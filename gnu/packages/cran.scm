@@ -17959,17 +17959,19 @@ signalled with increasing levels of non-invasive verbosity.")
 (define-public r-assertable
   (package
     (name "r-assertable")
-    (version "0.2.7")
+    (version "0.2.8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "assertable" version))
        (sha256
         (base32
-         "1npks9rcrnchmd0silq6qrvqkmdkp9fwjkyyvvp1lqjclyxk6vkk"))))
+         "1cciil1nzxd8gbj49w99jiv077lbpb59vx7bmb4p218aj2h5hqq4"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-data-table" ,r-data-table)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://cran.r-project.org/web/packages/assertable/")
     (synopsis "Verbose assertions for tabular data (data.frames and data.tables)")
     (description "This package provides simple, flexible assertions on
