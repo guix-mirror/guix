@@ -11102,17 +11102,18 @@ hypothesis testing.")
 (define-public r-feature
   (package
     (name "r-feature")
-    (version "1.2.14")
+    (version "1.2.15")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "feature" version))
        (sha256
         (base32
-         "1c12rny9nx8dynzxbcf49h76a7wlmsk1m131wh0jiyqx3c3y41y1"))))
+         "0yzn1w1sasilcp8v0pcjnxjv9l6lspkskqi412i6h040gqmjjf6y"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-ks" ,r-ks)))
+     `(("r-ks" ,r-ks)
+       ("r-plot3d" ,r-plot3d)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (home-page "http://www.mvstat.net/tduong/")
