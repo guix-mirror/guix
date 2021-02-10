@@ -25813,6 +25813,32 @@ in pure Rust.")
      "This package provides FFI bindings for PDCurses implementation.")
     (license license:expat)))
 
+(define-public rust-pear-codegen-0.1
+  (package
+    (name "rust-pear-codegen")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "pear_codegen" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1jk8jxkgjd3pymldkckg2ligkpy4nnskgcj8qf3yzlf3zlvcihdz"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-0.4)
+        ("rust-quote" ,rust-quote-0.6)
+        ("rust-syn" ,rust-syn-0.15)
+        ("rust-version-check" ,rust-version-check-0.9)
+        ("rust-yansi" ,rust-yansi-0.5))))
+    (home-page "https://crates.io/crates/pear_codegen")
+    (synopsis "Codegen for pear")
+    (description
+     "This package provides a (codegen) pear is a fruit.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-peeking-take-while-0.1
   (package
     (name "rust-peeking-take-while")
