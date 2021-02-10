@@ -38556,6 +38556,27 @@ longform text (e.g., ESC becomes @code{r\x1B}) and tries to encode ill-formed
 UTF-8.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-str-buf-1
+  (package
+    (name "rust-str-buf")
+    (version "1.0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "str-buf" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0shprf95kywspn4vbn706n8kvh6n473c5sffmdbsz77zni1kcjnl"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-serde" ,rust-serde-1))))
+    (home-page "https://github.com/DoumanAsh/str-buf")
+    (synopsis "Static string buffer")
+    (description "This package provides a static string buffer.")
+    (license license:boost1.0)))
+
 (define-public rust-stream-cipher-0.4
   (package
     (name "rust-stream-cipher")
