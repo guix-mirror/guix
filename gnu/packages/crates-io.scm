@@ -46838,6 +46838,28 @@ with webpki.")
      "This package provides a WebIDL Parser.")
     (license license:expat)))
 
+(define-public rust-weezl-0.1
+  (package
+    (name "rust-weezl")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "weezl" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0v16mvdmsicinbhgsm1l7gq1jmcaqrvm22rgn9lrhkhg71wb6cja"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-futures" ,rust-futures-0.3))))
+    (home-page "https://github.com/image-rs/lzw.git")
+    (synopsis "Fast LZW compression and decompression")
+    (description
+     "This package provides fast LZW compression and decompression.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-wepoll-sys-3
   (package
     (name "rust-wepoll-sys")
