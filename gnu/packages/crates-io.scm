@@ -46021,6 +46021,26 @@ to XDG Base Directory specification.")
      "Push based streaming parser for xml.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-xmlparser-0.13
+  (package
+    (name "rust-xmlparser")
+    (version "0.13.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "xmlparser" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1n73ymdxpdq30fgz698095zvh8k5r264rl6pcxnyyrr19nra4jqi"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/RazrFalcon/xmlparser")
+    (synopsis "Pull-based, zero-allocation XML parser")
+    (description
+     "@code{xmlparser} is a low-level, pull-based, zero-allocation XML 1.0
+parser.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-xz2-0.1
   (package
     (name "rust-xz2")
