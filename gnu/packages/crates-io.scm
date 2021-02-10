@@ -3160,8 +3160,49 @@ in Rust.")
         ("rust-serde-json" ,rust-serde-json-1)
         ("rust-streaming-stats" ,rust-streaming-stats-0.2))))))
 
+(define-public rust-awc-2
+  (package
+    (name "rust-awc")
+    (version "2.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "awc" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "14g6m53zmxw3f1sf990l7ps3w2fq2c29n1slpizc7kxhwy8f90dk"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-actix-codec" ,rust-actix-codec-0.3)
+        ("rust-actix-http" ,rust-actix-http-2)
+        ("rust-actix-rt" ,rust-actix-rt-1)
+        ("rust-actix-service" ,rust-actix-service-1)
+        ("rust-base64" ,rust-base64-0.13)
+        ("rust-bytes" ,rust-bytes-0.5)
+        ("rust-cfg-if" ,rust-cfg-if-1)
+        ("rust-derive-more" ,rust-derive-more-0.99)
+        ("rust-futures-core" ,rust-futures-core-0.3)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-mime" ,rust-mime-0.3)
+        ("rust-openssl" ,rust-openssl-0.10)
+        ("rust-percent-encoding" ,rust-percent-encoding-2)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-rustls" ,rust-rustls-0.18)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-serde-urlencoded" ,rust-serde-urlencoded-0.7))))
+    (home-page "https://actix.rs")
+    (synopsis "Async HTTP and WebSocket client library")
+    (description
+     "This package provides async HTTP and WebSocket client library
+built on the Actix ecosystem.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-awc-1
   (package
+    (inherit rust-awc-2)
     (name "rust-awc")
     (version "1.0.1")
     (source
@@ -3171,7 +3212,6 @@ in Rust.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1idacmq7n3irmdjkbxc5kdwspxk9w1gip94pcmfk7wky3m6isq6p"))))
-    (build-system cargo-build-system)
     ;; XXX: The crate fails to't build with with the same error as
     ;; rust-actix-connect.  Skip build for now.
     (arguments
@@ -3197,13 +3237,7 @@ in Rust.")
        #:cargo-development-inputs
        (("rust-actix-http-test" ,rust-actix-http-test-1)
         ("rust-actix-web" ,rust-actix-web-2)
-        ("rust-brotli" ,rust-brotli-3))))
-    (home-page "https://actix.rs")
-    (synopsis "Async HTTP and WebSocket client library")
-    (description
-     "This package provides async HTTP and WebSocket client library
-built on the Actix ecosystem.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-brotli" ,rust-brotli-3))))))
 
 (define-public rust-az-1
   (package
