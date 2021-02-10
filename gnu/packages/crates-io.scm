@@ -14652,6 +14652,24 @@ for constructing a Message Authentication Code (MAC), as in the AES-GCM
 authenticated encryption cipher.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-ghash-0.2
+  (package
+    (inherit rust-ghash-0.3)
+    (name "rust-ghash")
+    (version "0.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ghash" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0lijv1y6qcysnxv45ny5fjvc4v9gmpggxlj6xa4l065737nk02cz"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-polyval" ,rust-polyval-0.3)
+        ("rust-zeroize" ,rust-zeroize-1))))))
+
 (define-public rust-gimli-0.20
   (package
     (name "rust-gimli")
