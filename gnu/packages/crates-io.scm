@@ -36746,7 +36746,7 @@ words, like Python's shlex.")
         ("rust-libc" ,rust-libc-0.2)
         ("rust-mio" ,rust-mio-0.7)
         ("rust-mio-uds" ,rust-mio-uds-0.6)
-        ("rust-signal-hook-registry" ,rust-signal-hook-registry-1)
+        ("rust-signal-hook-registry" ,rust-signal-hook-registry-1.2)
         ("rust-tokio-reactor" ,rust-tokio-reactor-0.1))
        #:cargo-development-inputs
        (("rust-tokio" ,rust-tokio-0.1)
@@ -36759,6 +36759,32 @@ words, like Python's shlex.")
 (define-public rust-signal-hook-registry-1
   (package
     (name "rust-signal-hook-registry")
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "signal-hook-registry" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "19hirq0h33jjyh505s8hf9q5dq0ky80ygivkl3vshjv0y7zd1w8n"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2))))
+    (home-page "https://github.com/vorner/signal-hook")
+    (synopsis "Backend crate for signal-hook")
+    (description "This package is a backend crate for @code{signal-hook}.")
+    (license (list license:asl2.0 license:expat))))
+
+;; XXX: This package is needed for `rust-signal-hook-0.1', where "Cargo.toml"
+;; contains "~1.2".
+(define-public rust-signal-hook-registry-1.2
+  (package
+    (inherit rust-signal-hook-registry-1)
+    (name "rust-signal-hook-registry")
     (version "1.2.0")
     (source
      (origin
@@ -36769,18 +36795,13 @@ words, like Python's shlex.")
        (sha256
         (base32
          "0haz828bif1lbp3alx17zkcy5hwy15bbpmvks72j8iznx7npix4l"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-arc-swap" ,rust-arc-swap-0.4)
         ("rust-libc" ,rust-libc-0.2))
        #:cargo-development-inputs
        (("rust-signal-hook" ,rust-signal-hook-0.1)
-        ("rust-version-sync" ,rust-version-sync-0.8))))
-    (home-page "https://github.com/vorner/signal-hook")
-    (synopsis "Backend crate for signal-hook")
-    (description "Backend crate for signal-hook.")
-    (license (list license:asl2.0 license:expat))))
+        ("rust-version-sync" ,rust-version-sync-0.8))))))
 
 (define-public rust-signature-1
   (package
