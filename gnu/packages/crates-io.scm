@@ -14665,7 +14665,7 @@ featuring zero allocations, composability, and iterator-like interfaces.")
 (define-public rust-futures-core-0.3
   (package
     (name "rust-futures-core")
-    (version "0.3.8")
+    (version "0.3.12")
     (source
      (origin
        (method url-fetch)
@@ -14674,11 +14674,11 @@ featuring zero allocations, composability, and iterator-like interfaces.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0j0pixxv8dmqas1h5cgy92z4r9lpmnlis8ls22v17yrgnwqy2z44"))))
+         "0r8ag0mkxx9cd74yrccjk31lph4gr6lhgb9di6rx39wdvrfi9rbr"))))
     (build-system cargo-build-system)
-    (arguments '(#:tests? #f))
-    (home-page "https://rust-lang-nursery.github.io/futures-rs")
-    (synopsis "Core traits and types in for the `futures` library")
+    (arguments '(#:skip-build? #t))
+    (home-page "https://rust-lang.github.io/futures-rs")
+    (synopsis "Core traits and types in for the @code{futures} library")
     (description "This package provides the core traits and types in for the
 @code{futures} library.")
     (license (list license:expat license:asl2.0))))
