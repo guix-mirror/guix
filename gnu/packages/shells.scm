@@ -1381,6 +1381,35 @@ files and text.")
     (description "Nushell Plugin")
     (license expat)))
 
+(define-public rust-nu-plugin-sys-0.26
+  (package
+    (name "rust-nu-plugin-sys")
+    (version "0.26.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nu_plugin_sys" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "02jddzflzb173g8s6026vi0vk887h4p1q1a2cmc5g31r20z6h61p"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-futures" ,rust-futures-0.3)
+        ("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-nu-errors" ,rust-nu-errors-0.26)
+        ("rust-nu-plugin" ,rust-nu-plugin-0.26)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.26)
+        ("rust-nu-source" ,rust-nu-source-0.26)
+        ("rust-num-bigint" ,rust-num-bigint-0.3)
+        ("rust-sysinfo" ,rust-sysinfo-0.16))))
+    (home-page "https://www.nushell.sh")
+    (synopsis "System info plugin for Nushell")
+    (description "This package provides a system info plugin for Nushell.")
+    (license expat)))
+
 (define-public rust-nu-plugin-textview-0.26
   (package
     (name "rust-nu-plugin-textview")
