@@ -27984,6 +27984,38 @@ overloading without macros in Rust.")
 UDP.")
     (license license:unlicense)))
 
+(define-public rust-postgres-0.15
+  (package
+    (name "rust-postgres")
+    (version "0.15.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "postgres" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1id6jb56jack7kxivpp3rnjjmkmymmxqadf0h0smgbsixy8dwp8i"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bytes" ,rust-bytes-0.4)
+        ("rust-fallible-iterator" ,rust-fallible-iterator-0.1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-native-tls" ,rust-native-tls-0.1)
+        ("rust-openssl" ,rust-openssl-0.9)
+        ("rust-postgres-protocol" ,rust-postgres-protocol-0.3)
+        ("rust-postgres-shared" ,rust-postgres-shared-0.4)
+        ("rust-rustc-serialize" ,rust-rustc-serialize-0.3)
+        ("rust-schannel" ,rust-schannel-0.1)
+        ("rust-security-framework" ,rust-security-framework-0.1)
+        ("rust-socket2" ,rust-socket2-0.3))))
+    (home-page "https://github.com/sfackler/rust-postgres")
+    (synopsis "Native, synchronous PostgreSQL client")
+    (description
+     "This package provides a native, synchronous PostgreSQL client.")
+    (license license:expat)))
+
 (define-public rust-postgres-protocol-0.3
   (package
     (name "rust-postgres-protocol")
