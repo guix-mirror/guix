@@ -1094,6 +1094,30 @@ files and text.")
 Nushell.")
     (license expat)))
 
+(define-public rust-nu-stream-0.26
+  (package
+    (name "rust-nu-stream")
+    (version "0.26.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nu-stream" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1y7f28zxfrlhi9qrpbk6dpzb3wr6f59yhx3yim001796c1x6xlcs"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-futures" ,rust-futures-0.3)
+        ("rust-nu-errors" ,rust-nu-errors-0.26)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.26)
+        ("rust-nu-source" ,rust-nu-source-0.26))))
+    (home-page "https://www.nushell.sh")
+    (synopsis "Nushell stream")
+    (description "This package provides Nushell stream.")
+    (license expat)))
+
 (define-public rust-nu-table-0.26
   (package
     (name "rust-nu-table")
