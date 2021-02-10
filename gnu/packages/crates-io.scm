@@ -14732,7 +14732,7 @@ the computation on the threads themselves.")
 (define-public rust-futures-executor-0.3
   (package
     (name "rust-futures-executor")
-    (version "0.3.8")
+    (version "0.3.12")
     (source
      (origin
        (method url-fetch)
@@ -14741,17 +14741,18 @@ the computation on the threads themselves.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0r8ayj6g08d1i0hj2v6g5zr3hzlkxpqlkpf1awq0105qd0mjpajc"))))
+         "1ffr1zclhz60ql49n2pj44jhhk22yah41xwlpyb30jws03f9zrg9"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:tests? #f
+     `(#:skip-build? #t
        #:cargo-inputs
        (("rust-futures-core" ,rust-futures-core-0.3)
         ("rust-futures-task" ,rust-futures-task-0.3)
         ("rust-futures-util" ,rust-futures-util-0.3)
         ("rust-num-cpus" ,rust-num-cpus-1))))
-    (home-page "https://rust-lang-nursery.github.io/futures-rs")
-    (synopsis "Executors for asynchronous tasks based on the futures-rs library")
+    (home-page "https://rust-lang.github.io/futures-rs")
+    (synopsis
+     "Executors for asynchronous tasks based on the @code{futures-rs} library")
     (description
      "This package provides executors for asynchronous tasks based on the
 @code{futures-rs} library.")
