@@ -1381,6 +1381,35 @@ files and text.")
     (description "Nushell Plugin")
     (license expat)))
 
+(define-public rust-nu-plugin-start-0.26
+  (package
+    (name "rust-nu-plugin-start")
+    (version "0.26.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nu_plugin_start" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0k7yqjrj7ydihcpjm8wgf3v4n8w16rawvxk9hdfysgmmvzw29kk8"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-glob" ,rust-glob-0.3)
+        ("rust-nu-errors" ,rust-nu-errors-0.26)
+        ("rust-nu-plugin" ,rust-nu-plugin-0.26)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.26)
+        ("rust-nu-source" ,rust-nu-source-0.26)
+        ("rust-open" ,rust-open-1)
+        ("rust-url" ,rust-url-2))))
+    (home-page "https://www.nushell.sh")
+    (synopsis "Plugin to open files/URLs directly from Nushell")
+    (description
+     "This package provides a plugin to open files/URLs directly from
+Nushell.")
+    (license expat)))
+
 (define-public rust-nu-plugin-sys-0.26
   (package
     (name "rust-nu-plugin-sys")
