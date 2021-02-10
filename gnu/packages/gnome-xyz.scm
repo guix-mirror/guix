@@ -9,6 +9,7 @@
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
 ;;; Copyright © 2020 Ellis Kenyo <me@elken.dev>
+;;; Copyright © 2020 Stefan Reichör <stefan@xsteve.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,6 +33,7 @@
   #:use-module (guix build-system meson)
   #:use-module (guix git-download)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
@@ -888,3 +890,42 @@ feature-set for programming Vala effectively.")
    (description "Nordic is a Gtk3.20+ theme created using the Nord color
 pallete.")
    (license license:gpl3))))
+
+(define-public tiramisu
+  (let ((commit "8eb946dae0e2f98d3850d89e1bb535640e8c3266")
+        (revision "0"))
+    (package
+      (name "tiramisu")
+      (version (git-version "1.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/Sweets/tiramisu")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "0wz2r8369d40vnxswknx0zxzbs03gzv0nc8al4g0ffg972p15j25"))
+                (file-name (git-file-name name version))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (delete 'check)
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (install-file "tiramisu" (string-append out "/bin"))
+                 #t))))
+         #:make-flags
+         (list (string-append "CC=" ,(cc-for-target)))))
+      (inputs
+       `(("glib" ,glib)))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)))
+      (home-page "https://github.com/Sweets/tiramisu")
+      (synopsis "Desktop notifications, the UNIX way")
+      (description "tiramisu is a notification daemon based on dunst that
+outputs notifications to STDOUT in order to allow the user to process
+notifications any way they prefer.")
+      (license license:expat))))
