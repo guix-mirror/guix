@@ -1043,6 +1043,29 @@ and iOS.")
     (description "This package provides wgl bindings for glutin.")
     (license license:asl2.0)))
 
+(define-public rust-ical-0.7
+  (package
+    (name "rust-ical")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ical" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1kvk1pgas67rnp0n4424lxxs8y3n1h0fw3ap8jbfcxqdmlap57sa"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-thiserror" ,rust-thiserror-1))))
+    (home-page "https://github.com/Peltoche/ical-rs")
+    (synopsis "Ical/Vcard parser for Rust")
+    (description
+     "This library parse the ICalendar format defined in RFC5545, as well as
+similar formats like VCard.")
+    (license license:asl2.0)))
+
 (define-public rust-ichwh-0.3
   (package
     (name "rust-ichwh")
