@@ -45488,6 +45488,34 @@ first byte.")
         ("rust-serde" ,rust-serde-1)
         ("rust-sha1" ,rust-sha1-0.2))))))
 
+(define-public rust-v-frame-0.2
+  (package
+    (name "rust-v-frame")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "v_frame" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0xqf7dynsc6fm94jz3hknwi2n4ch1j7wrs0dd333r1ldniw49rf3"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-1)
+        ("rust-noop-proc-macro" ,rust-noop-proc-macro-0.3)
+        ("rust-num-derive" ,rust-num-derive-0.3)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-wasm-bindgen" ,rust-wasm-bindgen-0.2))))
+    (home-page "https://github.com/xiph/rav1e")
+    (synopsis "@code{Video Frame} data structures, part of rav1e")
+    (description
+     "This package provides @code{Video Frame} data structures, as a part of
+rav1e.")
+    (license license:bsd-2)))
+
 (define-public rust-vcpkg-0.2
   (package
     (name "rust-vcpkg")
