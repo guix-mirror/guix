@@ -26383,14 +26383,14 @@ vector machines, and gradient boosting.")
 (define-public r-bbotk
   (package
     (name "r-bbotk")
-    (version "0.2.2")
+    (version "0.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "bbotk" version))
        (sha256
         (base32
-         "06iz6gyymcxkbjiw049v1dk3vjfni646z247q08i2s0x59sqfqxv"))))
+         "0kbjbwwq1fdfpl4xzy08hz4qvhjjchvz58icxq0dlbsmdyqwhwv0"))))
     (properties `((upstream-name . "bbotk")))
     (build-system r-build-system)
     (propagated-inputs
@@ -26400,6 +26400,8 @@ vector machines, and gradient boosting.")
        ("r-mlr3misc" ,r-mlr3misc)
        ("r-paradox" ,r-paradox)
        ("r-r6" ,r-r6)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bbotk.mlr-org.com")
     (synopsis "Black-Box Optimization Toolkit")
     (description "This package provides a common framework for optimization of
