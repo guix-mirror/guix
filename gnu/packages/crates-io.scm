@@ -12967,6 +12967,30 @@ variables.")
      `(#:cargo-inputs
        (("rust-backtrace" ,rust-backtrace-0.3))))))
 
+(define-public rust-error-code-2
+  (package
+    (name "rust-error-code")
+    (version "2.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "error-code" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0lmblmk2kr0cy6x3d1y2ywxg3jg6nicf8fahd3l5wb1ddzv9975l"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-str-buf" ,rust-str-buf-1))))
+    (home-page "")
+    (synopsis "Alternative @code{Error} for Rust")
+    (description
+     "This package provides a simplified @code{Error} which works in
+@code{no_std} environment.")
+    (license license:boost1.0)))
+
 (define-public rust-escargot-0.5
   (package
     (name "rust-escargot")
