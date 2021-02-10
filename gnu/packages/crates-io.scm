@@ -1947,6 +1947,39 @@ coverage-guided, mutation-based fuzzers.")
           (base32
             "1i3fhcdyjq4isn22xx2svmpfr5hwyzi0wavbm07fs8i2dv5pdkv4"))))))
 
+(define-public rust-arboard-1
+  (package
+    (name "rust-arboard")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "arboard" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0wpyv732fxkplmiwik1sbgdlnbk748w1aqpkc71gn5lm2ns9w545"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-clipboard-win" ,rust-clipboard-win-4)
+        ("rust-core-graphics" ,rust-core-graphics-0.21)
+        ("rust-image" ,rust-image-0.23)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-objc" ,rust-objc-0.2)
+        ("rust-objc-foundation" ,rust-objc-foundation-0.1)
+        ("rust-objc-id" ,rust-objc-id-0.1)
+        ("rust-scopeguard" ,rust-scopeguard-1)
+        ("rust-thiserror" ,rust-thiserror-1)
+        ("rust-winapi" ,rust-winapi-0.3)
+        ("rust-xcb" ,rust-xcb-0.9))))
+    (home-page "https://github.com/ArturKovacs/arboard")
+    (synopsis "Image and text handling for the OS clipboard")
+    (description
+     "This package provides image and text handling for the OS clipboard.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-arc-swap-1
   (package
     (name "rust-arc-swap")
