@@ -17288,6 +17288,33 @@ let} expressions.")
 ignore files such as @file{.gitignore} against file paths.")
     (license (list license:unlicense license:expat))))
 
+(define-public rust-include-flate-codegen-0.1
+  (package
+    (name "rust-include-flate-codegen")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "include-flate-codegen" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1mbw6fcczmfw4dabps4l90mdn2wdy9zhqwh60xx4fjcxqfsm9ksb"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-libflate" ,rust-libflate-0.1)
+        ("rust-proc-macro-hack" ,rust-proc-macro-hack-0.5)
+        ("rust-proc-macro2" ,rust-proc-macro2-0.4)
+        ("rust-quote" ,rust-quote-0.6)
+        ("rust-syn" ,rust-syn-0.15))))
+    (home-page "https://github.com/SOF3/include-flate")
+    (synopsis "Macro codegen for the @code{include-flate} crate")
+    (description
+     "This package provides macro codegen for the @code{include-flate}
+crate.")
+    (license license:asl2.0)))
+
 (define-public rust-indexmap-1
   (package
     (name "rust-indexmap")
