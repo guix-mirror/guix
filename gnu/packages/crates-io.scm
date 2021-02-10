@@ -27964,14 +27964,14 @@ crate.")
 (define-public rust-pin-project-lite-0.2
   (package
     (name "rust-pin-project-lite")
-    (version "0.2.0")
+    (version "0.2.4")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "pin-project-lite" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "070klqy200alrhxb79fxarrrrn0vbwg95dmqw9062vhqxibky1kb"))))
+        (base32 "09x8chns8apal89pndqdrr0c2nv8jw6nmi8hl38acjbc6sprg5j3"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-development-inputs
