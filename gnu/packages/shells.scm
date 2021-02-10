@@ -1380,6 +1380,34 @@ files and text.")
     (description "Nushell Plugin")
     (license expat)))
 
+(define-public rust-nu-plugin-xpath-0.26
+  (package
+    (name "rust-nu-plugin-xpath")
+    (version "0.26.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nu_plugin_xpath" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0sp3q5wlmwpzsx9751wqis2xxshck0fl6gpl1jckwivg8s9glbbg"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bigdecimal" ,rust-bigdecimal-0.2)
+        ("rust-indexmap" ,rust-indexmap-1)
+        ("rust-nu-errors" ,rust-nu-errors-0.26)
+        ("rust-nu-plugin" ,rust-nu-plugin-0.26)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.26)
+        ("rust-nu-source" ,rust-nu-source-0.26)
+        ("rust-sxd-document" ,rust-sxd-document-0.3)
+        ("rust-sxd-xpath" ,rust-sxd-xpath-0.4))))
+    (home-page "https://www.nushell.sh")
+    (synopsis "Traverses XML")
+    (description "Traverses XML")
+    (license expat)))
+
 (define-public rust-nu-protocol-0.26
   (package
     (name "rust-nu-protocol")
