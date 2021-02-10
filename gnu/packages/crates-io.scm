@@ -585,8 +585,42 @@ asynchronous request/response operations.")
     (description "This package provides Actix thread pool for sync code.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-actix-tls-2
+  (package
+    (name "rust-actix-tls")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "actix-tls" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1yqmlyn02c72a1rrmjkfx5hnz286130y3sq4ll1mbkv1fdyrny14"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-actix-codec" ,rust-actix-codec-0.3)
+        ("rust-actix-service" ,rust-actix-service-1)
+        ("rust-actix-utils" ,rust-actix-utils-2)
+        ("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-native-tls" ,rust-native-tls-0.2)
+        ("rust-openssl" ,rust-openssl-0.10)
+        ("rust-rustls" ,rust-rustls-0.18)
+        ("rust-tokio-openssl" ,rust-tokio-openssl-0.4)
+        ("rust-tokio-rustls" ,rust-tokio-rustls-0.14)
+        ("rust-tokio-tls" ,rust-tokio-tls-0.3)
+        ("rust-webpki" ,rust-webpki-0.21)
+        ("rust-webpki-roots" ,rust-webpki-roots-0.20))))
+    (home-page "https://actix.rs")
+    (synopsis "TLS acceptor services for Actix ecosystem")
+    (description
+     "This package provides TLS acceptor services for Actix ecosystem.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-actix-tls-1
   (package
+    (inherit rust-actix-tls-2)
     (name "rust-actix-tls")
     (version "1.0.0")
     (source
@@ -596,7 +630,6 @@ asynchronous request/response operations.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1a4m96jz6vzmknpk5m803c337c6dillnqq4w71nrlphhmzxb9rd4"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-actix-codec" ,rust-actix-codec-0.2)
@@ -616,12 +649,7 @@ asynchronous request/response operations.")
         ("rust-webpki" ,rust-webpki-0.21)
         ("rust-webpki-roots" ,rust-webpki-roots-0.17))
        #:cargo-development-inputs
-       (("rust-actix-testing" ,rust-actix-testing-1))))
-    (home-page "https://actix.rs")
-    (synopsis "TLS acceptor services for Actix ecosystem")
-    (description
-     "This package provides TLS acceptor services for Actix ecosystem.")
-    (license (list license:expat license:asl2.0))))
+       (("rust-actix-testing" ,rust-actix-testing-1))))))
 
 (define-public rust-actix-utils-2
   (package
