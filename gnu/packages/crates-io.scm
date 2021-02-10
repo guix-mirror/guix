@@ -204,8 +204,46 @@ protocols.")
         ("rust-tokio" ,rust-tokio-0.2)
         ("rust-tokio-util" ,rust-tokio-util-0.2))))))
 
+(define-public rust-actix-connect-2
+  (package
+    (name "rust-actix-connect")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "actix-connect" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1p6hh5rj9zpx4wx0h87d56ahk68hmhpw2gmfsfl5pwb312hkfy0p"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-actix-codec" ,rust-actix-codec-0.3)
+        ("rust-actix-rt" ,rust-actix-rt-1)
+        ("rust-actix-service" ,rust-actix-service-1)
+        ("rust-actix-utils" ,rust-actix-utils-2)
+        ("rust-derive-more" ,rust-derive-more-0.99)
+        ("rust-either" ,rust-either-1)
+        ("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-http" ,rust-http-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-openssl" ,rust-openssl-0.10)
+        ("rust-rustls" ,rust-rustls-0.18)
+        ("rust-tokio-openssl" ,rust-tokio-openssl-0.4)
+        ("rust-tokio-rustls" ,rust-tokio-rustls-0.14)
+        ("rust-trust-dns-proto" ,rust-trust-dns-proto-0.19)
+        ("rust-trust-dns-resolver" ,rust-trust-dns-resolver-0.19)
+        ("rust-webpki" ,rust-webpki-0.21))))
+    (home-page "https://actix.rs")
+    (synopsis "TCP connector service for Actix ecosystem")
+    (description
+     "This package provides a TCP connector service for Actix ecosystem.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-actix-connect-1
   (package
+    (inherit rust-actix-connect-2)
     (name "rust-actix-connect")
     (version "1.0.2")
     (source
@@ -215,7 +253,6 @@ protocols.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "0v77m394gzbrrzg12xkqgli11vwhig0zcxy3yhmq1s91j9bcjp69"))))
-    (build-system cargo-build-system)
     (arguments
      ;; XXX: The crate fails to't build with: "error[E0432]: unresolved import
      ;; `trust_dns_resolver::Background`".  I assume it really expects
@@ -247,12 +284,7 @@ protocols.")
              (substitute* "Cargo.toml"
                (("0.18.0-alpha.2")
                 ,(package-version rust-trust-dns-proto-0.18)))
-             #t)))))
-    (home-page "https://actix.rs")
-    (synopsis "TCP connector service for Actix ecosystem")
-    (description
-     "This package provides a TCP connector service for Actix ecosystem.")
-    (license (list license:expat license:asl2.0))))
+             #t)))))))
 
 (define-public rust-actix-derive-0.5
   (package
