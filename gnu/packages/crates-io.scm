@@ -5626,20 +5626,18 @@ little-endian.")
   (package
     (inherit rust-bytes-0.6)
     (name "rust-bytes")
-    (version "0.5.4")
+    (version "0.5.6")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "bytes" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1q9r7si1l8vndg4n2ny2nv833ghp5vyqzk5indb9rmhd5ibaq2hk"))))
+        (base32 "0f5s7xq6qzmdh22ygsy8v0sp02m51y0radvq4i4y8cizy1lfqk0f"))))
     (arguments
-     `(#:cargo-inputs
-       (("rust-serde" ,rust-serde-1))
-       #:cargo-development-inputs
-       (("rust-loom" ,rust-loom-0.2)
-        ("rust-serde-test" ,rust-serde-test-1))))))
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-serde" ,rust-serde-1))))))
 
 (define-public rust-bytes-0.4
   (package/inherit rust-bytes-0.5
