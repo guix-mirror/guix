@@ -999,6 +999,37 @@ files and text.")
     (description "Nushell parser")
     (license expat)))
 
+(define-public rust-nu-plugin-0.26
+  (package
+    (name "rust-nu-plugin")
+    (version "0.26.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nu-plugin" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1n7lf9d0dkjdnmwv60szrz22z47aq3yl946f9y20dnk7xy798bv6"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bigdecimal" ,rust-bigdecimal-0.2)
+        ("rust-indexmap" ,rust-indexmap-1)
+        ("rust-nu-errors" ,rust-nu-errors-0.26)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.26)
+        ("rust-nu-source" ,rust-nu-source-0.26)
+        ("rust-nu-test-support" ,rust-nu-test-support-0.26)
+        ("rust-nu-value-ext" ,rust-nu-value-ext-0.26)
+        ("rust-num-bigint" ,rust-num-bigint-0.3)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1))))
+    (home-page "https://www.nushell.sh")
+    (synopsis "Nushell Plugin")
+    (description "Nushell Plugin")
+    (license expat)))
+
 (define-public rust-nu-protocol-0.26
   (package
     (name "rust-nu-protocol")
