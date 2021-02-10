@@ -16651,6 +16651,29 @@ SystemTime}}.")
         ("rust-unicase" ,rust-unicase-1)
         ("rust-url" ,rust-url-1))))))
 
+(define-public rust-hyper-native-tls-0.3
+  (package
+    (name "rust-hyper-native-tls")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "hyper-native-tls" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0s30y20qy0akzss91yxsq1x1q7rr04jy33i0cq72nx22yjc5advd"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-antidote" ,rust-antidote-1)
+        ("rust-hyper" ,rust-hyper-0.10)
+        ("rust-native-tls" ,rust-native-tls-0.2))))
+    (home-page "https://github.com/sfackler/hyper-native-tls")
+    (synopsis "native-tls support for Hyper 0.10")
+    (description "This package provides native-tls support for Hyper 0.10.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-hyper-old-types-0.11
   (package
     (name "rust-hyper-old-types")
