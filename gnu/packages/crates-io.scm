@@ -13063,6 +13063,30 @@ supported in purely NFA-based implementations.")
        (("rust-clap" ,rust-clap-2)
         ("rust-tempdir" ,rust-tempdir-0.3))))))
 
+(define-public rust-filesize-0.2
+  (package
+    (name "rust-filesize")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "filesize" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0hvx4dfnara3a2dnhb9ci5bmm1m8s44h9l61s5djwkjx87i43mqj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-winapi" ,rust-winapi-0.3))))
+    (home-page "https://github.com/Freaky/rust-filesize")
+    (synopsis "Find the physical space used by a file")
+    (description
+     "@code{filesize} abstracts platform-specific methods of determining the
+real space used by files, taking into account filesystem compression and
+sparse files.")
+    (license license:expat)))
+
 (define-public rust-filetime-0.2
   (package
     (name "rust-filetime")
