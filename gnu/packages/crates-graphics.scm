@@ -1251,6 +1251,26 @@ for the most common image formats.")
         ("rust-num-complex" ,rust-num-complex-0.2)
         ("rust-quickcheck" ,rust-quickcheck-0.6))))))
 
+(define-public rust-imgref-1
+  (package
+    (name "rust-imgref")
+    (version "1.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "imgref" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "19dd5xss3nd40avv8az2kzicpxx71c2akiqznr616hki30w9vj07"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/kornelski/imgref")
+    (synopsis "2D slice of a @code{Vec}")
+    (description
+     "This package provides a trivial struct for interchange of 2d-dimensional
+pixel buffers with width, height and stride.")
+    (license license:cc0)))
+
 (define-public rust-jpeg-decoder-0.1
   (package
     (name "rust-jpeg-decoder")
