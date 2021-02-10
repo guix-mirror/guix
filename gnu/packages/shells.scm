@@ -1026,3 +1026,26 @@ files and text.")
      "This package provides a source string characterizer for
 Nushell.")
     (license expat)))
+
+(define-public rust-nu-table-0.26
+  (package
+    (name "rust-nu-table")
+    (version "0.26.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nu-table" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1kxgmngfzi13xr2r65f5mxy24a8d1d0xrhi9bfjp5955r8r09km4"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-ansi-term" ,rust-ansi-term-0.12)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-unicode-width" ,rust-unicode-width-0.1))))
+    (home-page "https://www.nushell.sh")
+    (synopsis "Nushell table printing")
+    (description "Nushell table printing")
+    (license expat)))
