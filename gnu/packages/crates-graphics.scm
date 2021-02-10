@@ -1163,41 +1163,36 @@ PATH.")
 (define-public rust-image-0.23
   (package
     (name "rust-image")
-    (version "0.23.6")
+    (version "0.23.12")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "image" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "1d2a80k7pwqshliqi5fw1dwkz7q9zd6pjnwpw8zxc1v4xhzmbc5m"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "image" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1dg9z5sbc389spp7pm23n2b1k0gdd8hjdb8hhsp3k3npx9vl1q3w"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:tests? #f      ; Some test images are missing from the release.
+     `(#:skip-build? #t
        #:cargo-inputs
        (("rust-bytemuck" ,rust-bytemuck-1)
         ("rust-byteorder" ,rust-byteorder-1)
-        ("rust-gif" ,rust-gif-0.10)
+        ("rust-color-quant" ,rust-color-quant-1)
+        ("rust-gif" ,rust-gif-0.11)
         ("rust-jpeg-decoder" ,rust-jpeg-decoder-0.1)
         ("rust-num-iter" ,rust-num-iter-0.1)
         ("rust-num-rational" ,rust-num-rational-0.3)
         ("rust-num-traits" ,rust-num-traits-0.2)
         ("rust-png" ,rust-png-0.16)
+        ("rust-ravif" ,rust-ravif-0.6)
+        ("rust-rgb" ,rust-rgb-0.8)
         ("rust-scoped-threadpool" ,rust-scoped-threadpool-0.1)
-        ("rust-tiff" ,rust-tiff-0.5))
-       #:cargo-development-inputs
-       (("rust-crc32fast" ,rust-crc32fast-1)
-        ("rust-criterion" ,rust-criterion-0.3)
-        ("rust-glob" ,rust-glob-0.3)
-        ("rust-num-complex" ,rust-num-complex-0.3)
-        ("rust-quickcheck" ,rust-quickcheck-0.9))))
+        ("rust-tiff" ,rust-tiff-0.6))))
     (home-page "https://github.com/image-rs/image")
     (synopsis "Imaging library written in Rust")
     (description
-     "Imaging library written in Rust.  Provides basic filters and decoders
-for the most common image formats.")
+     "This package is an imaging library written in Rust.  It provides basic
+filters and decoders for the most common image formats.")
     (license license:expat)))
 
 (define-public rust-image-0.22
@@ -1918,6 +1913,101 @@ interactive applications.")
         ;; ("rust-glium" ,rust-glium-0.21)
         ("rust-glob" ,rust-glob-0.2)
         ("rust-term" ,rust-term-0.4))))))
+
+(define-public rust-rav1e-0.4
+  (package
+    (name "rust-rav1e")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rav1e" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "02cpgzycfgnflnv8sck6ajasa7abfgdzn6b4jv01sf6r21yfipbq"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-aom-sys" ,rust-aom-sys-0.2)
+        ("rust-arbitrary" ,rust-arbitrary-0.4)
+        ("rust-arg-enum-proc-macro" ,rust-arg-enum-proc-macro-0.3)
+        ("rust-arrayvec" ,rust-arrayvec-0.5)
+        ("rust-av-metrics" ,rust-av-metrics-0.6)
+        ("rust-backtrace" ,rust-backtrace-0.3)
+        ("rust-bitstream-io" ,rust-bitstream-io-1)
+        ("rust-byteorder" ,rust-byteorder-1)
+        ("rust-cc" ,rust-cc-1)
+        ("rust-cfg-if" ,rust-cfg-if-1)
+        ("rust-clap" ,rust-clap-2)
+        ("rust-console" ,rust-console-0.14)
+        ("rust-crossbeam" ,rust-crossbeam-0.8)
+        ("rust-dav1d-sys" ,rust-dav1d-sys-0.3)
+        ("rust-fern" ,rust-fern-0.6)
+        ("rust-image" ,rust-image-0.23)
+        ("rust-interpolate-name" ,rust-interpolate-name-0.2)
+        ("rust-itertools" ,rust-itertools-0.10)
+        ("rust-ivf" ,rust-ivf-0.1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-libfuzzer-sys" ,rust-libfuzzer-sys-0.3)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-nasm-rs" ,rust-nasm-rs-0.2)
+        ("rust-noop-proc-macro" ,rust-noop-proc-macro-0.3)
+        ("rust-num-derive" ,rust-num-derive-0.3)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-paste" ,rust-paste-1)
+        ("rust-rand" ,rust-rand-0.8)
+        ("rust-rand-chacha" ,rust-rand-chacha-0.3)
+        ("rust-rayon" ,rust-rayon-1)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-rust-hawktracer" ,rust-rust-hawktracer-0.7)
+        ("rust-rustc-version" ,rust-rustc-version-0.3)
+        ("rust-scan-fmt" ,rust-scan-fmt-0.2)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-signal-hook" ,rust-signal-hook-0.3)
+        ("rust-simd-helpers" ,rust-simd-helpers-0.1)
+        ("rust-thiserror" ,rust-thiserror-1)
+        ("rust-toml" ,rust-toml-0.5)
+        ("rust-v-frame" ,rust-v-frame-0.2)
+        ("rust-vergen" ,rust-vergen-3)
+        ("rust-wasm-bindgen" ,rust-wasm-bindgen-0.2)
+        ("rust-y4m" ,rust-y4m-0.7))))
+    (home-page "https://github.com/xiph/rav1e")
+    (synopsis "Fast and safe AV1 encoder")
+    (description
+     "@code{rav1e} is an AV1 video encoder.  It is designed to eventually
+cover all use cases, though in its current form it is most suitable for cases
+where libaom (the reference encoder) is too slow.")
+    (license license:bsd-2)))
+
+(define-public rust-ravif-0.6
+  (package
+    (name "rust-ravif")
+    (version "0.6.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ravif" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1gyc7w1fz3qdk95cdpkj185dm6lskxfp329xm69waxc565fcz9rx"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-avif-serialize" ,rust-avif-serialize-0.6)
+        ("rust-imgref" ,rust-imgref-1)
+        ("rust-loop9" ,rust-loop9-0.1)
+        ("rust-num-cpus" ,rust-num-cpus-1)
+        ("rust-rav1e" ,rust-rav1e-0.4)
+        ("rust-rayon" ,rust-rayon-1)
+        ("rust-rgb" ,rust-rgb-0.8))))
+    (home-page "https://lib.rs/ravif")
+    (synopsis "Library for encoding images in AVIF format")
+    (description
+     "This package is a rav1e-based pure Rust library for encoding images in
+AVIF format.")
+    (license license:bsd-3)))
 
 (define-public rust-raw-window-handle-0.3
   (package
