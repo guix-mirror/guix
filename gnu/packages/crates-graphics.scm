@@ -1043,6 +1043,33 @@ and iOS.")
     (description "This package provides wgl bindings for glutin.")
     (license license:asl2.0)))
 
+(define-public rust-ichwh-0.3
+  (package
+    (name "rust-ichwh")
+    (version "0.3.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ichwh" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0m6628yw3l812hjknmh5b5gcvhn6as9gzjz60h54zjxyy4w5ss7a"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-async-std" ,rust-async-std-1)
+        ("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-futures" ,rust-futures-0.3)
+        ("rust-thiserror" ,rust-thiserror-1))))
+    (home-page "https://gitlab.com/avandesa/ichwh-rs")
+    (synopsis "Asynchronous implementation of @command{which}")
+    (description
+     "@code{ichwh} aims to be a fully-asynchronous clone of GNU which.  The
+main job of @command{which} is to search for executables on the current
+PATH.")
+    (license license:expat)))
+
 (define-public rust-image-0.23
   (package
     (name "rust-image")
