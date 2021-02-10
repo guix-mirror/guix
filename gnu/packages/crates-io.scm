@@ -26656,8 +26656,28 @@ and would-block I/O operations.")
         ("rust-tokio-core" ,rust-tokio-core-0.1))))
     (license license:bsd-3)))
 
+(define-public rust-paste-1
+  (package
+    (name "rust-paste")
+    (version "1.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "paste" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1hfikh0bds8hqn371l2wf039mp6b5wrmwrwg96jcs6lkjm6mrmn5"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/dtolnay/paste")
+    (synopsis "Macros for all your token pasting needs")
+    (description
+     "This package provides macros for all your token pasting needs.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-paste-0.1
   (package
+    (inherit rust-paste-1)
     (name "rust-paste")
     (version "0.1.18")
     (source
@@ -26669,19 +26689,13 @@ and would-block I/O operations.")
        (sha256
         (base32
          "10587zrlmzhq66yhd0z36fzglf32m1nlhi9bxxm6dgl0gp3j1jj5"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-paste-impl" ,rust-paste-impl-0.1)
         ("rust-proc-macro-hack" ,rust-proc-macro-hack-0.5))
        #:cargo-development-inputs
        (("rust-rustversion" ,rust-rustversion-1)
-        ("rust-trybuild" ,rust-trybuild-1))))
-    (home-page "https://github.com/dtolnay/paste")
-    (synopsis "Macros for all your token pasting needs")
-    (description
-     "Macros for all your token pasting needs.")
-    (license (list license:asl2.0 license:expat))))
+        ("rust-trybuild" ,rust-trybuild-1))))))
 
 (define-public rust-paste-impl-0.1
   (package
