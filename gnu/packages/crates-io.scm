@@ -9795,23 +9795,20 @@ Mode functionality is accessed using traits from re-exported cipher crate.")
 (define-public rust-ctrlc-3
   (package
     (name "rust-ctrlc")
-    (version "3.1.3")
+    (version "3.1.7")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "ctrlc" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "0zz8ad4bk28s111af5vy1c5kii4zw0cgh87ivzgj28f8nkcd5py7"))))
+        (base32 "027bzbddk0wg7s2wnbgcwx2iv6bjzvxfpp0s2xdg444yfklr4ymm"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs
-       (("rust-nix" ,rust-nix-0.14)
-        ("rust-winapi" ,rust-winapi-0.3))
-       #:cargo-development-inputs
-       (("rust-winapi" ,rust-winapi-0.3))))
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-nix" ,rust-nix-0.18)
+        ("rust-winapi" ,rust-winapi-0.3))))
     (home-page "https://github.com/Detegr/rust-ctrlc")
     (synopsis "Easy Ctrl-C handler for Rust projects")
     (description
