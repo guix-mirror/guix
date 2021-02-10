@@ -45917,6 +45917,23 @@ color in a Windows console.")
     (license (list license:unlicense
                    license:expat))))
 
+(define-public rust-wincolor-0.1
+  (package
+    (inherit rust-wincolor-1)
+    (name "rust-wincolor")
+    (version "0.1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "wincolor" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0rvpvv26a8c4dla5i5hsxlkvjcjjbl0dylhhg4147m54lfcn9c7f"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-winapi" ,rust-winapi-0.3))))))
+
 (define-public rust-win-crypto-ng-0.4
   (package
     (name "rust-win-crypto-ng")
