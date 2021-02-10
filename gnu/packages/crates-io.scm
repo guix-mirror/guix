@@ -30518,6 +30518,34 @@ MessagePack format.")
     (description "This crate provides Serde bindings for RMP.")
     (license license:expat)))
 
+(define-public rust-rocket-codegen-0.4
+  (package
+    (name "rust-rocket-codegen")
+    (version "0.4.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rocket_codegen" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0n4k00fwwabvkjvnl62gwdc5v7rsg6bnmmwwiwm5bzpmdnqm94ai"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-devise" ,rust-devise-0.2)
+        ("rust-glob" ,rust-glob-0.3)
+        ("rust-indexmap" ,rust-indexmap-1)
+        ("rust-quote" ,rust-quote-0.6)
+        ("rust-rocket-http" ,rust-rocket-http-0.4)
+        ("rust-version-check" ,rust-version-check-0.9)
+        ("rust-yansi" ,rust-yansi-0.5))))
+    (home-page "https://rocket.rs")
+    (synopsis "Procedural macros for the Rocket web framework")
+    (description
+     "This package provides procedural macros for the Rocket web framework.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-rocket-http-0.4
   (package
     (name "rust-rocket-http")
