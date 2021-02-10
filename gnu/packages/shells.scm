@@ -1381,6 +1381,35 @@ files and text.")
     (description "Nushell Plugin")
     (license expat)))
 
+(define-public rust-nu-plugin-inc-0.26
+  (package
+    (name "rust-nu-plugin-inc")
+    (version "0.26.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nu_plugin_inc" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1v72zaqhzf37x3sba43c6pry75v4aacqsk4mw7fnmx6mfzbpjdn6"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-nu-errors" ,rust-nu-errors-0.26)
+        ("rust-nu-plugin" ,rust-nu-plugin-0.26)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.26)
+        ("rust-nu-source" ,rust-nu-source-0.26)
+        ("rust-nu-test-support" ,rust-nu-test-support-0.26)
+        ("rust-nu-value-ext" ,rust-nu-value-ext-0.26)
+        ("rust-semver" ,rust-semver-0.10))))
+    (home-page "https://www.nushell.sh")
+    (synopsis "Version incrementer plugin for Nushell")
+    (description
+     "This package provides a version incrementer plugin for
+Nushell.")
+    (license expat)))
+
 (define-public rust-nu-plugin-match-0.26
   (package
     (name "rust-nu-plugin-match")
