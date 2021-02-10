@@ -1019,6 +1019,25 @@ AES (Rijndael) block ciphers.")
 block ciphers using AES-NI.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-aesni-0.6
+  (package
+    (inherit rust-aesni-0.7)
+    (name "rust-aesni")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "aesni" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "007imgcfl82nilfpamj5dik83pkcmkzvbkxp384p7r3iz6sscw1g"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-block-cipher-trait" ,rust-block-cipher-trait-0.6)
+        ("rust-opaque-debug" ,rust-opaque-debug-0.2)
+        ("rust-stream-cipher" ,rust-stream-cipher-0.3))))))
+
 (define-public rust-afl-0.8
   (package
     (name "rust-afl")
