@@ -12423,14 +12423,14 @@ Precision Floating-Point Reliable} (MPFR) library.")
 (define-public r-assertive-base
   (package
     (name "r-assertive-base")
-    (version "0.0-7")
+    (version "0.0-9")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "assertive.base" version))
        (sha256
         (base32
-         "1xs3ysvj0z57c58jw57pckq2rynia6ks4rmjmc02alczhk54wbgh"))))
+         "07m0ddz092bgbl2fn1yk932h0iajdcqkri632477wl5a1q5r3w2b"))))
     (properties
      `((upstream-name . "assertive.base")))
     (build-system r-build-system)
