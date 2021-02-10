@@ -29386,6 +29386,25 @@ to write.")
      "This package provides a high performance XML reader and writer.")
     (license license:expat)))
 
+(define-public rust-quick-xml-0.19
+  (package
+    (inherit rust-quick-xml-0.20)
+    (name "rust-quick-xml")
+    (version "0.19.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "quick-xml" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "16qzavgdfdhw325hpyfwmb6wc7msvy01flmn02yqb3s7fxa2vmxk"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-encoding-rs" ,rust-encoding-rs-0.8)
+        ("rust-memchr" ,rust-memchr-2)
+        ("rust-serde" ,rust-serde-1))))))
+
 (define-public rust-quick-xml-0.12
   (package
     (inherit rust-quick-xml-0.20)
