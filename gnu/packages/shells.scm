@@ -16,6 +16,7 @@
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,6 +39,8 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages crates-graphics)
+  #:use-module (gnu packages crates-io)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages guile)
@@ -52,6 +55,7 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages scheme)
+  #:use-module (guix build-system cargo)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
@@ -926,3 +930,29 @@ Underpinning these utilities are many Scheme interfaces for manipulating
 files and text.")
     (license gpl3+)))
 
+(define-public rust-nu-source-0.26
+  (package
+    (name "rust-nu-source")
+    (version "0.26.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nu-source" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1sdmasal3qqcp8fjpqncppc81m0984bp528lb9zggipbxzjpvb3i"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-derive-new" ,rust-derive-new-0.5)
+        ("rust-getset" ,rust-getset-0.1)
+        ("rust-pretty" ,rust-pretty-0.5)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-termcolor" ,rust-termcolor-1))))
+    (home-page "https://www.nushell.sh")
+    (synopsis "Source string characterizer for Nushell")
+    (description
+     "This package provides a source string characterizer for
+Nushell.")
+    (license expat)))
