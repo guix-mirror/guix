@@ -14529,7 +14529,7 @@ stabilized, and eventually removed.  This library reïnstates these traits.")
 (define-public rust-futures-0.3
   (package
     (name "rust-futures")
-    (version "0.3.8")
+    (version "0.3.12")
     (source
      (origin
        (method url-fetch)
@@ -14538,10 +14538,10 @@ stabilized, and eventually removed.  This library reïnstates these traits.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1l434mh7p5na5c3c7lih575hszqc515r9idk62fm5rhz1820qfwv"))))
+         "0l7i1hcag46k5v34cbn5dk45gwxn5yy5rxcvmbaxhi02lnhm546s"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:tests? #f
+     `(#:skip-build? #t
        #:cargo-inputs
        (("rust-futures-channel" ,rust-futures-channel-0.3)
         ("rust-futures-core" ,rust-futures-core-0.3)
@@ -14549,16 +14549,12 @@ stabilized, and eventually removed.  This library reïnstates these traits.")
         ("rust-futures-io" ,rust-futures-io-0.3)
         ("rust-futures-sink" ,rust-futures-sink-0.3)
         ("rust-futures-task" ,rust-futures-task-0.3)
-        ("rust-futures-util" ,rust-futures-util-0.3))
-       #:cargo-development-inputs
-       (("rust-assert-matches" ,rust-assert-matches-1)
-        ("rust-pin-utils" ,rust-pin-utils-0.1)
-        ("rust-tokio" ,rust-tokio-0.1))))
-    (home-page "https://rust-lang-nursery.github.io/futures-rs")
+        ("rust-futures-util" ,rust-futures-util-0.3))))
+    (home-page "https://rust-lang.github.io/futures-rs")
     (synopsis "Rust implementation of futures and streams")
     (description
-     "A Rust implementation of futures and streams featuring zero allocations,
-composability, and iterator-like interfaces.")
+     "This package is a Rust implementation of futures and streams featuring
+zero allocations, composability, and iterator-like interfaces.")
     (license (list license:expat license:asl2.0))))
 
 (define-public rust-futures-0.1
