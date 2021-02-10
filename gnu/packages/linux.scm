@@ -408,20 +408,15 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.256")
+(define-public linux-libre-4.9-version "4.9.257")
 (define deblob-scripts-4.9
   (linux-libre-deblob-scripts
-   ;; 4.9.256 is the same as 4.9.255, but is meant to test if anything
-   ;; breaks when the minor version overflows an 8-bit representation.
-   ;; Same story for 4.4.256.
-   ;; https://lwn.net/Articles/845206/
-   ;; http://kroah.com/log/blog/2021/02/05/8-bits-are-enough-for-a-version-number-dot-dot-dot/
-   "4.9.255"
+   linux-libre-4.9-version
    (base32 "1wvldzlv7q2xdbadas87dh593nxr4a8p5n0f8zpm72lja6w18hmg")
    (base32 "0fxajshb75siq39lj5h8xvhdj8lcmddkslwlyj65rhlwk6g2r4b2")))
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "15qlv4m56dzv195xjy4yp8qsrkbmv51vwfg0qcm664hkrb4i32y4")))
+        (hash (base32 "0kynyqk62hkfmamhvfp98i9kyr395chnwghslcbq5pl1zkzq1rwm")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
