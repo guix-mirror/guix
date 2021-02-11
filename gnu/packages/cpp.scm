@@ -512,7 +512,7 @@ maintained anymore.")
 (define-public gperftools
   (package
     (name "gperftools")
-    (version "2.8")
+    (version "2.8.1")
     (source
      (origin
        (method git-fetch)
@@ -520,9 +520,13 @@ maintained anymore.")
              (url "https://github.com/gperftools/gperftools")
              (commit (string-append "gperftools-" version))))
        (sha256
-        (base32 "1rnc53kaxlljgbpsff906vdsry9jl9gcvcnmxgkprwzxq1wipyd0"))
+        (base32 "19bj2vlsbfwq7m826v2ccqg47kd7cb5vcz1yw2x0v5qzhaxbakk1"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
+    (arguments
+      ;; The tests are flaky when run in parallel. For more info:
+      ;; https://bugs.gnu.org/46562
+     '(#:parallel-tests? #f))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
