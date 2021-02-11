@@ -2139,6 +2139,33 @@ new Date();"))
              (substitute* "make/data/blacklistedcertsconverter/blacklisted.certs.pem"
                (("^#!.*") "#! java BlacklistedCertsConverter SHA-256\n"))
              #t))
+         (add-after 'unpack 'patch-jni-libs
+           ;; Hardcode dynamically loaded libraries.
+           (lambda _
+             (let* ((library-path (search-path-as-string->list
+                                   (getenv "LIBRARY_PATH")))
+                    (find-library (lambda (name)
+                                    (search-path
+                                     library-path
+                                     (string-append "lib" name ".so")))))
+               (for-each
+                (lambda (file)
+                  (catch 'decoding-error
+                    (lambda ()
+                      (substitute* file
+                        (("VERSIONED_JNI_LIB_NAME\\(\"(.*)\", \"(.*)\"\\)"
+                          _ name version)
+                         (format #f "\"~a\""  (find-library name)))
+                        (("JNI_LIB_NAME\\(\"(.*)\"\\)" _ name)
+                         (format #f "\"~a\"" (find-library name)))))
+                    (lambda _
+                      ;; Those are safe to skip.
+                      (format (current-error-port)
+                                      "warning: failed to substitute: ~a~%"
+                                      file))))
+                (find-files "."
+                            "\\.c$|\\.h$"))
+               #t)))
          (add-before 'build 'write-source-revision-file
            (lambda _
              (with-output-to-file ".src-rev"
