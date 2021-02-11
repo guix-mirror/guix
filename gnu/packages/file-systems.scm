@@ -1074,14 +1074,14 @@ compatible directories.")
 (define-public python-dropbox
   (package
     (name "python-dropbox")
-    (version "11.0.0")
+    (version "11.2.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "dropbox" version))
         (sha256
          (base32
-          "0r64jxm5m4a1sln2la3av0103filb0plqja1nnyibqvk9qrqs5jf"))))
+          "0ml6z37k6nkhkiy483kvifs8im8z7vabd2g9jl6fkf1fzy3n6bym"))))
     (build-system python-build-system)
     (arguments '(#:tests? #f))  ; Tests require a network connection.
     (native-inputs
