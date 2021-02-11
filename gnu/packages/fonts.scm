@@ -33,7 +33,7 @@
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
-;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2020, 2021 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2020 Zhu Zihao <all_but_last@163.com>
 ;;; Copyright © 2020 Simen Endsjø <simendsjo@gmail.com>
 ;;; Copyright © 2020 Tim Van den Langenbergh <tmt_vdl@gmx.com>
@@ -2100,3 +2100,36 @@ operators and special symbols.")
 is a stylish type with a polished yet relaxed feel.  Its versatility makes it
 suitable for a wide range of uses.")
       (license license:silofl1.1))))
+
+(define-public font-cozette
+  (package
+    (name "font-cozette")
+    (version "1.9.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/slavfox/Cozette")
+                     (commit (string-append "v." version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0mb5ns6705piwgjw1g10czsakhyc1jnvxh342ixw8m5f1gf4595n"))))
+    (build-system font-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'build
+           (lambda _
+             (invoke "python3" "build.py" "fonts"))))))
+    (native-inputs
+     `(("fontforge" ,fontforge)
+       ("python" ,python)
+       ("python-crayons" ,python-crayons)
+       ("python-fonttools" ,python-fonttools)
+       ("python-numpy" ,python-numpy)
+       ("python-pillow" ,python-pillow)))
+    (home-page "https://github.com/slavfox/Cozette")
+    (synopsis "Bitmap programming font")
+    (description "Cozette is a 6x13px (bounding box) bitmap font based on Dina
+and heavily inspired by Creep.")
+    (license license:expat)))
