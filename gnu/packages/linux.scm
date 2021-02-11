@@ -1772,8 +1772,8 @@ parameters.")
     (description
      "Procps is the package that has a bunch of small useful utilities
 that give information about processes using the Linux /proc file system.
-The package includes the programs ps, top, vmstat, w, kill, free,
-slabtop, and skill.")
+The package includes the programs free, pgrep, pidof, pkill, pmap, ps, pwdx,
+slabtop, tload, top, vmstat, w, watch and sysctl.")
     (license license:gpl2)))
 
 (define-public usbutils
