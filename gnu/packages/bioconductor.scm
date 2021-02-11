@@ -7812,14 +7812,14 @@ visualizing RNA-sequencing datasets and differentially expressed genes.")
 (define-public r-chemminer
   (package
     (name "r-chemminer")
-    (version "3.42.0")
+    (version "3.42.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ChemmineR" version))
        (sha256
         (base32
-         "14q9zhhxgkx5skj424i2rbjdbp5j8jfkxspkhnkwv5i45cvkgh19"))))
+         "1853w19042c53whdnrfg1v8f07wpswf2si8q4613yrcamzg2zjkx"))))
     (properties `((upstream-name . "ChemmineR")))
     (build-system r-build-system)
     (propagated-inputs
