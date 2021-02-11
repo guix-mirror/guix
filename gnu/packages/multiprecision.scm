@@ -353,6 +353,9 @@ multiplies.")
              ;; default makefile target.
              (delete-file "makefile")
              (symlink "makefile.shared" "makefile")
+             ;; We link to libtommath, so we need to add it to the pc file
+             (substitute* "libtomcrypt.pc.in"
+               (("-ltomcrypt") "-ltomcrypt -ltommath"))
              #t))
          (add-after 'build 'build-static
            (lambda* (#:key make-flags #:allow-other-keys)
