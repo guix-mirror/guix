@@ -1654,14 +1654,14 @@ gapped, local, and paired-end alignment modes.")
 (define-public bowtie1
   (package
     (name "bowtie1")
-    (version "1.2.3")
+    (version "1.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/bowtie-bio/bowtie/"
-                                  version "/bowtie-src-x86_64.zip"))
+                                  version "/bowtie-" version "-src.zip"))
               (sha256
                (base32
-                "0vmiqdhc9dzyfy9sh6vgi7k9xy2hiw8g87vbamnc6cgpm179zsa4"))
+                "11dbihdnrizc6qhx9xsw77w3q5ssx642alaqzvhxx32ak9glvq04"))
               (modules '((guix build utils)))
               (snippet
                '(substitute* "Makefile"
@@ -1672,7 +1672,7 @@ gapped, local, and paired-end alignment modes.")
     (arguments
      '(#:tests? #f                      ; no "check" target
        #:make-flags
-       (list "all"
+       (list "CC=gcc" "all"
              (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
