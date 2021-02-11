@@ -9213,6 +9213,12 @@ play with up to four players simultaneously.  It has network support.")
                                "-Dhaskell_flags=-dynamic;-fPIC")
        #:phases
        (modify-phases %standard-phases
+         (add-before 'configure 'fix-sources
+           (lambda _
+             ;; Fix a missing 'include'.
+             (substitute* "QTfrontend/ui/page/pagegamestats.cpp"
+               (("#include <QSizePolicy>")
+                "#include <QSizePolicy>\n#include <QPainterPath>"))))
          (replace 'check
            (lambda _ (invoke "ctest")))
          (add-after 'install 'install-icon
