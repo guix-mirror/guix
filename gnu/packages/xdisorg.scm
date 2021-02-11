@@ -43,6 +43,7 @@
 ;;; Copyright © 2020 James Smith <jsubuntuxp@disroot.org>
 ;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
 ;;; Copyright © 2020 Zheng Junjie <873216071@qq.com>
+;;; Copyright © 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1361,6 +1362,59 @@ color temperature should be set to match the lamps in your room.
 This is a fork with added support for Wayland using the wlr-gamma-control
 protocol.")
       (license license:gpl3+))))
+
+(define-public gammastep
+  (package
+    (name "gammastep")
+    (version "2.0.7")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/chinstrap/gammastep")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "11j54rdd3cgngdhjwyapwjbrdm8cii4i7g4zdvfykvmb1w4zdk7g"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-python-and-typelib
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Gammastep GUI needs Typelib files from GTK and access
+             ;; to Python libraries.
+             (wrap-program (string-append (assoc-ref outputs "out")
+                                          "/bin/gammastep-indicator")
+               `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH")))
+               `("GI_TYPELIB_PATH" ":" prefix
+                 (,(getenv "GI_TYPELIB_PATH")))))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gettext-minimal)
+       ("intltool" ,intltool)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("gtk" ,gtk+)
+       ("libappindicator" ,libappindicator)
+       ("libdrm" ,libdrm)
+       ("libX11" ,libx11)
+       ("libxxf86vm" ,libxxf86vm)
+       ("libxcb" ,libxcb)
+       ("python" ,python)
+       ("python-pygobject" ,python-pygobject)
+       ("python-pyxdg" ,python-pyxdg)
+       ("wayland" ,wayland)))
+    (home-page "https://gitlab.com/chinstrap/gammastep")
+    (synopsis "Adjust the color temperature of your screen")
+    (description
+     "Gammastep automatically adjusts the color temperature of your
+screen according to your surroundings.  This may help your eyes hurt
+less if you are working in front of the screen at night.")
+    (license license:gpl3)))
 
 (define-public xscreensaver
   (package
