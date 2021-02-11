@@ -7311,14 +7311,14 @@ includes software to
 (define-public r-genefilter
   (package
     (name "r-genefilter")
-    (version "1.72.0")
+    (version "1.72.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "genefilter" version))
        (sha256
         (base32
-         "0929g6c4v2qhgipgrh1a5gv6444sm2dp52x9c3qbk03i8wzc6633"))))
+         "1c6h3qnjvphs977qhv5vafvsb108r0q7xhaayly6qv6adqfn94rn"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)
