@@ -10,7 +10,7 @@
 ;;; Copyright © 2018, 2019 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2019, 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
+;;; Copyright © 2019, 2020, 2021 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
@@ -1928,6 +1928,33 @@ new Date();"))
                                                  (number->string (parallel-job-count))))
                             '())
                       ,@make-flags))))
+         (add-after 'unpack 'patch-jni-libs
+           ;; Hardcode dynamically loaded libraries.
+           (lambda _
+             (let* ((library-path (search-path-as-string->list
+                                   (getenv "LIBRARY_PATH")))
+                    (find-library (lambda (name)
+                                    (search-path
+                                     library-path
+                                     (string-append "lib" name ".so")))))
+               (for-each
+                (lambda (file)
+                  (catch 'decoding-error
+                    (lambda ()
+                      (substitute* file
+                        (("VERSIONED_JNI_LIB_NAME\\(\"(.*)\", \"(.*)\"\\)"
+                          _ name version)
+                         (format #f "\"~a\""  (find-library name)))
+                        (("JNI_LIB_NAME\\(\"(.*)\"\\)" _ name)
+                         (format #f "\"~a\"" (find-library name)))))
+                    (lambda _
+                      ;; Those are safe to skip.
+                      (format (current-error-port)
+                                      "warning: failed to substitute: ~a~%"
+                                      file))))
+                (find-files "."
+                            "\\.c$|\\.h$"))
+               #t)))
          ;; Some of the libraries in the lib/ folder link to libjvm.so.
          ;; But that shared object is located in the server/ folder, so it
          ;; cannot be found.  This phase creates a symbolic link in the
