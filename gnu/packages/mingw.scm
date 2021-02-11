@@ -2,6 +2,7 @@
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Carl Dong <contact@carldong.me>
+;;; Copyright © 2021 Léo Le Bouter <lle-bout@zaclys.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,24 +46,27 @@ specified, recurse and return a mingw-w64 with support for winpthreads."
     (package
       (name (string-append "mingw-w64" "-" machine
                            (if with-winpthreads? "-winpthreads" "")))
-      (version "7.0.0")
-      (source (origin
-                (method url-fetch)
-                (uri (string-append
-                      "https://sourceforge.net/projects/mingw-w64/files/mingw-w64/"
-                      "mingw-w64-release/mingw-w64-v" version ".tar.bz2"))
-                (sha256
-                 (base32 "0a5njsa2zw2ssdz10jkb10mhrf3cb8qp9avs89zqmw4n6pzxy85a"))
-                (patches
-                 (search-patches "mingw-w64-6.0.0-gcc.patch"
-                                 "mingw-w64-dlltool-temp-prefix.patch"
-                                 "mingw-w64-reproducible-gendef.patch"))))
+      (version "8.0.0")
+      (source
+       (origin
+         (method url-fetch)
+         (uri (string-append
+               "mirror://sourceforge/mingw-w64/mingw-w64/"
+               "mingw-w64-release/mingw-w64-v" version ".tar.bz2"))
+         (sha256
+          (base32 "0qjpb9rviasfshk337j5r32ncmrwml8sv6qnmb1lp4mkdbm41is4"))
+         (patches
+          (search-patches "mingw-w64-6.0.0-gcc.patch"
+                          "mingw-w64-dlltool-temp-prefix.patch"
+                          "mingw-w64-reproducible-gendef.patch"))))
       (native-inputs `(("xgcc-core" ,(if xgcc xgcc (cross-gcc triplet)))
-                       ("xbinutils" ,(if xbinutils xbinutils (cross-binutils triplet)))
+                       ("xbinutils" ,(if xbinutils xbinutils
+                                         (cross-binutils triplet)))
                        ,@(if with-winpthreads?
-                             `(("xlibc" ,(make-mingw-w64 machine
-                                                         #:xgcc xgcc
-                                                         #:xbinutils xbinutils)))
+                             `(("xlibc" ,(make-mingw-w64
+                                          machine
+                                          #:xgcc xgcc
+                                          #:xbinutils xbinutils)))
                              '())))
       (build-system gnu-build-system)
       (search-paths
@@ -85,9 +89,11 @@ specified, recurse and return a mingw-w64 with support for winpthreads."
            (add-before 'configure 'setenv
              (lambda* (#:key inputs #:allow-other-keys)
                (let ((xgcc-core (assoc-ref inputs "xgcc-core"))
-                     (mingw-headers (string-append (getcwd) "/mingw-w64-headers")))
+                     (mingw-headers (string-append
+                                     (getcwd) "/mingw-w64-headers")))
                  (setenv "CPP"
-                         (string-append xgcc-core ,(string-append "/bin/" triplet "-cpp")))
+                         (string-append
+                          xgcc-core ,(string-append "/bin/" triplet "-cpp")))
                  (setenv "CROSS_C_INCLUDE_PATH"
                          (string-append
                           mingw-headers
@@ -96,11 +102,11 @@ specified, recurse and return a mingw-w64 with support for winpthreads."
                           ":" mingw-headers "/defaults/include"
                           ":" mingw-headers "/direct-x/include"))
                  (when ,with-winpthreads?
-                     (let ((xlibc (assoc-ref inputs "xlibc")))
-                       (setenv "CROSS_LIBRARY_PATH"
-                               (string-append
-                                xlibc "/lib" ":"
-                                xlibc "/" ,triplet "/lib"))))))))
+                   (let ((xlibc (assoc-ref inputs "xlibc")))
+                     (setenv "CROSS_LIBRARY_PATH"
+                             (string-append
+                              xlibc "/lib" ":"
+                              xlibc "/" ,triplet "/lib"))))))))
          #:make-flags (list "DEFS=-DHAVE_CONFIG_H -D__MINGW_HAS_DXSDK=1")
          #:tests? #f ; compiles and includes glibc headers
          #:strip-binaries? #f))
@@ -133,3 +139,64 @@ several new APIs such as DirectX and DDK, and 64-bit support.")
                   #:with-winpthreads? #t))
 
 (define-public mingw-w64 mingw-w64-i686)
+
+(define-public mingw-w64-tools
+  (package
+    (name "mingw-w64-tools")
+    (version "8.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://sourceforge/mingw-w64/mingw-w64/"
+             "mingw-w64-release/mingw-w64-v" version ".tar.bz2"))
+       (sha256
+        (base32 "0qjpb9rviasfshk337j5r32ncmrwml8sv6qnmb1lp4mkdbm41is4"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (srfi srfi-1))
+       #:phases
+       (append
+        (modify-phases %standard-phases
+          (add-after 'unpack 'cd-gendef
+            (lambda _
+              (chdir "mingw-w64-tools/gendef"))))
+        (modify-phases %standard-phases
+          (replace 'unpack
+            (lambda _
+              (chdir "../genidl"))))
+        (modify-phases %standard-phases
+          (replace 'unpack
+            (lambda _
+              (chdir "../genlib"))))
+        (modify-phases %standard-phases
+          (replace 'unpack
+            (lambda _
+              (chdir "../genpeimg"))))
+        (append-map
+         (lambda (target)
+           (modify-phases %standard-phases
+             (replace 'unpack
+               (lambda _
+                 (chdir "../widl")
+                 (false-if-exception
+                  (delete-file-recursively "../build"))
+                 #t))
+             (replace 'configure
+               (lambda args
+                 (apply (assoc-ref %standard-phases 'configure)
+                        (append args (list #:out-of-source? #t
+                                           #:configure-flags
+                                           `("--target" ,target
+                                             "--program-prefix"
+                                             ,(string-append target "-")))))))))
+         '("i686-w64-mingw32" "x86_64-w64-mingw32")))))
+    (home-page "https://mingw-w64.org")
+    (synopsis "Tools of Minimalist GNU for Windows")
+    (description "This package provides the tools of Minimalist GNU for
+Windows, a complete software development environment for creating native
+Microsoft Windows applications.")
+    (license (list license:gpl3+ ;gendef, genidl, genlib, genpeimg, genstubdll
+                   license:lgpl2.1+)))) ;widl

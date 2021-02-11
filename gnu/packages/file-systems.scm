@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
@@ -331,8 +331,8 @@ from a mounted file system.")
     (license license:gpl2+)))
 
 (define-public bcachefs-tools
-  (let ((commit "db931a4571817d7d61be6bce306f1d42f7cd3398")
-        (revision "2"))
+  (let ((commit "612f6b9ab73c7f46e0254355b707d494a8ad9270")
+        (revision "3"))
     (package
       (name "bcachefs-tools")
       (version (git-version "0.1" revision commit))
@@ -344,7 +344,7 @@ from a mounted file system.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "1zl8lda6ni6rhsmsng6smrcjihy2irjf03h1m7nvkqmkhq44j80s"))))
+          (base32 "1a62wkv1i6pg5k1cjw7fzn933cbz8cp8y40cdpfd8rxjx0wg2szb"))))
       (build-system gnu-build-system)
       (arguments
        `(#:make-flags
@@ -627,7 +627,7 @@ from the jfsutils package.  It is meant to be used in initrds.")
 (define-public disorderfs
   (package
     (name "disorderfs")
-    (version "0.5.10")
+    (version "0.5.11")
     (source
      (origin
        (method git-fetch)
@@ -637,7 +637,7 @@ from the jfsutils package.  It is meant to be used in initrds.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0lsisx5118k0qk0b5klbxl03rvhycnznyfx05yxmjawh85bfhmlh"))))
+         "1pnrj0h8sgqwgsc18vz3fkqsp6vhigdbi75vdj0si1r6wgslnr7z"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -847,7 +847,7 @@ APFS.")
 (define-public zfs
   (package
     (name "zfs")
-    (version "2.0.1")
+    (version "2.0.2")
     (outputs '("out" "module" "src"))
     (source
       (origin
@@ -856,7 +856,7 @@ APFS.")
                               "/download/zfs-" version
                               "/zfs-" version ".tar.gz"))
           (sha256
-           (base32 "0y3992l4nzr67q18lz1kizw0za1shvqbpmsjz9shv4frh5ihllbi"))))
+           (base32 "090b2pp0cgzkjcnbjf8ms28dah5dff8s04q31z62czapwiy0drdx"))))
     (build-system linux-module-build-system)
     (arguments
      `(;; The ZFS kernel module should not be downloaded since the license
@@ -1074,14 +1074,14 @@ compatible directories.")
 (define-public python-dropbox
   (package
     (name "python-dropbox")
-    (version "11.0.0")
+    (version "11.2.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "dropbox" version))
         (sha256
          (base32
-          "0r64jxm5m4a1sln2la3av0103filb0plqja1nnyibqvk9qrqs5jf"))))
+          "0ml6z37k6nkhkiy483kvifs8im8z7vabd2g9jl6fkf1fzy3n6bym"))))
     (build-system python-build-system)
     (arguments '(#:tests? #f))  ; Tests require a network connection.
     (native-inputs
@@ -1103,14 +1103,14 @@ Dropbox API v2.")
 (define-public dbxfs
   (package
     (name "dbxfs")
-    (version "1.0.50")
+    (version "1.0.51")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "dbxfs" version))
         (sha256
          (base32
-          "01zvk862ybz12270q0r2l1i7kdj30ib2gxrlxmwvi19b2fkf39na"))
+          "1zz82d0mnql55397x4jx7z5rn857rf9zhjv895j93wpxdq10xwvk"))
         (patches (search-patches "dbxfs-remove-sentry-sdk.patch"))))
     (build-system python-build-system)
     (arguments

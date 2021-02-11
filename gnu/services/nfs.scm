@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -69,7 +69,7 @@
              (rpcbind-configuration-rpcbind config))
 
            (define rpcbind-command
-             #~(list (string-append #$rpcbind "/bin/rpcbind") "-f"
+             #~(list (string-append #$rpcbind "/sbin/rpcbind") "-f"
                      #$@(if (rpcbind-configuration-warm-start? config) '("-w") '())))
 
            (shepherd-service

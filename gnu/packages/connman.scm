@@ -44,14 +44,14 @@
 (define-public connman
   (package
     (name "connman")
-    (version "1.38")
+    (version "1.39")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "mirror://kernel.org/linux/network/connman/"
                             "connman-" version ".tar.xz"))
     (sha256
-     (base32 "0awkqigvhwwxiapw0x6yd4whl465ka8a4al0v2pcqy9ggjlsqc6b"))))
+     (base32 "1wqs307vjphhh73qbqk25zxhhqwn1mdk6bpzl5qcd4blkcbafqlz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

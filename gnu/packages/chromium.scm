@@ -310,8 +310,8 @@
                   (string-append "ungoogled-chromium-" category "-" name))))
     (sha256 (base32 hash))))
 
-(define %chromium-version "88.0.4324.104")
-(define %ungoogled-revision "4e2679ce15a53925b34a95aa3e1731751530dc22")
+(define %chromium-version "88.0.4324.150")
+(define %ungoogled-revision "f7c33ded1674556b6e9e72d597c706666f490da8")
 (define %debian-revision "debian/84.0.4147.105-1")
 
 (define %debian-patches
@@ -329,7 +329,7 @@
                               (string-take %ungoogled-revision 7)))
     (sha256
      (base32
-      "09x6kxd99a274mln3k3ckly6swyp5qdnkkp8p6grs9nr5jrgqqx5"))))
+      "0hzap19pbnfcskpzbqq7dqrankmlrq9q7m1xrf7aygqiir0ksp4y"))))
 
 (define %guix-patches
   (list (local-file
@@ -467,7 +467,7 @@
                                   %chromium-version ".tar.xz"))
               (sha256
                (base32
-                "0iq1rmfiqmxsj6skbi17g007zqgjsb50b59slfni2n4mz06xmgbx"))
+                "1hrqrggg4g1hjmaajbpydwsij2mfkfj5ccs1lj76nv4qj91yj4mf"))
               (modules '((guix build utils)))
               (snippet (force ungoogled-chromium-snippet))))
     (build-system gnu-build-system)
@@ -825,7 +825,6 @@
        ("cups" ,cups)
        ("curl" ,curl)
        ("dbus" ,dbus)
-       ("dbus-glib" ,dbus-glib)
        ("expat" ,expat)
        ("flac" ,flac)
        ("ffmpeg" ,ffmpeg)

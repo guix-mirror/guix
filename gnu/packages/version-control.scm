@@ -1736,14 +1736,14 @@ following features:
 (define-public subversion
   (package
     (name "subversion")
-    (version "1.14.0")
+    (version "1.14.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://apache/subversion/"
                                  "subversion-" version ".tar.bz2"))
              (sha256
               (base32
-               "00i1f88snlpcnsycpn6r315h6792l5nkr2p5k6kq6yprz4cf5a3b"))))
+               "1ag1hvcm9q92kgalzbbgcsq9clxnzmbj9nciz9lmabjx4lyajp9c"))))
     (build-system gnu-build-system)
     (arguments
      '(#:parallel-tests? #f             ; TODO Seems to cause test failures on
@@ -2667,7 +2667,7 @@ interrupted, published, and collaborated on while in progress.")
 (define-public git-lfs
   (package
     (name "git-lfs")
-    (version "2.11.0")
+    (version "2.13.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2676,7 +2676,7 @@ interrupted, published, and collaborated on while in progress.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "05qd96bn2cl7gn5qarbcv6scdpj28qiwdfzalamqk5jjiidpmng5"))))
+                "0gfpzdya48phwln61746ii78sq55mhzj938lz8x062xkkcsdvbf4"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/git-lfs/git-lfs"

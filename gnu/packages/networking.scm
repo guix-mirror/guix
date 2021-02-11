@@ -700,8 +700,16 @@ or, more generally, MAC addresses of the same category of hardware.")
                 "0j9ilig570snbmj48230hf7ms8kvcwi2wblycqrmhh85lksd49ps"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     '(#:configure-flags
+       (list "--localstatedir=/var")
+       #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'do-not-create-/run
+           (lambda _
+             (substitute* (find-files "src" "Makefile.*")
+               (("^.+install_sh.+/run.+$")
+                "\ttrue"))
+             #t))
          (add-after 'unpack 'patch-iproute2
            (lambda* (#:key inputs #:allow-other-keys)
              (let* ((iproute (assoc-ref inputs "iproute"))

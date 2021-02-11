@@ -9,7 +9,7 @@
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020, 2021 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -313,32 +313,50 @@ local system.")
     (license lgpl2.1+)))
 
 (define-public zeal
-  (package
-    (name "zeal")
-    (version "0.6.1")
-    (home-page "https://github.com/zealdocs/zeal")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url home-page)
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "05qcjpibakv4ibhxgl5ajbkby3w7bkxsv3nfv2a0kppi1z0f8n8v"))))
-    (build-system qt-build-system)
-    (arguments `(#:tests? #f))          ; no tests
-    (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("pkg-config" ,pkg-config)))
-    (inputs
-     `(("libarchive" ,libarchive)
-       ("sqlite" ,sqlite)
-       ("qtbase" ,qtbase)
-       ("qtwebkit" ,qtwebkit)
-       ("qtx11extras" ,qtx11extras)
-       ("xcb-util-keyms" ,xcb-util-keysyms)))
-    (synopsis "Offline documentation browser inspired by Dash")
-    (description "Zeal is a simple offline documentation browser
+  (let ((commit "d3c5521c501d24050f578348ff1b9d68244b992c")
+        (revision "1"))
+    (package
+      (name "zeal")
+      (version (git-version "0.6.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/zealdocs/zeal")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1ky2qi2cmjckc51lm3i28815ixgqdm36j7smixxr16jxpmbqs6sl"))))
+      (build-system qt-build-system)
+      (arguments
+       `(#:tests? #f                    ;no tests
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'wrap 'wrap-qt-process-path
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin/zeal"))
+                      (qt-process-path (string-append
+                                        (assoc-ref inputs "qtwebengine")
+                                        "/lib/qt5/libexec/QtWebEngineProcess")))
+                 (wrap-program bin
+                   `("QTWEBENGINEPROCESS_PATH" = (,qt-process-path)))
+                 #t))))))
+      (native-inputs
+       `(("extra-cmake-modules" ,extra-cmake-modules)
+         ("pkg-config" ,pkg-config)))
+      (inputs
+       `(("libarchive" ,libarchive)
+         ("sqlite" ,sqlite)
+         ("qtbase" ,qtbase)
+         ("qtdeclarative" ,qtdeclarative)
+         ("qtwebchannel" ,qtwebchannel)
+         ("qtwebengine" ,qtwebengine)
+         ("qtquickcontrols" ,qtquickcontrols)
+         ("qtx11extras" ,qtx11extras)
+         ("xcb-util-keyms" ,xcb-util-keysyms)))
+      (home-page "https://zealdocs.org/")
+      (synopsis "Offline documentation browser inspired by Dash")
+      (description "Zeal is a simple offline documentation browser
 inspired by Dash.")
-    (license gpl3+)))
+      (license gpl3+))))

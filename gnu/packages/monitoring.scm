@@ -7,6 +7,7 @@
 ;;; Copyright © 2018, 2019, 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Alex ter Weele <alex.ter.weele@gmail.com>
 ;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
+;;; Copyright © 2021 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -46,6 +47,7 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages image)
   #:use-module (gnu packages mail)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages pcre)
@@ -242,6 +244,82 @@ solution (client-side agent)")
     (synopsis "Distributed monitoring solution (server-side)")
     (description "This package provides a distributed monitoring
 solution (server-side)")))
+
+(define-public zabbix-cli
+  (package
+    (name "zabbix-cli")
+    (version "2.2.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/unioslo/zabbix-cli")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0wzmrn8p09ksqhhgawr179c4az7p2liqr0l4q2dra62bxliawyqz"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'use-absolute-ncurses
+                    (lambda _
+                      (substitute* "bin/zabbix-cli"
+                        (("'clear'")
+                         (string-append "'" (which "clear") "'")))))
+                  (add-after 'unpack 'patch-setup.py
+                    (lambda _
+                      ;; Install data_files to $out/share instead of /usr/share.
+                      (substitute* "setup.py"
+                        (("/usr/") "")))))))
+    (inputs
+     `(("clear" ,ncurses)
+       ("python-requests" ,python-requests)))
+    (home-page "https://github.com/unioslo/zabbix-cli")
+    (synopsis "Command-line interface to Zabbix")
+    (description
+     "@command{zabbix-cli} is a command-line client for the Zabbix
+monitoring system.  It can configure and display various aspects of Zabbix
+through a text-based interface.")
+    (license license:gpl3+)))
+
+(define-public python-pyzabbix
+  (package
+    (name "python-pyzabbix")
+    (version "0.8.2")
+    (home-page "http://github.com/lukecyca/pyzabbix")
+    ;; No tests on PyPI, use the git checkout.
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference (url home-page) (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "15rrnpkv94wx6748hh4sd120v6x25rkbd6vlz6hfrhvjwxz5lgjl"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'patch
+                    (lambda _
+                      ;; Permit newer versions of httpretty.
+                      (substitute* "setup.py"
+                        (("httpretty<0\\.8\\.7")
+                         "httpretty"))))
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (if tests?
+                          (invoke "python" "setup.py" "nosetests")
+                          (format #t "test suite not run~")))))))
+    (native-inputs
+     `(;; For tests.
+       ("python-httpretty" ,python-httpretty)
+       ("python-nose" ,python-nose)))
+    (propagated-inputs
+     `(("python-requests" ,python-requests)))
+    (synopsis "Python interface to the Zabbix API")
+    (description
+     "@code{pyzabbix} is a Python module for working with the Zabbix API.")
+    (license license:lgpl2.1+)))
 
 (define-public darkstat
   (package

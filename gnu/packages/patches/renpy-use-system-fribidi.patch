@@ -2,22 +2,27 @@ See also [Arch] and [Gentoo] for similar patches in other distros.
 [Arch] https://github.com/archlinux/svntogit-community/blob/packages/renpy/trunk/renpy-system-fribidi.patch
 [Gentoo] https://gitweb.gentoo.org/repo/gentoo.git/tree/games-engines/renpy/files/renpy-7.3.5-use-system-fribidi.patch
 
-Index: renpy-7.3.5-source/module/renpybidicore.c
+Index: renpy-7.4.0-source/module/renpybidicore.c
 ===================================================================
---- renpy-7.3.5-source.orig/module/renpybidicore.c
-+++ renpy-7.3.5-source/module/renpybidicore.c
-@@ -1,5 +1,5 @@
+--- renpy-7.4.0-source.orig/module/renpybidicore.c
++++ renpy-7.4.0-source/module/renpybidicore.c
+@@ -1,9 +1,3 @@
  #include <Python.h>
+-
+-#ifdef RENPY_BUILD
+ #include <fribidi.h>
+-#else
 -#include <fribidi-src/lib/fribidi.h>
-+#include <fribidi.h>
+-#endif
+-
  #include <stdlib.h>
 
  #ifndef alloca
-Index: renpy-7.3.5-source/module/setup.py
+Index: renpy-7.4.0-source/module/setup.py
 ===================================================================
---- renpy-7.3.5-source.orig/module/setup.py
-+++ renpy-7.3.5-source/module/setup.py
-@@ -119,30 +119,13 @@ cython(
+--- renpy-7.4.0-source.orig/module/setup.py
++++ renpy-7.4.0-source/module/setup.py
+@@ -125,30 +125,13 @@ cython(
      sdl + [ png, 'z', 'm' ])
 
  FRIBIDI_SOURCES = """

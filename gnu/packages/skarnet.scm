@@ -30,14 +30,14 @@
 (define-public skalibs
   (package
     (name "skalibs")
-    (version "2.10.0.0")
+    (version "2.10.0.1")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "https://skarnet.org/software/skalibs/skalibs-"
                           version ".tar.gz"))
       (sha256
-       (base32 "122xipbxh6awsfdfj37mjc8f3g8ndmmmps4gw5s43mya8wgzib61"))))
+       (base32 "1chwjzlh13jbrldk77h3i4qjqv8hjpvvd3papcb8j46mvj7sxysg"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; no tests exist
@@ -62,14 +62,14 @@ and file system operations.  It is used by all skarnet.org software.")
 (define-public execline
   (package
     (name "execline")
-    (version "2.7.0.0")
+    (version "2.7.0.1")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "https://skarnet.org/software/execline/execline-"
                           version ".tar.gz"))
       (sha256
-       (base32 "0kl74yix60msgw8k3shhp9ymm80n91yxxqckixj5qbbhmylpnpqd"))))
+       (base32 "1pfwiynr3vk7ajzknjqs5mpzb78m97aqcsd3mc34lxkzz5j13xnd"))))
     (build-system gnu-build-system)
     (inputs `(("skalibs" ,skalibs)))
     (arguments
@@ -104,14 +104,14 @@ complexity.")))
 (define-public s6
   (package
    (name "s6")
-   (version "2.10.0.0")
+   (version "2.10.0.1")
    (source
     (origin
      (method url-fetch)
      (uri (string-append "https://skarnet.org/software/s6/s6-"
                          version ".tar.gz"))
      (sha256
-      (base32 "0xzqrd0m3wjklmw1w3gjw5dcdxnhgvxv2r5wd6m2ismw2jprr9k0"))))
+      (base32 "1xfil1a138k7a83rqmrgmhklmasgspgdqszn8nyyn3vrnh7ny0nh"))))
    (build-system gnu-build-system)
    (inputs `(("skalibs" ,skalibs)
              ("execline" ,execline)))
@@ -150,14 +150,14 @@ functionality with a very small amount of code.")))
 (define-public s6-dns
   (package
    (name "s6-dns")
-   (version "2.3.4.0")
+   (version "2.3.5.0")
    (source
     (origin
      (method url-fetch)
      (uri (string-append "https://skarnet.org/software/s6-dns/s6-dns-"
                          version ".tar.gz"))
      (sha256
-      (base32 "03s94bc1y2yf0i3v3gh27xz3l2ycf246nb29mrf1zm4v9kdff5fn"))))
+      (base32 "0h5p5dbkkdadahrp4pqhc3x9ds758i6djy49k5zrn7mm5k4722wz"))))
     (build-system gnu-build-system)
     (inputs `(("skalibs" ,skalibs)))
     (arguments

@@ -284,7 +284,7 @@ other apt sources typically provided by open source developers.")
 (define-public dpkg
   (package
     (name "dpkg")
-    (version "1.20.5")
+    (version "1.20.7.1")
     (source
       (origin
         (method git-fetch)
@@ -294,7 +294,7 @@ other apt sources typically provided by open source developers.")
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "190q968g1vdz07byvfvc2gladhpq3yl765mfiacglyix3nkisy0j"))))
+          "0d1cppigwhpv0z1ac94gjalkzs3n0gjyi383pkhz1h9d4fvmadk9"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

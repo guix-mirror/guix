@@ -53,9 +53,10 @@
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Trevor Hass <thass@okstate.edu>
-;;; Copyright © 2020 Leo Prikler <leo.prikler@student.tugraz.at>
+;;; Copyright © 2020, 2021 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2020 Lu hux <luhux@outlook.com>
 ;;; Copyright © 2020 Tomás Ortín Fernández <tomasortin@mailbox.org>
+;;; Copyright © 2021 Olivier Rojon <o.rojon@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -856,6 +857,52 @@ powerful monstrosities, from zombies to giant insects to killer robots and
 things far stranger and deadlier, and against the others like yourself, that
 want what you have.")
     (license license:cc-by-sa3.0)))
+
+(define-public cockatrice
+  (let ((release-date "2021-01-26"))
+    (package
+      (name "cockatrice")
+      (version "2.8.0")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Cockatrice/Cockatrice")
+               (commit (string-append release-date "-Release-" version))))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0q8ffcklb2b7hcqhy3d2f9kz9aw22pp04pc9y4sslyqmf17pwnz9"))
+         (modules '((guix build utils)))
+         (snippet
+          ;; Strip image URLs as they point towards non-free web services
+          '(substitute* "cockatrice/src/settings/downloadsettings.cpp"
+             (("downloadURLs.append\\(\".*\"\\);") "")))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:configure-flags '("-DWITH_SERVER=1"
+                             "-DWITH_CLIENT=1"
+                             "-DWITH_ORACLE=1"
+                             "-DTEST=1")))
+      (native-inputs
+       `(("googletest" ,googletest)
+         ("pkg-config" ,pkg-config)))
+      (inputs
+       `(("protobuf" ,protobuf)
+         ("qtbase" ,qtbase)
+         ("qtmultimedia" ,qtmultimedia)
+         ("qtsvg" ,qtsvg)
+         ("qttools" ,qttools)
+         ("qtwebsockets" ,qtwebsockets)
+         ("xz" ,xz)
+         ("zlib" ,zlib)))
+      (home-page "https://cockatrice.github.io")
+      (synopsis "Tabletop card game simulator")
+      (description "Cockatrice is a program for playing tabletop card games
+over a network.  Its server design prevents users from manipulating the game
+for unfair advantage.  The client also provides a single-player mode, which
+allows users to brew while offline.")
+      (license license:gpl2))))
 
 (define-public corsix-th
   (package
@@ -6320,14 +6367,14 @@ fish.  The whole game is accompanied by quiet, comforting music.")
 (define-public crawl
   (package
     (name "crawl")
-    (version "0.26.0")
+    (version "0.26.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/crawl/crawl/releases/download/"
                            version "/stone_soup-" version "-nodeps.tar.xz"))
        (sha256
-        (base32 "1m81x1sp6p2ka5w2nib3pcw5w5iv58z41c8aqn0dayi1lb3yslfb"))
+        (base32 "1d8p2np2q5951wqphq2f4dyvv976m2lh82b0qp7w9pp1h8zzi1ff"))
        (patches (search-patches "crawl-upgrade-saves.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -7071,7 +7118,7 @@ elements to achieve a simple goal in the most complex way possible.")
 (define-public pioneer
   (package
     (name "pioneer")
-    (version "20200203")
+    (version "20210203")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -7080,7 +7127,7 @@ elements to achieve a simple goal in the most complex way possible.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1011xsi94jhw98mhm8kryq8ajig0qfbrdx5xdasi92bd4nk7lcp8"))))
+                "1zyi1xyghj99hz8fa6dywpscj6flp04fspnlgxbivf3rgmnxflg7"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -9154,6 +9201,12 @@ play with up to four players simultaneously.  It has network support.")
                                "-Dhaskell_flags=-dynamic;-fPIC")
        #:phases
        (modify-phases %standard-phases
+         (add-before 'configure 'fix-sources
+           (lambda _
+             ;; Fix a missing 'include'.
+             (substitute* "QTfrontend/ui/page/pagegamestats.cpp"
+               (("#include <QSizePolicy>")
+                "#include <QSizePolicy>\n#include <QPainterPath>"))))
          (replace 'check
            (lambda _ (invoke "ctest")))
          (add-after 'install 'install-icon

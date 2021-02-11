@@ -15,7 +15,7 @@
 ;;; Copyright © 2017, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
-;;; Copyright © 2019, 2020 Leo Prikler <leo.prikler@student.tugraz.at>
+;;; Copyright © 2019, 2020, 2021 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2019 Jethro Cao <jethrocao@gmail.com>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Timotej Lazar <timotej.lazar@araneo.si>
@@ -63,6 +63,7 @@
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages fribidi)
   #:use-module (gnu packages dbm)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
@@ -748,7 +749,7 @@ programming language.")
                       (url "https://github.com/keharriso/love-nuklear/")
                       (commit commit)
                       (recursive? #t)))
-                ;; NOTE: the HEAD of the Nuklear git-submodule is at commit 
+                ;; NOTE: the HEAD of the Nuklear git-submodule is at commit
                 ;; "adc52d710fe3c87194b99f540c53e82eb75c2521" of Oct 1 2019
                 (file-name (git-file-name name version))
                 (sha256
@@ -1088,7 +1089,7 @@ to create fully featured games and multimedia programs in the python language.")
 
 (define-public python2-pygame-sdl2
   (let ((real-version "2.1.0")
-        (renpy-version "7.3.5"))
+        (renpy-version "7.4.2"))
     (package
       (inherit python2-pygame)
       (name "python2-pygame-sdl2")
@@ -1098,13 +1099,13 @@ to create fully featured games and multimedia programs in the python language.")
          (method url-fetch)
          (uri (string-append "https://www.renpy.org/dl/" renpy-version
                              "/pygame_sdl2-" version ".tar.gz"))
-         (sha256 (base32 "1bmr7j9mlsc4czpgw70ld15ymyp4wxrk9hdsqad40wjwdxvvg2dr"))
+         (sha256 (base32 "1lpk69nh379x5pdlr838x5b49spzksn9hyqiq2g0q28k0xk4lm67"))
          (modules '((guix build utils)))
          (snippet
           '(begin
              ;; drop generated sources
              (delete-file-recursively "gen")
-             (delete-file-recursively "gen3")
+             (delete-file-recursively "gen-static")
              #t))))
       (build-system python-build-system)
       (arguments
@@ -1141,13 +1142,13 @@ developed mainly for Ren'py.")
 (define-public python2-renpy
   (package
     (name "python2-renpy")
-    (version "7.3.5")
+    (version "7.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.renpy.org/dl/" version
                            "/renpy-" version "-source.tar.bz2"))
-       (sha256 (base32 "1anr5cfbvbsbik4v4rvrkdkciwhg700k4lydfbs4n85raimz9mw4"))
+       (sha256 (base32 "1mlrq9q3r36izyskq674qhp8s32iirvvfb4r8z6hi26189aaydsw"))
        (modules '((guix build utils)))
        (patches
         (search-patches
@@ -1204,8 +1205,8 @@ developed mainly for Ren'py.")
              ;; (both source and compiled) in the same directory.
              (let* ((out (assoc-ref outputs "out"))
                     (site (string-append "/lib/python"
-                                         ,(version-major+minor
-                                           (package-version python-2))
+                                         (python-version
+                                          (assoc-ref inputs "python"))
                                          "/site-packages")))
                (with-directory-excursion "module"
                  (apply (assoc-ref %standard-phases 'install) args))
@@ -1218,11 +1219,14 @@ developed mainly for Ren'py.")
        ("fribidi" ,fribidi)
        ("glew" ,glew)
        ("libpng" ,libpng)
-       ("python2-pygame" ,python2-pygame-sdl2)
        ("sdl-union"
         ,(sdl-union (list sdl2 sdl2-image sdl2-mixer sdl2-ttf)))))
+    (propagated-inputs
+     `(("python2-future" ,python2-future)
+       ("python2-pygame" ,python2-pygame-sdl2)))
     (native-inputs
-     `(("python2-cython" ,python2-cython)
+     `(("gcc" ,gcc-8) ; for const variables as initializer elements
+       ("python2-cython" ,python2-cython)
        ("xdg-utils" ,xdg-utils)))
     (home-page "https://www.renpy.org/")
     (synopsis "Ren'py python module")
@@ -1234,7 +1238,6 @@ modules of Ren'py.")
   (package
     (inherit python2-renpy)
     (name "renpy")
-    (version "7.3.5")
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ; see python2-renpy

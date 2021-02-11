@@ -156,6 +156,10 @@ extraction from CDs.")
 libcdio.")
     (license gpl3+)))
 
+;; Xorriso is used by Guix for creating ISO images. If you change this package,
+;; please make sure the Guix functionality still works by running some related
+;; system tests.
+;; For example, try running `make check-system TESTS=iso-image-installer`.
 (define-public xorriso
   (package
     (name "xorriso")

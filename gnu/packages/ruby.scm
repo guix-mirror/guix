@@ -24,6 +24,8 @@
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Holgr Peters <holger.peters@posteo.de>
+;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
+;;; Copyright © 2021 EuAndreh <eu@euandre.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,6 +51,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages rails)
@@ -1102,6 +1105,43 @@ line of code.")
     ;; of the Expat license.
     (license license:bsd-3)))
 
+(define-public ruby-awesome-print
+  (package
+    (name "ruby-awesome-print")
+    (version "1.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "awesome_print" version))
+       (sha256
+        (base32
+         "14arh1ixfsd6j5md0agyzvksm5svfkvchb90fp32nn7y3avcmc2h"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             ;; Remove failing test.
+             (for-each delete-file
+                       '("spec/ext/nokogiri_spec.rb"
+                         "spec/colors_spec.rb"
+                         "spec/formats_spec.rb"
+                         "spec/methods_spec.rb"
+                         "spec/misc_spec.rb"
+                         "spec/objects_spec.rb"))
+             (invoke "rspec" "-c" "spec"))))))
+    (native-inputs
+     `(("ruby-nokogiri" ,ruby-nokogiri)
+       ("ruby-rspec" ,ruby-rspec)
+       ("ruby-simplecov" ,ruby-simplecov)))
+    (synopsis "Pretty print Ruby objects to visualize their structure")
+    (description
+     "Ruby dubugging companion: pretty print Ruby objects to visualize their
+structure.  Supports custom object formatting via plugins.")
+    (home-page "https://github.com/awesome-print/awesome_print")
+    (license license:expat)))
+
 (define-public ruby-pandoc-ruby
   (package
     (name "ruby-pandoc-ruby")
@@ -1163,6 +1203,31 @@ ConTeXt, PDF, RTF, DocBook XML, OpenDocument XML, ODT, GNU Texinfo, MediaWiki
 markup, groff man pages, HTML slide shows, EPUB, Microsoft Word docx, and
 more.")
     (home-page "https://github.com/xwmx/pandoc-ruby")
+    (license license:expat)))
+
+(define-public ruby-patron
+  (package
+    (name "ruby-patron")
+    (version "0.13.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "patron" version))
+       (sha256
+        (base32
+         "0523gddx88zql2mq6655k60gy2ac8vybpzkcf90lmd9nx7wl3fi9"))))
+    (build-system ruby-build-system)
+    (inputs
+     `(("curl" ,curl)))
+    (arguments
+     `(#:tests? #f))                    ; no included tests
+    (synopsis "Ruby HTTP client library based on @code{libcurl}")
+    (description
+     "Patron is a Ruby HTTP client library based on @code{libcurl}.  It does
+not try to expose the full power (read complexity) of @code{libcurl} but
+instead tries to provide a sane API while taking advantage of @code{libcurl}
+under the hood.")
+    (home-page "https://github.com/toland/patron")
     (license license:expat)))
 
 (define-public ruby-slim
@@ -1439,6 +1504,30 @@ loader for the file type associated with a filename extension, and it augments
     (description "This package provides a Ruby-based Parsing Expression
 Grammar (PEG) parser generator Domain Specific Language (DSL).")
     (home-page "https://github.com/cjheath/treetop")
+    (license license:expat)))
+
+(define-public ruby-typhoeus
+  (package
+    (name "ruby-typhoeus")
+    (version "1.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "typhoeus" version))
+       (sha256
+        (base32
+         "1m22yrkmbj81rzhlny81j427qdvz57yk5wbcf3km0nf3bl6qiygz"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:tests? #f))                    ; no included tests
+    (propagated-inputs
+     `(("ruby-ethon" ,ruby-ethon)))
+    (synopsis "@code{libcurl} wrapper in Ruby")
+    (description
+     "Like a modern code version of the mythical beast with 100 serpent heads,
+Typhoeus runs HTTP requests in parallel while cleanly encapsulating handling
+logic.")
+    (home-page "https://github.com/typhoeus/typhoeus")
     (license license:expat)))
 
 (define-public ruby-rubocop-performance
@@ -2277,6 +2366,30 @@ features such as multi-language support, auto escaping, auto trimming spaces
 around @code{<% %>}, a changeable embedded pattern, and Ruby on Rails
 support.")
     (home-page "http://www.kuwata-lab.com/erubis/")
+    (license license:expat)))
+
+(define-public ruby-ethon
+  (package
+    (name "ruby-ethon")
+    (version "0.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "ethon" version))
+       (sha256
+        (base32
+         "0gggrgkcq839mamx7a8jbnp2h7x2ykfn34ixwskwb0lzx2ak17g9"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:tests? #f))                    ; no included tests
+    (inputs
+     `(("curl" ,curl)))
+    (propagated-inputs
+     `(("ruby-ffi" ,ruby-ffi)))
+    (synopsis "Very lightweight @code{libcurl} wrapper")
+    (description
+     "Ethon is a very basic @code{libcurl} wrapper using ffi.")
+    (home-page "https://github.com/typhoeus/ethon")
     (license license:expat)))
 
 (define-public ruby-execjs
@@ -10280,14 +10393,14 @@ features that don't exist yet like variables, nesting, mixins and inheritance.")
 (define-public ruby-sassc
   (package
     (name "ruby-sassc")
-    (version "2.2.1")
+    (version "2.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "sassc" version))
        (sha256
         (base32
-         "09bnid7r5z5hcin5hykvpvv8xig27wbbckxwis60z2aaxq4j9siz"))))
+         "0gpqv48xhl8mb8qqhcifcp0pixn206a7imc07g48armklfqa4q2c"))))
     (build-system ruby-build-system)
     (arguments
      '(#:modules ((guix build ruby-build-system)
@@ -10366,13 +10479,13 @@ bindings to the libsass library.  This enables rendering
 (define-public ruby-jekyll-sass-converter
   (package
     (name "ruby-jekyll-sass-converter")
-    (version "1.5.2")
+    (version "2.1.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "jekyll-sass-converter" version))
               (sha256
                (base32
-                "008ikh5fk0n6ri54mylcl8jn0mq8p2nfyfqif2q3pp0lwilkcxsk"))))
+                "04ncr44wrilz26ayqwlg7379yjnkb29mvx4j04i62b7czmdrc9dv"))))
     (build-system ruby-build-system)
     (propagated-inputs
      `(("ruby-sass" ,ruby-sass)))
@@ -10827,17 +10940,6 @@ is compatible with stylesheets designed for pygments.")
                ;; pygments is licensed under bsd-2
                license:bsd-2))))
 
-(define-public ruby-rouge-2
-  (package
-    (inherit ruby-rouge)
-    (version "2.2.1")
-    (source (origin
-              (method url-fetch)
-              (uri (rubygems-uri "rouge" version))
-              (sha256
-               (base32
-                "02kpahk5nkc33yxnn75649kzxaz073wvazr2zyg491nndykgnvcs"))))))
-
 (define-public ruby-hashie
   (package
     (name "ruby-hashie")
@@ -10924,13 +11026,13 @@ YAML.load suitable for accepting user input in Ruby applications.")
 (define-public ruby-mercenary
   (package
     (name "ruby-mercenary")
-    (version "0.3.6")
+    (version "0.4.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "mercenary" version))
               (sha256
                (base32
-                "10la0xw82dh5mqab8bl0dk21zld63cqxb1g16fk8cb39ylc4n21a"))))
+                "0f2i827w4lmsizrxixsrv2ssa3gk1b7lmqh8brk8ijmdb551wnmj"))))
     (build-system ruby-build-system)
     (arguments `(#:test-target "spec"))
     (native-inputs
@@ -11002,16 +11104,57 @@ methods for your source as @code{Forwardable::Extended}.")
 Pathname.")
     (license license:expat)))
 
+(define-public ruby-terminal-table
+  (package
+    (name "ruby-terminal-table")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "terminal-table" version))
+       (sha256
+        (base32
+         "18rbrh464ysqbdv53iwj0r8frshn65566kyj044cp3x9c2754jwh"))))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'remove-gemfile-lock
+           (lambda _
+             (delete-file "Gemfile.lock")))
+         (add-before 'check 'remove-unnecessary-dependencies
+           (lambda _
+             (substitute* "terminal-table.gemspec"
+               (("s.add_runtime_dependency.*") "\n")
+               (("s.add_development_dependency.*") "\n"))
+             (substitute* "Gemfile"
+               ((".*tins.*") "\n"))))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "rspec")))))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-unicode-display-width" ,ruby-unicode-display-width)))
+    (native-inputs
+     `(("ruby-rspec" ,ruby-rspec)))
+    (home-page "https://github.com/tj/terminal-table")
+    (synopsis "Simple, feature rich ASCII table generation library")
+    (description
+     "Terminal Table is a fast and simple, yet feature rich
+table generator written in Ruby.  It supports ASCII and
+Unicode formatted tables.")
+    (license license:expat)))
+
 (define-public jekyll
   (package
     (name "jekyll")
-    (version "3.8.6")
+    (version "4.2.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "jekyll" version))
               (sha256
                (base32
-                "1ph1jjjl25vmzif7bvxzviq7azjm384pm7ba4k24cah94285bzhz"))))
+                "0cqkh78jw8scrajyx5nla0vwm9fvp2qql3kdcvvplcq9mazy8snq"))))
     (build-system ruby-build-system)
     (arguments
      ;; No rakefile, but a test subdirectory.
@@ -11035,8 +11178,10 @@ Pathname.")
        ("ruby-liquid" ,ruby-liquid)
        ("ruby-mercenary" ,ruby-mercenary)
        ("ruby-pathutil" ,ruby-pathutil)
-       ("ruby-rouge" ,ruby-rouge-2)
-       ("ruby-safe-yaml" ,ruby-safe-yaml)))
+       ("ruby-rouge" ,ruby-rouge)
+       ("ruby-safe-yaml" ,ruby-safe-yaml)
+       ("ruby-sassc" ,ruby-sassc)
+       ("ruby-terminal-table" ,ruby-terminal-table)))
     (home-page "https://jekyllrb.com/")
     (synopsis "Static site generator")
     (description "Jekyll is a simple, blog aware, static site generator.")
@@ -11225,6 +11370,48 @@ template.")
 object that behaves like a regular expression and has comparable performance
 characteristics.")
     (home-page "https://github.com/sinatra/mustermann")
+    (license license:expat)))
+
+(define-public ruby-html-proofer
+  (package
+    (name "ruby-html-proofer")
+    (version "3.18.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/gjtorikian/html-proofer")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1pxb0fajb3l3lm7sqj548qwl7vx6sx3jy7n4cns9d4lqx7s9r9xb"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(;; FIXME: Tests depend on rubocop-standard.
+       #:tests? #f))
+    (native-inputs
+     `(("ruby-awesome-print" ,ruby-awesome-print)
+       ("ruby-redcarpet" ,ruby-redcarpet)
+       ("ruby-rspec" ,ruby-rspec)
+       ("ruby-rubocop" ,ruby-rubocop)
+       ("ruby-rubocop-performance" ,ruby-rubocop-performance)
+       ("ruby-pry-byebug" ,ruby-pry-byebug)))
+    (propagated-inputs
+     `(("ruby-addressable" ,ruby-addressable)
+       ("ruby-mercenary" ,ruby-mercenary)
+       ("ruby-nokogumbo" ,ruby-nokogumbo)
+       ("ruby-parallel" ,ruby-parallel)
+       ("ruby-rainbow" ,ruby-rainbow)
+       ("ruby-typhoeus" ,ruby-typhoeus)
+       ("ruby-yell" ,ruby-yell)))
+    (synopsis "Test your rendered HTML files to make sure they're accurate")
+    (description
+     "HTMLProofer is a set of tests to validate your HTML output.  These
+tests check if your image references are legitimate, if they have alt tags,
+if your internal links are working, and so on.  It's intended to be an
+all-in-one checker for your output.")
+    (home-page "https://github.com/gjtorikian/html-proofer")
     (license license:expat)))
 
 (define-public ruby-htmlentities
@@ -11721,4 +11908,31 @@ defined in @file{.travis.yml} on your local machine, using @code{rvm},
     (description "Rugged is a library for accessing libgit2 in Ruby.  It gives
 you the speed and portability of libgit2 with the beauty of the Ruby
 language.")
+    (license license:expat)))
+
+(define-public ruby-yell
+  (package
+    (name "ruby-yell")
+    (version "2.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "yell" version))
+       (sha256
+        (base32
+         "1g16kcdhdfvczn7x81jiq6afg3bdxmb73skqjyjlkp5nqcy6y5hx"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "rake" "examples")))))) ; there is no test target.
+    (synopsis
+     "Extensible logging library for Ruby")
+    (description
+     "Yell is a comprehensive logging replacement for Ruby.  It defines
+multiple adapters, various log level combinations and message formatting
+options.")
+    (home-page "https://github.com/rudionrails/yell")
     (license license:expat)))

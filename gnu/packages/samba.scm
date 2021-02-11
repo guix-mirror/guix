@@ -172,14 +172,14 @@ external dependencies.")
 (define-public samba
   (package
     (name "samba")
-    (version "4.13.3")
+    (version "4.13.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.samba.org/pub/samba/stable/"
                            "samba-" version ".tar.gz"))
        (sha256
-        (base32 "0hb5fli4kgwg376c289mcmdqszd51vs8pzzrw7j6yr9k7za8a1f1"))
+        (base32 "0y2wc7njhyhg055krp878xfv9c3wbhrhzn02d5ich30hyxilrcx1"))
        (patches (search-patches "samba-fix-fcntl-hint-detection.patch"))
        (modules '((guix build utils)))
        (snippet
@@ -281,14 +281,14 @@ Desktops into Active Directory environments using the winbind daemon.")
 (define-public talloc
   (package
     (name "talloc")
-    (version "2.3.1")
+    (version "2.3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/talloc/talloc-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0xwzgzrqamfdlklwacp9d219pqkah0yfrhxb1j7bxlmgzp924j7g"))))
+                "1mvv57srpzcc1qh6vjjyjhgpdlcw4bmmsxfz4j8pfk9qkvwkx817"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

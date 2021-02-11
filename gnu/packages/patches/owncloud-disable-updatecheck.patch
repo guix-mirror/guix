@@ -14,11 +14,11 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
      if (connection.isEmpty())
          con = defaultConnection();
  
--    QVariant fallback = getValue(QLatin1String(skipUpdateCheckC), con, false);
-+    QVariant fallback = getValue(QLatin1String(skipUpdateCheckC), con, true);
-     fallback = getValue(QLatin1String(skipUpdateCheckC), QString(), fallback);
+-    QVariant fallback = getValue(skipUpdateCheckC(), con, false);
++    QVariant fallback = getValue(skipUpdateCheckC(), con, true);
+     fallback = getValue(skipUpdateCheckC(), QString(), fallback);
  
-     QVariant value = getPolicySetting(QLatin1String(skipUpdateCheckC), fallback);
+     QVariant value = getPolicySetting(skipUpdateCheckC(), fallback);
 -    return value.toBool();
 +    if ( !value.toBool() )
 +        qDebug() << "Guix has disabled the UpdateCheck mechanism.";

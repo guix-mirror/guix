@@ -9,6 +9,7 @@
 ;;; Copyright © 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.ccom>
+;;; Copyright © 2021 Zheng Junjie <873216071@qq.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -159,7 +160,7 @@ Ansible syntax.  Benchmark files can be written in YAML.")
         ("rust-libc" ,rust-libc-0.2)
         ("rust-locale" ,rust-locale-0.2)
         ("rust-log" ,rust-log-0.4)
-        ("rust-natord" ,rust-natord-1.0)
+        ("rust-natord" ,rust-natord-1)
         ("rust-num-cpus" ,rust-num-cpus-1)
         ("rust-number-prefix" ,rust-number-prefix-0.3)
         ("rust-scoped-threadpool" ,rust-scoped-threadpool-0.1)
@@ -247,7 +248,7 @@ also knows about symlinks, extended attributes, and Git.")
         ("rust-anyhow" ,rust-anyhow-1)
         ("rust-atty" ,rust-atty-0.2)
         ("rust-clap" ,rust-clap-2)
-        ("rust-ctrlc" ,rust-ctrlc-3.1)
+        ("rust-ctrlc" ,rust-ctrlc-3)
         ("rust-dirs" ,rust-dirs-2)
         ("rust-globset" ,rust-globset-0.4)
         ("rust-humantime" ,rust-humantime-2)

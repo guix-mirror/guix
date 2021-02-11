@@ -478,7 +478,7 @@ tree binary files.  These are board description files used by Linux and BSD.")
 (define u-boot
   (package
     (name "u-boot")
-    (version "2020.10")
+    (version "2021.01")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -486,7 +486,7 @@ tree binary files.  These are board description files used by Linux and BSD.")
                     "u-boot-" version ".tar.bz2"))
               (sha256
                (base32
-                "08m6f1bh4pdcqbxf983qdb66ccd5vak5cbzc114yf3jwq2yinj0d"))))
+                "0m04glv9kn3bhs62sn675w60wkrl4m3a4hnbnnw67s3l198y21xl"))))
     (native-inputs
      `(("bc" ,bc)
        ("bison" ,bison)
@@ -813,30 +813,19 @@ to Novena upstream, does not load u-boot.img from the first partition.")
     (package
       (inherit base)
       (arguments
-       (substitute-keyword-arguments (package-arguments base)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (add-after 'unpack 'set-environment
-               (lambda* (#:key inputs #:allow-other-keys)
-                 ;; Need to copy the firmware into u-boot build
-                 ;; directory.
-                 (copy-file (string-append (assoc-ref inputs "firmware")
-                                           "/bl31.bin") "bl31-rk3399.bin")
-                 (copy-file (string-append (assoc-ref inputs "firmware-m0")
-                                           "/rk3399m0.bin") "rk3399m0.bin")
-                 #t))
-             (add-after 'build 'build-itb
-               (lambda* (#:key make-flags #:allow-other-keys)
-                 ;; The u-boot.itb is not built by default.
-                 (apply invoke "make" `(,@make-flags ,"u-boot.itb"))))
-             (add-after 'build-itb 'build-rksd
-               (lambda* (#:key inputs #:allow-other-keys)
-                 ;; Build Rockchip SD card images.
-                 (invoke "./tools/mkimage" "-T" "rksd" "-n" "rk3399" "-d"
-                         "spl/u-boot-spl.bin" "u-boot-spl.rksd")))))))
+        (substitute-keyword-arguments (package-arguments base)
+          ((#:phases phases)
+           `(modify-phases ,phases
+              (add-after 'unpack 'set-environment
+                (lambda* (#:key inputs #:allow-other-keys)
+                  (setenv "BL31" (string-append (assoc-ref inputs "firmware")
+                                                "/bl31.elf"))
+                  #t))
+              ;; Phases do not succeed on the bl31 ELF.
+              (delete 'strip)
+              (delete 'validate-runpath)))))
       (native-inputs
-       `(("firmware" ,arm-trusted-firmware-puma-rk3399)
-         ("firmware-m0" ,rk3399-cortex-m0)
+       `(("firmware" ,arm-trusted-firmware-rk3399)
          ,@(package-native-inputs base))))))
 
 (define-public u-boot-qemu-riscv64
@@ -927,6 +916,13 @@ to Novena upstream, does not load u-boot.img from the first partition.")
         (substitute-keyword-arguments (package-arguments base)
           ((#:phases phases)
            `(modify-phases ,phases
+              (add-after 'unpack 'patch-pinebook-pro-config
+                ;; Fix regression in 2020.10 causing freezes on boot with USB boot enabled.
+                ;; See https://gitlab.manjaro.org/manjaro-arm/packages/core/uboot-rockpro64/-/issues/4
+                (lambda _
+                  (substitute* "configs/pinebook-pro-rk3399_defconfig"
+                    (("CONFIG_USE_PREBOOT=y") "CONFIG_USE_PREBOOT=n"))
+                  #t))
               (add-after 'unpack 'set-environment
                 (lambda* (#:key inputs #:allow-other-keys)
                   (setenv "BL31" (string-append (assoc-ref inputs "firmware")

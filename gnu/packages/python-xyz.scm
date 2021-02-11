@@ -7,7 +7,7 @@
 ;;; Copyright © 2014, 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Omar Radwan <toxemicsquire4@gmail.com>
 ;;; Copyright © 2015 Pierre-Antoine Rault <par@rigelk.eu>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2020 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2015, 2016 David Thompson <davet@gnu.org>
@@ -26,11 +26,11 @@
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2016, 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2016, 2017, 2019 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2016, 2017, 2018, 2020 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2016, 2017, 2018, 2020, 2021 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2016–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
@@ -1063,17 +1063,15 @@ inter-process communication.")
 (define-public python-semantic-version
   (package
     (name "python-semantic-version")
-    (version "2.6.0")
+    (version "2.8.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "semantic_version" version))
        (sha256
         (base32
-         "1h2l9xyg1zzsda6kjcmfcgycbvrafwci283vcr1v5sbk01l2hhra"))))
+         "0m4avx8zdkzc7qglv5zlr54g8yna5vl098drg5396ql7aph2vjyj"))))
     (build-system python-build-system)
-    (arguments
-     `(#:tests? #f))                    ; PyPI tarball lacks tests
     (home-page "https://github.com/rbarrois/python-semanticversion")
     (synopsis "Semantic versioning module for Python")
     (description
@@ -1164,10 +1162,54 @@ Python 3 support.")
     (license (list license:psfl        ; setuptools itself
                    license:expat       ; six, appdirs, pyparsing
                    license:asl2.0      ; packaging is dual ASL2/BSD-2
-                   license:bsd-2))))
+                   license:bsd-2))
+    (properties `((python2-variant . ,(delay python2-setuptools))))))
 
+;; Newer versions of setuptools no longer support Python 2.
 (define-public python2-setuptools
-  (package-with-python2 python-setuptools))
+  (package
+    (name "python2-setuptools")
+    (version "41.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "setuptools" version ".zip"))
+       (sha256
+        (base32
+         "04sns22y2hhsrwfy1mha2lgslvpjsjsz8xws7h2rh5a7ylkd28m2"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Remove included binaries which are used to build self-extracting
+           ;; installers for Windows.
+           ;; TODO: Find some way to build them ourself so we can include them.
+           (for-each delete-file (find-files "setuptools" "^(cli|gui).*\\.exe$"))
+           #t))))
+    (build-system python-build-system)
+    ;; FIXME: Tests require pytest, which itself relies on setuptools.
+    ;; One could bootstrap with an internal untested setuptools.
+    (arguments
+     `(#:tests? #f))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "https://pypi.org/project/setuptools/")
+    (synopsis
+     "Library designed to facilitate packaging Python projects")
+    (description
+     "Setuptools is a fully-featured, stable library designed to facilitate
+packaging Python projects, where packaging includes:
+Python package and module definitions,
+distribution package metadata,
+test hooks,
+project installation,
+platform-specific details,
+Python 3 support.")
+    ;; TODO: setuptools now bundles the following libraries:
+    ;; packaging, pyparsing, six and appdirs. How to unbundle?
+    (license (list license:psfl         ; setuptools itself
+                   license:expat        ; six, appdirs, pyparsing
+                   license:asl2.0       ; packaging is dual ASL2/BSD-2
+                   license:bsd-2))))
 
 ;; The setuptools provided by Python 3.7.4 is too new for Tensorflow.
 (define-public python-setuptools-for-tensorflow
@@ -4927,10 +4969,17 @@ that client code uses to construct the grammar directly in Python code.")
      "Numpy's Sphinx extensions")
     (description
      "Sphinx extension to support docstrings in Numpy format.")
-    (license license:bsd-2)))
+    (license license:bsd-2)
+    (properties `((python2-variant . ,(delay python2-numpydoc))))))
 
 (define-public python2-numpydoc
-  (package-with-python2 python-numpydoc))
+  (let ((base (package-with-python2
+               (strip-python2-variant python-numpydoc))))
+    (package
+      (inherit base)
+      (propagated-inputs
+       `(("python2-jinja2" ,python2-jinja2)
+         ,@(package-propagated-inputs base))))))
 
 (define-public python-numexpr
   (package
@@ -5192,7 +5241,10 @@ toolkits.")
          ("python2-subprocess32" ,python2-subprocess32)
          ("python2-tkinter" ,python-2 "tk")
          ,@(fold alist-delete (package-propagated-inputs matplotlib)
-                 '("python-pycairo" "python-pygobject" "python-tkinter")))))))
+                 '("python-cairocffi"
+                   "python-pycairo"
+                   "python-pygobject"
+                   "python-tkinter")))))))
 
 (define-public python-matplotlib-documentation
   (package
@@ -11871,6 +11923,28 @@ programmatically interfacing with your system's $EDITOR.")
 (define-public python2-editor
   (package-with-python2 python-editor))
 
+(define-public python-multiprocessing-logging
+  (package
+    (name "python-multiprocessing-logging")
+    (version "0.3.1")
+    (home-page "https://github.com/jruere/multiprocessing-logging")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1625wy3djlr3b2fpd3vi822f8gw6b75mnls5a4318dbi9za5pf0y"))))
+    (build-system python-build-system)
+    (synopsis "Manage logs from multiple processes")
+    (description
+     "This Python module implements a multiprocessing-aware @code{Handler}
+that, when set on the root @code{Logger}, will tunnel log records to the
+main process so that they are handled correctly.")
+    (license license:lgpl3+)))
+
 (define-public python-vobject
   (package
     (name "python-vobject")
@@ -14552,10 +14626,23 @@ of arguments and options for Python scripts using @code{argparse}.  It's
 particularly useful for programs with many options or sub-parsers that can
 dynamically suggest completions; for example, when browsing resources over the
 network.")
-    (license license:asl2.0)))
+    (license license:asl2.0)
+    (properties `((python2-variant . ,(delay python2-argcomplete))))))
 
 (define-public python2-argcomplete
-  (package-with-python2 python-argcomplete))
+  (let ((variant (package-with-python2
+                  (strip-python2-variant python-argcomplete))))
+    (package
+      (inherit variant)
+      (arguments
+       (substitute-keyword-arguments (package-arguments variant)
+         ((#:phases phases '%standard-phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'set-my-HOME
+               (lambda _ (setenv "HOME" "/tmp")))))))
+      (native-inputs
+       `(("python2-importlib-metadata" ,python2-importlib-metadata)
+         ,@(package-native-inputs variant))))))
 
 (define-public python-csscompressor
   (package
@@ -17121,18 +17208,24 @@ design and layout.")
 (define-public python-pkginfo
   (package
     (name "python-pkginfo")
-    (version "1.4.2")
+    (version "1.7.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "pkginfo" version))
         (sha256
           (base32
-            "0x6lm17p1ks031mj6pajyp4rkq74vpqq8qwjb7ikgwmkli1day2q"))))
+            "1d1xn1xmfvz0jr3pj8irdwnwby3r13g0r2gwklr1q5y68p5p16h2"))))
     (build-system python-build-system)
     (arguments
-     ;; The tests are broken upstream.
-     '(#:tests? #f))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'patch-tests
+           (lambda _
+             (substitute* "pkginfo/tests/test_installed.py"
+               (("test_ctor_w_package_no_PKG_INFO")
+                "_test_ctor_w_package_no_PKG_INFO"))
+             #t)))))
     (home-page
       "https://code.launchpad.net/~tseaver/pkginfo/trunk")
     (synopsis
@@ -23533,3 +23626,24 @@ implementations.")
       "Pivy provides python bindings for Coin, a 3D graphics library with an
 Application Programming Interface based on the Open Inventor 2.1 API.")
     (license license:isc)))
+
+(define-public python-crayons
+  (package
+    (name "python-crayons")
+    (version "0.4.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "crayons" version))
+        (sha256
+         (base32
+          "0gw106k4b6y8mw7pp52awxyplj2bwvwk315k4sywzwh0g1abfcxx"))))
+    (build-system python-build-system)
+    (propagated-inputs
+      `(("python-colorama" ,python-colorama)))
+    (home-page "https://github.com/MasterOdin/crayons")
+    (synopsis "TextUI colors for Python")
+    (description "This package gives you colored strings for the terminal.
+Crayons automatically wraps a given string in the foreground color and
+restores the original state after the string is printed.")
+    (license license:expat)))

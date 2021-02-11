@@ -5657,7 +5657,7 @@ phylogenies.")
                             "/include/htslib/sam.h")
              (string-append "SAMLIBS="
                             (assoc-ref %build-inputs "htslib")
-                            "/lib/libhts.a"))
+                            "/lib/libhts.so"))
        #:phases
        (modify-phases %standard-phases
          ;; No "configure" script.

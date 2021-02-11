@@ -2173,10 +2173,12 @@ valid inputs."
 (define (store-path-hash-part path)
   "Return the hash part of PATH as a base32 string, or #f if PATH is not a
 syntactically valid store path."
-  (let* ((base (store-path-base path))
-         (hash (string-take base 32)))
-    (and (string-every %nix-base32-charset hash)
-         hash)))
+  (match (store-path-base path)
+    (#f #f)
+    (base
+     (let ((hash (string-take base 32)))
+       (and (string-every %nix-base32-charset hash)
+            hash)))))
 
 (define (derivation-log-file drv)
   "Return the build log file for DRV, a derivation file name, or #f if it

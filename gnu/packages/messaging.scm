@@ -931,14 +931,14 @@ simultaneously and therefore appear under the same nickname on IRC.")
 (define-public python-nbxmpp
   (package
     (name "python-nbxmpp")
-    (version "1.0.2")
+    (version "2.0.1")
     (source
      (origin
        (method url-fetch)
        (uri
         (pypi-uri "nbxmpp" version))
        (sha256
-        (base32 "0vw5drr077w9ks4crnw6pwa4735ycyjdcm54knc3w4in4x5027wr"))))
+        (base32 "0184nklbpzriq081lghsfavw9m8jr5kc45qqy4v4rdnxn64j7njc"))))
     (build-system python-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin")))
@@ -946,6 +946,7 @@ simultaneously and therefore appear under the same nickname on IRC.")
      `(("glib" ,glib)
        ("glib-networking" ,glib-networking)
        ("libsoup" ,libsoup)
+       ("python-gssapi" ,python-gssapi)
        ("python-idna" ,python-idna)
        ("python-precis-i18n" ,python-precis-i18n)
        ("python-pygobject" ,python-pygobject)))
@@ -962,7 +963,7 @@ of xmpppy.")
 (define-public gajim
   (package
     (name "gajim")
-    (version "1.2.2")
+    (version "1.3.0")
     (source
      (origin
        (method url-fetch)
@@ -971,7 +972,7 @@ of xmpppy.")
                        (version-major+minor version)
                        "/gajim-" version ".tar.gz"))
        (sha256
-        (base32 "1gfcp3b5nq43xxz5my8vfhfxnnli726j3hzcgwh9fzrzzd9ic3gx"))
+        (base32 "1v0cx8r1zr9aj17ik5apxxfpr9rv5w8p1i7hfys6wp9292gc7s25"))
        (patches (search-patches "gajim-honour-GAJIM_PLUGIN_PATH.patch"))))
     (build-system python-build-system)
     (arguments
@@ -985,6 +986,11 @@ of xmpppy.")
         (guix build utils))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'disable-failing-tests
+           (lambda _
+             ;; https://dev.gajim.org/gajim/gajim/-/issues/10427
+             (delete-file "test/unit/test_gui_interface.py")
+             #t))
          (replace 'check
            (lambda _
              ;; Tests require a running X server.
@@ -1046,7 +1052,6 @@ of xmpppy.")
        ("geoclue" ,geoclue)
        ("glib" ,glib)
        ("glib-networking" ,glib-networking)
-       ("gnome-keyring" ,gnome-keyring)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("gsound",gsound)
        ("gspell" ,gspell)
@@ -1054,6 +1059,7 @@ of xmpppy.")
        ("gst-plugins-base" ,gst-plugins-base)
        ("gtk+" ,gtk+)
        ("gupnp-igd" ,gupnp-igd)
+       ("libsecret" ,libsecret)
        ("libsoup" ,libsoup)
        ("libxss" ,libxscrnsaver)
        ("network-manager" ,network-manager)
@@ -1078,7 +1084,7 @@ and OpenPGP) and available in 29 languages.")
 (define-public gajim-omemo
   (package
     (name "gajim-omemo")
-    (version "2.6.80")
+    (version "2.7.13")
     (source
      (origin
        (method url-fetch/zipbomb)
@@ -1087,7 +1093,7 @@ and OpenPGP) and available in 29 languages.")
          "https://ftp.gajim.org/plugins_releases/omemo_"
          version ".zip"))
        (sha256
-        (base32 "179hgx091c12258335znn1540jhp4z3n3wv5ksrgqq7l3jgc93d7"))))
+        (base32 "1msr71rvik05wjpa2inpkadddad2rxaqbqcww5qrdrcz75pm8brn"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -1116,7 +1122,7 @@ multi-client end-to-end encryption.")
 (define-public gajim-openpgp
   (package
     (name "gajim-openpgp")
-    (version "1.2.14")
+    (version "1.3.9")
     (source
      (origin
        (method url-fetch/zipbomb)
@@ -1125,7 +1131,7 @@ multi-client end-to-end encryption.")
          "https://ftp.gajim.org/plugins_releases/openpgp_"
          version ".zip"))
        (sha256
-        (base32 "0wdjpf1i4pvl4ha4plfpywwi9aw5n2mhrpv8mmbidpawxqfbd94b"))))
+        (base32 "0fzvvrap1hmj4rbrcjs6cs5c9l9c0795bgw9vxxxk915n6j91m23"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -1140,7 +1146,8 @@ multi-client end-to-end encryption.")
            #t))))
     (propagated-inputs
      `(("python-cryptography" ,python-cryptography)
-       ("python-gnupg" ,python-gnupg)))
+       ("python-gnupg" ,python-gnupg)
+       ("python-gpg" ,python-gpg)))
     (synopsis "Gajim OpenPGP plugin")
     (description "Gajim-OpenPGP is a plugin that adds support for the OpenPGP
 Encryption to Gajim.")

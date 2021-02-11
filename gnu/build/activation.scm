@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -234,7 +234,7 @@ they already exist."
                                  "/" (basename prog))))
       (copy-file prog target)
       (chown target 0 0)
-      (chmod target #o6555)))
+      (chmod target #o4555)))
 
   (format #t "setting up setuid programs in '~a'...~%"
           %setuid-directory)

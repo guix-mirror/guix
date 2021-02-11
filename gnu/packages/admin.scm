@@ -1985,7 +1985,7 @@ system is under heavy load.")
 (define-public detox
   (package
     (name "detox")
-    (version "1.3.0")
+    (version "1.3.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1994,7 +1994,7 @@ system is under heavy load.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1dd608c7g65s5lj02cddvani3q9kzirddgkjqa22ap9d4f8b9xgr"))))
+                "13mhs62m7bpff45liy65pajq5jg3i12jj90vwdkra94z9mlr2rlz"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -2837,13 +2837,13 @@ a new command using the matched rule, and runs it.")
 (define-public di
   (package
     (name "di")
-    (version "4.48")
+    (version "4.48.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://gentoo.com/di/di-" version ".tar.gz"))
        (sha256
-        (base32 "0crvvfsxh8ryc0j19a2x52i9zacvggm8zi6j3kzygkcwnpz4km8r"))))
+        (base32 "0rxli3bcm6vlcfx2jminviv8aawwczrpp9kja5zniawy6528al30"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; obscure test failures
@@ -3459,7 +3459,7 @@ make it a perfect utility on modern distros.")
 (define-public thermald
   (package
     (name "thermald")
-    (version "2.4.1")
+    (version "2.4.2")
     (source
      (origin
       (method git-fetch)
@@ -3468,7 +3468,7 @@ make it a perfect utility on modern distros.")
              (commit (string-append "v" version))))
       (file-name (git-file-name name version))
       (sha256
-       (base32 "0rlac7v1b59m7gh767hkd8a0r4p001nd24786fnmryygbxynd2s6"))))
+       (base32 "0nzjfiis4d3ml765s65bywk5dhx5x2fb3hpiixpxzzrs50ajwasj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

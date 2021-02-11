@@ -7890,6 +7890,19 @@ passes flags specified by the @code{#:make-maker-flags} or
 Which Perl package is used can be specified with @code{#:perl}.
 @end defvr
 
+@defvr {Scheme Variable} renpy-build-system
+This variable is exported by @code{(guix build-system renpy)}.  It implements
+the more or less standard build procedure used by Ren'py games, which consists
+of loading @code{#:game} once, thereby creating bytecode for it.
+
+It further creates a wrapper script in @code{bin/} and a desktop entry in
+@code{share/applications}, both of which can be used to launch the game.
+
+Which Ren'py package is used can be specified with @code{#:renpy}.
+Games can also be installed in outputs other than ``out'' by using
+@code{#:output}.
+@end defvr
+
 @defvr {Scheme Variable} qt-build-system
 This variable is exported by @code{(guix build-system qt)}.  It
 is intended for use with applications using Qt or KDE.

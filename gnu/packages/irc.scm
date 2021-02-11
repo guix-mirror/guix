@@ -238,7 +238,7 @@ using a mouse.  It is customizable and extensible with plugins and scripts.")
 (define-public srain
   (package
     (name "srain")
-    (version "1.1.2")
+    (version "1.1.3")
     (source
      (origin
        (method git-fetch)
@@ -247,7 +247,7 @@ using a mouse.  It is customizable and extensible with plugins and scripts.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1jjs3lrlz67z9ghpc4c406a5r3naisn1famdh9rwwcg4y4y1vcws"))))
+        (base32 "1vqjjsxzc4601dpc8lf9k25rp2c7sjab7l5a6cbfygpr8dqvm6vq"))))
     (arguments
      `(#:tests? #f ;there are no tests
        #:phases
@@ -261,7 +261,8 @@ using a mouse.  It is customizable and extensible with plugins and scripts.")
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)))
     (inputs
      `(("glib-networking" ,glib-networking)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)

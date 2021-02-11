@@ -206,7 +206,7 @@ text or blue underlined text, on ANSI terminals.")
     (arguments
       `(#:cargo-inputs
         (("rust-bindgen" ,rust-bindgen-0.54)
-         ("rust-metadeps" ,rust-metadeps-1.1))))
+         ("rust-metadeps" ,rust-metadeps-1))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -236,7 +236,7 @@ text or blue underlined text, on ANSI terminals.")
     (arguments
      `(#:cargo-inputs
        (("rust-bindgen" ,rust-bindgen-0.53)
-        ("rust-metadeps" ,rust-metadeps-1.1))))
+        ("rust-metadeps" ,rust-metadeps-1))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -531,7 +531,7 @@ and iOS.")
     (arguments
      `(#:cargo-inputs
        (("rust-bindgen" ,rust-bindgen-0.54)
-        ("rust-metadeps" ,rust-metadeps-1.1))))
+        ("rust-metadeps" ,rust-metadeps-1))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -689,7 +689,7 @@ and iOS.")
     (arguments
      `(#:tests? #f      ; tests not included in release
        #:cargo-inputs
-       (("rust-color-quant" ,rust-color-quant-1.0)
+       (("rust-color-quant" ,rust-color-quant-1)
         ("rust-libc" ,rust-libc-0.2)
         ("rust-lzw" ,rust-lzw-0.10))
        #:cargo-development-inputs
@@ -1335,7 +1335,7 @@ graphics and video games.")
      "The Piston game engine core libraries.")
     (license license:expat)))
 
-(define-public rust-piston-float-1.0
+(define-public rust-piston-float-1
   (package
     (name "rust-piston-float")
     (version "1.0.0")
@@ -1452,7 +1452,7 @@ nicely with Piston libraries.")
       "This package provides a generic library for textures")
     (license license:expat)))
 
-(define-public rust-piston-viewport-1.0
+(define-public rust-piston-viewport-1
   (package
     (name "rust-piston-viewport")
     (version "1.0.0")
@@ -1469,7 +1469,7 @@ nicely with Piston libraries.")
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-piston-float" ,rust-piston-float-1.0))))
+       (("rust-piston-float" ,rust-piston-float-1))))
     (home-page "https://github.com/PistonDevelopers/viewport")
     (synopsis "Library for storing viewport information")
     (description
@@ -1555,9 +1555,9 @@ nicely with Piston libraries.")
        (("rust-interpolation" ,rust-interpolation-0.2)
         ("rust-rusttype" ,rust-rusttype-0.7)
         ("rust-piston-texture" ,rust-piston-texture-0.8)
-        ("rust-piston-viewport" ,rust-piston-viewport-1.0)
-        ("rust-read-color" ,rust-read-color-1.0)
-        ("rust-vecmath" ,rust-vecmath-1.0)
+        ("rust-piston-viewport" ,rust-piston-viewport-1)
+        ("rust-read-color" ,rust-read-color-1)
+        ("rust-vecmath" ,rust-vecmath-1)
         ("rust-fnv" ,rust-fnv-1))))
     (home-page "https://github.com/pistondevelopers/graphics")
     (synopsis "Library for 2D graphics that works with multiple back-ends")
@@ -1635,7 +1635,7 @@ interactive applications.")
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-piston-viewport" ,rust-piston-viewport-1.0)
+       (("rust-piston-viewport" ,rust-piston-viewport-1)
         ("rust-serde" ,rust-serde-1)
         ("rust-serde-derive" ,rust-serde-derive-1)
         ("rust-bitflags" ,rust-bitflags-1))))
@@ -2778,7 +2778,7 @@ the platform-specific getters provided by winit, or another library.")
      `(#:cargo-inputs
        (("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-libc" ,rust-libc-0.2)
-        ("rust-maybe-uninit" ,rust-maybe-uninit-2.0)
+        ("rust-maybe-uninit" ,rust-maybe-uninit-2)
         ("rust-pkg-config" ,rust-pkg-config-0.3))))
     (home-page "https://github.com/erlepereira/x11-rs.git")
     (synopsis "X11 library bindings for Rust")

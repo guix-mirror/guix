@@ -30,6 +30,7 @@
 ;;; Copyright © 2020 Lars-Dominik Braun <lars@6xq.net>
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Léo Le Bouter <lle-bout@zaclys.net>
+;;; Copyright © 2021 Antoine Côté <antoine.cote@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -808,8 +809,10 @@ decompression of some loosely related file formats used by Microsoft.")
        ("python" ,python)
        ("valgrind" ,valgrind)))
     (arguments
-     `(#:test-target "test"
-       #:parallel-tests? #f      ;occasional failures when running in parallel
+     `(;; Not designed for parallel testing.
+       ;; See https://github.com/lz4/lz4/issues/957#issuecomment-737419821
+       #:parallel-tests? #f
+       #:test-target "test"
        #:make-flags (list (string-append "CC=" ,(cc-for-target))
                           (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases
@@ -2359,14 +2362,14 @@ to their original, binary CD format.")
 (define-public tarlz
   (package
     (name "tarlz")
-    (version "0.17")
+    (version "0.19")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://savannah/lzip/tarlz/"
                            "tarlz-" version ".tar.lz"))
        (sha256
-        (base32 "0gpdm6z9pdr5bn31kxg73wm686hhpb5pdf5782pbl5a4xqqhqj90"))))
+        (base32 "09xal55973ivzpaja93jcc1pfla8gb3vrk8dx7pj9qvvz5aynf9n"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("lzip" ,lzip)))

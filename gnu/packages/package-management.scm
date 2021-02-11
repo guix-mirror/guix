@@ -132,8 +132,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "1.2.0")
-        (commit "dffc918af6cf6e1ce942dd329d210271ced1205d")
-        (revision 12))
+        (commit "a53f711422f63d7e32b8639b968cf00bcc69ffea")
+        (revision 13))
     (package
       (name "guix")
 
@@ -149,11 +149,18 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "0wcwb09iy4svky5kmxwch7fymmkx78h8haam6p8ix110mm88in8k"))
+                  "01sky036v6dh8zwvrzl08pj4r6vkz7mjadkqbrwhak4nvds5frq8"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
        `(#:configure-flags (list
+
+                            ;; Provide channel metadata for 'guix describe'.
+                            ;; Don't pass '--with-channel-url' and
+                            ;; '--with-channel-introduction' and instead use
+                            ;; the defaults.
+                            ,(string-append "--with-channel-commit=" commit)
+
                             "--localstatedir=/var"
                             "--sysconfdir=/etc"
                             (string-append "--with-bash-completion-dir="
@@ -996,24 +1003,18 @@ written entirely in Python.")
 (define-public gwl
   (package
     (name "gwl")
-    (version "0.2.1")
+    (version "0.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gwl/gwl-" version ".tar.gz"))
               (sha256
                (base32
-                "1ji5jvzni8aml9fmimlr11g3k8isrnlvnbzhmwgdjh72hils0alc"))))
+                "1lqif00mq7fsaknbc2gvvcv1j89k311sm44jp9jklbrv0v2lc83n"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'build 'fix-tests
-           (lambda _
-             ;; Avoid cross-device link.
-             (substitute* "tests/cache.scm"
-               (("/tmp/gwl-test-input-XXXXXX")
-                (string-append (getcwd) "/gwl-test-input-XXXXXX")))
-             #t)))))
+     `(#:parallel-build? #false ; for reproducibility
+       #:make-flags
+       '("GUILE_AUTO_COMPILE=0")))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -1021,14 +1022,17 @@ written entirely in Python.")
        ("texinfo" ,texinfo)
        ("graphviz" ,graphviz)))
     (inputs
-     `(("guile" ,@(assoc-ref (package-native-inputs guix) "guile"))))
-    (propagated-inputs
-     `(("guix" ,guix)
-       ("guile-commonmark" ,guile-commonmark)
-       ("guile-gcrypt" ,guile-gcrypt)
-       ("guile-pfds" ,guile-pfds)
-       ("guile-syntax-highlight" ,guile-syntax-highlight)
-       ("guile-wisp" ,guile-wisp)))
+     (let ((p (package-input-rewriting
+               `((,guile-3.0 . ,guile-3.0-latest))
+               #:deep? #false)))
+       `(("guix" ,guix)
+         ("guile" ,guile-3.0-latest)
+         ("guile-commonmark" ,(p guile-commonmark))
+         ("guile-config" ,(p guile-config))
+         ("guile-gcrypt" ,(p guile-gcrypt))
+         ("guile-pfds" ,(p guile-pfds))
+         ("guile-syntax-highlight" ,(p guile-syntax-highlight))
+         ("guile-wisp" ,(p guile-wisp)))))
     (home-page "https://workflows.guix.info")
     (synopsis "Workflow management extension for GNU Guix")
     (description "The @dfn{Guix Workflow Language} (GWL) provides an
@@ -1042,8 +1046,8 @@ environments.")
     (license (list license:gpl3+ license:agpl3+ license:silofl1.1))))
 
 (define-public guix-build-coordinator
-  (let ((commit "b5d998c22f7d4db3e26166ada9489af363f2d47a")
-        (revision "15"))
+  (let ((commit "88fbb69264a412ca2c7e6c4de024414444bd2df8")
+        (revision "18"))
     (package
       (name "guix-build-coordinator")
       (version (git-version "0" revision commit))
@@ -1054,7 +1058,7 @@ environments.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "1jfmwfx7cvfsvryc3w70nw6mixdamjymkqh40qkv99sspkd86dkr"))
+                  "0bjf9bibamyk1d762w4nv0n0a7azww5bks2c9627zpzs2zqwqyiv"))
                 (file-name (string-append name "-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments

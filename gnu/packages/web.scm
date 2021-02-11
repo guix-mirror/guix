@@ -685,7 +685,7 @@ programming language.")))
 (define-public lighttpd
   (package
     (name "lighttpd")
-    (version "1.4.58")
+    (version "1.4.59")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.lighttpd.net/lighttpd/"
@@ -693,7 +693,7 @@ programming language.")))
                                   "lighttpd-" version ".tar.xz"))
               (sha256
                (base32
-                "03kd28nq6wndvvyk0zs5120ajvg1icnif5bvrsyhw69sl7yyyzr6"))))
+                "1mc421yrbnq3k6yrc708svp0fgcamrn5a0p2nvnhivysffr3v5gv"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -1479,7 +1479,7 @@ used to validate and fix HTML data.")
 (define-public esbuild
   (package
     (name "esbuild")
-    (version "0.8.37")
+    (version "0.8.43")
     (source
      (origin
        (method git-fetch)
@@ -1488,7 +1488,7 @@ used to validate and fix HTML data.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0c98w2y4y9jaj2wv0334xwdbsvsi5hfh9jdkqr7ffz8lxhmh610f"))
+        (base32 "0ab8xpbh39nvrq1302qld692i4xy2mgynk6hjkwhlrziybj74njp"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -4632,20 +4632,20 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
   (package-with-python2 python-feedparser))
 
 (define-public guix-data-service
-  (let ((commit "060df92557d5a32dbd3ae4a32c2c5725cd53e09b")
-        (revision "24"))
+  (let ((commit "b7ba8d0c2ca3aca9ba5b5f9f27b9778ee949d20e")
+        (revision "25"))
     (package
       (name "guix-data-service")
       (version (string-append "0.0.1-" revision "." (string-take commit 7)))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://git.savannah.gnu.org/git/guix/data-service.git")
+                      (url "https://git.savannah.gnu.org/git/guix/data-service.git/")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0ggwslwm041gkd0i45xhvnalxrhjaj4da27p5wrpknrhpa4ipf6v"))))
+                  "0brv64bsqysl7dncz067blwvmqrlx99c2kwrgpz6k0nqv8nzsa28"))))
       (build-system gnu-build-system)
       (arguments
        '(#:modules ((guix build utils)
@@ -4727,7 +4727,7 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
 through a web interface.  It supports listening to the guix-commits mailing
 list to find out about new revisions, then loads the data from these in to a
 PostgreSQL database.")
-      (home-page "http://data.guix.gnu.org/")
+      (home-page "https://data.guix.gnu.org/")
       (license license:agpl3+))))
 
 (define-public gumbo-parser

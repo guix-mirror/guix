@@ -47,6 +47,7 @@
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
+  #:autoload   (guix describe) (current-channels) ;XXX: circular dep
   #:autoload   (guix self) (whole-package make-config.scm)
   #:autoload   (guix inferior) (gexp->derivation-in-inferior) ;FIXME: circular dep
   #:autoload   (guix quirks) (%quirks %patches applicable-patch? apply-patch)
@@ -344,6 +345,18 @@ commits)...~%")
 
     (progress-reporter/bar (length commits)))
 
+  (define authentic-commits
+    ;; Consider the currently-used commit of CHANNEL as authentic so
+    ;; authentication can skip it and all its closure.
+    (match (find (lambda (candidate)
+                   (eq? (channel-name candidate) (channel-name channel)))
+                 (current-channels))
+      (#f '())
+      (channel
+       (if (channel-commit channel)
+           (list (channel-commit channel))
+           '()))))
+
   ;; XXX: Too bad we need to re-open CHECKOUT.
   (with-repository checkout repository
     (authenticate-repository repository
@@ -354,6 +367,7 @@ commits)...~%")
                              #:keyring-reference
                              (string-append keyring-reference-prefix
                                             keyring-reference)
+                             #:authentic-commits authentic-commits
                              #:make-reporter make-reporter
                              #:cache-key cache-key)))
 
@@ -626,16 +640,23 @@ that unconditionally resumes the continuation."
       (values (run-with-store store mvalue)
               store))))
 
-(define* (build-from-source name source
-                            #:key core verbose? commit
-                            (dependencies '()))
-  "Return a derivation to build Guix from SOURCE, using the self-build script
-contained therein; use COMMIT as the version string.  When CORE is true, build
-package modules under SOURCE using CORE, an instance of Guix."
+(define* (build-from-source instance
+                            #:key core verbose? (dependencies '()))
+  "Return a derivation to build Guix from INSTANCE, using the self-build
+script contained therein.  When CORE is true, build package modules under
+SOURCE using CORE, an instance of Guix."
+  (define name
+    (symbol->string
+     (channel-name (channel-instance-channel instance))))
+  (define source
+    (channel-instance-checkout instance))
+  (define commit
+    (channel-instance-commit instance))
+
   ;; Running the self-build script makes it easier to update the build
   ;; procedure: the self-build script of the Guix-to-be-installed contains the
   ;; right dependencies, build procedure, etc., which the Guix-in-use may not
-  ;; be know.
+  ;; know.
   (define script
     (string-append source "/" %self-build-file))
 
@@ -661,7 +682,9 @@ package modules under SOURCE using CORE, an instance of Guix."
           ;; cause us to redo half of the BUILD computation several times just
           ;; to realize it gives the same result.
           (with-trivial-build-handler
-           (build source #:verbose? verbose? #:version commit
+           (build source
+                  #:verbose? verbose? #:version commit
+                  #:channel-metadata (channel-instance->sexp instance)
                   #:pull-version %pull-version))))
 
       ;; Build a set of modules that extend Guix using the standard method.
@@ -672,10 +695,7 @@ package modules under SOURCE using CORE, an instance of Guix."
   "Return, as a monadic value, the derivation for INSTANCE, a channel
 instance.  DEPENDENCIES is a list of extensions providing Guile modules that
 INSTANCE depends on."
-  (build-from-source (symbol->string
-                      (channel-name (channel-instance-channel instance)))
-                     (channel-instance-checkout instance)
-                     #:commit (channel-instance-commit instance)
+  (build-from-source instance
                      #:core core
                      #:dependencies dependencies))
 

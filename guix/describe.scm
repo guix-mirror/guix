@@ -23,12 +23,13 @@
   #:use-module ((guix utils) #:select (location-file))
   #:use-module ((guix store) #:select (%store-prefix store-path?))
   #:use-module ((guix config) #:select (%state-directory))
-  #:autoload   (guix channels) (sexp->channel)
+  #:autoload   (guix channels) (sexp->channel manifest-entry-channel)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match)
   #:export (current-profile
             current-profile-date
             current-profile-entries
+            current-channels
             package-path-entries
 
             package-provenance
@@ -87,10 +88,19 @@ as a number of seconds since the Epoch, or #f if it could not be determined."
                            (string-append (dirname file) "/" target)))))
              (const #f)))))))
 
+(define (channel-metadata)
+  "Return the 'guix' channel metadata sexp from (guix config) if available;
+otherwise return #f."
+  ;; Older 'build-self.scm' would create a (guix config) file without the
+  ;; '%channel-metadata' variable.  Thus, properly deal with a lack of
+  ;; information.
+  (let ((module (resolve-interface '(guix config))))
+    (and=> (module-variable module '%channel-metadata) variable-ref)))
+
 (define current-profile-entries
   (mlambda ()
     "Return the list of entries in the 'guix pull' profile the calling process
-lives in, or #f if this is not applicable."
+lives in, or the empty list if this is not applicable."
     (match (current-profile)
       (#f '())
       (profile
@@ -104,6 +114,20 @@ lives in, or #f if this is not applicable."
     (remove (lambda (entry)
               (string=? (manifest-entry-name entry) "guix"))
             (current-profile-entries))))
+
+(define current-channels
+  (mlambda ()
+    "Return the list of channels currently available, including the 'guix'
+channel.  Return the empty list if this information is missing."
+    (match (current-profile-entries)
+      (()
+       ;; As a fallback, if we're not running from a profile, use 'guix'
+       ;; channel metadata from (guix config).
+       (match (channel-metadata)
+         (#f '())
+         (sexp (or (and=> (sexp->channel sexp 'guix) list) '()))))
+      (entries
+       (filter-map manifest-entry-channel entries)))))
 
 (define (package-path-entries)
   "Return two values: the list of package path entries to be added to the

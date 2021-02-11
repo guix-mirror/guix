@@ -109,6 +109,8 @@
                     (default #f))
   (fallback?        cuirass-configuration-fallback? ;boolean
                     (default #f))
+  (zabbix-uri       cuirass-configuration-zabbix-uri ;string
+                    (default #f))
   (extra-options    cuirass-configuration-extra-options
                     (default '())))
 
@@ -129,6 +131,7 @@
         (use-substitutes? (cuirass-configuration-use-substitutes? config))
         (one-shot?        (cuirass-configuration-one-shot? config))
         (fallback?        (cuirass-configuration-fallback? config))
+        (zabbix-uri       (cuirass-configuration-zabbix-uri config))
         (extra-options    (cuirass-configuration-extra-options config)))
     `(,(shepherd-service
         (documentation "Run Cuirass.")
@@ -170,6 +173,11 @@
                         "--interval" #$(number->string interval)
                         #$@(if use-substitutes? '("--use-substitutes") '())
                         #$@(if fallback? '("--fallback") '())
+                        #$@(if zabbix-uri
+                               (list (string-append
+                                      "--zabbix-uri="
+                                      zabbix-uri))
+                               '())
                         #$@extra-options)
 
                   #:user #$user

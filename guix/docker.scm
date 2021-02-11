@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018, 2019, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -113,7 +113,14 @@ Return a version of TAG that follows these rules."
 (define %tar-determinism-options
   ;; GNU tar options to produce archives deterministically.
   '("--sort=name" "--mtime=@1"
-    "--owner=root:0" "--group=root:0"))
+    "--owner=root:0" "--group=root:0"
+
+    ;; When 'build-docker-image' is passed store items, the 'nlink' of the
+    ;; files therein leads tar to store hard links instead of actual copies.
+    ;; However, the 'nlink' count depends on deduplication in the store; it's
+    ;; an "implicit input" to the build process.  '--hard-dereference'
+    ;; eliminates it.
+    "--hard-dereference"))
 
 (define directive-file
   ;; Return the file or directory created by a 'evaluate-populate-directive'

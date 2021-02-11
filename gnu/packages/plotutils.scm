@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2017, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -24,8 +24,10 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages bdw-gc)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages xorg)
@@ -97,40 +99,36 @@ programs for plotting scientific data.")
     (license license:gpl2+)))
 
 (define-public guile-charting
-  (package
-    (name "guile-charting")
-    (version "0.2.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://wingolog.org/pub/guile-charting/"
-                                  "guile-charting-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0w5qiyv9v0ip5li22x762bm48g8xnw281w66iyw094zdw611pb2m"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; Allow builds with Guile 3.0.
-                  (substitute* "configure"
-                    (("2\\.2 2\\.0")
-                     "3.0 2.2 2.0"))
-
-                  ;; By default, .go files would be installed to
-                  ;; $libdir/…/ccache instead of $libdir/…/site-ccache.  Fix
-                  ;; that.
-                  (substitute* (find-files "." "^Makefile\\.in$")
-                    (("/ccache") "/site-ccache"))
-                  #t))))
-    (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("guile" ,guile-3.0)))
-    (propagated-inputs `(("guile-cairo" ,guile-cairo)))
-    (home-page "http://wingolog.org/software/guile-charting/")
-    (synopsis "Create charts and graphs in Guile")
-    (description
-     "Guile-Charting is a Guile Scheme library to create bar charts and graphs
+  ;; This commit fixes a few things, including Guile 3 support, not available
+  ;; in the latest release.
+  (let ((commit "75f755b691a9f712f3b956657d01805d6a8a1b98")
+        (revision "1"))
+    (package
+      (name "guile-charting")
+      (version (git-version "0.2.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://gitlab.com/wingo/guile-charting")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "03049g7wnpyfi0r36ij4a46kc9l45jbanx02iklkjwav2n6jqnnk"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("texinfo" ,texinfo)
+         ("pkg-config" ,pkg-config)))
+      (inputs `(("guile" ,guile-3.0)))
+      (propagated-inputs `(("guile-cairo" ,guile-cairo)))
+      (home-page "http://wingolog.org/projects/guile-charting/")
+      (synopsis "Create charts and graphs in Guile")
+      (description
+       "Guile-Charting is a Guile Scheme library to create bar charts and graphs
 using the Cairo drawing library.")
-    (license license:lgpl2.1+)))
+      (license license:lgpl2.1+))))
 
 (define-public guile2.2-charting
   (package

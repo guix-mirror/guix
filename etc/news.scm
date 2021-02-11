@@ -18,9 +18,64 @@
 (channel-news
  (version 0)
 
+ (entry (commit "aa8de806252e3835d57fab351b02d13db762deac")
+        (title
+         (en "Risk of local privilege escalation @i{via} setuid programs")
+         (de "Risiko lokaler Rechteausweitung bei setuid-Programmen")
+         (fr "Risque de gain local de privilèges @i{via} les programmes setuid"))
+        (body
+         (en "On Guix System, setuid programs were, until now, installed as
+setuid-root @emph{and} setgid-root (in the @file{/run/setuid-programs}
+directory).  However, most of these programs are meant to run as setuid-root,
+but not setgid-root.  Thus, this setting posed a risk of local privilege
+escalation.
+
+This bug has been fixed and users are advised to upgrade their system, with a
+command along the lines of:
+
+@example
+guix system reconfigure /run/current-system/configuration.scm
+@end example
+
+Users of Guix on a ``foreign distro'' are unaffected.  See
+@url{https://issues.guix.gnu.org/46395} for more information.")
+         (de "Auf Guix System wurden setuid-Programme bisher mit setuid-root
+@emph{und} setgid-root ausgestattet (im Verzeichnis
+@file{/run/setuid-programs}).  Die meisten solchen Programme sind jedoch nur
+dafür gedacht, mit setuid-root zu laufen, ohne setgid-root.  Durch diese
+Einstellung war daher vielleicht eine lokale Rechteausweitung („local
+privilege escalation“) möglich.
+
+Dieser Fehler wurde behoben und Benutzern wird geraten, ihr System zu
+aktualisieren, etwa mit diesem Befehl:
+
+@example
+guix system reconfigure /run/current-system/configuration.scm
+@end example
+
+Benutzer von Guix auf einer „Fremddistribution“ sind @emph{nicht} betroffen.
+Siehe @url{https://issues.guix.gnu.org/46395} für weitere Informationen.")
+         (fr "Sur Guix System, les programmes setuid étaient jusqu'à présent
+installés setuid-root @emph{et} setgid-root (dans le répertoire
+@file{/run/setuid-programs}).  Ces programmes sont généralement conçus pour
+être setuid-root, mais pas setgid-root, et cette situation posait donc un
+risque de gain local de privilèges.
+
+Ce problème est corrigé et vous êtes encouragé·e à mettre à jour votre
+système, avec une commande de ce genre :
+
+@example
+guix system reconfigure /run/current-system/configuration.scm
+@end example
+
+Les usagers de Guix sur une distrib externe ne sont pas touché·es.  Plus
+d'informations sont disponibles à @url{https://issues.guix.gnu.org/46395} (en
+anglais).")))
+
  (entry (commit "aedbc5ff32a62f45aeed74c6833399a6cf2c22dc")
         (title
          (en "Create a manifest with @command{guix package --export-manifest}")
+         (de "Manifest erzeugen mit @command{guix package --export-manifest}")
          (fr "Créer un manifeste avec @command{guix package --export-manifest}"))
         (body
          (en "The @command{guix package --export-manifest} command outputs a
@@ -39,6 +94,25 @@ This allows you to ``pin'' Guix to the revision that was used to build the
 profile.
 
 Run @command{info \"(guix) Invoking guix package\"} for more info.")
+         (de "Mit dem Befehl @command{guix package --export-manifest} wird ein
+@dfn{Manifest} aus Ihrem Profil erzeugt. Bei einem Manifest handelt es sich um
+ein Stück Code, das Sie an @command{guix package --manifest} zum Einspielen
+der Pakete aus dem Manifest übergeben können (oder an jeden anderen Befehl,
+der die Befehlszeilenoption @option{--manifest} versteht).
+
+Die Absicht hinter dieser neuen Befehlszeilenoption @option{--export-manifest}
+ist, dass man leichter von einem „imperativen“ Stil, bei dem man wiederholt
+@command{guix install} und ähnliche Befehle aufruft, zum deklarativen Stil
+wechseln kann. Im deklarativen Stil tragen Sie die Liste der Pakete, die Sie
+haben möchten, in eine Manifest-Datei ein.
+
+Analog können Sie mit der neuen Befehlszeilenoption @option{--export-channels}
+zu Ihrem Profil eine @dfn{Kanalspezifikation} erzeugen, die für @command{guix
+pull --channels} geeignet ist.  Damit können Sie für Guix immer die Version
+benutzen, mit der das Profil erstellt wurde.
+
+Führen Sie für mehr Informationen @command{info \"(guix.de) Aufruf von guix
+package\"} aus.")
          (fr "La commande @command{guix package --export-manifest} affiche un
 @dfn{manifeste} pour le profil choisi.  Ce manifeste est un bout de code qu'on
 peut passer à @command{guix package --manifest} (ou n'importe qu'elle commande

@@ -765,7 +765,7 @@ like appearance, display, keyboard and mouse settings.")
 (define-public thunar
   (package
     (name "thunar")
-    (version "4.16.2")
+    (version "4.16.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
@@ -773,7 +773,7 @@ like appearance, display, keyboard and mouse settings.")
                                   "thunar-" version ".tar.bz2"))
               (sha256
                (base32
-                "1pbspa31q4kgydjzmssahq3k0wcy10ma466dlsd2y69nqjc0pab7"))))
+                "0wpzs7r79aayg4zbxy514fbkabac1hhvw522cjjr453gva4xq92m"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1069,7 +1069,7 @@ the desktop wallpaper.")
 (define-public xfce4-taskmanager
   (package
     (name "xfce4-taskmanager")
-    (version "1.4.0")
+    (version "1.4.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/apps/"
@@ -1077,7 +1077,7 @@ the desktop wallpaper.")
                                   "xfce4-taskmanager-" version ".tar.bz2"))
               (sha256
                (base32
-                "0hvx7qqkiyq81axcbkqfv39bn84x8gjzrybq3w3hkz0mzkfq8mk5"))))
+                "1ya81si7xhqqbbc9lfcjg2i1pi1qdfw1pnjry7kf95f1w50244nd"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -1357,7 +1357,7 @@ A plugin for the Xfce panel is also available.")
 (define-public xfce4-cpugraph-plugin
   (package
    (name "xfce4-cpugraph-plugin")
-   (version "1.2.0")
+   (version "1.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
@@ -1366,7 +1366,7 @@ A plugin for the Xfce panel is also available.")
                                   "/xfce4-cpugraph-plugin-" version ".tar.bz2"))
               (sha256
                (base32
-                "19rdc3k085z7bv8365g26vz6iy9dx2f4x4q3wszsjmq5pvdxsrkq"))))
+                "0jljxyvxq4kmf5wz7wkq6wma4bq1qsnlv3lx6527lhcipnddynk1"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -1501,7 +1501,7 @@ precedence rules, and the following functions and common constants.")
 (define-public xfce4-cpufreq-plugin
   (package
    (name "xfce4-cpufreq-plugin")
-   (version "1.2.3")
+   (version "1.2.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
@@ -1510,7 +1510,7 @@ precedence rules, and the following functions and common constants.")
                                   "/xfce4-cpufreq-plugin-" version ".tar.bz2"))
               (sha256
                (base32
-                "1g07rpbq61dbdz0zvvb0xz6ipympxadwknn5y5q3v85k0nr9qfbx"))))
+                "17kzy156xqnbk4apskg005p7r09q7zb8crifad5mbawc7ysihll1"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)

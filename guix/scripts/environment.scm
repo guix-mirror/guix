@@ -21,6 +21,7 @@
 (define-module (guix scripts environment)
   #:use-module (guix ui)
   #:use-module (guix store)
+  #:use-module (guix utils)
   #:use-module ((guix status) #:select (with-status-verbosity))
   #:use-module (guix grafts)
   #:use-module (guix derivations)
@@ -136,6 +137,8 @@ COMMAND or an interactive shell in that environment.\n"))
                          FILE evaluates to"))
   (display (G_ "
   -m, --manifest=FILE    create environment with the manifest from FILE"))
+  (display (G_ "
+  -p, --profile=PATH     create environment from profile at PATH"))
   (display (G_ "
       --ad-hoc           include all specified packages in the environment instead
                          of only their inputs"))
@@ -269,6 +272,10 @@ use '--preserve' instead~%"))
          (option '(#\P "link-profile") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'link-profile? #t result)))
+         (option '(#\p "profile") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'profile arg
+                               (alist-delete 'profile result eq?))))
          (option '(#\u "user") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'user arg
@@ -706,6 +713,7 @@ message if any test fails."
            (user       (assoc-ref opts 'user))
            (bootstrap? (assoc-ref opts 'bootstrap?))
            (system     (assoc-ref opts 'system))
+           (profile    (assoc-ref opts 'profile))
            (command    (or (assoc-ref opts 'exec)
                            ;; Spawn a shell if the user didn't specify
                            ;; anything in particular.
@@ -735,8 +743,16 @@ message if any test fails."
                                             #:dry-run?
                                             (assoc-ref opts 'dry-run?))
           (with-status-verbosity (assoc-ref opts 'verbosity)
-            (define manifest
+            (define manifest-from-opts
               (options/resolve-packages store opts))
+            (when (and profile
+                       (> (length (manifest-entries manifest-from-opts)) 0))
+              (leave (G_ "'--profile' cannot be used with package options~%")))
+
+            (define manifest
+              (if profile
+                (profile-manifest profile)
+                manifest-from-opts))
 
             (set-build-options-from-command-line store opts)
 
@@ -755,7 +771,9 @@ message if any test fails."
                                                                    system))
                                      (prof-drv   (manifest->derivation
                                                   manifest system bootstrap?))
-                                     (profile -> (derivation->output-path prof-drv))
+                                     (profile -> (if profile
+                                                   (readlink* profile)
+                                                   (derivation->output-path prof-drv)))
                                      (gc-root -> (assoc-ref opts 'gc-root)))
 
                   ;; First build the inputs.  This is necessary even for

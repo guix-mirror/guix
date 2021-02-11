@@ -3,7 +3,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
-;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2019, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017, 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
@@ -11,7 +11,7 @@
 ;;; Copyright © 2017 nikita <nikita@n0.is>
 ;;; Copyright © 2017 Rodger Fox <thylakoid@openmailbox.org>
 ;;; Copyright © 2017, 2018, 2019, 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
-;;; Copyright © 2017, 2018, 2019 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2017, 2018, 2019, 2021 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 nee <nee.git@hidamari.blue>
@@ -337,116 +337,111 @@ and play MIDI files with a few clicks in a user-friendly interface offering
 score, keyboard, guitar, drum and controller views.")
     (license license:gpl3+)))
 
-;; We don't use the latest release because it depends on Qt4.  Instead we
-;; download the sources from the tip of the "qt5" branch.
 (define-public clementine
-  (let ((commit "4619a4c1ab3b17b13d4b2327ad477912917eaf36")
-        (revision "2"))
-    (package
-      (name "clementine")
-      (version (git-version "1.3.1" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/clementine-player/Clementine")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "1hximk3q0p8nw8is5w7215xgkb7k4flnfyr0pdz9svfwvcm05w1i"))
-                (modules '((guix build utils)))
-                (snippet
-                 '(begin
-                    (for-each
-                     (lambda (dir)
-                       (delete-file-recursively
-                        (string-append "3rdparty/" dir)))
-                     (list
-                      ;; TODO: The following dependencies are still bundled:
-                      ;; - "qxt": Appears to be unmaintained upstream.
-                      ;; - "qsqlite"
-                      ;; - "qtsingleapplication"
-                      ;; - "qocoa"
-                      ;; - "qtiocompressor"
-                      ;; - "gmock": The tests crash when using our googletest
-                      ;;   package instead of the bundled gmock.
-                      "SPMediaKeyTap"
-                      "fancytabwidget"
-                      "google-breakpad"
-                      "libmygpo-qt"
-                      "libmygpo-qt5"
-                      "libprojectm"
-                      "qtwin"
-                      "sha2" ;; Replaced by openssl.
-                      "taglib"
-                      "tinysvcmdns"))
-                    #t))
-                (patches (search-patches "clementine-use-openssl.patch"
-                                         "clementine-remove-crypto++-dependency.patch"
-                                         "clementine-fix-sqlite.patch"))))
-      (build-system cmake-build-system)
-      (arguments
-       '(#:test-target "clementine_test"
-         #:configure-flags
-         (list ;; Requires unpackaged "projectm"
-               "-DENABLE_VISUALISATIONS=OFF"
-               ;; Otherwise it may try to download a non-free library at run-time.
-               ;; TODO In an origin snippet, remove the code that performs the
-               ;; download.
-               "-DHAVE_SPOTIFY_DOWNLOADER=FALSE"
-               "-DUSE_SYSTEM_SHA2=TRUE")
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'install 'wrap-program
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let ((out             (assoc-ref outputs "out"))
-                     (gst-plugin-path (getenv "GST_PLUGIN_SYSTEM_PATH")))
-                 (wrap-program (string-append out "/bin/clementine")
-                   `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path)))
-                 #t))))))
-      (native-inputs
-       `(("gettext" ,gettext-minimal)
-         ("pkg-config" ,pkg-config)
-         ("qtlinguist" ,qttools)))
-      (inputs
-       `(("boost" ,boost)
-         ("chromaprint" ,chromaprint)
-         ("fftw" ,fftw)
-         ("glib" ,glib)
-         ("glu" ,glu)
-         ("gstreamer" ,gstreamer)
-         ("gst-plugins-base" ,gst-plugins-base)
-         ("gst-plugins-good" ,gst-plugins-good)
-         ("gst-libav" ,gst-libav)
-         ("libcdio" ,libcdio)
-         ("libmygpo-qt" ,libmygpo-qt)
-         ;; TODO: Package libgpod.
-         ("libmtp" ,libmtp)
-         ("libxml2" ,libxml2)
-         ("openssl" ,openssl)
-         ("protobuf" ,protobuf)
-         ("pulseaudio" ,pulseaudio)
-         ("qtbase" ,qtbase)
-         ("qtx11extras" ,qtx11extras)
-         ("sqlite" ,sqlite)
-         ("sparsehash" ,sparsehash)
-         ("taglib" ,taglib)))
-      (home-page "https://clementine-player.org")
-      (synopsis "Music player and library organizer")
-      (description "Clementine is a multiplatform music player.  It is inspired
+  (package
+    (name "clementine")
+    (version "1.4.0rc1-450-g2725ef99d")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/clementine-player/Clementine")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1pcwwi9b2qcfjn748577gqx6d1hgg7cisw2dn43npwafdvvkdb90"))
+              (modules '((guix build utils)
+                         (ice-9 regex)))
+              (snippet
+               '(begin
+                  (use-modules ((ice-9 regex)))
+                  (for-each
+                   (lambda (dir)
+                     ;; TODO: The following dependencies are still bundled:
+                     ;; - "qxt": Appears to be unmaintained upstream.
+                     ;; - "qsqlite"
+                     ;; - "qtsingleapplication"
+                     ;; - "qocoa"
+                     ;; - "qtiocompressor"
+                     (let ((bundled '("qsqlite"
+                                      "qtsingleapplication"
+                                      "qxt"
+                                      "qocoa"
+                                      "qtiocompressor")))
+                       (if (not
+                            (string-match
+                              (string-append ".?*(" (string-join bundled "|") ")")
+                              dir))
+                           (delete-file-recursively dir))))
+                   (find-files "3rdparty"
+                               (lambda (file stat)
+                                 (string-match "^3rdparty/[^/]*$" file))
+                               #:directories? #t))
+                  #t))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:test-target "clementine_test"
+       #:configure-flags
+       (list ;; Requires unpackaged "projectm"
+             "-DENABLE_VISUALISATIONS=OFF"
+             ;; Otherwise it may try to download a non-free library at run-time.
+             ;; TODO In an origin snippet, remove the code that performs the
+             ;; download.
+             "-DHAVE_SPOTIFY_DOWNLOADER=FALSE"
+             ;; Clementine checks that the taglib version is higher than 1.11,
+             ;; because of https://github.com/taglib/taglib/issues/864. Remove
+             ;; this flag when 1.12 is released.
+             "-DUSE_SYSTEM_TAGLIB=TRUE")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out             (assoc-ref outputs "out"))
+                   (gst-plugin-path (getenv "GST_PLUGIN_SYSTEM_PATH")))
+               (wrap-program (string-append out "/bin/clementine")
+                 `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path)))
+               #t))))))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("googletest" ,googletest)
+       ("pkg-config" ,pkg-config)
+       ("qtlinguist" ,qttools)))
+    (inputs
+     `(("boost" ,boost)
+       ("chromaprint" ,chromaprint)
+       ("fftw" ,fftw)
+       ("glib" ,glib)
+       ("glu" ,glu)
+       ("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("gst-plugins-good" ,gst-plugins-good)
+       ("gst-libav" ,gst-libav)
+       ("libcdio" ,libcdio)
+       ("libmygpo-qt" ,libmygpo-qt)
+       ;; TODO: Package libgpod.
+       ("libmtp" ,libmtp)
+       ("libxml2" ,libxml2)
+       ("protobuf" ,protobuf)
+       ("pulseaudio" ,pulseaudio)
+       ("qtbase" ,qtbase)
+       ("qtx11extras" ,qtx11extras)
+       ("sqlite" ,sqlite)
+       ("sparsehash" ,sparsehash)
+       ("taglib" ,taglib)))
+    (home-page "https://clementine-player.org")
+    (synopsis "Music player and library organizer")
+    (description "Clementine is a multiplatform music player.  It is inspired
 by Amarok 1.4, focusing on a fast and easy-to-use interface for searching and
 playing your music.")
-      (license (list
-                 ;; clementine and qtiocompressor are under GPLv3.
-                 license:gpl3+
-                 ;; gmock is under BSD-3.
-                 license:bsd-3
-                 ;; qxt is under CPL1.0.
-                 license:cpl1.0
-                 ;; qsqlite and qtsingleapplication are under LGPL2.1+.
-                 license:lgpl2.1+
-                 ;; qocoa is under MIT and CC by-sa for the icons.
-                 license:cc-by-sa3.0)))))
+    (license (list
+               ;; clementine and qtiocompressor are under GPLv3.
+               license:gpl3+
+               ;; qxt is under CPL1.0.
+               license:cpl1.0
+               ;; qsqlite and qtsingleapplication are under LGPL2.1+.
+               license:lgpl2.1+
+               ;; qocoa is under MIT and CC by-sa for the icons.
+               license:cc-by-sa3.0))))
 
 (define-public cmus
   (package
@@ -3487,6 +3482,7 @@ websites such as Libre.fm.")
                 (uri (git-reference
                       (url "https://github.com/beetbox/beets")
                       (commit commit)))
+                (file-name (git-file-name "beets" version))
                 (sha256
                  (base32
                   "092a9sss2shhcjmpgbwvscv8brpm5970i5hddkhi81xcff3bg1h4"))))
@@ -3526,6 +3522,7 @@ websites such as Libre.fm.")
          ("python-mediafile" ,python-mediafile)
          ("python-reflink" ,python-reflink)
          ("python-requests-oauthlib" ,python-requests-oauthlib)
+         ("opusfile" ,opusfile)
          ,@(package-inputs beets))))))
 
 (define-public beets-bandcamp
@@ -4385,7 +4382,7 @@ are a C compiler and glib.  Full API documentation and examples are included.")
 (define-public lmms
   (package
     (name "lmms")
-    (version "1.2.1")
+    (version "1.2.2")
     (source
      (origin
        (method git-fetch)
@@ -4395,7 +4392,7 @@ are a C compiler and glib.  Full API documentation and examples are included.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1gx730z361xx30iqbsm99aam1k2c8yf561gcay6sryyjksb4w1wy"))))
+         "11xgf461cnmq0jkgdgx5bddi87ammpik4whg1m4fcvd3i0d5i601"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; no tests
@@ -4463,7 +4460,8 @@ are a C compiler and glib.  Full API documentation and examples are included.")
        ("libxft" ,libxft)
        ("freetype2" ,freetype)
        ("fftw3f" ,fftwf)
-       ("jack" ,jack-1)))
+       ("jack" ,jack-1)
+       ("carla" ,carla)))
     (home-page "https://lmms.io/")
     (synopsis "Music composition tool")
     (description "LMMS is a digital audio workstation.  It includes tools for sequencing
@@ -4504,7 +4502,7 @@ standalone JACK client and an LV2 plugin is also available.")
 (define-public musescore
   (package
     (name "musescore")
-    (version "3.6.1")
+    (version "3.6.2")
     (source
      (origin
        (method git-fetch)
@@ -4513,7 +4511,7 @@ standalone JACK client and an LV2 plugin is also available.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "087j474sdm8vcjczfqlbb1hpcvgvdghjsd132db9dlqwpgk4hmnv"))
+        (base32 "0szvb6mlzy9df9lrq546rrpixa480knzij1wgh6ilflxz87q048q"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove unused libraries.

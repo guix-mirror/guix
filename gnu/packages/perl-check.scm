@@ -4,7 +4,7 @@
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Nikita <nikita@n0.is>
-;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2019, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Alex Sassmannshausen <alex@pompo.co>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
@@ -1160,7 +1160,7 @@ checks for pod coverage of all appropriate files.")
 (define-public perl-test-requires
   (package
     (name "perl-test-requires")
-    (version "0.10")
+    (version "0.11")
     (source
      (origin
        (method url-fetch)
@@ -1168,7 +1168,7 @@ checks for pod coverage of all appropriate files.")
                            "Test-Requires-" version ".tar.gz"))
        (sha256
         (base32
-         "1d9f481lj12cw1ciil46xq9nq16p6a90nm7yrsalpf8asn8s6s17"))))
+         "03q49vi09b4n31kpnmq4v2dga5ja438a8f1wgkgwvvlpjmadx22b"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Test-Requires")
     (synopsis "Checks to see if the module can be loaded")
@@ -1231,7 +1231,7 @@ reported, and the tests skipped.")
 (define-public perl-test-runvalgrind
   (package
     (name "perl-test-runvalgrind")
-    (version "0.2.1")
+    (version "0.2.2")
     (source
      (origin
        (method url-fetch)
@@ -1240,7 +1240,7 @@ reported, and the tests skipped.")
              version
              ".tar.gz"))
        (sha256
-        (base32 "175hlycrhgwrp7j4rwx5bk4fd6775242wjdqv107rvgsrszsi915"))))
+        (base32 "1vm5iw5sy0mhjjypaaviil9qgqixmkaghdbjbcyb4lf2mm6d24v9"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)))
@@ -1300,14 +1300,14 @@ makes fork(2) safe to use in test cases.")
 (define-public perl-test-simple
   (package
     (name "perl-test-simple")
-    (version "1.302172")
+    (version "1.302183")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/E/EX/EXODIST/"
                                   "Test-Simple-" version ".tar.gz"))
               (sha256
                (base32
-                "1z1l8dgssf0mqbgik33sc5j48iiapppkwmacwah990hj0j7pd23k"))))
+                "1zq6841yrwxmrmhgzmzx0njlymsv9mzl6l5njabfl2j2xjjvs0ws"))))
     (build-system perl-build-system)
     (synopsis "Basic utilities for writing tests")
     (description
@@ -1345,7 +1345,7 @@ test scripts.")
 (define-public perl-test-taint
   (package
     (name "perl-test-taint")
-    (version "1.06")
+    (version "1.08")
     (source
      (origin
        (method url-fetch)
@@ -1353,7 +1353,7 @@ test scripts.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "01rip5d7gdr1c7lq6yczzkqfd0500nfa977ryigylj6jj75526vj"))))
+         "0zd946qam0yffpciqqd9xhn92gdplyh3mii4a1w96b1max14snax"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Test-Taint")
     (synopsis "Checks for taintedness of variables")
@@ -1489,15 +1489,15 @@ defined, and that the version is valid.")
 (define-public perl-test-warn
   (package
     (name "perl-test-warn")
-    (version "0.30")
+    (version "0.36")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/C/CH/CHORNY/"
+       (uri (string-append "mirror://cpan/authors/id/B/BI/BIGJ/"
                            "Test-Warn-" version ".tar.gz"))
        (sha256
         (base32
-         "0haf2ii7br5z0psmkvlvmx2z2q9qz1c70gx0969r378qjidmb5w1"))))
+         "1nkc7jzxff0w4x9axbpsgxrksqdjnf70rb74q39zikkrsd3a7g7c"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-sub-uplevel" ,perl-sub-uplevel)))
@@ -1510,7 +1510,7 @@ warning based code.")
 (define-public perl-test-warnings
   (package
     (name "perl-test-warnings")
-    (version "0.026")
+    (version "0.030")
     (source
      (origin
        (method url-fetch)
@@ -1518,7 +1518,7 @@ warning based code.")
                            "Test-Warnings-" version ".tar.gz"))
        (sha256
         (base32
-         "024srkwjckp15dxkni9lb1hc8bg4xwc52zz0iich8rv1nnqnhaxf"))))
+         "0kz2daardmr2i5vg7g3h0cvw9xnp6d25hx92280swr0mvxyr9949"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Test-Warnings")
     (synopsis "Test for warnings and the lack of them")
@@ -1599,7 +1599,7 @@ support.")
 (define-public perl-test-trailingspace
  (package
   (name "perl-test-trailingspace")
-  (version "0.0301")
+  (version "0.0600")
   (source
     (origin
       (method url-fetch)
@@ -1609,7 +1609,7 @@ support.")
              ".tar.gz"))
       (sha256
         (base32
-          "0w2rvsksv7cmf80v632xm2rwxrv933kzz97839yhwynvg9s7b252"))))
+          "04aszaw4n3sra7n7sq2cj4wjjvfghia9zqi47aj00ry0vqx2d7gh"))))
   (build-system perl-build-system)
   (native-inputs
     `(("perl-module-build" ,perl-module-build)

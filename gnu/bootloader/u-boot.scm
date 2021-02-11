@@ -73,12 +73,9 @@
 
 (define install-allwinner64-u-boot
   #~(lambda (bootloader root-index image)
-      (let ((spl (string-append bootloader "/libexec/spl/sunxi-spl.bin"))
-            (u-boot (string-append bootloader "/libexec/u-boot.itb")))
+      (let ((spl (string-append bootloader "/libexec/u-boot-sunxi-with-spl.fit.itb")))
         (write-file-on-device spl (stat:size (stat spl))
-                              image (* 8 1024))
-        (write-file-on-device u-boot (stat:size (stat u-boot))
-                              image (* 40 1024)))))
+                              image (* 8 1024)))))
 
 (define install-imx-u-boot
   #~(lambda (bootloader root-index image)
@@ -91,7 +88,7 @@
 
 (define install-puma-rk3399-u-boot
   #~(lambda (bootloader root-index image)
-      (let ((spl (string-append bootloader "/libexec/u-boot-spl.rksd"))
+      (let ((spl (string-append bootloader "/libexec/idbloader.img"))
             (u-boot (string-append bootloader "/libexec/u-boot.itb")))
         (write-file-on-device spl (stat:size (stat spl))
                               image (* 64 512))

@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016, 2019, 2020 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2016, 2017 John Darrington <jmd@gnu.org>
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Eric Bavier <bavier@posteo.net>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2014 Mathieu Lirzin <mathieu.lirzin@openmailbox.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
@@ -1080,7 +1080,7 @@ incompatible with HDF5.")
 (define-public hdf5-1.8
   (package
     (name "hdf5")
-    (version "1.8.21")
+    (version "1.8.22")
     (source
      (origin
       (method url-fetch)
@@ -1095,9 +1095,8 @@ incompatible with HDF5.")
                                    (string-append major minor)))
                                 "/src/hdf5-" version ".tar.bz2")))
       (sha256
-       (base32 "03glk4w4wyb1jyb443g53y3y1ncnf6mj2cqwm6avfr2awkgb3cg5"))
-      (patches (search-patches "hdf5-config-date.patch"
-                               "hdf5-1.8-mpi-deprecations.patch"))))
+       (base32 "194ki2s5jrgl4czkvy5nc9nwjyapah0fj72l0gb0aysplp38i6v8"))
+      (patches (search-patches "hdf5-config-date.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("zlib" ,zlib)))
@@ -3508,7 +3507,7 @@ point numbers.")
 (define-public wxmaxima
   (package
     (name "wxmaxima")
-    (version "20.12.2")
+    (version "21.01.0")
     (source
      (origin
        (method git-fetch)
@@ -3517,13 +3516,12 @@ point numbers.")
              (commit (string-append "Version-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1rxnxk7yanb9ac5pxbii6k7gg3b09pbp9rmwvsvgpbrk17mg79r9"))))
+        (base32 "1bnv9410xmk73adqi4r6w0qgbqk7qig0vr5219839c09xagyyd12"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)))
     (inputs
-     `(("libomp" ,libomp)
-       ("wxwidgets" ,wxwidgets)
+     `(("wxwidgets" ,wxwidgets)
        ("maxima" ,maxima)
        ;; Runtime support.
        ("adwaita-icon-theme" ,adwaita-icon-theme)

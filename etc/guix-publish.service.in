@@ -4,6 +4,9 @@
 
 [Unit]
 Description=Publish the GNU Guix store
+Requires=guix-daemon.service
+PartOf=guix-daemon.service
+After=guix-daemon.service
 
 [Service]
 ExecStart=@localstatedir@/guix/profiles/per-user/root/current-guix/bin/guix publish --user=nobody --port=8181

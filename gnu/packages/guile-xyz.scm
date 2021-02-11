@@ -2399,7 +2399,9 @@ inspired by the SCSH regular expression system.")
      `(("pkg-config" ,pkg-config)
        ("texinfo" ,texinfo)))
     (inputs
-     `(("guile" ,guile-3.0)))
+     ;; Depend on the latest Guile to avoid bytecode compatibility issues when
+     ;; using modules built against the latest version.
+     `(("guile" ,guile-3.0-latest)))
     (propagated-inputs
      `(("guile-reader" ,guile-reader)
        ("guile-commonmark" ,guile-commonmark)))
@@ -2504,6 +2506,19 @@ key-value cache and store.")
                      "3.0 2.2 2.0"))
                   #t))))
     (build-system gnu-build-system)
+    ;; The tests throw exceptions with Guile 3.0.5, because they evaluate
+    ;; (exit ...).
+    ;;
+    ;; This has been fixed upstream, but there has not been a new release
+    ;; containing this change.
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-tests-when-building-with-guile-3.0.5
+           (lambda _
+             (substitute* (find-files "tests" "\\.scm$")
+               (("\\(exit.*") ""))
+             #t)))))
     (inputs
      `(("guile" ,guile-3.0)))
     (native-inputs
@@ -2626,7 +2641,10 @@ The picture values can directly be displayed in Geiser.")
   (package
     (inherit guile-picture-language)
     (name "guile2.2-picture-language")
-    (inputs `(("guile" ,guile-2.2)))))
+    (inputs `(("guile" ,guile-2.2)))
+    (propagated-inputs
+     `(("guile-cairo" ,guile2.2-cairo)
+       ("guile-rsvg" ,guile2.2-rsvg)))))
 
 (define-public guile3.0-picture-language
   (deprecated-package "guile3.0-picture-language"

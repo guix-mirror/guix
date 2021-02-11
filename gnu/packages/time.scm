@@ -2,7 +2,7 @@
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2013, 2017, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015, 2017 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
@@ -418,7 +418,10 @@ timestamps.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (invoke "pytest" "-vv" "tests"))))))
+             (invoke "pytest" "-vv" "tests"
+                     ;; python-dateutil doesn't recognize America/Nuuk.
+                     ;; Remove when python-dateutil > 2.8.1.
+                     "-k" "not test_parse_tz_name_zzz"))))))
     (native-inputs
      `(;; For testing
        ("python-chai" ,python-chai)

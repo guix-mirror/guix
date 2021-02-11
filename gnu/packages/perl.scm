@@ -6,7 +6,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
 ;;; Copyright © 2016, 2018, 2020 Roel Janssen <roel@gnu.org>
@@ -10374,7 +10374,7 @@ duration strings like \"2 minutes\" and \"3 seconds\" to seconds.")
 (define-public perl-time-local
   (package
     (name "perl-time-local")
-    (version "1.28")
+    (version "1.30")
     (source
      (origin
        (method url-fetch)
@@ -10382,7 +10382,7 @@ duration strings like \"2 minutes\" and \"3 seconds\" to seconds.")
                            "Time-Local-" version ".tar.gz"))
        (sha256
         (base32
-         "03p1mxk75vmmi4l0ibpd05b6hncbh8afjhvss87vpp4rrkjvjy4j"))))
+         "1jr0i57jqm0spdd98gp5mzdnrqdyf7rls0ygwb9ldfc655mlyx67"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Time-Local")
     (synopsis "Efficiently compute time from local and GMT time")
@@ -10841,7 +10841,7 @@ having to write a single line of XS.")
 (define-public perl-xml-writer
   (package
     (name "perl-xml-writer")
-    (version "0.625")
+    (version "0.900")
     (source
      (origin
        (method url-fetch)
@@ -10851,7 +10851,7 @@ having to write a single line of XS.")
              ".tar.gz"))
        (sha256
         (base32
-         "1gjzs570i67ywbv967g8ylb5sg59clwmyrl2yix3jl70dhn55070"))))
+         "07qd806kcs7si7qakx3x5p68xq2jdmkxdrns987kaayg7syzbj3k"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/XML-Writer")
     (synopsis "Easily generate well-formed, namespace-aware XML")
@@ -10913,7 +10913,7 @@ on the YAML 1.0 specification.")
 (define-public perl-yaml-libyaml
   (package
     (name "perl-yaml-libyaml")
-    (version "0.80")
+    (version "0.82")
     (source
      (origin
        (method url-fetch)
@@ -10921,7 +10921,7 @@ on the YAML 1.0 specification.")
              "mirror://cpan/authors/id/T/TI/TINITA/YAML-LibYAML-"
              version ".tar.gz"))
        (sha256
-        (base32 "1nhn4w52kpq757rxl052f61h36rdzsy416k740m3fy5ih7axhq4x"))))
+        (base32 "0j7yhxkaasccynl5iq1cqpf4x253p4bi5wsq6qbwwv2wjsiwgd02"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/YAML-LibYAML")
     (synopsis "Perl YAML Serialization using XS and libyaml")

@@ -54,19 +54,26 @@
 (define-public tor
   (package
     (name "tor")
-    (version "0.4.4.6")
+    (version "0.4.4.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://dist.torproject.org/tor-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1p0zpqmbskygx0wmiijhprg8r45n2wqbbjl7kv4gbb83b0alq5az"))))
+               "1vh5kdx7s74il8a6gr7jydbpv0an01nla4y2r8w7h33z2wk2jv9j"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
        (list "--enable-lzma"
-             "--enable-zstd")))
+             "--enable-zstd")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'skip-practracker
+           ;; This is a style linter.  It doesn't get to throw fatal errors.
+           (lambda _
+             (setenv "TOR_DISABLE_PRACTRACKER" "set")
+             #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python" ,python)))             ; for tests
