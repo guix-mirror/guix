@@ -30,7 +30,7 @@
 ;;; Copyright © 2016, 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2016, 2017, 2019 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2016, 2017, 2018, 2020 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2016, 2017, 2018, 2020, 2021 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2016–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
@@ -23739,3 +23739,24 @@ implementations.")
       "Pivy provides python bindings for Coin, a 3D graphics library with an
 Application Programming Interface based on the Open Inventor 2.1 API.")
     (license license:isc)))
+
+(define-public python-crayons
+  (package
+    (name "python-crayons")
+    (version "0.4.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "crayons" version))
+        (sha256
+         (base32
+          "0gw106k4b6y8mw7pp52awxyplj2bwvwk315k4sywzwh0g1abfcxx"))))
+    (build-system python-build-system)
+    (propagated-inputs
+      `(("python-colorama" ,python-colorama)))
+    (home-page "https://github.com/MasterOdin/crayons")
+    (synopsis "TextUI colors for Python")
+    (description "This package gives you colored strings for the terminal.
+Crayons automatically wraps a given string in the foreground color and
+restores the original state after the string is printed.")
+    (license license:expat)))
