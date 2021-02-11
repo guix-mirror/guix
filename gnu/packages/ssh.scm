@@ -505,13 +505,23 @@ responsive, especially over Wi-Fi, cellular, and long-distance links.")
              "https://matt.ucc.asn.au/dropbear/releases/"
              "dropbear-" version ".tar.bz2"))
        (sha256
-        (base32 "0fy5ma4cfc2pk25mcccc67b2mf1rnb2c06ilb7ddnxbpnc85s8s8"))))
+        (base32 "0fy5ma4cfc2pk25mcccc67b2mf1rnb2c06ilb7ddnxbpnc85s8s8"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (delete-file-recursively "libtommath")
+           (delete-file-recursively "libtomcrypt")
+           (substitute* "configure"
+             (("-ltomcrypt") "-ltomcrypt -ltommath"))
+           #t))))
     (build-system gnu-build-system)
-    (arguments `(#:tests? #f))  ; there is no "make check" or anything similar
-    ;; TODO: Investigate unbundling libtommath and libtomcrypt or at least
-    ;; cherry-picking important bug fixes from them. See <bugs.gnu.org/24674>
-    ;; for more information.
-    (inputs `(("zlib" ,zlib)))
+    (arguments
+     `(#:configure-flags '("--disable-bundled-libtom")
+       #:tests? #f))    ; there is no "make check" or anything similar
+    (inputs
+     `(("libtomcrypt" ,libtomcrypt)
+       ("libtommath" ,libtommath)
+       ("zlib" ,zlib)))
     (synopsis "Small SSH server and client")
     (description "Dropbear is a relatively small SSH server and
 client.  It runs on a variety of POSIX-based platforms.  Dropbear is
