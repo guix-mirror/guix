@@ -63,7 +63,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (guix download)
   #:use-module (guix git-download)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils))
 
@@ -99,8 +99,8 @@
 as small as possible, often without sacrificing speed.  It is faster than the
 GNU Bourne-Again Shell (@command{bash}) at most scripted tasks.  dash is a
 direct descendant of NetBSD's Almquist Shell (@command{ash}).")
-    (license (list bsd-3
-                   gpl2+))))    ; mksignames.c
+    (license (list license:bsd-3
+                   license:gpl2+))))    ; mksignames.c
 
 (define-public fish
   (package
@@ -248,7 +248,7 @@ access to all the fish documentation in your web browser.  Other features
 include smart terminal handling based on terminfo, an easy to search history,
 and syntax highlighting.")
     (home-page "https://fishshell.com/")
-    (license gpl2)))
+    (license license:gpl2)))
 
 (define-public fish-foreign-env
   (package
@@ -296,7 +296,7 @@ and syntax highlighting.")
     (description "@code{fish-foreign-env} wraps bash script execution in a way
 that environment variables that are exported or modified get imported back
 into fish.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public rc
   (package
@@ -336,7 +336,7 @@ into fish.")
      "This is a reimplementation by Byron Rakitzis of the Plan 9 shell.  It
 has a small feature set similar to a traditional Bourne shell.")
     (home-page "https://github.com/rakitzis/rc")
-    (license zlib)))
+    (license license:zlib)))
 
 (define-public es
   (package
@@ -372,7 +372,7 @@ Scheme, and the Tcl embeddable programming language.  This implementation is
 derived from Byron Rakitzis's public domain implementation of rc, and was
 written by Paul Haahr and Byron Rakitzis.")
     (home-page "https://wryun.github.io/es-shell/")
-    (license public-domain)))
+    (license license:public-domain)))
 
 (define-public tcsh
   (package
@@ -440,7 +440,7 @@ UNIX C shell (csh).  It is a command language interpreter usable both as an
 interactive login shell and a shell script command processor.  It includes a
 command-line editor, programmable word completion, spelling correction, a
 history mechanism, job control and a C-like syntax.")
-    (license bsd-4)))
+    (license license:bsd-4)))
 
 (define-public zsh
   (package
@@ -513,7 +513,7 @@ ksh, and tcsh.")
 
     ;; The whole thing is under an MIT/X11-style license, but there's one
     ;; command, 'Completion/Unix/Command/_darcs', which is under GPLv2+.
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public xonsh
   (package
@@ -559,7 +559,7 @@ prompt.  The language is a superset of Python 3.4+ with additional shell
 primitives that you are used to from Bash and IPython.  It works on all major
 systems including Linux, Mac OSX, and Windows.  Xonsh is meant for the daily
 use of experts and novices alike.")
-    (license bsd-2)))
+    (license license:bsd-2)))
 
 (define-public scsh
   (let ((commit "114432435e4eadd54334df6b37fcae505079b49f")
@@ -604,7 +604,7 @@ use of experts and novices alike.")
 components: a process notation for running programs and setting up pipelines
 and redirections, and a complete syscall library for low-level access to the
 operating system.")
-      (license bsd-3))))
+      (license license:bsd-3))))
 
 (define-public linenoise
   (let ((commit "2105ce445821381cf1bca87b6d386d4ea88ee20d")
@@ -652,7 +652,7 @@ Its features include:
 @item Hints (suggestions at the right of the prompt as you type)
 @item A subset of VT100 escapes, ANSI.SYS compatible
 @end enumerate\n")
-      (license bsd-2))))
+      (license license:bsd-2))))
 
 (define-public s-shell
   (let ((commit "da2e5c20c0c5f477ec3426dc2584889a789b1659")
@@ -716,7 +716,7 @@ This is a \"no surprises\" straightforward approach.
 There are no redirection operators > in the shell language, they are added as
 extra programs.  > is just another unix command, < is essentially cat(1).
 A @code{andglob} program is also provided along with s.")
-      (license bsd-3))))
+      (license license:bsd-3))))
 
 (define-public oksh
   (package
@@ -739,7 +739,7 @@ A @code{andglob} program is also provided along with s.")
     (description
      "Oksh is a port of the OpenBSD Korn Shell.
 The OpenBSD Korn Shell is a cleaned up and enhanced ksh.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public loksh
   (package
@@ -775,7 +775,7 @@ The OpenBSD Korn Shell is a cleaned up and enhanced ksh.")
 interactive POSIX shell targeted at resource-constrained systems.")
     ;; The file 'LEGAL' says it is the public domain, and the 2
     ;; exceptions which are listed are not included in this port.
-    (license public-domain)))
+    (license license:public-domain)))
 
 (define-public mksh
   (package
@@ -813,8 +813,8 @@ interactive POSIX shell targeted at resource-constrained systems.")
     (description "mksh is an actively developed free implementation of the
 Korn Shell programming language and a successor to the Public Domain Korn
 Shell (pdksh).")
-    (license (list miros
-                   isc))))              ; strlcpy.c
+    (license (list license:miros
+                   license:isc))))              ; strlcpy.c
 
 (define-public oil
   (package
@@ -855,8 +855,8 @@ Shell (pdksh).")
     (description "Oil is a programming language with automatic translation for
 Bash.  It includes osh, a Unix/POSIX shell that runs unmodified Bash
 scripts.")
-    (license (list psfl                 ; tarball includes python2.7
-                   asl2.0))))
+    (license (list license:psfl                 ; tarball includes python2.7
+                   license:asl2.0))))
 
 (define-public oil-shell
   (deprecated-package "oil-shell" oil))
@@ -893,7 +893,7 @@ scripts.")
 Scheme.  It provides both the shell interface, as well as a Guile
 library for parsing shell scripts.  Gash is designed to bootstrap Bash
 as part of the Guix bootstrap process.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public gash-utils
   (package
@@ -929,7 +929,7 @@ complexity from @command{false} to @command{awk}).  The utilities are
 designed to be capable of bootstrapping their standard GNU counterparts.
 Underpinning these utilities are many Scheme interfaces for manipulating
 files and text.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public rust-nu-cli-0.26
   (package
@@ -1044,7 +1044,7 @@ files and text.")
     (home-page "https://www.nushell.sh")
     (synopsis "CLI for nushell")
     (description "CLI for nushell")
-    (license expat)))
+    (license license:expat)))
 
 (define-public rust-nu-command-0.26
   (package
@@ -1156,7 +1156,7 @@ files and text.")
     (home-page "https://www.nushell.sh")
     (synopsis "CLI for nushell")
     (description "CLI for nushell")
-    (license expat)))
+    (license license:expat)))
 
 (define-public rust-nu-data-0.26
   (package
@@ -1200,7 +1200,7 @@ files and text.")
     (home-page "https://www.nushell.sh")
     (synopsis "CLI for nushell")
     (description "CLI for nushell")
-    (license expat)))
+    (license license:expat)))
 
 (define-public rust-nu-engine-0.26
   (package
@@ -1255,7 +1255,7 @@ files and text.")
     (home-page "https://www.nushell.sh")
     (synopsis "Core commands for nushell")
     (description "Core commands for nushell")
-    (license expat)))
+    (license license:expat)))
 
 (define-public rust-nu-errors-0.26
   (package
@@ -1288,7 +1288,7 @@ files and text.")
     (home-page "https://www.nushell.sh")
     (synopsis "Core error subsystem for Nushell")
     (description "Core error subsystem for Nushell")
-    (license expat)))
+    (license license:expat)))
 
 (define-public rust-nu-json-0.26
   (package
@@ -1312,7 +1312,7 @@ files and text.")
     (home-page "https://www.nushell.sh")
     (synopsis "Fork of @code{serde-hjson}")
     (description "This package is a fork of @code{serde-hjson}.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public rust-nu-parser-0.26
   (package
@@ -1348,7 +1348,7 @@ files and text.")
     (home-page "https://www.nushell.sh")
     (synopsis "Nushell parser")
     (description "Nushell parser")
-    (license expat)))
+    (license license:expat)))
 
 (define-public rust-nu-plugin-0.26
   (package
@@ -1379,7 +1379,7 @@ files and text.")
     (home-page "https://www.nushell.sh")
     (synopsis "Nushell Plugin")
     (description "Nushell Plugin")
-    (license expat)))
+    (license license:expat)))
 
 (define-public rust-nu-plugin-binaryview-0.26
   (package
@@ -1410,7 +1410,7 @@ files and text.")
     (synopsis "Binary viewer plugin for Nushell")
     (description
      "This package provides a binary viewer plugin for Nushell.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public rust-nu-plugin-chart-0.26
   (package
@@ -1440,7 +1440,7 @@ files and text.")
     (synopsis "Plugin to display charts")
     (description
      "This package provides a plugin to display charts in Nushell.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public rust-nu-plugin-fetch-0.26
   (package
@@ -1468,7 +1468,7 @@ files and text.")
     (home-page "https://www.nushell.sh")
     (synopsis "URL fetch plugin for Nushell")
     (description "This package provides a URL fetch plugin for Nushell.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public rust-nu-plugin-from-bson-0.26
   (package
@@ -1498,7 +1498,7 @@ files and text.")
     (description
      "This package provides a converter plugin to the bson format for
 Nushell.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public rust-nu-plugin-from-sqlite-0.26
   (package
@@ -1529,7 +1529,7 @@ Nushell.")
     (description
      "This package provides a converter plugin to the bson format for
 Nushell.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public rust-nu-plugin-inc-0.26
   (package
@@ -1558,7 +1558,7 @@ Nushell.")
     (description
      "This package provides a version incrementer plugin for
 Nushell.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public rust-nu-plugin-match-0.26
   (package
@@ -1584,7 +1584,7 @@ Nushell.")
     (synopsis "Regex match plugin for Nushell")
     (description
      "This package provides a regex match plugin for Nushell.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public rust-nu-plugin-post-0.26
   (package
@@ -1614,7 +1614,7 @@ Nushell.")
     (home-page "https://www.nushell.sh")
     (synopsis "HTTP post plugin for Nushell")
     (description "This package is an HTTP post plugin for Nushell.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public rust-nu-plugin-ps-0.26
   (package
@@ -1643,7 +1643,7 @@ Nushell.")
     (synopsis "Process list plugin for Nushell")
     (description
      "This package provides a process list plugin for Nushell.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public rust-nu-plugin-s3-0.26
   (package
@@ -1669,7 +1669,7 @@ Nushell.")
     (home-page "https://www.nushell.sh")
     (synopsis "S3 plugin for Nushell")
     (description "This package is an S3 plugin for Nushell.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public rust-nu-plugin-selector-0.26
   (package
@@ -1695,7 +1695,7 @@ Nushell.")
     (synopsis "Web scraping using CSS selector")
     (description
      "This package provides web scraping using CSS selector.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public rust-nu-plugin-start-0.26
   (package
@@ -1724,7 +1724,7 @@ Nushell.")
     (description
      "This package provides a plugin to open files/URLs directly from
 Nushell.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public rust-nu-plugin-sys-0.26
   (package
@@ -1753,7 +1753,7 @@ Nushell.")
     (home-page "https://www.nushell.sh")
     (synopsis "System info plugin for Nushell")
     (description "This package provides a system info plugin for Nushell.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public rust-nu-plugin-textview-0.26
   (package
@@ -1783,7 +1783,7 @@ Nushell.")
     (synopsis "Text viewer plugin for Nushell")
     (description "This package provides a text viewer plugin for
 Nushell.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public rust-nu-plugin-to-bson-0.26
   (package
@@ -1812,7 +1812,7 @@ Nushell.")
     (description
      "This package provides a converter plugin to the bson format for
 Nushell.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public rust-nu-plugin-to-sqlite-0.26
   (package
@@ -1843,7 +1843,7 @@ Nushell.")
     (description
      "This package provides a converter plugin to the bson format for
 Nushell.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public rust-nu-plugin-tree-0.26
   (package
@@ -1870,7 +1870,7 @@ Nushell.")
     (synopsis "Tree viewer plugin for Nushell")
     (description "This package provides a tree viewer plugin for
 Nushell.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public rust-nu-plugin-xpath-0.26
   (package
@@ -1898,7 +1898,7 @@ Nushell.")
     (home-page "https://www.nushell.sh")
     (synopsis "Traverses XML")
     (description "Traverses XML")
-    (license expat)))
+    (license license:expat)))
 
 (define-public rust-nu-protocol-0.26
   (package
@@ -1935,7 +1935,7 @@ Nushell.")
     (home-page "https://www.nushell.sh")
     (synopsis "Core values and protocols for Nushell")
     (description "Core values and protocols for Nushell")
-    (license expat)))
+    (license license:expat)))
 
 (define-public rust-nu-source-0.26
   (package
@@ -1962,7 +1962,7 @@ Nushell.")
     (description
      "This package provides a source string characterizer for
 Nushell.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public rust-nu-stream-0.26
   (package
@@ -1986,7 +1986,7 @@ Nushell.")
     (home-page "https://www.nushell.sh")
     (synopsis "Nushell stream")
     (description "This package provides Nushell stream.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public rust-nu-table-0.26
   (package
@@ -2009,7 +2009,7 @@ Nushell.")
     (home-page "https://www.nushell.sh")
     (synopsis "Nushell table printing")
     (description "Nushell table printing")
-    (license expat)))
+    (license license:expat)))
 
 (define-public rust-nu-test-support-0.26
   (package
@@ -2042,7 +2042,7 @@ Nushell.")
     (synopsis "Support for writing Nushell tests")
     (description "This package provides support for writing Nushell
 tests.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public rust-nu-value-ext-0.26
   (package
@@ -2071,4 +2071,4 @@ tests.")
     (description
      "This package provides @code{Extension} traits for values in
 Nushell.")
-    (license expat)))
+    (license license:expat)))
