@@ -941,6 +941,32 @@ X Window System.")
 transparent text on your screen.")
     (license license:gpl2+)))
 
+(define-public wob
+  (package
+    (name "wob")
+    (version "0.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/francma/wob/releases/download/"
+                           version "/wob-" version ".tar.gz"))
+       (sha256
+        (base32 "1vgngcg8wxn6zfg34czn9w55ia0zmhlgnpzf0gh31dc72li9353k"))))
+    (build-system meson-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("scdoc" ,scdoc)))
+    (inputs
+     `(("libseccomp" ,libseccomp)
+       ("wayland" ,wayland)
+       ("wayland-protocols" ,wayland-protocols)))
+    (home-page "https://github.com/francma/wob")
+    (synopsis "Lightweight overlay bar for Wayland")
+    (description
+     "Wob, or Wayland Overlay Bar, is a lightweight overlay volume,
+backlight, progress, or anything bar for Wayland.")
+    (license license:isc)))
+
 (define-public xbindkeys
   (package
     (name "xbindkeys")
