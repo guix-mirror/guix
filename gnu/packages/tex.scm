@@ -6356,7 +6356,7 @@ and Karl Berry.")
 (define-public lyx
   (package
     (name "lyx")
-    (version "2.3.5.1")
+    (version "2.3.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.lyx.org/pub/lyx/stable/"
@@ -6364,7 +6364,7 @@ and Karl Berry.")
                                   "lyx-" version ".tar.xz"))
               (sha256
                (base32
-                "0mv32s26igm0pd8vs7d2mk1240dpr83y0a2wyh3xz6b67ph0w157"))
+                "0y7sx804ral14py5jwmb3icvyd6rsw806dfclw0qx28r6iix5gn6"))
               (modules '((guix build utils)))
               (snippet
                '(begin
