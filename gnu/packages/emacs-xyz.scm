@@ -19722,10 +19722,10 @@ source code.")
                    license:asl2.0))))
 
 (define-public emacs-ztree
-  (let ((commit "c54425a094353ec40a8179f9eab3596f76c6cf94"))
+  (let ((commit "6eee81d2691009ce60b2edf7c298b227caf1b0d6"))
     (package
       (name "emacs-ztree")
-      (version (git-version "1.0.5" "1" commit))
+      (version (git-version "1.0.5" "2" commit))
       (source
        (origin
          (method git-fetch)
@@ -19735,7 +19735,7 @@ source code.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0j8fpxds8m1zi04nrs8vv21091abvh4n8ab76f1sgdxnp4l5cfb0"))))
+           "1xmimjflylssx63g1kpd5n34gdlpivgg9ih8nwplad57bxiy2yqb"))))
       (build-system emacs-build-system)
       (home-page "https://github.com/fourier/ztree")
       (synopsis "Directory tree comparison mode for Emacs")
