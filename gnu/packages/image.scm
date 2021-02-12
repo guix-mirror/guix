@@ -28,6 +28,7 @@
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Zhu Zihao <all_but_last@163.com>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1819,6 +1820,36 @@ Features:
 @item Upload to Imgur.
 @end itemize\n")
     (license license:gpl3+)))
+
+(define-public swappy
+  (package
+    (name "swappy")
+    (version "1.2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jtheoof/swappy")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "14ac2jmnak7avcz0jhqjm30vk7pv3gq5aq5rdyh84k8c613kkicf"))))
+    (build-system meson-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("scdoc" ,scdoc)
+       ("glib" ,glib "bin"))) ; for 'glib-compile-resources'
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("libnotify" ,libnotify)))
+    (home-page "https://github.com/jtheoof/swappy")
+    (synopsis "Grab and edit on the fly snapshots of a Wayland compositor")
+    (description
+     "@command{swappy} is a command-line utility to take and edit screenshots
+of Wayland desktops.  Works great with grim, slurp and sway.  But can easily
+work with other screen copy tools that can output a final PNG image to
+stdout.")
+    (license license:expat)))
 
 (define-public gifsicle
   (package
