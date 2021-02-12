@@ -47,6 +47,7 @@
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
+;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3874,23 +3875,23 @@ Monitor read/write activity on a mongo server
              ;;"-DBENCHMARK_ENABLE_TESTING=OFF"
              "-DARROW_BUILD_STATIC=OFF")))
     (inputs
-     `(("boost" ,boost)
+     `(("apache-thrift" ,apache-thrift "lib")
+       ("boost" ,boost)
        ("brotli" ,google-brotli)
+       ("bzip2" ,bzip2)
        ("double-conversion" ,double-conversion)
-       ("snappy" ,snappy)
        ("gflags" ,gflags)
        ("glog" ,glog)
-       ("apache-thrift" ,apache-thrift "lib")
-       ("protobuf" ,protobuf)
-       ("rapidjson" ,rapidjson)
-       ("zlib" ,zlib)
-       ("bzip2" ,bzip2)
-       ("lz4" ,lz4)
-       ("zstd" ,zstd "lib")
-       ("re2" ,re2)
        ("grpc" ,grpc)
+       ("lz4" ,lz4)
+       ("protobuf" ,protobuf)
        ("python-3" ,python)
-       ("python-numpy" ,python-numpy)))
+       ("python-numpy" ,python-numpy)
+       ("rapidjson" ,rapidjson)
+       ("re2" ,re2)
+       ("snappy" ,snappy)
+       ("zlib" ,zlib)
+       ("zstd" ,zstd "lib")))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (outputs '("out" "lib" "include"))
