@@ -40,6 +40,7 @@
   #:use-module (gnu packages fltk)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gd)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gstreamer)
@@ -581,14 +582,19 @@ using GNU Radio and the Qt GUI toolkit.")
     (version "4.1.17")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "http://www.w1hkj.com/files/fldigi/fldigi-"
-                           version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.code.sf.net/p/fldigi/fldigi")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1gzff60sn3h05279f9mdi1rkdws52m28shcil16911lvlq6ki13m"))))
+        (base32 "0qli67dmdf49nvvh0i66bvhys8p74ljdcck8i9ra5jsfncih2xn8"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("fltk" ,fltk)
