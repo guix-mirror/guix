@@ -311,6 +311,8 @@
                     (default cuirass))
   (workers          cuirass-remote-worker-workers ;int
                     (default 1))
+  (server           cuirass-remote-worker-server ;string
+                    (default #f))
   (systems          cuirass-remote-worker-systems ;list
                     (default (list (%current-system))))
   (log-file         cuirass-remote-worker-log-file ;string
@@ -326,7 +328,8 @@
   "Return a <shepherd-service> for the Cuirass remote worker service with
 CONFIG."
   (match-record config <cuirass-remote-worker-configuration>
-    (cuirass workers systems log-file publish-port public-key private-key)
+    (cuirass workers server systems log-file publish-port
+             public-key private-key)
     (list (shepherd-service
            (documentation "Run Cuirass remote build worker.")
            (provision '(cuirass-remote-worker))
@@ -335,6 +338,9 @@ CONFIG."
                      (list (string-append #$cuirass "/bin/remote-worker")
                            (string-append "--workers="
                                           #$(number->string workers))
+                           #$@(if server
+                                  (list (string-append "--server=" server))
+                                  '())
                            #$@(if systems
                                   (list (string-append
                                          "--systems="
