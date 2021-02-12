@@ -39,7 +39,7 @@
                                 close-inferior)
   #:use-module (guix scripts build)
   #:use-module (guix scripts describe)
-  #:autoload   (guix build utils) (which)
+  #:autoload   (guix build utils) (which mkdir-p)
   #:use-module ((guix build syscalls)
                 #:select (with-file-lock/no-wait))
   #:use-module (guix git)
@@ -521,6 +521,7 @@ true, display what would be built without actually building it."
       (catch 'system-error
         (lambda ()
           (false-if-exception (delete-file link))
+          (mkdir-p (dirname link))
           (symlink %current-profile link))
         (lambda args
           (leave (G_ "while creating symlink '~a': ~a~%")
