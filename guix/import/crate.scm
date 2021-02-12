@@ -2,6 +2,7 @@
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2019, 2020 Martin Becze <mjbecze@riseup.net>
+;;; Copyright © 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -192,9 +193,7 @@ and LICENSE."
                                               (maybe-cargo-inputs cargo-inputs)
                                               (maybe-cargo-development-inputs
                                                 cargo-development-inputs)))
-                   (home-page ,(match home-page
-                                 ('null "")
-                                 (_ home-page)))
+                   (home-page ,home-page)
                    (synopsis ,synopsis)
                    (description ,(beautify-description description))
                    (license ,(match license
@@ -304,8 +303,14 @@ look up the development dependencs for the given crate."
                            #:version (crate-version-number version*)
                            #:cargo-inputs cargo-inputs
                            #:cargo-development-inputs cargo-development-inputs
-                           #:home-page (or (crate-home-page crate)
-                                           (crate-repository crate))
+                           #:home-page
+                           (let ((home-page (crate-home-page crate)))
+                             (if (string? home-page)
+                                 home-page
+                                 (let ((repository (crate-repository crate)))
+                                   (if (string? repository)
+                                       repository
+                                       ""))))
                            #:synopsis (crate-description crate)
                            #:description (crate-description crate)
                            #:license (and=> (crate-version-license version*)
