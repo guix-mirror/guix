@@ -533,6 +533,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/synergy.scm			\
   %D%/packages/syndication.scm			\
   %D%/packages/task-management.scm		\
+  %D%/packages/task-runners.scm			\
   %D%/packages/tbb.scm				\
   %D%/packages/tcl.scm				\
   %D%/packages/telegram.scm                 \
