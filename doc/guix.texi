@@ -22373,7 +22373,7 @@ the @code{transmission-password-hash} procedure.
 @end deffn
 
 These procedures are accessible from within a Guile REPL started with
-the @command{guix repl} command (@pxref {Invoking guix repl}).  This is
+the @command{guix repl} command (@pxref{Invoking guix repl}).  This is
 useful for obtaining a random salt value to provide as the second
 parameter to `transmission-password-hash`, as in this example session:
 
