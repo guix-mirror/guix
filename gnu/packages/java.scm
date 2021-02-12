@@ -1881,10 +1881,10 @@ new Date();"))
                 "01ihmyf7k5z17wbr7xig7y40l9f01d5zjgkcmawn1102hw5kchpq"))
               (modules '((guix build utils)))
               (snippet
-                `(begin
-                   (for-each delete-file
-                             (find-files "." ".*.(bin|exe|jar)$"))
-                   #t))))
+               `(begin
+                  (for-each delete-file
+                            (find-files "." ".*.(bin|exe|jar)$"))
+                  #t))))
     (build-system gnu-build-system)
     (outputs '("out" "jdk" "doc"))
     (arguments
@@ -1950,8 +1950,8 @@ new Date();"))
                     (lambda _
                       ;; Those are safe to skip.
                       (format (current-error-port)
-                                      "warning: failed to substitute: ~a~%"
-                                      file))))
+                              "warning: failed to substitute: ~a~%"
+                              file))))
                 (find-files "."
                             "\\.c$|\\.h$"))
                #t)))
@@ -1968,9 +1968,9 @@ new Date();"))
          (add-after 'install 'install-libjvm
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((lib-out (string-append (assoc-ref outputs "out")
-                                             "/lib"))
+                                            "/lib"))
                     (lib-jdk (string-append (assoc-ref outputs "jdk")
-                                             "/lib")))
+                                            "/lib")))
                (symlink (string-append lib-jdk "/server/libjvm.so")
                         (string-append lib-jdk "/libjvm.so"))
                (symlink (string-append lib-out "/server/libjvm.so")
@@ -2000,11 +2000,11 @@ new Date();"))
                                          (unless (eq? (stat:type s) 'symlink)
                                            (format #t "reset ~a~%" file)
                                            (utime file 0 0 0 0))))
-                             (find-files dir #:directories? #t))
+                                     (find-files dir #:directories? #t))
                            (with-directory-excursion dir
                              (let ((files (find-files "." ".*" #:directories? #t)))
                                (apply invoke "zip" "-0" "-X" zip files)))))
-               (find-files (assoc-ref outputs "doc") ".*.zip$"))
+                       (find-files (assoc-ref outputs "doc") ".*.zip$"))
              #t)))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
@@ -2054,32 +2054,32 @@ new Date();"))
                         "openjdk-10-idlj-reproducibility.patch"))
               (modules '((guix build utils)))
               (snippet
-                `(begin
-                   (for-each delete-file (find-files "." ".*.(bin|exe|jar)$"))
-                   #t))))
+               `(begin
+                  (for-each delete-file (find-files "." ".*.(bin|exe|jar)$"))
+                  #t))))
     (arguments
-      (substitute-keyword-arguments (package-arguments openjdk9)
-        ((#:phases phases)
-         `(modify-phases ,phases
-            (replace 'fix-java-shebangs
-              (lambda _
-                ;; This file was "fixed" by patch-source-shebangs, but it requires
-                ;; this exact first line.
-                (substitute* "make/data/blacklistedcertsconverter/blacklisted.certs.pem"
-                  (("^#!.*") "#! java BlacklistedCertsConverter SHA-256\n"))
-                #t))
-            (replace 'configure
-              (lambda* (#:key inputs outputs #:allow-other-keys)
-                (invoke "bash" "./configure"
-                        (string-append "--with-freetype=" (assoc-ref inputs "freetype"))
-                        "--disable-freetype-bundling"
-                        "--disable-warnings-as-errors"
-                        "--disable-hotspot-gtest"
-                        "--with-giflib=system"
-                        "--with-libjpeg=system"
-                        "--with-native-debug-symbols=zipped"
-                        (string-append "--prefix=" (assoc-ref outputs "out")))
-                #t))))))
+     (substitute-keyword-arguments (package-arguments openjdk9)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'fix-java-shebangs
+             (lambda _
+               ;; This file was "fixed" by patch-source-shebangs, but it requires
+               ;; this exact first line.
+               (substitute* "make/data/blacklistedcertsconverter/blacklisted.certs.pem"
+                 (("^#!.*") "#! java BlacklistedCertsConverter SHA-256\n"))
+               #t))
+           (replace 'configure
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (invoke "bash" "./configure"
+                       (string-append "--with-freetype=" (assoc-ref inputs "freetype"))
+                       "--disable-freetype-bundling"
+                       "--disable-warnings-as-errors"
+                       "--disable-hotspot-gtest"
+                       "--with-giflib=system"
+                       "--with-libjpeg=system"
+                       "--with-native-debug-symbols=zipped"
+                       (string-append "--prefix=" (assoc-ref outputs "out")))
+               #t))))))
     (native-inputs
      `(("openjdk9" ,openjdk9)
        ("openjdk9:jdk" ,openjdk9 "jdk")
@@ -2101,9 +2101,9 @@ new Date();"))
                 "0v705w1s9lrqalzahir78pk397rkk9gfvzq821yv8h3xha0bqi6w"))
               (modules '((guix build utils)))
               (snippet
-                `(begin
-                   (for-each delete-file (find-files "." ".*.(bin|exe|jar)$"))
-                   #t))))
+               `(begin
+                  (for-each delete-file (find-files "." ".*.(bin|exe|jar)$"))
+                  #t))))
     (build-system gnu-build-system)
     (outputs '("out" "jdk" "doc"))
     (arguments
@@ -2161,8 +2161,8 @@ new Date();"))
                     (lambda _
                       ;; Those are safe to skip.
                       (format (current-error-port)
-                                      "warning: failed to substitute: ~a~%"
-                                      file))))
+                              "warning: failed to substitute: ~a~%"
+                              file))))
                 (find-files "."
                             "\\.c$|\\.h$"))
                #t)))
@@ -2216,9 +2216,9 @@ new Date();"))
          (add-after 'install 'install-libjvm
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((lib-out (string-append (assoc-ref outputs "out")
-                                             "/lib"))
+                                            "/lib"))
                     (lib-jdk (string-append (assoc-ref outputs "jdk")
-                                             "/lib")))
+                                            "/lib")))
                (symlink (string-append lib-jdk "/server/libjvm.so")
                         (string-append lib-jdk "/libjvm.so"))
                (symlink (string-append lib-out "/server/libjvm.so")
@@ -2238,8 +2238,8 @@ new Date();"))
                    (for-each (lambda (file)
                                (substitute* file
                                  (((string-append "This file was generated "
-                                                 "AUTOMATICALLY from a template "
-                                                 "file.*"))
+                                                  "AUTOMATICALLY from a template "
+                                                  "file.*"))
                                   (string-append "This file was generated "
                                                  "AUTOMATICALLY from a template "
                                                  "file"))))
@@ -2253,24 +2253,24 @@ new Date();"))
                           (ice-9 binary-ports)
                           (rnrs bytevectors))
              (letrec ((repack-archive
-                    (lambda (archive)
-                      (let ((dir (mkdtemp! "zip-contents.XXXXXX")))
-                        (with-directory-excursion dir
-                          (invoke "unzip" archive))
-                        (delete-file archive)
-                        (for-each (compose repack-archive canonicalize-path)
-                                  (find-files dir "(ct.sym|.*.jar)$"))
-                        (let ((reset-file-timestamp
-                               (lambda (file)
-                                 (let ((s (lstat file)))
-                                   (unless (eq? (stat:type s) 'symlink)
-                                     (format #t "reset ~a~%" file)
-                                     (utime file 0 0 0 0))))))
-                          (for-each reset-file-timestamp
-                                    (find-files dir #:directories? #t)))
-                        (with-directory-excursion dir
-                          (let ((files (find-files "." ".*" #:directories? #t)))
-                            (apply invoke "zip" "-0" "-X" archive files)))))))
+                       (lambda (archive)
+                         (let ((dir (mkdtemp! "zip-contents.XXXXXX")))
+                           (with-directory-excursion dir
+                             (invoke "unzip" archive))
+                           (delete-file archive)
+                           (for-each (compose repack-archive canonicalize-path)
+                                     (find-files dir "(ct.sym|.*.jar)$"))
+                           (let ((reset-file-timestamp
+                                  (lambda (file)
+                                    (let ((s (lstat file)))
+                                      (unless (eq? (stat:type s) 'symlink)
+                                        (format #t "reset ~a~%" file)
+                                        (utime file 0 0 0 0))))))
+                             (for-each reset-file-timestamp
+                                       (find-files dir #:directories? #t)))
+                           (with-directory-excursion dir
+                             (let ((files (find-files "." ".*" #:directories? #t)))
+                               (apply invoke "zip" "-0" "-X" archive files)))))))
                (for-each repack-archive
                          (find-files (assoc-ref outputs "doc") ".*.zip$"))
                (for-each repack-archive
@@ -2293,21 +2293,21 @@ new Date();"))
                                          (content-length
                                           (- (stat:size (stat file))
                                              header-length)))
-                             (sendfile temp-file file content-length header-length)
-                             (delete-file file-name)
-                             (close-port temp-file)
-                             (repack-archive (canonicalize-path temp-filename))
-                             (call-with-output-file file-name
-                               (lambda (file)
-                                 (put-bytevector file header)
-                                 (call-with-input-file temp-filename
-                                   (lambda (temp-file)
-                                     (sendfile
-                                      file temp-file
-                                      (stat:size (stat temp-file)) 0)))))))))))))
+                                    (sendfile temp-file file content-length header-length)
+                                    (delete-file file-name)
+                                    (close-port temp-file)
+                                    (repack-archive (canonicalize-path temp-filename))
+                                    (call-with-output-file file-name
+                                      (lambda (file)
+                                        (put-bytevector file header)
+                                        (call-with-input-file temp-filename
+                                          (lambda (temp-file)
+                                            (sendfile
+                                             file temp-file
+                                             (stat:size (stat temp-file)) 0)))))))))))))
                  (for-each repack-jmod
                            (find-files (assoc-ref outputs "jdk") ".*.jmod$")))
-             #t)))
+               #t)))
          (add-after 'install 'remove-timestamp-from-api-summary
            (lambda* (#:key outputs #:allow-other-keys)
              (substitute* (string-append (assoc-ref outputs "doc")
@@ -2393,17 +2393,17 @@ new Date();"))
     (name "openjdk")
     (version "13.0")
     (source (origin
-	     (method url-fetch)
-	     (uri "http://hg.openjdk.java.net/jdk/jdk13/archive/9c250a7600e1.tar.bz2")
-	     (file-name (string-append name "-" version ".tar.bz2"))
-	     (sha256
-	      (base32
-	       "0v0ljvx5dyzp96dw4z4ksw3pvasil7783mgnmd1wk9gads5ab8iq"))
-	     (modules '((guix build utils)))
-	     (snippet
-	      `(begin
-		 (for-each delete-file (find-files "." ".*.(bin|exe|jar)$"))
-		 #t))))
+              (method url-fetch)
+              (uri "http://hg.openjdk.java.net/jdk/jdk13/archive/9c250a7600e1.tar.bz2")
+              (file-name (string-append name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0v0ljvx5dyzp96dw4z4ksw3pvasil7783mgnmd1wk9gads5ab8iq"))
+              (modules '((guix build utils)))
+              (snippet
+               `(begin
+                  (for-each delete-file (find-files "." ".*.(bin|exe|jar)$"))
+                  #t))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("cups" ,cups)
@@ -2435,21 +2435,21 @@ new Date();"))
     (name "openjdk")
     (version "14.0")
     (source (origin
-	      (method url-fetch)
-	      (uri "http://hg.openjdk.java.net/jdk/jdk14/archive/bc54620a3848.tar.bz2")
-	      (file-name (string-append name "-" version ".tar.bz2"))
-	      (sha256
-	       (base32
-	        "0z485pk7r1xpw8004g4nrwrzj17sabgx8yfdbxwfvzkjp8qyajch"))
-	      (modules '((guix build utils)))
-	      (snippet
-	       `(begin
+              (method url-fetch)
+              (uri "http://hg.openjdk.java.net/jdk/jdk14/archive/bc54620a3848.tar.bz2")
+              (file-name (string-append name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0z485pk7r1xpw8004g4nrwrzj17sabgx8yfdbxwfvzkjp8qyajch"))
+              (modules '((guix build utils)))
+              (snippet
+               `(begin
                   ;; The m4 macro uses 'help' to search for builtins, which is
                   ;; not available in bash-minimal
                   (substitute* "make/autoconf/basics.m4"
                     (("if help") "if command -v"))
-		  (for-each delete-file (find-files "." ".*.(bin|exe|jar)$"))
-		  #t))))
+                  (for-each delete-file (find-files "." ".*.(bin|exe|jar)$"))
+                  #t))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("cups" ,cups)
