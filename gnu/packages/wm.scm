@@ -1294,7 +1294,7 @@ project derived from the original Calm Window Manager.")
     (home-page "https://github.com/djpohly/dwl")
     (synopsis "Dynamic window manager for Wayland")
     (description
-     "@command{dwm} is a compact, hackable compositor for Wayland based on
+     "@command{dwl} is a compact, hackable compositor for Wayland based on
 wlroots.  It is intended to fill the same space in the Wayland world that dwm
 does in X11, primarily in terms of philosophy, and secondarily in terms of
 functionality.  Like dwm, dwl is easy to understand and hack on, due to a
