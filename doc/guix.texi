@@ -5558,6 +5558,12 @@ they should be defined in @file{.bash_profile}, which is sourced only by
 log-in shells.  @xref{Bash Startup Files,,, bash, The GNU Bash Reference
 Manual}, for details on Bash start-up files.}.
 
+Exiting from a Guix environment is the same as exiting from the shell,
+and will place the user back in the old environment before @command{guix
+environment} was invoked.  The next garbage collection (@pxref{Invoking
+guix gc}) will clean up packages that were installed from within the
+environment and are no longer used outside of it.
+
 @vindex GUIX_ENVIRONMENT
 @command{guix environment} defines the @env{GUIX_ENVIRONMENT}
 variable in the shell it spawns; its value is the file name of the
