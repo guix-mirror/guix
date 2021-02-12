@@ -589,7 +589,7 @@ memory, disks, network and processes.")
         (base32
          "1p5jrrvj68v6cby8w7zms138xm1g5j2q58951lji0qlqr8145jjb"))))
     (build-system python-build-system)
-    (propagated-inputs
+    (inputs
      `(("python-psutil" ,python-psutil)))
     (home-page
      "https://github.com/aristocratos/bpytop")
