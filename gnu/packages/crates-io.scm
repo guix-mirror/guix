@@ -37884,6 +37884,31 @@ stack.")
     (build-system cargo-build-system)
     (arguments `(#:skip-build? #t))))
 
+(define-public rust-smart-default-0.6
+  (package
+    (name "rust-smart-default")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "smart-default" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1xnvxz9wilj4d5b8kg4wbs0yk48wm41fnwkmn3p6wi9rafhmjdhk"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/idanarye/rust-smart-default")
+    (synopsis "Custom-derive macro for Default with more control on the fields")
+    (description
+     "This package provides a custom-derive macro for Default with more
+control on the fields.")
+    (license license:expat)))
+
 (define-public rust-smol-0.1
   (package
     (name "rust-smol")
