@@ -2544,6 +2544,8 @@ GNOME Desktop.")
        ("libxslt" ,libxslt) ;for documentation
        ("docbook-xml" ,docbook-xml-4.2)
        ("docbook-xsl" ,docbook-xsl)))
+    (propagated-inputs
+     `(("gcr" ,gcr)))
     (home-page "https://www.gnome.org")
     (synopsis "Daemon to store passwords and encryption keys")
     (description
