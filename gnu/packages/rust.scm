@@ -1451,5 +1451,9 @@ move around."
   (rust-bootstrapped-package rust-1.48 "1.49.0"
     "0yf7kll517398dgqsr7m3gldzj0iwsp3ggzxrayckpqzvylfy2mm"))
 
+(define-public rust-1.50
+  (rust-bootstrapped-package rust-1.49 "1.50.0"
+    "0pjs7j62maiyvkmhp9zrxl528g2n0fphp4rq6ap7aqdv0a6qz5wm"))
+
 ;; TODO(staging): Bump this variable to the latest packaged rust.
 (define-public rust rust-1.45)
