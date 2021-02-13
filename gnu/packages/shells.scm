@@ -39,8 +39,10 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages crates-graphics)
   #:use-module (gnu packages crates-io)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages guile)
@@ -54,8 +56,12 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages rust)
   #:use-module (gnu packages rust-apps)
   #:use-module (gnu packages scheme)
+  #:use-module (gnu packages tls)
+  #:use-module (gnu packages version-control)
+  #:use-module (gnu packages xorg)
   #:use-module (guix build-system cargo)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
@@ -930,6 +936,88 @@ designed to be capable of bootstrapping their standard GNU counterparts.
 Underpinning these utilities are many Scheme interfaces for manipulating
 files and text.")
     (license license:gpl3+)))
+
+(define-public nushell
+  ;; Regular 0.26.0 release has an issue with rust-sysinfo.  Use a later
+  ;; commit including the patches fixing it.
+  (let ((commit "30833468844eca336e24e02c3304a0245b5760b5")
+        (revision "0"))
+    (package
+      (name "nushell")
+      (version (git-version "0.26.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/nushell/nushell.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "19miwximiqh9j7cjh2f72c38a06d0zvd9fxa7m8aaz8cbcmnsrjp"))))
+      (build-system cargo-build-system)
+      (arguments
+       `(#:rust ,rust-1.47
+         #:tests? #false                ;missing files
+         #:features '("extra")
+         #:cargo-inputs
+         (("rust-clap" ,rust-clap-2)
+          ("rust-ctrlc" ,rust-ctrlc-3)
+          ("rust-futures" ,rust-futures-0.3)
+          ("rust-itertools" ,rust-itertools-0.10)
+          ("rust-log" ,rust-log-0.4)
+          ("rust-nu-cli" ,rust-nu-cli-0.26)
+          ("rust-nu-command" ,rust-nu-command-0.26)
+          ("rust-nu-data" ,rust-nu-data-0.26)
+          ("rust-nu-engine" ,rust-nu-engine-0.26)
+          ("rust-nu-errors" ,rust-nu-errors-0.26)
+          ("rust-nu-parser" ,rust-nu-parser-0.26)
+          ("rust-nu-plugin" ,rust-nu-plugin-0.26)
+          ("rust-nu-protocol" ,rust-nu-protocol-0.26)
+          ("rust-nu-source" ,rust-nu-source-0.26)
+          ("rust-nu-value-ext" ,rust-nu-value-ext-0.26)
+          ("rust-nu-plugin-binaryview" ,rust-nu-plugin-binaryview-0.26)
+          ("rust-nu-plugin-chart" ,rust-nu-plugin-chart-0.26)
+          ("rust-nu-plugin-fetch" ,rust-nu-plugin-fetch-0.26)
+          ("rust-nu-plugin-from-bson" ,rust-nu-plugin-from-bson-0.26)
+          ("rust-nu-plugin-from-sqlite" ,rust-nu-plugin-from-sqlite-0.26)
+          ("rust-nu-plugin-inc" ,rust-nu-plugin-inc-0.26)
+          ("rust-nu-plugin-match" ,rust-nu-plugin-match-0.26)
+          ("rust-nu-plugin-post" ,rust-nu-plugin-post-0.26)
+          ("rust-nu-plugin-ps" ,rust-nu-plugin-ps-0.26)
+          ("rust-nu-plugin-s3" ,rust-nu-plugin-s3-0.26)
+          ("rust-nu-plugin-selector" ,rust-nu-plugin-selector-0.26)
+          ("rust-nu-plugin-start" ,rust-nu-plugin-start-0.26)
+          ("rust-nu-plugin-sys" ,rust-nu-plugin-sys-0.26)
+          ("rust-nu-plugin-textview" ,rust-nu-plugin-textview-0.26)
+          ("rust-nu-plugin-to-bson" ,rust-nu-plugin-to-bson-0.26)
+          ("rust-nu-plugin-to-sqlite" ,rust-nu-plugin-to-sqlite-0.26)
+          ("rust-nu-plugin-tree" ,rust-nu-plugin-tree-0.26)
+          ("rust-nu-plugin-xpath" ,rust-nu-plugin-xpath-0.26)
+          ("rust-pretty-env-logger" ,rust-pretty-env-logger-0.4))
+         #:cargo-development-inputs
+         (("rust-dunce" ,rust-dunce-1)
+          ("rust-nu-test-support" ,rust-nu-test-support-0.26))))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)
+         ("python" ,python)))
+      (inputs
+       `(("curl" ,curl)
+         ("libgit2" ,libgit2)
+         ("libx11" ,libx11)
+         ("libxcb" ,libxcb)
+         ("openssl" ,openssl)
+         ("zlib" ,zlib)))
+      (home-page "https://www.nushell.sh")
+      (synopsis "Shell that understands the structure of the data")
+      (description
+       "Nu draws inspiration from projects like PowerShell, functional
+programming languages, and modern CLI tools.  Rather than thinking of files
+and services as raw streams of text, Nu looks at each input as something with
+structure.  For example, when you list the contents of a directory, what you
+get back is a table of rows, where each row represents an item in that
+directory.  These values can be piped through a series of steps, in a series
+of commands called a ``pipeline''.")
+      (license license:expat))))
 
 (define-public rust-nu-cli-0.26
   (package
