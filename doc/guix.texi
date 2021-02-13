@@ -26336,9 +26336,12 @@ Defaults to @samp{()}.
 @cindex virtual private network (VPN)
 
 The @code{(gnu services vpn)} module provides services related to
-@dfn{virtual private networks} (VPNs).  It provides a @emph{client} service for
-your machine to connect to a VPN, and a @emph{server} service for your machine
-to host a VPN@.  Both services use @uref{https://openvpn.net/, OpenVPN}.
+@dfn{virtual private networks} (VPNs).
+
+@subsubheading OpenVPN
+
+It provides a @emph{client} service for your machine to connect to a
+VPN, and a @emph{server} service for your machine to host a VPN@.
 
 @deffn {Scheme Procedure} openvpn-client-service @
        [#:config (openvpn-client-configuration)]
@@ -26717,6 +26720,70 @@ Defaults to @samp{#f}.
 
 @c %end of automatic openvpn-server documentation
 
+@subsubheading Wireguard
+
+@defvr {Scheme Variable} wireguard-service-type
+A service type for a Wireguard tunnel interface.  Its value must be a
+@code{wireguard-configuration} record as in this example:
+
+@lisp
+(service wireguard-service-type
+         (wireguard-configuration
+          (peers
+           (list
+            (wireguard-peer
+             (name "my-peer")
+             (endpoint "my.wireguard.com:51820")
+             (public-key "hzpKg9X1yqu1axN6iJp0mWf6BZGo8m1wteKwtTmDGF4=")
+             (allowed-ips '("10.0.0.2/32")))))))
+@end lisp
+
+@end defvr
+
+@deftp {Data Type} wireguard-configuration
+Data type representing the configuration of the Wireguard service.
+
+@table @asis
+@item @code{wireguard}
+The wireguard package to use for this service.
+
+@item @code{interface} (default: @code{"wg0"})
+The interface name for the VPN.
+
+@item @code{addresses} (default: @code{'("10.0.0.1/32")})
+The IP addresses to be assigned to the above interface.
+
+@item @code{private-key} (default: @code{"/etc/wireguard/private.key"})
+The private key file for the interface.  It is automatically generated if
+the file does not exist.
+
+@item @code{peers} (default: @code{'()})
+The authorized peers on this interface.  This is a list of
+@var{wireguard-peer} records.
+
+@end table
+@end deftp
+
+@deftp {Data Type} wireguard-peer
+Data type representing a Wireguard peer attached to a given interface.
+
+@table @asis
+@item @code{name}
+The peer name.
+
+@item @code{endpoint} (default: @code{#f})
+The optional endpoint for the peer, such as
+@code{"demo.wireguard.com:51820"}.
+
+@item @code{public-key}
+The peer public-key represented as a base64 string.
+
+@item @code{allowed-ips}
+A list of IP addresses from which incoming traffic for this peer is
+allowed and to which incoming traffic for this peer is directed.
+
+@end table
+@end deftp
 
 @node Network File System
 @subsection Network File System
