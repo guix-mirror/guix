@@ -281,22 +281,13 @@ if file doesn't exist, and the narinfo otherwise."
   ;; Set of names of unreachable hosts.
   (make-hash-table))
 
-(define* (open-connection-for-uri/maybe uri
-                                        #:key
-                                        fresh?
-                                        (time %fetch-timeout)
-                                        verify-certificate?)
-  "Open a connection to URI via 'open-connection-for-uri/cached' and return a
-port to it, or, if connection failed, print a warning and return #f.  Pass
-#:fresh? to 'open-connection-for-uri/cached'."
+(define* (call-with-connection-error-handling uri proc)
+  "Call PROC, and catch if a connection fails, print a warning and return #f."
   (define host
     (uri-host uri))
 
   (catch #t
-    (lambda ()
-      (open-connection-for-uri/cached uri #:timeout time
-                                      #:fresh? fresh?
-                                      #:verify-certificate? verify-certificate?))
+    proc
     (match-lambda*
       (('getaddrinfo-error error)
        (unless (hash-ref %unreachable-hosts host)
@@ -377,11 +368,14 @@ port to it, or, if connection failed, print a warning and return #f.  Pass
        (let* ((requests (map (cut narinfo-request url <>) paths))
               (result   (begin
                           (update-progress!)
-                          (http-multiple-get uri
-                                             handle-narinfo-response '()
-                                             requests
-                                             #:open-connection open-connection
-                                             #:verify-certificate? #f))))
+                          (call-with-connection-error-handling
+                           uri
+                           (lambda ()
+                             (http-multiple-get uri
+                                                handle-narinfo-response '()
+                                                requests
+                                                #:open-connection open-connection
+                                                #:verify-certificate? #f))))))
          (newline (current-error-port))
          result))
       ((file #f)
@@ -595,7 +589,7 @@ authorized substitutes."
      ;; Return the subset of PATHS available in CACHE-URLS.
      (let ((substitutable (lookup-narinfos/diverse
                            cache-urls paths valid?
-                           #:open-connection open-connection-for-uri/maybe)))
+                           #:open-connection open-connection-for-uri/cached)))
        (for-each (lambda (narinfo)
                    (format #t "~a~%" (narinfo-path narinfo)))
                  substitutable)
@@ -604,7 +598,7 @@ authorized substitutes."
      ;; Reply info about PATHS if it's in CACHE-URLS.
      (let ((substitutable (lookup-narinfos/diverse
                            cache-urls paths valid?
-                           #:open-connection open-connection-for-uri/maybe)))
+                           #:open-connection open-connection-for-uri/cached)))
        (for-each display-narinfo-data substitutable)
        (newline)))
     (wtf
@@ -617,7 +611,7 @@ authorized substitutes."
 
 (define open-connection-for-uri/cached
   (let ((cache '()))
-    (lambda* (uri #:key fresh? timeout verify-certificate?)
+    (lambda* (uri #:key fresh? (timeout %fetch-timeout) verify-certificate?)
       "Return a connection for URI, possibly reusing a cached connection.
 When FRESH? is true, delete any cached connections for URI and open a new one.
 Return #f if URI's scheme is 'file' or #f.
@@ -704,11 +698,14 @@ the current output port."
              (warning (G_ "while fetching ~a: server is somewhat slow~%")
                       (uri->string uri))
              (warning (G_ "try `--no-substitutes' if the problem persists~%")))
-           (http-fetch uri #:text? #f
-                       #:open-connection open-connection-for-uri/maybe
-                       #:keep-alive? #t
-                       #:buffered? #f
-                       #:verify-certificate? #f))))
+           (call-with-connection-error-handling
+            uri
+            (lambda ()
+              (http-fetch uri #:text? #f
+                          #:open-connection open-connection-for-uri/cached
+                          #:keep-alive? #t
+                          #:buffered? #f
+                          #:verify-certificate? #f))))))
       (else
        (leave (G_ "unsupported substitute URI scheme: ~a~%")
               (uri->string uri)))))
