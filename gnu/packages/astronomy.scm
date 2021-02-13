@@ -94,6 +94,25 @@ in FITS files.")
     (license (license:non-copyleft "file://License.txt"
                           "See License.txt in the distribution."))))
 
+(define-public qfits
+  (package
+    (name "qfits")
+    (version "6.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "ftp://ftp.eso.org/pub/qfits/qfits-" version ".tar.gz"))
+       (sha256
+        (base32 "0m2b21mim3a7wgfg3ph2w5hv7mdvr03jmmhzipc0wcahijglcw9j"))))
+    (build-system gnu-build-system)
+    (home-page "https://www.eso.org/sci/software/eclipse/qfits/")
+    (synopsis "C library offering access to astronomical FITS files")
+    (description
+     "@code{qfits} is a C library giving access to FITS file internals, both
+for reading and writing.")
+    (license license:gpl2+)))
+
 (define-public eye
   (package
     (name "eye")
