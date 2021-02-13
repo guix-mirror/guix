@@ -1087,11 +1087,11 @@ before they hit users, and to reduce the window during which pre-built
 binaries are not available.
 
 When we decide to start building the @code{staging} or
-@code{core-updates} branches, they will be renamed with the suffix
-@code{-frozen}, at which time only bug fixes may be pushed to them.  At
-the same time, a corresponding branch suffixed with @code{-next} will be
-created to accept patches for the next cycle.  Please ask on the mailing
-list or IRC if unsure where to place a patch.
+@code{core-updates} branches, they will be forked and renamed with the
+suffix @code{-frozen}, at which time only bug fixes may be pushed to the
+frozen branches.  The @code{core-updates} and @code{staging} branches
+will remain open to accept patches for the next cycle.  Please ask on
+the mailing list or IRC if unsure where to place a patch.
 @c TODO: It would be good with badges on the website that tracks these
 @c branches.  Or maybe even a status page.
 
