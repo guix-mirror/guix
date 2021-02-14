@@ -42294,8 +42294,35 @@ servers.")
      "Event loop that drives Tokio I/O resources.")
     (license license:expat)))
 
+(define-public rust-tokio-rustls-0.22
+  (package
+    (name "rust-tokio-rustls")
+    (version "0.22.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tokio-rustls" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1dp1s2kai081f3fn9gjq92x2lw7lm7iqpcsl02cg2zg5fbg48s5w"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-rustls" ,rust-rustls-0.19)
+        ("rust-tokio" ,rust-tokio-1)
+        ("rust-webpki" ,rust-webpki-0.21))))
+    (home-page "https://github.com/tokio-rs/tls")
+    (synopsis "Asynchronous TLS/SSL streams for Tokio")
+    (description
+     "This package provides asynchronous TLS/SSL streams for Tokio using
+Rustls.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-tokio-rustls-0.14
   (package
+    (inherit rust-tokio-rustls-0.22)
     (name "rust-tokio-rustls")
     (version "0.14.1")
     (source
@@ -42306,7 +42333,6 @@ servers.")
        (sha256
         (base32
          "16l8kx3j7i3jxq36qs3hnmys6cd2zqcixc1n0kf3kymwanr32a71"))))
-    (build-system cargo-build-system)
     (arguments
      `(;; These tests require network access.
        #:cargo-test-flags '("--release" "--" "--skip=tls12" "--skip=modern")
@@ -42320,12 +42346,7 @@ servers.")
        (("rust-futures-util" ,rust-futures-util-0.3)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-tokio" ,rust-tokio-0.2)
-        ("rust-webpki-roots" ,rust-webpki-roots-0.20))))
-    (home-page "https://github.com/tokio-rs/tls")
-    (synopsis "Asynchronous TLS/SSL streams for Tokio")
-    (description "This package provides asynchronous TLS/SSL streams for Tokio
-using Rustls.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-webpki-roots" ,rust-webpki-roots-0.20))))))
 
 (define-public rust-tokio-rustls-0.13
   (package
