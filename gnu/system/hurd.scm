@@ -79,7 +79,7 @@
                  (list (static-networking (interface "lo")
                                           (ip "127.0.0.1")
                                           (requirement '())
-                                          (provision '(loopback))
+                                          (provision '(loopback networking))
                                           (name-servers '("10.0.2.3")))))
         (syslog-service)
         (service guix-service-type
