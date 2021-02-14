@@ -81,7 +81,7 @@ Copyright @copyright{} 2020 R Veera Kumar@*
 Copyright @copyright{} 2020 Pierre Langlois@*
 Copyright @copyright{} 2020 pinoaffe@*
 Copyright @copyright{} 2020 André Batista@*
-Copyright @copyright{} 2020 Alexandru-Sergiu Marton@*
+Copyright @copyright{} 2020, 2021 Alexandru-Sergiu Marton@*
 Copyright @copyright{} 2020 raingloom@*
 Copyright @copyright{} 2020 Daniel Brooks@*
 Copyright @copyright{} 2020 John Soo@*
@@ -25318,6 +25318,93 @@ configuration listens on port 1965 and serves files from
 @file{/srv/gemini}.  Certificates are stored in
 @file{/var/lib/gemini/certs}.  For more information, run @command{man
 gmnisrv} and @command{man gmnisrv.ini}.
+
+@end table
+@end deftp
+
+@subsubheading Agate
+
+@cindex agate
+The @uref{gemini://qwertqwefsday.eu/agate.gmi, Agate}
+(@uref{https://github.com/mbrubeck/agate, GitHub page over HTTPS})
+program is a simple @uref{https://gemini.circumlunar.space/, Gemini}
+protocol server written in Rust.
+
+@deffn {Scheme Variable} agate-service-type
+This is the type of the agate service, whose value should be an
+@code{agate-service-type} object, as in this example:
+
+@lisp
+(service agate-service-type
+	 (agate-configuration
+	   (content "/srv/gemini")
+	   (cert "/srv/cert.pem")
+	   (key "/srv/key.rsa")))
+@end lisp
+
+The example above represents the minimal tweaking necessary to get Agate
+up and running.  Specifying the path to the certificate and key is
+always necessary, as the Gemini protocol requires TLS by default.
+
+To obtain a certificate and a key, you could, for example, use OpenSSL,
+running a command similar to the following example:
+
+@example
+openssl req -x509 -newkey rsa:4096 -keyout key.rsa -out cert.pem \
+    -days 3650 -nodes -subj "/CN=example.com"
+@end example
+
+Of course, you'll have to replace @i{example.com} with your own domain
+name, and then point the Agate configuration towards the path of the
+generated key and certificate.
+
+@end deffn
+
+@deftp {Data Type} agate-configuration
+Data type representing the configuration of Agate.
+
+@table @asis
+@item @code{package} (default: @code{agate})
+The package object of the Agate server.
+
+@item @code{content} (default: @file{"/srv/gemini"})
+The directory from which Agate will serve files.
+
+@item @code{cert} (default: @code{#f})
+The path to the TLS certificate PEM file to be used for encrypted
+connections.  Must be filled in with a value from the user.
+
+@item @code{key} (default: @code{#f})
+The path to the PKCS8 private key file to be used for encrypted
+connections.  Must be filled in with a value from the user.
+
+@item @code{addr} (default: @code{'("0.0.0.0:1965" "[::]:1965")})
+A list of the addresses to listen on.
+
+@item @code{hostname} (default: @code{#f})
+The domain name of this Gemini server.  Optional.
+
+@item @code{lang} (default: @code{#f})
+RFC 4646 language code(s) for text/gemini documents.  Optional.
+
+@item @code{silent?} (default: @code{#f})
+Set to @code{#t} to disable logging output.
+
+@item @code{serve-secret?} (default: @code{#f})
+Set to @code{#t} to serve secret files (files/directories starting with
+a dot).
+
+@item @code{log-ip?} (default: @code{#t})
+Whether or not to output IP addresses when logging.
+
+@item @code{user} (default: @code{"agate"})
+Owner of the @code{agate} process.
+
+@item @code{group} (default: @code{"agate"})
+Owner's group of the @code{agate} process.
+
+@item @code{log-file} (default: @file{"/var/log/agate.log"})
+The file which should store the logging output of Agate.
 
 @end table
 @end deftp
