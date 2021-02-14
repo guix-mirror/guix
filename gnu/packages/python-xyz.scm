@@ -10785,6 +10785,41 @@ applications.")
     (home-page "https://github.com/click-contrib/click-log")
     (license license:expat)))
 
+(define-public python-structlog
+  (package
+    (name "python-structlog")
+    (version "20.2.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "structlog" version))
+        (sha256
+         (base32
+          "0x1i21vn3xjfa3j9ijbblia5z0jlzc9aqvpqc26sy16i8yjxyydg"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest"))
+             #t)))))
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-freezegun" ,python-freezegun)
+       ("python-pretend" ,python-pretend)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-asyncio" ,python-pytest-asyncio)
+       ("python-simplejson" ,python-simplejson)
+       ("python-twisted" ,python-twisted)))
+    (home-page "https://www.structlog.org/")
+    (synopsis "Structured Logging for Python")
+    (description "@code{structlog} changes logging in Python by adding structure
+to your log entries.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public python-apipkg
   (package
     (name "python-apipkg")
