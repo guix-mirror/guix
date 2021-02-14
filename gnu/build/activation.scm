@@ -1,6 +1,11 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
+;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2015, 2018 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,7 +42,8 @@
             activate-modprobe
             activate-firmware
             activate-ptrace-attach
-            activate-current-system))
+            activate-current-system
+            mkdir-p/perms))
 
 ;;; Commentary:
 ;;;
@@ -54,6 +60,47 @@
 
 (define (dot-or-dot-dot? file)
   (member file '("." "..")))
+
+;; Based upon mkdir-p from (guix build utils)
+(define (verify-not-symbolic dir)
+  "Verify DIR or its ancestors aren't symbolic links."
+  (define absolute?
+    (string-prefix? "/" dir))
+
+  (define not-slash
+    (char-set-complement (char-set #\/)))
+
+  (define (verify-component file)
+    (unless (eq? 'directory (stat:type (lstat file)))
+      (error "file name component is not a directory" dir)))
+
+  (let loop ((components (string-tokenize dir not-slash))
+             (root       (if absolute?
+                             ""
+                             ".")))
+    (match components
+      ((head tail ...)
+       (let ((file (string-append root "/" head)))
+         (catch 'system-error
+           (lambda ()
+             (verify-component file)
+             (loop tail file))
+           (lambda args
+             (if (= ENOENT (system-error-errno args))
+                 #t
+                 (apply throw args))))))
+      (() #t))))
+
+;; TODO: the TOCTTOU race can be addressed once guile has bindings
+;; for fstatat, openat and friends.
+(define (mkdir-p/perms directory owner bits)
+  "Create the directory DIRECTORY and all its ancestors.
+Verify no component of DIRECTORY is a symbolic link.
+Warning: this is currently suspect to a TOCTTOU race!"
+  (verify-not-symbolic directory)
+  (mkdir-p directory)
+  (chown directory (passwd:uid owner) (passwd:gid owner))
+  (chmod directory bits))
 
 (define* (copy-account-skeletons home
                                  #:key

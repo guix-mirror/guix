@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +29,7 @@
   #:use-module (guix gexp)
   #:use-module ((guix packages) #:select (package-name))
   #:use-module (guix records)
+  #:use-module (guix modules)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match)
   #:export (dbus-configuration
@@ -161,24 +163,23 @@ includes the @code{etc/dbus-1/system.d} directories of each package listed in
 
 (define (dbus-activation config)
   "Return an activation gexp for D-Bus using @var{config}."
-  #~(begin
-      (use-modules (guix build utils))
+  (with-imported-modules (source-module-closure
+                          '((gnu build activation)
+                            (guix build utils)))
+    #~(begin
+        (use-modules (gnu build activation)
+                     (guix build utils))
 
-      (mkdir-p "/var/run/dbus")
+        (let ((user (getpwnam "messagebus")))
+          ;; This directory contains the daemon's socket so it must be
+          ;; world-readable.
+          (mkdir-p/perms "/var/run/dbus" user #o755))
 
-      (let ((user (getpwnam "messagebus")))
-        (chown "/var/run/dbus"
-               (passwd:uid user) (passwd:gid user))
-
-        ;; This directory contains the daemon's socket so it must be
-        ;; world-readable.
-        (chmod "/var/run/dbus" #o755))
-
-      (unless (file-exists? "/etc/machine-id")
-        (format #t "creating /etc/machine-id...~%")
-        (invoke (string-append #$(dbus-configuration-dbus config)
-                               "/bin/dbus-uuidgen")
-                "--ensure=/etc/machine-id"))))
+        (unless (file-exists? "/etc/machine-id")
+          (format #t "creating /etc/machine-id...~%")
+          (invoke (string-append #$(dbus-configuration-dbus config)
+                                 "/bin/dbus-uuidgen")
+                  "--ensure=/etc/machine-id")))))
 
 (define dbus-shepherd-service
   (match-lambda

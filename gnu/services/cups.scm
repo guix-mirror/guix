@@ -4,6 +4,7 @@
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,6 +32,7 @@
   #:use-module (guix packages)
   #:use-module (guix records)
   #:use-module (guix gexp)
+  #:use-module (guix modules)
   #:use-module (ice-9 match)
   #:use-module ((srfi srfi-1) #:select (append-map find))
   #:export (cups-service-type
@@ -871,13 +873,11 @@ IPP specifications.")
 
 (define %cups-activation
   ;; Activation gexp.
-  (with-imported-modules '((guix build utils))
+  (with-imported-modules (source-module-closure '((gnu build activation)
+                                                  (guix build utils)))
     #~(begin
-        (use-modules (guix build utils))
-        (define (mkdir-p/perms directory owner perms)
-          (mkdir-p directory)
-          (chown directory (passwd:uid owner) (passwd:gid owner))
-          (chmod directory perms))
+        (use-modules (gnu build activation)
+                     (guix build utils))
         (define (build-subject parameters)
           (string-concatenate
            (map (lambda (pair)
