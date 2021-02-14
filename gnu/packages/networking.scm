@@ -1454,13 +1454,13 @@ round-robin fashion.")
 (define-public gandi.cli
   (package
     (name "gandi.cli")
-    (version "1.5")
+    (version "1.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri name version))
        (sha256
-        (base32 "110wc9zgxsrvw4yzp21p0ian5lcf7vhcpxhnmsc4fg9pzl2bwxd5"))))
+        (base32 "1h36jahbp7273wn3yd747kbiwjc0bm3sja67bcxdsd54ln0vyndg"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -1484,8 +1484,11 @@ round-robin fashion.")
                #t))))))
     (native-inputs
      `(("python-docutils" ,python-docutils)   ; for rst2man.py
+       ("python-pytest" ,python-pytest)
        ("python-pytest-cov" ,python-pytest-cov)
        ("python-tox" ,python-tox)))
+    (propagated-inputs
+     `(("openssh" ,openssh)))           ; used by gandi/cli/modules/iass.py
     (inputs
      `(("openssl" ,openssl)
        ("python-click" ,python-click)
