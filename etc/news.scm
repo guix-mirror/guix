@@ -53,7 +53,8 @@ gnu/system/images/pine64.scm} par exemple.")))
         (title
          (en "Risk of local privilege escalation @i{via} setuid programs")
          (de "Risiko lokaler Rechteausweitung bei setuid-Programmen")
-         (fr "Risque de gain local de privilèges @i{via} les programmes setuid"))
+         (fr "Risque de gain local de privilèges @i{via} les programmes setuid")
+         (zh "存在通过 setuid 程序进行本地提权的风险"))
         (body
          (en "On Guix System, setuid programs were, until now, installed as
 setuid-root @emph{and} setgid-root (in the @file{/run/setuid-programs}
@@ -101,7 +102,19 @@ guix system reconfigure /run/current-system/configuration.scm
 
 Les usagers de Guix sur une distrib externe ne sont pas touché·es.  Plus
 d'informations sont disponibles à @url{https://issues.guix.gnu.org/46395} (en
-anglais).")))
+anglais).")
+         (zh "到目前为止，Guix 系统上的 setuid 程序（位于 @file{/run/setuid-programs}）
+同时具有 setuid-root @emph{和} setgid-root 权限。然而，此类程序大多被设计为在拥有
+setuid 权限而非 setgid 权限时运行。因此，这样的设置可能会使系统受到本地提权攻击。
+
+此漏洞已经被修复，同时建议用户使用下列命令升级他们的系统：
+
+@example
+guix system reconfigure /run/current-system/configuration.scm
+@end example
+
+在 ``第三方宿主系统'' 上使用 Guix 的用户不受此漏洞影响，详情请参阅
+@url{https://issues.guix.gnu.org/46395}。")))
 
  (entry (commit "aedbc5ff32a62f45aeed74c6833399a6cf2c22dc")
         (title
