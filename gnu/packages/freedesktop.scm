@@ -5,7 +5,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
-;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2019, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017, 2018 Mark H Weaver <mhw@netris.org>
@@ -769,14 +769,14 @@ manager for the current system.")
 (define-public python-pyxdg
   (package
     (name "python-pyxdg")
-    (version "0.25")
+    (version "0.27")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyxdg" version))
        (sha256
         (base32
-         "179767h8m634ydlm4v8lnz01ba42gckfp684id764zaip7h87s41"))))
+         "19f5j5mxp7ff0vp33s32qbpdi65iiwha0bj641gl70pdwnm97gc0"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -789,15 +789,16 @@ manager for the current system.")
              (substitute* "test/test-icon.py"
                (("/usr/share/icons/hicolor/index.theme")
                 (string-append (assoc-ref inputs "hicolor-icon-theme")
-                               "/share/icons/hicolor/index.theme"))
-               ;; FIXME: This test fails because the theme contains the unknown
-               ;; key "Scale".
-               (("theme.validate\\(\\)") "#"))
+                               "/share/icons/hicolor/index.theme")))
 
-             ;; One test fails with:
-             ;; AssertionError: 'x-apple-ios-png' != 'png'
+             ;; These two tests are known to fail in strange ways.
              (substitute* "test/test-mime.py"
-               (("self.check_mimetype\\(imgpng, 'image', 'png'\\)") "#"))
+               (("def test_get_type\\(self") "def _test_get_type(self")
+               (("def test_get_type2\\(self") "def _test_get_type2(self"))
+
+             ;; There are test files not shipped in the release tarball
+             (substitute* "test/test-icon.py"
+               (("def test_validate_icon_theme") "def _test_validate_icon_theme"))
              (invoke "nosetests" "-v"))))))
     (native-inputs
      ;; For tests.
