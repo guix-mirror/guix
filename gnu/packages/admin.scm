@@ -32,7 +32,7 @@
 ;;; Copyright © 2019, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
-;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020, 2021 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;; Copyright © 2021 Zheng Junjie <873216071@qq.com>
@@ -591,6 +591,18 @@ memory, disks, network and processes.")
     (build-system python-build-system)
     (inputs
      `(("python-psutil" ,python-psutil)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-themes
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((themes (string-append (assoc-ref outputs "out")
+                                          "/lib/python"
+                                          ,(version-major+minor
+                                            (package-version python))
+                                          "/site-packages/bpytop-themes")))
+               (mkdir-p themes)
+               (copy-recursively "bpytop-themes" themes)))))))
     (home-page
      "https://github.com/aristocratos/bpytop")
     (synopsis "Resource monitor")
