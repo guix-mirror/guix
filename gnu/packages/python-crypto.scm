@@ -369,39 +369,31 @@ do what is needed for client/server Kerberos authentication based on
 (define-public python-keyring
   (package
     (name "python-keyring")
-    (version "21.0.0")
+    (version "22.0.1")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "keyring" version))
       (sha256
        (base32
-        "1k0w3yh3fz0qp0cvkxdiinq9jzbrnc6bd88qpjz34x3cgcr94psz"))
-      (modules '((guix build utils)))
-      (snippet
-        ;; https://github.com/jaraco/keyring/issues/414
-       '(begin (substitute* "tests/test_packaging.py"
-                 (("ep, =") "(ep,) =")) #t))))
+        "1pvqc6may03did0iz98gasg7cy4h8ljzs4ibh927bfzda8a3xjws"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             ;; Not clear why this test fails.
-             (delete-file "tests/test_packaging.py")
-             (substitute* "pytest.ini"
-               (("--black ") ""))
              (invoke "pytest"))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
+     `(("python-toml" ,python-toml)
+       ("python-pytest" ,python-pytest)
        ("python-pytest-checkdocs" ,python-pytest-checkdocs)
        ("python-pytest-cov" ,python-pytest-cov)
        ("python-pytest-flake8" ,python-pytest-flake8)
+       ("python-setuptools" ,python-setuptools)
        ("python-setuptools-scm" ,python-setuptools-scm)))
     (propagated-inputs
-     `(("python-importlib-metadata" ,python-importlib-metadata)
-       ("python-secretstorage" ,python-secretstorage)))
+     `(("python-secretstorage" ,python-secretstorage)))
     (home-page "https://github.com/jaraco/keyring")
     (synopsis "Store and access your passwords safely")
     (description
