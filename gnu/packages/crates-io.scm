@@ -41936,17 +41936,18 @@ futures efficiently")
 (define-public rust-tokio-macros-1
   (package
     (name "rust-tokio-macros")
-    (version "1.0.0")
+    (version "1.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "tokio-macros" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "150l6wfcqw2rcjaf22qk3z6ca794x0s2c68n5ar18cfafllpsla2"))))
+        (base32
+         "0mys5zm2gcdgc0iq8nqipzn703q26x1bpw59m04shikgacdb3xya"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:tests? #false                  ;FIXME: undeclared type `tokio`
+     `(#:skip-build? #t
        #:cargo-inputs
        (("rust-proc-macro2" ,rust-proc-macro2-1)
         ("rust-quote" ,rust-quote-1)
