@@ -10,6 +10,7 @@
 ;;; Copyright © 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.ccom>
 ;;; Copyright © 2021 Zheng Junjie <873216071@qq.com>
+;;; Copyright © 2021 Alexandru-Sergiu Marton <brown121407@posteo.ro>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,6 +43,41 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control))
+
+(define-public agate
+  (package
+    (name "agate")
+    (version "2.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "agate" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1mhrl4j5r6wzsnwpqsbgzny5vqschyjm3gnk4y88har7skk7j19v"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-configparser" ,rust-configparser-2)
+        ("rust-env-logger" ,rust-env-logger-0.8)
+        ("rust-getopts" ,rust-getopts-0.2)
+        ("rust-glob" ,rust-glob-0.3)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-mime-guess" ,rust-mime-guess-2)
+        ("rust-once-cell" ,rust-once-cell-1)
+        ("rust-percent-encoding" ,rust-percent-encoding-2)
+        ("rust-rustls" ,rust-rustls-0.19)
+        ("rust-tokio" ,rust-tokio-1)
+        ("rust-tokio-rustls" ,rust-tokio-rustls-0.22)
+        ("rust-url" ,rust-url-2))))
+    (home-page "https://github.com/mbrubeck/agate")
+    (synopsis "Very simple server for the Gemini hypertext protocol")
+    (description
+     "Agate is a server for the Gemini network protocol, built with the Rust
+programming language.  It has very few features, and can only serve static
+files.  It uses async I/O, and should be quite efficient even when running on
+low-end hardware and serving many concurrent requests.")
+    (license (list license:expat license:asl2.0))))
 
 (define-public bat
   (package
