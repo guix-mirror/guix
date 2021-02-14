@@ -41496,17 +41496,18 @@ Fireball''.")
 (define-public rust-tokio-1
   (package
     (name "rust-tokio")
-    (version "1.0.1")
+    (version "1.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "tokio" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1gd6qc9xvm568kicbkch40kjn5w0q2nsn527gcy80v3baqgj4n6j"))))
+        (base32
+         "0fmfykdp29hjq5264mp6sa4c0wp5mlimbi0dd9mrxsk5qq20s6g8"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:tests? #false                  ;FIXME: unresolved import
+     `(#:skip-build? #t
        #:cargo-inputs
        (("rust-autocfg" ,rust-autocfg-1)
         ("rust-bytes" ,rust-bytes-1)
@@ -41520,15 +41521,7 @@ Fireball''.")
         ("rust-signal-hook-registry" ,rust-signal-hook-registry-1)
         ("rust-tokio-macros" ,rust-tokio-macros-1)
         ("rust-tracing" ,rust-tracing-0.1)
-        ("rust-winapi" ,rust-winapi-0.3))
-       #:cargo-development-inputs
-       (("rust-async-stream" ,rust-async-stream-0.3)
-        ("rust-futures" ,rust-futures-0.3)
-        ("rust-loom" ,rust-loom-0.4)
-        ("rust-nix" ,rust-nix-0.19)
-        ("rust-proptest" ,rust-proptest-0.10)
-        ("rust-tokio-stream" ,rust-tokio-stream-0.1)
-        ("rust-tokio-test" ,rust-tokio-test-0.4))))
+        ("rust-winapi" ,rust-winapi-0.3))))
     (home-page "https://tokio.rs")
     (synopsis "Event-driven, non-blocking I/O platform")
     (description
