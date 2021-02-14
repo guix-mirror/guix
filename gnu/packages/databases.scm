@@ -1194,6 +1194,7 @@ developed in C/C++ to MariaDB and MySQL databases.")
 (define-public postgresql-13
   (package
     (name "postgresql")
+    (replacement postgresql-13.2)
     (version "13.1")
     (source (origin
               (method url-fetch)
@@ -1241,6 +1242,20 @@ types, including INTEGER, NUMERIC, BOOLEAN, CHAR, VARCHAR, DATE, INTERVAL, and
 TIMESTAMP.  It also supports storage of binary large objects, including
 pictures, sounds, or video.")
     (license (license:x11-style "file://COPYRIGHT"))))
+
+(define-public postgresql-13.2
+  (package
+    (inherit postgresql-13)
+    (name "postgresql")
+    (version "13.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://ftp.postgresql.org/pub/source/v"
+                                  version "/postgresql-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1z5d847jnajcfr3wa6jn52a8xjhamvwzmz18xlm5nvxqip8grmsz"))
+              (patches (search-patches "postgresql-disable-resolve_symlinks.patch"))))))
 
 (define-public postgresql-11
   (package
