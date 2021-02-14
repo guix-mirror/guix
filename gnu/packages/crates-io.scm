@@ -14,6 +14,7 @@
 ;;; Copyright © 2020 Antoine Côté <antoine.cote@posteo.net>
 ;;; Copyright © 2021 aecepoglu <aecepoglu@fastmail.fm>
 ;;; Copyright @ 2021 Zheng Junjie <873216071@qq.com>
+;;; Copyright © 2021 Alexandru-Sergiu Marton <brown121407@posteo.ro>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33794,8 +33795,37 @@ rustc compiler.")
      "Automatically apply the suggestions made by rustc.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-rustls-0.19
+  (package
+    (name "rust-rustls")
+    (version "0.19.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rustls" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "02wqas2pcxk75s9l9c9f1r5am7258bmqprh68pnqfvkwz0gx4kq6"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-base64" ,rust-base64-0.13)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-ring" ,rust-ring-0.16)
+        ("rust-sct" ,rust-sct-0.6)
+        ("rust-webpki" ,rust-webpki-0.21))))
+    (home-page "https://github.com/ctz/rustls")
+    (synopsis "Modern TLS library written in Rust")
+    (description
+     "This package provides a modern TLS library written in Rust.")
+    (license
+     (list license:asl2.0 license:isc license:expat))))
+
 (define-public rust-rustls-0.18
   (package
+    (inherit rust-rustls-0.19)
     (name "rust-rustls")
     (version "0.18.1")
     (source
@@ -33807,7 +33837,6 @@ rustc compiler.")
        (sha256
         (base32
          "108cf3bfw5high066shz9xrfv4jz7djdmnwqs3kwx4wfypf2c4ax"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-base64" ,rust-base64-0.12)
@@ -33819,13 +33848,7 @@ rustc compiler.")
        (("rust-criterion" ,rust-criterion-0.3)
         ("rust-env-logger" ,rust-env-logger-0.7)
         ("rust-log" ,rust-log-0.4)
-        ("rust-webpki-roots" ,rust-webpki-roots-0.20))))
-    (home-page "https://github.com/ctz/rustls")
-    (synopsis "Modern TLS library written in Rust.")
-    (description "This package provides a modern TLS library written in
-Rust.")
-    (license
-     (list license:asl2.0 license:isc license:expat))))
+        ("rust-webpki-roots" ,rust-webpki-roots-0.20))))))
 
 (define-public rust-rustls-0.17
   (package
