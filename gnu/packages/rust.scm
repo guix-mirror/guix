@@ -859,4 +859,4 @@ safety and thread safety guarantees.")
 ;;; intermediate rusts are built for bootstrapping purposes and should not
 ;;; be relied upon.  This is to ease maintenance and reduce the time
 ;;; required to build the full Rust bootstrap chain.
-(define-public rust rust-1.49)
+(define-public rust rust-1.50)
