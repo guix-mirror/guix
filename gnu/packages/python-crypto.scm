@@ -1483,14 +1483,14 @@ and Backlog for a list of what is and is not currently supported.")
 (define-public python-secretstorage
   (package
     (name "python-secretstorage")
-    (version "3.1.2")
+    (version "3.3.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "SecretStorage" version))
         (sha256
          (base32
-          "1xmzr0j3066s220bss4nkgqbiwb5k4kkp2rkpqlqwjb5kfc8mnhm"))))
+          "15ginv4gzxrx77n7517xnvf2jcpqc6ran12s951hc85zlr8nqrpx"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f)) ; Tests require a running dbus service.
