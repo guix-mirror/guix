@@ -382,8 +382,10 @@ do what is needed for client/server Kerberos authentication based on
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _
-             (invoke "pytest"))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest"))
+             #t)))))
     (native-inputs
      `(("python-toml" ,python-toml)
        ("python-pytest" ,python-pytest)
