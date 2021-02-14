@@ -464,16 +464,16 @@ you send to a FIFO file.")
 (define-public guile-dsv
   (package
     (name "guile-dsv")
-    (version "0.3.0")
+    (version "0.4.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/artyom-poptsov/guile-dsv")
-                    (commit "6c867915dc4198eacc548a4834ef0e1aef852795")))
+                    (commit (string-append "v" version))))
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1mxbbcsmbjfnh4yydqz44ihbkdnzdwz38xanaam128arlb7hwr8n"))))
+                "1mvyc8i38j56frjh3p6vwziv8lrzlyqndz30663h5nwcp0044sdn"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -489,14 +489,6 @@ you send to a FIFO file.")
        #:imported-modules ((guix build guile-build-system)
                            ,@%gnu-build-system-modules)
        #:phases (modify-phases %standard-phases
-                  ;; Support Guile 3.0 in configure from upstream commit
-                  ;; 4c724577ccf19bb88580f72f2f6b166a0447ce3f
-                  (add-before 'bootstrap 'configure-support-guile3.0
-                    (lambda _
-                      (substitute* "configure.ac"
-                                  (("GUILE_PKG.*")
-                                   "GUILE_PKG([3.0 2.0 2.2])"))
-                      #t))
                   (add-before 'configure 'set-guilesitedir
                     (lambda _
                       (substitute* "Makefile.in"
