@@ -60,6 +60,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages slang)
@@ -1051,36 +1052,79 @@ OpenDocument presentations (*.odp).")
 (define-public opencc
   (package
     (name "opencc")
-    (version "1.0.5")
+    (version "1.1.1")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-              (url "https://github.com/BYVoid/OpenCC")
-              (commit (string-append "ver." version))))
+             (url "https://github.com/BYVoid/OpenCC")
+             (commit (string-append "ver." version))))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1pv5md225qwhbn8ql932zdg6gh1qlx3paiajaks8gfsa07yzvhr4"))
+         "07y0pvxjlmpcnym229j87qcfwnfm7vi10dad0a20xy6as55a9j3d"))
        (modules '((guix build utils)))
        (snippet
         '(begin
            ;; TODO: Unbundle tclap, darts-clone, gtest
-           (delete-file-recursively "deps/rapidjson-0.11") #t))))
+           (delete-file-recursively "deps/rapidjson-1.1.0") #t))))
     (build-system cmake-build-system)
     (arguments
-     '(#:phases
+     ;; Required to locate the install script properly.
+     `(#:out-of-source? #f
+       #:parallel-build? #f             ;occasionally failed.
+       #:imported-modules
+       (,@%cmake-build-system-modules
+        (guix build python-build-system))
+       #:modules ((guix build cmake-build-system)
+                  ((guix build python-build-system) #:prefix python:)
+                  (guix build utils))
+       #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'prevent-rebuild-during-installation
+           (lambda _
+             (substitute* "python/setup.py"
+               (("'build_py': BuildPyCommand,") ""))
+             #t))
          (add-after 'unpack 'patch-3rd-party-references
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((rapidjson (assoc-ref inputs "rapidjson")))
                (substitute* "src/CMakeLists.txt"
-                 (("../deps/rapidjson-0.11")
+                 (("../deps/rapidjson-1.1.0")
                   (string-append rapidjson "/include/rapidjson")))
-             #t))))))
+               #t)))
+         (add-before 'configure 'patch-python-binding-installation
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "python/opencc/__init__.py"
+                 (("(_libopenccfile =).*$" _ prefix)
+                  (format #f "~a os.path.join('~a/lib', _libopenccfilename)~%"
+                          prefix out))
+                 (("(_opencc_share_dir =).*$" _ prefix)
+                  (format #f "~a '~a/share/opencc'~%" prefix out))))
+             #t))
+         (add-after 'install 'install-python-binding
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (dist (string-append
+                           out "/lib/python"
+                           ,(version-major+minor (package-version python))
+                           "/site-packages")))
+               (chdir "python")
+               (mkdir-p dist)
+               (setenv "PYTHONPATH"
+                       (string-append dist ":" (getenv "PYTHONPATH")))
+               (invoke "python" "setup.py" "install"
+                       "--root=/" "--single-version-externally-managed"
+                       (string-append "--prefix=" out))
+               #t)))
+         (add-before 'install-python-binding 'enable-bytecode-determinism
+           (assoc-ref python:%standard-phases 'enable-bytecode-determinism)))))
     (native-inputs
      `(("python" ,python-wrapper)
-       ("rapidjson" ,rapidjson)))
+       ("rapidjson" ,rapidjson)
+       ("python-setuptools" ,python-setuptools)
+       ("python-wheel" ,python-wheel)))
     (home-page "https://github.com/BYVoid/OpenCC")
     (synopsis "Convert between Traditional Chinese and Simplified Chinese")
     (description "Open Chinese Convert (OpenCC) converts between Traditional
