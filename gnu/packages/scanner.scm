@@ -59,8 +59,7 @@
               '(begin
                  (substitute* "tools/sane-desc.c"
                    (("asctime \\(localtime \\(&current_time\\)\\)")
-                    "\"1970-01-01\""))
-                 #t))))
+                    "\"1970-01-01\""))))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -87,8 +86,7 @@
 
              ;; Disable tests that may require back ends to be built.
              (substitute* "testsuite/Makefile.in"
-               ((" backend ") " "))
-             #t))
+               ((" backend ") " "))))
          (add-before 'configure 'disable-failing-tests
            (lambda _
              ;; Disable unmaintained tests that that fail with errors resembling:
@@ -109,8 +107,7 @@
              ;; sanei_usb_test: sanei_usb_test.c:849: main: Assertion
              ;; `test_init (1)' failed.
              (substitute* "testsuite/sanei/Makefile.in"
-               (("sanei_usb_test\\$\\(EXEEXT\\) ") ""))
-             #t))
+               (("sanei_usb_test\\$\\(EXEEXT\\) ") ""))))
          (add-before 'build 'build-pixma_sane_options.c
            ;; "No rule to make target '../backend/pixma/pixma_sane_options.c',
            ;; needed by 'sane-backends.pot-update'."
@@ -123,8 +120,7 @@
                (copy-file "tools/udev/libsane.rules"
                           (string-append out
                                          "/lib/udev/rules.d/"
-                                         "60-libsane.rules"))
-               #t)))
+                                         "60-libsane.rules")))))
          (add-after 'install 'make-reproducible
            ;; XXX Work around an old bug <https://issues.guix.gnu.org/26247>.
            ;; Then work around "Throw to key `decoding-error' ..." by using sed.
