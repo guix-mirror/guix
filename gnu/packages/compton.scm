@@ -146,7 +146,7 @@ performance).
        ("xorgproto" ,xorgproto)))
     (arguments
      `(#:build-type "release"
-       #:configure-flags '("-Dbuild_docs=true")))
+       #:configure-flags '("-Dwith_docs=true")))
     (home-page "https://github.com/yshui/picom")
     (synopsis "Compositor for X11, forked from Compton")
     (description
