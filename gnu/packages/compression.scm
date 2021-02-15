@@ -1037,7 +1037,7 @@ smaller than those produced by @code{Xdelta}.")
 (define-public libjcat
   (package
     (name "libjcat")
-    (version "0.1.5")
+    (version "0.1.6")
     (source
      (origin
        (method git-fetch)
@@ -1047,7 +1047,7 @@ smaller than those produced by @code{Xdelta}.")
          (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0rxyqikdhkh2nq1y0hy05df2kkxf3d2cp6lm5x1s5i717k6y3zy5"))))
+        (base32 "1a2z34m8611xvna9kwch8ralxx7c9mk4rm9vrxx7p9hr8sbqbsaz"))))
     (build-system meson-build-system)
     (native-inputs
      `(("gobject-introspection" ,gobject-introspection)
