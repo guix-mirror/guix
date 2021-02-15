@@ -580,14 +580,14 @@ memory, disks, network and processes.")
 (define-public bpytop
   (package
     (name "bpytop")
-    (version "1.0.61")
+    (version "1.0.62")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "bpytop" version))
        (sha256
         (base32
-         "1p5jrrvj68v6cby8w7zms138xm1g5j2q58951lji0qlqr8145jjb"))))
+         "02d9gdnnx45lnhx0bgg4wz9bdrkg40mm6pi1443f5i3mcpz8yh4s"))))
     (build-system python-build-system)
     (inputs
      `(("python-psutil" ,python-psutil)))
