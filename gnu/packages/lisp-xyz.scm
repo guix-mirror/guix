@@ -10699,7 +10699,7 @@ tables.")
 (define-public sbcl-cl-rdkafka
   (package
     (name "sbcl-cl-rdkafka")
-    (version "1.0.2")
+    (version "1.1.0")
     (source
      (origin
        (method git-fetch)
@@ -10709,7 +10709,7 @@ tables.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1qcgfd4h7syilzmrmd4z2vknbvawda3q3ykw7xm8n381syry4g82"))))
+         "0z2g0k0xy8k1p9g93h8dy9wbygaq7ziwagm4yz93zk67mhc0b84v"))))
     (build-system asdf-build-system/sbcl)
     (arguments
      `(#:tests? #f ; Attempts to connect to locally running Kafka
