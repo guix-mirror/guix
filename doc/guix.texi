@@ -45,7 +45,7 @@ Copyright @copyright{} 2017 Federico Beffa@*
 Copyright @copyright{} 2017, 2018 Carlo Zancanaro@*
 Copyright @copyright{} 2017 Thomas Danckaert@*
 Copyright @copyright{} 2017 humanitiesNerd@*
-Copyright @copyright{} 2017 Christopher Allan Webber@*
+Copyright @copyright{} 2017, 2021 Christopher Lemmer Webber@*
 Copyright @copyright{} 2017, 2018, 2019, 2020 Marius Bakke@*
 Copyright @copyright{} 2017, 2019, 2020 Hartmut Goebel@*
 Copyright @copyright{} 2017, 2019, 2020, 2021 Maxim Cournoyer@*
@@ -16595,6 +16595,13 @@ If you want to customize the SOCKS socket in more detail, leave
 @code{SocksPort} option.
 @end table
 @end deftp
+
+@item @code{control-socket?} (default: @code{#f})
+Whether or not to provide a ``control socket'' by which Tor can be
+controlled to, for instance, dynamically instantiate tor onion services.
+If @code{#t}, Tor will listen for control commands on the UNIX domain socket
+@file{/var/run/tor/control-sock}, which will be made writable by members of the
+@code{tor} group.
 
 @cindex hidden service
 @deffn {Scheme Procedure} tor-hidden-service @var{name} @var{mapping}
