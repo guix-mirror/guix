@@ -4,7 +4,7 @@
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
-;;; Copyright © 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,7 +40,7 @@
 (define-public w3m
   (package
     (name "w3m")
-    (version "0.5.3+git20210102")
+    (version "0.5.3+git20200502")
     (source (origin
               (method git-fetch)
               ;; Debian's fork of w3m is the only one that is still maintained.
@@ -50,7 +50,7 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0amq1wfjp5mhqjmvrc0yhxjlx1335p78d7ap8iykfjn5h8yhmrg5"))))
+                "0yyfhwcwy1dvdbirj6zqwk4gl8z9npfavs0k7ipcg5fd16vnx7mi"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f  ; no check target
