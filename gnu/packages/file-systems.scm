@@ -6,7 +6,7 @@
 ;;; Copyright © 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;; Copyright © 2020 Morgan Smith <Morgan.J.Smith@outlook.com>
-;;; Copyright © 2021 raid5atemyhoemwork <raid5atemyhomework@protonmail.com>
+;;; Copyright © 2021 raid5atemyhomework <raid5atemyhomework@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
