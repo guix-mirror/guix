@@ -184,7 +184,7 @@ This package also provides @command{xls2csv} to export Excel files to CSV.")
 (define r-with-tests
   (package
     (name "r-with-tests")
-    (version "4.0.3")
+    (version "4.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cran/src/base/R-"
@@ -192,7 +192,7 @@ This package also provides @command{xls2csv} to export Excel files to CSV.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "03cypg2qf7v9mq9mr9alz9w5y9m5kdgwbc97bp26pyymg253m609"))))
+                "0bl098xcv8v316kqnf43v6gb4kcsv31ydqfm1f7qr824jzb2fgsj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:disallowed-references (,tzdata-for-tests)
@@ -272,12 +272,11 @@ as.POSIXct(if (\"\" != Sys.getenv(\"SOURCE_DATE_EPOCH\")) {\
 
              ;; The "References" section of this file when converted to
              ;; package.rds is sometimes stored with a newline, sometimes with
-             ;; a space.  We avoid this problem by adding characters to break
-             ;; up the series of line break and spaces that is suspected to be
-             ;; the culprit.
+             ;; a space.  We avoid this problem by removing the line break
+             ;; that is suspected to be the culprit.
              (substitute* "src/library/methods/DESCRIPTION.in"
-               (("  ``Software")
-                "  -- ``Software"))
+               (("\\(2008\\)\n") "(2008) ")
+               (("  ``Software") "``Software"))
              #t))
          (add-before 'build 'set-locales
            (lambda _
