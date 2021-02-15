@@ -90,7 +90,7 @@
 ;;; Copyright © 2020 Jonathan Rostran <rostranjj@gmail.com>
 ;;; Copyright © 2020, 2021 Noah Evans <noah@nevans.me>
 ;;; Copyright © 2020 Brit Butler <brit@kingcons.io>
-;;; Copyright © 2021 Alexandr Vityazev avityazew@gmail.com
+;;; Copyright © 2021 Alexandr Vityazev <avityazew@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
