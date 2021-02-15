@@ -805,6 +805,30 @@ theme and apply them to the rest of Linux with Pywal.  Pywal only applies your
 theme to the current session.")
       (license license:gpl3+))))
 
+(define-public emacs-theme-sorcery
+  (let ((revision "0")
+        (commit "5a1c4445b9e6e09589a299a9962a6973272a0c2f"))
+    (package
+      (name "emacs-theme-sorcery")
+      (version "1.0")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/mtreca/emacs-theme-sorcery")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1b858049n6nw4qf60fmszjrhl80x7ssh32f7glj722kwy7404kdh"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-autothemer" ,emacs-autothemer)))
+      (home-page "https://github.com/mtreca/emacs-theme-sorcery")
+      (synopsis "Dark and low-contrast Emacs theme")
+      (description "Sorcery is a dark and low-contrast Emacs theme inspired by
+Apprentice and Sourcerer.")
+      (license license:gpl3+))))
+
 (define-public emacs-treepy
   (package
     (name "emacs-treepy")
