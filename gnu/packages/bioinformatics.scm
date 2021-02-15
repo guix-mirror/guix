@@ -15570,6 +15570,41 @@ manipulation of hierarchical features (e.g., genes, transcripts, and exons)
 than is possible with plain-text methods alone.")
       (license license:expat))))
 
+(define-public indelfixer
+  (package
+    (name "indelfixer")
+    (version "1.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/cbg-ethz/InDelFixer/")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "10ak05x8i1bx2p7rriv2rglqg1wr7c8wrhjrqlq1wm7ka99w8i79"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "InDelFixer.jar"
+       #:source-dir "src/main/java"
+       #:test-dir "src/test"))
+    (inputs
+     `(("java-commons-lang2" ,java-commons-lang)
+       ("java-args4j" ,java-args4j)))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "https://github.com/cbg-ethz/InDelFixer/")
+    (synopsis "Iterative and sensitive NGS sequence aligner")
+    (description "InDelFixer is a sensitive aligner for 454, Illumina and
+PacBio data, employing a full Smith-Waterman alignment against a reference.
+This Java command line application aligns Next-Generation Sequencing (NGS) and
+third-generation reads to a set of reference sequences, by a prior fast k-mer
+matching and removes indels, causing frame shifts.  In addition, only a
+specific region can be considered.  An iterative refinement of the alignment
+can be performed, by alignment against the consensus sequence with wobbles.
+The output is in SAM format.")
+    (license license:gpl3+)))
+
 (define-public libsbml
   (package
     (name "libsbml")
