@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2019 Carlo Zancanaro <carlo@zancanaro.id.au>
@@ -13332,6 +13332,60 @@ technology that allows you to embed data about a file, known as metadata,
 into the file itself.  The XMP Toolkit for Java is based on the C++ XMPCore
 library and the API is similar.")
     (license license:bsd-3)))
+
+(define-public java-args4j
+  (package
+    (name "java-args4j")
+    (version "2.33")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/kohsuke/args4j")
+                    (commit (string-append "args4j-site-" version))))
+              (sha256
+               (base32
+                "0w061fg65qrsm1a0lz0vyprsyidj31krjb459qi2lw0y78xza26s"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "args4j.jar"
+       #:source-dir "args4j/src"
+       #:test-dir "args4j/test"
+       #:test-exclude
+       (list "**/ExampleTest.*"
+             "**/ExternalConfiguredTest.*" ; fails to find a file
+             ;; We still don't want to run abstract classes
+             "**/Abstract*.*")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'fix-test-dir
+           (lambda _
+             (substitute* "build.xml"
+               (("/java\">") "\">"))
+             #t))
+         (add-before 'build 'copy-resources
+           (lambda _
+             (let ((from-prefix "args4j/src/org/kohsuke/args4j/")
+                   (to-prefix "build/classes/org/kohsuke/args4j/"))
+               (for-each (lambda (f)
+                           (install-file
+                            (string-append from-prefix f)
+                            (string-append to-prefix (dirname f))))
+                         (list "Messages.properties"
+                               "Messages_de.properties"
+                               "Messages_en.properties"
+                               "Messages_ru.properties"
+                               "spi/Messages.properties"
+                               "spi/Messages_de.properties"
+                               "spi/Messages_en.properties"
+                               "spi/Messages_ru.properties")))
+             #t)))))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "https://args4j.kohsuke.org/")
+    (synopsis "Command line parser library")
+    (description "Args4j is a small Java class library that makes it easy to
+parse command line options/arguments in your CUI application.")
+    (license license:expat)))
 
 (define-public java-metadata-extractor
   (package
