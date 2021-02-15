@@ -47,6 +47,7 @@
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020, 2021 Ryan Prior <rprior@protonmail.com>
 ;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@posteo.ro>
+;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4868,6 +4869,33 @@ mangle the data format that you have into the one that you want with very
 little effort, and the program to do so is often shorter and simpler than
 you'd expect.")
     (license (list license:expat license:cc-by3.0))))
+
+(define-public pup
+  (let ((revision "1")
+        (commit "681d7bb639334bf485476f5872c5bdab10931f9a"))
+    (package
+      (name "pup")
+      (version (git-version "0.4.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ericchiang/pup")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1hx1k0qlc1bq6gg5d4yprn4d7kvqzagg6mi5mvb39zdq6c4y17vr"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/ericchiang/pup"))
+      (home-page "https://github.com/ericchiang/pup")
+      (synopsis "Parse HTML at the command line")
+      (description
+       "@command{pup} is a command line tool for processing HTML.  It reads
+from stdin, prints to stdout, and allows the user to filter parts of the page
+using CSS selectors.  Inspired by @command{jq}, @command{pup} aims to be a
+fast and flexible way of exploring HTML from the terminal.")
+      (license license:expat))))
 
 (define-public uhttpmock
   (package
