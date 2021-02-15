@@ -43,7 +43,7 @@
 (define-public sane-backends-minimal
   (package
     (name "sane-backends-minimal")
-    (version "1.0.31")
+    (version "1.0.32")
     (source (origin
              (method git-fetch)
              (uri (git-reference
@@ -51,7 +51,7 @@
                    (commit version)))
              (file-name (git-file-name name version))
              (sha256
-              (base32 "161hh2zcs2fh6vxxgavf3m0xbm1gbxkasp10p8964pkzxax8rwqp"))
+              (base32 "13jlqdp7n7z2n78v6idl3ri5idk7ddk9j8wrmh73lba8l9y8xnsi"))
              (modules '((guix build utils)))
              (snippet
               ;; Generated HTML files and udev rules normally embed a
@@ -77,9 +77,11 @@
        (modify-phases %standard-phases
          (add-before 'bootstrap 'zap-unnecessary-git-dependency
            (lambda _
-             (substitute* "configure.ac"
-               (("git describe --dirty")
-                (string-append "echo " ,version)))))
+             ;; This runs before default patch-shebangs phase.
+             (substitute* "tools/git-version-gen"
+               (("/bin/sh") (which "sh")))
+             (with-output-to-file ".tarball-version"
+               (lambda _ (format #t ,version)))))
          (add-before 'configure 'disable-backends
            (lambda _
              (setenv "BACKENDS" " ")
