@@ -1420,6 +1420,37 @@ and macros, primarily for software projects written in CL by the author.")
 (define-public cl-piping
   (sbcl-package->cl-source-package sbcl-piping))
 
+(define-public sbcl-cl-pcg
+  (let ((commit "8263d85ab0ca17fb05637a4430c2d564456bce8f")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-pcg")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/sjl/cl-pcg")
+               (commit commit)))
+         (file-name (git-file-name "cl-pcg" version))
+         (sha256
+          (base32 "0s57wvvlvshp1gcp9i9d3qcmqhswnxps3i0y7wbb0v8i1a3p46m4"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("1am" ,sbcl-1am)))
+      (home-page "https://github.com/sjl/cl-pcg")
+      (synopsis "Permuted congruential generators in Common Lisp")
+      (description
+       "This is a bare-bones Permuted Congruential Generator implementation in
+pure Common Lisp.")
+      (license license:expat))))
+
+(define-public ecl-cl-pcg
+  (sbcl-package->ecl-package sbcl-cl-pcg))
+
+(define-public cl-pcg
+  (sbcl-package->cl-source-package sbcl-cl-pcg))
+
 (define-public sbcl-jpl-queues
   (package
     (name "sbcl-jpl-queues")
