@@ -815,7 +815,7 @@ users.")
   (package
     (inherit hamlib)
     (name "wsjtx-hamlib")
-    (version "2.2.2")
+    (version "2.3.0")
     (source
      (origin
        (method git-fetch)
@@ -824,7 +824,7 @@ users.")
              (commit (string-append "wsjtx-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "01h5ps0yq5vi1x9rkw742gx6a5fj02zhbpi89i412qdfbnyk35cv"))))
+        (base32 "0ampwqs7p0g8pdnwpdrbvwyqag065n96amgb3v4z332nw0nxvm10"))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -849,7 +849,7 @@ users.")
 (define-public wsjtx
   (package
     (name "wsjtx")
-    (version "2.2.2")
+    (version "2.3.0")
     (source
      (origin
        (method git-fetch)
@@ -858,13 +858,7 @@ users.")
              (commit (string-append "wsjtx-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0fhws44gg05d9y2al0pcdnxwxwh4bazcfl0g5mq2ks1r7w23wi5x"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           ;; Delete bundled boost to use the shared one.
-           (delete-file-recursively "boost")
-           #t))))
+        (base32 "1qf8r88ssara3pddvd3jpv5phzxwnanvdj00dxgmzq0c2jqcy2a8"))))
     (build-system qt-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)
