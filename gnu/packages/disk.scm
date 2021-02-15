@@ -376,16 +376,15 @@ to recover data more efficiently by only reading the necessary blocks.")
 (define-public dosfstools
   (package
     (name "dosfstools")
-    (version "4.1")
+    (version "4.2")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/" name "/" name
+       (uri (string-append "https://github.com/dosfstools/dosfstools"
                            "/releases/download/v" version "/"
-                           name "-" version ".tar.xz"))
+                           "dosfstools-" version ".tar.gz"))
        (sha256
-        (base32
-         "0wy13i3i4x2bw1hf5m4fd0myh61f9bcrs035fdlf6gyc1jksrcp6"))))
+        (base32 "09xm1540h9npqw0s5s2335xqxfdp059rl98l3fidr4h0z7mnx4k4"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list "--enable-compat-symlinks")
