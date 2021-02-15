@@ -90,6 +90,7 @@
 ;;; Copyright © 2020 Jonathan Rostran <rostranjj@gmail.com>
 ;;; Copyright © 2020, 2021 Noah Evans <noah@nevans.me>
 ;;; Copyright © 2020 Brit Butler <brit@kingcons.io>
+;;; Copyright © 2021 Alexandr Vityazev avityazew@gmail.com
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19472,8 +19473,8 @@ Pandoc, the document-conversion tool.")
       (license license:expat))))
 
 (define-public emacs-ccls
-  (let ((commit "aab3e31fd716daf59f9794e62d473357263e8cc0")
-        (revision "4"))
+  (let ((commit "675a5704c14a27931e835a431beea3631d92e8e6")
+        (revision "5"))
     (package
       (name "emacs-ccls")
       (version (git-version "0.1" revision commit))
@@ -19486,12 +19487,11 @@ Pandoc, the document-conversion tool.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1ykgw21ypyhwlyflppjcgqrj1xw4d9rld4z65qvwhk3f12cv113j"))))
+           "0l4bhyr9d8ljz1f0cfg1s2cjcmh6fiwbk5mdlvc7rrwz5hxc21is"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("ccls" ,ccls)
          ("emacs-dash" ,emacs-dash)
-         ("emacs-projectile" ,emacs-projectile)
          ("emacs-lsp-mode" ,emacs-lsp-mode)))
       (home-page "https://github.com/MaskRay/emacs-ccls")
       (synopsis "Emacs support for the @code{ccls} language server")
