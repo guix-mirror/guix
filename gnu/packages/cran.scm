@@ -33,6 +33,7 @@
 ;;; Copyright © 2020 Magali Lemes <magalilemes00@gmail.com>
 ;;; Copyright © 2020 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2020 Aniket Patil <aniket112.patil@gmail.com>
+;;; Copyright © 2021 Tim Howes <timhowes@lavabit.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28280,3 +28281,24 @@ functionalities for displaying text co-occurrence networks, text correlation
 networks, dependency relationships as well as text clustering.  Feel free to
 join the effort of providing interesting text visualisations.")
     (license license:gpl2)))
+
+(define-public r-gsa
+  (package
+    (name "r-gsa")
+    (version "1.03.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "GSA" version))
+       (sha256
+        (base32
+         "05x9wspah1cdznjpncqam1iawsxdiigyl8v2anyhss2k7wwd94p1"))))
+    (properties `((upstream-name . "GSA")))
+    (build-system r-build-system)
+    (home-page "https://statweb.stanford.edu/~tibs/GSA/")
+    (synopsis "Gene set analysis")
+    (description "This package lets you determine the significance of
+pre-defined sets of genes with respect to an outcome variable, such as a group
+indicator, a quantitative variable or a survival time.")
+    ;; Any version of the LGPL
+    (license license:lgpl3+)))
