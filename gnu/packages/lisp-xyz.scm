@@ -2092,10 +2092,10 @@ processes that doesn't run under Emacs.  Lisp processes created by
   (sbcl-package->ecl-package sbcl-slime-swank))
 
 (define-public sbcl-mgl-pax
-  (let ((commit "818448418d6b9de74620f606f5b23033c6082769"))
+  (let ((commit "61ce8741f8920bd2faa425c5de4a99afdbc506c2"))
     (package
       (name "sbcl-mgl-pax")
-      (version (git-version "0.0.0" "1" commit))
+      (version (git-version "0.0.3" "1" commit))
       (source
        (origin
          (method git-fetch)
@@ -2103,8 +2103,7 @@ processes that doesn't run under Emacs.  Lisp processes created by
                (url "https://github.com/melisgl/mgl-pax")
                (commit commit)))
          (sha256
-          (base32
-           "1p97zfkh130bdxqqxwaw2j9psv58751wakx7czbfpq410lg7dd7i"))
+          (base32 "1zm3j9vzd38b9pq7wmamj0pm1v5i13339mkbywyv0jzb5n1hz9s1"))
          (file-name (git-file-name "mgl-pax" version))))
       (build-system asdf-build-system/sbcl)
       (inputs
