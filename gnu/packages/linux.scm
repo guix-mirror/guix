@@ -353,6 +353,19 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 
 ;; The current "stable" kernels. That is, the most recently released major
 ;; versions that are still supported upstream.
+(define-public linux-libre-5.11-version "5.11")
+(define deblob-scripts-5.11
+  (linux-libre-deblob-scripts
+   linux-libre-5.11-version
+   (base32 "1kcvwbbzlii4smx6m4hj97va5bf3drbglb24jkky93a1g37a9ksj")
+   (base32 "0y76962qnnjxc5jgaw9vwrydzwjvj3q4xf7skp3ks2dab7vkhj33")))
+(define-public linux-libre-5.11-pristine-source
+  (let ((version linux-libre-5.11-version)
+        (hash (base32 "1d37w0zvmf8c1l99xvy1hy6p55icjhmbsv7f0amxy2nly1a7pw04")))
+   (make-linux-libre-source version
+                            (%upstream-linux-source version hash)
+                            deblob-scripts-5.11)))
+
 (define-public linux-libre-5.10-version "5.10.16")
 (define deblob-scripts-5.10
   (linux-libre-deblob-scripts
@@ -468,6 +481,11 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (patches (append (origin-patches source)
                      patches))))
 
+(define-public linux-libre-5.11-source
+  (source-with-patches linux-libre-5.11-pristine-source
+                       (list %boot-logo-patch
+                             %linux-libre-arm-export-__sync_icache_dcache-patch)))
+
 (define-public linux-libre-5.10-source
   (source-with-patches linux-libre-5.10-pristine-source
                        (list %boot-logo-patch
@@ -571,6 +589,10 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (synopsis "GNU Linux-Libre kernel headers")
     (description "Headers of the Linux-Libre kernel.")
     (license license:gpl2)))
+
+(define-public linux-libre-headers-5.11
+  (make-linux-libre-headers* linux-libre-5.10-version
+                             linux-libre-5.10-source))
 
 (define-public linux-libre-headers-5.10
   (make-linux-libre-headers* linux-libre-5.10-version
@@ -865,6 +887,12 @@ It has been modified to remove all non-free binary blobs.")
 ;;;
 ;;; Generic kernel packages.
 ;;;
+
+(define-public linux-libre-5.11
+  (make-linux-libre* linux-libre-5.11-version
+                     linux-libre-5.11-source
+                     '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux" "riscv64-linux")
+                     #:configuration-file kernel-config))
 
 (define-public linux-libre-5.10
   (make-linux-libre* linux-libre-5.10-version
