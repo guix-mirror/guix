@@ -12661,7 +12661,7 @@ and supports the use of a mouse.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/emacsorphanage/transpose-frame.git")
+             (url "https://github.com/emacsorphanage/transpose-frame")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
