@@ -1825,7 +1825,7 @@ have been designed to be very distinguishable from each other.")
 (define-public font-dseg
   (package
     (name "font-dseg")
-    (version "0.45")
+    (version "0.46")
     (source
       (origin
         (method url-fetch/zipbomb)
@@ -1836,8 +1836,7 @@ have been designed to be very distinguishable from each other.")
                          (string-concatenate (string-split version #\.))
                          ".zip"))
         (sha256
-          (base32
-            "0v8sghh4vl286faf8pvi74znz07pyf0qii8z4wjllisqwc35sx72"))))
+          (base32 "13133kpa1ndsji9yq5ppkds5yq2y094qvrv2f83ah74p40sz9hm6"))))
     (build-system font-build-system)
     (arguments
      `(#:phases
