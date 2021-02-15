@@ -12656,15 +12656,16 @@ and supports the use of a mouse.")
 (define-public emacs-transpose-frame
   (package
     (name "emacs-transpose-frame")
-    (version "0.1.0")
+    (version "0.2.0")
     (source
      (origin
-       (method url-fetch)
-       (uri "https://www.emacswiki.org/emacs/download/transpose-frame.el")
-       (file-name (string-append "transpose-frame-" version ".el"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/emacsorphanage/transpose-frame.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1f67yksgw9s6j0033hmqzaxx2a93jm11sd5ys7cc3li5gfh680m4"))))
+        (base32 "01j4ci0c52r2c31hc9r4p7nsb6s8blmvg50g9n5v5h3afjl1c35v"))))
     (build-system emacs-build-system)
     (home-page "https://www.emacswiki.org/emacs/TransposeFrame")
     (synopsis "Transpose window arrangement in current frame")
