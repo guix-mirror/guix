@@ -11,7 +11,7 @@
 ;;; Copyright © 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2015, 2017, 2018 Christopher Lemmer Webber <cwebber@dustycloud.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016, 2017 Rodger Fox <thylakoid@openmailbox.org>
@@ -12169,6 +12169,63 @@ inside the Zenith Colony.")
 such as GnuGo.
 @end itemize")
     (license license:gpl2+)))
+
+(define-public passage
+  (package
+    (name "passage")
+    (version "4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/hcsoftware/Passage/v"
+                           version "/Passage_v" version "_UnixSource.tar.gz"))
+       (sha256
+        (base32 "02ky4a4xdjvr71r58339jjrjyz76b5skcnbq4f8707mrln9vhby3"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #false ; there are none
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _
+             (chdir "gamma256/gameSource")
+             (system "cat Makefile.GnuLinux Makefile.all > Makefile")))
+         (replace 'configure
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (setenv "CPATH"
+                     (string-append
+                      (assoc-ref inputs "sdl") "/include/SDL:"
+                      (or (getenv "CPATH") "")))
+             (let* ((out (assoc-ref outputs "out"))
+                    (assets (string-append out "/share/passage")))
+               (substitute* "common.cpp"
+                 (("readTGA\\( \"graphics\"")
+                  (format #false "readTGA(\"~a/graphics\"" assets)))
+               (substitute* "musicPlayer.cpp"
+                 (("readTGA\\( \"music\"")
+                  (format #false "readTGA(\"~a/music\"" assets))))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (assets (string-append out "/share/passage/")))
+               (install-file "Passage" bin)
+               (install-file "../documentation/Readme.txt" assets)
+               (copy-recursively "graphics" (string-append assets "graphics"))
+               (copy-recursively "music" (string-append assets "music"))
+               (copy-recursively "settings" (string-append assets "settings"))))))))
+    (inputs
+     `(("sdl" ,(sdl-union (list sdl sdl-mixer)))))
+    (native-inputs
+     `(("imagemagick" ,imagemagick)))
+    (home-page "http://hcsoftware.sourceforge.net/passage/")
+    (synopsis "Memento mori game")
+    (description "Passage is meant to be a memento mori game. It presents an
+entire life, from young adulthood through old age and death, in the span of
+five minutes.  Of course, it's a game, not a painting or a film, so the
+choices that you make as the player are crucial.  There's no \"right\" way to
+play Passage, just as there's no right way to interpret it.")
+    (license license:public-domain)))
 
 (define-public paperview
   (let ((commit "9f8538eb6734c76877b878b8f1e52587f2ae19e6")
