@@ -161,34 +161,52 @@ window managers, that don't provide Qt integration by themselves.")
     (license license:bsd-2)))
 
 (define-public materialdecoration
-  (package
-    (name "materialdecoration")
-    (version "1.1.0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri
-        (git-reference
-         (url "https://github.com/lirios/materialdecoration.git")
-         (commit "2079487116c6c794af3a15452342a69293039b46")))
-       (file-name
-        (git-file-name name version))
-       (sha256
-        (base32 "1pczmxbmnsgj9s1g6ap55qq2q4ccibcnhsw9b6cl5rzgc48izy06"))))
-    (build-system qt-build-system)
-    (native-inputs
-     `(("cmake-shared" ,cmake-shared)
-       ("extra-cmake-modules" ,extra-cmake-modules)
-       ("pkg-config" ,pkg-config)))
-    (inputs
-     `(("qtbase" ,qtbase)
-       ("qtwayland" ,qtwayland)
-       ("wayland" ,wayland)))
-    (synopsis "Material Decoration for Qt")
-    (description "MaterialDecoration is a client-side decoration for Qt
+  (let ((commit "6a5de23f2e5162fbee39d16f938473ff970a2ec0")
+        (revision "9"))
+    (package
+      (name "materialdecoration")
+      (version
+       (git-version "1.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/lirios/materialdecoration.git")
+           (commit commit)))
+         (file-name
+          (git-file-name name version))
+         (sha256
+          (base32 "1zdrcb39fhhmn76w8anv1dnspz26pdl6izmj1mlm02aza4y8ffp4"))
+         (modules '((guix build utils)
+                    (ice-9 ftw)
+                    (srfi srfi-1)))
+         (snippet
+          `(begin
+             (delete-file-recursively "cmake/3rdparty")))))
+      (build-system qt-build-system)
+      (arguments
+       `(#:tests? #f                    ; No target
+         #:configure-flags
+         (list
+          (string-append "-DCMAKE_CXX_FLAGS=-I"
+                         (assoc-ref %build-inputs "qtbase")
+                         "/include/qt5/QtXkbCommonSupport/"
+                         ,(package-version qtbase)))))
+      (native-inputs
+       `(("cmake-shared" ,cmake-shared)
+         ("extra-cmake-modules" ,extra-cmake-modules)
+         ("pkg-config" ,pkg-config)))
+      (inputs
+       `(("qtbase" ,qtbase)
+         ("qtwayland" ,qtwayland)
+         ("wayland" ,wayland)
+         ("xkbcommon" ,libxkbcommon)))
+      (synopsis "Material Decoration for Qt")
+      (description "MaterialDecoration is a client-side decoration for Qt
 applications on Wayland.")
-    (home-page "https://github.com/lirios/materialdecoration")
-    (license license:lgpl3+)))
+      (home-page "https://github.com/lirios/materialdecoration")
+      (license license:lgpl3+))))
 
 (define-public grantlee
   (package
