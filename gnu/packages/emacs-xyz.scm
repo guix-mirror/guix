@@ -29,7 +29,7 @@
 ;;; Copyright © 2017, 2018, 2019, 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
-;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Mike Gerwitz <mtg@gnu.org>
 ;;; Copyright © 2017, 2018, 2019, 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Sohom Bhattacharjee <soham.bhattacharjee15@gmail.com>
@@ -14690,10 +14690,10 @@ functionality is inherited from @code{hcl-mode}.")
          "1ga8bpxngd3ph2hdiik92c612ki71qxw818i6rgx6f6a5r0sbf3p"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/purcell/exec-path-from-shell")
-    (synopsis "Get environment variables such as @var{PATH} from the shell")
+    (synopsis "Get environment variables such as @env{PATH} from the shell")
     (description
-     "This library allows the user to set Emacs @var{exec-path} and @var{PATH}
-from the shell @var{PATH}, so that @code{shell-command}, @code{compile} and
+     "This library allows the user to set Emacs @code{exec-path} and @env{PATH}
+from the shell's @env{PATH}, so that @code{shell-command}, @code{compile} and
 the like work as expected on systems on which Emacs is not guaranteed to
 inherit a login shell's environment variables.  It also allows other
 environment variables to be retrieved from the shell, so that Emacs will see
