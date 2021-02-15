@@ -4,7 +4,7 @@
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016, 2020 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
@@ -121,14 +121,14 @@ a flexible and convenient way.")
 (define-public man-db
   (package
     (name "man-db")
-    (version "2.9.3")
+    (version "2.9.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/man-db/man-db-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1f4palf5bdyf3f8sa0981cqxn9cjcr2pz53ngrrsybb9n0da2nps"))))
+                "0mk7n7yn6scy785jhg1j14b3q9l0cgvpry49r0ldjsnizbnrjv5n"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
