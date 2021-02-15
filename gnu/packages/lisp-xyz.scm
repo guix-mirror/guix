@@ -1451,6 +1451,40 @@ pure Common Lisp.")
 (define-public cl-pcg
   (sbcl-package->cl-source-package sbcl-cl-pcg))
 
+(define-public sbcl-seedable-rng
+  (let ((commit "aa1a1564b6e07e2698df37c7a98348c4f762cb15")
+        (revision "1"))
+    (package
+      (name "sbcl-seedable-rng")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://git.mfiano.net/mfiano/seedable-rng")
+               (commit commit)))
+         (file-name (git-file-name "seedable-rng" version))
+         (sha256
+          (base32 "1ldpsbp3qrfzvknclsxj3sdyms1jf9ad20dvh4w0kw3zgahn2nr5"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("cl-pcg" ,sbcl-cl-pcg)
+         ("golden-utils" ,sbcl-golden-utils)
+         ("ironclad" ,sbcl-ironclad)))
+      (home-page "https://git.mfiano.net/mfiano/seedable-rng")
+      (synopsis "Common Lisp random number generator")
+      (description
+       "SEEDABLE-RNG provides a convenient means of generating random numbers
+that are seedable with deterministic results across hardware and Common Lisp
+implementations.")
+      (license license:expat))))
+
+(define-public ecl-seedable-rng
+  (sbcl-package->ecl-package sbcl-seedable-rng))
+
+(define-public cl-seedable-rng
+  (sbcl-package->cl-source-package sbcl-seedable-rng))
+
 (define-public sbcl-jpl-queues
   (package
     (name "sbcl-jpl-queues")
