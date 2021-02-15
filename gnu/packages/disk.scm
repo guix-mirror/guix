@@ -379,19 +379,23 @@ to recover data more efficiently by only reading the necessary blocks.")
     (version "4.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/dosfstools/dosfstools"
-                           "/releases/download/v" version "/"
-                           "dosfstools-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dosfstools/dosfstools")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "09xm1540h9npqw0s5s2335xqxfdp059rl98l3fidr4h0z7mnx4k4"))))
+        (base32 "1xygsixmmc9l7drxylggnzkqqiks8zmlsbhg3z723ii2ak94236s"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list "--enable-compat-symlinks")
        #:make-flags (list (string-append "PREFIX=" %output)
                           "CC=gcc")))
     (native-inputs
-     `(("xxd" ,xxd))) ; for tests
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ;; For tests.
+       ("xxd" ,xxd)))
     (home-page "https://github.com/dosfstools/dosfstools")
     (synopsis "Utilities for making and checking MS-DOS FAT file systems")
     (description
