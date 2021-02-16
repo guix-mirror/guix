@@ -10288,14 +10288,14 @@ rounded or exact terms.")
 (define-public perl-time-duration-parse
   (package
     (name "perl-time-duration-parse")
-    (version "0.14")
+    (version "0.15")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/N/NE/NEILB/"
                            "Time-Duration-Parse-" version ".tar.gz"))
        (sha256
-        (base32 "17nh73r50mqqpgxdf3zpgdiqrizmjy0vdk0zd6xi9zcsdijrdhnc"))))
+        (base32 "10g39bbrxkabbsfq4rv7f5b5x7h3jba08j4pg8gwr0b9iqx19n31"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-time-duration" ,perl-time-duration)))
