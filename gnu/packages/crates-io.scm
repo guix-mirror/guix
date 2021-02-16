@@ -30275,14 +30275,14 @@ radix.")
 (define-public rust-rand-0.8
   (package
     (name "rust-rand")
-    (version "0.8.2")
+    (version "0.8.3")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "rand" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "07lb17qj02bi17mhqxlmsiyf4g8cmplm6hbiw5hxc900li19nl8q"))))
+        (base32 "0zldxfx4gi551n2fna4zz9ab22zsnzw1mj5hzi5nfs24dgkfgy8f"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
