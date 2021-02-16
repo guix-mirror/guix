@@ -3787,7 +3787,7 @@ Monitor read/write activity on a mongo server
 (define-public apache-arrow
   (package
     (name "apache-arrow")
-    (version "0.17.1")
+    (version "3.0.0")
     (source
      (origin
        (method git-fetch)
@@ -3797,7 +3797,7 @@ Monitor read/write activity on a mongo server
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "02r6yx3yhywzikd3b0vfkjgddhfiriyx2vpm3jf5880wq59x798a"))))
+         "03ngddh3r1g6f9aja2jlfksgvgyzmxmfy4bxvzjrcv5fvl5x8ii0"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f
@@ -3890,6 +3890,7 @@ Monitor read/write activity on a mongo server
        ("rapidjson" ,rapidjson)
        ("re2" ,re2)
        ("snappy" ,snappy)
+       ("utf8proc" ,utf8proc)
        ("zlib" ,zlib)
        ("zstd" ,zstd "lib")))
     (native-inputs
