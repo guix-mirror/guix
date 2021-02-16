@@ -2092,10 +2092,11 @@ processes that doesn't run under Emacs.  Lisp processes created by
   (sbcl-package->ecl-package sbcl-slime-swank))
 
 (define-public sbcl-mgl-pax
-  (let ((commit "61ce8741f8920bd2faa425c5de4a99afdbc506c2"))
+  (let ((commit "4ada6eb26364e71addb169ce58e4ba83bc7a8eaa")
+        (revision "2"))
     (package
       (name "sbcl-mgl-pax")
-      (version (git-version "0.0.3" "1" commit))
+      (version (git-version "0.0.3" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -2103,7 +2104,7 @@ processes that doesn't run under Emacs.  Lisp processes created by
                (url "https://github.com/melisgl/mgl-pax")
                (commit commit)))
          (sha256
-          (base32 "1zm3j9vzd38b9pq7wmamj0pm1v5i13339mkbywyv0jzb5n1hz9s1"))
+          (base32 "1s38crgvmd9hgqwsscqpj6m6c10a074zjgg8k5sl15yih1wkpssm"))
          (file-name (git-file-name "mgl-pax" version))))
       (build-system asdf-build-system/sbcl)
       (inputs
@@ -2137,13 +2138,7 @@ pretty, documentation is code.")
   (sbcl-package->cl-source-package sbcl-mgl-pax))
 
 (define-public ecl-mgl-pax
-  (let ((pkg (sbcl-package->ecl-package sbcl-mgl-pax)))
-    (package
-      (inherit pkg)
-      (arguments
-       (substitute-keyword-arguments (package-arguments pkg)
-         ;; TODO: Find why the tests fail on ECL.
-         ((#:tests? _ #f) #f))))))
+  (sbcl-package->ecl-package sbcl-mgl-pax))
 
 (define-public sbcl-mssql
   (let ((commit "045602a19a32254108f2b75871049293f49731eb")
