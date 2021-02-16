@@ -13342,6 +13342,7 @@ library and the API is similar.")
               (uri (git-reference
                     (url "https://github.com/kohsuke/args4j")
                     (commit (string-append "args4j-site-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "0w061fg65qrsm1a0lz0vyprsyidj31krjb459qi2lw0y78xza26s"))))
