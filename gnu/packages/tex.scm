@@ -7795,4 +7795,4 @@ heavier.  Arev is one of a very small number of sans-font mathematics
 support packages.  Others are cmbright, hvmath and kerkis.")
     (license (list license:silofl1.1 ;for Arev Sans
                    license:lppl1.3a  ;for TeX support files
-                   license:gpl2))))  ;fora ms-mdbch.sty
+                   license:gpl2))))  ;for ams-mdbch.sty
