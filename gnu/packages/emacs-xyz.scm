@@ -2905,7 +2905,7 @@ and stored in memory.")
 (define-public emacs-dash
   (package
     (name "emacs-dash")
-    (version "2.17.0")
+    (version "2.18.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2914,11 +2914,9 @@ and stored in memory.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "153f55dqkhs8w2xlf6b88wp5vlkap7h8vjd9wxh4jp2ram5g4l1n"))))
+                "190v264wj5cdm109ippzx2vc64hvfzmh5nbx4f2w09hn0hwfqipm"))))
     (build-system emacs-build-system)
-    (arguments
-     `(#:tests? #t
-       #:test-command '("./run-tests.sh")))
+    (arguments `(#:tests? #t))
     (home-page "https://github.com/magnars/dash.el")
     (synopsis "Modern list library for Emacs")
     (description "This package provides a modern list API library for Emacs.")
