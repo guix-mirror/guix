@@ -600,16 +600,17 @@ scripts/input/X11/C/Shell/HTML/Dired): 49KB.
 (define-public ghostwriter
   (package
     (name "ghostwriter")
-    (version "1.8.1")
+    ;; XXX We use a release candidate to fix incompatibility with Qt 5.15.
+    (version "2.0.0-rc4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/wereturtle/ghostwriter")
-                    (commit (string-append "v" version))))
+                    (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0jc6szfh5sdnafhwsr1xv7cn1fznniq58bix41hb9wlbkvq7wzi6"))))
+                "07547503a209hc0fcg902w3x0s1m899c10nj3gqz3hak0cmrasi3"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
