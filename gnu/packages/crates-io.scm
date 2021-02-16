@@ -21541,23 +21541,22 @@ by inspecting the system for user preference.")
 (define-public rust-log-0.4
   (package
     (name "rust-log")
-    (version "0.4.11")
+    (version "0.4.14")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "log" version))
-        (file-name (string-append name "-" version ".crate"))
-        (sha256
-         (base32
-          "12xzqaflpiljn5cmxsbnbv9sjaj13ykhwsvll0gysbx4blbyvasg"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "log" version))
+       (file-name (string-append name "-" version ".crate"))
+       (sha256
+        (base32 "04175hv0v62shd82qydq58a48k3bjijmk54v38zgqlbxqkkbpfai"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs
+     `(#:skip-build? #t
+       #:cargo-inputs
        (("rust-cfg-if" ,rust-cfg-if-0.1)
         ("rust-serde" ,rust-serde-1)
-        ("rust-sval" ,rust-sval-0.5))
-       #:cargo-development-inputs
-       (("rust-serde-test" ,rust-serde-test-1))))
+        ("rust-sval" ,rust-sval-1)
+        ("rust-value-bag" ,rust-value-bag-1))))
     (home-page "https://github.com/rust-lang/log")
     (synopsis "Lightweight logging facade for Rust")
     (description
