@@ -36377,14 +36377,14 @@ for later processing.")
 (define-public rust-serde-yaml-0.8
   (package
     (name "rust-serde-yaml")
-    (version "0.8.15")
+    (version "0.8.17")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "serde_yaml" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "17q8rshlq56z6zna7wxhk9pihna3s5qdz8q5niip396lwkvfh6wp"))))
+        (base32 "08xvb5zxz3x5dgx0fy1q0aq9aa9fibcvi75333wnnwk1mga4wr8m"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
