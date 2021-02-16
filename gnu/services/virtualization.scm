@@ -172,7 +172,7 @@ stopping the Avahi daemon.")
    "Default mDNS advertisement name. This must be unique on the
 immediate broadcast network.")
   (unix-sock-group
-   (string "root")
+   (string "libvirt")
    "UNIX domain socket group ownership. This can be used to
 allow a 'trusted' set of users access to management capabilities
 without becoming root.")
