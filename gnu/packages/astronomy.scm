@@ -54,6 +54,7 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages version-control)
+  #:use-module (gnu packages video)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xorg)
   #:use-module (guix build-system cmake)
@@ -513,6 +514,48 @@ Mechanics, Astrometry and Astrodynamics library.")
     (home-page "http://libnova.sourceforge.net/")
     (license (list license:lgpl2.0+
                    license:gpl2+)))) ; examples/transforms.c & lntest/*.c
+
+(define-public libskry
+  (package
+    (name "libskry")
+    (version "0.3.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/GreatAttractor/libskry")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "14kwng0j8wqzlb0gqg3ayq36l15dpz7kvxc56fa47j55b376bwh6"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list
+        (string-append
+         "LIBAV_INCLUDE_PATH=" (assoc-ref %build-inputs "ffmpeg") "/include"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure) ;; no configure provided
+         (delete 'check) ;; no tests provided
+         (replace 'install
+           ;; The Makefile lacks an ‘install’ target.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib"))
+                    (include (string-append out "/include")))
+               (copy-recursively "bin" lib)
+               (copy-recursively "include" include))
+             #t)))))
+    (inputs
+     `(("ffmpeg" ,ffmpeg)))
+    (home-page "https://github.com/GreatAttractor/libskry")
+    (synopsis "Astronimical lucky imaging library")
+    (description
+     "@code{libskry} implements the lucky imaging principle of astronomical
+imaging: creating a high-quality still image out of a series of many thousands)
+low quality ones")
+    (license license:gpl3+)))
 
 (define-public libpasastro
   ;; NOTE: (Sharlatan-20210122T215921+0000): the version tag has a build
