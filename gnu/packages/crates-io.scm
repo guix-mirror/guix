@@ -45708,7 +45708,7 @@ first byte.")
 (define-public rust-uuid-0.8
   (package
     (name "rust-uuid")
-    (version "0.8.1")
+    (version "0.8.2")
     (source
       (origin
         (method url-fetch)
@@ -45717,17 +45717,17 @@ first byte.")
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "049w16qwk3d3b9cmpgvd7fvcnwgs75l8rlsagh06w7ga9dm2zplz"))))
+          "1dy4ldcp7rnzjy56dxh7d2sgrcvn4q77y0a8r0a48946h66zjp5w"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-winapi" ,rust-winapi-0.3)
-        ("rust-sha1" ,rust-sha1-0.6)
-        ("rust-md5" ,rust-md5-0.6)
-        ("rust-rand" ,rust-rand-0.7)
+       (("rust-getrandom" ,rust-getrandom-0.2)
+        ("rust-md5" ,rust-md5-0.7)
         ("rust-serde" ,rust-serde-1)
-        ("rust-slog" ,rust-slog-2))))
+        ("rust-sha1" ,rust-sha1-0.6)
+        ("rust-slog" ,rust-slog-2)
+        ("rust-winapi" ,rust-winapi-0.3))))
     (home-page "https://github.com/uuid-rs/uuid")
     (synopsis "Library to generate and parse UUIDs")
     (description
