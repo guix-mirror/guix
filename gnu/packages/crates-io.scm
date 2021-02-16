@@ -45953,6 +45953,31 @@ first byte.")
 rav1e.")
     (license license:bsd-2)))
 
+(define-public rust-value-bag-1
+  (package
+    (name "rust-value-bag")
+    (version "1.0.0-alpha.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "value-bag" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1cas61n2vkf9b82ljv6dzs8hp8s07arl68vw24rr1jamw0860rvb"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-ctor" ,rust-ctor-0.1)
+        ("rust-erased-serde" ,rust-erased-serde-0.3)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-fmt" ,rust-serde-fmt-1)
+        ("rust-sval" ,rust-sval-1))))
+    (home-page "https://github.com/sval-rs/value-bag")
+    (synopsis "Anonymous structured values")
+    (description "This package provides anonymous structured values.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-vcpkg-0.2
   (package
     (name "rust-vcpkg")
