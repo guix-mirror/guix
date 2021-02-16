@@ -12183,7 +12183,7 @@ such as GnuGo.
         (base32 "02ky4a4xdjvr71r58339jjrjyz76b5skcnbq4f8707mrln9vhby3"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #false ; there are none
+     `(#:tests? #false                  ; there are none
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'chdir
@@ -12220,11 +12220,12 @@ such as GnuGo.
      `(("imagemagick" ,imagemagick)))
     (home-page "http://hcsoftware.sourceforge.net/passage/")
     (synopsis "Memento mori game")
-    (description "Passage is meant to be a memento mori game. It presents an
-entire life, from young adulthood through old age and death, in the span of
-five minutes.  Of course, it's a game, not a painting or a film, so the
-choices that you make as the player are crucial.  There's no \"right\" way to
-play Passage, just as there's no right way to interpret it.")
+    (description
+     "Passage is meant to be a memento mori game.  It presents an entire life,
+from young adulthood through old age and death, in the span of five minutes.
+Of course, it's a game, not a painting or a film, so the choices that you make
+as the player are crucial.  There's no ``right'' way to play Passage, just as
+there's no right way to interpret it.")
     (license license:public-domain)))
 
 (define-public paperview
