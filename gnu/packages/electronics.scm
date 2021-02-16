@@ -28,6 +28,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
+  #:use-module (gnu packages algebra)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages boost)
@@ -38,8 +39,10 @@
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages graphviz)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages libftdi)
   #:use-module (gnu packages libusb)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages qt))
@@ -301,3 +304,30 @@ are implemented as a core Linux kernel module providing common functionality and
 individual low-level driver modules.")
     (home-page "https://www.comedi.org/")
     (license license:lgpl2.1)))
+
+(define-public xoscope
+  (package
+    (name "xoscope")
+    (version "2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/xoscope/xoscope/"
+                                  version "/xoscope-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1b9wxnrwz8qy6qyx5icrklb4720rlxnr1c4h3dr6g0dzj6nkc5av"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("comedilib" ,comedilib)
+       ("fftw" ,fftw)
+       ("gtk+-2" ,gtk+-2)
+       ("gtkdatabox" ,gtkdatabox)))
+    (synopsis "Digital oscilloscope")
+    (description "Xoscope is a digital oscilloscope that can acquire signals
+from ALSA, ESD, and COMEDI sources.  This package currently does not include
+support for ESD sources.")
+    (home-page "http://xoscope.sourceforge.net/")
+    (license license:gpl2+)))
