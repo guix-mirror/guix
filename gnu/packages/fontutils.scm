@@ -632,14 +632,14 @@ definitions.")
 (define-public fontforge
   (package
    (name "fontforge")
-   (version "20200314")
+   (version "20201107")
    (source (origin
             (method url-fetch)
             (uri (string-append
                   "https://github.com/fontforge/fontforge/releases/download/"
                   version "/fontforge-" version ".tar.xz"))
             (sha256
-             (base32 "0qf88wd6riycq56d24brybyc93ns74s0nyyavm43zp2kfcihn6fd"))))
+             (base32 "0y3c8x1i6yf6ak9m5dhr1nldgfmg7zhnwdfd57ffs698c27vmg38"))))
    (build-system cmake-build-system)
    (native-inputs
     `(("pkg-config" ,pkg-config)))
