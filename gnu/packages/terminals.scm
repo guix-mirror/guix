@@ -1276,6 +1276,12 @@ made by suckless.")
                     (libxkbcommon (assoc-ref inputs "libxkbcommon"))
                     (libwayland (assoc-ref inputs "wayland"))
                     (mesa (assoc-ref inputs "mesa")))
+               ;; Fix dlopen()ing some libraries on pure Wayland (no $DISPLAY):
+               ;; Failed to initialize any backend! Wayland status: NoWaylandLib
+               ;; XXX We patch transitive dependencies that aren't even direct
+               ;; inputs to this package, because of the way Guix's Rust build
+               ;; system currently works.  <http://issues.guix.gnu.org/46399>
+               ;; might fix this and allow patching them directly.
                (substitute* (string-append vendor-dir "/"
                                            smithay-client-toolkit-src
                                            "/seat/keyboard/ffi.rs")
@@ -1297,6 +1303,8 @@ made by suckless.")
                                            "/client.rs")
                  (("libwayland-client\\.so")
                   (string-append libwayland "/lib/libwayland-client.so")))
+
+               ;; Mesa is needed everywhere.
                (substitute*
                    (string-append vendor-dir "/" glutin-api "glx/mod.rs")
                  (("libGL.so") (string-append mesa "/lib/libGL.so")))
