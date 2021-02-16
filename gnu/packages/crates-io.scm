@@ -39516,8 +39516,32 @@ alike.  It's completely modular, and built directly for @code{async/await}.")
         ("rust-smallvec" ,rust-smallvec-0.6)
         ("rust-serde" ,rust-serde-1))))))
 
+(define-public rust-sval-derive-1
+  (package
+    (name "rust-sval-derive")
+    (version "1.0.0-alpha.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "sval_derive" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1clarb8fqxlffa2i6p70l5nr6l3pcp90p98xkvdn8f65xkc0hhkp"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/sval-rs/sval")
+    (synopsis "Custom derive for @code{sval}")
+    (description "This package provides custom derive for @code{sval}.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-sval-derive-0.5
   (package
+    (inherit rust-sval-derive-1)
     (name "rust-sval-derive")
     (version "0.5.2")
     (source
@@ -39527,16 +39551,11 @@ alike.  It's completely modular, and built directly for @code{async/await}.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1spip2cjhmjazq2dns69909p9hyx4cmbx6ma4g2skwvcwv4h3gnq"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-proc-macro2" ,rust-proc-macro2-1)
         ("rust-quote" ,rust-quote-1)
-        ("rust-syn" ,rust-syn-1))))
-    (home-page "https://github.com/sval-rs/sval")
-    (synopsis "Custom derive for @code{sval}")
-    (description "This package provides custom derive for @code{sval}.")
-    (license (list license:asl2.0 license:expat))))
+        ("rust-syn" ,rust-syn-1))))))
 
 (define-public rust-sval-derive-0.4
   (package
