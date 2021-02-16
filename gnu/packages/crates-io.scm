@@ -22262,8 +22262,28 @@ parallelize and optimize.")
        (("rust-digest" ,rust-digest-0.8)
         ("rust-hex-literal" ,rust-hex-literal-0.1))))))
 
+(define-public rust-md5-0.7
+  (package
+    (name "rust-md5")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "md5" version))
+       (file-name (string-append name "-" version ".crate"))
+       (sha256
+        (base32 "0wcps37hrhz59fkhf8di1ppdnqld6l1w5sdy7jp7p51z0i4c8329"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/stainless-steel/md5")
+    (synopsis "MD5 hash function in Rust")
+    (description "The package provides the MD5 hash function.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-md5-0.6
   (package
+    (inherit rust-md5-0.7)
     (name "rust-md5")
     (version "0.6.1")
     (source
@@ -22273,13 +22293,7 @@ parallelize and optimize.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "17b2xm4h4cvxsdjsf3kdrzqv2za60kak961xzi5kmw6g6djcssvy"))))
-    (build-system cargo-build-system)
-    (home-page "https://github.com/stainless-steel/md5")
-    (synopsis "MD5 hash function in Rust")
-    (description "The package provides the MD5 hash function.")
-    (license (list license:asl2.0
-                   license:expat))))
+          "17b2xm4h4cvxsdjsf3kdrzqv2za60kak961xzi5kmw6g6djcssvy"))))))
 
 (define-public rust-md5-0.3
   (package
