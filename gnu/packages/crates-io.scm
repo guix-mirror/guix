@@ -25290,7 +25290,7 @@ directly.")
 (define-public rust-num-integer-0.1
   (package
     (name "rust-num-integer")
-    (version "0.1.43")
+    (version "0.1.44")
     (source
      (origin
        (method url-fetch)
@@ -25299,15 +25299,15 @@ directly.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0nw79ynfvw8br6yncv27pw65y2vw2z7m3kv9g2hinm1dcrz4ancd"))))
+         "1nq152y3304as1iai95hqz8prqnc94lks1s7q05sfjdmcf56kk6j"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-num-traits" ,rust-num-traits-0.2)
-        ("rust-autocfg" ,rust-autocfg-1))))
+       (("rust-autocfg" ,rust-autocfg-1)
+        ("rust-num-traits" ,rust-num-traits-0.2))))
     (home-page "https://github.com/rust-num/num-integer")
     (synopsis "Integer traits and functions")
-    (description "Integer traits and functions.")
+    (description "This package provides Integer traits and functions.")
     ;; Dual licensed.
     (license (list license:asl2.0
                    license:expat))))
