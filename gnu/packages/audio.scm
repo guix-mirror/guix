@@ -19,7 +19,7 @@
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
-;;; Copyright © 2019 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2019, 2021 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -5057,4 +5057,58 @@ across multiple applications running on one or more devices.  Applications on de
 connected to a local network discover each other automatically and form a musical
 session in which each participant can perform independently: anyone can start or stop
 while still staying in time.")
+    (license license:gpl2+)))
+
+(define-public butt
+  (package
+    (name "butt")
+    (version "0.1.28")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/butt/butt/butt-"
+                                  version "/butt-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1rbp4v6dlyapld6y4aqbpfmcaiafa06f2zqd1rhk4r3ld3bndafm"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-documentation
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (manual (assoc-ref inputs "manual"))
+                    (doc (string-append out "/share/doc/" ,name "-" ,version)))
+               (install-file "README" doc)
+               (copy-file manual (string-append doc "/butt-manual.pdf"))))))))
+    (inputs
+     `(("dbus" ,dbus)
+       ("flac" ,flac)
+       ("fltk" ,fltk)
+       ("lame" ,lame)
+       ("libfdk" ,libfdk)
+       ("libsamplerate" ,libsamplerate)
+       ("libvorbis" ,libvorbis)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxfixes" ,libxfixes)
+       ("libxft" ,libxft)
+       ("libxrender" ,libxrender)
+       ("ogg" ,libogg)
+       ("openssl" ,openssl)
+       ("opus" ,opus)
+       ("portaudio" ,portaudio)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("manual" ,(origin
+                    (method url-fetch)
+                    (uri (string-append "https://danielnoethen.de/butt/butt-"
+                                        version "_manual.pdf"))
+                    (sha256
+                     (base32
+                      "04wz2sqhk22h9gymwh5r6kp6sxc994mia8rg9lwpmy1r18w4pvsl"))))))
+    (home-page "https://danielnoethen.de/butt/")
+    (synopsis "Audio streaming tool")
+    (description "Butt is a tool to stream audio to a ShoutCast or
+Icecast server.")
     (license license:gpl2+)))
