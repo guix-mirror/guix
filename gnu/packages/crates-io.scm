@@ -36795,7 +36795,7 @@ code is translated from C to Rust using c2rust.")
 (define-public rust-sha2-0.9
   (package
     (name "rust-sha2")
-    (version "0.9.2")
+    (version "0.9.3")
     (source
       (origin
         (method url-fetch)
@@ -36804,7 +36804,7 @@ code is translated from C to Rust using c2rust.")
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "1a225akwq8k1ym827f8f72rfgxaf7zdnnq07qpcblj91zs3anykf"))))
+          "1phjvjcvc33xa3xdpxw3a324ksbnrg9qhjnig13z9dwsn8a7m0ps"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
