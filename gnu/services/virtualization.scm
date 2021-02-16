@@ -131,6 +131,10 @@
   (libvirt
    (package libvirt)
    "Libvirt package.")
+  (qemu
+   (package qemu)
+   "Qemu package.")
+
   (listen-tls?
    (boolean #t)
    "Flag listening for secure TLS connections on the public TCP/IP port.
@@ -485,7 +489,7 @@ potential infinite waits blocking libvirt."))
                                      (lambda (config)
                                        (list
                                         (libvirt-configuration-libvirt config)
-                                        qemu)))
+                                        (libvirt-configuration-qemu config))))
                   (service-extension activation-service-type
                                      %libvirt-activation)
                   (service-extension shepherd-root-service-type
