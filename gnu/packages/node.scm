@@ -50,14 +50,14 @@
 (define-public node
   (package
     (name "node")
-    (version "10.22.1")
+    (version "10.23.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nodejs.org/dist/v" version
                                   "/node-v" version ".tar.xz"))
               (sha256
                (base32
-                "0pr569qiabr4m7k38s7rwi3iyzrc5jmx19z2z0k7n4xfvhjlfzzl"))
+                "13za06bz17k71gcxyrx41l2j8al1kr3j627b8m7kqrf3l7rdfnsi"))
               (modules '((guix build utils)))
               (snippet
                `(begin
