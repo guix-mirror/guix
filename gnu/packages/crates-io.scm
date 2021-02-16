@@ -39632,33 +39632,21 @@ browsers.")
 (define-public rust-syn-1
   (package
     (name "rust-syn")
-    (version "1.0.53")
+    (version "1.0.60")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "syn" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0s3y325n7s6gsg4wg0dq0pxymhv1x8qd4nmsp8my2kf24h3y4cw8"))))
+        (base32 "1080gw6mlja7yl26crya3k403wjdp7v3wx9mxcmpcnlar9z5j067"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-unicode-xid" ,rust-unicode-xid-0.2)
-        ("rust-proc-macro2" ,rust-proc-macro2-1)
-        ("rust-quote" ,rust-quote-1))
-       #:cargo-development-inputs
-       (("rust-anyhow" ,rust-anyhow-1)
-        ("rust-flate2" ,rust-flate2-1)
-        ("rust-insta" ,rust-insta-0.16)
-        ("rust-rayon" ,rust-rayon-1)
-        ("rust-ref-cast" ,rust-ref-cast-1)
-        ("rust-regex" ,rust-regex-1)
-        ("rust-reqwest" ,rust-reqwest-0.10)
-        ("rust-syn-test-suite" ,rust-syn-test-suite-0)
-        ("rust-tar" ,rust-tar-0.4)
-        ("rust-termcolor" ,rust-termcolor-1)
-        ("rust-walkdir" ,rust-walkdir-2))))
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-unicode-xid" ,rust-unicode-xid-0.2))))
     (home-page "https://github.com/dtolnay/syn")
     (synopsis "Parser for Rust source code")
     (description
