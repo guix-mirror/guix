@@ -40514,23 +40514,22 @@ deleting all contents when it's dropped.")
 (define-public rust-tempfile-3
   (package
     (name "rust-tempfile")
-    (version "3.1.0")
+    (version "3.2.0")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "tempfile" version))
-        (file-name (string-append name "-" version ".crate"))
-        (sha256
-         (base32
-          "1a9cfdqw70n7bcnkx05aih9xdba8lqazmqlkjpkmn2la6gcj8vks"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tempfile" version))
+       (file-name (string-append name "-" version ".crate"))
+       (sha256
+        (base32 "08pbf3c1i42382dc44dil5bgiawcsi0qk6zdibw10f69rxiwdhfs"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-cfg-if" ,rust-cfg-if-0.1)
+       (("rust-cfg-if" ,rust-cfg-if-1)
         ("rust-libc" ,rust-libc-0.2)
-        ("rust-rand" ,rust-rand-0.7)
-        ("rust-redox-syscall" ,rust-redox-syscall-0.1)
+        ("rust-rand" ,rust-rand-0.8)
+        ("rust-redox-syscall" ,rust-redox-syscall-0.2)
         ("rust-remove-dir-all" ,rust-remove-dir-all-0.5)
         ("rust-winapi" ,rust-winapi-0.3))))
     (home-page "https://stebalien.com/projects/tempfile-rs")
