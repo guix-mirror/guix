@@ -3,6 +3,7 @@
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2021 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2021 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -279,3 +280,24 @@ format support.")
     (description "PulseView is a Qt based logic analyzer, oscilloscope and MSO GUI
 for sigrok.")
     (license license:gpl3+)))
+
+(define-public comedilib
+  (package
+    (name "comedilib")
+    (version "0.12.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.comedi.org/download/comedilib-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0wzh23iyix4xj211fsd8hwrdcjhg2w5jswk9kywb1gpd3h8afajj"))))
+    (build-system gnu-build-system)
+    (synopsis "Library for Comedi")
+    (description "Comedilib is a user-space library that provides a
+developer-friendly interface to Comedi devices.  Comedi is a collection of
+drivers for a variety of common data acquisition plug-in boards.  The drivers
+are implemented as a core Linux kernel module providing common functionality and
+individual low-level driver modules.")
+    (home-page "https://www.comedi.org/")
+    (license license:lgpl2.1)))
