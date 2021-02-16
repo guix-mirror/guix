@@ -1006,13 +1006,9 @@ derivations--e.g., code evaluated for its side effects."
                        (guile     (if guile-for-build
                                       (return guile-for-build)
                                       (default-guile-derivation system)))
-                       (normals  (lower-inputs (gexp-inputs exp)
+                       (inputs   (lower-inputs (gexp-inputs exp)
                                                #:system system
                                                #:target target))
-                       (natives  (lower-inputs (gexp-native-inputs exp)
-                                               #:system system
-                                               #:target #f))
-                       (inputs -> (append normals natives))
                        (sexp     (gexp->sexp exp
                                              #:system system
                                              #:target target))
@@ -1218,26 +1214,26 @@ The other arguments are as for 'derivation'."
                       #:substitutable? substitutable?
                       #:properties properties))))
 
-(define* (gexp-inputs exp #:key native?)
-  "Return the list of <gexp-input> for EXP.  When NATIVE? is true, return only
-native references; otherwise, return only non-native references."
+(define (gexp-inputs exp)
+  "Return the list of <gexp-input> for EXP."
+  (define set-gexp-input-native?
+    (match-lambda
+      (($ <gexp-input> thing output)
+       (%gexp-input thing output #t))))
+
   (define (add-reference-inputs ref result)
     (match ref
       (($ <gexp-input> (? gexp? exp) _ #t)
-       (if native?
-           (append (gexp-inputs exp)
-                   (gexp-inputs exp #:native? #t)
-                   result)
-           result))
-      (($ <gexp-input> (? gexp? exp) _ #f)
-       (append (gexp-inputs exp #:native? native?)
+       (append (map set-gexp-input-native? (gexp-inputs exp))
                result))
+      (($ <gexp-input> (? gexp? exp) _ #f)
+       (append (gexp-inputs exp) result))
       (($ <gexp-input> (? string? str))
        (if (direct-store-path? str)
            (cons ref result)
            result))
       (($ <gexp-input> (? struct? thing) output n?)
-       (if (and (eqv? n? native?) (lookup-compiler thing))
+       (if (lookup-compiler thing)
            ;; THING is a derivation, or a package, or an origin, etc.
            (cons ref result)
            result))
@@ -1260,9 +1256,6 @@ native references; otherwise, return only non-native references."
   (fold-right add-reference-inputs
               '()
               (gexp-references exp)))
-
-(define gexp-native-inputs
-  (cut gexp-inputs <> #:native? #t))
 
 (define (gexp-outputs exp)
   "Return the outputs referred to by EXP as a list of strings."
