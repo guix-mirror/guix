@@ -6,6 +6,7 @@
 ;;; Copyright © 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,6 +26,7 @@
 (define-module (gnu packages sync)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system copy)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
   #:use-module (guix build-system meson)
@@ -46,6 +48,7 @@
   #:use-module (gnu packages kde-frameworks)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
+  #:use-module (gnu packages ocaml)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -53,6 +56,7 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages rsync)
   #:use-module (gnu packages selinux)
+  #:use-module (gnu packages shells)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tls))
@@ -314,6 +318,37 @@ machines.  Lsyncd is thus a light-weight live mirror solution that is
 comparatively easy to install not requiring new file systems or block devices
 and does not hamper local file system performance.")
     (license license:gpl2+)))
+
+(define-public usync
+  (let ((revision "1")
+        (commit "09a8059a1adc22666d3ecf7872e22e6846c3ac9e"))
+    (package
+      (name "usync")
+      (version (git-version "0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ebzzry/usync")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "16i1q8f0jmfd43rb8d70l2b383vr5ib4kh7iq3yd345q7xjz9c2j"))))
+      (build-system copy-build-system)
+      (propagated-inputs
+       `(("scsh" ,scsh)
+         ("rsync" ,rsync)
+         ("unison" ,unison)))
+      (arguments
+       `(#:install-plan
+         '(("usync" "bin/usync"))))
+      (home-page "https://github.com/ebzzry/usync")
+      (synopsis "Command line site-to-site synchronization tool")
+      (description
+       "@command{usync} is a simple site-to-site synchronization program
+written in @command{scsh}.  It makes use of @command{unison} and
+@command{rsync} for bi- and uni-directional synchronizations.")
+      (license license:expat))))
 
 (define-public casync
   (package
