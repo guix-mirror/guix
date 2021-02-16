@@ -35619,23 +35619,19 @@ rules are rather complex.  This crate implements the whole grammar." )
 (define-public rust-serde-1
   (package
     (name "rust-serde")
-    (version "1.0.118")
+    (version "1.0.123")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "serde" version))
-        (file-name (string-append name "-" version ".crate"))
-        (sha256
-         (base32
-          "0028kv3dh3ix5g7jfws22zb9hcqq4cnpwn2lnlpam1wxhmil5ih6"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "serde" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1bk9733mgiv5sg8yb19y8mc85fb2aaqp1k02v10alavj688idmcj"))))
     (build-system cargo-build-system)
     (arguments
-     ;; Tests fail with "error: cannot find derive macro `Deserialize` in this
-     ;; scope".
-     `(#:tests? #false
+     `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-serde-derive" ,rust-serde-derive-1))
-       #:cargo-development-inputs
        (("rust-serde-derive" ,rust-serde-derive-1))))
     (home-page "https://serde.rs")
     (synopsis "Generic serialization/deserialization framework")
