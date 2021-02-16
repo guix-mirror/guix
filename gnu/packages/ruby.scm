@@ -7,7 +7,7 @@
 ;;; Copyright © 2015, 2016, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017, 2018, 2019 Christopher Baines <mail@cbaines.net>
@@ -5852,13 +5852,13 @@ documentation for Ruby code.")
 (define-public ruby-gem-hadar
   (package
     (name "ruby-gem-hadar")
-    (version "1.9.1")
+    (version "1.11.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "gem_hadar" version))
               (sha256
                (base32
-                "1zxvd9l95rbks7x3cxn396w0sn7nha5542bf97v8akkn4vm7nby9"))))
+                "160abb3l4n3gkhd86f22n981bhqxkbf5ym6fhsk796pix6696pd5"))))
     (build-system ruby-build-system)
     ;; This gem needs itself at development time. We disable rebuilding of the
     ;; gemspec to avoid this loop.
