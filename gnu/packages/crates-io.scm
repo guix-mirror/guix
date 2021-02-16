@@ -30105,8 +30105,33 @@ integers, floats, tuples, booleans, lists, strings, options and results.")
         (base32
          "1vb4acppaavlnchzc1jmn5wlkgir9x9gmhgp97bavyxxqxgsg1nh"))))))
 
+(define-public rust-quickcheck-macros-1
+  (package
+    (name "rust-quickcheck-macros")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "quickcheck-macros" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1s8nh0fmmzq3fd7928qcp2syvymlyv1pmww6fxcaj5np48r6jamj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/BurntSushi/quickcheck")
+    (synopsis "Macro attribute for quickcheck")
+    (description
+     "This package provides a macro attribute for quickcheck.")
+    (license (list license:unlicense license:expat))))
+
 (define-public rust-quickcheck-macros-0.9
   (package
+    (inherit rust-quickcheck-macros-1)
     (name "rust-quickcheck-macros")
     (version "0.9.1")
     (source
@@ -30118,19 +30143,13 @@ integers, floats, tuples, booleans, lists, strings, options and results.")
        (sha256
         (base32
          "0zsb9b4jpg7qvbiym4v8y9pgqk7p1g4f5hn9gp0fnzz9v1pib330"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-proc-macro2" ,rust-proc-macro2-1)
         ("rust-quote" ,rust-quote-1)
         ("rust-syn" ,rust-syn-1))
        #:cargo-development-inputs
-       (("rust-quickcheck" ,rust-quickcheck-0.9))))
-    (home-page "https://github.com/BurntSushi/quickcheck")
-    (synopsis "Macro attribute for quickcheck")
-    (description
-     "This package provides a macro attribute for quickcheck.")
-    (license (list license:unlicense license:expat))))
+       (("rust-quickcheck" ,rust-quickcheck-0.9))))))
 
 (define-public rust-quickcheck-macros-0.8
   (package
