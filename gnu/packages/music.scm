@@ -33,6 +33,7 @@
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2019 Riku Viitanen <riku.viitanen0@gmail.com>
 ;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
+;;; Copyright © 2021 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -442,6 +443,98 @@ playing your music.")
                license:lgpl2.1+
                ;; qocoa is under MIT and CC by-sa for the icons.
                license:cc-by-sa3.0))))
+
+(define-public strawberry
+  (package
+    (name "strawberry")
+    (version "0.8.5")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/strawberrymusicplayer/strawberry")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0lfbbmhfzwlhnjhzfk5zn8h71cabx47pzfkcw2nylkbqkz83r57r"))
+              (modules '((guix build utils)
+                         (ice-9 regex)))
+              (snippet
+               '(begin
+                  (use-modules ((ice-9 regex)))
+                  (for-each
+                   (lambda (dir)
+                     ;; TODO: The following dependencies are still bundled:
+                     ;; - "singleapplication"
+                     (let ((bundled '("singleapplication")))
+                       (if (not
+                            (string-match
+                              (string-append ".?*(" (string-join bundled "|") ")")
+                              dir))
+                           (delete-file-recursively dir))))
+                   (find-files "3rdparty"
+                               (lambda (file stat)
+                                 (string-match "^3rdparty/[^/]*$" file))
+                               #:directories? #t))
+                  #t))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:test-target "run_strawberry_tests"
+       #:configure-flags
+       (list "-DUSE_SYSTEM_TAGLIB=TRUE"
+             "-DBUILD_TESTS=TRUE")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out             (assoc-ref outputs "out"))
+                   (gst-plugin-path (getenv "GST_PLUGIN_SYSTEM_PATH")))
+               (wrap-program (string-append out "/bin/strawberry")
+                 `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path)))
+               #t)))
+         (add-before 'check 'pre-check
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((xorg-server (assoc-ref inputs "xorg-server")))
+               (system (format #f "~a/bin/Xvfb :1 &" xorg-server))
+               (setenv "DISPLAY" ":1")
+               (setenv "HOME" (getcwd))
+               #t))))))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("googletest" ,googletest)
+       ("pkg-config" ,pkg-config)
+       ("qtlinguist" ,qttools)
+       ("xorg-server" ,xorg-server-for-tests)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("boost" ,boost)
+       ("chromaprint" ,chromaprint)
+       ("dbus" ,dbus)
+       ("fftw" ,fftw)
+       ("glib" ,glib)
+       ("gnutls" ,gnutls)
+       ("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("gst-plugins-good" ,gst-plugins-good)
+       ("libcdio" ,libcdio)
+       ("libmtp" ,libmtp)
+       ("protobuf" ,protobuf)
+       ("pulseaudio" ,pulseaudio)
+       ("qtbase" ,qtbase)
+       ("qtx11extras" ,qtx11extras)
+       ("sqlite" ,sqlite)
+       ("taglib" ,taglib)))
+    (home-page "https://www.strawberrymusicplayer.org/")
+    (synopsis "Music player and library organizer")
+    (description "Strawberry is a music player and music collection organizer.
+It is a fork of Clementine aimed at music collectors and audiophiles.")
+    (license (list
+              ;; strawberry.
+              license:gpl3+
+              ;; singleapplication
+              license:expat
+              ;; icons.
+              license:cc-by-sa3.0))))
 
 (define-public cmus
   (package
