@@ -29838,17 +29838,17 @@ to write.")
     (license (list license:asl2.0
                    license:expat))))
 
-(define-public rust-quick-xml-0.20
+(define-public rust-quick-xml-0.21
   (package
     (name "rust-quick-xml")
-    (version "0.20.0")
+    (version "0.21.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "quick-xml" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1pd6fiq79sxsf75027a65f45fqm0kds0in0y9nkf9415issbdai6"))))
+        (base32 "0xgcmf5qlpjsl239igbkf4j6mlmsm5xp14a3rv45h2j185cnjlh4"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -29861,6 +29861,25 @@ to write.")
     (description
      "This package provides a high performance XML reader and writer.")
     (license license:expat)))
+
+(define-public rust-quick-xml-0.20
+  (package
+    (inherit rust-quick-xml-0.21)
+    (name "rust-quick-xml")
+    (version "0.20.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "quick-xml" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1pd6fiq79sxsf75027a65f45fqm0kds0in0y9nkf9415issbdai6"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-encoding-rs" ,rust-encoding-rs-0.8)
+        ("rust-memchr" ,rust-memchr-2)
+        ("rust-serde" ,rust-serde-1))))))
 
 (define-public rust-quick-xml-0.19
   (package
