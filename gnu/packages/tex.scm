@@ -13,7 +13,7 @@
 ;;; Copyright © 2018 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2018, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
-;;; Copyright © 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
+;;; Copyright © 2020, 2021 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -7765,3 +7765,34 @@ Adobe.  LaTeX use is enabled by the mathpazo package, which is part of
 the @code{psnfss} distribution.")
     ;; Either LPPL version 1.0 or later, or GPL version 2
     (license (list license:lppl1.0+ license:gpl2))))
+
+(define-public texlive-arev
+  (package
+    (inherit (simple-texlive-package
+              "texlive-arev"
+              (list "/doc/fonts/arev/"
+                    "/fonts/afm/public/arev/"
+                    "/fonts/enc/dvips/arev/"
+                    "/fonts/map/dvips/arev/"
+                    "/fonts/tfm/public/arev/"
+                    "/fonts/type1/public/arev/"
+                    "/fonts/vf/public/arev/"
+                    "/tex/latex/arev/")
+              (base32
+               "15wkgc48r52mjpymv6l7j9bl99kwxbvg3g1mi3qyq7nfm799dkxy")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/arev")
+    (synopsis "Fonts and LaTeX support files for Arev Sans")
+    (description "The @code{arev} package provides type 1 fonts,
+virtual fonts and LaTeX packages for using Arev Sans in both text and
+mathematics.  Arev Sans is a derivative of Bitstream Vera Sans, adding
+support for Greek and Cyrillic characters and a few variant letters
+appropriate for mathematics.  The font is primarily used in LaTeX for
+presentations, particularly when using a computer projector.  Arev
+Sans has large x-height, \"open letters\", wide spacing and thick
+stems.  The style is very similar to the SliTeX font lcmss but
+heavier.  Arev is one of a very small number of sans-font mathematics
+support packages.  Others are cmbright, hvmath and kerkis.")
+    (license (list license:silofl1.1 ;for Arev Sans
+                   license:lppl1.3a  ;for TeX support files
+                   license:gpl2))))  ;fora ms-mdbch.sty
