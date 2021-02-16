@@ -29943,8 +29943,35 @@ to write.")
         ("rust-log" ,rust-log-0.4)
         ("rust-memchr" ,rust-memchr-2))))))
 
+(define-public rust-quickcheck-1
+  (package
+    (name "rust-quickcheck")
+    (version "1.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "quickcheck" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1mjhkfqwrb8mdyxdqr4zzbj1rm5dfx25n9zcc25lb6fxwiw673sq"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-env-logger" ,rust-env-logger-0.8)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-rand" ,rust-rand-0.8))))
+    (home-page "https://github.com/BurntSushi/quickcheck")
+    (synopsis "Automatic property based testing with shrinking")
+    (description
+     "QuickCheck is a way to do property based testing using randomly generated
+input.  This crate comes with the ability to randomly generate and shrink
+integers, floats, tuples, booleans, lists, strings, options and results.")
+    (license (list license:unlicense license:expat))))
+
 (define-public rust-quickcheck-0.9
   (package
+    (inherit rust-quickcheck-1)
     (name "rust-quickcheck")
     (version "0.9.2")
     (source
@@ -29956,20 +29983,12 @@ to write.")
        (sha256
         (base32
          "0pwl7j21wmf843kpa9gr0byb40hg975ghjrwp0yxcym99bkq6j54"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-env-logger" ,rust-env-logger-0.7)
         ("rust-log" ,rust-log-0.4)
         ("rust-rand" ,rust-rand-0.7)
-        ("rust-rand-core" ,rust-rand-core-0.5))))
-    (home-page "https://github.com/BurntSushi/quickcheck")
-    (synopsis "Automatic property based testing with shrinking")
-    (description
-     "QuickCheck is a way to do property based testing using randomly generated
-input.  This crate comes with the ability to randomly generate and shrink
-integers, floats, tuples, booleans, lists, strings, options and results.")
-    (license (list license:unlicense license:expat))))
+        ("rust-rand-core" ,rust-rand-core-0.5))))))
 
 (define-public rust-quickcheck-0.8
   (package
