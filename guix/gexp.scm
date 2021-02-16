@@ -842,24 +842,23 @@ When TARGET is true, use it as the cross-compilation target triplet."
   (with-monad %store-monad
     (>>= (mapm/accumulate-builds
           (match-lambda
-            (((? struct? thing) sub-drv ...)
-             (mlet %store-monad ((obj (lower-object
-                                       thing system #:target target)))
+            (($ <gexp-input> (? store-item? item))
+             (return item))
+            (($ <gexp-input> thing output native?)
+             (mlet %store-monad ((obj (lower-object thing system
+                                                    #:target
+                                                    (and (not native?)
+                                                         target))))
                (return (match obj
                          ((? derivation? drv)
-                          (let ((outputs (if (null? sub-drv)
-                                             '("out")
-                                             sub-drv)))
-                            (derivation-input drv outputs)))
+                          (derivation-input drv (list output)))
                          ((? store-item? item)
                           item)
                          ((? self-quoting?)
                           ;; Some inputs such as <system-binding> can lower to
                           ;; a self-quoting object that FILTERM will filter
                           ;; out.
-                          #f)))))
-            (((? store-item? item))
-             (return item)))
+                          #f))))))
           inputs)
          filterm)))
 
@@ -867,9 +866,16 @@ When TARGET is true, use it as the cross-compilation target triplet."
   "Given GRAPHS, a list of (FILE-NAME INPUT ...) lists for use as a
 #:reference-graphs argument, lower it such that each INPUT is replaced by the
 corresponding <derivation-input> or store item."
+  (define tuple->gexp-input
+    (match-lambda
+      ((thing)
+       (%gexp-input thing "out" #t))
+      ((thing output)
+       (%gexp-input thing output #t))))
+
   (match graphs
     (((file-names . inputs) ...)
-     (mlet %store-monad ((inputs (lower-inputs inputs
+     (mlet %store-monad ((inputs (lower-inputs (map tuple->gexp-input inputs)
                                                #:system system
                                                #:target target)))
        (return (map cons file-names inputs))))))
@@ -1213,9 +1219,8 @@ The other arguments are as for 'derivation'."
                       #:properties properties))))
 
 (define* (gexp-inputs exp #:key native?)
-  "Return the input list for EXP.  When NATIVE? is true, return only native
-references; otherwise, return only non-native references."
-  ;; TODO: Return <gexp-input> records instead of tuples.
+  "Return the list of <gexp-input> for EXP.  When NATIVE? is true, return only
+native references; otherwise, return only non-native references."
   (define (add-reference-inputs ref result)
     (match ref
       (($ <gexp-input> (? gexp? exp) _ #t)
@@ -1229,12 +1234,12 @@ references; otherwise, return only non-native references."
                result))
       (($ <gexp-input> (? string? str))
        (if (direct-store-path? str)
-           (cons `(,str) result)
+           (cons ref result)
            result))
       (($ <gexp-input> (? struct? thing) output n?)
        (if (and (eqv? n? native?) (lookup-compiler thing))
            ;; THING is a derivation, or a package, or an origin, etc.
-           (cons `(,thing ,output) result)
+           (cons ref result)
            result))
       (($ <gexp-input> (lst ...) output n?)
        (fold-right add-reference-inputs result

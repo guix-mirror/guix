@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -63,6 +63,9 @@
                                      #:target target)
                   #:guile-for-build (%guile-for-build)))
 
+(define (gexp-input->tuple input)
+  (list (gexp-input-thing input) (gexp-input-output input)))
+
 (define %extension-package
   ;; Example of a package to use when testing 'with-extensions'.
   (dummy-package "extension"
@@ -106,8 +109,8 @@
   (let ((exp (gexp (display (ungexp coreutils)))))
     (and (gexp? exp)
          (match (gexp-inputs exp)
-           (((p "out"))
-            (eq? p coreutils)))
+           ((input)
+            (eq? (gexp-input-thing input) coreutils)))
          (equal? `(display ,(derivation->output-path
                              (package-derivation %store coreutils)))
                  (gexp->sexp* exp)))))
@@ -116,8 +119,8 @@
   (let ((exp (gexp (coreutils . (ungexp coreutils)))))
     (and (gexp? exp)
          (match (gexp-inputs exp)
-           (((p "out"))
-            (eq? p coreutils)))
+           ((input)
+            (eq? (gexp-input-thing input) coreutils)))
          (equal? `(coreutils . ,(derivation->output-path
                                  (package-derivation %store coreutils)))
                  (gexp->sexp* exp)))))
@@ -126,8 +129,9 @@
   (let ((exp (gexp (display (ungexp (package-source coreutils))))))
     (and (gexp? exp)
          (match (gexp-inputs exp)
-           (((o "out"))
-            (eq? o (package-source coreutils))))
+           ((input)
+            (and (eq? (gexp-input-thing input) (package-source coreutils))
+                 (string=? (gexp-input-output input) "out"))))
          (equal? `(display ,(derivation->output-path
                              (package-source-derivation
                               %store (package-source coreutils))))
@@ -141,8 +145,9 @@
                               "sha256" file)))
     (and (gexp? exp)
          (match (gexp-inputs exp)
-           (((x "out"))
-            (eq? x local)))
+           ((input)
+            (and (eq? (gexp-input-thing input) local)
+                 (string=? (gexp-input-output input) "out"))))
          (equal? `(display ,intd) (gexp->sexp* exp)))))
 
 (test-assert "one local file, symlink"
@@ -158,8 +163,9 @@
                                     "sha256" file)))
           (and (gexp? exp)
                (match (gexp-inputs exp)
-                 (((x "out"))
-                  (eq? x local)))
+                 ((input)
+                  (and (eq? (gexp-input-thing input) local)
+                       (string=? (gexp-input-output input) "out"))))
                (equal? `(display ,intd) (gexp->sexp* exp)))))
       (lambda ()
         (false-if-exception (delete-file link))))))
@@ -201,8 +207,9 @@
          (expected (add-text-to-store %store "hi" "Hello, world!")))
     (and (gexp? exp)
          (match (gexp-inputs exp)
-           (((x "out"))
-            (eq? x file)))
+           ((input)
+            (and (eq? (gexp-input-thing input) file)
+                 (string=? (gexp-input-output input) "out"))))
          (equal? `(display ,expected) (gexp->sexp* exp)))))
 
 (test-assert "same input twice"
@@ -211,8 +218,9 @@
                      (display (ungexp coreutils))))))
     (and (gexp? exp)
          (match (gexp-inputs exp)
-           (((p "out"))
-            (eq? p coreutils)))
+           ((input)
+            (and (eq? (gexp-input-thing input) coreutils)
+                 (string=? (gexp-input-output input) "out"))))
          (let ((e `(display ,(derivation->output-path
                               (package-derivation %store coreutils)))))
            (equal? `(begin ,e ,e) (gexp->sexp* exp))))))
@@ -228,9 +236,8 @@
                       (display (ungexp drv))
                       (display (ungexp txt))))))
     (define (match-input thing)
-      (match-lambda
-       ((drv-or-pkg _ ...)
-        (eq? thing drv-or-pkg))))
+      (lambda (input)
+        (eq? (gexp-input-thing input) thing)))
 
     (and (gexp? exp)
          (= 4 (length (gexp-inputs exp)))
@@ -255,8 +262,9 @@
                       (string-append (derivation->output-path drv)
                                      "/bin/guile"))))
          (match (gexp-inputs exp)
-           (((thing "out"))
-            (eq? thing fa))))))
+           ((input)
+            (and (eq? (gexp-input-thing input) fa)
+                 (string=? (gexp-input-output input) "out")))))))
 
 (test-assert "file-append, output"
   (let* ((drv (package-derivation %store glibc))
@@ -268,8 +276,9 @@
                       (string-append (derivation->output-path drv "debug")
                                      "/lib/debug"))))
          (match (gexp-inputs exp)
-           (((thing "debug"))
-            (eq? thing fa))))))
+           ((input)
+            (and (eq? (gexp-input-thing input) fa)
+                 (string=? (gexp-input-output input) "debug")))))))
 
 (test-assert "file-append, nested"
   (let* ((drv   (package-derivation %store glibc))
@@ -283,8 +292,8 @@
                       (string-append (derivation->output-path drv)
                                      "/bin/getent"))))
          (match (gexp-inputs exp)
-           (((thing "out"))
-            (eq? thing file))))))
+           ((input)
+            (eq? (gexp-input-thing input) file))))))
 
 (test-assert "file-append, raw store item"
   (let* ((obj   (plain-file "example.txt" "Hello!"))
@@ -346,8 +355,11 @@
          (low (run-with-store %store (lower-gexp exp))))
     (list (lowered-gexp-sexp low)
           (match (gexp-inputs exp)
-            (((($ (@@ (guix gexp) <system-binding>)) "out"))
-             '(system-binding))
+            ((input)
+             (and (eq? (struct-vtable (gexp-input-thing input))
+                       (@@ (guix gexp) <system-binding>))
+                  (string=? (gexp-input-output input) "out")
+                  '(system-binding)))
             (x x))
           (gexp-native-inputs exp)
           'low
@@ -388,8 +400,11 @@
             (x x))
           (gexp-inputs exp)
           (match (gexp-native-inputs exp)
-            (((($ (@@ (guix gexp) <system-binding>)) "out"))
-             '(system-binding))
+            ((input)
+             (and (eq? (struct-vtable (gexp-input-thing input))
+                       (@@ (guix gexp) <system-binding>))
+                  (string=? (gexp-input-output input) "out")
+                  '(system-binding)))
             (x x)))))
 
 (test-assert "ungexp + ungexp-native"
@@ -408,10 +423,10 @@
                   (package-cross-derivation %store binutils target))))
     (and (lset= equal?
                 `((,%bootstrap-guile "out") (,glibc "out"))
-                (gexp-native-inputs exp))
+                (map gexp-input->tuple (gexp-native-inputs exp)))
          (lset= equal?
                 `((,coreutils "out") (,binutils "out"))
-                (gexp-inputs exp))
+                (map gexp-input->tuple (gexp-inputs exp)))
          (equal? `(list ,guile ,cu ,libc ,bu)
                  (gexp->sexp* exp target)))))
 
@@ -419,7 +434,9 @@
   (list `((,%bootstrap-guile "out")) '<> `((,coreutils "out")))
   (let* ((exp (gexp (list (ungexp-native (gexp (ungexp coreutils)))
                           (ungexp %bootstrap-guile)))))
-    (list (gexp-inputs exp) '<> (gexp-native-inputs exp))))
+    (list (map gexp-input->tuple (gexp-inputs exp))
+          '<>
+          (map gexp-input->tuple (gexp-native-inputs exp)))))
 
 (test-equal "ungexp + ungexp-native, nested, special mixture"
   `(() <> ((,coreutils "out")))
@@ -427,7 +444,9 @@
   ;; (gexp-native-inputs exp) used to return '(), wrongfully.
   (let* ((foo (gexp (foo (ungexp-native coreutils))))
          (exp (gexp (bar (ungexp foo)))))
-    (list (gexp-inputs exp) '<> (gexp-native-inputs exp))))
+    (list (map gexp-input->tuple (gexp-inputs exp))
+          '<>
+          (map gexp-input->tuple (gexp-native-inputs exp)))))
 
 (test-assert "input list"
   (let ((exp   (gexp (display
@@ -438,7 +457,7 @@
                 (package-derivation %store coreutils))))
     (and (lset= equal?
                 `((,%bootstrap-guile "out") (,coreutils "out"))
-                (gexp-inputs exp))
+                (map gexp-input->tuple (gexp-inputs exp)))
          (equal? `(display '(,guile ,cu))
                  (gexp->sexp* exp)))))
 
@@ -457,10 +476,10 @@
                  (package-cross-derivation %store binutils target))))
     (and (lset= equal?
                 `((,%bootstrap-guile "out") (,coreutils "out"))
-                (gexp-native-inputs exp))
+                (map gexp-input->tuple (gexp-native-inputs exp)))
          (lset= equal?
                 `((,glibc "out") (,binutils "out"))
-                (gexp-inputs exp))
+                (map gexp-input->tuple (gexp-inputs exp)))
          (equal? `(display (cons '(,guile ,cu) '(,xlibc ,xbu)))
                  (gexp->sexp* exp target)))))
 
@@ -474,7 +493,7 @@
          (exp     (gexp (list (ungexp-splicing (cons (+ 2 3) inputs))))))
     (and (lset= equal?
                 `((,glibc "debug") (,%bootstrap-guile "out"))
-                (gexp-inputs exp))
+                (map gexp-input->tuple (gexp-inputs exp)))
          (equal? (gexp->sexp* exp)
                  `(list ,@(cons 5 outputs))))))
 
@@ -484,7 +503,7 @@
          (exp    (gexp (list (ungexp-native-splicing (cons (+ 2 3) inputs))))))
     (and (lset= equal?
                 `((,glibc "debug") (,%bootstrap-guile "out"))
-                (gexp-native-inputs exp))
+                (map gexp-input->tuple (gexp-native-inputs exp)))
          (null? (gexp-inputs exp))
          (equal? (gexp->sexp* exp)                ;native
                  (gexp->sexp* exp "mips64el-linux")))))
@@ -492,7 +511,8 @@
 (test-assert "gexp list splicing + ungexp-splicing"
   (let* ((inner (gexp (ungexp-native glibc)))
          (exp   (gexp (list (ungexp-splicing (list inner))))))
-    (and (equal? `((,glibc "out")) (gexp-native-inputs exp))
+    (and (equal? `((,glibc "out"))
+                 (map gexp-input->tuple (gexp-native-inputs exp)))
          (null? (gexp-inputs exp))
          (equal? (gexp->sexp* exp)                ;native
                  (gexp->sexp* exp "mips64el-linux")))))
