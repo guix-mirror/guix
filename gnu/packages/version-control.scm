@@ -2394,7 +2394,7 @@ by rclone usable with git-annex.")
 (define-public fossil
   (package
     (name "fossil")
-    (version "2.11")
+    (version "2.14")
     (source
      (origin
        (method url-fetch)
@@ -2402,7 +2402,7 @@ by rclone usable with git-annex.")
               "https://www.fossil-scm.org/index.html/uv/"
               "fossil-src-" version ".tar.gz"))
        (sha256
-        (base32 "0c9nzx42wxfmym9vf1pnbdb1c7gp7a7zqky60izxsph7w2xh8nix"))
+        (base32 "1fazl117ph5z7xg7h6w7i32sf7rsa67499rg2llsxn3d34hckl5q"))
        (modules '((guix build utils)))
        (snippet
         '(begin
