@@ -25,6 +25,7 @@
 ;;; Copyright © 2020 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2266,3 +2267,27 @@ foreground and background colors, text justification and more.")
        (variable "GLADE_MODULE_SEARCH_PATH")
        (files '("lib/glade/modules")))))
     (license license:lgpl2.0+)))
+
+(define-public gtkdatabox
+  (package
+    (name "gtkdatabox")
+    (version "0.9.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/gtkdatabox/gtkdatabox/"
+                                  version "/gtkdatabox-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1rdxnjgh6v3yjqgsfmamyzpfxckzchps4kqvvz88nifmd7ckhjfh"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gtk+-2" ,gtk+-2)))
+    (synopsis "Display widget for dynamic data")
+    (description "GtkDatabox is a widget for live display of large amounts of
+fluctuating numerical data.  It enables data presentation (for example, on
+linear or logarithmic scales, as dots or lines, with markers/labels) as well as
+user interaction (e.g.  measuring distances).")
+    (home-page "https://sourceforge.net/projects/gtkdatabox/")
+    (license license:lgpl2.1+)))
