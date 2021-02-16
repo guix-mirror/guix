@@ -1261,7 +1261,42 @@ made by suckless.")
                     (glutin-version ,(package-version rust-glutin-0.26))
                     (glutin-api (string-append glutin-name "-" glutin-version
                                                ".tar.gz/src/api/"))
+                    (smithay-client-toolkit-name
+                     ,(package-name rust-smithay-client-toolkit-0.12))
+                    (smithay-client-toolkit-version
+                     ,(package-version rust-smithay-client-toolkit-0.12))
+                    (smithay-client-toolkit-src
+                     (string-append smithay-client-toolkit-name "-"
+                                    smithay-client-toolkit-version ".tar.gz/src"))
+                    (wayland-sys-name ,(package-name rust-wayland-sys-0.28))
+                    (wayland-sys-version ,(package-version rust-wayland-sys-0.28))
+                    (wayland-sys-src (string-append wayland-sys-name "-"
+                                                    wayland-sys-version
+                                                    ".tar.gz/src"))
+                    (libxkbcommon (assoc-ref inputs "libxkbcommon"))
+                    (libwayland (assoc-ref inputs "wayland"))
                     (mesa (assoc-ref inputs "mesa")))
+               (substitute* (string-append vendor-dir "/"
+                                           smithay-client-toolkit-src
+                                           "/seat/keyboard/ffi.rs")
+                 (("libxkbcommon\\.so")
+                  (string-append libxkbcommon "/lib/libxkbcommon.so")))
+               (substitute* (string-append vendor-dir "/" wayland-sys-src
+                                           "/server.rs")
+                 (("libwayland-server\\.so")
+                  (string-append libwayland "/lib/libwayland-server.so")))
+               (substitute* (string-append vendor-dir "/" wayland-sys-src
+                                           "/cursor.rs")
+                 (("libwayland-cursor\\.so")
+                  (string-append libwayland "/lib/libwayland-cursor.so")))
+               (substitute* (string-append vendor-dir "/" wayland-sys-src
+                                           "/egl.rs")
+                 (("libwayland-egl\\.so")
+                  (string-append libwayland "/lib/libwayland-egl.so")))
+               (substitute* (string-append vendor-dir "/" wayland-sys-src
+                                           "/client.rs")
+                 (("libwayland-client\\.so")
+                  (string-append libwayland "/lib/libwayland-client.so")))
                (substitute*
                    (string-append vendor-dir "/" glutin-api "glx/mod.rs")
                  (("libGL.so") (string-append mesa "/lib/libGL.so")))
