@@ -10207,7 +10207,7 @@ multiple checkers, including Aspell and Hunspell.")
          (uri (git-reference
                (url home-page)
                (commit commit)))
-         (file-name (git-file-name name version))
+         (file-name (git-file-name "cl-change-case" version))
          (sha256
           (base32 "0qmk341zzcsbf8sq0w9ix3r080zg4ri6vzxym63lhdjfzwz3y8if"))))
       (build-system asdf-build-system/sbcl)
@@ -10216,10 +10216,11 @@ multiple checkers, including Aspell and Hunspell.")
          ("cl-ppcre-unicode" ,sbcl-cl-ppcre-unicode)))
       (native-inputs
        `(("fiveam" ,sbcl-fiveam)))
-      (synopsis "Convert Common Lisp strings between camelCase, PascalCase and more")
+      (synopsis
+       "Convert Common Lisp strings between camelCase, PascalCase and more")
       (description
-       "@code{cl-change-case} is library to convert strings between camelCase,
-PascalCase, snake_case, param-case, CONSTANT_CASE and more.")
+       "@code{cl-change-case} is a library to convert strings between
+camelCase, PascalCase, snake_case, param-case, CONSTANT_CASE and more.")
       (license license:llgpl))))
 
 (define-public cl-change-case
