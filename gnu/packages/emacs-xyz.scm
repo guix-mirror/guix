@@ -19199,10 +19199,14 @@ image, rotate it, save modified images, and more.")
       (license license:gpl3+))))
 
 (define-public emacs-package-lint
-  (let ((commit "69bb89d00ba212b734c676ad056aa793c450b288"))
+  ;; The commit below includes a fix for a missing file, "stdlib-changes",
+  ;; preventing build.
+  (let ((commit "14c216f4889e71eec2a9da64e36ab8990337e82d")
+        (version "0.13")
+        (revision "0"))
     (package
       (name "emacs-package-lint")
-      (version (git-version "0.5" "1" commit))
+      (version (git-version version revision commit))
       (source
        (origin
          (method git-fetch)
@@ -19212,7 +19216,7 @@ image, rotate it, save modified images, and more.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1hfricsgmy3x9snnd2p4xq6vnnv94qdsxxnxp07b3hqc9bhw31rq"))))
+           "1zifiqmpj9j14fnrm3jxapady25m1nlm514nfry0jfrhhikvj6i8"))))
       (build-system emacs-build-system)
       (home-page "https://github.com/purcell/package-lint")
       (synopsis "Linting library for elisp package authors")
