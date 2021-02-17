@@ -21818,7 +21818,7 @@ files in Elisp.")
 (define-public emacs-lsp-java
   (package
     (name "emacs-lsp-java")
-    (version "2.2")
+    (version "3.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -21827,16 +21827,17 @@ files in Elisp.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0hcnvbyaqyypgby1bfj4zbrbq97amk8hfx0sj4w73rl46yf4jk3j"))))
+                "1h0hqgjpk5mbylma1fkva0vx45achf0k7ab2c5y8a2449niww90h"))))
     (build-system emacs-build-system)
     (propagated-inputs
-      `(("emacs-lsp-mode" ,emacs-lsp-mode)
-        ("emacs-markdown-mode" ,emacs-markdown-mode)
-        ("emacs-dash" ,emacs-dash)
-        ("emacs-f" ,emacs-f)
-        ("emacs-ht" ,emacs-ht)
-        ("emacs-request" ,emacs-request)
-        ("emacs-treemacs" ,emacs-treemacs)))
+     `(("emacs-dap-mode" ,emacs-dap-mode)
+       ("emacs-lsp-mode" ,emacs-lsp-mode)
+       ("emacs-markdown-mode" ,emacs-markdown-mode)
+       ("emacs-dash" ,emacs-dash)
+       ("emacs-f" ,emacs-f)
+       ("emacs-ht" ,emacs-ht)
+       ("emacs-request" ,emacs-request)
+       ("emacs-treemacs" ,emacs-treemacs)))
     (home-page "https://github.com/emacs-lsp/lsp-java/")
     (synopsis "Java support for lsp-mode")
     (description "Emacs Java IDE using Eclipse JDT Language Server.")
