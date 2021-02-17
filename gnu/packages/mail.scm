@@ -34,7 +34,7 @@
 ;;; Copyright © 2020 Eric Brown <ecbrown@ericcbrown.com>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
-;;; Copyright © 2020 Alexey Abramov <levenson@mmer.org>
+;;; Copyright © 2020, 2021 Alexey Abramov <levenson@mmer.org>
 ;;; Copyright © 2020 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@posteo.ro>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
@@ -159,6 +159,7 @@
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system go)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system go)
   #:use-module (guix build-system guile)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
@@ -3168,6 +3169,39 @@ writing OpenSMTPd filters.")
      "The @command{filter-dkimsign} OpenSMTPd filter signs outgoing e-mail
 messages with @acronym{DKIM, DomainKeys Identified Mail} (RFC 4871).")
     (license license:expat)))
+
+(define-public opensmtpd-filter-rspamd
+  (package
+    (name "opensmtpd-filter-rspamd")
+    (version "0.1.7")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/poolpOrg/filter-rspamd")
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32 "1qhrw20q9y44ffgx5k14nvqc9dh47ihywgzza84g0zv9xgif7hd5"))
+              (file-name (git-file-name name version))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/poolpOrg/filter-rspamd"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'set-bootstrap-variables
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             ;; Tell the build system where to install binaries
+             (let* ((out (assoc-ref outputs "out"))
+                    (libexec (string-append out "/libexec/opensmtpd")))
+               (setenv "GOBIN" libexec)))))))
+    (native-inputs
+     `(("opensmtpd" ,opensmtpd)))
+    (home-page "https://github.com/poolpOrg/filter-rspamd")
+    (synopsis "OpenSMTPd filter to request an Rspamd analysis")
+    (description
+     "The @command{filter-rspamd} OpenSMTPd filter implements the
+Rspamd protocol and allows OpenSMTPd to request an Rspamd analysis of
+an SMTP transaction before a message is committed to queue.")
+    (license license:isc)))
 
 (define-public mailman
   (package
