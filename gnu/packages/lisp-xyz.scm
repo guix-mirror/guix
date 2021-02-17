@@ -11532,38 +11532,40 @@ files.")
   (sbcl-package->ecl-package sbcl-zpb-exif))
 
 (define-public sbcl-pngload
-  (package
-    (name "sbcl-pngload")
-    (version "2.0.0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/bufferswap/pngload")
-             (commit version)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "1ix8dd0fxlf8xm0bszh1s7sx83hn0vqq8b8c9gkrd5m310w8mpvh"))))
-    (build-system asdf-build-system/sbcl)
-    (inputs
-     `(("3bz" ,sbcl-3bz)
-       ("alexandria" ,sbcl-alexandria)
-       ("cffi" ,sbcl-cffi)
-       ("mmap" ,sbcl-mmap)
-       ("parse-float" ,sbcl-parse-float)
-       ("static-vectors" ,sbcl-static-vectors)
-       ("swap-bytes" ,sbcl-swap-bytes)
-       ("zpb-exif" ,sbcl-zpb-exif)))
-    (arguments
-     ;; Test suite disabled because of a dependency cycle.
-     ;; pngload tests depend on opticl which depends on pngload.
-     '(#:tests? #f))
-    (home-page "https://github.com/bufferswap/pngload")
-    (synopsis "PNG image decoder for Common Lisp")
-    (description
-     "This is a Common Lisp library to load images in the PNG image format,
+  (let ((commit "91f1d703c65bb6a94d6fee06ddbbbbbc5778b71f")
+        (revision "2"))
+    (package
+      (name "sbcl-pngload")
+      (version (git-version "2.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://git.mfiano.net/mfiano/pngload.git")
+               (commit commit)))
+         (file-name (git-file-name "pngload" version))
+         (sha256
+          (base32 "0s94fdbrbqj12qvgyn2g4lfwvz7qhhzbclrpz5ni7adwxgrmvxl1"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("3bz" ,sbcl-3bz)
+         ("alexandria" ,sbcl-alexandria)
+         ("cffi" ,sbcl-cffi)
+         ("mmap" ,sbcl-mmap)
+         ("parse-float" ,sbcl-parse-float)
+         ("static-vectors" ,sbcl-static-vectors)
+         ("swap-bytes" ,sbcl-swap-bytes)
+         ("zpb-exif" ,sbcl-zpb-exif)))
+      (arguments
+       ;; Test suite disabled because of a dependency cycle.
+       ;; pngload tests depend on opticl which depends on pngload.
+       '(#:tests? #f))
+      (home-page "https://git.mfiano.net/mfiano/pngload.git")
+      (synopsis "PNG image decoder for Common Lisp")
+      (description
+       "This is a Common Lisp library to load images in the PNG image format,
 both from files on disk, or streams in memory.")
-    (license license:expat)))
+      (license license:expat))))
 
 (define-public cl-pngload
   (sbcl-package->cl-source-package sbcl-pngload))
