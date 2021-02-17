@@ -2353,7 +2353,7 @@ authentication.")
        ("ruby-rspec" ,ruby-rspec)
        ("ruby-simplecov" ,ruby-simplecov)
        ("ruby-rack-test" ,ruby-rack-test)
-       ("ruby-webmock" ,ruby-webmock-2)))
+       ("ruby-webmock" ,ruby-webmock)))
     (synopsis "Abstract OAuth2 strategy for OmniAuth")
     (description
      "This library provides a generic OAuth2 strategy for OmniAuth.  It
@@ -9063,17 +9063,17 @@ requests.")
     (home-page "https://github.com/opperator/warden-oauth2")
     (license license:expat)))
 
-(define-public ruby-webmock-2
+(define-public ruby-webmock
   (package
     (name "ruby-webmock")
-    (version "2.3.2")
+    (version "3.11.2")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "webmock" version))
        (sha256
         (base32
-         "04hkcqsmbfnp8g237pisnc834vpgildklicbjbyikqg0bg1rwcy5"))))
+         "1hdlbvfw316lkz251qnfk79drmaay7l51kidvicz41nhvw12xz8v"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("bundler" ,bundler)
@@ -9088,6 +9088,19 @@ requests.")
 requests.  This is useful when testing software.")
     (home-page "https://github.com/bblimke/webmock")
     (license license:expat)))
+
+(define-public ruby-webmock-2
+  (package
+    (inherit ruby-webmock)
+    (name "ruby-webmock")
+    (version "2.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "webmock" version))
+       (sha256
+        (base32
+         "04hkcqsmbfnp8g237pisnc834vpgildklicbjbyikqg0bg1rwcy5"))))))
 
 (define-public ruby-unicode-display-width
   (package
@@ -11950,7 +11963,7 @@ application.")
      `(("ruby-rspec" ,ruby-rspec)
        ("ruby-pry" ,ruby-pry)
        ("ruby-simplecov" ,ruby-simplecov)
-       ("ruby-webmock" ,ruby-webmock-2)))
+       ("ruby-webmock" ,ruby-webmock)))
     ;; FIXME: can't figure out how to run the tests properly:
 
     ;; An error occurred while loading spec_helper.
