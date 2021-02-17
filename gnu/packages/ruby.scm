@@ -1546,6 +1546,44 @@ logic.")
     (home-page "https://github.com/typhoeus/typhoeus")
     (license license:expat)))
 
+(define-public ruby-rubocop-rspec
+  (package
+    (name "ruby-rubocop-rspec")
+    (version "2.2.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/rubocop-hq/rubocop-rspec")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "0gdpjpympb6qc77bang759z7z6lckf14ghkx8v6614agxg8l3g5y"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:test-target "internal_investigation"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-HOME
+           (lambda _
+             (setenv "HOME" "/tmp")
+             #t)))))
+    (propagated-inputs
+     `(("ruby-rubocop" ,ruby-rubocop)
+       ("ruby-rubocop-ast" ,ruby-rubocop-ast)))
+    (native-inputs
+     `(("ruby-rack" ,ruby-rack)
+       ("ruby-rspec" ,ruby-rspec)
+       ("ruby-rubocop-performance" ,ruby-rubocop-performance)
+       ("ruby-simplecov" ,ruby-simplecov)
+       ("ruby-yard" ,ruby-yard)))
+    (synopsis "Code style checking for RSpec files")
+    (description "This package provides a plugin for the RuboCop code style
+enforcing & linting tool.")
+    (home-page "https://github.com/rubocop-hq/rubocop-rspec")
+    (license license:expat)))
+
 (define-public ruby-rubocop-performance
   (package
     (name "ruby-rubocop-performance")
