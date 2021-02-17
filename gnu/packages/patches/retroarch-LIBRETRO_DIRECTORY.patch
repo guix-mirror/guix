@@ -1,0 +1,32 @@
+From f308dc91660954ab88bb41868c0b9809592923e6 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=E5=AE=8B=E6=96=87=E6=AD=A6?= <iyzsong@member.fsf.org>
+Date: Sat, 20 Feb 2021 20:37:39 +0800
+Subject: [PATCH] Allow set libretro_directory via environment variable
+
+---
+ retroarch.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/retroarch.c b/retroarch.c
+index 6a88c3108e..6807c12b5b 100644
+--- a/retroarch.c
++++ b/retroarch.c
+@@ -36038,6 +36038,15 @@ static void retroarch_parse_input_and_config(
+ #endif
+       config_load(&p_rarch->g_extern);
+ 
++   /* Override settings via environment variables */
++   if (getenv("LIBRETRO_DIRECTORY")) {
++      settings_t *settings = p_rarch->configuration_settings;
++      retroarch_override_setting_set(RARCH_OVERRIDE_SETTING_LIBRETRO_DIRECTORY, NULL);
++      configuration_set_string(settings,
++            settings->paths.directory_libretro,
++            getenv("LIBRETRO_DIRECTORY"));
++   }
++
+    /* Second pass: All other arguments override the config file */
+    optind = 1;
+ 
+-- 
+2.30.0
+

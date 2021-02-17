@@ -1273,7 +1273,7 @@ as RetroArch.")
 (define-public retroarch
   (package
     (name "retroarch")
-    (version "1.8.1")
+    (version "1.9.0")
     (source
      (origin
        (method git-fetch)
@@ -1282,18 +1282,9 @@ as RetroArch.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0y7rcpz7psf8k3agsrq277jdm651vbnn9xpqvmj2in1a786idya7"))
+        (base32 "1n0dcv85vqrdr79psnf009hi4r2mvsgsjbghrrc9pm5g7ywwwcvp"))
        (patches
-        (search-patches "retroarch-disable-online-updater.patch"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           ;; Don't suggest using the Online Updater if available: it never
-           ;; is.  This disables translation of this particular message.
-           (substitute* (find-files "menu/drivers" "\\.c$")
-             (("msg_hash_to_str\\(MSG_MISSING_ASSETS\\)")
-              "\"Warning: Missing assets, go get some\""))
-           #t))))
+        (search-patches "retroarch-LIBRETRO_DIRECTORY.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
@@ -1328,7 +1319,9 @@ as RetroArch.")
                        '("--enable-neon" "--enable-floathard")
                        '())
                  (string-append "--prefix=" out)
-                 (string-append "--global-config-dir=" etc)
+                 ;; Non-free software are available through the core updater,
+                 ;; disable it.  See <https://issues.guix.gnu.org/38360>.
+                 "--disable-update_cores"
                  "--disable-builtinminiupnpc")))))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
@@ -1354,6 +1347,11 @@ as RetroArch.")
      `(("pkg-config" ,pkg-config)
        ("wayland-protocols" ,wayland-protocols)
        ("which" ,which)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "LIBRETRO_DIRECTORY")
+            (separator #f)              ; single entry
+            (files '("lib/libretro")))))
     (home-page "https://www.libretro.com/")
     (synopsis "Reference frontend for the libretro API")
     (description
