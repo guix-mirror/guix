@@ -7556,6 +7556,28 @@ navigation capabilities to @code{pry}, using @code{byebug}.")
     (home-page "https://github.com/deivid-rodriguez/pry-byebug")
     (license license:expat)))
 
+(define-public ruby-stackprof
+  (package
+    (name "ruby-stackprof")
+    (version "0.2.16")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (rubygems-uri "stackprof" version))
+        (sha256
+         (base32
+          "147rb66p3n062vc433afqhkd99iazvkrqnghxgh871r62yhha93f"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("ruby-mocha" ,ruby-mocha)
+       ("ruby-rake-compiler" ,ruby-rake-compiler)))
+    (synopsis "Sampling profiler for Ruby code")
+    (description
+     "@code{stackprof} is a fast sampling profiler for Ruby code, with cpu,
+wallclock and object allocation samplers.")
+    (home-page "http://github.com/tmm1/stackprof")
+    (license license:expat)))
+
 (define-public ruby-binding-of-caller
   (package
     (name "ruby-binding-of-caller")
