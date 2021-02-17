@@ -21581,6 +21581,30 @@ integration with other popular Emacs packages like Company, Flycheck, and
 Projectile.")
     (license license:gpl3+)))
 
+(define-public emacs-lsp-treemacs
+  (package
+    (name "emacs-lsp-treemacs")
+    (version "0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/emacs-lsp/lsp-treemacs")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1z9cb7i546pbzvxii6lsj31jq8m70xrzscphl5z71vh93sydyhkb"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-lsp-mode" ,emacs-lsp-mode)
+       ("emacs-treemacs" ,emacs-treemacs)))
+    (home-page "https://github.com/emacs-lsp/lsp-treemacs")
+    (synopsis "Integration between LSP mode and treemacs")
+    (description
+     "This package provides integration between LSP mode and treemacs,
+and implementation of treeview controls using treemacs as a tree renderer.")
+    (license license:gpl3+)))
+
 (define-public emacs-pfuture
   (package
     (name "emacs-pfuture")
