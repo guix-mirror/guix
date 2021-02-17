@@ -7,7 +7,7 @@
 ;; Copyright © 2019, 2020 Julien Lepiller <julien@lepiller.eu>
 ;; Copyright © 2019, 2020, 2021 Florian Pelz <pelzflorian@pelzflorian.de>
 ;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
-;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
+;; Copyright © 2020, 2021 Mathieu Othacehe <m.othacehe@gmail.com>
 ;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;
@@ -17,6 +17,28 @@
 
 (channel-news
  (version 0)
+
+ (entry (commit "6e8cdf1d26092cb9654e179b04730fff7c15c94f")
+        (title
+         (en "The @command{guix system image} command can now operate on image records")
+         (fr "La commande @command{guix system image} peut désormais fonctionner sur des images"))
+        (body
+         (en "The @command{guix system image} command can now operate on
+@code{image} records.  This means that the file parameter or the expression
+passed to this command can return @code{image} or @code{operating-system}
+records.
+
+The @file{gnu/system/images} directory contains default images that can be
+built by running @command{guix system image gnu/system/images/pine64.scm} for
+instance.")
+         (fr "La commande @command{guix system image} peut désormais
+fonctionner sur des images.  Cela signifie que le fichier ou l'expression
+passé en paramètre de cette commande peuvent retourner une structure de type
+@code{image} ou @code{operating-system}.
+
+Le dossier @file{gnu/system/images} contient des images par défaut qui peuvent
+être construites en lançant la commande @command{guix system image
+gnu/system/images/pine64.scm} par exemple.")))
 
  (entry (commit "aa8de806252e3835d57fab351b02d13db762deac")
         (title
