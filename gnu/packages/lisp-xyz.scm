@@ -13427,6 +13427,37 @@ backtick.  It has been forked from SHELISP.")
 (define-public ecl-clesh
   (sbcl-package->ecl-package sbcl-clesh))
 
+(define-public sbcl-trivial-channels
+  (let ((commit "e2370118d8983ba69c0360a7695f8f2e2fd6a8a6")
+        (revision "1"))
+    (package
+      (name "sbcl-trivial-channels")
+      (version (git-version "1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/rpav/trivial-channels")
+               (commit commit)))
+         (file-name (git-file-name "trivial-channels" version))
+         (sha256
+          (base32 "04wnxcgk40x8p0gxnz9arv1a5wasdqrdxa8c4p5v7r2mycfps6jj"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("bordeaux-threads" ,sbcl-bordeaux-threads)
+         ("trivial-timeout" ,sbcl-trivial-timeout)))
+      (home-page "https://github.com/rpav/trivial-channels")
+      (synopsis "Common Lisp simple thread-safe channels with timeout")
+      (description
+       "It's very basic implementation of channels and queue for Common Lisp.")
+      (license license:bsd-2))))
+
+(define-public ecl-trivial-channels
+  (sbcl-package->ecl-package sbcl-trivial-channels))
+
+(define-public cl-trivial-channels
+  (sbcl-package->cl-source-package sbcl-trivial-channels))
+
 (define-public sbcl-trivial-download
   (let ((commit "d2472061d86b1cf3d32f388daacd4e32a13af699"))
     (package
