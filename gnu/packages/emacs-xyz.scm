@@ -20109,42 +20109,40 @@ execute its commands and resize images.")
       (license license:gpl3+))))
 
 (define-public emacs-synosaurus
-  (let ((commit "8bf95b935976ec0a1964cf175ed57cc5f6f93bdb"))
-    (package
-      (name "emacs-synosaurus")
-      (version (git-version "0.1.0" "1" commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/hpdeifel/synosaurus")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "15by9jccab6kyplxa6k0glzaivxkqdigl33gl2qi2cvy6f2q7gva"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("wordnet" ,wordnet)))
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'configure
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let ((wn (assoc-ref inputs "wordnet")))
-                 ;; .el is read-only in git.
-                 (chmod "synosaurus-wordnet.el" #o644)
-                 ;; Specify the absolute file names of the various
-                 ;; programs so that everything works out-of-the-box.
-                 (emacs-substitute-variables
-                     "synosaurus-wordnet.el"
-                   ("wordnet-command"
-                    (string-append wn "/bin/wn")))))))))
-      (home-page "https://github.com/hpdeifel/synosaurus")
-      (synopsis "Extensible thesaurus mode for Emacs")
-      (description "Synosaurus is a thesaurus fontend for Emacs with pluggable
+  (package
+    (name "emacs-synosaurus")
+    (version "0.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/hpdeifel/synosaurus")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "14dd6p89pmpf1w3nx4f9mzm4sn2b64nicws436ck7pmp223pwciv"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("wordnet" ,wordnet)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((wn (assoc-ref inputs "wordnet")))
+               ;; .el is read-only in git.
+               (make-file-writable "synosaurus-wordnet.el")
+               ;; Specify the absolute file names of the various
+               ;; programs so that everything works out-of-the-box.
+               (emacs-substitute-variables "synosaurus-wordnet.el"
+                 ("synosaurus-wordnet--command"
+                  (string-append wn "/bin/wn")))))))))
+    (home-page "https://github.com/hpdeifel/synosaurus")
+    (synopsis "Extensible thesaurus mode for Emacs")
+    (description "Synosaurus is a thesaurus fontend for Emacs with pluggable
 backends, including the @command{wordnet} offline backend.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-editorconfig
   (package
