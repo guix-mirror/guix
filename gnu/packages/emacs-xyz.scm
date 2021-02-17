@@ -22673,32 +22673,30 @@ definition-jumping and type-checking on demand.")
       (license license:bsd-3))))
 
 (define-public emacs-rjsx-mode
-  (let ((commit "0e7fa6b4facdec4f85a7a8865bdf59dfd57217b5")
-        (revision "2"))
-    (package
-      (name "emacs-rjsx-mode")
-      (version (git-version "0.4" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/felipeochoa/rjsx-mode")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "0s0871sx3ch09kgvbcp9na4zdrfrda62xjq8m9knbq5vnj8q8qpi"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-js2-mode" ,emacs-js2-mode)))
-      (arguments
-       `(#:tests? #t
-         #:test-command '("make" "test")))
-      (home-page "https://github.com/felipeochoa/rjsx-mode")
-      (synopsis "Major mode for JSX files")
-      (description "This package extends the parser of @code{js2-mode} to
+  (package
+    (name "emacs-rjsx-mode")
+    (version "0.5.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/felipeochoa/rjsx-mode")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "08b4hdgq4hc1yfd9pvyir2j3cqqdqa3j5svgaba97x5fzhsz7y8i"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-js2-mode" ,emacs-js2-mode)))
+    (arguments
+     `(#:tests? #t
+       #:test-command '("make" "test")))
+    (home-page "https://github.com/felipeochoa/rjsx-mode")
+    (synopsis "Major mode for JSX files")
+    (description "This package extends the parser of @code{js2-mode} to
 support JSX syntax.")
-      (license license:expat))))
+    (license license:expat)))
 
 (define-public emacs-origami-el
   (let ((commit "1f38085c8f9af7842765ed63f7d6dfe4dab59366")
