@@ -57,8 +57,7 @@
   (apply (@@ (guix gexp) gexp->sexp) x))
 
 (define* (gexp->sexp* exp #:optional target)
-  (run-with-store %store (gexp->sexp exp
-                                     #:target target)
+  (run-with-store %store (gexp->sexp exp (%current-system) target)
                   #:guile-for-build (%guile-for-build)))
 
 (define (gexp-input->tuple input)
@@ -540,7 +539,7 @@
 (test-assertm "gexp->file"
   (mlet* %store-monad ((exp -> (gexp (display (ungexp %bootstrap-guile))))
                        (guile  (package-file %bootstrap-guile))
-                       (sexp   (gexp->sexp exp))
+                       (sexp   (gexp->sexp exp (%current-system) #f))
                        (drv    (gexp->file "foo" exp))
                        (out -> (derivation->output-path drv))
                        (done   (built-derivations (list drv)))

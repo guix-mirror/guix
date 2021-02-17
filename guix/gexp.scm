@@ -826,8 +826,7 @@ list."
     (one-of symbol? string? keyword? pair? null? array?
             number? boolean? char?)))
 
-(define* (lower-inputs inputs
-                       #:key system target)
+(define (lower-inputs inputs system target)
   "Turn any object from INPUTS into a derivation input for SYSTEM or a store
 item (a \"source\"); return the corresponding input list as a monadic value.
 When TARGET is true, use it as the cross-compilation target triplet."
@@ -874,8 +873,7 @@ corresponding <derivation-input> or store item."
   (match graphs
     (((file-names . inputs) ...)
      (mlet %store-monad ((inputs (lower-inputs (map tuple->gexp-input inputs)
-                                               #:system system
-                                               #:target target)))
+                                               system target)))
        (return (map cons file-names inputs))))))
 
 (define* (lower-references lst #:key system target)
@@ -1005,11 +1003,8 @@ derivations--e.g., code evaluated for its side effects."
                                       (return guile-for-build)
                                       (default-guile-derivation system)))
                        (inputs   (lower-inputs (gexp-inputs exp)
-                                               #:system system
-                                               #:target target))
-                       (sexp     (gexp->sexp exp
-                                             #:system system
-                                             #:target target))
+                                               system target))
+                       (sexp     (gexp->sexp exp system target))
                        (extensions -> (gexp-extensions exp))
                        (exts     (mapm %store-monad
                                        (lambda (obj)
@@ -1278,9 +1273,7 @@ The other arguments are as for 'derivation'."
   (delete-duplicates
    (add-reference-output (gexp-references exp) '())))
 
-(define* (gexp->sexp exp #:key
-                     (system (%current-system))
-                     (target (%current-target-system)))
+(define (gexp->sexp exp system target)
   "Return (monadically) the sexp corresponding to EXP for the given OUTPUT,
 and in the current monad setting (system type, etc.)"
   (define* (reference->sexp ref #:optional native?)
@@ -1293,8 +1286,7 @@ and in the current monad setting (system type, etc.)"
          (return `((@ (guile) getenv) ,output)))
         (($ <gexp-input> (? gexp? exp) output n?)
          (gexp->sexp exp
-                     #:system system
-                     #:target (if (or n? native?) #f target)))
+                     system (if (or n? native?) #f target)))
         (($ <gexp-input> (refs ...) output n?)
          (mapm %store-monad
                (lambda (ref)
