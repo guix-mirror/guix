@@ -18496,7 +18496,7 @@ matching regexps.")
 (define-public emacs-esh-autosuggest
   (package
     (name "emacs-esh-autosuggest")
-    (version "2.0.0")
+    (version "2.0.1")
     (source
      (origin
        (method git-fetch)
@@ -18506,7 +18506,7 @@ matching regexps.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "116pdjgpjy9b0psm5kzwkwy7dq8vn0p6dy75dl1zsy2xrjf1iqdw"))))
+         "0l2nnlr3b6df1xn0qjf5d5ryy1wcs1jczyfy795vsasd5gm3g0xh"))))
     (build-system emacs-build-system)
     (propagated-inputs `(("emacs-company" ,emacs-company)))
     (home-page "https://github.com/dieggsy/esh-autosuggest")
