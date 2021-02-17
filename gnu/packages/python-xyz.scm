@@ -97,6 +97,7 @@
 ;;; Copyright © 2021 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;; Copyright © 2020 EuAndreh <eu@euandre.org>
 ;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
+;;; Copyright © 2021 Ellis Kenyő <me@elken.dev>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23988,3 +23989,28 @@ and frame grabber interface.")
     (description
       "A screencast tool to display your keys inspired by Screenflick.")
     (license license:gpl3+)))
+
+(define-public python-jinja2-cli
+  (package
+    (name "python-jinja2-cli")
+    (version "0.7.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "jinja2-cli" version))
+        (sha256
+          (base32
+            "0vikx7v6fbvww6kfrv0k5a24jyv3ak7nindg60906pdd1m9qvkcw"))))
+    (build-system python-build-system)
+    (propagated-inputs
+      `(("python-jinja2" ,python-jinja2)))
+    (native-inputs
+      `(("python-flake8" ,python-flake8)
+        ("python-jinja2" ,python-jinja2)
+        ("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/mattrobenolt/jinja2-cli")
+    (synopsis "Command-line interface to Jinja2")
+    (description
+     "This package provides a command-line interface (CLI) to the Jinja2
+template engine.")
+    (license license:bsd-3)))
