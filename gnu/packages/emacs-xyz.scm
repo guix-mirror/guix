@@ -19817,7 +19817,7 @@ buffer displays recursive dir sizes.")
 (define-public emacs-dired-rsync
   (package
     (name "emacs-dired-rsync")
-    (version "0.5")
+    (version "0.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -19826,7 +19826,7 @@ buffer displays recursive dir sizes.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1nq3d8py2zsji835wilg514z5j180k371pwqsqrmnnhq1cj4fkia"))))
+                "19za6i96xrmczdh928n5ixd7j7pvy175sz1msaiwvdjwysjr8k51"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-s" ,emacs-s)
