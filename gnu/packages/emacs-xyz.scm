@@ -17678,32 +17678,27 @@ decreasing the default font size in all GUI Emacs frames.")
     (license license:gpl3+)))
 
 (define-public emacs-mixed-pitch
-  ;; This commit contains fixes for visual alignment of line numbers and
-  ;; org-indent-mode.
-  (let ((commit "d305108f9520e196b533f05d1dcc284cf535faaf")
-        (tag "1.1.0")
-        (revision "0"))
-    (package
-      (name "emacs-mixed-pitch")
-      (version (git-version tag revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://gitlab.com/jabranham/mixed-pitch.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "0yx89is3g2m8af8vfsz5rgjmfmx7mfrxlffb1x6y4b8lh9l0k6dj"))))
-      (build-system emacs-build-system)
-      (home-page "https://gitlab.com/jabranham/mixed-pitch")
-      (synopsis "Mix variable- and fixed-pitch fonts in the same Emacs buffer")
-      (description
-       "@code{mixed-pitch-mode} is a minor mode that enables mixing
+  (package
+    (name "emacs-mixed-pitch")
+    (version "1.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/jabranham/mixed-pitch.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1dhljrh44dsnixd8hbb11k6dgap8r8n7jknhfy2afdzq889fih74"))))
+    (build-system emacs-build-system)
+    (home-page "https://gitlab.com/jabranham/mixed-pitch")
+    (synopsis "Mix variable- and fixed-pitch fonts in the same Emacs buffer")
+    (description
+     "@code{mixed-pitch-mode} is a minor mode that enables mixing
 variable-pitch and fixed-pitch fonts in the same buffer.  The list
 @code{mixed-pitch-fixed-pitch-faces} defines the faces that are kept
 fixed-pitch,everything else becomes variable-pitch.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-visual-regexp
   (package
