@@ -21245,7 +21245,7 @@ convenient to edit foreign files.")
 (define-public emacs-repo
   (package
     (name "emacs-repo")
-    (version "0.1.3")
+    (version "0.2.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -21254,7 +21254,7 @@ convenient to edit foreign files.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0rbvcvm7bfr6ncji7cllfxyyr6x7n9fx863byp243phsj3n93adz"))))
+                "0jgiawdnzjlrpx2j1y6djwbqncdpmyfd31q1qf1890049y8ppxnb"))))
     (build-system emacs-build-system)
     (native-inputs
      `(("emacs-el-mock" ,emacs-el-mock)
