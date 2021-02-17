@@ -17405,32 +17405,31 @@ Emacs.")
       (license license:gpl3+))))
 
 (define-public emacs-magit-org-todos-el
-  (let ((commit "df206287737b9671f2e36ae7b1474ebbe9940d2a"))
-    (package
-      (name "emacs-magit-org-todos-el")
-      (version (git-version "0.1.1" "1" commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/danielma/magit-org-todos.el")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "0kdp7k7jnnrkhsg0xh1c3h7iz0vgi120gf5xwl1hxy61avivnxrn"))))
-      (propagated-inputs
-       `(("magit" ,emacs-magit)))
-      (build-system emacs-build-system)
-      (home-page "https://github.com/danielma/magit-org-todos.el")
-      (synopsis "Get todo.org into Emacs Magit status")
-      (description "This package allows you to get @file{todo.org} into your
+  (package
+    (name "emacs-magit-org-todos-el")
+    (version "0.1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/danielma/magit-org-todos.el")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "07r5x256k1fjjxs1yfg41kc94nwvnjlk2vvknkra3j8v9p0j88m7"))))
+    (propagated-inputs
+     `(("magit" ,emacs-magit)))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/danielma/magit-org-todos.el")
+    (synopsis "Get todo.org into Emacs Magit status")
+    (description "This package allows you to get @file{todo.org} into your
 magit status.
 
 If you have a @file{todo.org} file with @code{TODO} items in the root of your
 repository, @code{magit-org-todos} will create a section in your Magit status
 buffer with each of your todos.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-vcsh
   (package
