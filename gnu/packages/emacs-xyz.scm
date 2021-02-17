@@ -21040,7 +21040,7 @@ comments.")
 (define-public emacs-libmpdel
   (package
     (name "emacs-libmpdel")
-    (version "1.1.2")
+    (version "1.2.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -21049,7 +21049,7 @@ comments.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0dnjndpv6bmz5blfs75ynmbm32g23l4slg5p3941b1i94a08qzpy"))))
+                "1nzs6g2mg3jhfhhfcxjhd9sbvwzhmr6j6mc80ln2nr4gzjqgaa4k"))))
     (build-system emacs-build-system)
     (home-page "https://gitea.petton.fr/mpdel/libmpdel")
     (synopsis "Emacs library to communicate with Music Player Daemon (MPD)")
