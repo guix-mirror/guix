@@ -23538,6 +23538,17 @@ download images.")
         (base32
          "017kkzv9lxlz9qhg3gprrf1wcyflxrif6wjk27x9b4bdzylw6bsx"))))
     (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'install-server-binary
+           ;; Makevars tries to install to R's store directory.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (substitute* "src/Makevars.in"
+                 (("\\$\\(R_HOME\\)") out))
+               (mkdir-p bin)))))))
     (propagated-inputs
      `(("r-checkmate" ,r-checkmate)
        ("r-mime" ,r-mime)
