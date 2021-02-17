@@ -1584,6 +1584,16 @@ enforcing & linting tool.")
     (home-page "https://github.com/rubocop-hq/rubocop-rspec")
     (license license:expat)))
 
+(define-public ruby-rubocop-rspec-minimal
+  (hidden-package
+   (package
+     (inherit ruby-rubocop-rspec)
+     (arguments
+      (substitute-keyword-arguments (package-arguments ruby-rubocop-rspec)
+        ((#:tests? _ #f) #f)))
+     (propagated-inputs '())
+     (native-inputs '()))))
+
 (define-public ruby-rubocop-performance
   (package
     (name "ruby-rubocop-performance")
@@ -1624,6 +1634,16 @@ enforcing & linting tool.")
 for performance optimizations in Ruby code.")
     (home-page "https://docs.rubocop.org/rubocop-performance/")
     (license license:expat)))
+
+(define-public ruby-rubocop-performance-minimal
+  (hidden-package
+   (package
+     (inherit ruby-rubocop-performance)
+     (arguments
+      (substitute-keyword-arguments (package-arguments ruby-rubocop-performance)
+        ((#:tests? _ #f) #f)))
+     (propagated-inputs '())
+     (native-inputs '()))))
 
 (define-public ruby-gimme
   (let ((revision "1")
@@ -7270,7 +7290,7 @@ run.")
 (define-public ruby-rubocop
   (package
     (name "ruby-rubocop")
-    (version "0.88.0")
+    (version "1.10.0")
     (source
      (origin
        (method git-fetch)               ;no tests in distributed gem
@@ -7280,41 +7300,24 @@ run.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1d06893jp8pd85fvgp5d16vqcf31bafi430v4f4y746ihyvhzz5r"))
-       (patches (search-patches "ruby-rubocop-break-dependency-cycle.patch"))))
+         "0wjw9vpzr4f3nf1zf010bag71w4hdi0haybdn7r5rlmw45pmim29"))))
     (build-system ruby-build-system)
     (arguments
      '(#:test-target "default"
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'remove-problematic-tests
-           ;; These tests depend on Rubocop extensions, which cannot be
-           ;; included as they cause a dependency cycle with Rubocop itself.
-           (lambda _
-             (delete-file "spec/rubocop/config_loader_spec.rb")
-             (substitute* "Gemfile"
-               ((".*'rubocop-performance'.*") "")
-               ((".*'rubocop-rspec'.*") ""))
-             ;; Prevent "Unnecessary disabling of RSpec/* (unknown cop)"
-             ;; errors.
-             (substitute* (find-files "spec/rubocop/cop/" "_spec\\.rb$")
-               (("# (rubocop:(enable|disable) RSpec.*)" _ what)
-                (string-append "# Disabled: " what)))
-             #t))
-         (add-after 'unpack 'disable-bundler
-           (lambda _
-             (substitute* "Rakefile"
-               (("Bundler\\.setup.*") "nil\n"))
-             #t))
-         (replace 'replace-git-ls-files
-           (lambda _
-             (substitute* "rubocop.gemspec"
-               (("`git ls-files(.*)`" _ files)
-                (format #f "`find ~a -type f| sort`" files)))
-             #t))
          (add-before 'check 'set-home
            (lambda _
              (setenv "HOME" (getcwd))
+             #t))
+         ;; Rubocop depends on itself for tests, directly and indirectly. By
+         ;; regenerating the TODO list we test rubocop against itself and
+         ;; forgo adjusting the test suite to our environment each release.
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (make-file-writable ".rubocop_todo.yml")
+               (invoke "./exe/rubocop" "--auto-gen-config"))
              #t))
          (add-before 'check 'make-adoc-files-writable
            (lambda _
@@ -7324,10 +7327,17 @@ run.")
              #t)))))
     (native-inputs
      `(("ruby-bump" ,ruby-bump)
+       ("ruby-memory-profiler" ,ruby-memory-profiler)
        ("ruby-pry" ,ruby-pry)
+       ("ruby-rake" ,ruby-rake)
        ("ruby-rspec" ,ruby-rspec)
+       ("ruby-rubocop-minimal" ,ruby-rubocop-minimal)
+       ("ruby-rubocop-performance-minimal" ,ruby-rubocop-performance-minimal)
+       ("ruby-rubocop-rspec-minimal" ,ruby-rubocop-rspec-minimal)
+       ("ruby-simplecov" ,ruby-simplecov)
+       ("ruby-stackprof" ,ruby-stackprof)
        ("ruby-test-queue" ,ruby-test-queue)
-       ("ruby-webmock" ,ruby-webmock-2)
+       ("ruby-webmock" ,ruby-webmock)
        ("ruby-yard" ,ruby-yard)))
     (propagated-inputs
      `(("ruby-parallel" ,ruby-parallel)
@@ -7344,6 +7354,16 @@ run.")
 the community-driven Ruby Style Guide.")
     (home-page "https://github.com/rubocop-hq/rubocop")
     (license license:expat)))
+
+(define-public ruby-rubocop-minimal
+  (hidden-package
+   (package
+     (inherit ruby-rubocop)
+     (arguments
+      (substitute-keyword-arguments (package-arguments ruby-rubocop)
+        ((#:tests? _ #f) #f)))
+     (propagated-inputs '())
+     (native-inputs '()))))
 
 (define-public ruby-contest
   (package
