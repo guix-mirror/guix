@@ -89,7 +89,7 @@ resources).  It supports virtualized, parallel, and GPU-based applications.")
                  #:tests? #f)) ; FIXME: Looks like bad test syntax in the
                                ; source package, 2 tests fail.  Disable for
                                ; now.
-    (inputs `(("openssl" ,openssl-1.0)
+    (inputs `(("openssl" ,openssl)
               ("curl" ,curl)
               ("mariadb:dev" ,mariadb "dev")
               ("zlib" ,zlib)))
