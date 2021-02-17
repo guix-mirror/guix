@@ -5519,6 +5519,29 @@ projects.  It has very little overhead and can be easily integrated with
 development tools to catch coverage problems early.")
     (license license:expat)))
 
+(define-public ruby-oedipus-lex
+  (package
+    (name "ruby-oedipus-lex")
+    (version "2.5.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (rubygems-uri "oedipus_lex" version))
+        (sha256
+         (base32
+          "1v1rk78khwq87ar300lwll570zxpkq9rjnpgc9mgsyd6mm9qjz4w"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("ruby-hoe" ,ruby-hoe)))
+    (synopsis "Ruby lexer")
+    (description
+     "Oedipus Lex is a lexer generator in the same family as Rexical and Rex.
+It is based primarily on generating code much like you would a hand-written
+lexer.  It uses StrScanner within a multi-level case statement.  As such,
+Oedipus matches on the first match, not the longest.")
+      (home-page "https://github.com/seattlerb/oedipus_lex")
+      (license license:expat)))
+
 (define-public ruby-guard
   (package
     (name "ruby-guard")
