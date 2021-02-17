@@ -159,7 +159,7 @@
 (define (serialize-free-form-args field-name val)
   (serialize-field field-name
                    (string-join
-                    (map (match-lambda ((k . v) (format #t "~a=~a" k v))) val)
+                    (map (match-lambda ((k . v) (format #f "~a=~a" k v))) val)
                     " ")))
 
 (define-configuration dict-configuration
