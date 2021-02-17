@@ -3092,20 +3092,19 @@ immutable queue or stack).")
 (define-public ruby-hashdiff
   (package
     (name "ruby-hashdiff")
-    (version "0.3.8")
+    (version "1.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "hashdiff" version))
        (sha256
         (base32
-         "19ykg5pax8798nh1yv71adkx0zzs7gn2rxjj86v7nsw0jba5lask"))))
+         "1nynpl0xbj0nphqx1qlmyggq58ms1phf5i03hk64wcc0a17x1m1c"))))
     (build-system ruby-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         ;; Run tests directly via rspec to avoid Rake issue:
-         ;; NoMethodError: undefined method `last_comment'
+         ;; Run tests directly via rspec to avoid depending on rubocop.
          (replace 'check
            (lambda* (#:key tests? #:allow-other-keys)
              (when tests?
