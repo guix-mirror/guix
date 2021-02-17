@@ -22297,7 +22297,7 @@ provides a minor mode that autoformats the buffer upon saving.")
 (define-public emacs-fish-mode
   (package
     (name "emacs-fish-mode")
-    (version "0.1.4")
+    (version "0.1.6")
     (source
      (origin
        (method git-fetch)
@@ -22307,7 +22307,7 @@ provides a minor mode that autoformats the buffer upon saving.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0a74ghmjjrxfdhk4mvq6lar4w6l6lc4iilabs99smqr2fn5rsslq"))))
+         "1spxxkji9xa930sbwvzyjm8jrqk9ra0xqhivw7zd12a4c56nhna9"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/wwwjfy/emacs-fish")
     (synopsis "Major mode for Fish shell scripts")
