@@ -36,6 +36,7 @@
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;; Copyright © 2021 Zheng Junjie <873216071@qq.com>
+;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -526,6 +527,42 @@ facts can be collected on the command line with the @command{facter} command
 or via the @code{facter} Ruby library.")
     (home-page "https://github.com/puppetlabs/facter-ng")
     (license license:expat)))
+
+(define-public ttyload
+  (let ((revision "1")
+        (commit "f9495372801ce4b4dad98ad854203e694c31c1eb"))
+    (package
+      (name "ttyload")
+      (version (git-version "0.5.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/lindes/ttyload")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0ldb7a13b9v876c6cbrs78pkizj64drnqx95z5shfbwgpwfhr4im"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f      ; no tests
+         #:make-flags
+         (list (string-append "CC=" ,(cc-for-target)))
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin")))
+                 (install-file "ttyload" bin)))))))
+      (home-page "https://www.daveltd.com/src/util/ttyload/")
+      (synopsis "Console based color-coded graphs of CPU load average")
+      (description
+       "Show graphs for 1 minute, 5 minute, 15 minute load averages on the
+console.")
+      ;; This package uses a modified version of the "ISC License".
+      (license (license:non-copyleft "file://LICENSE")))))
 
 (define-public htop
   (package
