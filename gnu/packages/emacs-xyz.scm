@@ -16812,29 +16812,27 @@ within Emacs.")
       (license license:gpl3+))))
 
 (define-public emacs-ibuffer-projectile
-  (let ((commit "76496214144687cee0b5139be2e61b1e400cac87")
-        (revision "2"))
-    (package
-      (name "emacs-ibuffer-projectile")
-      (version (git-version "0.2" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/purcell/ibuffer-projectile")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "0vv9xwb1qd5x8zhqmmsn1nrpd11cql9hxb7483nsdhcfwl4apqav"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-projectile" ,emacs-projectile)))
-      (home-page "https://github.com/purcell/ibuffer-projectile")
-      (synopsis "Group ibuffer's list by projectile root")
-      (description "Adds functionality to Emacs @code{ibuffer} for
+  (package
+    (name "emacs-ibuffer-projectile")
+    (version "0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/purcell/ibuffer-projectile")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "18cqxnwzzbkcj9jcaw89b210432yzhrl1dwsv48p0jbhfnr17k41"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-projectile" ,emacs-projectile)))
+    (home-page "https://github.com/purcell/ibuffer-projectile")
+    (synopsis "Group ibuffer's list by projectile root")
+    (description "Adds functionality to Emacs @code{ibuffer} for
 grouping buffers by their projectile root directory.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-elm-mode
   (package
