@@ -18525,7 +18525,7 @@ autosuggestions with:
 (define-public emacs-desktop-environment
   (package
     (name "emacs-desktop-environment")
-    (version "0.3.0")
+    (version "0.4.0")
     (source
      (origin
        (method git-fetch)
@@ -18535,7 +18535,7 @@ autosuggestions with:
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "195n99xvxyh4cfxjpfa1h1maalqrxf7nyi0bh3lqa1z6z5bdb6x2"))))
+         "0s33jncjg8c2xlr90qjk1ishwmwxm9yg0z6n3kzilawcilpxidsh"))))
     (build-system emacs-build-system)
     (home-page "https://gitlab.petton.fr/DamienCassou/desktop-environment")
     (synopsis "Control your GNU/Linux desktop environment from Emacs")
