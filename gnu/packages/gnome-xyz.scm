@@ -781,6 +781,64 @@ dark elements.  It supports GNOME, Unity, Xfce, and Openbox.")
 (define-public numix-theme
   (deprecated-package "numix-theme" numix-gtk-theme))
 
+(define-public orchis-theme
+  (package
+    (name "orchis-theme")
+    (version "2021-01-22")
+    (source
+      (origin
+        (method git-fetch)
+        (uri
+          (git-reference
+            (url "https://github.com/vinceliuice/Orchis-theme")
+            (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+          (base32
+           "1m0wilvrscg2xnkp6a90j0iccxd8ywvfpza1345sc6xmml9gvjzc"))
+        (modules '((guix build utils)
+                   (ice-9 regex)
+                   (srfi srfi-26)))
+        (snippet
+         '(begin
+            (for-each
+             (lambda (f)
+               (let* ((r (make-regexp "\\.scss"))
+                      (f* (regexp-substitute #f (regexp-exec r f) 'pre ".css")))
+                 (if (file-exists? f*)
+                     (delete-file f*))))
+             (find-files "." ".*\\.scss"))
+            #t))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'bootstrap)
+         (delete 'configure)
+         (replace 'build (lambda _ (invoke "./parse-sass.sh")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((themes (string-append (assoc-ref outputs "out")
+                                          "/share/themes")))
+               (mkdir-p themes)
+               (invoke "./install.sh" "-d" themes)
+               #t))))))
+    (inputs
+     `(("gtk-engines" ,gtk-engines)))
+    (native-inputs
+     `(;("coreutils" ,coreutils)
+       ("gtk+" ,gtk+)
+       ("sassc" ,sassc)))
+    (home-page "https://github.com/vinceliuice/Orchis-theme")
+    (synopsis "Material Design theme for a wide range of environments")
+    (description "Orchis is a Material Design them for GNOME/GTK based
+desktop environments.  It is based on materia-theme and adds more color
+variants.")
+    (license (list license:gpl3            ; Claimed by README.md.
+                   license:lgpl2.1         ; Some style sheets.
+                   license:cc-by-sa4.0)))) ; Some icons
+
 (define-public markets
   (package
     (name "markets")
