@@ -21365,7 +21365,7 @@ opposed to character-based).")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://gitlab.com/Ambrevar/emacs-disk-usage.git")
+             (url "https://gitlab.com/Ambrevar/emacs-disk-usage")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
