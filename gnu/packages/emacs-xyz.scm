@@ -16430,7 +16430,7 @@ mode.")
 (define-public emacs-edit-server
   (package
     (name "emacs-edit-server")
-    (version "1.15")
+    (version "1.16")
     (source
      (origin
        (method git-fetch)
@@ -16439,7 +16439,7 @@ mode.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0xxby3ghs38i1l7kag12rnzlzcg9297pm8k6kqq3aqzsg9d2950y"))))
+        (base32 "0m7gj224sqxjjw5sxky92fnrxg9jy4nf33kwf0aqxnfhqlgh545k"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
@@ -16448,6 +16448,7 @@ mode.")
            ;; Elisp directory is not in root of the source.
            (lambda _
              (chdir "servers"))))))
+    (propagated-inputs `(("emacs-ert-async" ,emacs-ert-async)))
     (home-page "https://github.com/stsquad/emacs_chrome")
     (synopsis "Server that responds to edit requests from Chromium")
     (description
