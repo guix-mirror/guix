@@ -21605,6 +21605,34 @@ Projectile.")
 and implementation of treeview controls using treemacs as a tree renderer.")
     (license license:gpl3+)))
 
+(define-public emacs-dap-mode
+  (package
+    (name "emacs-dap-mode")
+    (version "0.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/emacs-lsp/dap-mode")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1d4hdydfk86d4slibigyhwng8wx3vzyap8hp5iv0h7wr6868m4iv"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-bui" ,emacs-bui)
+       ("emacs-lsp-mode" ,emacs-lsp-mode)
+       ("emacs-posframe" ,emacs-posframe)
+       ("emacs-lsp-treemacs" ,emacs-lsp-treemacs)))
+    (home-page "https://emacs-lsp.github.io/dap-mode")
+    (synopsis "Emacs client/library for Debug Adapter Protocol ")
+    (description
+     "Dap mode is an Emacs client/library for Debug Adapter
+Protocol (DAP), a wire protocol for communication between client and
+debug server.  It is similar to the LSP but provides integration with
+Debug server.")
+    (license license:gpl3+)))
+
 (define-public emacs-pfuture
   (package
     (name "emacs-pfuture")
