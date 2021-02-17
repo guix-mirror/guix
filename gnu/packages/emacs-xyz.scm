@@ -20730,40 +20730,38 @@ other frame parameters.")
       (license license:gpl3+))))
 
 (define-public emacs-annalist
-  (let ((commit "e0601539c9ac0171a684ea3ff6266d215d1d08e6")
-        (revision "1"))
-    (package
-      (name "emacs-annalist")
-      (version (git-version "1.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/noctuid/annalist.el")
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "10bmimdzpi6cql4sb2hbgdvrza83xbac50bi9qng4z662pfnlaam"))
-                (file-name (git-file-name name version))))
-      (build-system emacs-build-system)
-      (native-inputs
-       `(("emacs-buttercup" ,emacs-buttercup)
-         ("emacs-lispy" ,emacs-lispy)
-         ("emacs-evil" ,emacs-evil)))
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-before 'check 'fix-makefile
-             (lambda _
-               (substitute* "Makefile"
-                 (("cask exec ") ""))
-               #t)))
-         #:tests? #t
-         #:test-command '("make" "test")))
-      (home-page "https://github.com/noctuid/annalist.el")
-      (synopsis "Record and display information with Org headings and tables")
-      (description "This package allows for keybindings, settings, hooks, and
+  (package
+    (name "emacs-annalist")
+    (version "1.0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/noctuid/annalist.el")
+                    (commit version)))
+              (sha256
+               (base32
+                "1jlb5w4972l8m2aa18q2l6arfpm65g4nk21dn1yi8c9dbpk2g67c"))
+              (file-name (git-file-name name version))))
+    (build-system emacs-build-system)
+    (native-inputs
+     `(("emacs-buttercup" ,emacs-buttercup)
+       ("emacs-lispy" ,emacs-lispy)
+       ("emacs-evil" ,emacs-evil)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'fix-makefile
+           (lambda _
+             (substitute* "Makefile"
+               (("cask exec ") ""))
+             #t)))
+       #:tests? #t
+       #:test-command '("make" "test")))
+    (home-page "https://github.com/noctuid/annalist.el")
+    (synopsis "Record and display information with Org headings and tables")
+    (description "This package allows for keybindings, settings, hooks, and
 advice to be recorded and displayed.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-general
   (let ((commit "a0b17d207badf462311b2eef7c065b884462cb7c")
