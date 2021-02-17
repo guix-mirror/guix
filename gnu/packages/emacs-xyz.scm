@@ -20042,7 +20042,7 @@ depending on the downloaded URL.")
 (define-public emacs-org-web-tools
   (package
     (name "emacs-org-web-tools")
-    (version "1.0")
+    (version "1.1.1")
     (source
      (origin
        (method git-fetch)
@@ -20052,11 +20052,12 @@ depending on the downloaded URL.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0kak9h5ny00d39gnwspv53nadnag01brw2fq9zk5wpfc91h9bjng"))))
+         "0v4qad54r0z7dr7kg5lpfdsazi44qvrbybx9aciyl4w9grfajphb"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
        ("emacs-esxml" ,emacs-esxml)
+       ("emacs-request" ,emacs-request)
        ("emacs-s" ,emacs-s)))
     (inputs
      `(("pandoc" ,pandoc)))
