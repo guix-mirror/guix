@@ -19,6 +19,7 @@
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Hendur Saga <hendursaga@yahoo.com>
 ;;; Copyright © 2020 pukkamustard <pukkamustard@posteo.net>
+;;; Copyright © 2021 Ellis Kenyő <me@elken.dev>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -71,6 +72,7 @@
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages version-control)
   #:use-module (gnu packages xml)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -78,6 +80,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system cargo)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system copy)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
   #:use-module (guix build-system perl)
@@ -1335,3 +1338,39 @@ version 3) onion addresses.  It allows one to produce customized vanity .onion
 addresses using a brute-force method.")
     (home-page "https://github.com/cathugger/mkp224o")
     (license license:cc0)))
+
+(define-public transcrypt
+  (package
+    (name "transcrypt")
+    (version "2.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/elasticdog/transcrypt")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "0bpz1hazbhfb6pqi68x55kq6a31bgh6vwij836slmi4jqiwvnh5a"))
+       (file-name (git-file-name name version))))
+    (inputs
+     `(("git" ,git)
+       ("openssl" ,openssl)))
+    (build-system copy-build-system)
+    (arguments
+     `(#:install-plan
+       '(("transcrypt" "bin/transcrypt")
+         ("man/transcrypt.1" "share/man/man1/transcrypt.1")
+         ("contrib/bash/transcrypt"
+          "share/bash-completion/completions/transcrypt")
+         ("contrib/zsh/_transcrypt"
+          "share/zsh/site-functions/_transcrypt"))))
+    (home-page "https://github.com/elasticdog/transcrypt")
+    (synopsis "Transparently encrypt files within a git repository")
+    (description
+     "Transcrypt is a script to configure transparent encryption of sensitive
+files stored in a Git repository.  Files that you choose will be automatically
+encrypted when you commit them, and automatically decrypted when you check
+them out.  The process will degrade gracefully, so even people without your
+encryption password can safely commit changes to the repository's
+non-encrypted files.")
+    (license license:expat)))
