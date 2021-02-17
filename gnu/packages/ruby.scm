@@ -7700,6 +7700,29 @@ Profiling multiple threads simultaneously is supported.
     (home-page "https://github.com/ruby-prof/ruby-prof")
     (license license:bsd-2)))
 
+(define-public ruby-memory-profiler
+  (package
+    (name "ruby-memory-profiler")
+    (version "1.0.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/SamSaffron/memory_profiler")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "07yqv11q68xg2fqkrhs6ysngryk8b9zq6qzh24rgx9xqv6qfnj0w"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("ruby-rake" ,ruby-rake)))
+    (synopsis "Memory profiling routines for Ruby")
+    (description
+     "This package provides memory profiling routines for Ruby.")
+    (home-page "https://github.com/SamSaffron/memory_profiler")
+    (license license:expat)))
+
 (define-public ruby-cucumber-messages
   (package
     (name "ruby-cucumber-messages")
