@@ -2047,14 +2047,14 @@ value is found.")
 (define-public ruby-crack
   (package
     (name "ruby-crack")
-    (version "0.4.3")
+    (version "0.4.5")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "crack" version))
        (sha256
         (base32
-         "0abb0fvgw00akyik1zxnq7yv391va148151qxdghnzngv66bl62k"))))
+         "1cr1kfpw3vkhysvkk3wg7c54m75kd68mbm9rs5azdjdq57xid13r"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
@@ -2068,7 +2068,7 @@ value is found.")
                          (find-files "test" ".*rb$")))
              #t)))))
     (propagated-inputs
-     `(("ruby-safe-yaml" ,ruby-safe-yaml)))
+     `(("ruby-rexml" ,ruby-rexml)))
     (synopsis "Simple JSON and XML parsing for Ruby")
     (description
      "@code{crack} provides really simple JSON and XML parsing, extracted from
