@@ -15246,7 +15246,7 @@ Emacs.")
 (define-public emacs-elisp-slime-nav
   (package
     (name "emacs-elisp-slime-nav")
-    (version "0.9")
+    (version "0.10")
     (source
      (origin
        (method git-fetch)
@@ -15255,7 +15255,7 @@ Emacs.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "11vyy0bvzbs1h1kggikrvhd658j7c730w0pdp6qkm60rigvfi1ih"))))
+        (base32 "08k4zlawjkb0ldn4lgrhih8nzln398x7dwzpipqfyrmp0xziywma"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/purcell/elisp-slime-nav")
     (synopsis "Make @code{M-.} and @code{M-,} work for elisp like they do in SLIME")
