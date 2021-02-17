@@ -21919,31 +21919,29 @@ workspaces with a LSP-compliant server running.")
     (license license:gpl3+)))
 
 (define-public emacs-helm-lsp
-  (let ((commit "3a58ca4cfd94b9ab1e15e819d3b16ef568e8889b")
-        (revision "1"))
-    (package
-      (name "emacs-helm-lsp")
-      (version (git-version "0.1" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/emacs-lsp/helm-lsp")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0wh5zai3s17ss2q8wcdd6d87hv1h3nbyrxxs4js9cas8m6y2ssjv"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-helm" ,emacs-helm)
-         ("emacs-lsp-mode" ,emacs-lsp-mode)
-         ("emacs-dash" ,emacs-dash)))
-      (home-page "https://github.com/emacs-lsp/helm-lsp")
-      (synopsis "Provide LSP-enhanced completion for symbols")
-      (description
-       "This package enhances @code{helm} with completion for symbols from
+  (package
+    (name "emacs-helm-lsp")
+    (version "0.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/emacs-lsp/helm-lsp")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1vq3qpqm3ndqyvf5bk8qhqcr60x9ykc0ipk2a43rr3yjm4z1b6s9"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-helm" ,emacs-helm)
+       ("emacs-lsp-mode" ,emacs-lsp-mode)
+       ("emacs-dash" ,emacs-dash)))
+    (home-page "https://github.com/emacs-lsp/helm-lsp")
+    (synopsis "Provide LSP-enhanced completion for symbols")
+    (description
+     "This package enhances @code{helm} with completion for symbols from
 workspaces with a LSP-compliant server running.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-helm-notmuch
   (package
