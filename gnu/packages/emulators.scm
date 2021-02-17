@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
-;;; Copyright © 2015, 2016 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2015, 2016, 2021 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2015, 2016 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2018 David Thompson <dthompson2@worcester.edu>
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
@@ -36,6 +36,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix svn-download)
+  #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages assembly)
@@ -1230,6 +1231,44 @@ towards a working Mupen64Plus for casual users.")
 System (NES/Famicom) emulator Nestopia, with enhancements from members of the
 emulation community.  It provides highly accurate emulation.")
     (license license:gpl2+)))
+
+(define-public libretro-lowresnx
+  (let ((commit "743ab43a6c4a13e0d5363b0d25ac12c7511c6581")
+        (revision "1"))
+    (package
+      (name "libretro-lowresnx")
+      (version (git-version "1.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/timoinutilis/lowres-nx")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0r15kb5p5s2jwky6zy4v1j9i95i4rz36p9wxg0g6xdjksf04b5cf"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f                    ; no tests
+         #:make-flags (list "-C" "platform/LibRetro"
+                            (string-append "CC=" ,(cc-for-target)))
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)          ; no configure script
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (libretrodir (string-append out "/lib/libretro")))
+                 (install-file "platform/LibRetro/lowresnx_libretro.so"
+                               libretrodir)
+                 #t))))))
+      (home-page "https://lowresnx.inutilis.com/")
+      (synopsis "Libretro core for LowRES NX")
+      (description "LowRES NX is a simulated retro game console, which can be
+programmed in the classic BASIC language.  This package provides a libretro
+core allowing the lowRES NX programs to be used with libretro frontends such
+as RetroArch.")
+      (license license:zlib))))
 
 (define-public retroarch
   (package
