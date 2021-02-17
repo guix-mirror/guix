@@ -18578,16 +18578,16 @@ calendar.")
 (define-public emacs-zotxt
   (package
     (name "emacs-zotxt")
-    (version "20180518")
+    (version "5.0.5")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/egh/zotxt-emacs")
-             (commit "23a4a9f74a658222027d53a9a83cd4bcc583ca8b")))
+             (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "09fq3w9yk9kn6bz7y9kgpiw612dvj3yzsdk734js6zgb0p8lfd2c"))))
+        (base32 "1zr67h0w49rsi84mgf6jdili28h8782q6vjl8za0iq1hcx9zqxyf"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-deferred" ,emacs-deferred)
