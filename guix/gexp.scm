@@ -120,8 +120,6 @@
             file-like?
             lower-object
 
-            lower-inputs
-
             &gexp-error
             gexp-error?
             &gexp-input-error
