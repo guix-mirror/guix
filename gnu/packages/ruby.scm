@@ -1549,19 +1549,38 @@ logic.")
 (define-public ruby-rubocop-performance
   (package
     (name "ruby-rubocop-performance")
-    (version "1.7.1")
+    (version "1.9.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (rubygems-uri "rubocop-performance" version))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/rubocop-hq/rubocop-performance")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "04r8d4x62ygv17spvz9yyfxbmbf8qxwhijs0xycfvzr0q4pyg9sw"))))
+         "04lmkmz6c0ccs5miikrww7lakp7y6xz00g7b47ay7rn7sx5j6qyf"))))
     (build-system ruby-build-system)
     (arguments
-     `(#:tests? #f))                    ;no test suite in the distributed gem
+     `(#:tests? #f  ; tests require a git checkout of rubocop's source code.
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'replace-git-ls-files
+           (lambda _
+             (substitute* "rubocop-performance.gemspec"
+               (("`git ls-files -z config lib LICENSE.txt README.md`")
+                "`find config lib LICENSE.txt README.md -type f -print0 |sort -z`"))
+             #t))
+         (add-before 'check 'set-HOME
+           (lambda _
+             (setenv "HOME" "/tmp")
+             #t)))))
     (propagated-inputs
-     `(("ruby-rubocop" ,ruby-rubocop)))
+     `(("ruby-rubocop" ,ruby-rubocop)
+       ("ruby-rubocop-ast" ,ruby-rubocop-ast)))
+    (native-inputs
+     `(("ruby-bump" ,ruby-bump)
+       ("ruby-yard" ,ruby-yard)))
     (synopsis "Performance optimizations checkers for Ruby code")
     (description "This package provides a collection of RuboCop cops to check
 for performance optimizations in Ruby code.")
