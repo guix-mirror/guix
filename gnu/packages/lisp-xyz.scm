@@ -2246,10 +2246,11 @@ new fiends in addition to old friends like @command{aif} and
   (sbcl-package->ecl-package sbcl-anaphora))
 
 (define-public sbcl-lift
-  (let ((commit "7d49a66c62759535624037826891152223d4206c"))
+  (let ((commit "2594160d6ca3a77d8750110dfa63214256aab852")
+        (revision "2"))
     (package
       (name "sbcl-lift")
-      (version (git-version "1.7.1" "1" commit))
+      (version (git-version "1.7.1" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -2257,8 +2258,7 @@ new fiends in addition to old friends like @command{aif} and
                (url "https://github.com/gwkkwg/lift")
                (commit commit)))
          (sha256
-          (base32
-           "127v5avpz1i4m0lkaxqrq8hrl69rdazqaxf6s8awf0nd7wj2g4dp"))
+          (base32 "01xvz9sl5l5lai4h9dabmcjnm659wf5zllaxqbs55lffskp6jwq3"))
          (file-name (git-file-name "lift" version))
          (modules '((guix build utils)))
          (snippet
