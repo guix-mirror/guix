@@ -22605,7 +22605,7 @@ files, and sends rendered Markdown to a web browser.")
 (define-public emacs-dotenv-mode
   (package
     (name "emacs-dotenv-mode")
-    (version "0.2.4")
+    (version "0.2.5")
     (source
      (origin
        (method git-fetch)
@@ -22615,7 +22615,7 @@ files, and sends rendered Markdown to a web browser.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1fplkhxnsgdrg10iqsmw162zny2idz4vvv35spsb9j0hsk8imclc"))))
+         "0ys1czramj3c8zbnxxc599bqc0nqp3nnn3n45ac9cjglx5iaydq3"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/preetpalS/emacs-dotenv-mode")
     (synopsis "Major mode for @file{.env} files")
