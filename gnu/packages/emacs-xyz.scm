@@ -19935,29 +19935,27 @@ files) are provided.")
       (license license:gpl2+))))
 
 (define-public emacs-hackernews
-  (let ((commit "2362d7b00e59da7caddc8c0adc24dccb42fddef9")
-        (revision "2"))
-    (package
-      (name "emacs-hackernews")
-      (version (git-version "0.5.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/clarete/hackernews.el")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "1hcc5b173yzcvvd2ls3jxrmsw2w9bi21m9hcpcirkn0nh93ywadv"))))
-      (build-system emacs-build-system)
-      (home-page "https://github.com/clarete/hackernews.el")
-      (synopsis "Hacker News client for Emacs")
-      (description "The @command{hackernews} package is able to fetch stories
+  (package
+    (name "emacs-hackernews")
+    (version "0.6.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/clarete/hackernews.el")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "17lkjcka6ydd6khhz5jbjlybfpx05153z0d8s1rxaxcwl7z2y6cf"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/clarete/hackernews.el")
+    (synopsis "Hacker News client for Emacs")
+    (description "The @command{hackernews} package is able to fetch stories
 from six different Hacker News feeds, namely top, new, best, ask, show and job
 stories.  The default feed is top stories, which corresponds to the Hacker
 News homepage.")
-      (license license:gpl3))))
+    (license license:gpl3)))
 
 (define-public emacs-youtube-dl
   (let ((commit "af877b5bc4f01c04fccfa7d47a2c328926f20ef4")
