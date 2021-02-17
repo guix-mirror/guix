@@ -6978,7 +6978,7 @@ inspired by the Sinatra microframework style of specifying actions:
 (define-public ruby-rubocop-ast
   (package
     (name "ruby-rubocop-ast")
-    (version "0.3.0")
+    (version "1.4.1")
     (source
      (origin
        (method git-fetch)               ;no test suite in distributed gem
@@ -6988,16 +6988,15 @@ inspired by the Sinatra microframework style of specifying actions:
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1ycf6qcj8nbzk2js72priim4642lkn56w5kbny1nlryjkckxgm04"))))
+         "1x2m7k4bn4zvvwmj7imzmv0dav6xnrbcvssad1m5lkprx7h5lzkq"))))
     (build-system ruby-build-system)
     (arguments
      `(#:test-target "spec"
        #:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'disable-bundler
+                  (add-before 'build 'generate-lexer
                     (lambda _
-                      (substitute* "Rakefile"
-                        (("Bundler\\.setup.*") "nil\n"))
-                      #t))
+                      (setenv "RUBOCOP_VERSION" "none")
+                      (invoke "rake" "generate")))
                   (replace 'replace-git-ls-files
                     (lambda _
                       (substitute* "rubocop-ast.gemspec"
@@ -7006,7 +7005,12 @@ inspired by the Sinatra microframework style of specifying actions:
                       #t)))))
     (native-inputs
      `(("ruby-bump" ,ruby-bump)
-       ("ruby-rspec" ,ruby-rspec)))
+       ("ruby-oedipus-lex" ,ruby-oedipus-lex)
+       ("ruby-pry" ,ruby-pry)
+       ("ruby-racc" ,ruby-racc)
+       ("ruby-rake" ,ruby-rake)
+       ("ruby-rspec" ,ruby-rspec)
+       ("ruby-simplecov" ,ruby-simplecov)))
     (propagated-inputs
      `(("ruby-parser" ,ruby-parser)))
     (synopsis "RuboCop's AST extensions and NodePattern functionality")
