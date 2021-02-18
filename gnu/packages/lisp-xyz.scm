@@ -9540,13 +9540,7 @@ type correctness in Common Lisp.  It is based on CLtL2 extensions.")
   (sbcl-package->cl-source-package sbcl-numcl))
 
 (define-public ecl-numcl
-  (let ((pkg (sbcl-package->ecl-package sbcl-numcl)))
-    (package
-      (inherit pkg)
-      (arguments
-       (substitute-keyword-arguments (package-arguments pkg)
-        ;; TODO: (Sharlatan-20210218T000554+0000): Tests freezed after 20min
-         ((#:tests? _ #f) #t))))))
+  (sbcl-package->ecl-package sbcl-numcl))
 
 (define-public sbcl-pzmq
   (let ((commit "7c7390eedc469d033c72dc497984d1536ee75826")
