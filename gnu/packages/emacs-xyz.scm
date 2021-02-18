@@ -24350,7 +24350,7 @@ commands that bear resemblance to the input command.")
 (define-public emacs-unfill
   (package
     (name "emacs-unfill")
-    (version "0.2")
+    (version "0.3")
     (home-page "https://github.com/purcell/unfill")
     (source
      (origin
@@ -24360,7 +24360,7 @@ commands that bear resemblance to the input command.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0wyradin5igp25nsd3n22i2ppxhmy49ac1iq1w2715v8pfmiydnc"))))
+        (base32 "0pg64nza2mp4xyr69pjq51jsq1aaym0g38g4jzaxr0hh3w0ris1n"))))
     (build-system emacs-build-system)
     (synopsis "Inverse of Emacs' @code{fill-paragraph} and @code{fill-region}")
     (description
