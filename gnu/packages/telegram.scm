@@ -262,7 +262,7 @@ Telegram project, for its use in telegram desktop client.")
 (define-public telegram-desktop
   (package
     (name "telegram-desktop")
-    (version "2.5.1")
+    (version "2.5.9")
     (source
      (origin
        (method git-fetch)
@@ -274,7 +274,7 @@ Telegram project, for its use in telegram desktop client.")
        (file-name
         (git-file-name name version))
        (sha256
-        (base32 "0drirhkr9gnm1g03lcqmvap5ljlk859c29gbsm63hhsgv15dlw0y"))
+        (base32 "1lqs06scqvzg37a2py8jk7nnlvk42jjifcpnhdd5rgd5biw70nyx"))
        (modules '((guix build utils)
                   (ice-9 ftw)
                   (srfi srfi-1)))
@@ -360,11 +360,11 @@ Telegram project, for its use in telegram desktop client.")
            (uri
             (git-reference
              (url "https://github.com/desktop-app/cmake_helpers.git")
-             (commit "a81345a28d407fb5acd5267ec6afa1864f4e8d5b")))
+             (commit "695fabda6830b58bdc02d09db70531d5dececcd0")))
            (file-name
             (git-file-name "cmake-helpers-for-telegram-desktop" version))
            (sha256
-            (base32 "0s5hxip68dmkaspjq6j30wx1r5v4prnrjza79hdbznz6i57a2248"))))
+            (base32 "1j3ppgfmihcjl22w5jk8jhwif10i9wbycq5zqnssn6pnhnj7di5i"))))
        ("cmake-shared" ,cmake-shared)
        ("extra-cmake-modules" ,extra-cmake-modules)
        ("gcc" ,gcc-9)
@@ -398,17 +398,18 @@ Telegram project, for its use in telegram desktop client.")
        ("hime" ,hime)
        ("hunspell" ,hunspell)
        ("iconv" ,libiconv)
+       ("kwayland" ,kwayland)
        ("lib-base-source"
         ,(origin
            (method git-fetch)
            (uri
             (git-reference
              (url "https://github.com/desktop-app/lib_base.git")
-             (commit "81df0d0b7842be2b6c88f93dfa136b8efea4c9ad")))
+             (commit "f1e4168081428fa451d2f50eee7b1c448268c43a")))
            (file-name
             (git-file-name "lib-base-for-telegram-desktop" version))
            (sha256
-            (base32 "0ikddprjnjvg0ic8jr2886xq0f18syp587q6z2kci9xmdnvjl217"))))
+            (base32 "0piqp7llwi7sfy4c15g0p8ihr90rz1qps6q5fkl1iasrf5ysw8qc"))))
        ("lib-crl-source"
         ,(origin
            (method git-fetch)
@@ -503,22 +504,22 @@ Telegram project, for its use in telegram desktop client.")
            (uri
             (git-reference
              (url "https://github.com/desktop-app/lib_ui.git")
-             (commit "1e2799245cf2720a329ecb5cf5644fded669cce6")))
+             (commit "e14bc4681d69c1b538b8c5af51501077ae5a8a86")))
            (file-name
             (git-file-name "lib-ui-for-telegram-desktop" version))
            (sha256
-            (base32 "0kd4njcvic2700f00qn25vn3b80vsd2flsm3pi2synnldkiy8lcw"))))
+            (base32 "04b1x4bswk3bxqrwpv5g7w4frkprrwf0px6aibh6z4drinv08wsv"))))
        ("lib-webrtc-source"
         ,(origin
            (method git-fetch)
            (uri
             (git-reference
              (url "https://github.com/desktop-app/lib_webrtc.git")
-             (commit "4bc51d6f6d5740159fdb51cb1593e80ce149ed4e")))
+             (commit "60d5c43daf882a6c03944a3e6198b5f35b654a0e")))
            (file-name
             (git-file-name "lib-webrtc-for-telegram-desktop" version))
            (sha256
-            (base32 "06hpyq4qglrj3cb1xg8ghlmzm9ra8f5n6vm7hcy67n2wk8sy4cal"))))
+            (base32 "0mxmbw8i37axllg9h976p6np2gcfyci6xwwl9hc9mhs49vwwsw5s"))))
        ("libdbusmenu-qt" ,libdbusmenu-qt)
        ("libjpeg" ,libjpeg-turbo)
        ("libtgvoip" ,libtgvoip-for-telegram-desktop)
@@ -543,11 +544,11 @@ Telegram project, for its use in telegram desktop client.")
            (uri
             (git-reference
              (url "https://github.com/TelegramMessenger/tgcalls.git")
-             (commit "178983f72312ca8bd422bc73810fd63f1a89bd9d")))
+             (commit "71addf5b41cb6bb6844f75e977edae0020938930")))
            (file-name
             (git-file-name "tgcalls-for-telegram-desktop" version))
            (sha256
-            (base32 "1xad65c9m6mj6zdj08flafvh8xjkd7xi9r1agcyc64y69lr427d0"))))
+            (base32 "1zrjxf03n3ad8b95gwjarmq4gj5i5cwhlg93qcjv2232kksh29iy"))))
        ("webrtc" ,webrtc-for-telegram-desktop)
        ("x11" ,libx11)
        ("xcb" ,libxcb)
