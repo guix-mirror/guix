@@ -1433,6 +1433,80 @@ generate dynamic style sheets.  The package uses the Sass CSS extension
 language, which is stable, powerful, and CSS compatible.")
     (license license:expat)))
 
+;; This package includes minified JavaScript files.  When upgrading please
+;; check that there are no new minified JavaScript files.
+(define-public r-bslib
+  (package
+    (name "r-bslib")
+    (version "0.2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "bslib" version))
+       (sha256
+        (base32
+         "0qlpv2lqr3hjykszmnll7vi4zhmrz4rgcfl0sifxc6cha6jy2nac"))
+       (snippet
+        '(for-each delete-file
+                   '("inst/lib/bs-a11y-p/plugins/js/bootstrap-accessibility.min.js"
+                     "inst/lib/bs-colorpicker/js/bootstrap-colorpicker.min.js"
+                     "inst/lib/bs-sass/assets/javascripts/bootstrap.min.js"
+                     "inst/lib/bs/dist/js/bootstrap.bundle.min.js")))))
+    (properties `((upstream-name . "bslib")))
+    (build-system r-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (guix build r-build-system)
+                  (srfi srfi-1))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'process-javascript
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "inst/lib/"
+               (call-with-values
+                   (lambda ()
+                     (unzip2
+                      `(("bs-a11y-p/plugins/js/bootstrap-accessibility.js"
+                         "bs-a11y-p/plugins/js/bootstrap-accessibility.min.js")
+                        ("bs-colorpicker/js/bootstrap-colorpicker.js"
+                         "bs-colorpicker/js/bootstrap-colorpicker.min.js")
+                        ("bs-sass/assets/javascripts/bootstrap.js"
+                         "bs-sass/assets/javascripts/bootstrap.min.js")
+                        (,(assoc-ref inputs "js-bootstrap-bundle")
+                         "bs/dist/js/bootstrap.bundle.min.js"))))
+                 (lambda (sources targets)
+                   (for-each (lambda (source target)
+                               (format #t "Processing ~a --> ~a~%"
+                                       source target)
+                               (invoke "esbuild" source "--minify"
+                                       (string-append "--outfile=" target)))
+                             sources targets)))))))))
+    (propagated-inputs
+     `(("r-digest" ,r-digest)
+       ("r-htmltools" ,r-htmltools)
+       ("r-jquerylib" ,r-jquerylib)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-magrittr" ,r-magrittr)
+       ("r-rlang" ,r-rlang)
+       ("r-sass" ,r-sass)))
+    (native-inputs
+     `(("esbuild" ,esbuild)
+       ("js-bootstrap-bundle"
+        ,(origin
+           (method url-fetch)
+           (uri "https://raw.githubusercontent.com/twbs/bootstrap/v4.5.3/dist/js/bootstrap.bundle.js")
+           (sha256
+            (base32
+             "1lcsxj7gcm56va3gck47ggpwzjxrzq27sgjzdw6c54qkp0487sak"))))))
+    (home-page "https://rstudio.github.io/bslib/")
+    (synopsis "Custom Bootstrap Sass themes for shiny and rmarkdown")
+    (description
+     "This package simplifies custom CSS styling of both shiny and rmarkdown
+via Bootstrap Sass.  It supports both Bootstrap 3 and 4 as well as their
+various Bootswatch themes.  An interactive widget is also provided for
+previewing themes in real time.")
+    (license license:expat)))
+
 (define-public r-shiny
   (package
     (name "r-shiny")
