@@ -73,7 +73,9 @@
             shepherd-service-back-edges
             shepherd-service-upgrade
 
-            user-processes-service-type))
+            user-processes-service-type
+
+            assert-valid-graph))
 
 ;;; Commentary:
 ;;;
