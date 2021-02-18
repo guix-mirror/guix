@@ -23613,7 +23613,7 @@ connections using TLS encryption.")
 (define-public emacs-zerodark-theme
   (package
     (name "emacs-zerodark-theme")
-    (version "4.6")
+    (version "4.7")
     (source
      (origin
        (method git-fetch)
@@ -23623,7 +23623,7 @@ connections using TLS encryption.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0pfyd1iqs7l2ngwgvj9n0r9k1px7yl16h8n502xdyf0pprxcs4p6"))))
+         "1r5s4mvwlxsb9ylr6dkfxpm1l0pbqkmn5gwjdcfk762cnxlam8cm"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-flycheck" ,emacs-flycheck)
