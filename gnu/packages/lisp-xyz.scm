@@ -9498,49 +9498,43 @@ type correctness in Common Lisp.  It is based on CLtL2 extensions.")
          ((#:tests? _ #f) #f))))))
 
 (define-public sbcl-numcl
-  (let ((commit "3e8d40bf774e070e7af1d3dbf01bc8c37dbebd3a")
-        (revision "2"))
+  (let ((commit "d19f36356be900c600ef08560c9e1af441a166cb")
+        (revision "1"))
     (package
       (name "sbcl-numcl")
-      (version (git-version "0.1.0" revision commit))
+      (version (git-version "0.2.0" revision commit))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
                (url "https://github.com/numcl/numcl")
                (commit commit)))
-         (file-name (git-file-name name version))
+         (file-name (git-file-name "numcl" version))
          (sha256
-          (base32 "1hqpr68f6xkxaj1hjjayyh97wcdmj51k20qrd3nsv1rcpmdc5ll4"))))
+          (base32 "0q4ylfr7hl0gz2ynr0c15h09dmnli2x6ndnm5wr58wfplf1wfj31"))))
       (build-system asdf-build-system/sbcl)
-      (synopsis "Numpy clone in Common Lisp")
-      (description
-       "This is a Numpy clone in Common Lisp.  At the moment the
-library is written in pure Common Lisp, focusing more on correctness
-and usefulness, not speed.  Track the progress at
-@url{https://github.com/numcl/numcl/projects/1}.")
-      (home-page "https://github.com/numcl/numcl")
-      (license license:lgpl3+)
-      (inputs
-       `(("trivia" ,sbcl-trivia)
-         ("alexandria" ,sbcl-alexandria)
-         ("iterate" ,sbcl-iterate)
-         ("lisp-namespace" ,sbcl-lisp-namespace)
-         ("type-r" ,sbcl-type-r)
-         ("constantfold" ,sbcl-constantfold)
-         ("cl-randist" ,sbcl-cl-randist)
-         ("float-features" ,sbcl-float-features)
-         ("function-cache" ,sbcl-function-cache)
-         ("specialized-function" ,sbcl-specialized-function)
-         ("gtype" ,sbcl-gtype)))
+      (arguments
+       `(#:test-asd-file "numcl.test.asd"
+         #:asd-files '("numcl.asd")))
       (native-inputs
        `(("fiveam" ,sbcl-fiveam)))
-      (arguments
-       `(#:asd-files '("numcl.asd")
-         #:test-asd-file "numcl.test.asd"
-         ;; Tests fail on SBCL with "Heap exhausted, game over",
-         ;; but they pass on ECL.
-         #:tests? #f)))))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cl-randist" ,sbcl-cl-randist)
+         ("constantfold" ,sbcl-constantfold)
+         ("float-features" ,sbcl-float-features)
+         ("function-cache" ,sbcl-function-cache)
+         ("gtype" ,sbcl-gtype)
+         ("iterate" ,sbcl-iterate)
+         ("lisp-namespace" ,sbcl-lisp-namespace)
+         ("specialized-function" ,sbcl-specialized-function)
+         ("trivia" ,sbcl-trivia)
+         ("type-r" ,sbcl-type-r)))
+      (home-page "https://numcl.github.io/numcl/")
+      (synopsis "Numpy clone in Common Lisp")
+      (description
+       "This package is a Python Numpy clone implemented in pure Common Lisp.")
+      (license license:lgpl3+))))
 
 (define-public cl-numcl
   (sbcl-package->cl-source-package sbcl-numcl))
@@ -9551,6 +9545,7 @@ and usefulness, not speed.  Track the progress at
       (inherit pkg)
       (arguments
        (substitute-keyword-arguments (package-arguments pkg)
+        ;; TODO: (Sharlatan-20210218T000554+0000): Tests freezed after 20min
          ((#:tests? _ #f) #t))))))
 
 (define-public sbcl-pzmq
