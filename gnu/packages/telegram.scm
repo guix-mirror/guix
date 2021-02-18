@@ -216,8 +216,8 @@ Telegram project, for its use in telegram desktop client.")
                 #t)))))))))
 
 (define-public libtgvoip-for-telegram-desktop
-  (let ((commit "37d98e984fd6fa389262307db826d52ab86c8241")
-        (revision "87"))
+  (let ((commit "13a5fcb16b04472d808ce122abd695dbf5d206cd")
+        (revision "88"))
     (hidden-package
      (package
        (inherit libtgvoip)
@@ -233,7 +233,7 @@ Telegram project, for its use in telegram desktop client.")
           (file-name
            (git-file-name "libtgvoip-for-telegram-desktop" version))
           (sha256
-           (base32 "13dzvyq8p20nlhjihv18aj6y97czk07qdl0k6v81vp6mbwcldg7h"))))
+           (base32 "12p6s7vxkf1gh1spdckkdxrx7bjzw881ds9bky7l5fw751cwb3xd"))))
        (arguments
         `(#:configure-flags
           (list
