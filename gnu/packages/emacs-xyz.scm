@@ -25165,7 +25165,7 @@ It uses parseclj's shift-reduce parser internally.")
 (define-public emacs-parseclj
   (package
     (name "emacs-parseclj")
-    (version "0.1.0")
+    (version "0.2.0")
     (source
      (origin
        (method git-fetch)
@@ -25175,7 +25175,7 @@ It uses parseclj's shift-reduce parser internally.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "03bm5dm4hmkqimv4wqxjjh5814pxysmm7z54bv2rf7zwv1x7dggr"))))
+         "0894vhyx1phq8mdynnnqflcgi2a54hi926f4dk8slawzx1cb9xxb"))))
     (build-system emacs-build-system)
     (propagated-inputs `(("emacs-a" ,emacs-a)))
     (home-page "https://cider.mx")
