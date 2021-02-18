@@ -1344,6 +1344,65 @@ are used.  Fastmap avoids this memory leak issue by implementing the map using
 data structures in C++.")
     (license license:expat)))
 
+;; This package includes minified JavaScript files.  When upgrading please
+;; check that there are no new minified JavaScript files.
+(define-public r-jquerylib
+  (package
+    (name "r-jquerylib")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "jquerylib" version))
+       (sha256
+        (base32
+         "1s0d6mws13hwkx07jqmry7vp30a05b2p9w7ir68bmkhasidwkzdq"))
+       (snippet
+        '(for-each delete-file
+                   '("inst/lib/jquery-1.12.4.min.js"
+                     "inst/lib/jquery-2.2.4.min.js"
+                     "inst/lib/jquery-3.5.1.min.js")))))
+    (properties `((upstream-name . "jquerylib")))
+    (build-system r-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (guix build r-build-system)
+                  (srfi srfi-1))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'process-javascript
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "inst/lib/"
+               (call-with-values
+                   (lambda ()
+                     (unzip2
+                      `(("jquery-1.12.4.js"
+                         "jquery-1.12.4.min.js")
+                        ("jquery-2.2.4.js"
+                         "jquery-2.2.4.min.js")
+                        ("jquery-3.5.1.js"
+                         "jquery-3.5.1.min.js"))))
+                 (lambda (sources targets)
+                   (for-each (lambda (source target)
+                               (format #t "Processing ~a --> ~a~%"
+                                       source target)
+                               (invoke "esbuild" source "--minify"
+                                       (string-append "--outfile=" target)))
+                             sources targets)))))))))
+    (propagated-inputs
+     `(("r-htmltools" ,r-htmltools)))
+    (native-inputs
+     `(("esbuild" ,esbuild)))
+    (home-page "https://cran.r-project.org/package=jquerylib")
+    (synopsis "Obtain jQuery as an HTML dependency object")
+    (description
+     "Obtain any major version of jQuery and use it in any webpage generated
+by htmltools (e.g. shiny, htmlwidgets, and rmarkdown).  Most R users don't
+need to use this package directly, but other R packages (e.g. shiny,
+rmarkdown, etc.) depend on this package to avoid bundling redundant copies of
+jQuery.")
+    (license license:expat)))
+
 (define-public r-shiny
   (package
     (name "r-shiny")
