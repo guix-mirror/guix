@@ -24028,11 +24028,11 @@ passphrase until the first time you push to a remote.")
     (license license:gpl3+)))
 
 (define-public emacs-tao-theme
-  (let ((commit "c5107fbe7e752f4e58c2d2147ff18a1ebb12937c")
-        (revision "0"))
+  (let ((commit "468ee4f6ba7afb9dbfc8855ae2c333cb16ca4408")
+        (revision "1"))
     (package
       (name "emacs-tao-theme")
-      (version (git-version "0" revision commit))
+      (version (git-version "1.1.1" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -24042,7 +24042,7 @@ passphrase until the first time you push to a remote.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "07vvlglmkj87hpxz79s3bl2cjn71vain57fdxs7j9vlr5jkchxwn"))))
+           "0yqibx6wcdsj5k6130c3qp0hmj6zwhfjrrvw98lny23ksw6k0s3s"))))
       (build-system emacs-build-system)
       (home-page "https://github.com/11111000000/tao-theme-emacs")
       (synopsis "Parameterized uncolored color themes for Emacs")
