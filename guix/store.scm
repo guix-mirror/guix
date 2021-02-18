@@ -1835,18 +1835,21 @@ and RESULT is typically its derivation."
   (if (profiled? "object-cache")
       (let ((fresh    0)
             (lookups  0)
-            (hits     0))
+            (hits     0)
+            (size     0))
         (register-profiling-hook!
          "object-cache"
          (lambda ()
            (format (current-error-port) "Store object cache:
   fresh caches: ~5@a
   lookups:      ~5@a
-  hits:         ~5@a (~,1f%)~%"
+  hits:         ~5@a (~,1f%)
+  cache size:   ~5@a entries~%"
                    fresh lookups hits
                    (if (zero? lookups)
                        100.
-                       (* 100. (/ hits lookups))))))
+                       (* 100. (/ hits lookups)))
+                   size)))
 
         (lambda (hit? cache)
           (set! fresh
@@ -1854,7 +1857,9 @@ and RESULT is typically its derivation."
                 (+ 1 fresh)
                 fresh))
           (set! lookups (+ 1 lookups))
-          (set! hits (if hit? (+ hits 1) hits))))
+          (set! hits (if hit? (+ hits 1) hits))
+          (set! size (+ (if hit? 0 1)
+                        (vlist-length cache)))))
       (lambda (x y)
         #t)))
 
