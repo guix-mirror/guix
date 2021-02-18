@@ -9166,6 +9166,15 @@ indentation guides in Emacs:
      `(#:include (cons* "^elpy/[^/]+\\.py$" "^snippets\\/" %default-include)
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-ffip-project-search-call
+           (lambda _
+             ;; Since version 6.0.0 of find-file-in-project,
+             ;; ffip-project-search doesn't accept a third argument anymore
+             ;; (see: https://github.com/jorgenschaefer/elpy/issues/1889).
+             (substitute* "elpy.el"
+               (("\\((ffip-project-search nil nil) project-root\\)" _ signature)
+                (format #f "(let ((ffip-project-root project-root)) (~a))"
+                        signature)))))
          ;; The default environment of the RPC uses Virtualenv to install
          ;; Python dependencies from PyPI.  We don't want/need this in Guix.
          (add-before 'check 'do-not-use-virtualenv
