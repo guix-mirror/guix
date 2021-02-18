@@ -75,14 +75,14 @@ themselves.")
   ;; This version is not API-compatible with version 2.  In particular, lsh
   ;; cannot use it yet.  So keep it separate.
   (package (inherit nettle-2)
-    (version "3.7")
+    (version "3.7.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/nettle/nettle-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0nn7rslvjbj5g04b5qnn251hrinb1b1cpv5wj7fi7gs4ni7gc0gh"))))
+                "0bn46vscn5jbx5yl1hsmgbpq0kykjl5pfjxkz5gsf03vgi122rhm"))))
     (arguments
      (substitute-keyword-arguments (package-arguments nettle-2)
        ((#:configure-flags flags)
