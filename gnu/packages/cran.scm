@@ -1507,10 +1507,12 @@ various Bootswatch themes.  An interactive widget is also provided for
 previewing themes in real time.")
     (license license:expat)))
 
+;; This package includes minified JavaScript files.  When upgrading please
+;; check that there are no new minified JavaScript files.
 (define-public r-shiny
   (package
     (name "r-shiny")
-    (version "1.4.0.2")
+    (version "1.6.0")
     (source
      (origin
        (method git-fetch)
@@ -1520,7 +1522,23 @@ previewing themes in real time.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "005wgcxq7f2q9g6wvfk29n2nms262w0abpz93sfvx79yv6qxppzs"))))
+         "0f6cwx5xyqzs40msq271sqhwl8736rwbm7kd1ldkcvxngzr4vlx9"))
+       (snippet
+        '(for-each delete-file
+                   '("inst/www/shared/bootstrap/js/bootstrap.min.js"
+                     "inst/www/shared/bootstrap/accessibility/js/bootstrap-accessibility.min.js" ; TODO
+                     "inst/www/shared/datatables/js/jquery.dataTables.min.js"
+                     "inst/www/shared/datepicker/js/bootstrap-datepicker.min.js"
+                     "inst/www/shared/highlight/highlight.pack.js"
+                     "inst/www/shared/ionrangeslider/js/ion.rangeSlider.min.js"
+                     "inst/www/shared/jquery.min.js"
+                     "inst/www/shared/jqueryui/jquery-ui.min.js"
+                     "inst/www/shared/legacy/jquery.min.js"
+                     "inst/www/shared/selectize/accessibility/js/selectize-plugin-a11y.min.js"
+                     "inst/www/shared/selectize/js/selectize.min.js"
+                     "inst/www/shared/shiny.min.js"
+                     "inst/www/shared/showdown/compressed/showdown.js"
+                     "inst/www/shared/strftime/strftime-min.js")))))
     (build-system r-build-system)
     (arguments
      `(#:modules ((guix build r-build-system)
@@ -1535,21 +1553,11 @@ previewing themes in real time.")
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((replace-file (lambda (old new)
                                    (format #t "replacing ~a with ~a\n" old new)
-                                   (delete-file old)
                                    (symlink new old))))
                ;; NOTE: Files in ./inst/www/shared/datepicker/js/locales/
                ;; contain just data.  They are not minified code, so we don't
                ;; replace them.
                (with-directory-excursion "inst/www/shared"
-                 (replace-file "bootstrap/shim/respond.min.js"
-                               (string-append (assoc-ref inputs "js-respond")
-                                              "/share/javascript/respond.min.js"))
-                 (replace-file "bootstrap/shim/html5shiv.min.js"
-                               (string-append (assoc-ref inputs "js-html5shiv")
-                                              "/share/javascript/html5shiv.min.js"))
-                 (replace-file "json2-min.js"
-                               (string-append (assoc-ref inputs "js-json2")
-                                              "/share/javascript/json2-min.js"))
                  (replace-file "strftime/strftime-min.js"
                                (string-append (assoc-ref inputs "js-strftime")
                                               "/share/javascript/strftime.min.js"))
@@ -1562,14 +1570,10 @@ previewing themes in real time.")
                  (replace-file "selectize/js/selectize.min.js"
                                (string-append (assoc-ref inputs "js-selectize")
                                               "/share/javascript/selectize.min.js"))
-                 (replace-file "selectize/js/es5-shim.min.js"
-                               (string-append (assoc-ref inputs "js-es5-shim")
-                                              "/share/javascript/es5-shim.min.js"))
                  (for-each (match-lambda
                              ((source . target)
-                              (delete-file target)
                               (minify source #:target target)))
-                           '(("jqueryui/jquery-ui.js" .
+                           `(("jqueryui/jquery-ui.js" .
                               "jqueryui/jquery-ui.min.js")
                              ("datepicker/js/bootstrap-datepicker.js" .
                               "datepicker/js/bootstrap-datepicker.min.js")
@@ -1577,23 +1581,32 @@ previewing themes in real time.")
                               "ionrangeslider/js/ion.rangeSlider.min.js")
                              ("bootstrap/js/bootstrap.js" .
                               "bootstrap/js/bootstrap.min.js")
+                             (,(assoc-ref inputs "js-bootstrap-accessibility") .
+                              "bootstrap/accessibility/js/bootstrap-accessibility.min.js")
                              ("shiny.js" .
                               "shiny.min.js")
                              ("jquery.js" .
                               "jquery.min.js")
                              ("legacy/jquery.js" .
                               "legacy/jquery.min.js")
+                             ("selectize/accessibility/js/selectize-plugin-a11y.js" .
+                              "selectize/accessibility/js/selectize-plugin-a11y.min.js")
                              ("showdown/src/showdown.js" .
-                              "showdown/compressed/showdown.js")))))
-             #t)))))
+                              "showdown/compressed/showdown.js"))))))))))
     (propagated-inputs
-     `(("r-crayon" ,r-crayon)
+     `(("r-bslib" ,r-bslib)
+       ("r-cachem" ,r-cachem)
+       ("r-commonmark" ,r-commonmark)
+       ("r-crayon" ,r-crayon)
        ("r-digest" ,r-digest)
+       ("r-ellipsis" ,r-ellipsis)
        ("r-fastmap" ,r-fastmap)
+       ("r-glue" ,r-glue)
        ("r-htmltools" ,r-htmltools)
        ("r-httpuv" ,r-httpuv)
        ("r-jsonlite" ,r-jsonlite)
        ("r-later" ,r-later)
+       ("r-lifecycle" ,r-lifecycle)
        ("r-mime" ,r-mime)
        ("r-promises" ,r-promises)
        ("r-r6" ,r-r6)
@@ -1603,16 +1616,20 @@ previewing themes in real time.")
        ("r-xtable" ,r-xtable)))
     (inputs
      `(("js-datatables" ,js-datatables)
-       ("js-html5shiv" ,js-html5shiv)
-       ("js-json2" ,js-json2)
-       ("js-respond" ,js-respond)
        ("js-selectize" ,js-selectize)
        ("js-strftime" ,js-strftime)
-       ("js-highlight" ,js-highlight)
-       ("js-es5-shim" ,js-es5-shim)))
+       ("js-highlight" ,js-highlight)))
     (native-inputs
      `(("uglify-js" ,uglify-js)
-       ("gfortran" ,gfortran)))
+       ("gfortran" ,gfortran)
+       ("js-bootstrap-accessibility"
+        ,(origin
+           (method url-fetch)
+           (uri "https://raw.githubusercontent.com/paypal/bootstrap-accessibility-plugin/\
+v1.0.7/_site/plugins/js/bootstrap-accessibility.js")
+           (sha256
+            (base32
+             "1489wyzwrpf86y7vhc13n4v3mszmsfybhd3f75jkpnbvyp5sncm8"))))))
     (home-page "http://shiny.rstudio.com")
     (synopsis "Easy interactive web applications with R")
     (description
