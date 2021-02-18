@@ -57,6 +57,7 @@
 ;;; Copyright © 2020 Lu hux <luhux@outlook.com>
 ;;; Copyright © 2020 Tomás Ortín Fernández <tomasortin@mailbox.org>
 ;;; Copyright © 2021 Olivier Rojon <o.rojon@posteo.net>
+;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -544,6 +545,40 @@ Instead, it uses a special algorithm to choose the worst brick possible.
 Playing bastet can be a painful experience, especially if you usually make
 canyons and wait for the long I-shaped block to clear four rows at a time.")
     (license license:gpl3+)))
+
+(define-public vitetris
+  (package
+    (name "vitetris")
+    (version "0.59.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/vicgeralds/vitetris")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "1ah1c5g7abksif0n8v5rb7r4pn2az20c3mkp4ak13vgs23ddmds5"))
+       (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;no test
+       #:make-flags
+       (list ,(string-append "CC=" (cc-for-target))
+             (string-append "DESTDIR=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda _
+             ;; the non standard configure script does not accept
+             ;; standard parameters -> invoke configure by hand
+             (invoke "./configure" "prefix=")
+             ;; src/src-conf.mk must be writable for the build step
+             (make-file-writable "src/src-conf.mk"))))))
+    (home-page "http://victornils.net/tetris/")
+    (synopsis "Terminal-based Tetris clone")
+    (description "Vitetris is a classic multiplayer Tetris clone for the
+terminal.")
+    (license license:bsd-2)))
 
 (define-public blobwars
   (package
