@@ -317,6 +317,8 @@ and BOOTP/TFTP for network booting of diskless machines.")
   (package
     (name "bind")
     ;; When updating, check whether isc-dhcp's bundled copy should be as well.
+    ;; The BIND release notes are available here:
+    ;; https://www.isc.org/bind/
     (version "9.16.12")
     (source (origin
               (method url-fetch)
