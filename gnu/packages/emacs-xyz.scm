@@ -24231,7 +24231,7 @@ and it should work well with 256 color terminals.")
 (define-public emacs-elixir-mode
   (package
     (name "emacs-elixir-mode")
-    (version "2.3.1")
+    (version "2.3.2")
     (source
      (origin
        (method git-fetch)
@@ -24240,7 +24240,7 @@ and it should work well with 256 color terminals.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "06bi68x49v6f7flpz279mm4jpg31ll3s274givm3pvr8slcxs6xg"))))
+        (base32 "0f2a360h8bizvqk6bmgxm59g8n7id5rzwlbv6d383h15w298mcga"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-pkg-info" ,emacs-pkg-info)))
