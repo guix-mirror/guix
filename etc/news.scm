@@ -21,6 +21,7 @@
  (entry (commit "6e8cdf1d26092cb9654e179b04730fff7c15c94f")
         (title
          (en "The @command{guix system image} command can now operate on image records")
+         (de "Der Befehl @command{guix system image} kann jetzt auch mit @code{image}-Verbundsobjekten umgehen")
          (fr "La commande @command{guix system image} peut désormais fonctionner sur des images"))
         (body
          (en "The @command{guix system image} command can now operate on
@@ -31,6 +32,14 @@ records.
 The @file{gnu/system/images} directory contains default images that can be
 built by running @command{guix system image gnu/system/images/pine64.scm} for
 instance.")
+         (de "Sie können den Befehl @command{guix system image} jetzt auch auf
+Verbundsobjekte vom Typ @code{image} anwenden.  Das heißt, wenn Sie eine Datei
+oder einen Ausdruck als Parameter übergeben, darf dieser ein Verbundsobjekt
+vom Typ @code{image} oder @code{operating-system} zurückliefern.
+
+Im Verzeichnis @file{gnu/system/images} finden Sie vorkonfigurierte Abbilder
+als @code{image}-Verbundsobjekte. Sie können zum Beispiel @command{guix system
+image gnu/system/images/pine64.scm} ausführen, um das Abbild zu erstellen.")
          (fr "La commande @command{guix system image} peut désormais
 fonctionner sur des images.  Cela signifie que le fichier ou l'expression
 passé en paramètre de cette commande peuvent retourner une structure de type
