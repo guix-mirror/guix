@@ -8,7 +8,7 @@
 ;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 malte Frank Gerdes <malte.f.gerdes@gmail.com>
-;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Greg Hogan <code@greghogan.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -284,14 +284,14 @@ file metadata operations that can be performed per second.")
 (define-public python-locust
   (package
     (name "python-locust")
-    (version "1.4.1")
+    (version "1.4.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "locust" version))
        (sha256
         (base32
-         "1q2nza37fwsqf8qdmisfz6bmjpss90shi1bajrclf6gkbslhryxl"))))
+         "0vmw151xcaznd2j85n96iyv9fniss0bkk91xn4maw2gwzym424xk"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -302,8 +302,7 @@ file metadata operations that can be performed per second.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (setenv "PATH" (string-append out "/bin:"
-                                             (getenv "PATH"))))
-             #t))
+                                             (getenv "PATH"))))))
          (replace 'check
            (lambda _
              (invoke "python" "-m" "pytest"
@@ -313,12 +312,19 @@ file metadata operations that can be performed per second.")
                             "not test_default_headless_spawn_options"
                             "not test_default_headless_spawn_options_with_shape"
                             "not test_headless_spawn_options_wo_run_time"
-                            ;; This test depends on networking.
+                            ;; These tests depend on networking.
+                            "not test_html_report_option"
                             "not test_web_options"
                             ;; This test fails because of the warning "System open
                             ;; file limit '1024' is below minimum setting '10000'".
-                            "not test_skip_logging") " and "))
-             #t)))))
+                            "not test_skip_logging"
+                            ;; On some (slow?) machines, the following tests
+                            ;; fail, with the processes returning exit code
+                            ;; -15 instead of the expected 42 and 0,
+                            ;; respectively (see:
+                            ;; https://github.com/locustio/locust/issues/1708).
+                            "not test_custom_exit_code"
+                            "not test_webserver") " and ")))))))
     (propagated-inputs
      `(("python-configargparse" ,python-configargparse)
        ("python-flask" ,python-flask)
@@ -341,5 +347,9 @@ use, scriptable and scalable.  The test scenarios are described in plain
 Python.  It provides a web-based user interface to visualize the results in
 real-time, but can also be run non-interactively.  Locust is primarily geared
 toward testing HTTP-based applications or services, but it can be customized to
-test any system or protocol.")
+test any system or protocol.
+
+Note: Locust will complain if the available open file descriptors limit for
+the user is too low.  To raise such limit on a Guix System, refer to
+@samp{info guix --index-search=pam-limits-service}.")
     (license license:expat)))
