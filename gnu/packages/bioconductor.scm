@@ -8972,6 +8972,40 @@ scan putative TFBS from sequence/alignment, query JASPAR database and
 provides a wrapper of de novo motif discovery software.")
     (license license:gpl2)))
 
+(define-public r-motifmatchr
+  (package
+    (name "r-motifmatchr")
+    (version "1.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "motifmatchr" version))
+       (sha256
+        (base32
+         "0zrpn0hqdg0hm80ydkfpiqncwyb8y0xp6mlin7g955p8zcpcm67z"))))
+    (properties `((upstream-name . "motifmatchr")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biostrings" ,r-biostrings)
+       ("r-bsgenome" ,r-bsgenome)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-matrix" ,r-matrix)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)
+       ("r-tfbstools" ,r-tfbstools)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://bioconductor.org/packages/motifmatchr")
+    (synopsis "Fast motif matching in R")
+    (description
+     "Quickly find motif matches for many motifs and many sequences.
+This package wraps C++ code from the MOODS motif calling library.")
+    (license license:gpl3)))
+
 (define-public r-singlecellexperiment
   (package
     (name "r-singlecellexperiment")
