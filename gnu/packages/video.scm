@@ -49,6 +49,7 @@
 ;;; Copyright © 2020 Antoine Côté <antoine.cote@posteo.net>
 ;;; Copyright © 2021 Alexey Abramov <levenson@mmer.org>
 ;;; Copyright © 2021 Andrew Tropin <andrew@trop.in>
+;;; Copyright © 2021 David Wilson <david@daviwil.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3174,6 +3175,43 @@ and JACK.")
     (description "This OBS plugins allows you to vizualize MPD and internal
 OBS audio sources.")
     (license license:gpl2)))
+
+(define-public obs-websocket
+  (package
+    (name "obs-websocket")
+    (version "4.9.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Palakis/obs-websocket")
+             (commit version)
+             (recursive? #t)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1r47861ma1s3998clahbnbc216wcf706b1ps514k5p28h511l5w0"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ;no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-permission-change
+           (lambda* _
+             (substitute* "CMakeLists.txt"
+               ;; Remove lines that set writeable permissions on outputs.
+               (("set\\(CMAKE_INSTALL_DEFAULT_DIRECTORY_PERMISSIONS") "")
+               (("OWNER_READ.*\\)") "")
+               (("PERMISSIONS") ")"))
+             #t)))))
+    (inputs
+     `(("obs" ,obs)
+       ("qtbase" ,qtbase)))
+    (home-page "https://github.com/Palakis/obs-websocket")
+    (synopsis "OBS plugin for remote control via WebSockets")
+    (description "This OBS plugin allows you to establish a WebSocket channel
+from within your running OBS instance so that you can control it remotely from
+programs on your current machine or on other machines.")
+    (license license:gpl2+)))
 
 (define-public obs-wlrobs
   (package
