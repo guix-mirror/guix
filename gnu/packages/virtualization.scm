@@ -1081,6 +1081,8 @@ manage system or application containers.")
        (list "--with-qemu"
              "--with-qemu-user=nobody"
              "--with-qemu-group=kvm"
+             "--with-storage-disk"
+             "--with-storage-dir"
              "--with-polkit"
              (string-append "--docdir=" (assoc-ref %outputs "out") "/share/doc/"
                             ,name "-" ,version)
@@ -1142,6 +1144,7 @@ manage system or application containers.")
        ("dmidecode" ,dmidecode)
        ("dnsmasq" ,dnsmasq)
        ("ebtables" ,ebtables)
+       ("parted" ,parted)
        ("iproute" ,iproute)
        ("iptables" ,iptables)))
     (native-inputs
