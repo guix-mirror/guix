@@ -126,7 +126,9 @@
                   (copy-recursively libyuv-from libyuv-to))
                 #t)))))
        (native-inputs
-        `(("pkg-config" ,pkg-config)
+        `(("gcc" ,gcc-9) ; keep in line with telegram-desktop
+          ("perl" ,perl)
+          ("pkg-config" ,pkg-config)
           ("python" ,python-wrapper)
           ("yasm" ,yasm)))
        (inputs
