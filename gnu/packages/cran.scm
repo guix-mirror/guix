@@ -1403,6 +1403,36 @@ rmarkdown, etc.) depend on this package to avoid bundling redundant copies of
 jQuery.")
     (license license:expat)))
 
+(define-public r-sass
+  (package
+    (name "r-sass")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "sass" version))
+       (sha256
+        (base32
+         "1cxqwsdyz71mgflqqa65mfr161jlv8q9mshs1y19pxp6pz5wnv0s"))))
+    (properties `((upstream-name . "sass")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-digest" ,r-digest)
+       ("r-fs" ,r-fs)
+       ("r-htmltools" ,r-htmltools)
+       ("r-r6" ,r-r6)
+       ("r-rappdirs" ,r-rappdirs)
+       ("r-rlang" ,r-rlang)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/rstudio/sass")
+    (synopsis "Syntactically Awesome Style Sheets (SASS)")
+    (description
+     "This package provides an SCSS compiler, powered by the libsass library.
+With this, R developers can use variables, inheritance, and functions to
+generate dynamic style sheets.  The package uses the Sass CSS extension
+language, which is stable, powerful, and CSS compatible.")
+    (license license:expat)))
+
 (define-public r-shiny
   (package
     (name "r-shiny")
