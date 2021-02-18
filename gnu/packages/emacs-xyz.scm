@@ -25780,7 +25780,7 @@ variables.")
 (define-public emacs-company-emoji
   (package
     (name "emacs-company-emoji")
-    (version "2.6.0")
+    (version "2.6.1")
     (source
      (origin
        (method git-fetch)
@@ -25789,7 +25789,7 @@ variables.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0pa67yfcr8lrxdbvln8hs663gsxz38ggwpva7121ngascqgx42wp"))))
+        (base32 "1rhf2hr345953mkn52i58aiq8j16ps2ckapd5f7jxmhkcpzxxfhk"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-company" ,emacs-company)))
