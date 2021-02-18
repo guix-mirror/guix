@@ -15612,13 +15612,15 @@ to add @var{device} to the kernel's entropy pool.  The service will fail if
 @cindex priority
 @cindex realtime
 @cindex jackd
+@cindex nofile
+@cindex open file descriptors
 @deffn {Scheme Procedure} pam-limits-service [#:limits @code{'()}]
 
 Return a service that installs a configuration file for the
 @uref{http://linux-pam.org/Linux-PAM-html/sag-pam_limits.html,
 @code{pam_limits} module}.  The procedure optionally takes a list of
 @code{pam-limits-entry} values, which can be used to specify
-@code{ulimit} limits and nice priority limits to user sessions.
+@code{ulimit} limits and @code{nice} priority limits to user sessions.
 
 The following limits definition sets two hard and soft limits for all
 login sessions of users in the @code{realtime} group:
@@ -15634,6 +15636,22 @@ The first entry increases the maximum realtime priority for
 non-privileged processes; the second entry lifts any restriction of the
 maximum address space that can be locked in memory.  These settings are
 commonly used for real-time audio systems.
+
+Another useful example is raising the maximum number of open file
+descriptors that can be used:
+
+@lisp
+(pam-limits-service
+ (list
+  (pam-limits-entry "*" 'both 'nofile 100000)))
+@end lisp
+
+In the above example, the asterisk means the limit should apply to any
+user.  It is important to ensure the chosen value doesn't exceed the
+maximum system value visible in the @file{/proc/sys/fs/file-max} file,
+else the users would be prevented from login in.  For more information
+about the Pluggable Authentication Module (PAM) limits, refer to the
+@samp{pam_limits} man page from the @code{linux-pam} package.
 @end deffn
 
 @node Scheduled Job Execution
