@@ -886,8 +886,8 @@ Initiation Protocol (SIP) and a multimedia framework.")
     (build-system gnu-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)
-       ("libopusenc" ,libopusenc)
        ("openssl" ,openssl)
+       ("opus" ,opus)
        ("pulseaudio" ,pulseaudio)))
     (arguments
      `(#:phases
