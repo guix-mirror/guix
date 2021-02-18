@@ -91,6 +91,7 @@
 ;;; Copyright © 2020, 2021 Noah Evans <noah@nevans.me>
 ;;; Copyright © 2020 Brit Butler <brit@kingcons.io>
 ;;; Copyright © 2021 Alexandr Vityazev <avityazew@gmail.com>
+;;; Copyright © 2021 Yurii Kholodkov <urist.mckorobochka@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3144,6 +3145,36 @@ functionality from Emacs Kanji mode if it is installed.")
 cursor in a transient buffer.  It has a built-in collection of SVG images
 depicting stroke orders for all Kanji.  The collection is a slightly modified
 and limited version of the images provided by the KanjiVG project.")
+      (license license:gpl3+))))
+
+(define-public emacs-kbd
+  ;; Package has no release.  Version is extracted from "Version:" keyword in
+  ;; main file.
+  (let ((commit "a7f4c9b9770fa6a58895c5f121df82652bb1b737")
+        (revision "0"))
+    (package
+      (name "emacs-kbd")
+      (version (git-version "0.0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/slotThe/kbd-mode")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0jv9yfsncgf96308c041hvps3jlc151xb0aipm0vasbma3x83ygm"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'enter-lisp-directory
+             (lambda _ (chdir "lisp") #t)))))
+      (home-page "https://github.com/slotThe/kbd-mode")
+      (synopsis "Minor mode for syntax highlighting kmonad's @file{.kbd} files")
+      (description
+       "This minor mode provides syntax highlighting for Lisp-like DSL used in
+kmonad's configuration files (@file{.kbd}).")
       (license license:gpl3+))))
 
 (define-public emacs-keycast
