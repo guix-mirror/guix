@@ -69,8 +69,8 @@
   #:use-module (guix build-system qt))
 
 (define-public webrtc-for-telegram-desktop
-  (let ((commit "fa86fcc00c218813d61a272a56feab55c76a1ab9")
-        (revision "52"))
+  (let ((commit "a19877363082da634a3c851a4698376504d2eaee")
+        (revision "83"))
     (hidden-package
      (package
        (name "webrtc-for-telegram-desktop")
@@ -86,7 +86,7 @@
           (file-name
            (git-file-name name version))
           (sha256
-           (base32 "06gcrlym6vqqw7zlds9lpwyg37d5m81d87h16aps19v0v9gzan0l"))
+           (base32 "0961zm1m1mc2kh54dx5ax95q8sw13impvpjvg9jv12bmfkgm17wr"))
           (modules '((guix build utils)
                      (ice-9 ftw)
                      (srfi srfi-1)))
@@ -158,7 +158,10 @@
           ("openssl" ,openssl)
           ("opus" ,opus)
           ("protobuf" ,protobuf)
-          ("pulseaudio" ,pulseaudio)))
+          ("pulseaudio" ,pulseaudio)
+          ("x11" ,libx11)
+          ("xext" ,libxext)
+          ("xtst" ,libxtst)))
        (synopsis "WebRTC support for Telegram Desktop")
        (description "WebRTC-for-Telegram-Desktop is a custom WebRTC fork by
 Telegram project, for its use in telegram desktop client.")
