@@ -8926,6 +8926,52 @@ advanced visualization of sets of conserved noncoding elements.")
                    (license:non-copyleft
                     "https://raw.githubusercontent.com/ucscGenomeBrowser/kent/v410_base/src/lib/LICENSE")))))
 
+(define-public r-tfbstools
+  (package
+    (name "r-tfbstools")
+    (version "1.28.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "TFBSTools" version))
+       (sha256
+        (base32
+         "0p42hnwhipmcvrsqk3s8qfiian1fvh6izfd9m961bsx99r2clnha"))))
+    (properties `((upstream-name . "TFBSTools")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-biostrings" ,r-biostrings)
+       ("r-bsgenome" ,r-bsgenome)
+       ("r-catools" ,r-catools)
+       ("r-cner" ,r-cner)
+       ("r-dbi" ,r-dbi)
+       ("r-dirichletmultinomial" ,r-dirichletmultinomial)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-gtools" ,r-gtools)
+       ("r-iranges" ,r-iranges)
+       ("r-rsqlite" ,r-rsqlite)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-seqlogo" ,r-seqlogo)
+       ("r-tfmpvalue" ,r-tfmpvalue)
+       ("r-xml" ,r-xml)
+       ("r-xvector" ,r-xvector)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/ge11232002/TFBSTools")
+    (synopsis "Transcription factor binding site (TFBS) analysis")
+    (description
+     "TFBSTools is a package for the analysis and manipulation of
+transcription factor binding sites.  It includes matrices conversion
+between @dfn{Position Frequency Matrix} (PFM), @dfn{Position Weight
+Matrix} (PWM) and @dfn{Information Content Matrix} (ICM).  It can also
+scan putative TFBS from sequence/alignment, query JASPAR database and
+provides a wrapper of de novo motif discovery software.")
+    (license license:gpl2)))
+
 (define-public r-singlecellexperiment
   (package
     (name "r-singlecellexperiment")
