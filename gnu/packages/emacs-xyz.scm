@@ -25181,9 +25181,9 @@ It uses parseclj's shift-reduce parser internally.")
     (home-page "https://cider.mx")
     (synopsis "Clojure parser for Emacs Lisp")
     (description
-     "An Emacs Lisp library for parsing Clojure code and EDN data.
-It supports several input and output formats, all powered by the
-same shift-reduce parser function.")
+     "Parseclj is an Emacs Lisp library for parsing Clojure code and EDN data.
+It supports several input and output formats, all powered by the same
+shift-reduce parser function.")
     (license license:gpl3+)))
 
 (define-public emacs-hide-mode-line
