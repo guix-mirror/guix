@@ -23043,7 +23043,7 @@ nodes, and more.")
 (define-public emacs-eval-sexp-fu-el
   (package
     (name "emacs-eval-sexp-fu-el")
-    (version "0.5.0")
+    (version "0.6.0")
     (source
      (origin
        (method git-fetch)
@@ -23053,7 +23053,7 @@ nodes, and more.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "01mpnpgmlnfbi2yw9dxz5iw72mw3lk223bj172i4fnx3xdrrxbij"))))
+         "19rv0kwajq0j8inglp84sml23ci74wdcvp5bl6zxbw5skqpf6phr"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/hchbaw/eval-sexp-fu.el")
     (synopsis "Enhancements for evaluating s-expressions")
