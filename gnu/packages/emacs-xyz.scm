@@ -25158,7 +25158,7 @@ data, including buffers, window configuration, variables, and more.")
     (home-page "https://cider.mx")
     (synopsis "EDN parser for Emacs Lisp")
     (description
-     "An Emacs Lisp library for parsing EDN (Clojure) data.
+     "Parseedn is an Emacs Lisp library for parsing EDN (Clojure) data.
 It uses parseclj's shift-reduce parser internally.")
     (license license:gpl3+)))
 
