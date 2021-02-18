@@ -23147,7 +23147,7 @@ with passwords for paths matching regexps.")
 (define-public emacs-eacl
   (package
     (name "emacs-eacl")
-    (version "2.0.1")
+    (version "2.0.4")
     (source
      (origin
        (method git-fetch)
@@ -23157,7 +23157,7 @@ with passwords for paths matching regexps.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0ksn11sm3g1ja5lpjz3hrzzw8b480mfcb3q589m52qjgvvn5iyfv"))))
+         "0fxb2lv4cqdjxarqhzjgfc43sncc1c6m96n0aflm8l4gdmm090kq"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-ivy" ,emacs-ivy)))
