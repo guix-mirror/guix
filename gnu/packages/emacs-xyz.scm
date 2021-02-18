@@ -26227,32 +26227,30 @@ or region and use of locally installed binaries.")
     (license license:gpl3+)))
 
 (define-public emacs-execline
-  (let ((commit "c75dd9b2c54d8e59fc35fd4bd98d8e213948a3f5")
-        (revision "1"))
-    (package
-      (name "emacs-execline")
-      (version (git-version "0.1" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://gitlab.com/KAction/emacs-execline/")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "02q531c9wvdwflhggflnci4a36h2bb90bq25bbhw6i2lvrd9sk55"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-s" ,emacs-s)))
-      (arguments
-       `(#:tests? #t
-         #:test-command '("emacs" "-Q" "-batch" "-L" "."
-                          "-l" "t/indent.el"
-                          "-f" "ert-run-tests-batch-and-exit")))
-      (home-page "https://gitlab.com/KAction/emacs-execline/")
-      (synopsis "Major Emacs mode for editing execline scripts")
-      (description
-       "This package provides a major mode for editing execline scripts.
+  (package
+    (name "emacs-execline")
+    (version "1.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitlab.com/KAction/emacs-execline/")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "02q531c9wvdwflhggflnci4a36h2bb90bq25bbhw6i2lvrd9sk55"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-s" ,emacs-s)))
+    (arguments
+     `(#:tests? #t
+       #:test-command '("emacs" "-Q" "-batch" "-L" "."
+                        "-l" "t/indent.el"
+                        "-f" "ert-run-tests-batch-and-exit")))
+    (home-page "https://gitlab.com/KAction/emacs-execline/")
+    (synopsis "Major Emacs mode for editing execline scripts")
+    (description
+     "This package provides a major mode for editing execline scripts.
 
 Features:
 @itemize
@@ -26263,7 +26261,7 @@ Features:
 @item Automatic enable of mode in @file{*.exec} files.
 @item Automatic enable of mode in files with @code{execlineb} interpreter.
 @end itemize\n")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-shell-pop
   (let ((commit "4b4394037940a890a313d715d203d9ead2d156a6")
