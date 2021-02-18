@@ -2707,6 +2707,37 @@ non-consing thread safe queues and fibonacci priority queues.")
 (define-public ecl-queues
   (sbcl-package->ecl-package sbcl-queues))
 
+(define-public sbcl-glsl-packing
+  (let ((commit "03628159468a8e5b7f2a1d5e78b77053e136794a")
+        (revision "1"))
+    (package
+      (name "sbcl-glsl-packing")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/3b/glsl-packing/")
+               (commit commit)))
+         (file-name (git-file-name "glsl-packing" version))
+         (sha256
+          (base32 "0k2f1771wd9kdrcasldy1r00k5bdgi9fd07in52zmjggc0i7dd80"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)))
+      (home-page "https://github.com/3b/glsl-packing/")
+      (synopsis "Common Lisp utilities to calculate OpenGL layouts")
+      (description
+       "This is a Common Lisp library to calculate std140 or std430 layouts for
+a glsl UBO/SSBO.")
+      (license license:expat))))
+
+(define-public ecl-glsl-packing
+  (sbcl-package->ecl-package sbcl-glsl-packing))
+
+(define-public cl-glsl-packing
+  (sbcl-package->cl-source-package sbcl-glsl-packing))
+
 (define-public sbcl-glsl-spec
   (let ((commit "f04476f7da89355ae6856b33283c60ba95c6555d")
         (revision "1"))
