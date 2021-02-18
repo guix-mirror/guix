@@ -127,7 +127,7 @@ Features include:
        ("libgee" ,libgee)
        ("libhandy" ,libhandy)
        ("libsoup" ,libsoup)
-       ("vala" ,vala-0.50)
+       ("vala" ,vala)
        ("xdg-utils" ,xdg-utils)))
     (home-page "https://github.com/bleakgrey/tootle")
     (synopsis "GTK3 client for Mastodon")
