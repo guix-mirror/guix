@@ -8875,6 +8875,57 @@ variety of commonly used matrix types, including sparse and HDF5-backed
 matrices.")
     (license license:gpl3)))
 
+;; This package includes files that have been taken from kentutils.  Some
+;; parts of kentutils are not released under a free license, but this package
+;; only uses files that are also found in the free parts of kentutils.
+(define-public r-cner
+  (package
+    (name "r-cner")
+    (version "1.26.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "CNEr" version))
+       (sha256
+        (base32 "0qy4pm23vyy23zwsjkf0mpf2c0p54nq26w9lq7j0ld4bx9l3jc6c"))))
+    (properties `((upstream-name . "CNEr")))
+    (build-system r-build-system)
+    (inputs `(("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-annotate" ,r-annotate)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biostrings" ,r-biostrings)
+       ("r-dbi" ,r-dbi)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicalignments" ,r-genomicalignments)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-go-db" ,r-go-db)
+       ("r-iranges" ,r-iranges)
+       ("r-keggrest" ,r-keggrest)
+       ("r-powerlaw" ,r-powerlaw)
+       ("r-r-utils" ,r-r-utils)
+       ("r-readr" ,r-readr)
+       ("r-reshape2" ,r-reshape2)
+       ("r-rsqlite" ,r-rsqlite)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-xvector" ,r-xvector)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/ge11232002/CNEr")
+    (synopsis "CNE Detection and Visualization")
+    (description
+     "This package provides tools for large-scale identification and
+advanced visualization of sets of conserved noncoding elements.")
+    ;; For all files in src/ucsc "license is hereby granted for all use -
+    ;; public, private or commercial"; this includes those files that don't
+    ;; have a license header, because they are included in the free parts of
+    ;; the kentutils package.
+    (license (list license:gpl2
+                   (license:non-copyleft
+                    "https://raw.githubusercontent.com/ucscGenomeBrowser/kent/v410_base/src/lib/LICENSE")))))
+
 (define-public r-singlecellexperiment
   (package
     (name "r-singlecellexperiment")
