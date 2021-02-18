@@ -7203,6 +7203,55 @@ clustering analysis, differential analysis, motif inference and exploration of
 single cell ATAC-seq sequencing data.")
     (license license:gpl3)))
 
+(define-public r-archr
+  (let ((commit "46b519ffb6f73edf132497ac31650d19ef055dc1")
+        (revision "1"))
+    (package
+      (name "r-archr")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/GreenleafLab/ArchR")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1zj3sdfhgn2q2256fmz61a92vw1wylyck632d7842d6knd0v92v8"))))
+      (properties `((upstream-name . "ArchR")))
+      (build-system r-build-system)
+      (propagated-inputs
+       `(("r-biocgenerics" ,r-biocgenerics)
+         ("r-biostrings" ,r-biostrings)
+         ("r-chromvar" ,r-chromvar)
+         ("r-complexheatmap" ,r-complexheatmap)
+         ("r-data-table" ,r-data-table)
+         ("r-genomicranges" ,r-genomicranges)
+         ("r-ggplot2" ,r-ggplot2)
+         ("r-ggrepel" ,r-ggrepel)
+         ("r-gridextra" ,r-gridextra)
+         ("r-gtable" ,r-gtable)
+         ("r-gtools" ,r-gtools)
+         ("r-magrittr" ,r-magrittr)
+         ("r-matrix" ,r-matrix)
+         ("r-matrixstats" ,r-matrixstats)
+         ("r-motifmatchr" ,r-motifmatchr)
+         ("r-nabor" ,r-nabor)
+         ("r-plyr" ,r-plyr)
+         ("r-rcpp" ,r-rcpp)
+         ("r-rhdf5" ,r-rhdf5)
+         ("r-rsamtools" ,r-rsamtools)
+         ("r-s4vectors" ,r-s4vectors)
+         ("r-stringr" ,r-stringr)
+         ("r-summarizedexperiment" ,r-summarizedexperiment)
+         ("r-uwot" ,r-uwot)))
+      (home-page "https://github.com/GreenleafLab/ArchR")
+      (synopsis "Analyze single-cell regulatory chromatin in R")
+      (description
+       "This package is designed to streamline scATAC analyses in R.")
+      (license license:gpl2+))))
+
 (define-public r-scde
   (package
     (name "r-scde")
