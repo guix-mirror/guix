@@ -23741,7 +23741,7 @@ files to numerous other formats via Pandoc.")
 (define-public emacs-wc-mode
   (package
     (name "emacs-wc-mode")
-    (version "1.3")
+    (version "1.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -23750,7 +23750,7 @@ files to numerous other formats via Pandoc.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0pjlxv46zzqdq6q131jb306vqlg4sfqls1x8vag7mmfw462hafqp"))))
+                "01icd63mb2hg1bgbmkq3jm8kc3ic8whfy2awcgx53zqkmyz87qxc"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/bnbeckwith/wc-mode")
     (synopsis "Running word count with goals (minor mode)")
