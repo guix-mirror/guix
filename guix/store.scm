@@ -1863,8 +1863,7 @@ and RESULT is typically its derivation."
       (lambda (x y)
         #t)))
 
-(define* (lookup-cached-object object #:optional (keys '())
-                               #:key (vhash-fold* vhash-foldq*))
+(define-inlinable (lookup-cached-object object keys vhash-fold*)
   "Return the cached object in the store connection corresponding to OBJECT
 and KEYS; use VHASH-FOLD* to look for OBJECT in the cache.  KEYS is a list of
 additional keys to match against, and which are compared with 'equal?'.
@@ -1895,7 +1894,7 @@ Return #f on failure and the cached result otherwise."
 OBJECT/KEYS, or return its cached value.  Use VHASH-CONS to insert OBJECT into
 the cache, and VHASH-FOLD* to look it up."
   (mlet %store-monad ((cached (lookup-cached-object object keys
-                                                    #:vhash-fold* vhash-fold*)))
+                                                    vhash-fold*)))
     (if cached
         (return cached)
         (>>= (mthunk)
