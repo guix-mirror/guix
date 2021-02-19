@@ -8892,6 +8892,26 @@ straightforward and (perhaps someday) standard way.  Spiffy borrows ideas from
 other OO languages like Python, Ruby, Java and Perl 6.")
     (license (package-license perl))))
 
+(define-public perl-want
+  (package
+    (name "perl-want")
+    (version "0.29")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/R/RO/ROBIN/Want-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1xsjylbxxcbkjazqms49ipi94j1hd2ykdikk29cq7dscil5p9r5l"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/release/Want")
+    (synopsis "Generalization of wantarray")
+    (description "This module generalises the mechanism of the
+@code{wantarray} function, allowing a function to determine in some detail how
+its return value is going to be immediately used.")
+    (license license:perl-license)))
+
 (define-public perl-statistics-basic
   (package
     (name "perl-statistics-basic")
