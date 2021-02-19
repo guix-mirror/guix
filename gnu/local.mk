@@ -436,6 +436,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/perl.scm				\
   %D%/packages/perl-check.scm			\
   %D%/packages/perl-compression.scm		\
+  %D%/packages/perl-maths.scm			\
   %D%/packages/perl-web.scm			\
   %D%/packages/perl6.scm			\
   %D%/packages/photo.scm			\
