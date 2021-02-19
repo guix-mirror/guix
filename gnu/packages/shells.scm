@@ -940,7 +940,7 @@ files and text.")
 (define-public nushell
   (package
     (name "nushell")
-    (version "0.27.0")
+    (version "0.27.1")
     (source
      (origin
        (method git-fetch)
@@ -949,7 +949,7 @@ files and text.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0gi477kfin9vpi7cmijqgbshm54r2winp4pkravrd7v3pqw0isrr"))))
+        (base32 "19l42qdqmc9g2qxy4b856z0xlq2g4qrfxj8l7dmdv99vymyfik9j"))))
     (build-system cargo-build-system)
     (arguments
      `(#:rust ,rust-1.47
@@ -992,7 +992,8 @@ files and text.")
         ("rust-pretty-env-logger" ,rust-pretty-env-logger-0.4))
        #:cargo-development-inputs
        (("rust-dunce" ,rust-dunce-1)
-        ("rust-nu-test-support" ,rust-nu-test-support-0.27))))
+        ("rust-nu-test-support" ,rust-nu-test-support-0.27)
+        ("rust-serial-test" ,rust-serial-test-0.5))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python" ,python)))
@@ -1018,14 +1019,14 @@ of commands called a ``pipeline''.")
 (define-public rust-nu-cli-0.27
   (package
     (name "rust-nu-cli")
-    (version "0.27.0")
+    (version "0.27.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu-cli" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0kj0n4lkzmscvya1m5psf1n3ijpzxn4avw2a71rqgcdjyk3phahb"))))
+        (base32 "0rv4g5vfs81gans9npa2yyz893jqnd1yqcc16h0w6xlbsgdx2712"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -1134,14 +1135,14 @@ of commands called a ``pipeline''.")
 (define-public rust-nu-command-0.27
   (package
     (name "rust-nu-command")
-    (version "0.27.0")
+    (version "0.27.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu-command" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "16syx1sb3bj4hdh1l294byqqzbrgm24jp6h339rf9sn4k1m9fwd3"))))
+        (base32 "1kpf72fw310mnywv3y678cgxkdzhfss14228p0ndhr2knxz8gdki"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -1247,14 +1248,14 @@ of commands called a ``pipeline''.")
 (define-public rust-nu-data-0.27
   (package
     (name "rust-nu-data")
-    (version "0.27.0")
+    (version "0.27.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu-data" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0k024pgzq3r6rh3j3d3pnsnsg5vnz6w21g7xabsfm1ylv074d8i9"))))
+        (base32 "0v7rkbrbzjy9794isz1z3dz1kpciadgg7hdfr6107i3qw11j8pq3"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -1291,14 +1292,14 @@ of commands called a ``pipeline''.")
 (define-public rust-nu-engine-0.27
   (package
     (name "rust-nu-engine")
-    (version "0.27.0")
+    (version "0.27.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu-engine" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "14463wafn4am6c7sc942zqjs4ckd3yxm8l786qhhkxw7gwq7m76s"))))
+        (base32 "0a1b8j7k2rawdimxr7yknw6yk0pbs69qj5p73sg4a24pyx0f7zkp"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -1346,14 +1347,14 @@ of commands called a ``pipeline''.")
 (define-public rust-nu-errors-0.27
   (package
     (name "rust-nu-errors")
-    (version "0.27.0")
+    (version "0.27.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu-errors" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0j9w8fyjgrb602v35871vychh2b9m3bzjmmk8jgcbm41458ji5sl"))))
+        (base32 "0h81034cmlra627bnq7kp46s3k61j5xhzbbk61lxybmyg1m5dr74"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -1379,14 +1380,14 @@ of commands called a ``pipeline''.")
 (define-public rust-nu-json-0.27
   (package
     (name "rust-nu-json")
-    (version "0.27.0")
+    (version "0.27.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu-json" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0s3bv8hcqfric8ib9da71cjfa298pn3154lyziv55yg2wrmqn9kr"))))
+        (base32 "1ymdiv606kiw6m79rr7blflk1m7cnk96ahxx5j82ygamkr4mckf3"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -1403,14 +1404,14 @@ of commands called a ``pipeline''.")
 (define-public rust-nu-parser-0.27
   (package
     (name "rust-nu-parser")
-    (version "0.27.0")
+    (version "0.27.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu-parser" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0jyl29c16hmyfbmp4w0yay441dc3c54hwknqsaq7bppg5kyxhvx9"))))
+        (base32 "1zv68yzkrgdk8c50bbsrx3jfsg46621522zgg1glbv0809gcns5p"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -1440,7 +1441,7 @@ of commands called a ``pipeline''.")
 (define-public rust-nu-plugin-0.27
   (package
     (name "rust-nu-plugin")
-    (version "0.27.0")
+    (version "0.27.1")
     (source
      (origin
        (method url-fetch)
@@ -1448,7 +1449,7 @@ of commands called a ``pipeline''.")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1k5hjaisig9syx442qslnipq6anphi67wvqhig1l6alwf95d7mps"))))
+        (base32 "12x01n7x9bqn0pp5pymmaxmd32gjm6lcs3hd3zhp1y15swrj2kr9"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -1471,14 +1472,14 @@ of commands called a ``pipeline''.")
 (define-public rust-nu-plugin-binaryview-0.27
   (package
     (name "rust-nu-plugin-binaryview")
-    (version "0.27.0")
+    (version "0.27.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu_plugin_binaryview" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0dqh50v3whd9vdcjyyymwh9jcxjrx73ixzdwp3ga8vgcg4fsy2xp"))))
+        (base32 "0py5wzzf0527dj43k5lah2da9ws9w4n4mi2i6dprswmy4pvplhq1"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -1502,14 +1503,14 @@ of commands called a ``pipeline''.")
 (define-public rust-nu-plugin-chart-0.27
   (package
     (name "rust-nu-plugin-chart")
-    (version "0.27.0")
+    (version "0.27.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu_plugin_chart" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "14bh7qa2a6hwrggcb9qi92d9dqdrsr6hz5bhplbb8ym9yhr1b43k"))))
+        (base32 "07im3fcd9lxfnj3b81j1jky3yl1sfx3gqgcf8n46gfqh5gmgismb"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -1532,14 +1533,14 @@ of commands called a ``pipeline''.")
 (define-public rust-nu-plugin-fetch-0.27
   (package
     (name "rust-nu-plugin-fetch")
-    (version "0.27.0")
+    (version "0.27.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu_plugin_fetch" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0cyn462vpb1njhcdmad63c672xc3si2l4kvgbjf7z57zsg4ldf1i"))))
+        (base32 "06mgd7vis7g3br3acswq24v4ffi15zq5fi0i7v65jz418vapvmzp"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -1560,14 +1561,14 @@ of commands called a ``pipeline''.")
 (define-public rust-nu-plugin-from-bson-0.27
   (package
     (name "rust-nu-plugin-from-bson")
-    (version "0.27.0")
+    (version "0.27.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu_plugin_from_bson" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "02r66fm1ih690d5z9il4lawnk53vv51d6cxga7s4bj68yn7b5sig"))))
+        (base32 "16ksyzsxyy2wd138y1zz9sdq6s5zvrh7rrsvyhwdd4w7irk2q474"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -1590,14 +1591,14 @@ Nushell.")
 (define-public rust-nu-plugin-from-sqlite-0.27
   (package
     (name "rust-nu-plugin-from-sqlite")
-    (version "0.27.0")
+    (version "0.27.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu_plugin_from_sqlite" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1l5li343ba8g6cvckjby78vl9d8nj5n679asdh103gr2y8pbrk4b"))))
+        (base32 "0z35aw6n2w4lmwp2797zd85ix64ch1msn5d0g3g2kdrihbpymxj2"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -1621,14 +1622,14 @@ Nushell.")
 (define-public rust-nu-plugin-inc-0.27
   (package
     (name "rust-nu-plugin-inc")
-    (version "0.27.0")
+    (version "0.27.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu_plugin_inc" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0rpgbxk79wgg3wks9w1nz0pala2arq9kxrqm971ph10gl398dah0"))))
+        (base32 "1ykrfixf642zv0h6349mxsidm9m7j933imnw978v96ymzp7hdalk"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -1650,14 +1651,14 @@ Nushell.")
 (define-public rust-nu-plugin-match-0.27
   (package
     (name "rust-nu-plugin-match")
-    (version "0.27.0")
+    (version "0.27.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu_plugin_match" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0v8rdpxqf414mbz2yqgh6cqfi3cszir4mh6qdgijll1ywjib1xag"))))
+        (base32 "0ax8aanmr8clvz3abbc4mwhpp2bwwzfh03vydwa50dadnrhrh51s"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -1676,14 +1677,14 @@ Nushell.")
 (define-public rust-nu-plugin-post-0.27
   (package
     (name "rust-nu-plugin-post")
-    (version "0.27.0")
+    (version "0.27.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu_plugin_post" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0i2jd19rw4dpi44qfw1yavzyhljqxcr4angyk4q3rn49isdz2njg"))))
+        (base32 "19zsvddd5lb1y1jm1wldk8padxl3a4w55xh82hpxz4igvjblpcz6"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -1706,14 +1707,14 @@ Nushell.")
 (define-public rust-nu-plugin-ps-0.27
   (package
     (name "rust-nu-plugin-ps")
-    (version "0.27.0")
+    (version "0.27.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu_plugin_ps" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1xh55xi1w8393dyk9vp8l74r73pva4rbl5rrz4flx692vw5i40f5"))))
+        (base32 "1d8i1hfpcjpiwikdi5i2gdnxxm43nnmmyfz1y7zivx5hzha1qjg1"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -1735,14 +1736,14 @@ Nushell.")
 (define-public rust-nu-plugin-s3-0.27
   (package
     (name "rust-nu-plugin-s3")
-    (version "0.27.0")
+    (version "0.27.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu_plugin_s3" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0g8dx1llizvg98g9jw80iz2jpcnjq4zvw70drsllzlxygpap0rl5"))))
+        (base32 "14kk07rm62am24fp7cks8gcfp7h67zlcmfzpixh0rfwkfgr87mwq"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -1761,14 +1762,14 @@ Nushell.")
 (define-public rust-nu-plugin-selector-0.27
   (package
     (name "rust-nu-plugin-selector")
-    (version "0.27.0")
+    (version "0.27.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu_plugin_selector" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1v674fkmdb2y28blhvlg0ryp6ric621sfl8law1msvqxq4c7jn84"))))
+        (base32 "1nvqp8lzyiyk3n8c5gqr6wrk2pirzpyxpwc4r67fr9rsllyrfhw2"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -1787,14 +1788,14 @@ Nushell.")
 (define-public rust-nu-plugin-start-0.27
   (package
     (name "rust-nu-plugin-start")
-    (version "0.27.0")
+    (version "0.27.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu_plugin_start" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0i98qchvslw0chbzzscfnib1yf1w6wfi1bbp9766hjldnvac0rik"))))
+        (base32 "1kznb1npqbbak3xk9w6m6ng6h7ir164il7xydrhwrl45mll2g4yw"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -1818,7 +1819,7 @@ Nushell.")
 (define-public rust-nu-plugin-sys-0.27
   (package
     (name "rust-nu-plugin-sys")
-    (version "0.27.0")
+    (version "0.27.1")
     (source
      (origin
        (method url-fetch)
@@ -1826,7 +1827,7 @@ Nushell.")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1zfyjdkga65ns8qdhxzjaj4b5q76pvqkv98sa3cj4sx4wl8q9zrg"))))
+        (base32 "1bdd745w5gmignfclp5fzwpyjfpqsmf6hrry3chn3jzdpl5gvgiw"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -1847,14 +1848,14 @@ Nushell.")
 (define-public rust-nu-plugin-textview-0.27
   (package
     (name "rust-nu-plugin-textview")
-    (version "0.27.0")
+    (version "0.27.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu_plugin_textview" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1izjv2jwbpaw9y01wdhsv3fnyhrhn0rdx3nr86i9rab1xcgnxrny"))))
+        (base32 "10w5isqgc5mf7rhs49rglm3s6pcij0ch12xkvrq4930y8pr6cy9l"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -1877,14 +1878,14 @@ Nushell.")
 (define-public rust-nu-plugin-to-bson-0.27
   (package
     (name "rust-nu-plugin-to-bson")
-    (version "0.27.0")
+    (version "0.27.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu_plugin_to_bson" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1k5r4gwn5h48ix4wqyfj4lcymg61ssc5mw8zy7x6s0w2daj58f85"))))
+        (base32 "1x90r11wg46i2wx21gk42pyjjcpib66rrqgxrc690y376dn9ivlr"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -1906,14 +1907,14 @@ Nushell.")
 (define-public rust-nu-plugin-to-sqlite-0.27
   (package
     (name "rust-nu-plugin-to-sqlite")
-    (version "0.27.0")
+    (version "0.27.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu_plugin_to_sqlite" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1n5xy6yfd5vgqz1vj4p7nrb200m8akcfhpqp5hjbn79c7w4nn5d1"))))
+        (base32 "055k5sksxv7q4ivy74c1ndxps30c5c97rz6v7dibckh9c0q1vbhk"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -1937,14 +1938,14 @@ Nushell.")
 (define-public rust-nu-plugin-tree-0.27
   (package
     (name "rust-nu-plugin-tree")
-    (version "0.27.0")
+    (version "0.27.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu_plugin_tree" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "102zhj8sv0mybv0wnljsw48n0p6y5wx7lzv7w96kflxna40q1dm4"))))
+        (base32 "0bjir9f5fraz5n9bj99ba7djmnzb8ws0dbvdhwn5hz9lmb5ss0mg"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -1964,14 +1965,14 @@ Nushell.")
 (define-public rust-nu-plugin-xpath-0.27
   (package
     (name "rust-nu-plugin-xpath")
-    (version "0.27.0")
+    (version "0.27.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu_plugin_xpath" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1x9zn2xyqkyg0pjl8kzd9da3gmhknlrdga02rzyssnc0kjagkm7v"))))
+        (base32 "1cyq7qb8bzzf599fq24pg7z0svsdffkd26fplggdg4nihjv28clv"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -1992,14 +1993,14 @@ Nushell.")
 (define-public rust-nu-protocol-0.27
   (package
     (name "rust-nu-protocol")
-    (version "0.27.0")
+    (version "0.27.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu-protocol" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1z6q6zdkhwx3axv5m788l4k8yds3zd161mwvmvaz0vzj6g10np51"))))
+        (base32 "1031mysphq7qczmilmdshcm4h6wh0132cvdc0346qz2q2b3qmrjr"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -2029,14 +2030,14 @@ Nushell.")
 (define-public rust-nu-source-0.27
   (package
     (name "rust-nu-source")
-    (version "0.27.0")
+    (version "0.27.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu-source" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0dr8lssx8cf22cwrrjcpx4xlqxk8qv6nyar3i9jk218q34m6bgn2"))))
+        (base32 "1akfcn7138sfaawb7sl5311vgmcba32c79lnkmdzpb48xdr9ybp8"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -2056,14 +2057,14 @@ Nushell.")
 (define-public rust-nu-stream-0.27
   (package
     (name "rust-nu-stream")
-    (version "0.27.0")
+    (version "0.27.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu-stream" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1hz9n380rnvvg86qi9bfika6c702kn4b9ljsgcwrr984mm3vbb2n"))))
+        (base32 "09xm93mk0kyi4nd6f1x89yfk3139ahamirs2zwnzr97f7xng216v"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -2080,14 +2081,14 @@ Nushell.")
 (define-public rust-nu-table-0.27
   (package
     (name "rust-nu-table")
-    (version "0.27.0")
+    (version "0.27.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu-table" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1rmxic6vif8vb5klsvlida7p24nqbnmj1xclmg0p9a10bykzp4gp"))))
+        (base32 "1vkn0kf7rwywrj8d31mr4j64rwjay9syjsvg94yi9rdxbccd5jf2"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -2103,14 +2104,14 @@ Nushell.")
 (define-public rust-nu-test-support-0.27
   (package
     (name "rust-nu-test-support")
-    (version "0.27.0")
+    (version "0.27.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu-test-support" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0hwiymqhh6x37bn0vnyi8rxzn6rpq561hxs80fw5qs4q3dkx74nv"))))
+        (base32 "0yk1368by0s9p7j2diw5mdk88by00cw6q6wspasbprcr684g5kvn"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -2136,7 +2137,7 @@ tests.")
 (define-public rust-nu-value-ext-0.27
   (package
     (name "rust-nu-value-ext")
-    (version "0.27.0")
+    (version "0.27.1")
     (source
      (origin
        (method url-fetch)
@@ -2144,7 +2145,7 @@ tests.")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "11jj6v6i6hn66q9hbkj3vw5ccz3lkiypxcd1qg5qnlzxq8ba8mj1"))))
+        (base32 "1yhzqzafg0l1fj4pwlbjl0h74b0rj0x4gdx2rgc3nzndc7j00axn"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
