@@ -113,6 +113,32 @@ in FITS files.")
 for reading and writing.")
     (license license:gpl2+)))
 
+(define-public erfa
+  (package
+    (name "erfa")
+    (version "1.7.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/liberfa/erfa")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1vsqwvzlk7r8q7nwyb7i710blcfdl5kwcm2va9km07a820nsp84a"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("automake" ,automake)
+       ("autoreconf" ,autoconf)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/liberfa/erfa")
+    (synopsis "Essential Routines for Fundamental Astronomy")
+    (description
+     "ERFA is a C library containing key algorithms for astronomy, and is based
+on the SOFA library published by the International Astronomical Union (IAU).")
+    (license license:bsd-3)))
+
 (define-public eye
   (package
     (name "eye")
