@@ -31,20 +31,89 @@
   #:use-module (gnu services databases)
   #:use-module (gnu services networking)
   #:use-module (gnu system nss)
+  #:use-module (guix channels)
   #:use-module (guix gexp)
   #:use-module (guix store)
   #:export (%cuirass-test
             %cuirass-remote-test))
 
-(define* (run-cuirass-test name #:key remote-build?)
-  (define %cuirass-specs
+(define %derivation-file
+  (scheme-file
+   "derivation.scm"
+   '(begin
+      (use-modules (guix)
+                   (srfi srfi-1)
+                   (ice-9 match))
+
+      (define (derivation->alist store drv)
+        `((#:derivation . ,(derivation-file-name drv))
+          (#:log . ,(log-file store (derivation-file-name drv)))
+          (#:outputs . ,(filter-map (lambda (res)
+                                      (match res
+                                        ((name . path)
+                                         `(,name . ,path))))
+                                    (derivation->output-paths drv)))
+          (#:nix-name . ,(derivation-name drv))
+          (#:system . ,(derivation-system drv))
+          (#:max-silent-time . 3600)
+          (#:timeout . 3600)))
+
+      (define (cuirass-jobs store arguments)
+        (let* ((file (plain-file "test" "this is a test derivation"))
+               (job-name "test-job")
+               (drv  (run-with-store store
+                       (gexp->derivation
+                        job-name
+                        #~(begin
+                            (mkdir #$output)
+                            (symlink #$file
+                                     (string-append #$output "/file")))))))
+          (list (lambda ()
+                  `((#:job-name . ,job-name)
+                    ,@(derivation->alist store drv)))))))))
+
+(define git-service
+  ;; Create a Git repository to host Cuirass' specification.
+  (simple-service
+   'create-git-directory activation-service-type
+   #~(begin
+       (let* ((git (string-append #$git "/bin/git"))
+              (main "/tmp/cuirass-main")
+              (file (string-append main "/build-aux/cuirass/gnu-system.scm")))
+         (mkdir-p (dirname file))
+         (with-directory-excursion main
+           (copy-file #$%derivation-file file)
+           (invoke git "config" "--global" "user.email"
+                   "charlie@example.org")
+           (invoke git "config" "--global" "user.name" "A U Thor")
+           (invoke git "init")
+           (invoke git "add" ".")
+           (invoke git "commit" "-m" "That's a commit."))))))
+
+(define cow-service
+  ;; The Guix-daemon & Cuirass will complain if the store is
+  ;; read-only. Create a store overlay to solve this issue.
+  (simple-service
+   'mount-cow-store activation-service-type
+   #~(begin
+       (use-modules (guix build syscalls)
+                    (guix build utils))
+       (mkdir-p "/rw-store")
+       (mount "none" "/rw-store" "tmpfs")
+
+       (mkdir-p "/rw-store/upper")
+       (mkdir-p "/rw-store/work")
+       (mount "none" "/gnu/store" "overlay" 0
+              "lowerdir=/gnu/store,upperdir=/rw-store/upper,workdir=/rw-store/work"))))
+
+(define %cuirass-specs
     #~(list
        '((#:name . "test")
          (#:load-path-inputs . ())
          (#:package-path-inputs . ())
          (#:proc-input . "main")
-         (#:proc-file . "derivation.scm")
-         (#:proc . main)
+         (#:proc-file . "build-aux/cuirass/gnu-system.scm")
+         (#:proc . cuirass-jobs)
          (#:proc-args . ())
          (#:inputs . (((#:name . "main")
                        (#:url . "file:///tmp/cuirass-main/")
@@ -54,103 +123,29 @@
          (#:build-outputs . ())
          (#:priority . 1))))
 
-  (define %derivation-file
-    (scheme-file
-     "derivation.scm"
-     '(begin
-        (use-modules (guix)
-                     (srfi srfi-1)
-                     (ice-9 match))
+(define* (cuirass-services #:key remote-build?)
+  (list
+   (service cuirass-service-type
+            (cuirass-configuration
+             (specifications %cuirass-specs)
+             (remote-server (and remote-build?
+                                 (cuirass-remote-server-configuration)))
+             (host "0.0.0.0")
+             (use-substitutes? #t)))
+   (service postgresql-service-type
+            (postgresql-configuration
+             (postgresql postgresql-10)))
+   (service postgresql-role-service-type)))
 
-        (define (derivation->alist store drv)
-          `((#:derivation . ,(derivation-file-name drv))
-            (#:log . ,(log-file store (derivation-file-name drv)))
-            (#:outputs . ,(filter-map (lambda (res)
-                                        (match res
-                                          ((name . path)
-                                           `(,name . ,path))))
-                                      (derivation->output-paths drv)))
-            (#:nix-name . ,(derivation-name drv))
-            (#:system . ,(derivation-system drv))
-            (#:max-silent-time . 3600)
-            (#:timeout . 3600)))
-
-        (define (main store arguments)
-          (let* ((file (plain-file "test" "this is a test derivation"))
-                 (job-name "test-job")
-                 (drv  (run-with-store store
-                         (gexp->derivation
-                          job-name
-                          #~(begin
-                              (mkdir #$output)
-                              (symlink #$file
-                                       (string-append #$output "/file")))))))
-            (list (lambda ()
-                    `((#:job-name . ,job-name)
-                      ,@(derivation->alist store drv)))))))))
-
-  (define os
-    (marionette-operating-system
-     (simple-operating-system
-      (service cuirass-service-type
-               (cuirass-configuration
-                (specifications %cuirass-specs)
-                (remote-server (and remote-build?
-                                    (cuirass-remote-server-configuration)))
-                (host "0.0.0.0")
-                (use-substitutes? #t)))
-      (service dhcp-client-service-type)
-      ;; Create a Git repository to host Cuirass' specification.
-      (simple-service
-       'create-git-directory activation-service-type
-       #~(begin
-           (let* ((git (string-append #$git "/bin/git"))
-                  (main "/tmp/cuirass-main")
-                  (file (string-append main "/derivation.scm")))
-             (mkdir-p main)
-             (with-directory-excursion main
-               (copy-file #$%derivation-file file)
-               (invoke git "config" "--global" "user.email"
-                       "charlie@example.org")
-               (invoke git "config" "--global" "user.name" "A U Thor")
-               (invoke git "init")
-               (invoke git "add" ".")
-               (invoke git "commit" "-m" "That's a commit.")))))
-      ;; The Guix-daemon & Cuirass will complain if the store is
-      ;; read-only. Create a store overlay to solve this issue.
-      (simple-service
-       'mount-cow-store activation-service-type
-       #~(begin
-           (use-modules (guix build syscalls)
-                        (guix build utils))
-           (mkdir-p "/rw-store")
-           (mount "none" "/rw-store" "tmpfs")
-
-           (mkdir-p "/rw-store/upper")
-           (mkdir-p "/rw-store/work")
-           (mount "none" "/gnu/store" "overlay" 0
-                  "lowerdir=/gnu/store,upperdir=/rw-store/upper,workdir=/rw-store/work")))
-      (service postgresql-service-type
-               (postgresql-configuration
-                (postgresql postgresql-10)))
-      (service postgresql-role-service-type))
-     #:imported-modules '((gnu services herd)
-                          (guix combinators)
-                          (guix build syscalls)
-                          (guix build utils))))
-
+(define (run-cuirass-test name os)
   (define os*
-    (operating-system
-      (inherit os)
-      (name-service-switch %mdns-host-lookup-nss)
-      (services
-       (append (if remote-build?
-                   (list
-                    (service avahi-service-type)
-                    (service cuirass-remote-worker-service-type
-                             (cuirass-remote-worker-configuration)))
-                   '())
-               (operating-system-user-services os)))))
+    (let ((modules '((gnu services herd)
+                     (guix combinators)
+                     (guix build syscalls)
+                     (guix build utils))))
+      (marionette-operating-system
+       os
+       #:imported-modules modules)))
 
   (define cuirass-web-port 8081)
   (define forward-port 5000)
@@ -219,8 +214,7 @@
                  #:times 5
                  #:delay 5)))
 
-            (test-equal "cuirass-web evaluation"
-              "test"
+            (test-assert "cuirass-web evaluation"
               (begin
                 (retry
                  (lambda ()
@@ -230,8 +224,9 @@
                             (false-if-exception
                              (json-string->scm
                               (utf8->string text)))))
-                       (and result
-                            (assoc-ref result "specification")))))
+                       (eq? (and result
+                                 (assoc-ref result "id"))
+                            1))))
                  #:times 5
                  #:delay 5)))
 
@@ -249,11 +244,7 @@
                              (utf8->string text))))
                        (match (vector->list result)
                          ((build)
-                          (and (string=? (assoc-ref build "job")
-                                         "test-job")
-                               (or (not #$remote-build?)
-                                   ;; Check if the build is started.
-                                   (= (assoc-ref build "buildstatus") -1))))
+                          (string=? (assoc-ref build "job") "test-job"))
                          (else #f)))))
                  #:times 5
                  #:delay 10)))
@@ -264,13 +255,32 @@
   (gexp->derivation name test))
 
 (define %cuirass-test
-  (system-test
-   (name "cuirass")
-   (description "Connect to a Cuirass server.")
-   (value (run-cuirass-test name))))
+  (let ((os (operating-system
+              (inherit %simple-os)
+              (services
+               (append (list cow-service
+                             (service dhcp-client-service-type)
+                             git-service)
+                       (cuirass-services)
+                       (operating-system-user-services %simple-os))))))
+    (system-test
+     (name "cuirass")
+     (description "Connect to a Cuirass server.")
+     (value
+      (run-cuirass-test name os)))))
 
 (define %cuirass-remote-test
-  (system-test
-   (name "cuirass-remote")
-   (description "Connect to a Cuirass server with remote build.")
-   (value (run-cuirass-test name #:remote-build? #t))))
+  (let ((os (operating-system
+              (inherit %simple-os)
+              (name-service-switch %mdns-host-lookup-nss)
+              (services
+               (append (list (service avahi-service-type)
+                             cow-service
+                             (service dhcp-client-service-type)
+                             git-service)
+                       (cuirass-services #:remote-build? #t)
+                       (operating-system-user-services %simple-os))))))
+    (system-test
+     (name "cuirass-remote")
+     (description "Connect to a Cuirass server with remote build.")
+     (value (run-cuirass-test name os)))))
