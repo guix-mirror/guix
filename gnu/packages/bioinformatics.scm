@@ -7825,6 +7825,31 @@ clusters.")
     (home-page "https://sourceforge.net/projects/pardre/")
     (license license:gpl3+)))
 
+(define-public ngshmmalign
+  (package
+    (name "ngshmmalign")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/cbg-ethz/ngshmmalign/"
+                           "releases/download/" version
+                           "/ngshmmalign-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "0jryvlssi2r2ii1dxnx39yk6bh4yqgq010fnxrgfgbaj3ykijlzv"))))
+    (build-system cmake-build-system)
+    (arguments '(#:tests? #false))      ; there are none
+    (inputs
+     `(("boost" ,boost)))
+    (home-page "https://github.com/cbg-ethz/ngshmmalign/")
+    (synopsis "Profile HMM aligner for NGS reads")
+    (description
+     "ngshmmalign is a profile HMM aligner for NGS reads designed particularly
+for small genomes (such as those of RNA viruses like HIV-1 and HCV) that
+experience substantial biological insertions and deletions.")
+    (license license:gpl2+)))
+
 (define-public ruby-bio-kseq
   (package
     (name "ruby-bio-kseq")
