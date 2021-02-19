@@ -26,7 +26,7 @@
 ;;; Copyright © 2018 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2018, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2018, 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Vagrant Cascadian <vagrant@debian.org>
 ;;; Copyright © 2019 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
@@ -3032,16 +3032,20 @@ for the basic TCP/IP protocols.")
                '(begin
                   ;; Delete pre-compiled files.
                   (for-each delete-file (find-files "src/geventhttpclient"
-                                                    ".*\\.pyc"))
-                  #t))))
+                                                    ".*\\.pyc"))))))
     (build-system python-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'delete-network-tests
            (lambda _
-             (delete-file "src/geventhttpclient/tests/test_client.py")
-             #t))
+             (delete-file "src/geventhttpclient/tests/test_client.py")))
+         (add-after 'unpack 'fix-compatibility-issue
+           ;; See: https://github.com/gwik/geventhttpclient/issues/137.
+           (lambda _
+             (substitute* "src/geventhttpclient/tests/test_ssl.py"
+               ((".*sock.last_seen_sni = None.*")
+                ""))))
          (replace 'check
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (add-installed-pythonpath inputs outputs)
@@ -3049,10 +3053,9 @@ for the basic TCP/IP protocols.")
                      ;; Append the test modules to sys.path to avoid
                      ;; namespace conflict which breaks SSL tests.
                      "--import-mode=append"
-                     ;; XXX: Disable test fails with Python 3.8:
+                     ;; XXX: This test fails with Python 3.8:
                      ;; https://github.com/gwik/geventhttpclient/issues/119
-                     "-k" (string-append "not test_cookielib_compatibility"))
-             #t)))))
+                     "-k" "not test_cookielib_compatibility"))))))
     (native-inputs
      `(("python-dpkt" ,python-dpkt)
        ("python-pytest" ,python-pytest)))
