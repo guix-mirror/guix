@@ -1328,7 +1328,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/llvm-9-fix-scev-miscompilation.patch	\
   %D%/packages/patches/lm-sensors-hwmon-attrs.patch		\
   %D%/packages/patches/lrcalc-includes.patch    		\
-  %D%/packages/patches/lrzip-CVE-2017-8842.patch		\
   %D%/packages/patches/lsh-fix-x11-forwarding.patch		\
   %D%/packages/patches/lsof-fatal-test-failures.patch		\
   %D%/packages/patches/lua-CVE-2014-5461.patch                      \

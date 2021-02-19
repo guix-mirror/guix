@@ -31,6 +31,7 @@
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Léo Le Bouter <lle-bout@zaclys.net>
 ;;; Copyright © 2021 Antoine Côté <antoine.cote@posteo.net>
+;;; Copyright © 2021 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1109,16 +1110,15 @@ human-readable output.")
 (define-public lrzip
   (package
     (name "lrzip")
-    (version "0.631")
+    (version "0.640")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "http://ck.kolivas.org/apps/lrzip/lrzip-" version ".tar.bz2"))
+             "http://ck.kolivas.org/apps/lrzip/lrzip-" version ".tar.xz"))
        (sha256
         (base32
-         "0mb449vmmwpkalq732jdyginvql57nxyd31sszb108yps1lf448d"))
-       (patches (search-patches "lrzip-CVE-2017-8842.patch"))))
+         "175466drfpz8rsfr0pzfn5rqrj3wmcmcs3i2sfmw366w2kbjm4j9"))))
     (build-system gnu-build-system)
     (native-inputs
      `(;; nasm is only required when building for 32-bit x86 platforms
@@ -1129,6 +1129,7 @@ human-readable output.")
        ("perl" ,perl)))
     (inputs
      `(("bzip2" ,bzip2)
+       ("lz4" ,lz4)
        ("lzo" ,lzo)
        ("zlib" ,zlib)))
     (home-page "http://ck.kolivas.org/apps/lrzip/")
