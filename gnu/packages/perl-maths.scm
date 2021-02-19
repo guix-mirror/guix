@@ -24,6 +24,25 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check))
 
+(define-public perl-math-cephes
+  (package
+    (name "perl-math-cephes")
+    (version "0.5305")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/S/SH/SHLOMIF/Math-Cephes-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "18c3xg53d1vv7hlj43601jj7ks119fm6ndpwpv94irr2905806jn"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/release/Math-Cephes")
+    (synopsis "Perl interface to the Cephes math library")
+    (description "The Math::Cephes module provides a Perl interface to over
+150 functions of the Cephes math library.")
+    (license license:perl-license)))
+
 (define-public perl-math-matrixreal
   (package
     (name "perl-math-matrixreal")
