@@ -550,28 +550,28 @@ data for video and audio files.")
 (define-public python-psutil
   (package
     (name "python-psutil")
-    (version "5.7.2")
+    (version "5.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "psutil" version))
        (sha256
-        (base32 "1svv985vmqsls35kmvp3vhh26nsgz229324s9k29awf6qgqhm6ch"))))
+        (base32 "1immnj532bnnrh1qmk5q3lsw3san8qfk9kxy1cpmy0knmfcwp70c"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: some tests do not return and time out.  Some tests fail because
      ;; some processes survive kill().
      '(#:tests? #f))
-    (home-page "https://www.github.com/giampaolo/psutil")
+    (home-page "https://github.com/giampaolo/psutil")
     (synopsis "Library for retrieving information on running processes")
     (description
-     "psutil (Python system and process utilities) is a library for retrieving
-information on running processes and system utilization (CPU, memory, disks,
-network) in Python.  It is useful mainly for system monitoring, profiling and
-limiting process resources and management of running processes.  It implements
-many functionalities offered by command line tools such as: ps, top, lsof,
-netstat, ifconfig, who, df, kill, free, nice, ionice, iostat, iotop, uptime,
-pidof, tty, taskset, pmap.")
+     "@code{psutil} (Python system and process utilities) is a library for
+retrieving information on running processes and system utilization (CPU,
+memory, disks, network) in Python.  It is useful mainly for system monitoring,
+profiling and limiting process resources and management of running processes.
+It implements many functionalities offered by command line tools such as: ps,
+top, lsof, netstat, ifconfig, who, df, kill, free, nice, ionice, iostat,
+iotop, uptime, pidof, tty, taskset, pmap.")
     (properties `((python2-variant . ,(delay python2-psutil))))
     (license license:bsd-3)))
 
