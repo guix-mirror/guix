@@ -1357,7 +1357,7 @@ A plugin for the Xfce panel is also available.")
 (define-public xfce4-cpugraph-plugin
   (package
    (name "xfce4-cpugraph-plugin")
-   (version "1.2.1")
+   (version "1.2.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
@@ -1366,7 +1366,7 @@ A plugin for the Xfce panel is also available.")
                                   "/xfce4-cpugraph-plugin-" version ".tar.bz2"))
               (sha256
                (base32
-                "0jljxyvxq4kmf5wz7wkq6wma4bq1qsnlv3lx6527lhcipnddynk1"))))
+                "0pnm2lqcc9snzpcd25c2yvzcnikk5chc5bn1jh14r6726vx14z1l"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
