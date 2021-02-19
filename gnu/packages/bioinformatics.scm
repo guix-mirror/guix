@@ -7850,6 +7850,54 @@ for small genomes (such as those of RNA viruses like HIV-1 and HCV) that
 experience substantial biological insertions and deletions.")
     (license license:gpl2+)))
 
+(define-public prinseq
+  (package
+    (name "prinseq")
+    (version "0.20.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/prinseq/standalone/"
+                           "prinseq-lite-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0vxmzvmm67whxrqdaaamwgjk7cf0fzfs5s673jgg00kz7g70splv"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #false                  ; no check target
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (for-each (lambda (file)
+                           (chmod file #o555)
+                           (install-file file bin)
+                           (wrap-script (string-append bin "/" (basename file))
+                                        `("PERL5LIB" ":" prefix
+                                          (,(getenv "PERL5LIB")))))
+                         (find-files "." "prinseq.*.pl"))))))))
+    (inputs
+     `(("guile" ,guile-3.0)             ; for wrapper scripts
+       ("perl" ,perl)
+       ("perl-cairo" ,perl-cairo)
+       ("perl-data-dumper" ,perl-data-dumper)
+       ("perl-digest-md5" ,perl-digest-md5)
+       ("perl-getopt-long" ,perl-getopt-long)
+       ("perl-json" ,perl-json)
+       ("perl-statistics-pca" ,perl-statistics-pca)))
+    (home-page "http://prinseq.sourceforge.net/")
+    (synopsis "Preprocess sequence data in FASTA or FASTQ formats")
+    (description
+     "PRINSEQ is a bioinformatics tool to help you preprocess your genomic or
+metagenomic sequence data in FASTA or FASTQ formats.  The tool is written in
+Perl and can be helpful if you want to filter, reformat, or trim your sequence
+data.  It also generates basic statistics for your sequences.")
+    (license license:gpl3+)))
+
 (define-public ruby-bio-kseq
   (package
     (name "ruby-bio-kseq")
