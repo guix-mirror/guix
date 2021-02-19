@@ -15185,6 +15185,30 @@ modernized interface.")
     (description "Word8 library to be used with @code{Data.ByteString}.")
     (license license:bsd-3)))
 
+(define-public ghc-wordexp
+  (package
+    (name "ghc-wordexp")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/wordexp/wordexp-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1mbcrq89jz0dcibw66w0jdy4f4bfpx4zwjfs98rm3jjgdikwdzb4"))))
+    (build-system haskell-build-system)
+    (native-inputs `(("ghc-c2hs" ,ghc-c2hs)))
+    (inputs
+     `(("ghc-semigroups" ,ghc-semigroups)))
+    (home-page "https://hackage.haskell.org/package/wordexp")
+    (synopsis "Library wrapping @code{wordexp} for Haskell")
+    (description "@code{wordexp(3)} wrapper library for Haskell to perform
+word expansion like a posix-shell.")
+    (license license:bsd-3)))
+
 (define-public ghc-x11
   (package
     (name "ghc-x11")
