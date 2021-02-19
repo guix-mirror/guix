@@ -8912,6 +8912,28 @@ other OO languages like Python, Ruby, Java and Perl 6.")
 its return value is going to be immediately used.")
     (license license:perl-license)))
 
+(define-public perl-contextual-return
+  (package
+    (name "perl-contextual-return")
+    (version "0.004014")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/D/DC/DCONWAY/Contextual-Return-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0y4zf5qkpayp4kkg7lw9ydbbin1z99m6xvy02fgacjbfw4ai9zh9"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-want" ,perl-want)))
+    (home-page "https://metacpan.org/release/Contextual-Return")
+    (synopsis "Create context-sensitive return values")
+    (description "This module provides a collection of named blocks that allow
+a return statement to return different values depending on the context in
+which it is called.")
+    (license license:perl-license)))
+
 (define-public perl-statistics-basic
   (package
     (name "perl-statistics-basic")
