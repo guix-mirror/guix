@@ -70,6 +70,7 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages perl-compression)
+  #:use-module (gnu packages perl-maths)
   #:use-module (gnu packages perl-web)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages readline)
@@ -8954,6 +8955,32 @@ which it is called.")
     (description "This package provides basic statistics functions like
 @code{median()}, @code{mean()}, @code{variance()} and @code{stddev()}.")
     (license license:lgpl2.0)))
+
+(define-public perl-statistics-pca
+  (package
+    (name "perl-statistics-pca")
+    (version "0.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/D/DS/DSTH/Statistics-PCA-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1i3bskwibp54c9a2wx8gzr3hyds6mmhr3d550g8j6893005v3bgq"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
+    (propagated-inputs
+     `(("perl-contextual-return" ,perl-contextual-return)
+       ("perl-math-cephes" ,perl-math-cephes)
+       ("perl-math-matrixreal" ,perl-math-matrixreal)
+       ("perl-text-simpletable" ,perl-text-simpletable)))
+    (home-page "https://metacpan.org/release/Statistics-PCA")
+    (synopsis "Perl implementation of Principal Component Analysis")
+    (description "This package provides the Statistics::PCA module, an
+implementation of @dfn{Principal Component Analysis} (PCA).")
+    (license license:perl-license)))
 
 (define-public perl-stream-buffered
   (package
