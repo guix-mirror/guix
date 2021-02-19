@@ -948,6 +948,38 @@ of stand-alone functions and classes.")
                    license:expat
                    license:lgpl3+))))
 
+(define-public python-asdf
+  (package
+    (name "python-asdf")
+    (version "2.7.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "asdf" version))
+       (sha256
+        (base32 "1y47zhkd90i8wmm2i35amfl0rvjqlb3fcx90xp7n9kr2z0byzyzg"))))
+    (build-system python-build-system)
+    (arguments
+     ;; TODO: (Sharlatan-20210207T165820+0000): Tests depend on astropy, astropy
+     ;; depends on asdf. Disable circular dependence.
+     `(#:tests? #f))
+    (native-inputs
+     `(("packaging" ,python-packaging)
+       ("semantic-version" ,python-semantic-version)
+       ("setuptools-scm" ,python-setuptools-scm)))
+     (inputs
+      `(("importlib-resources" ,python-importlib-resources)
+        ("jsonschema" ,python-jsonschema)
+        ("numpy" ,python-numpy)
+        ("pyyaml" ,python-pyyaml)))
+     (home-page "http://github.com/asdf-format/asdf")
+     (synopsis "Python tools to handle ASDF files")
+     (description
+      "The Advanced Scientific Data Format (ASDF) is a next-generation
+interchange format for scientific data.  This package contains the Python
+implementation of the ASDF Standard.")
+     (license license:bsd-3)))
+
 (define-public python-astroalign
   (package
     (name "python-astroalign")
