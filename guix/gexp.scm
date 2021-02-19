@@ -1207,12 +1207,26 @@ The other arguments are as for 'derivation'."
                       #:substitutable? substitutable?
                       #:properties properties))))
 
+(define (fold/tree proc seed lst)
+  "Like 'fold', but recurse into sub-lists of LST and accept improper lists."
+  (let loop ((obj lst)
+             (result seed))
+    (match obj
+      ((head . tail)
+       (loop tail (loop head result)))
+      (_
+       (proc obj result)))))
+
 (define (gexp-inputs exp)
   "Return the list of <gexp-input> for EXP."
   (define set-gexp-input-native?
     (match-lambda
       (($ <gexp-input> thing output)
        (%gexp-input thing output #t))))
+
+  (define (interesting? obj)
+    (or (file-like? obj)
+        (and (string? obj) (direct-store-path? obj))))
 
   (define (add-reference-inputs ref result)
     (match ref
@@ -1230,18 +1244,23 @@ The other arguments are as for 'derivation'."
            ;; THING is a derivation, or a package, or an origin, etc.
            (cons ref result)
            result))
-      (($ <gexp-input> (lst ...) output n?)
-       (fold-right add-reference-inputs result
-                   ;; XXX: For now, automatically convert LST to a list of
-                   ;; gexp-inputs.  Inherit N?.
-                   (map (match-lambda
-                          ((? gexp-input? x)
-                           (%gexp-input (gexp-input-thing x)
-                                        (gexp-input-output x)
-                                        n?))
-                          (x
-                           (%gexp-input x "out" n?)))
-                        lst)))
+      (($ <gexp-input> (? pair? lst) output n?)
+       ;; XXX: Scan LST for inputs.  Inherit N?.
+       (fold/tree (lambda (obj result)
+                    (match obj
+                      ((? gexp-input? x)
+                       (cons (%gexp-input (gexp-input-thing x)
+                                          (gexp-input-output x)
+                                          n?)
+                             result))
+                      ((? interesting? x)
+                       (cons (%gexp-input x "out" n?) result))
+                      ((? gexp? x)
+                       (append (gexp-inputs x) result))
+                      (_
+                       result)))
+                  result
+                  lst))
       (_
        ;; Ignore references to other kinds of objects.
        result)))
@@ -1258,20 +1277,20 @@ The other arguments are as for 'derivation'."
        (cons name result))
       (($ <gexp-input> (? gexp? exp))
        (append (gexp-outputs exp) result))
-      (($ <gexp-input> (lst ...) output native?)
-       ;; XXX: Automatically convert LST.
-       (add-reference-output (map (match-lambda
-                                   ((? gexp-input? x) x)
-                                   (x (%gexp-input x "out" native?)))
-                                  lst)
-                             result))
-      ((lst ...)
-       (fold-right add-reference-output result lst))
+      (($ <gexp-input> (? pair? lst))
+       ;; XXX: Scan LST for outputs.
+       (fold/tree (lambda (obj result)
+                    (match obj
+                      (($ <gexp-output> name) (cons name result))
+                      ((? gexp? x) (append (gexp-outputs x) result))
+                      (_ result)))
+                  result
+                  lst))
       (_
        result)))
 
   (delete-duplicates
-   (add-reference-output (gexp-references exp) '())))
+   (fold add-reference-output '() (gexp-references exp))))
 
 (define (gexp->sexp exp system target)
   "Return (monadically) the sexp corresponding to EXP for the given OUTPUT,
@@ -1291,11 +1310,14 @@ and in the current monad setting (system type, etc.)"
          (mapm %store-monad
                (lambda (ref)
                  ;; XXX: Automatically convert REF to an gexp-input.
-                 (reference->sexp
-                  (if (gexp-input? ref)
-                      ref
-                      (%gexp-input ref "out" n?))
-                  (or n? native?)))
+                 (if (or (symbol? ref) (number? ref)
+                         (boolean? ref) (null? ref) (array? ref))
+                     (return ref)
+                     (reference->sexp
+                      (if (gexp-input? ref)
+                          ref
+                          (%gexp-input ref "out" n?))
+                      (or n? native?))))
                refs))
         (($ <gexp-input> (? struct? thing) output n?)
          (let ((target (if (or n? native?) #f target)))
