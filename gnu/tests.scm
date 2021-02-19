@@ -45,6 +45,7 @@
             marionette-operating-system
             define-os-with-source
 
+            %simple-os
             simple-operating-system
 
             system-test
