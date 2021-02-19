@@ -364,6 +364,7 @@ data types.")
 (define-public python-3.8
   (package (inherit python-2)
     (name "python")
+    (replacement python-3.8/fixed)
     (version "3.8.2")
     (source (origin
               (method url-fetch)
@@ -520,6 +521,14 @@ data types.")
             (files (list (string-append "lib/python"
                                         (version-major+minor version)
                                         "/site-packages"))))))))
+
+(define python-3.8/fixed
+  (package
+    (inherit python-3.8)
+    (source (origin
+              (inherit (package-source python-3.8))
+              (patches (append (search-patches "python-3.8-CVE-2021-3177.patch")
+                               (origin-patches (package-source python-3.8))))))))
 
 (define-public python-3.9
   (package (inherit python-3.8)
