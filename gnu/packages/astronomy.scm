@@ -841,6 +841,32 @@ of stand-alone functions and classes.")
                    license:expat
                    license:lgpl3+))))
 
+(define-public python-astroalign
+  (package
+    (name "python-astroalign")
+    (version "2.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "astroalign" version))
+       (sha256
+        (base32 "19qzv3552lgrd9qmj0rxs51wmx485hw04cbf76ds5pin85kfaiy1"))))
+    (build-system python-build-system)
+    (arguments
+     ;; TODO: (Sharlatan-20210213T162940+0000): I could not make tests run
+     `(#:tests? #f))
+    (inputs
+     `(("numpy" ,python-numpy)
+       ("scikit-image" ,python-scikit-image)
+       ("scipy" ,python-scipy)
+       ("sep" ,python-sep)))
+    (home-page "https://astroalign.readthedocs.io/")
+    (synopsis "Astrometric Alignment of Images")
+    (description
+     "ASTROALIGN is a python module that will try to align two stellar
+astronomical images, especially when there is no WCS information available.")
+    (license license:expat)))
+
 (define-public python-skyfield
   (package
     (name "python-skyfield")
