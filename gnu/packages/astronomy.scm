@@ -48,6 +48,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pretty-print)
+  #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-science)
   #:use-module (gnu packages python-xyz)
@@ -773,6 +774,47 @@ more.")
      "The package is a Python implementation of the mathematics that standard
 JPL ephemerides use to predict raw (x,y,z) planetary positions.")
     (license license:expat)))
+
+(define-public python-pyerfa
+  (package
+    (name "python-pyerfa")
+    (version "1.7.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyerfa" version))
+       (sha256
+        (base32 "1s78mdyrxha2jcckfs0wg5ynkf0pwh1bw9mmh99vprinxh9n4xri"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Remove bundled submodule library.
+           (delete-file-recursively "liberfa")
+           #t))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'use-system-liberfa
+           (lambda _
+             (setenv "PYERFA_USE_SYSTEM_LIBERFA" "1")
+             #t)))))
+    (native-inputs
+     `(("pytest" ,python-pytest)
+       ("setuptools-scm" ,python-setuptools-scm)
+       ("pytest-doctestplus" ,python-pytest-doctestplus)))
+    (inputs
+     `(("liberfa" ,erfa)
+       ("numpy" ,python-numpy)))
+    (home-page "https://github.com/liberfa/pyerfa")
+    (synopsis "Python bindings for ERFA")
+    (description
+     "PyERFA is the Python wrapper for the ERFA library (Essential
+Routines for Fundamental Astronomy), a C library containing key algorithms for
+astronomy, which is based on the SOFA library published by the International
+Astronomical Union (IAU).  All C routines are wrapped as Numpy universal
+functions, so that they can be called with scalar or array inputs.")
+    (license license:bsd-3)))
 
 (define-public python-skyfield
   (package
