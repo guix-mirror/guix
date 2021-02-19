@@ -12770,19 +12770,18 @@ graphviz.")
 (define-public python-gevent
   (package
     (name "python-gevent")
-    (version "20.9.0")
+    (version "21.1.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "gevent" version))
               (sha256
                (base32
-                "13aw9x6imsy3b369kfjblqiwfni69pp32m4r13n62r9k3l2lhvaz"))
+                "10f9y899y9nmq51pv4r1zb51b4w5yxx00sz5whvg9vm956hc432j"))
               (modules '((guix build utils)))
               (snippet
                '(begin
                   ;; unbunding libev and c-ares
-                  (delete-file-recursively "deps")
-                  #t))))
+                  (delete-file-recursively "deps")))))
     (build-system python-build-system)
     (arguments
      `(#:modules ((ice-9 ftw)
@@ -12799,8 +12798,7 @@ graphviz.")
                                   (substitute* file
                                     (("/bin/sh") (which "sh"))
                                     (("/bin/true") (which "true"))))
-                                (find-files "src/greentest" "\\.py$"))
-                      #t))
+                                (find-files "src/greentest" "\\.py$"))))
                   (add-before 'build 'do-not-use-bundled-sources
                     (lambda _
                       (setenv "GEVENTSETUP_EMBED" "0")
@@ -12808,8 +12806,7 @@ graphviz.")
                       ;; Prevent building bundled libev.
                       (substitute* "setup.py"
                         (("run_make=_BUILDING")
-                         "run_make=False"))
-                      #t))
+                         "run_make=False"))))
                   (add-before 'build 'add-greenlet-on-C_INCLUDE_PATH
                     (lambda* (#:key inputs #:allow-other-keys)
                       (let ((greenlet (string-append
@@ -12822,16 +12819,14 @@ graphviz.")
                            (setenv "C_INCLUDE_PATH"
                                    (string-append greenlet "/" python ":"
                                                   (or (getenv "C_INCLUDE_PATH")
-                                                      ""))))))
-                      #t))
+                                                      ""))))))))
                   (add-before 'check 'pretend-to-be-CI
                     (lambda _
                       ;; A few tests are skipped due to network constraints or
                       ;; get longer timeouts when running in a CI environment.
                       ;; Piggy-back on that, as we need the same adjustments.
                       (setenv "TRAVIS" "1")
-                      (setenv "APPVEYOR" "1")
-                      #t))
+                      (setenv "APPVEYOR" "1")))
                   (add-before 'check 'adjust-tests
                     (lambda _
                       (let ((disabled-tests
@@ -12863,8 +12858,7 @@ graphviz.")
                         (call-with-output-file "skipped_tests.txt"
                           (lambda (port)
                             (format port "~a~%"
-                                    (string-join disabled-tests "\n"))))
-                        #t)))
+                                    (string-join disabled-tests "\n")))))))
                   (replace 'check
                     (lambda _
                       ;; Make sure the build directory is on PYTHONPATH.
