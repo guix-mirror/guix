@@ -2015,6 +2015,15 @@ is also scriptable and extensible via Guile.")
                (base32
                 "1bxnkhrypgv41qyy1n545kcggmlw1hvxnhwihijhhcf2pxd2s654"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags (list "--disable-static")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-make
+           (lambda _
+             (substitute* "Makefile.am"
+               (("'\\^xmpp_'") "'.'"))
+             #t)))))
     (inputs
      `(("expat" ,expat)
        ("openssl" ,openssl)))
