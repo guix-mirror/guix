@@ -134,33 +134,34 @@
   (package
     (name "qemu")
     (version "5.1.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://download.qemu.org/qemu-"
-                                  version ".tar.xz"))
-               (sha256
-                (base32
-                 "1rd41wwlvp0vpialjp2czs6i3lsc338xc72l3zkbb7ixjfslw5y9"))
-              (patches (search-patches "qemu-build-info-manual.patch"
-                                       "qemu-CVE-2021-20203.patch"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; Fix a bug in the do_ioctl_ifconf() function of qemu to
-                  ;; make ioctl(…, SIOCGIFCONF, …) work for emulated 64 bit
-                  ;; architectures.  The size of struct ifreq is handled
-                  ;; incorrectly.
-                  ;; https://lists.nongnu.org/archive/html/qemu-devel/2021-01/msg01545.html
-                  (substitute* '("linux-user/syscall.c")
-                    (("^([[:blank:]]*)const argtype ifreq_arg_type.*$" line indent)
-                     (string-append line indent
-                                    "const argtype ifreq_max_type[] = { MK_STRUCT(STRUCT_ifmap_ifreq) };\n"))
-                    (("^([[:blank:]]*)target_ifreq_size[[:blank:]]=.*$" _ indent)
-                     (string-append indent "target_ifreq_size = thunk_type_size(ifreq_max_type, 0);")))
-                  #t))))
-     (outputs '("out" "doc"))            ;4.7 MiB of HTML docs
-     (build-system gnu-build-system)
-     (arguments
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://download.qemu.org/qemu-"
+                           version ".tar.xz"))
+       (sha256
+        (base32
+         "1rd41wwlvp0vpialjp2czs6i3lsc338xc72l3zkbb7ixjfslw5y9"))
+       (patches (search-patches "qemu-build-info-manual.patch"
+                                "qemu-CVE-2021-20203.patch"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Fix a bug in the do_ioctl_ifconf() function of qemu to
+           ;; make ioctl(…, SIOCGIFCONF, …) work for emulated 64 bit
+           ;; architectures.  The size of struct ifreq is handled
+           ;; incorrectly.
+           ;; https://lists.nongnu.org/archive/html/qemu-devel/2021-01/msg01545.html
+           (substitute* '("linux-user/syscall.c")
+             (("^([[:blank:]]*)const argtype ifreq_arg_type.*$" line indent)
+              (string-append line indent "const argtype ifreq_max_type[] = "
+                             "{ MK_STRUCT(STRUCT_ifmap_ifreq) };\n"))
+             (("^([[:blank:]]*)target_ifreq_size[[:blank:]]=.*$" _ indent)
+              (string-append indent "target_ifreq_size = "
+                             "thunk_type_size(ifreq_max_type, 0);")))))))
+    (outputs '("out" "doc"))            ;4.7 MiB of HTML docs
+    (build-system gnu-build-system)
+    (arguments
      `(;; FIXME: Disable tests on i686 to work around
        ;; <https://bugs.gnu.org/40527>.
        #:tests? ,(or (%current-target-system)
@@ -194,8 +195,7 @@
                                  inputs)))
                (set-path-environment-variable "C_INCLUDE_PATH"
                                               '("include")
-                                              input-directories)
-               #t)))
+                                              input-directories))))
          (add-after 'unpack 'extend-test-time-outs
            (lambda _
              ;; These tests can time out on heavily-loaded and/or slow storage.
@@ -219,16 +219,14 @@
                ;; x86 CPUs (see https://issues.guix.info/43048 and
                ;; https://bugs.launchpad.net/qemu/+bug/1896263).
                (("check-qtest-i386-y \\+= bios-tables-test" all)
-                (string-append "# " all)))
-             #t))
+                (string-append "# " all)))))
          (add-after 'patch-source-shebangs 'patch-/bin/sh-references
            (lambda _
              ;; Ensure the executables created by these source files reference
              ;; /bin/sh from the store so they work inside the build container.
              (substitute* '("block/cloop.c" "migration/exec.c"
                             "net/tap.c" "tests/qtest/libqtest.c")
-               (("/bin/sh") (which "sh")))
-             #t))
+               (("/bin/sh") (which "sh")))))
          (replace 'configure
            (lambda* (#:key inputs outputs (configure-flags '())
                      #:allow-other-keys)
@@ -273,8 +271,7 @@
                    (format port "#!/bin/sh
 exec smbd $@")))
                (chmod "samba-wrapper" #o755)
-               (install-file "samba-wrapper" libexec))
-             #t))
+               (install-file "samba-wrapper" libexec))))
          (add-after 'install 'move-html-doc
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -282,23 +279,22 @@ exec smbd $@")))
                     (qemu-doc (string-append doc "/share/doc/qemu-" ,version)))
                (mkdir-p qemu-doc)
                (rename-file (string-append out "/share/doc/qemu")
-                            (string-append qemu-doc "/html")))
-             #t)))))
-    (inputs                                       ; TODO: Add optional inputs.
+                            (string-append qemu-doc "/html"))))))))
+    (inputs                             ; TODO: Add optional inputs.
      `(("alsa-lib" ,alsa-lib)
        ("attr" ,attr)
        ("glib" ,glib)
        ("gtk+" ,gtk+)
        ("libaio" ,libaio)
        ("libattr" ,attr)
-       ("libcacard" ,libcacard)     ; smartcard support
-       ("libcap-ng" ,libcap-ng)     ; virtfs support requires libcap-ng & libattr
+       ("libcacard" ,libcacard)  ; smartcard support
+       ("libcap-ng" ,libcap-ng)  ; virtfs support requires libcap-ng & libattr
        ("libdrm" ,libdrm)
        ("libepoxy" ,libepoxy)
        ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("libseccomp" ,libseccomp)
-       ("libusb" ,libusb)                         ;USB pass-through support
+       ("libusb" ,libusb)               ;USB pass-through support
        ("mesa" ,mesa)
        ("ncurses" ,ncurses)
        ;; ("pciutils" ,pciutils)
