@@ -2008,7 +2008,7 @@ is also scriptable and extensible via Guile.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/boothj5/libmesode")
+                    (url "https://github.com/profanity-im/libmesode")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -2027,7 +2027,7 @@ is also scriptable and extensible via Guile.")
     (description "Libmesode is a fork of libstrophe for use with Profanity
 XMPP Client.  In particular, libmesode provides extra TLS functionality such as
 manual SSL certificate verification.")
-    (home-page "https://github.com/boothj5/libmesode")
+    (home-page "https://github.com/profanity/libmesode")
     ;; Dual-licensed.
     (license (list license:gpl3+ license:x11))))
 
