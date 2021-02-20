@@ -27147,8 +27147,8 @@ argument.
 Data type representing the configuration of a simple Cuirass instance.
 
 @table @asis
-@item @code{build} (default: @code{'all})
-The packages to be built by Cuirass.  It defaults to @code{'all}, which
+@item @code{build} (default: @code{all})
+The packages to be built by Cuirass.  It defaults to @code{all}, which
 means that all the discovered packages in the subsequent @code{channels}
 field are to be selected.
 
@@ -27168,7 +27168,7 @@ The manifest path inside the channel.
 @end deftp
 
 @item @code{channels} (default: @code{%default-channels})
-The channels to be fetched by Cuirass, see @pxref{Channels}.
+The channels to be fetched by Cuirass (@pxref{Channels}).
 
 @item @code{non-package-channels} (default: @code{'()})
 List the channel names that must not be searched for packages.  That is
@@ -27197,8 +27197,8 @@ channels.
 @end lisp
 
 In the same spirit, this builds all the packages that are part of the
-@code{'guix} or @code{'my-guix} channels and declared in the manifest
-located in the @code{'conf} channel.
+@code{guix} or @code{my-guix} channels and declared in the manifest
+located in the @code{conf} channel.
 
 @lisp
 (simple-cuirass-services
