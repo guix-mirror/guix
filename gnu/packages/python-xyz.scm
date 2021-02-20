@@ -82,7 +82,7 @@
 ;;; Copyright © 2020 Josh Holland <josh@inv.alid.pw>
 ;;; Copyright © 2020 Yuval Kogman <nothingmuch@woobling.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
-;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Guy Fleury Iteriteka <gfleury@disroot.org>
 ;;; Copyright © 2020 Hendursaga <hendursaga@yahoo.com>
 ;;; Copyright © 2020 Malte Frank Gerdes <malte.f.gerdes@gmail.com>
@@ -5918,6 +5918,39 @@ a general image processing tool.")
      (substitute-keyword-arguments (package-arguments python-pillow)
        ((#:tests? _ #f) #f)))
     (properties '((hidden? #t)))))
+
+(define-public python-pillow-simd
+  (package
+    (inherit python-pillow)
+    (name "python-pillow-simd")
+    (version "7.1.2")
+    ;; The PyPI tarball does not include test files.
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/uploadcare/pillow-simd")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0w11np4cybamry3jsg70x747c79zwjzfq0xiprfp6c186rd6nzp9"))))
+    (arguments
+     (substitute-keyword-arguments
+         (package-arguments python-pillow)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'make-tests-writable
+             (lambda _
+               (for-each make-file-writable (find-files "Tests"))
+               #t))))))
+    (inputs
+     `(("libraqm" ,libraqm)
+       ("libimagequant" ,libimagequant)
+       ,@(package-inputs python-pillow)))
+    (home-page "https://github.com/uploadcare/pillow-simd")
+    (synopsis "Fork of the Python Imaging Library (Pillow)")
+    (description "This package is a fork of Pillow which adds support for SIMD
+parallelism.")))
 
 (define-public python-roifile
   (package
