@@ -77,9 +77,6 @@
         (lambda (e1 e2)
           (string<? (car e1) (car e2)))))
 
-;; Avoid collisions with other tests.
-(%http-server-port 10500)
-
 
 (test-begin "derivations")
 
@@ -205,8 +202,6 @@
       (build-derivations %store (list drv))
       #f)))
 
-(unless (http-server-can-listen?)
-  (test-skip 1))
 (test-assert "'download' built-in builder"
   (let ((text (random-text)))
     (with-http-server `((200 ,text))
@@ -221,8 +216,6 @@
                          get-string-all)
                        text))))))
 
-(unless (http-server-can-listen?)
-  (test-skip 1))
 (test-assert "'download' built-in builder, invalid hash"
   (with-http-server `((200 "hello, world!"))
     (let* ((drv (derivation %store "world"
@@ -236,8 +229,6 @@
         (build-derivations %store (list drv))
         #f))))
 
-(unless (http-server-can-listen?)
-  (test-skip 1))
 (test-assert "'download' built-in builder, not found"
   (with-http-server '((404 "not found"))
     (let* ((drv (derivation %store "will-never-be-found"
@@ -262,26 +253,24 @@
       (build-derivations %store (list drv))
       #f)))
 
-(unless (http-server-can-listen?)
-  (test-skip 1))
 (test-assert "'download' built-in builder, check mode"
   ;; Make sure rebuilding the 'builtin:download' derivation in check mode
   ;; works.  See <http://bugs.gnu.org/25089>.
-  (let* ((text (random-text))
-         (drv (derivation %store "world"
-                          "builtin:download" '()
-                          #:env-vars `(("url"
-                                        . ,(object->string (%local-url))))
-                          #:hash-algo 'sha256
-                          #:hash (gcrypt:sha256 (string->utf8 text)))))
-    (and (with-http-server `((200 ,text))
-           (build-derivations %store (list drv)))
-         (with-http-server `((200 ,text))
-           (build-derivations %store (list drv)
-                              (build-mode check)))
-         (string=? (call-with-input-file (derivation->output-path drv)
-                     get-string-all)
-                   text))))
+  (let* ((text (random-text)))
+    (with-http-server `((200 ,text))
+      (let ((drv (derivation %store "world"
+                             "builtin:download" '()
+                             #:env-vars `(("url"
+                                           . ,(object->string (%local-url))))
+                             #:hash-algo 'sha256
+                             #:hash (gcrypt:sha256 (string->utf8 text)))))
+        (and drv (build-derivations %store (list drv))
+             (with-http-server `((200 ,text))
+               (build-derivations %store (list drv)
+                                  (build-mode check)))
+             (string=? (call-with-input-file (derivation->output-path drv)
+                         get-string-all)
+                       text))))))
 
 (test-equal "derivation-name"
   "foo-0.0"

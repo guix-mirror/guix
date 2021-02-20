@@ -69,9 +69,6 @@
                  (keyval (@ (value "tests") (key "topic")))
                  "\n  null\n")))
 
-;; Avoid collisions with other tests.
-(%http-server-port 10200)
-
 (test-equal "fetch-sxml: returns SXML for valid XML"
   sxml
   (with-http-server `((200 ,xml))
