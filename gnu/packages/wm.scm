@@ -160,14 +160,14 @@ the leaves of a full binary tree.")
 (define-public herbstluftwm
   (package
     (name "herbstluftwm")
-    (version "0.8.3")
+    (version "0.9.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://herbstluftwm.org/tarballs/herbstluftwm-"
                            version ".tar.gz"))
        (sha256
-        (base32 "1qmb4pjf2f6g0dvcg11cw9njwmxblhqzd70ai8qnlgqw1iz3nkm1"))
+        (base32 "0avfhr68f6fjnafjdcyxcx7dkg38f2nadmhpj971qyqzfq2f6i38"))
        (file-name (string-append "herbstluftwm-" version ".tar.gz"))))
     (build-system cmake-build-system)
     (inputs
@@ -180,10 +180,12 @@ the leaves of a full binary tree.")
        ("libx11"      ,libx11)
        ("libxext"     ,libxext)
        ("libxinerama" ,libxinerama)
-       ("libxrandr"   ,libxrandr)))
+       ("libxrandr"   ,libxrandr)
+       ("libxft"      ,libxft)))
     (native-inputs
      `(("asciidoc"   ,asciidoc)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("python"     ,python)))
     (arguments
      '(#:tests? #f
        #:configure-flags
