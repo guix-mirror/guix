@@ -2096,6 +2096,7 @@ are both supported).")
     (arguments
      `(#:configure-flags
        (list
+        "--disable-static"
         "--enable-notifications"
         "--enable-python-plugins"
         "--enable-c-plugins"
