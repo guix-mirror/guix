@@ -12309,6 +12309,54 @@ encoding algorithms to do fuzzy string matching.")
 module, adding support for Unicode strings.")
     (license license:bsd-2)))
 
+(define-public python-pdfminer-six
+  (package
+    (name "python-pdfminer-six")
+    (version "20201018")
+    ;; There are no tests in the PyPI tarball.
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/pdfminer/pdfminer.six")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1a2fxxnnjqbx344znpvx7cnv1881dk6585ibw01inhfq3w6yj2lr"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Tests write to the source tree.
+         (add-after 'unpack 'make-git-checkout-writable
+           (lambda _
+             (for-each make-file-writable (find-files "."))
+             #t))
+         (replace 'check
+           (lambda _
+             (invoke "make" "test")))
+         (add-before 'reset-gzip-timestamps 'make-files-writable
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (for-each make-file-writable
+                         (find-files out "\\.gz$"))
+               #t))))))
+    (propagated-inputs
+     `(("python-chardet" ,python-chardet)
+       ("python-cryptography" ,python-cryptography)
+       ("python-sortedcontainers" ,python-sortedcontainers)))
+    (native-inputs
+     `(("python-nose" ,python-nose)
+       ("python-tox" ,python-tox)))
+    (home-page "https://github.com/pdfminer/pdfminer.six")
+    (synopsis "PDF parser and analyzer")
+    (description "@code{pdfminer.six} is a community maintained fork of
+the original PDFMiner.  It is a tool for extracting information from PDF
+documents.  It focuses on getting and analyzing text data.  Pdfminer.six
+extracts the text from a page directly from the sourcecode of the PDF.  It
+can also be used to get the exact location, font or color of the text.")
+    (license license:expat)))
+
 (define-public python-rarfile
   (package
     (name "python-rarfile")
