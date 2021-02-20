@@ -8,7 +8,7 @@
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2020 Sebastian Schott <sschott@mailbox.org>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
-;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020. 2021 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -469,7 +469,7 @@ photographic equipment.")
 (define-public darktable
   (package
     (name "darktable")
-    (version "3.4.0")
+    (version "3.4.1")
     (source
      (origin
        (method url-fetch)
@@ -477,7 +477,7 @@ photographic equipment.")
              "https://github.com/darktable-org/darktable/releases/"
              "download/release-" version "/darktable-" version ".tar.xz"))
        (sha256
-        (base32 "1nmx5lmhp7igav5pswqxmacsbnhgydgvxh1q53wlmyd9bqgxxlvd"))))
+        (base32 "07llfhhz5dhh43smhv4ax4xi1diym8hrzl7cad87rkcvv98zihvz"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DBINARY_PACKAGE_BUILD=On"
