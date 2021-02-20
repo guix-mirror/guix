@@ -55,6 +55,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages webkit)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
@@ -843,7 +844,7 @@ generated list of fallback fonts are checked.")
 (define-public fontmanager
   (package
    (name "fontmanager")
-   (version "0.7.7")
+   (version "0.8.4")
    (source
     (origin
       (method git-fetch)
@@ -853,7 +854,7 @@ generated list of fallback fonts are checked.")
       (file-name (git-file-name name version))
       (sha256
        (base32
-        "1bzqvspplp1zj0n0869jqbc60wgbjhf0vdrn5bj8dfawxynh8s5f"))))
+        "09rv0srpj8ann2n1zpv1frlpxz0x10d2y21c5lys7pmfngljlxi9"))))
    (build-system meson-build-system)
    (arguments
     `(#:glib-or-gtk? #t
@@ -863,19 +864,21 @@ generated list of fallback fonts are checked.")
                            (assoc-ref %outputs "out")
                            "/lib/font-manager"))))
    (native-inputs
-    `(("pkg-config" ,pkg-config)
-      ("vala" ,vala)
-      ("yelp-tools" ,yelp-tools)
+    `(("desktop-file-utils" ,desktop-file-utils)
       ("gettext" ,gettext-minimal)
       ("glib" ,glib "bin")
       ("gobject-introspection" ,gobject-introspection)
-      ("desktop-file-utils" ,desktop-file-utils)))
+      ("pkg-config" ,pkg-config)
+      ("vala" ,vala-0.50)
+      ("yelp-tools" ,yelp-tools)))
    (inputs
-    `(("json-glib" ,json-glib)
-      ("sqlite" ,sqlite)
-      ("fonconfig" ,fontconfig)
+    `(("fonconfig" ,fontconfig)
       ("freetype" ,freetype)
-      ("gtk+" ,gtk+)))
+      ("gtk+" ,gtk+)
+      ("json-glib" ,json-glib)
+      ("libsoup" ,libsoup)
+      ("sqlite" ,sqlite)
+      ("webkitgtk" ,webkitgtk)))
    (home-page "https://fontmanager.github.io/")
    (synopsis "Simple font management for GTK+ desktop environments")
    (description "Font Manager is intended to provide a way for users to
