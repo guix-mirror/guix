@@ -674,15 +674,15 @@ arithmetic ops.")
 (define-public jbig2dec
   (package
     (name "jbig2dec")
-    (version "0.18")
+    (version "0.19")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/ArtifexSoftware"
                                   "/ghostpdl-downloads/releases/download"
-                                  "/gs951/" name "-" version ".tar.gz"))
+                                  "/gs9533/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0pigfw2v0ppvr0lbysm69gx0zsa5q2q92yrb8af2j3im6x97f6cy"))))
+                "0dwa24kjqyg9hmm40fh048sdxfpnasz43l2rm8wlkw1qbdlpd517"))))
     (build-system gnu-build-system)
     (arguments '(#:configure-flags '("--disable-static")
                  #:phases (modify-phases %standard-phases
