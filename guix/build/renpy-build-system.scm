@@ -57,7 +57,7 @@
       (delete-file (string-append data "/renpy-build.json"))
       (call-with-output-file launcher
         (lambda (port)
-          (format port "#!~a~%~a ~a \"$@\""
+          (format port "#!~a~%~a ~s \"$@\""
                   (which "bash")
                   (which "renpy")
                   data)))
@@ -77,8 +77,9 @@
      (string-append out "/share/applications/" executable-name ".desktop")
      #:name (assoc-ref json-dump "name")
      #:generic-name (assoc-ref build "display_name")
-     #:exec (string-append (which "renpy") " "
-                           out "/share/renpy/" directory-name)
+     #:exec (format #f "~a ~s"
+                    (which "renpy")
+                    (string-append out "/share/renpy/" directory-name))
      #:categories '("Game" "Visual Novel")))
   #t)
 
