@@ -160,7 +160,7 @@ printing, and psresize, for adjusting page sizes.")
 (define-public ghostscript
   (package
     (name "ghostscript")
-    (version "9.52")
+    (version "9.53.3")
     (source
       (origin
         (method url-fetch)
@@ -170,9 +170,8 @@ printing, and psresize, for adjusting page sizes.")
                             "/ghostscript-" version ".tar.xz"))
         (sha256
          (base32
-          "0z1w42y2jmcpl2m1l3z0sfii6zmvzcwcgzn6bydklia6ig7jli2p"))
+          "0d52w9ajv1rz533119ywgmkzkapp74riwny0d21v0zkcbg45p7ww"))
         (patches (search-patches "ghostscript-freetype-compat.patch"
-                                 "ghostscript-CVE-2020-15900.patch"
                                  "ghostscript-no-header-creationdate.patch"
                                  "ghostscript-no-header-id.patch"
                                  "ghostscript-no-header-uuid.patch"))

@@ -1061,7 +1061,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/ghc-monad-par-fix-tests.patch		\
   %D%/packages/patches/ghc-pandoc-fix-html-tests.patch		\
   %D%/packages/patches/ghc-pandoc-fix-latex-test.patch		\
-  %D%/packages/patches/ghostscript-CVE-2020-15900.patch		\
   %D%/packages/patches/ghostscript-freetype-compat.patch	\
   %D%/packages/patches/ghostscript-no-header-id.patch		\
   %D%/packages/patches/ghostscript-no-header-uuid.patch		\
