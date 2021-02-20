@@ -27,7 +27,7 @@
 ;;; Copyright © 2020 R Veera Kumar <vkor@vkten.in>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Zhu Zihao <all_but_last@163.com>
-;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -1580,6 +1580,39 @@ also converts external formats (BMP, GIF, PNM and TIFF) to optimized
 PNG, and performs PNG integrity checks and corrections.")
     (home-page "http://optipng.sourceforge.net/")
     (license license:zlib)))
+
+(define-public imgp
+  (package
+    (name "imgp")
+    (version "2.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "imgp" version))
+       (sha256
+        (base32 "0q99h9wv9rynig0s0flnr9mxi541zzl0gw8vh4y6m5x132diilri"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ;there are no tests
+       #:phases
+       (modify-phases %standard-phases
+         ;; setup.py expects the file to be named 'imgp'.
+         (add-after 'unpack 'rename-imgp
+           (lambda _
+             (rename-file "imgp.py" "imgp")
+             #t)))))
+    (inputs
+     `(("python-pillow" ,python-pillow)))
+    (home-page "https://github.com/jarun/imgp")
+    (synopsis "High-performance CLI batch image resizer & rotator")
+    (description
+     "@code{imgp} is a command line image resizer and rotator for JPEG and PNG
+images.  It can resize (or thumbnail) and rotate thousands of images in a go
+while saving significantly on storage.
+
+This package may optionally be built with @code{python-pillow-simd} in place
+of @{python-pillow} for SIMD parallelism.")
+    (license license:gpl3+)))
 
 (define-public pngsuite
   (package
