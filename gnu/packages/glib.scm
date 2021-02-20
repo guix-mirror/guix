@@ -9,7 +9,7 @@
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2019, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
@@ -445,6 +445,34 @@ dynamic loading, and an object system.")
                                    (string-append doc html))
                  (delete-file-recursively (string-append out html))
                  #t)))))))))
+
+;;; TODO: Merge into glib as a 'static' output on core-updates.
+(define-public glib-static
+  (hidden-package
+   (package
+     (inherit glib)
+     (name "glib-static")
+     (outputs '("out"))
+     (arguments
+      (substitute-keyword-arguments (package-arguments glib)
+        ((#:configure-flags flags ''())
+         `(cons* "--default-library=static"
+                 "-Dselinux=disabled"
+                 "-Dman=false"
+                 "-Dgtk_doc=false"
+                 "-Dinternal_pcre=false"
+                 ,flags))
+        ((#:phases phases)
+         `(modify-phases ,phases
+            (delete 'move-executables)
+            (replace 'install
+              ;; Only install the static libraries.
+              (lambda* (#:key outputs #:allow-other-keys)
+                (let* ((out (assoc-ref outputs "out"))
+                       (lib (string-append out "/lib")))
+                  (for-each (lambda (f)
+                              (install-file f lib))
+                            (find-files "." "\\.a$"))))))))))))
 
 (define gobject-introspection
   (package
