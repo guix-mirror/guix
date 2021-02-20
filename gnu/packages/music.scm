@@ -5489,7 +5489,7 @@ for integration into status line generators or other command-line tools.")
 (define-public artyfx
   (package
     (name "artyfx")
-    (version "1.3")
+    (version "1.3.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -5499,7 +5499,7 @@ for integration into status line generators or other command-line tools.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "012hcy1mxl7gs2lipfcqp5x0xv1azb9hjrwf0h59yyxnzx96h7c9"))))
+                "0cxikdnxgjk5gp6kmml4dx2jy2cy4x0c837h7bwraj2pfz0nfgqq"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                                ; no tests included
