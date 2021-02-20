@@ -15,7 +15,7 @@
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;; Copyright © 2020 Edouard Klein <edk@beaver-labs.com>
-;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -583,7 +583,7 @@ in terms of new algorithms.")
 (define-public python-onnx
   (package
     (name "python-onnx")
-    (version "1.8.0")
+    (version "1.8.1")
     (source
      (origin
        (method url-fetch)
@@ -592,7 +592,7 @@ in terms of new algorithms.")
        ;; to use googletest from Guix and enable tests by default.
        (patches (search-patches "python-onnx-use-system-googletest.patch"))
        (sha256
-        (base32 "0365zkikq6v3cl5hh2daa5z1alhij8xpn8rmlcny340jrv9pyy2z"))))
+        (base32 "1ys5f4kqkabm4mgivsw80zz8xj1svanfbpszqbw9j15914hcarcx"))))
     (build-system python-build-system)
     (native-inputs
      `(("cmake" ,cmake)
