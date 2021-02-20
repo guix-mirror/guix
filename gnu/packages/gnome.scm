@@ -11468,7 +11468,7 @@ and toolbars.")
 (define-public setzer
   (package
     (name "setzer")
-    (version "0.3.9")
+    (version "0.4.1")
     (source
      (origin
        (method git-fetch)
@@ -11477,7 +11477,7 @@ and toolbars.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1qmy2bxl8x6pijjaaj91v6rqdipha6iyy0b6b9y1lk3r2p3azd42"))))
+        (base32 "1rcx2c07jg1ij81pnvg3px49hfbjmkagn68d3gp79z3gcajbp2av"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -11509,6 +11509,7 @@ and toolbars.")
        ("gtksourceview" ,gtksourceview)
        ("pango" ,pango)
        ("poppler" ,poppler)
+       ("python-pdfminer" ,python-pdfminer-six)
        ("python-pycairo" ,python-pycairo)
        ("python-pygobject" ,python-pygobject)
        ("python-pyxdg" ,python-pyxdg)
