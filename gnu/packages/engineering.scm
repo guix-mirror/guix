@@ -1215,14 +1215,14 @@ use on a given system.")
 (define-public libredwg
   (package
     (name "libredwg")
-    (version "0.12")
+    (version "0.12.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://gnu/libredwg/libredwg-"
              version ".tar.xz"))
        (sha256
-        (base32 "0z5algzi3alq166885y0qyj2gnc7gc6vhnz7nw0kwc0d236p6md8"))))
+        (base32 "0a1ih91nn5rh7v8li2ljppm8iacrnv8nkdpzshbdggl5f0mm1pyy"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-bindings")))
