@@ -5788,16 +5788,16 @@ ZaMultiComp, ZaMultiCompX2 and ZamSynth.")
 (define-public geonkick
   (package
     (name "geonkick")
-    (version "2.3.8")
+    (version "2.7.0")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://gitlab.com/geontime/geonkick.git")
+             (url "https://gitlab.com/iurie-sw/geonkick")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "07809yy2q7dd6fcp0yndlg1vw2ca2zisnsplb3xrxvzdvrqlw910"))))
+        (base32 "0w1mvqm46qdwldcl81svaykwii4wvx7mcr57kwvnj0iv2qrc891i"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;no tests included
@@ -5807,8 +5807,7 @@ ZaMultiComp, ZaMultiCompX2 and ZamSynth.")
              (string-append "-DCMAKE_INSTALL_PREFIX="
                             (assoc-ref %outputs "out")))))
     (inputs
-     `(("cairo" ,cairo)
-       ("hicolor-icon-theme" ,hicolor-icon-theme)
+     `(("hicolor-icon-theme" ,hicolor-icon-theme)
        ("jack" ,jack-1)                 ;for the standalone JACK application
        ("libsndfile" ,libsndfile)
        ("libx11" ,libx11)
@@ -5824,7 +5823,7 @@ ZaMultiComp, ZaMultiCompX2 and ZamSynth.")
     (description "Geonkick is a synthesizer that can synthesize elements
 of percussion such as kicks, snares, hit-hats, shakers, claps and sticks.
 It can also play and mix samples.")
-    (home-page "https://gitlab.com/geontime/geonkick")
+    (home-page "https://gitlab.com/iurie-sw/geonkick")
     (license license:gpl3+)))
 
 (define-public dpf-plugins
