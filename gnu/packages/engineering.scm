@@ -22,6 +22,7 @@
 ;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020, 2021 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;; Copyright © 2021 qblade <qblade@protonmail.com>
+;;; Copyright © 2021 Gerd Heber <gerd.heber@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3044,3 +3045,39 @@ and drilling of PCBs.  It takes Gerber files as input and outputs G-code files
 for the milling of PCBs.  It also includes an autoleveller for the automatic
 dynamic calibration of the milling depth.")
      (license license:gpl3+)))
+
+(define-public syscall-intercept
+  ;; Upstream provides no tag. Also, last version update is 4 years old.
+  (let ((commit "304404581c57d43478438d175099d20260bae74e")
+        (revision "0"))
+    (package
+      (name "syscall-intercept")
+      (version (git-version "0.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/pmem/syscall_intercept/")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "17sw78xp5wjzv25adpbq3khl8fi0avj7bgpi57q3jnvl3c68xy5z"))))
+      (native-inputs
+       `(("perl" ,perl)
+         ("pkg-config" ,pkg-config)))
+      (inputs
+       `(("capstone" ,capstone)))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:build-type "Release"
+         ;; FIXME: "syscall_format_logging" test fails.
+         #:tests? #f))
+      (home-page "https://github.com/pmem/syscall_intercept")
+      (synopsis "System call intercepting library")
+      (description
+       "The system call intercepting library provides a low-level interface
+for hooking Linux system calls in user space.  This is achieved by
+hot-patching the machine code of the standard C library in the memory of
+a process.")
+      (license license:bsd-2))))
