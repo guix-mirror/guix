@@ -421,7 +421,7 @@ in C/C++.")
 (define-public mozjs-78
   (package
     (inherit mozjs-60)
-    (version "78.5.0")
+    (version "78.6.1")
     (source (origin
               (method url-fetch)
               ;; TODO: Switch to IceCat source once available on ftp.gnu.org.
@@ -430,7 +430,7 @@ in C/C++.")
                                   version "esr.source.tar.xz"))
               (sha256
                (base32
-                "1442yjmwz69hkfcvh8kkb60jf4c9ms0pac04nc3xw2da13v4zxai"))))
+                "1kp75838a38x4h0w98qn01g9asn7jlgm64bz7n70353bnr6bf1qd"))))
     (arguments
      `(#:imported-modules ,%cargo-utils-modules ;for `generate-all-checksums'
        #:modules ((guix build cargo-utils)
@@ -457,6 +457,12 @@ in C/C++.")
          "--with-intl-api")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-StructuredClone.h
+           (lambda _
+             (substitute* "js/public/StructuredClone.h"
+               (("class SharedArrayRawBufferRefs \\{")
+                "class JS_PUBLIC_API SharedArrayRawBufferRefs {"))
+             #t))
          (add-after 'patch-source-shebangs 'patch-cargo-checksums
            (lambda _
              (let ((null-hash
