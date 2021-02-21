@@ -37,6 +37,7 @@
 ;;; Copyright © 2020 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;; Copyright © 2021 Zheng Junjie <873216071@qq.com>
 ;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
+;;; Copyright © 2021 qblade <qblade@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3887,6 +3888,38 @@ support forum.  It runs with the @code{/exec} command in most IRC clients.")
     (synopsis "Python udev binding")
     (description "This package provides @code{udev} bindings for Python.")
     (license license:lgpl2.1)))
+
+(define-public vmtouch
+  (package
+    (name "vmtouch")
+    (version "1.3.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/hoytech/vmtouch/")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "08da6apzfkfjwasn4dxrlfxqfx7arl28apdzac5nvm0fhvws0dxk"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("perl" ,perl)))
+    (arguments
+     `(#:tests? #f                      ; no tests
+       #:make-flags
+       (list
+        (string-append "CC=" ,(cc-for-target))
+        (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (home-page "https://github.com/hoytech/vmtouch/")
+    (synopsis "Portable file system cache diagnostics and control")
+    (description
+     "vmtouch is a tool for learning about and controlling the file system
+cache of unix and unix-like systems.")
+    (license license:bsd-3)))
 
 (define-public solaar
   (package
