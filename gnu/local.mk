@@ -664,6 +664,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/system/images/novena.scm			\
   %D%/system/images/pine64.scm			\
   %D%/system/images/pinebook-pro.scm		\
+  %D%/system/images/rock64.scm			\
 						\
   %D%/machine.scm				\
 						\
