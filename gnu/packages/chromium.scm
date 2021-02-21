@@ -310,8 +310,8 @@
                   (string-append "ungoogled-chromium-" category "-" name))))
     (sha256 (base32 hash))))
 
-(define %chromium-version "88.0.4324.150")
-(define %ungoogled-revision "f7c33ded1674556b6e9e72d597c706666f490da8")
+(define %chromium-version "88.0.4324.182")
+(define %ungoogled-revision "b98f2d51406c84a75df96f0da9dee3c0d790963d")
 (define %debian-revision "debian/84.0.4147.105-1")
 
 (define %debian-patches
@@ -329,7 +329,7 @@
                               (string-take %ungoogled-revision 7)))
     (sha256
      (base32
-      "0hzap19pbnfcskpzbqq7dqrankmlrq9q7m1xrf7aygqiir0ksp4y"))))
+      "1c9y1dn9s06pskkjw2r8lsbplak8m2rwh4drixvjpif7b4cgdhay"))))
 
 (define %guix-patches
   (list (local-file
@@ -467,7 +467,7 @@
                                   %chromium-version ".tar.xz"))
               (sha256
                (base32
-                "1hrqrggg4g1hjmaajbpydwsij2mfkfj5ccs1lj76nv4qj91yj4mf"))
+                "10av060ix6lgsvv99lyvyy03r0m3zwdg4hddbi6dycrdxk1iyh9h"))
               (modules '((guix build utils)))
               (snippet (force ungoogled-chromium-snippet))))
     (build-system gnu-build-system)
