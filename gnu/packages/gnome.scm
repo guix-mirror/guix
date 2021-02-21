@@ -56,7 +56,7 @@
 ;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
-;;; Copyright © 2020 Andy Tai <atai@atai.org>
+;;; Copyright © 2020, 2021 Andy Tai <atai@atai.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -149,6 +149,7 @@
   #:use-module (gnu packages ninja)
   #:use-module (gnu packages node)
   #:use-module (gnu packages nss)
+  #:use-module (gnu packages ocr)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages password-utils)
@@ -12096,4 +12097,68 @@ your data.")
 for the GNOME 3.x platform with many features.  It aims to be a very complete
 editing environment for translation issues within the GNU gettext/GNOME desktop
 world.")
+    (license license:gpl3+)))
+
+
+(define-public ocrfeeder
+  (package
+    (name "ocrfeeder")
+    (version "0.8.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/ocrfeeder/"
+                                  (version-major+minor version) "/"
+                                  "ocrfeeder-" version ".tar.xz"))
+              (sha256
+               (base32
+                "12f5gnq92ffnd5zaj04df7jrnsdz1zn4zcgpbf5p9qnd21i2y529"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after
+          'install 'wrap-program
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((prog (string-append (assoc-ref outputs "out")
+                                       "/bin/" "ocrfeeder"))
+                  (pylib (string-append (assoc-ref outputs "out")
+                                        "/lib/python"
+                                        ,(version-major+minor
+                                          (package-version python))
+                                        "/site-packages")))
+              (wrap-program prog
+                `("PYTHONPATH" = (,(getenv "PYTHONPATH") ,pylib))
+                `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))
+              #t))))))
+    (native-inputs
+     `(("glib:bin" ,glib "bin")                   ; for glib-compile-resources
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk+:bin" ,gtk+ "bin")                   ; for gtk-update-icon-cache
+       ("intltool" ,intltool)
+       ("itstool" ,itstool)
+       ("pkg-config" ,pkg-config)
+       ("xmllint" ,libxml2)))
+    (inputs
+     `(("enchant" ,enchant)
+       ("glib" ,glib)
+       ("goocanvas" ,goocanvas)
+       ("gtk" ,gtk+)
+       ("gtkspell3" ,gtkspell3)
+       ("libjpeg" ,libjpeg-turbo)
+       ("libtiff" ,libtiff)
+       ("libraw" ,libraw)
+       ("ocrad" ,ocrad)
+       ("python" ,python-wrapper)
+       ("python-pygobject" ,python-pygobject)
+       ("python-odfpy" ,python-odfpy)
+       ("python-pillow" ,python-pillow)
+       ("python-pyenchant" ,python-pyenchant)
+       ("python-reportlab" ,python-reportlab)
+       ("python-sane" ,python-sane)
+       ("sane-backends" ,sane-backends)
+       ("tesseract-ocr" ,tesseract-ocr)))
+    (home-page "https://wiki.gnome.org/Apps/OCRFeeder")
+    (synopsis "Complete OCR Suite")
+    (description "OCRFeeder is a complete Optical Character Recognition and
+Document Analysis and Recognition program.")
     (license license:gpl3+)))
