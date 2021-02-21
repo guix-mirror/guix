@@ -20,6 +20,7 @@
 (define-module (gnu packages opencl)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system copy)
   #:use-module (guix build-system python)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -47,44 +48,35 @@
 ;; tests that require such devices are all disabled.
 ;; Check https://lists.gnu.org/archive/html/guix-devel/2018-04/msg00293.html
 
+(define-public opencl-headers
+  (package
+    (name "opencl-headers")
+    (version "2020.12.18")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/KhronosGroup/OpenCL-Headers")
+              (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1zslxfzvbb1mrzmsik4pjzj88ds8y3p94ry5nnrnkhv6qm4n4lw9"))))
+    (build-system copy-build-system)
+    (arguments
+     '(#:install-plan
+       '(("CL" "include/")))) ; TODO: add phase for tests
+    (synopsis "The Khronos OpenCL headers")
+    (description
+     "This package provides the C headers by Khronos for OpenCL programming.")
+    (home-page "https://www.khronos.org/registry/OpenCL/")
+    (license license:asl2.0)))
+
 (define (make-opencl-headers major-version subversion)
-  (let ((commit "e986688daf750633898dfd3994e14a9e618f2aa5")
-        (revision "0"))
-    (package
-      (name "opencl-headers")
-      (version (git-version
-                (string-append major-version "." subversion ".0")
-                revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/KhronosGroup/OpenCL-Headers")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "176ydpbyws5nr4av6hf8p41pkhc0rc4m4vrah9w6gp2fw2i32838"))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (delete 'configure)
-           (delete 'build)
-           (delete 'check)
-           (replace 'install
-             (lambda* (#:key outputs #:allow-other-keys)
-               (copy-recursively (string-append "./opencl" (string-append
-                                                            ,major-version
-                                                            ,subversion) "/CL")
-                                 (string-append
-                                  (assoc-ref outputs "out")
-                                  "/include/CL")))))))
-      (synopsis "The Khronos OpenCL headers")
-      (description
-       "This package provides the C headers by Khronos for OpenCL
-programming.")
-      (home-page "https://www.khronos.org/registry/OpenCL/")
-      (license license:expat))))
+  ;; The upstream OpenCL-Headers repository is no longer separating headers by
+  ;; version; instead, you are supposed to #define CL_TARGET_OPENCL_VERSION.
+  (deprecated-package (string-append "opencl-headers-"
+                                     major-version "."
+                                     subversion) opencl-headers))
 
 (define-public opencl-headers-2.2
   (make-opencl-headers "2" "2"))
@@ -98,8 +90,6 @@ programming.")
   (make-opencl-headers "1" "1"))
 (define-public opencl-headers-1.0
   (make-opencl-headers "1" "0"))
-
-(define-public opencl-headers opencl-headers-2.2)
 
 (define-public opencl-clhpp
   (package
