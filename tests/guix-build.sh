@@ -1,6 +1,7 @@
 # GNU Guix --- Functional package management for GNU
 # Copyright © 2012, 2013, 2014, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+# Copyright © 2021 Chris Marusich <cmmarusich@gmail.com>
 #
 # This file is part of GNU Guix.
 #
@@ -61,8 +62,9 @@ guix build -e '(@@ (gnu packages bootstrap) %bootstrap-guile)'
 test `guix build sed -s x86_64-linux -d | wc -l` = 1
 
 # Passing multiple '-s' flags.
-all_systems="-s x86_64-linux -s i686-linux -s armhf-linux -s aarch64-linux"
-test `guix build sed $all_systems -d | sort -u | wc -l` = 4
+all_systems="-s x86_64-linux -s i686-linux -s armhf-linux -s aarch64-linux \
+-s powerpc64le-linux"
+test `guix build sed $all_systems -d | sort -u | wc -l` = 5
 
 # Check there's no weird memoization effect leading to erroneous results.
 # See <https://bugs.gnu.org/40482>.

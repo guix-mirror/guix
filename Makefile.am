@@ -14,6 +14,7 @@
 # Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 # Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 # Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
+# Copyright © 2021 Chris Marusich <cmmarusich@gmail.com>
 #
 # This file is part of GNU Guix.
 #
@@ -799,7 +800,8 @@ SOURCE_TARBALLS =					\
   $(foreach ext,tar.gz,$(PACKAGE_FULL_TARNAME).$(ext))
 
 # Systems supported by Guix.
-SUPPORTED_SYSTEMS ?= x86_64-linux i686-linux armhf-linux aarch64-linux
+SUPPORTED_SYSTEMS ?= x86_64-linux i686-linux armhf-linux aarch64-linux \
+  powerpc64le-linux
 
 # Guix binary tarballs.
 BINARY_TARBALLS =							\
