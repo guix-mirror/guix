@@ -1418,14 +1418,14 @@ operate properly.")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "4.3.1")
+    (version "4.3.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1yrg9nri54iav86vxy5i8pj51dhikksa04x20d77nc3fsi09405d"))))
+               "1nyd9jlcy0pqnwzi29a7sg50hq37vb0g3f9l16y3q8yh3m7ydr26"))))
     (build-system gnu-build-system)
     (inputs
      `(("dav1d" ,dav1d)
