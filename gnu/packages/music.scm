@@ -5985,7 +5985,7 @@ and as an LV2 plugin.")
     ;; distros to make necessary changes to integrate the software into the
     ;; distribution.
     (name "zrythm")
-    (version "1.0.0-alpha.6.0.1")
+    (version "1.0.0-alpha.12.0.1")
     (source
       (origin
         (method url-fetch)
@@ -5993,7 +5993,7 @@ and as an LV2 plugin.")
                             version ".tar.xz"))
         (sha256
           (base32
-           "1zfky3yj0k0rmbxighlk9sp4fsgw8rj7viv44yv626kldfvc04ab"))))
+           "1si4n8rdg0a3frlbj6yqpyzr4f20v3cpl4m6kv0yf7r25psyl5pk"))))
    (build-system meson-build-system)
    (arguments
     `(#:glib-or-gtk? #t
@@ -6026,6 +6026,7 @@ and as an LV2 plugin.")
       ("libyaml" ,libyaml)
       ("lilv" ,lilv)
       ("lv2" ,lv2)
+      ("pulseaudio" ,pulseaudio)
       ("reproc" ,reproc)
       ("rubberband" ,rubberband)
       ("rtmidi" ,rtmidi)
