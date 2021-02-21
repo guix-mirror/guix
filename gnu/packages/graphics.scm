@@ -24,6 +24,7 @@
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Gabriel Arazas <foo.dogsquared@gmail.com>
 ;;; Copyright © 2021 Antoine Côté <antoine.cote@posteo.net>
+;;; Copyright © 2021 Andy Tai <atai@atai.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -74,6 +75,7 @@
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages kde-frameworks)
+  #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages maths)
@@ -97,6 +99,7 @@
   #:use-module (gnu packages tbb)
   #:use-module (gnu packages upnp)
   #:use-module (gnu packages video)
+  #:use-module (gnu packages vulkan)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
@@ -1914,3 +1917,40 @@ Some feature highlights:
 @item Automatic port forwarding with UPnP
 @end itemize\n")
       (license license:gpl3+))))
+
+(define-public monado
+  (package
+    (name "monado")
+    (version "21.0.0")
+    (source (origin
+          (method url-fetch)
+          (uri (string-append "https://gitlab.freedesktop.org/" name "/"
+                              name "/-/archive/v" version "/"
+                              name "-v" version ".tar.bz2"))
+          (sha256
+           (base32
+            "0n04k7a8b0i8ga0kbzh7qxmvni1ijawgk98s83519vxg4d0yyjbq"))))
+    (build-system meson-build-system)
+    (inputs
+     `(("ffmpeg" ,ffmpeg)
+       ("glslang" ,glslang)
+       ("libudev" ,eudev)
+       ("libusb" ,libusb)
+       ("libxcb" ,libxcb)
+       ("libxrandr" ,libxrandr)
+       ("opengl" ,mesa)
+       ("v4l" ,v4l-utils)
+       ("vulkan-loader" ,vulkan-loader)))
+    (native-inputs
+     `(("eigen" ,eigen)
+       ("pkg-config" ,pkg-config)
+       ("vulkan-headers" ,vulkan-headers)))
+    (arguments
+     `(#:configure-flags
+       (list "-Dinstall-active-runtime=false")))
+    (home-page "https://monado.freedesktop.org/")
+    (synopsis "OpenXR runtime")
+    (description "Monado is an OpenXR runtime delivering immersive experiences
+such as VR and AR on mobile, PC/desktop, and any other device.  Monado aims to be
+a complete and conforming implementation of the OpenXR API made by Khronos.")
+    (license license:boost1.0)))
