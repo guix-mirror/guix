@@ -4605,20 +4605,20 @@ workstations as well as consumer software such as music players.")
 (define-public redkite
   (package
     (name "redkite")
-    (version "1.0.3")
+    (version "1.3.0")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://gitlab.com/geontime/redkite.git")
+             (url "https://gitlab.com/iurie-sw/redkite")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1m2db7c791fi33snkjwnvlxapmf879g5r8azlkx7sr6vp2s0jq2k"))))
+        (base32 "16j9zp5i7svq3g38rfb6h257qfgnd2brrxi7cjd2pdax9xxwj40y"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ;no tests included
-    (inputs
+    (propagated-inputs
      `(("cairo" ,cairo)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
