@@ -180,6 +180,7 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages search)
+  #:use-module (gnu packages scanner)
   #:use-module (gnu packages shells)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages ssh)
@@ -23905,4 +23906,26 @@ Application Programming Interface based on the Open Inventor 2.1 API.")
     (description "This package gives you colored strings for the terminal.
 Crayons automatically wraps a given string in the foreground color and
 restores the original state after the string is printed.")
+    (license license:expat)))
+
+(define-public python-sane
+  (package
+    (name "python-sane")
+    (version "2.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri name version))
+       (sha256
+        (base32
+         "1pi597z94n2mkd821ln52fq0g727n2jxfskf280ip3kf7jw8w294"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (inputs
+     `(("sane-backends" ,sane-backends)))
+    (home-page "https://github.com/python-pillow/Sane")
+    (synopsis "Python interface to the SANE scanner")
+    (description "This package provides Python interface to the SANE scanner
+and frame grabber interface.")
     (license license:expat)))
