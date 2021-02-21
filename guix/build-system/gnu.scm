@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -506,7 +506,12 @@ is one of `host' or `target'."
                           (strip-directories ''("lib" "lib64" "libexec"
                                                 "bin" "sbin"))
                           (validate-runpath? #t)
-                          (make-dynamic-linker-cache? #t)
+
+                          ;; We run 'ldconfig' to generate ld.so.cache and it
+                          ;; generally can't do that for cross-built binaries
+                          ;; ("ldconfig: foo.so is for unknown machine 40.").
+                          (make-dynamic-linker-cache? #f)
+
                           (license-file-regexp %license-file-regexp)
                           (phases '%standard-phases)
                           (locale "en_US.utf8")
