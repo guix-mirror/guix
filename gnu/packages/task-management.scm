@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 Tomáš Čech <sleep_walker@suse.cz>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2021 Eric Bavier <bavier@posteo.net>
+;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,6 +37,7 @@
   #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system go)
   #:use-module (guix build-system meson))
 
 (define-public taskwarrior
@@ -64,6 +66,53 @@
      "Taskwarrior is a command-line task manager following the Getting Things
 Done time management method.  It supports network synchronization, filtering
 and querying data, exposing task data in multiple formats to other tools.")
+    (license license:expat)))
+
+(define-public dstask
+  (package
+    (name "dstask")
+    (version "0.24.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/naggie/dstask")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "03rl2wh58xd6a80ji43c7ak3h0ysi3ddg570pn8ry24s7s45zsz2"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/naggie/dstask"
+       #:install-source? #f
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'build
+           (lambda* (#:key import-path #:allow-other-keys)
+             (with-directory-excursion (string-append "src/" import-path)
+               (invoke "go" "build" "-o" "dstask" "cmd/dstask/main.go")
+               (invoke "go" "build" "-o" "dstask-import"
+                       "cmd/dstask-import/main.go"))))
+         (replace 'install
+           (lambda* (#:key import-path outputs #:allow-other-keys)
+             (with-directory-excursion (string-append "src/" import-path)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bindir (string-append out "/bin"))
+                      (zsh-completion (string-append
+                                       out "/share/zsh/site-functions/_dstask"))
+                      (bash-completion
+                       (string-append
+                        out "/share/bash-completion/completions/_dstask")))
+                 (install-file "dstask" bindir)
+                 (install-file "dstask-import" bindir)
+                 (install-file ".dstask-bash-completions.sh" bash-completion)
+                 (install-file ".dstask-zsh-completions.sh" zsh-completion)))
+             #t)))))
+    (synopsis "CLI-based TODO manager with git-based sync + markdown notes per task")
+    (description "dstask is a personal task tracker that uses git for
+synchronization.  It offers a note command to attach a Markdown based note to
+a task.")
+    (home-page "https://github.com/naggie/dstask")
     (license license:expat)))
 
 (define-public blanket
