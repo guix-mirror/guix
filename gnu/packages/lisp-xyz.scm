@@ -13116,11 +13116,11 @@ scale statistical machine learning package")
   (sbcl-package->cl-source-package sbcl-clml))
 
 (define-public sbcl-utm-ups
-  (let ((commit "780f1d8ab6290ad2be0f40e2cddc2535fa6fe979")
+  (let ((commit "ffcb7b6d5a56fb7d4b2b95b83bbd28ffe6e6961f")
         (revision "0"))
     (package
       (name "sbcl-utm-ups")
-      (version (git-version "1.0" revision commit))
+      (version (git-version "1.1" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -13129,7 +13129,7 @@ scale statistical machine learning package")
                (commit commit)))
          (file-name (git-file-name "utm-ups" version))
          (sha256
-          (base32 "0l3kr2m56skf5cx3kkkdcis7msmidcsixx9fqjapkcjsj8x67aqq"))))
+          (base32 "1rvyh0srgd81kvbzmq4ysd9y6c0qdwh23naqxc9asw1vh7fq08x1"))))
       (build-system asdf-build-system/sbcl)
       (native-inputs
        `(("fiveam" ,sbcl-fiveam)))
