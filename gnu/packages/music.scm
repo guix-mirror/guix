@@ -1035,6 +1035,45 @@ are helpful when working in problem spaces where timing is important (such as
 audio and video).")
     (license license:bsd-2)))
 
+(define-public fluida-lv2
+  (package
+   (name "fluida-lv2")
+   (version "0.6")
+   (source
+    (origin
+      (method git-fetch)
+      (uri
+       (git-reference
+        (url "https://github.com/brummer10/Fluida.lv2")
+        (commit (string-append "v" version))
+        (recursive? #t))) ; references specific commit of libxputty
+      (file-name (git-file-name name version))
+      (sha256
+       (base32
+        "1v0bh4wcx79y832qigc3my8ixq0r4ica6z5fg2rg946pkh20x1a2"))))
+   (build-system gnu-build-system)
+   (arguments
+    `(#:tests? #f  ; no "check" target
+      #:make-flags
+      (list (string-append "INSTALL_DIR="
+                           (assoc-ref %outputs "out") "/lib/lv2")
+            "CC=gcc")
+      #:phases
+      (modify-phases %standard-phases
+        (delete 'configure))))
+   (inputs
+    `(("cairo" ,cairo)
+      ("libx11" ,libx11)
+      ("lv2" ,lv2)
+      ("fluidsynth" ,fluidsynth)))
+   (native-inputs
+    `(("pkg-config" ,pkg-config)))
+   (home-page "https://github.com/brummer10/Fluida.lv2")
+   (synopsis "Fluidsynth as an LV2 audio plugin")
+   (description "Fluida is an audio plugin in the LV2 format that acts as
+a frontend for fluidsynth.")
+   (license license:gpl2+)))
+
 (define-public surge-synth
   (package
    (name "surge-synth")
