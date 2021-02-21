@@ -58,6 +58,7 @@
 ;;; Copyright © 2020 Tomás Ortín Fernández <tomasortin@mailbox.org>
 ;;; Copyright © 2021 Olivier Rojon <o.rojon@posteo.net>
 ;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
+;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -11812,7 +11813,7 @@ etc.  You can also play games on FICS or against an engine.")
 (define-public stockfish
   (package
     (name "stockfish")
-    (version "12")
+    (version "13")
     (source
      (origin
        (method git-fetch)
@@ -11821,15 +11822,15 @@ etc.  You can also play games on FICS or against an engine.")
              (commit (string-append "sf_" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0vcymbwp5nf114pp3ax40s21ki5dckda15vmhr77d1mnq3fn0l32"))))
+        (base32 "15dfp9fnl3w7dgxhqmsm461amsysn646rj1arnzvwhy2i6ijhg2m"))))
     (build-system gnu-build-system)
     (inputs
      `(("neural-network"
         ,(origin
            (method url-fetch)
-           (uri "https://tests.stockfishchess.org/api/nn/nn-82215d0fd0df.nnue")
+           (uri "https://tests.stockfishchess.org/api/nn/nn-62ef826d1a6d.nnue")
            (sha256
-            (base32 "1r4yqrh4di05syyhl84hqcz84djpbd605b27zhbxwg6zs07ms8c2"))))))
+            (base32 "0qsy9rr4zgxrpgwhwbi96z01a2560am2b00q2klbj4bd39nq5vv2"))))))
     (arguments
      `(#:tests? #f
        #:make-flags (list "-C" "src"
@@ -11851,7 +11852,7 @@ etc.  You can also play games on FICS or against an engine.")
                   (add-after 'unpack 'copy-net
                     (lambda* (#:key inputs #:allow-other-keys)
                       (copy-file (assoc-ref inputs "neural-network")
-                                 "src/nn-82215d0fd0df.nnue")
+                                 "src/nn-62ef826d1a6d.nnue")
                       #t)))))
     (synopsis "Strong chess engine")
     (description
