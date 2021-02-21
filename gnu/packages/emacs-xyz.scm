@@ -19177,7 +19177,7 @@ e.g: @code{from:Peter to:Anne flag:attach search term}.")
 (define-public emacs-helm-pass
   (package
     (name "emacs-helm-pass")
-    (version "0.3")
+    (version "0.4")
     (source
      (origin
        (method git-fetch)
@@ -19187,7 +19187,7 @@ e.g: @code{from:Peter to:Anne flag:attach search term}.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0vglaknmir3yv4iwibwn8r40ran8d04gcyp99hx73ldmf3zqpnxv"))))
+         "19w24isddzamkikq17vbv3y7ha22i7wc09d2nqw1j0qwhrrfkng9"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-helm" ,emacs-helm)
