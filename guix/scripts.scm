@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2017, 2018, 2019, 2020, 2021, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Deck Pickard <deck.r.pickard@gmail.com>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
@@ -157,7 +157,8 @@ parameter of 'args-fold'."
     ;; Actual parsing takes place here.
     (apply args-fold* args options
            (lambda (opt name arg . rest)
-             (let ((hint (option-hint name options)))
+             (let ((hint (and (string? name)      ;not a short option
+                              (option-hint name options))))
                (report-error (G_ "~A: unrecognized option~%") name)
                (when hint
                  (display-hint
