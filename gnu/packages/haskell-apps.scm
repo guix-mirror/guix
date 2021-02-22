@@ -15,6 +15,7 @@
 ;;; Copyright © 2019, 2020 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@member.fsf.org>
 ;;; Copyright © 2020 Brian Leung <bkleung89@gmail.com>
+;;; Copyright © 2021 EuAndreh <eu@euandre.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -689,6 +690,35 @@ and conditional mappings that send a different keycode when tapped or held.
 By operating at a lower level than most similar tools, it supports X11,
 Wayland, and Linux console environments alike.")
     (license license:expat)))
+
+(define-public nixfmt
+  (package
+    (name "ghc-nixfmt")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/nixfmt/nixfmt-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32 "1ispgl8rc2scr6v8bb6sks7px856jf61x74zj2iyddrn5qamkb3n"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-megaparsec" ,ghc-megaparsec)
+       ("ghc-parser-combinators" ,ghc-parser-combinators)
+       ("ghc-cmdargs" ,ghc-cmdargs)
+       ("ghc-safe-exceptions" ,ghc-safe-exceptions)))
+    (arguments
+     `(#:cabal-revision
+       ("1" "1hsj0jh6siph3afd9c2wii09sffl48rzqv653n4clpd8qy0rn48d")))
+    (home-page "https://github.com/serokell/nixfmt")
+    (synopsis "Opinionated formatter for Nix")
+    (description
+     "Nixfmt is a formatter for Nix that ensures consistent and clear
+formatting by forgetting all existing formatting during parsing.")
+    (license license:mpl2.0)))
 
 (define-public raincat
   (package
