@@ -156,6 +156,7 @@ SYSTEM."
     "arm-linux-gnueabihf"
     "aarch64-linux-gnu"
     "powerpc-linux-gnu"
+    "powerpc64le-linux-gnu"
     "riscv64-linux-gnu"
     "i586-pc-gnu"                                 ;aka. GNU/Hurd
     "i686-w64-mingw32"
