@@ -27145,11 +27145,15 @@ The Cuirass package to use.
 @subsubheading Simple Cuirass
 
 The Cuirass service configuration described above can be a little
-intimidating.  The @code{simple-cuirass-services} procedure offers a way
-to setup a continuous integration server more readily.
+intimidating.  In particular, getting the right @code{specifications}
+can prove difficult.  The @code{simple-cuirass-configuration->specs}
+procedure offers a way to generate those @code{specifications} and thus
+setup a continuous integration server more readily.
 
-It takes a @code{simple-cuirass-configuration} record as its first
-argument.
+@deffn {Scheme Procedure} simple-cuirass-configuration->specs @var{configuration}
+This procedure takes a @code{simple-cuirass-configuration} record as
+argument and returns the corresponding Cuirass specifications gexp.
+@end deffn
 
 @deftp {Data Type} simple-cuirass-configuration
 Data type representing the configuration of a simple Cuirass instance.
@@ -27195,13 +27199,16 @@ is re-evaluated each time a commit is pushed in one of the declared
 channels.
 
 @lisp
-(simple-cuirass-services
- (simple-cuirass-configuration
-  (build 'all)
-  (channels (cons (channel
-                   (name 'my-guix)
-                   (url "https://my-git-repo/guix.git"))
-                  %default-channels))))
+(service cuirass-service-type
+         (cuirass-configuration
+          (specifications
+           (simple-cuirass-configuration->specs
+            (simple-cuirass-configuration
+             (build 'all)
+             (channels (cons (channel
+                              (name 'my-guix)
+                              (url "https://my-git-repo/guix.git"))
+                             %default-channels)))))))
 @end lisp
 
 In the same spirit, this builds all the packages that are part of the
@@ -27209,20 +27216,23 @@ In the same spirit, this builds all the packages that are part of the
 located in the @code{conf} channel.
 
 @lisp
-(simple-cuirass-services
- (simple-cuirass-configuration
-  (build (list
-          (build-manifest
-           (channel-name 'conf)
-           (manifest "guix/manifest.scm"))))
-  (channels (cons* (channel
-                    (name 'my-guix)
-                    (url "https://my-git-repo/guix.git"))
-                   (channel
-                    (name 'conf)
-                    (url "https://my-git-repo/conf.git"))
-                   %default-channels))
-  (non-package-channels '(conf))))
+(service cuirass-service-type
+         (cuirass-configuration
+          (specifications
+           (simple-cuirass-configuration->specs
+            (simple-cuirass-configuration
+             (build (list
+                     (build-manifest
+                      (channel-name 'conf)
+                      (manifest "guix/manifest.scm"))))
+             (channels (cons* (channel
+                               (name 'my-guix)
+                               (url "https://my-git-repo/guix.git"))
+                              (channel
+                               (name 'conf)
+                               (url "https://my-git-repo/conf.git"))
+                              %default-channels))
+             (non-package-channels '(conf)))))))
 @end lisp
 
 Finally, @code{simple-cuirass-services} takes as a second optional

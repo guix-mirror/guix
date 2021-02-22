@@ -132,11 +132,7 @@
              (remote-server (and remote-build?
                                  (cuirass-remote-server-configuration)))
              (host "0.0.0.0")
-             (use-substitutes? #t)))
-   (service postgresql-service-type
-            (postgresql-configuration
-             (postgresql postgresql-10)))
-   (service postgresql-role-service-type)))
+             (use-substitutes? #t)))))
 
 (define (run-cuirass-test name os)
   (define os*
@@ -286,6 +282,20 @@
      (description "Connect to a Cuirass server with remote build.")
      (value (run-cuirass-test name os)))))
 
+(define simple-cuirass-service
+  (service cuirass-service-type
+           (cuirass-configuration
+            (specifications
+             (simple-cuirass-configuration->specs
+              (simple-cuirass-configuration
+               (build 'all)
+               (channels
+                (list (channel
+                       (name 'guix)
+                       (url "file:///tmp/cuirass-main/")))))))
+            (host "0.0.0.0")
+            (use-substitutes? #t))))
+
 (define %cuirass-simple-test
   (let ((os (operating-system
               (inherit %simple-os)
@@ -293,17 +303,8 @@
                (append
                 (list cow-service
                       (service dhcp-client-service-type)
-                      git-service)
-                (simple-cuirass-services
-                 (simple-cuirass-configuration
-                  (build 'all)
-                  (channels (list (channel
-                                   (name 'guix)
-                                   (url "file:///tmp/cuirass-main/")))))
-                 (cuirass-configuration
-                  (inherit %default-cuirass-config)
-                  (host "0.0.0.0")
-                  (use-substitutes? #t)))
+                      git-service
+                      simple-cuirass-service)
                 (operating-system-user-services %simple-os))))))
     (system-test
      (name "cuirass-simple")

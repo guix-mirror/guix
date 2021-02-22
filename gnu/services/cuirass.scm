@@ -60,8 +60,7 @@
             simple-cuirass-configuration
             simple-cuirass-configuration?
 
-            %default-cuirass-config
-            simple-cuirass-services))
+            simple-cuirass-configuration->specs))
 
 ;;;; Commentary:
 ;;;
@@ -419,13 +418,7 @@ CONFIG."
   (systems               simple-cuirass-configuration-systems
                          (default (list (%current-system))))) ;list of strings
 
-(define %default-cuirass-config
-  (cuirass-configuration
-   (specifications #~())))
-
-(define* (simple-cuirass-services config
-                                  #:optional
-                                  (cuirass %default-cuirass-config))
+(define* (simple-cuirass-configuration->specs config)
   (define (format-name name)
     (if (string? name)
         name
@@ -475,13 +468,4 @@ CONFIG."
         (#:build-outputs . ())
         (#:priority . 1))))
 
-  (list
-   (service cuirass-service-type
-            (cuirass-configuration
-             (inherit cuirass)
-             (specifications #~(list
-                                '#$(config->spec config)))))
-   (service postgresql-service-type
-            (postgresql-configuration
-             (postgresql postgresql-10)))
-   (service postgresql-role-service-type)))
+  #~(list '#$(config->spec config)))
