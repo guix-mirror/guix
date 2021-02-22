@@ -324,6 +324,8 @@
      (service-extension activation-service-type cuirass-activation)
      (service-extension shepherd-root-service-type cuirass-shepherd-service)
      (service-extension account-service-type cuirass-account)
+     ;; Make sure postgresql and postgresql-role are instantiated.
+     (service-extension postgresql-service-type (const #t))
      (service-extension postgresql-role-service-type
                         cuirass-postgresql-role)))
    (description
