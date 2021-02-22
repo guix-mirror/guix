@@ -25,7 +25,6 @@
   #:use-module (guix base64)
   #:use-module (guix records)
   #:use-module (guix diagnostics)
-  #:use-module (guix scripts substitute)
   #:use-module (gcrypt hash)
   #:use-module (gcrypt pk-crypto)
   #:use-module (rnrs bytevectors)

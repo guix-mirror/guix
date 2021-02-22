@@ -114,6 +114,7 @@ MODULES =					\
   guix/channels.scm				\
   guix/gnu-maintenance.scm			\
   guix/self.scm					\
+  guix/substitutes.scm				\
   guix/upstream.scm				\
   guix/licenses.scm				\
   guix/lint.scm				\

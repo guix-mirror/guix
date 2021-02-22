@@ -32,7 +32,7 @@
   #:use-module (guix gexp)
   #:use-module ((guix build syscalls) #:select (terminal-columns))
   #:use-module ((guix build utils) #:select (every*))
-  #:use-module (guix scripts substitute)
+  #:use-module (guix substitutes)
   #:use-module (guix narinfo)
   #:use-module (guix http-client)
   #:use-module (guix ci)

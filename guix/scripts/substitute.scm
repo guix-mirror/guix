@@ -24,6 +24,7 @@
   #:use-module (guix scripts)
   #:use-module (guix narinfo)
   #:use-module (guix store)
+  #:use-module (guix substitutes)
   #:use-module (guix utils)
   #:use-module (guix combinators)
   #:use-module (guix config)
@@ -39,40 +40,28 @@
   #:use-module (guix cache)
   #:use-module (gcrypt pk-crypto)
   #:use-module (guix pki)
-  #:use-module ((guix build utils) #:select (mkdir-p dump-port))
+  #:use-module ((guix build utils) #:select (mkdir-p))
   #:use-module ((guix build download)
                 #:select (uri-abbreviation nar-uri-abbreviation
                           (open-connection-for-uri
-                           . guix:open-connection-for-uri)
-                          store-path-abbreviation byte-count->string))
-  #:autoload   (gnutls) (error/invalid-session)
+                           . guix:open-connection-for-uri)))
   #:use-module (guix progress)
   #:use-module ((guix build syscalls)
                 #:select (set-thread-name))
   #:use-module (ice-9 rdelim)
-  #:use-module (ice-9 regex)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
   #:use-module (ice-9 ftw)
-  #:use-module (ice-9 binary-ports)
-  #:use-module (ice-9 vlist)
   #:use-module (rnrs bytevectors)
   #:use-module (srfi srfi-1)
-  #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:use-module (web uri)
-  #:use-module (web http)
-  #:use-module (web request)
-  #:use-module (web response)
   #:use-module (guix http-client)
-  #:export (lookup-narinfos
-            lookup-narinfos/diverse
-
-            %allow-unauthenticated-substitutes?
+  #:export (%allow-unauthenticated-substitutes?
             %error-to-file-descriptor-4?
 
             substitute-urls
@@ -89,16 +78,9 @@
 ;;;
 ;;; Code:
 
-(define %narinfo-cache-directory
-  ;; A local cache of narinfos, to avoid going to the network.  Most of the
-  ;; time, 'guix substitute' is called by guix-daemon as root and stores its
-  ;; cached data in /var/guix/….  However, when invoked from 'guix challenge'
-  ;; as a user, it stores its cache in ~/.cache.
-  (if (zero? (getuid))
-      (or (and=> (getenv "XDG_CACHE_HOME")
-                 (cut string-append <> "/guix/substitute"))
-          (string-append %state-directory "/substitute/cache"))
-      (string-append (cache-directory #:ensure? #f) "/substitute")))
+(define %narinfo-expired-cache-entry-removal-delay
+  ;; How often we want to remove files corresponding to expired cache entries.
+  (* 7 24 3600))
 
 (define (warn-about-missing-authentication)
   (warning (G_ "authentication and authorization of substitutes \
@@ -111,24 +93,6 @@ disabled!~%"))
   (make-parameter
    (and=> (getenv "GUIX_ALLOW_UNAUTHENTICATED_SUBSTITUTES")
           (cut string-ci=? <> "yes"))))
-
-(define %narinfo-ttl
-  ;; Number of seconds during which cached narinfo lookups are considered
-  ;; valid for substitute servers that do not advertise a TTL via the
-  ;; 'Cache-Control' response header.
-  (* 36 3600))
-
-(define %narinfo-negative-ttl
-  ;; Likewise, but for negative lookups---i.e., cached lookup failures (404).
-  (* 1 3600))
-
-(define %narinfo-transient-error-ttl
-  ;; Likewise, but for transient errors such as 504 ("Gateway timeout").
-  (* 10 60))
-
-(define %narinfo-expired-cache-entry-removal-delay
-  ;; How often we want to remove files corresponding to expired cache entries.
-  (* 7 24 3600))
 
 (define %fetch-timeout
   ;; Number of seconds after which networking is considered "slow".
@@ -169,84 +133,6 @@ again."
         (sigaction SIGALRM SIG_DFL)
         (apply values result)))))
 
-(define (narinfo-cache-file cache-url path)
-  "Return the name of the local file that contains an entry for PATH.  The
-entry is stored in a sub-directory specific to CACHE-URL."
-  ;; The daemon does not sanitize its input, so PATH could be something like
-  ;; "/gnu/store/foo".  Gracefully handle that.
-  (match (store-path-hash-part path)
-    (#f
-     (leave (G_ "'~a' does not name a store item~%") path))
-    ((? string? hash-part)
-     (string-append %narinfo-cache-directory "/"
-                    (bytevector->base32-string (sha256 (string->utf8 cache-url)))
-                    "/" hash-part))))
-
-(define (cached-narinfo cache-url path)
-  "Check locally if we have valid info about PATH coming from CACHE-URL.
-Return two values: a Boolean indicating whether we have valid cached info, and
-that info, which may be either #f (when PATH is unavailable) or the narinfo
-for PATH."
-  (define now
-    (current-time time-monotonic))
-
-  (define cache-file
-    (narinfo-cache-file cache-url path))
-
-  (catch 'system-error
-    (lambda ()
-      (call-with-input-file cache-file
-        (lambda (p)
-          (match (read p)
-            (('narinfo ('version 2)
-                       ('cache-uri cache-uri)
-                       ('date date) ('ttl ttl) ('value #f))
-             ;; A cached negative lookup.
-             (if (obsolete? date now ttl)
-                 (values #f #f)
-                 (values #t #f)))
-            (('narinfo ('version 2)
-                       ('cache-uri cache-uri)
-                       ('date date) ('ttl ttl) ('value value))
-             ;; A cached positive lookup
-             (if (obsolete? date now ttl)
-                 (values #f #f)
-                 (values #t (string->narinfo value cache-uri))))
-            (('narinfo ('version v) _ ...)
-             (values #f #f))))))
-    (lambda _
-      (values #f #f))))
-
-(define (cache-narinfo! cache-url path narinfo ttl)
-  "Cache locally NARNIFO for PATH, which originates from CACHE-URL, with the
-given TTL (a number of seconds or #f).  NARINFO may be #f, in which case it
-indicates that PATH is unavailable at CACHE-URL."
-  (define now
-    (current-time time-monotonic))
-
-  (define (cache-entry cache-uri narinfo)
-    `(narinfo (version 2)
-              (cache-uri ,cache-uri)
-              (date ,(time-second now))
-              (ttl ,(or ttl
-                        (if narinfo %narinfo-ttl %narinfo-negative-ttl)))
-              (value ,(and=> narinfo narinfo->string))))
-
-  (let ((file (narinfo-cache-file cache-url path)))
-    (mkdir-p (dirname file))
-    (with-atomic-file-output file
-      (lambda (out)
-        (write (cache-entry cache-url narinfo) out))))
-
-  narinfo)
-
-(define (narinfo-request cache-url path)
-  "Return an HTTP request for the narinfo of PATH at CACHE-URL."
-  (let ((url (string-append cache-url "/" (store-path-hash-part path)
-                            ".narinfo"))
-        (headers '((User-Agent . "GNU Guile"))))
-    (build-request (string->uri url) #:method 'GET #:headers headers)))
-
 (define (at-most max-length lst)
   "If LST is shorter than MAX-LENGTH, return it and the empty list; otherwise
 return its MAX-LENGTH first elements and its tail."
@@ -261,10 +147,6 @@ return its MAX-LENGTH first elements and its tail."
            (values (reverse result) lst)
            (loop (+ 1 len) tail (cons head result)))))))
 
-(define (read-to-eof port)
-  "Read from PORT until EOF is reached.  The data are discarded."
-  (dump-port port (%make-void-port "w")))
-
 (define (narinfo-from-file file url)
   "Attempt to read a narinfo from FILE, using URL as the cache URL.  Return #f
 if file doesn't exist, and the narinfo otherwise."
@@ -276,186 +158,6 @@ if file doesn't exist, and the narinfo otherwise."
       (if (= ENOENT (system-error-errno args))
           #f
           (apply throw args)))))
-
-(define %unreachable-hosts
-  ;; Set of names of unreachable hosts.
-  (make-hash-table))
-
-(define* (call-with-connection-error-handling uri proc)
-  "Call PROC, and catch if a connection fails, print a warning and return #f."
-  (define host
-    (uri-host uri))
-
-  (catch #t
-    proc
-    (match-lambda*
-      (('getaddrinfo-error error)
-       (unless (hash-ref %unreachable-hosts host)
-         (hash-set! %unreachable-hosts host #t)   ;warn only once
-         (warning (G_ "~a: host not found: ~a~%")
-                  host (gai-strerror error)))
-       #f)
-      (('system-error . args)
-       (unless (hash-ref %unreachable-hosts host)
-         (hash-set! %unreachable-hosts host #t)
-         (warning (G_ "~a: connection failed: ~a~%") host
-                  (strerror
-                   (system-error-errno `(system-error ,@args)))))
-       #f)
-      (args
-       (apply throw args)))))
-
-(define* (fetch-narinfos url paths
-                         #:key (open-connection guix:open-connection-for-uri))
-  "Retrieve all the narinfos for PATHS from the cache at URL and return them."
-  (define update-progress!
-    (let ((done 0)
-          (total (length paths)))
-      (lambda ()
-        (display "\r\x1b[K" (current-error-port)) ;erase current line
-        (force-output (current-error-port))
-        (format (current-error-port)
-                (G_ "updating substitutes from '~a'... ~5,1f%")
-                url (* 100. (/ done total)))
-        (set! done (+ 1 done)))))
-
-  (define hash-part->path
-    (let ((mapping (fold (lambda (path result)
-                           (vhash-cons (store-path-hash-part path) path
-                                       result))
-                         vlist-null
-                         paths)))
-      (lambda (hash)
-        (match (vhash-assoc hash mapping)
-          (#f #f)
-          ((_ . path) path)))))
-
-  (define (handle-narinfo-response request response port result)
-    (let* ((code   (response-code response))
-           (len    (response-content-length response))
-           (cache  (response-cache-control response))
-           (ttl    (and cache (assoc-ref cache 'max-age))))
-      (update-progress!)
-
-      ;; Make sure to read no more than LEN bytes since subsequent bytes may
-      ;; belong to the next response.
-      (if (= code 200)                            ; hit
-          (let ((narinfo (read-narinfo port url #:size len)))
-            (if (string=? (dirname (narinfo-path narinfo))
-                          (%store-prefix))
-                (begin
-                  (cache-narinfo! url (narinfo-path narinfo) narinfo ttl)
-                  (cons narinfo result))
-                result))
-          (let* ((path      (uri-path (request-uri request)))
-                 (hash-part (basename
-                             (string-drop-right path 8)))) ;drop ".narinfo"
-            (if len
-                (get-bytevector-n port len)
-                (read-to-eof port))
-            (cache-narinfo! url (hash-part->path hash-part) #f
-                            (if (or (= 404 code) (= 202 code))
-                                ttl
-                                %narinfo-transient-error-ttl))
-            result))))
-
-  (define (do-fetch uri)
-    (case (and=> uri uri-scheme)
-      ((http https)
-       ;; Note: Do not check HTTPS server certificates to avoid depending
-       ;; on the X.509 PKI.  We can do it because we authenticate
-       ;; narinfos, which provides a much stronger guarantee.
-       (let* ((requests (map (cut narinfo-request url <>) paths))
-              (result   (begin
-                          (update-progress!)
-                          (call-with-connection-error-handling
-                           uri
-                           (lambda ()
-                             (http-multiple-get uri
-                                                handle-narinfo-response '()
-                                                requests
-                                                #:open-connection open-connection
-                                                #:verify-certificate? #f))))))
-         (newline (current-error-port))
-         result))
-      ((file #f)
-       (let* ((base  (string-append (uri-path uri) "/"))
-              (files (map (compose (cut string-append base <> ".narinfo")
-                                   store-path-hash-part)
-                          paths)))
-         (filter-map (cut narinfo-from-file <> url) files)))
-      (else
-       (leave (G_ "~s: unsupported server URI scheme~%")
-              (if uri (uri-scheme uri) url)))))
-
-  (do-fetch (string->uri url)))
-
-(define* (lookup-narinfos cache paths
-                          #:key (open-connection guix:open-connection-for-uri))
-  "Return the narinfos for PATHS, invoking the server at CACHE when no
-information is available locally."
-  (let-values (((cached missing)
-                (fold2 (lambda (path cached missing)
-                         (let-values (((valid? value)
-                                       (cached-narinfo cache path)))
-                           (if valid?
-                               (if value
-                                   (values (cons value cached) missing)
-                                   (values cached missing))
-                               (values cached (cons path missing)))))
-                       '()
-                       '()
-                       paths)))
-    (if (null? missing)
-        cached
-        (let ((missing (fetch-narinfos cache missing
-                                       #:open-connection open-connection)))
-          (append cached (or missing '()))))))
-
-(define* (lookup-narinfos/diverse caches paths authorized?
-                                  #:key (open-connection
-                                         guix:open-connection-for-uri))
-  "Look up narinfos for PATHS on all of CACHES, a list of URLS, in that order.
-That is, when a cache lacks an AUTHORIZED? narinfo, look it up in the next
-cache, and so on.
-
-Return a list of narinfos for PATHS or a subset thereof.  The returned
-narinfos are either AUTHORIZED?, or they claim a hash that matches an
-AUTHORIZED? narinfo."
-  (define (select-hit result)
-    (lambda (path)
-      (match (vhash-fold* cons '() path result)
-        ((one)
-         one)
-        ((several ..1)
-         (let ((authorized (find authorized? (reverse several))))
-           (and authorized
-                (find (cut equivalent-narinfo? <> authorized)
-                      several)))))))
-
-  (let loop ((caches caches)
-             (paths  paths)
-             (result vlist-null)                  ;path->narinfo vhash
-             (hits   '()))                        ;paths
-    (match paths
-      (()                                         ;we're done
-       ;; Now iterate on all the HITS, and return exactly one match for each
-       ;; hit: the first narinfo that is authorized, or that has the same hash
-       ;; as an authorized narinfo, in the order of CACHES.
-       (filter-map (select-hit result) hits))
-      (_
-       (match caches
-         ((cache rest ...)
-          (let* ((narinfos (lookup-narinfos cache paths
-                                            #:open-connection open-connection))
-                 (definite (map narinfo-path (filter authorized? narinfos)))
-                 (missing  (lset-difference string=? paths definite))) ;XXX: perf
-            (loop rest missing
-                  (fold vhash-cons result
-                        (map narinfo-path narinfos) narinfos)
-                  (append definite hits))))
-         (()                                      ;that's it
-          (filter-map (select-hit result) hits)))))))
 
 (define (lookup-narinfo caches path authorized?)
   "Return the narinfo for PATH in CACHES, or #f when no substitute for PATH
