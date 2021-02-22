@@ -279,6 +279,58 @@ interactive development model in mind.")
 (define-public ecl-fiveam
   (sbcl-package->ecl-package sbcl-fiveam))
 
+(define-public sbcl-cl-irc
+  (let ((commit "963823537c7bfcda2edd4c44d172192da6722175")
+        (revision "0"))
+    (package
+      (name "sbcl-cl-irc")
+      (version (git-version "0.9.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://salsa.debian.org/common-lisp-team/cl-irc.git")
+               (commit commit)))
+         (file-name (git-file-name "cl-irc" version))
+         (sha256
+          (base32 "1b3nqbb4pj377lxl47rfgrs82pidadnrc65l48bk553c2f59b52w"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       ;; Tests only.
+       `(("rt" ,sbcl-rt)))
+      (inputs
+       `(("cl+ssl" ,sbcl-cl+ssl)
+         ("flexi-streams" ,sbcl-flexi-streams)
+         ("split-sequence" ,sbcl-split-sequence)
+         ("usocket" ,sbcl-usocket)))
+      (arguments
+       `(#:asd-systems '("cl-irc") ;; Some inexisting "c" system is
+                                   ;; found by guix otherwise.
+         #:asd-files '("cl-irc.asd")
+         #:test-asd-file "test/cl-irc-test.asd"))
+      (synopsis "IRC client library for Common Lisp")
+      (description "@code{cl-irc} is a Common Lisp IRC client library that
+features (partial) DCC, CTCP and all relevant commands from the IRC
+RFCs (RFC2810, RFC2811 and RFC2812).
+
+Features:
+@itemize
+@item implements all commands in the RFCs
+@item extra convenience commands such as op/deop, ban, ignore, etc.
+@item partial DCC SEND/CHAT support
+@item event driven model with hooks makes interfacing easy
+@item the user can keep multiple connections
+@item all CTCP commands
+@end itemize\n")
+      (home-page "https://common-lisp.net/project/cl-irc/")
+      (license license:bsd-2))))
+
+(define-public cl-irc
+  (sbcl-package->cl-source-package sbcl-cl-irc))
+
+(define-public ecl-cl-irc
+  (sbcl-package->ecl-package sbcl-cl-irc))
+
 (define-public sbcl-trivial-timeout
   (let ((commit "feb869357f40f5e109570fb40abad215fb370c6c")
         (revision "1"))
