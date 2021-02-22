@@ -331,7 +331,9 @@ host	all	all	::1/128 	md5"))
                              (const %postgresql-accounts))
           (service-extension
            profile-service-type
-           (compose list postgresql-configuration-postgresql))))))
+           (compose list postgresql-configuration-postgresql))))
+   (default-value (postgresql-configuration
+                   (postgresql postgresql-10)))))
 
 (define-deprecated (postgresql-service #:key (postgresql postgresql)
                                        (port 5432)
