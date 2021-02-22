@@ -15,7 +15,7 @@
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -83,6 +83,7 @@
   #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages protobuf)
@@ -118,6 +119,7 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
   #:use-module (ice-9 match))
 
 (define (qemu-patch commit file-name sha256-bv)
@@ -159,23 +161,30 @@
              (("^([[:blank:]]*)target_ifreq_size[[:blank:]]=.*$" _ indent)
               (string-append indent "target_ifreq_size = "
                              "thunk_type_size(ifreq_max_type, 0);")))))))
-    (outputs '("out" "doc"))            ;4.7 MiB of HTML docs
+    (outputs '("out" "static" "doc"))   ;4.7 MiB of HTML docs
     (build-system gnu-build-system)
     (arguments
-     `(;; FIXME: Disable tests on i686 to work around
-       ;; <https://bugs.gnu.org/40527>.
-       #:tests? ,(or (%current-target-system)
+     ;; FIXME: Disable tests on i686 to work around
+     ;; <https://bugs.gnu.org/40527>.
+     `(#:tests? ,(or (%current-target-system)
                      (not (string=? "i686-linux" (%current-system))))
-
-       #:configure-flags (list "--enable-usb-redir" "--enable-opengl"
-                               "--enable-docs"
-                               (string-append "--smbd="
-                                              (assoc-ref %outputs "out")
-                                              "/libexec/samba-wrapper")
-                               "--audio-drv-list=alsa,pa,sdl")
+       #:configure-flags
+       (let ((gcc (string-append (assoc-ref %build-inputs "gcc") "/bin/gcc"))
+             (out (assoc-ref %outputs "out")))
+         (list (string-append "--cc=" gcc)
+               ;; Some architectures insist on using HOST_CC.
+               (string-append "--host-cc=" gcc)
+               (string-append "--prefix=" out)
+               "--sysconfdir=/etc"
+               (string-append "--smbd=" out "/libexec/samba-wrapper")
+               "--disable-debug-info"   ;for space considerations
+               ;; The binaries need to be linked against -lrt.
+               (string-append "--extra-ldflags=-lrt")))
        ;; Make build and test output verbose to facilitate investigation upon failure.
        #:make-flags '("V=1")
        #:modules ((srfi srfi-1)
+                  (srfi srfi-26)
+                  (ice-9 ftw)
                   (ice-9 match)
                   ,@%gnu-build-system-modules)
        #:phases
@@ -220,6 +229,11 @@
                ;; https://bugs.launchpad.net/qemu/+bug/1896263).
                (("check-qtest-i386-y \\+= bios-tables-test" all)
                 (string-append "# " all)))))
+         (add-after 'unpack 'patch-test-shebangs
+           (lambda _
+             (substitute* "tests/qemu-iotests/check"
+               (("#!/usr/bin/env python3")
+                (string-append "#!" (which "python3"))))))
          (add-after 'patch-source-shebangs 'patch-/bin/sh-references
            (lambda _
              ;; Ensure the executables created by these source files reference
@@ -228,37 +242,56 @@
                             "net/tap.c" "tests/qtest/libqtest.c")
                (("/bin/sh") (which "sh")))))
          (replace 'configure
-           (lambda* (#:key inputs outputs (configure-flags '())
-                     #:allow-other-keys)
+           (lambda* (#:key inputs outputs configure-flags #:allow-other-keys)
              ;; The `configure' script doesn't understand some of the
              ;; GNU options.  Thus, add a new phase that's compatible.
              (let ((out (assoc-ref outputs "out")))
                (setenv "SHELL" (which "bash"))
-
-               ;; While we're at it, patch for tests.
-               (substitute* "tests/qemu-iotests/check"
-                 (("#!/usr/bin/env python3")
-                  (string-append "#!" (which "python3"))))
-
                ;; Ensure config.status gets the correct shebang off the bat.
                ;; The build system gets confused if we change it later and
                ;; attempts to re-run the whole configury, and fails.
                (substitute* "configure"
                  (("#!/bin/sh")
                   (string-append "#!" (which "sh"))))
-
-               ;; The binaries need to be linked against -lrt.
-               (setenv "LDFLAGS" "-lrt")
-               (apply invoke
-                      `("./configure"
-                        ,(string-append "--cc=" (which "gcc"))
-                        ;; Some architectures insist on using HOST_CC
-                        ,(string-append "--host-cc=" (which "gcc"))
-                        "--disable-debug-info" ; save build space
-                        "--enable-virtfs"      ; just to be sure
-                        ,(string-append "--prefix=" out)
-                        ,(string-append "--sysconfdir=/etc")
-                        ,@configure-flags)))))
+               (mkdir-p "b/qemu")
+               (chdir "b/qemu")
+               (apply invoke "../../configure" configure-flags))))
+         ;; Configure, build and install QEMU user-emulation static binaries.
+         (add-after 'configure 'configure-user-static
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((gcc (string-append (assoc-ref inputs "gcc") "/bin/gcc"))
+                    (static (assoc-ref outputs "static"))
+                    ;; This is the common set of configure flags; it is
+                    ;; duplicated here to isolate this phase from manipulations
+                    ;; to the #:configure-flags build argument, as done in
+                    ;; derived packages such as qemu-minimal.
+                    (configure-flags (list (string-append "--cc=" gcc)
+                                           (string-append "--host-cc=" gcc)
+                                           "--sysconfdir=/etc"
+                                           "--disable-debug-info")))
+               (mkdir-p "../user-static")
+               (with-directory-excursion "../user-static"
+                 (apply invoke "../../configure"
+                        "--static"
+                        "--disable-docs" ;already built
+                        "--disable-system"
+                        "--enable-linux-user"
+                        (string-append "--prefix=" static)
+                        configure-flags)))))
+         (add-after 'build 'build-user-static
+           (lambda args
+             (with-directory-excursion "../user-static"
+               (apply (assoc-ref %standard-phases 'build) args))))
+         (add-after 'install 'install-user-static
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((static (assoc-ref outputs "static"))
+                    (bin (string-append static "/bin")))
+               (with-directory-excursion "../user-static"
+                 (for-each (cut install-file <> bin)
+                           (append-map (cut find-files <> "^qemu-")
+                                       (scandir "."
+                                                (cut string-suffix?
+                                                     "-linux-user" <>))))))))
          ;; Create a wrapper for Samba. This allows QEMU to use Samba without
          ;; pulling it in as an input. Note that you need to explicitly install
          ;; Samba in your Guix profile for Samba support.
@@ -315,7 +348,12 @@ exec smbd $@")))
                      ("pkg-config" ,pkg-config)
                      ("python-wrapper" ,python-wrapper)
                      ("python-sphinx" ,python-sphinx)
-                     ("texinfo" ,texinfo)))
+                     ("texinfo" ,texinfo)
+                     ;; The following static libraries are required to build
+                     ;; the static output of QEMU.
+                     ("glib-static" ,glib-static)
+                     ("pcre:static" ,pcre "static")
+                     ("zlib:static" ,zlib "static")))
     (home-page "https://www.qemu.org")
     (synopsis "Machine emulator and virtualizer")
     (description
@@ -340,46 +378,49 @@ server and embedded PowerPC, and S390 guests.")
 
 (define-public qemu-minimal
   ;; QEMU without GUI support, only supporting the host's architecture
-  (package (inherit qemu)
+  (package
+    (inherit qemu)
     (name "qemu-minimal")
     (synopsis
      "Machine emulator and virtualizer (without GUI) for the host architecture")
     (arguments
      (substitute-keyword-arguments (package-arguments qemu)
-       ((#:configure-flags _ '(list))
+       ((#:configure-flags configure-flags '(list))
         ;; Restrict to the host's architecture.
-        (let ((system (or (%current-target-system)
-                          (%current-system))))
-          (cond
-            ((string-prefix? "i686" system)
-             '(list "--target-list=i386-softmmu"))
-            ((string-prefix? "xasdf86_64" system)
-             '(list "--target-list=i386-softmmu,x86_64-softmmu"))
-            ((string-prefix? "mips64" system)
-             '(list (string-append "--target-list=mips-softmmu,mipsel-softmmu,"
-                                   "mips64-softmmu,mips64el-softmmu")))
-            ((string-prefix? "mips" system)
-             '(list "--target-list=mips-softmmu,mipsel-softmmu"))
-            ((string-prefix? "aarch64" system)
-             '(list "--target-list=arm-softmmu,aarch64-softmmu"))
-            ((string-prefix? "arm" system)
-             '(list "--target-list=arm-softmmu"))
-            ((string-prefix? "alpha" system)
-             '(list "--target-list=alpha-softmmu"))
-            ((string-prefix? "powerpc64" system)
-             '(list "--target-list=ppc-softmmu,ppc64-softmmu"))
-            ((string-prefix? "powerpc" system)
-             '(list "--target-list=ppc-softmmu"))
-            ((string-prefix? "s390" system)
-             '(list "--target-list=s390x-softmmu"))
-            ((string-prefix? "riscv" system)
-             '(list "--target-list=riscv32-softmmu,riscv64-softmmu"))
-            (else   ; An empty list actually builds all the targets.
-              ''()))))))
+        (let* ((system (or (%current-target-system)
+                           (%current-system)))
+               (target-list-arg
+                (match system
+                  ((? (cut string-prefix? "i686" <>))
+                   "--target-list=i386-softmmu")
+                  ((? (cut string-prefix? "x86_64" <>))
+                   "--target-list=i386-softmmu,x86_64-softmmu")
+                  ((? (cut string-prefix? "mips64" <>))
+                   (string-append "--target-list=mips-softmmu,mipsel-softmmu,"
+                                  "mips64-softmmu,mips64el-softmmu"))
+                  ((? (cut string-prefix? "mips" <>))
+                   "--target-list=mips-softmmu,mipsel-softmmu")
+                  ((? (cut string-prefix? "aarch64" <>))
+                   "--target-list=arm-softmmu,aarch64-softmmu")
+                  ((? (cut string-prefix? "arm" <>))
+                   "--target-list=arm-softmmu")
+                  ((? (cut string-prefix? "alpha" <>))
+                   "--target-list=alpha-softmmu")
+                  ((? (cut string-prefix? "powerpc64" <>))
+                   "--target-list=ppc-softmmu,ppc64-softmmu")
+                  ((? (cut string-prefix? "powerpc" <>))
+                   "--target-list=ppc-softmmu")
+                  ((? (cut string-prefix? "s390" <>))
+                   "--target-list=s390x-softmmu")
+                  ((? (cut string-prefix? "riscv" <>))
+                   "--target-list=riscv32-softmmu,riscv64-softmmu")
+                  (else       ; An empty list actually builds all the targets.
+                   '()))))
+          `(cons ,target-list-arg ,configure-flags)))))
 
     ;; Remove dependencies on optional libraries, notably GUI libraries.
     (native-inputs (fold alist-delete (package-native-inputs qemu)
-                  '("gettext")))
+                         '("gettext")))
     (inputs (fold alist-delete (package-inputs qemu)
                   '("libusb" "mesa" "sdl2" "spice" "virglrenderer" "gtk+"
                     "usbredir" "libdrm" "libepoxy" "pulseaudio" "vde2"
