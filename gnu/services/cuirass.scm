@@ -108,6 +108,8 @@
                     (default "cuirass"))
   (interval         cuirass-configuration-interval ;integer (seconds)
                     (default 60))
+  (parameters       cuirass-configuration-parameters ;string
+                    (default #f))
   (remote-server    cuirass-configuration-remote-server
                     (default #f))
   (database         cuirass-configuration-database ;string
@@ -124,8 +126,6 @@
                     (default #f))
   (fallback?        cuirass-configuration-fallback? ;boolean
                     (default #f))
-  (zabbix-uri       cuirass-configuration-zabbix-uri ;string
-                    (default #f))
   (extra-options    cuirass-configuration-extra-options
                     (default '())))
 
@@ -138,6 +138,7 @@
         (user             (cuirass-configuration-user config))
         (group            (cuirass-configuration-group config))
         (interval         (cuirass-configuration-interval config))
+        (parameters       (cuirass-configuration-parameters config))
         (remote-server    (cuirass-configuration-remote-server config))
         (database         (cuirass-configuration-database config))
         (port             (cuirass-configuration-port config))
@@ -146,7 +147,6 @@
         (use-substitutes? (cuirass-configuration-use-substitutes? config))
         (one-shot?        (cuirass-configuration-one-shot? config))
         (fallback?        (cuirass-configuration-fallback? config))
-        (zabbix-uri       (cuirass-configuration-zabbix-uri config))
         (extra-options    (cuirass-configuration-extra-options config)))
     `(,(shepherd-service
         (documentation "Run Cuirass.")
@@ -159,6 +159,11 @@
                         #$(scheme-file "cuirass-specs.scm" specs)
                         "--database" #$database
                         "--interval" #$(number->string interval)
+                        #$@(if parameters
+                               (list (string-append
+                                      "--parameters="
+                                      parameters))
+                               '())
                         #$@(if remote-server '("--build-remote") '())
                         #$@(if use-substitutes? '("--use-substitutes") '())
                         #$@(if one-shot? '("--one-shot") '())
@@ -186,13 +191,13 @@
                         "--port" #$(number->string port)
                         "--listen" #$host
                         "--interval" #$(number->string interval)
+                        #$@(if parameters
+                               (list (string-append
+                                      "--parameters="
+                                      parameters))
+                               '())
                         #$@(if use-substitutes? '("--use-substitutes") '())
                         #$@(if fallback? '("--fallback") '())
-                        #$@(if zabbix-uri
-                               (list (string-append
-                                      "--zabbix-uri="
-                                      zabbix-uri))
-                               '())
                         #$@extra-options)
 
                   #:user #$user
@@ -222,6 +227,11 @@
                                        (list (string-append
                                               "--publish-port="
                                               (number->string publish-port)))
+                                       '())
+                                #$@(if parameters
+                                       (list (string-append
+                                              "--parameters="
+                                              parameters))
                                        '())
                                 #$@(if trigger-url
                                        (list
