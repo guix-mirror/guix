@@ -6804,7 +6804,7 @@ application of SortMeRNA is filtering rRNA from metatranscriptomic data.")
 (define-public star
   (package
     (name "star")
-    (version "2.7.3a")
+    (version "2.7.8a")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -6813,7 +6813,7 @@ application of SortMeRNA is filtering rRNA from metatranscriptomic data.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1hgiqw5qhs0pc1xazzihcfd92na02xyq2kb469z04y1v51kpvvjq"))
+                "0zc5biymja9zml9yizcj1h68fq9c6sxfcav8a0lbgvgsm44rvans"))
               (modules '((guix build utils)))
               (snippet
                '(begin
