@@ -529,7 +529,7 @@ clone.")
                    all)))
                #t))))))
     (native-inputs
-     `(("autoconf" ,autoconf-wrapper)
+     `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("guile" ,guile-3.0)
        ("pkg-config" ,pkg-config)

@@ -267,6 +267,8 @@ exec ~a --no-auto-compile \"$0\" \"$@\"
     ;; Do not show it in the UI since it's meant for internal use.
     (properties '((hidden? . #t)))))
 
+;; Only use this package when autoconf is not usable,
+;; see <https://issues.guix.gnu.org/46564#1>.
 (define-public autoconf-wrapper
   (make-autoconf-wrapper autoconf))
 

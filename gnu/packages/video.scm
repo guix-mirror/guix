@@ -4265,7 +4265,7 @@ It counts more than 100 plugins.")
               (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf-wrapper)
+     `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))

@@ -695,6 +695,8 @@ PGP keysigning parties.")
                 "1aig5ssabzbk4mih7xd04vgr931bw0flbi8dz902wlr610gyv5s5"))))
     (build-system gnu-build-system)
     (native-inputs
+     ;; autoconf-wrapper is required due to the non-standard
+     ;; 'configure phase.
      `(("autoconf" ,autoconf-wrapper)
        ("automake" ,automake)))
     (inputs `(("perl" ,perl)

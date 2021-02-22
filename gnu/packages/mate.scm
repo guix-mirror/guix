@@ -176,6 +176,8 @@ actions.")
              (setenv "CONFIG_SHELL" (which "sh"))
              (invoke "sh" "autogen.sh"))))))
     (native-inputs
+     ;; autoconf-wrapper is required due to the non-standard
+     ;; 'autoconf phase.
      `(("autoconf" ,autoconf-wrapper)
        ("automake" ,automake)
        ("intltool" ,intltool)
@@ -1201,7 +1203,7 @@ Re-decorates windows on un-maximise.
                (("dbus-1") ""))))))))
     (native-inputs
      `(("automake" ,automake)
-       ("autoconf" ,autoconf-wrapper)
+       ("autoconf" ,autoconf)
        ("gettext" ,gettext-minimal)
        ("intltool" ,intltool)
        ("mate-common" ,mate-common)

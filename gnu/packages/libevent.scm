@@ -115,6 +115,7 @@ limited support for fork events.")
      '(#:configure-flags '("--disable-static")
        ;; XXX: Some tests want /dev/tty, attempt to make connections, etc.
        #:tests? #f))
+    ;; TODO replace with autoconf on core-updates
     (native-inputs `(("autoconf" ,autoconf-wrapper)
                      ("automake" ,automake)
                      ("libtool" ,libtool)

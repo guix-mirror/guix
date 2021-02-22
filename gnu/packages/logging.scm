@@ -99,7 +99,7 @@ staying as close to their API as is reasonable.")
                       #t)))))
     (native-inputs
      `(("perl" ,perl)                             ;for tests
-       ("autoconf" ,autoconf-wrapper)
+       ("autoconf" ,autoconf)
        ("automake" ,automake)
        ("libtool" ,libtool)))
     (synopsis "C++ logging library")
