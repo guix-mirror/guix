@@ -1308,16 +1308,27 @@ Scheme by using Guile’s foreign function interface.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1vblf3d1bbwna3l09p2ap5y8ycvl549bz6whgk78imyfmn28ygry"))))
+                "1vblf3d1bbwna3l09p2ap5y8ycvl549bz6whgk78imyfmn28ygry"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Allow builds with Guile 3.0.
+                  (substitute* "configure.ac"
+                    (("^PKG_CHECK.*") "")
+                    (("^GUILE_PKG.*")
+                     "GUILE_PKG([3.0 2.2])\n"))
+                  #t))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
-       ("pkg-config" ,pkg-config)))
+       ("emacs" ,emacs-minimal)
+       ("pkg-config" ,pkg-config)
+       ("texinfo" ,texinfo)))
     (inputs
-     `(("guile" ,guile-2.2)
+     `(("guile" ,guile-3.0)
        ("gnutls" ,gnutls)
-       ("guile-json" ,guile-json-1)))
+       ("guile-json" ,guile-json-4)))
     (home-page "https://framagit.org/prouby/guile-mastodon")
     (synopsis "Guile Mastodon REST API module")
     (description "This package provides Guile modules to access the
