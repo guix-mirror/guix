@@ -6,6 +6,7 @@
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2021 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -942,7 +943,11 @@ backend device."
 ;;;
 
 ;; From <uapi/linux/random.h>.
-(define RNDADDTOENTCNT #x40045201)
+(define RNDADDTOENTCNT
+  ;; Avoid using %current-system here to avoid depending on host-side code.
+  (if (string-prefix? "powerpc64le" %host-type)
+      #x80045201
+      #x40045201))
 
 (define (add-to-entropy-count port-or-fd n)
   "Add N to the kernel's entropy count (the value that can be read from
