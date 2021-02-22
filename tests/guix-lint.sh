@@ -90,3 +90,8 @@ guix lint -L $module_dir -c inputs-should-be-native dummy dummy@42 dummy
 # that it does find it anyway.  See <https://bugs.gnu.org/42543>.
 (cd "$module_dir"/.. ; guix lint -c formatting -L "$(basename "$module_dir")" dummy@42) 2>&1 > "$module_dir/out"
 test -z "$(cat "$module_dir/out")"
+
+# Likewise, when there's a warning, 'package-field-location' used to crash
+# because it can't find "t-xyz/foo.scm".  See <https://bugs.gnu.org/46390>.
+(cd "$module_dir"/.. ; guix lint -c synopsis -L "$(basename "$module_dir")" dummy@42) 2>&1 > "$module_dir/out"
+grep_warning "`cat "$module_dir/out"`"

@@ -475,29 +475,34 @@ object."
 
   (match (package-location package)
     (($ <location> file line column)
-     (catch 'system-error
-       (lambda ()
-         ;; In general we want to keep relative file names for modules.
-         (call-with-input-file (search-path %load-path file)
-           (lambda (port)
-             (goto port line column)
-             (match (read port)
-               (('package inits ...)
-                (let ((field (assoc field inits)))
-                  (match field
-                    ((_ value)
-                     (let ((loc (and=> (source-properties value)
-                                       source-properties->location)))
-                       (and loc
-                            ;; Preserve the original file name, which may be a
-                            ;; relative file name.
-                            (set-field loc (location-file) file))))
-                    (_
-                     #f))))
-               (_
-                #f)))))
-       (lambda _
-         #f)))
+     (match (search-path %load-path file)
+       ((? string? file)
+        (catch 'system-error
+          (lambda ()
+            ;; In general we want to keep relative file names for modules.
+            (call-with-input-file file
+              (lambda (port)
+                (goto port line column)
+                (match (read port)
+                  (('package inits ...)
+                   (let ((field (assoc field inits)))
+                     (match field
+                       ((_ value)
+                        (let ((loc (and=> (source-properties value)
+                                          source-properties->location)))
+                          (and loc
+                               ;; Preserve the original file name, which may be a
+                               ;; relative file name.
+                               (set-field loc (location-file) file))))
+                       (_
+                        #f))))
+                  (_
+                   #f)))))
+          (lambda _
+            #f)))
+       (#f
+        ;; FILE could not be found in %LOAD-PATH.
+        #f)))
     (_ #f)))
 
 
