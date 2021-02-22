@@ -2926,11 +2926,11 @@ defects faster.")
     (license license:asl2.0)))
 
 (define-public gita
-  (let ((commit "62eb3d69874f75bdd6f95743e57315bc59890f70")
+  (let ((commit "e41b504dca90a25e9be27f296da7ce22e5782893")
         (revision "1"))
     (package
       (name "gita")
-      (version (git-version "0.10.10" revision commit))
+      (version (git-version "0.12.9" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -2939,7 +2939,7 @@ defects faster.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1jn5wnmjbdrrgz9fif7s81pv3g92q0wjcqy5qxl77kjy7iv0kpfp"))))
+                  "1k03zgcbhl91cgyh4k7ywyjp00y63q4bqbimncqh5b3lni8l8j5l"))))
       (build-system python-build-system)
       (native-inputs
        `(("git" ,git) ;for tests
