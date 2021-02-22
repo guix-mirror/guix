@@ -85,9 +85,11 @@
                       (bytes  (assoc-ref inputs "guile-bytestructures"))
                       (fibers (assoc-ref inputs "guile-fibers"))
                       (zlib   (assoc-ref inputs "guile-zlib"))
+                      (matd   (assoc-ref inputs "guile-mastodon"))
+                      (mail   (assoc-ref inputs "mailutils"))
                       (guix   (assoc-ref inputs "guix"))
                       (deps   (list avahi gcrypt json zmq squee git bytes
-                                    fibers zlib guix))
+                                    fibers zlib matd mail guix))
                       (guile  (assoc-ref %build-inputs "guile"))
                       (effective (read-line
                                   (open-pipe* OPEN_READ
@@ -125,6 +127,8 @@
          ("guile-squee" ,guile-squee)
          ("guile-git" ,guile-git)
          ("guile-zlib" ,guile-zlib)
+         ("guile-mastodon" ,guile-mastodon)
+         ("mailutils" ,mailutils)
          ;; FIXME: this is propagated by "guile-git", but it needs to be among
          ;; the inputs to add it to GUILE_LOAD_PATH.
          ("guile-bytestructures" ,guile-bytestructures)
