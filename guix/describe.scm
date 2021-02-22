@@ -182,7 +182,7 @@ property of manifest entries, or #f if it could not be determined."
   "Return ENTRY with an additional 'provenance' property if it's not already
 there."
   (let ((properties (manifest-entry-properties entry)))
-    (if (assq 'properties properties)
+    (if (assq 'provenance properties)
         entry
         (let ((item (manifest-entry-item entry)))
           (manifest-entry
