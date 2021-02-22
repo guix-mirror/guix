@@ -1016,7 +1016,6 @@ your @code{operating-system} configuration:
 (service qemu-binfmt-service-type
  (qemu-binfmt-configuration
    (platforms (lookup-qemu-platforms "arm" "aarch64"))
-   (guix-support? #t)))
 @end lisp
 
 Then reconfigure your system.

@@ -28723,13 +28723,6 @@ This is the configuration for the @code{qemu-binfmt} service.
 The list of emulated QEMU platforms.  Each item must be a @dfn{platform
 object} as returned by @code{lookup-qemu-platforms} (see below).
 
-@item @code{guix-support?} (default: @code{#t})
-When it is true, QEMU and all its dependencies are added to the build
-environment of @command{guix-daemon} (@pxref{Invoking guix-daemon,
-@option{--chroot-directory} option}).  This allows the @code{binfmt_misc}
-handlers to be used within the build environment, which in turn means
-that you can transparently build programs for another architecture.
-
 For example, let's suppose you're on an x86_64 machine and you have this
 service:
 
@@ -28737,7 +28730,6 @@ service:
 (service qemu-binfmt-service-type
          (qemu-binfmt-configuration
            (platforms (lookup-qemu-platforms "arm"))
-           (guix-support? #t)))
 @end lisp
 
 You can run:
@@ -28751,10 +28743,6 @@ and it will build Inkscape for ARMv7 @emph{as if it were a native
 build}, transparently using QEMU to emulate the ARMv7 CPU@.  Pretty handy
 if you'd like to test a package build for an architecture you don't have
 access to!
-
-When @code{guix-support?} is set to @code{#f}, programs for other
-architectures can still be executed transparently, but invoking commands
-like @command{guix build -s armhf-linux @dots{}} will fail.
 
 @item @code{qemu} (default: @code{qemu})
 The QEMU package to use.
