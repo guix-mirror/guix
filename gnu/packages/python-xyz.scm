@@ -23928,7 +23928,9 @@ restores the original state after the string is printed.")
     (synopsis "Python interface to the SANE scanner")
     (description "This package provides Python interface to the SANE scanner
 and frame grabber interface.")
-    (license license:expat)))
+    (license (license:non-copyleft
+               ;; Yet another variant of the X/MIT license.
+               "https://github.com/python-pillow/Sane/blob/master/COPYING"))))
 
 (define-public python-screenkey
   (package
