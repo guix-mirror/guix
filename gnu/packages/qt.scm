@@ -1903,17 +1903,17 @@ module provides support functions to the automatically generated code.")
                    (string-append "https://www.riverbankcomputing.com/static/"
                                   "Downloads/PyQt5/" version "/PyQt5-"
                                   version ".tar.gz")))
-        (file-name (string-append "PyQt5-"version ".tar.gz"))
+        (file-name (string-append "PyQt5-" version ".tar.gz"))
         (sha256
          (base32
           "1z74295i69cha52llsqffzhb5zz7qnbjc64h8qg21l91jgf0harp"))
-       (patches (search-patches "pyqt-configure.patch"
-                                "pyqt-public-sip.patch"))))
+        (patches (search-patches "pyqt-configure.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("qtbase" ,qtbase))) ; for qmake
     (propagated-inputs
-     `(("python-sip" ,python-sip)))
+     `(("python-sip" ,python-sip)
+       ("python-pyqt5-sip" ,python-pyqt5-sip)))
     (inputs
      `(("python" ,python-wrapper)
        ("qtbase" ,qtbase)
