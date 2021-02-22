@@ -693,7 +693,7 @@ Wayland, and Linux console environments alike.")
 
 (define-public nixfmt
   (package
-    (name "ghc-nixfmt")
+    (name "nixfmt")
     (version "0.4.0")
     (source
      (origin
