@@ -43,9 +43,10 @@
             MS_NOEXEC
             MS_REMOUNT
             MS_NOATIME
+            MS_STRICTATIME
+            MS_RELATIME
             MS_BIND
             MS_MOVE
-            MS_STRICTATIME
             MS_LAZYTIME
             MNT_FORCE
             MNT_DETACH
@@ -466,6 +467,7 @@ the returned procedure is called."
 (define MS_NOATIME         1024)
 (define MS_BIND            4096)
 (define MS_MOVE            8192)
+(define MS_RELATIME     2097152)
 (define MS_STRICTATIME 16777216)
 (define MS_LAZYTIME    33554432)
 
