@@ -20,6 +20,7 @@
 ;;; Copyright © 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Brendan Tildesley <mail@brendan.scot>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -88,6 +89,7 @@
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages regex)
   #:use-module (gnu packages ruby)
@@ -1807,6 +1809,42 @@ and binaries removed, and adds modular support for using system libraries.")
 (define-public python-sip
   (package
     (name "python-sip")
+    (version "5.5.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (list (pypi-uri "sip" version)
+                   (string-append "https://www.riverbankcomputing.com/static/"
+                                  "Downloads/sip/" version
+                                  "/sip-" version ".tar.gz")))
+        (sha256
+         (base32
+          "1idaivamp1jvbbai9yzv471c62xbqxhaawccvskaizihkd0lq0jx"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python" ,python-wrapper)))
+    (propagated-inputs
+     `(("python-toml" ,python-toml)
+       ("python-packaging" ,python-packaging)))
+    (home-page "https://www.riverbankcomputing.com/software/sip/intro")
+    (synopsis "Python binding creator for C and C++ libraries")
+    (description
+     "SIP is a tool to create Python bindings for C and C++ libraries.  It
+was originally developed to create PyQt, the Python bindings for the Qt
+toolkit, but can be used to create bindings for any C or C++ library.
+
+SIP comprises a code generator and a Python module.  The code generator
+processes a set of specification files and generates C or C++ code, which
+is then compiled to create the bindings extension module.  The SIP Python
+module provides support functions to the automatically generated code.")
+    ;; There is a choice between a python like license, gpl2 and gpl3.
+    ;; For compatibility with pyqt, we need gpl3.
+    (license license:gpl3)))
+
+(define-public python-sip-4
+  (package
+    (inherit python-sip)
+    (name "python-sip")
     (version "4.19.24")
     (source
       (origin
@@ -1821,6 +1859,7 @@ and binaries removed, and adds modular support for using system libraries.")
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-wrapper)))
+    (propagated-inputs `())
     (arguments
      `(#:tests? #f ; no check target
        #:imported-modules ((guix build python-build-system)
@@ -1843,23 +1882,10 @@ and binaries removed, and adds modular support for using system libraries.")
                        "--bindir" bin
                        "--destdir" lib
                        "--incdir" include)))))))
-    (home-page "https://www.riverbankcomputing.com/software/sip/intro")
-    (synopsis "Python binding creator for C and C++ libraries")
-    (description
-     "SIP is a tool to create Python bindings for C and C++ libraries.  It
-was originally developed to create PyQt, the Python bindings for the Qt
-toolkit, but can be used to create bindings for any C or C++ library.
-
-SIP comprises a code generator and a Python module.  The code generator
-processes a set of specification files and generates C or C++ code, which
-is then compiled to create the bindings extension module.  The SIP Python
-module provides support functions to the automatically generated code.")
-    ;; There is a choice between a python like license, gpl2 and gpl3.
-    ;; For compatibility with pyqt, we need gpl3.
     (license license:gpl3)))
 
 (define-public python2-sip
-  (package/inherit python-sip
+  (package/inherit python-sip-4
     (name "python2-sip")
     (native-inputs
      `(("python" ,python-2)))))

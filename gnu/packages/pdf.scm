@@ -339,7 +339,7 @@ When present, Poppler is able to correctly render CJK and Cyrillic text.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("python-sip" ,python-sip)
+     `(("python-sip" ,python-sip-4)
        ("python-pyqt" ,python-pyqt)
        ("poppler-qt5" ,poppler-qt5)
        ("qtbase" ,qtbase)))

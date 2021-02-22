@@ -2082,7 +2082,21 @@ growing set of geoscientific methods.")
                (("sip_dir = cfg.default_sip_dir")
                 (string-append "sip_dir = \""
                                (assoc-ref inputs "python-pyqt+qscintilla")
-                               "/share/sip\"")))
+                               "/share/sip\""))
+               ;; Fix building with python-sip@5.
+               ;;
+               ;; The reason for this is that python-sip@5 introduces some
+               ;; changes such as a new build system 'sip-build' as well as the
+               ;; use of the path "/lib/pythonX.X/site-packages/*/bindings/"
+               ;; instead of "/share/sip/" for .sip files. However, we do not
+               ;; actually use that those yet. QGIS detects SIP5 and assumes we
+               ;; are, messing up the build. The long term solution is to fully
+               ;; upgrade SIP, use sip-build and fix all failing packages, but
+               ;; for now I just want to get the build working.
+               ((".pyqt_sip_dir...os.path.join.*,")
+                (string-append "'pyqt_sip_dir': \""
+                               (assoc-ref inputs "python-pyqt+qscintilla")
+                               "/share/sip"  "\",")))
              (substitute* (list "scripts/prepare_commit.sh"
                                 "scripts/qstringfixup.sh"
                                 "scripts/release.pl"

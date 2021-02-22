@@ -2290,7 +2290,8 @@ ASCII text files using Gmsh's own scripting language.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ;;("python-astropy" ,python-astropy) ;; FIXME: Package this.
-       ("qttools" ,qttools)))
+       ("qttools" ,qttools)
+       ("python-sip" ,python-sip-4)))
     (inputs
      `(("ghostscript" ,ghostscript) ;optional, for EPS/PS output
        ("python-dbus" ,python-dbus)
