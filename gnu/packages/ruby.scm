@@ -2320,19 +2320,20 @@ with a similar style to the original OAuth spec.")
 (define-public ruby-omniauth
   (package
     (name "ruby-omniauth")
-    (version "1.9.1")
+    (version "2.0.3")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "omniauth" version))
        (sha256
-        (base32 "002vi9gwamkmhf0dsj2im1d47xw2n1jfhnzl18shxf3ampkqfmyz"))))
+        (base32 "105mzgvmn2kjaacxw01h4wqv33r7hfn5z8fxlkk3jcjar14j71bh"))))
     (build-system ruby-build-system)
-    (arguments
-     '(#:tests? #f)) ; No included tests
     (propagated-inputs
      `(("ruby-hashie" ,ruby-hashie)
-       ("ruby-rack" ,ruby-rack)))
+       ("ruby-rack" ,ruby-rack)
+       ("ruby-rack-protection" ,ruby-rack-protection)))
+    (native-inputs
+     `(("ruby-rspec" ,ruby-rspec)))
     (synopsis "Generalized Rack framework for multiple-provider authentication")
     (description
      "This package provides a generalized Rack framework for multiple-provider
