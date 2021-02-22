@@ -476,11 +476,11 @@ object."
   (match (package-location package)
     (($ <location> file line column)
      (match (search-path %load-path file)
-       ((? string? file)
+       ((? string? file-found)
         (catch 'system-error
           (lambda ()
             ;; In general we want to keep relative file names for modules.
-            (call-with-input-file file
+            (call-with-input-file file-found
               (lambda (port)
                 (goto port line column)
                 (match (read port)
