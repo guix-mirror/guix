@@ -16593,8 +16593,6 @@ If you want to customize the SOCKS socket in more detail, leave
 @code{socks-socket-type} at its default value of @code{'tcp} and use
 @code{config-file} to override the default by providing your own
 @code{SocksPort} option.
-@end table
-@end deftp
 
 @item @code{control-socket?} (default: @code{#f})
 Whether or not to provide a ``control socket'' by which Tor can be
@@ -16602,6 +16600,9 @@ controlled to, for instance, dynamically instantiate tor onion services.
 If @code{#t}, Tor will listen for control commands on the UNIX domain socket
 @file{/var/run/tor/control-sock}, which will be made writable by members of the
 @code{tor} group.
+
+@end table
+@end deftp
 
 @cindex hidden service
 @deffn {Scheme Procedure} tor-hidden-service @var{name} @var{mapping}
