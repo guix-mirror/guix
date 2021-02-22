@@ -2344,14 +2344,14 @@ authentication.")
 (define-public ruby-omniauth-oauth2
   (package
     (name "ruby-omniauth-oauth2")
-    (version "1.6.0")
+    (version "1.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "omniauth-oauth2" version))
        (sha256
         (base32
-         "11mi36l9d97r77q99jnafdc1yaa0a9wahhpp7dj7ank8q52g7g79"))))
+         "10fr2b58sp7l6nfdvxpbi67374hkrvsf507cvda89jjs0jacy319"))))
     (build-system ruby-build-system)
     (arguments
      '(#:phases
