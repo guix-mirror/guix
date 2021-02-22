@@ -7174,26 +7174,22 @@ for Ivy and Company that make use of the library.")
     (license license:expat)))
 
 (define-public emacs-selectrum
-  ;; Release 3.0 has compatibility issues with recent versions of Emacs
-  ;; Consult.
-  (let ((commit "a2ba6333e59ddc853318ece229f34016400ca033")
-        (revision "0"))
-    (package
-      (name "emacs-selectrum")
-      (version (git-version "3.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/raxod502/selectrum")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "1agpcazga6gxl6k28bdski1sx046699cici8a9hz0nj7s8rkx1zm"))))
-      (build-system emacs-build-system)
-      (home-page "https://github.com/raxod502/selectrum/")
-      (synopsis "Incremental narrowing in Emacs")
-      (description "Selectrum is a solution for incremental narrowing in
+  (package
+    (name "emacs-selectrum")
+    (version "3.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/raxod502/selectrum")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "02jrki6vzyfyi1bbslki5pk2348flh9dz18jkc4y7p60bvbr52cb"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/raxod502/selectrum/")
+    (synopsis "Incremental narrowing in Emacs")
+    (description "Selectrum is a solution for incremental narrowing in
 Emacs, replacing Helm, Ivy, and IDO.  Its design philosophy is based
 on choosing the right abstractions and prioritizing consistency and
 predictability over special-cased improvements for particular cases.
@@ -7201,7 +7197,7 @@ As such, Selectrum follows existing Emacs conventions where they exist
 and are reasonable, and it declines to implement features which have
 marginal benefit compared to the additional complexity of a new
 interface.")
-      (license license:expat))))
+    (license license:expat)))
 
 (define-public emacs-orderless
   (package
