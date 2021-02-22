@@ -36,7 +36,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module ((guix licenses)
-                #:prefix licence:)
+                #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils))
 
@@ -141,7 +141,7 @@
 proving access to any raster image scanner hardware (flatbed scanner,
 hand-held scanner, video- and still-cameras, frame-grabbers, etc.).  The
 package contains the library, but no drivers.")
-    (license licence:gpl2+))) ; plus linking exception
+    (license license:gpl2+))) ; plus linking exception
 
 ;; This variant links in the hpaio backend provided by hplip, which adds
 ;; support for HP scanners whose backends are not maintained by the SANE
@@ -227,7 +227,7 @@ package contains the library and drivers.")))
      `(#:make-flags
        (list (string-append "xsanedocdir=" (assoc-ref %outputs "out")
                             "/share/doc/" ,name "-" ,version))
-       #:tests? #f                      ; no test suite
+       #:tests? #f                                ; no test suite
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-invalid-dereference
@@ -273,4 +273,4 @@ as a GIMP plugin to acquire images directly from a scanner.
 
 XSane talks to scanners through the @acronym{SANE, Scanner Access Now Easy}
 back-end library, which supports almost all existing scanners.")
-    (license licence:gpl2+)))
+    (license license:gpl2+)))
