@@ -1564,17 +1564,16 @@ monitor/GPU.")
 (define-public runc
   (package
     (name "runc")
-    (version "1.0.0-rc6")
+    (version "1.0.0-rc93")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://github.com/opencontainers/runc/releases/"
                     "download/v" version "/runc.tar.xz"))
               (file-name (string-append name "-" version ".tar.xz"))
-              (patches (search-patches "runc-CVE-2019-5736.patch"))
               (sha256
                (base32
-                "1c7832dq70slkjh8qp2civ1wxhhdd2hrx84pq7db1mmqc9fdr3cc"))))
+                "0b90r1bkvlqli53ca1yc1l488dba0isd3i6l7nlhszxi8p7hzvkh"))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "github.com/opencontainers/runc"
@@ -1584,35 +1583,27 @@ monitor/GPU.")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
-         (replace 'unpack
-           (lambda* (#:key source import-path #:allow-other-keys)
-             ;; Unpack the tarball into 'runc' instead of 'runc-1.0.0-rc5'.
-             (let ((dest (string-append "src/" import-path)))
-               (mkdir-p dest)
-               (invoke "tar" "-C" (string-append "src/" import-path)
-                       "--strip-components=1"
-                       "-xvf" source))))
          (replace 'build
            (lambda* (#:key import-path #:allow-other-keys)
              (with-directory-excursion (string-append "src/" import-path)
-               ;; XXX: requires 'go-md2man'.
-               ;; (invoke "make" "man")
-               (invoke "make"))))
-         ;; (replace 'check
-         ;;   (lambda _
-         ;;     (invoke "make" "localunittest")))
+               (invoke "make" "all" "man"))))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "make" "localunittest"))))
          (replace 'install
            (lambda* (#:key import-path outputs #:allow-other-keys)
              (with-directory-excursion (string-append "src/" import-path)
                (let ((out (assoc-ref outputs "out")))
-                 (invoke "make" "install" "install-bash"
+                 (invoke "make" "install" "install-bash" "install-man"
                          (string-append "PREFIX=" out)))))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("go-md2man" ,go-github-com-go-md2man)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("libseccomp" ,libseccomp)))
     (synopsis "Open container initiative runtime")
-    (home-page "https://www.opencontainers.org/")
+    (home-page "https://opencontainers.org/")
     (description
      "@command{runc} is a command line client for running applications
 packaged according to the

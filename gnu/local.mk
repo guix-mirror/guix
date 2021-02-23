@@ -1645,7 +1645,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/rnp-disable-ruby-rnp-tests.patch		\
   %D%/packages/patches/rnp-unbundle-googletest.patch		\
   %D%/packages/patches/ruby-sanitize-system-libxml.patch	\
-  %D%/packages/patches/runc-CVE-2019-5736.patch			\
   %D%/packages/patches/rust-1.19-mrustc.patch			\
   %D%/packages/patches/rust-1.25-accept-more-detailed-gdb-lines.patch \
   %D%/packages/patches/rust-1.45-linker-locale.patch		\
