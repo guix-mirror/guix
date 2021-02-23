@@ -191,15 +191,6 @@
 
             (test-begin "cuirass")
 
-            ;; Wait for cuirass to be up and running.
-            (test-assert "cuirass running"
-              (marionette-eval
-               '(begin
-                  (use-modules (gnu services herd))
-                  (start-service 'cuirass)
-                  #t)
-               marionette))
-
             (test-assert "cuirass-web running"
               (begin
                 (wait-for-tcp-port #$cuirass-web-port marionette)
