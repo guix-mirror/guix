@@ -394,7 +394,8 @@ source files.")
     (propagated-inputs
      `(("ruby-activesupport" ,ruby-activesupport)
        ("ruby-middleware" ,ruby-middleware)
-       ("ruby-thor" ,ruby-thor)))
+       ("ruby-thor" ,ruby-thor)
+       ("ruby-thread-safe" ,ruby-thread-safe)))
     (home-page "https://github.com/ruby-protobuf/protobuf")
     (synopsis "Implementation of Google's Protocol Buffers in Ruby")
     (description "Protobuf is an implementation of Google's Protocol Buffers
