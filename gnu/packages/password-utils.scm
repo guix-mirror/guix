@@ -275,29 +275,31 @@ platforms.")
          (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
-       `(#:tests? #f ; FIXME: skip failing test suite (requires write access
-                     ; to /tmp), patching path does not help somehow.
+       ;; FIXME: skip failing test suite (requires write access to /tmp),
+       ;; patching path does not help somehow.
+       `(#:tests? #f
          #:phases
          (modify-phases %standard-phases
-         (replace 'bootstrap
-           (lambda _
-             (invoke "aclocal")
-             (invoke "autoheader")
-             (invoke "automake" "--add-missing")
-             (invoke "autoconf")
-             #t)))))
+           (replace 'bootstrap
+             (lambda _
+               (invoke "aclocal")
+               (invoke "autoheader")
+               (invoke "automake" "--add-missing")
+               (invoke "autoconf")
+               #t)))))
       (native-inputs
        `(("autoconf" ,autoconf)
          ("automake" ,automake)))
       (inputs
-       `(("openssl" ,openssl)
-         ("libx11" ,libx11)
+       `(("libx11" ,libx11)
+         ("libxmu" ,libxmu)
          ("libxt" ,libxt)
-         ("libxmu" ,libxmu)))
+         ("openssl" ,openssl)))
       (home-page "https://github.com/nsd20463/pwsafe")
       (synopsis "CLI password manager")
-      (description "Command line tool compatible with Counterpane's
-Passwordsafe.")
+      (description
+       "@command{pwsafe} is a command line tool compatible with
+Counterpane's Passwordsafe.")
       (license license:gpl2+))))
 
 (define-public shroud
