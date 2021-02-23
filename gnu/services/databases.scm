@@ -410,13 +410,8 @@ rolname = '" ,name "')) as not_exists;\n"
 
   (let ((host (postgresql-role-configuration-host config))
         (roles (postgresql-role-configuration-roles config)))
-    (program-file
-     "postgresql-create-roles"
-     #~(begin
-         (let ((psql #$(file-append postgresql "/bin/psql")))
-           (execl psql psql "-a"
-                  "-h" #$host
-                  "-f" #$(roles->queries roles)))))))
+    #~(let ((psql #$(file-append postgresql "/bin/psql")))
+        (list psql "-a" "-h" #$host "-f" #$(roles->queries roles)))))
 
 (define (postgresql-role-shepherd-service config)
   (match-record config <postgresql-role-configuration>
@@ -425,10 +420,14 @@ rolname = '" ,name "')) as not_exists;\n"
            (requirement '(postgres))
            (provision '(postgres-roles))
            (one-shot? #t)
-           (start #~(make-forkexec-constructor
-                     (list #$(postgresql-create-roles config))
-                     #:user "postgres" #:group "postgres"
-                     #:log-file #$log))
+           (start
+            #~(lambda args
+                (let ((pid (fork+exec-command
+                            #$(postgresql-create-roles config)
+                            #:user "postgres"
+                            #:group "postgres"
+                            #:log-file #$log)))
+                  (zero? (cdr (waitpid pid))))))
            (documentation "Create PostgreSQL roles.")))))
 
 (define postgresql-role-service-type
