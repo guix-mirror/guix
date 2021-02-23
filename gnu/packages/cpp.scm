@@ -928,17 +928,18 @@ conversions to and from strings, iteration and related functionality.")
      `(#:configure-flags
        '("-DCLI11_SINGLE_FILE=OFF"
          "-DCLI11_BUILD_EXAMPLES=OFF")
-       #:imported-modules ,(append %cmake-build-system-modules
-                                   (source-module-closure '((guix utils))))
+       #:imported-modules ,%cmake-build-system-modules
+       #:modules ((guix build cmake-build-system)
+                  (guix build utils))
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'no-vendor-gtest
            (lambda _
-             (use-modules (guix utils))
              (substitute* "tests/CMakeLists.txt"
-               ;; We provide our own googletest, so this is not really a problem.
-               (("message\\(FATAL_ERROR \"You have requested tests be built, but googletest is not downloaded." msg)
-                 (string-replace-substring msg "FATAL_ERROR" "TRACE")))
+               ;; We provide our own googletest, so this is not really a
+               ;; problem.
+               (("message\\(FATAL_ERROR \"You have requested")
+                "message(TRACE \"You have requested"))
              (substitute* "cmake/AddGoogletest.cmake"
                (("^add_subdirectory\\(.*googletest.*$") "find_package(GTest REQUIRED)")
                (("^set_target_properties\\(gtest gtest_main gmock gmock_main") "")
