@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2018 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2020 Christopher Baines <mail@cbaines.net>
@@ -510,7 +510,9 @@ was found."
     ;; lookup errors are typically the first one, and because other errors are
     ;; a subset of `system-error', which is harder to filter.
     ((_ exp ...)
-     (catch #t
+     ;; Use a pre-unwind handler so that re-throwing preserves useful
+     ;; backtraces.  'with-throw-handler' works for Guile 2.2 and 3.0.
+     (with-throw-handler #t
        (lambda () exp ...)
        (match-lambda*
          (('getaddrinfo-error error)
