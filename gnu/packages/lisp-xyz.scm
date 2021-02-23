@@ -3563,10 +3563,10 @@ client and server.")
   (sbcl-package->cl-source-package sbcl-trivial-arguments))
 
 (define-public sbcl-trivial-clipboard
-  (let ((commit "afcd3743b842f5a81fc86dba60f9db59970f49c5"))
+  (let ((commit "8a580cb97196be7cf096548eb1f46794cd22bb39"))
     (package
       (name "sbcl-trivial-clipboard")
-      (version (git-version "0.0.0.0" "3" commit))
+      (version (git-version "0.0.0.0" "4" commit))
       (source
        (origin
          (method git-fetch)
@@ -3576,7 +3576,7 @@ client and server.")
          (file-name (git-file-name "trivial-clipboard" version))
          (sha256
           (base32
-           "1qfbvkzmvkbqpc5s3sx31c5653sy6qlcixafgzd10qpykb843prr"))))
+           "0apkgqrscylw3hhm5x2vs0z3hz6h7zd7dl5y3wr2zl8qjpvpc80k"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("xclip" ,xclip)))
@@ -3588,10 +3588,8 @@ client and server.")
            (add-after 'unpack 'fix-paths
              (lambda* (#:key inputs #:allow-other-keys)
                (substitute* "src/text.lisp"
-                 (("\\(executable-find \"xclip\"\\)")
-                  (string-append "(executable-find \""
-                                 (assoc-ref inputs "xclip")
-                                 "/bin/xclip\")"))))))))
+                 (("\"xclip\"")
+                  (string-append "\"" (assoc-ref inputs "xclip") "/bin/xclip\""))))))))
       (home-page "https://github.com/snmsts/trivial-clipboard")
       (synopsis "Access system clipboard in Common Lisp")
       (description
