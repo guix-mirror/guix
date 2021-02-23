@@ -116,6 +116,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system guile)
   #:use-module (guix utils)
+  #:use-module ((guix build utils) #:select (alist-replace))
   #:use-module (ice-9 match)
   #:use-module ((srfi srfi-1) #:select (alist-delete)))
 
@@ -2191,6 +2192,21 @@ library.")
        '("GUILE_AUTO_COMPILE=0")        ; to prevent guild errors
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-for-cross-compilation
+           (lambda _
+             (substitute* "configure.ac"
+               (("GUILE_FLAGS")
+                "GUILE_FLAGS
+if test \"$cross_compiling\" != no; then
+   GUILE_TARGET=\"--target=$host_alias\"
+   AC_SUBST([GUILE_TARGET])
+fi
+"))
+             (substitute* "am/guile.mk"
+               (("guild compile") "guild compile $(GUILE_TARGET)"))
+             (delete-file "configure")  ; trigger the bootstrap phase to run
+                                        ; autoreconf
+             #t))
          (add-before 'configure 'patch-module-dir
            (lambda _
              (substitute* "src/Makefile.in"
@@ -2201,7 +2217,10 @@ library.")
 $(libdir)/guile/@GUILE_EFFECTIVE_VERSION@/site-ccache\n"))
              #t)))))
     (native-inputs
-     `(("guile" ,guile-3.0)
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gettext-minimal)
+       ("guile" ,guile-3.0)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("guile" ,guile-3.0)))
@@ -2222,15 +2241,23 @@ for Guile\".")
   (package
     (inherit guile-lib)
     (name "guile2.0-lib")
-    (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("guile" ,guile-2.0)))))
+    (native-inputs
+     (alist-replace "guile" (list guile-2.0)
+                    (package-native-inputs guile-lib)))
+    (inputs
+     (alist-replace "guile" (list guile-2.0)
+                    (package-inputs guile-lib)))))
 
 (define-public guile2.2-lib
   (package
     (inherit guile-lib)
     (name "guile2.2-lib")
-    (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("guile" ,guile-2.2)))))
+    (native-inputs
+     (alist-replace "guile" (list guile-2.2)
+                    (package-native-inputs guile-lib)))
+    (inputs
+     (alist-replace "guile" (list guile-2.2)
+                    (package-inputs guile-lib)))))
 
 (define-public guile3.0-lib
   (deprecated-package "guile3.0-lib" guile-lib))
