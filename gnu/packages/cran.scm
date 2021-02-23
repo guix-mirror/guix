@@ -2309,10 +2309,25 @@ including functions for geolocation and routing.")
        (uri (cran-uri "haven" version))
        (sha256
         (base32
-         "03cypgqhdkrfbfpl1yx2wb7flczrbak1w654wkicmd5ajwr9zvkf"))))
+         "03cypgqhdkrfbfpl1yx2wb7flczrbak1w654wkicmd5ajwr9zvkf"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+            ;; unvendor readstat
+           (delete-file-recursively "src/readstat")
+           #t))))
     (build-system r-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'unbundle-readstat
+           (lambda _
+             ;; Not required, since we’re not building readstat.
+             (substitute* "src/Makevars"
+               (("-lz") "-lreadstat"))
+             #t)))))
     (inputs
-     `(("zlib" ,zlib)))
+     `(("readstat" ,readstat)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (propagated-inputs
