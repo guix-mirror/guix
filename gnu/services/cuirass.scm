@@ -150,7 +150,7 @@
     `(,(shepherd-service
         (documentation "Run Cuirass.")
         (provision '(cuirass))
-        (requirement '(guix-daemon postgres networking))
+        (requirement '(guix-daemon postgres postgres-roles networking))
         (start #~(make-forkexec-constructor
                   (list (string-append #$cuirass "/bin/cuirass")
                         "--cache-directory" #$cache-directory
@@ -181,7 +181,7 @@
       ,(shepherd-service
         (documentation "Run Cuirass web interface.")
         (provision '(cuirass-web))
-        (requirement '(guix-daemon postgres networking))
+        (requirement '(cuirass))
         (start #~(make-forkexec-constructor
                   (list (string-append #$cuirass "/bin/cuirass")
                         "--cache-directory" #$cache-directory
@@ -211,7 +211,7 @@
                (shepherd-service
                 (documentation "Run Cuirass remote build server.")
                 (provision '(cuirass-remote-server))
-                (requirement '(avahi-daemon cuirass guix-daemon networking))
+                (requirement '(avahi-daemon cuirass))
                 (start #~(make-forkexec-constructor
                           (list (string-append #$cuirass "/bin/remote-server")
                                 (string-append "--database=" #$database)
