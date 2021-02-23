@@ -262,7 +262,7 @@ platforms.")
         (revision "0"))
     (package
       (name "pwsafe-cli")
-      (version (git-version "0.2.1" revision commit))
+      (version (git-version "0.2.0" revision commit))
       (source
        (origin
          (method git-fetch)
