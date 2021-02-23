@@ -1223,6 +1223,37 @@ object library.")
 language and software synthesizer.")
     (license license:lgpl2.1+)))
 
+(define-public midicomp
+  ;; The latest tagged release is 9 years old and there have been
+  ;; unreleased fixes, so we take the last commit.
+  (let ((commit "70f76963cb0cdb3cbe03ec6e7246b1fb885d3c68")
+        (revision "1"))
+    (package
+      (name "midicomp")
+      (version (git-version "0.0.8" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/markc/midicomp")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+           (base32
+            "12zh247c6v88ssy4l8v7yirh4bl2jcc1ch7f4gdry79a82kai1gf"))))
+     (build-system cmake-build-system)
+     (arguments
+      `(#:tests? #f))  ; no "check" target
+      (synopsis "Convert SMF MIDI files to and from plain text")
+      (description
+       "midicomp can manipulate SMF (Standard MIDI File) files.  It can both
+  read and write SMF files in 0 or format 1 and also read and write its own
+  plain text format.  This means a SMF file can be turned into easily
+  parseable text, edited with any text editor or filtered through any script
+  language, and recompiled back into a binary SMF file.")
+      (home-page "https://github.com/markc/midicomp")
+      (license license:agpl3))))
+
 (define-public clalsadrv
   (package
     (name "clalsadrv")
