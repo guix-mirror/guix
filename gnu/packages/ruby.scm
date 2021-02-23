@@ -6434,14 +6434,14 @@ documents and fragments.  It's built on top of Nokogiri and libxml2.")
 (define-public ruby-activesupport
   (package
     (name "ruby-activesupport")
-    (version "5.2.2.1")
+    (version "6.1.3")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "activesupport" version))
        (sha256
         (base32
-         "161bp4p01v1a1lvszrhd1a02zf9x1p1l1yhw79a3rix1kvzkkdqb"))))
+         "00a4db64g8w5yyk6hzak2nqrmdfvyh5zc9cvnm9gglwbi87ss28h"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
@@ -6455,12 +6455,13 @@ documents and fragments.  It's built on top of Nokogiri and libxml2.")
        ("ruby-i18n" ,ruby-i18n)
        ("ruby-minitest" ,ruby-minitest)
        ("ruby-tzinfo" ,ruby-tzinfo)
-       ("ruby-tzinfo-data" ,ruby-tzinfo-data)))
+       ("ruby-tzinfo-data" ,ruby-tzinfo-data)
+       ("ruby-zeitwerk" ,ruby-zeitwerk)))
     (synopsis "Ruby on Rails utility library")
     (description "ActiveSupport is a toolkit of support libraries and Ruby
 core extensions extracted from the Rails framework.  It includes support for
 multibyte strings, internationalization, time zones, and testing.")
-    (home-page "http://www.rubyonrails.org")
+    (home-page "https://www.rubyonrails.org")
     (license license:expat)))
 
 (define-public ruby-crass
