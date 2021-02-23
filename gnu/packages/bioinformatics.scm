@@ -6889,6 +6889,32 @@ sequences.")
     ;; STAR is licensed under GPLv3 or later; htslib is MIT-licensed.
     (license license:gpl3+)))
 
+(define-public star-for-pigx
+  (package
+    (inherit star)
+    (name "star")
+    (version "2.7.3a")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/alexdobin/STAR")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1hgiqw5qhs0pc1xazzihcfd92na02xyq2kb469z04y1v51kpvvjq"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (substitute* "source/Makefile"
+                    (("/bin/rm") "rm"))
+                  ;; Remove pre-built binaries and bundled htslib sources.
+                  (delete-file-recursively "bin/MacOSX_x86_64")
+                  (delete-file-recursively "bin/Linux_x86_64")
+                  (delete-file-recursively "bin/Linux_x86_64_static")
+                  (delete-file-recursively "source/htslib")
+                  #t))))))
+
 (define-public starlong
   (package (inherit star)
     (name "starlong")
@@ -12587,7 +12613,7 @@ once.  This package provides tools to perform Drop-seq analyses.")
        ("snakemake" ,snakemake)
        ("fastqc" ,fastqc)
        ("multiqc" ,multiqc)
-       ("star" ,star)
+       ("star" ,star-for-pigx)
        ("trim-galore" ,trim-galore)
        ("htseq" ,htseq)
        ("samtools" ,samtools)
@@ -12798,7 +12824,7 @@ methylation and segmentation.")
        ("pandoc-citeproc" ,pandoc-citeproc)
        ("samtools" ,samtools)
        ("snakemake" ,snakemake)
-       ("star" ,star)
+       ("star" ,star-for-pigx)
        ("r-minimal" ,r-minimal)
        ("r-argparser" ,r-argparser)
        ("r-cowplot" ,r-cowplot)
