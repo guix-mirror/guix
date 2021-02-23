@@ -10077,21 +10077,19 @@ of the more insecure basic authentication scheme.")
 (define-public ruby-mail
   (package
     (name "ruby-mail")
-    (version "2.6.6")
+    (version "2.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "mail" version))
        (sha256
         (base32
-         "0d7lhj2dw52ycls6xigkfz6zvfhc6qggply9iycjmcyj9760yvz9"))))
+         "00wwz6ys0502dpk8xprwcqfwyf3hmnx6lgxaiq6vj43mkx43sapc"))))
     (build-system ruby-build-system)
     (propagated-inputs
-     `(("ruby-mime-types" ,ruby-mime-types)))
+     `(("ruby-mini-mime" ,ruby-mini-mime)))
     (arguments
-     ;; Tests require extra gems not included in the Gemfile.
-     ;; XXX: Try enabling this for the next version with mini_mime.
-     `(#:tests? #f))
+     '(#:tests? #f)) ; no rakefile
     (synopsis "Mail library for Ruby")
     (description
      "Mail is an internet library for Ruby that is designed to handle email
