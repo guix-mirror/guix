@@ -425,7 +425,7 @@ name of its URI."
 
 (define-syntax-rule (package/inherit p overrides ...)
   "Like (package (inherit P) OVERRIDES ...), except that the same
-transformation is done to the package replacement, if any.  P must be a bare
+transformation is done to the package P's replacement, if any.  P must be a bare
 identifier, and will be bound to either P or its replacement when evaluating
 OVERRIDES."
   (let loop ((p p))
