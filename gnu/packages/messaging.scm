@@ -2054,6 +2054,15 @@ manual SSL certificate verification.")
        (sha256
         (base32 "11d341avsfr0z4lq15cy5dkmff6qpy91wkgzdpfdy31l27pa1g79"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags (list "--disable-static")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-make
+           (lambda _
+             (substitute* "Makefile.am"
+               (("'\\^xmpp_'") "'.'"))
+             #t)))))
     (inputs
      `(("expat" ,expat)
        ("openssl" ,openssl)))
