@@ -260,14 +260,14 @@ applications, in pace of the default Minitest testing library.")
 (define-public ruby-rails-html-sanitizer
   (package
     (name "ruby-rails-html-sanitizer")
-    (version "1.0.4")
+    (version "1.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "rails-html-sanitizer" version))
        (sha256
         (base32
-         "1gv7vr5d9g2xmgpjfq4nxsqr70r9pr042r9ycqqnfvw5cz9c7jwr"))))
+         "1icpqmxbppl4ynzmn6dx7wdil5hhq6fz707m9ya6d86c7ys8sd4f"))))
     (build-system ruby-build-system)
     (arguments
      '(;; No included tests
