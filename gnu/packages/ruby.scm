@@ -8823,6 +8823,23 @@ definitions.")
     (home-page "https://github.com/mime-types/ruby-mime-types")
     (license license:expat)))
 
+(define-public ruby-mini-mime
+  (package
+    (name "ruby-mini-mime")
+    (version "1.0.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (rubygems-uri "mini_mime" version))
+        (sha256
+         (base32
+          "1axm0rxyx3ss93wbmfkm78a6x03l8y4qy60rhkkiq0aza0vwq3ha"))))
+    (build-system ruby-build-system)
+    (synopsis "Lightweight mime type lookup toy")
+    (description "This package provides a lightweight mime type lookup toy.")
+    (home-page "https://github.com/discourse/mini_mime")
+    (license license:expat)))
+
 (define-public ruby-fivemat
   (package
     (name "ruby-fivemat")
