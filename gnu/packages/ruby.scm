@@ -6335,14 +6335,14 @@ you about the changes.")
 (define-public ruby-loofah
   (package
     (name "ruby-loofah")
-    (version "2.2.3")
+    (version "2.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "loofah" version))
        (sha256
         (base32
-         "1ccsid33xjajd0im2xv941aywi58z7ihwkvaf1w2bv89vn5bhsjg"))))
+         "0npqav026zd7r4qdidq9x5nxcp2dzg71bnp421xxx7sngbxf2xbd"))))
     (build-system ruby-build-system)
     (arguments
      '(#:phases
@@ -6351,11 +6351,9 @@ you about the changes.")
            (lambda _
              ;; concourse is a development tool which is unused, so remove it
              ;; so it's not required.
-             (substitute* "Gemfile"
-               ((".*\"concourse\".*") "\n"))
              (substitute* "Rakefile"
-               (("require 'concourse'") "")
-               (("Concourse\\.new.*") "\n"))
+               (("require \"concourse\"") "")
+               (("Concourse\\.new.*") "task :concourse do\n"))
              #t)))))
     (native-inputs
      `(("ruby-hoe" ,ruby-hoe)
