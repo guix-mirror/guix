@@ -12112,6 +12112,35 @@ which snapshots to consider and what files to include.")
      "https://github.com/hartator/wayback-machine-downloader")
     (license license:expat)))
 
+(define-public ruby-zeitwerk
+  (package
+    (name "ruby-zeitwerk")
+    (version "2.4.2")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               ;; No tests in the released gem.
+               (url "https://github.com/fxn/zeitwerk")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "119fgdyb57gmss2yvfwfr47wcy8nny38sai72446krpihyavpizw"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("ruby-minitest" ,ruby-minitest)
+       ("ruby-minitest-focus" ,ruby-minitest-focus)
+       ("ruby-minitest-reporters" ,ruby-minitest-reporters)))
+    (synopsis "Efficient and thread-safe code loader for Ruby")
+    (description
+     "Zeitwerk implements constant autoloading with Ruby semantics.  Each gem
+and application may have their own independent autoloader, with its own
+configuration, inflector, and logger.  Supports autoloading, reloading, and
+eager loading.")
+    (home-page "https://github.com/fxn/zeitwerk")
+    (license license:expat)))
+
 (define-public ruby-wwtd
   (package
     (name "ruby-wwtd")
