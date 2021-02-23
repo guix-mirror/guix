@@ -527,7 +527,7 @@ application bootup, plugins, generators, and Rake tasks.")
 (define-public ruby-web-console
   (package
     (name "ruby-web-console")
-    (version "3.7.0")
+    (version "4.1.0")
     (source
      (origin
        ;; Download from GitHub as test files are not provided in the gem.
@@ -538,7 +538,7 @@ application bootup, plugins, generators, and Rake tasks.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0ir999p8cnm3l3zwbgpwxxcq1vwkj8d0d3r24362cyaf4v1rglq2"))))
+         "0azk8nmimnjbh74vxgwcj9jr588rj7kb5rrlclcjfjsw9jqjzckc"))))
     (build-system ruby-build-system)
     (arguments
      '(#:phases
