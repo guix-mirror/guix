@@ -298,7 +298,7 @@ platforms.")
       (synopsis "CLI password manager")
       (description "Command line tool compatible with Counterpane's
 Passwordsafe.")
-      (license license:gpl2))))
+      (license license:gpl2+))))
 
 (define-public shroud
   (package
