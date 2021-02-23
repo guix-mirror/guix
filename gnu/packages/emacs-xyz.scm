@@ -60,7 +60,7 @@
 ;;; Copyright © 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;; Copyright © 2020 Robert Smith <robertsmith@posteo.net>
 ;;; Copyright © 2020 Evan Straw <evan.straw99@gmail.com>
-;;; Copyright © 2020 Masaya Tojo <masaya@tojo.tokyo>
+;;; Copyright © 2020, 2021 Masaya Tojo <masaya@tojo.tokyo>
 ;;; Copyright © 2020, 2021 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2020, 2021 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
@@ -18025,6 +18025,27 @@ bookmarks and history.")
     (synopsis "Interface for IETF RFC document")
     (description
      "This package provides an Emacs interface for IETF RFC document.")
+    (license license:gpl3+)))
+
+(define-public emacs-ido-at-point
+  (package
+    (name "emacs-ido-at-point")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/katspaugh/ido-at-point")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1bii7vj8pmmijcpvq3a1scky4ais7k6d7zympb3m9dmz355m9rpp"))))
+    (build-system emacs-build-system)
+    (synopsis "Ido-style completion at point")
+    (description
+     "This package is an alternative frontend for @code{completion-at-point}.
+It replaces the standard completions buffer with Ido prompt.")
+    (home-page "https://github.com/katspaugh/ido-at-point")
     (license license:gpl3+)))
 
 (define-public emacs-ido-vertical-mode
