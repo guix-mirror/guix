@@ -980,3 +980,32 @@ programming environment using the actor model for concurrent, distributed
 computation.")
     (home-page "https://www.actor-framework.org/")
     (license license:bsd-3)))
+
+(define-public pcg-cpp
+  (let ((commit "5b5cac8d61339e810c5dbb4692d868a1d7ca1b2d")
+        (revision "1"))
+    (package
+      (name "pcg-cpp")
+      (version (git-version "0.98.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/imneme/pcg-cpp")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1s9dcd4iydlc1xj9m6f7c52nlyx99klk043sk7arqy6kp7gdaa33"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:test-target "test"
+         #:phases
+          (modify-phases %standard-phases
+            (delete 'configure))
+         #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))))
+      (synopsis "C++11 header only library for random number generation")
+      (description "The Permuted Congruential Generator (PCG) extends the
+Linear Congruential Generator (LCG) with a permutation function to increase
+output randomness while retaining speed, simplicity, and conciseness.")
+      (home-page "https://www.pcg-random.org")
+      (license (list license:expat license:asl2.0))))) ; dual licensed
