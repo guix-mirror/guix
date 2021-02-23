@@ -21,6 +21,7 @@
 ;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
 ;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020, 2021 Morgan Smith <Morgan.J.Smith@outlook.com>
+;;; Copyright © 2021 qblade <qblade@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -106,6 +107,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pretty-print)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
@@ -1521,6 +1523,32 @@ bindings for Python, Java, OCaml and more.")
 
 (define-public python2-capstone
   (package-with-python2 python-capstone))
+
+
+(define-public python-esptool-3.0
+  (package
+    (name "python-esptool")
+    (version "3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "esptool" version))
+       (sha256
+        (base32
+         "0d69rd9h8wrzjvfrc66vmz4qd5hly2fpdcwj2bdrlb7dbwikv5c7"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))                    ;XXX: require python-reedsolo
+    (propagated-inputs
+     `(("python-ecdsa" ,python-ecdsa)
+       ("python-pyaes" ,python-pyaes)
+       ("python-pyserial" ,python-pyserial)))
+    (home-page "https://github.com/espressif/esptool")
+    (synopsis "Bootloader utility for Espressif ESP8266 & ESP32 chips")
+    (description
+     "@code{esptool.py} is a Python-based utility to communicate with the ROM
+bootloader in Espressif ESP8266 & ESP32 series chips.")
+    (license license:gpl2+)))
 
 (define-public radare2
   (package
