@@ -92,6 +92,7 @@
 ;;; Copyright © 2020 Brit Butler <brit@kingcons.io>
 ;;; Copyright © 2021 Alexandr Vityazev <avityazew@gmail.com>
 ;;; Copyright © 2021 Yurii Kholodkov <urist.mckorobochka@gmail.com>
+;;; Copyright © 2021 Alexey Abramov <levenson@mmer.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -13858,7 +13859,7 @@ write applications that use WebSockets, and is not useful by itself.")
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
-                           "oauth2-" version ".el"))
+                           "oauth2-" version ".tar"))
        (sha256
         (base32 "1rzly2nwjywrfgcmp8zidbmjl2ahyd8l8507lb1mxm4xqryvf316"))))
     (build-system emacs-build-system)
