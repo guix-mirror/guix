@@ -19211,6 +19211,48 @@ tool.  See @uref{https://www.freedesktop.org/software/colord/, the colord web
 site} for more information.
 @end deffn
 
+@cindex scanner access
+@defvr {Scheme Variable} sane-service-type
+This service provides access to scanners @i{via}
+@uref{http://www.sane-project.org, SANE} by installing the necessary
+udev rules.  It is included in @code{%desktop-services} (@pxref{Desktop
+Services}) and relies by default on @code{sane-backends-minimal} package
+(see below) for hardware support.
+@end defvr
+
+@defvr {Scheme Variable} sane-backends-minimal
+The default package which the @code{sane-service-type} installs.  It
+supports many recent scanners.
+@end defvr
+
+@defvr {Scheme Variable} sane-backends
+This package includes support for all scanners that
+@code{sane-backends-minimal} supports, plus older Hewlett-Packard
+scanners supported by @code{hplip} package.  In order to use this on
+a system which relies on @code{%desktop-services}, you may use
+@code{modify-services} (@pxref{Service Reference,
+@code{modify-services}}) as illustrated below:
+
+@lisp
+(use-modules (gnu))
+(use-service-modules
+  @dots{}
+  desktop)
+(use-package-modules
+  @dots{}
+  scanner)
+
+(define %my-desktop-services
+  ;; List of desktop services that supports a broader range of scanners.
+  (modify-services %desktop-services
+    (sane-service-type _ => sane-backends)))
+
+(operating-system
+  @dots{}
+  (services %my-desktop-services)
+@end lisp
+@end defvr
+
 @deffn {Scheme Procedure} geoclue-application name [#:allowed? #t] [#:system? #f] [#:users '()]
 Return a configuration allowing an application to access GeoClue
 location data.  @var{name} is the Desktop ID of the application, without
@@ -19220,13 +19262,6 @@ will have access to location information by default.  The boolean
 or not.  Finally @var{users} is a list of UIDs of all users for which
 this application is allowed location info access.  An empty users list
 means that all users are allowed.
-@end deffn
-
-@cindex scanner access
-@deffn {Scheme Procedure} sane-service-type
-This service provides access to scanners @i{via}
-@uref{http://www.sane-project.org, SANE} by installing the necessary udev
-rules.
 @end deffn
 
 @defvr {Scheme Variable} %standard-geoclue-applications
