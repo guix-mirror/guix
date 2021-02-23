@@ -2043,7 +2043,7 @@ manual SSL certificate verification.")
 (define-public libstrophe
   (package
     (name "libstrophe")
-    (version "0.9.3")
+    (version "0.10.1")
     (source
      (origin
        (method git-fetch)
@@ -2052,7 +2052,7 @@ manual SSL certificate verification.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1g1l0w9z9hdy5ncdvd9097gi7k7783did6py5h9camlpb2fnk5mk"))))
+        (base32 "11d341avsfr0z4lq15cy5dkmff6qpy91wkgzdpfdy31l27pa1g79"))))
     (build-system gnu-build-system)
     (inputs
      `(("expat" ,expat)
