@@ -157,6 +157,38 @@ language.  It may be embedded or used as a general-purpose, stand-alone
 language.")
     (license license:x11)))
 
+(define-public luajit-lua52-openresty
+  (package
+    (inherit luajit)
+    (name "luajit-lua52-openresty")
+    (version "2.1-20201229")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/openresty/luajit2.git")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "07haj27kbpbnkv836c2nd36h2xislrmri52w0zbpxvl68xk6g96p"))))
+    (arguments
+     `(#:tests? #f                      ;no test
+       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ;no configure script
+         (add-after 'unpack 'enable-lua52-compat
+           (lambda _
+             (substitute* "src/Makefile"
+               (("#(XCFLAGS\\+= -DLUAJIT_ENABLE_LUA52COMPAT)" _ flag) flag))
+             #t)))))
+    (home-page "https://github.com/openresty/luajit2")
+    (synopsis "OpenResty's Branch of LuaJIT 2")
+    (description
+     "This is the official OpenResty branch of LuaJIT.  It is not to be
+considered a fork, since changes are regularly synchronized from the upstream
+LuaJIT project.  This package also enables the Lua 5.2 compat mode needed by
+some projects.")))
+
 (define (make-lua-expat name lua)
   (package
     (name name)
