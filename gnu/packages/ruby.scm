@@ -5770,14 +5770,18 @@ utilities for Ruby.")
 (define-public ruby-tzinfo
   (package
     (name "ruby-tzinfo")
-    (version "1.2.4")
+    (version "2.0.4")
     (source
      (origin
-       (method url-fetch)
-       (uri (rubygems-uri "tzinfo" version))
+       (method git-fetch)
+       (uri (git-reference
+              ;; Pull from git because the gem has no tests.
+              (url "https://github.com/tzinfo/tzinfo")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "09dpbrih054mn42flbbcdpzk2727mzfvjrgqb12zdafhx7p9rrzp"))))
+         "0jaq1givdaz5jxz47xngyj3j315n872rk97mnpm5njwm48wy45yh"))))
     (build-system ruby-build-system)
     (arguments
      '(#:phases
@@ -5788,9 +5792,22 @@ utilities for Ruby.")
                (("def safe_test\\(options = \\{\\}\\)")
                  "def safe_test(options = {})
       skip('The Guix build environment has an unsafe load path')"))
+             #t))
+         (add-before 'check 'pre-check
+           (lambda _
+             (setenv "HOME" (getcwd))
+             (substitute* "Gemfile"
+               (("simplecov.*") "simplecov'\n"))
+             #t))
+         (replace 'check
+           (lambda* (#:key tests? test-target #:allow-other-keys)
+             (when tests?
+               (invoke "bundler" "exec" "rake" test-target))
              #t)))))
     (propagated-inputs
-     `(("ruby-thread-safe" ,ruby-thread-safe)))
+     `(("ruby-concurrent-ruby" ,ruby-concurrent)))
+    (native-inputs
+     `(("ruby-simplecov" ,ruby-simplecov)))
     (synopsis "Time zone library for Ruby")
     (description "TZInfo is a Ruby library that provides daylight savings
 aware transformations between times in different time zones.")
