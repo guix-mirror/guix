@@ -191,6 +191,32 @@
 
             (test-begin "cuirass")
 
+            ;; XXX: Shepherd reads the config file *before* binding its
+            ;; control socket, so /var/run/shepherd/socket might not exist yet
+            ;; when the 'marionette' service is started.
+            (test-assert "shepherd socket ready"
+              (marionette-eval
+               `(begin
+                  (use-modules (gnu services herd))
+                  (let loop ((i 10))
+                    (cond ((file-exists? (%shepherd-socket-file))
+                           #t)
+                          ((> i 0)
+                           (sleep 1)
+                           (loop (- i 1)))
+                          (else
+                           'failure))))
+               marionette))
+
+            ;; Wait for cuirass to be up and running.
+            (test-assert "cuirass running"
+              (marionette-eval
+               '(begin
+                  (use-modules (gnu services herd))
+                  (start-service 'cuirass)
+                  #t)
+               marionette))
+
             (test-assert "cuirass-web running"
               (begin
                 (wait-for-tcp-port #$cuirass-web-port marionette)
