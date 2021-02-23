@@ -45,7 +45,6 @@
 (define-module (gnu packages ruby)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
-  #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages c)
   #:use-module (gnu packages check)
@@ -6890,21 +6889,25 @@ generates Ruby program.")
 (define-public ruby-rack
   (package
     (name "ruby-rack")
-    (version "2.0.6")
+    (version "2.2.3")
     (source
      (origin
        (method git-fetch)
-       ;; Download from GitHub so that the patch can be applied.
+       ;; Download from GitHub so that the snippet can be applied and tests run.
        (uri (git-reference
               (url "https://github.com/rack/rack")
               (commit version)))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1n7z4g1x6yxip096cdc04wq7yk7ywpinq28g2xjb46r4nlv5h0j6"))
+         "1qrm5z5v586738bnkr9188dvz0s25nryw6sgvx18jjlkizayw1g4"))
        ;; Ignore test which fails inside the build environment but works
        ;; outside.
-       (patches (search-patches "ruby-rack-ignore-failing-test.patch"))))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin (substitute* "test/spec_files.rb"
+                  (("res.body.must_equal expected_body") ""))
+                #t))))
     (build-system ruby-build-system)
     (arguments
      '(#:phases
@@ -6918,30 +6921,19 @@ generates Ruby program.")
              ;; "/gnu/store".
              (let ((size-diff (- (string-length (which "ruby"))
                                  (string-length "/usr/bin/env ruby"))))
-               (substitute* '("test/spec_file.rb")
-                 (("193")
-                  (number->string (+ 193 size-diff)))
+               (substitute* '("test/spec_files.rb")
+                 (("208" bytes)
+                  (number->string (+ (string->number bytes) size-diff)))
                  (("bytes(.)22-33" all delimiter)
                   (string-append "bytes"
                                  delimiter
                                  (number->string (+ 22 size-diff))
                                  "-"
                                  (number->string (+ 33 size-diff))))))
-             #t))
-         (add-before 'reset-gzip-timestamps 'make-files-writable
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; Make sure .gz files are writable so that the
-             ;; 'reset-gzip-timestamps' phase can do its work.
-             (let ((out (assoc-ref outputs "out")))
-               (for-each make-file-writable
-                         (find-files out "\\.gz$"))
-               #t))))))
+             #t)))))
     (native-inputs
      `(("ruby-minitest" ,ruby-minitest)
-       ("ruby-minitest-sprint" ,ruby-minitest-sprint)
-       ("which" ,which)))
-    (propagated-inputs
-     `(("ruby-concurrent" ,ruby-concurrent)))
+       ("ruby-minitest-global-expectations" ,ruby-minitest-global-expectations)))
     (synopsis "Unified web application interface for Ruby")
     (description "Rack provides a minimal, modular and adaptable interface for
 developing web applications in Ruby.  By wrapping HTTP requests and responses,
