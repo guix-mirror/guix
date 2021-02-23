@@ -78,6 +78,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages xml)
@@ -5817,7 +5818,7 @@ aware transformations between times in different time zones.")
 (define-public ruby-tzinfo-data
   (package
     (name "ruby-tzinfo-data")
-    (version "1.2017.3")
+    (version "1.2021.1")
     (source
      (origin
        (method git-fetch)
@@ -5829,15 +5830,61 @@ aware transformations between times in different time zones.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0v3phl5l3jrm6waxcszqmj2dkjhqawxfsxb6mss7vkp1hlckqcdp"))
-       ;; Remove the known test failure.
-       ;; https://github.com/tzinfo/tzinfo-data/issues/10
-       ;; https://bugs.launchpad.net/ubuntu/+source/glibc/+bug/1587128
-       (patches (search-patches
-                 "ruby-tzinfo-data-ignore-broken-test.patch"))))
+         "0yzyr3rf8qaw6kxfc0gwpxsb7gl3rhfpx9g1c2z15vapyminhi60"))))
     (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "Rakefile"
+               (("https://data.iana.org/time-zones/releases")
+                (assoc-ref inputs "tzdata")))
+             #t))
+         (add-before 'check 'pre-check
+           (lambda _
+             (setenv "HOME" (getcwd))
+             (substitute* "Rakefile"
+               ;; Don't need gpg, and it may break after a time.
+               (("gpg ") "echo ")
+               (("    sh\\(\\\"make -C" text)
+                (string-append "    sh(\"sed -i 's@/bin/sh@sh@' #{tzdb_combined_path}/Makefile \")\n"
+                               "    sh(\"sed -i 's@cc=@cc?=@' #{tzdb_combined_path}/Makefile \")\n" text)))
+               (setenv "cc" ,(cc-for-target))
+             #t)))))
     (propagated-inputs
      `(("ruby-tzinfo" ,ruby-tzinfo)))
+    (native-inputs
+     `(("tzdata"
+        ,(file-union "tzdata-for-ruby-tzdata-info"
+           `(("tzdata2021a.tar.gz"
+              ,(origin
+                 (method url-fetch)
+                 (uri "https://data.iana.org/time-zones/releases/tzdata2021a.tar.gz")
+                 (sha256
+                  (base32
+                   "022fn6gkmp7pamlgab04x0dm5hnyn2m2fcnyr3pvm36612xd5rrr"))))
+             ("tzdata2021a.tar.gz.asc"
+              ,(origin
+                 (method url-fetch)
+                 (uri "https://data.iana.org/time-zones/releases/tzdata2021a.tar.gz.asc")
+                 (sha256
+                  (base32
+                   "0n7h2w8ji1lrxpk0d44wyfshlhr7c9jmwj6lqbxlyvqnfi3gbicx"))))
+             ("tzcode2021a.tar.gz"
+              ,(origin
+                 (method url-fetch)
+                 (uri "https://data.iana.org/time-zones/releases/tzcode2021a.tar.gz")
+                 (sha256
+                  (base32
+                   "1l02b0jiwp3fl0xd6227i69d26rmx3yrnq0ssq9vvdmm4jhvyipb"))))
+             ("tzcode2021a.tar.gz.asc"
+              ,(origin
+                 (method url-fetch)
+                 (uri "https://data.iana.org/time-zones/releases/tzcode2021a.tar.gz.asc")
+                 (sha256
+                  (base32
+                   "1qhlj4lr810s47s1lwcvv1sgvg2sflf98w4sbg1lc8wzv5qxxv7g")))))))))
     (synopsis "Data from the IANA Time Zone database")
     (description
      "This library provides @code{TZInfo::Data}, which contains data from the
