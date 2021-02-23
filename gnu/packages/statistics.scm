@@ -5904,3 +5904,31 @@ Java package that provides routines for various statistical distributions.")
 is designed to support editing of scripts and interaction with various
 statistical analysis programs such as R, Julia, and JAGS.")
       (license license:gpl3+))))
+
+(define-public readstat
+  (package
+    (name "readstat")
+    (version "1.1.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/WizardMac/ReadStat")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "00sdmaq0qzp6kyv53fpfi6jf3iv4pd0ap0gmw3mbfip52bbnl55w"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gnu-gettext)
+       ("libtool" ,libtool)))
+    (inputs
+     `(("zlib" ,zlib)))                 ; libz
+    (synopsis "Convert SAS, Stata, and SPSS files")
+    (description "Command-line tool and C library for reading files from
+popular stats packages like SAS, Stata and SPSS.")
+    (home-page "https://github.com/WizardMac/ReadStat")
+    (license license:expat)))
+
