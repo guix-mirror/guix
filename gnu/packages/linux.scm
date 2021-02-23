@@ -395,17 +395,16 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.176")
+(define-public linux-libre-4.19-version "4.19.177")
 (define deblob-scripts-4.19
   (linux-libre-deblob-scripts
-   ;; XXX While linux-libre.fsfla.org is offline, use the cached deblob
-   ;; scripts for the previous version on ci.guix.gnu.org.
-   "4.19.175"
+   linux-libre-4.19-version
    (base32 "02zs405awaxydbapka4nz8h6lmnc0dahgczqsrs5s2bmzjyyqkcy")
    (base32 "1jiaw0as1ippkrjdpd52657w5mz9qczg3y2hlra7m9k0xawwiqlf")))
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "0wv0hb25c5jgw6h3zwbb24mfnn19yr0sgcmk1g2xa6x33g9bihz1")))
+        (hash (base32
+                "0z9m081jg84mzp639ifx3321bpysfs3rpcrsx9mwdsh19rwv63mc")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
