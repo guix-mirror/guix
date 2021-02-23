@@ -1889,7 +1889,7 @@ many bug fixes.")
 (define-public loudmouth
   (package
     (name "loudmouth")
-    (version "1.5.3")
+    (version "1.5.4")
     (source
      (origin
        (method url-fetch)
@@ -1897,7 +1897,7 @@ many bug fixes.")
                            name "-" version ".tar.bz2"))
        (sha256
         (base32
-         "0b6kd5gpndl9nzis3n6hcl0ldz74bnbiypqgqa1vgb0vrcar8cjl"))))
+         "03adv5xc84l9brcx0dpyqyffmsclans8yfrpnd357k6x3wfckjri"))))
     (build-system gnu-build-system)
     (inputs
      `(("glib" ,glib)
