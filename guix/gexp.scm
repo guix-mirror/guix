@@ -757,19 +757,28 @@ attribute that is traversed."
        (append (let ((attribute (self-attribute gexp)))
                  (validate gexp attribute)
                  attribute)
-               (append-map (match-lambda
-                             (($ <gexp-input> (? gexp? exp))
-                              (gexp-attribute exp self-attribute
-                                              #:validate validate))
-                             (($ <gexp-input> (lst ...))
-                              (append-map (lambda (item)
-                                            (gexp-attribute item self-attribute
-                                                            #:validate
-                                                            validate))
-                                          lst))
-                             (_
-                              '()))
-                           (gexp-references gexp)))
+               (reverse
+                (fold (lambda (input result)
+                        (match input
+                          (($ <gexp-input> (? gexp? exp))
+                           (append (gexp-attribute exp self-attribute
+                                                   #:validate validate)
+                                   result))
+                          (($ <gexp-input> (lst ...))
+                           (fold/tree (lambda (obj result)
+                                        (match obj
+                                          ((? gexp? exp)
+                                           (append (gexp-attribute exp self-attribute
+                                                                   #:validate validate)
+                                                   result))
+                                          (_
+                                           result)))
+                                      result
+                                      lst))
+                          (_
+                           result)))
+                      '()
+                      (gexp-references gexp))))
        equal?)
       '()))                                       ;plain Scheme data type
 
