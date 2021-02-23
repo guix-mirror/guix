@@ -14418,10 +14418,10 @@ and @code{doseq*}.")
   (sbcl-package->cl-source-package sbcl-trivial-do))
 
 (define-public sbcl-common-lisp-jupyter
-  (let ((commit "61a9a8e7a18e2abd7af7c697ba5146fd19bd9d62"))
+  (let ((commit "011f60b69a3b8c70eefeafe7acb724cd00dd3e62"))
     (package
       (name "sbcl-common-lisp-jupyter")
-      (version (git-version "0.1" "1" commit))
+      (version (git-version "0.1" "2" commit))
       (source
        (origin
          (method git-fetch)
@@ -14430,7 +14430,7 @@ and @code{doseq*}.")
                (commit commit)))
          (file-name (git-file-name name commit))
          (sha256
-          (base32 "0zyzl55l45w9z65ygi5pcwda5w5p1j1bb0p2zg2n5cpv8344dkh2"))))
+          (base32 "10jdghlcmp9p6ygrvw7g49i8f9jy71ybzn29n544fzb6g47siqhw"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("alexandria" ,sbcl-alexandria)
