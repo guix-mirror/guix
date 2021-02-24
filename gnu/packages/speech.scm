@@ -7,6 +7,7 @@
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2021 qblade <qblade@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -554,6 +555,40 @@ The system is written in C++ and uses the Edinburgh Speech Tools Library for
 low level architecture and has a Scheme (SIOD) based command interpreter for
 control.")
     (license (license:non-copyleft "file://COPYING"))))
+
+(define-public ekho
+  (package
+    (name "ekho")
+    (version "8.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://sourceforge/e-guidedog/Ekho/"
+                       version "/ekho-" version ".tar.xz"))
+       (sha256
+        (base32 "1v476kpw09ljj8mavasj4hya2w11jwlx7q22rh1lsn9jkkam5i2a"))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("espeak-ng" ,espeak-ng)
+       ("libsndfile" ,libsndfile)
+       ("pulseaudio" ,pulseaudio)))
+    (build-system gnu-build-system)
+    (native-search-paths
+     (list (search-path-specification
+            (variable "EKHO_DATA_PATH")
+            (files '("share/ekho-data")))))
+    (home-page "https://eguidedog.net/ekho.php")
+    (synopsis "Chinese text-to-speech software")
+    (description
+     "Ehko is a Text-To-Speech (TTS) software.  It supports Cantonese,
+Mandarin, Toisanese, Zhaoan Hakka, Tibetan, Ngangien and Korean (in trial).
+It can also speak English through eSpeak or Festival.")
+    (license (list license:gpl2+
+                   ;; libmusicxml
+                   license:mpl2.0))))
 
 (define-public sphinxbase
   (package
