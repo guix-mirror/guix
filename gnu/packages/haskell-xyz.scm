@@ -10576,6 +10576,22 @@ replace the standard one provided by GHC.")
         (base32
          "0zzkyxz0vmcbncpid7gp72fpjj0fla3gqhlfkij5c5lg12skjgfj"))))))
 
+(define-public ghc-protolude-0.3
+  (package
+    (inherit ghc-protolude)
+    (name "ghc-protolude")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/protolude/protolude-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1b6wprbwfdjyvds2bm6na0fbqgzdkj5ikkk33whbkyh3krd3i0s0"))))))
+
 (define-public ghc-psqueue
   (package
     (name "ghc-psqueue")
