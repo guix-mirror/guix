@@ -1165,7 +1165,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/hdf-eos5-fix-szip.patch			\
   %D%/packages/patches/hdf-eos5-fortrantests.patch		\
   %D%/packages/patches/http-parser-CVE-2020-8287.patch		\
-  %D%/packages/patches/http-parser-fix-assertion-on-armhf.patch	\
   %D%/packages/patches/hubbub-sort-entities.patch		\
   %D%/packages/patches/hurd-cross.patch				\
   %D%/packages/patches/hurd-xattr.patch				\
