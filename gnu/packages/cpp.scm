@@ -954,3 +954,29 @@ conversions to and from strings, iteration and related functionality.")
 feature set with a simple and intuitive interface.")
     (home-page "https://cliutils.github.io/CLI11/book/")
     (license license:bsd-3)))
+
+(define-public caf
+  (package
+    (name "caf")
+    (version "0.18.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/actor-framework/actor-framework")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1c3spd6vm1h9qhlk5c4fdwi6nbqx5vwz2zvv6qp0rj1hx6xpq3cx"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags
+       '("-DCAF_ENABLE_EXAMPLES=OFF")))
+    (inputs
+     `(("openssl" ,openssl)))
+    (synopsis "C++ implementation of the actor model")
+    (description "The C++ Actor Framework (CAF) offers a high-level C++17
+programming environment using the actor model for concurrent, distributed
+computation.")
+    (home-page "https://www.actor-framework.org/")
+    (license license:bsd-3)))
