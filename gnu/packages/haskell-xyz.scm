@@ -28,7 +28,6 @@
 ;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@member.fsf.org>
 ;;; Copyright © 2020 Carlo Holl <carloholl@gmail.com>
 ;;; Copyright © 2020 Christopher Lemmer Webber <cwebber@dustycloud.org>
-;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -10536,7 +10535,7 @@ the ideal templating system.")
 (define-public ghc-protolude
   (package
     (name "ghc-protolude")
-    (version "0.3.0")
+    (version "0.2.3")
     (source
      (origin
        (method url-fetch)
@@ -10546,7 +10545,7 @@ the ideal templating system.")
              ".tar.gz"))
        (sha256
         (base32
-         "1b6wprbwfdjyvds2bm6na0fbqgzdkj5ikkk33whbkyh3krd3i0s0"))))
+         "0zzkyxz0vmcbncpid7gp72fpjj0fla3gqhlfkij5c5lg12skjgfj"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-async" ,ghc-async)
