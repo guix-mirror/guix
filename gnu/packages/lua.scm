@@ -168,6 +168,7 @@ language.")
        (uri (git-reference
              (url "https://github.com/openresty/luajit2.git")
              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32 "07haj27kbpbnkv836c2nd36h2xislrmri52w0zbpxvl68xk6g96p"))))
     (arguments
