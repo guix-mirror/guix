@@ -46,7 +46,7 @@
 ;;; Copyright © 2019, 2020 Brian Leung <bkleung89@gmail.com>
 ;;; Copyright © 2019 mikadoZero <mikadozero@yandex.com>
 ;;; Copyright © 2019 Gabriel Hondet <gabrielhondet@gmail.com>
-;;; Copyright © 2019, 2020 Joseph LaFreniere <joseph@lafreniere.xyz>
+;;; Copyright © 2019, 2020, 2021 Joseph LaFreniere <joseph@lafreniere.xyz>
 ;;; Copyright © 2019 Amar Singh <nly@disroot.org>
 ;;; Copyright © 2019 Baptiste Strazzulla <bstrazzull@hotmail.fr>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
@@ -3726,6 +3726,37 @@ and code formatting.")
      "Emacs Lisp Mock is a library for mocking and stubbing using readable
 syntax.  Most commonly Emacs Lisp Mock is used in conjunction with Emacs Lisp
 Expectations, but it can be used in other contexts.")
+    (license license:gpl3+)))
+
+(define-public emacs-ecukes
+  (package
+    (name "emacs-ecukes")
+    (version "0.6.17")
+    (home-page "https://github.com/ecukes/ecukes")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1isscwz4h3nx62lwfrj899lp2yc27zk1ndgr441d848495ccmshn"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:include (cons* "^feature/" "^reporters/" "^templates/" %default-include)))
+    (propagated-inputs
+     `(("emacs-ansi" ,emacs-ansi)
+       ("emacs-commander" ,emacs-commander)
+       ("emacs-dash" ,emacs-dash)
+       ("emacs-espuds" ,emacs-espuds)
+       ("emacs-f" ,emacs-f)
+       ("emacs-s" ,emacs-s)))
+    (synopsis "Cucumber for Emacs")
+    (description
+     "This package provides Ecukes, a Cucumber-inspired integration testing
+tool for Emacs.  Ecukes is not a complete clone of Cucumber and is not
+intended to be.")
     (license license:gpl3+)))
 
 (define-public emacs-espuds
