@@ -181,7 +181,11 @@ Return the coverage ratio, an exact number between 0 and 1."
   (format #t (G_ "looking for ~h store items on ~a...~%")
           (length items) server)
 
-  (let/time ((time narinfos (lookup-narinfos server items)))
+  (let/time ((time narinfos (lookup-narinfos
+                             server items
+                             #:make-progress-reporter
+                             (lambda* (total #:key url #:allow-other-keys)
+                               (progress-reporter/bar total)))))
     (format #t "~a~%" server)
     (let ((obtained  (length narinfos))
           (requested (length items))
