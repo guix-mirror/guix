@@ -10559,22 +10559,6 @@ the ideal templating system.")
 replace the standard one provided by GHC.")
     (license license:expat)))
 
-(define-public ghc-protolude-0.2
-  (package
-    (inherit ghc-protolude)
-    (name "ghc-protolude")
-    (version "0.2.3")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "mirror://hackage/package/protolude/protolude-"
-             version
-             ".tar.gz"))
-       (sha256
-        (base32
-         "0zzkyxz0vmcbncpid7gp72fpjj0fla3gqhlfkij5c5lg12skjgfj"))))))
-
 (define-public ghc-protolude-0.3
   (package
     (inherit ghc-protolude)
