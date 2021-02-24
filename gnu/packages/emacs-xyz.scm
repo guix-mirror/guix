@@ -142,6 +142,7 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages haskell-apps)
   #:use-module (gnu packages ibus)
+  #:use-module (gnu packages java)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
@@ -26938,3 +26939,40 @@ to pastebin-like services.  It supports more than one service and will
 failover if one service fails.  More services can easily be added over time
 and prefered services can easily be configured.")
     (license license:gpl3+)))
+
+(define-public emacs-keystore-mode
+  (let ((release "0.0.1")
+        (revision "0")
+        (commit "43bd5926348298d077c7221f37902c990df3f951"))
+    (package
+      (name "emacs-keystore-mode")
+      (version (git-version release revision commit))
+      (home-page "https://github.com/peterpaul/keystore-mode")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "06cznkqkm04zz5lqfb514aqvsr2p13arzysixv0ss0bqpvdq7cv7"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:tests? #t
+         #:test-command
+         '("emacs" "--no-init-file" "--batch"
+           "--eval=(require 'ecukes)" "--eval=(ecukes)")))
+      (native-inputs
+       `(("emacs-ecukes" ,emacs-ecukes)
+         ("emacs-espuds" ,emacs-espuds)
+         ("emacs-undercover" ,emacs-undercover)
+         ("openjdk" ,openjdk9)))
+      (propagated-inputs
+       `(("emacs-origami" ,emacs-origami-el)
+         ("emacs-s" ,emacs-s)))
+      (synopsis "Major mode for viewing and managing Java keystores")
+      (description
+       "This package provides an Elisp wrapper around the Java
+@command{keytool} command and major mode for viewing Java keystores.")
+      (license license:expat))))
