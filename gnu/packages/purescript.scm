@@ -91,7 +91,7 @@
        ("ghc-network" ,ghc-network)
        ("ghc-parallel" ,ghc-parallel)
        ("ghc-pattern-arrows" ,ghc-pattern-arrows)
-       ("ghc-protolude" ,ghc-protolude-0.2)
+       ("ghc-protolude" ,ghc-protolude)
        ("ghc-regex-tdfa" ,ghc-regex-tdfa)
        ("ghc-safe" ,ghc-safe)
        ("ghc-scientific" ,ghc-scientific)
