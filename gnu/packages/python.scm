@@ -59,6 +59,7 @@
 ;;; Copyright © 2018 Vagrant Cascadian <vagrant@debian.org>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -533,19 +534,18 @@ data types.")
 (define-public python-3.9
   (package (inherit python-3.8)
     (name "python-next")
-    (version "3.9.1")
+    (version "3.9.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.python.org/ftp/python/"
                                   version "/Python-" version ".tar.xz"))
               (patches (search-patches
                         "python-3.9-fix-tests.patch"
-                        "python-3.9-CVE-2021-3177.patch"
                         "python-3-deterministic-build-info.patch"
                         "python-3-search-paths.patch"))
               (sha256
                (base32
-                "1zq3k4ymify5ig739zyvx9s2ainvchxb1zpy139z74krr653y74r"))
+                "0z94vv5qhlwvcgc4sy9sdiqs0220s84wx3b62vslh5419z2k881w"))
               (modules '((guix build utils)))
               (snippet
                '(begin
