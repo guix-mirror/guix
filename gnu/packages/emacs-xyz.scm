@@ -12299,16 +12299,13 @@ containing words from the Rime project.")
 (define-public emacs-pyim
   (package
     (name "emacs-pyim")
-    (version "2.0")
+    (version "3.2")
     (source
      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/tumashu/pyim")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/pyim-" version ".tar"))
        (sha256
-        (base32 "06ahzyi2h353xj17mzsm9fxmkc6cyzd1mjzmvqfw8cyv538nijc0"))))
+        (base32 "1rr9mq334dqf7mx1ii7910zkigw7chl63iws4sw0qsn014kjlb0a"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-async" ,emacs-async)
@@ -12318,8 +12315,9 @@ containing words from the Rime project.")
        ("emacs-xr" ,emacs-xr)))
     (home-page "https://github.com/tumashu/pyim")
     (synopsis "Chinese input method")
-    (description "Chinese input method which supports quanpin, shuangpin, wubi
-and cangjie.")
+    (description
+     "This package provides a Chinese input method which supports quanpin,
+shuangpin, wubi and cangjie.")
     (license license:gpl2+)))
 
 (define-public emacs-posframe
