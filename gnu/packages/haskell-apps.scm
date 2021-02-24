@@ -342,14 +342,14 @@ to @code{cabal repl}).")
 (define-public git-annex
   (package
     (name "git-annex")
-    (version "8.20210127")
+    (version "8.20210223")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://hackage.haskell.org/package/"
                            "git-annex/git-annex-" version ".tar.gz"))
        (sha256
-        (base32 "1hsmaw70lfza1g5j6b9zbwqkkr374m18p7qb4nl952pj42a46vv3"))))
+        (base32 "07wxf44pdh9d1pxqympgyfbkk8vk0pqbgxma0mkadlkdr6c9z832"))))
     (build-system haskell-build-system)
     (arguments
      `(#:configure-flags
