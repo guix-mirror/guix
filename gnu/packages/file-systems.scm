@@ -1156,3 +1156,36 @@ local file system using FUSE.")
     (description
      "This package provides Go native bindings for the FUSE kernel module.")
     (license license:bsd-3)))
+
+(define-public tmsu
+  (package
+    (name "tmsu")
+    (version "0.7.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/oniony/TMSU")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0834hah7p6ad81w60ifnxyh9zn09ddfgrll04kwjxwp7ypbv38wq"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/oniony/TMSU"
+       #:unpack-path ".."))
+    (inputs
+     `(("go-github-com-mattn-go-sqlite3" ,go-github-com-mattn-go-sqlite3)
+       ("go-github-com-hanwen-fuse" ,go-github-com-hanwen-fuse)))
+    (home-page "https://github.com/oniony/TMSU")
+    (synopsis "Tag files and access them through a virtual filesystem")
+    (description
+     "TMSU is a tool for tagging your files.  It provides a simple
+command-line utility for applying tags and a virtual filesystem to give you a
+tag-based view of your files from any other program.  TMSU does not alter your
+files in any way: they remain unchanged on disk, or on the network, wherever
+your put them.  TMSU maintains its own database and you simply gain an
+additional view, which you can mount where you like, based upon the tags you
+set up.")
+    (license license:gpl3+)))
