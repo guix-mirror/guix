@@ -13,6 +13,7 @@
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Simon South <simon@simonsouth.net>
 ;;; Copyright © 2020 Paul A. Patience <paul@apatience.com>
+;;; Copyright © 2021 Vinícius dos Santos Oliveira <vini.ipsmaker@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,8 +38,11 @@
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
+  #:use-module (gnu packages gcc)
+  #:use-module (gnu packages build-tools)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages tls)
@@ -47,6 +51,11 @@
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages boost)
+  #:use-module (gnu packages tls)
+  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages vim)
+  #:use-module (gnu packages re2c)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages gtk))
 
@@ -1095,6 +1104,59 @@ signals to Linux processes.")
     (description "This package provides Lua module for nonblocking system
 shell command executions.")
     (license license:bsd-3)))
+
+(define-public emilua
+  (package
+   (name "emilua")
+   (version "0.2.1")
+   (source (origin
+            (method git-fetch)
+            (uri (git-reference
+                  (url "https://gitlab.com/emilua/emilua.git")
+                  (commit (string-append "v" version))
+                  ;; Current version requires bundled CLI11 and fmt, but at some
+                  ;; future release the ones found in the system could be used
+                  ;; instead. Current version also requires Trial.Protocol and
+                  ;; the HTTP lib developed as part of GSoC 2014 for Boost, but
+                  ;; these are dependencies unlikely to be "unbundled" in future
+                  ;; releases.
+                  (recursive? #t)))
+            (sha256
+             (base32
+              "1d6k5v6x85fbvz2ijq1imnfdwvqmsav4xp021a5v3ah4mgy7yann"))))
+   (build-system meson-build-system)
+   (arguments
+    `(#:meson ,meson-0.55
+      ;; Tests are disabled for now due to an issue that affecs guix:
+      ;; <https://gitlab.com/emilua/emilua/-/issues/22>
+      #:configure-flags '("-Denable_http=false" "-Denable_tests=false")))
+   (native-inputs
+    `(("gcc" ,gcc-10) ; gcc-7 is too old for our C++17 needs
+      ("luajit-lua52-openresty" ,luajit-lua52-openresty)
+      ("pkg-config" ,pkg-config)
+      ("re2c" ,re2c)
+      ("xxd" ,xxd)))
+   (inputs
+    `(("boost" ,boost)
+      ("boost-static" ,boost-static)
+      ;; LuaJIT has a 2GiB addressing limit[1] that has been fixed on OpenResty
+      ;; fork. Emilua is severely affected by this limit, so the upstream package
+      ;; is avoided. Emilua also depends on the -DLUAJIT_ENABLE_LUA52COMPAT
+      ;; configure flag[2] for some features to work (e.g. __pairs on HTTP
+      ;; headers).
+      ;;
+      ;; [1] <http://hacksoflife.blogspot.com/2012/12/integrating-luajit-with-x-plane-64-bit.html>
+      ;; [2] <http://luajit.org/extensions.html#lua52>
+      ("luajit-lua52-openresty" ,luajit-lua52-openresty)
+      ("ncurses" ,ncurses)
+      ("openssl" ,openssl)))
+   (home-page "https://gitlab.com/emilua/emilua")
+   (synopsis "Lua execution engine")
+   (description
+    "Emilua is a LuaJIT-based Lua execution engine that supports async IO,
+fibers and actor-inspired threading.  The experimental builtin HTTP module is
+enabled.")
+   (license license:boost1.0)))
 
 (define-public fennel
   (package
