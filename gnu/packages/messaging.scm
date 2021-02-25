@@ -1949,11 +1949,13 @@ protocol allows.")
        (list
         "--disable-static"
         "--enable-otr"
+        "--enable-enchant"
         "--enable-aspell")))
     (inputs
      `(("gpgme" ,gpgme)
        ("libotr" ,libotr)
        ("aspell" ,aspell)
+       ("enchant" ,enchant-1.6)
        ("libidn" ,libidn)
        ("glib" ,glib)
        ("ncurses" ,ncurses)
