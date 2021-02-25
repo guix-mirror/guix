@@ -156,16 +156,16 @@ not be determined."
      (let ((file (if (string-prefix? "/" file)
                      file
                      (search-path %load-path file))))
-       (and file
-            (string-prefix? (%store-prefix) file)
-
-            (filter-map
-             (lambda (entry)
-               (let ((item (manifest-entry-item entry)))
-                 (and (or (string-prefix? item file)
-                          (string=? "guix" (manifest-entry-name entry)))
-                      (manifest-entry-channel entry))))
-             (current-profile-entries)))))))
+       (if (and file
+                (string-prefix? (%store-prefix) file))
+           (filter-map
+            (lambda (entry)
+              (let ((item (manifest-entry-item entry)))
+                (and (or (string-prefix? item file)
+                         (string=? "guix" (manifest-entry-name entry)))
+                     (manifest-entry-channel entry))))
+            (current-profile-entries))
+           '())))))
 
 (define (package-provenance package)
   "Return the provenance of PACKAGE as an sexp for use as the 'provenance'
