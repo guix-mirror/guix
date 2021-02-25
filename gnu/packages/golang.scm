@@ -6739,3 +6739,34 @@ compressed streams in Go.")
     (synopsis "Go library to get configuration values from gitconfig")
     (description "@{gitconfig} is a package to get configuration values from gitconfig.")
     (license license:expat)))
+
+(define-public go-github-com-operatorfoundation-ed25519
+  (let ((commit "b22b4bd3ddef042eec45f3ee135cd40281fde2b4")
+        (revision "0"))
+    (package
+      (name "go-github-com-operatorfoundation-ed25519")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/OperatorFoundation/ed25519")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0xrzqrjlghkgd1cy5rj4khryn4f59vas2vzrxc6d8jpj5ijf3xkv"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/OperatorFoundation/ed25519"
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'install 'remove-test-data
+             (lambda* (#:key import-path #:allow-other-keys)
+               (delete-file-recursively
+                 (string-append "src/" import-path "/testdata"))
+               #t)))))
+      (home-page "https://github.com/OperatorFoundation/ed25519")
+      (synopsis "Ed25519 for go")
+      (description "Package ed25519 implements the Ed25519 signature
+algorithm.")
+      (license license:bsd-3))))
