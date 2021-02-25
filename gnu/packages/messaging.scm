@@ -78,6 +78,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages kerberos)
   #:use-module (gnu packages less)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages libidn)
@@ -1909,6 +1910,7 @@ many bug fixes.")
     (inputs
      `(("glib" ,glib)
        ("gnutls" ,gnutls)
+       ("krb5" ,mit-krb5)
        ("libidn" ,libidn)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
