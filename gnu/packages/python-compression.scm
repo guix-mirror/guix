@@ -6,6 +6,7 @@
 ;;; Copyright © 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2021 Brendan Tildesley <mail@brendan.scot>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,8 +36,37 @@
   #:use-module (gnu packages maths)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages sphinx))
+
+(define-public python-multivolumefile
+  (package
+    (name "python-multivolumefile")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "multivolumefile" version))
+       (sha256
+        (base32
+         "0j46wab4b09s3favjzp3zs1cn2sn8pr7qyngs5wn31hpqqxbbz76"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pep517" ,python-pep517)
+       ("python-setuptools" ,python-setuptools)
+       ("python-setuptools-scm" ,python-setuptools-scm/next)
+       ("python-coverage" ,python-coverage)
+       ("python-coveralls" ,python-coveralls)
+       ("python-pyannotate" ,python-pyannotate)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)))
+    (home-page "https://github.com/miurahr/multivolume")
+    (synopsis "Treat multiple files as one")
+    (description "MultiVolumefile is a Python library that provides a
+file-object abstraction, making it possible to use multiple files as if they
+were a single file.")
+    (license license:lgpl2.1+)))
 
 (define-public python-lzo
   (package
