@@ -24,7 +24,7 @@
 ;;; Copyright © 2019 Jakob L. Kreuze <zerodaysfordays@sdf.org>
 ;;; Copyright © 2019 raingloom <raingloom@protonmail.com>
 ;;; Copyright © 2019 David Wilson <david@daviwil.com>
-;;; Copyright © 2019, 2020 Alexandros Theodotou <alex@zrythm.org>
+;;; Copyright © 2019, 2020, 2021 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Lars-Dominik Braun <lars@6xq.net>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
@@ -5863,6 +5863,51 @@ of percussion such as kicks, snares, hit-hats, shakers, claps and sticks.
 It can also play and mix samples.")
     (home-page "https://gitlab.com/iurie-sw/geonkick")
     (license license:gpl3+)))
+
+(define-public mamba
+  (package
+   (name "mamba")
+   (version "2.1")
+   (source
+    (origin
+      (method git-fetch)
+      (uri
+       (git-reference
+        (url "https://github.com/brummer10/Mamba")
+        (commit (string-append "v" version))
+        (recursive? #t))) ; references specific commit of libxputty
+      (file-name (git-file-name name version))
+      (sha256
+       (base32
+        "1bq6sqsij3cdwcsj3wpsnivi4c7jl4l5gwfywhqnib70v60smdja"))))
+   (build-system gnu-build-system)
+   (arguments
+    `(#:tests? #f  ; no "check" target
+      #:make-flags
+      (list (string-append "PREFIX="
+                           (assoc-ref %outputs "out"))
+            "CC=gcc")
+      #:phases
+      (modify-phases %standard-phases
+        (delete 'configure))))
+   (inputs
+    `(("alsa-lib" ,alsa-lib)
+      ("cairo" ,cairo)
+      ("fluidsynth" ,fluidsynth)
+      ("jack" ,jack-1)
+      ("liblo" ,liblo)
+      ("libsigc++" ,libsigc++)
+      ("libsmf" ,libsmf)
+      ("libx11" ,libx11)))
+   (native-inputs
+    `(("pkg-config" ,pkg-config)))
+   (home-page "https://github.com/brummer10/Mamba")
+   (synopsis "Virtual MIDI keyboard and MIDI file player/recorder for JACK")
+   (description "Mamba is a virtual MIDI keyboard and MIDI file
+player/recorder for the JACK Audio Connection Kit.  It comes with predefined
+keymaps for QWERTZ, QWERTY and AZERTY keyboards and also allows custom
+ones.")
+   (license license:bsd-0)))
 
 (define-public dpf-plugins
   (package
