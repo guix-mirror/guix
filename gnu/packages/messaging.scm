@@ -1900,10 +1900,15 @@ many bug fixes.")
         (base32
          "03adv5xc84l9brcx0dpyqyffmsclans8yfrpnd357k6x3wfckjri"))))
     (build-system gnu-build-system)
+    (outputs '("out" "doc"))
     (arguments
      `(#:configure-flags
        (list
-        "--disable-static")
+        "--disable-static"
+        "--enable-gtk-doc"
+        (string-append "--with-html-dir="
+                       (assoc-ref %outputs "doc")
+                       "/share/gtk-doc/html"))
        #:make-flags
        (list
         "CFLAGS=-Wno-error=all")))
