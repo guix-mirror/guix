@@ -4684,14 +4684,14 @@ their web site.")
 (define-public python-feedparser
   (package
     (name "python-feedparser")
-    (version "5.2.1")
+    (version "6.0.2")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "feedparser" version ".tar.bz2"))
+       (uri (pypi-uri "feedparser" version ".tar.gz"))
        (sha256
         (base32
-         "00hb4qg2am06g81mygfi1jsbx8830024jm45g6qp9g8fr6am91yf"))))
+         "0x0hm9brh3j71645pydvlkrwxaaca9dnwd7xahwjyjaz882s200v"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f))
