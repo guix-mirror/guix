@@ -142,6 +142,35 @@
   #:use-module (gnu packages xml)
   #:use-module (ice-9 match))
 
+(define-public usrsctp
+  (package
+    (name "usrsctp")
+    (version "0.9.5.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/sctplab/usrsctp")
+         (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "10ndzkip8blgkw572n3dicl6mgjaa7kygwn3vls80liq92vf1sa9"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)
+       ("which" ,which)))
+    (home-page "https://github.com/sctplab/usrsctp/")
+    (synopsis "SCTP user-land implementation")
+    (description "UsrSCTP is a portable SCTP userland stack.  SCTP is a message
+oriented, reliable transport protocol with direct support for multihoming that
+runs on top of IP or UDP, and supports both v4 and v6 versions.")
+    (license license:bsd-3)))
+
 (define-public axel
   (package
     (name "axel")
