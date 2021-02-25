@@ -1945,8 +1945,11 @@ protocol allows.")
         (base32 "0q1i5acyghsmzas88qswvki8kkk2nfpr8zapgnxbcd3lwcxl38f4"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags (list "--enable-otr"
-                               "--enable-aspell")))
+     `(#:configure-flags
+       (list
+        "--disable-static"
+        "--enable-otr"
+        "--enable-aspell")))
     (inputs
      `(("gpgme" ,gpgme)
        ("libotr" ,libotr)
