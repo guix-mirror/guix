@@ -1001,8 +1001,8 @@ convenient nested tree operations.")
     (license license:gpl3+)))
 
 (define-public guile-simple-zmq
-  (let ((commit "c8b1fa09e08e12207cf84023fc3d569936c886d7")
-        (revision "7"))
+  (let ((commit "e9446173280117e98ab4208e2aa5273128650e19")
+        (revision "8"))
     (package
       (name "guile-simple-zmq")
       (version (git-version "0.0.0" revision commit))
@@ -1014,23 +1014,20 @@ convenient nested tree operations.")
                (commit commit)))
          (sha256
           (base32
-           "0ilyviny3c2am20d192cqhq7rsdy3jvbvmvqqg7qv9myrcwqg26y"))
+           "1nhlp5kl1095k1irvv0kgdbc7lp5qki3d3wg9rla6f7822hkmrzw"))
          (file-name (git-file-name name version))))
-      (build-system guile-build-system)
+      (build-system gnu-build-system)
       (arguments
-       `(#:source-directory "src"
-         #:phases (modify-phases %standard-phases
-                    (add-after 'unpack 'set-libzmq-file-name
-                      (lambda* (#:key inputs #:allow-other-keys)
-                        (substitute* "src/simple-zmq.scm"
-                          (("\\(dynamic-link \"libzmq\"\\)")
-                           (format #f "(dynamic-link \"~a/lib/libzmq.so\")"
-                                   (assoc-ref inputs "zeromq"))))
-                        #t)))))
+       '(#:make-flags
+         '("GUILE_AUTO_COMPILE=0"))) ;to prevent guild warnings
+
       (native-inputs
        `(("guile" ,guile-3.0)))
       (inputs
-       `(("zeromq" ,zeromq)))
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("pkg-config" ,pkg-config)
+         ("zeromq" ,zeromq)))
       (home-page "https://github.com/jerry40/guile-simple-zmq")
       (synopsis "Guile wrapper over ZeroMQ library")
       (description
