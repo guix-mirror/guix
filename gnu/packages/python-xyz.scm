@@ -21013,6 +21013,39 @@ by Igor Pavlov.")
 enumeration library in Python.")
     (license license:expat)))
 
+(define-public python-zeroconf
+  (package
+    (name "python-zeroconf")
+    (version "0.28.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "zeroconf" version))
+       (sha256
+        (base32
+         "0narq8haa3b375vfblbyil77n8bw0wxqnanl91pl0wwwm884mqjb"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (propagated-inputs
+     `(("python-ifaddr" ,python-ifaddr)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _ ;; Networking isn't available for these tests.
+             (invoke "nosetests" "-v"
+                     "--exclude" "test_integration_with_listener_ipv6"
+                     "--exclude" "test_launch_and_close_v6_only"
+                     "--exclude" "test_launch_and_close_v4_v6"
+                     "--exclude" "test_launch_and_close"))))))
+    (home-page "https://github.com/jstasiak/python-zeroconf")
+    (synopsis "Pure Python mDNS service discovery")
+    (description
+     "Pure Python multicast DNS (mDNS) service discovery library (Bonjour/Avahi
+compatible).")
+    (license license:lgpl2.1+)))
+
 (define-public python2-zeroconf
   (package
     (name "python2-zeroconf")
