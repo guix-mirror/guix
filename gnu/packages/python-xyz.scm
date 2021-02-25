@@ -43,7 +43,7 @@
 ;;; Copyright © 2017, 2018, 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Muriithi Frederick Muriuki <fredmanglis@gmail.com>
-;;; Copyright © 2017, 2019 Brendan Tildesley <mail@brendan.scot>
+;;; Copyright © 2017, 2019, 2021 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2018 Ethan R. Jones <ethanrjones97@gmail.com
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2018 Vijayalakshmi Vedantham <vijimay12@gmail.com>
@@ -20987,6 +20987,31 @@ by Igor Pavlov.")
 
 (define-public python2-pylzma
   (package-with-python2 python-pylzma))
+
+(define-public python-ifaddr
+  (package
+    (name "python-ifaddr")
+    (version "0.1.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ifaddr" version))
+       (sha256
+        (base32
+         "150sxdlicwrphmhnv03ykxplyd2jdrxz0mikgnivavgilrn8m7hz"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _ (invoke "nosetests"))))))
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (home-page "https://github.com/pydron/ifaddr")
+    (synopsis "Network interface and IP address enumeration library")
+    (description "This package provides a network interface and IP address
+enumeration library in Python.")
+    (license license:expat)))
 
 (define-public python2-zeroconf
   (package
