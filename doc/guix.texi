@@ -34471,7 +34471,7 @@ which has minimalist replacements for Awk, the GNU Core Utilities, Grep,
 Gzip, Sed, and Tar.  The rest of the bootstrap binary seeds that were
 removed are now built from source.
 
-Building the GNU System from source is currently only possibly by adding
+Building the GNU System from source is currently only possible by adding
 some historical GNU packages as intermediate steps@footnote{Packages
 such as @code{gcc-2.95.3}, @code{binutils-2.14}, @code{glibc-2.2.5},
 @code{gzip-1.2.4}, @code{tar-1.22}, and some others.  For details, see
