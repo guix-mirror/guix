@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -480,7 +480,7 @@ the operating system."
     (program-file "boot-program"
                   #~(let ((system (cadr (command-line))))
                       (setenv "GUIX_NEW_SYSTEM" system)
-                      (execl #$(file-append guile-2.2 "/bin/guile")
+                      (execl #$(file-append guile-3.0 "/bin/guile")
                              "guile" "--no-auto-compile"
                              (string-append system "/boot")))))
 
