@@ -3252,7 +3252,7 @@ in the center.")
        (sha256
         (base32 "00admi87gqm0akhfqm4dcp9fw8ihpygy030955jswkha4zs7lw2p"))))
     (build-system emacs-build-system)
-    (home-page "http://www.dr-qubit.org/emacs.php")
+    (home-page "https://www.dr-qubit.org/undo-tree.html")
     (synopsis "Treat undo history as a tree")
     (description
      "Tree-like interface to Emacs undo system, providing
