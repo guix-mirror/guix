@@ -31,6 +31,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
+  #:use-module (gnu packages libffi)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages check)
   #:use-module (gnu packages maths)
@@ -66,6 +67,34 @@
     (description "MultiVolumefile is a Python library that provides a
 file-object abstraction, making it possible to use multiple files as if they
 were a single file.")
+    (license license:lgpl2.1+)))
+
+(define-public python-ppmd-cffi
+  (package
+    (name "python-ppmd-cffi")
+    (version "0.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ppmd-cffi" version))
+       (sha256
+        (base32
+         "01wcd9l6pp6hivdmd275qh9dhcwficjqfl67hxix5n07vvq7jzz0"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-cffi" ,python-cffi)))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-setuptools-scm" ,python-setuptools-scm/next)
+       ("python-pep517" ,python-pep517)
+       ("python-coverage" ,python-coverage)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)))
+    (home-page "https://github.com/miurahr/ppmd")
+    (synopsis "Prediction by Partial Matching compression library")
+    (description "PPMd is a compression algorithm library using the Prediction
+by Partial Matching statistical technique.  It is used in RAR and 7-Zip as one of
+several possible methods.")
     (license license:lgpl2.1+)))
 
 (define-public python-lzo
