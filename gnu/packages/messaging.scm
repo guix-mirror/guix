@@ -1899,6 +1899,13 @@ many bug fixes.")
         (base32
          "03adv5xc84l9brcx0dpyqyffmsclans8yfrpnd357k6x3wfckjri"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list
+        "--disable-static")
+       #:make-flags
+       (list
+        "CFLAGS=-Wno-error=all")))
     (inputs
      `(("glib" ,glib)
        ("gnutls" ,gnutls)
@@ -1906,7 +1913,7 @@ many bug fixes.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("check" ,check)
-       ("glib" ,glib "bin") ; gtester
+       ("glib" ,glib "bin")             ; gtester
        ("gtk-doc" ,gtk-doc)))
     (home-page "https://mcabber.com/")
     (description
