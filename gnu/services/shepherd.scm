@@ -97,7 +97,11 @@
   #~(begin
       ;; Keep track of the booted system.
       (false-if-exception (delete-file "/run/booted-system"))
-      (symlink (readlink "/run/current-system")
+
+      ;; Make /run/booted-system, an indirect GC root, point to the store item
+      ;; /run/current-system points to.  Use 'canonicalize-path' rather than
+      ;; 'readlink' to make sure we get the store item.
+      (symlink (canonicalize-path "/run/current-system")
                "/run/booted-system")
 
       ;; Close any remaining open file descriptors to be on the safe
