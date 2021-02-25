@@ -7293,7 +7293,8 @@ elements to achieve a simple goal in the most complex way possible.")
      `(#:tests? #f                      ;tests are broken
        #:configure-flags (list "-DUSE_SYSTEM_LIBLUA:BOOL=YES"
                                (string-append "-DPIONEER_DATA_DIR="
-                                              %output "/share/games/pioneer"))))
+                                              %output "/share/games/pioneer"))
+       #:make-flags (list "all" "build-data")))
     (home-page "https://pioneerspacesim.net")
     (synopsis "Game of lonely space adventure")
     (description
