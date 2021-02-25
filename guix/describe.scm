@@ -23,7 +23,9 @@
   #:use-module ((guix utils) #:select (location-file))
   #:use-module ((guix store) #:select (%store-prefix store-path?))
   #:use-module ((guix config) #:select (%state-directory))
-  #:autoload   (guix channels) (sexp->channel manifest-entry-channel)
+  #:autoload   (guix channels) (channel-name
+                                sexp->channel
+                                manifest-entry-channel)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match)
   #:export (current-profile
