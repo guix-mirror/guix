@@ -39,6 +39,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-check)
+  #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages sphinx))
 
@@ -123,6 +124,46 @@ Jump conversion filter by CFFI for Python.")
     (description "PPMd is a compression algorithm library using the Prediction
 by Partial Matching statistical technique.  It is used in RAR and 7-Zip as one of
 several possible methods.")
+    (license license:lgpl2.1+)))
+
+(define-public python-py7zr
+  (package
+    (name "python-py7zr")
+    (version "0.14.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "py7zr" version))
+       (sha256
+        (base32
+         "1zmgp7yax328fj8yj8pj4l7yh78hp727j6wk12vfi6nmi82wl32i"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-bcj-cffi" ,python-bcj-cffi)
+       ("python-multivolumefile" ,python-multivolumefile)
+       ("python-ppmd-cffi" ,python-ppmd-cffi)
+       ("python-pycryptodome" ,python-pycryptodome)
+       ("python-pyzstd" ,python-pyzstd)
+       ("python-texttable" ,python-texttable)
+       ("python-zstandard" ,python-zstandard)))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-setuptools-scm" ,python-setuptools-scm/next)
+       ("python-coverage" ,python-coverage)
+       ("python-coveralls" ,python-coveralls)
+       ("python-libarchive-c" ,python-libarchive-c)
+       ("python-py-cpuinfo" ,python-py-cpuinfo)
+       ("python-pyannotate" ,python-pyannotate)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-benchmark" ,python-pytest-benchmark)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-remotedata" ,python-pytest-remotedata)
+       ("python-pytest-timeout" ,python-pytest-timeout)))
+    (home-page "https://github.com/miurahr/py7zr")
+    (synopsis "7-zip in Python")
+    (description "This package provides py7zr, which implements 7-zip
+archive compression, decompression, encryption and decryption in
+Python.")
     (license license:lgpl2.1+)))
 
 (define-public python-lzo
