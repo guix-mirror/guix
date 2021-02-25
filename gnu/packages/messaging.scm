@@ -1956,7 +1956,9 @@ protocol allows.")
        ("ncurses" ,ncurses)
        ("loudmouth" ,loudmouth)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)))
     (home-page "https://mcabber.com")
     (description
      "Mcabber is a small XMPP (Jabber) console client, which includes features
