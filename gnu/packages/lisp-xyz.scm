@@ -2931,6 +2931,37 @@ package.")
 (define-public ecl-cffi
   (sbcl-package->ecl-package sbcl-cffi))
 
+(define-public sbcl-cffi-c-ref
+  (let ((commit "8123cbb6034c5f7921a0766107cfb8c4e8efd5ce")
+        (revision "0"))
+    (package
+      (name "sbcl-cffi-c-ref")
+      (version (git-version "1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/borodust/cffi-c-ref")
+               (commit commit)))
+         (sha256
+          (base32 "1a3pp6xcisabqir3rp1gvvjfdxcvpm8yr35p38nri9azsinmmc7z"))
+         (file-name (git-file-name "cffi-c-ref" version))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cffi" ,sbcl-cffi)))
+      (synopsis "Streamlined access to foreign memory")
+      (description
+       "This Common Lisp library provides macros to access foreign memory.")
+      (home-page "https://github.com/borodust/cffi-c-ref")
+      (license license:expat))))
+
+(define-public cl-cffi-c-ref
+  (sbcl-package->cl-source-package sbcl-cffi-c-ref))
+
+(define-public ecl-cffi-c-ref
+  (sbcl-package->ecl-package sbcl-cffi-c-ref))
+
 (define-public sbcl-cl-sqlite
   (package
     (name "sbcl-cl-sqlite")
