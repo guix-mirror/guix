@@ -198,14 +198,14 @@ not offer a replacement for libcurl.")
 (define-public guile-curl
   (package
    (name "guile-curl")
-   (version "0.7")
+   (version "0.9")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://www.lonelycactus.com/tarball/"
                                 "guile_curl-" version ".tar.gz"))
             (sha256
              (base32
-              "1zk0ijx6bj212k0j0ma84cpvpvn0x6raaxnby3wdx3w4wnhnscn7"))))
+              "0y7wfhilfm6vzs0wyifrrc2pj9nsxfas905c7qa5cw4i6s74ypmi"))))
    (build-system gnu-build-system)
    (arguments
     `(#:modules (((guix build guile-build-system)
@@ -230,7 +230,7 @@ not offer a replacement for libcurl.")
       (modify-phases %standard-phases
         (add-after 'unpack 'patch-undefined-references
           (lambda* _
-            (substitute* "src/curl.scm"
+            (substitute* "module/curl.scm"
               ;; The following #defines are missing from our curl package
               ;; and therefore result in the evaluation of undefined symbols.
               ((",CURLOPT_HAPROXYPROTOCOL") "#f")
