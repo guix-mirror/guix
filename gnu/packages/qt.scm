@@ -105,6 +105,39 @@
   #:use-module (gnu packages xml)
   #:use-module (srfi srfi-1))
 
+(define-public qite
+  (let ((commit "75fb3b6bbd5c6a5a8fc35e08a6efbfb588ed546a")
+        (revision "74"))
+    (package
+      (name "qite")
+      (version (git-version "0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/Ri0n/qite")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0jmmgy9pvk9hwwph1nwy7hxhczy8drhl4ymhnjjn6yx7bckssvsq"))))
+      (build-system qt-build-system)
+      (arguments
+       `(#:tests? #f                    ; no target
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'chdir
+             (lambda _
+               (chdir "libqite")
+               #t)))))
+      (inputs
+       `(("qtbase" ,qtbase)
+         ("qtmultimedia" ,qtmultimedia)))
+      (home-page "https://github.com/Ri0n/qite/")
+      (synopsis "Qt Interactive Text Elements")
+      (description "Qite allows to manage interactive elements on QTextEdit.")
+      (license license:asl2.0))))
+
 (define-public qt5ct
   (package
     (name "qt5ct")
