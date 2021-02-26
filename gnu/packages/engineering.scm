@@ -2956,10 +2956,10 @@ GUI.")
                      ("python-2" ,python-2)
                      ("python-3" ,python-3)))
     ;; FIXME: Enable NBD support by adding `libnbd' (currently unpackaged).
-    ;; FIXME: A "hyperlinks-capable" `libtexststyle' needed for the hserver.
     (inputs `(("json-c" ,json-c)
               ("libgc" ,libgc)
-              ("readline" ,readline)))
+              ("readline" ,readline)
+              ("libtextstyle" ,libtextstyle)))
     (arguments
      ;; To build the GUI, add the `--enable-gui' configure flag.
      ;; To enable the "hyperlink server", add the `--enable-hserver' flag.
