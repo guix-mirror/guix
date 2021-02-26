@@ -52,6 +52,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages guile)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages llvm)
@@ -103,6 +104,71 @@
                               name "-v" (version-major+minor+point version)
                               ".tar.gz"))
           (sha256 (base32 hash))))
+
+(define-public camlboot
+  (let ((commit "506280c6e0813e0e794988151a8e46be55373ebc")
+        (revision "0"))
+    (package
+      (name "camlboot")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/Ekdohibs/camlboot")
+                      (commit commit)
+                      (recursive? #t)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0vimxl4karw9ih3npyc5rhxg85cjh6fqjbq3dzj7j2iymlhwfbkv"))
+                (modules '((guix build utils)))
+                (snippet
+                 `(begin
+                    ;; Remove bootstrap binaries and pre-generated source files,
+                    ;; to ensure we actually bootstrap properly.
+                    (for-each delete-file (find-files "ocaml-src" "^.depend$"))
+                    (delete-file "ocaml-src/boot/ocamlc")
+                    (delete-file "ocaml-src/boot/ocamllex")
+                    ;; Ensure writable
+                    (for-each
+                     (lambda (file)
+                       (chmod file (logior (stat:mode (stat file)) #o200)))
+                     (find-files "." "."))))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:make-flags (list "_boot/ocamlc") ; build target
+         #:tests? #f                        ; no tests
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (add-before 'build 'no-autocompile
+             (lambda _
+               ;; prevent a guile warning
+               (setenv "GUILE_AUTO_COMPILE" "0")))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin")))
+                 (mkdir-p bin)
+                 (install-file "_boot/ocamlc" bin)
+                 (rename-file "miniml/interp/lex.byte" "ocamllex")
+                 (install-file "ocamllex" bin)))))))
+      (native-inputs
+       `(("guile" ,guile-3.0)))
+      (home-page "https://github.com/Ekdohibs/camlboot")
+      (synopsis "OCaml souce bootstrap")
+      (description "OCaml is written in OCaml.  Its sources contain a pre-compiled
+bytecode version of @command{ocamlc} and @command{ocamllex} that are used to
+build the next version of the compiler.  Camlboot implements a bootstrap for
+the OCaml compiler and provides a bootstrapped equivalent to these files.
+
+It contains a compiler for a small subset of OCaml written in Guile Scheme,
+an interpreter for OCaml written in that subset and a manually-written lexer
+for OCaml.  These elements eliminate the need for the binary bootstrap in
+OCaml and can effectively bootstrap OCaml 4.07.
+
+This package produces a native @command{ocamlc} and a bytecode @command{ocamllex}.")
+      (license license:expat))))
 
 (define-public ocaml-4.11
   (package
