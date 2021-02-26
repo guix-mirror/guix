@@ -367,6 +367,9 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.11)))
 
+;; The "longterm" kernels — the older releases with long-term upstream support.
+;; Here are the support timelines:
+;; <https://www.kernel.org/category/releases.html>
 (define-public linux-libre-5.10-version "5.10.19")
 (define deblob-scripts-5.10
   (linux-libre-deblob-scripts
@@ -380,9 +383,6 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.10)))
 
-;; The "longterm" kernels — the older releases with long-term upstream support.
-;; Here are the support timelines:
-;; <https://www.kernel.org/category/releases.html>
 (define-public linux-libre-5.4-version "5.4.101")
 (define deblob-scripts-5.4
   (linux-libre-deblob-scripts
@@ -890,16 +890,16 @@ It has been modified to remove all non-free binary blobs.")
                      '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux" "riscv64-linux")
                      #:configuration-file kernel-config))
 
+(define-public linux-libre-version         linux-libre-5.11-version)
+(define-public linux-libre-pristine-source linux-libre-5.11-pristine-source)
+(define-public linux-libre-source          linux-libre-5.11-source)
+(define-public linux-libre                 linux-libre-5.11)
+
 (define-public linux-libre-5.10
   (make-linux-libre* linux-libre-5.10-version
                      linux-libre-5.10-source
                      '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux" "riscv64-linux")
                      #:configuration-file kernel-config))
-
-(define-public linux-libre-version         linux-libre-5.10-version)
-(define-public linux-libre-pristine-source linux-libre-5.10-pristine-source)
-(define-public linux-libre-source          linux-libre-5.10-source)
-(define-public linux-libre                 linux-libre-5.10)
 
 (define-public linux-libre-5.4
   (make-linux-libre* linux-libre-5.4-version
