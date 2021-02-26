@@ -77,6 +77,7 @@
   #:use-module (guix build-system ant)
   #:use-module (guix build-system cargo)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system copy)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
@@ -169,6 +170,79 @@
   #:use-module (gnu packages vim)
   #:use-module (gnu packages xml)
   #:use-module ((srfi srfi-1) #:select (delete-duplicates)))
+
+(define-public qhttp
+  (package
+    (name "qhttp")
+    (version "3.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/azadkuh/qhttp")
+         (commit (string-append "version-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0cx23g4y4k4v9p5ph6h7gfhp8sfy1gcdv1g6bl44hppar1y0zfdq"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no target
+       #:imported-modules
+       ((guix build copy-build-system)
+        ,@%gnu-build-system-modules)
+       #:modules
+       (((guix build copy-build-system) #:prefix copy:)
+        (guix build gnu-build-system)
+        (guix build utils))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "commondir.pri"
+               (("\\$\\$PRJDIR/xbin")
+                (string-append (assoc-ref outputs "out") "/lib"))
+               (("-L")
+                "-lhttp_parser -L")
+               (("\\$\\$PRJDIR/3rdparty")
+                ""))
+             (substitute* "src/src.pro"
+               (("SOURCES  \\+= \\$\\$PRJDIR/3rdparty/http-parser/http_parser.c")
+                "")
+               (("HEADERS  \\+= \\$\\$PRJDIR/3rdparty/http-parser/http_parser.h")
+                ""))
+             (substitute* '("src/private/qhttpbase.hpp" "src/qhttpabstracts.cpp")
+               (("http-parser/http_parser.h")
+                "http_parser.h"))
+             #t))
+         (replace 'configure
+           (lambda _ (invoke "qmake")))
+         (replace 'install
+           (lambda args
+             (apply (assoc-ref copy:%standard-phases 'install)
+                    #:install-plan
+                    '(("src" "include"
+                       #:include-regexp ("\\.hpp$")))
+                    args)))
+         (add-after 'install 'remove-examples
+           (lambda* (#:key outputs #:allow-other-keys)
+             (with-directory-excursion
+                 (string-append (assoc-ref outputs "out") "/lib")
+               (for-each delete-file
+                         (list
+                          "basic-server"
+                          "helloworld"
+                          "postcollector")))
+             #t)))))
+    (inputs
+     `(("http-parser" ,http-parser)
+       ("qtbase" ,qtbase)))
+    (home-page "https://github.com/azadkuh/qhttp/")
+    (synopsis "Qt-based HTTP Library")
+    (description
+     "Qhttp is a light-weight and asynchronous HTTP library
+(both server & client) in Qt5 and C++14.")
+    (license license:expat)))
 
 (define-public httpd
   (package
