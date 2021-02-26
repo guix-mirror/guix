@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
-;;; Copyright © 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018, 2019, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -2928,66 +2928,49 @@ GUI.")
     (license license:gpl3+)))
 
 (define-public poke
-  ;; Upstream has yet to tag any releases.
-  (let ((commit "d33317a46e3b7c48130a471a48cbfea1abab70d8")
-        (revision "0"))
-    (package
-      (name "poke")
-      (version (git-version "0.0.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "git://git.savannah.gnu.org/poke.git")
-               (commit commit)
-               (recursive? #t)))
-         (sha256
-          (base32 "1dd0r1x123bqi78lrsk58rvg9c9wka0kywdyzn7g3i4hkh54xb7d"))
-         (file-name (git-file-name name version))))
-      (build-system gnu-build-system)
-      ;; The GUI, which we elide, requires tcl and tk.
-      (native-inputs `(("autoconf" ,autoconf)
-                       ("automake" ,automake)
-                       ;; Requires bison 3.6+ but we currently only have 3.5.
-                       ;; Bison 3.6 will be available in the next core update.
-                       ("bison-3.6" ,bison-3.6)
-                       ("clisp" ,clisp)
-                       ("dejagnu" ,dejagnu)
-                       ("flex" ,flex)
-                       ("gettext" ,gettext-minimal)
-                       ("help2man" ,help2man)
-                       ("libtool" ,libtool)
-                       ("perl" ,perl)
-                       ("pkg-config" ,pkg-config)
-                       ("python-2" ,python-2)
-                       ("python-3" ,python-3)
-                       ("texinfo" ,texinfo)))
-      ;; FIXME: Enable NBD support by adding `libnbd' (currently unpackaged).
-      ;; FIXME: A "hyperlinks-capable" `libtexststyle' needed for the hserver.
-      (inputs `(("json-c" ,json-c)
-                ("libgc" ,libgc)
-                ("readline" ,readline)))
-      (arguments
-       ;; To build the GUI, add the `--enable-gui' configure flag.
-       ;; To enable the "hyperlink server", add the `--enable-hserver' flag.
-       `(#:configure-flags '("--enable-mi")
-         #:phases (modify-phases %standard-phases
-                    ;; This is a non-trivial bootstrap that needs many of the
-                    ;; native-inputs and thus must run after `patch-shebangs'.
-                    (delete 'bootstrap)
-                    (add-after 'patch-source-shebangs 'bootstrap
-                      (lambda _
-                        (invoke "./bootstrap" "--no-git"
-                                "--no-bootstrap-sync"
-                                "--gnulib-srcdir=gnulib")
-                        #t)))))
-      (home-page "http://jemarch.net/poke.html")
-      (synopsis "Interactive, extensible editor for binary data")
-      (description "GNU poke is an interactive, extensible editor for binary
+  (package
+    (name "poke")
+    (version "1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/poke/poke-" version
+                                  ".tar.gz"))
+              (sha256
+               (base32
+                "02jvla69xd0nnlg2bil2vxxxglqgylswml6h5hy2nxy0023hp4yy"))))
+
+    ;; XXX: Version 1.0 only supports 64-bit systems.
+    (supported-systems '("x86_64-linux" "aarch64-linux"))
+
+    (build-system gnu-build-system)
+    ;; The GUI, which we elide, requires tcl and tk.
+    (native-inputs `(;; Requires bison 3.6+ but we currently only have 3.5.
+                     ;; Bison 3.6 will be available in the next core update.
+                     ("bison-3.6" ,bison-3.6)
+                     ("clisp" ,clisp)
+                     ("dejagnu" ,dejagnu)
+                     ("flex" ,flex)
+                     ("libtool" ,libtool)
+                     ("perl" ,perl)
+                     ("pkg-config" ,pkg-config)
+                     ("python-2" ,python-2)
+                     ("python-3" ,python-3)))
+    ;; FIXME: Enable NBD support by adding `libnbd' (currently unpackaged).
+    ;; FIXME: A "hyperlinks-capable" `libtexststyle' needed for the hserver.
+    (inputs `(("json-c" ,json-c)
+              ("libgc" ,libgc)
+              ("readline" ,readline)))
+    (arguments
+     ;; To build the GUI, add the `--enable-gui' configure flag.
+     ;; To enable the "hyperlink server", add the `--enable-hserver' flag.
+     `(#:configure-flags '("--enable-mi")))
+    (home-page "http://jemarch.net/poke.html")
+    (synopsis "Interactive, extensible editor for binary data")
+    (description "GNU poke is an interactive, extensible editor for binary
   data.  Not limited to editing basic entities such as bits and bytes, it
   provides a full-fledged procedural, interactive programming language designed
   to describe data structures and to operate on them.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public pcb2gcode
     (package
