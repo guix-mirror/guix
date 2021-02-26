@@ -10,6 +10,7 @@
 ;; Copyright © 2020, 2021 Mathieu Othacehe <m.othacehe@gmail.com>
 ;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;; Copyright © 2021 Leo Famulari <leo@famulari.name>
 ;;
 ;; Copying and distribution of this file, with or without modification, are
 ;; permitted in any medium without royalty provided the copyright notice and
@@ -17,6 +18,23 @@
 
 (channel-news
  (version 0)
+
+ (entry (commit "1b5b882120daf7d111aa351a919a90e818324347")
+        (title
+          (en "The @code{linux-libre} kernel is updated to 5.11.2")
+          (fr "Le noyau @code{linux-libre} est mis à jour vers la 5.11.2"))
+        (body
+          (en "The default @code{linux-libre} kernel is now based on the 5.11
+stable kernel series, beginning with version 5.11.2.  Promiment features include
+improved Wine performance, unprivileged Overlayfs mounts, support for Intel SGX,
+support for new graphics hardware, and improved performance of the Btrfs
+file system.")
+          (fr "Le noyau @code{linux-libre} par défaut est maintenant basé sur la
+lignée stable 5.11 du noyau, à commencer par la version 5.11.2.  Parmi les
+fonctionnalités notables on trouve des performances améliorées pour Wine, le
+montage Overlayfs non privilégié, la prise en charge d'Intel SGX, celle des
+nouveaux périphériques graphiques et de meilleures performances du système de
+fichiers Btrfs.")))
 
  (entry (commit "6e8cdf1d26092cb9654e179b04730fff7c15c94f")
         (title
