@@ -14614,3 +14614,34 @@ adaptations.")
 
 (define-public cl-radiance
   (sbcl-package->cl-source-package sbcl-radiance))
+
+(define-public sbcl-daemon
+  (let ((commit "d5652f4332c3cee21e9bf83b9237129605004597")
+        (revision "1"))
+    (package
+      (name "sbcl-daemon")
+      (version (git-version "0.0.4" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/snmsts/daemon")
+               (commit commit)))
+         (file-name (git-file-name "daemon" version))
+         (sha256
+          (base32 "1kdxfnhh9fz34j8qs7pn7mwjz3v33q4v9nh0hqkyzraq5xs2j3f4"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("trivial-features" ,sbcl-trivial-features)))
+      (home-page "https://github.com/snmsts/daemon")
+      (synopsis "Daemonize Common Lisp processes")
+      (description
+       "DAEMON provides the functionality of daemonizing Common Lisp processes
+on UNIX like platforms.")
+      (license license:expat))))
+
+(define-public ecl-daemon
+  (sbcl-package->ecl-package sbcl-daemon))
+
+(define-public cl-daemon
+  (sbcl-package->cl-source-package sbcl-daemon))
