@@ -9544,7 +9544,7 @@ client/server side engines).  Web mode is compatible with many template
 engines: PHP, JSP, ASP, Django, Twig, Jinja, Mustache, ERB, FreeMarker,
 Velocity, Cheetah, Smarty, CTemplate, Mustache, Blade, ErlyDTL, Go Template,
 Dust.js, React/JSX, Angularjs, ejs, etc.")
-    (home-page "http://web-mode.org/")
+    (home-page "https://web-mode.org/")
     (license license:gpl3+)))
 
 (define-public emacs-templatel
