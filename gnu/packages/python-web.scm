@@ -94,13 +94,13 @@
 (define-public python-aiohttp
   (package
     (name "python-aiohttp")
-    (version "3.7.3")
+    (version "3.7.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "aiohttp" version))
        (sha256
-        (base32 "1i3p4yrfgrf1zpbgnywqmb33ps4k51wylcxykhf2cwky0spq26lw"))))
+        (base32 "1pn79h8fng4xi5gl1f6saw31nxgmgyxl41yf3vba1l21673yr12x"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
