@@ -88,6 +88,26 @@
     (description "CHMLIB is a library for dealing with ITSS/CHM format files.")
     (license license:lgpl2.1+)))
 
+(define-public python-pychm
+  (package
+    (name "python-pychm")
+    (version "0.8.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pychm" version))
+       (sha256
+        (base32
+         "0wpn9ijlsmrpyiwg3drmgz4dms1i1i347adgqw37bkrh3vn6yq16"))))
+    (build-system python-build-system)
+    (inputs
+     `(("chmlib" ,chmlib)))
+    (home-page "https://github.com/dottedmag/pychm")
+    (synopsis "Handle CHM files")
+    (description "This package provides a Python module for interacting
+with Microsoft Compiled HTML (CHM) files")
+    (license license:gpl2+)))
+
 (define-public calibre
   (package
     (name "calibre")
