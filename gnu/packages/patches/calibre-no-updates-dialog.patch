@@ -1,11 +1,17 @@
-Taken from debian.
+From 19e8d7701c302b0eca4c638705a6db625352caa3 Mon Sep 17 00:00:00 2001
+From: Brendan Tildesley <mail@brendan.scot>
+Date: Thu, 25 Feb 2021 12:17:30 +1100
+Subject: [PATCH] Don't check for updates.
 
-# Description: Disable update check by default.
-Index: calibre/src/calibre/gui2/main.py
-===================================================================
---- calibre.orig/src/calibre/gui2/main.py	2014-02-02 10:41:28.470954623 +0100
-+++ calibre/src/calibre/gui2/main.py	2014-02-02 10:41:56.546954247 +0100
-@@ -37,8 +37,8 @@
+---
+ src/calibre/gui2/main.py | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/calibre/gui2/main.py b/src/calibre/gui2/main.py
+index 776f8bebfb..4302716d7e 100644
+--- a/src/calibre/gui2/main.py
++++ b/src/calibre/gui2/main.py
+@@ -59,8 +59,8 @@ def option_parser():
                        help=_('Start minimized to system tray.'))
      parser.add_option('-v', '--verbose', default=0, action='count',
                        help=_('Ignored, do not use. Present only for legacy reasons'))
@@ -16,3 +22,5 @@ Index: calibre/src/calibre/gui2/main.py
      parser.add_option('--ignore-plugins', default=False, action='store_true',
              help=_('Ignore custom plugins, useful if you installed a plugin'
                  ' that is preventing calibre from starting'))
+--
+2.30.1
