@@ -1982,6 +1982,25 @@ framework.  The bindings are implemented as a set of Python modules and
 contain over 620 classes.")
     (license license:gpl3)))
 
+(define-public python-pyqt5-sip
+  (package
+    (name "python-pyqt5-sip")
+    (version "12.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "PyQt5_sip" version))
+       (sha256
+        (base32
+         "1gg032ys4pccwkdzmdryadc9a4lq85nr05pag9swrsdykbdl9s9h"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)) ;; No test code.
+    (home-page "https://www.riverbankcomputing.com/software/sip/")
+    (synopsis "Sip module support for PyQt5")
+    (description "Sip module support for PyQt5")
+    (license license:lgpl2.1+)))
+
 (define-public python-pyqtwebengine
   (package
     (name "python-pyqtwebengine")
