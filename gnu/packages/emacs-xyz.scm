@@ -1967,7 +1967,7 @@ mode, Rmail, Gnus, MH-E, and VM).  BBDB is fully customizable.")
           "03g3lk8hz9a17vf5r16x054bhyk8xsbnfq0div8ig13fmhqi159q"))))
   (build-system emacs-build-system)
   (propagated-inputs `(("emacs-ivy" ,emacs-ivy)))
-  (home-page "https://github.com/redguard/counsel-bbdb")
+  (home-page "https://github.com/redguardtoo/counsel-bbdb")
   (synopsis "Ivy interface for BBDB")
   (description "This Ivy extension enables the use of @code{ivy-mode} to input
 email addresses from BBDB efficiently.  The main functions are:
