@@ -6610,7 +6610,7 @@ email.")
 (define-public emacs-org-superstar
   (package
     (name "emacs-org-superstar")
-    (version "1.4.0")
+    (version "1.5.0")
     (source
      (origin
        (method git-fetch)
@@ -6619,7 +6619,7 @@ email.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1aklp6nk05ghpq7ybsbvn28wrygfwqvq58k1hjll97nbhd7h0gyb"))))
+        (base32 "12inin2p6pm6vbv3yc06fx343dsp0vp07fjb35w088akhikmqh2a"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-org" ,emacs-org)))
