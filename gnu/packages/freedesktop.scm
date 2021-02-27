@@ -22,6 +22,7 @@
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2020 Anders Thuné <asse.97@gmail.com>
 ;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
+;;; Copyright © 2021 Brendan Tildesley <mail@brendan.scot>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1919,6 +1920,26 @@ encoding names are iconv-compatible.")
     ;; This combines code under MPL 1.1, LGPL 2.1+, and GPL 2.0+, so the
     ;; combination is GPL 2.0+.
     (license license:gpl2+)))
+
+(define-public python-cchardet
+  (package
+  (name "python-cchardet")
+  (version "2.1.7")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (pypi-uri "cchardet" version))
+      (sha256
+        (base32
+          "1bqfz85cd51sw0bvhvdq9ikccxi2ld7g5jpni4jkq1a5clrvca64"))))
+  (build-system python-build-system)
+  (inputs
+   `(("uchardet" ,uchardet)))
+  (home-page "https://github.com/PyYoshi/cChardet")
+  (synopsis "High-performance character encoding detection for Python")
+  (description "cChardet is a character encoding detector, written in
+Python, that binds to the C library @code{uchardet} to increase performance.")
+  (license license:gpl2+)))
 
 (define-public udiskie
   (package
