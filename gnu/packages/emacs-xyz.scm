@@ -8427,7 +8427,7 @@ builtin JavaScript mode.")
                (base32
                 "0cx2848sqnnkkr4zisvqadzxngjyhmb36mh0q3if7q19yjjhmrkb"))))
     (build-system emacs-build-system)
-    (home-page "http://www.dr-qubit.org/tags/computing-code-emacs.html")
+    (home-page "https://www.dr-qubit.org/emacs_data-structures.html")
     (synopsis "Queue data structure for Emacs")
     (description
      "This Emacs library provides queue data structure.  These queues can be
