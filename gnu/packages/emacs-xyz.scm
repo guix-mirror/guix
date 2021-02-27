@@ -6598,7 +6598,7 @@ cards created in Org mode.")
        (sha256
         (base32 "0vchyd80ybvr6317dwm50nxcgxfrpc0bz6259vnrh24p5sb8shbj"))))
     (build-system emacs-build-system)
-    (home-page "http://github.com/org-mime/org-mime")
+    (home-page "https://github.com/org-mime/org-mime")
     (synopsis "Send HTML email using Org mode HTML export")
     (description
      "This program sends HTML email using Org-mode HTML export.
