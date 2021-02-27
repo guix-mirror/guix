@@ -1102,7 +1102,9 @@ storage.")
     (build-system python-build-system)
     (propagated-inputs
      `(("python-six" ,python-six)
-       ("python-webencodings" ,python-webencodings)))
+       ("python-webencodings" ,python-webencodings)
+       ;; Required by Calibre 5.
+       ("python-chardet" ,python-chardet)))
     (arguments
      `(#:test-target "check"))
     (home-page
