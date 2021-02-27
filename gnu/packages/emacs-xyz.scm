@@ -3567,7 +3567,7 @@ display and behaviour is easily customisable.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/syohex/git-gutter-fringe")
+               (url "https://github.com/emacsorphanage/git-gutter-fringe")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -3576,7 +3576,7 @@ display and behaviour is easily customisable.")
       (propagated-inputs
        `(("emacs-git-gutter" ,emacs-git-gutter)
          ("emacs-fringe-helper" ,emacs-fringe-helper)))
-      (home-page "https://github.com/syohex/git-gutter-fringe")
+      (home-page "https://github.com/emacsorphanage/git-gutter-fringe")
       (synopsis "See and manage hunks of text in a version control system")
       (description
        "This package extends @code{git-gutter} to use the fringe area of a
