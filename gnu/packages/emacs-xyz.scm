@@ -1955,21 +1955,22 @@ mode, Rmail, Gnus, MH-E, and VM).  BBDB is fully customizable.")
 
 (define-public emacs-counsel-bbdb
   (package
-  (name "emacs-counsel-bbdb")
-  (version "20181128.1320")
-  (source
-    (origin
-      (method url-fetch)
-      (uri (string-append "https://melpa.org/packages/counsel-bbdb-"
-                          version ".el"))
-      (sha256
-        (base32
-          "03g3lk8hz9a17vf5r16x054bhyk8xsbnfq0div8ig13fmhqi159q"))))
-  (build-system emacs-build-system)
-  (propagated-inputs `(("emacs-ivy" ,emacs-ivy)))
-  (home-page "https://github.com/redguardtoo/counsel-bbdb")
-  (synopsis "Ivy interface for BBDB")
-  (description "This Ivy extension enables the use of @code{ivy-mode} to input
+    (name "emacs-counsel-bbdb")
+    (version "0.0.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/redguardtoo/counsel-bbdb")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0bki658mvlchqf3prkzxz4217a95cxm58c1qmf84yp2n8h6gd0d8"))))
+    (build-system emacs-build-system)
+    (propagated-inputs `(("emacs-ivy" ,emacs-ivy)))
+    (home-page "https://github.com/redguardtoo/counsel-bbdb")
+    (synopsis "Ivy interface for BBDB")
+    (description "This Ivy extension enables the use of @code{ivy-mode} to input
 email addresses from BBDB efficiently.  The main functions are:
 @table @code
 @item counsel-bbdb-complete-mail to input email addresses;
@@ -1979,7 +1980,7 @@ email addresses from BBDB efficiently.  The main functions are:
 Since @code{counsel-bbdb} is based on @code{ivy-mode}, all Ivy key bindings
 are supported.  For example, after @samp{C-u M-x counsel-bbdb-complete-mail},
 you can press @samp{C-M-n} to input multiple email addresses.")
-  (license license:gpl3+)))
+    (license license:gpl3+)))
 
 (define-public emacs-bluetooth
   (package
