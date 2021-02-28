@@ -759,7 +759,7 @@ server and embedded PowerPC, and S390 guests.")
        ("python-bitarray" ,python-bitarray)
        ("python-paramiko" ,python-paramiko)
        ("python-psutil" ,python-psutil)))
-    (home-page "http://www.ganeti.org/")
+    (home-page "https://www.ganeti.org/")
     (synopsis "Cluster-based virtual machine management system")
     (description
      "Ganeti is a virtual machine management tool built on top of existing
