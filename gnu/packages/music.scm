@@ -3031,7 +3031,7 @@ from the command line.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("qttools" ,qttools)))
-    (home-page "http://qtractor.org/")
+    (home-page "https://qtractor.org/")
     (synopsis "Audio/MIDI multi-track sequencer")
     (description
      "Qtractor is an Audio/MIDI multi-track sequencer application.  It uses
