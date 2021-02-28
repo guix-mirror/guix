@@ -24,7 +24,7 @@
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 JoJo <jo@jo.zone>
-;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@member.fsf.org>
 ;;; Copyright © 2020 Carlo Holl <carloholl@gmail.com>
 ;;; Copyright © 2020 Christopher Lemmer Webber <cwebber@dustycloud.org>
@@ -6432,7 +6432,7 @@ monads with anaphoric variants on @code{if} and @code{when} and a C-like
     (native-inputs
      `(("ghc-tasty" ,ghc-tasty)
        ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
-    (home-page "http://patch-tag.com/r/salazar/indents")
+    (home-page "https://github.com/jaspervdj/indents")
     (synopsis "Indentation sensitive parser-combinators for parsec")
     (description
      "This library provides functions for use in parsing indentation sensitive
