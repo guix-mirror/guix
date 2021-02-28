@@ -379,7 +379,7 @@ underlying solvers like Cplex, Gurobi, Lpsolver, Glpk, CbC, SCIP or WBO.")
         ("ocaml-extlib" ,ocaml-extlib)
         ("ocamlbuild" ,ocamlbuild)
         ("ocaml-cppo" ,ocaml-cppo)))
-    (home-page "http://www.mancoosi.org/software/")
+    (home-page "https://www.mancoosi.org/software/")
     (synopsis "Package distribution management framework")
     (description "Dose3 is a framework made of several OCaml libraries for
 managing distribution packages and their dependencies.  Though not tied to
