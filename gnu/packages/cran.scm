@@ -2466,7 +2466,7 @@ Docstrings (PEP-0257) and Julia's Triple-Quoted String Literals.")
    (build-system r-build-system)
    (propagated-inputs
     `(("r-boot" ,r-boot)))
-   (home-page "http://www.sciviews.org/pastecs")
+   (home-page "https://github.com/phgrosjean/pastecs")
    (synopsis "Analysis of space-time ecological series")
    (description
     "This package provides functions for regulation, decomposition and analysis
