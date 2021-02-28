@@ -31017,6 +31017,23 @@ coordinator.
 @end table
 @end deftp
 
+@deftp {Data Type} guix-build-coordinator-agent-dynamic-auth
+Data type representing an agent authenticating with a coordinator via a
+dyanmic auth token and agent name.
+
+@table @asis
+@item @code{agent-name}
+Name of an agent, this is used to match up to an existing entry in the
+database if there is one.  When no existing entry is found, a new entry
+is automatically added.
+
+@item @code{token}
+Dynamic auth token, this is created and stored in the coordinator
+database, and is used by the agent to authenticate.
+
+@end table
+@end deftp
+
 The Guix Build Coordinator package contains a script to query an
 instance of the Guix Data Service for derivations to build, and then
 submit builds for those derivations to the coordinator.  The service

@@ -71,6 +71,11 @@
             guix-build-coordinator-agent-password-file-auth-uuid
             guix-build-coordinator-agent-password-file-auth-password-file
 
+            guix-build-coordinator-agent-dynamic-auth
+            guix-build-coordinator-agent-dynamic-auth?
+            guix-build-coordinator-agent-dynamic-auth-agent-name
+            guix-build-coordinator-agent-dynamic-auth-token
+
             guix-build-coordinator-agent-service-type
 
             guix-build-coordinator-queue-builds-configuration
@@ -167,6 +172,13 @@
   (uuid                guix-build-coordinator-agent-password-file-auth-uuid)
   (password-file
    guix-build-coordinator-agent-password-file-auth-password-file))
+
+(define-record-type* <guix-build-coordinator-agent-dynamic-auth>
+  guix-build-coordinator-agent-dynamic-auth
+  make-guix-build-coordinator-agent-dynamic-auth
+  guix-build-coordinator-agent-dynamic-auth?
+  (agent-name          guix-build-coordinator-agent-dynamic-auth-agent-name)
+  (token               guix-build-coordinator-agent-dynamic-auth-token))
 
 (define-record-type* <guix-build-coordinator-queue-builds-configuration>
   guix-build-coordinator-queue-builds-configuration
@@ -365,7 +377,11 @@
                                uuid password-file)
                             #~(#$(string-append "--uuid=" uuid)
                                #$(string-append "--password-file="
-                                                password-file))))
+                                                password-file)))
+                           (($ <guix-build-coordinator-agent-dynamic-auth>
+                               agent-name token)
+                            #~(#$(string-append "--name=" agent-name)
+                               #$(string-append "--dynamic-auth-token=" token))))
                       #$(simple-format #f "--max-parallel-builds=~A"
                                        max-parallel-builds)
                       #$@(if derivation-substitute-urls
