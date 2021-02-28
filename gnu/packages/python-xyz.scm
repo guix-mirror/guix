@@ -7180,7 +7180,7 @@ without using the configuration machinery.")
     (arguments `(#:tests? #f))
     (propagated-inputs
      `(("python-traitlets" ,python-traitlets)))
-    (home-page "http://jupyter.org/")
+    (home-page "https://jupyter.org/")
     (synopsis "Jupyter base package")
     (description
      "Jupyter core is the base package on which Jupyter projects rely.")
