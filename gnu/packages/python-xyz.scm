@@ -10192,7 +10192,7 @@ time.")
        ("python-nbformat" ,python-nbformat)
        ("python-pygments" ,python-pygments)
        ("python-traitlets" ,python-traitlets)))
-    (home-page "http://jupyter.org")
+    (home-page "https://jupyter.org")
     (synopsis "Converting Jupyter Notebooks")
     (description "The @code{nbconvert} tool, @{jupyter nbconvert}, converts
 notebooks to various other formats via Jinja templates.  It allows you to
