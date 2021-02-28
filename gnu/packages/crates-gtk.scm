@@ -468,7 +468,7 @@
        ("gtk+" ,gtk+)
        ("glib" ,glib)
        ("pango" ,pango)))
-    (home-page "http://gtk-rs.org/")
+    (home-page "https://gtk-rs.org/")
     (synopsis "FFI bindings to libgdk-3")
     (description "FFI bindings to libgdk-3")
     (license license:expat)))
