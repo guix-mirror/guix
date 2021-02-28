@@ -23238,7 +23238,7 @@ as possible (with tests to prove it).")
         "04lhqk5qfvaz1jk90glr2yi5vq7cdy0w8m6g2lnzk359l9y41zhp"))))
     (properties `((upstream-name . "boa")))
     (build-system r-build-system)
-    (home-page "http://www.jstatsoft.org/v21/i11")
+    (home-page "https://www.jstatsoft.org/v21/i11")
     (synopsis "Library for @dfn{Bayesian Output Analysis Program} (BOA) for MCMC")
     (description
      "This package provides a menu-driven program and library of functions for
