@@ -1960,7 +1960,7 @@ simple (yet expressive) query language to select the tests to run.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))
-    (home-page "http://erratique.ch/software/react")
+    (home-page "https://erratique.ch/software/react")
     (synopsis "Declarative events and signals for OCaml")
     (description "React is an OCaml module for functional reactive programming
 (FRP).  It provides support to program with time varying values: declarative
