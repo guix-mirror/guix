@@ -260,7 +260,7 @@
        ("glib" ,glib)
        ("gtk+" ,gtk+)
        ("pango" ,pango)))
-    (home-page "http://gtk-rs.org/")
+    (home-page "https://gtk-rs.org/")
     (synopsis "Rust bindings for the GDK 3 library")
     (description "This package provides Rust bindings for the GDK 3 library.")
     (license license:expat)))
