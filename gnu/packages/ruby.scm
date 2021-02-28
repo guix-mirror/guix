@@ -21,7 +21,7 @@
 ;;; Copyright © 2019 Diego N. Barbato <dnbarbato@posteo.de>
 ;;; Copyright © 2019 Brett Gilio <brettg@posteo.de>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
-;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Holgr Peters <holger.peters@posteo.de>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
@@ -3119,7 +3119,7 @@ HTML or XML that is designed to express the structure of documents using
 indentation rather than closing tags.  It was originally envisioned as a
 plugin for Ruby on Rails, but it can function as a stand-alone templating
 engine.")
-    (home-page "http://haml.info/")
+    (home-page "https://haml.info/")
     (license license:expat)))
 
 (define-public ruby-hamster
