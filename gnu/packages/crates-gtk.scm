@@ -781,7 +781,7 @@
         ("rust-proc-macro2" ,rust-proc-macro2-1)
         ("rust-quote" ,rust-quote-1)
         ("rust-syn" ,rust-syn-1))))
-    (home-page "http://gtk-rs.org/")
+    (home-page "https://gtk-rs.org/")
     (synopsis "Rust bindings for the GLib library, proc macros crate")
     (description "Rust bindings for the GLib library, proc macros crate.")
     (license license:expat)))
