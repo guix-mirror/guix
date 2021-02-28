@@ -141,7 +141,8 @@
                (sha256
                 (base32
                  "1rd41wwlvp0vpialjp2czs6i3lsc338xc72l3zkbb7ixjfslw5y9"))
-              (patches (search-patches "qemu-build-info-manual.patch"))
+              (patches (search-patches "qemu-build-info-manual.patch"
+                                       "qemu-CVE-2021-20203.patch"))
               (modules '((guix build utils)))
               (snippet
                '(begin
