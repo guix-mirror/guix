@@ -5219,7 +5219,7 @@ C++ library for numerical linear algebra and RcppEigen glue.")
        ("r-numderiv" ,r-numderiv)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
-    (home-page "http://people.math.aau.dk/~sorenh/software/pbkrtest/")
+    (home-page "https://people.math.aau.dk/~sorenh/software/pbkrtest/")
     (synopsis "Methods for linear mixed model comparison")
     (description
      "This package implements a parametric bootstrap test and a Kenward Roger
