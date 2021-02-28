@@ -406,7 +406,7 @@
         ("rust-tempfile" ,rust-tempfile-3))))
     (inputs
      `(("gdk-pixbuf" ,gdk-pixbuf)))
-    (home-page "http://gtk-rs.org/")
+    (home-page "https://gtk-rs.org/")
     (synopsis "FFI bindings to libgdk_pixbuf-2.0")
     (description "This package provides FFI bindings to @code{libgdk_pixbuf-2.0}.")
     (license license:expat)))
