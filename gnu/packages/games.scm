@@ -4014,7 +4014,7 @@ also available.")
        ("python-polib" ,python-polib)
        ("python-pytest" ,python-pytest)
        ("python-pytest-mock" ,python-pytest-mock)))
-    (home-page "http://unknown-horizons.org/")
+    (home-page "https://unknown-horizons.org/")
     (synopsis "Isometric realtime strategy, economy and city building simulation")
     (description
      "Unknown Horizons is a 2D realtime strategy simulation with an emphasis
