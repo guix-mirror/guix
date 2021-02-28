@@ -199,7 +199,7 @@
         ("rust-x11" ,rust-x11-2))))
     (inputs
      `(("cairo" ,cairo)))
-    (home-page "http://gtk-rs.org/")
+    (home-page "https://gtk-rs.org/")
     (synopsis "FFI bindings to libcairo")
     (description "This package provides FFI bindings to libcairo.")
     (license license:expat)))
