@@ -2159,7 +2159,7 @@ message report is decoupled from logging and is handled by a reporter.")
     (propagated-inputs
      `(("topkg" ,ocaml-topkg)
        ("astring" ,ocaml-astring)))
-    (home-page "http://erratique.ch/software/fpath")
+    (home-page "https://erratique.ch/software/fpath")
     (synopsis "File system paths for OCaml")
     (description "Fpath is an OCaml module for handling file system paths with
 POSIX or Windows conventions.  Fpath processes paths without accessing the
