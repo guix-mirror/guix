@@ -2194,7 +2194,7 @@ file system and is independent from any system library.")
        ("fpath" ,ocaml-fpath)
        ("logs" ,ocaml-logs)
        ("rresult" ,ocaml-rresult)))
-    (home-page "http://erratique.ch/software/bos")
+    (home-page "https://erratique.ch/software/bos")
     (synopsis "Basic OS interaction for OCaml")
     (description "Bos provides support for basic and robust interaction with
 the operating system in OCaml.  It has functions to access the process
