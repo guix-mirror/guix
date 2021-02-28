@@ -6881,7 +6881,7 @@ differences (added or removed nodes) between two XML/HTML documents.")
     (description
      "Racc is a LALR(1) parser generator.  It is written in Ruby itself, and
 generates Ruby program.")
-    (home-page "http://i.loveruby.net/en/projects/racc/")
+    (home-page "https://i.loveruby.net/en/projects/racc/")
     (license (list
               ;; Generally licensed under the LGPL2.1, and some files also
               ;; available under the same license as Ruby.
