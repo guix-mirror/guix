@@ -305,7 +305,7 @@ for day to day programming.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))
-    (home-page "http://www.mancoosi.org/cudf/")
+    (home-page "https://www.mancoosi.org/cudf/")
     (synopsis "CUDF library (part of the Mancoosi tools)")
     (description "CUDF (for Common Upgradeability Description Format) is a
 format for describing upgrade scenarios in package-based Free and Open Source
