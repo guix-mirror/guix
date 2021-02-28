@@ -22,7 +22,8 @@
  (entry (commit "1b5b882120daf7d111aa351a919a90e818324347")
         (title
           (en "The @code{linux-libre} kernel is updated to 5.11.2")
-          (fr "Le noyau @code{linux-libre} est mis à jour vers la 5.11.2"))
+          (fr "Le noyau @code{linux-libre} est mis à jour vers la 5.11.2")
+          (nl "De @code{linux-libre}-kernel werd bijgewertk naar 5.11.2"))
         (body
           (en "The default @code{linux-libre} kernel is now based on the 5.11
 stable kernel series, beginning with version 5.11.2.  Promiment features include
@@ -34,7 +35,12 @@ lignée stable 5.11 du noyau, à commencer par la version 5.11.2.  Parmi les
 fonctionnalités notables on trouve des performances améliorées pour Wine, le
 montage Overlayfs non privilégié, la prise en charge d'Intel SGX, celle des
 nouveaux périphériques graphiques et de meilleures performances du système de
-fichiers Btrfs.")))
+fichiers Btrfs.")
+          (nl "De standaard @code{linux-libre}-kernel is nu geëent op de
+stabiele 5.11-reeks, te beginnen met versie 5.11.2.  Deze update biedt onder
+andere verbeterde prestaties voor Wine en het Btfrs-bestandssysteem, laat
+gewone gebruikers toe om met Overlayfs bestandssystemen te combineren, en
+ondersteunt Intel SGX en nieuwe grafische apparatuur.")))
 
  (entry (commit "6e8cdf1d26092cb9654e179b04730fff7c15c94f")
         (title
