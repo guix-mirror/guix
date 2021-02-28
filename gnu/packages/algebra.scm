@@ -557,7 +557,7 @@ arithmetic).  It supports integers, rationals, modular integers,
 real and complex ball arithmetic, polynomials and matrices over all
 these types and other mathematical functions.")
     (license license:expat)
-    (home-page "http://fredrikj.net/python-flint/")))
+    (home-page "https://fredrikj.net/python-flint/")))
 
 (define-public ntl
   (package
