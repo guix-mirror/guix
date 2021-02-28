@@ -120,7 +120,7 @@
        (("rust-tempfile" ,rust-tempfile-3))))
     (inputs
      `(("cairo" ,cairo)))
-    (home-page "http://gtk-rs.org/")
+    (home-page "https://gtk-rs.org/")
     (synopsis "Rust bindings for the Cairo library")
     (description "Rust bindings for the Cairo library")
     (license license:expat)))
