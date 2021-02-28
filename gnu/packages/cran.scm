@@ -14311,7 +14311,7 @@ probabilities from a standard bivariate normal CDF.")
        ("r-mnormt" ,r-mnormt)
        ("r-numderiv" ,r-numderiv)
        ("r-pbivnorm" ,r-pbivnorm)))
-    (home-page "http://lavaan.ugent.be")
+    (home-page "https://lavaan.ugent.be")
     (synopsis "Latent variable analysis")
     (description
      "This package provides tools to fit a variety of latent variable models,
