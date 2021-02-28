@@ -2636,7 +2636,7 @@ savings are consistently > 5x.")
                           "test.log" "error.log" "RDict.db"
                           "uninstall.py"))
               #t))))))
-    (home-page "http://slepc.upv.es")
+    (home-page "https://slepc.upv.es")
     (synopsis "Scalable library for eigenproblems")
     (description "SLEPc is a software library for the solution of large sparse
 eigenproblems on parallel computers.  It can be used for the solution of
