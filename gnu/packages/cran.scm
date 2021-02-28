@@ -11296,7 +11296,7 @@ hypothesis testing.")
        ("r-plot3d" ,r-plot3d)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
-    (home-page "http://www.mvstat.net/tduong/")
+    (home-page "https://www.mvstat.net/tduong/")
     (synopsis "Inferential feature significance for kernel density estimation")
     (description
      "The feature package contains functions to display and compute kernel
