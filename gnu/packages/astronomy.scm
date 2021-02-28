@@ -972,7 +972,7 @@ of stand-alone functions and classes.")
         ("jsonschema" ,python-jsonschema)
         ("numpy" ,python-numpy)
         ("pyyaml" ,python-pyyaml)))
-     (home-page "http://github.com/asdf-format/asdf")
+     (home-page "https://github.com/asdf-format/asdf")
      (synopsis "Python tools to handle ASDF files")
      (description
       "The Advanced Scientific Data Format (ASDF) is a next-generation
