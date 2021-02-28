@@ -14762,7 +14762,7 @@ Record Format (DWARF).")
                   (string-append "libev_dll_name = \"" libev "\"")))))))))
     (inputs
      `(("libev" ,libev)))
-    (home-page "http://pythonhosted.org/pyev/")
+    (home-page "https://github.com/gabrielfalcao/pyev")
     (synopsis "Python libev interface")
     (description "Pyev provides a Python interface to libev.")
     (license license:gpl3)))
