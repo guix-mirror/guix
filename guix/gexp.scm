@@ -1787,6 +1787,43 @@ are searched for in PATH.  Return #f when MODULES and EXTENSIONS are empty."
                                          extensions))
                               %load-compiled-path)))))))))
 
+(define* (input-tuples->gexp inputs #:key native?)
+  "Given INPUTS, a list of label/gexp-input tuples, return a gexp that expands
+to an input alist."
+  (define references
+    (map (match-lambda
+           ((label input) input))
+         inputs))
+
+  (define labels
+    (match inputs
+      (((labels . _) ...)
+       labels)))
+
+  (define (proc . args)
+    (cons 'quote (list (map cons labels args))))
+
+  ;; This gexp is more efficient than an equivalent hand-written gexp: fewer
+  ;; allocations, no need to scan long list-valued <gexp-input> records in
+  ;; search of file-like objects, etc.
+  (make-gexp references '() '() proc
+             (source-properties inputs)))
+
+(define (outputs->gexp outputs)
+  "Given OUTPUTS, a list of output names, return a gexp that expands to an
+output alist."
+  (define references
+    (map gexp-output outputs))
+
+  (define (proc . args)
+    `(list ,@(map (lambda (name)
+                    `(cons ,name ((@ (guile) getenv) ,name)))
+                  outputs)))
+
+  ;; This gexp is more efficient than an equivalent hand-written gexp.
+  (make-gexp references '() '() proc
+             (source-properties outputs)))
+
 (define (with-build-variables inputs outputs body)
   "Return a gexp that surrounds BODY with a definition of the legacy
 '%build-inputs', '%outputs', and '%output' variables based on INPUTS, a list
@@ -1798,17 +1835,12 @@ of name/gexp-input tuples, and OUTPUTS, a list of strings."
   ;; expected.
   (gexp (begin
           (define %build-inputs
-            (map (lambda (tuple)
-                   (apply cons tuple))
-                 '(ungexp inputs)))
+            (ungexp (input-tuples->gexp inputs)))
           (define %outputs
-            (list (ungexp-splicing
-                   (map (lambda (name)
-                          (gexp (cons (ungexp name)
-                                      (ungexp output name))))
-                        outputs))))
-          (define  %output
+            (ungexp (outputs->gexp outputs)))
+          (define %output
             (assoc-ref %outputs "out"))
+
           (ungexp body))))
 
 (define* (gexp->script name exp
