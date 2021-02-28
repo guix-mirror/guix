@@ -260,13 +260,8 @@ provides a 'setup.ml' file as its build system."
           (use-modules #$@modules)
           (ocaml-build #:source #$source
                        #:system #$system
-                       #:outputs (list #$@(map (lambda (name)
-                                                 #~(cons #$name
-                                                         (ungexp output name)))
-                                               outputs))
-                       #:inputs (map (lambda (tuple)
-                                       (apply cons tuple))
-                                     '#$inputs)
+                       #:outputs #$(outputs->gexp outputs)
+                       #:inputs #$(input-tuples->gexp inputs)
                        #:search-paths '#$(map search-path-specification->sexp
                                               search-paths)
                        #:phases #$phases

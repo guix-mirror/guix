@@ -106,6 +106,9 @@
             lowered-gexp-load-compiled-path
 
             with-build-variables
+            input-tuples->gexp
+            outputs->gexp
+
             gexp->derivation
             gexp->file
             gexp->script

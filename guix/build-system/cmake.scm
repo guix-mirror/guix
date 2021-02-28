@@ -204,20 +204,14 @@ build system."
           (use-modules #$@(sexp->gexp modules))
 
           (define %build-host-inputs
-            (map (lambda (tuple)
-                   (apply cons tuple))
-                 '#+(append build-inputs target-inputs)))
+            #+(input-tuples->gexp build-inputs))
 
           (define %build-target-inputs
-            (map (lambda (tuple)
-                   (apply cons tuple))
-                 '#$host-inputs))
+            (append #$(input-tuples->gexp host-inputs)
+                    #+(input-tuples->gexp target-inputs)))
 
           (define %outputs
-            (list #$@(map (lambda (name)
-                            #~(cons #$name
-                                    (ungexp output name)))
-                          outputs)))
+            #$(outputs->gexp outputs))
 
           (cmake-build #:source #+source
                        #:system #$system

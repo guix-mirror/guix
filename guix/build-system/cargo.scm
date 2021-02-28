@@ -114,13 +114,8 @@ to NAME and VERSION."
                        #:phases #$(if (pair? phases)
                                       (sexp->gexp phases)
                                       phases)
-                       #:outputs (list #$@(map (lambda (name)
-                                                 #~(cons #$name
-                                                         (ungexp output name)))
-                                               outputs))
-                       #:inputs (map (lambda (tuple)
-                                       (apply cons tuple))
-                                     '#$inputs)
+                       #:outputs #$(outputs->gexp outputs)
+                       #:inputs #$(input-tuples->gexp inputs)
                        #:search-paths '#$(sexp->gexp
                                           (map search-path-specification->sexp
                                                search-paths))))))

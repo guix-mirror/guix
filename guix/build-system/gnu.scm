@@ -510,20 +510,14 @@ platform."
         (use-modules #$@(sexp->gexp modules))
 
         (define %build-host-inputs
-          (map (lambda (tuple)
-                 (apply cons tuple))
-               '#+build-inputs))
+          #+(input-tuples->gexp build-inputs))
 
         (define %build-target-inputs
-          (map (lambda (tuple)
-                 (apply cons tuple))
-               (append '#$host-inputs '#+target-inputs)))
+          (append #$(input-tuples->gexp host-inputs)
+                  #+(input-tuples->gexp target-inputs)))
 
         (define %outputs
-          (list #$@(map (lambda (name)
-                          #~(cons #$name
-                                  (ungexp output name)))
-                        outputs)))
+          #$(outputs->gexp outputs))
 
         (gnu-build #:source #+source
                    #:system #$system
