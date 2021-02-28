@@ -10446,7 +10446,7 @@ Jupyter kernels such as IJulia and IRKernel.")
        ("python-ipython" ,python-ipython)))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
-    (home-page "http://jupyter.org")
+    (home-page "https://jupyter.org")
     (synopsis "Jupyter Qt console")
     (description "This package provides a Qt-based console for Jupyter with
 support for rich media output.")
