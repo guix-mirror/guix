@@ -1839,7 +1839,7 @@ most of the POSIX and GNU conventions.")
                  #:phases
                  (modify-phases %standard-phases
                    (delete 'configure))))
-    (home-page "http://erratique.ch/software/fmt")
+    (home-page "https://erratique.ch/software/fmt")
     (synopsis "OCaml Format pretty-printer combinators")
     (description "Fmt exposes combinators to devise Format pretty-printing
 functions.")
