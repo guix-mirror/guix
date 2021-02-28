@@ -57,7 +57,7 @@
     (inputs
      `(("atk" ,atk)
        ("glib" ,glib)))
-    (home-page "http://gtk-rs.org/")
+    (home-page "https://gtk-rs.org/")
     (synopsis "FFI bindings to libatk-1")
     (description "FFI bindings to libatk-1")
     (license license:expat)))
