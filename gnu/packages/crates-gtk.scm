@@ -698,7 +698,7 @@
         ("rust-once-cell" ,rust-once-cell-1))))
     (inputs
      `(("glib" ,glib)))
-    (home-page "http://gtk-rs.org/")
+    (home-page "https://gtk-rs.org/")
     (synopsis "Rust bindings for the GLib library")
     (description "Rust bindings for the GLib library")
     (license license:expat)))
