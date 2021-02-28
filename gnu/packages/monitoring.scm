@@ -286,7 +286,7 @@ through a text-based interface.")
   (package
     (name "python-pyzabbix")
     (version "0.8.2")
-    (home-page "http://github.com/lukecyca/pyzabbix")
+    (home-page "https://github.com/lukecyca/pyzabbix")
     ;; No tests on PyPI, use the git checkout.
     (source
      (origin
