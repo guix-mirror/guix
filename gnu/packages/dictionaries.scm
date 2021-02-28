@@ -334,7 +334,7 @@ translation engines from your terminal.")
        ("automake" ,automake)
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)))
-    (home-page "http://wiki.apertium.org/wiki/Lttoolbox")
+    (home-page "https://wiki.apertium.org/wiki/Lttoolbox")
     (synopsis "Lexical processing toolbox")
     (description "Lttoolbox is a toolbox for lexical processing, morphological
 analysis and generation of words.  Analysis is the process of splitting a
