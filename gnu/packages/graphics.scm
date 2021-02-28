@@ -320,7 +320,7 @@ minimum of resource usage and overhead.")
     (synopsis "Interface description language")
     (description "Flux is an interface description language used by DirectFB.
 Fluxcomp compiles .flux files to .cpp or .c files.")
-    (home-page "http://www.directfb.org/")
+    (home-page "https://www.directfb.org/")
     (license license:lgpl2.1+))) ; Same as DirectFB
 
 (define-public fox
