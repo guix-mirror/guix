@@ -11423,7 +11423,7 @@ browser.")
       (inputs
        `(("perl" ,perl)
          ("java-commons-cli" ,java-commons-cli)))
-      (home-page "http://fureylab.web.unc.edu/software/fseq/")
+      (home-page "https://fureylab.web.unc.edu/software/fseq/")
       (synopsis "Feature density estimator for high-throughput sequence tags")
       (description
        "F-Seq is a software package that generates a continuous tag sequence
