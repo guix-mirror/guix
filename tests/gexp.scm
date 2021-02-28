@@ -96,6 +96,13 @@
          (null? (gexp-inputs exp))
          (gexp->sexp* exp))))
 
+(test-equal "sexp->gexp"
+  '(a b (c d) e)
+  (let ((exp (sexp->gexp '(a b (c d) e))))
+    (and (gexp? exp)
+         (null? (gexp-inputs exp))
+         (gexp->sexp* exp))))
+
 (test-equal "unquote"
   '(display `(foo ,(+ 2 3)))
   (let ((exp (gexp (display `(foo ,(+ 2 3))))))

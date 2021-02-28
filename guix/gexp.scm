@@ -39,6 +39,7 @@
   #:use-module (ice-9 match)
   #:export (gexp
             gexp?
+            sexp->gexp
             with-imported-modules
             with-extensions
             let-system
@@ -1843,6 +1844,16 @@ of name/gexp-input tuples, and OUTPUTS, a list of strings."
             (assoc-ref %outputs "out"))
 
           (ungexp body))))
+
+(define (sexp->gexp sexp)
+  "Turn SEXP into a gexp without any references.
+
+Using this is a way for the caller to tell that SEXP doesn't need to be
+scanned for file-like objects, thereby reducing processing costs.  This is
+particularly useful if SEXP is a long list or a deep tree."
+  (make-gexp '() '() '()
+             (lambda () sexp)
+             (source-properties sexp)))
 
 (define* (gexp->script name exp
                        #:key (guile (default-guile))
