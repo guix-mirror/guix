@@ -11,7 +11,7 @@
 ;;; Copyright © 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -457,7 +457,7 @@ primary means by which end users perform conversions, and they have not
 been designed, tested, and debugged to the extent that general-purpose
 applications should be.")
     (license license:lgpl2.1+)
-    (home-page "http://scripts.sil.org/cms/scripts/page.php?cat_id=teckit")))
+    (home-page "https://scripts.sil.org/cms/scripts/page.php?cat_id=teckit")))
 
 (define-public graphite2
   (package
