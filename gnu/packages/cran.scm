@@ -7021,7 +7021,7 @@ JavaScript library) and interact with the igraph package.")
        ("r-stringi" ,r-stringi)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
-    (home-page "http://github.com/gluc/data.tree")
+    (home-page "https://github.com/gluc/data.tree")
     (synopsis "General purpose hierarchical data structure")
     (description
      "Create tree structures from hierarchical data, and traverse the tree in
