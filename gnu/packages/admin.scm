@@ -1656,7 +1656,9 @@ features of sudo with a fraction of the codebase.")
                     ;; Disable D-Bus to save ~14MiB on the closure size.
                     (("^CONFIG_CTRL_IFACE_DBUS" line _)
                      (string-append "#" line)))
-                    #t))))
+                  #t))
+              (patches
+               (search-patches "wpa-supplicant-CVE-2021-27803.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -1820,7 +1822,9 @@ command.")
                                   ".tar.gz"))
               (sha256
                (base32
-                "1mrbvg4v7vm7mknf0n29mf88k3s4a4qj6r4d51wq8hmjj1m7s7c8"))))
+                "1mrbvg4v7vm7mknf0n29mf88k3s4a4qj6r4d51wq8hmjj1m7s7c8"))
+              (patches
+               (search-patches "wpa-supplicant-CVE-2021-27803.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
