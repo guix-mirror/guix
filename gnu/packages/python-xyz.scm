@@ -3985,8 +3985,7 @@ for SSH and SFTP.  It has the following main usages:
       (base32
        "197dw8mbq0pjjz1l6h1ksi62vgn7x55d373ch74y06744qiq5sjx"))))
    (build-system python-build-system)
-   (home-page
-    "http://bitbucket.org/leapfrogdevelopment/rstr/overview")
+   (home-page "https://github.com/leapfrogonline/rstr")
    (synopsis "Generate random strings in Python")
    (description "This package provides a python module for generating
 random strings of various types.  It could be useful for fuzz testing,
