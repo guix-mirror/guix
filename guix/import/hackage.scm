@@ -344,8 +344,8 @@ respectively."
   (memoize hackage->guix-package))
 
 (define* (hackage-recursive-import package-name . args)
-  (recursive-import package-name #f
-                    #:repo->guix-package (lambda (name repo)
+  (recursive-import package-name
+                    #:repo->guix-package (lambda* (name #:key repo version)
                                            (apply hackage->guix-package/m
                                                   (cons name args)))
                     #:guix-name hackage-name->package-name))
