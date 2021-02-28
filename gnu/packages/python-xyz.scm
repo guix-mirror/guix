@@ -5077,7 +5077,7 @@ transcendental functions).")
      '(#:tests? #f))
     (propagated-inputs
      `(("python-six" ,python-six)))
-    (home-page "http://matplotlib.org/cycler/")
+    (home-page "https://matplotlib.org/cycler/")
     (synopsis "Composable keyword argument iterator")
     (description
      "When using @code{matplotlib} and plotting more than one line, it is
