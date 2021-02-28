@@ -534,7 +534,7 @@
         ("rust-serial-test" ,rust-serial-test-0.4))))
     (inputs
      `(("glib" ,glib)))
-    (home-page "http://gtk-rs.org/")
+    (home-page "https://gtk-rs.org/")
     (synopsis "Rust bindings for the Gio library")
     (description "Rust bindings for the Gio library")
     (license license:expat)))
