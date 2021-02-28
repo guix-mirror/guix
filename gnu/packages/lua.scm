@@ -1121,6 +1121,7 @@ shell command executions.")
                   ;; these are dependencies unlikely to be "unbundled" in future
                   ;; releases.
                   (recursive? #t)))
+            (file-name (git-file-name name version))
             (sha256
              (base32
               "1d6k5v6x85fbvz2ijq1imnfdwvqmsav4xp021a5v3ah4mgy7yann"))))
