@@ -1630,7 +1630,7 @@ v1.0.7/_site/plugins/js/bootstrap-accessibility.js")
            (sha256
             (base32
              "1489wyzwrpf86y7vhc13n4v3mszmsfybhd3f75jkpnbvyp5sncm8"))))))
-    (home-page "http://shiny.rstudio.com")
+    (home-page "https://shiny.rstudio.com")
     (synopsis "Easy interactive web applications with R")
     (description
      "Makes it incredibly easy to build interactive web applications
