@@ -7709,7 +7709,7 @@ navigation capabilities to @code{pry}, using @code{byebug}.")
     (description
      "@code{stackprof} is a fast sampling profiler for Ruby code, with cpu,
 wallclock and object allocation samplers.")
-    (home-page "http://github.com/tmm1/stackprof")
+    (home-page "https://github.com/tmm1/stackprof")
     (license license:expat)))
 
 (define-public ruby-binding-of-caller
