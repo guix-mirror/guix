@@ -322,7 +322,7 @@
        (("rust-gir-format-check" ,rust-gir-format-check-0.1))))
     (inputs
      `(("gdk-pixbuf" ,gdk-pixbuf)))
-    (home-page "http://gtk-rs.org/")
+    (home-page "https://gtk-rs.org/")
     (synopsis "Rust bindings for the GdkPixbuf library")
     (description "Rust bindings for the GdkPixbuf library")
     (license license:expat)))
