@@ -1018,7 +1018,7 @@
        (("rust-gir-format-check" ,rust-gir-format-check-0.1))))
     (inputs
      `(("pango" ,pango)))
-    (home-page "http://gtk-rs.org/")
+    (home-page "https://gtk-rs.org/")
     (synopsis "Rust bindings for the Pango library")
     (description "Rust bindings for the Pango library")
     (license license:expat)))
