@@ -1641,7 +1641,7 @@ defined in this library.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))
-    (home-page "http://erratique.ch/software/topkg")
+    (home-page "https://erratique.ch/software/topkg")
     (synopsis "Transitory OCaml software packager")
     (description "Topkg is a packager for distributing OCaml software. It
 provides an API to describe the files a package installs in a given build
