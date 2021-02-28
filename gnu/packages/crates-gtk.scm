@@ -1098,7 +1098,7 @@
         ("rust-system-deps" ,rust-system-deps-1))))
     (inputs
      `(("pango" ,pango)))
-    (home-page "http://gtk-rs.org/")
+    (home-page "https://gtk-rs.org/")
     (synopsis "FFI bindings to libpango-1.0")
     (description "This package provides FFI bindings to @code{libpango-1.0}.")
     (license license:expat)))
