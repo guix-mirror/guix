@@ -1803,7 +1803,7 @@ spans without being subject to operating system calendar time adjustments.")
                (("Sys.readdir dir")
                 "let a = Sys.readdir dir in Array.sort String.compare a; a"))
              #t)))))
-    (home-page "http://erratique.ch/software/cmdliner")
+    (home-page "https://erratique.ch/software/cmdliner")
     (synopsis "Declarative definition of command line interfaces for OCaml")
     (description "Cmdliner is a module for the declarative definition of command
 line interfaces.  It provides a simple and compositional mechanism to convert
