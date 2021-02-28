@@ -20666,7 +20666,7 @@ format.")
           (base32
             "074anvhyjgsv2iby2ql1ixfvjgmhnvcwjbdz8gk70xzkzcm1fx5q"))))
     (build-system python-build-system)
-    (home-page "http://www.joachim-bauch.de/projects/pylzma/")
+    (home-page "https://www.joachim-bauch.de/projects/pylzma/")
     (synopsis "Python bindings for the LZMA library by Igor Pavlov.")
     (description "This package provides Python bindings for the LZMA library
 by Igor Pavlov.")
