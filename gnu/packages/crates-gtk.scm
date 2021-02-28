@@ -622,7 +622,7 @@
         ("rust-winapi" ,rust-winapi-0.3))))
     (inputs
      `(("glib" ,glib)))
-    (home-page "http://gtk-rs.org/")
+    (home-page "https://gtk-rs.org/")
     (synopsis "FFI bindings to libgio-2.0")
     (description "This package provides FFI bindings to libgio-2.0.")
     (license license:expat)))
