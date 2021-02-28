@@ -11269,7 +11269,7 @@ isosurfaces.")
        ("r-multicool" ,r-multicool)
        ("r-mvtnorm" ,r-mvtnorm)
        ("r-plot3d" ,r-plot3d)))
-    (home-page "http://www.mvstat.net/tduong/")
+    (home-page "https://www.mvstat.net/tduong/")
     (synopsis "Kernel smoothing")
     (description
      "This package provides kernel smoothers for univariate and multivariate
