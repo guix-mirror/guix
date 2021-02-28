@@ -1672,7 +1672,7 @@ creation and publication procedures.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))
-    (home-page "http://erratique.ch/software/rresult")
+    (home-page "https://erratique.ch/software/rresult")
     (synopsis "Result value combinators for OCaml")
     (description "Handle computation results and errors in an explicit and
 declarative manner, without resorting to exceptions.  It defines combinators
