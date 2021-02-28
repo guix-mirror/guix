@@ -2385,7 +2385,7 @@ and consumable.")
     (propagated-inputs
      `(("uchar" ,ocaml-uchar)
        ("cmdliner" ,ocaml-cmdliner)))
-    (home-page "http://erratique.ch/software/uutf")
+    (home-page "https://erratique.ch/software/uutf")
     (synopsis "Non-blocking streaming Unicode codec for OCaml")
     (description "Uutf is a non-blocking streaming codec to decode and encode
 the UTF-8, UTF-16, UTF-16LE and UTF-16BE encoding schemes.  It can efficiently
