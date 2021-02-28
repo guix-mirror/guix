@@ -544,7 +544,7 @@ be used by the sighted.")
            (sha256
             (base32
              "1k2xh13miyv48gh06rgsq2vj25xwj7z6vwq9ilsn8i7ig3nrgzg4"))))))
-    (home-page "http://www.cstr.ed.ac.uk/projects/festival/")
+    (home-page "https://www.cstr.ed.ac.uk/projects/festival/")
     (synopsis "Speech synthesis system")
     (description "Festival offers a general framework for building speech
 synthesis systems as well as including examples of various modules.  As a
