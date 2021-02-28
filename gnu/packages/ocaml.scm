@@ -1768,7 +1768,7 @@ manipulate such data.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))
-    (home-page "http://erratique.ch/software/mtime")
+    (home-page "https://erratique.ch/software/mtime")
     (synopsis "Monotonic wall-clock time for OCaml")
     (description "Access monotonic wall-clock time.  It measures time
 spans without being subject to operating system calendar time adjustments.")
