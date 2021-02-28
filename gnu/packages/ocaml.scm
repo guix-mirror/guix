@@ -1867,7 +1867,7 @@ functions.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))
-    (home-page "http://erratique.ch/software/astring")
+    (home-page "https://erratique.ch/software/astring")
     (synopsis "Alternative String module for OCaml")
     (description "Astring exposes an alternative String module for OCaml.  This
 module balances minimality and expressiveness for basic, index-free, string
