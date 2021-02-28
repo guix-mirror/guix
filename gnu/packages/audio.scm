@@ -3425,7 +3425,7 @@ conversion.  It may be used, for example, to resample PCM-encoded audio.")
     (native-inputs
      `(("perl" ,perl)
        ("which" ,which)))               ;used in tests/test.pl
-    (home-page "http://www.twolame.org/")
+    (home-page "https://www.twolame.org/")
     (synopsis "MPEG Audio Layer 2 (MP2) encoder")
     (description
      "TwoLAME is an optimised MPEG Audio Layer 2 (MP2) encoder based on
