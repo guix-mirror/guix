@@ -2224,7 +2224,7 @@ run command line programs.")
      `(("ocamlbuild" ,ocamlbuild)
        ("ocaml-topkg" ,ocaml-topkg)
        ("opam" ,opam)))
-    (home-page "http://erratique.ch/software/xmlm")
+    (home-page "https://erratique.ch/software/xmlm")
     (synopsis "Streaming XML codec for OCaml")
     (description "Xmlm is a streaming codec to decode and encode the XML data
 format.  It can process XML documents without a complete in-memory
