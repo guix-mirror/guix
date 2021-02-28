@@ -12,6 +12,7 @@
 ;;; Copyright © 2020 Yuval Kogman <nothingmuch@woobling.org>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2021 qblade <qblade@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,6 +38,8 @@
   #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
   #:use-module (gnu packages adns)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cpp)
@@ -146,6 +149,53 @@ provide information on how a given compilation unit is processed.  With this,
 it is easy to re-run the compilation with alternate programs.  Bear is used to
 generate such a compilation database.")
     (license license:gpl3+)))
+
+(define-public bmake
+  (package
+    (name "bmake")
+    (version "20210206")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://www.crufty.net/ftp/pub/sjg/bmake-" version ".tar.gz"))
+       (sha256
+        (base32 "07n9avzdg6gifrzyddnyzada5s5rzklvbqfpv5drljpxcgpqpvwg"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("bash" ,bash-minimal)))
+    (native-inputs
+     `(("coreutils" ,coreutils)))
+    (arguments
+     `(#:tests? #f                      ; test during build
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'fix-test ; fix from nixpkgs
+           (lambda _
+             (substitute* "unit-tests/unexport-env.mk"
+               (("PATH=\t/bin:/usr/bin:/sbin:/usr/sbin")
+                "PATH := ${PATH}"))))
+         (add-after 'configure 'remove-fail-tests
+           (lambda _
+             (substitute* "unit-tests/Makefile"
+               (("cmd-interrupt") "")
+               (("varmod-localtime") ""))
+             #t)))
+       #:configure-flags
+       (list
+        (string-append
+         "--with-defshell=" (assoc-ref %build-inputs "bash") "/bin/bash")
+        (string-append
+         "--with-default-sys-path=" (assoc-ref %outputs "out") "/share/mk"))
+       #:make-flags
+       (list "INSTALL=install"))) ;; use coreutils install
+    (home-page "http://www.crufty.net/help/sjg/bmake.htm")
+    (synopsis "BSD's make")
+    (description
+     "bmake is a program designed to simplify the maintenance of other
+programs.  Its input is a list of specifications as to the files upon which
+programs and other files depend.")
+    (license license:bsd-3)))
 
 (define-public gn
   (let ((commit "e327ffdc503815916db2543ec000226a8df45163")
