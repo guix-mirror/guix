@@ -651,7 +651,7 @@ geometry and singularity theory.")
    ;; libraries with which it links are licensed under lgpl3+, so the
    ;; combined work becomes gpl3. See COPYING in the source code.
    (license license:gpl3)
-   (home-page "http://www.singular.uni-kl.de/index.php")))
+   (home-page "https://www.singular.uni-kl.de/index.php")))
 
 (define-public gmp-ecm
   (package
