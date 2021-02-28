@@ -2128,7 +2128,7 @@ ocaml lwt.")
        ("result" ,ocaml-result)
        ("cmdliner" ,ocaml-cmdliner)
        ("topkg" ,ocaml-topkg)))
-    (home-page "http://erratique.ch/software/logs")
+    (home-page "https://erratique.ch/software/logs")
     (synopsis "Logging infrastructure for OCaml")
     (description "Logs provides a logging infrastructure for OCaml.  Logging is
 performed on sources whose reporting level can be set independently.  Log
