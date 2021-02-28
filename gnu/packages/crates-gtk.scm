@@ -986,7 +986,7 @@
         ("rust-tempfile" ,rust-tempfile-3))))
     (inputs
      `(("gtk+" ,gtk+)))
-    (home-page "http://gtk-rs.org/")
+    (home-page "https://gtk-rs.org/")
     (synopsis "FFI bindings to libgtk-3")
     (description "This package provides FFI bindings to libgtk-3.")
     (license license:expat)))
