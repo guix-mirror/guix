@@ -2265,14 +2265,14 @@ similar to BerkeleyDB, LevelDB, etc.")
 (define-public redis
   (package
     (name "redis")
-    (version "6.0.10")
+    (version "6.0.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.redis.io/releases/redis-"
                                   version".tar.gz"))
               (sha256
                (base32
-                "1gc529nfh8frk4pynyjlnmzvwa0j9r5cmqwyd7537sywz6abifvr"))
+                "0prwqap452m581nyc3cz642d1z3x9nd81896hlqdm3z8238z49y9"))
               (modules '((guix build utils)))
               (snippet
                ;; Delete bundled jemalloc, as the package will use the libc one
