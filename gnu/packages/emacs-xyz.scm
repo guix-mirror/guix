@@ -22088,48 +22088,46 @@ as Emacs Lisp.")
     (license license:gpl3+)))
 
 (define-public emacs-transient
-  (let ((revision "1")
-        (commit "a6e4cced303b3febd59412b24a97eaf1e855e6d7"))
-    (package
-      (name "emacs-transient")
-      (version (git-version "0.2.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/magit/transient")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "01xsw9sxr50valc2q590ngy3ra2ll01p39l9cbzvqqz6mxyymxmd"))))
-      (build-system emacs-build-system)
-      (arguments
-       `(#:tests? #f                      ;no test suite
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'build-info-manual
-             (lambda _
-               (invoke "make" "info")
-               ;; Move the info file to lisp so that it gets installed by the
-               ;; emacs-build-system.
-               (rename-file "docs/transient.info" "lisp/transient.info")
-               #t))
-           (add-after 'build-info-manual 'enter-lisp-directory
-             (lambda _
-               (chdir "lisp")
-               #t)))))
-      (native-inputs
-       `(("texinfo" ,texinfo)))
-      (propagated-inputs
-       `(("dash" ,emacs-dash)))
-      (home-page "https://magit.vc/manual/transient")
-      (synopsis "Transient commands in Emacs")
-      (description "Taking inspiration from prefix keys and prefix arguments
+  (package
+    (name "emacs-transient")
+    (version "0.3.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/magit/transient")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0g694ydmb9zjn99hxgfjd3m73kpmnkbrgqhr73b4crbxza5sl29c"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:tests? #f                      ;no test suite
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'build-info-manual
+           (lambda _
+             (invoke "make" "info")
+             ;; Move the info file to lisp so that it gets installed by the
+             ;; emacs-build-system.
+             (rename-file "docs/transient.info" "lisp/transient.info")
+             #t))
+         (add-after 'build-info-manual 'enter-lisp-directory
+           (lambda _
+             (chdir "lisp")
+             #t)))))
+    (native-inputs
+     `(("texinfo" ,texinfo)))
+    (propagated-inputs
+     `(("dash" ,emacs-dash)))
+    (home-page "https://magit.vc/manual/transient")
+    (synopsis "Transient commands in Emacs")
+    (description "Taking inspiration from prefix keys and prefix arguments
 in Emacs, Transient implements a similar abstraction involving a prefix
 command, infix arguments and suffix commands.  We could call this abstraction
 a \"transient command\", but because it always involves at least two
 commands (a prefix and a suffix) we prefer to call it just a \"transient\".")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-forge
   (let ((commit "05ef02913004826165c383bd6d2ff6574542b76c"))
