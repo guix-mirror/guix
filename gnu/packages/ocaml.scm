@@ -2421,7 +2421,7 @@ string values and to directly encode characters in OCaml Buffer.t values.")
     (propagated-inputs
      `(("uutf" ,ocaml-uutf)
        ("cmdliner" ,ocaml-cmdliner)))
-    (home-page "http://erratique.ch/software/jsonm")
+    (home-page "https://erratique.ch/software/jsonm")
     (synopsis "Non-blocking streaming JSON codec for OCaml")
     (description "Jsonm is a non-blocking streaming codec to decode and encode
 the JSON data format.  It can process JSON text without blocking on IO and
