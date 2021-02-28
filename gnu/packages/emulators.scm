@@ -2084,7 +2084,7 @@ performance, features, and ease of use.")
             `(("assembler-for-tests" ,(cross-binutils "i686-unknown-linux-gnu"))))
          ("cmocka" ,cmocka)
          ("hexdump-for-tests" ,util-linux)))
-      (home-page "http://www.unicorn-engine.org")
+      (home-page "https://www.unicorn-engine.org")
       (synopsis "Unicorn CPU emulator framework")
       (description
        "Unicorn is a lightweight, multi-platform, multi-architecture CPU emulator
