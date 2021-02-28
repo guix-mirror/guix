@@ -3213,7 +3213,7 @@ tool and piqi-ocaml.")
     (propagated-inputs
      `(("cmdliner" ,ocaml-cmdliner)
        ("topkg" ,ocaml-topkg)))
-    (home-page "http://erratique.ch/software/uuidm")
+    (home-page "https://erratique.ch/software/uuidm")
     (synopsis "Universally unique identifiers for OCaml")
     (description "Uuidm is an OCaml module implementing 128 bits universally
 unique identifiers (UUIDs) version 3, 5 (named based with MD5, SHA-1 hashing)
