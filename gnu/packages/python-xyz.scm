@@ -10249,7 +10249,7 @@ convert an @code{.ipynb} notebook file into various static formats including:
      `(("python-nose" ,python-nose)
        ("python-sphinx" ,python-sphinx)
        ("python-requests" ,python-requests)))
-    (home-page "http://jupyter.org/")
+    (home-page "https://jupyter.org/")
     (synopsis "Web-based notebook environment for interactive computing")
     (description
      "The Jupyter HTML notebook is a web-based notebook environment for
