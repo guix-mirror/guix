@@ -40,7 +40,7 @@
         (base32
          "11whfrbafj191ahbhlhadws0vkg9kmvqswzkvswgwajhr1x678rh"))))
     (build-system perl-build-system)
-    (home-page "http://mojolicious.org/")
+    (home-page "https://mojolicious.org/")
     (synopsis "Real-time web framework")
     (description "Back in the early days of the web, many people learned Perl
 because of a wonderful Perl library called @code{CGI}.  It was simple enough
