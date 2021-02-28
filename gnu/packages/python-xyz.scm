@@ -8074,7 +8074,7 @@ and statistical routines from scipy and statsmodels.")
        (replace 'check
          (lambda _
            (invoke "python" "mpmath/tests/runtests.py" "-local"))))))
-  (home-page "http://mpmath.org")
+  (home-page "https://mpmath.org")
   (synopsis "Arbitrary-precision floating-point arithmetic in python")
   (description
     "@code{mpmath} can be used as an arbitrary-precision substitute for
