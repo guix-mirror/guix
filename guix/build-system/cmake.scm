@@ -113,8 +113,7 @@
                       (strip-flags ''("--strip-debug"))
                       (strip-directories ''("lib" "lib64" "libexec"
                                             "bin" "sbin"))
-                      (phases '(@ (guix build cmake-build-system)
-                                  %standard-phases))
+                      (phases '%standard-phases)
                       (system (%current-system))
                       (substitutable? #t)
                       (imported-modules %cmake-build-system-modules)
@@ -125,17 +124,22 @@ provides a 'CMakeLists.txt' file as its build system."
   (define build
     (with-imported-modules imported-modules
       #~(begin
-          (use-modules #$@modules)
+          (use-modules #$@(sexp->gexp modules))
 
           #$(with-build-variables inputs outputs
               #~(cmake-build #:source #+source
                              #:system #$system
                              #:outputs %outputs
                              #:inputs %build-inputs
-                             #:search-paths '#$(map search-path-specification->sexp
-                                                    search-paths)
-                             #:phases #$phases
-                             #:configure-flags #$configure-flags
+                             #:search-paths '#$(sexp->gexp
+                                                (map search-path-specification->sexp
+                                                     search-paths))
+                             #:phases #$(if (pair? phases)
+                                            (sexp->gexp phases)
+                                            phases)
+                             #:configure-flags #$(if (pair? configure-flags)
+                                                     (sexp->gexp configure-flags)
+                                                     configure-flags)
                              #:make-flags #$make-flags
                              #:out-of-source? #$out-of-source?
                              #:build-type #$build-type
@@ -146,8 +150,8 @@ provides a 'CMakeLists.txt' file as its build system."
                              #:validate-runpath? #$validate-runpath?
                              #:patch-shebangs? #$patch-shebangs?
                              #:strip-binaries? #$strip-binaries?
-                             #:strip-flags #$strip-flags
-                             #:strip-directories #$strip-directories)))))
+                             #:strip-flags #$(sexp->gexp strip-flags)
+                             #:strip-directories #$(sexp->gexp strip-directories))))))
 
   (mlet %store-monad ((guile (package->derivation (or guile (default-guile))
                                                   system #:graft? #f)))
@@ -184,8 +188,7 @@ provides a 'CMakeLists.txt' file as its build system."
                                             "--enable-deterministic-archives"))
                             (strip-directories ''("lib" "lib64" "libexec"
                                                   "bin" "sbin"))
-                            (phases '(@ (guix build cmake-build-system)
-                                        %standard-phases))
+                            (phases '%standard-phases)
                             (substitutable? #t)
                             (system (%current-system))
                             (build (nix-system->gnu-triplet system))

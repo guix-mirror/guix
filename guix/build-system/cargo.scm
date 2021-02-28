@@ -84,8 +84,7 @@ to NAME and VERSION."
                       (features ''())
                       (skip-build? #f)
                       (install-source? #t)
-                      (phases '(@ (guix build cargo-build-system)
-                                  %standard-phases))
+                      (phases '%standard-phases)
                       (outputs '("out"))
                       (search-paths '())
                       (system (%current-system))
@@ -98,21 +97,23 @@ to NAME and VERSION."
   (define builder
     (with-imported-modules imported-modules
       #~(begin
-          (use-modules #$@modules)
+          (use-modules #$@(sexp->gexp modules))
 
           (cargo-build #:name #$name
                        #:source #+source
                        #:system #$system
                        #:test-target #$test-target
                        #:vendor-dir #$vendor-dir
-                       #:cargo-build-flags #$cargo-build-flags
-                       #:cargo-test-flags #$cargo-test-flags
-                       #:cargo-package-flags #$cargo-package-flags
-                       #:features #$features
+                       #:cargo-build-flags #$(sexp->gexp cargo-build-flags)
+                       #:cargo-test-flags #$(sexp->gexp cargo-test-flags)
+                       #:cargo-package-flags #$(sexp->gexp cargo-package-flags)
+                       #:features #$(sexp->gexp features)
                        #:skip-build? #$skip-build?
                        #:install-source? #$install-source?
                        #:tests? #$(and tests? (not skip-build?))
-                       #:phases #$phases
+                       #:phases #$(if (pair? phases)
+                                      (sexp->gexp phases)
+                                      phases)
                        #:outputs (list #$@(map (lambda (name)
                                                  #~(cons #$name
                                                          (ungexp output name)))
@@ -120,8 +121,9 @@ to NAME and VERSION."
                        #:inputs (map (lambda (tuple)
                                        (apply cons tuple))
                                      '#$inputs)
-                       #:search-paths '#$(map search-path-specification->sexp
-                                             search-paths)))))
+                       #:search-paths '#$(sexp->gexp
+                                          (map search-path-specification->sexp
+                                               search-paths))))))
 
   (gexp->derivation name builder
                     #:system system

@@ -63,8 +63,7 @@
                     (tests? #t)
                     (test-target #f)
                     (dub-build-flags ''())
-                    (phases '(@ (guix build dub-build-system)
-                                %standard-phases))
+                    (phases '%standard-phases)
                     (outputs '("out"))
                     (search-paths '())
                     (system (%current-system))
@@ -76,7 +75,7 @@
   (define builder
     (with-imported-modules imported-modules
       #~(begin
-          (use-modules #$@modules)
+          (use-modules #$@(sexp->gexp modules))
           (dub-build #:name #$name
                      #:source #+source
                      #:system #$system
@@ -85,8 +84,9 @@
                      #:tests? #$tests?
                      #:phases #$phases
                      #:outputs #$(outputs->gexp outputs)
-                     #:search-paths '#$(map search-path-specification->sexp
-                                            search-paths)
+                     #:search-paths '#$(sexp->gexp
+                                        (map search-path-specification->sexp
+                                             search-paths))
                      #:inputs #$(input-tuples->gexp inputs)))))
 
   (mlet %store-monad ((guile (package->derivation (or guile (default-guile))

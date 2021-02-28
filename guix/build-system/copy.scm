@@ -108,16 +108,21 @@
                             #:system #$system
                             #:outputs %outputs
                             #:inputs %build-inputs
-                            #:install-plan #$install-plan
-                            #:search-paths '#$(map search-path-specification->sexp
-                                                   search-paths)
-                            #:phases #$phases
+                            #:install-plan #$(if (pair? install-plan)
+                                                 (sexp->gexp install-plan)
+                                                 install-plan)
+                            #:search-paths '#$(sexp->gexp
+                                               (map search-path-specification->sexp
+                                                    search-paths))
+                            #:phases #$(if (pair? phases)
+                                           (sexp->gexp phases)
+                                           phases)
                             #:out-of-source? #$out-of-source?
                             #:validate-runpath? #$validate-runpath?
                             #:patch-shebangs? #$patch-shebangs?
                             #:strip-binaries? #$strip-binaries?
-                            #:strip-flags #$strip-flags
-                            #:strip-directories #$strip-directories)))))
+                            #:strip-flags #$(sexp->gexp strip-flags)
+                            #:strip-directories #$(sexp->gexp strip-directories))))))
 
   (mlet %store-monad ((guile (package->derivation (or guile (default-guile))
                                                   system #:graft? #f)))

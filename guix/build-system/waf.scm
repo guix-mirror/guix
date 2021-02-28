@@ -77,9 +77,8 @@
                     #:key source
                     (tests? #t)
                     (test-target "check")
-                    (configure-flags ''())
-                    (phases '(@ (guix build waf-build-system)
-                                %standard-phases))
+                    (configure-flags #~'())
+                    (phases '%standard-phases)
                     (outputs '("out"))
                     (search-paths '())
                     (system (%current-system))
@@ -91,7 +90,7 @@
 as its build system."
   (define build
     #~(begin
-        (use-modules #$@modules)
+        (use-modules #$@(sexp->gexp modules))
 
         #$(with-build-variables inputs outputs
             #~(waf-build #:name #$name
@@ -102,8 +101,9 @@ as its build system."
                          #:tests? #$tests?
                          #:phases #$phases
                          #:outputs %outputs
-                         #:search-paths '#$(map search-path-specification->sexp
-                                                search-paths)
+                         #:search-paths '#$(sexp->gexp
+                                            (map search-path-specification->sexp
+                                                 search-paths))
                          #:inputs %build-inputs))))
 
   (mlet %store-monad ((guile (package->derivation (or guile (default-guile))

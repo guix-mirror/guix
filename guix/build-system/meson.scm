@@ -107,8 +107,7 @@
                                             "bin" "sbin"))
                       (elf-directories ''("lib" "lib64" "libexec"
                                           "bin" "sbin"))
-                      (phases '(@ (guix build meson-build-system)
-                                  %standard-phases))
+                      (phases '%standard-phases)
                       (system (%current-system))
                       (imported-modules %meson-build-system-modules)
                       (modules '((guix build meson-build-system)
@@ -120,24 +119,26 @@ has a 'meson.build' file."
   (define builder
     (with-imported-modules imported-modules
       #~(begin
-          (use-modules #$@modules)
+          (use-modules #$@(sexp->gexp modules))
 
           (define build-phases
-            #$(if glib-or-gtk?
-                  phases
-                  #~(modify-phases #$phases
-                      (delete 'glib-or-gtk-compile-schemas)
-                      (delete 'glib-or-gtk-wrap))))
+            #$(let ((phases (if (pair? phases) (sexp->gexp phases) phases)))
+                (if glib-or-gtk?
+                    phases
+                    #~(modify-phases #$phases
+                        (delete 'glib-or-gtk-compile-schemas)
+                        (delete 'glib-or-gtk-wrap)))))
 
           #$(with-build-variables inputs outputs
               #~(meson-build #:source #+source
                              #:system #$system
                              #:outputs %outputs
                              #:inputs %build-inputs
-                             #:search-paths '#$(map search-path-specification->sexp
-                                                    search-paths)
+                             #:search-paths '#$(sexp->gexp
+                                                (map search-path-specification->sexp
+                                                     search-paths))
                              #:phases build-phases
-                             #:configure-flags #$configure-flags
+                             #:configure-flags #$(sexp->gexp configure-flags)
                              #:build-type #$build-type
                              #:tests? #$tests?
                              #:test-target #$test-target
@@ -146,9 +147,9 @@ has a 'meson.build' file."
                              #:validate-runpath? #$validate-runpath?
                              #:patch-shebangs? #$patch-shebangs?
                              #:strip-binaries? #$strip-binaries?
-                             #:strip-flags #$strip-flags
-                             #:strip-directories #$strip-directories
-                             #:elf-directories #$elf-directories)))))
+                             #:strip-flags #$(sexp->gexp strip-flags)
+                             #:strip-directories #$(sexp->gexp strip-directories)
+                             #:elf-directories #$(sexp->gexp elf-directories))))))
 
   (mlet %store-monad ((guile (package->derivation (or guile (default-guile))
                                                   system #:graft? #f)))

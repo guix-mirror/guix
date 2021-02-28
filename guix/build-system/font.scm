@@ -77,8 +77,7 @@
                      (tests? #t)
                      (test-target "test")
                      (configure-flags ''())
-                     (phases '(@ (guix build font-build-system)
-                                 %standard-phases))
+                     (phases '%standard-phases)
                      (outputs '("out"))
                      (search-paths '())
                      (system (%current-system))
@@ -99,10 +98,13 @@
                             #:system #$system
                             #:test-target #$test-target
                             #:tests? #$tests?
-                            #:phases #$phases
+                            #:phases #$(if (pair? phases)
+                                           (sexp->gexp phases)
+                                           phases)
                             #:outputs %outputs
-                            #:search-paths '#$(map search-path-specification->sexp
-                                                   search-paths)
+                            #:search-paths '#$(sexp->gexp
+                                               (map search-path-specification->sexp
+                                                    search-paths))
                             #:inputs %build-inputs)))))
 
   (mlet %store-monad ((guile (package->derivation (or guile (default-guile))

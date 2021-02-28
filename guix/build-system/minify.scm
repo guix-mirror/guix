@@ -76,8 +76,7 @@
                        #:key
                        source
                        (javascript-files #f)
-                       (phases '(@ (guix build minify-build-system)
-                                   %standard-phases))
+                       (phases '%standard-phases)
                        (outputs '("out"))
                        (system (%current-system))
                        search-paths
@@ -89,14 +88,15 @@
   (define builder
     (with-imported-modules imported-modules
       #~(begin
-          (use-modules #$@modules)
+          (use-modules #$@(sexp->gexp modules))
           (minify-build #:name #$name
                         #:source #+source
                         #:javascript-files #$javascript-files
                         #:phases #$phases
                         #:outputs #$(outputs->gexp outputs)
-                        #:search-paths '#$(map search-path-specification->sexp
-                                               search-paths)
+                        #:search-paths '#$(sexp->gexp
+                                           (map search-path-specification->sexp
+                                                search-paths))
                         #:inputs #$(input-tuples->gexp inputs)))))
 
   (mlet %store-monad ((guile (package->derivation (or guile (default-guile))

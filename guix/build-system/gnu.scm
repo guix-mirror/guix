@@ -330,6 +330,12 @@ standard packages used as implicit inputs of the GNU build system."
   ;; Typical names of Autotools "bootstrap" scripts.
   '("bootstrap" "bootstrap.sh" "autogen.sh"))
 
+(define %strip-flags
+  #~'("--strip-unneeded" "--enable-deterministic-archives"))
+
+(define %strip-directories
+  #~'("lib" "lib64" "libexec" "bin" "sbin"))
+
 (define* (gnu-build name inputs
                     #:key
                     guile source
@@ -345,10 +351,8 @@ standard packages used as implicit inputs of the GNU build system."
                     (parallel-tests? #t)
                     (patch-shebangs? #t)
                     (strip-binaries? #t)
-                    (strip-flags ''("--strip-unneeded"
-                                    "--enable-deterministic-archives"))
-                    (strip-directories ''("lib" "lib64" "libexec"
-                                          "bin" "sbin"))
+                    (strip-flags %strip-flags)
+                    (strip-directories %strip-directories)
                     (validate-runpath? #t)
                     (make-dynamic-linker-cache? #t)
                     (license-file-regexp %license-file-regexp)
@@ -381,7 +385,7 @@ are allowed to refer to."
   (define builder
     (with-imported-modules imported-modules
       #~(begin
-          (use-modules #$@modules)
+          (use-modules #$@(sexp->gexp modules))
 
           #$(with-build-variables inputs outputs
               #~(gnu-build #:source #+source
@@ -389,13 +393,20 @@ are allowed to refer to."
                            #:build #$build
                            #:outputs %outputs
                            #:inputs %build-inputs
-                           #:search-paths '#$(map search-path-specification->sexp
-                                                  search-paths)
-                           #:phases #$phases
+                           #:search-paths '#$(sexp->gexp
+                                              (map search-path-specification->sexp
+                                                   search-paths))
+                           #:phases #$(if (pair? phases)
+                                          (sexp->gexp phases)
+                                          phases)
                            #:locale #$locale
-                           #:bootstrap-scripts #$bootstrap-scripts
-                           #:configure-flags #$configure-flags
-                           #:make-flags #$make-flags
+                           #:bootstrap-scripts #$(sexp->gexp bootstrap-scripts)
+                           #:configure-flags #$(if (pair? configure-flags)
+                                                   (sexp->gexp configure-flags)
+                                                   configure-flags)
+                           #:make-flags #$(if (pair? make-flags)
+                                              (sexp->gexp make-flags)
+                                              make-flags)
                            #:out-of-source? #$out-of-source?
                            #:tests? #$tests?
                            #:test-target #$test-target
@@ -472,10 +483,8 @@ is one of `host' or `target'."
                           (parallel-build? #t) (parallel-tests? #t)
                           (patch-shebangs? #t)
                           (strip-binaries? #t)
-                          (strip-flags ''("--strip-unneeded"
-                                          "--enable-deterministic-archives"))
-                          (strip-directories ''("lib" "lib64" "libexec"
-                                                "bin" "sbin"))
+                          (strip-flags %strip-flags)
+                          (strip-directories %strip-directories)
                           (validate-runpath? #t)
 
                           ;; We run 'ldconfig' to generate ld.so.cache and it
@@ -498,7 +507,7 @@ cross-built inputs, and NATIVE-INPUTS are inputs that run on the build
 platform."
   (define builder
     #~(begin
-        (use-modules #$@modules)
+        (use-modules #$@(sexp->gexp modules))
 
         (define %build-host-inputs
           (map (lambda (tuple)
@@ -523,11 +532,13 @@ platform."
                    #:outputs %outputs
                    #:inputs %build-target-inputs
                    #:native-inputs %build-host-inputs
-                   #:search-paths '#$(map search-path-specification->sexp
-                                          search-paths)
-                   #:native-search-paths '#$(map
-                                             search-path-specification->sexp
-                                             native-search-paths)
+                   #:search-paths '#$(sexp->gexp
+                                      (map search-path-specification->sexp
+                                           search-paths))
+                   #:native-search-paths '#$(sexp->gexp
+                                             (map
+                                              search-path-specification->sexp
+                                              native-search-paths))
                    #:phases #$phases
                    #:locale #$locale
                    #:bootstrap-scripts #$bootstrap-scripts

@@ -103,8 +103,7 @@
                        source
                        (search-paths '())
                        (tests? #t)
-                       (phases '(@ (guix build rakudo-build-system)
-                                   %standard-phases))
+                       (phases '%standard-phases)
                        (outputs '("out"))
                        (system (%current-system))
                        (guile #f)
@@ -117,11 +116,12 @@
   (define builder
     (with-imported-modules imported-modules
       #~(begin
-          (use-modules #$@modules)
+          (use-modules #$@(sexp->gexp modules))
           (rakudo-build #:name #$name
                         #:source #+source
-                        #:search-paths '#$(map search-path-specification->sexp
-                                               search-paths)
+                        #:search-paths '#$(sexp->gexp
+                                           (map search-path-specification->sexp
+                                                search-paths))
                         #:phases #$phases
                         #:system #$system
                         #:tests? #$tests?

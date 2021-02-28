@@ -137,16 +137,19 @@
   (define build
     (with-imported-modules imported-modules
       #~(begin
-          (use-modules #$@modules)
+          (use-modules #$@(sexp->gexp modules))
 
           #$(with-build-variables inputs outputs
               #~(glib-or-gtk-build #:source #+source
                                    #:system #$system
                                    #:outputs %outputs
                                    #:inputs %build-inputs
-                                   #:search-paths '#$(map search-path-specification->sexp
-                                                          search-paths)
-                                   #:phases #$phases
+                                   #:search-paths '#$(sexp->gexp
+                                                      (map search-path-specification->sexp
+                                                           search-paths))
+                                   #:phases #$(if (pair? phases)
+                                                  (sexp->gexp phases)
+                                                  phases)
                                    #:glib-or-gtk-wrap-excluded-outputs
                                    #$glib-or-gtk-wrap-excluded-outputs
                                    #:configure-flags #$configure-flags
@@ -159,8 +162,9 @@
                                    #:validate-runpath? #$validate-runpath?
                                    #:patch-shebangs? #$patch-shebangs?
                                    #:strip-binaries? #$strip-binaries?
-                                   #:strip-flags #$strip-flags
-                                   #:strip-directories #$strip-directories)))))
+                                   #:strip-flags #$(sexp->gexp strip-flags)
+                                   #:strip-directories
+                                   #$(sexp->gexp strip-directories))))))
 
 
   (mlet %store-monad ((guile (package->derivation (or guile (default-guile))

@@ -137,7 +137,7 @@
   (define builder
     (with-imported-modules imported-modules
       #~(begin
-          (use-modules #$@modules)
+          (use-modules #$@(sexp->gexp modules))
 
           (clojure-build #:name #$name
                          #:source #+source
@@ -162,8 +162,9 @@
 
                          #:phases #$phases
                          #:outputs #$(outputs->gexp outputs)
-                         #:search-paths '#$(map search-path-spec->sexp
-                                                search-paths)
+                         #:search-paths '#$(sexp->gexp
+                                            (map search-path-spec->sexp
+                                                 search-paths))
                          #:system #$system
                          #:inputs #$(input-tuples->gexp inputs)))))
 

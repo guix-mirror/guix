@@ -41,8 +41,7 @@
                             source
                             (tests? #t)
                             (test-target #f)
-                            (phases '(@ (guix build android-ndk-build-system)
-                                        %standard-phases))
+                            (phases '%standard-phases)
                             (outputs '("out"))
                             (make-flags #~'())
                             (search-paths '())
@@ -55,7 +54,7 @@
   (define builder
     (with-imported-modules imported-modules
       #~(begin
-          (use-modules #$@modules)
+          (use-modules #$@(sexp->gexp modules))
 
           (android-ndk-build #:name #$name
                              #:source #+source
@@ -70,8 +69,9 @@
                                                    "/share/android/build/core/main.mk")
                                     #$make-flags)
                              #:outputs #$(outputs->gexp outputs)
-                             #:search-paths '#$(map search-path-specification->sexp
-                                                    search-paths)
+                             #:search-paths '#$(sexp->gexp
+                                                (map search-path-specification->sexp
+                                                     search-paths))
                              #:inputs #$(input-tuples->gexp inputs)))))
 
   (mlet %store-monad  ((guile (package->derivation (or guile (default-guile))

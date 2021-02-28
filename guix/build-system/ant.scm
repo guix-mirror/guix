@@ -110,8 +110,7 @@
                     (test-exclude (list "**/Abstract*.java"))
                     (source-dir "src")
                     (test-dir "src/test")
-                    (phases '(@ (guix build ant-build-system)
-                                %standard-phases))
+                    (phases '%standard-phases)
                     (outputs '("out"))
                     (search-paths '())
                     (system (%current-system))
@@ -124,7 +123,7 @@
   (define builder
     (with-imported-modules imported-modules
       #~(begin
-          (use-modules #$@modules)
+          (use-modules #$@(sexp->gexp modules))
           (ant-build #:name #$name
                      #:source #+source
                      #:make-flags #$make-flags
@@ -141,8 +140,9 @@
                      #:test-dir #$test-dir
                      #:phases #$phases
                      #:outputs #$(outputs->gexp outputs)
-                     #:search-paths '#$(map search-path-specification->sexp
-                                            search-paths)
+                     #:search-paths '#$(sexp->gexp
+                                        (map search-path-specification->sexp
+                                             search-paths))
                      #:inputs #$(input-tuples->gexp inputs)))))
 
   (mlet %store-monad  ((guile (package->derivation (or guile (default-guile))

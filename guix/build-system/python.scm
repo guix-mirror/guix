@@ -175,8 +175,7 @@ pre-defined variants."
                        (test-target "test")
                        (use-setuptools? #t)
                        (configure-flags ''())
-                       (phases '(@ (guix build python-build-system)
-                                   %standard-phases))
+                       (phases '%standard-phases)
                        (outputs '("out"))
                        (search-paths '())
                        (system (%current-system))
@@ -189,7 +188,7 @@ provides a 'setup.py' file as its build system."
   (define build
     (with-imported-modules imported-modules
       #~(begin
-          (use-modules #$@modules)
+          (use-modules #$@(sexp->gexp modules))
 
           #$(with-build-variables inputs outputs
               #~(python-build #:name #$name
@@ -199,10 +198,13 @@ provides a 'setup.py' file as its build system."
                               #:system #$system
                               #:test-target #$test-target
                               #:tests? #$tests?
-                              #:phases #$phases
+                              #:phases #$(if (pair? phases)
+                                             (sexp->gexp phases)
+                                             phases)
                               #:outputs %outputs
-                              #:search-paths '#$(map search-path-specification->sexp
-                                                     search-paths)
+                              #:search-paths '#$(sexp->gexp
+                                                 (map search-path-specification->sexp
+                                                      search-paths))
                               #:inputs %build-inputs)))))
 
 

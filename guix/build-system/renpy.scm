@@ -77,8 +77,7 @@
 (define* (renpy-build name inputs
                       #:key
                       source
-                      (phases '(@ (guix build renpy-build-system)
-                                  %standard-phases))
+                      (phases '%standard-phases)
                       (configure-flags ''())
                       (outputs '("out"))
                       (output "out")
@@ -93,7 +92,7 @@
   (define builder
     (with-imported-modules imported-modules
       #~(begin
-          (use-modules #$@modules)
+          (use-modules #$@(sexp->gexp modules))
           (renpy-build #:name #$name
                        #:source #+source
                        #:configure-flags #$configure-flags
@@ -102,8 +101,9 @@
                        #:outputs #$(outputs->gexp outputs)
                        #:output #$output
                        #:game #$game
-                       #:search-paths '#$(map search-path-specification->sexp
-                                              search-paths)
+                       #:search-paths '#$(sexp->gexp
+                                          (map search-path-specification->sexp
+                                               search-paths))
                        #:inputs #$(input-tuples->gexp inputs)))))
 
   (mlet %store-monad ((guile (package->derivation (or guile (default-guile))

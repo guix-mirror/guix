@@ -100,17 +100,20 @@ provides a `Makefile.PL' file as its build system."
   (define build
     (with-imported-modules imported-modules
       #~(begin
-          (use-modules #$@modules)
+          (use-modules #$@(sexp->gexp modules))
 
           #$(with-build-variables inputs outputs
               #~(perl-build #:name #$name
                             #:source #+source
-                            #:search-paths '#$(map search-path-specification->sexp
-                                                   search-paths)
+                            #:search-paths '#$(sexp->gexp
+                                               (map search-path-specification->sexp
+                                                    search-paths))
                             #:make-maker? #$make-maker?
                             #:make-maker-flags #$make-maker-flags
-                            #:module-build-flags #$module-build-flags
-                            #:phases #$phases
+                            #:module-build-flags #$(sexp->gexp module-build-flags)
+                            #:phases #$(if (pair? phases)
+                                           (sexp->gexp phases)
+                                           phases)
                             #:system #$system
                             #:test-target "test"
                             #:tests? #$tests?

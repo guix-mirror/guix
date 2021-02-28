@@ -123,8 +123,7 @@
                    (strip-flags ''("--strip-debug"))
                    (strip-directories ''("lib" "lib64" "libexec"
                                          "bin" "sbin"))
-                   (phases '(@ (guix build qt-build-system)
-                               %standard-phases))
+                   (phases '%standard-phases)
                    (qt-wrap-excluded-outputs ''())
                    (system (%current-system))
                    (imported-modules %qt-build-system-modules)
@@ -135,13 +134,14 @@ provides a 'CMakeLists.txt' file as its build system."
   (define builder
     (with-imported-modules imported-modules
       #~(begin
-          (use-modules #$@modules)
+          (use-modules #$@(sexp->gexp modules))
           (qt-build #:source #+source
                     #:system #$system
                     #:outputs #$(outputs->gexp outputs)
                     #:inputs #$(input-tuples->gexp inputs)
-                    #:search-paths '#$(map search-path-specification->sexp
-                                           search-paths)
+                    #:search-paths '#$(sexp->gexp
+                                       (map search-path-specification->sexp
+                                            search-paths))
                     #:phases #$phases
                     #:qt-wrap-excluded-outputs #$qt-wrap-excluded-outputs
                     #:configure-flags #$configure-flags
@@ -191,8 +191,7 @@ provides a 'CMakeLists.txt' file as its build system."
                                          "--enable-deterministic-archives"))
                          (strip-directories ''("lib" "lib64" "libexec"
                                                "bin" "sbin"))
-                         (phases '(@ (guix build qt-build-system)
-                                     %standard-phases))
+                         (phases '%standard-phases)
                          (system (%current-system))
                          (build (nix-system->gnu-triplet system))
                          (imported-modules %qt-build-system-modules)
@@ -204,7 +203,7 @@ build system."
   (define builder
     (with-imported-modules imported-modules
       #~(begin
-          (use-modules #$@modules)
+          (use-modules #$@(sexp->gexp modules))
 
           (define %build-host-inputs
             #+(input-tuples->gexp build-inputs))
@@ -223,8 +222,9 @@ build system."
                     #:outputs %outputs
                     #:inputs %build-target-inputs
                     #:native-inputs %build-host-inputs
-                    #:search-paths '#$(map search-path-specification->sexp
-                                           search-paths)
+                    #:search-paths '#$(sexp->gexp
+                                       (map search-path-specification->sexp
+                                            search-paths))
                     #:native-search-paths '#$(map
                                               search-path-specification->sexp
                                               native-search-paths)

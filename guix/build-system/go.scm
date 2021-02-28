@@ -113,8 +113,7 @@ it, defaulting to full VERSION if a pseudo-version pattern is not recognized."
 (define* (go-build name inputs
                    #:key
                    source
-                   (phases '(@ (guix build go-build-system)
-                               %standard-phases))
+                   (phases '%standard-phases)
                    (outputs '("out"))
                    (search-paths '())
                    (install-source? #t)
@@ -138,8 +137,9 @@ it, defaulting to full VERSION if a pseudo-version pattern is not recognized."
                     #:system #$system
                     #:phases #$phases
                     #:outputs #$(outputs->gexp outputs)
-                    #:search-paths '#$(map search-path-specification->sexp
-                                           search-paths)
+                    #:search-paths '#$(sexp->gexp
+                                       (map search-path-specification->sexp
+                                            search-paths))
                     #:install-source? #$install-source?
                     #:import-path #$import-path
                     #:unpack-path #$unpack-path

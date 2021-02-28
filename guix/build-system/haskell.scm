@@ -129,8 +129,7 @@ version REVISION."
                         (parallel-build? #f)
                         (configure-flags ''())
                         (extra-directories ''())
-                        (phases '(@ (guix build haskell-build-system)
-                                    %standard-phases))
+                        (phases '%standard-phases)
                         (outputs '("out" "static"))
                         (search-paths '())
                         (system (%current-system))
@@ -143,7 +142,7 @@ provides a 'Setup.hs' file as its build system."
   (define builder
     (with-imported-modules imported-modules
       #~(begin
-          (use-modules #$@modules)
+          (use-modules #$@(sexp->gexp modules))
 
           (haskell-build #:name #$name
                          #:source #+source
@@ -159,8 +158,9 @@ provides a 'Setup.hs' file as its build system."
                          #:haddock? #$haddock?
                          #:phases #$phases
                          #:outputs #$(outputs->gexp outputs)
-                         #:search-paths '#$(map search-path-specification->sexp
-                                                search-paths)
+                         #:search-paths '#$(sexp->gexp
+                                            (map search-path-specification->sexp
+                                                 search-paths))
                          #:inputs #$(input-tuples->gexp inputs)))))
 
   (mlet %store-monad ((guile (package->derivation (or guile (default-guile))

@@ -96,8 +96,7 @@
 
 (define* (asdf-build/source name inputs
                             #:key source outputs
-                            (phases '(@ (guix build asdf-build-system)
-                                        %standard-phases/source))
+                            (phases '%standard-phases/source)
                             (search-paths '())
                             (system (%current-system))
                             (guile #f)
@@ -106,14 +105,15 @@
   (define builder
     (with-imported-modules imported-modules
       #~(begin
-          (use-modules #$@modules)
+          (use-modules #$@(sexp->gexp modules))
           (asdf-build/source #:name #$name
                              #:source #+source
                              #:system #$system
                              #:phases #$phases
                              #:outputs #$(outputs->gexp outputs)
-                             #:search-paths '#$(map search-path-specification->sexp
-                                                    search-paths)
+                             #:search-paths '#$(sexp->gexp
+                                                (map search-path-specification->sexp
+                                                     search-paths))
                              #:inputs #$(input-tuples->gexp inputs)))))
 
   (mlet %store-monad ((guile (package->derivation (or guile (default-guile))
@@ -272,8 +272,7 @@ set up using CL source package conventions."
                  (asd-files ''())
                  (asd-systems ''())
                  (test-asd-file #f)
-                 (phases '(@ (guix build asdf-build-system)
-                             %standard-phases))
+                 (phases '%standard-phases)
                  (search-paths '())
                  (system (%current-system))
                  (guile #f)
@@ -295,7 +294,7 @@ set up using CL source package conventions."
     (define builder
       (with-imported-modules imported-modules
         #~(begin
-            (use-modules #$@modules)
+            (use-modules #$@(sexp->gexp modules))
             (parameterize ((%lisp (string-append
                                    (assoc-ref %build-inputs #$lisp-type)
                                    "/bin/" #$lisp-type))
@@ -309,8 +308,9 @@ set up using CL source package conventions."
                           #:tests? #$tests?
                           #:phases #$phases
                           #:outputs #$(outputs->gexp outputs)
-                          #:search-paths '#$(map search-path-specification->sexp
-                                                 search-paths)
+                          #:search-paths '#$(sexp->gexp
+                                             (map search-path-specification->sexp
+                                                  search-paths))
                           #:inputs #$(input-tuples->gexp inputs))))))
 
     (mlet %store-monad ((guile (package->derivation (or guile (default-guile))

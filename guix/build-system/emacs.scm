@@ -87,8 +87,7 @@
                       (tests? #f)
                       (parallel-tests? #t)
                       (test-command ''("make" "check"))
-                      (phases '(@ (guix build emacs-build-system)
-                                  %standard-phases))
+                      (phases '%standard-phases)
                       (outputs '("out"))
                       (include (quote %default-include))
                       (exclude (quote %default-exclude))
@@ -103,7 +102,7 @@
   (define builder
     (with-imported-modules imported-modules
       #~(begin
-          (use-modules #$@modules)
+          (use-modules #$@(sexp->gexp modules))
           (emacs-build #:name #$name
                        #:source #+source
                        #:system #$system
@@ -114,8 +113,9 @@
                        #:outputs #$(outputs->gexp outputs)
                        #:include #$include
                        #:exclude #$exclude
-                       #:search-paths '#$(map search-path-specification->sexp
-                                              search-paths)
+                       #:search-paths '#$(sexp->gexp
+                                          (map search-path-specification->sexp
+                                               search-paths))
                        #:inputs #$(input-tuples->gexp inputs)))))
 
   (mlet %store-monad ((guile (package->derivation (or guile (default-guile))

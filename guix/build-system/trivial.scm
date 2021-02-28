@@ -54,7 +54,10 @@
   "Run build expression BUILDER, an expression, for SYSTEM.  SOURCE is
 ignored."
   (mlet %store-monad ((guile (package->derivation (or guile (default-guile))
-                                                  system #:graft? #f)))
+                                                  system #:graft? #f))
+                      (builder -> (if (pair? builder)
+                                      (sexp->gexp builder)
+                                      builder)))
     (gexp->derivation name (with-build-variables inputs outputs builder)
                       #:system system
                       #:target #f
@@ -72,7 +75,10 @@ ignored."
   "Run build expression BUILDER, an expression, for SYSTEM.  SOURCE is
 ignored."
   (mlet %store-monad  ((guile (package->derivation (or guile (default-guile))
-                                                   system #:graft? #f)))
+                                                   system #:graft? #f))
+                       (builder -> (if (pair? builder)
+                                       (sexp->gexp builder)
+                                       builder)))
     (gexp->derivation name (with-build-variables
                                (append build-inputs target-inputs)
                                outputs

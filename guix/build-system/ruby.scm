@@ -80,8 +80,7 @@ NAME and VERSION."
                      (gem-flags ''())
                      (test-target "test")
                      (tests? #t)
-                     (phases '(@ (guix build ruby-build-system)
-                                 %standard-phases))
+                     (phases '%standard-phases)
                      (outputs '("out"))
                      (search-paths '())
                      (system (%current-system))
@@ -92,7 +91,7 @@ NAME and VERSION."
   "Build SOURCE using RUBY and INPUTS."
   (define build
     #~(begin
-        (use-modules #$@modules)
+        (use-modules #$@(sexp->gexp modules))
 
         #$(with-build-variables inputs outputs
             #~(ruby-build #:name #$name
@@ -101,10 +100,13 @@ NAME and VERSION."
                           #:gem-flags #$gem-flags
                           #:test-target #$test-target
                           #:tests? #$tests?
-                          #:phases #$phases
+                          #:phases #$(if (pair? phases)
+                                         (sexp->gexp phases)
+                                         phases)
                           #:outputs %outputs
-                          #:search-paths '#$(map search-path-specification->sexp
-                                                 search-paths)
+                          #:search-paths '#$(sexp->gexp
+                                             (map search-path-specification->sexp
+                                                  search-paths))
                           #:inputs %build-inputs))))
 
   (mlet %store-monad ((guile (package->derivation (or guile (default-guile))

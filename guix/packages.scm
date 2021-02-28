@@ -769,7 +769,9 @@ specifies modules in scope when evaluating SNIPPET."
                            module
                            (map resolve-interface '#+modules))
                           ((@ (system base compile) compile)
-                           '#+snippet
+                           '#+(if (pair? snippet)
+                                  (sexp->gexp snippet)
+                                  snippet)
                            #:to 'value
                            #:opts %auto-compilation-options
                            #:env module))

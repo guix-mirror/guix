@@ -144,24 +144,24 @@ level package ID."
   (define builder
     (with-imported-modules imported-modules
       #~(begin
-          (use-modules #$@modules)
-          (texlive-build #:name #$name
-                         #:source #+source
-                         #:tex-directory #$tex-directory
-                         #:build-targets #$build-targets
-                         #:tex-format #$tex-format
-                         #:system #$system
-                         #:tests? #$tests?
-                         #:phases #$phases
-                         #:outputs (list #$@(map (lambda (name)
-                                                   #~(cons #$name
-                                                           (ungexp output name)))
-                                                 outputs))
-                         #:inputs (map (lambda (tuple)
-                                         (apply cons tuple))
-                                       '#$inputs)
-                         #:search-paths '#$(map search-path-specification->sexp
-                                                search-paths)))))
+          (use-modules #$@(sexp->gexp modules))
+
+          #$(with-build-variables inputs outputs
+              #~(texlive-build #:name #$name
+                               #:source #+source
+                               #:tex-directory #$tex-directory
+                               #:build-targets #$build-targets
+                               #:tex-format #$tex-format
+                               #:system #$system
+                               #:tests? #$tests?
+                               #:phases #$(if (pair? phases)
+                                              (sexp->gexp phases)
+                                              phases)
+                               #:outputs %outputs
+                               #:inputs %build-inputs
+                               #:search-paths '#$(sexp->gexp
+                                                  (map search-path-specification->sexp
+                                                       search-paths)))))))
 
   (gexp->derivation name builder
                     #:system system

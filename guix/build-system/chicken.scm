@@ -75,8 +75,7 @@
 (define* (chicken-build name inputs
                         #:key
                         source
-                        (phases '(@ (guix build chicken-build-system)
-                                    %standard-phases))
+                        (phases '%standard-phases)
                         (outputs '("out"))
                         (search-paths '())
                         (egg-name "")
@@ -92,14 +91,15 @@
   (define builder
     (with-imported-modules imported-modules
       #~(begin
-          (use-modules #$@modules)
+          (use-modules #$@(sexp->gexp modules))
           (chicken-build #:name #$name
                          #:source #+source
                          #:system #$system
                          #:phases #$phases
                          #:outputs #$(outputs->gexp outputs)
-                         #:search-paths '#$(map search-path-specification->sexp
-                                                search-paths)
+                         #:search-paths '#$(sexp->gexp
+                                            (map search-path-specification->sexp
+                                                 search-paths))
                          #:egg-name #$egg-name
                          #:unpack-path #$unpack-path
                          #:build-flags #$build-flags

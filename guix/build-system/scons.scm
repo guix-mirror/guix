@@ -79,11 +79,10 @@
                       (source #f)
                       (tests? #t)
                       (scons-flags ''())
-                      (build-targets ''())
+                      (build-targets #~'())
                       (test-target "test")
-                      (install-targets ''("install"))
-                      (phases '(@ (guix build scons-build-system)
-                                  %standard-phases))
+                      (install-targets #~'("install"))
+                      (phases '%standard-phases)
                       (outputs '("out"))
                       (search-paths '())
                       (system (%current-system))
@@ -96,17 +95,19 @@ provides a 'SConstruct' file as its build system."
   (define builder
     (with-imported-modules imported-modules
       #~(begin
-          (use-modules #$@modules)
+          (use-modules #$@(sexp->gexp modules))
 
           (scons-build #:name ,name
                        #:source #+source
-                       #:scons-flags #$scons-flags
+                       #:scons-flags #$(sexp->gexp scons-flags)
                        #:system #$system
                        #:build-targets #$build-targets
                        #:test-target #$test-target
                        #:tests? #$tests?
                        #:install-targets #$install-targets
-                       #:phases #$phases
+                       #:phases #$(if (pair? phases)
+                                      (sexp->gexp phases)
+                                      phases)
                        #:outputs (list #$@(map (lambda (name)
                                                  #~(cons #$name
                                                          (ungexp output name)))
@@ -114,8 +115,9 @@ provides a 'SConstruct' file as its build system."
                        #:inputs (map (lambda (tuple)
                                        (apply cons tuple))
                                      '#$inputs)
-                       #:search-paths '#$(map search-path-specification->sexp
-                                              search-paths)))))
+                       #:search-paths '#$(sexp->gexp
+                                          (map search-path-specification->sexp
+                                               search-paths))))))
 
   (gexp->derivation name builder
                     #:system system

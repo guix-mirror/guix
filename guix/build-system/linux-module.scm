@@ -155,8 +155,7 @@
                              source target
                              (search-paths '())
                              (tests? #t)
-                             (phases '(@ (guix build linux-module-build-system)
-                                         %standard-phases))
+                             (phases '%standard-phases)
                              (outputs '("out"))
                              (make-flags ''())
                              (system (%current-system))
@@ -170,11 +169,12 @@
   (define builder
     (with-imported-modules imported-modules
       #~(begin
-          (use-modules #$@modules)
+          (use-modules #$@(sexp->gexp modules))
           (linux-module-build #:name #$name
                               #:source #+source
-                              #:search-paths '#$(map search-path-specification->sexp
-                                                     search-paths)
+                              #:search-paths '#$(sexp->gexp
+                                                 (map search-path-specification->sexp
+                                                      search-paths))
                               #:phases #$phases
                               #:system #$system
                               #:target #$target
@@ -202,8 +202,7 @@
           (search-paths '())
           (native-search-paths '())
           (tests? #f)
-          (phases '(@ (guix build linux-module-build-system)
-                      %standard-phases))
+          (phases '%standard-phases)
           (system (%current-system))
           (substitutable? #t)
           (imported-modules
@@ -213,7 +212,7 @@
   (define builder
     (with-imported-modules imported-modules
       #~(begin
-          (use-modules #$@modules)
+          (use-modules #$@(sexp->gexp modules))
 
           (define %build-host-inputs
             '#+(input-tuples->gexp build-inputs))
@@ -232,8 +231,9 @@
                               #:inputs %build-target-inputs
                               #:native-inputs %build-host-inputs
                               #:search-paths
-                              '#$(map search-path-specification->sexp
-                                      search-paths)
+                              '#$(sexp->gexp
+                                  (map search-path-specification->sexp
+                                       search-paths))
                               #:native-search-paths
                               '#$(map
                                   search-path-specification->sexp

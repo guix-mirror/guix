@@ -78,8 +78,7 @@
 (define* (julia-build name inputs
                       #:key source
                       (tests? #t)
-                      (phases '(@ (guix build julia-build-system)
-                                  %standard-phases))
+                      (phases '%standard-phases)
                       (outputs '("out"))
                       (search-paths '())
                       (system (%current-system))
@@ -92,15 +91,16 @@
   (define builder
     (with-imported-modules imported-modules
       #~(begin
-          (use-modules #$@modules)
+          (use-modules #$@(sexp->gexp modules))
           (julia-build #:name #$name
                        #:source #+source
                        #:system #$system
                        #:tests? #$tests?
                        #:phases #$phases
                        #:outputs #$(outputs->gexp outputs)
-                       #:search-paths '#$(map search-path-specification->sexp
-                                              search-paths)
+                       #:search-paths '#$(sexp->gexp
+                                          (map search-path-specification->sexp
+                                               search-paths))
                        #:inputs #$(input-tuples->gexp inputs)
                        #:julia-package-name #$julia-package-name))))
 
