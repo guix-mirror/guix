@@ -55,13 +55,21 @@
             guix-build-coordinator-agent-configuration-package
             guix-build-coordinator-agent-configuration-user
             guix-build-coordinator-agent-configuration-coordinator
-            guix-build-coordinator-agent-configuration-uuid
-            guix-build-coordinator-agent-configuration-password
-            guix-build-coordinator-agent-configuration-password-file
+            guix-build-coordinator-agent-configuration-authentication
             guix-build-coordinator-agent-configuration-systems
             guix-build-coordinator-agent-configuration-max-parallel-builds
             guix-build-coordinator-agent-configuration-derivation-substitute-urls
             guix-build-coordinator-agent-configuration-non-derivation-substitute-urls
+
+            guix-build-coordinator-agent-password-auth
+            guix-build-coordinator-agent-password-auth?
+            guix-build-coordinator-agent-password-auth-uuid
+            guix-build-coordinator-agent-password-auth-password
+
+            guix-build-coordinator-agent-password-file-auth
+            guix-build-coordinator-agent-password-file-auth?
+            guix-build-coordinator-agent-password-file-auth-uuid
+            guix-build-coordinator-agent-password-file-auth-password-file
 
             guix-build-coordinator-agent-service-type
 
@@ -132,11 +140,7 @@
                        (default "guix-build-coordinator-agent"))
   (coordinator         guix-build-coordinator-agent-configuration-coordinator
                        (default "http://localhost:8745"))
-  (uuid                guix-build-coordinator-agent-configuration-uuid)
-  (password            guix-build-coordinator-agent-configuration-password
-                       (default #f))
-  (password-file       guix-build-coordinator-agent-configuration-password-file
-                       (default #f))
+  (authentication      guix-build-coordinator-agent-configuration-authentication)
   (systems             guix-build-coordinator-agent-configuration-systems
                        (default #f))
   (max-parallel-builds
@@ -148,6 +152,21 @@
   (non-derivation-substitute-urls
    guix-build-coordinator-agent-configuration-non-derivation-substitute-urls
    (default #f)))
+
+(define-record-type* <guix-build-coordinator-agent-password-auth>
+  guix-build-coordinator-agent-password-auth
+  make-guix-build-coordinator-agent-password-auth
+  guix-build-coordinator-agent-password-auth?
+  (uuid                guix-build-coordinator-agent-password-auth-uuid)
+  (password            guix-build-coordinator-agent-password-auth-password))
+
+(define-record-type* <guix-build-coordinator-agent-password-file-auth>
+  guix-build-coordinator-agent-password-file-auth
+  make-guix-build-coordinator-agent-password-file-auth
+  guix-build-coordinator-agent-password-file-auth?
+  (uuid                guix-build-coordinator-agent-password-file-auth-uuid)
+  (password-file
+   guix-build-coordinator-agent-password-file-auth-password-file))
 
 (define-record-type* <guix-build-coordinator-queue-builds-configuration>
   guix-build-coordinator-queue-builds-configuration
@@ -326,7 +345,7 @@
 
 (define (guix-build-coordinator-agent-shepherd-services config)
   (match-record config <guix-build-coordinator-agent-configuration>
-    (package user coordinator uuid password password-file max-parallel-builds
+    (package user coordinator authentication max-parallel-builds
              derivation-substitute-urls non-derivation-substitute-urls
              systems)
     (list
@@ -337,13 +356,16 @@
       (start #~(make-forkexec-constructor
                 (list #$(file-append package "/bin/guix-build-coordinator-agent")
                       #$(string-append "--coordinator=" coordinator)
-                      #$(string-append "--uuid=" uuid)
-                      #$@(if password
-                             #~(#$(string-append "--password=" password))
-                             #~())
-                      #$@(if password-file
-                             #~(#$(string-append "--password-file=" password-file))
-                             #~())
+                      #$@(match authentication
+                           (($ <guix-build-coordinator-agent-password-auth>
+                               uuid password)
+                            #~(#$(string-append "--uuid=" uuid)
+                               #$(string-append "--password=" password)))
+                           (($ <guix-build-coordinator-agent-password-file-auth>
+                               uuid password-file)
+                            #~(#$(string-append "--uuid=" uuid)
+                               #$(string-append "--password-file="
+                                                password-file))))
                       #$(simple-format #f "--max-parallel-builds=~A"
                                        max-parallel-builds)
                       #$@(if derivation-substitute-urls
