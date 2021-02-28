@@ -13415,7 +13415,7 @@ interfaces.")
         (base32
          "16wh8qgybmfh4pjp8vfv78mdlkxfmcasg78lzlnm6nslsfkci31p"))))
     (build-system python-build-system)
-    (home-page "http://msgpack.org/")
+    (home-page "https://msgpack.org/")
     (synopsis "Package to deserialize messages in MessagePack binary format")
     (description
      "MessagePack is an efficient binary serialization format.  It lets you
