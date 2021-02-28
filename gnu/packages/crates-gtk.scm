@@ -1157,7 +1157,7 @@
        (("rust-gir-format-check" ,rust-gir-format-check-0.1))))
     (inputs
      `(("gtk+" ,gtk+)))
-    (home-page "http://gtk-rs.org/")
+    (home-page "https://gtk-rs.org/")
     (synopsis "Rust bindings for the PangoCairo library")
     (description
      "Rust bindings for the PangoCairo library.")
