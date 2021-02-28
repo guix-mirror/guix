@@ -3242,7 +3242,7 @@ stretching and pitch scaling of audio.  This package contains the library.")
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("libtool" ,libtool)))
-    (home-page "http://www.wavpack.com/")
+    (home-page "https://www.wavpack.com/")
     (synopsis "Hybrid lossless audio codec")
     (description
      "WavPack is an audio compression format with lossless, lossy and hybrid
