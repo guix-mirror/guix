@@ -7221,7 +7221,7 @@ without using the configuration machinery.")
      `(("python-pyzmq" ,python-pyzmq)
        ("python-traitlets" ,python-traitlets)
        ("python-jupyter-core" ,python-jupyter-core)))
-    (home-page "http://jupyter.org/")
+    (home-page "https://jupyter.org/")
     (synopsis "Jupyter protocol implementation and client libraries")
     (description
      "The @code{jupyter_client} package contains the reference implementation
