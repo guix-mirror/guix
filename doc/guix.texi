@@ -13455,12 +13455,12 @@ of a package:
 
 (operating-system
   ;; ...
-  (packages (cons (list bind "utils")
+  (packages (cons (list isc-bind "utils")
                   %base-packages)))
 @end lisp
 
 @findex specification->package
-Referring to packages by variable name, like @code{bind} above, has
+Referring to packages by variable name, like @code{isc-bind} above, has
 the advantage of being unambiguous; it also allows typos and such to be
 diagnosed right away as ``unbound variables''.  The downside is that one
 needs to know which module defines which package, and to augment the
