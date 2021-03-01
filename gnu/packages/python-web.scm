@@ -91,6 +91,31 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (srfi srfi-1))
 
+(define-public python-prawcore
+  (package
+    (name "python-prawcore")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "prawcore" version))
+       (sha256
+        (base32 "1l9nrn4s03xl8fvkyybdk86bm9cyyk43alkxf9g014a9ynvdk65l"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-betamax" ,python-betamax)
+       ("python-betamax-matchers" ,python-betamax-matchers)
+       ("python-betamax-serializers" ,python-betamax-serializers)
+       ("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)
+       ("python-testfixtures" ,python-testfixtures)))
+    (propagated-inputs
+     `(("python-requests" ,python-requests)))
+    (synopsis "Core component of PRAW")
+    (description "PRAWcore is a low-level communication layer used by PRAW.")
+    (home-page "https://praw.readthedocs.io/en/latest/")
+    (license license:bsd-2)))
+
 (define-public python-aiohttp
   (package
     (name "python-aiohttp")
