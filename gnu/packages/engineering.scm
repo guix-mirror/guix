@@ -1553,7 +1553,7 @@ bootloader in Espressif ESP8266 & ESP32 series chips.")
 (define-public radare2
   (package
     (name "radare2")
-    (version "5.0.0")
+    (version "5.1.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1561,7 +1561,7 @@ bootloader in Espressif ESP8266 & ESP32 series chips.")
                     (commit version)))
               (sha256
                (base32
-                "0aa7c27kd0l55fy5qfvxqmakp4pz6240v3hn84095qmqkzcbs420"))
+                "0hv9x31iabasj12g8f04incr1rbcdkxi3xnqn3ggp8gl4h6pf2f3"))
               (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
