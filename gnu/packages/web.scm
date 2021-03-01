@@ -5813,14 +5813,14 @@ tools like SSH (Secure Shell) to reach the outside world.")
 (define-public stunnel
   (package
   (name "stunnel")
-  (version "5.57")
+  (version "5.58")
   (source
     (origin
       (method url-fetch)
       (uri (string-append "https://www.stunnel.org/downloads/stunnel-"
                           version ".tar.gz"))
       (sha256
-       (base32 "1q8gc05fiz7w55ws0whwzb94ffjnhzfppf1mhz1hf671vmrvjnmg"))))
+       (base32 "0y9vjzjqi340vy6h321r1cskb7l6a4prr9d2ysixqzjpjv04rhfl"))))
   (build-system gnu-build-system)
   (native-inputs
    ;; For tests.
@@ -5847,6 +5847,8 @@ tools like SSH (Secure Shell) to reach the outside world.")
            (substitute* "tests/make_test"
              (("/bin/sh ")
               (string-append (which "sh") " ")))
+           ;; test requires networking
+           (delete-file "tests/recipes/055_socket_closed")
            #t)))))
   (home-page "https://www.stunnel.org")
   (synopsis "TLS proxy for clients or servers")
