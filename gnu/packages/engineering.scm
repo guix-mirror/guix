@@ -2393,6 +2393,21 @@ analysis and AC analysis.  The engine is designed to do true mixed-mode
 simulation.")
     (license license:gpl3+)))
 
+(define-public radare2-for-cutter
+  (package
+    (inherit radare2)
+    (name "radare2")
+    (version "5.0.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/radareorg/radare2")
+                    (commit version)))
+              (sha256
+               (base32
+                "0aa7c27kd0l55fy5qfvxqmakp4pz6240v3hn84095qmqkzcbs420"))
+              (file-name (git-file-name name version))))))
+
 (define-public cutter
   (package
     (name "cutter")
@@ -2428,7 +2443,9 @@ simulation.")
      `(("qtbase" ,qtbase)
        ("qtsvg" ,qtsvg)
        ("openssl" ,openssl)
-       ("radare2" ,radare2)))
+       ;; Depends on radare2 4.5.1 officially, builds and works fine with
+       ;; radare2 5.0.0 but fails to build with radare2 5.1.1.
+       ("radare2" ,radare2-for-cutter)))
     (home-page "https://github.com/radareorg/cutter")
     (synopsis "GUI for radare2 reverse engineering framework")
     (description "Cutter is a GUI for radare2 reverse engineering framework.
