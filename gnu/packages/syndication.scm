@@ -366,13 +366,14 @@ formats, including all versions of RSS and Atom.")
     (name "quiterss")
     (version "0.19.4")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/QuiteRSS/quiterss/archive/"
-                    version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/QuiteRSS/quiterss")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1g1kfa15fr8xskpsc15fbw22z8fljkyq6wfq02zygi4fb8hgmpyr"))
+                "1cgvl67vhn5y7bj5gbjbgk26bhb0196bgrgsp3r5fmrislarj8s6"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -383,7 +384,7 @@ formats, including all versions of RSS and Atom.")
                      "settings.value(\"Settings/statisticsEnabled2\", false)")
                     ;; Disable update check spyware by default, otherwise runs
                     ;; at every startup, nasty. Not needed on GNU Guix as a
-                    ;; feature either way. 
+                    ;; feature either way.
                     (("settings\\.value\\(\"Settings/updateCheckEnabled\", true\\)")
                      "settings.value(\"Settings/updateCheckEnabled\", false)"))
                   #t))))
