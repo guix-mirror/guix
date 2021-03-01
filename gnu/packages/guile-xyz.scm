@@ -32,7 +32,7 @@
 ;;; Copyright © 2020 Jesse Gibbons <jgibbons2357@gmail.com>
 ;;; Copyright © 2020 Mike Rosset <mike.rosset@gmail.com>
 ;;; Copyright © 2020 Leo Prikler <leo.prikler@student.tugraz.at>
-;;; Copyright © 2020 pukkamustard <pukkamustard@posteo.net>
+;;; Copyright © 2020, 2021 pukkamustard <pukkamustard@posteo.net>
 ;;; Copyright © 2021 Bonface Munyoki Kilyungi <me@bonfacemunyoki.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -4560,3 +4560,32 @@ ffi-helper from nyacc.")
 for C++ code using a simple embedded DSL.  Think of it as @code{Boost.Python}
 or @code{LuaBind} but for Scheme.")
       (license license:boost1.0))))
+
+(define-public guile-cbor
+  (package
+    (name "guile-cbor")
+    (version "0.1.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://inqlab.net/git/guile-cbor.git")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256 (base32 "0bdqg3ifayf7m2j09lqrgdfprbdaa67azf09bcq9b4k71inxfnxl"))))
+    (build-system gnu-build-system)
+    (arguments `())
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)
+       ("texinfo" ,texinfo)))
+    (inputs `(("guile" ,guile-3.0)))
+    (synopsis "Guile implementation of CBOR")
+    (description
+     "The Concise Binary Object Representation (CBOR), as specified by RFC 8949, is
+a binary data serialization format.  CBOR is similar to JSON but serializes to
+binary which is smaller and faster to generate and parse.  This package provides
+a Guile implementation of CBOR.")
+    (home-page "https://inqlab.net/git/guile-cbor.git")
+    (license license:gpl3+)))
