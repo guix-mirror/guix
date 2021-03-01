@@ -51,7 +51,7 @@
 ;;; Copyright © 2020 Vitaliy Shatrov <D0dyBo0D0dyBo0@protonmail.com>
 ;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
-;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020, 2021 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Trevor Hass <thass@okstate.edu>
 ;;; Copyright © 2020, 2021 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2020 Lu hux <luhux@outlook.com>
@@ -11794,14 +11794,14 @@ and chess engines.")
 (define-public chessx
   (package
     (name "chessx")
-    (version "1.5.4")
+    (version "1.5.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/chessx/chessx/"
                            version "/chessx-" version ".tgz"))
        (sha256
-        (base32 "1a3541vl5hp6jllgx998w9kjh9kp3wrl80yfwkxmq1bc5bzsrnz2"))))
+        (base32 "01fjchil2h6ry2ywr0dwjw2g7zd29580cr4c74d5z74h999lp6nh"))))
     (build-system qt-build-system)
     (native-inputs
      `(("qttools" ,qttools)))
@@ -11819,12 +11819,7 @@ and chess engines.")
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "chessx.pro"
                (("\\$\\$\\[QT_INSTALL_BINS\\]/lrelease")
-                (string-append (assoc-ref inputs "qttools") "/bin/lrelease"))
-               ;; Fix missing translations.
-               (("TRANSLATIONS = i18n/chessx_de.ts")
-                "TRANSLATIONS = i18n/chessx_de.ts i18n/chessx_da.ts \\
-i18n/chessx_fr.ts i18n/chessx_it.ts i18n/chessx_cz.ts i18n/chessx_ru.ts \\
-i18n/chessx_es.ts"))
+                (string-append (assoc-ref inputs "qttools") "/bin/lrelease")))
              #t))
          (add-after 'fix-paths 'make-qt-deterministic
            (lambda _
