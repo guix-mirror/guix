@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2018 David Thompson <davet@gnu.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Mike Gerwitz <mtg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -745,14 +745,15 @@ message if any test fails."
           (with-status-verbosity (assoc-ref opts 'verbosity)
             (define manifest-from-opts
               (options/resolve-packages store opts))
-            (when (and profile
-                       (> (length (manifest-entries manifest-from-opts)) 0))
-              (leave (G_ "'--profile' cannot be used with package options~%")))
 
             (define manifest
               (if profile
-                (profile-manifest profile)
-                manifest-from-opts))
+                  (profile-manifest profile)
+                  manifest-from-opts))
+
+            (when (and profile
+                       (> (length (manifest-entries manifest-from-opts)) 0))
+              (leave (G_ "'--profile' cannot be used with package options~%")))
 
             (set-build-options-from-command-line store opts)
 
