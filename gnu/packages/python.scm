@@ -107,6 +107,7 @@
 (define-public python-2.7
   (package
     (name "python2")
+    (replacement python-2.7/fixed)
     (version "2.7.17")
     (source
      (origin
@@ -349,6 +350,14 @@ packages; exception-based error handling; and very high level dynamic
 data types.")
     (properties '((cpe-name . "python")))
     (license license:psfl)))
+
+(define python-2.7/fixed
+  (package
+    (inherit python-2.7)
+    (source (origin
+              (inherit (package-source python-2.7))
+              (patches (append (search-patches "python-2.7-CVE-2021-3177.patch")
+                               (origin-patches (package-source python-2.7))))))))
 
 ;; Current 2.x version.
 (define-public python-2 python-2.7)
