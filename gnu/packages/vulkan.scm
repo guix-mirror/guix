@@ -156,7 +156,9 @@ SPIR-V, aiming to emit GLSL or MSL that looks like human-written code.")
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/KhronosGroup/glslang")
-             (commit version)))
+             ;; Tag "10-11.0.0" was moved to "11.0.0".
+             ;; FIXME: Use (commit version) on next update.
+             (commit "11.0.0")))
        (sha256
         (base32
          "14mn2awswl022ls75mfpsnpsl0ai0jgfbqj3sxcsqawyj5f432py"))
