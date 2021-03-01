@@ -116,6 +116,49 @@
     (home-page "https://praw.readthedocs.io/en/latest/")
     (license license:bsd-2)))
 
+(define-public python-praw
+  (package
+    (name "python-praw")
+    (version "7.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "praw" version))
+       (sha256
+        (base32 "0ll1a0n8xs8gykizdsfrw63jp6bc39ab0pk3yzwcak96fyxh0ij3"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-failing-tests
+           (lambda _
+             (with-directory-excursion "tests"
+               ;; Require networking.
+               (for-each delete-file-recursively
+                         '("integration/models" "unit/models"))
+               ;; https://github.com/praw-dev/praw/issues/1699
+               ;; #issuecomment-795336704
+               (delete-file "unit/test_config.py"))
+             #t))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest"))
+             #t)))))
+    (native-inputs
+     `(("python-betamax" ,python-betamax)
+       ("python-betamax-matchers" ,python-betamax-matchers)
+       ("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-prawcore" ,python-prawcore)
+       ("python-websocket-client" ,python-websocket-client)))
+    (synopsis "Python Reddit API Wrapper")
+    (description "PRAW is a Python package that allows for simple access to
+Reddit’s API.  It aims to be easy to use and internally follows all of Reddit’s
+API rules.")
+    (home-page "https://praw.readthedocs.io/en/latest/")
+    (license license:bsd-2)))
+
 (define-public python-aiohttp
   (package
     (name "python-aiohttp")
