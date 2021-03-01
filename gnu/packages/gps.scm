@@ -162,6 +162,7 @@ between two other data points.")
         (snippet
          '(begin
             (delete-file-recursively "lib/expat")
+            (for-each delete-file (find-files "doc/fig" "\\.pdf$"))
             #t))))
     (build-system gnu-build-system)
     (arguments '(#:parallel-tests? #f)) ; race condition
