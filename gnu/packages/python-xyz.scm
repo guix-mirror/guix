@@ -22556,23 +22556,26 @@ networking engine for Python.")
 (define-public python-pysaml2
   (package
     (name "python-pysaml2")
-    (version "5.0.0")
+    (version "6.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pysaml2" version))
        (sha256
         (base32
-         "1h8cmxh9cvxhrdfmkh92wg6zpxmhi2fixq1cy4hxismmaar7bsny"))))
+         "1xk2x0slz1f8cqv7vn77qx99xfd1mshhswiwrljk9m72w2m9iivd"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-cryptography" ,python-cryptography)
        ("python-dateutil" ,python-dateutil)
        ("python-defusedxml" ,python-defusedxml)
+       ("python-importlib-resources"
+        ,python-importlib-resources)
        ("python-pyopenssl" ,python-pyopenssl)
        ("python-pytz" ,python-pytz)
        ("python-requests" ,python-requests)
-       ("python-six" ,python-six)))
+       ("python-six" ,python-six)
+       ("python-xmlschema" ,python-xmlschema)))
     (home-page "https://idpy.org")
     (synopsis "Python implementation of SAML Version 2 Standard")
     (description
