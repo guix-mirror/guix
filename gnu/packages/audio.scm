@@ -741,7 +741,7 @@ engineers, musicians, soundtrack editors and composers.")
        ("gettext" ,gettext-minimal)     ;for msgfmt
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)
-       ("python" ,python-2)
+       ("python" ,python)
        ("which" ,which)))
     (arguments
      `(#:configure-flags
