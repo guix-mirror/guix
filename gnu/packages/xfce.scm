@@ -413,7 +413,7 @@ management D-Bus specification.")
 (define-public xfce4-panel
   (package
     (name "xfce4-panel")
-    (version "4.16.1")
+    (version "4.16.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
@@ -421,7 +421,7 @@ management D-Bus specification.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "14arjxpvnxdl0a0ajifrmy2py3hv5qy4fykl52wdp4k5pv39n2gs"))
+                "1kxm905z6m0mvnki7qxwz638kfa93lvy5xv3qfp8sc8ldxp1cd46"))
               (patches (search-patches "xfce4-panel-plugins.patch"))))
     (build-system gnu-build-system)
     (arguments
