@@ -24,6 +24,7 @@
   #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module (guix build-system cargo)
+  #:use-module (guix build-system qt)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
@@ -39,12 +40,14 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages kde-frameworks)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages python-web)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tls)
@@ -357,3 +360,57 @@ a simple interface that makes it easy to organize and browse feeds.")
 \"river of news\" or a public \"planet\" page.  It supports all common feed
 formats, including all versions of RSS and Atom.")
     (license license:gpl2+)))
+
+(define-public quiterss
+  (package
+    (name "quiterss")
+    (version "0.19.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/QuiteRSS/quiterss/archive/"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1g1kfa15fr8xskpsc15fbw22z8fljkyq6wfq02zygi4fb8hgmpyr"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (substitute* (find-files "." "\\.cpp$")
+                    ;; Disable Google Analytics spyware by default,
+                    ;; removing completely is not trivial.
+                    (("settings\\.value\\(\"Settings/statisticsEnabled2\", true\\)")
+                     "settings.value(\"Settings/statisticsEnabled2\", false)")
+                    ;; Disable update check spyware by default, otherwise runs
+                    ;; at every startup, nasty. Not needed on GNU Guix as a
+                    ;; feature either way. 
+                    (("settings\\.value\\(\"Settings/updateCheckEnabled\", true\\)")
+                     "settings.value(\"Settings/updateCheckEnabled\", false)"))
+                  #t))))
+    (build-system qt-build-system)
+    (arguments
+     `(#:tests? #f ;; no test suite
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (invoke "qmake" "CONFIG+=release"
+                     (string-append "PREFIX="
+                                    (assoc-ref outputs "out"))
+                     (string-append "QMAKE_LRELEASE="
+                                    (assoc-ref inputs "qttools")
+                                    "/bin/lrelease")))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("qtwebkit" ,qtwebkit)
+       ("qtbase" ,qtbase)
+       ("qtmultimedia" ,qtmultimedia)
+       ("phonon" ,phonon)
+       ("sqlite" ,sqlite)))
+    (home-page "https://quiterss.org/")
+    (synopsis "RSS/Atom news feeds reader written on Qt/C++")
+    (description "QuiteRSS is an RSS/Atom news feeds reader written on Qt/C++
+that aims to be quite fast and comfortable to it's user.")
+    (license license:gpl3+)))
