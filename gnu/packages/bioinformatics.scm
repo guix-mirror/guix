@@ -7156,14 +7156,14 @@ data in the form of VCF files.")
 (define-public infernal
   (package
     (name "infernal")
-    (version "1.1.3")
+    (version "1.1.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://eddylab.org/software/infernal/"
                                   "infernal-" version ".tar.gz"))
               (sha256
                (base32
-                "0pm8bm3s6nfa0av4x6m6h27lsg12b3lz3jm0fyh1mc77l2isd61v"))))
+                "1z4mgwqg1j4n5ika08ai8mg9yjyjhf4821jp83v2bgwzxrykqjgr"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)
