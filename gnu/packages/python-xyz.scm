@@ -5131,8 +5131,9 @@ convert between colorspaces like sRGB, XYZ, CIEL*a*b*, CIECAM02, CAM02-UCS, etc.
        (method url-fetch)
        (uri (pypi-uri "matplotlib" version))
        (sha256
-        (base32
-         "1nmshfqh7wyg15i16hx1yiylcvzkws29ivn66n3i0wyqwcpjr3lf"))))
+        (base32 "1nmshfqh7wyg15i16hx1yiylcvzkws29ivn66n3i0wyqwcpjr3lf"))
+       (patches
+        (search-patches "python-matplotlib-run-under-wayland-gtk3.patch"))))
     (build-system python-build-system)
     (propagated-inputs ; the following packages are all needed at run time
      `(("python-cycler" ,python-cycler)

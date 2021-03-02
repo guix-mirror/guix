@@ -1,0 +1,31 @@
+From: Tobias Geerinckx-Rice <me@tobias.gr>
+Date: Tue, 02 Mar 2021 18:04:33 +0100
+Subject: [PATCH] gnu: python-matplotlib: Run under Wayland with GTK3.
+
+Adopted from upstream's fix[0] for
+<https://github.com/matplotlib/matplotlib/issues/19405>.
+
+[0]: https://github.com/liuyun88/matplotlib/commit/3d5000463bd23cb046681220f5511f07743f7d82
+
+---
+diff -Naur a/lib/matplotlib/backends/backend_gtk3.py b/lib/matplotlib/backends/backend_gtk3.py
+--- a/lib/matplotlib/backends/backend_gtk3.py	2019-11-21 23:47:05.000000000 +0100
++++ b/lib/matplotlib/backends/backend_gtk3.py	2021-03-02 18:00:57.479929766 +0100
+@@ -42,11 +42,12 @@
+ 
+ try:
++    _display = Gdk.Display.get_default()
+     cursord = {
+-        cursors.MOVE          : Gdk.Cursor.new(Gdk.CursorType.FLEUR),
+-        cursors.HAND          : Gdk.Cursor.new(Gdk.CursorType.HAND2),
+-        cursors.POINTER       : Gdk.Cursor.new(Gdk.CursorType.LEFT_PTR),
+-        cursors.SELECT_REGION : Gdk.Cursor.new(Gdk.CursorType.TCROSS),
+-        cursors.WAIT          : Gdk.Cursor.new(Gdk.CursorType.WATCH),
++        cursors.MOVE          : Gdk.Cursor.new_from_name(_display, "move"),
++        cursors.HAND          : Gdk.Cursor.new_from_name(_display, "pointer"),
++        cursors.POINTER       : Gdk.Cursor.new_from_name(_display, "default"),
++        cursors.SELECT_REGION : Gdk.Cursor.new_from_name(_display, "crosshair"),
++        cursors.WAIT          : Gdk.Cursor.new_from_name(_display, "wait"),
+     }
+ except TypeError as exc:
+     # Happens when running headless.  Convert to ImportError to cooperate with
