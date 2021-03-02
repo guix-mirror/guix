@@ -19,6 +19,7 @@
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2020 Bonface Munyoki Kilyungi <bonfacemunyoki@gmail.com>
+;;; Copyright © 2021 Tim Howes <timhowes@lavabit.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3874,7 +3875,7 @@ indexing scheme is called a @dfn{Hierarchical Graph FM index} (HGFM).")
 (define-public hmmer
   (package
     (name "hmmer")
-    (version "3.2.1")
+    (version "3.3.2")
     (source
      (origin
        (method url-fetch)
@@ -3882,9 +3883,10 @@ indexing scheme is called a @dfn{Hierarchical Graph FM index} (HGFM).")
              "http://eddylab.org/software/hmmer/hmmer-" version ".tar.gz"))
        (sha256
         (base32
-         "171bivy6xhgjsz5nv53n81pc3frnwz29ylblawk2bv46szwjjqd5"))))
+         "0s9wf6n0qanbx8qs6igfl3vyjikwbrvh4d9d6mv54yp3xysykzlj"))))
     (build-system gnu-build-system)
-    (native-inputs `(("perl" ,perl)))
+    (native-inputs `(("perl" ,perl)
+                     ("python" ,python))) ; for tests
     (home-page "http://hmmer.org/")
     (synopsis "Biosequence analysis using profile hidden Markov models")
     (description
