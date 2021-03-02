@@ -14645,3 +14645,29 @@ on UNIX like platforms.")
 
 (define-public cl-daemon
   (sbcl-package->cl-source-package sbcl-daemon))
+
+(define-public sbcl-file-attributes
+  (let ((commit "2c6fdb08f136d5f9a8d12626ed5b64edc2ae1bb8"))
+    (package
+      (name "sbcl-file-attributes")
+      (version (git-version "1.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shinmera/file-attributes/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1vi1h6pd04g41ay3hr76ac89isyz4x864g87r8v9xcl4gizkzwlq"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("cffi" ,sbcl-cffi)
+         ("documentation-utils" ,sbcl-documentation-utils)
+         ("trivial-features" ,sbcl-trivial-features)))
+      (home-page "https://shinmera.github.io/file-attributes/")
+      (synopsis "Access to common file attributes in Common Lisp")
+      (description
+       "This is a small OS portability library to retrieve and set file
+attributes not supported by the Common Lisp standard functions.")
+      (license license:zlib))))
