@@ -40218,6 +40218,29 @@ syntax extension expansion.")
     (description "This package provides a backport of libsyntax.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-sys-info-0.7
+  (package
+    (name "rust-sys-info")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "sys-info" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0facyh6hswp1i7airri8ly5kl6sv5bvkkd21vs51k2b3z22bvkz5"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cc" ,rust-cc-1)
+        ("rust-libc" ,rust-libc-0.2))))
+    (home-page "https://github.com/FillZpp/sys-info-rs")
+    (synopsis "Get system information in Rust")
+    (description
+     "This Rust crate gathers system information.")
+    (license license:expat)))
+
 (define-public rust-sysctl-0.4
   (package
     (name "rust-sysctl")
