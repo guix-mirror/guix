@@ -83,24 +83,26 @@ low-end hardware and serving many concurrent requests.")
 (define-public bat
   (package
     (name "bat")
-    (version "0.17.1")
+    (version "0.18.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "bat" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1ia12774prjnm3msiaja6qdpxkpyknxswqpgkmwzj0wn9nhkc7nz"))))
+        (base32 "1hr6vzkw8mdy9v0sg1pg9gibamabhip05s7zdkwzwlv69qnhgs1z"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-ansi-colours" ,rust-ansi-colours-1)
         ("rust-ansi-term" ,rust-ansi-term-0.12)
         ("rust-atty" ,rust-atty-0.2)
+        ("rust-bugreport" ,rust-bugreport-0.3)
         ("rust-clap" ,rust-clap-2)
-        ("rust-console" ,rust-console-0.13)
+        ("rust-clircle" ,rust-clircle-0.3)
+        ("rust-console" ,rust-console-0.14)
         ("rust-content-inspector" ,rust-content-inspector-0.2)
-        ("rust-dirs" ,rust-dirs-3)
+        ("rust-dirs-next" ,rust-dirs-next-2)
         ("rust-encoding" ,rust-encoding-0.2)
         ("rust-error-chain" ,rust-error-chain-0.12)
         ("rust-git2" ,rust-git2-0.13)
@@ -116,8 +118,11 @@ low-end hardware and serving many concurrent requests.")
         ("rust-wild" ,rust-wild-2))
        #:cargo-development-inputs
        (("rust-assert-cmd" ,rust-assert-cmd-1)
+        ("rust-nix" ,rust-nix-0.19)
         ("rust-predicates" ,rust-predicates-1)
-        ("rust-tempdir" ,rust-tempdir-0.3))))
+        ("rust-serial-test" ,rust-serial-test-0.5)
+        ("rust-tempfile" ,rust-tempfile-3)
+        ("rust-wait-timeout" ,rust-wait-timeout-0.2))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
