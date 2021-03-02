@@ -4,6 +4,7 @@
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2021 Andy Tai <atai@atai.org>
+;;; Copyright © 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,6 +26,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
@@ -33,12 +35,19 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages djvu)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages enchant)
+  #:use-module (gnu packages gettext)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages icu4c)
+  #:use-module (gnu packages pdf)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages qt)
+  #:use-module (gnu packages scanner)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages image))
 
@@ -129,6 +138,67 @@ positional information and page layout analysis.  Several image formats are
 supported through the Leptonica library.  It can also detect whether text is
 monospaced or proportional.")
       (license license:asl2.0))))
+
+(define-public gimagereader
+  (package
+    (name "gimagereader")
+    (version "3.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/manisandro/gImageReader/releases"
+             "/download/v" version "/"
+             "gimagereader-" version ".tar.xz"))
+       (sha256
+        (base32 "1pghffb55k3wq33nbn9fi0lmjbldpmvqs2msnvss8bxz1k1ck23n"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ;no test
+       #:configure-flags (list "-DENABLE_VERSIONCHECK=0")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-build
+           ;; XXX: Prevent compilation error: "incomplete type ‘QUrl’ used in
+           ;; nested name specifier".  Fixed upstream as
+           ;; 6209e25dab20b233e399ff36fabe4252db0f9e44.  It can be removed in
+           ;; release 3.3.2+.
+           (lambda _
+             (with-directory-excursion "qt/src/hocr"
+               (substitute* '("HOCROdtExporter.cc" "HOCRTextExporter.cc")
+                 (("#include <QMessageBox>\n" all)
+                  (string-append all "#include <QUrl>\n"))))
+             #t)))))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("enchant" ,enchant)
+       ("djvulibre" ,djvulibre)
+       ("leptonica" ,leptonica)
+       ("podofo" ,podofo)
+       ("poppler-qt5" ,poppler-qt5)
+       ("sane-backends" ,sane-backends)
+       ("qtbase" ,qtbase)
+       ("qtspell" ,qtspell)
+       ("quazip" ,quazip)
+       ("tesseract" ,tesseract-ocr)))
+    (home-page "https://github.com/manisandro/gImageReader")
+    (synopsis "Qt front-end to tesseract-ocr")
+    (description
+     "gImageReader is a Qt front-end to Tesseract optical character
+recognition (OCR) software.
+
+gImageReader supports automatic page layout detection but the user can
+also manually define and adjust the recognition regions.  It is
+possible to import images from disk, scanning devices, clipboard and
+screenshots.  gImageReader also supports multipage PDF documents.
+Recognized text is displayed directly next to the image and basic text
+editing including search/replace and removing of line breaks is
+possible.  Spellchecking for the output text is also supported if the
+corresponding dictionaries are installed.")
+    (license license:gpl3+)))
 
 (define-public zinnia
   (let* ((commit "581faa8f6f15e4a7b21964be3a5ec36265c80e5b")
