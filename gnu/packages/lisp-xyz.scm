@@ -14671,3 +14671,9 @@ on UNIX like platforms.")
        "This is a small OS portability library to retrieve and set file
 attributes not supported by the Common Lisp standard functions.")
       (license license:zlib))))
+
+(define-public ecl-file-attributes
+  (sbcl-package->ecl-package sbcl-file-attributes))
+
+(define-public cl-file-attributes
+  (sbcl-package->cl-source-package sbcl-file-attributes))
