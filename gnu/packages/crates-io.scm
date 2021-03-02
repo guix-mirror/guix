@@ -2290,7 +2290,7 @@ standard library.")
 (define-public rust-assert-cmd-1
   (package
     (name "rust-assert-cmd")
-    (version "1.0.1")
+    (version "1.0.3")
     (source
       (origin
         (method url-fetch)
@@ -2299,11 +2299,12 @@ standard library.")
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "1nhqr0zimizcnqfggccfznyrmvklgqwhklsh0f1yq5lwdyi9r2y8"))))
+          "15h3wfxn1q7sfcrin4z35x9hgf539f2dhkwz2mq4zswlrmc5nizj"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-doc-comment" ,rust-doc-comment-0.3)
+       (("rust-bstr" ,rust-bstr-0.2)
+        ("rust-doc-comment" ,rust-doc-comment-0.3)
         ("rust-predicates" ,rust-predicates-1)
         ("rust-predicates-core" ,rust-predicates-core-1)
         ("rust-predicates-tree" ,rust-predicates-tree-1)
