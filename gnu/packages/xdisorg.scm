@@ -44,6 +44,7 @@
 ;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
 ;;; Copyright © 2020, 2021 Zheng Junjie <873216071@qq.com>
 ;;; Copyright © 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2323,7 +2324,7 @@ can optionally use some appearance settings from XSettings, tint2 and GTK.")
 (define-public xwallpaper
   (package
     (name "xwallpaper")
-    (version "0.6.5")
+    (version "0.6.6")
     (source
      (origin
        (method git-fetch)
@@ -2332,7 +2333,7 @@ can optionally use some appearance settings from XSettings, tint2 and GTK.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "121ai4dc0v65qk12gn9w62ixly8hc8a5qrygkbb82vy8ck4jqxj7"))))
+        (base32 "10klm81rs3k3l2i7whpvcsg95x51ja11l86fmwbrvg3kq705p2sr"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
