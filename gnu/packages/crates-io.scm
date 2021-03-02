@@ -5326,7 +5326,7 @@ alphabet.")
 (define-public rust-bstr-0.2
   (package
     (name "rust-bstr")
-    (version "0.2.12")
+    (version "0.2.15")
     (source
      (origin
        (method url-fetch)
@@ -5335,7 +5335,7 @@ alphabet.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0hazfback6i2k3vhhwyj8h46id3y58zxqh22pz46hj9r1zayd298"))))
+         "0gca4v6448clsssll3y787jgw542c9mw9phqdi7419g1jfnlf2x4"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
