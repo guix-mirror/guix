@@ -398,22 +398,26 @@ implementation techniques and as an expository tool.")
 (define-public racket
   (package
     (name "racket")
-    (version "7.9")            ; note: remember to also update racket-minimal!
+    (version "8.0")            ; note: remember to also update racket-minimal!
     (source (origin
               (method url-fetch)
-              (uri (list (string-append "http://mirror.racket-lang.org/installers/"
-                                        version "/racket-" version "-src.tgz")
+              (uri (list (string-append "https://mirror.racket-lang.org/installers/"
+                                        version "/racket-src.tgz")
+                         ;; this mirror seems to have broken HTTPS:
                          (string-append
                           "http://mirror.informatik.uni-tuebingen.de/mirror/racket/"
-                          version "/racket-" version "-src.tgz")))
+                          version "/racket-src.tgz")))
               (sha256
                (base32
-                "0gmp2ahmfd97nn9bwpfx9lznjmjkd042slnrrbdmyh59cqh98y2m"))
+                "047wpjblfzmf1msz7snrp2c2h0zxyzlmbsqr9bwsyvz3frcg0888"))
               (patches (search-patches
                         "racket-store-checksum-override.patch"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     '(#:configure-flags
+       '("--enable-libz"
+         "--enable-liblz4")
+       #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'pre-configure-minimal
            (lambda* (#:key inputs #:allow-other-keys)
@@ -493,13 +497,45 @@ implementation techniques and as an expository tool.")
            (lambda _
              (substitute* "collects/racket/system.rkt"
                (("/bin/sh") (which "sh")))
-             #t)))
+             #t))
+         (add-after 'patch-/bin/sh 'patch-chez-configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* "src/cs/c/Makefile.in"
+               (("/bin/sh") (which "sh")))
+             ;; TODO: Racket CS uses a fork of Chez Scheme.
+             ;; Most of this is copy-pasted from the "chez.scm",
+             ;; but maybe there's a way to reuse more directly.
+             (with-directory-excursion "src/ChezScheme"
+               (substitute* (find-files "mats" "Mf-.*")
+                 (("^[[:space:]]+(cc ) *") "\tgcc "))
+               (substitute*
+                   (find-files "." (string-append
+                                    "("
+                                    "Mf-[a-zA-Z0-9.]+"
+                                    "|Makefile[a-zA-Z0-9.]*"
+                                    "|checkin"
+                                    "|stex\\.stex"
+                                    "|newrelease"
+                                    "|workarea"
+                                    "|unix\\.ms"
+                                    "|^6\\.ms"
+                                    ;;"|[a-zA-Z0-9.]+\\.ms" ; guile can't read
+                                    ")"))
+                 (("/bin/rm") (which "rm"))
+                 (("/bin/ln") (which "ln"))
+                 (("/bin/cp") (which "cp"))
+                 (("/bin/echo") (which "echo")))
+               (substitute* "makefiles/installsh"
+                 (("/bin/true") (which "true")))))))
        ;; XXX: how to run them?
        #:tests? #f))
     (inputs
-     `(("libffi" ,libffi)
-       ;; Hardcode dynamically loaded libraries for better functionality.
+     `(;; Hardcode dynamically loaded libraries for better functionality.
        ;; sqlite and libraries for `racket/draw' are needed to build the doc.
+       ("zlib" ,zlib)
+       ("zlib:static" ,zlib "static")
+       ("lz4" ,lz4)
+       ("lz4:static" ,lz4 "static")
        ("cairo" ,cairo)
        ("fontconfig" ,fontconfig)
        ("glib" ,glib)
@@ -519,10 +555,14 @@ implementation techniques and as an expository tool.")
     (home-page "https://racket-lang.org")
     (synopsis "Implementation of Scheme and related languages")
     (description
-     "Racket is an implementation of the Scheme programming language (R5RS and
-R6RS) and related languages, such as Typed Racket.  It features a compiler and
-a virtual machine with just-in-time native compilation, as well as a large set
-of libraries.")
+     "Racket is a general-purpose programming language in the Scheme family,
+with a large set of libraries and a compiler based on Chez Scheme.  Racket is
+also a platform for language-oriented programming, from small domain-specific
+languages to complete language implementations.
+
+The main Racket distribution comes with many bundled packages, including
+the DrRacket IDE, libraries for GUI and web programming, and implementations
+of languages such as Typed Racket, R5RS and R6RS Scheme, and Datalog.")
     ;; https://download.racket-lang.org/license.html
     (license (list lgpl3+ asl2.0 expat))))
 
@@ -533,14 +573,15 @@ of libraries.")
     (version (package-version racket))
     (source (origin
               (method url-fetch)
-              (uri (list (string-append "http://mirror.racket-lang.org/installers/"
-                                        version "/racket-minimal-" version "-src.tgz")
+              (uri (list (string-append "https://mirror.racket-lang.org/installers/"
+                                        version "/racket-minimal-src.tgz")
+                         ;; this mirror seems to have broken HTTPS:
                          (string-append
                           "http://mirror.informatik.uni-tuebingen.de/mirror/racket/"
-                          version "/racket-minimal-" version "-src.tgz")))
+                          version "/racket-minimal-src.tgz")))
               (sha256
                (base32
-                "0yc5zkpq1bavj64h67pllw6mfjhmdp65fgdpyqcaan3syy6b5cia"))
+                "0mwyffw4gcci8wmzxa3j28h03h0gsz55aard8qrk3lri8r2xyg21"))
               (patches (search-patches
                         "racket-store-checksum-override.patch"))))
     (synopsis "Racket without bundled packages such as Dr. Racket")
@@ -551,18 +592,21 @@ of libraries.")
            ;; Delete fix that applies to files not included in the minimal package.
            (delete 'pre-configure)))))
     (inputs
-     `(("libffi" ,libffi)
-       ("openssl" ,openssl)
-       ("sqlite" ,sqlite)))
+     `(("openssl" ,openssl)
+       ("sqlite" ,sqlite)
+       ("zlib" ,zlib)
+       ("zlib:static" ,zlib "static")
+       ("lz4" ,lz4)
+       ("lz4:static" ,lz4 "static")))
     (description
-     "Racket is an implementation of the Scheme programming language (R5RS and
-R6RS) and related languages, such as Typed Racket.  It features a compiler and
-a virtual machine with just-in-time native compilation, as well as a large set
-of libraries.
+     "Racket is a general-purpose programming language in the Scheme family,
+with a large set of libraries and a compiler based on Chez Scheme.  Racket is
+also a platform for language-oriented programming, from small domain-specific
+languages to complete language implementations.
 
-In this minimal package, the essential package racket-libs is included, as
-well as libraries that live in collections.  In particular, @command{raco} and
-the @code{pkg} library are still bundled.")))
+The ``minimal Racket'' distribution includes just enough of Racket for you to
+use @command{raco pkg} to install more.  Bundled packages, such as the
+Dr. Racket IDE, are not included.")))
 
 (define-public gambit-c
   (package
