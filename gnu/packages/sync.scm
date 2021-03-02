@@ -2,7 +2,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
@@ -335,13 +335,19 @@ and does not hamper local file system performance.")
          (sha256
           (base32 "16i1q8f0jmfd43rb8d70l2b383vr5ib4kh7iq3yd345q7xjz9c2j"))))
       (build-system copy-build-system)
+      (inputs
+       `(("scsh" ,scsh)))
       (propagated-inputs
-       `(("scsh" ,scsh)
-         ("rsync" ,rsync)
+       `(("rsync" ,rsync)
          ("unison" ,unison)))
       (arguments
-       `(#:install-plan
-         '(("usync" "bin/usync"))))
+       `(#:install-plan '(("usync" "bin/usync"))
+         #:phases (modify-phases %standard-phases
+                    (add-before 'install 'patch-usync-shebang
+                      (lambda _
+                        (substitute* "usync"
+                          (("/usr/bin/env scsh")
+                           (which "scsh"))))))))
       (home-page "https://github.com/ebzzry/usync")
       (synopsis "Command line site-to-site synchronization tool")
       (description
