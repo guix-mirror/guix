@@ -1264,7 +1264,7 @@ project derived from the original Calm Window Manager.")
 (define-public dwl
   (package
     (name "dwl")
-    (version "0.1")
+    (version "0.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1273,7 +1273,7 @@ project derived from the original Calm Window Manager.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "18g2sx8cv54zl5iw5m9lzngrp6ra2pyp7c68qps2ava3brw9m0j2"))))
+                "0r5hsxpckkrq1y7bjfq58rlc5xy45z499rg628q3nh289978ail1"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
@@ -1283,12 +1283,7 @@ project derived from the original Calm Window Manager.")
         (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)            ; no configure
-         (replace 'install              ; no install target
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (bin (string-append out "/bin")))
-               (install-file "dwl" bin)))))))
+         (delete 'configure))))         ; no configure
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
