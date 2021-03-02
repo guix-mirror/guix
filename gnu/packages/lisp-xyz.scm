@@ -11977,27 +11977,27 @@ overview article about COP which also contains some ContextL examples:
   (sbcl-package->ecl-package sbcl-contextl))
 
 (define-public sbcl-hu.dwim.common-lisp
-  (package
-    (name "sbcl-hu.dwim.common-lisp")
-    (version "2015-07-09")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "http://beta.quicklisp.org/archive/hu.dwim.common-lisp/"
-             version "/hu.dwim.common-lisp-"
-             (string-replace-substring version "-" "")
-             "-darcs.tgz"))
-       (sha256
-        (base32 "13cxrvh55rw080mvfir7s7k735l9rcfh3khxp97qfwd5rz0gadb9"))))
-    (build-system asdf-build-system/sbcl)
-    (native-inputs
-     `(("hu.dwim.asdf" ,sbcl-hu.dwim.asdf)))
-    (home-page "http://dwim.hu/")
-    (synopsis "Redefine some standard Common Lisp names")
-    (description "This library is a redefinition of the standard Common Lisp
+  (let ((commit "90558195773383142a57a16687d5e7f4adea6418"))
+    (package
+      (name "sbcl-hu.dwim.common-lisp")
+      (version "2021-01-27")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/hu-dwim/hu.dwim.common-lisp/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "06zkdw3scnaw0d4nmsgkv7pi7sw00dikdgfgsqmbqfbz2yrsdabk"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("hu.dwim.asdf" ,sbcl-hu.dwim.asdf)))
+      (home-page "http://dwim.hu/project/hu.dwim.common-lisp")
+      (synopsis "Redefine some standard Common Lisp names")
+      (description "This library is a redefinition of the standard Common Lisp
 package that includes a number of renames and shadows. ")
-    (license license:public-domain)))
+      (license license:public-domain))))
 
 (define-public cl-hu.dwim.common-lisp
   (sbcl-package->cl-source-package sbcl-hu.dwim.common-lisp))
