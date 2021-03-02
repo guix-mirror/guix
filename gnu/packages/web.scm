@@ -6585,14 +6585,14 @@ encoder/decoder based on the draft-12 specification for UBJSON.")
 (define-public java-tomcat
   (package
     (name "java-tomcat")
-    (version "8.5.53")
+    (version "8.5.63")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://apache/tomcat/tomcat-8/v"
                                   version "/src/apache-tomcat-" version "-src.tar.gz"))
               (sha256
                (base32
-                "15lwq3clf21hzk7mma70sffpxjqn8ww5mjq6zhmwcp4m17m22z26"))
+                "1wr6mpgbk2gs18vp8mdggiq6vifj68a875dd1fkdf7cs31q54rns"))
               (modules '((guix build utils)))
               ;; Delete bundled jars.
               (snippet
