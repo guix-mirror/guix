@@ -11592,7 +11592,7 @@ using nucleotide or amino-acid sequence data.")
 (define-public kallisto
   (package
     (name "kallisto")
-    (version "0.44.0")
+    (version "0.46.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -11601,7 +11601,10 @@ using nucleotide or amino-acid sequence data.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0nj382jiywqnpgvyhichajpkkh5r0bapn43f4dx40zdaq5v4m40m"))))
+                "0ij5n7v3m90jdfi7sn8nvglfyf58abp1f5xq42r4k73l0lfds6xi"))
+              (modules '((guix build utils)))
+              (snippet
+               '(delete-file-recursively "ext/htslib/"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f          ; no "check" target
