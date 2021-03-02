@@ -1860,8 +1860,8 @@ Nushell.")
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("bat" ,bat)
-        ("rust-ansi-term" ,rust-ansi-term-0.12)
+       (("rust-ansi-term" ,rust-ansi-term-0.12)
+        ("rust-bat" ,rust-bat-0.17)
         ("rust-nu-data" ,rust-nu-data-0.27)
         ("rust-nu-errors" ,rust-nu-errors-0.27)
         ("rust-nu-plugin" ,rust-nu-plugin-0.27)
