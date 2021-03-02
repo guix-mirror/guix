@@ -7001,6 +7001,34 @@ colorization.")
 pitfalls in Rust.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-clircle-0.3
+  (package
+    (name "rust-clircle")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "clircle" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "15p36klnsgjimfswi0mjc7wsh4b662v7gbfinh56ipk3bacbv2z6"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-winapi" ,rust-winapi-0.3))))
+    (home-page "https://github.com/niklasmohrin/clircle")
+    (synopsis "Detect IO circles in your CLI apps arguments.")
+    (description
+     "Clircle provides a cross-platform API to detect read or write cycles
+from your user-supplied arguments.  You can get the important identifiers of
+a file (from a path) and for all three stdio streams, if they are piped from
+or to a file as well.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-cloudabi-0.1
   (package
     (name "rust-cloudabi")
