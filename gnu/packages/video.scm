@@ -4116,7 +4116,7 @@ tools for styling them, including a built-in real-time video preview.")
 (define-public pitivi
   ;; Pitivi switched to a non-semantic versioning scheme close before 1.0
   (let ((latest-semver "0.999.0")
-        (%version "2020.09.2"))
+        (%version "2021.01.0"))
    (package
      (name "pitivi")
      (version (string-append latest-semver "-" %version))
@@ -4128,7 +4128,7 @@ tools for styling them, including a built-in real-time video preview.")
               (commit %version)))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "13x5acs29za5y5n058z86qqrzdx53w05zkw91zkqx0m2hn94dy3p"))))
+         (base32 "1jics10l16ismi5br6wxi4jxz3dd4p0c0xv8l0l3nvksvda4aafi"))))
      (build-system meson-build-system)
      (inputs
       `(("glib" ,glib)
