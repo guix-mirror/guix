@@ -5426,6 +5426,31 @@ system calls.  Second, exposing the internal buffer allows the user to work
 with data in place, which avoids another copy.")
     (license license:gpl3)))
 
+(define-public rust-bugreport-0.3
+  (package
+    (name "rust-bugreport")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "bugreport" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1n5f1nkqbc5yf9bckjap49pwnqnvdczm6x9y23caaghpgw0n4rqi"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-snailquote" ,rust-snailquote-0.3)
+        ("rust-sys-info" ,rust-sys-info-0.7))))
+    (home-page "https://github.com/sharkdp/bugreport")
+    (synopsis "Collect system and environment information for bug reports")
+    (description
+     "bugreport is a Rust library that helps application developers to
+automatically collect information about the system and the environment that
+users can send along with a bug report.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-build-const-0.2
   (package
     (name "rust-build-const")
