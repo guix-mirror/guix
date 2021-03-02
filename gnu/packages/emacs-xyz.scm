@@ -2909,7 +2909,7 @@ and stored in memory.")
 (define-public emacs-dash
   (package
     (name "emacs-dash")
-    (version "2.18.0")
+    (version "2.18.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2918,7 +2918,7 @@ and stored in memory.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "190v264wj5cdm109ippzx2vc64hvfzmh5nbx4f2w09hn0hwfqipm"))))
+                "1cvfd36vv0wqb16bnqqxh99hy2yks0j2i4l8qjkg3bxjgk7ldmva"))))
     (build-system emacs-build-system)
     (arguments `(#:tests? #t))
     (home-page "https://github.com/magnars/dash.el")
