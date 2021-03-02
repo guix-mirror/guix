@@ -40018,7 +40018,7 @@ a syntax tree of Rust source code.")
 (define-public rust-syntect-4
   (package
     (name "rust-syntect")
-    (version "4.4.0")
+    (version "4.5.0")
     (source
      (origin
        (method url-fetch)
@@ -40026,7 +40026,7 @@ a syntax tree of Rust source code.")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "121y6rswylvbhaz8krjb9aa7h16f6ly2sdbbka1hr1dm0pgphfaf"))))
+        (base32 "1r9ij3qmq4cs83jwpk1043sai1dwdghb8lwkm34rs12d7frc5yib"))))
     (build-system cargo-build-system)
     (arguments
      `(#:tests? #f                      ;missing files
