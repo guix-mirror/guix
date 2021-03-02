@@ -1928,15 +1928,15 @@ can solve two kinds of problems:
 (define-public octave-cli
   (package
     (name "octave-cli")
-    (version "6.1.0")
+    (version "6.2.0")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnu/octave/octave-"
-                          version ".tar.lz"))
+                          version ".tar.xz"))
       (sha256
        (base32
-        "0355s0pi8603ccs2j08zym3nalgalslxn83s37zq8nkrrkwxrjfk"))))
+        "06id09zspya24gshcwgp039cp35c06150mdlxysawgnbrhj16wkv"))))
     (build-system gnu-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)
@@ -1971,8 +1971,7 @@ can solve two kinds of problems:
        ("texinfo" ,texinfo)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("lzip" ,lzip)
-       ("gfortran" ,gfortran)
+     `(("gfortran" ,gfortran)
        ("pkg-config" ,pkg-config)
        ("perl" ,perl)
        ;; The following inputs are not actually used in the build process.
