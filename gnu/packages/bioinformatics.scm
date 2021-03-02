@@ -11624,7 +11624,7 @@ using nucleotide or amino-acid sequence data.")
              #t)))))
     (inputs
      `(("hdf5" ,hdf5)
-       ("htslib" ,htslib)
+       ("htslib" ,htslib-1.9)
        ("zlib" ,zlib)))
     (home-page "https://pachterlab.github.io/kallisto/")
     (synopsis "Near-optimal RNA-Seq quantification")
