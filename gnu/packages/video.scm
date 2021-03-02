@@ -4120,14 +4120,15 @@ tools for styling them, including a built-in real-time video preview.")
    (package
      (name "pitivi")
      (version (string-append latest-semver "-" %version))
-     (source (origin
-               (method url-fetch)
-               (uri (string-append "mirror://gnome/sources/" name "/"
-                                   (version-major+minor %version) "/"
-                                   name "-" %version ".tar.xz"))
-               (sha256
-                (base32
-                 "0hzvv4wia4rk0kvq16y27imq2qd4q5lg3vx99hdcjdb1x3zqqfg0"))))
+     (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://gitlab.gnome.org/GNOME/pitivi.git")
+              (commit %version)))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "13x5acs29za5y5n058z86qqrzdx53w05zkw91zkqx0m2hn94dy3p"))))
      (build-system meson-build-system)
      (inputs
       `(("glib" ,glib)
