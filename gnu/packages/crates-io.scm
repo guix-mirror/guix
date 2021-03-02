@@ -28681,14 +28681,14 @@ dependency to expose a precomputed hash.")
 (define-public rust-predicates-1
   (package
     (name "rust-predicates")
-    (version "1.0.5")
+    (version "1.0.7")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "predicates" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0nkkn3h3b9vigyy4adlnhi2zrxm5j0nbnqid6snwxp4h5v8ymgwn"))))
+        (base32 "1ai5qdqym11x1x55via1gq2w86ac1gj3rsjdan9wqmqsdi2k7d7f"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
