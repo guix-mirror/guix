@@ -128,14 +128,14 @@
 (define-public artanis
   (package
     (name "artanis")
-    (version "0.4.1")
+    (version "0.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/artanis/artanis-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0nnmdfx5xwcc3kck64var7msz7g3qk817d7bv9l159nkmic0v9w4"))
+                "1vk1kp2xhz35xa5n27cxlq9c88wk6qm7fqaac8rb0pb6k9pvsv7v"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -167,16 +167,17 @@
                   #t))))
     (build-system gnu-build-system)
     (inputs
-     `(("guile" ,guile-2.2)
+     `(("guile" ,guile-3.0)
+       ("nspr" ,nspr)
        ("nss" ,nss)))
     ;; FIXME the bundled csv contains one more exported procedure
     ;; (sxml->csv-string) than guile-csv. The author is maintainer of both
     ;; projects.
     ;; TODO: Add guile-dbi and guile-dbd optional dependencies.
     (propagated-inputs
-     `(("guile-json" ,guile-json-1) ; This is already using guile-2.2.
-       ("guile-readline" ,guile2.2-readline)
-       ("guile-redis" ,guile2.2-redis)))
+     `(("guile-json" ,guile-json-3)
+       ("guile-readline" ,guile-readline)
+       ("guile-redis" ,guile-redis)))
     (native-inputs
      `(("bash"       ,bash)         ;for the `source' builtin
        ("pkgconfig"  ,pkg-config)
@@ -218,8 +219,10 @@
                 (string-append
                  "ffi-binding \""
                  (assoc-ref inputs "nss") "/lib/nss/libnss3.so"
-                 "\"")))
-             #t))
+                 "\""))
+               (("ffi-binding \"libssl3\"")
+                (string-append
+                 "ffi-binding \"" (assoc-ref inputs "nss") "/lib/nss/libssl3.so\"")))))
          (add-before 'install 'substitute-root-dir
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out  (assoc-ref outputs "out")))
@@ -227,8 +230,7 @@
                  ((" /etc/bash.bashrc") " /dev/null"))
                (substitute* "Makefile"   ;set the root of config files to OUT
                  ((" /etc") (string-append " " out "/etc")))
-               (mkdir-p (string-append out "/bin")) ;for the `art' executable
-               #t)))
+               (mkdir-p (string-append out "/bin")) )))
          (add-after 'install 'wrap-art
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -241,8 +243,7 @@
                  `("GUILE_LOAD_PATH" ":" prefix
                    (,scm ,(getenv "GUILE_LOAD_PATH")))
                  `("GUILE_LOAD_COMPILED_PATH" ":" prefix
-                   (,go ,(getenv "GUILE_LOAD_COMPILED_PATH"))))
-               #t))))))
+                   (,go ,(getenv "GUILE_LOAD_COMPILED_PATH"))))))))))
     (synopsis "Web application framework written in Guile")
     (description "GNU Artanis is a web application framework written in Guile
 Scheme.  A web application framework (WAF) is a software framework that is
