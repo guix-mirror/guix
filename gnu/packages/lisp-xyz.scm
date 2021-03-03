@@ -14959,3 +14959,36 @@ Lisp.")
 
 (define-public cl-i18n
   (sbcl-package->cl-source-package sbcl-cl-i18n))
+
+(define-public sbcl-crypto-shortcuts
+  (let ((commit "7efd22d80e867cd8c9f8f363d4fe7b51ee2dadc0")
+        (revision "1"))
+    (package
+      (name "sbcl-crypto-shortcuts")
+      (version (git-version "2.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shinmera/crypto-shortcuts")
+               (commit commit)))
+         (file-name (git-file-name "crypto-shortcuts" version))
+         (sha256
+          (base32 "0c0m0ar04jn7qf2v8c4sivamlzki03r13rnxy8b3n27rh9r6hgin"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("cl-base64" ,sbcl-cl-base64)
+         ("flexi-stream" ,sbcl-flexi-streams)
+         ("ironclad" ,sbcl-ironclad)))
+      (synopsis "Collection of common cryptography functions")
+      (description
+       "This is a collection of common cryptography functions for Common
+Lisp.")
+      (home-page "https://shinmera.github.io/crypto-shortcuts/")
+      (license license:zlib))))
+
+(define-public ecl-crypto-shortcuts
+  (sbcl-package->ecl-package sbcl-crypto-shortcuts))
+
+(define-public cl-crypto-shortcuts
+  (sbcl-package->cl-source-package sbcl-crypto-shortcuts))
