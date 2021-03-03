@@ -73,6 +73,7 @@
   #:use-module (gnu packages lisp)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mp3)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -14783,3 +14784,46 @@ protocol for Mastodon.")
 
 (define-public cl-tooter
   (sbcl-package->cl-source-package sbcl-tooter))
+
+(define-public sbcl-croatoan
+  (let ((commit "89ecd147cf1548f569f23353b3ab656cfb74de1f")
+        (revision "1"))
+    (package
+      (name "sbcl-croatoan")
+      (version (git-version "0.0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/McParen/croatoan")
+               (commit commit)))
+         (file-name (git-file-name "croatoan" version))
+         (sha256
+          (base32 "0pk4mym88531jx0f1zmm6gmvrmdjzj2zcl2cdywdsxvjygr53zyx"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "ncurses/ncurses.lisp"
+                 (("libncursesw" all)
+                  (string-append (assoc-ref inputs "ncurses")
+                                 "/lib/"
+                                 all))))))))
+      (inputs
+       `(("bordeaux-threads" ,sbcl-bordeaux-threads)
+         ("cffi" ,sbcl-cffi)
+         ("ncurses" ,ncurses)
+         ("trivial-gray-streams" ,sbcl-trivial-gray-streams)))
+      (synopsis "Common Lisp bindings for the ncurses terminal library")
+      (description "Croatoan provides high-level Common Lisp CLOS bindings for
+the ncurses terminal library.")
+      (home-page "https://github.com/McParen/croatoan")
+      (license license:expat))))
+
+(define-public ecl-croatoan
+  (sbcl-package->ecl-package sbcl-croatoan))
+
+(define-public cl-croatoan
+  (sbcl-package->cl-source-package sbcl-croatoan))
