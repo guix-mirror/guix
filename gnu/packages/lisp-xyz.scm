@@ -14716,3 +14716,35 @@ sequences based on the Python difflib module.")
 
 (define-public cl-difflib
   (sbcl-package->cl-source-package sbcl-cl-difflib))
+
+(define-public sbcl-cl-html-diff
+  (let ((commit "5a0b39d1c524278d6f60851d7786bb2585614310")
+        (revision "0"))
+    (package
+      (name "sbcl-cl-html-diff")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/wiseman/cl-html-diff")
+               (commit commit)))
+         (file-name
+          (git-file-name name version))
+         (sha256
+          (base32 "1varnijivzd4jpimn1cz8p5ks713zzha5cgl4vmb0xr8ahravwzb"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("cl-difflib" ,sbcl-cl-difflib)))
+      (home-page "https://github.com/wiseman/cl-html-diff")
+      (synopsis "Generate a human-readable diff of two HTML documents")
+      (description
+       "A Common Lisp library for generating a human-readable diff of two
+HTML documents.")
+      (license license:expat))))
+
+(define-public ecl-cl-html-diff
+  (sbcl-package->ecl-package sbcl-cl-html-diff))
+
+(define-public cl-html-diff
+  (sbcl-package->cl-source-package sbcl-cl-html-diff))
