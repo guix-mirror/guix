@@ -23,6 +23,7 @@
 ;;; Copyright © 2020, 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;; Copyright © 2021 Aurora <rind38@disroot.org>
 ;;; Copyright © 2021 Matthew Kraai <kraai@ftbfs.org>
+;;; Copyright © 2021 André A. Gomes <andremegafone@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -14680,3 +14681,38 @@ attributes not supported by the Common Lisp standard functions.")
 
 (define-public cl-file-attributes
   (sbcl-package->cl-source-package sbcl-file-attributes))
+
+(define-public sbcl-cl-difflib
+  (let ((commit "98eb335c693f1881584b83ca7be4a0fe05355c4e")
+        (revision "0"))
+    (package
+      (name "sbcl-cl-difflib")
+      (version (git-version "0.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/wiseman/cl-difflib")
+               (commit commit)))
+         (file-name
+          (git-file-name name version))
+         (sha256
+          (base32 "08if0abhqg191xcz9s7xv8faqq51nswzp8hw423fkqjzr24pmq48"))))
+      (build-system asdf-build-system/sbcl)
+      ;; Due to the age of this library tests use some deprecated
+      ;; functionality and keep failing.
+      (arguments
+       '(#:tests? #f
+         #:asd-files '("cl-difflib.asd")))
+      (home-page "https://github.com/wiseman/cl-difflib")
+      (synopsis "Compute differences between pairs of sequences")
+      (description
+       "A Common Lisp library for computing differences between
+sequences based on the Python difflib module.")
+      (license license:expat))))
+
+(define-public ecl-cl-difflib
+  (sbcl-package->ecl-package sbcl-cl-difflib))
+
+(define-public cl-difflib
+  (sbcl-package->cl-source-package sbcl-cl-difflib))
