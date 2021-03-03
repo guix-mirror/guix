@@ -813,7 +813,7 @@ useful for making transparent firewalls.")
 (define-public socat
   (package
     (name "socat")
-    (version "1.7.3.4")
+    (version "1.7.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -821,7 +821,7 @@ useful for making transparent firewalls.")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "1z7xgnwiqpcv1j6aghhj9nqbx7cg3gpc4n9j7vi9hm7nhv5788wp"))))
+                "1sbmqqvni3ss9wyay6ik5v81kxffkra80mh4ypgj74g82iba5b1z"))))
     (build-system gnu-build-system)
     (arguments '(#:tests? #f))          ; no test suite
     (inputs `(("openssl" ,openssl)))
