@@ -14992,3 +14992,37 @@ Lisp.")
 
 (define-public cl-crypto-shortcuts
   (sbcl-package->cl-source-package sbcl-crypto-shortcuts))
+
+(define-public sbcl-cl-html5-parser
+  (let ((commit "74a92eb3a183a0afd089ea33350e816e6b9aeefa")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-html5-parser")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/rotatef/cl-html5-parser")
+               (commit commit)))
+         (file-name (git-file-name "cl-html5-parser" version))
+         (sha256
+          (base32 "04if61wigylsmn996rbfl8ylsd0d9hzdmg7p2wiglncibjzcl5k9"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       '(#:tests? #f
+         #:asd-systems '("cl-html5-parser")))
+      (inputs
+       `(("cl-ppcre" ,sbcl-cl-ppcre)
+         ("flexi-stream" ,sbcl-flexi-streams)
+         ("string-case" ,sbcl-string-case)))
+      (synopsis "HTML5 parser for Common Lisp")
+      (description "This a Common Lisp library to parse HTML5 documents.")
+      (home-page "https://github.com/rotatef/cl-html5-parser")
+      (license license:lgpl3+))))
+
+(define-public ecl-cl-html5-parser
+  (sbcl-package->ecl-package sbcl-cl-html5-parser))
+
+(define-public cl-html5-parser
+  (sbcl-package->cl-source-package sbcl-cl-html5-parser))
