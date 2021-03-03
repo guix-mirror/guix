@@ -15026,3 +15026,36 @@ Lisp.")
 
 (define-public cl-html5-parser
   (sbcl-package->cl-source-package sbcl-cl-html5-parser))
+
+(define-public sbcl-percent-encoding
+  (let ((commit "c1224e22bc8048fbd3ebbc9329715a0c1b673170")
+        (revision "1"))
+    (package
+      (name "sbcl-percent-encoding")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/llibra/percent-encoding")
+               (commit commit)))
+         (file-name (git-file-name "percent-encoding" version))
+         (sha256
+          (base32 "0q1lh3sa6mkjr5gcdkgimkpc29rgf9cjhv90f61h8ridj28grq0h"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("fiveam"   ,sbcl-fiveam)))
+      (inputs
+       `(("anaphora" ,sbcl-anaphora)
+         ("babel" ,sbcl-babel)))
+      (synopsis "RFC 3986 percent-encoding library")
+      (description
+       "This is a Common Lisp library providing RFC 3986 percent-encoding.")
+      (home-page "https://github.com/llibra/percent-encoding")
+      (license license:expat))))
+
+(define-public ecl-percent-encoding
+  (sbcl-package->ecl-package sbcl-percent-encoding))
+
+(define-public cl-percent-encoding
+  (sbcl-package->cl-source-package sbcl-percent-encoding))
