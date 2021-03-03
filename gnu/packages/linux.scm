@@ -6169,14 +6169,14 @@ running boot option, and more.")
 (define-public sysstat
   (package
     (name "sysstat")
-    (version "12.4.2")
+    (version "12.4.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://pagesperso-orange.fr/sebastien.godard/"
                            "sysstat-" version ".tar.xz"))
        (sha256
-        (base32 "13q1zb7ip389b35rcgy2ngf1z9zhdmdwx5bv9lwfnl1xi30v409p"))))
+        (base32 "1z8bdyj92q0capbrdscwzb51bqh54ng15gpvmjmvrb2syhqj8hxf"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no test suite.
