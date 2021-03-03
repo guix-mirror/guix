@@ -1426,7 +1426,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/openfoam-4.1-cleanup.patch			\
   %D%/packages/patches/openjdk-10-idlj-reproducibility.patch	\
   %D%/packages/patches/openmpi-mtl-priorities.patch		\
-  %D%/packages/patches/openssh-fix-ssh-copy-id.patch		\
   %D%/packages/patches/openssh-hurd.patch			\
   %D%/packages/patches/openresolv-restartcmd-guix.patch	\
   %D%/packages/patches/opensles-add-license-file.patch			\
