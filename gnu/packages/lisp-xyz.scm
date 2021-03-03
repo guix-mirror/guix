@@ -24,6 +24,7 @@
 ;;; Copyright © 2021 Aurora <rind38@disroot.org>
 ;;; Copyright © 2021 Matthew Kraai <kraai@ftbfs.org>
 ;;; Copyright © 2021 André A. Gomes <andremegafone@gmail.com>
+;;; Copyright © 2021 Cage <cage-dev@twistfold.it>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -14748,3 +14749,37 @@ HTML documents.")
 
 (define-public cl-html-diff
   (sbcl-package->cl-source-package sbcl-cl-html-diff))
+
+(define-public sbcl-tooter
+  (let ((commit "b8d4b245b1d946bc9da6f51a3d8c2dc43e4d3868")
+        (revision "1"))
+    (package
+      (name "sbcl-tooter")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shinmera/tooter")
+               (commit commit)))
+         (file-name (git-file-name "tooter" version))
+         (sha256
+          (base32 "0g40dlis4dbw4p3zxz3scx27b9zm8zlzihywapf5zqrdqfx5hpq9"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("sbcl-cl-ppcre" ,sbcl-cl-ppcre)
+         ("sbcl-documentation-utils" ,sbcl-documentation-utils)
+         ("sbcl-drakma" ,sbcl-drakma)
+         ("sbcl-yason" ,sbcl-yason)))
+      (synopsis "Common Lisp client library for Mastodon instances")
+      (description
+       "This is a Common Lisp library implementing the full v1 REST API
+protocol for Mastodon.")
+      (home-page "https://shinmera.github.io/tooter/")
+      (license license:zlib))))
+
+(define-public ecl-tooter
+  (sbcl-package->ecl-package sbcl-tooter))
+
+(define-public cl-tooter
+  (sbcl-package->cl-source-package sbcl-tooter))
