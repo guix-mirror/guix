@@ -235,7 +235,7 @@ speed up the access to freedesktop.org defined application menus.")
 (define-public pcmanfm
   (package
     (name "pcmanfm")
-    (version "1.3.1")
+    (version "1.3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/pcmanfm/"
@@ -243,7 +243,7 @@ speed up the access to freedesktop.org defined application menus.")
                                   "%29/PCManFM/pcmanfm-" version ".tar.xz"))
               (sha256
                (base32
-                "0mb8hg76x1z0szdyl0w7jpz0bdblc6a29is1vvnh79z37qxh8138"))))
+                "1xqc2k2jh165mm81xg0ghxx0ml1s3rhh4ndvbzkcri4kfhj7pjql"))))
     (build-system gnu-build-system)
     (inputs `(("gtk+"   ,gtk+-2)
               ("gvfs"   ,gvfs)          ; for trash and mount support
