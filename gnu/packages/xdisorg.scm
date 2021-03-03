@@ -1978,7 +1978,7 @@ a user-configurable period of time.")
 (define-public screen-message
   (package
     (name "screen-message")
-    (version "0.25")
+    (version "0.26")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1986,7 +1986,7 @@ a user-configurable period of time.")
                     "/screen-message-" version ".tar.gz"))
               (sha256
                (base32
-                "1lw955qq5pq010lzmaf32ylj2iprgsri9ih4hx672c3f794ilab0"))))
+                "0dwgm4z3dfk6xz41w8xiv0hmnwr74gf3ykb91b090hc4ffwsf4mw"))))
     (build-system gnu-build-system)
     (inputs `(("gtk3" ,gtk+)
               ("gdk" ,gdk-pixbuf)
