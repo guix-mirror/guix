@@ -2662,7 +2662,7 @@ using @command{dmenu}.")
 (define-public wofi
   (package
     (name "wofi")
-    (version "1.2.3")
+    (version "1.2.4")
     (source (origin
               (method hg-fetch)
               (uri (hg-reference
@@ -2671,7 +2671,7 @@ using @command{dmenu}.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0glpb2gf5n78s01z3rn614ak8ibxhfr824gy6xlljbxclgds264i"))))
+                "1bnf078fg1kwslzwm1mjxwcqqq3bhk1dzymwfw9gk3brqbxrl75c"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t))
