@@ -1458,14 +1458,14 @@ at login.  Local and dynamic reconfiguration are its key features.")
 (define-public powerstat
   (package
     (name "powerstat")
-    (version "0.02.22")
+    (version "0.02.25")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://kernel.ubuntu.com/~cking/tarballs/"
                            "powerstat/powerstat-" version ".tar.gz"))
        (sha256
-        (base32 "0r355b9syqa2nhfy8ksvxyy5d58v0isf983842js091s6liy0x7g"))))
+        (base32 "0dmixbxm4qd08ds26i0wvxwyy8nrjzfjj2q9ylx35564g4wh58qb"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
