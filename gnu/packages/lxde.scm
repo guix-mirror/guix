@@ -99,7 +99,7 @@ Glib/GIO giving a higher-level API.")
                      ("libtool"    ,libtool)
                      ("pkg-config" ,pkg-config)))
     (synopsis "File management support (extra library)")
-    (description "This package contains standalone library which extends the
+    (description "This package contains a stand-alone library which extends the
 libFM file management library.")))
 
 (define-public lxappearance
