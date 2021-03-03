@@ -72,7 +72,7 @@
 (define-public diffoscope
   (package
     (name "diffoscope")
-    (version "167")
+    (version "168")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -81,7 +81,7 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0v0l299igvjsxz7xbsfl7kfqw958v56khzda1ixdsax6qrnqcf6m"))))
+                "18rs4jfx50d7vkaqcc46r7pccgizp0is56267sq13vbfvz758dhh"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
