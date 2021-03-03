@@ -15,6 +15,7 @@
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@posteo.ro>
+;;; Copyright © 2021 Cage <cage-dev@twistfold.it>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -46,12 +47,14 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages fltk)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnome-xyz)
@@ -66,6 +69,7 @@
   #:use-module (gnu packages lua)
   #:use-module (gnu packages man)
   #:use-module (gnu packages markup)
+  #:use-module (gnu packages nano)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -816,4 +820,78 @@ vim-like key bindings, a document pager, configurable settings, and robust
 command selection.  The following protocols are supported as first-class
 citizens: gopher, gemini, finger, and local.  There is also support for telnet,
 http, and https via third-party applications.")
+    (license license:gpl3+)))
+
+(define-public tinmop
+  (package
+    (name "tinmop")
+    (version "0.5.9")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://notabug.org/cage/tinmop")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1zdra4q4mkrldv7dpag9p1bsma2k9pvp9pp9k7qsbm0alj7xwqpr"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("curl" ,curl)
+       ("gettext" ,gnu-gettext)
+       ("gnupg" ,gnupg)
+       ("sbcl" ,sbcl)))
+    (inputs
+     `(("access" ,sbcl-access)
+       ("alexandria" ,sbcl-alexandria)
+       ("babel" ,sbcl-babel)
+       ("bordeaux-threads" ,sbcl-bordeaux-threads)
+       ("cl-base64" ,sbcl-cl-base64)
+       ("cl-colors2" ,sbcl-cl-colors2)
+       ("cl-html5-parser" ,sbcl-cl-html5-parser)
+       ("cl-i18n" ,sbcl-cl-i18n)
+       ("cl-ppcre" ,sbcl-cl-ppcre)
+       ("cl-spark" ,sbcl-cl-spark)
+       ("cl-sqlite" ,sbcl-cl-sqlite)
+       ("cl+ssl" ,sbcl-cl+ssl)
+       ("clunit2" ,sbcl-clunit2)
+       ("croatoan" ,sbcl-croatoan)
+       ("crypto-shortcuts" ,sbcl-crypto-shortcuts)
+       ("drakma" ,sbcl-drakma)
+       ("esrap" ,sbcl-esrap)
+       ("ieee-floats" ,sbcl-ieee-floats)
+       ("local-time" ,sbcl-local-time)
+       ("log4cl" ,sbcl-log4cl)
+       ("marshal" ,sbcl-marshal)
+       ("nano" ,nano)
+       ("openssl" ,openssl)
+       ("osicat" ,sbcl-osicat)
+       ("parse-number" ,sbcl-parse-number)
+       ("percent-encoding" ,sbcl-percent-encoding)
+       ("sxql" ,sbcl-sxql)
+       ("sxql-composer" ,sbcl-sxql-composer)
+       ("tooter" ,sbcl-tooter)
+       ("unix-opts" ,sbcl-unix-opts)
+       ("usocket" ,sbcl-usocket)
+       ("xdg-utils" ,xdg-utils)))
+    (arguments
+     `(#:tests? #f
+       #:strip-binaries? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-home
+           (lambda _
+             (setenv "HOME" "/tmp")
+             #t))
+         (add-after 'configure 'fix-asdf
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "Makefile.in"
+               (("LISP_COMPILER) ")
+                "LISP_COMPILER) --eval \"(require 'asdf)\" --eval \"(push \\\"$$(pwd)/\\\" asdf:*central-registry*)\"  "))
+             #t)))))
+    (synopsis "Gemini and pleroma client with a terminal interface")
+    (description
+     "This package provides a Gemini and pleroma client with a terminal
+interface.")
+    (home-page "https://www.autistici.org/interzona/tinmop.html")
     (license license:gpl3+)))
