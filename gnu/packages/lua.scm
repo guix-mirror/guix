@@ -8,7 +8,7 @@
 ;;; Copyright © 2016 doncatnip <gnopap@gmail.com>
 ;;; Copyright © 2016, 2017, 2019 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016 José Miguel Sánchez García <jmi2k@openmailbox.org>
-;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Simon South <simon@simonsouth.net>
@@ -1162,7 +1162,7 @@ enabled.")
 (define-public fennel
   (package
     (name "fennel")
-    (version "0.8.0")
+    (version "0.8.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1171,7 +1171,7 @@ enabled.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1jng33vmnk6mi37l3x2z0plng940jpj7kz1s493ki80z3mkaxjfg"))
+                "0n0xkgzlrwpppm5vbvn84mq418xhmyakk9hakdmjv1lk2dfdq2g7"))
               (modules '((guix build utils)))
               (snippet
                '(begin
