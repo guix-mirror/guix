@@ -945,7 +945,7 @@ more.")
 (define-public czmq
   (package
     (name "czmq")
-    (version "4.2.0")
+    (version "4.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -954,7 +954,7 @@ more.")
                     "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1szciz62sk3fm4ga9qjpxz0n0lazvphm32km95bq92ncng12kayg"))))
+                "0fdclvd7fcwixp0k57ccv7d159v3slasyhvndxfn8n1a9hh0lwjx"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-drafts")
