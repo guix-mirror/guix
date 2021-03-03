@@ -5094,7 +5094,8 @@ blocks and random block placement.")
      `(("btrfs-progs" ,btrfs-progs)))
     (arguments
      `(#:tests? #f                      ; No tests.
-       #:make-flags (list "CC=gcc")
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target)))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
