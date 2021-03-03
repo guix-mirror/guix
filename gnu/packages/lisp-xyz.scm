@@ -943,10 +943,10 @@ antialiased TrueType font rendering using CLX and XRender extension.")
   (sbcl-package->ecl-package sbcl-clx-truetype))
 
 (define-public sbcl-slynk
-  (let ((commit "0f46f91a9542599d62c0c332b39636b2941ea372"))
+  (let ((commit "fb84318c08f59bc786e047006fc81e2ace568309"))
     (package
       (name "sbcl-slynk")
-      (version (git-version "1.0.43" "3" commit))
+      (version (git-version "1.0.43" "4" commit))
       (source
        (origin
          (method git-fetch)
@@ -955,7 +955,7 @@ antialiased TrueType font rendering using CLX and XRender extension.")
            (url "https://github.com/joaotavora/sly")
            (commit commit)))
          (sha256
-          (base32 "0p3j0zylacy6vms8ngis2hx2351xnwfzsw3zy043q6vmqd14wrf1"))
+          (base32 "0z123k9ak7yjb9bxb5qx48f33ma8066rhkqh8xc14z7shk75jybj"))
          (file-name (git-file-name "slynk" version))))
       (build-system asdf-build-system/sbcl)
       (outputs '("out" "image"))
