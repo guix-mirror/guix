@@ -770,7 +770,7 @@ OpenGL.")
 (define-public glfw
   (package
     (name "glfw")
-    (version "3.3.2")
+    (version "3.3.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/glfw/glfw"
@@ -778,7 +778,7 @@ OpenGL.")
                                   "/glfw-" version ".zip"))
               (sha256
                (base32
-                "1izgc4r0ypxwwklfzj98ab4xqsjpb1wbsfdbivvxpmr95x8km8q8"))))
+                "0xrrahhbs4sn7sgvdk9sgz5zla4sw3ajq6kxpqrx635l8nnqfc3j"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no test target
