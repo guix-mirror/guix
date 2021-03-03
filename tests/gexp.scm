@@ -1095,6 +1095,22 @@ importing.* \\(guix config\\) from the host"
                         (call-with-input-file g-guile read)
                         (list (derivation->output-path guile-drv) bash))))))
 
+(test-assertm "gexp->derivation #:references-graphs cross-compilation"
+  ;; The objects passed in #:references-graphs implicitly refer to
+  ;; cross-compiled derivations.  Make sure this is the case.
+  (mlet* %store-monad ((drv1 (lower-object coreutils (%current-system)
+                                           #:target "i586-pc-gnu"))
+                       (drv2 (lower-object coreutils (%current-system)
+                                           #:target #f))
+                       (drv3 (gexp->derivation "three"
+                                               #~(symlink #$coreutils #$output)
+                                               #:target "i586-pc-gnu"
+                                               #:references-graphs
+                                               `(("coreutils" ,coreutils))))
+                       (refs (references* (derivation-file-name drv3))))
+    (return (and (member (derivation-file-name drv1) refs)
+                 (not (member (derivation-file-name drv2) refs))))))
+
 (test-assertm "gexp->derivation #:allowed-references"
   (mlet %store-monad ((drv (gexp->derivation "allowed-refs"
                                              #~(begin

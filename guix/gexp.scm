@@ -875,9 +875,9 @@ corresponding <derivation-input> or store item."
   (define tuple->gexp-input
     (match-lambda
       ((thing)
-       (%gexp-input thing "out" #t))
+       (%gexp-input thing "out" (not target)))
       ((thing output)
-       (%gexp-input thing output #t))))
+       (%gexp-input thing output (not target)))))
 
   (match graphs
     (((file-names . inputs) ...)
