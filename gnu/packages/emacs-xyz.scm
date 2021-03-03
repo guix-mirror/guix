@@ -12887,6 +12887,30 @@ for the current file, using the major mode as a hint.  It prompts you to enter
 one if it fails.")
     (license license:gpl3+)))
 
+(define-public emacs-eldoc
+  (package
+    (name "emacs-eldoc")
+    (version "1.11.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://elpa.gnu.org/packages/eldoc-" version ".el"))
+       (sha256
+        (base32 "1py9l1vl7s90y5kfpglhy11jswam2gcrqap09h6wb5ldnyb8cgq2"))))
+    (build-system emacs-build-system)
+    (home-page "http://elpa.gnu.org/packages/eldoc.html")
+    (synopsis "Show function arglist or variable docstring in echo area")
+    (description
+     "This program was inspired by the behavior of the ``mouse documentation
+window'' on many Lisp Machine systems; as you type a function's symbol name as
+part of a sexp, it will print the argument list for that function.  Behavior
+is not identical; for example, you need not actually type the function name,
+you need only move point around in a sexp that calls it.  Also, if point is
+over a documented variable, it will print the one-line documentation for that
+variable instead, to remind you of that variable's meaning.")
+    (license license:gpl3+)))
+
 ;; Tests for ert-runner have a circular dependency with ecukes, and therefore
 ;; cannot be run
 (define-public emacs-ert-runner
