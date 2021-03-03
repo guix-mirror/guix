@@ -5839,14 +5839,14 @@ the OleFileIO module from PIL, the Python Image Library.")
 (define-public python-pillow
   (package
     (name "python-pillow")
-    (version "8.0.1")
+    (version "8.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Pillow" version))
        (sha256
         (base32
-         "17pv0flaqqfld9m4lz8ayxyqb11gbbmr7w04mw4ar79cn3lwdi8i"))))
+         "086g7nhv52wclrwnzbzs2x3nvyzs2hfq1bvgivsrp5f7r7wiiz7n"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)))
