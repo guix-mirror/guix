@@ -14827,3 +14827,33 @@ the ncurses terminal library.")
 
 (define-public cl-croatoan
   (sbcl-package->cl-source-package sbcl-croatoan))
+
+(define-public sbcl-cl-spark
+  (let ((commit "4e34bcebdcf8e45265986eb43ad4ad03bb41a581")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-spark")
+      (version (git-version "0.1.13" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/tkych/cl-spark")
+               (commit commit)))
+         (file-name (git-file-name "cl-spark" version))
+         (sha256
+          (base32 "0my1fsgi2rjaqkpk934f2bjy63pmnj7faza3fzvnk6k3l66y19nk"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (synopsis "Common Lisp library to make histograms")
+      (description "This is a Common Lisp library to make histograms using
+UTF-8 block characters.")
+      (home-page "https://github.com/tkych/cl-spark")
+      (license license:expat))))
+
+(define-public ecl-cl-spark
+  (sbcl-package->ecl-package sbcl-cl-spark))
+
+(define-public cl-spark
+  (sbcl-package->cl-source-package sbcl-cl-spark))
