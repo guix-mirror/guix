@@ -14650,10 +14650,10 @@ on UNIX like platforms.")
   (sbcl-package->cl-source-package sbcl-daemon))
 
 (define-public sbcl-file-attributes
-  (let ((commit "2c6fdb08f136d5f9a8d12626ed5b64edc2ae1bb8"))
+  (let ((commit "bbde396438f37d676de9775239115410bec4da2d"))
     (package
       (name "sbcl-file-attributes")
-      (version (git-version "1.0.0" "1" commit))
+      (version (git-version "1.0.0" "2" commit))
       (source
        (origin
          (method git-fetch)
@@ -14662,7 +14662,7 @@ on UNIX like platforms.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "1vi1h6pd04g41ay3hr76ac89isyz4x864g87r8v9xcl4gizkzwlq"))))
+          (base32 "0n8q818ry2shggjfhp8gjby8v5mla9pg97c5g19pcglpnwim7a74"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("cffi" ,sbcl-cffi)
