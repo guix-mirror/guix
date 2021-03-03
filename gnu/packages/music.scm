@@ -4574,14 +4574,14 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
 (define-public liquidsfz
   (package
     (name "liquidsfz")
-    (version "0.2.2")
+    (version "0.2.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://space.twc.de/~stefan/liquidsfz/"
                                   "liquidsfz-" version ".tar.bz2"))
               (sha256
                (base32
-                "011m839vjb8gmiv1vzc0d7xz2q2jiwk4v0j9paqyx3lm61czvy93"))))
+                "1hb4hc3gkvjfbx0ls6wxzavhv2hf9ix11cz8yvndyb6q9lwkimwl"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--enable-shared")))
