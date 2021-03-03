@@ -5079,7 +5079,7 @@ blocks and random block placement.")
 (define-public compsize
   (package
     (name "compsize")
-    (version "1.3")
+    (version "1.5")
     (home-page "https://github.com/kilobyte/compsize")
     (source (origin
               (method git-fetch)
@@ -5087,7 +5087,7 @@ blocks and random block placement.")
                     (url home-page)
                     (commit (string-append "v" version))))
               (sha256
-               (base32 "1c69whla844nwis30jxbj00zkpiw3ccndhkmzjii8av5358mjn43"))
+               (base32 "0vqnrwgpv6pc1yjl0g4gl71xyl6v0xl3pyqjanjpwps73c53azir"))
               (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
