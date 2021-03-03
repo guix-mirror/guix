@@ -2903,7 +2903,7 @@ remotely.")
 (define-public zyre
   (package
     (name "zyre")
-    (version "2.0.0")
+    (version "2.0.1")
     (source (origin
               (method url-fetch)
               (uri
@@ -2911,7 +2911,7 @@ remotely.")
                               version "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0qz2730bng1gs9xbqxhkw88qbsmszgmmrl2g9k6xrg6r3bqvsdc7"))))
+                "13596507ma1474cjqzxym5jlvcshvw7sjhw80rdz788gyz6kz90b"))))
     (build-system gnu-build-system)
     (inputs `(("zeromq" ,zeromq)
               ("czmq" ,czmq)
