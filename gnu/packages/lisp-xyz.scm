@@ -14857,3 +14857,41 @@ UTF-8 block characters.")
 
 (define-public cl-spark
   (sbcl-package->cl-source-package sbcl-cl-spark))
+
+(define-public sbcl-access
+  (let ((commit "1b26db3760018cdc4624f880f0a1e0155d8f6c50")
+        (revision "1"))
+    (package
+      (name "sbcl-access")
+      (version (git-version "1.5.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/sharplispers/access")
+               (commit commit)))
+         (file-name (git-file-name "access" version))
+         (sha256
+          (base32 "1knd3n4mpzkc97i1znbas32pscd30416isvmx2pjmgvar6k93pl5"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("lisp-unit2" ,sbcl-lisp-unit2)))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("anaphora" ,sbcl-anaphora)
+         ("closer-mop" ,sbcl-closer-mop)
+         ("interpol" ,sbcl-cl-interpol)
+         ("iterate" ,sbcl-iterate)))
+      (synopsis
+       "Common lisp library to unify access to dictionary-like structures")
+      (description
+       "This is a Common lisp library to unify access to the most common
+dictionary-like data structures.")
+      (home-page "https://github.com/sharplispers/access")
+      (license license:bsd-3))))
+
+(define-public ecl-access
+  (sbcl-package->ecl-package sbcl-access))
+
+(define-public cl-access
+  (sbcl-package->cl-source-package sbcl-access))
