@@ -16,7 +16,7 @@
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017, 2018, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2018, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018, 2019, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
@@ -2192,46 +2192,19 @@ library.")
 (define-public guile-lib
   (package
     (name "guile-lib")
-    (version "0.2.6.1")
+    (version "0.2.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/guile-lib/guile-lib-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0aizxdif5dpch9cvs8zz5g8ds5s4xhfnwza2il5ji7fv2h7ks7bd"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; Work around miscompilation on Guile 3.0.0 at -O2:
-                  ;; <https://bugs.gnu.org/39251>.
-                  (substitute* "src/md5.scm"
-                    (("\\(define f-ash ash\\)")
-                     "(define f-ash (@ (guile) ash))\n")
-                    (("\\(define f-add \\+\\)")
-                     "(define f-add (@ (guile) +))\n"))
-                  #t))))
+                "1ph4z4a64m75in36pdb4dw63dzdq3hdgh16gq33q460jby23pvz4"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:make-flags
-       '("GUILE_AUTO_COMPILE=0")        ; to prevent guild errors
+     '(#:make-flags '("GUILE_AUTO_COMPILE=0") ;placate guild warnings
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-for-cross-compilation
-           (lambda _
-             (substitute* "configure.ac"
-               (("GUILE_FLAGS")
-                "GUILE_FLAGS
-if test \"$cross_compiling\" != no; then
-   GUILE_TARGET=\"--target=$host_alias\"
-   AC_SUBST([GUILE_TARGET])
-fi
-"))
-             (substitute* "am/guile.mk"
-               (("guild compile") "guild compile $(GUILE_TARGET)"))
-             (delete-file "configure")  ; trigger the bootstrap phase to run
-                                        ; autoreconf
-             #t))
          (add-before 'configure 'patch-module-dir
            (lambda _
              (substitute* "src/Makefile.in"
@@ -2239,8 +2212,7 @@ fi
                 "moddir = $(datadir)/guile/site/@GUILE_EFFECTIVE_VERSION@\n")
                (("^godir = ([[:graph:]]+)")
                 "godir = \
-$(libdir)/guile/@GUILE_EFFECTIVE_VERSION@/site-ccache\n"))
-             #t)))))
+$(libdir)/guile/@GUILE_EFFECTIVE_VERSION@/site-ccache\n")))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -2248,7 +2220,7 @@ $(libdir)/guile/@GUILE_EFFECTIVE_VERSION@/site-ccache\n"))
        ("guile" ,guile-3.0)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("guile" ,guile-3.0)))
+     `(("guile" ,guile-3.0)))           ;for cross-compilation
     (home-page "https://www.nongnu.org/guile-lib/")
     (synopsis "Collection of useful Guile Scheme modules")
     (description
@@ -2256,7 +2228,6 @@ $(libdir)/guile/@GUILE_EFFECTIVE_VERSION@/site-ccache\n"))
 modules, allowing for people to cooperate integrating their generic Guile
 modules into a coherent library.  Think \"a down-scaled, limited-scope CPAN
 for Guile\".")
-
     ;; The whole is under GPLv3+, but some modules are under laxer
     ;; distribution terms such as LGPL and public domain.  See `COPYING' for
     ;; details.
