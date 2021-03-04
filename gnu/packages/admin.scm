@@ -2130,6 +2130,33 @@ environment variable is set and output is to tty.")
     (home-page "http://mama.indstate.edu/users/ice/tree/")
     (license license:gpl2+)))
 
+(define-public lr
+  (package
+    (name "lr")
+    (version "1.5.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.vuxu.org/lr/")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1wv2acm4r5y5gg6f64v2hiwpg1f3lnr4fy1a9zssw77fmdc7ys3j"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f
+       #:make-flags (list (string-append "CC=" ,(cc-for-target))
+                          (string-append "PREFIX=" %output))
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure))))
+    (synopsis "Tool to generate customized file listings")
+    (description
+     "lr is a tool for generating file listings, which includes the best
+features of ls(1), find(1), stat(1) and du(1).")
+    (home-page "https://git.vuxu.org/lr/about")
+    (license license:expat)))
+
 (define-public direvent
   (package
     (name "direvent")
