@@ -1178,6 +1178,7 @@ as a drop-in replacement of MySQL.")
              "https://downloads.mariadb.org/f/connector-c-" version
              "/mariadb-connector-c-" version "-src.tar.gz"
              "/from/https%3A//mirrors.ukfast.co.uk/sites/mariadb/?serve"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "0qzyahr8x9l1xz0l79wz3iahxz7648n1azc5yr7kx0dl113y2nig"))))
     (inputs
