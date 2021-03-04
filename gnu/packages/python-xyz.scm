@@ -3,7 +3,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014, 2015, 2016, 2019 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2014, 2017 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2017, 2021 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2014, 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Omar Radwan <toxemicsquire4@gmail.com>
 ;;; Copyright © 2015 Pierre-Antoine Rault <par@rigelk.eu>
@@ -19876,6 +19876,26 @@ functions, and dictionaries.")
 main differences are that @code{cytoolz} is faster and cytoolz offers a C API
 that is accessible to other projects developed in Cython.")
     (license license:bsd-3)))
+
+(define-public python-sortedcollections
+  (package
+    (name "python-sortedcollections")
+    (version "2.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "sortedcollections" version))
+       (sha256
+        (base32
+         "1kfabpnjyjm5ml2zspry9jy3xq49aybchgaa4ahic2jqdjfn1sfq"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-sortedcontainers" ,python-sortedcontainers)))
+    (arguments '(#:tests? #f))  ; Tests not included in release tarball.
+    (home-page "http://www.grantjenks.com/docs/sortedcollections/")
+    (synopsis "Python Sorted Collections")
+    (description "Sorted Collections is a Python sorted collections library.")
+    (license license:asl2.0)))
 
 (define-public python-sortedcontainers
   (package
