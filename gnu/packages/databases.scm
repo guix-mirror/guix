@@ -3648,7 +3648,7 @@ transforms idiomatic python function calls to well-formed SQL queries.")
 (define-public python-pypika
   (package
     (name "python-pypika")
-    (version "0.44.0")
+    (version "0.47.6")
     (source
      (origin (method git-fetch)
              (uri (git-reference
@@ -3657,7 +3657,7 @@ transforms idiomatic python function calls to well-formed SQL queries.")
              (file-name (git-file-name name version))
              (sha256
               (base32
-               "0mpddrw9z1pzcc40j3pzhd583hlgjx96aa8ak6m9zzhpm4bv3ard"))))
+               "001pg36sw9a36zdd1kccbymcxndphjcjbbrsy6ri7ng8h4dgz549"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-parameterized" ,python-parameterized)))
