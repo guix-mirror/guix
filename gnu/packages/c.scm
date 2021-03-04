@@ -581,6 +581,9 @@ portability.")
                 "1pjs31x3cq9wyw511y00kksz660m8im9zxk30hid8iwlilcbnyvx"))
               (patches (search-patches "aws-checksums-cmake-prefix.patch"))))
     (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags
+       '("-DBUILD_SHARED_LIBS=ON")))
     (inputs
      `(("aws-c-common" ,aws-c-common)))
     (synopsis "Amazon Web Services checksum library")
