@@ -958,13 +958,13 @@ specified in a \"Gemfile\", as well as their dependencies.")
 (define-public ruby-builder
   (package
     (name "ruby-builder")
-    (version "3.2.3")
+    (version "3.2.4")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "builder" version))
               (sha256
                (base32
-                "0qibi5s67lpdv1wgcj66wcymcr04q6j4mzws6a479n0mlrmh5wr1"))))
+                "045wzckxpwcqzrjr353cxnyaxgf0qg22jh00dcx7z38cys5g1jlr"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
