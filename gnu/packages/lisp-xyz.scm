@@ -1675,28 +1675,28 @@ that of Eos has not.  Thus, Eos is now deprecated in favor of FiveAM.")
   (sbcl-package->ecl-package sbcl-eos))
 
 (define-public sbcl-esrap
-  (let ((commit "133be8b05c2aae48696fe5b739eea2fa573fa48d"))
+  (let ((commit "da6b24fb18bdb8e7e177bcf2820cdaf0b560deb6")
+        (revision "1"))
     (package
       (name "sbcl-esrap")
-      (version (git-version "0.0.0" "1" commit))
+      (version (git-version "0.18" revision commit))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/nikodemus/esrap")
+               (url "https://github.com/scymtym/esrap")
                (commit commit)))
          (sha256
-          (base32
-           "02d5clihsdryhf7pix8c5di2571fdsffh75d40fkzhws90r5mksl"))
+          (base32 "12vf3bxwzf8icnf6rw1xalvm7493cfbb46r2vlhc09s59djkf39q"))
          (file-name (git-file-name "esrap" version))))
       (build-system asdf-build-system/sbcl)
       (native-inputs
-       `(("eos" ,sbcl-eos)))            ;For testing only.
+       `(("fiveam" ,sbcl-fiveam)))
       (inputs
        `(("alexandria" ,sbcl-alexandria)))
       (synopsis "Common Lisp packrat parser")
       (description
-       "A packrat parser for Common Lisp.
+       "This is a packrat parser for Common Lisp.
 In addition to regular Packrat / Parsing Grammar / TDPL features ESRAP supports:
 
 @itemize
@@ -1704,8 +1704,11 @@ In addition to regular Packrat / Parsing Grammar / TDPL features ESRAP supports:
 @item inline grammars
 @item semantic predicates
 @item introspective facilities (describing grammars, tracing, setting breaks)
+@item left-recursive grammars
+@item functions as terminals
+@item accurate, customizable parse error reports
 @end itemize\n")
-      (home-page "https://nikodemus.github.io/esrap/")
+      (home-page "https://scymtym.github.io/esrap/")
       (license license:expat))))
 
 (define-public cl-esrap
