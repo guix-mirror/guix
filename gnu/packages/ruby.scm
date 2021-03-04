@@ -4418,13 +4418,13 @@ client protocol.")
 (define-public ruby-minitest
   (package
     (name "ruby-minitest")
-    (version "5.11.3")
+    (version "5.12.2")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "minitest" version))
               (sha256
                (base32
-                "0icglrhghgwdlnzzp4jf76b0mbc71s80njn5afyfjn4wqji8mqbq"))))
+                "0zjm24aiz42i9n37mcw8lydd7n0y7wfk27by06jx77ypcld3qvkw"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("ruby-hoe" ,ruby-hoe)))
