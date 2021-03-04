@@ -793,7 +793,7 @@ provide you with detailed information about each pass.")
 (define-public indi
   (package
     (name "indi")
-    (version "1.8.8")
+    (version "1.8.9")
     (source
      (origin
        (method git-fetch)
@@ -802,7 +802,7 @@ provide you with detailed information about each pass.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "19gm7rbnm3295g2i8mdzfslpz0vrcgfmbl59311qpszvlxbmyd2r"))))
+        (base32 "0nw4b2cdsg244slcm3yf1v11jlxbbjrpvi6ax90svs7rlandz8jv"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
