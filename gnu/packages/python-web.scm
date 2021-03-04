@@ -5658,14 +5658,14 @@ as a Python package.")
 (define-public python-sanic
   (package
     (name "python-sanic")
-    (version "20.9.1")
+    (version "20.12.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "sanic" version))
        (sha256
         (base32
-         "06p0lsxqbfbka2yaqlpp0bg5pf7ma44zi6kq7qbb6hhry48dp1w6"))))
+         "1c02gdp1j18xny9jd33fp0w57qqi7g66zwmaykv2dhcks96f5mxr"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -5674,9 +5674,8 @@ as a Python package.")
            ;; Allow using recent dependencies.
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "setup.py"
-               (("httpcore==0.3.0") "httpcore")
                (("pytest==5.2.1") "pytest")
-               (("multidict==5.0.0") "multidict")
+               (("multidict>=5.0,<6.0") "multidict")
                (("httpx==0\\.15\\.4") "httpx"))
              #t))
          (replace 'check
@@ -5702,14 +5701,15 @@ as a Python package.")
        ("python-pytest-benchmark" ,python-pytest-benchmark)
        ("python-pytest-sanic" ,python-pytest-sanic)
        ("python-pytest-sugar" ,python-pytest-sugar)
+       ("python-pytest-asyncio" ,python-pytest-asyncio)
        ("python-urllib3" ,python-urllib3)
        ("python-uvicorn" ,python-uvicorn)))
     (home-page
-     "https://github.com/huge-success/sanic/")
+     "https://github.com/sanic-org/sanic/")
     (synopsis
-     "Async Python 3.6+ web server/framework")
+     "Async Python web server/framework")
     (description
-     "Sanic is a Python 3.6+ web server and web framework
+     "Sanic is a Python web server and web framework
 that's written to go fast.  It allows the usage of the
 @code{async/await} syntax added in Python 3.5, which makes
 your code non-blocking and speedy.")
