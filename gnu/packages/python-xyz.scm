@@ -21616,31 +21616,15 @@ tests.")
 (define-public python-gssapi
   (package
     (name "python-gssapi")
-    (version "1.6.9")
+    (version "1.6.12")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "gssapi" version))
        (sha256
         (base32
-         "1fa78pn5jzfbwf3y6mj4fc8sh11wjf1hwh5qv39cdlxb71qsq2hb"))))
+         "1j2idrbrbczykzlb56q1bn0ivc9c0rjjljpk4yz86xn3gxfkpv8n"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         ;; Work around
-         ;; https://github.com/pythongssapi/python-gssapi/issues/220.
-         (add-before 'check 'disable-failing-tests
-           (lambda _
-             (let ((reason "Disabled failing test (see: \
-https://github.com/pythongssapi/python-gssapi/issues/220)."))
-               (substitute* "gssapi/tests/test_high_level.py"
-                 ((".*def test_add_with_impersonate.*" all)
-                  (string-append all "        self.skipTest('" reason "')\n")))
-               (substitute* "gssapi/tests/test_raw.py"
-                 ((".*def test_.*impersonate_name.*" all)
-                  (string-append all "        self.skipTest('" reason "')\n")))
-               #t))))))
     (propagated-inputs
      `(("python-decorator" ,python-decorator)
        ("python-six" ,python-six)))
@@ -21648,8 +21632,7 @@ https://github.com/pythongssapi/python-gssapi/issues/220)."))
      `(("mit-krb5" ,mit-krb5)))
     ;; for tests
     (native-inputs
-     `(("python-shouldbe" ,python-shouldbe)
-       ("python-parameterized" ,python-parameterized)
+     `(("python-parameterized" ,python-parameterized)
        ("python-k5test" ,python-k5test)
        ("python-nose" ,python-nose)))
     (home-page "https://github.com/pythongssapi/python-gssapi")
