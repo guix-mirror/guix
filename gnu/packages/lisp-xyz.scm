@@ -14895,3 +14895,34 @@ dictionary-like data structures.")
 
 (define-public cl-access
   (sbcl-package->cl-source-package sbcl-access))
+
+(define-public sbcl-sxql-composer
+  (let ((commit "2b2230cb01ae1b68e28921d99e4814046867fb75")
+        (revision "1"))
+    (package
+      (name "sbcl-sxql-composer")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/mmontone/sxql-composer")
+               (commit commit)))
+         (file-name (git-file-name "sxql-composer" version))
+         (sha256
+          (base32 "1agkrj3ymskzc3c7pxbrj123d1kygjqcls145m0ap3i07q96hh1r"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("sxql" ,sbcl-sxql)))
+      (synopsis "Build and compose SXQL queries dynamically")
+      (description
+       "This is a Common Lisp library to build and compose SXQL queries
+dynamically.")
+      (home-page "https://github.com/mmontone/sxql-composer")
+      (license license:expat))))
+
+(define-public ecl-sxql-composer
+  (sbcl-package->ecl-package sbcl-sxql-composer))
+
+(define-public cl-sxql-composer
+  (sbcl-package->cl-source-package sbcl-sxql-composer))
