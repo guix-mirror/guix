@@ -170,12 +170,14 @@ lines.")
              (chdir "packages/python/plotly")
              #t))
          (replace 'check
-           (lambda _
-             (invoke "pytest" "-x" "plotly/tests/test_core")
-             (invoke "pytest" "-x" "plotly/tests/test_io")
-             ;; FIXME: Add optional dependencies and enable their tests.
-             ;; (invoke "pytest" "-x" "plotly/tests/test_optional")
-             (invoke "pytest" "_plotly_utils/tests")))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest" "-x" "plotly/tests/test_core")
+               (invoke "pytest" "-x" "plotly/tests/test_io")
+               ;; FIXME: Add optional dependencies and enable their tests.
+               ;; (invoke "pytest" "-x" "plotly/tests/test_optional")
+               (invoke "pytest" "_plotly_utils/tests"))
+             #t))
          (add-before 'reset-gzip-timestamps 'make-files-writable
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
