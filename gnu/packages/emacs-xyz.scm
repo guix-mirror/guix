@@ -5781,6 +5781,33 @@ interactive searches to move multiple fake cursors.")
 simultaneous cursors.")
     (license license:gpl3+)))
 
+(define-public emacs-multifiles
+  ;; There is no tag and no "Version:" keyword.  Using the latest release
+  ;; instead.
+  (let ((commit "dddfe64b8e1c1cd1f9ccc1f03405477fc0d53897")
+        (revision "1"))
+    (package
+      (name "emacs-multifiles")
+      (version (git-version "0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/magnars/multifiles.el")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "065l04ylplng1vgykkbn2vnkcs3sn1k2cikx1ha2q8wmgx6bkvai"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)))
+      (home-page "https://github.com/magnars/multifiles.el")
+      (synopsis "Edit multiple files in a single Emacs buffer")
+      (description
+       "This package allows one to view and edit parts of multiple files in
+one Emacs buffer.")
+      (license license:gpl3+))))
+
 (define-public emacs-mc-extras
   (let ((commit "053abc52181b8718559d7361a587bbb795faf164")
         (revision "1"))
