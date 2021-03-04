@@ -1237,22 +1237,23 @@ help in debugging failures and optimizing the scheduler to improve speed.")
 (define-public python-pytest-sanic
   (package
     (name "python-pytest-sanic")
-    (version "1.6.2")
+    (version "1.7.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "pytest-sanic" version))
               (sha256
                 (base32
-                  "02ajd8z77ahi69kzkz200qgxrb4s2j4qb6k8j9ds1kz6qa6fsa34"))))
+                  "0hm7im77dgqfk8k34qbbfhimg8hifl4zwpa2s3mgbknrjvyw5qpx"))))
     (build-system python-build-system)
     (arguments
      ;; Tests depend on python-sanic.
      `(#:tests? #f))
     (propagated-inputs
-      `(("python-aiohttp" ,python-aiohttp)
+      `(("python-httpx" ,python-httpx)
         ("python-async-generator"
          ,python-async-generator)
-        ("python-pytest" ,python-pytest)))
+        ("python-pytest" ,python-pytest)
+        ("python-websockets" ,python-websockets)))
     (home-page
       "https://github.com/yunstanford/pytest-sanic")
     (synopsis "Pytest plugin for Sanic")
