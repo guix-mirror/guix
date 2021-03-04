@@ -779,6 +779,47 @@ certificate returned by the server to which a connection has been established,
 and verifies that it matches the intended target hostname.")
     (license license:psfl)))
 
+(define-public python-bidict
+  (package
+    (name "python-bidict")
+    (version "0.21.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "bidict" version))
+       (sha256
+        (base32
+         "02dy0b1k7qlhn7ajyzkrvxhyhjj0hzcq6ws3zjml9hkdz5znz92g"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-hypothesis" ,python-hypothesis-5.23) ; use_true_random=... from >=5.19.0
+       ("python-pre-commit" ,python-pre-commit)
+       ("python-py" ,python-py)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-benchmark" ,python-pytest-benchmark)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-sortedcollections" ,python-sortedcollections)
+       ("python-sortedcontainers" ,python-sortedcontainers)
+       ("python-sphinx" ,python-sphinx)
+       ("python-sphinx-autodoc-typehints" ,python-sphinx-autodoc-typehints)
+       ("python-tox" ,python-tox)))
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'relax-reqs
+                    (lambda _
+                      (substitute* "setup.py"
+                        (("sortedcollections < 2") "sortedcollections"))
+                      #t))
+                  (replace 'check
+                    (lambda _ (invoke "./run_tests.py"))))))
+    (home-page "https://bidict.readthedocs.io")
+    (synopsis "Bidirectional mapping library")
+    (description "The @code{bidict} library provides several data structures
+for working with bidirectional mappings in Python.")
+    (license license:mpl2.0)))
+
 (define-public python-bitarray
   (package
     (name "python-bitarray")
