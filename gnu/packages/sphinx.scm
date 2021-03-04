@@ -670,6 +670,33 @@ documentation when a change is detected.  It also includes a livereload
 enabled web server.")
     (license license:expat)))
 
+(define-public python-sphinx-autodoc-typehints
+  (package
+    (name "python-sphinx-autodoc-typehints")
+    (version "1.11.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "sphinx-autodoc-typehints" version))
+       (sha256
+        (base32
+         "086v9mg21pvfx0lfqjx2xf36hnzrsripfg345xi59f7xwb9scjr4"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-sphinx" ,python-sphinx)))
+    (native-inputs
+     `(("python-dataclasses" ,python-dataclasses)
+       ("python-pytest" ,python-pytest)
+       ("python-sphinx" ,python-sphinx)
+       ("python-sphobjinv" ,python-sphobjinv)
+       ("python-typing-extensions" ,python-typing-extensions)))
+    (home-page "https://pypi.org/project/sphinx-autodoc-typehints/")
+    (synopsis "Type hints for the Sphinx autodoc extension")
+    (description "This extension allows you to use Python 3 annotations for
+documenting acceptable argument types and return value types of functions.")
+    (license license:expat)))
+
 (define-public python-nbsphinx
   (package
     (name "python-nbsphinx")
