@@ -237,14 +237,14 @@ servers from Python programs.")
 (define-public 389-ds-base
   (package
     (name "389-ds-base")
-    (version "1.4.0.21")
+    (version "1.4.0.31")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://releases.pagure.org/389-ds-base/"
                                   "389-ds-base-" version ".tar.bz2"))
               (sha256
                (base32
-                "1qd1ap5d5nxyiq0d19czfwc3h7iwl9lmr5sy7d7xmpr2by59aysr"))))
+                "1rs218iqxyclccsdqb529favdsmz88zw785lsxd9ln43ja3x3l65"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((srfi srfi-1)
