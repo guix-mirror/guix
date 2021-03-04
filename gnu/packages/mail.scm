@@ -1754,7 +1754,7 @@ facilities for checking incoming mail.")
   (package
     (name "dovecot")
     ;; Also update dovecot-pigeonhole when updating to a new minor version.
-    (version "2.3.13")
+    (version "2.3.14")
     (source
      (origin
        (method url-fetch)
@@ -1762,7 +1762,7 @@ facilities for checking incoming mail.")
                            (version-major+minor version) "/"
                            "dovecot-" version ".tar.gz"))
        (sha256
-        (base32 "1i7ijss79a23v7b6lycfzaa8r5rh01k0h0b9h0j4a6n11sw7by53"))))
+        (base32 "0jm3p52z619v7ajh533g2g7d790k82fk0w7ry0zqlm8ymzrxgcy8"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
