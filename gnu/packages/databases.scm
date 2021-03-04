@@ -1170,7 +1170,7 @@ as a drop-in replacement of MySQL.")
 (define-public mariadb-connector-c
   (package
     (name "mariadb-connector-c")
-    (version "3.1.11")
+    (version "3.1.12")
     (source
      (origin
        (method url-fetch)
@@ -1179,7 +1179,7 @@ as a drop-in replacement of MySQL.")
              "/mariadb-connector-c-" version "-src.tar.gz"
              "/from/https%3A//mirrors.ukfast.co.uk/sites/mariadb/?serve"))
        (sha256
-        (base32 "03svzahdf7czjlm695c11r4bfd04qdqgx8r1vkpr1zlkjhwnqvry"))))
+        (base32 "0qzyahr8x9l1xz0l79wz3iahxz7648n1azc5yr7kx0dl113y2nig"))))
     (inputs
      `(("openssl" ,openssl)))
     (build-system cmake-build-system)
