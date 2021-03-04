@@ -3,7 +3,7 @@
 ;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Guy Fleury Iteriteka <hoonandon@gmail.com>
 ;;; Copyright © 2019 Andy Tai <atai@atai.org>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
@@ -184,14 +184,14 @@ speed on x86, NEON on ARM, etc.).")
 (define-public fasm
   (package
     (name "fasm")
-    (version "1.73.25")
+    (version "1.73.27")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://flatassembler.net/fasm-"
                            version ".tgz"))
        (sha256
-        (base32 "0k3h61mfwslyb34kf4dnapfwl8jxlmrp4dv666wc057hkj047knn"))))
+        (base32 "1cghiks49ql77b9l4mwrnlk76kai0fm0z22j71kbdlxngwvlh0b8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests exist
