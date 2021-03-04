@@ -1237,7 +1237,7 @@ Trusted comments are signed, thus verified, before being displayed.")
 (define-public libolm
   (package
     (name "libolm")
-    (version "3.2.1")
+    (version "3.2.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1245,7 +1245,7 @@ Trusted comments are signed, thus verified, before being displayed.")
                     (commit version)))
               (sha256
                (base32
-                "14b5cplcnbf2baq0lvz4f97m6swxpb13rvxdajxyw3s4mbvasia4"))
+                "0qji25wiwmkxyfpraxj96c54hyayqmjkvwh0gsy5gb5pz5bp4mcy"))
               (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (arguments
