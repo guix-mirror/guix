@@ -14,6 +14,7 @@
 ;;; Copyright © 2019 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
+;;; Copyright © 2021 Eric Bavier <bavier@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -696,4 +697,28 @@ directives are used to show Jupyter Notebook code cells (and of course
 their results) in both HTML and LaTeX output.  Un-evaluated notebooks
 - i.e. notebooks without stored output cells - will be automatically
 executed during the Sphinx build process.")
+    (license license:expat)))
+
+(define-public python-sphobjinv
+  (package
+    (name "python-sphobjinv")
+    (version "2.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "sphobjinv" version))
+       (sha256
+        (base32
+         "126lgm54c94ay3fci512ap4l607gak90pbz0fk98syxvj5izrrzx"))
+       (patches (search-patches "python-sphobjinv-system-ca.patch"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-attrs" ,python-attrs)
+       ;("python-certifi" ,python-certifi)
+       ("python-fuzzywuzzy" ,python-fuzzywuzzy)
+       ("python-jsonschema" ,python-jsonschema)
+       ("python-levenshtein" ,python-levenshtein)))
+    (home-page "https://github.com/bskinn/sphobjinv")
+    (synopsis "Sphinx cross-reference tool")
+    (description "Sphinx objects.inv inspection/manipulation tool.")
     (license license:expat)))
