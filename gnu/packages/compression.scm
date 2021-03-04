@@ -891,14 +891,14 @@ extract such file systems.")
 (define-public pigz
   (package
     (name "pigz")
-    (version "2.4")
+    (version "2.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://zlib.net/pigz/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0wsgw5vwl23jrnpsvd8v3xcp5k4waw5mk0164fynjhkv58i1dy54"))))
+                "0z9avc4mifwcpj3qdsf9m2rjw9jx03b2r9pj0c4xgla9fh6ppv9f"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
