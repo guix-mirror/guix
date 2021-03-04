@@ -152,23 +152,16 @@ to the clients.")
 (define-public simde
   (package
     (name "simde")
-    (version "0.7.0")
-    (source (origin
-             (method git-fetch)
-             (uri (git-reference
-                    (url "https://github.com/simd-everywhere/simde")
-                    (commit (string-append "v" version))))
-             (file-name (git-file-name name version))
-             (sha256
-              (base32
-               "1xf5xfzkk9rj47cichgz5ni8xs9hbpz5p6fmxr4ij721ffd002k3"))
-             (modules '((guix build utils)))
-             (snippet
-              '(begin
-                 ;; Fix the version string
-                 (substitute* "meson.build"
-                   (("0.7.0-rc2") "0.7.0"))
-                 #t))))
+    (version "0.7.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/simd-everywhere/simde")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0xkf21gbkgz6zlxabkmgwvy7py6cdnfqx9aplj90gz25gzrr1mkb"))))
     (build-system meson-build-system)
     ;; We really want this for the headers, and the tests require a bundled library.
     (arguments '(#:configure-flags '("-Dtests=false")))
