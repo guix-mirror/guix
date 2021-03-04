@@ -13945,9 +13945,11 @@ characters, mouse support, and auto suggestions.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _
-             (setenv "HOME" "/tmp")
-             (invoke "python" "-m" "pytest" "-vv"))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (setenv "HOME" "/tmp")
+               (invoke "python" "-m" "pytest" "-vv"))
+             #t)))))
     (native-inputs
      `(("python-pytest" ,python-pytest)
        ("python-docopt" ,python-docopt)))
