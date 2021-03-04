@@ -3237,15 +3237,25 @@ translate the complete SQLite API into Python.")
 (define-public python-aiosqlite
   (package
     (name "python-aiosqlite")
-    (version "0.12.0")
+    (version "0.17.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "aiosqlite" version))
        (sha256
         (base32
-         "1w8248yz85xyzvvh4jaxnc59fqil45aka6h82kn1rcih4rjxbnn1"))))
+         "0lgfpbkcd730hbgj3zlrbx2y8fzvdns2zj3s4r4l31n49g1arrph"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (if tests?
+                          (invoke "python" "-m" "unittest" "aiosqlite.tests")
+                          (format #t "test suite not run~%"))
+                      #t)))))
+    (propagated-inputs
+     `(("python-typing-extensions" ,python-typing-extensions)))
     (native-inputs
      `(("python-aiounittest" ,python-aiounittest)))
     (home-page "https://github.com/jreese/aiosqlite")
