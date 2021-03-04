@@ -22484,6 +22484,36 @@ functions for Fish shell scripts.")
 parent directory using @code{Eshell}.")
       (license license:gpl3+))))
 
+(define-public emacs-springboard
+  ;; Upstream provides no tag.  Using the latest commit.  Version is extracted
+  ;; from "Version:" keyword.
+  (let ((commit "687d1e5898a880878995dc9bffe93b4598366203")
+        (version "1.0")
+        (revision "1"))
+    (package
+      (name "emacs-springboard")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/jwiegley/springboard")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0fn8c4hqblfjvcpg68kj2dmdjqsdnxddqbzgvakl43zckjg8pi01"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-helm" ,emacs-helm)
+         ("emacs-ivy" ,emacs-ivy)))
+      (home-page "https://github.com/jwiegley/springboard")
+      (synopsis "Change the Emacs default directory quickly")
+      (description
+       "This Emacs package provides a quick way to change the default
+directory for only the next invoked command.  The directory selection can be
+done using Helm, Ido or Ivy.")
+      (license license:gpl2+))))
+
 (define-public emacs-tco-el
   (let ((commit "482db5313f090b17ed22ccd856f0e141dc75afe6")
         (revision "1"))
