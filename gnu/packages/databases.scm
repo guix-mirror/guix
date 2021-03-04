@@ -2642,17 +2642,25 @@ can autogenerate peewee models using @code{pwiz}, a model generator.")
 (define-public python-tortoise-orm
   (package
     (name "python-tortoise-orm")
-    (version "0.16.7")
+    (version "0.16.21")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "tortoise-orm" version))
        (sha256
         (base32
-         "0wr7p4v0b16ypm9fcpwpl99kf491m6w3jkd13xcsgq13fy73fbqc"))))
+         "1dallk0q8q4v37klm0v3rppf2w8sjkqmypc1w8r9rraqxg1ylacp"))))
     (build-system python-build-system)
-    ;; Disable tests for now. They pull in a lot of dependencies.
-    (arguments `(#:tests? #f))
+    (arguments
+     `(#:tests? #f ; Pypi does not have tests and Git snapshot depends on
+                   ; poetry.
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'relax-version-requirements
+                    (lambda _
+                      (substitute* "setup.py"
+                        (("pypika>=0\\.44\\.0,<0\\.45\\.0") "pypika")
+                        (("aiosqlite>=0.16.0,<0.17.0") "aiosqlite"))
+                      #t)))))
     (native-inputs
      `(("python-asynctest" ,python-asynctest)
        ("python-nose2" ,python-nose2)))
