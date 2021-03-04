@@ -2848,15 +2848,27 @@ system.  The code under test requires no modification to work with pyfakefs.")
 (define-public python-aiounittest
   (package
     (name "python-aiounittest")
-    (version "1.3.1")
+    (version "1.4.0")
+    ;; Pypi package lacks tests.
     (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "aiounittest" version))
-       (sha256
-        (base32
-         "1q4bhmi80smaa1lknvdna0sx3915naczlfna1fp435nf6cjyrjl1"))))
+     (origin (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/kwarunek/aiounittest.git")
+                   (commit version)))
+             (file-name (git-file-name name version))
+             (sha256
+              (base32
+               "0hql5mw62lclrpblbh7xvinwjfcdcfvhhlvl7xlq2hi9isjq1c8r"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (if tests?
+                          (invoke "nosetests" "-v")
+                          (format #t "test suite not run~%"))
+                      #t)))))
+    (propagated-inputs `(("python-wrapt" ,python-wrapt)))
     (native-inputs
      `(("python-coverage" ,python-coverage)
        ("python-nose" ,python-nose)))
