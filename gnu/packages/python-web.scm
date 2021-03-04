@@ -9,7 +9,7 @@
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016, 2017, 2020 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
-;;; Copyright © 2014, 2017 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2017, 2021 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2015, 2016, 2017, 2019 Leo Famulari <leo@famulari.name>
@@ -3805,6 +3805,29 @@ this it tries to be opinion-free and very extendable.")
 
 (define-public python2-elasticsearch
   (package-with-python2 python-elasticsearch))
+
+(define-public python-engineio
+  (package
+    (name "python-engineio")
+    (version "4.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "python-engineio" version))
+       (sha256
+        (base32
+         "0xqkjjxbxakz9fd7v94rkr2r5r9nrkap2c3gf3abbd0j6ld5qmxv"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-aiohttp" ,python-aiohttp)
+       ("python-requests" ,python-requests)
+       ("python-websocket-client" ,python-websocket-client)))
+    (arguments '(#:tests? #f))        ; Tests not included in release tarball.
+    (home-page "https://github.com/miguelgrinberg/python-engineio/")
+    (synopsis "Engine.IO server")
+    (description "Python implementation of the Engine.IO realtime client and
+server.")
+    (license license:expat)))
 
 (define-public python-flask-script
   (package
