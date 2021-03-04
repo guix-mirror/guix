@@ -20,6 +20,9 @@
   #:use-module (guix tests)
   #:use-module (guix store)
   #:use-module ((guix gexp) #:select (lower-object))
+  #:use-module ((guix profiles)
+                #:select (package->manifest-entry
+                          manifest-entry-properties))
   #:use-module (guix derivations)
   #:use-module (guix packages)
   #:use-module (guix git-download)
@@ -412,6 +415,13 @@
                (t (options->transformation
                    `((with-latest . "foo")))))
           (package-version (t p)))))
+
+(test-equal "options->transformation + package->manifest-entry"
+  '((transformations . ((without-tests . "foo"))))
+  (let* ((p (dummy-package "foo"))
+         (t (options->transformation '((without-tests . "foo"))))
+         (e (package->manifest-entry (t p))))
+    (manifest-entry-properties e)))
 
 (test-end)
 

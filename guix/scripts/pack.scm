@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
@@ -1170,24 +1170,19 @@ Create a bundle of PACKAGE.\n"))
                manifest))
             identity))
 
-      (define (with-transformations manifest)
-        (map-manifest-entries manifest-entry-with-transformations
-                              manifest))
-
       (with-provenance
-       (with-transformations
-        (cond
-         ((and (not (null? manifests)) (not (null? packages)))
-          (leave (G_ "both a manifest and a package list were given~%")))
-         ((not (null? manifests))
-          (concatenate-manifests
-           (map (lambda (file)
-                  (let ((user-module (make-user-module
-                                      '((guix profiles) (gnu)))))
-                    (load* file user-module)))
-                manifests)))
-         (else
-          (packages->manifest packages)))))))
+       (cond
+        ((and (not (null? manifests)) (not (null? packages)))
+         (leave (G_ "both a manifest and a package list were given~%")))
+        ((not (null? manifests))
+         (concatenate-manifests
+          (map (lambda (file)
+                 (let ((user-module (make-user-module
+                                     '((guix profiles) (gnu)))))
+                   (load* file user-module)))
+               manifests)))
+        (else
+         (packages->manifest packages))))))
 
   (with-error-handling
     (with-store store
