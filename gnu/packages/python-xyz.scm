@@ -23594,14 +23594,14 @@ process.")
 (define-public python-aiofiles
   (package
     (name "python-aiofiles")
-    (version "0.5.0")
+    (version "0.6.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "aiofiles" version))
         (sha256
           (base32
-            "1bqmv019x16qa3zah0z915cw6z4va3fjs60fk2s7vyah3gyvrrlq"))))
+            "14m01kjxm2j7zyljjj6xlhlgygcsriymbx730gc5jp9xglaina70"))))
     (build-system python-build-system)
     (home-page "https://github.com/Tinche/aiofiles")
     (synopsis "File support for @code{asyncio}")
