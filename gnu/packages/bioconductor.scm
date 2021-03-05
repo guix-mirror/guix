@@ -4,7 +4,7 @@
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019, 2020 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2020 Peter Lo <peterloleungyau@gmail.com>
-;;; Copyright © 2020 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
+;;; Copyright © 2020, 2021 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -7434,6 +7434,56 @@ features (e.g.  genes, microRNAs).")
 data.  This modified test allows for testing differential expression in qPCR
 data.")
     (license license:gpl2+)))
+
+(define-public r-universalmotif
+  (package
+    (name "r-universalmotif")
+    (version "1.8.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "universalmotif" version))
+       (sha256
+        (base32
+         "1ys2kbayc1rzv8nzi60208yfslm4kzynndfg7vw2n0c30dvzycrc"))))
+    (properties
+     `((upstream-name . "universalmotif")))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-reference-to-strip
+           (lambda _
+             (substitute* "src/Makevars"
+               (("/usr/bin/strip") (which "strip"))))))))
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-biostrings" ,r-biostrings)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-ggseqlogo" ,r-ggseqlogo)
+       ("r-iranges" ,r-iranges)
+       ("r-mass" ,r-mass)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcppthread" ,r-rcppthread)
+       ("r-rdpack" ,r-rdpack)
+       ("r-rlang" ,r-rlang)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-yaml" ,r-yaml)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page
+     "https://bioconductor.org/packages/universalmotif/")
+    (synopsis
+     "Specific structures importer, modifier, and exporter for R")
+    (description
+     "This package allows importing most common @dfn{specific structure}
+(motif) types into R for use by functions provided by other Bioconductor
+motif-related packages.  Motifs can be exported into most major motif formats
+from various classes as defined by other Bioconductor packages.  A suite of
+motif and sequence manipulation and analysis functions are included, including
+enrichment, comparison, P-value calculation, shuffling, trimming, higher-order
+motifs, and others.")
+    (license license:gpl3)))
 
 ;; This is a CRAN package, but it depends on Bioconductor packages, so we put
 ;; it here.
