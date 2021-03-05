@@ -10859,6 +10859,72 @@ explore and perform basic analysis of single cell sequencing data coming from
 droplet sequencing.  It has been particularly tailored for Drop-seq.")
       (license license:gpl3))))
 
+(define-public r-cellchat
+  (let ((commit
+         "21edd226ca408e4c413408f98562d71ee0b54e5d")
+        (revision "1"))
+    (package
+      (name "r-cellchat")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/sqjin/CellChat")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0cvzl9mi8jjznpql2gv67swnk1dndn3a2h22z5l84h7lwpwjmh53"))
+         (snippet
+          '(for-each delete-file '("src/CellChat.so"
+                                   "src/CellChat_Rcpp.o"
+                                   "src/RcppExports.o")))))
+      (properties `((upstream-name . "CellChat")))
+      (build-system r-build-system)
+      (propagated-inputs
+       `(("r-biocgenerics" ,r-biocgenerics)
+         ("r-circlize" ,r-circlize)
+         ("r-colorspace" ,r-colorspace)
+         ("r-complexheatmap" ,r-complexheatmap)
+         ("r-cowplot" ,r-cowplot)
+         ("r-dplyr" ,r-dplyr)
+         ("r-expm" ,r-expm)
+         ("r-fnn" ,r-fnn)
+         ("r-forcats" ,r-forcats)
+         ("r-future" ,r-future)
+         ("r-future-apply" ,r-future-apply)
+         ("r-gg-gap" ,r-gg-gap)
+         ("r-ggalluvial" ,r-ggalluvial)
+         ("r-ggplot2" ,r-ggplot2)
+         ("r-ggrepel" ,r-ggrepel)
+         ("r-igraph" ,r-igraph)
+         ("r-irlba" ,r-irlba)
+         ("r-magrittr" ,r-magrittr)
+         ("r-matrix" ,r-matrix)
+         ("r-nmf" ,r-nmf)
+         ("r-patchwork" ,r-patchwork)
+         ("r-pbapply" ,r-pbapply)
+         ("r-rcolorbrewer" ,r-rcolorbrewer)
+         ("r-rcpp" ,r-rcpp)
+         ("r-rcppeigen" ,r-rcppeigen)
+         ("r-reshape2" ,r-reshape2)
+         ("r-reticulate" ,r-reticulate)
+         ("r-rspectra" ,r-rspectra)
+         ("r-rtsne" ,r-rtsne)
+         ("r-scales" ,r-scales)
+         ("r-shape" ,r-shape)
+         ("r-sna" ,r-sna)
+         ("r-stringr" ,r-stringr)
+         ("r-svglite" ,r-svglite)))
+      (native-inputs `(("r-knitr" ,r-knitr)))
+      (home-page "https://github.com/sqjin/CellChat")
+      (synopsis "Analysis of cell-cell communication from single-cell transcriptomics data")
+      (description
+       "This package infers, visualizes and analyzes the cell-cell
+communication networks from scRNA-seq data.")
+      (license license:gpl3))))
+
 (define-public sambamba
   (package
     (name "sambamba")
