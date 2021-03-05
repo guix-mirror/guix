@@ -672,6 +672,18 @@ including 2D color images.")
     (synopsis "Qt frontend for the G'MIC image processing framework")
     (license license:gpl3+)))
 
+(define-public gmic-qt-krita
+  (package
+    (inherit gmic-qt)
+    (name "gmic-qt-krita")
+    (arguments
+     (substitute-keyword-arguments (package-arguments gmic-qt)
+       ((#:configure-flags flags)
+        '(list "-DGMIC_QT_HOST=krita" "-DENABLE_DYNAMIC_LINKING=ON"
+               (string-append "-DGMIC_LIB_PATH="
+                              (assoc-ref %build-inputs "gmic") "/lib")))))
+    (synopsis "Krita plugin for the G'MIC image processing framework")))
+
 (define-public nip2
   (package
     (name "nip2")
