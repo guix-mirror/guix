@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -91,11 +91,11 @@ Download and deploy the latest version of Guix.\n"))
   (display (G_ "
   -C, --channels=FILE    deploy the channels defined in FILE"))
   (display (G_ "
-      --url=URL          download from the Git repository at URL"))
+      --url=URL          download \"guix\" channel from the Git repository at URL"))
   (display (G_ "
-      --commit=COMMIT    download the specified COMMIT"))
+      --commit=COMMIT    download the specified \"guix\" channel COMMIT"))
   (display (G_ "
-      --branch=BRANCH    download the tip of the specified BRANCH"))
+      --branch=BRANCH    download the tip of the specified \"guix\" channel BRANCH"))
   (display (G_ "
       --allow-downgrades allow downgrades to earlier channel revisions"))
   (display (G_ "
