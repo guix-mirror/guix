@@ -1756,14 +1756,14 @@ tools supporting SpatiaLite.")
 (define-public virtualpg
   (package
     (name "virtualpg")
-    (version "1.0.2")
+    (version "2.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.gaia-gis.it/gaia-sins/"
                            "virtualpg-" version ".tar.gz"))
        (sha256
-        (base32 "0kjipcd08vvn188xmwbs7sw41xcs06x47n2hbqshpjcr51mxbarp"))))
+        (base32 "12z0l7368r4116ljzg7nljy5hf425r11vxc540w79wlzikmynamy"))))
     (build-system gnu-build-system)
     (inputs
      `(("postgresql" ,postgresql)
