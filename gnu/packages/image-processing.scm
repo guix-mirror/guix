@@ -648,6 +648,30 @@ including 2D color images.")
     ;; Dual-licensed, either license applies.
     (license (list license:cecill license:cecill-c))))
 
+(define-public gmic-qt
+  (package
+    (inherit gmic)
+    (name "gmic-qt")
+    (arguments
+     (substitute-keyword-arguments (package-arguments gmic)
+       ((#:configure-flags _)
+        `(list "-DGMIC_QT_HOST=none" "-DENABLE_DYNAMIC_LINKING=ON"
+               (string-append "-DGMIC_LIB_PATH="
+                              (assoc-ref %build-inputs "gmic") "/lib")))
+        ((#:phases phases)
+         `(modify-phases ,phases
+            (add-after 'unpack 'qt-chdir
+              (lambda _ (chdir "gmic-qt") #t))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("gmic" ,gmic)
+       ("qtbase" ,qtbase)
+       ,@(package-inputs gmic)))
+    (synopsis "Qt frontend for the G'MIC image processing framework")
+    (license license:gpl3+)))
+
 (define-public nip2
   (package
     (name "nip2")
