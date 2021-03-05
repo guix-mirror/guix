@@ -750,6 +750,12 @@ engineers, musicians, soundtrack editors and composers.")
         "-Daudacity_use_ffmpeg=linked"
         "-Daudacity_use_lame=system"
         "-Daudacity_use_portsmf=system")
+       #:imported-modules ((guix build glib-or-gtk-build-system)
+                           ,@%cmake-build-system-modules)
+       #:modules
+       ((guix build utils)
+        (guix build cmake-build-system)
+        ((guix build glib-or-gtk-build-system) #:prefix glib-or-gtk:))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'comment-out-revision-ident
@@ -766,7 +772,9 @@ engineers, musicians, soundtrack editors and composers.")
                (("../lib-src/portmidi/pm_common/portmidi.h") "portmidi.h")
                (("../lib-src/portmidi/porttime/porttime.h") "porttime.h"))
              (substitute* "src/prefs/MidiIOPrefs.cpp"
-               (("../../lib-src/portmidi/pm_common/portmidi.h") "portmidi.h")))))
+               (("../../lib-src/portmidi/pm_common/portmidi.h") "portmidi.h"))))
+         (add-after 'wrap-program 'glib-or-gtk-wrap
+           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap)))
          ;; The test suite is not "well exercised" according to the developers,
          ;; and fails with various errors.  See
          ;; <http://sourceforge.net/p/audacity/mailman/message/33524292/>.
