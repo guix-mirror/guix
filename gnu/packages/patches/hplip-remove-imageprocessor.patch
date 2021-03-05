@@ -1,4 +1,5 @@
-This patch is based heavily on the Debian patch.
+This patch is based heavily on the Debian patch, but was updated to
+apply to subsequent upstream changes not yet in Debian.
 
 https://salsa.debian.org/printing-team/hplip/raw/debian/3.18.10+dfsg0-1/debian/patches/0025-Remove-all-ImageProcessor-functionality-which-is-clo.patch
 
@@ -175,55 +176,67 @@ index 5b282d8..0bacfaf 100644
  
  #include <signal.h>
  #include <sys/wait.h>
-@@ -637,16 +636,10 @@ int HPCupsFilter::processRasterData(cups_raster_t *cups_raster)
- 
+@@ -651,21 +650,8 @@
  
      sprintf(hpPreProcessedRasterFile, "%s/hp_%s_cups_SwapedPagesXXXXXX",CUPS_TMP_DIR, m_JA.user_name);
--    image_processor_t* imageProcessor = imageProcessorCreate();
- 
+  
+-    image_processor_t* imageProcessor=NULL;
+-    IMAGE_PROCESSOR_ERROR result;
+-    //added if condition to check if pinter language is "ljzjstream"
+-    //If so, then bypass imageprocessing functions while running HPCUPS filter.
+-    if(strncmp(m_JA.printer_platform, "ljzjstream",10) == 0){
+-        imageProcessor = imageProcessorCreate();
+-    }
      while (cupsRasterReadHeader2(cups_raster, &cups_header))
      {
- 
--        IMAGE_PROCESSOR_ERROR result = imageProcessorStartPage(imageProcessor, &cups_header);
+-       if(strncmp(m_JA.printer_platform, "ljzjstream",10) == 0){
+-        result = imageProcessorStartPage(imageProcessor, &cups_header);
 -        if (result != IPE_SUCCESS){
 -            dbglog("DEBUG: imageProcessorStartPage failed result = %d\n", result);
 -        }
--
+-     }
          current_page_number++;
  
          if (current_page_number == 1) {
-@@ -745,12 +738,6 @@ int HPCupsFilter::processRasterData(cups_raster_t *cups_raster)
+@@ -764,14 +750,6 @@
              color_raster = rgbRaster;
              black_raster = kRaster;
  
+-	if(strncmp(m_JA.printer_platform, "ljzjstream",10) == 0)
+-	{
 -            result = imageProcessorProcessLine(imageProcessor, m_pPrinterBuffer, cups_header.cupsBytesPerLine);
 -            if (result != IPE_SUCCESS){
 -                dbglog("DEBUG: imageProcessorProcessLine failed result = %d\n", result);
 -            }
--
+-	}
 -
              if ((y == 0) && !is_ljmono) {
                  //For ljmono, make sure that first line is not a blankRaster line.Otherwise printer
                  //may not skip blank lines before actual data
-@@ -780,12 +767,6 @@ int HPCupsFilter::processRasterData(cups_raster_t *cups_raster)
+@@ -801,14 +779,6 @@
              }
          }  // for() loop end
  
+-	if(strncmp(m_JA.printer_platform, "ljzjstream",10) == 0)
+-	{
 -        result = imageProcessorEndPage(imageProcessor);
 -        if (result != IPE_SUCCESS){
 -                dbglog("DEBUG: imageProcessorEndPage failed result = %d\n", result);
 -        }
--
+-	}
 -
          m_Job.NewPage();
          if (err != NO_ERROR) {
              break;
-@@ -800,8 +781,6 @@ int HPCupsFilter::processRasterData(cups_raster_t *cups_raster)
+@@ -823,11 +793,6 @@
          rgbRaster = NULL;
      }
  
+- 
+-   if(strncmp(m_JA.printer_platform, "ljzjstream",10) == 0)
+-   {
 -    imageProcessorDestroy(imageProcessor);
--
+-   }
      unlink(hpPreProcessedRasterFile);
      return ret_status;
  }
