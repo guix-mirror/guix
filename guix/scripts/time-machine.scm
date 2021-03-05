@@ -142,7 +142,8 @@ Execute COMMAND ARGS... in an older version of Guix.\n"))
                  (with-store store
                    (with-status-verbosity (assoc-ref opts 'verbosity)
                      (set-build-options-from-command-line store opts)
-                     (cached-channel-instance store channels
-                                              #:authenticate? authenticate?))))
+                     (channels->cached-profile
+                      store channels
+                      #:authenticate? authenticate?))))
                 (executable (string-append directory "/bin/guix")))
            (apply execl (cons* executable executable command-line))))))))
