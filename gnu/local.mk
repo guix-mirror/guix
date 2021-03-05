@@ -1382,6 +1382,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/mumps-shared-mumps.patch			\
   %D%/packages/patches/mumps-shared-pord.patch			\
   %D%/packages/patches/mupdf-fix-linkage.patch			\
+  %D%/packages/patches/mupdf-CVE-2021-3407.patch		\
   %D%/packages/patches/mupen64plus-ui-console-notice.patch	\
   %D%/packages/patches/mupen64plus-video-z64-glew-correct-path.patch    \
   %D%/packages/patches/musl-cross-locale.patch			\

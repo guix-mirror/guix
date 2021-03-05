@@ -724,7 +724,8 @@ extracting content or merging files.")
                            "mupdf-" version "-source.tar.xz"))
        (sha256
         (base32 "16m5sksil22sshxy70xkslsb2qhvcqb1d95i9savnhds1xn4ybar"))
-       (patches (search-patches "mupdf-fix-linkage.patch"))
+       (patches (search-patches "mupdf-fix-linkage.patch"
+                                "mupdf-CVE-2021-3407.patch"))
        (modules '((guix build utils)))
        (snippet
         '(begin
