@@ -7,6 +7,7 @@
 ;;; Copyright © 2019 Robert Vollmert <rob@vllmrt.net>
 ;;; Copyright © 2020 Helio Machado <0x2b3bfa0+guix@googlemail.com>
 ;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -57,6 +58,7 @@
             package-names->package-inputs
             maybe-inputs
             maybe-native-inputs
+            maybe-propagated-inputs
             package->definition
 
             spdx-string->license
@@ -247,23 +249,29 @@ use in an 'inputs' field of a package definition."
          (input (make-input input #f)))
        names))
 
-(define* (maybe-inputs package-names #:optional (output #f))
+(define* (maybe-inputs package-names #:optional (output #f)
+                       #:key (type #f))
   "Given a list of PACKAGE-NAMES, tries to generate the 'inputs' field of a
-package definition."
-  (match (package-names->package-inputs package-names output)
-    (()
-     '())
-    ((package-inputs ...)
-     `((inputs (,'quasiquote ,package-inputs))))))
+package definition.  TYPE can be used to specify the type of the inputs;
+either the 'native or 'propagated symbols are accepted.  Left unspecified, the
+snippet generated is for regular inputs."
+  (let ((field-name (match type
+                      ('native 'native-inputs)
+                      ('propagated 'propagated-inputs)
+                      (_ 'inputs))))
+    (match (package-names->package-inputs package-names output)
+      (()
+       '())
+      ((package-inputs ...)
+       `((,field-name (,'quasiquote ,package-inputs)))))))
 
 (define* (maybe-native-inputs package-names #:optional (output #f))
-  "Given a list of PACKAGE-NAMES, tries to generate the 'inputs' field of a
-package definition."
-  (match (package-names->package-inputs package-names output)
-    (()
-     '())
-    ((package-inputs ...)
-     `((native-inputs (,'quasiquote ,package-inputs))))))
+  "Same as MAYBE-INPUTS, but for native inputs."
+  (maybe-inputs package-names output #:type 'native))
+
+(define* (maybe-propagated-inputs package-names #:optional (output #f))
+  "Same as MAYBE-INPUTS, but for propagated inputs."
+  (maybe-inputs package-names output #:type 'propagated))
 
 (define* (package->definition guix-package #:optional append-version?/string)
   "If APPEND-VERSION?/STRING is #t, append the package's major+minor
