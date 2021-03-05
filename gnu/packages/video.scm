@@ -2197,14 +2197,14 @@ To load this plugin, specify the following option when starting mpv:
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2021.02.22")
+    (version "2021.03.03")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://youtube-dl.org/downloads/latest/"
                                   "youtube-dl-" version ".tar.gz"))
               (sha256
                (base32
-                "19j4kfqln1yk47dpid9j4z3zvgxy6xar1mpfsadifikfdgbmsq7x"))
+                "11z2v8mdii0bl13850mc6hgz80d0kgzb4hdxyikc3wa4jqfwrq7f"))
               (snippet
                '(begin
                   ;; Delete the pre-generated files, except for the man page
