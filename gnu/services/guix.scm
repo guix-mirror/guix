@@ -76,6 +76,11 @@
             guix-build-coordinator-agent-dynamic-auth-agent-name
             guix-build-coordinator-agent-dynamic-auth-token
 
+            guix-build-coordinator-agent-dynamic-auth-with-file
+            guix-build-coordinator-agent-dynamic-auth-with-file?
+            guix-build-coordinator-agent-dynamic-auth-with-file-agent-name
+            guix-build-coordinator-agent-dynamic-auth-with-file-token-file
+
             guix-build-coordinator-agent-service-type
 
             guix-build-coordinator-queue-builds-configuration
@@ -179,6 +184,13 @@
   guix-build-coordinator-agent-dynamic-auth?
   (agent-name          guix-build-coordinator-agent-dynamic-auth-agent-name)
   (token               guix-build-coordinator-agent-dynamic-auth-token))
+
+(define-record-type* <guix-build-coordinator-agent-dynamic-auth-with-file>
+  guix-build-coordinator-agent-dynamic-auth-with-file
+  make-guix-build-coordinator-agent-dynamic-auth-with-file
+  guix-build-coordinator-agent-dynamic-auth-with-file?
+  (agent-name      guix-build-coordinator-agent-dynamic-auth-with-file-agent-name)
+  (token-file      guix-build-coordinator-agent-dynamic-auth-with-file-token-file))
 
 (define-record-type* <guix-build-coordinator-queue-builds-configuration>
   guix-build-coordinator-queue-builds-configuration
@@ -381,7 +393,13 @@
                            (($ <guix-build-coordinator-agent-dynamic-auth>
                                agent-name token)
                             #~(#$(string-append "--name=" agent-name)
-                               #$(string-append "--dynamic-auth-token=" token))))
+                               #$(string-append "--dynamic-auth-token=" token)))
+                           (($
+                             <guix-build-coordinator-agent-dynamic-auth-with-file>
+                             agent-name token-file)
+                            #~(#$(string-append "--name=" agent-name)
+                               #$(string-append "--dynamic-auth-token-file="
+                                                token-file))))
                       #$(simple-format #f "--max-parallel-builds=~A"
                                        max-parallel-builds)
                       #$@(if derivation-substitute-urls
