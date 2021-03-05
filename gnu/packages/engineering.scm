@@ -2553,7 +2553,18 @@ specification can be downloaded at @url{http://3mf.io/specification/}.")
                          "echotest_allexpressions"
                          "lazyunion-*"
                          "pdfexporttest_centered"
-                         "pdfexporttest_simple-pdf")
+                         "pdfexporttest_simple-pdf"
+
+                         ;; Broken due since cgal@5.2 +
+                         ;; https://github.com/CGAL/cgal/pull/5371 (security)
+                         ;; FIXME: Investigate or wait for future releases to
+                         ;; fix it.
+                         ;; Unsure if wrong test-suite or wrong security
+                         ;; patch.
+                         "cgalpngtest_nef3_broken"
+                         "opencsgtest_nef3_broken"
+                         "csgpngtest_nef3_broken"
+                         "throwntogethertest_nef3_broken")
                         "|")))
              ;; strip python test files since lib dir ends up in out/share
              (for-each delete-file
