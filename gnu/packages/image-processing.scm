@@ -613,7 +613,18 @@ due to its architecture which automatically parallelises the image workflows.")
         (base32 "06n1dcskky7aqg3a0cp7biwz8agc4xqvr8091l2wsvgib98yhbyj"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f))                    ;there are no tests
+     `(#:tests? #f ;there are no tests
+       #:configure-flags '("-DBUILD_LIB_STATIC=OFF"
+                           "-DENABLE_DYNAMIC_LINKING=ON"
+                           "-DENABLE_LTO=ON")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'set-LDFLAGS
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (setenv "LDFLAGS"
+                     (string-append
+                      "-Wl,-rpath="
+                      (assoc-ref outputs "out") "/lib")))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
