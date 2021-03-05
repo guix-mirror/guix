@@ -24040,3 +24040,24 @@ traditional readability measures based on simple surface
 characteristics. These measures are basically linear regressions based on the
 number of words, syllables, and sentences.")
     (license license:asl2.0)))
+
+(define-public python-listparser
+  (package
+    (name "python-listparser")
+    (version "0.18")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "listparser" version))
+       (sha256
+        (base32
+         "0hdqs1mmayw1r8yla43hgb4d9y3zqs5483vgf8j9ygczkd2wrq2b"))))
+    (build-system python-build-system)
+    (home-page
+     "https://github.com/kurtmckee/listparser")
+    (synopsis
+     "Parse subscription lists in Python")
+    (description
+     "This package provides a Python library that can parse OPML, FOAF, and
+iGoogle subscription lists.")
+    (license license:expat)))
