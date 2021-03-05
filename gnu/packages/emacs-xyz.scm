@@ -93,6 +93,7 @@
 ;;; Copyright © 2021 Alexandr Vityazev <avityazew@gmail.com>
 ;;; Copyright © 2021 Yurii Kholodkov <urist.mckorobochka@gmail.com>
 ;;; Copyright © 2021 Alexey Abramov <levenson@mmer.org>
+;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -13665,6 +13666,32 @@ the nick color and the background color
 enables you to easily define search engines, bind them to keybindings, and
 query them from the comfort of your editor.")
     (home-page "https://github.com/hrs/engine-mode")
+    (license license:gpl3+)))
+
+(define-public emacs-envrc
+  (package
+    (name "emacs-envrc")
+    (version "0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/purcell/envrc")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0ssf9i6iym2rb530k2w5aj392qa73i6p5y0vwrs5qhkv9lagqq7p"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/purcell/envrc")
+    (synopsis "Support for Direnv which operates buffer-locally")
+    (description
+     "This is library which uses Direnv to set environment variables on
+a per-buffer basis.  This means that when you work across multiple projects
+which have @file{.envrc} files, all processes launched from the buffers ``in''
+those projects will be executed with the environment variables specified in
+those files.  This allows different versions of linters and other tools to be
+used in each project if desired.")
     (license license:gpl3+)))
 
 (define-public emacs-prop-menu
