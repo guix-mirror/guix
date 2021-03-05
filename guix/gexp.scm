@@ -1708,6 +1708,7 @@ TARGET, a GNU triplet."
     ;; TODO: Pass MODULES as an environment variable.
     (gexp->derivation name build
                       #:system system
+                      #:target target
                       #:guile-for-build guile
                       #:local-build? #t
                       #:env-vars
