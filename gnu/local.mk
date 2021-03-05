@@ -879,6 +879,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/cdparanoia-fpic.patch			\
   %D%/packages/patches/cdrtools-3.01-mkisofs-isoinfo.patch 	\
   %D%/packages/patches/ceph-disable-cpu-optimizations.patch	\
+  %D%/packages/patches/cgal-security-pr-5371.patch		\
   %D%/packages/patches/chmlib-inttypes.patch			\
   %D%/packages/patches/cl-asdf-config-directories.patch		\
   %D%/packages/patches/clamav-config-llvm-libs.patch		\
