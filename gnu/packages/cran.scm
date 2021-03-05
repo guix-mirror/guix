@@ -1954,6 +1954,29 @@ in R and Shiny via the D3 visualization library.")
 from Wes Anderson movies.")
     (license license:expat)))
 
+(define-public r-gg-gap
+  (package
+    (name "r-gg-gap")
+    (version "1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "gg.gap" version))
+       (sha256
+        (base32
+         "0m66050ryn31xmsmmikjsssllasvjdmp9yjbwfdwfpwdv106zn9h"))))
+    (properties `((upstream-name . "gg.gap")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-cowplot" ,r-cowplot)
+       ("r-ggplot2" ,r-ggplot2)))
+    (home-page "https://github.com/ChrisLou-bioinfo/gg.gap")
+    (synopsis "Define segments on the y-axis for ggplot2")
+    (description
+     "The @code{gg.gap} function enables you to define segments for the y-axis
+in a ggplot2 plot.")
+    (license license:gpl3)))
+
 (define-public r-tablerdash
   (package
     (name "r-tablerdash")
