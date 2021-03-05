@@ -57,6 +57,7 @@
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2020, 2021 Andy Tai <atai@atai.org>
+;;; Copyright © 2020, 2021 Sébastien Lerique <sl@eauchat.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -7978,7 +7979,9 @@ Cisco's AnyConnect SSL VPN.")
                 "1rf3nm0hjcy9f8ajb4vmvwy503w8yj8d4daxkcb7w7i7b92qmyfn"))))
     (build-system meson-build-system)
     (arguments
-     '(#:glib-or-gtk? #t))
+     '(#:glib-or-gtk? #t
+       #:configure-flags
+       '("-Dappindicator=yes")))
     (native-inputs
      `(("intltool" ,intltool)
        ("glib:bin" ,glib "bin") ; for glib-compile-resources, etc.
@@ -7994,6 +7997,7 @@ Cisco's AnyConnect SSL VPN.")
        ("libnma" ,libnma)))
     (inputs
      `(("gcr" ,gcr)
+       ("libappindicator" ,libappindicator)
        ("libgudev" ,libgudev)
        ("libnotify" ,libnotify)
        ("libsecret" ,libsecret)
