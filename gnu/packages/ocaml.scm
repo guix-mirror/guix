@@ -156,7 +156,7 @@
       (native-inputs
        `(("guile" ,guile-3.0)))
       (properties
-       `(max-silent-time . 14400)) ; 4 hours, expected even on x86_64
+       `((max-silent-time . 14400))) ; 4 hours, expected even on x86_64
       (home-page "https://github.com/Ekdohibs/camlboot")
       (synopsis "OCaml souce bootstrap")
       (description "OCaml is written in OCaml.  Its sources contain a pre-compiled
