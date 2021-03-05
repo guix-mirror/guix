@@ -563,8 +563,12 @@ identifiers.  The result is inferred from the file names of patches."
   (let* ((canonical (module-ref (resolve-interface '(gnu packages base))
                                 'canonical-package))
          (ref       (lambda (module var)
-                      (canonical
-                       (module-ref (resolve-interface module) var)))))
+                      ;; Make sure 'canonical-package' is not influenced by
+                      ;; '%current-target-system' since we're going to use the
+                      ;; native package anyway.
+                      (parameterize ((%current-target-system #f))
+                        (canonical
+                         (module-ref (resolve-interface module) var))))))
     `(("tar"   ,(ref '(gnu packages base) 'tar))
       ("xz"    ,(ref '(gnu packages compression) 'xz))
       ("bzip2" ,(ref '(gnu packages compression) 'bzip2))
