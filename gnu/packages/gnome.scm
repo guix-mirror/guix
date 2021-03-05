@@ -52,11 +52,12 @@
 ;;; Copyright © 2020 Naga Malleswari <nagamalli@riseup.net>
 ;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
 ;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
-;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2020, 2021 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
-;;; Copyright © 2020 Andy Tai <atai@atai.org>
+;;; Copyright © 2020, 2021 Andy Tai <atai@atai.org>
+;;; Copyright © 2020, 2021 Sébastien Lerique <sl@eauchat.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -149,6 +150,7 @@
   #:use-module (gnu packages ninja)
   #:use-module (gnu packages node)
   #:use-module (gnu packages nss)
+  #:use-module (gnu packages ocr)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages password-utils)
@@ -2544,6 +2546,8 @@ GNOME Desktop.")
        ("libxslt" ,libxslt) ;for documentation
        ("docbook-xml" ,docbook-xml-4.2)
        ("docbook-xsl" ,docbook-xsl)))
+    (propagated-inputs
+     `(("gcr" ,gcr)))
     (home-page "https://www.gnome.org")
     (synopsis "Daemon to store passwords and encryption keys")
     (description
@@ -7875,7 +7879,7 @@ Cisco's AnyConnect SSL VPN.")
 (define-public network-manager-applet
   (package
     (name "network-manager-applet")
-    (version "1.16.0")
+    (version "1.20.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/network-manager-applet/"
@@ -7883,10 +7887,12 @@ Cisco's AnyConnect SSL VPN.")
                                   "network-manager-applet-" version ".tar.xz"))
               (sha256
                (base32
-                "1rf3nm0hjcy9f8ajb4vmvwy503w8yj8d4daxkcb7w7i7b92qmyfn"))))
+                "0lsjkbv66hn7acl2pg9h6hz4b700zzv4cjwrwjvy7043blw0bcla"))))
     (build-system meson-build-system)
     (arguments
-     '(#:glib-or-gtk? #t))
+     '(#:glib-or-gtk? #t
+       #:configure-flags
+       '("-Dappindicator=yes")))
     (native-inputs
      `(("intltool" ,intltool)
        ("glib:bin" ,glib "bin") ; for glib-compile-resources, etc.
@@ -7902,6 +7908,7 @@ Cisco's AnyConnect SSL VPN.")
        ("libnma" ,libnma)))
     (inputs
      `(("gcr" ,gcr)
+       ("libappindicator" ,libappindicator)
        ("libgudev" ,libgudev)
        ("libnotify" ,libnotify)
        ("libsecret" ,libsecret)
@@ -10311,6 +10318,7 @@ photo-booth-like software, such as Cheese.")
      `(("gnome-desktop" ,gnome-desktop)
        ("gobject-introspection" ,gobject-introspection)
        ("gst-plugins-base" ,gst-plugins-base)
+       ("gst-plugins-good" ,gst-plugins-good)
        ("gst-plugins-bad" ,gst-plugins-bad)
        ("gtk+" ,gtk+)
        ("libx11" ,libx11)
@@ -11378,7 +11386,7 @@ and toolbars.")
 (define-public setzer
   (package
     (name "setzer")
-    (version "0.3.9")
+    (version "0.4.1")
     (source
      (origin
        (method git-fetch)
@@ -11387,7 +11395,7 @@ and toolbars.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1qmy2bxl8x6pijjaaj91v6rqdipha6iyy0b6b9y1lk3r2p3azd42"))))
+        (base32 "1rcx2c07jg1ij81pnvg3px49hfbjmkagn68d3gp79z3gcajbp2av"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -11419,6 +11427,7 @@ and toolbars.")
        ("gtksourceview" ,gtksourceview)
        ("pango" ,pango)
        ("poppler" ,poppler)
+       ("python-pdfminer" ,python-pdfminer-six)
        ("python-pycairo" ,python-pycairo)
        ("python-pygobject" ,python-pygobject)
        ("python-pyxdg" ,python-pyxdg)
@@ -11812,7 +11821,7 @@ integrated profiler via Sysprof, debugging support, and more.")
 (define-public komikku
   (package
     (name "komikku")
-    (version "0.26.0")
+    (version "0.26.1")
     (source
      (origin
        (method git-fetch)
@@ -11822,7 +11831,7 @@ integrated profiler via Sysprof, debugging support, and more.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1g5rhp3d97v0s8nk536vqpv6qd4gha4h27bfdkypcqa42h8wyxm2"))))
+         "1mas409c14p6g0v10w4cf5hsjbs0922h6h9k9pyj9s8y7yi2ikz2"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -12003,4 +12012,68 @@ your data.")
 for the GNOME 3.x platform with many features.  It aims to be a very complete
 editing environment for translation issues within the GNU gettext/GNOME desktop
 world.")
+    (license license:gpl3+)))
+
+
+(define-public ocrfeeder
+  (package
+    (name "ocrfeeder")
+    (version "0.8.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/ocrfeeder/"
+                                  (version-major+minor version) "/"
+                                  "ocrfeeder-" version ".tar.xz"))
+              (sha256
+               (base32
+                "12f5gnq92ffnd5zaj04df7jrnsdz1zn4zcgpbf5p9qnd21i2y529"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after
+          'install 'wrap-program
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((prog (string-append (assoc-ref outputs "out")
+                                       "/bin/" "ocrfeeder"))
+                  (pylib (string-append (assoc-ref outputs "out")
+                                        "/lib/python"
+                                        ,(version-major+minor
+                                          (package-version python))
+                                        "/site-packages")))
+              (wrap-program prog
+                `("PYTHONPATH" = (,(getenv "PYTHONPATH") ,pylib))
+                `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))
+              #t))))))
+    (native-inputs
+     `(("glib:bin" ,glib "bin")                   ; for glib-compile-resources
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk+:bin" ,gtk+ "bin")                   ; for gtk-update-icon-cache
+       ("intltool" ,intltool)
+       ("itstool" ,itstool)
+       ("pkg-config" ,pkg-config)
+       ("xmllint" ,libxml2)))
+    (inputs
+     `(("enchant" ,enchant)
+       ("glib" ,glib)
+       ("goocanvas" ,goocanvas)
+       ("gtk" ,gtk+)
+       ("gtkspell3" ,gtkspell3)
+       ("libjpeg" ,libjpeg-turbo)
+       ("libtiff" ,libtiff)
+       ("libraw" ,libraw)
+       ("ocrad" ,ocrad)
+       ("python" ,python-wrapper)
+       ("python-pygobject" ,python-pygobject)
+       ("python-odfpy" ,python-odfpy)
+       ("python-pillow" ,python-pillow)
+       ("python-pyenchant" ,python-pyenchant)
+       ("python-reportlab" ,python-reportlab)
+       ("python-sane" ,python-sane)
+       ("sane-backends" ,sane-backends)
+       ("tesseract-ocr" ,tesseract-ocr)))
+    (home-page "https://wiki.gnome.org/Apps/OCRFeeder")
+    (synopsis "Complete OCR Suite")
+    (description "OCRFeeder is a complete Optical Character Recognition and
+Document Analysis and Recognition program.")
     (license license:gpl3+)))

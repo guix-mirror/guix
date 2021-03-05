@@ -437,6 +437,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/perl.scm				\
   %D%/packages/perl-check.scm			\
   %D%/packages/perl-compression.scm		\
+  %D%/packages/perl-maths.scm			\
   %D%/packages/perl-web.scm			\
   %D%/packages/perl6.scm			\
   %D%/packages/photo.scm			\
@@ -535,6 +536,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/synergy.scm			\
   %D%/packages/syndication.scm			\
   %D%/packages/task-management.scm		\
+  %D%/packages/task-runners.scm			\
   %D%/packages/tbb.scm				\
   %D%/packages/tcl.scm				\
   %D%/packages/telegram.scm                 \
@@ -607,6 +609,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/dns.scm				\
   %D%/services/docker.scm			\
   %D%/services/authentication.scm		\
+  %D%/services/file-sharing.scm			\
   %D%/services/games.scm			\
   %D%/services/ganeti.scm			\
   %D%/services/getmail.scm				\
@@ -663,6 +666,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/system/images/novena.scm			\
   %D%/system/images/pine64.scm			\
   %D%/system/images/pinebook-pro.scm		\
+  %D%/system/images/rock64.scm			\
 						\
   %D%/machine.scm				\
 						\
@@ -973,8 +977,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/evolution-data-server-locales.patch	\
   %D%/packages/patches/evolution-data-server-libical-compat.patch	\
   %D%/packages/patches/exercism-disable-self-update.patch	\
-  %D%/packages/patches/exiv2-CVE-2017-14860.patch		\
-  %D%/packages/patches/exiv2-CVE-2017-14859-14862-14864.patch	\
   %D%/packages/patches/extempore-unbundle-external-dependencies.patch	\
   %D%/packages/patches/extundelete-e2fsprogs-1.44.patch		\
   %D%/packages/patches/farstream-make.patch                          \
@@ -1164,7 +1166,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/hdf-eos5-remove-gctp.patch		\
   %D%/packages/patches/hdf-eos5-fix-szip.patch			\
   %D%/packages/patches/hdf-eos5-fortrantests.patch		\
-  %D%/packages/patches/http-parser-fix-assertion-on-armhf.patch	\
+  %D%/packages/patches/http-parser-CVE-2020-8287.patch		\
   %D%/packages/patches/hubbub-sort-entities.patch		\
   %D%/packages/patches/hurd-cross.patch				\
   %D%/packages/patches/hurd-xattr.patch				\
@@ -1322,7 +1324,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/llvm-9-fix-scev-miscompilation.patch	\
   %D%/packages/patches/lm-sensors-hwmon-attrs.patch		\
   %D%/packages/patches/lrcalc-includes.patch    		\
-  %D%/packages/patches/lrzip-CVE-2017-8842.patch		\
   %D%/packages/patches/lsh-fix-x11-forwarding.patch		\
   %D%/packages/patches/lsof-fatal-test-failures.patch		\
   %D%/packages/patches/lua-CVE-2014-5461.patch                      \
@@ -1377,6 +1378,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/mumps-shared-mumps.patch			\
   %D%/packages/patches/mumps-shared-pord.patch			\
   %D%/packages/patches/mupdf-fix-linkage.patch			\
+  %D%/packages/patches/mupdf-CVE-2021-3407.patch		\
   %D%/packages/patches/mupen64plus-ui-console-notice.patch	\
   %D%/packages/patches/mupen64plus-video-z64-glew-correct-path.patch    \
   %D%/packages/patches/musl-cross-locale.patch			\
@@ -1421,10 +1423,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/openfoam-4.1-cleanup.patch			\
   %D%/packages/patches/openjdk-10-idlj-reproducibility.patch	\
   %D%/packages/patches/openmpi-mtl-priorities.patch		\
-  %D%/packages/patches/openssh-fix-ssh-copy-id.patch		\
   %D%/packages/patches/openssh-hurd.patch			\
   %D%/packages/patches/openresolv-restartcmd-guix.patch	\
-  %D%/packages/patches/openscad-parser-boost-1.72.patch	\
   %D%/packages/patches/opensles-add-license-file.patch			\
   %D%/packages/patches/openssl-runpath.patch			\
   %D%/packages/patches/openssl-1.1-c-rehash-in.patch		\
@@ -1512,11 +1512,16 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-2.7-search-paths.patch		\
   %D%/packages/patches/python-2.7-site-prefixes.patch		\
   %D%/packages/patches/python-2.7-source-date-epoch.patch	\
+  %D%/packages/patches/python-2.7-CVE-2021-3177.patch		\
   %D%/packages/patches/python-3-arm-alignment.patch		\
   %D%/packages/patches/python-3-deterministic-build-info.patch	\
   %D%/packages/patches/python-3-search-paths.patch		\
   %D%/packages/patches/python-3-fix-tests.patch			\
   %D%/packages/patches/python-3-hurd-configure.patch		\
+  %D%/packages/patches/python-3.8-CVE-2021-3177.patch		\
+  %D%/packages/patches/python-3.9-fix-tests.patch		\
+  %D%/packages/patches/python-CVE-2018-14647.patch		\
+  %D%/packages/patches/python-CVE-2020-26116.patch		\
   %D%/packages/patches/python-aionotify-0.2.0-py3.8.patch	\
   %D%/packages/patches/python-argcomplete-1.11.1-fish31.patch	\
   %D%/packages/patches/python-axolotl-AES-fix.patch		\
@@ -1531,6 +1536,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-flint-includes.patch		\
   %D%/packages/patches/python-libxml2-python39-compat.patch	\
   %D%/packages/patches/python-libxml2-utf8.patch		\
+  %D%/packages/patches/python-matplotlib-run-under-wayland-gtk3.patch	\
   %D%/packages/patches/python-mediafile-wavpack.patch		\
   %D%/packages/patches/python-memcached-syntax-warnings.patch	\
   %D%/packages/patches/python-mox3-python3.6-compat.patch	\
@@ -1553,6 +1559,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-waitress-fix-tests.patch		\
   %D%/packages/patches/pypy3-7.3.1-fix-tests.patch		\
   %D%/packages/patches/qemu-build-info-manual.patch		\
+  %D%/packages/patches/qemu-CVE-2021-20203.patch		\
   %D%/packages/patches/qemu-glibc-2.27.patch 			\
   %D%/packages/patches/qpdfview-qt515-compat.patch		\
   %D%/packages/patches/qrcodegen-cpp-make-install.patch		\
@@ -1584,14 +1591,11 @@ dist_patch_DATA =						\
   %D%/packages/patches/rtags-separate-rct.patch			\
   %D%/packages/patches/racket-store-checksum-override.patch	\
   %D%/packages/patches/remake-impure-dirs.patch			\
-  %D%/packages/patches/retroarch-disable-online-updater.patch	\
+  %D%/packages/patches/retroarch-LIBRETRO_DIRECTORY.patch	\
   %D%/packages/patches/rnp-add-version.cmake.patch		\
   %D%/packages/patches/rnp-disable-ruby-rnp-tests.patch		\
   %D%/packages/patches/rnp-unbundle-googletest.patch		\
-  %D%/packages/patches/ruby-rack-ignore-failing-test.patch	\
-  %D%/packages/patches/ruby-rubocop-break-dependency-cycle.patch\
   %D%/packages/patches/ruby-sanitize-system-libxml.patch	\
-  %D%/packages/patches/ruby-tzinfo-data-ignore-broken-test.patch\
   %D%/packages/patches/runc-CVE-2019-5736.patch			\
   %D%/packages/patches/rust-coresimd-doctest.patch		\
   %D%/packages/patches/rust-ndarray-remove-blas-src-dep.patch	\
@@ -1606,6 +1610,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/scheme48-tests.patch			\
   %D%/packages/patches/scotch-build-parallelism.patch		\
   %D%/packages/patches/scotch-integer-declarations.patch	\
+  %D%/packages/patches/screen-CVE-2021-26937.patch		\
   %D%/packages/patches/screen-hurd-path-max.patch		\
   %D%/packages/patches/sdl-libx11-1.6.patch			\
   %D%/packages/patches/seed-webkit.patch			\
@@ -1719,6 +1724,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/wordnet-CVE-2008-2149.patch			\
   %D%/packages/patches/wordnet-CVE-2008-3908-pt1.patch			\
   %D%/packages/patches/wordnet-CVE-2008-3908-pt2.patch			\
+  %D%/packages/patches/wpa-supplicant-CVE-2021-27803.patch	\
   %D%/packages/patches/x265-arm-flags.patch			\
   %D%/packages/patches/xf86-video-ark-remove-mibstore.patch	\
   %D%/packages/patches/xf86-video-mach64-glibc-2.20.patch	\

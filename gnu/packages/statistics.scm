@@ -185,7 +185,7 @@ This package also provides @command{xls2csv} to export Excel files to CSV.")
 (define r-with-tests
   (package
     (name "r-with-tests")
-    (version "4.0.3")
+    (version "4.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cran/src/base/R-"
@@ -193,7 +193,7 @@ This package also provides @command{xls2csv} to export Excel files to CSV.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "03cypg2qf7v9mq9mr9alz9w5y9m5kdgwbc97bp26pyymg253m609"))))
+                "0bl098xcv8v316kqnf43v6gb4kcsv31ydqfm1f7qr824jzb2fgsj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:disallowed-references (,tzdata-for-tests)
@@ -273,12 +273,11 @@ as.POSIXct(if (\"\" != Sys.getenv(\"SOURCE_DATE_EPOCH\")) {\
 
              ;; The "References" section of this file when converted to
              ;; package.rds is sometimes stored with a newline, sometimes with
-             ;; a space.  We avoid this problem by adding characters to break
-             ;; up the series of line break and spaces that is suspected to be
-             ;; the culprit.
+             ;; a space.  We avoid this problem by removing the line break
+             ;; that is suspected to be the culprit.
              (substitute* "src/library/methods/DESCRIPTION.in"
-               (("  ``Software")
-                "  -- ``Software"))
+               (("\\(2008\\)\n") "(2008) ")
+               (("  ``Software") "``Software"))
              #t))
          (add-before 'build 'set-locales
            (lambda _
@@ -3885,7 +3884,7 @@ data behind them) can be viewed and modified in a web browser.")
        "13i2lgfnjhlbbm2yxfc2l5hswqw6x03pwba5csjmirv8kpjw4xr3"))))
    (properties `((upstream-name . "BiasedUrn")))
    (build-system r-build-system)
-   (home-page "http://www.agner.org/random/")
+   (home-page "https://www.agner.org/random/")
    (synopsis "Biased urn model distributions")
    (description
     "This package provides statistical models of biased sampling in the form
@@ -5221,7 +5220,7 @@ C++ library for numerical linear algebra and RcppEigen glue.")
        ("r-numderiv" ,r-numderiv)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
-    (home-page "http://people.math.aau.dk/~sorenh/software/pbkrtest/")
+    (home-page "https://people.math.aau.dk/~sorenh/software/pbkrtest/")
     (synopsis "Methods for linear mixed model comparison")
     (description
      "This package implements a parametric bootstrap test and a Kenward Roger
@@ -5896,3 +5895,31 @@ Java package that provides routines for various statistical distributions.")
 is designed to support editing of scripts and interaction with various
 statistical analysis programs such as R, Julia, and JAGS.")
       (license license:gpl3+))))
+
+(define-public readstat
+  (package
+    (name "readstat")
+    (version "1.1.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/WizardMac/ReadStat")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "00sdmaq0qzp6kyv53fpfi6jf3iv4pd0ap0gmw3mbfip52bbnl55w"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gnu-gettext)
+       ("libtool" ,libtool)))
+    (inputs
+     `(("zlib" ,zlib)))                 ; libz
+    (synopsis "Convert SAS, Stata, and SPSS files")
+    (description "Command-line tool and C library for reading files from
+popular stats packages like SAS, Stata and SPSS.")
+    (home-page "https://github.com/WizardMac/ReadStat")
+    (license license:expat)))
+

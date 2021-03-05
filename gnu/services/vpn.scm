@@ -40,7 +40,24 @@
             openvpn-remote-configuration
             openvpn-ccd-configuration
             generate-openvpn-client-documentation
-            generate-openvpn-server-documentation))
+            generate-openvpn-server-documentation
+
+            wireguard-peer
+            wireguard-peer?
+            wireguard-peer-name
+            wireguard-peer-endpoint
+            wireguard-peer-allowed-ips
+
+            wireguard-configuration
+            wireguard-configuration?
+            wireguard-configuration-wireguard
+            wireguard-configuration-interface
+            wireguard-configuration-addresses
+            wireguard-configuration-port
+            wireguard-configuration-private-key
+            wireguard-configuration-peers
+
+            wireguard-service-type))
 
 ;;;
 ;;; OpenVPN.
@@ -507,3 +524,122 @@ is truncated and rewritten every minute.")
       (remote openvpn-remote-configuration))
      (openvpn-remote-configuration ,openvpn-remote-configuration-fields))
    'openvpn-client-configuration))
+
+
+;;;
+;;; Wireguard.
+;;;
+
+(define-record-type* <wireguard-peer>
+  wireguard-peer make-wireguard-peer
+  wireguard-peer?
+  (name              wireguard-peer-name)
+  (endpoint          wireguard-peer-endpoint
+                     (default #f))     ;string
+  (public-key        wireguard-peer-public-key)   ;string
+  (allowed-ips       wireguard-peer-allowed-ips)) ;list of strings
+
+(define-record-type* <wireguard-configuration>
+  wireguard-configuration make-wireguard-configuration
+  wireguard-configuration?
+  (wireguard          wireguard-configuration-wireguard ;<package>
+                      (default wireguard-tools))
+  (interface          wireguard-configuration-interface ;string
+                      (default "wg0"))
+  (addresses          wireguard-configuration-addresses ;string
+                      (default '("10.0.0.1/32")))
+  (port               wireguard-configuration-port ;integer
+                      (default 51820))
+  (private-key        wireguard-configuration-private-key ;string
+                      (default "/etc/wireguard/private.key"))
+  (peers              wireguard-configuration-peers ;list of <wiregard-peer>
+                      (default '())))
+
+(define (wireguard-configuration-file config)
+  (define (peer->config peer)
+    (let ((name (wireguard-peer-name peer))
+          (public-key (wireguard-peer-public-key peer))
+          (endpoint (wireguard-peer-endpoint peer))
+          (allowed-ips (wireguard-peer-allowed-ips peer)))
+      (format #f "[Peer] #~a
+PublicKey = ~a
+AllowedIPs = ~a
+~a"
+              name
+              public-key
+              (string-join allowed-ips ",")
+              (if endpoint
+                  (format #f "Endpoint = ~a\n" endpoint)
+                  "\n"))))
+
+  (match-record config <wireguard-configuration>
+    (wireguard interface addresses port private-key peers)
+    (let* ((config-file (string-append interface ".conf"))
+           (peers (map peer->config peers))
+           (config
+            (computed-file
+             "wireguard-config"
+             #~(begin
+                 (mkdir #$output)
+                 (chdir #$output)
+                 (call-with-output-file #$config-file
+                   (lambda (port)
+                     (let ((format (@ (ice-9 format) format)))
+                       (format port "[Interface]
+Address = ~a
+PostUp = ~a set %i private-key ~a
+~a
+~{~a~^~%~}"
+                               #$(string-join addresses ",")
+                               #$(file-append wireguard "/bin/wg")
+                               #$private-key
+                               #$(if port
+                                     (format #f "ListenPort = ~a" port)
+                                     "")
+                               (list #$@peers)))))))))
+      (file-append config "/" config-file))))
+
+(define (wireguard-activation config)
+  (match-record config <wireguard-configuration>
+    (private-key)
+    #~(begin
+        (use-modules (guix build utils)
+                     (ice-9 popen)
+                     (ice-9 rdelim))
+        (mkdir-p (dirname #$private-key))
+        (unless (file-exists? #$private-key)
+          (let* ((pipe
+                  (open-input-pipe (string-append
+                                    #$(file-append wireguard-tools "/bin/wg")
+                                    " genkey")))
+                 (key (read-line pipe)))
+            (call-with-output-file #$private-key
+              (lambda (port)
+                (display key port)))
+            (chmod #$private-key #o400)
+            (close-pipe pipe))))))
+
+(define (wireguard-shepherd-service config)
+  (match-record config <wireguard-configuration>
+    (wireguard interface)
+    (let ((wg-quick (file-append wireguard "/bin/wg-quick"))
+          (config (wireguard-configuration-file config)))
+      (list (shepherd-service
+             (requirement '(networking))
+             (provision (list
+                         (symbol-append 'wireguard-
+                                        (string->symbol interface))))
+             (start #~(lambda _
+                       (invoke #$wg-quick "up" #$config)))
+             (stop #~(lambda _
+                       (invoke #$wg-quick "down" #$config)))
+             (documentation "Run the Wireguard VPN tunnel"))))))
+
+(define wireguard-service-type
+  (service-type
+   (name 'wireguard)
+   (extensions
+    (list (service-extension shepherd-root-service-type
+                             wireguard-shepherd-service)
+          (service-extension activation-service-type
+                             wireguard-activation)))))

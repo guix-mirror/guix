@@ -16,6 +16,7 @@
 ;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2020, 2021 Greg Hogan <code@greghogan.com>
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
+;;; Copyright © 2020 Milkey Mouse <milkeymouse@meme.institute>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,6 +41,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
+  #:use-module (guix modules)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
@@ -512,7 +514,7 @@ maintained anymore.")
 (define-public gperftools
   (package
     (name "gperftools")
-    (version "2.8")
+    (version "2.8.1")
     (source
      (origin
        (method git-fetch)
@@ -520,9 +522,13 @@ maintained anymore.")
              (url "https://github.com/gperftools/gperftools")
              (commit (string-append "gperftools-" version))))
        (sha256
-        (base32 "1rnc53kaxlljgbpsff906vdsry9jl9gcvcnmxgkprwzxq1wipyd0"))
+        (base32 "19bj2vlsbfwq7m826v2ccqg47kd7cb5vcz1yw2x0v5qzhaxbakk1"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
+    (arguments
+      ;; The tests are flaky when run in parallel. For more info:
+      ;; https://bugs.gnu.org/46562
+     '(#:parallel-tests? #f))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -899,3 +905,107 @@ provides a number of utilities to make coding with expected cleaner.")
     (description "Magic Enum offers static reflection of enums, with
 conversions to and from strings, iteration and related functionality.")
     (license license:expat)))
+
+(define-public cli11
+  (package
+    (name "cli11")
+    (version "1.9.1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/CLIUtils/CLI11")
+              (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0hbch0vk8irgmiaxnfqlqys65v1770rxxdfn3d23m2vqyjh0j9l6"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin (delete-file-recursively "extern")
+                 #t))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       '("-DCLI11_SINGLE_FILE=OFF"
+         "-DCLI11_BUILD_EXAMPLES=OFF")
+       #:imported-modules ,%cmake-build-system-modules
+       #:modules ((guix build cmake-build-system)
+                  (guix build utils))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'no-vendor-gtest
+           (lambda _
+             (substitute* "tests/CMakeLists.txt"
+               ;; We provide our own googletest, so this is not really a
+               ;; problem.
+               (("message\\(FATAL_ERROR \"You have requested")
+                "message(TRACE \"You have requested"))
+             (substitute* "cmake/AddGoogletest.cmake"
+               (("^add_subdirectory\\(.*googletest.*$") "find_package(GTest REQUIRED)")
+               (("^set_target_properties\\(gtest gtest_main gmock gmock_main") "")
+               (("^    PROPERTIES FOLDER \"Extern\"\\)") ""))
+             #t)))))
+    (native-inputs
+     `(("doxygen" ,doxygen)
+       ("googletest" ,googletest)))
+    (synopsis "Command line parser for C++11")
+    (description
+     "CLI11 is a command line parser for C++11 and beyond that provides a rich
+feature set with a simple and intuitive interface.")
+    (home-page "https://cliutils.github.io/CLI11/book/")
+    (license license:bsd-3)))
+
+(define-public caf
+  (package
+    (name "caf")
+    (version "0.18.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/actor-framework/actor-framework")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1c3spd6vm1h9qhlk5c4fdwi6nbqx5vwz2zvv6qp0rj1hx6xpq3cx"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags
+       '("-DCAF_ENABLE_EXAMPLES=OFF")))
+    (inputs
+     `(("openssl" ,openssl)))
+    (synopsis "C++ implementation of the actor model")
+    (description "The C++ Actor Framework (CAF) offers a high-level C++17
+programming environment using the actor model for concurrent, distributed
+computation.")
+    (home-page "https://www.actor-framework.org/")
+    (license license:bsd-3)))
+
+(define-public pcg-cpp
+  (let ((commit "5b5cac8d61339e810c5dbb4692d868a1d7ca1b2d")
+        (revision "1"))
+    (package
+      (name "pcg-cpp")
+      (version (git-version "0.98.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/imneme/pcg-cpp")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1s9dcd4iydlc1xj9m6f7c52nlyx99klk043sk7arqy6kp7gdaa33"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:test-target "test"
+         #:phases
+          (modify-phases %standard-phases
+            (delete 'configure))
+         #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))))
+      (synopsis "C++11 header only library for random number generation")
+      (description "The Permuted Congruential Generator (PCG) extends the
+Linear Congruential Generator (LCG) with a permutation function to increase
+output randomness while retaining speed, simplicity, and conciseness.")
+      (home-page "https://www.pcg-random.org")
+      (license (list license:expat license:asl2.0))))) ; dual licensed

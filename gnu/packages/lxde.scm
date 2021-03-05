@@ -4,7 +4,7 @@
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Brendan Tildesley <mail@brendan.scot>
-;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 ison <ison@airmail.cc>
 ;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
@@ -66,7 +66,7 @@
 (define-public libfm
   (package
     (name "libfm")
-    (version "1.3.1")
+    (version "1.3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/pcmanfm/"
@@ -74,7 +74,7 @@
                                   "%29/LibFM/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1r6gl49xrykldwz8y4h2s7gjarxigg3bbkrj0gphxjj1vr5j9ccn"))))
+                "1rfira3lx8v6scz1aq69925j4vslpp36bmgrrzcfby2c60q2c155"))))
     (build-system gnu-build-system)
     (inputs `(("glib" ,glib)
               ("gtk+" ,gtk+-2)))
@@ -99,7 +99,7 @@ Glib/GIO giving a higher-level API.")
                      ("libtool"    ,libtool)
                      ("pkg-config" ,pkg-config)))
     (synopsis "File management support (extra library)")
-    (description "This package contains standalone library which extends the
+    (description "This package contains a stand-alone library which extends the
 libFM file management library.")))
 
 (define-public lxappearance
@@ -235,7 +235,7 @@ speed up the access to freedesktop.org defined application menus.")
 (define-public pcmanfm
   (package
     (name "pcmanfm")
-    (version "1.3.1")
+    (version "1.3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/pcmanfm/"
@@ -243,7 +243,7 @@ speed up the access to freedesktop.org defined application menus.")
                                   "%29/PCManFM/pcmanfm-" version ".tar.xz"))
               (sha256
                (base32
-                "0mb8hg76x1z0szdyl0w7jpz0bdblc6a29is1vvnh79z37qxh8138"))))
+                "1xqc2k2jh165mm81xg0ghxx0ml1s3rhh4ndvbzkcri4kfhj7pjql"))))
     (build-system gnu-build-system)
     (inputs `(("gtk+"   ,gtk+-2)
               ("gvfs"   ,gvfs)          ; for trash and mount support

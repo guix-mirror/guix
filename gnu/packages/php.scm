@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016-2020 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
@@ -60,7 +60,7 @@
 (define-public php
   (package
     (name "php")
-    (version "7.4.15")
+    (version "7.4.16")
     (home-page "https://secure.php.net/")
     (source (origin
               (method url-fetch)
@@ -68,7 +68,7 @@
                                   "php-" version ".tar.xz"))
               (sha256
                (base32
-                "1f1wsi2frdbr9a3hvhmk3mmd7cwzf6mwya2akpzkwyygy1jrr1cv"))
+                "12xr7w2mk8ab3igvbpi94ks2xfw2nqga9a6nxs94rvcdz3xcw5hw"))
               (modules '((guix build utils)))
               (snippet
                '(with-directory-excursion "ext"
@@ -194,7 +194,8 @@
                                 "ext/intl/tests/timezone_getErrorCodeMessage_basic.phpt"
                                 "ext/intl/tests/timezone_getOffset_error.phpt"
                                 "sapi/cli/tests/cli_process_title_unix.phpt"
-                                "sapi/cli/tests/upload_2G.phpt")))
+                                "sapi/cli/tests/upload_2G.phpt"
+                                "Zend/tests/concat_003.phpt")))
                    '())
 
              ;; Drop tests that are known to fail.
@@ -325,6 +326,14 @@
                          "ext/pcre/tests/bug79846.phpt"
                          ;; Expects an empty Array; gets one with " " in it.
                          "ext/pcre/tests/bug80118.phpt"))
+
+             ;; Accomodate two extra openssl errors flanking the expected one:
+             ;; random number generator:RAND_{load,write}_file:Cannot open file
+             ;; This is due to an invalid $HOME, but changing it in the test
+             ;; still prints the first one & changing it globally is overkill.
+             (substitute* "ext/openssl/tests/bug80747.phpt"
+               ((".*error:%s:key size too small.*" match)
+                (string-append "%s\n" match "%s\n")))
 
              ;; Skip tests requiring network access.
              (setenv "SKIP_ONLINE_TESTS" "1")

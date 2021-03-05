@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015, 2018 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Christopher Baines <mail@cbaines.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -246,7 +246,7 @@ GiB).")
 (define-public meld
   (package
     (name "meld")
-    (version "3.20.2")
+    (version "3.20.3")
     (source
      (origin
        (method url-fetch)
@@ -254,7 +254,7 @@ GiB).")
                            (version-major+minor version)
                            "/meld-" version ".tar.xz"))
        (sha256
-        (base32 "0a0x156zr3w2yg0rnhwy39giy3xnfm6sqcfa4xcw4i6ahvwqa2dc"))))
+        (base32 "06h52vaghvj5n507mj0hhk9yrca16pyl4l16c00b3bmkplljpqzh"))))
     (build-system python-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -321,7 +321,7 @@ you to figure out what is going on in that merge you keep avoiding.")
 (define-public patchwork
   (package
     (name "patchwork")
-    (version "3.0.0")
+    (version "3.0.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -330,7 +330,7 @@ you to figure out what is going on in that merge you keep avoiding.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "005irr5xsjpp3wrvvqs2xyr14ig9vp3h4v0qixhj1b8v69cfrgpi"))))
+                "049ih1fbbbmj11v5m9ilahifl8x7gi6wyba58552y9n9djzs8csc"))))
     (build-system python-build-system)
     (arguments
      `(;; TODO: Tests require a running database

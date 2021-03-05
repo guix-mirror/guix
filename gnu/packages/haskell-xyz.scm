@@ -24,7 +24,7 @@
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 JoJo <jo@jo.zone>
-;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@member.fsf.org>
 ;;; Copyright © 2020 Carlo Holl <carloholl@gmail.com>
 ;;; Copyright © 2020 Christopher Lemmer Webber <cwebber@dustycloud.org>
@@ -6432,7 +6432,7 @@ monads with anaphoric variants on @code{if} and @code{when} and a C-like
     (native-inputs
      `(("ghc-tasty" ,ghc-tasty)
        ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
-    (home-page "http://patch-tag.com/r/salazar/indents")
+    (home-page "https://github.com/jaspervdj/indents")
     (synopsis "Indentation sensitive parser-combinators for parsec")
     (description
      "This library provides functions for use in parsing indentation sensitive
@@ -10558,6 +10558,22 @@ the ideal templating system.")
      "Protolude gives you sensible defaults for writing custom Preludes to
 replace the standard one provided by GHC.")
     (license license:expat)))
+
+(define-public ghc-protolude-0.3
+  (package
+    (inherit ghc-protolude)
+    (name "ghc-protolude")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/protolude/protolude-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1b6wprbwfdjyvds2bm6na0fbqgzdkj5ikkk33whbkyh3krd3i0s0"))))))
 
 (define-public ghc-psqueue
   (package
@@ -15166,6 +15182,30 @@ modernized interface.")
     (home-page "https://hackage.haskell.org/package/word8")
     (synopsis "Word8 library for Haskell")
     (description "Word8 library to be used with @code{Data.ByteString}.")
+    (license license:bsd-3)))
+
+(define-public ghc-wordexp
+  (package
+    (name "ghc-wordexp")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/wordexp/wordexp-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1mbcrq89jz0dcibw66w0jdy4f4bfpx4zwjfs98rm3jjgdikwdzb4"))))
+    (build-system haskell-build-system)
+    (native-inputs `(("ghc-c2hs" ,ghc-c2hs)))
+    (inputs
+     `(("ghc-semigroups" ,ghc-semigroups)))
+    (home-page "https://hackage.haskell.org/package/wordexp")
+    (synopsis "Library wrapping @code{wordexp} for Haskell")
+    (description "@code{wordexp(3)} wrapper library for Haskell to perform
+word expansion like a posix-shell.")
     (license license:bsd-3)))
 
 (define-public ghc-x11

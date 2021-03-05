@@ -1086,10 +1086,12 @@ everything has been successfully built.  This allows us to fix issues
 before they hit users, and to reduce the window during which pre-built
 binaries are not available.
 
-Generally, branches other than @code{master} are considered
-@emph{frozen} if there has been a recent evaluation, or there is a
-corresponding @code{-next} branch.  Please ask on the mailing list or
-IRC if unsure where to place a patch.
+When we decide to start building the @code{staging} or
+@code{core-updates} branches, they will be forked and renamed with the
+suffix @code{-frozen}, at which time only bug fixes may be pushed to the
+frozen branches.  The @code{core-updates} and @code{staging} branches
+will remain open to accept patches for the next cycle.  Please ask on
+the mailing list or IRC if unsure where to place a patch.
 @c TODO: It would be good with badges on the website that tracks these
 @c branches.  Or maybe even a status page.
 

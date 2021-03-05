@@ -4,7 +4,7 @@
 ;;; Copyright © 2016, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
@@ -600,7 +600,7 @@ Microsoft Publisher documents of all versions.")
 (define-public libnumbertext
   (package
     (name "libnumbertext")
-    (version "1.0.6")
+    (version "1.0.7")
     (source
      (origin
        (method url-fetch)
@@ -608,7 +608,7 @@ Microsoft Publisher documents of all versions.")
                            "releases/download/" version
                            "/libnumbertext-" version ".tar.xz"))
        (sha256
-        (base32 "0mxf22gpbr818ib4av17zmyx6i6nf4br5qlxq0qvfz5z6h5j57vk"))))
+        (base32 "1z31idnmd9iv6ra5dcsn7q70wv32clk2sqc5bbhimqcsp2f29f0p"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-static")))
@@ -682,14 +682,14 @@ Microsoft Visio documents of all versions.")
 (define-public libodfgen
   (package
     (name "libodfgen")
-    (version "0.1.7")
+    (version "0.1.8")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://sourceforge/libwpd/libodfgen/"
                           "libodfgen-" version "/libodfgen-" version ".tar.xz"))
       (sha256 (base32
-               "0cdq48wlpp8m0qmndybv64r0m4vh0qsqx69cn6ms533cjlgljgij"))))
+               "0986c5gw4vdfz7bcmpdfz07inba5wxsx4f6xvndknqj6zlkh082m"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
@@ -698,9 +698,10 @@ Microsoft Visio documents of all versions.")
      `(("librevenge" ,librevenge)))
     (inputs
      `(("boost" ,boost)
+       ("libxml2" ,libxml2)
        ("zlib" ,zlib)))
     (arguments
-     ;; avoid triggering configure errors by simple inclusion of boost headers
+     ;; Avoid triggering configure errors by simple inclusion of Boost headers.
      `(#:configure-flags '("--disable-werror")))
     (home-page "https://sourceforge.net/p/libwpd/wiki/libodfgen/")
     (synopsis "ODF (Open Document Format) library")

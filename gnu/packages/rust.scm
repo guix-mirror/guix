@@ -716,7 +716,7 @@ safety and thread safety guarantees.")
                     (format #f "prefix = ~s" (assoc-ref outputs "rustfmt"))))
                  (invoke "./x.py" "install" "rustfmt"))))))))))
 
-(define rust-1.47
+(define-public rust-1.47
   (let ((base-rust (rust-bootstrapped-package
                     rust-1.46 "1.47.0"
                     "07fqd2vp7cf1ka3hr207dnnz93ymxml4935vp74g4is79h3dz19i")))
@@ -846,3 +846,7 @@ safety and thread safety guarantees.")
                       `("gdb" ,gdb-9.2)
                       `("procps" ,procps)
                       (package-native-inputs base-rust))))))
+
+(define-public rust-1.50
+  (rust-bootstrapped-package rust "1.50.0"
+    "0pjs7j62maiyvkmhp9zrxl528g2n0fphp4rq6ap7aqdv0a6qz5wm"))

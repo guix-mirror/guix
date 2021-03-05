@@ -52,6 +52,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages guile)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages llvm)
@@ -103,6 +104,73 @@
                               name "-v" (version-major+minor+point version)
                               ".tar.gz"))
           (sha256 (base32 hash))))
+
+(define-public camlboot
+  (let ((commit "506280c6e0813e0e794988151a8e46be55373ebc")
+        (revision "0"))
+    (package
+      (name "camlboot")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/Ekdohibs/camlboot")
+                      (commit commit)
+                      (recursive? #t)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0vimxl4karw9ih3npyc5rhxg85cjh6fqjbq3dzj7j2iymlhwfbkv"))
+                (modules '((guix build utils)))
+                (snippet
+                 `(begin
+                    ;; Remove bootstrap binaries and pre-generated source files,
+                    ;; to ensure we actually bootstrap properly.
+                    (for-each delete-file (find-files "ocaml-src" "^.depend$"))
+                    (delete-file "ocaml-src/boot/ocamlc")
+                    (delete-file "ocaml-src/boot/ocamllex")
+                    ;; Ensure writable
+                    (for-each
+                     (lambda (file)
+                       (chmod file (logior (stat:mode (stat file)) #o200)))
+                     (find-files "." "."))))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:make-flags (list "_boot/ocamlc") ; build target
+         #:tests? #f                        ; no tests
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (add-before 'build 'no-autocompile
+             (lambda _
+               ;; prevent a guile warning
+               (setenv "GUILE_AUTO_COMPILE" "0")))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin")))
+                 (mkdir-p bin)
+                 (install-file "_boot/ocamlc" bin)
+                 (rename-file "miniml/interp/lex.byte" "ocamllex")
+                 (install-file "ocamllex" bin)))))))
+      (native-inputs
+       `(("guile" ,guile-3.0)))
+      (properties
+       `((max-silent-time . 14400))) ; 4 hours, expected even on x86_64
+      (home-page "https://github.com/Ekdohibs/camlboot")
+      (synopsis "OCaml souce bootstrap")
+      (description "OCaml is written in OCaml.  Its sources contain a pre-compiled
+bytecode version of @command{ocamlc} and @command{ocamllex} that are used to
+build the next version of the compiler.  Camlboot implements a bootstrap for
+the OCaml compiler and provides a bootstrapped equivalent to these files.
+
+It contains a compiler for a small subset of OCaml written in Guile Scheme,
+an interpreter for OCaml written in that subset and a manually-written lexer
+for OCaml.  These elements eliminate the need for the binary bootstrap in
+OCaml and can effectively bootstrap OCaml 4.07.
+
+This package produces a native @command{ocamlc} and a bytecode @command{ocamllex}.")
+      (license license:expat))))
 
 (define-public ocaml-4.11
   (package
@@ -188,7 +256,11 @@ functional, imperative and object-oriented styles of programming.")
                (base32
                 "1v3z5ar326f3hzvpfljg4xj8b9lmbrl53fn57yih1bkbx3gr3yzj"))))))
 
-(define-public ocaml-4.07
+;; This package is a bootstrap package for ocaml-4.07. It builds from camlboot,
+;; using the upstream sources for ocaml 4.07. It installs a bytecode ocamllex
+;; and ocamlc, the bytecode interpreter ocamlrun, and generated .depend files
+;; that we otherwise remove for bootstrap purposes.
+(define ocaml-4.07-boot
   (package
     (inherit ocaml-4.09)
     (version "4.07.1")
@@ -200,11 +272,150 @@ functional, imperative and object-oriented styles of programming.")
                     "/ocaml-" version ".tar.xz"))
               (sha256
                (base32
-                "1f07hgj5k45cylj1q3k5mk8yi02cwzx849b1fwnwia8xlcfqpr6z"))))
+                "1f07hgj5k45cylj1q3k5mk8yi02cwzx849b1fwnwia8xlcfqpr6z"))
+              (modules '((guix build utils)))
+              (snippet
+               `(begin
+                  ;; Remove bootstrap binaries and pre-generated source files,
+                  ;; to ensure we actually bootstrap properly.
+                  (for-each delete-file (find-files "." "^.depend$"))
+                  (delete-file "boot/ocamlc")
+                  (delete-file "boot/ocamllex")))))
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'copy-bootstrap
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((camlboot (assoc-ref inputs "camlboot")))
+               (copy-file (string-append camlboot "/bin/ocamllex") "boot/ocamllex")
+               (copy-file (string-append camlboot "/bin/ocamlc") "boot/ocamlc")
+               (chmod "boot/ocamllex" #o755)
+               (chmod "boot/ocamlc" #o755))))
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (mandir (string-append out "/share/man")))
+               (invoke "./configure"
+                       "--prefix" out
+                       "--mandir" mandir))))
+         (replace 'build
+           (lambda* (#:key parallel-build? #:allow-other-keys)
+             (define* (make . args)
+               (apply invoke "make"
+                      (append (if parallel-build?
+                                  `("-j" ,(number->string (parallel-job-count)))
+                                  '())
+                              args)))
+             ;; create empty .depend files because they are included by various
+             ;; Makefiles, and they have no rule to generate them.
+             (invoke "touch" ".depend" "stdlib/.depend" "byterun/.depend"
+                     "tools/.depend"  "lex/.depend" "asmrun/.depend"
+                     "debugger/.depend" "ocamltest/.depend" "ocamldoc/.depend"
+                     "ocamldoc/stdlib_non_prefixed/.depend"
+                     "otherlibs/bigarray/.depend" "otherlibs/graph/.depend"
+                     "otherlibs/raw_spacetime_lib/.depend" "otherlibs/str/.depend"
+                     "otherlibs/systhreads/.depend" "otherlibs/threads/.depend"
+                     "otherlibs/unix/.depend" "otherlibs/win32unix/.depend")
+             ;; We cannot build ocamldep until we have created all the .depend
+             ;; files, so replace it with ocamlc -depend.
+             (substitute* "tools/Makefile"
+               (("\\$\\(CAMLRUN\\) ./ocamldep") "../boot/ocamlc -depend"))
+             (substitute* '("otherlibs/graph/Makefile"
+                            "otherlibs/systhreads/Makefile"
+                            "otherlibs/threads/Makefile"
+                            "otherlibs/unix/Makefile")
+               (("\\$\\(CAMLRUN\\) ../../tools/ocamldep")
+                "../../boot/ocamlc -depend"))
+             (substitute* '("otherlibs/bigarray/Makefile"
+                            "otherlibs/raw_spacetime_lib/Makefile"
+                            "otherlibs/str/Makefile"
+                            "otherlibs/win32unix/Makefile")
+               (("\\$\\(CAMLRUN\\) \\$\\(ROOTDIR\\)/tools/ocamldep")
+                "../../boot/ocamlc -depend"))
+             ;; Ensure we copy needed file, so we can generate a proper .depend
+             (substitute* "ocamldoc/Makefile"
+               (("include Makefile.unprefix")
+                "include Makefile.unprefix
+depend: $(STDLIB_MLIS) $(STDLIB_DEPS)"))
+             ;; Generate required tools for `alldepend'
+             (make "-C" "byterun" "depend")
+             (make "-C" "byterun" "all")
+             (copy-file "byterun/ocamlrun" "boot/ocamlrun")
+             (make "ocamlyacc")
+             (copy-file "yacc/ocamlyacc" "boot/ocamlyacc")
+             (make "-C" "stdlib" "sys.ml")
+             (make "-C" "stdlib" "CAMLDEP=../boot/ocamlc -depend" "depend")
+             ;; Build and copy files later used by `tools'
+             (make "-C" "stdlib" "COMPILER="
+                   "CAMLC=../boot/ocamlc -use-prims ../byterun/primitives"
+                   "all")
+             (for-each
+              (lambda (file)
+                (copy-file file (string-append "boot/" (basename file))))
+              (cons* "stdlib/stdlib.cma" "stdlib/std_exit.cmo" "stdlib/camlheader"
+                     (find-files "stdlib" ".*.cmi$")))
+             (symlink "../byterun/libcamlrun.a" "boot/libcamlrun.a")
+             ;; required for ocamldoc/stdlib_non_prefixed
+             (make "parsing/parser.mli")
+             ;; required for dependencies
+             (make "-C" "tools"
+                   "CAMLC=../boot/ocamlc -nostdlib -I ../boot -use-prims ../byterun/primitives -I .."
+                   "make_opcodes" "cvt_emit")
+             ;; generate all remaining .depend files
+             (make "alldepend"
+                   (string-append "ocamllex=" (getcwd) "/boot/ocamlrun "
+                                  (getcwd) "/boot/ocamllex")
+                   (string-append "CAMLDEP=" (getcwd) "/boot/ocamlc -depend")
+                   (string-append "OCAMLDEP=" (getcwd) "/boot/ocamlc -depend")
+                   (string-append "ocamldep=" (getcwd) "/boot/ocamlc -depend"))
+             ;; Build ocamllex
+             (make "CAMLC=boot/ocamlc -nostdlib -I boot -use-prims byterun/primitives"
+                   "ocamlc")
+             ;; Build ocamlc
+             (make "-C" "lex"
+                   "CAMLC=../boot/ocamlc -strict-sequence -nostdlib -I ../boot -use-prims ../byterun/primitives"
+                   "all")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (depends (string-append out "/share/depends")))
+               (mkdir-p bin)
+               (mkdir-p depends)
+               (install-file "ocamlc" bin)
+               (install-file "lex/ocamllex" bin)
+               (for-each
+                (lambda (file)
+                  (let ((dir (string-append depends "/" (dirname file))))
+                    (mkdir-p dir)
+                    (install-file file dir)))
+                (find-files "." "^\\.depend$"))))))))
+    (native-inputs
+     `(("camlboot" ,camlboot)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)))))
+
+(define-public ocaml-4.07
+  (package
+    (inherit ocaml-4.07-boot)
     (arguments
       (substitute-keyword-arguments (package-arguments ocaml-4.09)
         ((#:phases phases)
          `(modify-phases ,phases
+            (add-before 'configure 'copy-bootstrap
+              (lambda* (#:key inputs #:allow-other-keys)
+                (let ((ocaml (assoc-ref inputs "ocaml")))
+                  (copy-file (string-append ocaml "/bin/ocamllex") "boot/ocamllex")
+                  (copy-file (string-append ocaml "/bin/ocamlc") "boot/ocamlc")
+                  (chmod "boot/ocamllex" #o755)
+                  (chmod "boot/ocamlc" #o755)
+                  (let ((rootdir (getcwd)))
+                    (with-directory-excursion (string-append ocaml "/share/depends")
+                      (for-each
+                        (lambda (file)
+                          (copy-file file (string-append rootdir "/" file)))
+                        (find-files "." ".")))))))
             (replace 'configure
               (lambda* (#:key outputs #:allow-other-keys)
                 (let* ((out (assoc-ref outputs "out"))
@@ -213,7 +424,11 @@ functional, imperative and object-oriented styles of programming.")
                   ;; --prefix=<PREFIX> syntax (with equals sign).
                   (invoke "./configure"
                           "--prefix" out
-                          "--mandir" mandir))))))))))
+                          "--mandir" mandir))))))))
+    (native-inputs
+     `(("ocaml" ,ocaml-4.07-boot)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)))))
 
 (define-public ocaml ocaml-4.11)
 
@@ -304,7 +519,7 @@ for day to day programming.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))
-    (home-page "http://www.mancoosi.org/cudf/")
+    (home-page "https://www.mancoosi.org/cudf/")
     (synopsis "CUDF library (part of the Mancoosi tools)")
     (description "CUDF (for Common Upgradeability Description Format) is a
 format for describing upgrade scenarios in package-based Free and Open Source
@@ -378,7 +593,7 @@ underlying solvers like Cplex, Gurobi, Lpsolver, Glpk, CbC, SCIP or WBO.")
         ("ocaml-extlib" ,ocaml-extlib)
         ("ocamlbuild" ,ocamlbuild)
         ("ocaml-cppo" ,ocaml-cppo)))
-    (home-page "http://www.mancoosi.org/software/")
+    (home-page "https://www.mancoosi.org/software/")
     (synopsis "Package distribution management framework")
     (description "Dose3 is a framework made of several OCaml libraries for
 managing distribution packages and their dependencies.  Though not tied to
@@ -485,7 +700,7 @@ the opam file format.")
 (define-public opam
   (package
     (name "opam")
-    (version "2.0.7")
+    (version "2.0.8")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -494,7 +709,7 @@ the opam file format.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1p719ccn9wnzk6impsnwr809yh507h8f37dx9nn64b1hsyb5z8ax"))))
+                "1z0ls6xxa4ws5xw0am5gxmh5apnmyhgkcphrncp53w34j8sfydsj"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:configure-flags
@@ -1640,7 +1855,7 @@ defined in this library.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))
-    (home-page "http://erratique.ch/software/topkg")
+    (home-page "https://erratique.ch/software/topkg")
     (synopsis "Transitory OCaml software packager")
     (description "Topkg is a packager for distributing OCaml software. It
 provides an API to describe the files a package installs in a given build
@@ -1671,7 +1886,7 @@ creation and publication procedures.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))
-    (home-page "http://erratique.ch/software/rresult")
+    (home-page "https://erratique.ch/software/rresult")
     (synopsis "Result value combinators for OCaml")
     (description "Handle computation results and errors in an explicit and
 declarative manner, without resorting to exceptions.  It defines combinators
@@ -1767,7 +1982,7 @@ manipulate such data.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))
-    (home-page "http://erratique.ch/software/mtime")
+    (home-page "https://erratique.ch/software/mtime")
     (synopsis "Monotonic wall-clock time for OCaml")
     (description "Access monotonic wall-clock time.  It measures time
 spans without being subject to operating system calendar time adjustments.")
@@ -1802,7 +2017,7 @@ spans without being subject to operating system calendar time adjustments.")
                (("Sys.readdir dir")
                 "let a = Sys.readdir dir in Array.sort String.compare a; a"))
              #t)))))
-    (home-page "http://erratique.ch/software/cmdliner")
+    (home-page "https://erratique.ch/software/cmdliner")
     (synopsis "Declarative definition of command line interfaces for OCaml")
     (description "Cmdliner is a module for the declarative definition of command
 line interfaces.  It provides a simple and compositional mechanism to convert
@@ -1838,7 +2053,7 @@ most of the POSIX and GNU conventions.")
                  #:phases
                  (modify-phases %standard-phases
                    (delete 'configure))))
-    (home-page "http://erratique.ch/software/fmt")
+    (home-page "https://erratique.ch/software/fmt")
     (synopsis "OCaml Format pretty-printer combinators")
     (description "Fmt exposes combinators to devise Format pretty-printing
 functions.")
@@ -1866,7 +2081,7 @@ functions.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))
-    (home-page "http://erratique.ch/software/astring")
+    (home-page "https://erratique.ch/software/astring")
     (synopsis "Alternative String module for OCaml")
     (description "Astring exposes an alternative String module for OCaml.  This
 module balances minimality and expressiveness for basic, index-free, string
@@ -1959,7 +2174,7 @@ simple (yet expressive) query language to select the tests to run.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))
-    (home-page "http://erratique.ch/software/react")
+    (home-page "https://erratique.ch/software/react")
     (synopsis "Declarative events and signals for OCaml")
     (description "React is an OCaml module for functional reactive programming
 (FRP).  It provides support to program with time varying values: declarative
@@ -2127,7 +2342,7 @@ ocaml lwt.")
        ("result" ,ocaml-result)
        ("cmdliner" ,ocaml-cmdliner)
        ("topkg" ,ocaml-topkg)))
-    (home-page "http://erratique.ch/software/logs")
+    (home-page "https://erratique.ch/software/logs")
     (synopsis "Logging infrastructure for OCaml")
     (description "Logs provides a logging infrastructure for OCaml.  Logging is
 performed on sources whose reporting level can be set independently.  Log
@@ -2158,7 +2373,7 @@ message report is decoupled from logging and is handled by a reporter.")
     (propagated-inputs
      `(("topkg" ,ocaml-topkg)
        ("astring" ,ocaml-astring)))
-    (home-page "http://erratique.ch/software/fpath")
+    (home-page "https://erratique.ch/software/fpath")
     (synopsis "File system paths for OCaml")
     (description "Fpath is an OCaml module for handling file system paths with
 POSIX or Windows conventions.  Fpath processes paths without accessing the
@@ -2193,7 +2408,7 @@ file system and is independent from any system library.")
        ("fpath" ,ocaml-fpath)
        ("logs" ,ocaml-logs)
        ("rresult" ,ocaml-rresult)))
-    (home-page "http://erratique.ch/software/bos")
+    (home-page "https://erratique.ch/software/bos")
     (synopsis "Basic OS interaction for OCaml")
     (description "Bos provides support for basic and robust interaction with
 the operating system in OCaml.  It has functions to access the process
@@ -2223,7 +2438,7 @@ run command line programs.")
      `(("ocamlbuild" ,ocamlbuild)
        ("ocaml-topkg" ,ocaml-topkg)
        ("opam" ,opam)))
-    (home-page "http://erratique.ch/software/xmlm")
+    (home-page "https://erratique.ch/software/xmlm")
     (synopsis "Streaming XML codec for OCaml")
     (description "Xmlm is a streaming codec to decode and encode the XML data
 format.  It can process XML documents without a complete in-memory
@@ -2384,7 +2599,7 @@ and consumable.")
     (propagated-inputs
      `(("uchar" ,ocaml-uchar)
        ("cmdliner" ,ocaml-cmdliner)))
-    (home-page "http://erratique.ch/software/uutf")
+    (home-page "https://erratique.ch/software/uutf")
     (synopsis "Non-blocking streaming Unicode codec for OCaml")
     (description "Uutf is a non-blocking streaming codec to decode and encode
 the UTF-8, UTF-16, UTF-16LE and UTF-16BE encoding schemes.  It can efficiently
@@ -2420,7 +2635,7 @@ string values and to directly encode characters in OCaml Buffer.t values.")
     (propagated-inputs
      `(("uutf" ,ocaml-uutf)
        ("cmdliner" ,ocaml-cmdliner)))
-    (home-page "http://erratique.ch/software/jsonm")
+    (home-page "https://erratique.ch/software/jsonm")
     (synopsis "Non-blocking streaming JSON codec for OCaml")
     (description "Jsonm is a non-blocking streaming codec to decode and encode
 the JSON data format.  It can process JSON text without blocking on IO and
@@ -3212,7 +3427,7 @@ tool and piqi-ocaml.")
     (propagated-inputs
      `(("cmdliner" ,ocaml-cmdliner)
        ("topkg" ,ocaml-topkg)))
-    (home-page "http://erratique.ch/software/uuidm")
+    (home-page "https://erratique.ch/software/uuidm")
     (synopsis "Universally unique identifiers for OCaml")
     (description "Uuidm is an OCaml module implementing 128 bits universally
 unique identifiers (UUIDs) version 3, 5 (named based with MD5, SHA-1 hashing)

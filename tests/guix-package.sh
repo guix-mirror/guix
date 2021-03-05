@@ -386,6 +386,21 @@ guix package -I
 # '--dry-run' is passed.
 GUIX_BUILD_OPTIONS="--no-grafts"
 
+# Install using the "imperative model", export a manifest, instantiate it, and
+# make sure we get the same profile.
+guix package --bootstrap -i guile-bootstrap --without-tests=foo
+profile_directory="$(readlink -f "$default_profile")"
+guix package --export-manifest > "$tmpfile"
+grep 'without-tests.*foo' "$tmpfile"
+guix package --rollback --bootstrap
+guix package --bootstrap -m "$tmpfile"
+test "$(readlink -f "$default_profile")" = "$profile_directory"
+guix package --export-manifest > "$tmpfile.2nd"
+cmp "$tmpfile" "$tmpfile.2nd"
+
+rm -f "$tmpfile.2nd"
+guix package --rollback --bootstrap
+
 # Applying a manifest file.
 cat > "$module_dir/manifest.scm"<<EOF
 (use-package-modules bootstrap)

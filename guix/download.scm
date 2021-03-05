@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
@@ -535,9 +535,9 @@ own.  This helper makes it easier to deal with \"tar bombs\"."
                         #~(begin
                             (use-modules (guix build utils))
                             (mkdir #$output)
-                            (setenv "PATH" (string-append #$gzip "/bin"))
+                            (setenv "PATH" (string-append #+gzip "/bin"))
                             (chdir #$output)
-                            (invoke (string-append #$tar "/bin/tar")
+                            (invoke (string-append #+tar "/bin/tar")
                                     "xf" #$drv)))
                       #:system system
                       #:guile-for-build guile
@@ -574,7 +574,7 @@ own.  This helper makes it easier to deal with \"zip bombs\"."
                             (use-modules (guix build utils))
                             (mkdir #$output)
                             (chdir #$output)
-                            (invoke (string-append #$unzip "/bin/unzip")
+                            (invoke (string-append #+unzip "/bin/unzip")
                                     #$drv)))
                       #:system system
                       #:guile-for-build guile

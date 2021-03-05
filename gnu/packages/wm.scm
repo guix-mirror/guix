@@ -41,6 +41,7 @@
 ;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
 ;; Copyright © 2020 Niklas Eklund <niklas.eklund@posteo.net>
 ;;; Copyright © 2020 Robert Smith <robertsmith@posteo.net>
+;;; Copyright © 2021 Zheng Junjie <873216071@qq.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -159,14 +160,14 @@ the leaves of a full binary tree.")
 (define-public herbstluftwm
   (package
     (name "herbstluftwm")
-    (version "0.8.3")
+    (version "0.9.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://herbstluftwm.org/tarballs/herbstluftwm-"
                            version ".tar.gz"))
        (sha256
-        (base32 "1qmb4pjf2f6g0dvcg11cw9njwmxblhqzd70ai8qnlgqw1iz3nkm1"))
+        (base32 "0avfhr68f6fjnafjdcyxcx7dkg38f2nadmhpj971qyqzfq2f6i38"))
        (file-name (string-append "herbstluftwm-" version ".tar.gz"))))
     (build-system cmake-build-system)
     (inputs
@@ -179,10 +180,12 @@ the leaves of a full binary tree.")
        ("libx11"      ,libx11)
        ("libxext"     ,libxext)
        ("libxinerama" ,libxinerama)
-       ("libxrandr"   ,libxrandr)))
+       ("libxrandr"   ,libxrandr)
+       ("libxft"      ,libxft)))
     (native-inputs
      `(("asciidoc"   ,asciidoc)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("python"     ,python)))
     (arguments
      '(#:tests? #f
        #:configure-flags
@@ -317,7 +320,6 @@ commands would.")
        ("libxkbcommon" ,libxkbcommon)
        ("libev" ,libev)
        ("libyajl" ,libyajl)
-       ("asciidoc" ,asciidoc)
        ("xmlto" ,xmlto)
        ("perl-pod-simple" ,perl-pod-simple)
        ("libx11" ,libx11)
@@ -329,6 +331,7 @@ commands would.")
      `(("which" ,which)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
+       ("asciidoc-py3" ,asciidoc-py3)
        ;; For building the documentation.
        ("libxml2" ,libxml2)
        ("docbook-xsl" ,docbook-xsl)))
@@ -1257,6 +1260,45 @@ It is inspired by Xmonad and dwm.  Its major features include:
     (description "Cwm is a stacking window manager for X11.  It is an OpenBSD
 project derived from the original Calm Window Manager.")
     (license license:isc)))
+
+(define-public dwl
+  (package
+    (name "dwl")
+    (version "0.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/djpohly/dwl")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0r5hsxpckkrq1y7bjfq58rlc5xy45z499rg628q3nh289978ail1"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no tests
+       #:make-flags
+       (list
+        (string-append "CC=" ,(cc-for-target))
+        (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))         ; no configure
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("wlroots" ,wlroots)))
+    (home-page "https://github.com/djpohly/dwl")
+    (synopsis "Dynamic window manager for Wayland")
+    (description
+     "@command{dwl} is a compact, hackable compositor for Wayland based on
+wlroots.  It is intended to fill the same space in the Wayland world that dwm
+does in X11, primarily in terms of philosophy, and secondarily in terms of
+functionality.  Like dwm, dwl is easy to understand and hack on, due to a
+limited size and a few external dependencies.  It is configurable via
+@file{config.h}.")
+    ;;             LICENSE       LICENSE.dwm   LICENSE.tinywl
+    (license (list license:gpl3+ license:expat license:cc0))))
 
 (define-public nitrogen
   (package

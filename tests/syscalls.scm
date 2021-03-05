@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2020 Simon South <simon@simonsouth.net>
 ;;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -55,6 +55,20 @@
     (lambda args
       ;; Both return values have been encountered in the wild.
       (memv (system-error-errno args) (list EPERM ENOENT)))))
+
+(test-assert "mounts"
+  ;; Check for one of the common mount points.
+  (let ((mounts (mounts)))
+    (any (match-lambda
+           ((point . type)
+            (let ((mount (find (lambda (mount)
+                                 (string=? (mount-point mount) point))
+                               mounts)))
+              (and mount
+                   (string=? (mount-type mount) type)))))
+         '(("/proc"    . "proc")
+           ("/sys"     . "sysfs")
+           ("/dev/shm" . "tmpfs")))))
 
 (test-assert "mount-points"
   ;; Reportedly "/" is not always listed as a mount point, so check a few

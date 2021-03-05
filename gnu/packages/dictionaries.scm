@@ -216,14 +216,14 @@ It comes with a German-English dictionary with approximately 270,000 entries.")
 (define-public grammalecte
   (package
     (name "grammalecte")
-    (version "2.1.0")
+    (version "2.1.1")
     (source
      (origin
        (method url-fetch/zipbomb)
        (uri (string-append "https://grammalecte.net/grammalecte/zip/"
                            "Grammalecte-fr-v" version ".zip"))
        (sha256
-        (base32 "1j07zpqfvkxf52yhh0yf0xj1rh5whggc6s8fqrh6pbvz05lfdcr8"))))
+        (base32 "076jv3ywdgqqzg92bfbagc7ypy08xjq5zn4vgna6j9350fkfqhzn"))))
     (build-system python-build-system)
     (home-page "https://grammalecte.net")
     (synopsis "French spelling and grammar checker")
@@ -334,7 +334,7 @@ translation engines from your terminal.")
        ("automake" ,automake)
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)))
-    (home-page "http://wiki.apertium.org/wiki/Lttoolbox")
+    (home-page "https://wiki.apertium.org/wiki/Lttoolbox")
     (synopsis "Lexical processing toolbox")
     (description "Lttoolbox is a toolbox for lexical processing, morphological
 analysis and generation of words.  Analysis is the process of splitting a

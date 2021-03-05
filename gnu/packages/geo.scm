@@ -13,7 +13,7 @@
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Christopher Baines <mail@cbaines.net>
-;;; Copyright © 2020 Felix Gruber <felgru@posteo.net>
+;;; Copyright © 2020, 2021 Felix Gruber <felgru@posteo.net>
 ;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -424,7 +424,7 @@ writing GeoTIFF information tags.")
 (define-public libspatialite
   (package
     (name "libspatialite")
-    (version "5.0.0")
+    (version "5.0.1")
     (source
      (origin
        (method url-fetch)
@@ -432,7 +432,7 @@ writing GeoTIFF information tags.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1b3dmkgwbfi43hj3jzy2mh707khavrnw91vdd5sv387m8c1dfzvv"))))
+         "164y82rw2lrp5glfc0rkn7n6xvx5dvlgmh7bb7815067251wkjzf"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1723,14 +1723,14 @@ associated attribute file (@file{.dbf}).")
 (define-public spatialite-tools
   (package
     (name "spatialite-tools")
-    (version "5.0.0")
+    (version "5.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.gaia-gis.it/gaia-sins/"
                            "spatialite-tools-" version ".tar.gz"))
        (sha256
-        (base32 "0ckddgdpxhy6vkpr9q2hnx5qmanrd8g4pqnifbrq1i5jrj82s2dd"))))
+        (base32 "070p6pg541wvwb28wkn7k0z1qdyirik2qc2jpj4pf0vzx02w414n"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1756,14 +1756,14 @@ tools supporting SpatiaLite.")
 (define-public virtualpg
   (package
     (name "virtualpg")
-    (version "1.0.2")
+    (version "2.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.gaia-gis.it/gaia-sins/"
                            "virtualpg-" version ".tar.gz"))
        (sha256
-        (base32 "0kjipcd08vvn188xmwbs7sw41xcs06x47n2hbqshpjcr51mxbarp"))))
+        (base32 "12z0l7368r4116ljzg7nljy5hf425r11vxc540w79wlzikmynamy"))))
     (build-system gnu-build-system)
     (inputs
      `(("postgresql" ,postgresql)

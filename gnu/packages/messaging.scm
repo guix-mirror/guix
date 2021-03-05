@@ -78,6 +78,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages kerberos)
   #:use-module (gnu packages less)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages libidn)
@@ -1889,7 +1890,7 @@ many bug fixes.")
 (define-public loudmouth
   (package
     (name "loudmouth")
-    (version "1.5.3")
+    (version "1.5.4")
     (source
      (origin
        (method url-fetch)
@@ -1897,16 +1898,29 @@ many bug fixes.")
                            name "-" version ".tar.bz2"))
        (sha256
         (base32
-         "0b6kd5gpndl9nzis3n6hcl0ldz74bnbiypqgqa1vgb0vrcar8cjl"))))
+         "03adv5xc84l9brcx0dpyqyffmsclans8yfrpnd357k6x3wfckjri"))))
     (build-system gnu-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:configure-flags
+       (list
+        "--disable-static"
+        "--enable-gtk-doc"
+        (string-append "--with-html-dir="
+                       (assoc-ref %outputs "doc")
+                       "/share/gtk-doc/html"))
+       #:make-flags
+       (list
+        "CFLAGS=-Wno-error=all")))
     (inputs
      `(("glib" ,glib)
        ("gnutls" ,gnutls)
+       ("krb5" ,mit-krb5)
        ("libidn" ,libidn)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("check" ,check)
-       ("glib" ,glib "bin") ; gtester
+       ("glib" ,glib "bin")             ; gtester
        ("gtk-doc" ,gtk-doc)))
     (home-page "https://mcabber.com/")
     (description
@@ -1921,28 +1935,35 @@ protocol allows.")
 (define-public mcabber
   (package
     (name "mcabber")
-    (version "1.1.1")
+    (version "1.1.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://mcabber.com/files/"
                            name "-" version ".tar.bz2"))
        (sha256
-        (base32 "0ngrcc8nzpzk4vw36ni3w073149zsi0yjh922xy9cy5a7srwx2fp"))))
+        (base32 "0q1i5acyghsmzas88qswvki8kkk2nfpr8zapgnxbcd3lwcxl38f4"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags (list "--enable-otr"
-                               "--enable-aspell")))
+     `(#:configure-flags
+       (list
+        "--disable-static"
+        "--enable-otr"
+        "--enable-enchant"
+        "--enable-aspell")))
     (inputs
      `(("gpgme" ,gpgme)
        ("libotr" ,libotr)
        ("aspell" ,aspell)
+       ("enchant" ,enchant-1.6)
        ("libidn" ,libidn)
        ("glib" ,glib)
        ("ncurses" ,ncurses)
        ("loudmouth" ,loudmouth)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)))
     (home-page "https://mcabber.com")
     (description
      "Mcabber is a small XMPP (Jabber) console client, which includes features
@@ -2008,13 +2029,22 @@ is also scriptable and extensible via Guile.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/boothj5/libmesode")
+                    (url "https://github.com/profanity-im/libmesode")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
                 "1bxnkhrypgv41qyy1n545kcggmlw1hvxnhwihijhhcf2pxd2s654"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags (list "--disable-static")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-make
+           (lambda _
+             (substitute* "Makefile.am"
+               (("'\\^xmpp_'") "'.'"))
+             #t)))))
     (inputs
      `(("expat" ,expat)
        ("openssl" ,openssl)))
@@ -2027,14 +2057,14 @@ is also scriptable and extensible via Guile.")
     (description "Libmesode is a fork of libstrophe for use with Profanity
 XMPP Client.  In particular, libmesode provides extra TLS functionality such as
 manual SSL certificate verification.")
-    (home-page "https://github.com/boothj5/libmesode")
+    (home-page "https://github.com/profanity/libmesode")
     ;; Dual-licensed.
     (license (list license:gpl3+ license:x11))))
 
 (define-public libstrophe
   (package
     (name "libstrophe")
-    (version "0.9.3")
+    (version "0.10.1")
     (source
      (origin
        (method git-fetch)
@@ -2043,8 +2073,17 @@ manual SSL certificate verification.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1g1l0w9z9hdy5ncdvd9097gi7k7783did6py5h9camlpb2fnk5mk"))))
+        (base32 "11d341avsfr0z4lq15cy5dkmff6qpy91wkgzdpfdy31l27pa1g79"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags (list "--disable-static")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-make
+           (lambda _
+             (substitute* "Makefile.am"
+               (("'\\^xmpp_'") "'.'"))
+             #t)))))
     (inputs
      `(("expat" ,expat)
        ("openssl" ,openssl)))
@@ -2078,6 +2117,7 @@ are both supported).")
     (arguments
      `(#:configure-flags
        (list
+        "--disable-static"
         "--enable-notifications"
         "--enable-python-plugins"
         "--enable-c-plugins"
@@ -2099,10 +2139,12 @@ are both supported).")
        ("glib" ,glib)
        ("gpgme" ,gpgme)
        ("gtk+" ,gtk+-2)
+       ("libgcrypt" ,libgcrypt)
        ("libmesode" ,libmesode)
        ("libnotify" ,libnotify)
        ("libotr" ,libotr)
        ("libsignal-protocol-c" ,libsignal-protocol-c)
+       ;; ("libxss" ,libxss)
        ("ncurses" ,ncurses)
        ("openssl" ,openssl)
        ("python" ,python-wrapper)

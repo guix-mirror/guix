@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2017, 2018, 2019, 2020, 2021, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Deck Pickard <deck.r.pickard@gmail.com>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
@@ -118,7 +118,12 @@ procedure, but both the category and synopsis are meant to be read (parsed) by
 according to'string-distance'."
   (define (options->long-names options)
     (filter string? (append-map option-names options)))
-  (string-closest guess (options->long-names options) #:threshold 3))
+  (match guess
+    ((? string?)
+     (match (string-split guess #\=)
+       ((name rest ...)
+        (string-closest name (options->long-names options) #:threshold 3))))
+    (_ #f)))
 
 (define (args-fold* args options unrecognized-option-proc operand-proc . seeds)
   "A wrapper on top of `args-fold' that does proper user-facing error

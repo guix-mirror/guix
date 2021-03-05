@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -57,7 +57,7 @@
     (inputs
      `(("atk" ,atk)
        ("glib" ,glib)))
-    (home-page "http://gtk-rs.org/")
+    (home-page "https://gtk-rs.org/")
     (synopsis "FFI bindings to libatk-1")
     (description "FFI bindings to libatk-1")
     (license license:expat)))
@@ -88,7 +88,7 @@
     (inputs
      `(("atk" ,atk)
        ("glib" ,glib)))
-    (home-page "http://gtk-rs.org/")
+    (home-page "https://gtk-rs.org/")
     (synopsis "Rust bindings for the ATK library")
     (description "Rust bindings for the ATK library")
     (license license:expat)))
@@ -120,7 +120,7 @@
        (("rust-tempfile" ,rust-tempfile-3))))
     (inputs
      `(("cairo" ,cairo)))
-    (home-page "http://gtk-rs.org/")
+    (home-page "https://gtk-rs.org/")
     (synopsis "Rust bindings for the Cairo library")
     (description "Rust bindings for the Cairo library")
     (license license:expat)))
@@ -199,7 +199,7 @@
         ("rust-x11" ,rust-x11-2))))
     (inputs
      `(("cairo" ,cairo)))
-    (home-page "http://gtk-rs.org/")
+    (home-page "https://gtk-rs.org/")
     (synopsis "FFI bindings to libcairo")
     (description "This package provides FFI bindings to libcairo.")
     (license license:expat)))
@@ -260,7 +260,7 @@
        ("glib" ,glib)
        ("gtk+" ,gtk+)
        ("pango" ,pango)))
-    (home-page "http://gtk-rs.org/")
+    (home-page "https://gtk-rs.org/")
     (synopsis "Rust bindings for the GDK 3 library")
     (description "This package provides Rust bindings for the GDK 3 library.")
     (license license:expat)))
@@ -322,7 +322,7 @@
        (("rust-gir-format-check" ,rust-gir-format-check-0.1))))
     (inputs
      `(("gdk-pixbuf" ,gdk-pixbuf)))
-    (home-page "http://gtk-rs.org/")
+    (home-page "https://gtk-rs.org/")
     (synopsis "Rust bindings for the GdkPixbuf library")
     (description "Rust bindings for the GdkPixbuf library")
     (license license:expat)))
@@ -406,7 +406,7 @@
         ("rust-tempfile" ,rust-tempfile-3))))
     (inputs
      `(("gdk-pixbuf" ,gdk-pixbuf)))
-    (home-page "http://gtk-rs.org/")
+    (home-page "https://gtk-rs.org/")
     (synopsis "FFI bindings to libgdk_pixbuf-2.0")
     (description "This package provides FFI bindings to @code{libgdk_pixbuf-2.0}.")
     (license license:expat)))
@@ -468,7 +468,7 @@
        ("gtk+" ,gtk+)
        ("glib" ,glib)
        ("pango" ,pango)))
-    (home-page "http://gtk-rs.org/")
+    (home-page "https://gtk-rs.org/")
     (synopsis "FFI bindings to libgdk-3")
     (description "FFI bindings to libgdk-3")
     (license license:expat)))
@@ -534,7 +534,7 @@
         ("rust-serial-test" ,rust-serial-test-0.4))))
     (inputs
      `(("glib" ,glib)))
-    (home-page "http://gtk-rs.org/")
+    (home-page "https://gtk-rs.org/")
     (synopsis "Rust bindings for the Gio library")
     (description "Rust bindings for the Gio library")
     (license license:expat)))
@@ -622,7 +622,7 @@
         ("rust-winapi" ,rust-winapi-0.3))))
     (inputs
      `(("glib" ,glib)))
-    (home-page "http://gtk-rs.org/")
+    (home-page "https://gtk-rs.org/")
     (synopsis "FFI bindings to libgio-2.0")
     (description "This package provides FFI bindings to libgio-2.0.")
     (license license:expat)))
@@ -698,7 +698,7 @@
         ("rust-once-cell" ,rust-once-cell-1))))
     (inputs
      `(("glib" ,glib)))
-    (home-page "http://gtk-rs.org/")
+    (home-page "https://gtk-rs.org/")
     (synopsis "Rust bindings for the GLib library")
     (description "Rust bindings for the GLib library")
     (license license:expat)))
@@ -781,7 +781,7 @@
         ("rust-proc-macro2" ,rust-proc-macro2-1)
         ("rust-quote" ,rust-quote-1)
         ("rust-syn" ,rust-syn-1))))
-    (home-page "http://gtk-rs.org/")
+    (home-page "https://gtk-rs.org/")
     (synopsis "Rust bindings for the GLib library, proc macros crate")
     (description "Rust bindings for the GLib library, proc macros crate.")
     (license license:expat)))
@@ -808,7 +808,7 @@
         ("rust-tempfile" ,rust-tempfile-3))))
     (inputs
      `(("glib" ,glib)))
-    (home-page "http://gtk-rs.org/")
+    (home-page "https://gtk-rs.org/")
     (synopsis "FFI bindings to libglib-2.0")
     (description "This package provides FFI bindings to libglib-2.0.")
     (license license:expat)))
@@ -859,7 +859,7 @@
         ("rust-tempfile" ,rust-tempfile-3))))
     (inputs
      `(("glib" ,glib)))
-    (home-page "http://gtk-rs.org/")
+    (home-page "https://gtk-rs.org/")
     (synopsis "FFI bindings to libgobject-2.0")
     (description "This package provides FFI bindings to libgobject-2.0.")
     (license license:expat)))
@@ -930,7 +930,7 @@
        ("glib" ,glib)
        ("gtk+" ,gtk+)
        ("pango" ,pango)))
-    (home-page "http://gtk-rs.org/")
+    (home-page "https://gtk-rs.org/")
     (synopsis "Rust bindings for the GTK+ 3 library")
     (description "This package provides Rust bindings for the GTK+ 3 library.")
     (license license:expat)))
@@ -986,7 +986,7 @@
         ("rust-tempfile" ,rust-tempfile-3))))
     (inputs
      `(("gtk+" ,gtk+)))
-    (home-page "http://gtk-rs.org/")
+    (home-page "https://gtk-rs.org/")
     (synopsis "FFI bindings to libgtk-3")
     (description "This package provides FFI bindings to libgtk-3.")
     (license license:expat)))
@@ -1018,7 +1018,7 @@
        (("rust-gir-format-check" ,rust-gir-format-check-0.1))))
     (inputs
      `(("pango" ,pango)))
-    (home-page "http://gtk-rs.org/")
+    (home-page "https://gtk-rs.org/")
     (synopsis "Rust bindings for the Pango library")
     (description "Rust bindings for the Pango library")
     (license license:expat)))
@@ -1098,7 +1098,7 @@
         ("rust-system-deps" ,rust-system-deps-1))))
     (inputs
      `(("pango" ,pango)))
-    (home-page "http://gtk-rs.org/")
+    (home-page "https://gtk-rs.org/")
     (synopsis "FFI bindings to libpango-1.0")
     (description "This package provides FFI bindings to @code{libpango-1.0}.")
     (license license:expat)))
@@ -1157,7 +1157,7 @@
        (("rust-gir-format-check" ,rust-gir-format-check-0.1))))
     (inputs
      `(("gtk+" ,gtk+)))
-    (home-page "http://gtk-rs.org/")
+    (home-page "https://gtk-rs.org/")
     (synopsis "Rust bindings for the PangoCairo library")
     (description
      "Rust bindings for the PangoCairo library.")

@@ -49,6 +49,7 @@
 ;;; Copyright © 2020 Antoine Côté <antoine.cote@posteo.net>
 ;;; Copyright © 2021 Alexey Abramov <levenson@mmer.org>
 ;;; Copyright © 2021 Andrew Tropin <andrew@trop.in>
+;;; Copyright © 2021 David Wilson <david@daviwil.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1304,14 +1305,14 @@ SMPTE 314M.")
 (define-public libmatroska
   (package
     (name "libmatroska")
-    (version "1.6.2")
+    (version "1.6.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://dl.matroska.org/downloads/"
                            "libmatroska/libmatroska-" version ".tar.xz"))
        (sha256
-        (base32 "140r3q6n4a0n11zaf76lvyxd9gp435dgm8gn7mj0gar2hjm7ji5w"))))
+        (base32 "06h81sxyz2riic0gpzik6ffcnq32wrqphi8c6k55glcdymiimyfs"))))
     (build-system cmake-build-system)
     (inputs
      `(("libebml" ,libebml)))
@@ -1418,14 +1419,14 @@ operate properly.")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "4.3.1")
+    (version "4.3.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1yrg9nri54iav86vxy5i8pj51dhikksa04x20d77nc3fsi09405d"))))
+               "1nyd9jlcy0pqnwzi29a7sg50hq37vb0g3f9l16y3q8yh3m7ydr26"))))
     (build-system gnu-build-system)
     (inputs
      `(("dav1d" ,dav1d)
@@ -2196,14 +2197,14 @@ To load this plugin, specify the following option when starting mpv:
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2021.01.16")
+    (version "2021.03.03")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://youtube-dl.org/downloads/latest/"
                                   "youtube-dl-" version ".tar.gz"))
               (sha256
                (base32
-                "1q8pvw5j45k8nvr3d9rvnhi6xaj1mdqlkrg7q7qq6zciq5r54fhi"))
+                "11z2v8mdii0bl13850mc6hgz80d0kgzb4hdxyikc3wa4jqfwrq7f"))
               (snippet
                '(begin
                   ;; Delete the pre-generated files, except for the man page
@@ -3175,6 +3176,43 @@ and JACK.")
 OBS audio sources.")
     (license license:gpl2)))
 
+(define-public obs-websocket
+  (package
+    (name "obs-websocket")
+    (version "4.9.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Palakis/obs-websocket")
+             (commit version)
+             (recursive? #t)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1r47861ma1s3998clahbnbc216wcf706b1ps514k5p28h511l5w0"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ;no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-permission-change
+           (lambda* _
+             (substitute* "CMakeLists.txt"
+               ;; Remove lines that set writeable permissions on outputs.
+               (("set\\(CMAKE_INSTALL_DEFAULT_DIRECTORY_PERMISSIONS") "")
+               (("OWNER_READ.*\\)") "")
+               (("PERMISSIONS") ")"))
+             #t)))))
+    (inputs
+     `(("obs" ,obs)
+       ("qtbase" ,qtbase)))
+    (home-page "https://github.com/Palakis/obs-websocket")
+    (synopsis "OBS plugin for remote control via WebSockets")
+    (description "This OBS plugin allows you to establish a WebSocket channel
+from within your running OBS instance so that you can control it remotely from
+programs on your current machine or on other machines.")
+    (license license:gpl2+)))
+
 (define-public obs-wlrobs
   (package
     (name "obs-wlrobs")
@@ -4078,18 +4116,19 @@ tools for styling them, including a built-in real-time video preview.")
 (define-public pitivi
   ;; Pitivi switched to a non-semantic versioning scheme close before 1.0
   (let ((latest-semver "0.999.0")
-        (%version "2020.09.2"))
+        (%version "2021.01.0"))
    (package
      (name "pitivi")
      (version (string-append latest-semver "-" %version))
-     (source (origin
-               (method url-fetch)
-               (uri (string-append "mirror://gnome/sources/" name "/"
-                                   (version-major+minor %version) "/"
-                                   name "-" %version ".tar.xz"))
-               (sha256
-                (base32
-                 "0hzvv4wia4rk0kvq16y27imq2qd4q5lg3vx99hdcjdb1x3zqqfg0"))))
+     (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://gitlab.gnome.org/GNOME/pitivi.git")
+              (commit %version)))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1jics10l16ismi5br6wxi4jxz3dd4p0c0xv8l0l3nvksvda4aafi"))))
      (build-system meson-build-system)
      (inputs
       `(("glib" ,glib)

@@ -34,6 +34,8 @@
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2021 Léo Le Bouter <lle-bout@zaclys.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -81,6 +83,8 @@
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages golang)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages guile)
@@ -166,14 +170,14 @@ as well as the classic centralized workflow.")
 (define-public git
   (package
    (name "git")
-   (version "2.30.0")
+   (version "2.30.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "06ad6dylgla34k9am7d5z8y3rryc8ln3ibq5z0d74rcm20hm0wsm"))))
+              "0rwlbps9x8kgk2hsm0bvsrkpsk9bnbnz8alknbd7i688jnhai27r"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -190,11 +194,12 @@ as well as the classic centralized workflow.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "0xngjg60rwzrb9x32d1qbdd8szkzwcyha5qni7ilkldxsl2q8avv"))))
+            "015rqnz3ly1h6z6k9hfikgh401s3mzkmys8srai1kfv4v75pxz1h"))))
       ;; For subtree documentation.
       ("asciidoc" ,asciidoc-py3)
       ("docbook-xsl" ,docbook-xsl)
-      ("xmlto" ,xmlto)))
+      ("xmlto" ,xmlto)
+      ("pkg-config" ,pkg-config)))
    (inputs
     `(("curl" ,curl)
       ("expat" ,expat)
@@ -220,11 +225,16 @@ as well as the classic centralized workflow.")
 
       ;; For 'git gui', 'gitk', and 'git citool'.
       ("tcl" ,tcl)
-      ("tk" ,tk)))
+      ("tk" ,tk)
+
+      ;; For 'git-credential-libsecret'
+      ("glib" ,glib)
+      ("libsecret" ,libsecret)))
    (outputs '("out"                               ; the core
               "send-email"                        ; for git-send-email
               "svn"                               ; git-svn
               "credential-netrc"                  ; git-credential-netrc
+              "credential-libsecret"              ; git-credential-libsecret
               "subtree"                           ; git-subtree
               "gui"))                             ; gitk, git gui
    (arguments
@@ -262,6 +272,7 @@ as well as the classic centralized workflow.")
 
       #:modules ((srfi srfi-1)
                  (srfi srfi-26)
+                 ((guix build gnu-build-system) #:prefix gnu:)
                  ,@%gnu-build-system-modules)
       #:phases
       (modify-phases %standard-phases
@@ -389,6 +400,14 @@ as well as the classic centralized workflow.")
                 `("PERL5LIB" ":" prefix
                   (,(string-append (assoc-ref outputs "out") "/share/perl5"))))
               #t)))
+        (add-after 'install 'install-credential-libsecret
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((libsecret (assoc-ref outputs "credential-libsecret")))
+              (with-directory-excursion "contrib/credential/libsecret"
+                ((assoc-ref gnu:%standard-phases 'build))
+                (install-file "git-credential-libsecret"
+                              (string-append libsecret "/bin"))
+                #t))))
         (add-after 'install 'install-subtree
           (lambda* (#:key outputs #:allow-other-keys)
             (let ((subtree (assoc-ref outputs "subtree")))
@@ -535,6 +554,7 @@ everything from small to very large projects with speed and efficiency.")
            (delete 'install-man-pages)
            (delete 'install-subtree)
            (delete 'install-credential-netrc)
+           (delete 'install-credential-libsecret)
            (add-after 'install 'remove-unusable-perl-commands
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out     (assoc-ref outputs "out"))
@@ -1217,7 +1237,7 @@ lot easier.")
 (define-public stgit
   (package
     (name "stgit")
-    (version "0.23")
+    (version "1.0")
     (source
      (origin
        (method git-fetch)
@@ -1226,7 +1246,7 @@ lot easier.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0bgxgsd6nj6gkk74c56vrjsyr7j19jrj6cx2ma6f7b20wriznhd5"))))
+        (base32 "0dixgvjlsk3xisj8blzdhh0nphm5zqkjbj081wgsba52z4zq1y0q"))))
     (build-system python-build-system)
     (native-inputs
      `(("perl" ,perl)))
@@ -2906,11 +2926,11 @@ defects faster.")
     (license license:asl2.0)))
 
 (define-public gita
-  (let ((commit "62eb3d69874f75bdd6f95743e57315bc59890f70")
+  (let ((commit "e41b504dca90a25e9be27f296da7ce22e5782893")
         (revision "1"))
     (package
       (name "gita")
-      (version (git-version "0.10.10" revision commit))
+      (version (git-version "0.12.9" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -2919,7 +2939,7 @@ defects faster.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1jn5wnmjbdrrgz9fif7s81pv3g92q0wjcqy5qxl77kjy7iv0kpfp"))))
+                  "1k03zgcbhl91cgyh4k7ywyjp00y63q4bqbimncqh5b3lni8l8j5l"))))
       (build-system python-build-system)
       (native-inputs
        `(("git" ,git) ;for tests

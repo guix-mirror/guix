@@ -11,7 +11,7 @@
 ;;; Copyright © 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2015, 2017, 2018 Christopher Lemmer Webber <cwebber@dustycloud.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016, 2017 Rodger Fox <thylakoid@openmailbox.org>
@@ -51,12 +51,14 @@
 ;;; Copyright © 2020 Vitaliy Shatrov <D0dyBo0D0dyBo0@protonmail.com>
 ;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
-;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020, 2021 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Trevor Hass <thass@okstate.edu>
 ;;; Copyright © 2020, 2021 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2020 Lu hux <luhux@outlook.com>
 ;;; Copyright © 2020 Tomás Ortín Fernández <tomasortin@mailbox.org>
 ;;; Copyright © 2021 Olivier Rojon <o.rojon@posteo.net>
+;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
+;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -545,6 +547,40 @@ Playing bastet can be a painful experience, especially if you usually make
 canyons and wait for the long I-shaped block to clear four rows at a time.")
     (license license:gpl3+)))
 
+(define-public vitetris
+  (package
+    (name "vitetris")
+    (version "0.59.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/vicgeralds/vitetris")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "1ah1c5g7abksif0n8v5rb7r4pn2az20c3mkp4ak13vgs23ddmds5"))
+       (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;no test
+       #:make-flags
+       (list ,(string-append "CC=" (cc-for-target))
+             (string-append "DESTDIR=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda _
+             ;; the non standard configure script does not accept
+             ;; standard parameters -> invoke configure by hand
+             (invoke "./configure" "prefix=")
+             ;; src/src-conf.mk must be writable for the build step
+             (make-file-writable "src/src-conf.mk"))))))
+    (home-page "http://victornils.net/tetris/")
+    (synopsis "Terminal-based Tetris clone")
+    (description "Vitetris is a classic multiplayer Tetris clone for the
+terminal.")
+    (license license:bsd-2)))
+
 (define-public blobwars
   (package
     (name "blobwars")
@@ -731,14 +767,14 @@ Quizes: arithmetic, and quiz.")
 (define-public bzflag
   (package
     (name "bzflag")
-    (version "2.4.20")
+    (version "2.4.22")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.bzflag.org/bzflag/source/"
                            version "/bzflag-" version ".tar.bz2"))
        (sha256
-        (base32 "16brxqmfiyz4j4lb8ihzjcbwqmpsms6vm3ijbp34lnw0blbwdjb2"))))
+        (base32 "0kba0011nswc2csqlzkd7bas307zm5813zlnby5vsmxn08rnar4y"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -3966,7 +4002,7 @@ also available.")
        ("python-polib" ,python-polib)
        ("python-pytest" ,python-pytest)
        ("python-pytest-mock" ,python-pytest-mock)))
-    (home-page "http://unknown-horizons.org/")
+    (home-page "https://unknown-horizons.org/")
     (synopsis "Isometric realtime strategy, economy and city building simulation")
     (description
      "Unknown Horizons is a 2D realtime strategy simulation with an emphasis
@@ -8366,6 +8402,45 @@ to download and install them in @file{$HOME/.stepmania-X.Y/Songs} directory.")
     (home-page "https://www.stepmania.com")
     (license license:expat)))
 
+(define-public oshu
+  (package
+    (name "oshu")
+    (version "2.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/fmang/oshu")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1g598incc6zlls876slgwqblwiwiszkmqa4xpzw0z7mbjmmzsizz"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'pre-check
+           ;; `make test' doesn't actually build the test executable
+           (lambda _ (invoke "make" "zerotokei"))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("cairo" ,cairo)
+       ("ffmpeg" ,ffmpeg)
+       ("pango" ,pango)
+       ("sdl2" ,sdl2)
+       ("sdl2-image" ,sdl2-image)))
+    (home-page "https://github.com/fmang/oshu/")
+    (synopsis "Rhythm game in which you click on circles")
+    (description "@i{oshu!} is a minimalist variant of the @i{osu!} rhythm game,
+which is played by pressing buttons and following along sliders as they appear
+on screen.  Its aim is to be able to play any beatmap even on low-end hardware.
+
+This package provides the core application, but no beatmaps.  You need to
+download and unpack them separately.")
+    (license license:gpl3+)))
+
 (define-public btanks
   (package
     (name "btanks")
@@ -11707,14 +11782,14 @@ and chess engines.")
 (define-public chessx
   (package
     (name "chessx")
-    (version "1.5.4")
+    (version "1.5.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/chessx/chessx/"
                            version "/chessx-" version ".tgz"))
        (sha256
-        (base32 "1a3541vl5hp6jllgx998w9kjh9kp3wrl80yfwkxmq1bc5bzsrnz2"))))
+        (base32 "01fjchil2h6ry2ywr0dwjw2g7zd29580cr4c74d5z74h999lp6nh"))))
     (build-system qt-build-system)
     (native-inputs
      `(("qttools" ,qttools)))
@@ -11732,12 +11807,7 @@ and chess engines.")
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "chessx.pro"
                (("\\$\\$\\[QT_INSTALL_BINS\\]/lrelease")
-                (string-append (assoc-ref inputs "qttools") "/bin/lrelease"))
-               ;; Fix missing translations.
-               (("TRANSLATIONS = i18n/chessx_de.ts")
-                "TRANSLATIONS = i18n/chessx_de.ts i18n/chessx_da.ts \\
-i18n/chessx_fr.ts i18n/chessx_it.ts i18n/chessx_cz.ts i18n/chessx_ru.ts \\
-i18n/chessx_es.ts"))
+                (string-append (assoc-ref inputs "qttools") "/bin/lrelease")))
              #t))
          (add-after 'fix-paths 'make-qt-deterministic
            (lambda _
@@ -11765,7 +11835,7 @@ etc.  You can also play games on FICS or against an engine.")
 (define-public stockfish
   (package
     (name "stockfish")
-    (version "12")
+    (version "13")
     (source
      (origin
        (method git-fetch)
@@ -11774,15 +11844,15 @@ etc.  You can also play games on FICS or against an engine.")
              (commit (string-append "sf_" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0vcymbwp5nf114pp3ax40s21ki5dckda15vmhr77d1mnq3fn0l32"))))
+        (base32 "15dfp9fnl3w7dgxhqmsm461amsysn646rj1arnzvwhy2i6ijhg2m"))))
     (build-system gnu-build-system)
     (inputs
      `(("neural-network"
         ,(origin
            (method url-fetch)
-           (uri "https://tests.stockfishchess.org/api/nn/nn-82215d0fd0df.nnue")
+           (uri "https://tests.stockfishchess.org/api/nn/nn-62ef826d1a6d.nnue")
            (sha256
-            (base32 "1r4yqrh4di05syyhl84hqcz84djpbd605b27zhbxwg6zs07ms8c2"))))))
+            (base32 "0qsy9rr4zgxrpgwhwbi96z01a2560am2b00q2klbj4bd39nq5vv2"))))))
     (arguments
      `(#:tests? #f
        #:make-flags (list "-C" "src"
@@ -11804,7 +11874,7 @@ etc.  You can also play games on FICS or against an engine.")
                   (add-after 'unpack 'copy-net
                     (lambda* (#:key inputs #:allow-other-keys)
                       (copy-file (assoc-ref inputs "neural-network")
-                                 "src/nn-82215d0fd0df.nnue")
+                                 "src/nn-62ef826d1a6d.nnue")
                       #t)))))
     (synopsis "Strong chess engine")
     (description
@@ -12157,6 +12227,64 @@ inside the Zenith Colony.")
 such as GnuGo.
 @end itemize")
     (license license:gpl2+)))
+
+(define-public passage
+  (package
+    (name "passage")
+    (version "4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/hcsoftware/Passage/v"
+                           version "/Passage_v" version "_UnixSource.tar.gz"))
+       (sha256
+        (base32 "02ky4a4xdjvr71r58339jjrjyz76b5skcnbq4f8707mrln9vhby3"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #false                  ; there are none
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _
+             (chdir "gamma256/gameSource")
+             (system "cat Makefile.GnuLinux Makefile.all > Makefile")))
+         (replace 'configure
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (setenv "CPATH"
+                     (string-append
+                      (assoc-ref inputs "sdl") "/include/SDL:"
+                      (or (getenv "CPATH") "")))
+             (let* ((out (assoc-ref outputs "out"))
+                    (assets (string-append out "/share/passage")))
+               (substitute* "common.cpp"
+                 (("readTGA\\( \"graphics\"")
+                  (format #false "readTGA(\"~a/graphics\"" assets)))
+               (substitute* "musicPlayer.cpp"
+                 (("readTGA\\( \"music\"")
+                  (format #false "readTGA(\"~a/music\"" assets))))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (assets (string-append out "/share/passage/")))
+               (install-file "Passage" bin)
+               (install-file "../documentation/Readme.txt" assets)
+               (copy-recursively "graphics" (string-append assets "graphics"))
+               (copy-recursively "music" (string-append assets "music"))
+               (copy-recursively "settings" (string-append assets "settings"))))))))
+    (inputs
+     `(("sdl" ,(sdl-union (list sdl sdl-mixer)))))
+    (native-inputs
+     `(("imagemagick" ,imagemagick)))
+    (home-page "http://hcsoftware.sourceforge.net/passage/")
+    (synopsis "Memento mori game")
+    (description
+     "Passage is meant to be a memento mori game.  It presents an entire life,
+from young adulthood through old age and death, in the span of five minutes.
+Of course, it's a game, not a painting or a film, so the choices that you make
+as the player are crucial.  There's no ``right'' way to play Passage, just as
+there's no right way to interpret it.")
+    (license license:public-domain)))
 
 (define-public paperview
   (let ((commit "9f8538eb6734c76877b878b8f1e52587f2ae19e6")

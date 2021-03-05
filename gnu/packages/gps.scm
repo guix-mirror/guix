@@ -149,7 +149,7 @@ between two other data points.")
 (define-public gama
   (package
     (name "gama")
-    (version "2.13")
+    (version "2.14")
     (source
       (origin
         (method url-fetch)
@@ -157,11 +157,12 @@ between two other data points.")
                             version ".tar.gz"))
         (sha256
          (base32
-          "041cprbj4lfs42i7sd1c2zlx3r16g6c5shz3qls79gxb7kqflkgb"))
+          "04mhbgpqbynnmm8ww4k2yk1w2j66c276dns9xwn8cvrq58kjimln"))
         (modules '((guix build utils)))
         (snippet
          '(begin
             (delete-file-recursively "lib/expat")
+            (for-each delete-file (find-files "doc/fig" "\\.pdf$"))
             #t))))
     (build-system gnu-build-system)
     (arguments '(#:parallel-tests? #f)) ; race condition

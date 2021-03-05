@@ -235,14 +235,12 @@ non-zero relevance score."
                (case (version-compare candidate-version version)
                  ((>)
                   (manifest-transaction-install-entry
-                   (manifest-entry-with-transformations
-                    (package->manifest-entry* pkg output))
+                   (package->manifest-entry* pkg output)
                    transaction))
                  ((<)
                   transaction)
                  ((=)
-                  (let* ((new (manifest-entry-with-transformations
-                               (package->manifest-entry* pkg output))))
+                  (let* ((new (package->manifest-entry* pkg output)))
                     ;; Here we want to determine whether the NEW actually
                     ;; differs from ENTRY, but we need to intercept
                     ;; 'build-things' calls because they would prevent us from

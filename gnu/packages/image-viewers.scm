@@ -16,6 +16,7 @@
 ;;; Copyright © 2020 R Veera Kumar <vkor@vkten.in>
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2021 Rovanion Luckey <rovanion.luckey@gmail.com>
+;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -76,7 +77,7 @@
 (define-public feh
   (package
     (name "feh")
-    (version "3.6.2")
+    (version "3.6.3")
     (home-page "https://feh.finalrewind.org/")
     (source (origin
               (method url-fetch)
@@ -84,7 +85,7 @@
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0d66qz9h37pk8h10bc918hbv3j364vyni934rlw2j951s5wznj8n"))))
+                "1d13x8hmvpdc5f5rj4l29ha7iz7wvqxjlvh6il04wq8igzrj0x23"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases (delete 'configure))

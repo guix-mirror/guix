@@ -1835,18 +1835,21 @@ and RESULT is typically its derivation."
   (if (profiled? "object-cache")
       (let ((fresh    0)
             (lookups  0)
-            (hits     0))
+            (hits     0)
+            (size     0))
         (register-profiling-hook!
          "object-cache"
          (lambda ()
            (format (current-error-port) "Store object cache:
   fresh caches: ~5@a
   lookups:      ~5@a
-  hits:         ~5@a (~,1f%)~%"
+  hits:         ~5@a (~,1f%)
+  cache size:   ~5@a entries~%"
                    fresh lookups hits
                    (if (zero? lookups)
                        100.
-                       (* 100. (/ hits lookups))))))
+                       (* 100. (/ hits lookups)))
+                   size)))
 
         (lambda (hit? cache)
           (set! fresh
@@ -1854,12 +1857,13 @@ and RESULT is typically its derivation."
                 (+ 1 fresh)
                 fresh))
           (set! lookups (+ 1 lookups))
-          (set! hits (if hit? (+ hits 1) hits))))
+          (set! hits (if hit? (+ hits 1) hits))
+          (set! size (+ (if hit? 0 1)
+                        (vlist-length cache)))))
       (lambda (x y)
         #t)))
 
-(define* (lookup-cached-object object #:optional (keys '())
-                               #:key (vhash-fold* vhash-foldq*))
+(define-inlinable (lookup-cached-object object keys vhash-fold*)
   "Return the cached object in the store connection corresponding to OBJECT
 and KEYS; use VHASH-FOLD* to look for OBJECT in the cache.  KEYS is a list of
 additional keys to match against, and which are compared with 'equal?'.
@@ -1890,7 +1894,7 @@ Return #f on failure and the cached result otherwise."
 OBJECT/KEYS, or return its cached value.  Use VHASH-CONS to insert OBJECT into
 the cache, and VHASH-FOLD* to look it up."
   (mlet %store-monad ((cached (lookup-cached-object object keys
-                                                    #:vhash-fold* vhash-fold*)))
+                                                    vhash-fold*)))
     (if cached
         (return cached)
         (>>= (mthunk)

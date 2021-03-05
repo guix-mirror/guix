@@ -1261,7 +1261,50 @@ made by suckless.")
                     (glutin-version ,(package-version rust-glutin-0.26))
                     (glutin-api (string-append glutin-name "-" glutin-version
                                                ".tar.gz/src/api/"))
+                    (smithay-client-toolkit-name
+                     ,(package-name rust-smithay-client-toolkit-0.12))
+                    (smithay-client-toolkit-version
+                     ,(package-version rust-smithay-client-toolkit-0.12))
+                    (smithay-client-toolkit-src
+                     (string-append smithay-client-toolkit-name "-"
+                                    smithay-client-toolkit-version ".tar.gz/src"))
+                    (wayland-sys-name ,(package-name rust-wayland-sys-0.28))
+                    (wayland-sys-version ,(package-version rust-wayland-sys-0.28))
+                    (wayland-sys-src (string-append wayland-sys-name "-"
+                                                    wayland-sys-version
+                                                    ".tar.gz/src"))
+                    (libxkbcommon (assoc-ref inputs "libxkbcommon"))
+                    (libwayland (assoc-ref inputs "wayland"))
                     (mesa (assoc-ref inputs "mesa")))
+               ;; Fix dlopen()ing some libraries on pure Wayland (no $DISPLAY):
+               ;; Failed to initialize any backend! Wayland status: NoWaylandLib
+               ;; XXX We patch transitive dependencies that aren't even direct
+               ;; inputs to this package, because of the way Guix's Rust build
+               ;; system currently works.  <http://issues.guix.gnu.org/46399>
+               ;; might fix this and allow patching them directly.
+               (substitute* (string-append vendor-dir "/"
+                                           smithay-client-toolkit-src
+                                           "/seat/keyboard/ffi.rs")
+                 (("libxkbcommon\\.so")
+                  (string-append libxkbcommon "/lib/libxkbcommon.so")))
+               (substitute* (string-append vendor-dir "/" wayland-sys-src
+                                           "/server.rs")
+                 (("libwayland-server\\.so")
+                  (string-append libwayland "/lib/libwayland-server.so")))
+               (substitute* (string-append vendor-dir "/" wayland-sys-src
+                                           "/cursor.rs")
+                 (("libwayland-cursor\\.so")
+                  (string-append libwayland "/lib/libwayland-cursor.so")))
+               (substitute* (string-append vendor-dir "/" wayland-sys-src
+                                           "/egl.rs")
+                 (("libwayland-egl\\.so")
+                  (string-append libwayland "/lib/libwayland-egl.so")))
+               (substitute* (string-append vendor-dir "/" wayland-sys-src
+                                           "/client.rs")
+                 (("libwayland-client\\.so")
+                  (string-append libwayland "/lib/libwayland-client.so")))
+
+               ;; Mesa is needed everywhere.
                (substitute*
                    (string-append vendor-dir "/" glutin-api "glx/mod.rs")
                  (("libGL.so") (string-append mesa "/lib/libGL.so")))
@@ -1345,7 +1388,7 @@ terminal.  Note that you need support for OpenGL 3.2 or higher.")
 (define-public bootterm
   (package
     (name "bootterm")
-    (version "0.2")
+    (version "0.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1354,7 +1397,7 @@ terminal.  Note that you need support for OpenGL 3.2 or higher.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "08yb4kiid3028cqsx7wzyrzk46asphxlxlj1y141hi245wbql55n"))))
+                "1k3jacld98za41dbpr10sjms77hrw91sb10m0cnwv3h7aifiwmrs"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no test suite

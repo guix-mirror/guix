@@ -270,11 +270,9 @@ not available in the initrd."
 
     (remote-let ((missing remote-exp))
       (unless (null? missing)
-        (raise (condition
-                (&message
-                 (message (format #f (G_ "missing modules for ~a:~{ ~a~}~%")
+        (raise (formatted-message (G_ "missing modules for ~a:~{ ~a~}~%")
                                   (file-system-device fs)
-                                  missing))))))))
+                                  missing)))))
 
   (map missing-modules file-systems))
 

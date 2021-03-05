@@ -141,7 +141,8 @@
                (sha256
                 (base32
                  "1rd41wwlvp0vpialjp2czs6i3lsc338xc72l3zkbb7ixjfslw5y9"))
-              (patches (search-patches "qemu-build-info-manual.patch"))
+              (patches (search-patches "qemu-build-info-manual.patch"
+                                       "qemu-CVE-2021-20203.patch"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -722,7 +723,7 @@ server and embedded PowerPC, and S390 guests.")
        ("python-bitarray" ,python-bitarray)
        ("python-paramiko" ,python-paramiko)
        ("python-psutil" ,python-psutil)))
-    (home-page "http://www.ganeti.org/")
+    (home-page "https://www.ganeti.org/")
     (synopsis "Cluster-based virtual machine management system")
     (description
      "Ganeti is a virtual machine management tool built on top of existing

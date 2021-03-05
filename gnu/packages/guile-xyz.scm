@@ -32,7 +32,7 @@
 ;;; Copyright © 2020 Jesse Gibbons <jgibbons2357@gmail.com>
 ;;; Copyright © 2020 Mike Rosset <mike.rosset@gmail.com>
 ;;; Copyright © 2020 Leo Prikler <leo.prikler@student.tugraz.at>
-;;; Copyright © 2020 pukkamustard <pukkamustard@posteo.net>
+;;; Copyright © 2020, 2021 pukkamustard <pukkamustard@posteo.net>
 ;;; Copyright © 2021 Bonface Munyoki Kilyungi <me@bonfacemunyoki.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -464,16 +464,16 @@ you send to a FIFO file.")
 (define-public guile-dsv
   (package
     (name "guile-dsv")
-    (version "0.3.0")
+    (version "0.4.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/artyom-poptsov/guile-dsv")
-                    (commit "6c867915dc4198eacc548a4834ef0e1aef852795")))
+                    (commit (string-append "v" version))))
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1mxbbcsmbjfnh4yydqz44ihbkdnzdwz38xanaam128arlb7hwr8n"))))
+                "1mvyc8i38j56frjh3p6vwziv8lrzlyqndz30663h5nwcp0044sdn"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -489,14 +489,6 @@ you send to a FIFO file.")
        #:imported-modules ((guix build guile-build-system)
                            ,@%gnu-build-system-modules)
        #:phases (modify-phases %standard-phases
-                  ;; Support Guile 3.0 in configure from upstream commit
-                  ;; 4c724577ccf19bb88580f72f2f6b166a0447ce3f
-                  (add-before 'bootstrap 'configure-support-guile3.0
-                    (lambda _
-                      (substitute* "configure.ac"
-                                  (("GUILE_PKG.*")
-                                   "GUILE_PKG([3.0 2.0 2.2])"))
-                      #t))
                   (add-before 'configure 'set-guilesitedir
                     (lambda _
                       (substitute* "Makefile.in"
@@ -1009,8 +1001,8 @@ convenient nested tree operations.")
     (license license:gpl3+)))
 
 (define-public guile-simple-zmq
-  (let ((commit "f8b7d81afb38525750f8818ed2956ca18c828ee8")
-        (revision "5"))
+  (let ((commit "e9446173280117e98ab4208e2aa5273128650e19")
+        (revision "8"))
     (package
       (name "guile-simple-zmq")
       (version (git-version "0.0.0" revision commit))
@@ -1022,23 +1014,20 @@ convenient nested tree operations.")
                (commit commit)))
          (sha256
           (base32
-           "1gpzlpcq7bxw7sxyrg8zslwb3631vizw56lgg1aavw4gafh0hxb3"))
+           "1nhlp5kl1095k1irvv0kgdbc7lp5qki3d3wg9rla6f7822hkmrzw"))
          (file-name (git-file-name name version))))
-      (build-system guile-build-system)
+      (build-system gnu-build-system)
       (arguments
-       `(#:source-directory "src"
-         #:phases (modify-phases %standard-phases
-                    (add-after 'unpack 'set-libzmq-file-name
-                      (lambda* (#:key inputs #:allow-other-keys)
-                        (substitute* "src/simple-zmq.scm"
-                          (("\\(dynamic-link \"libzmq\"\\)")
-                           (format #f "(dynamic-link \"~a/lib/libzmq.so\")"
-                                   (assoc-ref inputs "zeromq"))))
-                        #t)))))
+       '(#:make-flags
+         '("GUILE_AUTO_COMPILE=0"))) ;to prevent guild warnings
+
       (native-inputs
        `(("guile" ,guile-3.0)))
       (inputs
-       `(("zeromq" ,zeromq)))
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("pkg-config" ,pkg-config)
+         ("zeromq" ,zeromq)))
       (home-page "https://github.com/jerry40/guile-simple-zmq")
       (synopsis "Guile wrapper over ZeroMQ library")
       (description
@@ -1308,16 +1297,27 @@ Scheme by using Guile’s foreign function interface.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1vblf3d1bbwna3l09p2ap5y8ycvl549bz6whgk78imyfmn28ygry"))))
+                "1vblf3d1bbwna3l09p2ap5y8ycvl549bz6whgk78imyfmn28ygry"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Allow builds with Guile 3.0.
+                  (substitute* "configure.ac"
+                    (("^PKG_CHECK.*") "")
+                    (("^GUILE_PKG.*")
+                     "GUILE_PKG([3.0 2.2])\n"))
+                  #t))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
-       ("pkg-config" ,pkg-config)))
+       ("emacs" ,emacs-minimal)
+       ("pkg-config" ,pkg-config)
+       ("texinfo" ,texinfo)))
     (inputs
-     `(("guile" ,guile-2.2)
+     `(("guile" ,guile-3.0)
        ("gnutls" ,gnutls)
-       ("guile-json" ,guile-json-1)))
+       ("guile-json" ,guile-json-4)))
     (home-page "https://framagit.org/prouby/guile-mastodon")
     (synopsis "Guile Mastodon REST API module")
     (description "This package provides Guile modules to access the
@@ -4560,3 +4560,32 @@ ffi-helper from nyacc.")
 for C++ code using a simple embedded DSL.  Think of it as @code{Boost.Python}
 or @code{LuaBind} but for Scheme.")
       (license license:boost1.0))))
+
+(define-public guile-cbor
+  (package
+    (name "guile-cbor")
+    (version "0.1.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://inqlab.net/git/guile-cbor.git")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256 (base32 "0bdqg3ifayf7m2j09lqrgdfprbdaa67azf09bcq9b4k71inxfnxl"))))
+    (build-system gnu-build-system)
+    (arguments `())
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)
+       ("texinfo" ,texinfo)))
+    (inputs `(("guile" ,guile-3.0)))
+    (synopsis "Guile implementation of CBOR")
+    (description
+     "The Concise Binary Object Representation (CBOR), as specified by RFC 8949, is
+a binary data serialization format.  CBOR is similar to JSON but serializes to
+binary which is smaller and faster to generate and parse.  This package provides
+a Guile implementation of CBOR.")
+    (home-page "https://inqlab.net/git/guile-cbor.git")
+    (license license:gpl3+)))

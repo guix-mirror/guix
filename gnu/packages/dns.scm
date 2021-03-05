@@ -317,7 +317,9 @@ and BOOTP/TFTP for network booting of diskless machines.")
   (package
     (name "bind")
     ;; When updating, check whether isc-dhcp's bundled copy should be as well.
-    (version "9.16.11")
+    ;; The BIND release notes are available here:
+    ;; https://www.isc.org/bind/
+    (version "9.16.12")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -325,7 +327,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
                     "/bind-" version ".tar.xz"))
               (sha256
                (base32
-                "1hcr0q6i2mk83yi12zxjs5q21y3gx7683q99l77ibxfqsx6zc481"))))
+                "0zys8hk08zzrw57x0vmzv6zx0a7vjj6qk5qh8jmrqd7x269sy54r"))))
     (build-system gnu-build-system)
     (outputs `("out" "utils"))
     (inputs
@@ -536,14 +538,14 @@ asynchronous fashion.")
 (define-public nsd
   (package
     (name "nsd")
-    (version "4.3.4")
+    (version "4.3.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.nlnetlabs.nl/downloads/nsd/nsd-"
                            version ".tar.gz"))
        (sha256
-        (base32 "0l4ba80ihwg3s2ifhnkmk7rjabrcy5zw6sz4hn0vm9sif6lk9s1v"))))
+        (base32 "0wj490rxqs86z8s4lxjwk06ry5pvkdqqyq1cf83z7mxk60zb98kx"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -606,14 +608,14 @@ to result in system-wide compromise.")
 (define-public unbound
   (package
     (name "unbound")
-    (version "1.13.0")
+    (version "1.13.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.unbound.net/downloads/unbound-"
                            version ".tar.gz"))
        (sha256
-        (base32 "18dj7migq6379hps59793457l81s3z7dll3y0fj6qcmhjlx08m59"))))
+        (base32 "1f2hky62f4xxnjr0lncrzz4gipg01rp12pf98mrqkgf5ixxxj145"))))
     (build-system gnu-build-system)
     (outputs '("out" "python"))
     (native-inputs
@@ -763,16 +765,16 @@ served by AS112.  Stub and forward zones are supported.")
 (define-public yadifa
   (package
     (name "yadifa")
-    (version "2.4.1")
+    (version "2.4.2")
     (source
-     (let ((build "9916"))
+     (let ((build "9997"))
        (origin
          (method url-fetch)
          (uri
           (string-append "https://www.yadifa.eu/sites/default/files/releases/"
                          "yadifa-" version "-" build ".tar.gz"))
          (sha256
-          (base32 "1m1j7q1f0682xig8qign5ms52igix8pd45fds7p5j285dvrfa4xd")))))
+          (base32 "0f1by2c7l39qpsar5nh98f3xypmn2ikv7wr557wmva6m0lwbl3q0")))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)))
@@ -810,7 +812,7 @@ Extensions} (DNSSEC).")
 (define-public knot
   (package
     (name "knot")
-    (version "3.0.3")
+    (version "3.0.4")
     (source
      (origin
        (method git-fetch)
@@ -819,7 +821,7 @@ Extensions} (DNSSEC).")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0xzig9l91wj6x23mh75vw2r51ihrgx916c7wxvpcfnwrqsv4f3hy"))
+        (base32 "1mbjl18zi8yxs7pa3395lqjwdw0agjbfpl32x42i6d9zb8fsblzs"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -940,14 +942,14 @@ synthesis, and on-the-fly re-configuration.")
 (define-public knot-resolver
   (package
     (name "knot-resolver")
-    (version "5.2.1")
+    (version "5.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://secure.nic.cz/files/knot-resolver/"
                                   "knot-resolver-" version ".tar.xz"))
               (sha256
                (base32
-                "09jqy23q1pgj76y2qd1xfk72wwmypnyawm3span3gx00qi2bfdxa"))))
+                "0gp3ivv3zccz4b6s1wxbsvvlrc837lw2g089l3cbvzsg7z0b4v7v"))))
     (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments

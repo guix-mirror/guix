@@ -4,7 +4,7 @@
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016, 2017, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Troy Sankey <sankeytms@gmail.com>
-;;; Copyright © 2016 Stefan Reichoer <stefan@xsteve.at>
+;;; Copyright © 2016, 2021 Stefan Reichoer <stefan@xsteve.at>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com
 ;;; Copyright © 2020 Brendan Tildesley <mail@brendan.scot>
@@ -226,7 +226,7 @@ able to synchronize with CalDAV servers through vdirsyncer.")
 (define-public remind
   (package
     (name "remind")
-    (version "3.1.17")
+    (version "3.3.5")
     (source
      (origin
        (method url-fetch)
@@ -237,7 +237,7 @@ able to synchronize with CalDAV servers through vdirsyncer.")
                                         ".")
                            ".tar.gz"))
        (sha256
-        (base32 "0lgyc2j69aqqk4knywr8inz4fsnni0zq54dgqh7p4s6kzybc2mf9"))))
+        (base32 "1hbfsq6444abkiws28xqy0k9cwzgzfi1hwfmd1rgm4yydgc1gvb1"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f))                    ; no "check" target

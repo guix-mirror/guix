@@ -19,7 +19,7 @@
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
-;;; Copyright © 2019 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2019, 2021 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -27,7 +27,7 @@
 ;;; Copyright © 2019 Christopher Lemmer Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2019 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
 ;;; Copyright © 2019 Hartmt Goebel <h.goebel@crazy-compilers.com>
-;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2019, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Jonathan Frederickson <jonathan@terracrypt.net>
@@ -741,7 +741,7 @@ engineers, musicians, soundtrack editors and composers.")
        ("gettext" ,gettext-minimal)     ;for msgfmt
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)
-       ("python" ,python-2)
+       ("python" ,python)
        ("which" ,which)))
     (arguments
      `(#:configure-flags
@@ -750,6 +750,12 @@ engineers, musicians, soundtrack editors and composers.")
         "-Daudacity_use_ffmpeg=linked"
         "-Daudacity_use_lame=system"
         "-Daudacity_use_portsmf=system")
+       #:imported-modules ((guix build glib-or-gtk-build-system)
+                           ,@%cmake-build-system-modules)
+       #:modules
+       ((guix build utils)
+        (guix build cmake-build-system)
+        ((guix build glib-or-gtk-build-system) #:prefix glib-or-gtk:))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'comment-out-revision-ident
@@ -766,7 +772,9 @@ engineers, musicians, soundtrack editors and composers.")
                (("../lib-src/portmidi/pm_common/portmidi.h") "portmidi.h")
                (("../lib-src/portmidi/porttime/porttime.h") "porttime.h"))
              (substitute* "src/prefs/MidiIOPrefs.cpp"
-               (("../../lib-src/portmidi/pm_common/portmidi.h") "portmidi.h")))))
+               (("../../lib-src/portmidi/pm_common/portmidi.h") "portmidi.h"))))
+         (add-after 'wrap-program 'glib-or-gtk-wrap
+           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap)))
          ;; The test suite is not "well exercised" according to the developers,
          ;; and fails with various errors.  See
          ;; <http://sourceforge.net/p/audacity/mailman/message/33524292/>.
@@ -1223,6 +1231,37 @@ object library.")
 language and software synthesizer.")
     (license license:lgpl2.1+)))
 
+(define-public midicomp
+  ;; The latest tagged release is 9 years old and there have been
+  ;; unreleased fixes, so we take the last commit.
+  (let ((commit "70f76963cb0cdb3cbe03ec6e7246b1fb885d3c68")
+        (revision "1"))
+    (package
+      (name "midicomp")
+      (version (git-version "0.0.8" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/markc/midicomp")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+           (base32
+            "12zh247c6v88ssy4l8v7yirh4bl2jcc1ch7f4gdry79a82kai1gf"))))
+     (build-system cmake-build-system)
+     (arguments
+      `(#:tests? #f))  ; no "check" target
+      (synopsis "Convert SMF MIDI files to and from plain text")
+      (description
+       "midicomp can manipulate SMF (Standard MIDI File) files.  It can both
+  read and write SMF files in 0 or format 1 and also read and write its own
+  plain text format.  This means a SMF file can be turned into easily
+  parseable text, edited with any text editor or filtered through any script
+  language, and recompiled back into a binary SMF file.")
+      (home-page "https://github.com/markc/midicomp")
+      (license license:agpl3))))
+
 (define-public clalsadrv
   (package
     (name "clalsadrv")
@@ -1615,7 +1654,7 @@ follower.")
        ("glib" ,glib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.fluidsynth.org/")
+    (home-page "https://www.fluidsynth.org/")
     (synopsis "SoundFont synthesizer")
     (description
      "FluidSynth is a real-time software synthesizer based on the SoundFont 2
@@ -1911,7 +1950,7 @@ well suited to all musical instruments and vocals.")
        (modify-phases %standard-phases
          (delete 'configure)        ; no configure script
          ;; See https://github.com/tomszilagyi/ir.lv2/pull/20
-         (add-after 'unpack 'fix-type 
+         (add-after 'unpack 'fix-type
            (lambda _
              (substitute* '("ir_gui.cc" "lv2_ui.h")
                (("_LV2UI_Descriptor") "LV2UI_Descriptor"))
@@ -3211,7 +3250,7 @@ stretching and pitch scaling of audio.  This package contains the library.")
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("libtool" ,libtool)))
-    (home-page "http://www.wavpack.com/")
+    (home-page "https://www.wavpack.com/")
     (synopsis "Hybrid lossless audio codec")
     (description
      "WavPack is an audio compression format with lossless, lossy and hybrid
@@ -3394,7 +3433,7 @@ conversion.  It may be used, for example, to resample PCM-encoded audio.")
     (native-inputs
      `(("perl" ,perl)
        ("which" ,which)))               ;used in tests/test.pl
-    (home-page "http://www.twolame.org/")
+    (home-page "https://www.twolame.org/")
     (synopsis "MPEG Audio Layer 2 (MP2) encoder")
     (description
      "TwoLAME is an optimised MPEG Audio Layer 2 (MP2) encoder based on
@@ -4574,20 +4613,20 @@ workstations as well as consumer software such as music players.")
 (define-public redkite
   (package
     (name "redkite")
-    (version "1.0.3")
+    (version "1.3.0")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://gitlab.com/geontime/redkite.git")
+             (url "https://gitlab.com/iurie-sw/redkite")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1m2db7c791fi33snkjwnvlxapmf879g5r8azlkx7sr6vp2s0jq2k"))))
+        (base32 "16j9zp5i7svq3g38rfb6h257qfgnd2brrxi7cjd2pdax9xxwj40y"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ;no tests included
-    (inputs
+    (propagated-inputs
      `(("cairo" ,cairo)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -5057,4 +5096,58 @@ across multiple applications running on one or more devices.  Applications on de
 connected to a local network discover each other automatically and form a musical
 session in which each participant can perform independently: anyone can start or stop
 while still staying in time.")
+    (license license:gpl2+)))
+
+(define-public butt
+  (package
+    (name "butt")
+    (version "0.1.28")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/butt/butt/butt-"
+                                  version "/butt-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1rbp4v6dlyapld6y4aqbpfmcaiafa06f2zqd1rhk4r3ld3bndafm"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-documentation
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (manual (assoc-ref inputs "manual"))
+                    (doc (string-append out "/share/doc/" ,name "-" ,version)))
+               (install-file "README" doc)
+               (copy-file manual (string-append doc "/butt-manual.pdf"))))))))
+    (inputs
+     `(("dbus" ,dbus)
+       ("flac" ,flac)
+       ("fltk" ,fltk)
+       ("lame" ,lame)
+       ("libfdk" ,libfdk)
+       ("libsamplerate" ,libsamplerate)
+       ("libvorbis" ,libvorbis)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxfixes" ,libxfixes)
+       ("libxft" ,libxft)
+       ("libxrender" ,libxrender)
+       ("ogg" ,libogg)
+       ("openssl" ,openssl)
+       ("opus" ,opus)
+       ("portaudio" ,portaudio)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("manual" ,(origin
+                    (method url-fetch)
+                    (uri (string-append "https://danielnoethen.de/butt/butt-"
+                                        version "_manual.pdf"))
+                    (sha256
+                     (base32
+                      "04wz2sqhk22h9gymwh5r6kp6sxc994mia8rg9lwpmy1r18w4pvsl"))))))
+    (home-page "https://danielnoethen.de/butt/")
+    (synopsis "Audio streaming tool")
+    (description "Butt is a tool to stream audio to a ShoutCast or
+Icecast server.")
     (license license:gpl2+)))

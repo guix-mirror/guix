@@ -8,6 +8,7 @@
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2021 Alexandros Theodotou <alex@zrythm.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -55,6 +56,7 @@
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages graphics)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages image)
   #:use-module (gnu packages kerberos)
@@ -694,6 +696,36 @@ Discovery Protocol (DNS-SD), the layer of Zeroconf that allows network services,
 such as printers, to be discovered without any user intervention or centralized
 infrastructure.")
     (license license:lgpl2.1+)))
+
+(define-public kgraphviewer
+  (package
+    (name "kgraphviewer")
+    (version "2.4.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/kgraphviewer/"
+                    version "/" name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1h6pgg89gvxl8gw7wmkabyqqrzad5pxyv5lsmn1fl4ir8lcc5q2l"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("boost" ,boost)
+       ("graphviz" ,graphviz)
+       ("kiconthemes" ,kiconthemes)
+       ("kparts" ,kparts)
+       ("qtsvg" ,qtsvg)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (home-page "https://apps.kde.org/en/kgraphviewer")
+    (synopsis "Graphviz dot graph viewer for KDE")
+    (description "KGraphViewer is a Graphviz DOT graph file viewer, aimed to
+replace the other outdated Graphviz tools.")
+    (license license:gpl2+)))
 
 (define-public kguiaddons
   (package

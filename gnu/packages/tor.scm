@@ -54,14 +54,14 @@
 (define-public tor
   (package
     (name "tor")
-    (version "0.4.4.7")
+    (version "0.4.5.6")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://dist.torproject.org/tor-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1vh5kdx7s74il8a6gr7jydbpv0an01nla4y2r8w7h33z2wk2jv9j"))))
+               "0cz78pjw2bc3kl3ziip1nhhbq89crv315rf1my3zmmgd9xws7jr2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -162,7 +162,7 @@ rejects UDP traffic from the application you're using.")
 (define-public privoxy
   (package
     (name "privoxy")
-    (version "3.0.31")
+    (version "3.0.32")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/ijbswa/Sources/"
@@ -170,7 +170,7 @@ rejects UDP traffic from the application you're using.")
                                  version "-stable-src.tar.gz"))
              (sha256
               (base32
-               "1sq4s0h73r7mynl8s0ynn3a6zl98j06nb2nqx2j254n7maijjxq7"))))
+               "1mzfxwnvnf1jkvfcrsivm6mjwdzjrc3h89qziz0mwi32ih0f87f6"))))
     (build-system gnu-build-system)
     (arguments
      '(;; The default 'sysconfdir' is $out/etc; change that to

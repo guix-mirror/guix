@@ -337,12 +337,11 @@ for example in gnu/system/examples/*.tmpl; do
     guix system -n disk-image $target "$example"
 done
 
-# Verify that the disk image types can be built.
+# Verify that the images can be built.
 guix system -n vm gnu/system/examples/vm-image.tmpl
-guix system -n vm-image gnu/system/examples/vm-image.tmpl
-# This invocation was taken care of in the loop above:
-# guix system -n disk-image gnu/system/examples/bare-bones.tmpl
-guix system -n disk-image -t iso9660 gnu/system/examples/bare-bones.tmpl
+guix system -n image gnu/system/images/pinebook-pro.scm
+guix system -n image -t qcow2 gnu/system/examples/vm-image.tmpl
+guix system -n image -t iso9660 gnu/system/examples/bare-bones.tmpl
 guix system -n docker-image gnu/system/examples/docker-image.tmpl
 
 # Verify that at least the raw image type is available.

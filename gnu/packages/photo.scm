@@ -8,7 +8,7 @@
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2020 Sebastian Schott <sschott@mailbox.org>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
-;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020. 2021 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -469,7 +469,7 @@ photographic equipment.")
 (define-public darktable
   (package
     (name "darktable")
-    (version "3.4.0")
+    (version "3.4.1")
     (source
      (origin
        (method url-fetch)
@@ -477,7 +477,7 @@ photographic equipment.")
              "https://github.com/darktable-org/darktable/releases/"
              "download/release-" version "/darktable-" version ".tar.xz"))
        (sha256
-        (base32 "1nmx5lmhp7igav5pswqxmacsbnhgydgvxh1q53wlmyd9bqgxxlvd"))))
+        (base32 "07llfhhz5dhh43smhv4ax4xi1diym8hrzl7cad87rkcvv98zihvz"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DBINARY_PACKAGE_BUILD=On"
@@ -694,7 +694,7 @@ off' shooting directly from the controlling computer.")
 (define-public hugin
   (package
     (name "hugin")
-    (version "2019.2.0")
+    (version "2020.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/hugin/hugin/hugin-"
@@ -702,7 +702,7 @@ off' shooting directly from the controlling computer.")
                                   "/hugin-" version ".tar.bz2"))
               (sha256
                (base32
-                "0gjsm5bgz10wbr5q3y74f8dzb238dh32xx0p5wa3yca6lbzbv9lb"))))
+                "1jyazc0mbr9g7vrichpqqnfl72lj21244csk0z5i8ycs4l0pcgi8"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
@@ -710,7 +710,7 @@ off' shooting directly from the controlling computer.")
     (inputs
      `(("boost" ,boost)
        ("enblend-enfuse" ,enblend-enfuse)
-       ("exiv2" ,exiv2-0.26)
+       ("exiv2" ,exiv2)
        ("fftw" ,fftw)
        ("flann" ,flann)
        ("freeglut" ,freeglut)

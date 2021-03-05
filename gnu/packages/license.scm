@@ -231,7 +231,7 @@ designed to be simple.")
              #t)))))
     (propagated-inputs
      `(("python-regex" ,python-regex)))
-    (home-page "http://github.com/johann-petrak/licenseheaders")
+    (home-page "https://github.com/johann-petrak/licenseheaders")
     (synopsis "Add or change license headers for all files in a directory")
     (description
      "Licenseheaders is a Python 3 tool to update, change or add license

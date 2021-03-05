@@ -193,5 +193,5 @@ done
     (synopsis "@file{dev.cpio} for Heads")
     (description "This package provides a @file{dev.cpio} file usable as a
 base for heads' initrd.")
-    (home-page "http://osresearch.net/")
+    (home-page "https://osresearch.net/")
     (license license:bsd-2)))

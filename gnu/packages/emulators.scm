@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
-;;; Copyright © 2015, 2016 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2015, 2016, 2021 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2015, 2016 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2018 David Thompson <dthompson2@worcester.edu>
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
@@ -36,6 +36,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix svn-download)
+  #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages assembly)
@@ -1231,10 +1232,48 @@ System (NES/Famicom) emulator Nestopia, with enhancements from members of the
 emulation community.  It provides highly accurate emulation.")
     (license license:gpl2+)))
 
+(define-public libretro-lowresnx
+  (let ((commit "743ab43a6c4a13e0d5363b0d25ac12c7511c6581")
+        (revision "1"))
+    (package
+      (name "libretro-lowresnx")
+      (version (git-version "1.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/timoinutilis/lowres-nx")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0r15kb5p5s2jwky6zy4v1j9i95i4rz36p9wxg0g6xdjksf04b5cf"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f                    ; no tests
+         #:make-flags (list "-C" "platform/LibRetro"
+                            (string-append "CC=" ,(cc-for-target)))
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)          ; no configure script
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (libretrodir (string-append out "/lib/libretro")))
+                 (install-file "platform/LibRetro/lowresnx_libretro.so"
+                               libretrodir)
+                 #t))))))
+      (home-page "https://lowresnx.inutilis.com/")
+      (synopsis "Libretro core for LowRES NX")
+      (description "LowRES NX is a simulated retro game console, which can be
+programmed in the classic BASIC language.  This package provides a libretro
+core allowing the lowRES NX programs to be used with libretro frontends such
+as RetroArch.")
+      (license license:zlib))))
+
 (define-public retroarch
   (package
     (name "retroarch")
-    (version "1.8.1")
+    (version "1.9.0")
     (source
      (origin
        (method git-fetch)
@@ -1243,18 +1282,9 @@ emulation community.  It provides highly accurate emulation.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0y7rcpz7psf8k3agsrq277jdm651vbnn9xpqvmj2in1a786idya7"))
+        (base32 "1n0dcv85vqrdr79psnf009hi4r2mvsgsjbghrrc9pm5g7ywwwcvp"))
        (patches
-        (search-patches "retroarch-disable-online-updater.patch"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           ;; Don't suggest using the Online Updater if available: it never
-           ;; is.  This disables translation of this particular message.
-           (substitute* (find-files "menu/drivers" "\\.c$")
-             (("msg_hash_to_str\\(MSG_MISSING_ASSETS\\)")
-              "\"Warning: Missing assets, go get some\""))
-           #t))))
+        (search-patches "retroarch-LIBRETRO_DIRECTORY.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
@@ -1289,7 +1319,9 @@ emulation community.  It provides highly accurate emulation.")
                        '("--enable-neon" "--enable-floathard")
                        '())
                  (string-append "--prefix=" out)
-                 (string-append "--global-config-dir=" etc)
+                 ;; Non-free software are available through the core updater,
+                 ;; disable it.  See <https://issues.guix.gnu.org/38360>.
+                 "--disable-update_cores"
                  "--disable-builtinminiupnpc")))))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
@@ -1315,6 +1347,11 @@ emulation community.  It provides highly accurate emulation.")
      `(("pkg-config" ,pkg-config)
        ("wayland-protocols" ,wayland-protocols)
        ("which" ,which)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "LIBRETRO_DIRECTORY")
+            (separator #f)              ; single entry
+            (files '("lib/libretro")))))
     (home-page "https://www.libretro.com/")
     (synopsis "Reference frontend for the libretro API")
     (description
@@ -1552,7 +1589,7 @@ This is a part of the TiLP project.")
 (define-public mame
   (package
     (name "mame")
-    (version "0.228")
+    (version "0.229")
     (source
      (origin
        (method git-fetch)
@@ -1561,7 +1598,7 @@ This is a part of the TiLP project.")
              (commit (apply string-append "mame" (string-split version #\.)))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1xqd0b8xz9bc6ks9qbnrm7kkjcr81l0ksisvflr6gr6lxg2268xz"))
+        (base32 "0s5q6fjk739p1bfh72fmh35xi13fwbrgjqrn45i5xzx3v3gadmbg"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled libraries.
@@ -2036,7 +2073,7 @@ performance, features, and ease of use.")
             `(("assembler-for-tests" ,(cross-binutils "i686-unknown-linux-gnu"))))
          ("cmocka" ,cmocka)
          ("hexdump-for-tests" ,util-linux)))
-      (home-page "http://www.unicorn-engine.org")
+      (home-page "https://www.unicorn-engine.org")
       (synopsis "Unicorn CPU emulator framework")
       (description
        "Unicorn is a lightweight, multi-platform, multi-architecture CPU emulator

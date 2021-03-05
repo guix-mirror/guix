@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -43,9 +43,10 @@
             MS_NOEXEC
             MS_REMOUNT
             MS_NOATIME
+            MS_STRICTATIME
+            MS_RELATIME
             MS_BIND
             MS_MOVE
-            MS_STRICTATIME
             MS_LAZYTIME
             MNT_FORCE
             MNT_DETACH
@@ -53,7 +54,18 @@
             UMOUNT_NOFOLLOW
 
             restart-on-EINTR
+
+            mount?
+            mount-device-number
+            mount-source
+            mount-point
+            mount-type
+            mount-options
+            mount-flags
+
+            mounts
             mount-points
+
             swapon
             swapoff
 
@@ -466,6 +478,7 @@ the returned procedure is called."
 (define MS_NOATIME         1024)
 (define MS_BIND            4096)
 (define MS_MOVE            8192)
+(define MS_RELATIME     2097152)
 (define MS_STRICTATIME 16777216)
 (define MS_LAZYTIME    33554432)
 
@@ -519,17 +532,106 @@ constants from <sys/mount.h>."
       (when update-mtab?
         (remove-from-mtab target)))))
 
-(define (mount-points)
-  "Return the mounts points for currently mounted file systems."
-  (call-with-input-file "/proc/mounts"
+;; Mount point information.
+(define-record-type <mount>
+  (%mount source point devno type options)
+  mount?
+  (devno    mount-device-number)                  ;st_dev
+  (source   mount-source)                         ;string
+  (point    mount-point)                          ;string
+  (type     mount-type)                           ;string
+  (options  mount-options))                       ;string
+
+(define (option-string->mount-flags str)
+  "Parse the \"option string\" STR as it appears in /proc/mounts and similar,
+and return two values: a mount bitmask (inclusive or of MS_* constants), and
+the remaining unprocessed options."
+  ;; Why do we need to do this?  Because mount flags and mount options are
+  ;; often lumped together; this is the case in /proc/mounts & co., so we need
+  ;; to extract the bits that actually correspond to mount flags.
+
+  (define not-comma
+    (char-set-complement (char-set #\,)))
+
+  (define lst
+    (string-tokenize str not-comma))
+
+  (let loop ((options   lst)
+             (mask      0)
+             (remainder '()))
+    (match options
+      (()
+       (values mask (string-concatenate-reverse remainder)))
+      ((head . tail)
+       (letrec-syntax ((match-options (syntax-rules (=>)
+                                        ((_)
+                                         (loop tail mask
+                                               (cons head remainder)))
+                                        ((_ (str => bit) rest ...)
+                                         (if (string=? str head)
+                                             (loop tail (logior bit mask)
+                                                   remainder)
+                                             (match-options rest ...))))))
+         (match-options ("rw"         => 0)
+                        ("ro"         => MS_RDONLY)
+                        ("nosuid"     => MS_NOSUID)
+                        ("nodev"      => MS_NODEV)
+                        ("noexec"     => MS_NOEXEC)
+                        ("relatime"   => MS_RELATIME)
+                        ("noatime"    => MS_NOATIME)))))))
+
+(define (mount-flags mount)
+  "Return the mount flags of MOUNT, a <mount> record, as an inclusive or of
+MS_* constants."
+  (option-string->mount-flags (mount-options mount)))
+
+(define (octal-decode str)
+  "Decode octal escapes from STR and return the corresponding string.  STR may
+look like this: \"white\\040space\", which is decoded as \"white space\"."
+  (define char-set:octal
+    (char-set #\0 #\1 #\2 #\3 #\4 #\5 #\6 #\7))
+  (define (octal? c)
+    (char-set-contains? char-set:octal c))
+
+  (let loop ((chars (string->list str))
+             (result '()))
+    (match chars
+      (()
+       (list->string (reverse result)))
+      ((#\\ (? octal? a) (? octal? b) (? octal? c) . rest)
+       (loop rest
+             (cons (integer->char
+                    (string->number (list->string (list a b c)) 8))
+                   result)))
+      ((head . tail)
+       (loop tail (cons head result))))))
+
+(define (mounts)
+  "Return the list of mounts (<mount> records) visible in the namespace of the
+current process."
+  (define (string->device-number str)
+    (match (string-split str #\:)
+      (((= string->number major) (= string->number minor))
+       (+ (* major 256) minor))))
+
+  (call-with-input-file "/proc/self/mountinfo"
     (lambda (port)
       (let loop ((result '()))
         (let ((line (read-line port)))
           (if (eof-object? line)
               (reverse result)
               (match (string-tokenize line)
-                ((source mount-point _ ...)
-                 (loop (cons mount-point result))))))))))
+                ((id parent-id major:minor root mount-point
+                     options _ type source _ ...)
+                 (let ((devno (string->device-number major:minor)))
+                   (loop (cons (%mount (octal-decode source)
+                                       (octal-decode mount-point)
+                                       devno type options)
+                               result)))))))))))
+
+(define (mount-points)
+  "Return the mounts points for currently mounted file systems."
+  (map mount-point (mounts)))
 
 (define swapon
   (let ((proc (syscall->procedure int "swapon" (list '* int))))

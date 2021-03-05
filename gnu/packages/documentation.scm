@@ -105,7 +105,7 @@ pages in HTML.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/asciidoc/asciidoc")
+                     (url "https://github.com/asciidoc-py/asciidoc-py2")
                      (commit version)))
               (file-name (git-file-name name version))
               (sha256

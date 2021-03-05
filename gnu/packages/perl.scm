@@ -70,6 +70,7 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages perl-compression)
+  #:use-module (gnu packages perl-maths)
   #:use-module (gnu packages perl-web)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages readline)
@@ -8936,6 +8937,48 @@ straightforward and (perhaps someday) standard way.  Spiffy borrows ideas from
 other OO languages like Python, Ruby, Java and Perl 6.")
     (license (package-license perl))))
 
+(define-public perl-want
+  (package
+    (name "perl-want")
+    (version "0.29")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/R/RO/ROBIN/Want-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1xsjylbxxcbkjazqms49ipi94j1hd2ykdikk29cq7dscil5p9r5l"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/release/Want")
+    (synopsis "Generalization of wantarray")
+    (description "This module generalises the mechanism of the
+@code{wantarray} function, allowing a function to determine in some detail how
+its return value is going to be immediately used.")
+    (license license:perl-license)))
+
+(define-public perl-contextual-return
+  (package
+    (name "perl-contextual-return")
+    (version "0.004014")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/D/DC/DCONWAY/Contextual-Return-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0y4zf5qkpayp4kkg7lw9ydbbin1z99m6xvy02fgacjbfw4ai9zh9"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-want" ,perl-want)))
+    (home-page "https://metacpan.org/release/Contextual-Return")
+    (synopsis "Create context-sensitive return values")
+    (description "This module provides a collection of named blocks that allow
+a return statement to return different values depending on the context in
+which it is called.")
+    (license license:perl-license)))
+
 (define-public perl-statistics-basic
   (package
     (name "perl-statistics-basic")
@@ -8956,6 +8999,32 @@ other OO languages like Python, Ruby, Java and Perl 6.")
     (description "This package provides basic statistics functions like
 @code{median()}, @code{mean()}, @code{variance()} and @code{stddev()}.")
     (license license:lgpl2.0)))
+
+(define-public perl-statistics-pca
+  (package
+    (name "perl-statistics-pca")
+    (version "0.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/D/DS/DSTH/Statistics-PCA-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1i3bskwibp54c9a2wx8gzr3hyds6mmhr3d550g8j6893005v3bgq"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
+    (propagated-inputs
+     `(("perl-contextual-return" ,perl-contextual-return)
+       ("perl-math-cephes" ,perl-math-cephes)
+       ("perl-math-matrixreal" ,perl-math-matrixreal)
+       ("perl-text-simpletable" ,perl-text-simpletable)))
+    (home-page "https://metacpan.org/release/Statistics-PCA")
+    (synopsis "Perl implementation of Principal Component Analysis")
+    (description "This package provides the Statistics::PCA module, an
+implementation of @dfn{Principal Component Analysis} (PCA).")
+    (license license:perl-license)))
 
 (define-public perl-stream-buffered
   (package
@@ -10332,14 +10401,14 @@ rounded or exact terms.")
 (define-public perl-time-duration-parse
   (package
     (name "perl-time-duration-parse")
-    (version "0.14")
+    (version "0.15")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/N/NE/NEILB/"
                            "Time-Duration-Parse-" version ".tar.gz"))
        (sha256
-        (base32 "17nh73r50mqqpgxdf3zpgdiqrizmjy0vdk0zd6xi9zcsdijrdhnc"))))
+        (base32 "10g39bbrxkabbsfq4rv7f5b5x7h3jba08j4pg8gwr0b9iqx19n31"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-time-duration" ,perl-time-duration)))

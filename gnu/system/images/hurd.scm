@@ -111,3 +111,6 @@
    (inherit
     (os->image hurd-barebones-os #:type hurd-qcow2-image-type))
    (name 'hurd-barebones.qcow2)))
+
+;; Return the default image.
+hurd-barebones-qcow2-image

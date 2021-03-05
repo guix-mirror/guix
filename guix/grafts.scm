@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -323,14 +323,14 @@ DRV, and graft DRV itself to refer to those grafted dependencies."
   ;; Whether to honor package grafts by default.
   (make-parameter #t))
 
-(define (set-grafting enable?)
-  "This monadic procedure enables grafting when ENABLE? is true, and disables
-it otherwise.  It returns the previous setting."
+(define-inlinable (set-grafting enable?)
+  ;; This monadic procedure enables grafting when ENABLE? is true, and
+  ;; disables it otherwise.  It returns the previous setting.
   (lambda (store)
     (values (%graft? enable?) store)))
 
-(define (grafting?)
-  "Return a Boolean indicating whether grafting is enabled."
+(define-inlinable (grafting?)
+  ;; Return a Boolean indicating whether grafting is enabled.
   (lambda (store)
     (values (%graft?) store)))
 

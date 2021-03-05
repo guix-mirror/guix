@@ -11,7 +11,7 @@
 ;;; Copyright © 2018 Sandeep Subramanian <sandeepsubramanian94@gmail.com>
 ;;; Copyright © 2018 Charlie Ritter <chewzeirta@posteo.net>
 ;;; Copyright © 2018 Konrad Hinsen <konrad.hinsen@fastmail.net>
-;;; Copyright © 2018, 2020 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
+;;; Copyright © 2018, 2020, 2021 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
 ;;; Copyright © 2018 Laura Lazzati <laura.lazzati.15@gmail.com>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
@@ -1344,10 +1344,175 @@ are used.  Fastmap avoids this memory leak issue by implementing the map using
 data structures in C++.")
     (license license:expat)))
 
+;; This package includes minified JavaScript files.  When upgrading please
+;; check that there are no new minified JavaScript files.
+(define-public r-jquerylib
+  (package
+    (name "r-jquerylib")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "jquerylib" version))
+       (sha256
+        (base32
+         "1s0d6mws13hwkx07jqmry7vp30a05b2p9w7ir68bmkhasidwkzdq"))
+       (snippet
+        '(for-each delete-file
+                   '("inst/lib/jquery-1.12.4.min.js"
+                     "inst/lib/jquery-2.2.4.min.js"
+                     "inst/lib/jquery-3.5.1.min.js")))))
+    (properties `((upstream-name . "jquerylib")))
+    (build-system r-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (guix build r-build-system)
+                  (srfi srfi-1))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'process-javascript
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "inst/lib/"
+               (call-with-values
+                   (lambda ()
+                     (unzip2
+                      `(("jquery-1.12.4.js"
+                         "jquery-1.12.4.min.js")
+                        ("jquery-2.2.4.js"
+                         "jquery-2.2.4.min.js")
+                        ("jquery-3.5.1.js"
+                         "jquery-3.5.1.min.js"))))
+                 (lambda (sources targets)
+                   (for-each (lambda (source target)
+                               (format #t "Processing ~a --> ~a~%"
+                                       source target)
+                               (invoke "esbuild" source "--minify"
+                                       (string-append "--outfile=" target)))
+                             sources targets)))))))))
+    (propagated-inputs
+     `(("r-htmltools" ,r-htmltools)))
+    (native-inputs
+     `(("esbuild" ,esbuild)))
+    (home-page "https://cran.r-project.org/package=jquerylib")
+    (synopsis "Obtain jQuery as an HTML dependency object")
+    (description
+     "Obtain any major version of jQuery and use it in any webpage generated
+by htmltools (e.g. shiny, htmlwidgets, and rmarkdown).  Most R users don't
+need to use this package directly, but other R packages (e.g. shiny,
+rmarkdown, etc.) depend on this package to avoid bundling redundant copies of
+jQuery.")
+    (license license:expat)))
+
+(define-public r-sass
+  (package
+    (name "r-sass")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "sass" version))
+       (sha256
+        (base32
+         "1cxqwsdyz71mgflqqa65mfr161jlv8q9mshs1y19pxp6pz5wnv0s"))))
+    (properties `((upstream-name . "sass")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-digest" ,r-digest)
+       ("r-fs" ,r-fs)
+       ("r-htmltools" ,r-htmltools)
+       ("r-r6" ,r-r6)
+       ("r-rappdirs" ,r-rappdirs)
+       ("r-rlang" ,r-rlang)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/rstudio/sass")
+    (synopsis "Syntactically Awesome Style Sheets (SASS)")
+    (description
+     "This package provides an SCSS compiler, powered by the libsass library.
+With this, R developers can use variables, inheritance, and functions to
+generate dynamic style sheets.  The package uses the Sass CSS extension
+language, which is stable, powerful, and CSS compatible.")
+    (license license:expat)))
+
+;; This package includes minified JavaScript files.  When upgrading please
+;; check that there are no new minified JavaScript files.
+(define-public r-bslib
+  (package
+    (name "r-bslib")
+    (version "0.2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "bslib" version))
+       (sha256
+        (base32
+         "0qlpv2lqr3hjykszmnll7vi4zhmrz4rgcfl0sifxc6cha6jy2nac"))
+       (snippet
+        '(for-each delete-file
+                   '("inst/lib/bs-a11y-p/plugins/js/bootstrap-accessibility.min.js"
+                     "inst/lib/bs-colorpicker/js/bootstrap-colorpicker.min.js"
+                     "inst/lib/bs-sass/assets/javascripts/bootstrap.min.js"
+                     "inst/lib/bs/dist/js/bootstrap.bundle.min.js")))))
+    (properties `((upstream-name . "bslib")))
+    (build-system r-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (guix build r-build-system)
+                  (srfi srfi-1))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'process-javascript
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "inst/lib/"
+               (call-with-values
+                   (lambda ()
+                     (unzip2
+                      `(("bs-a11y-p/plugins/js/bootstrap-accessibility.js"
+                         "bs-a11y-p/plugins/js/bootstrap-accessibility.min.js")
+                        ("bs-colorpicker/js/bootstrap-colorpicker.js"
+                         "bs-colorpicker/js/bootstrap-colorpicker.min.js")
+                        ("bs-sass/assets/javascripts/bootstrap.js"
+                         "bs-sass/assets/javascripts/bootstrap.min.js")
+                        (,(assoc-ref inputs "js-bootstrap-bundle")
+                         "bs/dist/js/bootstrap.bundle.min.js"))))
+                 (lambda (sources targets)
+                   (for-each (lambda (source target)
+                               (format #t "Processing ~a --> ~a~%"
+                                       source target)
+                               (invoke "esbuild" source "--minify"
+                                       (string-append "--outfile=" target)))
+                             sources targets)))))))))
+    (propagated-inputs
+     `(("r-digest" ,r-digest)
+       ("r-htmltools" ,r-htmltools)
+       ("r-jquerylib" ,r-jquerylib)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-magrittr" ,r-magrittr)
+       ("r-rlang" ,r-rlang)
+       ("r-sass" ,r-sass)))
+    (native-inputs
+     `(("esbuild" ,esbuild)
+       ("js-bootstrap-bundle"
+        ,(origin
+           (method url-fetch)
+           (uri "https://raw.githubusercontent.com/twbs/bootstrap/v4.5.3/dist/js/bootstrap.bundle.js")
+           (sha256
+            (base32
+             "1lcsxj7gcm56va3gck47ggpwzjxrzq27sgjzdw6c54qkp0487sak"))))))
+    (home-page "https://rstudio.github.io/bslib/")
+    (synopsis "Custom Bootstrap Sass themes for shiny and rmarkdown")
+    (description
+     "This package simplifies custom CSS styling of both shiny and rmarkdown
+via Bootstrap Sass.  It supports both Bootstrap 3 and 4 as well as their
+various Bootswatch themes.  An interactive widget is also provided for
+previewing themes in real time.")
+    (license license:expat)))
+
+;; This package includes minified JavaScript files.  When upgrading please
+;; check that there are no new minified JavaScript files.
 (define-public r-shiny
   (package
     (name "r-shiny")
-    (version "1.4.0.2")
+    (version "1.6.0")
     (source
      (origin
        (method git-fetch)
@@ -1357,7 +1522,23 @@ data structures in C++.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "005wgcxq7f2q9g6wvfk29n2nms262w0abpz93sfvx79yv6qxppzs"))))
+         "0f6cwx5xyqzs40msq271sqhwl8736rwbm7kd1ldkcvxngzr4vlx9"))
+       (snippet
+        '(for-each delete-file
+                   '("inst/www/shared/bootstrap/js/bootstrap.min.js"
+                     "inst/www/shared/bootstrap/accessibility/js/bootstrap-accessibility.min.js" ; TODO
+                     "inst/www/shared/datatables/js/jquery.dataTables.min.js"
+                     "inst/www/shared/datepicker/js/bootstrap-datepicker.min.js"
+                     "inst/www/shared/highlight/highlight.pack.js"
+                     "inst/www/shared/ionrangeslider/js/ion.rangeSlider.min.js"
+                     "inst/www/shared/jquery.min.js"
+                     "inst/www/shared/jqueryui/jquery-ui.min.js"
+                     "inst/www/shared/legacy/jquery.min.js"
+                     "inst/www/shared/selectize/accessibility/js/selectize-plugin-a11y.min.js"
+                     "inst/www/shared/selectize/js/selectize.min.js"
+                     "inst/www/shared/shiny.min.js"
+                     "inst/www/shared/showdown/compressed/showdown.js"
+                     "inst/www/shared/strftime/strftime-min.js")))))
     (build-system r-build-system)
     (arguments
      `(#:modules ((guix build r-build-system)
@@ -1372,21 +1553,11 @@ data structures in C++.")
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((replace-file (lambda (old new)
                                    (format #t "replacing ~a with ~a\n" old new)
-                                   (delete-file old)
                                    (symlink new old))))
                ;; NOTE: Files in ./inst/www/shared/datepicker/js/locales/
                ;; contain just data.  They are not minified code, so we don't
                ;; replace them.
                (with-directory-excursion "inst/www/shared"
-                 (replace-file "bootstrap/shim/respond.min.js"
-                               (string-append (assoc-ref inputs "js-respond")
-                                              "/share/javascript/respond.min.js"))
-                 (replace-file "bootstrap/shim/html5shiv.min.js"
-                               (string-append (assoc-ref inputs "js-html5shiv")
-                                              "/share/javascript/html5shiv.min.js"))
-                 (replace-file "json2-min.js"
-                               (string-append (assoc-ref inputs "js-json2")
-                                              "/share/javascript/json2-min.js"))
                  (replace-file "strftime/strftime-min.js"
                                (string-append (assoc-ref inputs "js-strftime")
                                               "/share/javascript/strftime.min.js"))
@@ -1399,14 +1570,10 @@ data structures in C++.")
                  (replace-file "selectize/js/selectize.min.js"
                                (string-append (assoc-ref inputs "js-selectize")
                                               "/share/javascript/selectize.min.js"))
-                 (replace-file "selectize/js/es5-shim.min.js"
-                               (string-append (assoc-ref inputs "js-es5-shim")
-                                              "/share/javascript/es5-shim.min.js"))
                  (for-each (match-lambda
                              ((source . target)
-                              (delete-file target)
                               (minify source #:target target)))
-                           '(("jqueryui/jquery-ui.js" .
+                           `(("jqueryui/jquery-ui.js" .
                               "jqueryui/jquery-ui.min.js")
                              ("datepicker/js/bootstrap-datepicker.js" .
                               "datepicker/js/bootstrap-datepicker.min.js")
@@ -1414,23 +1581,32 @@ data structures in C++.")
                               "ionrangeslider/js/ion.rangeSlider.min.js")
                              ("bootstrap/js/bootstrap.js" .
                               "bootstrap/js/bootstrap.min.js")
+                             (,(assoc-ref inputs "js-bootstrap-accessibility") .
+                              "bootstrap/accessibility/js/bootstrap-accessibility.min.js")
                              ("shiny.js" .
                               "shiny.min.js")
                              ("jquery.js" .
                               "jquery.min.js")
                              ("legacy/jquery.js" .
                               "legacy/jquery.min.js")
+                             ("selectize/accessibility/js/selectize-plugin-a11y.js" .
+                              "selectize/accessibility/js/selectize-plugin-a11y.min.js")
                              ("showdown/src/showdown.js" .
-                              "showdown/compressed/showdown.js")))))
-             #t)))))
+                              "showdown/compressed/showdown.js"))))))))))
     (propagated-inputs
-     `(("r-crayon" ,r-crayon)
+     `(("r-bslib" ,r-bslib)
+       ("r-cachem" ,r-cachem)
+       ("r-commonmark" ,r-commonmark)
+       ("r-crayon" ,r-crayon)
        ("r-digest" ,r-digest)
+       ("r-ellipsis" ,r-ellipsis)
        ("r-fastmap" ,r-fastmap)
+       ("r-glue" ,r-glue)
        ("r-htmltools" ,r-htmltools)
        ("r-httpuv" ,r-httpuv)
        ("r-jsonlite" ,r-jsonlite)
        ("r-later" ,r-later)
+       ("r-lifecycle" ,r-lifecycle)
        ("r-mime" ,r-mime)
        ("r-promises" ,r-promises)
        ("r-r6" ,r-r6)
@@ -1440,17 +1616,21 @@ data structures in C++.")
        ("r-xtable" ,r-xtable)))
     (inputs
      `(("js-datatables" ,js-datatables)
-       ("js-html5shiv" ,js-html5shiv)
-       ("js-json2" ,js-json2)
-       ("js-respond" ,js-respond)
        ("js-selectize" ,js-selectize)
        ("js-strftime" ,js-strftime)
-       ("js-highlight" ,js-highlight)
-       ("js-es5-shim" ,js-es5-shim)))
+       ("js-highlight" ,js-highlight)))
     (native-inputs
      `(("uglify-js" ,uglify-js)
-       ("gfortran" ,gfortran)))
-    (home-page "http://shiny.rstudio.com")
+       ("gfortran" ,gfortran)
+       ("js-bootstrap-accessibility"
+        ,(origin
+           (method url-fetch)
+           (uri "https://raw.githubusercontent.com/paypal/bootstrap-accessibility-plugin/\
+v1.0.7/_site/plugins/js/bootstrap-accessibility.js")
+           (sha256
+            (base32
+             "1489wyzwrpf86y7vhc13n4v3mszmsfybhd3f75jkpnbvyp5sncm8"))))))
+    (home-page "https://shiny.rstudio.com")
     (synopsis "Easy interactive web applications with R")
     (description
      "Makes it incredibly easy to build interactive web applications
@@ -1773,6 +1953,29 @@ in R and Shiny via the D3 visualization library.")
      "This package provides color palettes that have been generated mostly
 from Wes Anderson movies.")
     (license license:expat)))
+
+(define-public r-gg-gap
+  (package
+    (name "r-gg-gap")
+    (version "1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "gg.gap" version))
+       (sha256
+        (base32
+         "0m66050ryn31xmsmmikjsssllasvjdmp9yjbwfdwfpwdv106zn9h"))))
+    (properties `((upstream-name . "gg.gap")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-cowplot" ,r-cowplot)
+       ("r-ggplot2" ,r-ggplot2)))
+    (home-page "https://github.com/ChrisLou-bioinfo/gg.gap")
+    (synopsis "Define segments on the y-axis for ggplot2")
+    (description
+     "The @code{gg.gap} function enables you to define segments for the y-axis
+in a ggplot2 plot.")
+    (license license:gpl3)))
 
 (define-public r-tablerdash
   (package
@@ -2129,10 +2332,25 @@ including functions for geolocation and routing.")
        (uri (cran-uri "haven" version))
        (sha256
         (base32
-         "03cypgqhdkrfbfpl1yx2wb7flczrbak1w654wkicmd5ajwr9zvkf"))))
+         "03cypgqhdkrfbfpl1yx2wb7flczrbak1w654wkicmd5ajwr9zvkf"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+            ;; unvendor readstat
+           (delete-file-recursively "src/readstat")
+           #t))))
     (build-system r-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'unbundle-readstat
+           (lambda _
+             ;; Not required, since we’re not building readstat.
+             (substitute* "src/Makevars"
+               (("-lz") "-lreadstat"))
+             #t)))))
     (inputs
-     `(("zlib" ,zlib)))
+     `(("readstat" ,readstat)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (propagated-inputs
@@ -2286,7 +2504,7 @@ Docstrings (PEP-0257) and Julia's Triple-Quoted String Literals.")
    (build-system r-build-system)
    (propagated-inputs
     `(("r-boot" ,r-boot)))
-   (home-page "http://www.sciviews.org/pastecs")
+   (home-page "https://github.com/phgrosjean/pastecs")
    (synopsis "Analysis of space-time ecological series")
    (description
     "This package provides functions for regulation, decomposition and analysis
@@ -2472,6 +2690,27 @@ about Rcpp is provided by several vignettes included in this package, via the
 and Francois (2011, JSS), and the book by Eddelbuettel (2013, Springer); see
 @code{citation(\"Rcpp\")} for details on these last two.")
     (license license:gpl2+)))
+
+(define-public r-rcppthread
+  (package
+    (name "r-rcppthread")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "RcppThread" version))
+       (sha256
+        (base32
+         "1xfcxrny779kgknlvnc4j02ifprnakndnkhx8bhy50d39vp4hjjl"))))
+    (properties `((upstream-name . "RcppThread")))
+    (build-system r-build-system)
+    (home-page
+     "https://github.com/tnagler/RcppThread")
+    (synopsis "R threading in C++")
+    (description
+     "This package provides a C++11-style thread class and thread pool that can
+safely be interrupted from R.")
+    (license license:expat)))
 
 (define-public r-bindr
   (package
@@ -6841,7 +7080,7 @@ JavaScript library) and interact with the igraph package.")
        ("r-stringi" ,r-stringi)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
-    (home-page "http://github.com/gluc/data.tree")
+    (home-page "https://github.com/gluc/data.tree")
     (synopsis "General purpose hierarchical data structure")
     (description
      "Create tree structures from hierarchical data, and traverse the tree in
@@ -8270,7 +8509,7 @@ the work.")
        ("r-tibble" ,r-tibble)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
-    (home-page "http://people.math.aau.dk/~sorenh/software/doBy/")
+    (home-page "https://people.math.aau.dk/~sorenh/software/doBy/")
     (synopsis "Groupwise statistics, LSmeans, linear contrasts, and utilities")
     (description
      "This package contains:
@@ -11089,7 +11328,7 @@ isosurfaces.")
        ("r-multicool" ,r-multicool)
        ("r-mvtnorm" ,r-mvtnorm)
        ("r-plot3d" ,r-plot3d)))
-    (home-page "http://www.mvstat.net/tduong/")
+    (home-page "https://www.mvstat.net/tduong/")
     (synopsis "Kernel smoothing")
     (description
      "This package provides kernel smoothers for univariate and multivariate
@@ -11116,7 +11355,7 @@ hypothesis testing.")
        ("r-plot3d" ,r-plot3d)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
-    (home-page "http://www.mvstat.net/tduong/")
+    (home-page "https://www.mvstat.net/tduong/")
     (synopsis "Inferential feature significance for kernel density estimation")
     (description
      "The feature package contains functions to display and compute kernel
@@ -14131,7 +14370,7 @@ probabilities from a standard bivariate normal CDF.")
        ("r-mnormt" ,r-mnormt)
        ("r-numderiv" ,r-numderiv)
        ("r-pbivnorm" ,r-pbivnorm)))
-    (home-page "http://lavaan.ugent.be")
+    (home-page "https://lavaan.ugent.be")
     (synopsis "Latent variable analysis")
     (description
      "This package provides tools to fit a variety of latent variable models,
@@ -23058,7 +23297,7 @@ as possible (with tests to prove it).")
         "04lhqk5qfvaz1jk90glr2yi5vq7cdy0w8m6g2lnzk359l9y41zhp"))))
     (properties `((upstream-name . "boa")))
     (build-system r-build-system)
-    (home-page "http://www.jstatsoft.org/v21/i11")
+    (home-page "https://www.jstatsoft.org/v21/i11")
     (synopsis "Library for @dfn{Bayesian Output Analysis Program} (BOA) for MCMC")
     (description
      "This package provides a menu-driven program and library of functions for
@@ -23538,6 +23777,17 @@ download images.")
         (base32
          "017kkzv9lxlz9qhg3gprrf1wcyflxrif6wjk27x9b4bdzylw6bsx"))))
     (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'install-server-binary
+           ;; Makevars tries to install to R's store directory.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (substitute* "src/Makevars.in"
+                 (("\\$\\(R_HOME\\)") out))
+               (mkdir-p bin)))))))
     (propagated-inputs
      `(("r-checkmate" ,r-checkmate)
        ("r-mime" ,r-mime)

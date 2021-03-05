@@ -552,7 +552,9 @@ Report bugs to: ~a.") %guix-bug-report-address)
 ~a home page: <~a>") %guix-package-name %guix-home-page-url)
   (format #t (G_ "
 General help using Guix and GNU software: <~a>")
-           "https://guix.gnu.org/help/")
+          ;; TRANSLATORS: Change the "/en" bit of this URL appropriately if
+          ;; the web site is translated in your language.
+          (G_ "https://guix.gnu.org/en/help/"))
   (newline))
 
 (define (augmented-system-error-handler file)
@@ -1968,7 +1970,7 @@ way."
     display-generation-change))
 
 (define (switch-to-generation* profile number)
-  "Like 'switch-generation', but display what is happening."
+  "Like 'switch-to-generation', but display what is happening."
   (let ((previous (switch-to-generation profile number)))
     (display-generation-change previous number)))
 

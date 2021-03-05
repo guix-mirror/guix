@@ -47,9 +47,27 @@
   #:use-module (gnu packages xml)
   #:use-module (guix build-system gnu))
 
+(define-public guile-mastodon-dev
+  (let ((commit "88115d85221876b1baea4accb7c76995da32f479")
+        (revision "1"))
+    (package
+      (inherit guile-mastodon)
+      (name "guile-mastodon")
+      (version (git-version "0.0.1" revision commit))
+      (home-page "https://framagit.org/mothacehe/guile-mastodon.git")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "04dgxliz9bmhn0f7h1n0dj0r5h0fzhg80nxl1rpbxh4zs1yw9qvj"))
+                (file-name (string-append name "-" version "-checkout")))))))
+
 (define-public cuirass
-  (let ((commit "23688a0e451e0265ad29e150d6eba497d4291fb6")
-        (revision "67"))
+  (let ((commit "543e26addc6e2304611e2feb8dd3a5a0646507b6")
+        (revision "72"))
     (package
       (name "cuirass")
       (version (git-version "0.0.1" revision commit))
@@ -61,7 +79,7 @@
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1r90wnj9w3vh3rr48mddp0xi874ffawc9nsb8cdnpw034px62k1k"))))
+                  "01cxg0nwafzfg0phbv1b4cv24w7yaalkkdib3qfwf6jqagbfg85y"))))
       (build-system gnu-build-system)
       (arguments
        '(#:modules ((guix build utils)
@@ -85,9 +103,12 @@
                       (bytes  (assoc-ref inputs "guile-bytestructures"))
                       (fibers (assoc-ref inputs "guile-fibers"))
                       (zlib   (assoc-ref inputs "guile-zlib"))
+                      (matd   (assoc-ref inputs "guile-mastodon"))
+                      (tls    (assoc-ref inputs "gnutls"))
+                      (mail   (assoc-ref inputs "mailutils"))
                       (guix   (assoc-ref inputs "guix"))
                       (deps   (list avahi gcrypt json zmq squee git bytes
-                                    fibers zlib guix))
+                                    fibers zlib matd tls mail guix))
                       (guile  (assoc-ref %build-inputs "guile"))
                       (effective (read-line
                                   (open-pipe* OPEN_READ
@@ -125,6 +146,9 @@
          ("guile-squee" ,guile-squee)
          ("guile-git" ,guile-git)
          ("guile-zlib" ,guile-zlib)
+         ("guile-mastodon" ,guile-mastodon-dev)
+         ("gnutls" ,gnutls)
+         ("mailutils" ,mailutils)
          ;; FIXME: this is propagated by "guile-git", but it needs to be among
          ;; the inputs to add it to GUILE_LOAD_PATH.
          ("guile-bytestructures" ,guile-bytestructures)

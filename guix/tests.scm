@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -143,7 +143,7 @@ no external store to talk to."
       (lambda ()
         ;; Since we're using a different store we must clear the
         ;; package-derivation cache.
-        (hash-clear! (@@ (guix packages) %derivation-cache))
+        (hash-clear! (@@ (guix derivations) %derivation-cache))
 
         (proc store))
       (lambda ()

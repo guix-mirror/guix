@@ -3,6 +3,7 @@
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2021 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2021 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,6 +28,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
+  #:use-module (gnu packages algebra)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages boost)
@@ -37,8 +39,10 @@
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages graphviz)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages libftdi)
   #:use-module (gnu packages libusb)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages qt))
@@ -279,3 +283,51 @@ format support.")
     (description "PulseView is a Qt based logic analyzer, oscilloscope and MSO GUI
 for sigrok.")
     (license license:gpl3+)))
+
+(define-public comedilib
+  (package
+    (name "comedilib")
+    (version "0.12.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.comedi.org/download/comedilib-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0wzh23iyix4xj211fsd8hwrdcjhg2w5jswk9kywb1gpd3h8afajj"))))
+    (build-system gnu-build-system)
+    (synopsis "Library for Comedi")
+    (description "Comedilib is a user-space library that provides a
+developer-friendly interface to Comedi devices.  Comedi is a collection of
+drivers for a variety of common data acquisition plug-in boards.  The drivers
+are implemented as a core Linux kernel module providing common functionality and
+individual low-level driver modules.")
+    (home-page "https://www.comedi.org/")
+    (license license:lgpl2.1)))
+
+(define-public xoscope
+  (package
+    (name "xoscope")
+    (version "2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/xoscope/xoscope/"
+                                  version "/xoscope-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1b9wxnrwz8qy6qyx5icrklb4720rlxnr1c4h3dr6g0dzj6nkc5av"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("comedilib" ,comedilib)
+       ("fftw" ,fftw)
+       ("gtk+-2" ,gtk+-2)
+       ("gtkdatabox" ,gtkdatabox)))
+    (synopsis "Digital oscilloscope")
+    (description "Xoscope is a digital oscilloscope that can acquire signals
+from ALSA, ESD, and COMEDI sources.  This package currently does not include
+support for ESD sources.")
+    (home-page "http://xoscope.sourceforge.net/")
+    (license license:gpl2+)))

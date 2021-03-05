@@ -28,7 +28,8 @@
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Zhu Zihao <all_but_last@163.com>
-;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1369,34 +1370,6 @@ and XMP metadata of images in various formats.")
     ;;   <https://launchpad.net/ubuntu/precise/+source/exiv2/+copyright>.
     (license license:gpl2+)))
 
-(define-public exiv2-0.26
-  (package
-    (inherit exiv2)
-    (version "0.26")
-    (source (origin
-             (method url-fetch)
-             (uri (list (string-append "https://www.exiv2.org/builds/exiv2-"
-                                       version "-trunk.tar.gz")
-                        (string-append "https://www.exiv2.org/exiv2-"
-                                       version ".tar.gz")
-                        (string-append "https://fossies.org/linux/misc/exiv2-"
-                                       version ".tar.gz")))
-             (patches (search-patches "exiv2-CVE-2017-14860.patch"
-                                      "exiv2-CVE-2017-14859-14862-14864.patch"))
-             (sha256
-              (base32
-               "1yza317qxd8yshvqnay164imm0ks7cvij8y8j86p1gqi1153qpn7"))))
-    (build-system gnu-build-system)
-    (arguments '(#:tests? #f))                    ; no `check' target
-    (propagated-inputs
-     `(("expat" ,expat)
-       ("zlib" ,zlib)))
-    (native-inputs
-     `(("intltool" ,intltool)))
-
-    ;; People should rely on the newer version, so don't expose it.
-    (properties `((hidden? . #t)))))
-
 (define-public devil
   (package
     (name "devil")
@@ -1437,7 +1410,7 @@ convert, manipulate, filter and display a wide variety of image formats.")
 (define-public jasper
   (package
     (name "jasper")
-    (version "2.0.23")
+    (version "2.0.25")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1446,7 +1419,7 @@ convert, manipulate, filter and display a wide variety of image formats.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1fccpss5ii9rnsd2pkg6k7mkckwpfi8dgp64qzqv3zp1vs2nffw6"))))
+                "06s6z7qrcnbi9mbj2d0a6k7lxbjdh3ppjpx8bcdv73lxhm4z7pzr"))))
     (build-system cmake-build-system)
     (inputs
      `(("libjpeg" ,libjpeg-turbo)))
@@ -1597,6 +1570,39 @@ also converts external formats (BMP, GIF, PNM and TIFF) to optimized
 PNG, and performs PNG integrity checks and corrections.")
     (home-page "http://optipng.sourceforge.net/")
     (license license:zlib)))
+
+(define-public imgp
+  (package
+    (name "imgp")
+    (version "2.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "imgp" version))
+       (sha256
+        (base32 "0q99h9wv9rynig0s0flnr9mxi541zzl0gw8vh4y6m5x132diilri"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ;there are no tests
+       #:phases
+       (modify-phases %standard-phases
+         ;; setup.py expects the file to be named 'imgp'.
+         (add-after 'unpack 'rename-imgp
+           (lambda _
+             (rename-file "imgp.py" "imgp")
+             #t)))))
+    (inputs
+     `(("python-pillow" ,python-pillow)))
+    (home-page "https://github.com/jarun/imgp")
+    (synopsis "High-performance CLI batch image resizer & rotator")
+    (description
+     "@code{imgp} is a command line image resizer and rotator for JPEG and PNG
+images.  It can resize (or thumbnail) and rotate thousands of images in a go
+while saving significantly on storage.
+
+This package may optionally be built with @code{python-pillow-simd} in place
+of @{python-pillow} for SIMD parallelism.")
+    (license license:gpl3+)))
 
 (define-public pngsuite
   (package
@@ -1837,6 +1843,36 @@ Features:
 @item Upload to Imgur.
 @end itemize\n")
     (license license:gpl3+)))
+
+(define-public swappy
+  (package
+    (name "swappy")
+    (version "1.2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jtheoof/swappy")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "14ac2jmnak7avcz0jhqjm30vk7pv3gq5aq5rdyh84k8c613kkicf"))))
+    (build-system meson-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("scdoc" ,scdoc)
+       ("glib" ,glib "bin"))) ; for 'glib-compile-resources'
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("libnotify" ,libnotify)))
+    (home-page "https://github.com/jtheoof/swappy")
+    (synopsis "Grab and edit on the fly snapshots of a Wayland compositor")
+    (description
+     "@command{swappy} is a command-line utility to take and edit screenshots
+of Wayland desktops.  Works great with grim, slurp and sway.  But can easily
+work with other screen copy tools that can output a final PNG image to
+stdout.")
+    (license license:expat)))
 
 (define-public gifsicle
   (package

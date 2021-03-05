@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2019 Carlo Zancanaro <carlo@zancanaro.id.au>
@@ -10,7 +10,7 @@
 ;;; Copyright © 2018, 2019 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2019, 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
+;;; Copyright © 2019, 2020, 2021 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
@@ -1881,10 +1881,10 @@ new Date();"))
                 "01ihmyf7k5z17wbr7xig7y40l9f01d5zjgkcmawn1102hw5kchpq"))
               (modules '((guix build utils)))
               (snippet
-                `(begin
-                   (for-each delete-file
-                             (find-files "." ".*.(bin|exe|jar)$"))
-                   #t))))
+               `(begin
+                  (for-each delete-file
+                            (find-files "." ".*.(bin|exe|jar)$"))
+                  #t))))
     (build-system gnu-build-system)
     (outputs '("out" "jdk" "doc"))
     (arguments
@@ -1928,6 +1928,33 @@ new Date();"))
                                                  (number->string (parallel-job-count))))
                             '())
                       ,@make-flags))))
+         (add-after 'unpack 'patch-jni-libs
+           ;; Hardcode dynamically loaded libraries.
+           (lambda _
+             (let* ((library-path (search-path-as-string->list
+                                   (getenv "LIBRARY_PATH")))
+                    (find-library (lambda (name)
+                                    (search-path
+                                     library-path
+                                     (string-append "lib" name ".so")))))
+               (for-each
+                (lambda (file)
+                  (catch 'decoding-error
+                    (lambda ()
+                      (substitute* file
+                        (("VERSIONED_JNI_LIB_NAME\\(\"(.*)\", \"(.*)\"\\)"
+                          _ name version)
+                         (format #f "\"~a\""  (find-library name)))
+                        (("JNI_LIB_NAME\\(\"(.*)\"\\)" _ name)
+                         (format #f "\"~a\"" (find-library name)))))
+                    (lambda _
+                      ;; Those are safe to skip.
+                      (format (current-error-port)
+                              "warning: failed to substitute: ~a~%"
+                              file))))
+                (find-files "."
+                            "\\.c$|\\.h$"))
+               #t)))
          ;; Some of the libraries in the lib/ folder link to libjvm.so.
          ;; But that shared object is located in the server/ folder, so it
          ;; cannot be found.  This phase creates a symbolic link in the
@@ -1941,9 +1968,9 @@ new Date();"))
          (add-after 'install 'install-libjvm
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((lib-out (string-append (assoc-ref outputs "out")
-                                             "/lib"))
+                                            "/lib"))
                     (lib-jdk (string-append (assoc-ref outputs "jdk")
-                                             "/lib")))
+                                            "/lib")))
                (symlink (string-append lib-jdk "/server/libjvm.so")
                         (string-append lib-jdk "/libjvm.so"))
                (symlink (string-append lib-out "/server/libjvm.so")
@@ -1973,11 +2000,11 @@ new Date();"))
                                          (unless (eq? (stat:type s) 'symlink)
                                            (format #t "reset ~a~%" file)
                                            (utime file 0 0 0 0))))
-                             (find-files dir #:directories? #t))
+                                     (find-files dir #:directories? #t))
                            (with-directory-excursion dir
                              (let ((files (find-files "." ".*" #:directories? #t)))
                                (apply invoke "zip" "-0" "-X" zip files)))))
-               (find-files (assoc-ref outputs "doc") ".*.zip$"))
+                       (find-files (assoc-ref outputs "doc") ".*.zip$"))
              #t)))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
@@ -2027,32 +2054,32 @@ new Date();"))
                         "openjdk-10-idlj-reproducibility.patch"))
               (modules '((guix build utils)))
               (snippet
-                `(begin
-                   (for-each delete-file (find-files "." ".*.(bin|exe|jar)$"))
-                   #t))))
+               `(begin
+                  (for-each delete-file (find-files "." ".*.(bin|exe|jar)$"))
+                  #t))))
     (arguments
-      (substitute-keyword-arguments (package-arguments openjdk9)
-        ((#:phases phases)
-         `(modify-phases ,phases
-            (replace 'fix-java-shebangs
-              (lambda _
-                ;; This file was "fixed" by patch-source-shebangs, but it requires
-                ;; this exact first line.
-                (substitute* "make/data/blacklistedcertsconverter/blacklisted.certs.pem"
-                  (("^#!.*") "#! java BlacklistedCertsConverter SHA-256\n"))
-                #t))
-            (replace 'configure
-              (lambda* (#:key inputs outputs #:allow-other-keys)
-                (invoke "bash" "./configure"
-                        (string-append "--with-freetype=" (assoc-ref inputs "freetype"))
-                        "--disable-freetype-bundling"
-                        "--disable-warnings-as-errors"
-                        "--disable-hotspot-gtest"
-                        "--with-giflib=system"
-                        "--with-libjpeg=system"
-                        "--with-native-debug-symbols=zipped"
-                        (string-append "--prefix=" (assoc-ref outputs "out")))
-                #t))))))
+     (substitute-keyword-arguments (package-arguments openjdk9)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'fix-java-shebangs
+             (lambda _
+               ;; This file was "fixed" by patch-source-shebangs, but it requires
+               ;; this exact first line.
+               (substitute* "make/data/blacklistedcertsconverter/blacklisted.certs.pem"
+                 (("^#!.*") "#! java BlacklistedCertsConverter SHA-256\n"))
+               #t))
+           (replace 'configure
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (invoke "bash" "./configure"
+                       (string-append "--with-freetype=" (assoc-ref inputs "freetype"))
+                       "--disable-freetype-bundling"
+                       "--disable-warnings-as-errors"
+                       "--disable-hotspot-gtest"
+                       "--with-giflib=system"
+                       "--with-libjpeg=system"
+                       "--with-native-debug-symbols=zipped"
+                       (string-append "--prefix=" (assoc-ref outputs "out")))
+               #t))))))
     (native-inputs
      `(("openjdk9" ,openjdk9)
        ("openjdk9:jdk" ,openjdk9 "jdk")
@@ -2074,9 +2101,9 @@ new Date();"))
                 "0v705w1s9lrqalzahir78pk397rkk9gfvzq821yv8h3xha0bqi6w"))
               (modules '((guix build utils)))
               (snippet
-                `(begin
-                   (for-each delete-file (find-files "." ".*.(bin|exe|jar)$"))
-                   #t))))
+               `(begin
+                  (for-each delete-file (find-files "." ".*.(bin|exe|jar)$"))
+                  #t))))
     (build-system gnu-build-system)
     (outputs '("out" "jdk" "doc"))
     (arguments
@@ -2112,6 +2139,33 @@ new Date();"))
              (substitute* "make/data/blacklistedcertsconverter/blacklisted.certs.pem"
                (("^#!.*") "#! java BlacklistedCertsConverter SHA-256\n"))
              #t))
+         (add-after 'unpack 'patch-jni-libs
+           ;; Hardcode dynamically loaded libraries.
+           (lambda _
+             (let* ((library-path (search-path-as-string->list
+                                   (getenv "LIBRARY_PATH")))
+                    (find-library (lambda (name)
+                                    (search-path
+                                     library-path
+                                     (string-append "lib" name ".so")))))
+               (for-each
+                (lambda (file)
+                  (catch 'decoding-error
+                    (lambda ()
+                      (substitute* file
+                        (("VERSIONED_JNI_LIB_NAME\\(\"(.*)\", \"(.*)\"\\)"
+                          _ name version)
+                         (format #f "\"~a\""  (find-library name)))
+                        (("JNI_LIB_NAME\\(\"(.*)\"\\)" _ name)
+                         (format #f "\"~a\"" (find-library name)))))
+                    (lambda _
+                      ;; Those are safe to skip.
+                      (format (current-error-port)
+                              "warning: failed to substitute: ~a~%"
+                              file))))
+                (find-files "."
+                            "\\.c$|\\.h$"))
+               #t)))
          (add-before 'build 'write-source-revision-file
            (lambda _
              (with-output-to-file ".src-rev"
@@ -2162,9 +2216,9 @@ new Date();"))
          (add-after 'install 'install-libjvm
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((lib-out (string-append (assoc-ref outputs "out")
-                                             "/lib"))
+                                            "/lib"))
                     (lib-jdk (string-append (assoc-ref outputs "jdk")
-                                             "/lib")))
+                                            "/lib")))
                (symlink (string-append lib-jdk "/server/libjvm.so")
                         (string-append lib-jdk "/libjvm.so"))
                (symlink (string-append lib-out "/server/libjvm.so")
@@ -2184,8 +2238,8 @@ new Date();"))
                    (for-each (lambda (file)
                                (substitute* file
                                  (((string-append "This file was generated "
-                                                 "AUTOMATICALLY from a template "
-                                                 "file.*"))
+                                                  "AUTOMATICALLY from a template "
+                                                  "file.*"))
                                   (string-append "This file was generated "
                                                  "AUTOMATICALLY from a template "
                                                  "file"))))
@@ -2199,24 +2253,24 @@ new Date();"))
                           (ice-9 binary-ports)
                           (rnrs bytevectors))
              (letrec ((repack-archive
-                    (lambda (archive)
-                      (let ((dir (mkdtemp! "zip-contents.XXXXXX")))
-                        (with-directory-excursion dir
-                          (invoke "unzip" archive))
-                        (delete-file archive)
-                        (for-each (compose repack-archive canonicalize-path)
-                                  (find-files dir "(ct.sym|.*.jar)$"))
-                        (let ((reset-file-timestamp
-                               (lambda (file)
-                                 (let ((s (lstat file)))
-                                   (unless (eq? (stat:type s) 'symlink)
-                                     (format #t "reset ~a~%" file)
-                                     (utime file 0 0 0 0))))))
-                          (for-each reset-file-timestamp
-                                    (find-files dir #:directories? #t)))
-                        (with-directory-excursion dir
-                          (let ((files (find-files "." ".*" #:directories? #t)))
-                            (apply invoke "zip" "-0" "-X" archive files)))))))
+                       (lambda (archive)
+                         (let ((dir (mkdtemp! "zip-contents.XXXXXX")))
+                           (with-directory-excursion dir
+                             (invoke "unzip" archive))
+                           (delete-file archive)
+                           (for-each (compose repack-archive canonicalize-path)
+                                     (find-files dir "(ct.sym|.*.jar)$"))
+                           (let ((reset-file-timestamp
+                                  (lambda (file)
+                                    (let ((s (lstat file)))
+                                      (unless (eq? (stat:type s) 'symlink)
+                                        (format #t "reset ~a~%" file)
+                                        (utime file 0 0 0 0))))))
+                             (for-each reset-file-timestamp
+                                       (find-files dir #:directories? #t)))
+                           (with-directory-excursion dir
+                             (let ((files (find-files "." ".*" #:directories? #t)))
+                               (apply invoke "zip" "-0" "-X" archive files)))))))
                (for-each repack-archive
                          (find-files (assoc-ref outputs "doc") ".*.zip$"))
                (for-each repack-archive
@@ -2239,21 +2293,21 @@ new Date();"))
                                          (content-length
                                           (- (stat:size (stat file))
                                              header-length)))
-                             (sendfile temp-file file content-length header-length)
-                             (delete-file file-name)
-                             (close-port temp-file)
-                             (repack-archive (canonicalize-path temp-filename))
-                             (call-with-output-file file-name
-                               (lambda (file)
-                                 (put-bytevector file header)
-                                 (call-with-input-file temp-filename
-                                   (lambda (temp-file)
-                                     (sendfile
-                                      file temp-file
-                                      (stat:size (stat temp-file)) 0)))))))))))))
+                                    (sendfile temp-file file content-length header-length)
+                                    (delete-file file-name)
+                                    (close-port temp-file)
+                                    (repack-archive (canonicalize-path temp-filename))
+                                    (call-with-output-file file-name
+                                      (lambda (file)
+                                        (put-bytevector file header)
+                                        (call-with-input-file temp-filename
+                                          (lambda (temp-file)
+                                            (sendfile
+                                             file temp-file
+                                             (stat:size (stat temp-file)) 0)))))))))))))
                  (for-each repack-jmod
                            (find-files (assoc-ref outputs "jdk") ".*.jmod$")))
-             #t)))
+               #t)))
          (add-after 'install 'remove-timestamp-from-api-summary
            (lambda* (#:key outputs #:allow-other-keys)
              (substitute* (string-append (assoc-ref outputs "doc")
@@ -2339,17 +2393,17 @@ new Date();"))
     (name "openjdk")
     (version "13.0")
     (source (origin
-	     (method url-fetch)
-	     (uri "http://hg.openjdk.java.net/jdk/jdk13/archive/9c250a7600e1.tar.bz2")
-	     (file-name (string-append name "-" version ".tar.bz2"))
-	     (sha256
-	      (base32
-	       "0v0ljvx5dyzp96dw4z4ksw3pvasil7783mgnmd1wk9gads5ab8iq"))
-	     (modules '((guix build utils)))
-	     (snippet
-	      `(begin
-		 (for-each delete-file (find-files "." ".*.(bin|exe|jar)$"))
-		 #t))))
+              (method url-fetch)
+              (uri "http://hg.openjdk.java.net/jdk/jdk13/archive/9c250a7600e1.tar.bz2")
+              (file-name (string-append name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0v0ljvx5dyzp96dw4z4ksw3pvasil7783mgnmd1wk9gads5ab8iq"))
+              (modules '((guix build utils)))
+              (snippet
+               `(begin
+                  (for-each delete-file (find-files "." ".*.(bin|exe|jar)$"))
+                  #t))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("cups" ,cups)
@@ -2381,21 +2435,21 @@ new Date();"))
     (name "openjdk")
     (version "14.0")
     (source (origin
-	      (method url-fetch)
-	      (uri "http://hg.openjdk.java.net/jdk/jdk14/archive/bc54620a3848.tar.bz2")
-	      (file-name (string-append name "-" version ".tar.bz2"))
-	      (sha256
-	       (base32
-	        "0z485pk7r1xpw8004g4nrwrzj17sabgx8yfdbxwfvzkjp8qyajch"))
-	      (modules '((guix build utils)))
-	      (snippet
-	       `(begin
+              (method url-fetch)
+              (uri "http://hg.openjdk.java.net/jdk/jdk14/archive/bc54620a3848.tar.bz2")
+              (file-name (string-append name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0z485pk7r1xpw8004g4nrwrzj17sabgx8yfdbxwfvzkjp8qyajch"))
+              (modules '((guix build utils)))
+              (snippet
+               `(begin
                   ;; The m4 macro uses 'help' to search for builtins, which is
                   ;; not available in bash-minimal
                   (substitute* "make/autoconf/basics.m4"
                     (("if help") "if command -v"))
-		  (for-each delete-file (find-files "." ".*.(bin|exe|jar)$"))
-		  #t))))
+                  (for-each delete-file (find-files "." ".*.(bin|exe|jar)$"))
+                  #t))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("cups" ,cups)
@@ -13278,6 +13332,61 @@ technology that allows you to embed data about a file, known as metadata,
 into the file itself.  The XMP Toolkit for Java is based on the C++ XMPCore
 library and the API is similar.")
     (license license:bsd-3)))
+
+(define-public java-args4j
+  (package
+    (name "java-args4j")
+    (version "2.33")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/kohsuke/args4j")
+                    (commit (string-append "args4j-site-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0w061fg65qrsm1a0lz0vyprsyidj31krjb459qi2lw0y78xza26s"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "args4j.jar"
+       #:source-dir "args4j/src"
+       #:test-dir "args4j/test"
+       #:test-exclude
+       (list "**/ExampleTest.*"
+             "**/ExternalConfiguredTest.*" ; fails to find a file
+             ;; We still don't want to run abstract classes
+             "**/Abstract*.*")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'fix-test-dir
+           (lambda _
+             (substitute* "build.xml"
+               (("/java\">") "\">"))
+             #t))
+         (add-before 'build 'copy-resources
+           (lambda _
+             (let ((from-prefix "args4j/src/org/kohsuke/args4j/")
+                   (to-prefix "build/classes/org/kohsuke/args4j/"))
+               (for-each (lambda (f)
+                           (install-file
+                            (string-append from-prefix f)
+                            (string-append to-prefix (dirname f))))
+                         (list "Messages.properties"
+                               "Messages_de.properties"
+                               "Messages_en.properties"
+                               "Messages_ru.properties"
+                               "spi/Messages.properties"
+                               "spi/Messages_de.properties"
+                               "spi/Messages_en.properties"
+                               "spi/Messages_ru.properties")))
+             #t)))))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "https://args4j.kohsuke.org/")
+    (synopsis "Command line parser library")
+    (description "Args4j is a small Java class library that makes it easy to
+parse command line options/arguments in your CUI application.")
+    (license license:expat)))
 
 (define-public java-metadata-extractor
   (package

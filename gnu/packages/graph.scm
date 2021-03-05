@@ -2,7 +2,7 @@
 ;;; Copyright © 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2020 Alexander Krotov <krotov@iitp.ru>
 ;;; Copyright © 2020 Pierre Langlois <pierre.langlos@gmx.com>
@@ -151,7 +151,7 @@ lines.")
 (define-public python-plotly
   (package
     (name "python-plotly")
-    (version "4.8.1")
+    (version "4.14.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -160,7 +160,7 @@ lines.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "08ab677gr85m10zhixr6dnmlfws8q6sra7nhyb8nf3r8dx1ffqhz"))))
+                "02wlgy7gf3v5ckiq9ab3prm53cckxkavlghqgkk9xw2sfmmrn61q"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -170,12 +170,14 @@ lines.")
              (chdir "packages/python/plotly")
              #t))
          (replace 'check
-           (lambda _
-             (invoke "pytest" "-x" "plotly/tests/test_core")
-             (invoke "pytest" "-x" "plotly/tests/test_io")
-             ;; FIXME: Add optional dependencies and enable their tests.
-             ;; (invoke "pytest" "-x" "plotly/tests/test_optional")
-             (invoke "pytest" "_plotly_utils/tests")))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest" "-x" "plotly/tests/test_core")
+               (invoke "pytest" "-x" "plotly/tests/test_io")
+               ;; FIXME: Add optional dependencies and enable their tests.
+               ;; (invoke "pytest" "-x" "plotly/tests/test_optional")
+               (invoke "pytest" "_plotly_utils/tests"))
+             #t))
          (add-before 'reset-gzip-timestamps 'make-files-writable
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
@@ -183,16 +185,17 @@ lines.")
                  (find-files out "\\.gz"))
                #t))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     `(("python-ipywidgets" ,python-ipywidgets)
+       ("python-pytest" ,python-pytest)
+       ("python-xarray" ,python-xarray)))
     (propagated-inputs
-     `(("python-decorator" ,python-decorator)
-       ("python-ipywidgets" ,python-ipywidgets)
+     `(("python-ipython" ,python-ipython)
        ("python-pandas" ,python-pandas)
+       ("python-pillow" ,python-pillow)
        ("python-requests" ,python-requests)
        ("python-retrying" ,python-retrying)
        ("python-six" ,python-six)
-       ("python-statsmodels" ,python-statsmodels)
-       ("python-xarray" ,python-xarray)))
+       ("python-statsmodels" ,python-statsmodels)))
     (home-page "https://plotly.com/python/")
     (synopsis "Interactive plotting library for Python")
     (description "Plotly's Python graphing library makes interactive,

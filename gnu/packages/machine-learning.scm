@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
@@ -15,7 +15,7 @@
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;; Copyright © 2020 Edouard Klein <edk@beaver-labs.com>
-;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -568,7 +568,7 @@ in terms of new algorithms.")
 (define-public python-onnx
   (package
     (name "python-onnx")
-    (version "1.8.0")
+    (version "1.8.1")
     (source
      (origin
        (method url-fetch)
@@ -577,7 +577,7 @@ in terms of new algorithms.")
        ;; to use googletest from Guix and enable tests by default.
        (patches (search-patches "python-onnx-use-system-googletest.patch"))
        (sha256
-        (base32 "0365zkikq6v3cl5hh2daa5z1alhij8xpn8rmlcny340jrv9pyy2z"))))
+        (base32 "1ys5f4kqkabm4mgivsw80zz8xj1svanfbpszqbw9j15914hcarcx"))))
     (build-system python-build-system)
     (native-inputs
      `(("cmake" ,cmake)
@@ -787,7 +787,7 @@ computing environments.")
 (define-public python-scikit-learn
   (package
     (name "python-scikit-learn")
-    (version "0.22.1")
+    (version "0.24.1")
     (source
      (origin
        (method git-fetch)
@@ -797,7 +797,7 @@ computing environments.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1xqxv210gsmjw094vc5ghq2y9lmm74qkk22pq6flcjzj51b86jxf"))))
+         "0dd854hi9h81pa3y6gwa6r4qjwrwq5fndi312h6dkqzfh7jbvgvd"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -829,6 +829,7 @@ computing environments.")
        ("python-cython" ,python-cython)))
     (propagated-inputs
      `(("python-numpy" ,python-numpy)
+       ("python-threadpoolctl" ,python-threadpoolctl)
        ("python-scipy" ,python-scipy)
        ("python-joblib" ,python-joblib)))
     (home-page "https://scikit-learn.org/")
@@ -854,7 +855,17 @@ data analysis.")
                 (file-name (git-file-name "python-scikit-learn" version))
                 (sha256
                  (base32
-                  "08zbzi8yx5wdlxfx9jap61vg1malc9ajf576w7a0liv6jvvrxlpj")))))))
+                  "08zbzi8yx5wdlxfx9jap61vg1malc9ajf576w7a0liv6jvvrxlpj"))))
+      (inputs
+       `(("openblas" ,openblas)))
+      (native-inputs
+       `(("python2-pytest" ,python2-pytest)
+         ("python2-pandas" ,python2-pandas) ;for tests
+         ("python2-cython" ,python2-cython)))
+      (propagated-inputs
+       `(("python2-numpy" ,python2-numpy)
+         ("python2-scipy" ,python2-scipy)
+         ("python2-joblib" ,python2-joblib))))))
 
 (define-public python-threadpoolctl
   (package

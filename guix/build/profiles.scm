@@ -170,8 +170,8 @@ SEARCH-PATHS."
       (display "\
 ;; This file was automatically generated and is for internal use only.
 ;; It cannot be passed to the '--manifest' option.
-;; Run 'guix package --export-manifest' if to export a file suitable
-;; for '--manifest'.\n\n"
+;; Run 'guix package --export-manifest' if you want to export a file
+;; suitable for '--manifest'.\n\n"
                p)
       (pretty-print manifest p)))
 

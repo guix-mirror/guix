@@ -323,14 +323,14 @@ GNU ccRTP stack and serves as library for other RTP stacks
 (define-public osip
   (package
    (name "osip")
-   (version "5.1.2")
+   (version "5.2.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/osip/libosip2-" version ".tar.gz"))
             (patches (search-patches "osip-CVE-2017-7853.patch"))
             (sha256
              (base32
-              "148j1i0zkwf09qdpk3nc5sssj1dvppw7p0n9rgrg8k56447l1h1b"))))
+              "0xdk3cszkzb8nb757gl47slrr13mf6xz43ab4k343fv8llp8pd2g"))))
    (build-system gnu-build-system)
 
    (synopsis "Library implementing SIP (RFC-3261)")
@@ -515,14 +515,16 @@ address of one of the participants.")
 (define-public mumble
   (package
     (name "mumble")
-    (version "1.3.3")
+    (version "1.3.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://mumble.info/snapshot/stable/"
-                                  name "-" version ".tar.gz"))
+              (uri
+               (string-append
+                "https://github.com/mumble-voip/mumble/releases/download/"
+                version "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "101gw1334zmqsbjrba5dq1v4p2nxcs37g2yrzvkcra6s9ri4fw3j"))
+                "14v0rgy1a5alxmz7ly95y38bdj0hx79yysgkcd8r8p9qqfzlwpv1"))
               (modules '((guix build utils)))
               (snippet
                `(begin
@@ -886,8 +888,8 @@ Initiation Protocol (SIP) and a multimedia framework.")
     (build-system gnu-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)
-       ("libopusenc" ,libopusenc)
        ("openssl" ,openssl)
+       ("opus" ,opus)
        ("pulseaudio" ,pulseaudio)))
     (arguments
      `(#:phases

@@ -23,7 +23,9 @@
   #:use-module ((guix utils) #:select (location-file))
   #:use-module ((guix store) #:select (%store-prefix store-path?))
   #:use-module ((guix config) #:select (%state-directory))
-  #:autoload   (guix channels) (sexp->channel manifest-entry-channel)
+  #:autoload   (guix channels) (channel-name
+                                sexp->channel
+                                manifest-entry-channel)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match)
   #:export (current-profile
@@ -33,6 +35,7 @@
             package-path-entries
 
             package-provenance
+            package-channels
             manifest-entry-with-provenance
             manifest-entry-provenance))
 
@@ -144,6 +147,26 @@ when applicable."
                                       "/site-ccache")))
                (current-channel-entries))))
 
+(define (package-channels package)
+  "Return the list of channels providing PACKAGE or an empty list if it could
+not be determined."
+  (match (and=> (package-location package) location-file)
+    (#f '())
+    (file
+     (let ((file (if (string-prefix? "/" file)
+                     file
+                     (search-path %load-path file))))
+       (if (and file
+                (string-prefix? (%store-prefix) file))
+           (filter-map
+            (lambda (entry)
+              (let ((item (manifest-entry-item entry)))
+                (and (or (string-prefix? item file)
+                         (string=? "guix" (manifest-entry-name entry)))
+                     (manifest-entry-channel entry))))
+            (current-profile-entries))
+           '())))))
+
 (define (package-provenance package)
   "Return the provenance of PACKAGE as an sexp for use as the 'provenance'
 property of manifest entries, or #f if it could not be determined."
@@ -153,36 +176,31 @@ property of manifest entries, or #f if it could not be determined."
       (('source value) value)
       (_ #f)))
 
-  (match (and=> (package-location package) location-file)
-    (#f #f)
-    (file
-     (let ((file (if (string-prefix? "/" file)
-                     file
-                     (search-path %load-path file))))
-       (and file
-            (string-prefix? (%store-prefix) file)
-
-            ;; Always store information about the 'guix' channel and
-            ;; optionally about the specific channel FILE comes from.
-            (or (let ((main  (and=> (find (lambda (entry)
-                                            (string=? "guix"
-                                                      (manifest-entry-name entry)))
-                                          (current-profile-entries))
-                                    entry-source))
-                      (extra (any (lambda (entry)
-                                    (let ((item (manifest-entry-item entry)))
-                                      (and (string-prefix? item file)
-                                           (entry-source entry))))
-                                  (current-profile-entries))))
-                  (and main
-                       `(,main
-                         ,@(if extra (list extra) '()))))))))))
+  (let* ((channels (package-channels package))
+         (names (map (compose symbol->string channel-name) channels)))
+    ;; Always store information about the 'guix' channel and
+    ;; optionally about the specific channel FILE comes from.
+    (or (let ((main  (and=> (find (lambda (entry)
+                                    (string=? "guix"
+                                              (manifest-entry-name entry)))
+                                  (current-profile-entries))
+                            entry-source))
+              (extra (any (lambda (entry)
+                            (let ((item (manifest-entry-item entry))
+                                  (name (manifest-entry-name entry)))
+                              (and (member name names)
+                                   (not (string=? name "guix"))
+                                   (entry-source entry))))
+                          (current-profile-entries))))
+          (and main
+               `(,main
+                 ,@(if extra (list extra) '())))))))
 
 (define (manifest-entry-with-provenance entry)
   "Return ENTRY with an additional 'provenance' property if it's not already
 there."
   (let ((properties (manifest-entry-properties entry)))
-    (if (assq 'properties properties)
+    (if (assq 'provenance properties)
         entry
         (let ((item (manifest-entry-item entry)))
           (manifest-entry

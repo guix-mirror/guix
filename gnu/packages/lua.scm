@@ -8,11 +8,12 @@
 ;;; Copyright © 2016 doncatnip <gnopap@gmail.com>
 ;;; Copyright © 2016, 2017, 2019 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016 José Miguel Sánchez García <jmi2k@openmailbox.org>
-;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Simon South <simon@simonsouth.net>
 ;;; Copyright © 2020 Paul A. Patience <paul@apatience.com>
+;;; Copyright © 2021 Vinícius dos Santos Oliveira <vini.ipsmaker@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,8 +38,11 @@
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
+  #:use-module (gnu packages gcc)
+  #:use-module (gnu packages build-tools)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages tls)
@@ -47,6 +51,11 @@
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages boost)
+  #:use-module (gnu packages tls)
+  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages vim)
+  #:use-module (gnu packages re2c)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages gtk))
 
@@ -156,6 +165,39 @@ programming language.  Lua is a powerful, dynamic and light-weight programming
 language.  It may be embedded or used as a general-purpose, stand-alone
 language.")
     (license license:x11)))
+
+(define-public luajit-lua52-openresty
+  (package
+    (inherit luajit)
+    (name "luajit-lua52-openresty")
+    (version "2.1-20201229")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/openresty/luajit2.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "07haj27kbpbnkv836c2nd36h2xislrmri52w0zbpxvl68xk6g96p"))))
+    (arguments
+     `(#:tests? #f                      ;no test
+       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ;no configure script
+         (add-after 'unpack 'enable-lua52-compat
+           (lambda _
+             (substitute* "src/Makefile"
+               (("#(XCFLAGS\\+= -DLUAJIT_ENABLE_LUA52COMPAT)" _ flag) flag))
+             #t)))))
+    (home-page "https://github.com/openresty/luajit2")
+    (synopsis "OpenResty's Branch of LuaJIT 2")
+    (description
+     "This is the official OpenResty branch of LuaJIT.  It is not to be
+considered a fork, since changes are regularly synchronized from the upstream
+LuaJIT project.  This package also enables the Lua 5.2 compat mode needed by
+some projects.")))
 
 (define (make-lua-expat name lua)
   (package
@@ -1063,10 +1105,64 @@ signals to Linux processes.")
 shell command executions.")
     (license license:bsd-3)))
 
+(define-public emilua
+  (package
+   (name "emilua")
+   (version "0.2.1")
+   (source (origin
+            (method git-fetch)
+            (uri (git-reference
+                  (url "https://gitlab.com/emilua/emilua.git")
+                  (commit (string-append "v" version))
+                  ;; Current version requires bundled CLI11 and fmt, but at some
+                  ;; future release the ones found in the system could be used
+                  ;; instead. Current version also requires Trial.Protocol and
+                  ;; the HTTP lib developed as part of GSoC 2014 for Boost, but
+                  ;; these are dependencies unlikely to be "unbundled" in future
+                  ;; releases.
+                  (recursive? #t)))
+            (file-name (git-file-name name version))
+            (sha256
+             (base32
+              "1d6k5v6x85fbvz2ijq1imnfdwvqmsav4xp021a5v3ah4mgy7yann"))))
+   (build-system meson-build-system)
+   (arguments
+    `(#:meson ,meson-0.55
+      ;; Tests are disabled for now due to an issue that affecs guix:
+      ;; <https://gitlab.com/emilua/emilua/-/issues/22>
+      #:configure-flags '("-Denable_http=false" "-Denable_tests=false")))
+   (native-inputs
+    `(("gcc" ,gcc-10) ; gcc-7 is too old for our C++17 needs
+      ("luajit-lua52-openresty" ,luajit-lua52-openresty)
+      ("pkg-config" ,pkg-config)
+      ("re2c" ,re2c)
+      ("xxd" ,xxd)))
+   (inputs
+    `(("boost" ,boost)
+      ("boost-static" ,boost-static)
+      ;; LuaJIT has a 2GiB addressing limit[1] that has been fixed on OpenResty
+      ;; fork. Emilua is severely affected by this limit, so the upstream package
+      ;; is avoided. Emilua also depends on the -DLUAJIT_ENABLE_LUA52COMPAT
+      ;; configure flag[2] for some features to work (e.g. __pairs on HTTP
+      ;; headers).
+      ;;
+      ;; [1] <http://hacksoflife.blogspot.com/2012/12/integrating-luajit-with-x-plane-64-bit.html>
+      ;; [2] <http://luajit.org/extensions.html#lua52>
+      ("luajit-lua52-openresty" ,luajit-lua52-openresty)
+      ("ncurses" ,ncurses)
+      ("openssl" ,openssl)))
+   (home-page "https://gitlab.com/emilua/emilua")
+   (synopsis "Lua execution engine")
+   (description
+    "Emilua is a LuaJIT-based Lua execution engine that supports async IO,
+fibers and actor-inspired threading.  The experimental builtin HTTP module is
+enabled.")
+   (license license:boost1.0)))
+
 (define-public fennel
   (package
     (name "fennel")
-    (version "0.8.0")
+    (version "0.8.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1075,7 +1171,7 @@ shell command executions.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1jng33vmnk6mi37l3x2z0plng940jpj7kz1s493ki80z3mkaxjfg"))
+                "0n0xkgzlrwpppm5vbvn84mq418xhmyakk9hakdmjv1lk2dfdq2g7"))
               (modules '((guix build utils)))
               (snippet
                '(begin

@@ -15,7 +15,7 @@
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 nee <nee.git@hidamari.blue>
-;;; Copyright © 2018 Stefan Reichör <stefan@xsteve.at>
+;;; Copyright © 2018, 2021 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
@@ -33,6 +33,7 @@
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2019 Riku Viitanen <riku.viitanen0@gmail.com>
 ;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
+;;; Copyright © 2021 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -443,6 +444,98 @@ playing your music.")
                ;; qocoa is under MIT and CC by-sa for the icons.
                license:cc-by-sa3.0))))
 
+(define-public strawberry
+  (package
+    (name "strawberry")
+    (version "0.8.5")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/strawberrymusicplayer/strawberry")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0lfbbmhfzwlhnjhzfk5zn8h71cabx47pzfkcw2nylkbqkz83r57r"))
+              (modules '((guix build utils)
+                         (ice-9 regex)))
+              (snippet
+               '(begin
+                  (use-modules ((ice-9 regex)))
+                  (for-each
+                   (lambda (dir)
+                     ;; TODO: The following dependencies are still bundled:
+                     ;; - "singleapplication"
+                     (let ((bundled '("singleapplication")))
+                       (if (not
+                            (string-match
+                              (string-append ".?*(" (string-join bundled "|") ")")
+                              dir))
+                           (delete-file-recursively dir))))
+                   (find-files "3rdparty"
+                               (lambda (file stat)
+                                 (string-match "^3rdparty/[^/]*$" file))
+                               #:directories? #t))
+                  #t))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:test-target "run_strawberry_tests"
+       #:configure-flags
+       (list "-DUSE_SYSTEM_TAGLIB=TRUE"
+             "-DBUILD_TESTS=TRUE")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out             (assoc-ref outputs "out"))
+                   (gst-plugin-path (getenv "GST_PLUGIN_SYSTEM_PATH")))
+               (wrap-program (string-append out "/bin/strawberry")
+                 `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path)))
+               #t)))
+         (add-before 'check 'pre-check
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((xorg-server (assoc-ref inputs "xorg-server")))
+               (system (format #f "~a/bin/Xvfb :1 &" xorg-server))
+               (setenv "DISPLAY" ":1")
+               (setenv "HOME" (getcwd))
+               #t))))))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("googletest" ,googletest)
+       ("pkg-config" ,pkg-config)
+       ("qtlinguist" ,qttools)
+       ("xorg-server" ,xorg-server-for-tests)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("boost" ,boost)
+       ("chromaprint" ,chromaprint)
+       ("dbus" ,dbus)
+       ("fftw" ,fftw)
+       ("glib" ,glib)
+       ("gnutls" ,gnutls)
+       ("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("gst-plugins-good" ,gst-plugins-good)
+       ("libcdio" ,libcdio)
+       ("libmtp" ,libmtp)
+       ("protobuf" ,protobuf)
+       ("pulseaudio" ,pulseaudio)
+       ("qtbase" ,qtbase)
+       ("qtx11extras" ,qtx11extras)
+       ("sqlite" ,sqlite)
+       ("taglib" ,taglib)))
+    (home-page "https://www.strawberrymusicplayer.org/")
+    (synopsis "Music player and library organizer")
+    (description "Strawberry is a music player and music collection organizer.
+It is a fork of Clementine aimed at music collectors and audiophiles.")
+    (license (list
+              ;; strawberry.
+              license:gpl3+
+              ;; singleapplication
+              license:expat
+              ;; icons.
+              license:cc-by-sa3.0))))
+
 (define-public cmus
   (package
     (name "cmus")
@@ -506,14 +599,13 @@ many input formats and provides a customisable Vi-style user interface.")
 (define-public denemo
   (package
     (name "denemo")
-    (version "2.4.0")
+    (version "2.5.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://gnu/denemo/"
-                           "denemo-" version ".tar.gz"))
+       (uri (string-append "mirror://gnu/denemo/denemo-" version ".tar.gz"))
        (sha256
-        (base32 "145kq0zfgdadykl3i6na221i4s5wzdrcqq48amzyfarnrqk2rmpd"))))
+        (base32 "05kwy8894hsxr6123hc854j2qq2sxyjw721zk4g3vzz8pw29p887"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -930,7 +1022,7 @@ MusePack, Monkey's Audio, and WavPack files.")
        ("emacs" ,emacs-no-x)))
     ;; Extempore refuses to build on architectures other than x86_64
     (supported-systems '("x86_64-linux"))
-    (home-page "https://digego.github.io/extempore/")
+    (home-page "https://github.com/digego/extempore")
     (synopsis "Programming environment for live coding of multimedia")
     (description
      "Extempore is a programming language and runtime environment designed
@@ -1825,7 +1917,7 @@ users to select LV2 plugins and run them with jalv.")
 (define-public synthv1
   (package
     (name "synthv1")
-    (version "0.9.19")
+    (version "0.9.20")
     (source (origin
               (method url-fetch)
               (uri
@@ -1833,7 +1925,7 @@ users to select LV2 plugins and run them with jalv.")
                               "/synthv1-" version ".tar.gz"))
               (sha256
                (base32
-                "17sizhav01mn07gi812n8wqdcr85290zqg609s18cww2b95dy6mn"))))
+                "1g2i79gkl1j7i49djz6igkbvdmfwxhcg6kx97n63bcqcvvy03rqz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
@@ -1857,7 +1949,7 @@ oscillators and stereo effects.")
 (define-public drumkv1
   (package
     (name "drumkv1")
-    (version "0.9.19")
+    (version "0.9.20")
     (source (origin
               (method url-fetch)
               (uri
@@ -1865,7 +1957,7 @@ oscillators and stereo effects.")
                               "/drumkv1-" version ".tar.gz"))
               (sha256
                (base32
-                "0w9frc634yg2m0yc84szdf6x7l4f19pcviqpg065a1kdixf98qrf"))))
+                "0y6njh1n0yai4g9dhg24hwc9khba44l4n5xizqcs6i4q7lyr9z48"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
@@ -1890,7 +1982,7 @@ effects.")
 (define-public samplv1
   (package
     (name "samplv1")
-    (version "0.9.19")
+    (version "0.9.20")
     (source (origin
               (method url-fetch)
               (uri
@@ -1898,7 +1990,7 @@ effects.")
                               "/samplv1-" version ".tar.gz"))
               (sha256
                (base32
-                "1fwvk83sfvp1k6qyqv1a7a1l8sbm6azcldaiiqa3ls1vhl4m5wv4"))))
+                "06nni00dgn8fvbyam1v44aq4yfns1vf7hw1mwmwzv2vxapdbpngn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
@@ -1923,7 +2015,7 @@ effects.")
 (define-public padthv1
   (package
     (name "padthv1")
-    (version "0.9.19")
+    (version "0.9.20")
     (source (origin
               (method url-fetch)
               (uri
@@ -1931,7 +2023,7 @@ effects.")
                               "/padthv1-" version ".tar.gz"))
               (sha256
                (base32
-                "06fkrc4xxzr3sa3c76lnkcm4q9k0xl5993bn60la0ja4sz2kp6r7"))))
+                "1x3qjkby29xd7y0dg22ms19c8h8drqf55m9nxz6jlc58sfha2ss0"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
@@ -2929,7 +3021,7 @@ from the command line.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("qttools" ,qttools)))
-    (home-page "http://qtractor.org/")
+    (home-page "https://qtractor.org/")
     (synopsis "Audio/MIDI multi-track sequencer")
     (description
      "Qtractor is an Audio/MIDI multi-track sequencer application.  It uses
@@ -3105,7 +3197,7 @@ tune-in sender list from @url{http://opml.radiotime.com}.")
 (define-public pianobar
   (package
     (name "pianobar")
-    (version "2020.04.05")
+    (version "2020.11.28")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3114,7 +3206,7 @@ tune-in sender list from @url{http://opml.radiotime.com}.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1gq8kpks6nychqz4gf0rpy7mrhz5vjw48a60x56j6y9flmazmypw"))))
+                "13qx52a1yj2wghf7yd9jf4ar92scbc8zgqdq0kkqf4p9isf1phf3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
@@ -4472,14 +4564,14 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
 (define-public liquidsfz
   (package
     (name "liquidsfz")
-    (version "0.2.2")
+    (version "0.2.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://space.twc.de/~stefan/liquidsfz/"
                                   "liquidsfz-" version ".tar.bz2"))
               (sha256
                (base32
-                "011m839vjb8gmiv1vzc0d7xz2q2jiwk4v0j9paqyx3lm61czvy93"))))
+                "1hb4hc3gkvjfbx0ls6wxzavhv2hf9ix11cz8yvndyb6q9lwkimwl"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--enable-shared")))
@@ -5387,7 +5479,7 @@ for integration into status line generators or other command-line tools.")
 (define-public artyfx
   (package
     (name "artyfx")
-    (version "1.3")
+    (version "1.3.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -5397,7 +5489,7 @@ for integration into status line generators or other command-line tools.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "012hcy1mxl7gs2lipfcqp5x0xv1azb9hjrwf0h59yyxnzx96h7c9"))))
+                "0cxikdnxgjk5gp6kmml4dx2jy2cy4x0c837h7bwraj2pfz0nfgqq"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                                ; no tests included
@@ -5686,16 +5778,16 @@ ZaMultiComp, ZaMultiCompX2 and ZamSynth.")
 (define-public geonkick
   (package
     (name "geonkick")
-    (version "2.3.8")
+    (version "2.7.0")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://gitlab.com/geontime/geonkick.git")
+             (url "https://gitlab.com/iurie-sw/geonkick")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "07809yy2q7dd6fcp0yndlg1vw2ca2zisnsplb3xrxvzdvrqlw910"))))
+        (base32 "0w1mvqm46qdwldcl81svaykwii4wvx7mcr57kwvnj0iv2qrc891i"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;no tests included
@@ -5705,8 +5797,7 @@ ZaMultiComp, ZaMultiCompX2 and ZamSynth.")
              (string-append "-DCMAKE_INSTALL_PREFIX="
                             (assoc-ref %outputs "out")))))
     (inputs
-     `(("cairo" ,cairo)
-       ("hicolor-icon-theme" ,hicolor-icon-theme)
+     `(("hicolor-icon-theme" ,hicolor-icon-theme)
        ("jack" ,jack-1)                 ;for the standalone JACK application
        ("libsndfile" ,libsndfile)
        ("libx11" ,libx11)
@@ -5722,7 +5813,7 @@ ZaMultiComp, ZaMultiCompX2 and ZamSynth.")
     (description "Geonkick is a synthesizer that can synthesize elements
 of percussion such as kicks, snares, hit-hats, shakers, claps and sticks.
 It can also play and mix samples.")
-    (home-page "https://gitlab.com/geontime/geonkick")
+    (home-page "https://gitlab.com/iurie-sw/geonkick")
     (license license:gpl3+)))
 
 (define-public dpf-plugins
@@ -5883,7 +5974,7 @@ and as an LV2 plugin.")
     ;; distros to make necessary changes to integrate the software into the
     ;; distribution.
     (name "zrythm")
-    (version "1.0.0-alpha.6.0.1")
+    (version "1.0.0-alpha.12.0.1")
     (source
       (origin
         (method url-fetch)
@@ -5891,7 +5982,7 @@ and as an LV2 plugin.")
                             version ".tar.xz"))
         (sha256
           (base32
-           "1zfky3yj0k0rmbxighlk9sp4fsgw8rj7viv44yv626kldfvc04ab"))))
+           "1si4n8rdg0a3frlbj6yqpyzr4f20v3cpl4m6kv0yf7r25psyl5pk"))))
    (build-system meson-build-system)
    (arguments
     `(#:glib-or-gtk? #t
@@ -5924,6 +6015,7 @@ and as an LV2 plugin.")
       ("libyaml" ,libyaml)
       ("lilv" ,lilv)
       ("lv2" ,lv2)
+      ("pulseaudio" ,pulseaudio)
       ("reproc" ,reproc)
       ("rubberband" ,rubberband)
       ("rtmidi" ,rtmidi)

@@ -361,7 +361,7 @@ empty list when the FIELD cannot be found."
 
 (define (directory-needs-fortran? dir)
   "Check if the directory DIR contains Fortran source files."
-  (match (find-files dir "\\.f(90|95)?")
+  (match (find-files dir "\\.f(90|95)$")
     (() #f)
     (_ #t)))
 

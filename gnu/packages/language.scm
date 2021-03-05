@@ -1363,7 +1363,7 @@ noun phrases, verb phrases, etc.).")
        ("publesaudio" ,pulseaudio)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.fon.hum.uva.nl/praat/")
+    (home-page "https://www.fon.hum.uva.nl/praat/")
     (synopsis "Doing phonetics by computer")
     (description "Praat is a tool to perform phonetics tasks.  It can do speech
 analysis (pitch, formant, intensity, ...), speech synthesis, labelling, segmenting

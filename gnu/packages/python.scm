@@ -11,7 +11,7 @@
 ;;; Copyright © 2015, 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2015, 2016 David Thompson <davet@gnu.org>
-;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2015, 2016, 2017, 2021 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015, 2016 Erik Edrosa <erik.edrosa@gmail.com>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
@@ -59,7 +59,7 @@
 ;;; Copyright © 2018 Vagrant Cascadian <vagrant@debian.org>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
-;;; Copyright © 2020 Greg Hogan <code@greghogan.com>
+;;; Copyright © 2020, 2021 Greg Hogan <code@greghogan.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -377,6 +377,14 @@ packages; exception-based error handling; and very high level dynamic
 data types.")
     (properties '((cpe-name . "python")))
     (license license:psfl)))
+
+(define python-2.7/fixed
+  (package
+    (inherit python-2.7)
+    (source (origin
+              (inherit (package-source python-2.7))
+              (patches (append (search-patches "python-2.7-CVE-2021-3177.patch")
+                               (origin-patches (package-source python-2.7))))))))
 
 ;; Current 2.x version.
 (define-public python-2 python-2.7)

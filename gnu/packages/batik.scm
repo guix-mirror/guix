@@ -199,7 +199,7 @@ SAC is an interface for CSS parsers.")
 (define-public java-xmlgraphics-commons
   (package
     (name "java-xmlgraphics-commons")
-    (version "2.4")
+    (version "2.6")
     (source
       (origin
         (method url-fetch)
@@ -207,7 +207,7 @@ SAC is an interface for CSS parsers.")
               "mirror://apache/xmlgraphics/commons/source/xmlgraphics-commons-"
               version "-src.tar.gz"))
         (sha256
-         (base32 "0zdkngb896cr35jq1v859j2kpqyn6a87k6a893h394hgvnz7yi3v"))
+         (base32 "18gndjwzdd6vhp59fn8cwn6i6q0v0ym8nmwn65rcykdrzz0nvl72"))
         (modules '((guix build utils)))
         (snippet
          `(begin

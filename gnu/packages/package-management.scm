@@ -132,8 +132,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "1.2.0")
-        (commit "a53f711422f63d7e32b8639b968cf00bcc69ffea")
-        (revision 13))
+        (commit "112692c0d546d35cd67c5dc70dbd1dc609b18f64")
+        (revision 14))
     (package
       (name "guix")
 
@@ -149,7 +149,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "01sky036v6dh8zwvrzl08pj4r6vkz7mjadkqbrwhak4nvds5frq8"))
+                  "081m6zcgscmh3xbz1wrm7bjwj5d1fnwd8w89qbmd8z44a1iknf49"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -1046,8 +1046,8 @@ environments.")
     (license (list license:gpl3+ license:agpl3+ license:silofl1.1))))
 
 (define-public guix-build-coordinator
-  (let ((commit "88fbb69264a412ca2c7e6c4de024414444bd2df8")
-        (revision "18"))
+  (let ((commit "1f79fc38a17ceda30f378efd4e7f80f252c99b4d")
+        (revision "20"))
     (package
       (name "guix-build-coordinator")
       (version (git-version "0" revision commit))
@@ -1058,7 +1058,7 @@ environments.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "0bjf9bibamyk1d762w4nv0n0a7azww5bks2c9627zpzs2zqwqyiv"))
+                  "0d5zr5mv07pi195vva2fhclfgyzrgbk9vlnwrmy7z1jcw2p1d2zp"))
                 (file-name (string-append name "-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -1075,7 +1075,7 @@ environments.")
                (setenv "GUILE_AUTO_COMPILE" "0")
                #t))
            (add-after 'install 'wrap-executable
-             (lambda* (#:key inputs outputs #:allow-other-keys)
+             (lambda* (#:key inputs outputs target #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
                       (bin (string-append out "/bin"))
                       (guile (assoc-ref inputs "guile"))
@@ -1085,18 +1085,47 @@ environments.")
                  (for-each
                   (lambda (file)
                     (simple-format (current-error-port) "wrapping: ~A\n" file)
-                    (wrap-program file
-                      `("PATH" ":" prefix
-                        (,bin
-                         ;; Support building without sqitch as an input, as it
-                         ;; can't be cross-compiled yet
-                         ,@(or (and=> (assoc-ref inputs "sqitch")
-                                      list)
-                               '())))
-                      `("GUILE_LOAD_PATH" ":" prefix
-                        (,scm ,(getenv "GUILE_LOAD_PATH")))
-                      `("GUILE_LOAD_COMPILED_PATH" ":" prefix
-                        (,go ,(getenv "GUILE_LOAD_COMPILED_PATH")))))
+                    (let ((guile-inputs `("guile-json"
+                                          "guile-gcrypt"
+                                          "guix"
+                                          "guile-prometheus"
+                                          "guile-lib"
+                                          "guile-lzlib"
+                                          "guile-zlib"
+                                          "gnutls")))
+                      (wrap-program file
+                        `("PATH" ":" prefix
+                          (,bin
+                           ;; Support building without sqitch as an input, as it
+                           ;; can't be cross-compiled yet
+                           ,@(or (and=> (assoc-ref inputs "sqitch")
+                                        list)
+                                 '())))
+                        `("GUILE_LOAD_PATH" ":" prefix
+                          (,scm ,(string-join
+                                  (map (lambda (input)
+                                         (simple-format
+                                          #f "~A/share/guile/site/~A"
+                                          (assoc-ref inputs input)
+                                          version))
+                                       guile-inputs)
+                                  ":")))
+                        `("GUILE_LOAD_COMPILED_PATH" ":" prefix
+                          (,go ,(string-join
+                                 (map (lambda (input)
+                                        (simple-format
+                                         #f "~A/lib/guile/~A/site-ccache"
+                                         (assoc-ref inputs input)
+                                         version))
+                                      guile-inputs)
+                                 ":"))))
+                      (when target
+                        ;; XXX work around wrap-program picking bash for the
+                        ;; host rather than target
+                        (let ((bash (assoc-ref inputs "bash")))
+                          (substitute* file
+                            (("^#!.*/bash")
+                             (string-append "#! " bash "/bin/bash")))))))
                   (find-files bin)))
                #t))
            (delete 'strip))))             ; As the .go files aren't compatible
@@ -1116,6 +1145,9 @@ environments.")
          ("guile" ,@(assoc-ref (package-native-inputs guix) "guile"))))
       (inputs
        `(("guile" ,@(assoc-ref (package-native-inputs guix) "guile"))
+         ,@(if (%current-target-system)
+               `(("bash" ,bash-minimal))
+               '())
          ("sqlite" ,sqlite)
          ,@(if (hurd-target?)
                '()

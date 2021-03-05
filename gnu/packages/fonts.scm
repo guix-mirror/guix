@@ -11,7 +11,7 @@
 ;;; Copyright © 2016 Jookia <166291@gmail.com>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Dmitry Nikolaev <cameltheman@gmail.com>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Toni Reina <areina@riseup.net>
 ;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -198,6 +198,25 @@ package provides the TrueType (TTF) files.")
       "The Font Software may be sold as part of a larger software package but
 no copy of one or more of the Font Software typefaces may be sold by
 itself."))))
+
+(define-public font-canada1500
+  (package
+    (name "font-canada1500")
+    (version "1.101")
+    (source (origin
+              (method url-fetch)
+              (uri "https://typodermicfonts.com/wp-content/uploads/2017/06/canada1500.zip")
+              (sha256
+               (base32
+                "052rwhyfcz6q0g0nsr21bkbg2qb6sw7wzins5hv80qhdhi77sdaj"))))
+    (build-system font-build-system)
+    (home-page "https://typodermicfonts.com/canada1500/")
+    (synopsis "Canadian typeface that supports English, French and Aboriginal languages")
+    (description "Canada1500 is a display typeface originally created for the
+Canadian sesquicentennial with four weights, italics and space symbols which
+includes lining and old-style numerals, tabular and proportional.  Greek,
+Cyrillic, Canadian Syllabics and most Latin based languages are supported.")
+    (license license:cc0)))
 
 (define-public font-cantarell
   (package
@@ -712,7 +731,7 @@ for use at smaller text sizes")))
 (define-public font-gnu-unifont
   (package
     (name "font-gnu-unifont")
-    (version "13.0.05")
+    (version "13.0.06")
     (source
      (origin
        (method url-fetch)
@@ -722,7 +741,7 @@ for use at smaller text sizes")))
              (string-append "mirror://gnu/unifont/unifont-"
                             version "/unifont-" version ".tar.gz")))
        (sha256
-        (base32 "0kkgagnyhl92pwgnvf1vjrc1ql8lk5khb125sz18ck8vnxk4i3pr"))))
+        (base32 "09g91g0gv76sadslp70m5xwfk3jf8kh7rpk2pz3l2hpldnjggpk8"))))
     (build-system gnu-build-system)
     (outputs '("out"   ; TrueType version
                "pcf"   ; PCF (bitmap) version
@@ -1806,7 +1825,7 @@ have been designed to be very distinguishable from each other.")
 (define-public font-dseg
   (package
     (name "font-dseg")
-    (version "0.45")
+    (version "0.46")
     (source
       (origin
         (method url-fetch/zipbomb)
@@ -1817,8 +1836,7 @@ have been designed to be very distinguishable from each other.")
                          (string-concatenate (string-split version #\.))
                          ".zip"))
         (sha256
-          (base32
-            "0v8sghh4vl286faf8pvi74znz07pyf0qii8z4wjllisqwc35sx72"))))
+          (base32 "13133kpa1ndsji9yq5ppkds5yq2y094qvrv2f83ah74p40sz9hm6"))))
     (build-system font-build-system)
     (arguments
      `(#:phases

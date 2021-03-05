@@ -2,7 +2,7 @@
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019, 2020 Martin Becze <mjbecze@riseup.net>
-;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020, 2021 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -214,7 +214,7 @@ written in Go.")
 (define-public go-ipfs
   (package
     (name "go-ipfs")
-    (version "0.7.0")
+    (version "0.8.0")
     (source
      (origin
        (method url-fetch/tarbomb)
@@ -222,7 +222,7 @@ written in Go.")
              "https://dist.ipfs.io/go-ipfs/v" version
              "/go-ipfs-source.tar.gz"))
        (sha256
-        (base32 "1fkzwm4qxxpmbjammk6s5qcyjxivfa0ydqz4mpz1w756c4jq0jf3"))
+        (base32 "0k2qzlfz8ks9c70rxsy7jvk6d2s6yll1b8v9k2kcw07r989gxbdq"))
        (file-name (string-append name "-" version "-source"))))
     (build-system go-build-system)
     (arguments

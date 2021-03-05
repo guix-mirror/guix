@@ -21,8 +21,11 @@
 
 (define-module (guix http-client)
   #:use-module (web uri)
+  #:use-module (web http)
   #:use-module ((web client) #:hide (open-socket-for-uri))
+  #:use-module (web request)
   #:use-module (web response)
+  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-26)
@@ -35,6 +38,7 @@
   #:use-module (guix utils)
   #:use-module (guix base64)
   #:autoload   (gcrypt hash) (sha256)
+  #:autoload   (gnutls) (error/invalid-session)
   #:use-module ((guix build utils)
                 #:select (mkdir-p dump-port))
   #:use-module ((guix build download)
@@ -50,6 +54,7 @@
             http-get-error-reason
 
             http-fetch
+            http-multiple-get
 
             %http-cache-ttl
             http-fetch/cached))
@@ -70,6 +75,7 @@
 
 
 (define* (http-fetch uri #:key port (text? #f) (buffered? #t)
+                     (open-connection guix:open-connection-for-uri)
                      (keep-alive? #f)
                      (verify-certificate? #t)
                      (headers '((user-agent . "GNU Guile")))
@@ -92,10 +98,10 @@ Raise an '&http-get-error' condition if downloading fails."
   (let loop ((uri (if (string? uri)
                       (string->uri uri)
                       uri)))
-    (let ((port (or port (guix:open-connection-for-uri uri
-                                                       #:verify-certificate?
-                                                       verify-certificate?
-                                                       #:timeout timeout)))
+    (let ((port (or port (open-connection uri
+                                          #:verify-certificate?
+                                          verify-certificate?
+                                          #:timeout timeout)))
           (headers (match (uri-userinfo uri)
                      ((? string? str)
                       (cons (cons 'Authorization
@@ -137,6 +143,115 @@ Raise an '&http-get-error' condition if downloading fails."
                                 (G_ "~a: HTTP download failed: ~a (~s)")
                                 (uri->string uri) code
                                 (response-reason-phrase resp))))))))))))
+
+(define* (http-multiple-get base-uri proc seed requests
+                            #:key port (verify-certificate? #t)
+                            (open-connection guix:open-connection-for-uri)
+                            (keep-alive? #t)
+                            (batch-size 1000))
+  "Send all of REQUESTS to the server at BASE-URI.  Call PROC for each
+response, passing it the request object, the response, a port from which to
+read the response body, and the previous result, starting with SEED, à la
+'fold'.  Return the final result.
+
+When PORT is specified, use it as the initial connection on which HTTP
+requests are sent; otherwise call OPEN-CONNECTION to open a new connection for
+a URI.  When KEEP-ALIVE? is false, close the connection port before
+returning."
+  (let connect ((port     port)
+                (requests requests)
+                (result   seed))
+    (define batch
+      (if (>= batch-size (length requests))
+          requests
+          (take requests batch-size)))
+
+    ;; (format (current-error-port) "connecting (~a requests left)..."
+    ;;         (length requests))
+    (let ((p (or port (open-connection base-uri
+                                       #:verify-certificate?
+                                       verify-certificate?))))
+      ;; For HTTPS, P is not a file port and does not support 'setvbuf'.
+      (when (file-port? p)
+        (setvbuf p 'block (expt 2 16)))
+
+      ;; Send BATCH in a row.
+      ;; XXX: Do our own caching to work around inefficiencies when
+      ;; communicating over TLS: <http://bugs.gnu.org/22966>.
+      (let-values (((buffer get) (open-bytevector-output-port)))
+        ;; Inherit the HTTP proxying property from P.
+        (set-http-proxy-port?! buffer (http-proxy-port? p))
+
+        (catch #t
+          (lambda ()
+            (for-each (cut write-request <> buffer)
+                      batch)
+            (put-bytevector p (get))
+            (force-output p))
+          (lambda (key . args)
+            ;; If PORT becomes unusable, open a fresh connection and
+            ;; retry.
+            (if (or (and (eq? key 'system-error)
+                         (= EPIPE (system-error-errno `(,key ,@args))))
+                    (and (eq? key 'gnutls-error)
+                         (eq? (first args) error/invalid-session)))
+                (begin
+                  (close-port p)    ; close the broken port
+                  (connect #f
+                           requests
+                           result))
+                (apply throw key args)))))
+
+      ;; Now start processing responses.
+      (let loop ((sent      batch)
+                 (processed 0)
+                 (result    result))
+        (match sent
+          (()
+           (match (drop requests processed)
+             (()
+              (unless keep-alive?
+                (close-port p))
+              (reverse result))
+             (remainder
+              (connect p remainder result))))
+          ((head tail ...)
+           (catch #t
+             (lambda ()
+               (let* ((resp   (read-response p))
+                      (body   (response-body-port resp))
+                      (result (proc head resp body result)))
+                 ;; The server can choose to stop responding at any time,
+                 ;; in which case we have to try again.  Check whether
+                 ;; that is the case.  Note that even upon "Connection:
+                 ;; close", we can read from BODY.
+                 (match (assq 'connection (response-headers resp))
+                   (('connection 'close)
+                    (close-port p)
+                    (connect #f                       ;try again
+                             (drop requests (+ 1 processed))
+                             result))
+                   (_
+                    (loop tail (+ 1 processed) result))))) ;keep going
+             (lambda (key . args)
+               ;; If PORT was cached and the server closed the connection
+               ;; in the meantime, we get EPIPE.  In that case, open a
+               ;; fresh connection and retry.  We might also get
+               ;; 'bad-response or a similar exception from (web response)
+               ;; later on, once we've sent the request, or a
+               ;; ERROR/INVALID-SESSION from GnuTLS.
+               (if (or (and (eq? key 'system-error)
+                            (= EPIPE (system-error-errno `(,key ,@args))))
+                       (and (eq? key 'gnutls-error)
+                            (eq? (first args) error/invalid-session))
+                       (memq key
+                             '(bad-response bad-header bad-header-component)))
+                   (begin
+                     (close-port p)
+                     (connect #f      ; try again
+                              (drop requests (+ 1 processed))
+                              result))
+                   (apply throw key args))))))))))
 
 
 ;;;

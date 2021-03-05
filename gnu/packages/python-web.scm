@@ -24,7 +24,7 @@
 ;;; Copyright © 2015, 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2017 Mark Meyer <mark@ofosos.org>
 ;;; Copyright © 2018 Tomáš Čech <sleep_walker@gnu.org>
-;;; Copyright © 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2018, 2019, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2018, 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Vagrant Cascadian <vagrant@debian.org>
@@ -94,13 +94,13 @@
 (define-public python-aiohttp
   (package
     (name "python-aiohttp")
-    (version "3.7.3")
+    (version "3.7.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "aiohttp" version))
        (sha256
-        (base32 "1i3p4yrfgrf1zpbgnywqmb33ps4k51wylcxykhf2cwky0spq26lw"))))
+        (base32 "1pn79h8fng4xi5gl1f6saw31nxgmgyxl41yf3vba1l21673yr12x"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -641,7 +641,7 @@ Swartz.")
   (package
     (name "python-jose")
     (version "3.2.0")
-    (home-page "http://github.com/mpdavis/python-jose")
+    (home-page "https://github.com/mpdavis/python-jose")
     (source (origin
               (method git-fetch)
               (uri (git-reference (url home-page) (commit version)))
@@ -3008,16 +3008,20 @@ for the basic TCP/IP protocols.")
                '(begin
                   ;; Delete pre-compiled files.
                   (for-each delete-file (find-files "src/geventhttpclient"
-                                                    ".*\\.pyc"))
-                  #t))))
+                                                    ".*\\.pyc"))))))
     (build-system python-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'delete-network-tests
            (lambda _
-             (delete-file "src/geventhttpclient/tests/test_client.py")
-             #t))
+             (delete-file "src/geventhttpclient/tests/test_client.py")))
+         (add-after 'unpack 'fix-compatibility-issue
+           ;; See: https://github.com/gwik/geventhttpclient/issues/137.
+           (lambda _
+             (substitute* "src/geventhttpclient/tests/test_ssl.py"
+               ((".*sock.last_seen_sni = None.*")
+                ""))))
          (replace 'check
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (add-installed-pythonpath inputs outputs)
@@ -3025,10 +3029,9 @@ for the basic TCP/IP protocols.")
                      ;; Append the test modules to sys.path to avoid
                      ;; namespace conflict which breaks SSL tests.
                      "--import-mode=append"
-                     ;; XXX: Disable test fails with Python 3.8:
+                     ;; XXX: This test fails with Python 3.8:
                      ;; https://github.com/gwik/geventhttpclient/issues/119
-                     "-k" (string-append "not test_cookielib_compatibility"))
-             #t)))))
+                     "-k" "not test_cookielib_compatibility"))))))
     (native-inputs
      `(("python-dpkt" ,python-dpkt)
        ("python-pytest" ,python-pytest)))

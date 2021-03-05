@@ -583,13 +583,13 @@ netcat implementation that supports TLS.")
   (package
     (name "python-acme")
     ;; Remember to update the hash of certbot when updating python-acme.
-    (version "1.10.1")
+    (version "1.12.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "acme" version))
               (sha256
                (base32
-                "1n1g29f3qzy77xn06dss9nc92wndgm8phgjrvx740sy9xnd5bfzw"))))
+                "1wn2jvkg18z31nd060hfcp2yqvxjxykim2ybgaidv7qfsms38dma"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -605,7 +605,6 @@ netcat implementation that supports TLS.")
                (install-file "docs/_build/texinfo/acme-python.info" info)
                (install-file "docs/_build/man/acme-python.1" man)
                #t))))))
-    ;; TODO: Add optional inputs for testing.
     (native-inputs
      `(("python-mock" ,python-mock)
        ("python-pytest" ,python-pytest)
@@ -640,12 +639,20 @@ netcat implementation that supports TLS.")
               (uri (pypi-uri "certbot" version))
               (sha256
                (base32
-                "1dww9m1a2p3a9vpxs5j29f8cdkqywqb4j70z3cnkpl7017yf77hd"))))
+                "0nfzk6fzyfqy8lgs5lmxfndrdh5c2ljdvzj39rwvgg3r6ivkirsy"))))
     (build-system python-build-system)
     (arguments
      `(,@(substitute-keyword-arguments (package-arguments python-acme)
            ((#:phases phases)
             `(modify-phases ,phases
+             (replace 'build-documentation
+               (lambda _
+                 ;; Fix building the manual page in 1.12.0:
+                 ;; https://github.com/certbot/certbot/issues/8633
+                 ;; TODO Remove the substitution in later releases.
+                 (substitute* "docs/conf.py"
+                   (("'man',") ""))
+             (invoke "make" "-C" "docs" "man" "info")))
               (replace 'install-documentation
                 (lambda* (#:key outputs #:allow-other-keys)
                   (let* ((out (assoc-ref outputs "out"))
@@ -656,7 +663,6 @@ netcat implementation that supports TLS.")
                     (install-file "docs/_build/man/certbot.1" man1)
                     (install-file "docs/_build/man/certbot.7" man7)
                     #t))))))))
-    ;; TODO: Add optional inputs for testing.
     (native-inputs
      `(("python-mock" ,python-mock)
        ("python-pytest" ,python-pytest)

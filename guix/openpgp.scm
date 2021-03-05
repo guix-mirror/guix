@@ -538,17 +538,6 @@ signature."
            (raise (condition
                    (&openpgp-invalid-signature-error (port port))))))))
 
-(define (hash-algorithm-name algorithm)        ;XXX: should be in Guile-Gcrypt
-  "Return the name of ALGORITHM, a 'hash-algorithm' integer, as a symbol."
-  (letrec-syntax ((->name (syntax-rules ()
-                            ((_) #f)
-                            ((_ name rest ...)
-                             (if (= algorithm (hash-algorithm name))
-                                 'name
-                                 (->name rest ...))))))
-    (->name sha1 sha256 sha384 sha512 sha224
-            sha3-224 sha3-256 sha3-384 sha3-512)))
-
 (define (verify-openpgp-signature sig keyring dataport)
   "Verify that the data read from DATAPORT matches SIG, an
 <openpgp-signature>.  Fetch the public key of the issuer of SIG from KEYRING,

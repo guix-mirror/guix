@@ -59,3 +59,6 @@
    (inherit
     (os->image novena-barebones-os #:type novena-image-type))
    (name 'novena-barebones-raw-image)))
+
+;; Return the default image.
+novena-barebones-raw-image

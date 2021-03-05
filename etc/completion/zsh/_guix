@@ -383,7 +383,7 @@ _guix_list_installed_packages()
         '--max-jobs=[allow at most N build jobs]:N' \
         '--derivation[return the derivation of the given system]' \
         '--on-error=[apply STRATEGY when an error occurs while reading FILE]:STRATEGY' \
-        '--image-size=[for "vm-image", produce an image of SIZE]:SIZE' \
+        '--image-size=[for "image", produce an image of SIZE]:SIZE' \
         '--no-grub[for "init", do not install GRUB]' \
         '--share=[for "vm", share host file system according to SPEC]:SPEC' \
         '--expose=[for "vm", expose host file system according to SPEC]:SPEC' \

@@ -19,6 +19,7 @@
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2020 Bonface Munyoki Kilyungi <bonfacemunyoki@gmail.com>
+;;; Copyright © 2021 Tim Howes <timhowes@lavabit.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1615,14 +1616,14 @@ gapped, local, and paired-end alignment modes.")
 (define-public bowtie1
   (package
     (name "bowtie1")
-    (version "1.2.3")
+    (version "1.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/bowtie-bio/bowtie/"
-                                  version "/bowtie-src-x86_64.zip"))
+                                  version "/bowtie-" version "-src.zip"))
               (sha256
                (base32
-                "0vmiqdhc9dzyfy9sh6vgi7k9xy2hiw8g87vbamnc6cgpm179zsa4"))
+                "11dbihdnrizc6qhx9xsw77w3q5ssx642alaqzvhxx32ak9glvq04"))
               (modules '((guix build utils)))
               (snippet
                '(substitute* "Makefile"
@@ -1633,7 +1634,7 @@ gapped, local, and paired-end alignment modes.")
     (arguments
      '(#:tests? #f                      ; no "check" target
        #:make-flags
-       (list "all"
+       (list "CC=gcc" "all"
              (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
@@ -3819,7 +3820,7 @@ indexing scheme is called a @dfn{Hierarchical Graph FM index} (HGFM).")
 (define-public hmmer
   (package
     (name "hmmer")
-    (version "3.2.1")
+    (version "3.3.2")
     (source
      (origin
        (method url-fetch)
@@ -3827,9 +3828,10 @@ indexing scheme is called a @dfn{Hierarchical Graph FM index} (HGFM).")
              "http://eddylab.org/software/hmmer/hmmer-" version ".tar.gz"))
        (sha256
         (base32
-         "171bivy6xhgjsz5nv53n81pc3frnwz29ylblawk2bv46szwjjqd5"))))
+         "0s9wf6n0qanbx8qs6igfl3vyjikwbrvh4d9d6mv54yp3xysykzlj"))))
     (build-system gnu-build-system)
-    (native-inputs `(("perl" ,perl)))
+    (native-inputs `(("perl" ,perl)
+                     ("python" ,python))) ; for tests
     (home-page "http://hmmer.org/")
     (synopsis "Biosequence analysis using profile hidden Markov models")
     (description
@@ -6730,7 +6732,7 @@ application of SortMeRNA is filtering rRNA from metatranscriptomic data.")
 (define-public star
   (package
     (name "star")
-    (version "2.7.3a")
+    (version "2.7.8a")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -6739,7 +6741,7 @@ application of SortMeRNA is filtering rRNA from metatranscriptomic data.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1hgiqw5qhs0pc1xazzihcfd92na02xyq2kb469z04y1v51kpvvjq"))
+                "0zc5biymja9zml9yizcj1h68fq9c6sxfcav8a0lbgvgsm44rvans"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -6814,6 +6816,32 @@ sequences.")
     (supported-systems '("x86_64-linux" "mips64el-linux"))
     ;; STAR is licensed under GPLv3 or later; htslib is MIT-licensed.
     (license license:gpl3+)))
+
+(define-public star-for-pigx
+  (package
+    (inherit star)
+    (name "star")
+    (version "2.7.3a")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/alexdobin/STAR")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1hgiqw5qhs0pc1xazzihcfd92na02xyq2kb469z04y1v51kpvvjq"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (substitute* "source/Makefile"
+                    (("/bin/rm") "rm"))
+                  ;; Remove pre-built binaries and bundled htslib sources.
+                  (delete-file-recursively "bin/MacOSX_x86_64")
+                  (delete-file-recursively "bin/Linux_x86_64")
+                  (delete-file-recursively "bin/Linux_x86_64_static")
+                  (delete-file-recursively "source/htslib")
+                  #t))))))
 
 (define-public starlong
   (package (inherit star)
@@ -7054,14 +7082,14 @@ data in the form of VCF files.")
 (define-public infernal
   (package
     (name "infernal")
-    (version "1.1.3")
+    (version "1.1.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://eddylab.org/software/infernal/"
                                   "infernal-" version ".tar.gz"))
               (sha256
                (base32
-                "0pm8bm3s6nfa0av4x6m6h27lsg12b3lz3jm0fyh1mc77l2isd61v"))))
+                "1z4mgwqg1j4n5ika08ai8mg9yjyjhf4821jp83v2bgwzxrykqjgr"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)
@@ -7128,6 +7156,55 @@ scale single cell ATAC-seq data which includes quality control, normalization,
 clustering analysis, differential analysis, motif inference and exploration of
 single cell ATAC-seq sequencing data.")
     (license license:gpl3)))
+
+(define-public r-archr
+  (let ((commit "46b519ffb6f73edf132497ac31650d19ef055dc1")
+        (revision "1"))
+    (package
+      (name "r-archr")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/GreenleafLab/ArchR")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1zj3sdfhgn2q2256fmz61a92vw1wylyck632d7842d6knd0v92v8"))))
+      (properties `((upstream-name . "ArchR")))
+      (build-system r-build-system)
+      (propagated-inputs
+       `(("r-biocgenerics" ,r-biocgenerics)
+         ("r-biostrings" ,r-biostrings)
+         ("r-chromvar" ,r-chromvar)
+         ("r-complexheatmap" ,r-complexheatmap)
+         ("r-data-table" ,r-data-table)
+         ("r-genomicranges" ,r-genomicranges)
+         ("r-ggplot2" ,r-ggplot2)
+         ("r-ggrepel" ,r-ggrepel)
+         ("r-gridextra" ,r-gridextra)
+         ("r-gtable" ,r-gtable)
+         ("r-gtools" ,r-gtools)
+         ("r-magrittr" ,r-magrittr)
+         ("r-matrix" ,r-matrix)
+         ("r-matrixstats" ,r-matrixstats)
+         ("r-motifmatchr" ,r-motifmatchr)
+         ("r-nabor" ,r-nabor)
+         ("r-plyr" ,r-plyr)
+         ("r-rcpp" ,r-rcpp)
+         ("r-rhdf5" ,r-rhdf5)
+         ("r-rsamtools" ,r-rsamtools)
+         ("r-s4vectors" ,r-s4vectors)
+         ("r-stringr" ,r-stringr)
+         ("r-summarizedexperiment" ,r-summarizedexperiment)
+         ("r-uwot" ,r-uwot)))
+      (home-page "https://github.com/GreenleafLab/ArchR")
+      (synopsis "Analyze single-cell regulatory chromatin in R")
+      (description
+       "This package is designed to streamline scATAC analyses in R.")
+      (license license:gpl2+))))
 
 (define-public r-scde
   (package
@@ -7237,14 +7314,14 @@ includes software to
 (define-public r-genefilter
   (package
     (name "r-genefilter")
-    (version "1.72.0")
+    (version "1.72.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "genefilter" version))
        (sha256
         (base32
-         "0929g6c4v2qhgipgrh1a5gv6444sm2dp52x9c3qbk03i8wzc6633"))))
+         "1c6h3qnjvphs977qhv5vafvsb108r0q7xhaayly6qv6adqfn94rn"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)
@@ -7403,14 +7480,14 @@ the graph algorithms contained in the Boost library.")
 (define-public r-gseabase
   (package
     (name "r-gseabase")
-    (version "1.52.0")
+    (version "1.52.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "GSEABase" version))
        (sha256
         (base32
-         "0lcxbxfg62zdf2nql49asn3555cqrrxpjm2xsxf7vlxv84dl6r44"))))
+         "0dawh1kjmf6921jm77j2s2phrq5237pjc4sdh8fkln89gf48zx6i"))))
     (properties `((upstream-name . "GSEABase")))
     (build-system r-build-system)
     (propagated-inputs
@@ -7537,14 +7614,14 @@ ungapped alignment formats.")
 (define-public r-systempiper
   (package
     (name "r-systempiper")
-    (version "1.24.2")
+    (version "1.24.3")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "systemPipeR" version))
        (sha256
         (base32
-         "0blvvci57q12sl18yvw07233rfnj47mfadzm0pdpig1ll5z6ld2j"))))
+         "0ffazyl2q9plbhwlxi04s3fvnli6qj95n7bkjc21535bbi08xfki"))))
     (properties `((upstream-name . "systemPipeR")))
     (build-system r-build-system)
     (propagated-inputs
@@ -7700,6 +7777,79 @@ faster than multithreaded counterparts (end of 2015) for the same number of
 cores and, thanks to the message-passing technology, it can be executed on
 clusters.")
     (home-page "https://sourceforge.net/projects/pardre/")
+    (license license:gpl3+)))
+
+(define-public ngshmmalign
+  (package
+    (name "ngshmmalign")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/cbg-ethz/ngshmmalign/"
+                           "releases/download/" version
+                           "/ngshmmalign-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "0jryvlssi2r2ii1dxnx39yk6bh4yqgq010fnxrgfgbaj3ykijlzv"))))
+    (build-system cmake-build-system)
+    (arguments '(#:tests? #false))      ; there are none
+    (inputs
+     `(("boost" ,boost)))
+    (home-page "https://github.com/cbg-ethz/ngshmmalign/")
+    (synopsis "Profile HMM aligner for NGS reads")
+    (description
+     "ngshmmalign is a profile HMM aligner for NGS reads designed particularly
+for small genomes (such as those of RNA viruses like HIV-1 and HCV) that
+experience substantial biological insertions and deletions.")
+    (license license:gpl2+)))
+
+(define-public prinseq
+  (package
+    (name "prinseq")
+    (version "0.20.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/prinseq/standalone/"
+                           "prinseq-lite-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0vxmzvmm67whxrqdaaamwgjk7cf0fzfs5s673jgg00kz7g70splv"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #false                  ; no check target
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (for-each (lambda (file)
+                           (chmod file #o555)
+                           (install-file file bin)
+                           (wrap-script (string-append bin "/" (basename file))
+                                        `("PERL5LIB" ":" prefix
+                                          (,(getenv "PERL5LIB")))))
+                         (find-files "." "prinseq.*.pl"))))))))
+    (inputs
+     `(("guile" ,guile-3.0)             ; for wrapper scripts
+       ("perl" ,perl)
+       ("perl-cairo" ,perl-cairo)
+       ("perl-data-dumper" ,perl-data-dumper)
+       ("perl-digest-md5" ,perl-digest-md5)
+       ("perl-getopt-long" ,perl-getopt-long)
+       ("perl-json" ,perl-json)
+       ("perl-statistics-pca" ,perl-statistics-pca)))
+    (home-page "http://prinseq.sourceforge.net/")
+    (synopsis "Preprocess sequence data in FASTA or FASTQ formats")
+    (description
+     "PRINSEQ is a bioinformatics tool to help you preprocess your genomic or
+metagenomic sequence data in FASTA or FASTQ formats.  The tool is written in
+Perl and can be helpful if you want to filter, reformat, or trim your sequence
+data.  It also generates basic statistics for your sequences.")
     (license license:gpl3+)))
 
 (define-public ruby-bio-kseq
@@ -7954,13 +8104,13 @@ checks on R packages that are to be submitted to the Bioconductor repository.")
 (define-public r-s4vectors
   (package
     (name "r-s4vectors")
-    (version "0.28.0")
+    (version "0.28.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "S4Vectors" version))
               (sha256
                (base32
-                "0rfn46g2mfda01s75vpcfn5jc7xkp0jrl5v79gyd40jm37p4j1zv"))))
+                "0fhf4lsfxrim7glazh6ng46ykzaly5ggwpg170vcz4cc24prv0rh"))))
     (properties
      `((upstream-name . "S4Vectors")))
     (build-system r-build-system)
@@ -7981,13 +8131,13 @@ S4Vectors package itself.")
 (define-public r-iranges
   (package
     (name "r-iranges")
-    (version "2.24.0")
+    (version "2.24.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "IRanges" version))
               (sha256
                (base32
-                "1lfc8xz45v63y3q40im00i944hi0p9idwhx50w3nzkwdpk79315b"))))
+                "01mx46a82vd3gz705pj0kk4wpxg683s8jqxchzjia3gz00b4qw52"))))
     (properties
      `((upstream-name . "IRanges")))
     (build-system r-build-system)
@@ -8063,13 +8213,13 @@ names in their natural, rather than lexicographic, order.")
 (define-public r-edger
   (package
     (name "r-edger")
-    (version "3.32.0")
+    (version "3.32.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "edgeR" version))
               (sha256
                (base32
-                "0dkjd6li270icy1x5qbzpakk9bx712mdm5k32lrr3yrggq92jhjg"))))
+                "1gaic8qf6a6sy0bmydh1xzf52w0wnq31aanpvw3a30pfsi218bcp"))))
     (properties `((upstream-name . "edgeR")))
     (build-system r-build-system)
     (propagated-inputs
@@ -8266,13 +8416,13 @@ annotation data packages using SQLite data storage.")
 (define-public r-biomart
   (package
     (name "r-biomart")
-    (version "2.46.0")
+    (version "2.46.3")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "biomaRt" version))
               (sha256
                (base32
-                "1zpdm8nw1d0m31pdmzw1dccbd6iczfhiklhm4d325zkzf3jrkvxf"))))
+                "0gwmd0ykpv0gyh34c56g5m12lil20fvig49f3ih1jxrxf3q4wmq7"))))
     (properties
      `((upstream-name . "biomaRt")))
     (build-system r-build-system)
@@ -8401,13 +8551,13 @@ tab-delimited (tabix) files.")
 (define-public r-delayedarray
   (package
     (name "r-delayedarray")
-    (version "0.16.0")
+    (version "0.16.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "DelayedArray" version))
               (sha256
                (base32
-                "1564wnradxw15nsnv6w2wd3xngcs3xa1mlibbq3hygi5fcx4fk3g"))))
+                "1d75zrhha1v7dhbvjp6a4iap441l5k268w0jjxklpqywbqns7l3d"))))
     (properties
      `((upstream-name . "DelayedArray")))
     (build-system r-build-system)
@@ -9697,13 +9847,13 @@ number detection tools.")
 (define-public r-methylkit
   (package
     (name "r-methylkit")
-    (version "1.16.0")
+    (version "1.16.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "methylKit" version))
               (sha256
                (base32
-                "11pmn191n0ga28x1w20cm2cmw8kddl29q6h2xfjjba5bspp2g613"))))
+                "1c9b11gfh3cc37iwym9rgsba3mh2xkp78a1gvnjqhzlkiz667mn3"))))
     (properties `((upstream-name . "methylKit")))
     (build-system r-build-system)
     (propagated-inputs
@@ -10037,14 +10187,14 @@ structure (pcaRes) to provide a common interface to the PCA results.")
 (define-public r-msnbase
   (package
     (name "r-msnbase")
-    (version "2.16.0")
+    (version "2.16.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "MSnbase" version))
        (sha256
         (base32
-         "0cvcdmq1glifga5qwv9j3lgj31dcrcc6ql4kkk83jy4y43v2zxlx"))))
+         "0hxzs9zzljywqxr7q388hshpy1pdryhl0zkwffqbxpf5pcf92d3h"))))
     (properties `((upstream-name . "MSnbase")))
     (build-system r-build-system)
     (propagated-inputs
@@ -10356,14 +10506,14 @@ microarrays or GRanges for sequencing data.")
 (define-public r-gage
   (package
     (name "r-gage")
-    (version "2.40.0")
+    (version "2.40.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "gage" version))
        (sha256
         (base32
-         "0xm50wgjjjymv71mbv1clnhx4m12nrd1pc6vfplpdqr5q49v3yd5"))))
+         "1iawa03dy4bl333my69d4sk7d74cjzfg5dpcxga6q5dglan4sp8r"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
@@ -10633,6 +10783,72 @@ effort and encourages consistency.")
       (description "This package offers a quick and straight-forward way to
 explore and perform basic analysis of single cell sequencing data coming from
 droplet sequencing.  It has been particularly tailored for Drop-seq.")
+      (license license:gpl3))))
+
+(define-public r-cellchat
+  (let ((commit
+         "21edd226ca408e4c413408f98562d71ee0b54e5d")
+        (revision "1"))
+    (package
+      (name "r-cellchat")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/sqjin/CellChat")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0cvzl9mi8jjznpql2gv67swnk1dndn3a2h22z5l84h7lwpwjmh53"))
+         (snippet
+          '(for-each delete-file '("src/CellChat.so"
+                                   "src/CellChat_Rcpp.o"
+                                   "src/RcppExports.o")))))
+      (properties `((upstream-name . "CellChat")))
+      (build-system r-build-system)
+      (propagated-inputs
+       `(("r-biocgenerics" ,r-biocgenerics)
+         ("r-circlize" ,r-circlize)
+         ("r-colorspace" ,r-colorspace)
+         ("r-complexheatmap" ,r-complexheatmap)
+         ("r-cowplot" ,r-cowplot)
+         ("r-dplyr" ,r-dplyr)
+         ("r-expm" ,r-expm)
+         ("r-fnn" ,r-fnn)
+         ("r-forcats" ,r-forcats)
+         ("r-future" ,r-future)
+         ("r-future-apply" ,r-future-apply)
+         ("r-gg-gap" ,r-gg-gap)
+         ("r-ggalluvial" ,r-ggalluvial)
+         ("r-ggplot2" ,r-ggplot2)
+         ("r-ggrepel" ,r-ggrepel)
+         ("r-igraph" ,r-igraph)
+         ("r-irlba" ,r-irlba)
+         ("r-magrittr" ,r-magrittr)
+         ("r-matrix" ,r-matrix)
+         ("r-nmf" ,r-nmf)
+         ("r-patchwork" ,r-patchwork)
+         ("r-pbapply" ,r-pbapply)
+         ("r-rcolorbrewer" ,r-rcolorbrewer)
+         ("r-rcpp" ,r-rcpp)
+         ("r-rcppeigen" ,r-rcppeigen)
+         ("r-reshape2" ,r-reshape2)
+         ("r-reticulate" ,r-reticulate)
+         ("r-rspectra" ,r-rspectra)
+         ("r-rtsne" ,r-rtsne)
+         ("r-scales" ,r-scales)
+         ("r-shape" ,r-shape)
+         ("r-sna" ,r-sna)
+         ("r-stringr" ,r-stringr)
+         ("r-svglite" ,r-svglite)))
+      (native-inputs `(("r-knitr" ,r-knitr)))
+      (home-page "https://github.com/sqjin/CellChat")
+      (synopsis "Analysis of cell-cell communication from single-cell transcriptomics data")
+      (description
+       "This package infers, visualizes and analyzes the cell-cell
+communication networks from scRNA-seq data.")
       (license license:gpl3))))
 
 (define-public sambamba
@@ -11201,7 +11417,7 @@ browser.")
       (inputs
        `(("perl" ,perl)
          ("java-commons-cli" ,java-commons-cli)))
-      (home-page "http://fureylab.web.unc.edu/software/fseq/")
+      (home-page "https://fureylab.web.unc.edu/software/fseq/")
       (synopsis "Feature density estimator for high-throughput sequence tags")
       (description
        "F-Seq is a software package that generates a continuous tag sequence
@@ -11370,7 +11586,7 @@ using nucleotide or amino-acid sequence data.")
 (define-public kallisto
   (package
     (name "kallisto")
-    (version "0.44.0")
+    (version "0.46.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -11379,7 +11595,10 @@ using nucleotide or amino-acid sequence data.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0nj382jiywqnpgvyhichajpkkh5r0bapn43f4dx40zdaq5v4m40m"))))
+                "0ij5n7v3m90jdfi7sn8nvglfyf58abp1f5xq42r4k73l0lfds6xi"))
+              (modules '((guix build utils)))
+              (snippet
+               '(delete-file-recursively "ext/htslib/"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f          ; no "check" target
@@ -11402,7 +11621,7 @@ using nucleotide or amino-acid sequence data.")
              #t)))))
     (inputs
      `(("hdf5" ,hdf5)
-       ("htslib" ,htslib)
+       ("htslib" ,htslib-1.9)
        ("zlib" ,zlib)))
     (home-page "https://pachterlab.github.io/kallisto/")
     (synopsis "Near-optimal RNA-Seq quantification")
@@ -12387,7 +12606,7 @@ once.  This package provides tools to perform Drop-seq analyses.")
        ("snakemake" ,snakemake)
        ("fastqc" ,fastqc)
        ("multiqc" ,multiqc)
-       ("star" ,star)
+       ("star" ,star-for-pigx)
        ("trim-galore" ,trim-galore)
        ("htseq" ,htseq)
        ("samtools" ,samtools)
@@ -12598,7 +12817,7 @@ methylation and segmentation.")
        ("pandoc-citeproc" ,pandoc-citeproc)
        ("samtools" ,samtools)
        ("snakemake" ,snakemake)
-       ("star" ,star)
+       ("star" ,star-for-pigx)
        ("r-minimal" ,r-minimal)
        ("r-argparser" ,r-argparser)
        ("r-cowplot" ,r-cowplot)
@@ -14045,18 +14264,24 @@ choosing which reads pass the filter.")
                  #t)))
            (add-after 'install 'wrap-programs
              (lambda* (#:key outputs #:allow-other-keys)
-               (for-each (lambda (file)
-                           (wrap-program file `("GUIX_PYTHONPATH" ":" prefix (,path))))
-                         (find-files "/share/nanopolish/scripts" "\\.py"))
-               (for-each (lambda (file)
-                           (wrap-program file `("PERL5LIB" ":" prefix (,path))))
-                         (find-files  "/share/nanopolish/scripts" "\\.pl"))
-               #t)))))
+               (let ((pythonpath (getenv "GUIX_PYTHONPATH"))
+                     (perl5lib (getenv "PERL5LIB"))
+                     (scripts (string-append (assoc-ref outputs "out")
+                                             "/share/nanopolish/scripts")))
+                 (for-each (lambda (file)
+                             (wrap-program file `("GUIX_PYTHONPATH" ":" prefix (,pythonpath))))
+                           (find-files scripts "\\.py"))
+                 (for-each (lambda (file)
+                             (wrap-script file `("PERL5LIB" ":" prefix (,perl5lib))))
+                           (find-files scripts "\\.pl"))))))))
       (inputs
-       `(("eigen" ,eigen)
+       `(("guile" ,guile-3.0) ; for wrappers
+         ("eigen" ,eigen)
          ("hdf5" ,hdf5)
          ("htslib" ,htslib)
          ("perl" ,perl)
+         ("bioperl" ,bioperl-minimal)
+         ("perl-getopt-long" ,perl-getopt-long)
          ("python" ,python-wrapper)
          ("python-biopython" ,python-biopython)
          ("python-numpy" ,python-numpy)
@@ -15487,6 +15712,41 @@ files are loaded into a SQLite database, allowing much more complex
 manipulation of hierarchical features (e.g., genes, transcripts, and exons)
 than is possible with plain-text methods alone.")
       (license license:expat))))
+
+(define-public indelfixer
+  (package
+    (name "indelfixer")
+    (version "1.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/cbg-ethz/InDelFixer/")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "10ak05x8i1bx2p7rriv2rglqg1wr7c8wrhjrqlq1wm7ka99w8i79"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "InDelFixer.jar"
+       #:source-dir "src/main/java"
+       #:test-dir "src/test"))
+    (inputs
+     `(("java-commons-lang2" ,java-commons-lang)
+       ("java-args4j" ,java-args4j)))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "https://github.com/cbg-ethz/InDelFixer/")
+    (synopsis "Iterative and sensitive NGS sequence aligner")
+    (description "InDelFixer is a sensitive aligner for 454, Illumina and
+PacBio data, employing a full Smith-Waterman alignment against a reference.
+This Java command line application aligns Next-Generation Sequencing (NGS) and
+third-generation reads to a set of reference sequences, by a prior fast k-mer
+matching and removes indels, causing frame shifts.  In addition, only a
+specific region can be considered.  An iterative refinement of the alignment
+can be performed, by alignment against the consensus sequence with wobbles.
+The output is in SAM format.")
+    (license license:gpl3+)))
 
 (define-public libsbml
   (package

@@ -17,7 +17,7 @@
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019, 2020, 2021 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2019 Jethro Cao <jethrocao@gmail.com>
-;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Timotej Lazar <timotej.lazar@araneo.si>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;;
@@ -1131,7 +1131,7 @@ to create fully featured games and multimedia programs in the python language.")
           ,(sdl-union (list sdl2 sdl2-image sdl2-mixer sdl2-ttf)))))
       (native-inputs
        `(("python2-cython" ,python2-cython)))
-      (home-page "http://www.renpy.org/")
+      (home-page "https://www.renpy.org/")
       (synopsis "Reimplementation of the Pygame API using SDL2")
       (description "Pygame_SDL2 reimplements the Pygame API using SDL2,
 staying close to the original, but also adding some SDL2-specific features.

@@ -14,7 +14,7 @@
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
-;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@posteo.ro>
+;;; Copyright © 2020, 2021 Alexandru-Sergiu Marton <brown121407@posteo.ro>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -50,6 +50,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages logging)
   #:use-module (gnu packages mail)
+  #:use-module (gnu packages rust-apps)
   #:use-module (guix packages)
   #:use-module (guix records)
   #:use-module (guix modules)
@@ -263,7 +264,25 @@
             gmnisrv-configuration-package
             gmnisrv-configuration-config-file
 
-            gmnisrv-service-type))
+            gmnisrv-service-type
+
+            agate-configuration
+            agate-configuration?
+            agate-configuration-package
+            agate-configuration-content
+            agate-configuration-cert
+            agate-configuration-key
+            agate-configuration-addr
+            agate-configuration-hostname
+            agate-configuration-lang
+            agate-configuration-silent
+            agate-configuration-serve-secret
+            agate-configuration-log-ip
+            agate-configuration-user
+            agate-configuration-group
+            agate-configuration-log-file
+
+            agate-service-type))
 
 ;;; Commentary:
 ;;;
@@ -1885,3 +1904,92 @@ root=/srv/gemini
     "Run the gmnisrv Gemini server.")
    (default-value
      (gmnisrv-configuration))))
+
+(define-record-type* <agate-configuration>
+  agate-configuration make-agate-configuration
+  agate-configuration?
+  (package  agate-configuration-package
+            (default agate))
+  (content  agate-configuration-content
+            (default "/srv/gemini"))
+  (cert     agate-configuration-cert
+            (default #f))
+  (key      agate-configuration-key
+            (default #f))
+  (addr     agate-configuration-addr
+            (default '("0.0.0.0:1965" "[::]:1965")))
+  (hostname agate-configuration-hostname
+            (default #f))
+  (lang     agate-configuration-lang
+            (default #f))
+  (silent?  agate-configuration-silent
+            (default #f))
+  (serve-secret? agate-configuration-serve-secret
+                 (default #f))
+  (log-ip?  agate-configuration-log-ip
+            (default #t))
+  (user     agate-configuration-user
+            (default "agate"))
+  (group    agate-configuration-group
+            (default "agate"))
+  (log-file agate-configuration-log
+            (default "/var/log/agate.log")))
+
+(define agate-shepherd-service
+  (match-lambda
+    (($ <agate-configuration> package content cert key addr
+                              hostname lang silent? serve-secret?
+                              log-ip? user group log-file)
+     (list (shepherd-service
+            (provision '(agate))
+            (requirement '(networking))
+            (documentation "Run the agate Gemini server.")
+            (start (let ((agate (file-append package "/bin/agate")))
+                     #~(make-forkexec-constructor
+			(list #$agate
+			      "--content" #$content
+			      "--cert" #$cert
+			      "--key" #$key
+			      "--addr" #$@addr
+                              #$@(if lang
+                                     (list "--lang" lang)
+                                     '())
+			      #$@(if hostname
+				     (list "--hostname" hostname)
+				     '())
+			      #$@(if silent? '("--silent") '())
+			      #$@(if serve-secret? '("--serve-secret") '())
+			      #$@(if log-ip? '("--log-ip") '()))
+			#:user #$user #:group #$group
+			#:log-file #$log-file)))
+            (stop #~(make-kill-destructor)))))))
+             
+(define agate-accounts
+  (match-lambda
+    (($ <agate-configuration> _ _ _ _ _
+                              _ _ _ _
+                              _ user group _)
+     `(,@(if (equal? group "agate")
+             '()
+             (list (user-group (name "agate") (system? #t))))
+       ,(user-group
+         (name group)
+         (system? #t))
+       ,(user-account
+         (name user)
+         (group group)
+         (supplementary-groups '("agate"))
+         (system? #t)
+         (comment "agate server user")
+         (home-directory "/var/empty")
+         (shell (file-append shadow "/sbin/nologin")))))))
+
+(define agate-service-type
+  (service-type
+   (name 'guix)
+   (extensions
+    (list (service-extension account-service-type
+                             agate-accounts)
+          (service-extension shepherd-root-service-type
+                             agate-shepherd-service)))
+   (default-value (agate-configuration))))

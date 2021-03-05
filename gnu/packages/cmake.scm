@@ -55,31 +55,39 @@
   #:use-module (srfi srfi-1))
 
 (define-public cmake-shared
-  (package
-    (name "cmake-shared")
-    (version "1.1.0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri
-        (git-reference
-         (url "https://github.com/lirios/cmake-shared.git")
-         (commit
-          (string-append "v" version))))
-       (file-name
-        (git-file-name name version))
-       (sha256
-        (base32 "1srd3jmlalf0szgyp88ymhbnwds4qiywmf8lq1pif9g8irjjhdry"))))
-    (build-system cmake-build-system)
-    (arguments
-     `(#:tests? #f))                    ; No target
-    (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
-    (synopsis "Shared CMake functions and macros")
-    (description "CMake-Shared are shared functions and macros for projects
+  (let ((commit "8122f2b96c8da38ea41b653cf69958e75fe2129d")
+        (revision "32"))
+    (package
+      (name "cmake-shared")
+      (version
+       (git-version "1.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/lirios/cmake-shared.git")
+           (commit commit)))
+         (file-name
+          (git-file-name name version))
+         (sha256
+          (base32 "05avwzqcnliwx9h7qi1kl0iz4smqmxc4vkavyjbmlc6h2b97i58g"))
+         (modules '((guix build utils)
+                    (ice-9 ftw)
+                    (srfi srfi-1)))
+         (snippet
+          `(begin
+             (delete-file-recursively "3rdparty")))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:tests? #f))                  ; No target
+      (native-inputs
+       `(("extra-cmake-modules" ,extra-cmake-modules)))
+      (synopsis "Shared CMake functions and macros")
+      (description "CMake-Shared are shared functions and macros for projects
 using the CMake build system.")
-    (home-page "https://github.com/lirios/cmake-shared/")
-    (license license:bsd-3)))
+      (home-page "https://github.com/lirios/cmake-shared/")
+      (license license:bsd-3))))
 
 ;;; Build phases shared between 'cmake-bootstrap' and the later variants
 ;;; that use cmake-build-system.

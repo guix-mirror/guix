@@ -29,6 +29,7 @@
 ;;; Copyright © 2020 Jean-Baptiste Note <jean-baptiste.note@m4x.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -58,6 +59,7 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages aidc)
   #:use-module (gnu packages authentication)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
@@ -254,6 +256,51 @@ Schneier.  It offers a simple UI to manage passwords for different services.
 There are other programs that support the file format on different
 platforms.")
     (license license:artistic2.0)))
+
+(define-public pwsafe-cli
+  (let ((commit "c49a0541b66647ad04d19ddb351d264054c67759")
+        (revision "0"))
+    (package
+      (name "pwsafe-cli")
+      (version (git-version "0.2.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/nsd20463/pwsafe")
+               (commit commit)))
+         (sha256
+          (base32
+           "0ak09r1l7k57m6pdx468hhzvz0szmaq42vyr575fvsjc8rbrp8qq"))
+         (file-name (git-file-name name version))))
+      (build-system gnu-build-system)
+      (arguments
+       ;; FIXME: skip failing test suite (requires write access to /tmp),
+       ;; patching path does not help somehow.
+       `(#:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'bootstrap
+             (lambda _
+               (invoke "aclocal")
+               (invoke "autoheader")
+               (invoke "automake" "--add-missing")
+               (invoke "autoconf")
+               #t)))))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)))
+      (inputs
+       `(("libx11" ,libx11)
+         ("libxmu" ,libxmu)
+         ("libxt" ,libxt)
+         ("openssl" ,openssl)))
+      (home-page "https://github.com/nsd20463/pwsafe")
+      (synopsis "CLI password manager")
+      (description
+       "@command{pwsafe} is a command line tool compatible with
+Counterpane's Passwordsafe.")
+      (license license:gpl2+))))
 
 (define-public shroud
   (package

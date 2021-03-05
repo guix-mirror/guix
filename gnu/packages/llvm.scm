@@ -17,6 +17,7 @@
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,6 +39,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix memoization)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
@@ -54,6 +56,7 @@
   #:use-module (gnu packages lua)
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages ocaml)
   #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -1182,3 +1185,47 @@ C/C++/Obj-C code according to a set of style options, see
     (synopsis "Rename every occurrence of a symbol using clang-rename")
     (description "This package renames every occurrence of a symbol at point
 using @code{clang-rename}.")))
+
+(define make-ocaml-llvm
+  ;; Make it a memoizing procedure so its callers below don't end up defining
+  ;; two equal-but-not-eq "ocaml-llvm" packages for the default LLVM.
+  (mlambdaq (llvm)
+    (package
+      (inherit llvm)
+      (name "ocaml-llvm")
+      (outputs '("out"))
+      (arguments
+       `(#:configure-flags
+         (list
+          (string-append "-DLLVM_OCAML_EXTERNAL_LLVM_LIBDIR="
+                         (assoc-ref %build-inputs "llvm") "/lib")
+          "-DBUILD_SHARED_LIBS=TRUE"
+          "-DLLVM_OCAML_OUT_OF_TREE=TRUE"
+          (string-append "-DLLVM_OCAML_INSTALL_PATH="
+                         (assoc-ref %outputs "out") "/lib/ocaml/site-lib"))
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'build
+             (lambda _
+               (invoke "make" "ocaml_all")))
+           (replace 'install
+             (lambda _
+               (invoke "cmake" "-P" "bindings/ocaml/cmake_install.cmake"))))))
+      (inputs
+       `(("llvm" ,llvm)))
+      (native-inputs
+       `(("ocaml" ,ocaml)
+         ("ocaml-findlib" ,ocaml-findlib)
+         ("ocaml-ounit" ,ocaml-ounit)
+         ("python" ,python)))
+      (propagated-inputs
+       `(("ocaml-integers" ,ocaml-integers)
+         ("ocaml-ctypes" ,ocaml-ctypes)))
+      (synopsis "OCaml bindings to LLVM")
+      (description "This package contains the OCaml bindings distributed with
+LLVM."))))
+
+(define-public ocaml-llvm (make-ocaml-llvm llvm))
+(define-public ocaml-llvm-9 (make-ocaml-llvm llvm-9))
+(define-public ocaml-llvm-10 (make-ocaml-llvm llvm-10))
+(define-public ocaml-llvm-11 (make-ocaml-llvm llvm-11))

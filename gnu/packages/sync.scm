@@ -2,10 +2,11 @@
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,6 +26,7 @@
 (define-module (gnu packages sync)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system copy)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
   #:use-module (guix build-system meson)
@@ -46,6 +48,7 @@
   #:use-module (gnu packages kde-frameworks)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
+  #:use-module (gnu packages ocaml)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -53,6 +56,7 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages rsync)
   #:use-module (gnu packages selinux)
+  #:use-module (gnu packages shells)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tls))
@@ -154,14 +158,14 @@ See also: megacmd, the official tool set by MEGA.")
 (define-public owncloud-client
   (package
     (name "owncloud-client")
-    (version "2.7.5.3180")
+    (version "2.7.6.3261")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.owncloud.com/desktop/ownCloud/stable/"
                            version "/source/ownCloud-" version ".tar.xz"))
        (sha256
-        (base32 "13vlkmkr3i99ww3fkps7lwrx6vgr43rvmjcpsix259rj7f2ikkrp"))
+        (base32 "19jjlhbzhy4v5h1wj5a87ismxq2p7avb2bb4lfbh2rvl01r432vy"))
        (patches (search-patches "owncloud-disable-updatecheck.patch"))))
     ;; TODO: unbundle qprogessindicator, qlockedfile, qtokenizer and
     ;; qtsingleapplication which have not yet been packaged, but all are
@@ -314,6 +318,43 @@ machines.  Lsyncd is thus a light-weight live mirror solution that is
 comparatively easy to install not requiring new file systems or block devices
 and does not hamper local file system performance.")
     (license license:gpl2+)))
+
+(define-public usync
+  (let ((revision "1")
+        (commit "09a8059a1adc22666d3ecf7872e22e6846c3ac9e"))
+    (package
+      (name "usync")
+      (version (git-version "0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ebzzry/usync")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "16i1q8f0jmfd43rb8d70l2b383vr5ib4kh7iq3yd345q7xjz9c2j"))))
+      (build-system copy-build-system)
+      (inputs
+       `(("scsh" ,scsh)))
+      (propagated-inputs
+       `(("rsync" ,rsync)
+         ("unison" ,unison)))
+      (arguments
+       `(#:install-plan '(("usync" "bin/usync"))
+         #:phases (modify-phases %standard-phases
+                    (add-before 'install 'patch-usync-shebang
+                      (lambda _
+                        (substitute* "usync"
+                          (("/usr/bin/env scsh")
+                           (which "scsh"))))))))
+      (home-page "https://github.com/ebzzry/usync")
+      (synopsis "Command line site-to-site synchronization tool")
+      (description
+       "@command{usync} is a simple site-to-site synchronization program
+written in @command{scsh}.  It makes use of @command{unison} and
+@command{rsync} for bi- and uni-directional synchronizations.")
+      (license license:expat))))
 
 (define-public casync
   (package

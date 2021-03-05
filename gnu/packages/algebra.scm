@@ -234,7 +234,7 @@ the real span of the lattice.")
 (define-public pari-gp
   (package
     (name "pari-gp")
-    (version "2.13.0")
+    (version "2.13.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -242,7 +242,7 @@ the real span of the lattice.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "14xs90wrw8mbdx08hxlbhiahp6kgjq6yh27zjw7fvhfjx5nr84f8"))))
+                "1cgwdpw8b797883z9y92ixxjkv72kiy65zsw2qqf5and1kbzgv41"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("texlive" ,(texlive-updmap.cfg
@@ -307,24 +307,10 @@ GP2C, the GP to C compiler, translates GP scripts to PARI programs.")
    (license license:gpl2)
    (home-page "https://pari.math.u-bordeaux.fr/")))
 
-(define fplll-4-cmh
-  (package
-    (inherit fplll)
-    (name "fplll")
-    (version "4.0.4")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "http://perso.ens-lyon.fr/damien.stehle/fplll/libfplll-"
-             version ".tar.gz"))
-       (sha256
-        (base32 "1cbiby7ykis4z84swclpysrljmqhfcllpkcbll1m08rzskgb1a6b"))))))
-
 (define-public cmh
   (package
    (name "cmh")
-   (version "1.0")
+   (version "1.1.0")
    (source (origin
             (method url-fetch)
             ;; Git repo at <https://gitlab.inria.fr/cmh/cmh>.
@@ -332,14 +318,14 @@ GP2C, the GP to C compiler, translates GP scripts to PARI programs.")
                                 version ".tar.gz"))
             (sha256
              (base32
-              "1a28xr9bs0igms0ik99x0w8lnb0jyfcmvyi26pbyh9ggcdivd33p"))))
+              "1ws2yhzxmm2l5xqqqcjcimmg40f9qq5l9i6d4i5434an9v9s8531"))))
    (build-system gnu-build-system)
    (inputs
      `(("gmp" ,gmp)
        ("mpfr" ,mpfr)
        ("mpc" ,mpc)
        ("mpfrcx" ,mpfrcx)
-       ("fplll" ,fplll-4-cmh)
+       ("fplll" ,fplll)
        ("pari-gp"  ,pari-gp)))
    (synopsis "Igusa class polynomial computations")
    (description
@@ -571,7 +557,7 @@ arithmetic).  It supports integers, rationals, modular integers,
 real and complex ball arithmetic, polynomials and matrices over all
 these types and other mathematical functions.")
     (license license:expat)
-    (home-page "http://fredrikj.net/python-flint/")))
+    (home-page "https://fredrikj.net/python-flint/")))
 
 (define-public ntl
   (package
@@ -665,7 +651,7 @@ geometry and singularity theory.")
    ;; libraries with which it links are licensed under lgpl3+, so the
    ;; combined work becomes gpl3. See COPYING in the source code.
    (license license:gpl3)
-   (home-page "http://www.singular.uni-kl.de/index.php")))
+   (home-page "https://www.singular.uni-kl.de/index.php")))
 
 (define-public gmp-ecm
   (package

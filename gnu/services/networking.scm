@@ -15,6 +15,7 @@
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2021 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2021 Christopher Lemmer Webber <cwebber@dustycloud.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -744,7 +745,9 @@ demand.")))
   (hidden-services  tor-configuration-hidden-services
                     (default '()))
   (socks-socket-type tor-configuration-socks-socket-type ; 'tcp or 'unix
-                     (default 'tcp)))
+                     (default 'tcp))
+  (control-socket?  tor-control-socket-path
+                    (default #f)))
 
 (define %tor-accounts
   ;; User account and groups for Tor.
@@ -766,7 +769,8 @@ demand.")))
 (define (tor-configuration->torrc config)
   "Return a 'torrc' file for CONFIG."
   (match config
-    (($ <tor-configuration> tor config-file services socks-socket-type)
+    (($ <tor-configuration> tor config-file services
+                            socks-socket-type control-socket?)
      (computed-file
       "torrc"
       (with-imported-modules '((guix build utils))
@@ -786,6 +790,11 @@ Log notice syslog\n" port)
                   (display "\
 SocksPort unix:/var/run/tor/socks-sock
 UnixSocksGroupWritable 1\n" port))
+                (when #$control-socket?
+                  (display "\
+ControlSocket unix:/var/run/tor/control-sock GroupWritable RelaxDirModeCheck
+ControlSocketsGroupWritable 1\n"
+                           port))
 
                 (for-each (match-lambda
                             ((service (ports hosts) ...)

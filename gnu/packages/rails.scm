@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -180,14 +180,14 @@ Can I Use website.")
 (define-public ruby-activemodel
   (package
    (name "ruby-activemodel")
-   (version "5.2.2.1")
+   (version "6.1.3")
    (source
     (origin
      (method url-fetch)
      (uri (rubygems-uri "activemodel" version))
      (sha256
       (base32
-       "1idmvqvpgri34k31s44pjb88rc3jad3yxra7fd1kpidpnv5f3v65"))))
+       "07m85r00cd1dzxg65zr9wjrdqppw51b5ka9c5mrz92vnw18kfb70"))))
    (build-system ruby-build-system)
    (arguments
     '(;; No included tests
@@ -205,14 +205,14 @@ serialization, internationalization, and testing.")
 (define-public ruby-activerecord
   (package
    (name "ruby-activerecord")
-   (version "5.2.2.1")
+   (version "6.1.3")
    (source
     (origin
      (method url-fetch)
      (uri (rubygems-uri "activerecord" version))
      (sha256
       (base32
-       "1c5cz9v7ggpqjxf0fqs1xhy1pb9m34cp31pxarhs9aqb71qjl98v"))))
+       "03kr6vslwd9iw89jidjpjlp7prr2rf7kpsfa4fz03g9by0kliivs"))))
    (build-system ruby-build-system)
    (arguments
     '(;; No included tests
@@ -260,14 +260,14 @@ applications, in pace of the default Minitest testing library.")
 (define-public ruby-rails-html-sanitizer
   (package
     (name "ruby-rails-html-sanitizer")
-    (version "1.0.4")
+    (version "1.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "rails-html-sanitizer" version))
        (sha256
         (base32
-         "1gv7vr5d9g2xmgpjfq4nxsqr70r9pr042r9ycqqnfvw5cz9c7jwr"))))
+         "1icpqmxbppl4ynzmn6dx7wdil5hhq6fz707m9ya6d86c7ys8sd4f"))))
     (build-system ruby-build-system)
     (arguments
      '(;; No included tests
@@ -285,7 +285,7 @@ directly.")
 (define-public ruby-rails-dom-testing
   (package
    (name "ruby-rails-dom-testing")
-   (version "2.0.2")
+   (version "2.0.3")
    (source
     (origin
       (method git-fetch)
@@ -295,7 +295,7 @@ directly.")
       (file-name (git-file-name name version))
       (sha256
        (base32
-        "0zrg6x1w3wjgklbhcphjmggl11jx5s8cl21qjqij7wknm412i5wl"))))
+        "17vdh273cmmfpzy5m546dd13zqmimv54jjx0f7sl0zi5lwz0gnck"))))
    (build-system ruby-build-system)
    (native-inputs
     `(("bundler" ,bundler)))
@@ -309,17 +309,44 @@ useful when writing tests.")
    (home-page "https://github.com/rails/rails-dom-testing")
    (license license:expat)))
 
+(define-public ruby-actiontext
+  (package
+    (name "ruby-actiontext")
+    (version "6.1.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (rubygems-uri "actiontext" version))
+        (sha256
+         (base32
+          "04k4z4xj40sbzbgx0x9m6i8k0nc22jb6dkrlslj16p2z2dfnwhqg"))))
+    (build-system ruby-build-system)
+   (arguments
+    '(;; No included tests
+      #:tests? #f))
+    (propagated-inputs
+     `(("ruby-actionpack" ,ruby-actionpack)
+       ("ruby-activerecord" ,ruby-activerecord)
+       ("ruby-activestorage" ,ruby-activestorage)
+       ("ruby-activesupport" ,ruby-activesupport)
+       ("ruby-nokogiri" ,ruby-nokogiri)))
+    (synopsis "Edit and display rich text in Rails applications")
+    (description
+     "ActionText edits and displays rich text in Rails applications.")
+    (home-page "https://rubyonrails.org")
+    (license license:expat)))
+
 (define-public ruby-actionview
   (package
    (name "ruby-actionview")
-   (version "5.2.2.1")
+   (version "6.1.3")
    (source
     (origin
      (method url-fetch)
      (uri (rubygems-uri "actionview" version))
      (sha256
       (base32
-       "0832vlx37rly8ryfgi01b20mld8b3bv9cg62n5wax4zpzgn6jdxb"))))
+       "1s5kc1abi7id1g54lz1npgc42zl7pbz172wp8pi7j3s7qljafzw5"))))
    (build-system ruby-build-system)
    (arguments
     '(;; No included tests
@@ -340,14 +367,14 @@ Ruby.")
 (define-public ruby-actionpack
   (package
    (name "ruby-actionpack")
-   (version "5.2.2.1")
+   (version "6.1.3")
    (source
     (origin
      (method url-fetch)
      (uri (rubygems-uri "actionpack" version))
      (sha256
       (base32
-       "1lxqzxa728dqg42yw0q4hqkaawqagiw1k0392an2ghjfgb16pafx"))))
+       "030yyaskzlic5cp4d9zbwwr3rhf4k6hsls44a7ihsfd6r8mlivq5"))))
    (build-system ruby-build-system)
    (arguments
     '(;; No included tests
@@ -369,20 +396,21 @@ applications.  These work with any Rack-compatible server.")
 (define-public ruby-actioncable
   (package
    (name "ruby-actioncable")
-   (version "5.2.2.1")
+   (version "6.1.3")
    (source
     (origin
      (method url-fetch)
      (uri (rubygems-uri "actioncable" version))
      (sha256
       (base32
-       "1x5fxhsr2mxq5r6258s48xsn7ld081d3qaavppvj7yp7w9vqn871"))))
+       "1cgb1l0gml1vklxka2djpi5q5b4bgzgm5pahzfjvvgm5vzvrvi9v"))))
    (build-system ruby-build-system)
    (arguments
     '(;; No included tests
       #:tests? #f))
    (propagated-inputs
     `(("ruby-actionpack" ,ruby-actionpack)
+      ("ruby-activesupport" ,ruby-activesupport)
       ("ruby-nio4r" ,ruby-nio4r)
       ("ruby-websocket-driver" ,ruby-websocket-driver)))
    (synopsis "Integrate integrates WebSockets with Rails applications")
@@ -395,14 +423,14 @@ WebSockets it allows for real-time features in web applications.")
 (define-public ruby-activejob
   (package
    (name "ruby-activejob")
-   (version "5.2.2.1")
+   (version "6.1.3")
    (source
     (origin
      (method url-fetch)
      (uri (rubygems-uri "activejob" version))
      (sha256
       (base32
-       "1zma452lc3qp4a7r10zbdmsci0kv9a3gnk4da2apbdrc8fib5mr3"))))
+       "175d8q0achdlsxjsvq0w9znvfqfkgbj75kbmdrvg4fb277wwplmf"))))
    (build-system ruby-build-system)
    (arguments
     '(;; No included tests
@@ -420,40 +448,71 @@ applications.")
 (define-public ruby-activestorage
   (package
     (name "ruby-activestorage")
-    (version "5.2.2.1")
+    (version "6.1.3")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "activestorage" version))
        (sha256
         (base32
-         "155xpbzrz0kr0argx0vsh5prvadd2h1g1m61kdiabvfy2iygc02n"))))
+         "0gkxvbi5w8zmdxpiyz3b10kzz8cxqqh9bj81sjl3fp8wa3v2ld4i"))))
     (build-system ruby-build-system)
     (arguments
      '(;; No included tests
        #:tests? #f))
     (propagated-inputs
      `(("ruby-actionpack" ,ruby-actionpack)
+       ("ruby-activejob" ,ruby-activejob)
        ("ruby-activerecord" ,ruby-activerecord)
-       ("ruby-marcel" ,ruby-marcel)))
+       ("ruby-activesupport" ,ruby-activesupport)
+       ("ruby-marcel" ,ruby-marcel)
+       ("ruby-mimemagic" ,ruby-mimemagic)))
     (synopsis "Integrate file storage services in to Rails applications")
     (description
      "ActiveStorage integrates file storage services with Rails applications,
-allowing files to be attached to ActiveRecord models..")
+allowing files to be attached to ActiveRecord models.")
     (home-page "https://rubyonrails.org/")
+    (license license:expat)))
+
+(define-public ruby-actionmailbox
+  (package
+    (name "ruby-actionmailbox")
+    (version "6.1.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (rubygems-uri "actionmailbox" version))
+        (sha256
+         (base32
+         "0wv2p24xn4f0kj8kiyagkn934hzrcp98vzjqxwd4r75qq0cijadp"))))
+    (build-system ruby-build-system)
+   (arguments
+    '(;; No included tests
+      #:tests? #f))
+    (propagated-inputs
+     `(("ruby-actionpack" ,ruby-actionpack)
+       ("ruby-activejob" ,ruby-activejob)
+       ("ruby-activerecord" ,ruby-activerecord)
+       ("ruby-activestorage" ,ruby-activestorage)
+       ("ruby-activesupport" ,ruby-activesupport)
+       ("ruby-mail" ,ruby-mail)))
+    (synopsis "Receive and process incoming emails in Rails applications")
+    (description
+     "ActionMailbox receives and processes incoming emails in Rails applications.")
+    (home-page "https://rubyonrails.org")
     (license license:expat)))
 
 (define-public ruby-actionmailer
   (package
    (name "ruby-actionmailer")
-   (version "5.2.2.1")
+   (version "6.1.3")
    (source
     (origin
      (method url-fetch)
      (uri (rubygems-uri "actionmailer" version))
      (sha256
       (base32
-       "10n2v2al68rsq5ghrdp7cpycsc1q0m19fcd8cd5i528n30nl23iw"))))
+       "0lic4mc6wqi3p9ipdqljl64vd9ndabm0k8hww0m07sfdhwsl5ba9"))))
    (build-system ruby-build-system)
    (arguments
     '(;; No included tests
@@ -462,6 +521,7 @@ allowing files to be attached to ActiveRecord models..")
     `(("ruby-actionpack" ,ruby-actionpack)
       ("ruby-actionview" ,ruby-actionview)
       ("ruby-activejob" ,ruby-activejob)
+      ("ruby-activesupport" ,ruby-activesupport)
       ("ruby-mail" ,ruby-mail)
       ("ruby-rails-dom-testing" ,ruby-rails-dom-testing)))
    (synopsis "Work with emails using the controller/view pattern")
@@ -474,14 +534,14 @@ pattern.  Including support for multipart email and attachments.")
 (define-public ruby-railties
   (package
    (name "ruby-railties")
-   (version "5.2.2.1")
+   (version "6.1.3")
    (source
     (origin
      (method url-fetch)
      (uri (rubygems-uri "railties" version))
      (sha256
       (base32
-       "0al6mvh2jvr3n7cxkx0yvhgiiarby6gxc93vl5xg1yxkvx27qzd6"))))
+       "1685y5dcfgcq0b38j13vrpkhiiblmrl64wa9w065669bkgmkw4ra"))))
    (build-system ruby-build-system)
    (arguments
     '(;; No included tests
@@ -490,6 +550,7 @@ pattern.  Including support for multipart email and attachments.")
     `(("ruby-actionpack" ,ruby-actionpack)
       ("ruby-activesupport" ,ruby-activesupport)
       ("ruby-method-source" ,ruby-method-source)
+      ("ruby-rake" ,ruby-rake)
       ("ruby-thor" ,ruby-thor)))
    (synopsis "Rails internals, including application bootup and generators")
    (description
@@ -527,7 +588,7 @@ application bootup, plugins, generators, and Rake tasks.")
 (define-public ruby-web-console
   (package
     (name "ruby-web-console")
-    (version "3.7.0")
+    (version "4.1.0")
     (source
      (origin
        ;; Download from GitHub as test files are not provided in the gem.
@@ -538,7 +599,7 @@ application bootup, plugins, generators, and Rake tasks.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0ir999p8cnm3l3zwbgpwxxcq1vwkj8d0d3r24362cyaf4v1rglq2"))))
+         "0azk8nmimnjbh74vxgwcj9jr588rj7kb5rrlclcjfjsw9jqjzckc"))))
     (build-system ruby-build-system)
     (arguments
      '(#:phases
@@ -605,14 +666,14 @@ for locks.")
 (define-public ruby-rails
   (package
    (name "ruby-rails")
-   (version "5.2.2.1")
+   (version "6.1.3")
    (source
     (origin
      (method url-fetch)
      (uri (rubygems-uri "rails" version))
      (sha256
       (base32
-       "1jxmwrykwgbn116hhmi7h75hcsdifhj89wk12m7ch2f3mn1lrmp9"))))
+       "0hdancysa617lzyy5gmrcmnpgyb1mz1lawy0l34ycz2wary7y2bz"))))
    (build-system ruby-build-system)
    (arguments
     '(#:phases
@@ -635,17 +696,19 @@ for locks.")
               (invoke "ruby" "-e" "gem 'rails'"))
             #t)))))
    (propagated-inputs
-    `(("ruby-activesupport" ,ruby-activesupport)
+    `(("ruby-actioncable" ,ruby-actioncable)
+      ("ruby-actionmailbox" ,ruby-actionmailbox)
+      ("ruby-actionmailer" ,ruby-actionmailer)
       ("ruby-actionpack" ,ruby-actionpack)
+      ("ruby-actiontext" ,ruby-actiontext)
       ("ruby-actionview" ,ruby-actionview)
+      ("ruby-activejob" ,ruby-activejob)
       ("ruby-activemodel" ,ruby-activemodel)
       ("ruby-activerecord" ,ruby-activerecord)
-      ("ruby-actionmailer" ,ruby-actionmailer)
-      ("ruby-activejob" ,ruby-activejob)
-      ("ruby-actioncable" ,ruby-actioncable)
       ("ruby-activestorage" ,ruby-activestorage)
-      ("ruby-railties" ,ruby-railties)
+      ("ruby-activesupport" ,ruby-activesupport)
       ("bundler" ,bundler)
+      ("ruby-railties" ,ruby-railties)
       ("ruby-sprockets-rails" ,ruby-sprockets-rails)))
    (synopsis "Full-stack web framework optimized for programmer happiness")
    (description

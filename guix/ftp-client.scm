@@ -216,6 +216,17 @@ TIMEOUT, an ETIMEDOUT error is raised."
           (else
            (throw 'ftp-error conn "PASV" 227 message)))))
 
+(define (ftp-epsv conn)
+  (let* ((message (%ftp-command "EPSV" 229 (ftp-connection-socket conn))))
+    (string->number
+     (match:substring (string-match "\\(...([0-9]+).\\)" message) 1))))
+
+(define (ftp-passive conn)
+  "Enter passive mode using EPSV or PASV, return a data connection port on
+success."
+  ;; IPv6 only works with EPSV, so try it first.
+  (or (false-if-exception (ftp-epsv conn)) (ftp-pasv conn)))
+
 (define (address-with-port sa port)
   "Return a socket-address object based on SA, but with PORT."
   (let ((fam  (sockaddr:fam sa))
@@ -232,7 +243,7 @@ TIMEOUT, an ETIMEDOUT error is raised."
   (if directory
       (ftp-chdir conn directory))
 
-  (let* ((port (ftp-pasv conn))
+  (let* ((port (ftp-passive conn))
          (ai   (ftp-connection-addrinfo conn))
          (s    (socket (addrinfo:fam ai) (addrinfo:socktype ai)
                        (addrinfo:protocol ai))))
@@ -281,7 +292,7 @@ must be closed before CONN can be used for other purposes."
   ;; Ask for "binary mode".
   (%ftp-command "TYPE I" 200 (ftp-connection-socket conn))
 
-  (let* ((port (ftp-pasv conn))
+  (let* ((port (ftp-passive conn))
          (ai   (ftp-connection-addrinfo conn))
          (s    (with-fluids ((%default-port-encoding #f))
                  (socket (addrinfo:fam ai) (addrinfo:socktype ai)

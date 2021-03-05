@@ -253,7 +253,7 @@ provided, as well as a framework to add new color models and data types.")
      `(("pkg-config" ,pkg-config)
        ("glib" ,glib "bin")             ; for gtester
        ("intltool" ,intltool)))
-    (home-page "http://gegl.org")
+    (home-page "https://gegl.org")
     (synopsis "Graph based image processing framework")
     (description "GEGL (Generic Graphics Library) provides infrastructure to
 do demand based cached non destructive image editing on larger than RAM

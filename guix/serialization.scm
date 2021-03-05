@@ -199,6 +199,37 @@ substitute invalid byte sequences with question marks.  This is a
 (define write-store-path-list write-string-list)
 (define read-store-path-list read-string-list)
 
+(define-syntax write-literal-strings
+  (lambda (s)
+    "Write the given literal strings to PORT in an optimized fashion, without
+any run-time allocations or computations."
+    (define (padding len)
+      (let ((m (modulo len 8)))
+        (if (zero? m)
+            0
+            (- 8 m))))
+
+    (syntax-case s ()
+      ((_ port strings ...)
+       (let* ((bytes (map string->utf8 (syntax->datum #'(strings ...))))
+              (len   (fold (lambda (bv size)
+                             (+ size 8 (bytevector-length bv)
+                                     (padding (bytevector-length bv))))
+                           0
+                           bytes))
+              (bv    (make-bytevector len))
+              (zeros (make-bytevector 8 0)))
+         (fold (lambda (str offset)
+                 (let ((len (bytevector-length str)))
+                   (bytevector-u32-set! bv offset len (endianness little))
+                   (bytevector-copy! str 0 bv (+ 8 offset) len)
+                   (bytevector-copy! zeros 0 bv (+ 8 offset len)
+                                     (padding len))
+                   (+ offset 8 len (padding len))))
+               0
+               bytes)
+         #`(put-bytevector port #,bv))))))
+
 
 (define-condition-type &nar-read-error &nar-error
   nar-read-error?
@@ -332,14 +363,12 @@ which case you can use 'identity'."
     (define-values (type size)
       (file-type+size f))
 
-    (write-string "(" p)
+    (write-literal-strings p "(")
     (case type
       ((regular executable)
-       (write-string "type" p)
-       (write-string "regular" p)
+       (write-literal-strings p "type" "regular")
        (when (eq? 'executable type)
-         (write-string "executable" p)
-         (write-string "" p))
+         (write-literal-strings p "executable" ""))
        (let ((input (file-port f)))
          (dynamic-wind
            (const #t)
@@ -348,28 +377,23 @@ which case you can use 'identity'."
            (lambda ()
              (close-port input)))))
       ((directory)
-       (write-string "type" p)
-       (write-string "directory" p)
+       (write-literal-strings p "type" "directory")
        (let ((entries (postprocess-entries (directory-entries f))))
          (for-each (lambda (e)
                      (let* ((f (string-append f "/" e)))
-                       (write-string "entry" p)
-                       (write-string "(" p)
-                       (write-string "name" p)
+                       (write-literal-strings p "entry" "(" "name")
                        (write-string e p)
-                       (write-string "node" p)
+                       (write-literal-strings p "node")
                        (dump f)
-                       (write-string ")" p)))
+                       (write-literal-strings p ")")))
                    entries)))
       ((symlink)
-       (write-string "type" p)
-       (write-string "symlink" p)
-       (write-string "target" p)
+       (write-literal-strings p "type" "symlink" "target")
        (write-string (symlink-target f) p))
       (else
        (raise (condition (&message (message "unsupported file type"))
                          (&nar-error (file f) (port port))))))
-    (write-string ")" p)))
+    (write-literal-strings p ")")))
 
 (define port-conversion-strategy
   (fluid->parameter %default-port-conversion-strategy))

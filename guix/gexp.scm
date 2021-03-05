@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2019, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -119,8 +119,6 @@
             gexp-compiler?
             file-like?
             lower-object
-
-            lower-inputs
 
             &gexp-error
             gexp-error?
@@ -759,19 +757,28 @@ attribute that is traversed."
        (append (let ((attribute (self-attribute gexp)))
                  (validate gexp attribute)
                  attribute)
-               (append-map (match-lambda
-                             (($ <gexp-input> (? gexp? exp))
-                              (gexp-attribute exp self-attribute
-                                              #:validate validate))
-                             (($ <gexp-input> (lst ...))
-                              (append-map (lambda (item)
-                                            (gexp-attribute item self-attribute
-                                                            #:validate
-                                                            validate))
-                                          lst))
-                             (_
-                              '()))
-                           (gexp-references gexp)))
+               (reverse
+                (fold (lambda (input result)
+                        (match input
+                          (($ <gexp-input> (? gexp? exp))
+                           (append (gexp-attribute exp self-attribute
+                                                   #:validate validate)
+                                   result))
+                          (($ <gexp-input> (lst ...))
+                           (fold/tree (lambda (obj result)
+                                        (match obj
+                                          ((? gexp? exp)
+                                           (append (gexp-attribute exp self-attribute
+                                                                   #:validate validate)
+                                                   result))
+                                          (_
+                                           result)))
+                                      result
+                                      lst))
+                          (_
+                           result)))
+                      '()
+                      (gexp-references gexp))))
        equal?)
       '()))                                       ;plain Scheme data type
 
@@ -828,8 +835,7 @@ list."
     (one-of symbol? string? keyword? pair? null? array?
             number? boolean? char?)))
 
-(define* (lower-inputs inputs
-                       #:key system target)
+(define (lower-inputs inputs system target)
   "Turn any object from INPUTS into a derivation input for SYSTEM or a store
 item (a \"source\"); return the corresponding input list as a monadic value.
 When TARGET is true, use it as the cross-compilation target triplet."
@@ -842,24 +848,23 @@ When TARGET is true, use it as the cross-compilation target triplet."
   (with-monad %store-monad
     (>>= (mapm/accumulate-builds
           (match-lambda
-            (((? struct? thing) sub-drv ...)
-             (mlet %store-monad ((obj (lower-object
-                                       thing system #:target target)))
+            (($ <gexp-input> (? store-item? item))
+             (return item))
+            (($ <gexp-input> thing output native?)
+             (mlet %store-monad ((obj (lower-object thing system
+                                                    #:target
+                                                    (and (not native?)
+                                                         target))))
                (return (match obj
                          ((? derivation? drv)
-                          (let ((outputs (if (null? sub-drv)
-                                             '("out")
-                                             sub-drv)))
-                            (derivation-input drv outputs)))
+                          (derivation-input drv (list output)))
                          ((? store-item? item)
                           item)
                          ((? self-quoting?)
                           ;; Some inputs such as <system-binding> can lower to
                           ;; a self-quoting object that FILTERM will filter
                           ;; out.
-                          #f)))))
-            (((? store-item? item))
-             (return item)))
+                          #f))))))
           inputs)
          filterm)))
 
@@ -867,11 +872,17 @@ When TARGET is true, use it as the cross-compilation target triplet."
   "Given GRAPHS, a list of (FILE-NAME INPUT ...) lists for use as a
 #:reference-graphs argument, lower it such that each INPUT is replaced by the
 corresponding <derivation-input> or store item."
+  (define tuple->gexp-input
+    (match-lambda
+      ((thing)
+       (%gexp-input thing "out" (not target)))
+      ((thing output)
+       (%gexp-input thing output (not target)))))
+
   (match graphs
     (((file-names . inputs) ...)
-     (mlet %store-monad ((inputs (lower-inputs inputs
-                                               #:system system
-                                               #:target target)))
+     (mlet %store-monad ((inputs (lower-inputs (map tuple->gexp-input inputs)
+                                               system target)))
        (return (map cons file-names inputs))))))
 
 (define* (lower-references lst #:key system target)
@@ -941,6 +952,15 @@ second element is the derivation to compile them."
            modules
            system extensions guile deprecation-warnings module-path))
 
+(define (sexp->string sexp)
+  "Like 'object->string', but deterministic and slightly faster."
+  ;; Explicitly use UTF-8 for determinism, and also because UTF-8 output is
+  ;; faster.
+  (with-fluids ((%default-port-encoding "UTF-8"))
+    (call-with-output-string
+     (lambda (port)
+       (write sexp port)))))
+
 (define* (lower-gexp exp
                      #:key
                      (module-path %load-path)
@@ -991,16 +1011,9 @@ derivations--e.g., code evaluated for its side effects."
                        (guile     (if guile-for-build
                                       (return guile-for-build)
                                       (default-guile-derivation system)))
-                       (normals  (lower-inputs (gexp-inputs exp)
-                                               #:system system
-                                               #:target target))
-                       (natives  (lower-inputs (gexp-native-inputs exp)
-                                               #:system system
-                                               #:target #f))
-                       (inputs -> (append normals natives))
-                       (sexp     (gexp->sexp exp
-                                             #:system system
-                                             #:target target))
+                       (inputs   (lower-inputs (gexp-inputs exp)
+                                               system target))
+                       (sexp     (gexp->sexp exp system target))
                        (extensions -> (gexp-extensions exp))
                        (exts     (mapm %store-monad
                                        (lambda (obj)
@@ -1159,7 +1172,7 @@ The other arguments are as for 'derivation'."
                                        (return #f)))
                        (guile -> (lowered-gexp-guile lowered))
                        (builder  (text-file script-name
-                                            (object->string
+                                            (sexp->string
                                              (lowered-gexp-sexp lowered)))))
     (mbegin %store-monad
       (set-grafting graft?)                       ;restore the initial setting
@@ -1203,42 +1216,60 @@ The other arguments are as for 'derivation'."
                       #:substitutable? substitutable?
                       #:properties properties))))
 
-(define* (gexp-inputs exp #:key native?)
-  "Return the input list for EXP.  When NATIVE? is true, return only native
-references; otherwise, return only non-native references."
-  ;; TODO: Return <gexp-input> records instead of tuples.
+(define (fold/tree proc seed lst)
+  "Like 'fold', but recurse into sub-lists of LST and accept improper lists."
+  (let loop ((obj lst)
+             (result seed))
+    (match obj
+      ((head . tail)
+       (loop tail (loop head result)))
+      (_
+       (proc obj result)))))
+
+(define (gexp-inputs exp)
+  "Return the list of <gexp-input> for EXP."
+  (define set-gexp-input-native?
+    (match-lambda
+      (($ <gexp-input> thing output)
+       (%gexp-input thing output #t))))
+
+  (define (interesting? obj)
+    (or (file-like? obj)
+        (and (string? obj) (direct-store-path? obj))))
+
   (define (add-reference-inputs ref result)
     (match ref
       (($ <gexp-input> (? gexp? exp) _ #t)
-       (if native?
-           (append (gexp-inputs exp)
-                   (gexp-inputs exp #:native? #t)
-                   result)
-           result))
-      (($ <gexp-input> (? gexp? exp) _ #f)
-       (append (gexp-inputs exp #:native? native?)
+       (append (map set-gexp-input-native? (gexp-inputs exp))
                result))
+      (($ <gexp-input> (? gexp? exp) _ #f)
+       (append (gexp-inputs exp) result))
       (($ <gexp-input> (? string? str))
        (if (direct-store-path? str)
-           (cons `(,str) result)
+           (cons ref result)
            result))
       (($ <gexp-input> (? struct? thing) output n?)
-       (if (and (eqv? n? native?) (lookup-compiler thing))
+       (if (lookup-compiler thing)
            ;; THING is a derivation, or a package, or an origin, etc.
-           (cons `(,thing ,output) result)
+           (cons ref result)
            result))
-      (($ <gexp-input> (lst ...) output n?)
-       (fold-right add-reference-inputs result
-                   ;; XXX: For now, automatically convert LST to a list of
-                   ;; gexp-inputs.  Inherit N?.
-                   (map (match-lambda
-                          ((? gexp-input? x)
-                           (%gexp-input (gexp-input-thing x)
-                                        (gexp-input-output x)
-                                        n?))
-                          (x
-                           (%gexp-input x "out" n?)))
-                        lst)))
+      (($ <gexp-input> (? pair? lst) output n?)
+       ;; XXX: Scan LST for inputs.  Inherit N?.
+       (fold/tree (lambda (obj result)
+                    (match obj
+                      ((? gexp-input? x)
+                       (cons (%gexp-input (gexp-input-thing x)
+                                          (gexp-input-output x)
+                                          n?)
+                             result))
+                      ((? interesting? x)
+                       (cons (%gexp-input x "out" n?) result))
+                      ((? gexp? x)
+                       (append (gexp-inputs x) result))
+                      (_
+                       result)))
+                  result
+                  lst))
       (_
        ;; Ignore references to other kinds of objects.
        result)))
@@ -1246,9 +1277,6 @@ references; otherwise, return only non-native references."
   (fold-right add-reference-inputs
               '()
               (gexp-references exp)))
-
-(define gexp-native-inputs
-  (cut gexp-inputs <> #:native? #t))
 
 (define (gexp-outputs exp)
   "Return the outputs referred to by EXP as a list of strings."
@@ -1258,24 +1286,22 @@ references; otherwise, return only non-native references."
        (cons name result))
       (($ <gexp-input> (? gexp? exp))
        (append (gexp-outputs exp) result))
-      (($ <gexp-input> (lst ...) output native?)
-       ;; XXX: Automatically convert LST.
-       (add-reference-output (map (match-lambda
-                                   ((? gexp-input? x) x)
-                                   (x (%gexp-input x "out" native?)))
-                                  lst)
-                             result))
-      ((lst ...)
-       (fold-right add-reference-output result lst))
+      (($ <gexp-input> (? pair? lst))
+       ;; XXX: Scan LST for outputs.
+       (fold/tree (lambda (obj result)
+                    (match obj
+                      (($ <gexp-output> name) (cons name result))
+                      ((? gexp? x) (append (gexp-outputs x) result))
+                      (_ result)))
+                  result
+                  lst))
       (_
        result)))
 
   (delete-duplicates
-   (add-reference-output (gexp-references exp) '())))
+   (fold add-reference-output '() (gexp-references exp))))
 
-(define* (gexp->sexp exp #:key
-                     (system (%current-system))
-                     (target (%current-target-system)))
+(define (gexp->sexp exp system target)
   "Return (monadically) the sexp corresponding to EXP for the given OUTPUT,
 and in the current monad setting (system type, etc.)"
   (define* (reference->sexp ref #:optional native?)
@@ -1288,17 +1314,19 @@ and in the current monad setting (system type, etc.)"
          (return `((@ (guile) getenv) ,output)))
         (($ <gexp-input> (? gexp? exp) output n?)
          (gexp->sexp exp
-                     #:system system
-                     #:target (if (or n? native?) #f target)))
+                     system (if (or n? native?) #f target)))
         (($ <gexp-input> (refs ...) output n?)
          (mapm %store-monad
                (lambda (ref)
                  ;; XXX: Automatically convert REF to an gexp-input.
-                 (reference->sexp
-                  (if (gexp-input? ref)
-                      ref
-                      (%gexp-input ref "out" n?))
-                  (or n? native?)))
+                 (if (or (symbol? ref) (number? ref)
+                         (boolean? ref) (null? ref) (array? ref))
+                     (return ref)
+                     (reference->sexp
+                      (if (gexp-input? ref)
+                          ref
+                          (%gexp-input ref "out" n?))
+                      (or n? native?))))
                refs))
         (($ <gexp-input> (? struct? thing) output n?)
          (let ((target (if (or n? native?) #f target)))
@@ -1685,6 +1713,7 @@ TARGET, a GNU triplet."
     ;; TODO: Pass MODULES as an environment variable.
     (gexp->derivation name build
                       #:system system
+                      #:target target
                       #:guile-for-build guile
                       #:local-build? #t
                       #:env-vars

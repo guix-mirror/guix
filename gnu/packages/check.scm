@@ -1281,7 +1281,7 @@ result back.")
      `(("python-pytest" ,python-pytest)))
     (native-inputs
      `(("python-pexpect" ,python-pexpect)))
-    (home-page "http://bitbucket.org/pytest-dev/pytest-timeout/")
+    (home-page "https://github.com/pytest-dev/pytest-timeout")
     (synopsis "Plugin for py.test to abort hanging tests")
     (description
      "This package provides a py.test plugin that aborts hanging tests after a

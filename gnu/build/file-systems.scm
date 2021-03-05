@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
@@ -909,12 +909,27 @@ corresponds to the symbols listed in FLAGS."
                             (if options
                                 (string-append "," options)
                                 "")))))
-  (let ((type        (file-system-type fs))
-        (options     (file-system-options fs))
-        (source      (canonicalize-device-spec (file-system-device fs)))
-        (mount-point (string-append root "/"
-                                    (file-system-mount-point fs)))
-        (flags       (mount-flags->bit-mask (file-system-flags fs))))
+  (let* ((type    (file-system-type fs))
+         (source  (canonicalize-device-spec (file-system-device fs)))
+         (target  (string-append root "/"
+                                 (file-system-mount-point fs)))
+         (flags   (logior (mount-flags->bit-mask (file-system-flags fs))
+
+                          ;; For bind mounts, preserve the original flags such
+                          ;; as MS_NOSUID, etc.  Failing to do that, the
+                          ;; MS_REMOUNT call below fails with EPERM.
+                          ;; See <https://bugs.gnu.org/46292>
+                          (if (memq 'bind-mount (file-system-flags fs))
+                              (or (and=> (find (let ((devno (stat:dev
+                                                             (lstat source))))
+                                                 (lambda (mount)
+                                                   (= (mount-device-number mount)
+                                                      devno)))
+                                               (mounts))
+                                         mount-flags)
+                                  0)
+                              0)))
+         (options (file-system-options fs)))
     (when (file-system-check? fs)
       (check-file-system source type))
 
@@ -925,24 +940,24 @@ corresponds to the symbols listed in FLAGS."
         ;; needed.
         (if (and (= MS_BIND (logand flags MS_BIND))
                  (not (file-is-directory? source)))
-            (unless (file-exists? mount-point)
-              (mkdir-p (dirname mount-point))
-              (call-with-output-file mount-point (const #t)))
-            (mkdir-p mount-point))
+            (unless (file-exists? target)
+              (mkdir-p (dirname target))
+              (call-with-output-file target (const #t)))
+            (mkdir-p target))
 
         (cond
          ((string-prefix? "nfs" type)
-          (mount-nfs source mount-point type flags options))
+          (mount-nfs source target type flags options))
          (else
-          (mount source mount-point type flags options)))
+          (mount source target type flags options)))
 
         ;; For read-only bind mounts, an extra remount is needed, as per
         ;; <http://lwn.net/Articles/281157/>, which still applies to Linux
         ;; 4.0.
         (when (and (= MS_BIND (logand flags MS_BIND))
                    (= MS_RDONLY (logand flags MS_RDONLY)))
-          (let ((flags (logior MS_BIND MS_REMOUNT MS_RDONLY)))
-            (mount source mount-point type flags #f))))
+          (let ((flags (logior MS_REMOUNT flags)))
+            (mount source target type flags options))))
       (lambda args
         (or (file-system-mount-may-fail? fs)
             (apply throw args))))))

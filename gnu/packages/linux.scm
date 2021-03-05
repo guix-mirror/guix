@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Mark H Weaver <mhw@netris.org>
@@ -184,6 +184,7 @@
 defconfig.  Return the appropriate make target if applicable, otherwise return
 \"defconfig\"."
   (cond ((string-prefix? "powerpc-" system) "pmac32_defconfig")
+        ((string-prefix? "powerpc64-" system) "ppc64_defconfig")
         ((string-prefix? "powerpc64le-" system) "ppc64_defconfig")
         (else "defconfig")))
 
@@ -353,7 +354,23 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 
 ;; The current "stable" kernels. That is, the most recently released major
 ;; versions that are still supported upstream.
-(define-public linux-libre-5.10-version "5.10.14")
+(define-public linux-libre-5.11-version "5.11.3")
+(define deblob-scripts-5.11
+  (linux-libre-deblob-scripts
+   linux-libre-5.11-version
+   (base32 "1kcvwbbzlii4smx6m4hj97va5bf3drbglb24jkky93a1g37a9ksj")
+   (base32 "0yvr80g200hdryz54gdnzj4fl38pf7g4qbgj475rhcfwixhp1j7n")))
+(define-public linux-libre-5.11-pristine-source
+  (let ((version linux-libre-5.11-version)
+        (hash (base32 "1znbn7n2jzm2rd7gsfj897lgrvaw48ljqfyza3166mw0nc5wfn1m")))
+   (make-linux-libre-source version
+                            (%upstream-linux-source version hash)
+                            deblob-scripts-5.11)))
+
+;; The "longterm" kernels — the older releases with long-term upstream support.
+;; Here are the support timelines:
+;; <https://www.kernel.org/category/releases.html>
+(define-public linux-libre-5.10-version "5.10.20")
 (define deblob-scripts-5.10
   (linux-libre-deblob-scripts
    linux-libre-5.10-version
@@ -361,15 +378,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0hh27ccqimagr3aij7ygwikxw66y63sqwd0xlf49bhpjd090r9a7")))
 (define-public linux-libre-5.10-pristine-source
   (let ((version linux-libre-5.10-version)
-        (hash (base32 "0ahxga1jdgn8kxln0pn8j42qxx0dhrhm9vcpwilyjnwb36gvf9zs")))
+        (hash (base32 "18rh56aqc7ysr309prfml6sr0a81v6kh1ybw2c2vwhmszr373qwv")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.10)))
 
-;; The "longterm" kernels — the older releases with long-term upstream support.
-;; Here are the support timelines:
-;; <https://www.kernel.org/category/releases.html>
-(define-public linux-libre-5.4-version "5.4.96")
+(define-public linux-libre-5.4-version "5.4.102")
 (define deblob-scripts-5.4
   (linux-libre-deblob-scripts
    linux-libre-5.4-version
@@ -377,12 +391,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1xghbbnaisjd0k1klbyn1p7r6r4x5a1bpmkm56a3gh2zvw4s7mj8")))
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "1q7mz69wzk1ps5770l9bj556qyndiz2frjjsl7pigsy5brlxwa7p")))
+        (hash (base32 "1vcscg7cn8qycay913nbc1xl1691anhvakkxwx54s0pnqghpqsgx")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.174")
+(define-public linux-libre-4.19-version "4.19.178")
 (define deblob-scripts-4.19
   (linux-libre-deblob-scripts
    linux-libre-4.19-version
@@ -390,12 +404,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1jiaw0as1ippkrjdpd52657w5mz9qczg3y2hlra7m9k0xawwiqlf")))
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "1rcy0hfbc3ny52mfrfysknm1q2scqz0g8l28j0qlyw8cx41wgxhg")))
+        (hash (base32 "1vln86ksignzw3d2xk5qgc5a2vghngczfsk949dn3r5dxygvlx8b")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.220")
+(define-public linux-libre-4.14-version "4.14.223")
 (define deblob-scripts-4.14
   (linux-libre-deblob-scripts
    linux-libre-4.14-version
@@ -403,39 +417,33 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1qij18inijj6c3ma8hv98yjagnzxdxyn134da9fd23ky8q6hbvky")))
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "1qip0c8nvfximgg4fj9xai741cgvi9f141bsps3zmrryjd796i6h")))
+        (hash (base32 "04zn74k1b7hfnfdi9fgifrn4jz0j00d4ymp8vhgbrdj75jrmynhs")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.256")
+(define-public linux-libre-4.9-version "4.9.259")
 (define deblob-scripts-4.9
   (linux-libre-deblob-scripts
-   ;; 4.9.256 is the same as 4.9.255, but is meant to test if anything
-   ;; breaks when the minor version overflows an 8-bit representation.
-   ;; Same story for 4.4.256.
-   ;; https://lwn.net/Articles/845206/
-   ;; http://kroah.com/log/blog/2021/02/05/8-bits-are-enough-for-a-version-number-dot-dot-dot/
-   "4.9.255"
+   linux-libre-4.9-version
    (base32 "1wvldzlv7q2xdbadas87dh593nxr4a8p5n0f8zpm72lja6w18hmg")
    (base32 "0fxajshb75siq39lj5h8xvhdj8lcmddkslwlyj65rhlwk6g2r4b2")))
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "15qlv4m56dzv195xjy4yp8qsrkbmv51vwfg0qcm664hkrb4i32y4")))
+        (hash (base32 "1r71vgbw17srsjdmsdr1jra7v412mhiysi4kpa77y29r2h3zk5r3")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.256")
+(define-public linux-libre-4.4-version "4.4.259")
 (define deblob-scripts-4.4
   (linux-libre-deblob-scripts
-   ;; See the comment in deblob-scripts-4.9
-   "4.4.255"
+   linux-libre-4.4-version
    (base32 "0x2j1i88am54ih2mk7gyl79g25l9zz4r08xhl482l3fvjj2irwbw")
    (base32 "0hhin1jpfkd6nwrb6xqxjzl3hdxy4pn8a15hy2d3d83yw6pflbsf")))
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
-        (hash (base32 "1z7vfy4h0mjvv0rcvvpb55x5fl16c6cgpcafz5gpjp0pw1p2lva8")))
+        (hash (base32 "18mw4xgza2szgz9x7lq3nzbf48cfkg2g4rli5p5ix4w3ni34h0sr")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.4)))
@@ -467,6 +475,11 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (inherit source)
     (patches (append (origin-patches source)
                      patches))))
+
+(define-public linux-libre-5.11-source
+  (source-with-patches linux-libre-5.11-pristine-source
+                       (list %boot-logo-patch
+                             %linux-libre-arm-export-__sync_icache_dcache-patch)))
 
 (define-public linux-libre-5.10-source
   (source-with-patches linux-libre-5.10-pristine-source
@@ -571,6 +584,10 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (synopsis "GNU Linux-Libre kernel headers")
     (description "Headers of the Linux-Libre kernel.")
     (license license:gpl2)))
+
+(define-public linux-libre-headers-5.11
+  (make-linux-libre-headers* linux-libre-5.11-version
+                             linux-libre-5.11-source))
 
 (define-public linux-libre-headers-5.10
   (make-linux-libre-headers* linux-libre-5.10-version
@@ -866,16 +883,22 @@ It has been modified to remove all non-free binary blobs.")
 ;;; Generic kernel packages.
 ;;;
 
+(define-public linux-libre-5.11
+  (make-linux-libre* linux-libre-5.11-version
+                     linux-libre-5.11-source
+                     '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux" "riscv64-linux")
+                     #:configuration-file kernel-config))
+
+(define-public linux-libre-version         linux-libre-5.11-version)
+(define-public linux-libre-pristine-source linux-libre-5.11-pristine-source)
+(define-public linux-libre-source          linux-libre-5.11-source)
+(define-public linux-libre                 linux-libre-5.11)
+
 (define-public linux-libre-5.10
   (make-linux-libre* linux-libre-5.10-version
                      linux-libre-5.10-source
                      '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux" "riscv64-linux")
                      #:configuration-file kernel-config))
-
-(define-public linux-libre-version         linux-libre-5.10-version)
-(define-public linux-libre-pristine-source linux-libre-5.10-pristine-source)
-(define-public linux-libre-source          linux-libre-5.10-source)
-(define-public linux-libre                 linux-libre-5.10)
 
 (define-public linux-libre-5.4
   (make-linux-libre* linux-libre-5.4-version
@@ -1042,8 +1065,8 @@ It has been modified to remove all non-free binary blobs.")
 (define-public linux-libre-with-bpf
   (let ((base-linux-libre
          (make-linux-libre*
-          linux-libre-5.10-version
-          linux-libre-5.10-source
+          linux-libre-5.11-version
+          linux-libre-5.11-source
           '("x86_64-linux" "i686-linux" "armhf-linux"
             "aarch64-linux" "riscv64-linux")
           #:extra-version "bpf"
@@ -1434,14 +1457,14 @@ at login.  Local and dynamic reconfiguration are its key features.")
 (define-public powerstat
   (package
     (name "powerstat")
-    (version "0.02.22")
+    (version "0.02.25")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://kernel.ubuntu.com/~cking/tarballs/"
                            "powerstat/powerstat-" version ".tar.gz"))
        (sha256
-        (base32 "0r355b9syqa2nhfy8ksvxyy5d58v0isf983842js091s6liy0x7g"))))
+        (base32 "0dmixbxm4qd08ds26i0wvxwyy8nrjzfjj2q9ylx35564g4wh58qb"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -4918,7 +4941,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "5.9")
+    (version "5.10.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -4926,7 +4949,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "14d7hz07kfczfgmy1ixkgccjn393gpkjn7givz5kwxddcnk5i4xq"))))
+                "0i03vajakg1glbql1cv7xy0k71zvpd2whdwymmrz9rza3xrwqy8k"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of the binaries in "out"
@@ -5058,7 +5081,7 @@ blocks and random block placement.")
 (define-public compsize
   (package
     (name "compsize")
-    (version "1.3")
+    (version "1.5")
     (home-page "https://github.com/kilobyte/compsize")
     (source (origin
               (method git-fetch)
@@ -5066,14 +5089,15 @@ blocks and random block placement.")
                     (url home-page)
                     (commit (string-append "v" version))))
               (sha256
-               (base32 "1c69whla844nwis30jxbj00zkpiw3ccndhkmzjii8av5358mjn43"))
+               (base32 "0vqnrwgpv6pc1yjl0g4gl71xyl6v0xl3pyqjanjpwps73c53azir"))
               (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
      `(("btrfs-progs" ,btrfs-progs)))
     (arguments
      `(#:tests? #f                      ; No tests.
-       #:make-flags (list "CC=gcc")
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target)))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
@@ -6147,14 +6171,14 @@ running boot option, and more.")
 (define-public sysstat
   (package
     (name "sysstat")
-    (version "12.4.2")
+    (version "12.4.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://pagesperso-orange.fr/sebastien.godard/"
                            "sysstat-" version ".tar.xz"))
        (sha256
-        (base32 "13q1zb7ip389b35rcgy2ngf1z9zhdmdwx5bv9lwfnl1xi30v409p"))))
+        (base32 "1z8bdyj92q0capbrdscwzb51bqh54ng15gpvmjmvrb2syhqj8hxf"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no test suite.
@@ -7442,7 +7466,7 @@ of Linux application development.")
   (package
     (inherit pipewire)
     (name "pipewire")
-    (version "0.3.18")
+    (version "0.3.22")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -7451,7 +7475,7 @@ of Linux application development.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1yghhgs18yqrnd0b2r75l5n8yng962r1wszbsi01v6i9zib3jc9g"))))
+                "1ywna5f5v8s79ivrqfwwc8vy6sn3a2zvfwqyalf1fypj5d90w8g9"))))
     (arguments
      '(#:configure-flags
        (list (string-append "-Dudevrulesdir=" (assoc-ref %outputs "out")
@@ -7790,13 +7814,14 @@ receiving.  It is dedicated to the PL011 UART of the Raspberry Pi.")
 (define-public ipset
   (package
     (name "ipset")
-    (version "7.10")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://ipset.netfilter.org/ipset-" version ".tar.bz2"))
-              (sha256
-               (base32
-                "1xlwgsy06jx0bckc5r2wvyys8jfpc5klfqqqshmk5zp28fx0cjdj"))))
+    (version "7.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://ipset.netfilter.org/"
+                           "ipset-" version ".tar.bz2"))
+       (sha256
+        (base32 "0zdzp9fhpp6hmirzxy7w27fb9xx9lxd2ykxbn8by7ngi62nvll9i"))))
     (build-system gnu-build-system)
     (inputs
      `(("libmnl" ,libmnl)))

@@ -23,6 +23,7 @@
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020 raingloom <raingloom@riseup.net>
 ;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
+;;; Copyright © 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4849,6 +4850,28 @@ data serialization format.")
 directories.  It is optimized for filewalking. ")
     (license license:expat)))
 
+(define-public go-github-com-mattn-go-sqlite3
+  (package
+    (name "go-github-com-mattn-go-sqlite3")
+    (version "1.14.6")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/mattn/go-sqlite3")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "04anvqkc37mmc3z1dy4xfa6cas67zlxnnab0ywii7sylk864mhxz"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/mattn/go-sqlite3"))
+    (home-page "https://github.com/mattn/go-sqlite3")
+    (synopsis "Sqlite3 driver for Go")
+    (description "This package provides a Sqlite3 driver for Go using
+@code{database/sql}.")
+    (license license:expat)))
+
 (define-public go-github-com-willf-bitset
   (package
     (name "go-github-com-willf-bitset")
@@ -6644,6 +6667,31 @@ modifying them.")
 @end itemize")
     (license license:expat)))
 
+(define-public go-github-com-tekwizely-go-parsing
+  (let ((commit "1548cfb17df54d365ce9febed0677c06a40a8ceb")
+        (revision "0"))
+    (package
+      (name "go-github-com-tekwizely-go-parsing")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/tekwizely/go-parsing")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0bv5amka8hb9crc7qvlzi2kbycqrnh9d46b9wgcs8wqzl0z7w609"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/tekwizely/go-parsing"))
+      (home-page "https://github.com/tekwizely/go-parsing")
+      (synopsis "Text parsing, with lexers, parsers, and related tools")
+      (description
+       "This package provides Go modules focused on text parsing, with lexers,
+parsers, and related tools.")
+      (license license:expat))))
+
 (define-public go-github.com-ulikunitz-xz
   (package
     (name "go-github.com-ulikunitz-xz")
@@ -6691,3 +6739,34 @@ compressed streams in Go.")
     (synopsis "Go library to get configuration values from gitconfig")
     (description "@{gitconfig} is a package to get configuration values from gitconfig.")
     (license license:expat)))
+
+(define-public go-github-com-operatorfoundation-ed25519
+  (let ((commit "b22b4bd3ddef042eec45f3ee135cd40281fde2b4")
+        (revision "0"))
+    (package
+      (name "go-github-com-operatorfoundation-ed25519")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/OperatorFoundation/ed25519")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0xrzqrjlghkgd1cy5rj4khryn4f59vas2vzrxc6d8jpj5ijf3xkv"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/OperatorFoundation/ed25519"
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'install 'remove-test-data
+             (lambda* (#:key import-path #:allow-other-keys)
+               (delete-file-recursively
+                 (string-append "src/" import-path "/testdata"))
+               #t)))))
+      (home-page "https://github.com/OperatorFoundation/ed25519")
+      (synopsis "Ed25519 for go")
+      (description "Package ed25519 implements the Ed25519 signature
+algorithm.")
+      (license license:bsd-3))))

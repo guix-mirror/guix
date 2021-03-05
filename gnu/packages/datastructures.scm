@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2019–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
 ;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Mark H Weaver <mhw@netris.org>
@@ -140,14 +140,14 @@ in between these sequences may be different in both content and length.")
 (define-public liburcu
   (package
     (name "liburcu")
-    (version "0.12.1")
+    (version "0.12.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.lttng.org/files/urcu/"
                                   "userspace-rcu-" version ".tar.bz2"))
               (sha256
                (base32
-                "03nd1gy2c3fdb6xwdrd5lr1jcjxbzffqh3z91mzbjhjn6k8fmymv"))))
+                "0yx69kbx9zd6ayjzvwvglilhdnirq4f1x1sdv33jy8bc9wgc3vsf"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)))                 ; for tests
@@ -286,7 +286,7 @@ equivalent succinct data structure are (most of the time) identical.")
 (define-public tllist
   (package
     (name "tllist")
-    (version "1.0.4")
+    (version "1.0.5")
     (home-page "https://codeberg.org/dnkl/tllist")
     (source (origin
               (method git-fetch)
@@ -294,7 +294,7 @@ equivalent succinct data structure are (most of the time) identical.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1a26vwb7ll6mv3h8rbafsdx4vic1f286hiqn8s359sw8b7yjkvzs"))))
+                "061mkg6hc9x89zya3bw18ymxlzd8fbhjipxpva8x01lh2vp1d4f0"))))
     (build-system meson-build-system)
     (arguments
      `(#:meson ,meson-0.55))

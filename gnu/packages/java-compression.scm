@@ -99,6 +99,11 @@
              (copy-recursively "src/main/resources/org/xerial/snappy/native"
                                "build/classes/org/xerial/snappy/native")
              #t))
+         (add-before 'build 'set-test-memory-size
+           (lambda _
+             (substitute* "build.xml"
+               (("<junit printsummary=") "<junit maxmemory=\"2G\" printsummary="))
+             #t))
          (add-before 'check 'fix-failing
            (lambda _
              (with-directory-excursion "src/test/java/org/xerial/snappy"

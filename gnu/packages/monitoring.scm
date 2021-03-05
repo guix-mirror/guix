@@ -160,7 +160,7 @@ etc. via a Web interface.  Features include:
 (define-public zabbix-agentd
   (package
     (name "zabbix-agentd")
-    (version "5.2.3")
+    (version "5.2.5")
     (source
      (origin
        (method url-fetch)
@@ -168,7 +168,7 @@ etc. via a Web interface.  Features include:
              "https://cdn.zabbix.com/zabbix/sources/stable/"
              (version-major+minor version) "/zabbix-" version ".tar.gz"))
        (sha256
-        (base32 "0wlv3jala7xinl03fr6n0y3hmq9yi0wwn27k6snqhz4yyfdwhdnf"))))
+        (base32 "1iaby7rablakx91hajnkmjcc4zkvrq7xsvlhss3lw5drm12rf3ff"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -286,7 +286,7 @@ through a text-based interface.")
   (package
     (name "python-pyzabbix")
     (version "0.8.2")
-    (home-page "http://github.com/lukecyca/pyzabbix")
+    (home-page "https://github.com/lukecyca/pyzabbix")
     ;; No tests on PyPI, use the git checkout.
     (source
      (origin
@@ -507,6 +507,53 @@ WSGI and the node exporter textfile collector.")
 written in Go with pluggable metric collectors.")
     (home-page "https://github.com/prometheus/node_exporter")
     (license license:asl2.0)))
+
+(define-public temper-exporter
+  (let ((commit "a87bbab19c05609d62d9e4c7941178700c1ef84d")
+        (revision "0"))
+    (package
+      (name "temper-exporter")
+      (version (git-version "0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/yrro/temper-exporter")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0jk3ydi8s14q5kyl9j3gm2zrnwlb1jwjqpg5vqrgkbm9jrldrabc"))))
+      (build-system python-build-system)
+      (arguments
+       '(#:tests? #f                    ; One test failure:
+                                        ; test/test_exporter.py:33:
+                                        ; AssertionError
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-setup.py
+             (lambda _
+               (substitute* "setup.py"
+                 (("git_ref = .*\n") "git_ref = ''\n"))
+               #t))
+           (add-after 'install 'install-udev-rules
+             (lambda* (#:key outputs #:allow-other-keys)
+               (install-file "debian/prometheus-temper-exporter.udev"
+                             (string-append (assoc-ref outputs "out")
+                                            "/lib/udev/rules.d"))
+               #t)))))
+      (inputs
+       `(("python-prometheus-client" ,python-prometheus-client)
+         ("python-pyudev" ,python-pyudev)))
+      (native-inputs
+       `(("python-pytest" ,python-pytest)
+         ("python-pytest-mock" ,python-pytest-mock)
+         ("python-pytest-runner" ,python-pytest-runner)))
+      (home-page "https://github.com/yrro/temper-exporter")
+      (synopsis "Prometheus exporter for PCSensor TEMPer sensor devices")
+      (description
+       "This package contains a Prometheus exporter for the TEMPer sensor
+devices.")
+      (license license:expat))))
 
 (define-public fswatch
   (package

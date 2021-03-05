@@ -31,6 +31,7 @@
             partition-initializer
 
             image
+            image?
             image-name
             image-format
             image-target

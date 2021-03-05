@@ -42,8 +42,10 @@
 ;;; Copyright © 2020 Gabriel Arazas <foo.dogsquared@gmail.com>
 ;;; Copyright © 2020 James Smith <jsubuntuxp@disroot.org>
 ;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
-;;; Copyright © 2020 Zheng Junjie <873216071@qq.com>
+;;; Copyright © 2020, 2021 Zheng Junjie <873216071@qq.com>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -327,6 +329,34 @@ tabs.  Saved clipboard can be later copied and pasted directly into any
 application.")
   (home-page "https://hluk.github.io/CopyQ/")
   (license license:gpl3+)))
+
+(define-public xkeysnail
+  (package
+    (name "xkeysnail")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "xkeysnail" version))
+       (sha256
+        (base32
+         "1xyqp6yqxcwmxaqj86qcsiz0ly7bwr0a2w835myz909irhip3ngf"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))                    ;tests need /dev/uinput
+    (inputs
+     `(("python-appdirs" ,python-appdirs)
+       ("python-evdev" ,python-evdev)
+       ("python-inotify-simple" ,python-inotify-simple)
+       ("python-xlib" ,python-xlib)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/mooz/xkeysnail")
+    (synopsis "Keyboard remapping tool for the X11 environment")
+    (description
+     "Xkeysnail is an X environment keyboard remapping tool, featuring
+high-level and flexible remapping mechanisms.  It affects the low-level
+layers (evdev and uinput), making remapping work in almost all the places.")
+    (license license:gpl3+)))           ; see README.md (no licence headers)
 
 (define-public xclip
   (package
@@ -945,6 +975,32 @@ X Window System.")
 transparent text on your screen.")
     (license license:gpl2+)))
 
+(define-public wob
+  (package
+    (name "wob")
+    (version "0.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/francma/wob/releases/download/"
+                           version "/wob-" version ".tar.gz"))
+       (sha256
+        (base32 "1vgngcg8wxn6zfg34czn9w55ia0zmhlgnpzf0gh31dc72li9353k"))))
+    (build-system meson-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("scdoc" ,scdoc)))
+    (inputs
+     `(("libseccomp" ,libseccomp)
+       ("wayland" ,wayland)
+       ("wayland-protocols" ,wayland-protocols)))
+    (home-page "https://github.com/francma/wob")
+    (synopsis "Lightweight overlay bar for Wayland")
+    (description
+     "Wob, or Wayland Overlay Bar, is a lightweight overlay volume,
+backlight, progress, or anything bar for Wayland.")
+    (license license:isc)))
+
 (define-public xbindkeys
   (package
     (name "xbindkeys")
@@ -1363,6 +1419,59 @@ color temperature should be set to match the lamps in your room.
 This is a fork with added support for Wayland using the wlr-gamma-control
 protocol.")
       (license license:gpl3+))))
+
+(define-public gammastep
+  (package
+    (name "gammastep")
+    (version "2.0.7")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/chinstrap/gammastep")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "11j54rdd3cgngdhjwyapwjbrdm8cii4i7g4zdvfykvmb1w4zdk7g"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-python-and-typelib
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Gammastep GUI needs Typelib files from GTK and access
+             ;; to Python libraries.
+             (wrap-program (string-append (assoc-ref outputs "out")
+                                          "/bin/gammastep-indicator")
+               `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH")))
+               `("GI_TYPELIB_PATH" ":" prefix
+                 (,(getenv "GI_TYPELIB_PATH")))))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gettext-minimal)
+       ("intltool" ,intltool)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("gtk" ,gtk+)
+       ("libappindicator" ,libappindicator)
+       ("libdrm" ,libdrm)
+       ("libX11" ,libx11)
+       ("libxxf86vm" ,libxxf86vm)
+       ("libxcb" ,libxcb)
+       ("python" ,python)
+       ("python-pygobject" ,python-pygobject)
+       ("python-pyxdg" ,python-pyxdg)
+       ("wayland" ,wayland)))
+    (home-page "https://gitlab.com/chinstrap/gammastep")
+    (synopsis "Adjust the color temperature of your screen")
+    (description
+     "Gammastep automatically adjusts the color temperature of your
+screen according to your surroundings.  This may help your eyes hurt
+less if you are working in front of the screen at night.")
+    (license license:gpl3)))
 
 (define-public xscreensaver
   (package
@@ -1871,7 +1980,7 @@ a user-configurable period of time.")
 (define-public screen-message
   (package
     (name "screen-message")
-    (version "0.25")
+    (version "0.26")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1879,7 +1988,7 @@ a user-configurable period of time.")
                     "/screen-message-" version ".tar.gz"))
               (sha256
                (base32
-                "1lw955qq5pq010lzmaf32ylj2iprgsri9ih4hx672c3f794ilab0"))))
+                "0dwgm4z3dfk6xz41w8xiv0hmnwr74gf3ykb91b090hc4ffwsf4mw"))))
     (build-system gnu-build-system)
     (inputs `(("gtk3" ,gtk+)
               ("gdk" ,gdk-pixbuf)
@@ -2217,7 +2326,7 @@ can optionally use some appearance settings from XSettings, tint2 and GTK.")
 (define-public xwallpaper
   (package
     (name "xwallpaper")
-    (version "0.6.5")
+    (version "0.6.6")
     (source
      (origin
        (method git-fetch)
@@ -2226,7 +2335,7 @@ can optionally use some appearance settings from XSettings, tint2 and GTK.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "121ai4dc0v65qk12gn9w62ixly8hc8a5qrygkbb82vy8ck4jqxj7"))))
+        (base32 "10klm81rs3k3l2i7whpvcsg95x51ja11l86fmwbrvg3kq705p2sr"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -2555,7 +2664,7 @@ using @command{dmenu}.")
 (define-public wofi
   (package
     (name "wofi")
-    (version "1.2.3")
+    (version "1.2.4")
     (source (origin
               (method hg-fetch)
               (uri (hg-reference
@@ -2564,7 +2673,7 @@ using @command{dmenu}.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0glpb2gf5n78s01z3rn614ak8ibxhfr824gy6xlljbxclgds264i"))))
+                "1bnf078fg1kwslzwm1mjxwcqqq3bhk1dzymwfw9gk3brqbxrl75c"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t))
