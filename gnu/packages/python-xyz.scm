@@ -24016,3 +24016,27 @@ and frame grabber interface.")
      "This package provides a command-line interface (CLI) to the Jinja2
 template engine.")
     (license license:bsd-3)))
+
+(define-public python-readability
+  (package
+    (name "python-readability")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "readability" version))
+       (sha256
+        (base32
+         "1b8gq3g2zwvx0aivvdg56cc0bn7xw6f2v6psmxdx9aiipkw0s0zr"))))
+    (build-system python-build-system)
+    (home-page
+     "https://github.com/andreasvc/readability/")
+    (synopsis
+     "Measure the readability of a given text using surface
+characteristics")
+    (description
+     "This package provides a Python library that is an implementation of
+traditional readability measures based on simple surface
+characteristics. These measures are basically linear regressions based on the
+number of words, syllables, and sentences.")
+    (license license:asl2.0)))
