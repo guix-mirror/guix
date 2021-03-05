@@ -34,6 +34,7 @@
 ;;; Copyright © 2020 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2020, 2021 pukkamustard <pukkamustard@posteo.net>
 ;;; Copyright © 2021 Bonface Munyoki Kilyungi <me@bonfacemunyoki.com>
+;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -236,6 +237,30 @@ frameworks, session management, URL-remapping for RESTful, page caching, and
 more.")
     (home-page "https://www.gnu.org/software/artanis/")
     (license (list license:gpl3+ license:lgpl3+)))) ;dual license
+
+(define-public guile-f-scm
+  (package
+    (name "guile-f-scm")
+    (version "0.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.sr.ht/~brown121407/f.scm")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "14wyrs3m1649l3km4pl2175dmap1372j5h8nkhykrbxg5xqp6ivd"))))
+    (build-system guile-build-system)
+    (native-inputs
+     `(("guile" ,guile-3.0)))
+    (home-page "https://git.sr.ht/~brown121407/f.scm")
+    (synopsis "Library for working with files and directories")
+    (description
+     "f.scm is a library intended to facilitate working with files and
+directories (the file system in general).  It was initially inspired by the
+f library for Emacs.")
+    (license license:gpl3+)))
 
 ;; There has not been any release yet.
 (define-public guildhall
