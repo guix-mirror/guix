@@ -107,7 +107,6 @@
 (define-public python-2.7
   (package
     (name "python2")
-    (replacement python-2.7/fixed)
     (version "2.7.17")
     (source
      (origin
@@ -122,7 +121,8 @@
                                "python-2.7-site-prefixes.patch"
                                "python-2.7-source-date-epoch.patch"
                                "python-2.7-adjust-tests.patch"
-                               "python-cross-compile.patch"))
+                               "python-cross-compile.patch"
+                               "python-2.7-CVE-2021-3177.patch"))
       (modules '((guix build utils)))
       (snippet
        '(begin
@@ -350,14 +350,6 @@ packages; exception-based error handling; and very high level dynamic
 data types.")
     (properties '((cpe-name . "python")))
     (license license:psfl)))
-
-(define python-2.7/fixed
-  (package
-    (inherit python-2.7)
-    (source (origin
-              (inherit (package-source python-2.7))
-              (patches (append (search-patches "python-2.7-CVE-2021-3177.patch")
-                               (origin-patches (package-source python-2.7))))))))
 
 ;; Current 2.x version.
 (define-public python-2 python-2.7)
