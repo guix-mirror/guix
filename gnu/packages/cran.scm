@@ -11,7 +11,7 @@
 ;;; Copyright © 2018 Sandeep Subramanian <sandeepsubramanian94@gmail.com>
 ;;; Copyright © 2018 Charlie Ritter <chewzeirta@posteo.net>
 ;;; Copyright © 2018 Konrad Hinsen <konrad.hinsen@fastmail.net>
-;;; Copyright © 2018, 2020 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
+;;; Copyright © 2018, 2020, 2021 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
 ;;; Copyright © 2018 Laura Lazzati <laura.lazzati.15@gmail.com>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
@@ -2690,6 +2690,27 @@ about Rcpp is provided by several vignettes included in this package, via the
 and Francois (2011, JSS), and the book by Eddelbuettel (2013, Springer); see
 @code{citation(\"Rcpp\")} for details on these last two.")
     (license license:gpl2+)))
+
+(define-public r-rcppthread
+  (package
+    (name "r-rcppthread")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "RcppThread" version))
+       (sha256
+        (base32
+         "1xfcxrny779kgknlvnc4j02ifprnakndnkhx8bhy50d39vp4hjjl"))))
+    (properties `((upstream-name . "RcppThread")))
+    (build-system r-build-system)
+    (home-page
+     "https://github.com/tnagler/RcppThread")
+    (synopsis "R threading in C++")
+    (description
+     "This package provides a C++11-style thread class and thread pool that can
+safely be interrupted from R.")
+    (license license:expat)))
 
 (define-public r-bindr
   (package
