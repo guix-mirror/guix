@@ -24,10 +24,11 @@
   #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module (guix build-system cargo)
-  #:use-module (guix build-system qt)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system qt)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
@@ -50,7 +51,9 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages video)
   #:use-module (gnu packages web)
   #:use-module (gnu packages webkit)
   #:use-module (gnu packages xml)
@@ -414,4 +417,66 @@ formats, including all versions of RSS and Atom.")
     (synopsis "RSS/Atom news feeds reader written on Qt/C++")
     (description "QuiteRSS is an RSS/Atom news feeds reader written on Qt/C++
 that aims to be quite fast and comfortable to it's user.")
+    (license license:gpl3+)))
+
+(define-public gfeeds
+  (package
+    (name "gfeeds")
+    (version "0.16.2")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append
+                "https://gitlab.gnome.org/World/gfeeds/-/archive/" version
+                "/gfeeds-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "05gwwzqfz29m477imd5vh84jfla1wnklwpc2sdxnqli72wg08fli"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-mpv-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "gfeeds/confManager.py"
+               (("mpv") (string-append (assoc-ref inputs "mpv") "/bin/mpv")))
+             #t))
+         (add-after 'install 'wrap-gfeeds
+           (lambda* (#:key outputs #:allow-other-keys)
+             (wrap-program (string-append
+                            (assoc-ref outputs "out") "/bin/gfeeds")
+               `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH")))
+               `("GI_TYPELIB_PATH" ":" prefix (,(getenv "GI_TYPELIB_PATH")))
+               `("XDG_DATA_DIRS" ":" prefix (,(getenv "XDG_DATA_DIRS"))))
+             #t)))))
+    (native-inputs
+     `(("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk+:bin" ,gtk+ "bin")
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gtk+" ,gtk+)
+       ("hicolor-icon-theme" ,hicolor-icon-theme)
+       ("libhandy" ,libhandy)
+       ("mpv" ,mpv)
+       ("python" ,python)
+       ("python-beautifulsoup4" ,python-beautifulsoup4)
+       ("python-dateutil" ,python-dateutil)
+       ("python-feedparser" ,python-feedparser)
+       ("python-html5lib" ,python-html5lib)
+       ("python-listparser" ,python-listparser)
+       ("python-lxml" ,python-lxml)
+       ("python-pillow" ,python-pillow)
+       ("python-pygments" ,python-pygments)
+       ("python-pytz" ,python-pytz)
+       ("python-readability" ,python-readability)
+       ("python-requests" ,python-requests)
+       ("webkitgtk" ,webkitgtk)
+       ("python-pygobject" ,python-pygobject)))
+    (home-page "https://gfeeds.gabmus.org/")
+    (synopsis "Easy-to-use GTK+ RSS/Atom feed reader")
+    (description "Feeds is an RSS/Atom feed reader made with GTK+
+and it has an easy-to-use graphical user interface.")
     (license license:gpl3+)))
