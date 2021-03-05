@@ -1492,7 +1492,7 @@ the build tree is always called @file{/tmp/guix-build-@var{name}.drv-0}.
 
 The build directory is automatically deleted upon completion, unless the
 build failed and the client specified @option{--keep-failed}
-(@pxref{Invoking guix build, @option{--keep-failed}}).
+(@pxref{Common Build Options, @option{--keep-failed}}).
 
 The daemon listens for connections and spawns one sub-process for each session
 started by a client (one of the @command{guix} sub-commands).  The
@@ -10817,7 +10817,7 @@ build daemon uses.
 To that end, the first thing to do is to use the @option{--keep-failed}
 or @option{-K} option of @command{guix build}, which will keep the
 failed build tree in @file{/tmp} or whatever directory you specified as
-@env{TMPDIR} (@pxref{Invoking guix build, @option{--keep-failed}}).
+@env{TMPDIR} (@pxref{Common Build Options, @option{--keep-failed}}).
 
 From there on, you can @command{cd} to the failed build tree and source
 the @file{environment-variables} file, which contains all the
