@@ -6810,6 +6810,59 @@ accessibility data.")
          ,@(alist-delete "r-monocle"
                          (package-propagated-inputs r-cicero)))))))
 
+(define-public r-circrnaprofiler
+  (package
+    (name "r-circrnaprofiler")
+    (version "1.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "circRNAprofiler" version))
+       (sha256
+        (base32
+         "1rwpl9a5p5242aiapik0vf4ywqh7m6phzl8z8qmzcy0imbx7mpbn"))))
+    (properties
+     `((upstream-name . "circRNAprofiler")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationhub" ,r-annotationhub)
+       ("r-biostrings" ,r-biostrings)
+       ("r-bsgenome" ,r-bsgenome)
+       ("r-bsgenome-hsapiens-ucsc-hg19" ,r-bsgenome-hsapiens-ucsc-hg19)
+       ("r-deseq2" ,r-deseq2)
+       ("r-dplyr" ,r-dplyr)
+       ("r-edger" ,r-edger)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gwascat" ,r-gwascat)
+       ("r-iranges" ,r-iranges)
+       ("r-magrittr" ,r-magrittr)
+       ("r-r-utils" ,r-r-utils)
+       ("r-readr" ,r-readr)
+       ("r-reshape2" ,r-reshape2)
+       ("r-rlang" ,r-rlang)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-seqinr" ,r-seqinr)
+       ("r-stringi" ,r-stringi)
+       ("r-stringr" ,r-stringr)
+       ("r-universalmotif" ,r-universalmotif)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page
+     "https://github.com/Aufiero/circRNAprofiler")
+    (synopsis
+     "Computational framework for the downstream analysis of circular RNA's")
+    (description
+     "@code{r-circrnaprofiler} is a computational framework for a comprehensive
+in silico analysis of @dfn{circular RNA} (circRNAs).  This computational
+framework allows to combine and analyze circRNAs previously detected by
+multiple publicly available annotation-based circRNA detection tools.  It
+covers different aspects of circRNAs analysis from differential expression
+analysis, evolutionary conservation, biogenesis to functional analysis.")
+    (license license:gpl3)))
+
 (define-public r-cistopic
   (let ((commit "29abd8df9afb60ff27ac3f0a590930debe926950")
         (revision "0"))
