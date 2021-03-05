@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Pkill -9 <pkill9@runbox.com>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;;
@@ -392,7 +392,7 @@ waveform until they line up with the proper sounds.")
 (define-public pencil2d
   (package
     (name "pencil2d")
-    (version "0.6.5")
+    (version "0.6.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -401,7 +401,7 @@ waveform until they line up with the proper sounds.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "06l60wawkhb3wrsj79p5f7ka5cgcyly36pbvm95fvwbkmlvmjzf1"))))
+                "0b1nwiwyg01087q318vymg4si76dw41ykxbn2zwd6dqbxzbpr1dh"))))
     (build-system gnu-build-system)
     (inputs
      `(("qtbase" ,qtbase)
