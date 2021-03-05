@@ -755,8 +755,9 @@ seconds.  This procedure opens a new connection to the build daemon."
             (built-derivations (list profile))
             ;; Note: Caching is fine even when AUTHENTICATE? is false because
             ;; we always call 'latest-channel-instances?'.
-            (symlink* (derivation->output-path profile) cached)
-            (add-indirect-root* cached)
+            (unless (file-exists? cached)
+              (symlink* (derivation->output-path profile) cached)
+              (add-indirect-root* cached))
             (return cached))))))
 
 (define* (channels->cached-profile store channels
