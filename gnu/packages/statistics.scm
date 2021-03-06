@@ -2899,7 +2899,7 @@ if (certs != \"\") { .opts = merge.list(.opts, list(cainfo=certs)) }
      `(("libcurl" ,curl)))
     (propagated-inputs
      `(("r-bitops" ,r-bitops)))
-    (home-page "http://www.omegahat.org/RCurl")
+    (home-page "http://www.omegahat.net/RCurl")
     (synopsis "General network client interface for R")
     (description
      "The package allows one to compose general HTTP requests and provides
