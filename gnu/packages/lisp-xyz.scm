@@ -581,6 +581,34 @@ compatible with ANSI-compliant Common Lisp implementations.")
 (define-public ecl-cl-ppcre
   (sbcl-package->ecl-package sbcl-cl-ppcre))
 
+(define-public sbcl-parse
+  (let ((commit "2351ee78acac065fcf10b8713d3f404e2e910786")
+        (revision "1"))
+    (package
+     (name "sbcl-parse")
+      (version (git-version "1.0" revision commit))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/massung/parse")
+             (commit commit)))
+       (file-name (git-file-name "parse" version))
+       (sha256
+        (base32 "0l18yabyh7jizm5lgvra0jxi8s1cfwghidi6ix1pyixjkdbjlmvy"))))
+     (build-system asdf-build-system/sbcl)
+     (home-page "https://github.com/massung/parse")
+     (synopsis "Monadic parsing for Common Lisp")
+     (description
+      "PARSE is a simple token parsing library for Common Lisp.")
+     (license license:asl2.0))))
+
+(define-public ecl-parse
+  (sbcl-package->ecl-package sbcl-parse))
+
+(define-public cl-parse
+  (sbcl-package->cl-source-package sbcl-parse))
+
 (define-public sbcl-ubiquitous
   (let ((commit "35eb7bd9e1b3daee1705f6b41260775180cce8af")
         (revision "1"))
