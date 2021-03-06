@@ -1343,14 +1343,14 @@ its size
 (define-public polybar
   (package
     (name "polybar")
-    (version "3.5.4")
+    (version "3.5.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/polybar/polybar/releases/"
                            "download/" version "/polybar-" version ".tar.gz"))
        (sha256
-        (base32 "0awwjp3l0y9yhmrl914710ipawp2xr43jxrvmnanahlznblg8fhk"))))
+        (base32 "1c8br9972x1qw7l2shj9aqzv0gsx58fdh3r0f1z5i1bqdwxmsqky"))))
     (build-system cmake-build-system)
     (arguments
      ;; Test is disabled because it requires downloading googletest from the
