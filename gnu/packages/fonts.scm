@@ -1755,7 +1755,7 @@ files (TTF).")
 (define-public font-mononoki
   (package
     (name "font-mononoki")
-    (version "1.2")
+    (version "1.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1763,9 +1763,15 @@ files (TTF).")
                     (commit version)))
               (sha256
                (base32
-                "1rkzyxn30rn8qv2h2xz324j7q15hzg2lci8790a7cdl1dfgic4xi"))
+                "07gh84iw84g8fha3gx4yjyl1rsksqhy2kk38f01m048sgjp6ww5j"))
               (file-name (git-file-name name version))))
     (build-system font-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'make-files-writable
+           (lambda _
+             (for-each make-file-writable (find-files ".")))))))
     (synopsis "Font for programming and code review")
     (description
      "Mononoki is a typeface by Matthias Tellen, created to enhance code
