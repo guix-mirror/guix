@@ -15095,3 +15095,48 @@ related C functions to get information about the mounted file system.")
 
 (define-public cl-mount-info
   (sbcl-package->cl-source-package sbcl-cl-mount-info))
+
+(define-public sbcl-cl-diskspace
+  (let ((commit "2dce2d0387d58221c452bd76c7b9b7a7de81ef55")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-diskspace")
+      (version (git-version "0.3.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/muyinliu/cl-diskspace")
+               (commit commit)))
+         (file-name (git-file-name "cl-diskspace" version))
+         (sha256
+          (base32 "0l19hxqw6b8i5i1jdbr45k1xib9axcwdagsp3y8wkb35g6wwc0s7"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "src/unix/cl-diskspace-list-all-disks-with-df.lisp"
+                 (("grep")
+                  (string-append (assoc-ref inputs "grep") "/bin/grep")))
+               (substitute* "src/unix/cl-diskspace-list-all-disks-with-df.lisp"
+                 (("/bin/df")
+                  (which "df")))
+               #t)))))
+      (inputs
+       `(("cl-ppcre" ,sbcl-cl-ppcre)
+         ("cffi" ,sbcl-cffi)
+         ("grep" ,grep)))
+      (home-page "https://github.com/muyinliu/cl-diskspace")
+      (synopsis "Disk space information library for Common Lisp")
+      (description
+       "CL-DISKSPACE is a Common Lisp library to list disks with the command
+line tool @code{df} and get disk space information using @code{statvfs}.")
+      (license license:isc))))
+
+(define-public ecl-cl-diskspace
+  (sbcl-package->ecl-package sbcl-cl-diskspace))
+
+(define-public cl-diskspace
+  (sbcl-package->cl-source-package sbcl-cl-diskspace))
