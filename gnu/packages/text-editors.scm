@@ -1047,7 +1047,7 @@ card.  It offers:
              (substitute* "src/makefile"
               (("-lcurses") "-lncurses"))
              #t)))))
-    (home-page "http://ne.di.unimi.it/")
+    (home-page "https://ne.di.unimi.it/")
     (synopsis "Text editor with menu bar")
     (description "This package provides a modeless text editor with menu bar.
 It supports syntax highlighting, regular expressions, configurable menus,
