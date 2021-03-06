@@ -2930,7 +2930,7 @@ ldap, and also supports cookies, redirects, authentication, etc.")
        ("zlib" ,zlib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.omegahat.org/RSXML")
+    (home-page "http://www.omegahat.net/RSXML")
     (synopsis "Tools for parsing and generating XML within R")
     (description
      "Many approaches for both reading and creating XML (and HTML)
