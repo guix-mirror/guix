@@ -285,7 +285,7 @@ older games.")
 (define-public qtmips
   (package
     (name "qtmips")
-    (version "0.7.3")
+    (version "0.7.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -294,7 +294,7 @@ older games.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1khvwgqz4h6q6mhbbq0yx43ajz8gx9wmwzs8784vmfrglndbxgax"))))
+                "1fal7a8y5g0rqqjrk795jh1l50ihz01ppjnrfjrk9vkjbd59szbp"))))
     (build-system cmake-build-system)
     (arguments
      '(#:phases
