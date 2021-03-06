@@ -3909,7 +3909,9 @@ It is a replacement for the @command{urlview} program.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "07h48s5qf08503pp9kafqbwipdqghiif22ghki7z8j67gyp04l6l"))))
+                "07h48s5qf08503pp9kafqbwipdqghiif22ghki7z8j67gyp04l6l"))
+              (patches (search-patches "ytnef-CVE-2021-3403.patch"
+                                       "ytnef-CVE-2021-3404.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
