@@ -609,6 +609,37 @@ compatible with ANSI-compliant Common Lisp implementations.")
 (define-public cl-parse
   (sbcl-package->cl-source-package sbcl-parse))
 
+(define-public sbcl-re
+  (let ((commit "cfbc1f482970221e80d445080a188fd5c755cd2c")
+        (revision "1"))
+    (package
+     (name "sbcl-re")
+      (version (git-version "1.0" revision commit))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/massung/re")
+             (commit commit)))
+       (file-name (git-file-name "re" version))
+       (sha256
+        (base32 "1y2gq2sckspnq8118bix55p2j43dk9qn3p8a2rplp1ip2qxqbb1i"))))
+     (build-system asdf-build-system/sbcl)
+     (inputs
+      `(("parse" ,sbcl-parse)))
+     (home-page "https://github.com/massung/re")
+     (synopsis "Lua-style Pattern Matching for Common Lisp")
+     (description
+      "RE is a small, portable, lightweight, and quick, regular
+expression library for Common Lisp.  It is a non-recursive, backtracing VM.")
+     (license license:asl2.0))))
+
+(define-public ecl-re
+  (sbcl-package->ecl-package sbcl-re))
+
+(define-public cl-re
+  (sbcl-package->cl-source-package sbcl-re))
+
 (define-public sbcl-ubiquitous
   (let ((commit "35eb7bd9e1b3daee1705f6b41260775180cce8af")
         (revision "1"))
