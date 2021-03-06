@@ -835,7 +835,7 @@ dark elements.  It supports GNOME, Unity, Xfce, and Openbox.")
     (description "Orchis is a Material Design them for GNOME/GTK based
 desktop environments.  It is based on materia-theme and adds more color
 variants.")
-    (license (list license:gpl3            ; Claimed by README.md.
+    (license (list license:gpl3            ; According to COPYING.
                    license:lgpl2.1         ; Some style sheets.
                    license:cc-by-sa4.0)))) ; Some icons
 
