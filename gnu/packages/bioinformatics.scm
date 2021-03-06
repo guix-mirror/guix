@@ -6608,7 +6608,7 @@ writing files into the .sra format.")
      `(("source" ,source)
        ("tar" ,tar)
        ("xz" ,xz)))
-    (home-page "http://www.seqan.de")
+    (home-page "https://www.seqan.de")
     (synopsis "Library for nucleotide sequence analysis")
     (description
      "SeqAn is a C++ library of efficient algorithms and data structures for
