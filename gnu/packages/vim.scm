@@ -9,6 +9,7 @@
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019, 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
+;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -216,11 +217,14 @@ with the editor vim.")))
              "--enable-xim"
              "--disable-selinux"
              "--enable-gui")
-       ;; This flag fixes the following error:
-       ;; .../libpython3.7m.a(pyexpat.o): undefined reference to symbol 'XML_FreeContentModel'
-       ;; .../libexpat.so.1: error adding symbols: DSO missing from command line
-       #:make-flags '("LDFLAGS=-lexpat")
        ,@(substitute-keyword-arguments (package-arguments vim)
+           ;; This flag fixes the following error:
+           ;; .../libpython3.7m.a(pyexpat.o): undefined reference to symbol 'XML_FreeContentModel'
+           ;; .../libexpat.so.1: error adding symbols: DSO missing from command line
+           ((#:make-flags flags)
+            `(append
+              (list "LDFLAGS=-lexpat")
+              (delete "CFLAGS=-D_REENTRANT" ,flags)))
            ((#:phases phases)
             `(modify-phases ,phases
                (add-before 'check 'start-xserver
