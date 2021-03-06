@@ -7991,21 +7991,21 @@ intending to program in Lisp.")
   (sbcl-package->cl-source-package sbcl-antik))
 
 (define-public sbcl-cl-interpol
-  (let ((commit "1fd288d861db85bc4677cff3cdd6af75fda1afb4")
+  (let ((commit "70a1137f41dd8889004dbab9536b1adeac2497aa")
         (revision "1"))
     (package
       (name "sbcl-cl-interpol")
-      (version (git-version "0.2.6" revision commit))
+      (version (git-version "0.2.7" revision commit))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
                (url "https://github.com/edicl/cl-interpol")
                (commit commit)))
-         (file-name (git-file-name name version))
+         (file-name (git-file-name "cl-interpol" version))
          (sha256
           (base32
-           "1hnikak52hmcq1r5f616m6qq1108qnkw80pja950nv1fq5p0ppjn"))))
+           "1kr00zf62m7la7rxa2m5w49r9cyzamc106hvjcc8ffmi7a4jw490"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("cl-unicode" ,sbcl-cl-unicode)
