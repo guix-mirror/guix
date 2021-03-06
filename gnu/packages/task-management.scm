@@ -3,6 +3,7 @@
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2021 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
+;;; Copyright © 2021 LibreMiami <packaging-guix@libremiami.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,13 +33,42 @@
   #:use-module (gnu packages lua)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages tls)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix hg-download)
   #:use-module (guix utils)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system go)
-  #:use-module (guix build-system meson))
+  #:use-module (guix build-system meson)
+  #:use-module (guix build-system python))
+
+(define-public t
+  ;; Last release is more than 10 years old.  Using latest commit.
+  (let ((changeset "89ad444c000b")
+        (revision "97"))
+    (package
+      (name "t")
+      (version (git-version "1.2.0" revision changeset))
+      (source
+       (origin
+         (method hg-fetch)
+         (uri (hg-reference
+               (url "https://hg.stevelosh.com/t")
+               (changeset changeset)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32 "0c8zn7l0xq65wp07h7mxnb5ww56d1443l2vkjvx5sj6wpcchfn0s"))))
+      (build-system python-build-system)
+      (native-inputs
+       `(("python-cram" ,python-cram)))
+      (synopsis "Command-line todo list manager")
+      (description
+       "@command{t} is a command-line todo list manager for people that want
+to finish tasks, not organize them.")
+      (home-page "https://stevelosh.com/projects/t/")
+      (license license:expat))))
 
 (define-public taskwarrior
   (package
