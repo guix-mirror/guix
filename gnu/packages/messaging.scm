@@ -134,7 +134,7 @@
 (define-public libgnt
   (package
     (name "libgnt")
-    (version "2.14.0")
+    (version "2.14.1")
     (source
      (origin
        (method url-fetch)
@@ -142,7 +142,7 @@
         (string-append "mirror://sourceforge/pidgin/libgnt/"
                        version "/libgnt-" version ".tar.xz"))
        (sha256
-        (base32 "1grs9fxl404rscscxk1ff55fzjnwjqrisjxbasbssmcp1h1s4zkb"))))
+        (base32 "1n2bxg0ignn53c08cp69pj4sdg53kwlqn23rincyjmpr327fdhsy"))))
     (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments
