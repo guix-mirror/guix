@@ -444,7 +444,7 @@ support")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("eudev", eudev)
+     `(("eudev" ,eudev)
        ("ffmpeg" ,ffmpeg)
        ("libcdio-paranoia" ,libcdio-paranoia)
        ("libebur128" ,libebur128)

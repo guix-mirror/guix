@@ -24294,7 +24294,7 @@ cryptographic library.")
      `(("clang" ,clang)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("nettle", nettle)))
+     `(("nettle" ,nettle)))
     (arguments
      `(#:cargo-inputs
        (("rust-bindgen" ,rust-bindgen-0.51)

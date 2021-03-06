@@ -14120,7 +14120,7 @@ messaging service.")
            ;; HOME needs to exist for source compilation.
            (add-before 'build 'set-HOME
              (lambda _ (setenv "HOME" "/tmp") #t)))))
-      (propagated-inputs `(("emacs-slack", emacs-slack)))
+      (propagated-inputs `(("emacs-slack" ,emacs-slack)))
       (home-page "https://github.com/yuya373/helm-slack")
       (synopsis "Helm extension for emacs-slack")
       (description "This package provides an helm extension for emacs-slack

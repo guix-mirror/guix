@@ -2708,7 +2708,7 @@ such as sway, similar to @command{rofi}.")
          (delete 'configure))
        #:tests? #f))
     (inputs
-     `(("python", python)))
+     `(("python" ,python)))
     (native-inputs
      `(("python-sphinx" ,python-sphinx)))
     (home-page "https://github.com/jceb/dex")
