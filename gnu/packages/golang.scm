@@ -7,7 +7,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Sergei Trofimovich <slyfox@inbox.ru>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2018 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
@@ -1470,7 +1470,7 @@ optimized for performance yet simple to use.")
 (define-public go-github-com-tomnomnom-gron
   (package
     (name "gron")
-    (version "0.6.0")
+    (version "0.6.1")
     (home-page "https://github.com/tomnomnom/gron")
     (source
      (origin
@@ -1480,7 +1480,7 @@ optimized for performance yet simple to use.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "05f3w4zr15wd7xk75l12y5kip4gnv719a2x9w2hy23q3pnss9wk0"))))
+        (base32 "0qmzawkhg0qn9kxxrssbdjni2khvamhrcklv3yxc0ljmh77mh61m"))))
     (build-system go-build-system)
     (arguments
      (let ((import-path "github.com/tomnomnom/gron"))
