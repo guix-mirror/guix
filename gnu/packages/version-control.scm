@@ -37,6 +37,7 @@
 ;;; Copyright © 2021 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2021 Léo Le Bouter <lle-bout@zaclys.net>
 ;;; Copyright © 2021 LibreMiami <packaging-guix@libremiami.org>
+;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -599,6 +600,31 @@ everything from small to very large projects with speed and efficiency.")
        ("openssl" ,openssl)
        ("perl" ,perl)
        ("zlib" ,zlib)))))
+
+(define-public git2cl
+  (let ((commit "1d74d4c0d933fc69ed5cec838c73502584dead05"))
+    (package
+      (name "git2cl")
+      (version (string-append "20120919." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://git.savannah.nongnu.org/git/git2cl.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0wnnbm2sjvfj0qrksj89jlnl69miwl0vk3wrrvgvpclgys3na2g1"))))
+      (build-system copy-build-system)
+      (inputs
+       `(("perl" ,perl)))
+      (arguments
+       `(#:install-plan '(("git2cl" "bin/git2cl"))))
+      (home-page "https://savannah.nongnu.org/projects/git2cl")
+      (synopsis "Convert Git logs to GNU ChangeLog format")
+      (description "@code{git2cl} is a command line tool for converting Git
+logs to GNU ChangeLog format.")
+      (license license:gpl2+))))
 
 (define-public gitless
   (package
