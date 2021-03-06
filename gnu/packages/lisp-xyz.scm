@@ -4811,6 +4811,39 @@ Long Painful History of Time\".")
 (define-public ecl-local-time
   (sbcl-package->ecl-package sbcl-local-time))
 
+(define-public sbcl-chronicity
+  (package
+    (name "sbcl-chronicity")
+    (version "0.4.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/chaitanyagupta/chronicity")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name "chronicity" version))
+       (sha256
+        (base32 "0rzrl9is2v1aqbm0sym0qx3blnpd0bl13dkkmll6mb3983k2mkax"))))
+    (build-system asdf-build-system/sbcl)
+    (native-inputs
+     `(("lisp-unit" ,sbcl-lisp-unit)))
+    (inputs
+     `(("cl-interpol" ,sbcl-cl-interpol)
+       ("cl-ppcre" ,sbcl-cl-ppcre)
+       ("local-time" ,sbcl-local-time)))
+    (home-page "https://github.com/chaitanyagupta/chronicity")
+    (synopsis "Natural language date and time parser for Common Lisp")
+    (description
+     "CHRONICITY is Common Lisp natural language date and time parser inspired
+by Ruby's @code{Chronic}.")
+    (license license:bsd-3)))
+
+(define-public ecl-chronicity
+  (sbcl-package->ecl-package sbcl-chronicity))
+
+(define-public cl-chronicity
+  (sbcl-package->cl-source-package sbcl-chronicity))
+
 (define-public sbcl-trivial-mimes
   (let ((commit "a741fc2f567a4f86b853fd4677d75e62c03e51d9")
         (revision "2"))
