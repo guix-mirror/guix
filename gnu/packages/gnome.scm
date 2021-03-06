@@ -9029,7 +9029,7 @@ associations for GNOME.")
 (define-public libgovirt
   (package
    (name "libgovirt")
-   (version "0.3.6")
+   (version "0.3.8")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -9037,7 +9037,7 @@ associations for GNOME.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "19pb71pag3vsi83kbv8h08kimwym4hpw36kjl6a5ik5nk50mc8sg"))))
+              "1y0x1wyakj3ya33hgj0w1jkbcn50q21gmn2zyalxysqp55i1ij8x"))))
    (build-system glib-or-gtk-build-system)
    (native-inputs
     `(("gettext" ,gettext-minimal)
