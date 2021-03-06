@@ -5123,6 +5123,36 @@ macro for Common Lisp.")
 (define-public cl-printv
   (sbcl-package->cl-source-package sbcl-printv))
 
+(define-public sbcl-cl-debug
+  (let ((commit "b334280806104ee7f7d3aec666bf7e08d2f89b31")
+        (revision "1"))
+    (package
+     (name "sbcl-cl-debug")
+      (version (git-version "1.0.0" revision commit))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/kmx-io/cl-debug")
+             (commit commit)))
+       (file-name (git-file-name "cl-debug" version))
+       (sha256
+        (base32 "0w5vxbjsgr3zfpivdmghmhzxskfdvm1p34c8whwps2xlhypxsa78"))))
+     (build-system asdf-build-system/sbcl)
+     (home-page "https://github.com/kmx-io/cl-debug")
+     (synopsis "Common Lisp cross-package debugging facility")
+     (description
+      "CL-DEBUG provides a unified way to enable or disable debug-specific code.
+Debugging code can be enabled or disabled relative to program features denoted
+by either a symbol or a keyword.")
+     (license license:isc))))
+
+(define-public ecl-cl-debug
+  (sbcl-package->ecl-package sbcl-cl-debug))
+
+(define-public cl-debug
+  (sbcl-package->cl-source-package sbcl-cl-debug))
+
 (define-public sbcl-verbose
   (let ((commit "c5b7ecd465be61b35af17ef57564697b88397174")
         (revision "1"))
