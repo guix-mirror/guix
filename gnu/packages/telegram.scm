@@ -561,7 +561,7 @@ Telegram project, for its use in telegram desktop client.")
      `(("dconf" ,dconf)))
     (synopsis "Telegram Desktop")
     (description "Telegram desktop is the official desktop version of the
-Telegram instant messager.")
+Telegram instant messenger.")
     (home-page "https://desktop.telegram.org/")
     (license
      (list
