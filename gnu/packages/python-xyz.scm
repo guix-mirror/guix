@@ -98,6 +98,7 @@
 ;;; Copyright © 2020 EuAndreh <eu@euandre.org>
 ;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;; Copyright © 2021 Ellis Kenyő <me@elken.dev>
+;;; Copyright © 2021 LibreMiami <packaging-guix@libremiami.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -10850,6 +10851,27 @@ applications.")
 applications.")
     (home-page "https://github.com/click-contrib/click-log")
     (license license:expat)))
+
+(define-public python-click-default-group
+  (package
+    (name "python-click-default-group")
+    (version "1.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "click-default-group" version))
+              (sha256
+               (base32
+                "015r78jk8gznfw0dphpwaqcx5mhg5822b55w5xbb6i7sin70wmnr"))))
+    (build-system python-build-system)
+    (arguments
+      `(#:tests? #f)) ; no target
+    (propagated-inputs
+     `(("python-click" ,python-click)))
+    (synopsis "Extends click.Group")
+    (description "This package extends click.Group to invoke a command without
+explicit subcommand name.")
+    (home-page "https://github.com/click-contrib/click-default-group")
+    (license license:bsd-3)))
 
 (define-public python-structlog
   (package
