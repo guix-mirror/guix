@@ -6313,14 +6313,14 @@ with the mouse isn’t always trivial.")
 (define-public chroma
   (package
     (name "chroma")
-    (version "1.17")
+    (version "1.18")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://level7.org.uk/chroma/download/chroma-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "047sf00x71xbmi8bqrhfbmr9bk89l2gbykkqsfpw4wz6yfjscs6y"))))
+                "12bjisf5nlqinw8n4r223vld52p0p2mw3fca92vi175c46bycbzn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests included
