@@ -700,7 +700,7 @@ move windows, switch between desktops, etc.).")
 (define-public scrot
   (package
     (name "scrot")
-    (version "1.4")
+    (version "1.5")
     (source
      (origin
        (method git-fetch)
@@ -710,8 +710,7 @@ move windows, switch between desktops, etc.).")
          (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "12xq6glg70icwsvbnfw9gm4dahlbnrc7b6adpd0mpf89h4sj2gds"))))
+        (base32 "0x64b7xqi5cbq29pb8s8r2kzbxaday1f5k0j70n3s2p7sahjxy72"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -720,8 +719,8 @@ move windows, switch between desktops, etc.).")
     (inputs
      `(("giblib" ,giblib)
        ("libx11" ,libx11)
-       ("libXcursor" ,libxcursor)
        ("libxcomposite" ,libxcomposite)
+       ("libxext" ,libxext)
        ("libXfixes" ,libxfixes)))
     (home-page "https://github.com/resurrecting-open-source-projects/scrot")
     (synopsis "Command-line screen capture utility for X Window System")
