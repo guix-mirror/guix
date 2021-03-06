@@ -15062,3 +15062,36 @@ Lisp.")
 
 (define-public cl-percent-encoding
   (sbcl-package->cl-source-package sbcl-percent-encoding))
+
+(define-public sbcl-cl-mount-info
+  (let ((commit "2024f5037a7f63db3e3587dc9972cd7b9318f06b")
+        (revision "1"))
+    (package
+     (name "sbcl-cl-mount-info")
+     (version (git-version "0.0.1" revision commit))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://notabug.org/cage/cl-mount-info.git")
+             (commit commit)))
+       (file-name (git-file-name "cl-mount-info" version))
+       (sha256
+        (base32 "0vza9gj9q42nzb5v8aj22lmn4aqx9vrddsb5a343nbwfz89hbh9x"))))
+     (build-system asdf-build-system/sbcl)
+     (inputs
+      `(("alexandria" ,sbcl-alexandria)
+        ("cffi" ,sbcl-cffi)
+        ("cl-ppcre" ,sbcl-cl-ppcre)))
+     (home-page "https://notabug.org/cage/cl-mount-info.git")
+     (synopsis "Library to get information about mounted filesystems")
+     (description
+      "CL-MOUNT-INFO is a Common Lisp wrapper around @code{getmntent(3)} and
+related C functions to get information about the mounted file system.")
+     (license license:lgpl3))))
+
+(define-public ecl-cl-mount-info
+  (sbcl-package->ecl-package sbcl-cl-mount-info))
+
+(define-public cl-mount-info
+  (sbcl-package->cl-source-package sbcl-cl-mount-info))
