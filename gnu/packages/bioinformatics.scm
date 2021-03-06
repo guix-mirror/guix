@@ -6624,7 +6624,7 @@ bioinformatics file formats, sequence alignment, and more.")
     (version "1.4.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://packages.seqan.de/seqan-library/"
+              (uri (string-append "https://packages.seqan.de/seqan-library/"
                                   "seqan-library-" version ".tar.bz2"))
               (sha256
                (base32
