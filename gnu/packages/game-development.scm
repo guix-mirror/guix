@@ -652,7 +652,8 @@ sounds from presets such as \"explosion\" or \"powerup\".")
      (arguments
       '(#:configure-flags
         (let ((share (string-append (assoc-ref %outputs "out") "/share")))
-          (list (string-append "-DICON_PATH=" share "/pixmaps")
+          (list "-DWANT_STATIC=NO"
+                (string-append "-DICON_PATH=" share "/pixmaps")
                 (string-append "-DMETAINFO_PATH=" share "/metainfo")))
         #:tests? #f))
      (home-page "https://docs.opensurge2d.org")
