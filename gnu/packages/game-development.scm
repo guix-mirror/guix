@@ -638,7 +638,7 @@ sounds from presets such as \"explosion\" or \"powerup\".")
 (define-public surgescript
   (package
     (name "surgescript")
-    (version "0.5.4.4")
+    (version "0.5.5")
     (source
      (origin
        (method git-fetch)
@@ -647,7 +647,7 @@ sounds from presets such as \"explosion\" or \"powerup\".")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1vck1wk6r6jrrw5xzpqldplz601dfgpk5s5p45fam00nfsid0p7p"))))
+        (base32 "0xwd4g7n0b0rxkpbyshkzyl472h1y606ghyvf8gv034n3jz2g4jk"))))
      (build-system cmake-build-system)
      (arguments
       '(#:configure-flags
