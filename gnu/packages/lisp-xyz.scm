@@ -9000,20 +9000,20 @@ for reading and writing JPEG image files.")
   (sbcl-package->ecl-package sbcl-cl-jpeg))
 
 (define-public sbcl-nodgui
-  (let ((commit "bc59ed9b787dfc9e68ae3bd7f7e8507c5c619212")
+  (let ((commit "4a9c2e7714b278fbe97d198c56f54ea87290001d")
         (revision "1"))
     (package
       (name "sbcl-nodgui")
-      (version (git-version "0.0.5" revision commit))
+      (version (git-version "0.1.1" revision commit))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
                (url "https://notabug.org/cage/nodgui.git")
                (commit commit)))
-         (file-name (git-file-name name version))
+         (file-name (git-file-name "nodgui" version))
          (sha256
-          (base32 "0xx0dk54d882i598ydnwmy7mnfk0b7vib3ddsgpqxhjck1rwq8l8"))))
+          (base32 "1vgzzw459h32v2mi41cia6i940jqmvxlc8w3xj3516hbc2mqkaib"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("alexandria" ,sbcl-alexandria)
