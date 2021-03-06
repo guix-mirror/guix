@@ -36866,7 +36866,7 @@ functionality and without weak references.")
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("freetype" ,freetype)))
-    (home-page "http://www.freetype.org/")
+    (home-page "https://www.freetype.org/")
     (synopsis "Rust wrapper around freetype")
     (description
      "This package provides a Rust wrapper around the FreeType library.")
