@@ -264,7 +264,7 @@ always possible.")
 (define-public fsarchiver
   (package
     (name "fsarchiver")
-    (version "0.8.5")
+    (version "0.8.6")
     (source
      (origin
        (method git-fetch)
@@ -274,7 +274,7 @@ always possible.")
          (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1rvwq5v3rl14bqxjm1ibfapyicf0sa44nw7451v10kx39lp56ylp"))))
+        (base32 "1ry2sdkfbg4bwcldk42g1i3wa3z4pr9yh9dil6ilhwcvhqiw41zc"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
