@@ -358,9 +358,7 @@ Bitstream Vera Sans);
 Bitstream Vera Serif);
 @item Mono (a substitute for Courier New, Cumberland, Courier, Nimbus Mono L,
 and Bitstream Vera Sans Mono).
-@end enumerate
-
-The Liberation Fonts are sponsored by Red Hat.")
+@end enumerate\n")
     (license license:silofl1.1)))
 
 (define-public font-linuxlibertine
