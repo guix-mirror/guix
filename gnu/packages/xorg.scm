@@ -3193,17 +3193,14 @@ supported, and the RENDER extension is not accelerated by this driver.")
 (define-public xf86-video-nouveau
   (package
     (name "xf86-video-nouveau")
-    (version "1.0.16")
+    (version "1.0.17")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "mirror://xorg/individual/driver/xf86-video-nouveau-"
-             version
-             ".tar.bz2"))
+       (uri (string-append "mirror://xorg/individual/driver/xf86-video-nouveau-"
+                           version ".tar.bz2"))
        (sha256
-        (base32
-         "01mz8gnq7j6bvrqb2ljm3d1wpjhi9p2z2w8zbkdrqmqmcj060h1h"))))
+        (base32 "0sqm1jwjg15sp8v7039y2hsbhph8gpjd2bdzcqqiij2mgbi254s9"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
