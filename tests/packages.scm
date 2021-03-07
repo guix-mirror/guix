@@ -744,7 +744,7 @@
 
 (let ((dummy (dummy-package "foo" (inputs `(("x" ,(current-module)))))))
   (test-equal "&package-input-error"
-    (list dummy (current-module))
+    (list dummy `("x" ,(current-module)))
     (guard (c ((package-input-error? c)
                (list (package-error-package c)
                      (package-error-invalid-input c))))

@@ -1213,13 +1213,10 @@ Return the cached result when available."
 (define* (expand-input package input #:key native?)
   "Expand INPUT, an input tuple, to a name/<gexp-input> tuple.  PACKAGE is
 only used to provide contextual information in exceptions."
-  (define (valid? x)
-    (or (package? x) (origin? x) (derivation? x)))
-
   (match input
-    (((? string? name) (? valid? thing))
+    (((? string? name) (? file-like? thing))
      (list name (gexp-input thing #:native? native?)))
-    (((? string? name) (? valid? thing) (? string? output))
+    (((? string? name) (? file-like? thing) (? string? output))
      (list name (gexp-input thing output #:native? native?)))
     (((? string? name)
       (and (? string?) (? file-exists? file)))
@@ -1228,11 +1225,6 @@ only used to provide contextual information in exceptions."
      ;; source.
      (list name (gexp-input (local-file file #:recursive? #t)
                             #:native? native?)))
-    (((? string? name) (? struct? source))
-     ;; 'package-source-derivation' calls 'lower-object', which can throw
-     ;; '&gexp-input-error'.  However '&gexp-input-error' lacks source
-     ;; location info, so we used to catch and rethrow here (FIXME!).
-     (list name (gexp-input source)))
     (x
      (raise (condition (&package-input-error
                         (package package)
