@@ -7849,8 +7849,6 @@ Profiling multiple threads simultaneously is supported.
          (base32
           "07yqv11q68xg2fqkrhs6ysngryk8b9zq6qzh24rgx9xqv6qfnj0w"))))
     (build-system ruby-build-system)
-    (native-inputs
-     `(("ruby-rake" ,ruby-rake)))
     (synopsis "Memory profiling routines for Ruby")
     (description
      "This package provides memory profiling routines for Ruby.")
