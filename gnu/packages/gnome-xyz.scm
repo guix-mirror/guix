@@ -811,19 +811,25 @@ dark elements.  It supports GNOME, Unity, Xfce, and Openbox.")
             #t))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ; no tests
+     `(#:configure-flags (list
+                          "--dest" (string-append
+                                    (assoc-ref %outputs "out")
+                                    "/share/themes")
+                          "--theme" "all"
+                          "--radio-color")
+       #:tests? #f ; no tests
        #:phases
        (modify-phases %standard-phases
          (delete 'bootstrap)
          (delete 'configure)
          (replace 'build (lambda _ (invoke "./parse-sass.sh")))
          (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((themes (string-append (assoc-ref outputs "out")
-                                          "/share/themes")))
-               (mkdir-p themes)
-               (invoke "./install.sh" "-d" themes)
-               #t))))))
+           (lambda* (#:key configure-flags #:allow-other-keys)
+             (mkdir-p
+              (cadr (or (member "--dest" configure-flags)
+                        (member "-d" configure-flags))))
+             (apply invoke "./install.sh" configure-flags)
+             #t)))))
     (inputs
      `(("gtk-engines" ,gtk-engines)))
     (native-inputs
