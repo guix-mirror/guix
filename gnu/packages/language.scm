@@ -103,7 +103,15 @@
                        "/share/gtk-doc/html"))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-flags
+         (add-after 'unpack 'disable-qt4
+           (lambda _
+             (substitute* '("configure.ac" "modules/clients/Makefile.am")
+               (("\\[QtGui\\]")
+                "[Qt5Gui]")
+               ((" qt4")
+                ""))
+             #t))
+         (add-after 'disable-qt4 'patch-flags
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "configure.ac"
                (("-Werror")
@@ -136,10 +144,6 @@
                                "/lib"))
                (("\\$\\(GTK2_LIBDIR\\)")
                 (string-append (assoc-ref outputs "gtk")
-                               "/lib")))
-             (substitute* "modules/clients/qt4/Makefile.am"
-               (("\\$\\(QT4_LIB_DIR\\)")
-                (string-append (assoc-ref outputs "qt")
                                "/lib")))
              (substitute* "modules/clients/qt5/Makefile.am"
                (("\\$\\(QT5_IM_MODULE_DIR\\)")
@@ -180,7 +184,6 @@
        ("hangul" ,libhangul)
        ("m17n-db" ,m17n-db)
        ("m17n-lib" ,m17n-lib)
-       ("qt-4" ,qt-4)
        ("qtbase" ,qtbase)
        ("rime" ,librime)
        ("rsvg" ,librsvg)
