@@ -40,6 +40,7 @@
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
 ;;; Copyright © 2020 divoplade <d@divoplade.fr>
+;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -410,7 +411,7 @@ to run without any changes.")
 (define-public fetchmail
   (package
     (name "fetchmail")
-    (version "6.4.16")
+    (version "6.4.17")
     (source
      (origin
        (method url-fetch)
@@ -418,7 +419,7 @@ to run without any changes.")
                            (version-major+minor version) "/"
                            "fetchmail-" version ".tar.xz"))
        (sha256
-        (base32 "1fagi10fv8pdil6gss6a3ca3jbp3wbiyz7cp8ivsxyrsq059ljq4"))))
+        (base32 "1ijh9l7pg2yk5s5h1yj3vpd1az31giqy9bjrna10daj13gqws6x4"))))
     (build-system gnu-build-system)
     (inputs
      `(("openssl" ,openssl)))
