@@ -7384,7 +7384,6 @@ run.")
              #t)))))
     (native-inputs
      `(("ruby-bump" ,ruby-bump)
-       ("ruby-memory-profiler" ,ruby-memory-profiler)
        ("ruby-pry" ,ruby-pry)
        ("ruby-rake" ,ruby-rake)
        ("ruby-rspec" ,ruby-rspec)
