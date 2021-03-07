@@ -2777,4 +2777,139 @@ as phones, embedded computers or microcontrollers.")
     ;; Dual licensed.
     (license (list license:epl1.0 license:edl1.0))))
 
+(define-public psi-plus
+  (package
+    (name "psi-plus")
+    (version "1.5.1482")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/psi-plus/psi-plus-snapshots")
+         (commit version)))
+       (file-name (git-file-name name version))
+       (modules '((guix build utils)))
+       (snippet
+        `(begin
+           (delete-file-recursively "3rdparty")))
+       (sha256
+        (base32 "0lcx616hchwf492m1dm8ddb4qd2pmgf703ajnnb0y9ky99kgg8q2"))))
+    (build-system qt-build-system)
+    (arguments
+     `(#:tests? #f                      ; No target
+       #:imported-modules
+       (,@%qt-build-system-modules
+        (guix build glib-or-gtk-build-system))
+       #:modules
+       ((guix build qt-build-system)
+        ((guix build glib-or-gtk-build-system)
+         #:prefix glib-or-gtk:)
+        (guix build utils))
+       #:configure-flags
+       (list
+        "-DBUILD_PSIMEDIA=ON"           ; For A/V support
+        "-DENABLE_PLUGINS=ON"
+        "-DUSE_HUNSPELL=OFF"            ; Use Enchant instead
+        "-DUSE_ENCHANT=ON"
+        "-DUSE_CCACHE=OFF")             ; Not required
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("\\$\\{PROJECT_SOURCE_DIR\\}/3rdparty/http-parser/http_parser.h")
+                "")
+               (("\\$\\{PROJECT_SOURCE_DIR\\}/3rdparty/qhttp/qhttp.pro")
+                "")
+               (("\\$\\{PROJECT_SOURCE_DIR\\}/3rdparty/qite/qite.pro")
+                "")
+               (("add_subdirectory\\( 3rdparty \\)")
+                ""))
+             (substitute* "src/CMakeLists.txt"
+               (("\\$\\{PROJECT_SOURCE_DIR\\}/3rdparty/qite/libqite")
+                "")
+               (("\\$\\{PROJECT_SOURCE_DIR\\}/3rdparty/http-parser")
+                "")
+               (("\\$\\{PROJECT_SOURCE_DIR\\}/3rdparty/qhttp/src/private")
+                "")
+               (("\\$\\{PROJECT_SOURCE_DIR\\}/3rdparty/qhttp/src")
+                "")
+               (("\\$\\{PROJECT_SOURCE_DIR\\}/3rdparty")
+                "")
+               (("add_dependencies\\(\\$\\{PROJECT_NAME\\} qhttp\\)")
+                "target_link_libraries(${PROJECT_NAME} qhttp)"))
+             (substitute* "src/src.cmake"
+               (("include\\(\\$\\{PROJECT_SOURCE_DIR\\}/3rdparty/qite/libqite/libqite.cmake\\)")
+                "list(APPEND EXTRA_LIBS qite)"))
+             (substitute* '("src/filesharingmanager.h" "src/widgets/psirichtext.cpp"
+                            "src/filesharingmanager.cpp" "src/widgets/psitextview.cpp"
+                            "src/chatview_te.cpp" "src/msgmle.cpp")
+               (("qite.h")
+                "qite/qite.h")
+               (("qiteaudio.h")
+                "qite/qiteaudio.h")
+               (("qiteaudiorecorder.h")
+                "qite/qiteaudiorecorder.h"))
+             #t))
+         (add-after 'install 'wrap-env
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (for-each
+                (lambda (name)
+                  (let ((file (string-append out "/bin/" name))
+                        (gst-plugin-path (getenv "GST_PLUGIN_SYSTEM_PATH"))
+                        (gi-typelib-path (getenv "GI_TYPELIB_PATH")))
+                    (wrap-program file
+                      `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path))
+                      `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path)))))
+                '("psi-plus")))
+             #t))
+         (add-after 'wrap-env 'glib-or-gtk-compile-schemas
+           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-compile-schemas))
+         (add-after 'glib-or-gtk-compile-schemas 'glib-or-gtk-wrap
+           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap)))))
+    (native-inputs
+     `(("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)
+       ("ruby" ,ruby)))
+    (inputs
+     `(("blake2" ,libb2)
+       ("dbus" ,dbus)
+       ("enchant" ,enchant)
+       ("glib" ,glib)
+       ("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("http-parser" ,http-parser)
+       ("libgcrypt" ,libgcrypt)
+       ("libgpg-error" ,libgpg-error)
+       ("libidn" ,libidn)
+       ("libotr" ,libotr)
+       ("libsignal-protocol-c" ,libsignal-protocol-c)
+       ("libtidy" ,tidy-html)
+       ("openssl" ,openssl)
+       ("qca" ,qca)
+       ("qhttp" ,qhttp)
+       ("qite" ,qite)
+       ("qtbase" ,qtbase)
+       ("qtkeychain" ,qtkeychain)
+       ("qtmultimedia" ,qtmultimedia)
+       ("qtsvg" ,qtsvg)
+       ("qtx11extras" ,qtx11extras)
+       ("usrsctp" ,usrsctp)
+       ("x11" ,libx11)
+       ("xext" ,libxext)
+       ("xcb" ,libxcb)
+       ("xss" ,libxscrnsaver)
+       ("zlib" ,zlib)))
+    (home-page "https://psi-plus.com/")
+    (synopsis "Qt-based XMPP Client")
+    (description
+     "Psi+ is a spin-off of Psi XMPP client.  It is a powerful XMPP client
+designed for experienced users.")
+    (license license:gpl2+)))
+
 ;;; messaging.scm ends here
