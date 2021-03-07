@@ -179,37 +179,6 @@ algorithms AES or Twofish.")
     ;; the combined work falls under the GPLv3.
     (license license:gpl3)))
 
-(define-public keepassx
-  (package
-    (name "keepassx")
-    (version "2.0.3")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://www.keepassx.org/releases/" version
-                           "/keepassx-" version ".tar.gz"))
-       (sha256
-        (base32
-         "1ia7cqx9ias38mnffsl7da7g1f66bcbjsi23k49sln0c6spb9zr3"))))
-    (build-system cmake-build-system)
-    (inputs
-     `(("libgcrypt" ,libgcrypt)
-       ("libxi" ,libxi)
-       ("libxtst" ,libxtst)
-       ("qt" ,qt-4)))
-    (native-inputs
-     `(("zlib" ,zlib)))
-    (home-page "https://www.keepassx.org")
-    (synopsis "Password manager")
-    (description "KeePassX is a password manager or safe which helps you to
-manage your passwords in a secure way.  You can put all your passwords in one
-database, which is locked with one master key or a key-file which can be stored
-on an external storage device.  The databases are encrypted using the
-algorithms AES or Twofish.")
-    ;; Non functional parts use various licences.
-    (license license:gpl3)
-    (properties `((superseded . ,keepassxc)))))
-
 (define-public pwsafe
   (package
     (name "pwsafe")

@@ -299,13 +299,6 @@ When present, Poppler is able to correctly render CJK and Cyrillic text.")
     (license (list license:bsd-3
                    license:gpl2))))
 
-(define-public poppler-qt4
-  (package/inherit poppler
-   (name "poppler-qt4")
-   (inputs `(("qt-4" ,qt-4)
-             ,@(package-inputs poppler)))
-   (synopsis "Qt4 frontend for the Poppler PDF rendering library")))
-
 (define-public poppler-qt5
   (package/inherit poppler
    (name "poppler-qt5")
