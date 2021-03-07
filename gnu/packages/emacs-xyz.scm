@@ -94,6 +94,7 @@
 ;;; Copyright © 2021 Yurii Kholodkov <urist.mckorobochka@gmail.com>
 ;;; Copyright © 2021 Alexey Abramov <levenson@mmer.org>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
+;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5311,6 +5312,28 @@ integration servers.  Users can specify a list of server in the
 @code{butler-server-list} variable and then use @code{M-x butler-status} to
 view the build status of those servers' build jobs, and possibly to trigger
 build jobs.")
+    (license license:gpl3+)))
+
+(define-public emacs-tup-mode
+  (package
+    (name "emacs-tup-mode")
+    (version "1.3.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ejmr/tup-mode")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0asd024n5v23wdsg1959sszq568wg3a1bp4jrk0cllfji1z0n78y"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/ejmr/tup-mode")
+    (synopsis "Major mode for editing ``tupfiles'' used by the Tup build system")
+    (description
+     "Tup mode provides syntax highlighting for all of the elements of
+tupfiles, such as rule definitions, user-defined variables, macros, flags, bin
+variables, and so on.  The mode also allows you to execute Tup commands.")
     (license license:gpl3+)))
 
 (define-public emacs-company
