@@ -83,7 +83,7 @@
        (sha256
         (base32 "01qi7flmaqrn2fk03sa42r0caks9d8lsv88s0bgxahhxwk1x76gc"))))
     (build-system glib-or-gtk-build-system)
-    (outputs '("out" "doc"))
+    (outputs '("out" "gtk" "qt" "doc"))
     (arguments
      `(#:imported-modules
        (,@%glib-or-gtk-build-system-modules
@@ -132,18 +132,18 @@
                                "/bin:$GTK2_LIBDIR/libgtk2.0-0")))
              (substitute* "modules/clients/gtk/Makefile.am"
                (("\\$\\(GTK3_LIBDIR\\)")
-                (string-append (assoc-ref outputs "out")
+                (string-append (assoc-ref outputs "gtk")
                                "/lib"))
                (("\\$\\(GTK2_LIBDIR\\)")
-                (string-append (assoc-ref outputs "out")
+                (string-append (assoc-ref outputs "gtk")
                                "/lib")))
              (substitute* "modules/clients/qt4/Makefile.am"
                (("\\$\\(QT4_LIB_DIR\\)")
-                (string-append (assoc-ref outputs "out")
+                (string-append (assoc-ref outputs "qt")
                                "/lib")))
              (substitute* "modules/clients/qt5/Makefile.am"
                (("\\$\\(QT5_IM_MODULE_DIR\\)")
-                (string-append (assoc-ref outputs "out")
+                (string-append (assoc-ref outputs "qt")
                                "/lib/qt5/plugins/inputmethods")))
              (substitute* '("bin/nimf-settings/Makefile.am"
                             "data/apparmor-abstractions/Makefile.am"
