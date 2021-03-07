@@ -78,10 +78,12 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages kde)
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages less)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages libidn)
+  #:use-module (gnu packages libreoffice)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages logging)
   #:use-module (gnu packages lua)
@@ -104,6 +106,7 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages ruby)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tcl)
@@ -130,6 +133,62 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils))
+
+(define-public psi
+  (package
+    (name "psi")
+    (version "1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://sourceforge/psi/Psi/"
+                       version "/psi-" version ".tar.xz"))
+       (modules '((guix build utils)))
+       (snippet
+        `(begin
+           (delete-file-recursively "3rdparty")))
+       (sha256
+        (base32 "1dxmm1d1zr0pfs51lba732ipm6hm2357jlfb934lvarzsh7karri"))))
+    (build-system qt-build-system)
+    (arguments
+     `(#:tests? #f                      ; No target
+       #:configure-flags
+       (list
+        "-DUSE_ENCHANT=ON"
+        "-DUSE_CCACHE=OFF")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-cmake
+           (lambda _
+             (substitute* "cmake/modules/FindHunspell.cmake"
+               (("hunspell-1.6")
+                "hunspell-1.7"))
+             #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)
+       ("ruby" ,ruby)))
+    (inputs
+     `(("aspell" ,aspell)
+       ("enchant" ,enchant-1.6)
+       ("hunspell" ,hunspell)
+       ("libidn" ,libidn)
+       ("qca" ,qca)
+       ("qtbase" ,qtbase)
+       ("qtmultimedia" ,qtmultimedia)
+       ("qtsvg" ,qtsvg)
+       ("qtwebkit" ,qtwebkit)
+       ("qtx11extras" ,qtx11extras)
+       ("x11" ,libx11)
+       ("xext" ,libxext)
+       ("xcb" ,libxcb)
+       ("zlib" ,zlib)))
+    (synopsis "Qt-based XMPP Client")
+    (description "Psi is a capable XMPP client aimed at experienced users.
+Its design goals are simplicity and stability.")
+    (home-page "https://psi-im.org")
+    (license license:gpl2+)))
 
 (define-public libgnt
   (package
