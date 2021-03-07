@@ -6,6 +6,7 @@
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 EuAndreh <eu@euandre.org>
+;;; Copyright © 2021 Noisytoot <noisytoot@disroot.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,6 +32,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system perl)
+  #:use-module (guix build-system python)
   #:use-module (guix utils)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages)
@@ -299,4 +301,26 @@ and smu is that smu doesn't support reference style links.")
     (description "MD4C is a C Markdown parser with a
 SAX-like interface.  It is compliant to the CommonMark specification,
 with a few extensions.")
+    (license expat)))
+
+(define-public python-mistletoe
+  (package
+    (name "python-mistletoe")
+    (version "0.7.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "mistletoe" version))
+       (sha256
+        (base32 "18z6hqfnfjqnrcgfgl5pkj9ggf9yx0yyy94azcn1qf7hqn6g3l14"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/miyuchina/mistletoe")
+    (synopsis "Extensible Markdown parser in pure Python")
+    (description
+     "The @code{mistletoe} Markdown parser is a CommonMark-compliant Markdown
+parser that supports definitions of custom tokens.
+
+Parsing Markdown into an abstract syntax tree also allows @code{mistletoe} to
+swap out renderers for different output formats, without touching any of the
+core components.")
     (license expat)))
