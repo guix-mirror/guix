@@ -858,19 +858,23 @@
 
 (test-assert "search paths"
   (let* ((p (make-prompt-tag "return-search-paths"))
+         (t (make-parameter "guile-0"))
          (s (build-system
-             (name 'raw)
-             (description "Raw build system with direct store access")
-             (lower (lambda* (name #:key source inputs system target
-                                   #:allow-other-keys)
-                      (bag
-                        (name name)
-                        (system system) (target target)
-                        (build-inputs inputs)
-                        (build
-                         (lambda* (name inputs
-                                        #:key outputs system search-paths)
-                           (abort-to-prompt p search-paths))))))))
+              (name 'raw)
+              (description "Raw build system with direct store access")
+              (lower (lambda* (name #:key source inputs system target
+                                    #:allow-other-keys)
+                       (bag
+                         (name name)
+                         (system system) (target target)
+                         (build-inputs inputs)
+                         (build
+                          (lambda* (name inputs
+                                         #:key outputs system search-paths)
+                            (if (string=? name (t))
+                                (abort-to-prompt p search-paths)
+                                (gexp->derivation name
+                                                  #~(mkdir #$output))))))))))
          (x (list (search-path-specification
                    (variable "GUILE_LOAD_PATH")
                    (files '("share/guile/site/2.0")))
@@ -895,8 +899,10 @@
                                (lambda (k search-paths)
                                  search-paths))))))
       (and (null? (collect (package-derivation %store a)))
-           (equal? x (collect (package-derivation %store b)))
-           (equal? x (collect (package-derivation %store c)))))))
+           (parameterize ((t "guile-foo-0"))
+             (equal? x (collect (package-derivation %store b))))
+           (parameterize ((t "guile-bar-0"))
+             (equal? x (collect (package-derivation %store c))))))))
 
 (test-assert "package-transitive-native-search-paths"
   (let* ((sp (lambda (name)

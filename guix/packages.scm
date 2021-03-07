@@ -1210,25 +1210,45 @@ Return the cached result when available."
          (#f
           (cache! cache package key thunk)))))))
 
-(define* (expand-input package input #:key native?)
+(define* (expand-input package input #:key target)
   "Expand INPUT, an input tuple, to a name/<gexp-input> tuple.  PACKAGE is
 only used to provide contextual information in exceptions."
-  (match input
-    (((? string? name) (? file-like? thing))
-     (list name (gexp-input thing #:native? native?)))
-    (((? string? name) (? file-like? thing) (? string? output))
-     (list name (gexp-input thing output #:native? native?)))
-    (((? string? name)
-      (and (? string?) (? file-exists? file)))
-     ;; Add FILE to the store.  When FILE is in the sub-directory of a
-     ;; store path, it needs to be added anyway, so it can be used as a
-     ;; source.
-     (list name (gexp-input (local-file file #:recursive? #t)
-                            #:native? native?)))
-    (x
-     (raise (condition (&package-input-error
-                        (package package)
-                        (input   x)))))))
+  (with-monad %store-monad
+    (match input
+      ;; INPUT doesn't need to be lowered here because it'll be lowered down
+      ;; the road in the gexp that refers to it.  However, packages need to be
+      ;; special-cased to pass #:graft? #f (only the "tip" of the package
+      ;; graph needs to have #:graft? #t).  Lowering them here also allows
+      ;; 'bag->derivation' to delete non-eq? packages that lead to the same
+      ;; derivation.
+      (((? string? name) (? package? package))
+       (mlet %store-monad ((drv (if target
+                                    (package->cross-derivation package target
+                                                               #:graft? #f)
+                                    (package->derivation package #:graft? #f))))
+         (return (list name (gexp-input drv #:native? (not target))))))
+      (((? string? name) (? package? package) (? string? output))
+       (mlet %store-monad ((drv (if target
+                                    (package->cross-derivation package target
+                                                               #:graft? #f)
+                                    (package->derivation package #:graft? #f))))
+         (return (list name (gexp-input drv output #:native? (not target))))))
+
+      (((? string? name) (? file-like? thing))
+       (return (list name (gexp-input thing #:native? (not target)))))
+      (((? string? name) (? file-like? thing) (? string? output))
+       (return (list name (gexp-input thing output #:native? (not target)))))
+      (((? string? name)
+        (and (? string?) (? file-exists? file)))
+       ;; Add FILE to the store.  When FILE is in the sub-directory of a
+       ;; store path, it needs to be added anyway, so it can be used as a
+       ;; source.
+       (return (list name (gexp-input (local-file file #:recursive? #t)
+                                      #:native? (not target)))))
+      (x
+       (raise (condition (&package-input-error
+                          (package package)
+                          (input   x))))))))
 
 (define %bag-cache
   ;; 'eq?' cache mapping packages to system+target+graft?-dependent bags.
@@ -1438,17 +1458,18 @@ a package object describing the context in which the call occurs, for improved
 error reporting."
   (if (bag-target bag)
       (bag->cross-derivation bag)
-      (let* ((system     (bag-system bag))
-             (inputs     (bag-transitive-inputs bag))
-             (input-drvs (map (cut expand-input context <> #:native? #t)
-                              inputs))
-             (paths      (delete-duplicates
-                          (append-map (match-lambda
-                                       ((_ (? package? p) _ ...)
-                                        (package-native-search-paths
-                                         p))
-                                       (_ '()))
-                                      inputs))))
+      (mlet* %store-monad ((system ->  (bag-system bag))
+                           (inputs ->  (bag-transitive-inputs bag))
+                           (input-drvs (mapm %store-monad
+                                             (cut expand-input context <>)
+                                             inputs))
+                           (paths ->   (delete-duplicates
+                                        (append-map (match-lambda
+                                                      ((_ (? package? p) _ ...)
+                                                       (package-native-search-paths
+                                                        p))
+                                                      (_ '()))
+                                                    inputs))))
         ;; It's possible that INPUTS contains packages that are not 'eq?' but
         ;; that lead to the same derivation.  Delete those duplicates to avoid
         ;; issues down the road, such as duplicate entries in '%build-inputs'.
@@ -1462,31 +1483,35 @@ error reporting."
   "Return the derivation to build BAG, which is actually a cross build.
 Optionally, CONTEXT can be a package object denoting the context of the call.
 This is an internal procedure."
-  (let* ((system      (bag-system bag))
-         (target      (bag-target bag))
-         (host        (bag-transitive-host-inputs bag))
-         (host-drvs   (map (cut expand-input context <> #:native? #f)
-                           host))
-         (target*     (bag-transitive-target-inputs bag))
-         (target-drvs (map (cut expand-input context <> #:native? #t)
-                           target*))
-         (build       (bag-transitive-build-inputs bag))
-         (build-drvs  (map (cut expand-input context <> #:native? #t)
-                           build))
-         (all         (append build target* host))
-         (paths       (delete-duplicates
-                       (append-map (match-lambda
-                                    ((_ (? package? p) _ ...)
-                                     (package-search-paths p))
-                                    (_ '()))
-                                   all)))
-         (npaths      (delete-duplicates
-                       (append-map (match-lambda
-                                    ((_ (? package? p) _ ...)
-                                     (package-native-search-paths
-                                      p))
-                                    (_ '()))
-                                   all))))
+  (mlet* %store-monad ((system ->   (bag-system bag))
+                       (target ->   (bag-target bag))
+                       (host ->     (bag-transitive-host-inputs bag))
+                       (host-drvs   (mapm %store-monad
+                                          (cut expand-input context <>
+                                               #:target target)
+                                          host))
+                       (target* ->  (bag-transitive-target-inputs bag))
+                       (target-drvs (mapm %store-monad
+                                          (cut expand-input context <>)
+                                          target*))
+                       (build ->    (bag-transitive-build-inputs bag))
+                       (build-drvs  (mapm %store-monad
+                                          (cut expand-input context <>)
+                                          build))
+                       (all ->      (append build target* host))
+                       (paths ->    (delete-duplicates
+                                     (append-map (match-lambda
+                                                   ((_ (? package? p) _ ...)
+                                                    (package-search-paths p))
+                                                   (_ '()))
+                                                 all)))
+                       (npaths ->   (delete-duplicates
+                                     (append-map (match-lambda
+                                                   ((_ (? package? p) _ ...)
+                                                    (package-native-search-paths
+                                                     p))
+                                                   (_ '()))
+                                                 all))))
 
     (apply (bag-build bag) (bag-name bag)
            #:build-inputs (delete-duplicates build-drvs input=?)
