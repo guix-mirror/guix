@@ -31,7 +31,7 @@
 # Copyright © 2020 R Veera Kumar <vkor@vkten.in>
 # Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 # Copyright © 2020 Michael Rohleder <mike@rohleder.de>
-# Copyright © 2020 Felix Gruber <felgru@posteo.net>
+# Copyright © 2020, 2021 Felix Gruber <felgru@posteo.net>
 # Copyright © 2020 Ryan Prior <rprior@protonmail.com>
 # Copyright © 2020 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
 # Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
@@ -1720,6 +1720,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/vsearch-unbundle-cityhash.patch		\
   %D%/packages/patches/vte-CVE-2012-2738-pt1.patch			\
   %D%/packages/patches/vte-CVE-2012-2738-pt2.patch			\
+  %D%/packages/patches/vtk-fix-freetypetools-build-failure.patch	\
   %D%/packages/patches/warsow-qfusion-fix-bool-return-type.patch	\
   %D%/packages/patches/webkitgtk-share-store.patch		\
   %D%/packages/patches/webkitgtk-bind-all-fonts.patch		\

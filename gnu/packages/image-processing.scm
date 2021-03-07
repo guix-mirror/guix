@@ -13,6 +13,7 @@
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2020 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2021 Oleh Malyi <astroclubzp@gmail.com>
+;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -254,6 +255,8 @@ many popular formats.")
               (sha256
                (base32
                 "1fspgp8k0myr6p2a6wkc21ldcswb4bvmb484m12mxgk1a9vxrhrl"))
+              (patches
+               (search-patches "vtk-fix-freetypetools-build-failure.patch"))
               (modules '((guix build utils)))
               (snippet
                '(begin
