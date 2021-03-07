@@ -295,7 +295,7 @@ systems and other constrained environments, but they work everywhere.")))
 (define-public s6-linux-init
   (package
    (name "s6-linux-init")
-   (version "1.0.6.0")
+   (version "1.0.6.1")
    (source
     (origin
      (method url-fetch)
@@ -303,7 +303,7 @@ systems and other constrained environments, but they work everywhere.")))
            "https://skarnet.org/software/s6-linux-init/s6-linux-init-"
            version ".tar.gz"))
      (sha256
-      (base32 "0kzif3dqhm7h4h7c6npzdbcy7w756222g8ysw116fgb8j385dr6w"))))
+      (base32 "0sq8ya39a1qs61cdjns8ijwrvxnqd4snk2ab4j5wl9a87i7wixhn"))))
     (build-system gnu-build-system)
     (inputs
      `(("execline" ,execline)
