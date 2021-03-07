@@ -448,7 +448,9 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
            (search-path-specification
             (variable "LIBRARY_PATH")
             (files '("lib" "lib64")))))
-    (supported-systems '("x86_64-linux"))
+    (supported-systems
+     (delete "i686-linux"  ; fails to build, see bug #35519
+             %supported-systems))
     (synopsis "Compiler for the Rust progamming language")
     (description "Rust is a systems programming language that provides memory
 safety and thread safety guarantees.")
