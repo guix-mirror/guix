@@ -1845,6 +1845,49 @@ reports together for a particular project that can be viewed in a web
 browser.")
     (license license:artistic2.0)))
 
+(define-public r-shortread
+  (package
+    (name "r-shortread")
+    (version "1.48.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "ShortRead" version))
+       (sha256
+        (base32
+         "0w4m8d3h660mmr2ymp206r1n4aqssxmkv8yxkbr5y1swrahxzfk9"))))
+    (properties `((upstream-name . "ShortRead")))
+    (build-system r-build-system)
+    (inputs
+     `(("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-biostrings" ,r-biostrings)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicalignments" ,r-genomicalignments)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-rhtslib" ,r-rhtslib)
+       ("r-hwriter" ,r-hwriter)
+       ("r-iranges" ,r-iranges)
+       ("r-lattice" ,r-lattice)
+       ("r-latticeextra" ,r-latticeextra)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-xvector" ,r-xvector)
+       ("r-zlibbioc" ,r-zlibbioc)))
+    (home-page "https://bioconductor.org/packages/ShortRead")
+    (synopsis "FASTQ input and manipulation tools")
+    (description
+     "This package implements sampling, iteration, and input of FASTQ files.
+It includes functions for filtering and trimming reads, and for generating a
+quality assessment report.  Data are represented as
+@code{DNAStringSet}-derived objects, and easily manipulated for a diversity of
+purposes.  The package also contains legacy support for early single-end,
+ungapped alignment formats.")
+    (license license:artistic2.0)))
+
 (define-public r-geneplotter
   (package
     (name "r-geneplotter")
