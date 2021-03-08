@@ -1650,6 +1650,29 @@ high-throughput sequencing experiments.")
 the Human Protein Atlas project.")
     (license license:artistic2.0)))
 
+(define-public r-rbgl
+  (package
+    (name "r-rbgl")
+    (version "1.66.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "RBGL" version))
+       (sha256
+        (base32
+         "016vyzgixb3gjpzi21rbs6ngnnqcxr77krwjjf1ldnzzj8vqrqsz"))))
+    (properties `((upstream-name . "RBGL")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bh" ,r-bh)
+       ("r-graph" ,r-graph)))
+    (home-page "https://www.bioconductor.org/packages/RBGL")
+    (synopsis "Interface to the Boost graph library")
+    (description
+     "This package provides a fairly extensive and comprehensive interface to
+the graph algorithms contained in the Boost library.")
+    (license license:artistic2.0)))
+
 (define-public r-regioner
   (package
     (name "r-regioner")
