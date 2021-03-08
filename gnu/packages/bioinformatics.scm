@@ -7387,44 +7387,6 @@ includes software to
 ")
       (license license:cc0))))
 
-(define-public r-deseq2
-  (package
-    (name "r-deseq2")
-    (version "1.30.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (bioconductor-uri "DESeq2" version))
-       (sha256
-        (base32
-         "0q2f9cywrcmp1p7ii8f45g4dk4hsnjflq3yqhsxgnpv9fw338qpp"))))
-    (properties `((upstream-name . "DESeq2")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-biobase" ,r-biobase)
-       ("r-biocgenerics" ,r-biocgenerics)
-       ("r-biocparallel" ,r-biocparallel)
-       ("r-genefilter" ,r-genefilter)
-       ("r-geneplotter" ,r-geneplotter)
-       ("r-genomicranges" ,r-genomicranges)
-       ("r-ggplot2" ,r-ggplot2)
-       ("r-iranges" ,r-iranges)
-       ("r-locfit" ,r-locfit)
-       ("r-rcpp" ,r-rcpp)
-       ("r-rcpparmadillo" ,r-rcpparmadillo)
-       ("r-s4vectors" ,r-s4vectors)
-       ("r-summarizedexperiment" ,r-summarizedexperiment)))
-    (native-inputs
-     `(("r-knitr" ,r-knitr)))
-    (home-page "https://bioconductor.org/packages/DESeq2")
-    (synopsis "Differential gene expression analysis")
-    (description
-     "This package provides functions to estimate variance-mean dependence in
-count data from high-throughput nucleotide sequencing assays and test for
-differential expression based on a model using the negative binomial
-distribution.")
-    (license license:lgpl3+)))
-
 (define-public r-dexseq
   (package
     (name "r-dexseq")
