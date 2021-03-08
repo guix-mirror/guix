@@ -1888,6 +1888,60 @@ purposes.  The package also contains legacy support for early single-end,
 ungapped alignment formats.")
     (license license:artistic2.0)))
 
+(define-public r-systempiper
+  (package
+    (name "r-systempiper")
+    (version "1.24.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "systemPipeR" version))
+       (sha256
+        (base32
+         "0ffazyl2q9plbhwlxi04s3fvnli6qj95n7bkjc21535bbi08xfki"))))
+    (properties `((upstream-name . "systemPipeR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotate" ,r-annotate)
+       ("r-assertthat" ,r-assertthat)
+       ("r-batchtools" ,r-batchtools)
+       ("r-biostrings" ,r-biostrings)
+       ("r-deseq2" ,r-deseq2)
+       ("r-dot" ,r-dot)
+       ("r-edger" ,r-edger)
+       ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-go-db" ,r-go-db)
+       ("r-gostats" ,r-gostats)
+       ("r-iranges" ,r-iranges)
+       ("r-limma" ,r-limma)
+       ("r-magrittr" ,r-magrittr)
+       ("r-pheatmap" ,r-pheatmap)
+       ("r-rjson" ,r-rjson)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-rsvg" ,r-rsvg)
+       ("r-shortread" ,r-shortread)
+       ("r-stringr" ,r-stringr)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)
+       ("r-yaml" ,r-yaml)
+       ("r-variantannotation" ,r-variantannotation)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/tgirke/systemPipeR")
+    (synopsis "Next generation sequencing workflow and reporting environment")
+    (description
+     "This R package provides tools for building and running automated
+end-to-end analysis workflows for a wide range of @dfn{next generation
+sequence} (NGS) applications such as RNA-Seq, ChIP-Seq, VAR-Seq and Ribo-Seq.
+Important features include a uniform workflow interface across different NGS
+applications, automated report generation, and support for running both R and
+command-line software, such as NGS aligners or peak/variant callers, on local
+computers or compute clusters.  Efficient handling of complex sample sets and
+experimental designs is facilitated by a consistently implemented sample
+annotation infrastructure.")
+    (license license:artistic2.0)))
+
 (define-public r-geneplotter
   (package
     (name "r-geneplotter")
