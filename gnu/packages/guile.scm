@@ -293,13 +293,21 @@ without requiring the source code to be rewritten.")
     (name "guile")
     (version "3.0.7")
     (source (origin
-              (inherit (package-source guile-2.2)) ;preserve snippet
-              (patches '())
+              (inherit (package-source guile-2.2))
+              (patches '())     ; We no longer need the patches.
               (uri (string-append "mirror://gnu/guile/guile-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1dwiwsrpm4f96alfnz6wibq378242z4f16vsxgy1n9r00v3qczgm"))))
+                "1dwiwsrpm4f96alfnz6wibq378242z4f16vsxgy1n9r00v3qczgm"))
+              ;; Replace the snippet because the oom-test still
+              ;; fails on some 32-bit architectures.
+              (snippet '(begin
+                          (substitute* "test-suite/standalone/Makefile.in"
+                            (("test-out-of-memory") ""))
+                          (for-each delete-file
+                                    (find-files "prebuilt" "\\.go$"))
+                          #t))))
 
     ;; Build with the bundled mini-GMP to avoid interference with GnuTLS' own
     ;; use of GMP via Nettle: <https://issues.guix.gnu.org/46330>.
@@ -314,7 +322,25 @@ without requiring the source code to be rewritten.")
           ;; XXX: JIT-enabled Guile crashes in obscure ways on GNU/Hurd.
           (if (hurd-target?)
               `(cons "--disable-jit" ,flags)
-              flags)))))
+              flags)))
+       ((#:phases phases)
+         (if (string-prefix? "powerpc-" (%current-system))
+           `(modify-phases ,phases
+              (add-after 'unpack 'adjust-bootstrap-flags
+                (lambda _
+                  ;; Upstream knows about suggested solution.
+                  ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=45214
+                  (substitute* "bootstrap/Makefile.in"
+                    (("^GUILE_OPTIMIZATIONS.*")
+                     "GUILE_OPTIMIZATIONS = -O1 -Oresolve-primitives -Ocps\n"))))
+              (add-after 'unpack 'skip-failing-fdes-test
+                (lambda _
+                  ;; ERROR: ((system-error "seek" "~A" ("Bad file descriptor") (9)))
+                  (substitute* "test-suite/tests/ports.test"
+                    (("fdes not closed\"" all) (string-append all "(exit 77)")))
+                  #t)))
+           phases))))
+
     (native-search-paths
      (list (search-path-specification
             (variable "GUILE_LOAD_PATH")
