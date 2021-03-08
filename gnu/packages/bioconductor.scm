@@ -1487,6 +1487,38 @@ structure.")
 microarrays.")
     (license license:artistic2.0)))
 
+(define-public r-annotationforge
+  (package
+    (name "r-annotationforge")
+    (version "1.32.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "AnnotationForge" version))
+       (sha256
+        (base32
+         "0y3820dkvwz09wlmz9drx6gqpsr9cwppaiz40zafwfxbz65y8px7"))))
+    (properties
+     `((upstream-name . "AnnotationForge")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-dbi" ,r-dbi)
+       ("r-rcurl" ,r-rcurl)
+       ("r-rsqlite" ,r-rsqlite)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-xml" ,r-xml)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://bioconductor.org/packages/AnnotationForge")
+    (synopsis "Code for building annotation database packages")
+    (description
+     "This package provides code for generating Annotation packages and their
+databases.  Packages produced are intended to be used with AnnotationDbi.")
+    (license license:artistic2.0)))
+
 (define-public r-deseq2
   (package
     (name "r-deseq2")
