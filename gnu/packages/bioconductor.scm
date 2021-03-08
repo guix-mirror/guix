@@ -1487,6 +1487,34 @@ structure.")
 microarrays.")
     (license license:artistic2.0)))
 
+(define-public r-genefilter
+  (package
+    (name "r-genefilter")
+    (version "1.72.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "genefilter" version))
+       (sha256
+        (base32
+         "1c6h3qnjvphs977qhv5vafvsb108r0q7xhaayly6qv6adqfn94rn"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)
+       ("r-knitr" ,r-knitr)))
+    (propagated-inputs
+     `(("r-annotate" ,r-annotate)
+       ("r-annotationdbi" ,r-annotationdbi)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-survival" ,r-survival)))
+    (home-page "https://bioconductor.org/packages/genefilter")
+    (synopsis "Filter genes from high-throughput experiments")
+    (description
+     "This package provides basic functions for filtering genes from
+high-throughput sequencing experiments.")
+    (license license:artistic2.0)))
+
 (define-public r-hpar
   (package
     (name "r-hpar")
