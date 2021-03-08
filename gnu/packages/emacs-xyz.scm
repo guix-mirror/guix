@@ -23933,6 +23933,31 @@ convert the resulting @code{.epub} to a @code{.mobi} file.  Needs a working
 zip utility (default is @code{zip}).")
     (license license:gpl3+)))
 
+(define-public emacs-ox-gemini
+  ;; No releases yet
+  (let ((commit "d88c10bcb10fc463fa5a2f6e29c8c94b75a314c0")
+        (revision "0"))
+    (package
+      (name "emacs-ox-gemini")
+      (version (git-version "2021-01-02" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://git.sr.ht/~abrahms/ox-gemini")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1f8kbg5vjd1k7fak3v56b77yk612j6vmzx4xzx3m2vq3f0nyxq29"))))
+      (build-system emacs-build-system)
+      (home-page "https://sr.ht/~abrahms/ox-gemini")
+      (synopsis "Export Org files in Gemini format")
+      (description
+       "@code{ox-gemini} adds support for exporting Org files in Gemini
+format.  Many things were taken from the ASCII exporter, from which
+@code{ox-gemini} derives.")
+      (license license:gpl3+))))
+
 (define-public emacs-ox-hugo
   (package
     (name "emacs-ox-hugo")
