@@ -1661,6 +1661,37 @@ exploration of the results.")
 high-throughput sequencing experiments.")
     (license license:artistic2.0)))
 
+(define-public r-gostats
+  (package
+    (name "r-gostats")
+    (version "2.56.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "GOstats" version))
+       (sha256
+        (base32
+         "18q8p0fv9fl2r6zjxknfjwqxr69dlyxy6c8amzn6c6dwjq1cxk6j"))))
+    (properties `((upstream-name . "GOstats")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotate" ,r-annotate)
+       ("r-annotationdbi" ,r-annotationdbi)
+       ("r-annotationforge" ,r-annotationforge)
+       ("r-biobase" ,r-biobase)
+       ("r-category" ,r-category)
+       ("r-go-db" ,r-go-db)
+       ("r-graph" ,r-graph)
+       ("r-rgraphviz" ,r-rgraphviz)
+       ("r-rbgl" ,r-rbgl)))
+    (home-page "https://bioconductor.org/packages/GOstats")
+    (synopsis "Tools for manipulating GO and microarrays")
+    (description
+     "This package provides a set of tools for interacting with GO and
+microarray data.  A variety of basic manipulation tools for graphs, hypothesis
+testing and other simple calculations.")
+    (license license:artistic2.0)))
+
 (define-public r-gseabase
   (package
     (name "r-gseabase")
