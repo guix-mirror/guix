@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -189,8 +189,11 @@ by no means limited to these applications.)  This package provides XML DTDs.")
                   #t))))
     (build-system trivial-build-system)
     (arguments
-     `(#:builder (let ((name-version (string-append ,name "-" ,version)))
+     `(#:builder (begin
                    (use-modules (guix build utils))
+
+                   (define name-version
+                     (string-append ,name "-" ,version))
 
                    (let* ((bzip2  (assoc-ref %build-inputs "bzip2"))
                           (xz     (assoc-ref %build-inputs "xz"))
