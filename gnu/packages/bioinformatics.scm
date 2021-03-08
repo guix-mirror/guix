@@ -7387,35 +7387,6 @@ includes software to
 ")
       (license license:cc0))))
 
-(define-public r-gseabase
-  (package
-    (name "r-gseabase")
-    (version "1.52.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (bioconductor-uri "GSEABase" version))
-       (sha256
-        (base32
-         "0dawh1kjmf6921jm77j2s2phrq5237pjc4sdh8fkln89gf48zx6i"))))
-    (properties `((upstream-name . "GSEABase")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-annotate" ,r-annotate)
-       ("r-annotationdbi" ,r-annotationdbi)
-       ("r-biobase" ,r-biobase)
-       ("r-biocgenerics" ,r-biocgenerics)
-       ("r-graph" ,r-graph)
-       ("r-xml" ,r-xml)))
-    (native-inputs
-     `(("r-knitr" ,r-knitr)))
-    (home-page "https://bioconductor.org/packages/GSEABase")
-    (synopsis "Gene set enrichment data structures and methods")
-    (description
-     "This package provides classes and methods to support @dfn{Gene Set
-Enrichment Analysis} (GSEA).")
-    (license license:artistic2.0)))
-
 (define-public r-category
   (package
     (name "r-category")
