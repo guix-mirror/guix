@@ -7387,51 +7387,6 @@ includes software to
 ")
       (license license:cc0))))
 
-(define-public r-dexseq
-  (package
-    (name "r-dexseq")
-    (version "1.36.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (bioconductor-uri "DEXSeq" version))
-       (sha256
-        (base32
-         "0wfjb42xcr4wjy8a654b74411dky8hp6sp8xdwf0sxqgsxy106qi"))))
-    (properties `((upstream-name . "DEXSeq")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-annotationdbi" ,r-annotationdbi)
-       ("r-biobase" ,r-biobase)
-       ("r-biocgenerics" ,r-biocgenerics)
-       ("r-biocparallel" ,r-biocparallel)
-       ("r-biomart" ,r-biomart)
-       ("r-deseq2" ,r-deseq2)
-       ("r-genefilter" ,r-genefilter)
-       ("r-geneplotter" ,r-geneplotter)
-       ("r-genomicranges" ,r-genomicranges)
-       ("r-hwriter" ,r-hwriter)
-       ("r-iranges" ,r-iranges)
-       ("r-rcolorbrewer" ,r-rcolorbrewer)
-       ("r-rsamtools" ,r-rsamtools)
-       ("r-s4vectors" ,r-s4vectors)
-       ("r-statmod" ,r-statmod)
-       ("r-stringr" ,r-stringr)
-       ("r-summarizedexperiment" ,r-summarizedexperiment)))
-    (native-inputs
-     `(("r-knitr" ,r-knitr)))
-    (home-page "https://bioconductor.org/packages/DEXSeq")
-    (synopsis "Inference of differential exon usage in RNA-Seq")
-    (description
-     "This package is focused on finding differential exon usage using RNA-seq
-exon counts between samples with different experimental designs.  It provides
-functions that allows the user to make the necessary statistical tests based
-on a model that uses the negative binomial distribution to estimate the
-variance between biological replicates and generalized linear models for
-testing.  The package also provides functions for the visualization and
-exploration of the results.")
-    (license license:gpl3+)))
-
 (define-public r-annotationforge
   (package
     (name "r-annotationforge")
