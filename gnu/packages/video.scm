@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015, 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2014, 2015, 2016, 2018, 2020 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2015, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Alex Vong <alexvong1995@gmail.com>
@@ -1234,7 +1234,9 @@ ASS/SSA (Advanced Substation Alpha/SubStation Alpha) subtitle format.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1x3j6yfyxl52adgnabycr0n38j9hx2j74la0hz0n8cnh9ry4d2qj"))))
+                "1x3j6yfyxl52adgnabycr0n38j9hx2j74la0hz0n8cnh9ry4d2qj"))
+              (patches (search-patches "libcaca-CVE-2021-3410-pt1.patch"
+                                       "libcaca-CVE-2021-3410-pt2.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))

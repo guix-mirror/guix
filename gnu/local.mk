@@ -1266,6 +1266,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/libbase-fix-includes.patch		\
   %D%/packages/patches/libbase-use-own-logging.patch		\
   %D%/packages/patches/libbonobo-activation-test-race.patch	\
+  %D%/packages/patches/libcaca-CVE-2021-3410-pt1.patch		\
+  %D%/packages/patches/libcaca-CVE-2021-3410-pt2.patch		\
   %D%/packages/patches/libcanberra-sound-theme-freedesktop.patch \
   %D%/packages/patches/libcanberra-wayland-crash.patch \
   %D%/packages/patches/libcyaml-libyaml-compat.patch		\
