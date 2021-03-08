@@ -7387,37 +7387,6 @@ includes software to
 ")
       (license license:cc0))))
 
-(define-public r-category
-  (package
-    (name "r-category")
-    (version "2.56.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (bioconductor-uri "Category" version))
-       (sha256
-        (base32
-         "0m77wpnica0h2ia9ajdaiga4plgz1s9wls6pdnxzk7kwl8a68wkr"))))
-    (properties `((upstream-name . "Category")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-annotate" ,r-annotate)
-       ("r-annotationdbi" ,r-annotationdbi)
-       ("r-biobase" ,r-biobase)
-       ("r-biocgenerics" ,r-biocgenerics)
-       ("r-genefilter" ,r-genefilter)
-       ("r-graph" ,r-graph)
-       ("r-gseabase" ,r-gseabase)
-       ("r-matrix" ,r-matrix)
-       ("r-rbgl" ,r-rbgl)
-       ("r-dbi" ,r-dbi)))
-    (home-page "https://bioconductor.org/packages/Category")
-    (synopsis "Category analysis")
-    (description
-     "This package provides a collection of tools for performing category
-analysis.")
-    (license license:artistic2.0)))
-
 (define-public r-gostats
   (package
     (name "r-gostats")
