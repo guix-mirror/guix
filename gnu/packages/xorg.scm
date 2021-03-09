@@ -6766,3 +6766,77 @@ are easier to see and use, and Xdialog adds more functionality such as a help
 button and box, a treeview, an editbox, file and directory selectors, a range
 box, and a calendar.  It uses GTK+, and will match your desktop theme.")
     (license license:gpl2+)))
+
+(define-public xvfb-run
+  (package
+    (name "xvfb-run")
+    (version "1.20.10-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://debian/pool/main/x/xorg-server/"
+                           "xorg-server_" version ".diff.gz"))
+       (sha256
+        (base32 "08gs9ni8ss8rw4n9cql1s8q05mj517vk1vm1varj1dsx75k4j25v"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'unpack
+           ;; Apply the source patch to an empty directory.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((source (assoc-ref inputs "source"))
+                    (diff.gz (basename source))
+                    (diff (substring diff.gz 0 (string-rindex diff.gz #\.))))
+               (mkdir "source")
+               (chdir "source")
+               (copy-file source diff.gz)
+               (invoke "gunzip" diff.gz)
+               (invoke "patch" "-Np1" "-i" diff)
+               (chdir "debian/local"))))
+         (delete 'configure)            ; nothing to configure
+         (replace 'build
+           (lambda _
+             (chmod "xvfb-run" #o755)
+             (substitute* "xvfb-run"
+               (("(\\(| )(fmt|stty|awk|kill|getopt|mktemp|touch|rm|mcookie)"
+                 _ prefix command)
+                (string-append prefix (which command)))
+               ;; These also feature in UI messages, so be more strict.
+               (("(AUTHFILE |command -v |exec )(Xvfb|xauth)"
+                 _ prefix command)
+                (string-append prefix (which command))))))
+         (replace 'check
+           ;; There are no tests included.  Here we test whether we can run
+           ;; a simple client without xvfb-run itself relying on $PATH.
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (let ((old-PATH (getenv "PATH"))
+                     (xterm (which "xterm")))
+                 (unsetenv "PATH")
+                 (invoke "./xvfb-run" xterm "-e" "true")
+                 (setenv "PATH" old-PATH)))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (man (string-append out "/share/man/man1")))
+               (install-file "xvfb-run" bin)
+               (install-file "xvfb-run.1" man)))))))
+    (inputs
+     `(("util-linux" ,util-linux)       ; for getopt
+       ("xauth" ,xauth)
+       ("xorg-server" ,xorg-server)))
+    (native-inputs
+     `(("xterm" ,xterm)))               ; for the test
+    ;; This script is not part of the upstream xorg-server.  It is provided only
+    ;; as a patch added to Debian's package.
+    (home-page "https://packages.debian.org/sid/xorg-server-source")
+    (synopsis "Run X11 client or command in a virtual X server environment")
+    (description
+     "The @command{xvfb-run} wrapper simplifies running commands and scripts
+within a virtual X server environment.  It sets up an X authority file or uses
+an existing user-specified one, writes a cookie to it, and then starts the
+@command{Xvfb} X server as a background process.  It also takes care of killing
+the server and cleaning up before returning the exit status of the command.")
+    (license license:x11)))
