@@ -9005,22 +9005,22 @@ and coverage methods to tune the choice of threshold.")
 (define-public r-labelled
   (package
     (name "r-labelled")
-    (version "2.7.0")
+    (version "2.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "labelled" version))
        (sha256
         (base32
-         "1nsb0mh0jg7gggc41b6v55nmfq07g0qn9fy55x4jws5dscs6pdmi"))))
+         "0fs8fhmk9j2nv2j87mpkmm0clz34f8kybnzn6pzqpcbwk0i2pcwg"))))
     (properties `((upstream-name . "labelled")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dplyr" ,r-dplyr)
        ("r-haven" ,r-haven)
        ("r-lifecycle" ,r-lifecycle)
-       ("r-pillar" ,r-pillar)
        ("r-rlang" ,r-rlang)
+       ("r-stringr" ,r-stringr)
        ("r-tidyr" ,r-tidyr)
        ("r-vctrs" ,r-vctrs)))
     (native-inputs
