@@ -19276,6 +19276,31 @@ library: to minimize boilerplate code in traditional extension modules by
 inferring type information using compile-time introspection.")
     (license license:bsd-3)))
 
+(define-public python-pooch
+  (package
+    (name "python-pooch")
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pooch" version))
+       (sha256
+        (base32 "1618adsg9r8fsv422sv35z1i723q3a1iir5v7dv2sklh4pl4im1h"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)) ;requires online data
+    (propagated-inputs
+     `(("python-appdirs" ,python-appdirs)
+       ("python-packaging" ,python-packaging)
+       ("python-requests" ,python-requests)))
+    (home-page "https://github.com/fatiando/pooch")
+    (synopsis "Manage your Python library's sample data files")
+    (description
+     "Pooch manages your Python library's sample data files: it automatically
+downloads and stores them in a local directory, with support for versioning
+and corruption checks.")
+    (license license:bsd-3)))
+
 (define-public python-fasteners
   (package
     (name "python-fasteners")
