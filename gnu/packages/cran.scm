@@ -13968,14 +13968,14 @@ several common set, element and attribute related tasks.")
 (define-public r-shinyjqui
   (package
     (name "r-shinyjqui")
-    (version "0.3.3")
+    (version "0.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "shinyjqui" version))
        (sha256
         (base32
-         "0n4ijxmkp8x6dwrsxwvx0zgd8b5129cmn6q6rrav38v1q5k8889x"))
+         "0ins0pmfis34jr0rimsp1k1aw856r3xjdnsvv8lkwqhvp58nzqah"))
        (snippet
         '(begin
            (delete-file "inst/www/shinyjqui.min.js")))))
