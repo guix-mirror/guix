@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2020 Zhu Zihao <all_but_last@163.com>
+;;; Copyright © 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -171,14 +172,14 @@ client.")
 (define-public libime
   (package
     (name "libime")
-    (version "1.0.3")
+    (version "1.0.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.fcitx-im.org/fcitx5/libime/libime-"
                            version "_dict.tar.xz"))
        (sha256
-        (base32 "1gi9ylqha9x3dhjsa2i7x9wh2g9vgqkkfr6s1facs2ky65vgvdrv"))))
+        (base32 "0bwl12cy7crpf62f669qn99rv4df1sjlggvcn80z64yabs36nhjr"))))
     (build-system cmake-build-system)
     (inputs
      `(("fcitx5" ,fcitx5)
