@@ -447,7 +447,7 @@ more, like escaping special characters.")
 (define-public libfastjson
   (package
     (name "libfastjson")
-    (version "0.99.8")
+    (version "0.99.9")
     (source
      (origin
        (method git-fetch)
@@ -456,8 +456,7 @@ more, like escaping special characters.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0qhs0g9slj3p0v2z4s3cnsx44msrlb4k78ljg7714qiziqbrbwyl"))))
+        (base32 "12rqcdqxazw8czzxbivdapdgj19pcswpw1jp2915sxbljis83g6q"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
