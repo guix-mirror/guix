@@ -58,6 +58,7 @@
              (sha256
               (base32
                "0m8nkmywkqwyrr01q7aiakj6mi4rb2psjgzv8n0x82x3s1rpfyql"))))
+    (replacement imagemagick/fixed)
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--with-frozenpaths" "--without-gcc-arch"
@@ -125,6 +126,18 @@ and TIFF.  Use ImageMagick to resize, flip, mirror, rotate, distort, shear and
 transform images, adjust image colors, apply various special effects, or draw
 text, lines, polygons, ellipses and Bézier curves.")
     (license (license:fsf-free "http://www.imagemagick.org/script/license.php"))))
+
+(define-public imagemagick/fixed
+  (package
+    (inherit imagemagick)
+    (version "6.9.12-2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://imagemagick/ImageMagick-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "17da5zihz58qm41y61sbvw626m5xfwr2nzszlikrvxyq1j1q7asa"))))))
 
 (define-public perl-image-magick
   (package
