@@ -964,7 +964,7 @@ of xmpppy.")
 (define-public gajim
   (package
     (name "gajim")
-    (version "1.3.0")
+    (version "1.3.1")
     (source
      (origin
        (method url-fetch)
@@ -973,7 +973,7 @@ of xmpppy.")
                        (version-major+minor version)
                        "/gajim-" version ".tar.gz"))
        (sha256
-        (base32 "1v0cx8r1zr9aj17ik5apxxfpr9rv5w8p1i7hfys6wp9292gc7s25"))
+        (base32 "070h1n3miq99z6ln77plk3jlisgfqfs2yyn4rhchpf25zd8is1ba"))
        (patches (search-patches "gajim-honour-GAJIM_PLUGIN_PATH.patch"))))
     (build-system python-build-system)
     (arguments
@@ -989,7 +989,9 @@ of xmpppy.")
        (modify-phases %standard-phases
          (add-after 'unpack 'disable-failing-tests
            (lambda _
-             ;; https://dev.gajim.org/gajim/gajim/-/issues/10427
+             ;; ModuleNotFoundError: No module named 'gajim.gui.emoji_data'
+             ;; https://dev.gajim.org/gajim/gajim/-/issues/10478
+             (delete-file "test/lib/gajim_mocks.py")
              (delete-file "test/unit/test_gui_interface.py")
              #t))
          (replace 'check
