@@ -11241,14 +11241,14 @@ package provides a minimal R interface by relying on the Rcpp package.")
 (define-public r-rcppparallel
   (package
     (name "r-rcppparallel")
-    (version "5.0.2")
+    (version "5.0.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "RcppParallel" version))
        (sha256
         (base32
-         "10bg4fw38m64dhy543rwq2nnjjc9y24iggk343xslrb3ij8018lc"))))
+         "0ihcirny4al2ydymxhdfacwmybmrgrz5nm0lbf49gk2zy8w124ki"))))
     (properties `((upstream-name . "RcppParallel")))
     (build-system r-build-system)
     (home-page "https://rcppcore.github.io/RcppParallel/")
