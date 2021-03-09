@@ -7,7 +7,7 @@
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2016, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2015, 2018, 2020 Kyle Meyer <kyle@kyleam.com>
+;;; Copyright © 2015, 2018, 2020, 2021 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015, 2017, 2018, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017, 2018 Nikita <nikita@n0.is>
@@ -2347,7 +2347,15 @@ based on a manifest file published by servers.")
        (method url-fetch)
        (uri (pypi-uri "b4" version))
        (sha256
-        (base32 "1j904dy9cwxl85k2ngc498q5cdnqwsmw3jibjr1m55w8aqdck68z"))))
+        (base32 "1j904dy9cwxl85k2ngc498q5cdnqwsmw3jibjr1m55w8aqdck68z"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Fixes issue with dependency requirements being too strict. See upstream commit:
+           ;; https://git.kernel.org/pub/scm/utils/b4/b4.git/commit/?id=31348a14afdb1d39e7faf9576eaddea1ced76e19
+           (substitute* "setup.py"
+             (("~=") ">="))
+           #t))))
     (build-system python-build-system)
     (arguments '(#:tests? #f))          ; No tests.
     (inputs
