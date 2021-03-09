@@ -16778,6 +16778,33 @@ inline CSS directives, and it can be rendered both with and without word
 wrap.")
     (license license:expat)))
 
+(define-public r-ggtext
+  (package
+    (name "r-ggtext")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ggtext" version))
+       (sha256
+        (base32
+         "0n19dlcys8v7myfyckr6dnq0kx79k3sbh8nwx1jsx8pgzfbi8a2b"))))
+    (properties `((upstream-name . "ggtext")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-gridtext" ,r-gridtext)
+       ("r-rlang" ,r-rlang)
+       ("r-scales" ,r-scales)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://wilkelab.org/ggtext/")
+    (synopsis "Improved text rendering support for ggplot2")
+    (description
+     "This package provides a ggplot2 extension that enables the rendering of
+complex formatted plot labels (titles, subtitles, facet labels, axis labels,
+etc.).  Text boxes with automatic word wrap are also supported.")
+    (license license:gpl2)))
+
 ;; This package includes minified JavaScript files.  When upgrading please
 ;; check that there are no new minified JavaScript files.
 (define-public r-flexdashboard
