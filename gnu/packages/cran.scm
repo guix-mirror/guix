@@ -15462,14 +15462,14 @@ genetics of complex population dynamics.")
 (define-public r-genetics
   (package
     (name "r-genetics")
-    (version "1.3.8.1.2")
+    (version "1.3.8.1.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "genetics" version))
        (sha256
         (base32
-         "1v0ylnia6c44v356dsmnkx6054vcxazpzsrdh3yph5ch5vg6gjrh"))))
+         "0lljxvz7nc6y2z303icphar2niir0i407w5cyhy2pwspd9gwkwpy"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-combinat" ,r-combinat)
