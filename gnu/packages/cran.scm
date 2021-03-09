@@ -5379,14 +5379,14 @@ to variables on the left-hand side of the assignment.")
 (define-public r-pillar
   (package
     (name "r-pillar")
-    (version "1.4.7")
+    (version "1.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "pillar" version))
        (sha256
         (base32
-         "167ji21fx04s2niw5pjq9vzxgagxzsg3gimh8dzr2kl5ljrb5vfd"))))
+         "0wp68cg95895aybi7yjqy0sidvc68lmfqndinpd63dysci9x3r8c"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cli" ,r-cli)
@@ -5397,6 +5397,8 @@ to variables on the left-hand side of the assignment.")
        ("r-rlang" ,r-rlang)
        ("r-utf8" ,r-utf8)
        ("r-vctrs" ,r-vctrs)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/r-lib/pillar")
     (synopsis "Coloured formatting for columns")
     (description
