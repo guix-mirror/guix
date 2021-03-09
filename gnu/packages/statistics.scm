@@ -3078,13 +3078,13 @@ worker processes and collect and return the results on the master.")
 (define-public r-sparsem
   (package
     (name "r-sparsem")
-    (version "1.78")
+    (version "1.81")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "SparseM" version))
               (sha256
                (base32
-                "0cmlm0lps3daalvp5jzjnjfys388hgkyc8yw0g5r2351h749xdyn"))))
+                "0csbqd9wm6r4162mday1iaigzf9wv2rp1zq8hnihys6f38w8z0xx"))))
     (properties
      `((upstream-name . "SparseM")))
     (native-inputs
