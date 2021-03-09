@@ -11028,7 +11028,7 @@ with narrow binding events such as transcription factor ChIP-seq.")
 (define-public trim-galore
   (package
     (name "trim-galore")
-    (version "0.6.1")
+    (version "0.6.6")
     (source
      (origin
        (method git-fetch)
@@ -11038,7 +11038,7 @@ with narrow binding events such as transcription factor ChIP-seq.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1y31wbxwkm9xqzr5zv1pk5q418whnmlmgmfyxxpnl12h83m2i9iv"))))
+         "0yrwg6325j4sb9vnplvl3jplzab0qdhp92wl480qjinpfq88j4rs"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
