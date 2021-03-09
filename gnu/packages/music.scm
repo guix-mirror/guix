@@ -1861,7 +1861,7 @@ for path in [path for path in sys.path if 'site-packages' in path]: site.addsite
        ("txt2man" ,txt2man)
        ("libxml2" ,libxml2) ; for tests
        ("ghostscript" ,ghostscript)
-       ("texinfo" ,texinfo)))
+       ("texinfo" ,texinfo-5)))
     (home-page "https://www.gnu.org/software/solfege/")
     (synopsis "Ear training")
     (description
