@@ -590,6 +590,7 @@ extracting icontainer icon files.")
        (sha256
         (base32
          "0d46bdvxdiv59lxnb0xz9ywm8arsr6xsapi5s6y6vnys2wjz6aax"))))
+   (replacement libtiff/fixed)
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                           ;1.3 MiB of HTML documentation
@@ -611,6 +612,19 @@ collection of tools for doing simple manipulations of TIFF images.")
    (license (license:non-copyleft "file://COPYRIGHT"
                                   "See COPYRIGHT in the distribution."))
    (home-page "http://www.simplesystems.org/libtiff/")))
+
+(define-public libtiff/fixed
+  (package
+    (inherit libtiff)
+    (version "4.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://download.osgeo.org/libtiff/tiff-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1jrkjv0xya9radddn8idxvs2gqzp3l2b1s8knlizmn7ad3jq817b"))))))
 
 (define-public leptonica
   (package
