@@ -2512,14 +2512,17 @@ exec " gcc "/bin/" program
               ,flags))
            ((#:phases phases '%standard-phases)
             `(modify-phases ,phases
-               (add-before 'check 'skip-fnmatch-test
-                 (lambda _
-                   ;; 'test-fnmatch' fails when using glibc-mesboot@2.16, due
-                   ;; to incorrect handling of the [:alpha:] regexp character
-                   ;; class.  Ignore it.
-                   (substitute* "gnulib-tests/Makefile"
-                     (("^XFAIL_TESTS =")
-                      "XFAIL_TESTS = test-fnmatch ")))))))))))
+              ;; 'test-fnmatch' fails when using glibc-mesboot@2.16, due
+              ;; to incorrect handling of the [:alpha:] regexp character
+              ;; class.  Ignore it.
+              ,@(if (string=? (%current-system)
+                              (or "x86_64-linux" "i686-linux"))
+                  '((add-before 'check 'skip-fnmatch-test
+                      (lambda _
+                        (substitute* "gnulib-tests/Makefile"
+                          (("^XFAIL_TESTS =")
+                           "XFAIL_TESTS = test-fnmatch ")))))
+                  '()))))))))
 
 (define file
   (package
