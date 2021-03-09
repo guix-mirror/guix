@@ -432,7 +432,7 @@ upstream source.
 @subsection Package Naming
 
 @cindex package name
-A package has actually two names associated with it:
+A package actually has two names associated with it.
 First, there is the name of the @emph{Scheme variable}, the one following
 @code{define-public}.  By this name, the package can be made known in the
 Scheme code, for instance as input to another package.  Second, there is
