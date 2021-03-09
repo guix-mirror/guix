@@ -4800,7 +4800,7 @@ applications.  It only supports Intel-compatible CPUs (x86).")
               (sha256
                (base32
                 "1ypdiw4cq22llvm8jyszxdq6r1aydkj80dsxjarjn5b7c1f2q3ar"))))
-    ;; SVT-AV1 only supports 64-bit Intel-compatible CPUs.
+    ;; SVT-VP9 only supports 64-bit Intel-compatible CPUs.
     (supported-systems '("x86_64-linux"))
     (build-system cmake-build-system)
     (arguments
