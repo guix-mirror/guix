@@ -280,8 +280,6 @@
          (remote-cache   (and remote-server
                               (cuirass-remote-server-configuration-cache
                                remote-server)))
-         (db             (dirname
-                          (cuirass-configuration-database config)))
          (user           (cuirass-configuration-user config))
          (log            "/var/log/cuirass")
          (group          (cuirass-configuration-group config)))
@@ -290,7 +288,6 @@
           (use-modules (guix build utils))
 
           (mkdir-p #$cache)
-          (mkdir-p #$db)
           (mkdir-p #$log)
 
           (when #$remote-cache
@@ -299,7 +296,6 @@
           (let ((uid (passwd:uid (getpw #$user)))
                 (gid (group:gid (getgr #$group))))
             (chown #$cache uid gid)
-            (chown #$db uid gid)
             (chown #$log uid gid)
 
             (when #$remote-cache
