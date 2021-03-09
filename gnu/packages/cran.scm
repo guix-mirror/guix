@@ -25279,14 +25279,14 @@ p-value approximations.")
 (define-public r-survminer
   (package
     (name "r-survminer")
-    (version "0.4.8")
+    (version "0.4.9")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "survminer" version))
        (sha256
         (base32
-         "1niysd89mxb2a6ncvzm1s6xgfvq3psba65af0whh2p56r2hwrwff"))))
+         "0byh0wxdbjfwdrzsnqv4xlmnik6lj0vkkzfxy7lssk8dv5zmj7nz"))))
     (properties `((upstream-name . "survminer")))
     (build-system r-build-system)
     (propagated-inputs
@@ -25294,6 +25294,7 @@ p-value approximations.")
        ("r-dplyr" ,r-dplyr)
        ("r-ggplot2" ,r-ggplot2)
        ("r-ggpubr" ,r-ggpubr)
+       ("r-ggtext" ,r-ggtext)
        ("r-gridextra" ,r-gridextra)
        ("r-magrittr" ,r-magrittr)
        ("r-maxstat" ,r-maxstat)
