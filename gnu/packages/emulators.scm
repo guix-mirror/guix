@@ -2094,7 +2094,7 @@ framework based on QEMU.")
 (define-public ppsspp
   (package
     (name "ppsspp")
-    (version "1.11.2")
+    (version "1.11.3")
     (source
      (origin
        (method git-fetch)
@@ -2102,7 +2102,7 @@ framework based on QEMU.")
              (url "https://github.com/hrydgard/ppsspp")
              (commit (string-append "v" version))))
        (sha256
-        (base32 "03nxarx0l1ndi9fffl1wjfwsg3pk2bwf72cwcfaski1sg3dxsv7h"))
+        (base32 "1dpxnwvl6jq7z67lbjws4lqc1bxc31xi6ddlmg5n3aig008yi2fp"))
        (file-name (git-file-name name version))
        (patches
         (search-patches "ppsspp-disable-upgrade-and-gold.patch"))
