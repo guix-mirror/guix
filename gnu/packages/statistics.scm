@@ -1202,19 +1202,21 @@ and to generate base64 encoded string from raster matrix.")
 (define-public r-svglite
   (package
     (name "r-svglite")
-    (version "1.2.3.2")
+    (version "2.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "svglite" version))
        (sha256
         (base32
-         "00n8bg4iligl0h24v42cka417w26zmcxrr4r6k8wdal1riwhgmi5"))))
+         "19ggknw5322yw7r1bzhw0bqggcrpn0qxddk7kblpqnra2zz2brkn"))))
     (build-system r-build-system)
+    (inputs
+     `(("libpng" ,libpng)
+       ("zlib" ,zlib)))
     (propagated-inputs
-     `(("r-bh" ,r-bh)
-       ("r-gdtools" ,r-gdtools)
-       ("r-rcpp" ,r-rcpp)))
+     `(("r-cpp11" ,r-cpp11)
+       ("r-systemfonts" ,r-systemfonts)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/hadley/svglite")
