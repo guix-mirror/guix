@@ -25698,14 +25698,14 @@ for creating, simulating, or validating values for such parameters.")
 (define-public r-tune
   (package
     (name "r-tune")
-    (version "0.1.2")
+    (version "0.1.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tune" version))
        (sha256
         (base32
-         "0ja7rjkjj88v3ngrc6izcz2qh9qv4s8abgcafmvx2ihgz99hds37"))))
+         "05r5jzg96g2z10a2w4w8wq1ysfaxr91acwrvn75pmcy4rmixf293"))))
     (properties `((upstream-name . "tune")))
     (build-system r-build-system)
     (propagated-inputs
@@ -25717,7 +25717,6 @@ for creating, simulating, or validating values for such parameters.")
        ("r-ggplot2" ,r-ggplot2)
        ("r-glue" ,r-glue)
        ("r-gpfit" ,r-gpfit)
-       ("r-hardhat" ,r-hardhat)
        ("r-parsnip" ,r-parsnip)
        ("r-purrr" ,r-purrr)
        ("r-recipes" ,r-recipes)
