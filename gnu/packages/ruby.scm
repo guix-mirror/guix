@@ -6154,13 +6154,13 @@ interface so that Terraform can be more easily invoked from Ruby code.")
 (define-public ruby-pstree
   (package
     (name "ruby-pstree")
-    (version "0.1.0")
+    (version "0.3.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "pstree" version))
               (sha256
                (base32
-                "1mig1sv5qx1cdyhjaipy8jlh9j8pnja04vprrzihyfr54x0215p1"))))
+                "0ld3ng37y92kv9vqnachw1l3n07hsc8hrnjs9d840liw0mysf1vp"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("ruby-gem-hadar" ,ruby-gem-hadar)
