@@ -5199,14 +5199,14 @@ C++ library for numerical linear algebra and RcppEigen glue.")
 (define-public r-pbkrtest
   (package
     (name "r-pbkrtest")
-    (version "0.5-0.1")
+    (version "0.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "pbkrtest" version))
        (sha256
         (base32
-         "0sgl8r74cknmp8lnq5jvc1w181274ylgk6w4pxf4mzkfii42argm"))))
+         "1if7msv9i7jhg1as1f7m81a95dnwhwj3yfs24bqr0f6r0ch4b8xj"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-broom" ,r-broom)
