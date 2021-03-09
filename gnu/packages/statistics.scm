@@ -2267,18 +2267,17 @@ module, Java Server Pages, and Python's psp module.")
 (define-public r-desc
   (package
     (name "r-desc")
-    (version "1.2.0")
+    (version "1.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "desc" version))
        (sha256
         (base32
-         "1s6s13fk6sxwcj8wzkwxl9vr33153xx11p5wi9avqx3rzkabavz6"))))
+         "1sw4vya3l971gpccq4gnjywgbl73bgx8la18l0wy617qv94f905y"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-assertthat" ,r-assertthat)
-       ("r-crayon" ,r-crayon)
+     `(("r-crayon" ,r-crayon)
        ("r-r6" ,r-r6)
        ("r-rprojroot" ,r-rprojroot)))
     (home-page "https://github.com/r-pkgs/desc")
