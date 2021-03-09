@@ -1366,6 +1366,39 @@ data structures in C++.")
 rules and utility functions for adaptive GH quadrature.")
     (license license:expat)))
 
+(define-public r-rstpm2
+  (package
+    (name "r-rstpm2")
+    (version "1.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rstpm2" version))
+       (sha256
+        (base32
+         "0c6l3z250b2kn6mh2xyb0bd2y5nsbj11n9xfi51dac9s8xq3v7m4"))))
+    (properties `((upstream-name . "rstpm2")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bbmle" ,r-bbmle)
+       ("r-bh" ,r-bh)
+       ("r-desolve" ,r-desolve)
+       ("r-fastghquad" ,r-fastghquad)
+       ("r-mgcv" ,r-mgcv)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)
+       ("r-survival" ,r-survival)))
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "https://github.com/mclements/rstpm2")
+    (synopsis "Link-based survival models")
+    (description
+     "This package provides R implementations of @dfn{generalized survival
+models} (GSMs), smooth @dfn{accelerated failure time} (AFT) models and Markov
+multi-state models.")
+    ;; One of these licenses
+    (license (list license:gpl2 license:gpl3))))
+
 ;; This package includes minified JavaScript files.  When upgrading please
 ;; check that there are no new minified JavaScript files.
 (define-public r-jquerylib
