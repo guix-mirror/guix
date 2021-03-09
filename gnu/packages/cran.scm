@@ -25646,14 +25646,14 @@ different types of resampling objects (e.g. bootstrap, cross-validation).")
 (define-public r-dicedesign
   (package
     (name "r-dicedesign")
-    (version "1.8-1")
+    (version "1.9")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "DiceDesign" version))
        (sha256
         (base32
-         "11s1m543kxd6gv4amh8z6pph1n67sj9sfwm6hjy83wfs65syf5vp"))))
+         "1a8ixa65xgyfri03cviic8qi2plbhdyz8m02bwif8w94w0q3ghlk"))))
     (properties `((upstream-name . "DiceDesign")))
     (build-system r-build-system)
     (home-page "http://dice.emse.fr/")
