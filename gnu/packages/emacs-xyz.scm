@@ -12313,7 +12313,7 @@ using Imenu, and Compilation mode support for MSBuild, devenv and xbuild.")
 (define-public emacs-php-mode
   (package
     (name "emacs-php-mode")
-    (version "1.23.0")
+    (version "1.24.0")
     (source
      (origin
        (method git-fetch)
@@ -12322,8 +12322,17 @@ using Imenu, and Compilation mode support for MSBuild, devenv and xbuild.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0wnkcxg6djy4jvxhshiy1iw6b5cf79pjwjhfd1a060cavhfm4v5c"))))
+        (base32 "0bs9q62bd7885c39v7x1qz3w1fhpmpdgm72xwsk2yygw0ii425nn"))))
     (build-system emacs-build-system)
+    (arguments
+     `(#:include (cons "^lisp/" %default-include)
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'add-source-to-load-path 'add-lisp-dir-to-emacs-load-path
+           (lambda _
+             (setenv "EMACSLOADPATH"
+                     (string-append (getcwd) "/lisp:" (getenv "EMACSLOADPATH"))))))))
+    (propagated-inputs `(("emacs-projectile" ,emacs-projectile)))
     (home-page "https://github.com/ejmr/php-mode")
     (synopsis "Major mode for editing PHP code")
     (description
