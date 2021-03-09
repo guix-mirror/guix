@@ -36,6 +36,8 @@
   #:use-module (gnu packages maths)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-build)
+  #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages sphinx)
@@ -249,9 +251,25 @@ logic, also known as grey logic.")
         (base32 "0wgisa03smhrphcjnhq7waa5vyyd32b67hblapjbqrqqj751idpv"))))
     (build-system python-build-system)
     (arguments
-     ;; TODO: Some tests require running X11 server. Disable them?
-     '(#:tests? #f))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'change-home-dir
+           (lambda _
+             ;; Change from /homeless-shelter to /tmp for write permission.
+             (setenv "HOME" "/tmp")
+             #t))
+         (replace 'build
+           (lambda _
+             (invoke "make")))
+         (replace 'check
+           (lambda _
+             ;; The following tests require online data.
+             (invoke "python" "-m" "pytest" "skimage" "--doctest-modules" "-k"
+                     (string-append "not test_ndim"
+                                    " and not test_skin")))))))
     ;; See requirements/ for the list of build and run time requirements.
+    ;; NOTE: scikit-image has an optional dependency on python-pooch, however
+    ;; propagating it would enable many more tests that require online data.
     (propagated-inputs
      `(("python-cloudpickle" ,python-cloudpickle)
        ("python-dask" ,python-dask)
@@ -264,7 +282,13 @@ logic, also known as grey logic.")
        ("python-scipy" ,python-scipy)
        ("python-tifffile" ,python-tifffile)))
     (native-inputs
-     `(("python-cython" ,python-cython)))
+     `(("python-codecov" ,python-codecov)
+       ("python-cython" ,python-cython)
+       ("python-flake8" ,python-flake8)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-localserver" ,python-pytest-localserver)
+       ("python-wheel" ,python-wheel)))
     (home-page "https://scikit-image.org/")
     (synopsis "Image processing in Python")
     (description
