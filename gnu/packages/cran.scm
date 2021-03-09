@@ -26735,13 +26735,13 @@ package also supersedes the package @code{BBmisc}.")
 (define-public r-paradox
   (package
     (name "r-paradox")
-    (version "0.7.0")
+    (version "0.7.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "paradox" version))
               (sha256
                (base32
-                "1fz6sdwvvifm4qbmwgm27dil278mswvcfw8bbsvli5v4l1ghw8kj"))))
+                "1difp0bzsfxcmbm1snahh3i6417k1a2w4mnjx65p20n2yiclmrgs"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-backports" ,r-backports)
