@@ -662,25 +662,31 @@ module and then similar looking characters are removed.")
 (define-public python-logwrap
   (package
     (name "python-logwrap")
-    (version "3.2.1")
+    (version "8.2.0.post0")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "logwrap" version ".zip"))
+       (uri (pypi-uri "logwrap" version))
        (sha256
         (base32
-         "1d2k0hvpbi51vl410y8fbs5m0nxnlh2k7gr2nrh3k81ibhzscsra"))))
+         "1dv7gny3rfci5cal2ipr6d0pcz3yhka7af96dfsd3ir1mxy8p1j9"))))
     (build-system python-build-system)
-    (propagated-inputs
-     `(("python-six" ,python-six)
-       ("python-typing" ,python-typing)))
+    (arguments
+     `(#:tests? #f  ; Tests not included in pypi release.
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest"))
+             #t)))))
     (native-inputs
-     `(("unzip" ,unzip)
-       ("python-cython" ,python-cython)
+     `(("python-cython" ,python-cython)
        ("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-pytest-runner" ,python-pytest-runner)))
-    (home-page "https://github.com/penguinolog/logwrap")
+       ("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-toml" ,python-toml)
+       ("python-wheel" ,python-wheel)))
+    (home-page "https://github.com/python-useful-helpers/logwrap")
     (synopsis "Decorator for logging function arguments")
     (description "This package provides a decorator to log function arguments
 and function call return values in a human-readable way.")
