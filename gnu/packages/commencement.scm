@@ -2446,6 +2446,7 @@ exec " gcc "/bin/" program
 (define coreutils-boot0
   (package
     (inherit coreutils)
+    (outputs (delete "debug" (package-outputs coreutils)))
     (source (bootstrap-origin (package-source coreutils)))
     (name "coreutils-boot0")
     (native-inputs `())
