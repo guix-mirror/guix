@@ -129,14 +129,14 @@ files and provide more explicit control over line endings.")
 (define-public r-cachem
   (package
     (name "r-cachem")
-    (version "1.0.3")
+    (version "1.0.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "cachem" version))
        (sha256
         (base32
-         "0y3jb96lyn3vc3nq8gs9x669w3xp69vdg5xc69qy0l356r39gp3r"))))
+         "1b1gk837rk9kbfq385ybrrk12ckxwvhjvf0z9635l3vw49wal4mh"))))
     (properties `((upstream-name . "cachem")))
     (build-system r-build-system)
     (propagated-inputs
