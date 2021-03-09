@@ -6839,5 +6839,5 @@ within a virtual X server environment.  It sets up an X authority file or uses
 an existing user-specified one, writes a cookie to it, and then starts the
 @command{Xvfb} X server as a background process.  It also takes care of killing
 the server and cleaning up before returning the exit status of the command.")
-    (license license:x11                ; the script
-             license:gpl2+)))           ; the man page
+    (license (list license:x11                    ; the script
+                   license:gpl2+))))              ; the man page
