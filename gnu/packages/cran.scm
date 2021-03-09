@@ -1344,6 +1344,28 @@ are used.  Fastmap avoids this memory leak issue by implementing the map using
 data structures in C++.")
     (license license:expat)))
 
+(define-public r-fastghquad
+  (package
+    (name "r-fastghquad")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "fastGHQuad" version))
+       (sha256
+        (base32
+         "1rjia8wggadr9xwxcmzmal0rc4g6pa3dr5888fbbnb6abl8b2lrj"))))
+    (properties `((upstream-name . "fastGHQuad")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)))
+    (home-page "https://github.com/awblocker/fastGHQuad")
+    (synopsis "Fast Rcpp implementation of Gauss-Hermite Quadrature")
+    (description
+     "This package implements numerically-stable Gauss-Hermite quadrature
+rules and utility functions for adaptive GH quadrature.")
+    (license license:expat)))
+
 ;; This package includes minified JavaScript files.  When upgrading please
 ;; check that there are no new minified JavaScript files.
 (define-public r-jquerylib
