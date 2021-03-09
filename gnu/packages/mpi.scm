@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2018, 2019 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017 Dave Love <fx@gnu.org>
@@ -142,18 +142,18 @@ bind processes, and much more.")
     (license license:bsd-3)))
 
 (define-public hwloc-2
-  ;; Note: 2.0 isn't the default yet, see above.
+  ;; Note: 2.x isn't the default yet, see above.
   (package
     (inherit hwloc-1)
-    (version "2.2.0")
+    (version "2.4.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://www.open-mpi.org/software/hwloc/v"
+              (uri (string-append "https://download.open-mpi.org/release/hwloc/v"
                                   (version-major+minor version)
-                                  "/downloads/hwloc-" version ".tar.bz2"))
+                                  "/hwloc-" version ".tar.bz2"))
               (sha256
                (base32
-                "0li27a3lnmb77qxpijj0kpblz32wmqd3b386sypq8ar7vy9vhw5f"))))
+                "0qyywmyns2jf3is3axrwmffvdd7ji7liy5axp650q4i6kzk2291r"))))
 
     ;; libnuma is no longer needed.
     (inputs (alist-delete "numactl" (package-inputs hwloc-1)))
