@@ -777,7 +777,12 @@ is part of the GNOME accessibility project.")
    (outputs '("out" "bin" "doc"))
    (propagated-inputs
     `(("atk" ,atk)
-      ("gdk-pixbuf" ,gdk-pixbuf+svg)
+      ;; SVG support is optional and requires librsvg, which pulls in rust.
+      ;; Rust is not supported well on every architecture yet.
+      ("gdk-pixbuf" ,(if (string-prefix? "x86_64" (or (%current-target-system)
+                                                      (%current-system)))
+                         gdk-pixbuf+svg
+                         gdk-pixbuf))
       ("pango" ,pango)))
    (inputs
     `(("cups" ,cups)
@@ -844,7 +849,12 @@ application suites.")
    (propagated-inputs
     `(("at-spi2-atk" ,at-spi2-atk)
       ("atk" ,atk)
-      ("gdk-pixbuf" ,gdk-pixbuf+svg)
+      ;; SVG support is optional and requires librsvg, which pulls in rust.
+      ;; Rust is not supported well on every architecture yet.
+      ("gdk-pixbuf" ,(if (string-prefix? "x86_64" (or (%current-target-system)
+                                                      (%current-system)))
+                         gdk-pixbuf+svg
+                         gdk-pixbuf))
       ("libepoxy" ,libepoxy)
       ("libxcursor" ,libxcursor)
       ("libxi" ,libxi)

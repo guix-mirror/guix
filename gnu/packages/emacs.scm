@@ -71,6 +71,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (guix utils)
+  #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
 (define-public emacs
@@ -236,7 +237,12 @@
        ("libpng" ,libpng)
        ("zlib" ,zlib)
 
-       ("librsvg" ,librsvg)
+       ;; librsvg is an optional dependency that pulls in rust.  Rust is not
+       ;; supported well on every architecture yet.
+       ,@(if (string-prefix? "x86_64" (or (%current-target-system)
+                                          (%current-system)))
+             `(("librsvg" ,librsvg))
+             '())
        ("libxpm" ,libxpm)
        ("libxml2" ,libxml2)
        ("libice" ,libice)
