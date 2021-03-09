@@ -6957,14 +6957,14 @@ time after the current time, after the R execution stack has emptied.")
 (define-public r-promises
   (package
     (name "r-promises")
-    (version "1.1.1")
+    (version "1.2.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "promises" version))
        (sha256
         (base32
-         "002qkhcn3ri6a3w5fizjvdvrjgvqiw8i7rl9jglcnqik5kmwc61p"))))
+         "1dy4cbqw17awh4q8m7cy3anaj0n9iynabfzflb1g94cyj0bq4fld"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-later" ,r-later)
