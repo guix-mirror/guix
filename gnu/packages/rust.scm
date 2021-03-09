@@ -822,7 +822,10 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                  (substitute* "src/tools/cargo/tests/testsuite/generate_lockfile.rs"
                    ;; This test wants to update the crate index.
                    (("fn no_index_update") "#[ignore]\nfn no_index_update"))
-                 #t)))))))))
+                 #t))))))
+      (supported-systems
+       (delete "aarch64-linux"          ; fails to build, see #47019
+               (package-supported-systems base-rust))))))
 
 (define-public rust-1.27
   (let ((base-rust
