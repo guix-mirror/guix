@@ -11689,16 +11689,18 @@ components).")
 (define-public r-fftwtools
   (package
     (name "r-fftwtools")
-    (version "0.9-9")
+    (version "0.9-11")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "fftwtools" version))
        (sha256
         (base32
-         "0h8lyl2i6zq16ir7xnfj9dhyivxvwikm8lml19s8s8jx95z3n9x9"))))
+         "0zrchp4l0jdbir2gibjf00x225y9giqk80zvqmr2yyvc12lwkw7i"))))
     (build-system r-build-system)
     (inputs `(("fftw" ,fftw)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (home-page "https://github.com/krahim/fftwtools")
     (synopsis "Wrapper for FFTW3")
     (description
