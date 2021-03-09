@@ -445,6 +445,14 @@ the project name chosen upstream, with underscores replaced with
 hyphens.  For instance, GNUnet is available as @code{gnunet}, and
 SDL_net as @code{sdl-net}.
 
+A noteworthy exception to this rule is when the project name is only a
+single character, or if an older maintained project with the same name
+already exists---regardless of whether it has already been packaged for
+Guix.  Use common sense to make such names unambiguous and meaningful.
+For example, Guix's package for the shell called ``s'' upstream is
+@code{s-shell} and @emph{not} @code{s}.  Feel free to ask your fellow
+hackers for inspiration.
+
 We do not add @code{lib} prefixes for library packages, unless these are
 already part of the official project name.  But @pxref{Python
 Modules} and @ref{Perl Modules} for special rules concerning modules for

@@ -49,7 +49,7 @@ Copyright @copyright{} 2017, 2021 Christopher Lemmer Webber@*
 Copyright @copyright{} 2017, 2018, 2019, 2020 Marius Bakke@*
 Copyright @copyright{} 2017, 2019, 2020 Hartmut Goebel@*
 Copyright @copyright{} 2017, 2019, 2020, 2021 Maxim Cournoyer@*
-Copyright @copyright{} 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice@*
+Copyright @copyright{} 2017, 2018, 2019, 2020, 2021 Tobias Geerinckx-Rice@*
 Copyright @copyright{} 2017 George Clemmer@*
 Copyright @copyright{} 2017 Andy Wingo@*
 Copyright @copyright{} 2017, 2018, 2019, 2020 Arun Isaac@*
