@@ -2546,6 +2546,30 @@ inspired by Python's Literal String Interpolation (PEP-0498) and
 Docstrings (PEP-0257) and Julia's Triple-Quoted String Literals.")
     (license license:expat)))
 
+(define-public r-palmerpenguins
+  (package
+    (name "r-palmerpenguins")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "palmerpenguins" version))
+       (sha256
+        (base32
+         "0q1k3cdkliq7kwrg1n0vs9b6cjwyfarhlgdijhp9c6riy6y5ik7x"))))
+    (properties
+     `((upstream-name . "palmerpenguins")))
+    (build-system r-build-system)
+    (home-page "https://allisonhorst.github.io/palmerpenguins/")
+    (synopsis "Palmer Archipelago (Antarctica) penguin data")
+    (description
+     "This package includes size measurements, clutch observations, and blood
+isotope ratios for adult foraging Adélie, Chinstrap, and Gentoo penguins
+observed on islands in the Palmer Archipelago near Palmer Station, Antarctica.
+Data were collected and made available by Dr. Kristen Gorman and the Palmer
+Station Long Term Ecological Research (LTER) Program.")
+    (license license:cc0)))
+
 (define-public r-pastecs
   (package
    (name "r-pastecs")
