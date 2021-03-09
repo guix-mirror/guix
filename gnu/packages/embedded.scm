@@ -1469,7 +1469,7 @@ and Zilog Z80 families, plus many of their variants.")
 (define-public sdcc
   (package
     (name "sdcc")
-    (version "4.0.0")
+    (version "4.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1477,7 +1477,7 @@ and Zilog Z80 families, plus many of their variants.")
                     "/" version "/sdcc-src-" version ".tar.bz2"))
               (sha256
                (base32
-                "042fxw5mnsfhpc0z9lxfsw88kdkm32pwrxacp88kj2n2dy0814a8"))
+                "0gskzli17ghnn5qllvn4d56qf9bvvclqjh63nnj63p52smvggvc1"))
               (modules '((guix build utils)))
               (snippet
                '(begin
