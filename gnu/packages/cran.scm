@@ -12630,14 +12630,14 @@ and manipulating sets of ontological terms.")
 (define-public r-gargle
   (package
     (name "r-gargle")
-    (version "0.5.0")
+    (version "1.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "gargle" version))
        (sha256
         (base32
-         "1fykmiv3x8c9ai31r9wr7qcca51h6kqn9cgwbxvxfj15fhwskh4n"))))
+         "0hsqn4hf935wn6vk2pwym7la4sdvy271y4cashp38pg4hkpg9zph"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-fs" ,r-fs)
