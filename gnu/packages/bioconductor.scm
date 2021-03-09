@@ -8700,14 +8700,14 @@ routines.")
 (define-public r-wgcna
   (package
     (name "r-wgcna")
-    (version "1.69")
+    (version "1.70-3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "WGCNA" version))
        (sha256
         (base32
-         "022hkprnrafvggi8pkjffkvk1qlnibmbbxxrni00wkrdbga5589f"))))
+         "1m6b4a2xpb02c1ajndhk8qlqnhwxa7lkkwj6nzv3l618jy1kp15r"))))
     (properties `((upstream-name . "WGCNA")))
     (build-system r-build-system)
     (propagated-inputs
