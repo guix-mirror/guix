@@ -91,7 +91,7 @@
     (description "Range-v3 is an extension of the Standard Template Library that
 makes its iterators and algorithms more powerful by making them composable.
 Unlike other range-like solutions which, seek to do away with iterators, in
-range-v3 ranges are an abstration layer on top of iterators.")
+range-v3 ranges are an abstraction layer on top of iterators.")
     (home-page "https://github.com/ericniebler/range-v3/")
     (license
      (list
