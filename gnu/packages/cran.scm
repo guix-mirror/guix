@@ -7248,14 +7248,14 @@ Python's @url{https://github.com/ActiveState/appdirs,Appdirs} to R.")
 (define-public r-rastervis
   (package
     (name "r-rastervis")
-    (version "0.49")
+    (version "0.50")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rasterVis" version))
        (sha256
         (base32
-         "0d12h7xqcwy1wps6yya9nzfppbnsxpmbkqmy3a8pvxpg81l632kk"))))
+         "0m7fjd53apxim0d0rjnyzc28vmfcg4spcrn0zbnk8llillxji1hi"))))
     (properties `((upstream-name . "rasterVis")))
     (build-system r-build-system)
     (propagated-inputs
@@ -7265,6 +7265,7 @@ Python's @url{https://github.com/ActiveState/appdirs,Appdirs} to R.")
        ("r-raster" ,r-raster)
        ("r-rcolorbrewer" ,r-rcolorbrewer)
        ("r-sp" ,r-sp)
+       ("r-terra" ,r-terra)
        ("r-viridislite" ,r-viridislite)
        ("r-zoo" ,r-zoo)))
     (home-page "https://oscarperpinan.github.io/rastervis/")
