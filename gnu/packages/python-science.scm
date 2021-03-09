@@ -9,7 +9,7 @@
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2020 Pierre Langlois <pierre.langlois@gmx.com>
-;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -240,18 +240,18 @@ logic, also known as grey logic.")
 (define-public python-scikit-image
   (package
     (name "python-scikit-image")
-    (version "0.17.2")
+    (version "0.18.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "scikit-image" version))
        (sha256
-        (base32 "1cyqqbcbrg3prc36wis0sm3q5rjhd7h9bp33jwfyixzhi02lr5dx"))))
+        (base32 "0wgisa03smhrphcjnhq7waa5vyyd32b67hblapjbqrqqj751idpv"))))
     (build-system python-build-system)
     (arguments
      ;; TODO: Some tests require running X11 server. Disable them?
      '(#:tests? #f))
-    ;; See DEPENDS.txt for the list of build and run time requiremnts
+    ;; See requirements/ for the list of build and run time requirements.
     (propagated-inputs
      `(("python-cloudpickle" ,python-cloudpickle)
        ("python-dask" ,python-dask)
@@ -262,7 +262,6 @@ logic, also known as grey logic.")
        ("python-pillow" ,python-pillow)
        ("python-pywavelets" ,python-pywavelets)
        ("python-scipy" ,python-scipy)
-       ("python-six" ,python-six)
        ("python-tifffile" ,python-tifffile)))
     (native-inputs
      `(("python-cython" ,python-cython)))
