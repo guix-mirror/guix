@@ -16359,14 +16359,14 @@ sets of URLs.")
 (define-public r-ggforce
   (package
     (name "r-ggforce")
-    (version "0.3.2")
+    (version "0.3.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggforce" version))
        (sha256
         (base32
-         "1lplxyq5bgx90dgaimhynpcywag1gp6vlsy7q52ay1nfc35qmkjc"))))
+         "0bwzjbjl678xvc2ihm80dwn9pidwafqjdab3k299csys16s3na1a"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ggplot2" ,r-ggplot2)
