@@ -6868,14 +6868,14 @@ dependency on Java.")
 (define-public r-rio
   (package
     (name "r-rio")
-    (version "0.5.16")
+    (version "0.5.26")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rio" version))
        (sha256
         (base32
-         "0rfl56fdawlhc98451a9lcb6a6m56kw0i7dvd5hx58z025d8vsyk"))))
+         "1k6zxjb2bb0z6rv7zmkbaz85cbvs84mj602ikkwk60alh8kpdw2d"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-curl" ,r-curl)
@@ -6885,6 +6885,8 @@ dependency on Java.")
        ("r-openxlsx" ,r-openxlsx)
        ("r-readxl" ,r-readxl)
        ("r-tibble" ,r-tibble)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/leeper/rio")
     (synopsis "Swiss-army knife for data I/O")
     (description
