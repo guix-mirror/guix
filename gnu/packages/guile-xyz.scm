@@ -22,7 +22,7 @@
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2019 swedebugia <swedebugia@riseup.net>
 ;;; Copyright © 2019, 2020 Amar Singh <nly@disroot.org>
-;;; Copyright © 2019 Timothy Sample <samplet@ngyro.com>
+;;; Copyright © 2019, 2021 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2019, 2020 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2020 Evan Straw <evan.straw99@gmail.com>
 ;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
@@ -4618,4 +4618,29 @@ a binary data serialization format.  CBOR is similar to JSON but serializes to
 binary which is smaller and faster to generate and parse.  This package provides
 a Guile implementation of CBOR.")
     (home-page "https://inqlab.net/git/guile-cbor.git")
+    (license license:gpl3+)))
+
+(define-public guile-quickcheck
+  (package
+    (name "guile-quickcheck")
+    (version "0.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://files.ngyro.com/"
+                                  "guile-quickcheck/guile-quickcheck-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "03mwi1l3354x52nar0zwhcm0x29yai9xjln4p4gbchwvx5dsr6fb"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("guile" ,guile-3.0)))
+    (home-page "https://ngyro.com/software/guile-quickcheck.html")
+    (synopsis "Randomized property-based testing for Guile")
+    (description "Guile-Quickcheck is a library for random testing of program
+properties inspired by ghc-quickcheck.  You can use it to express properties,
+which functions should satisfy, as Scheme code and then check whether they hold
+in a large number of randomly generated test cases.")
     (license license:gpl3+)))
