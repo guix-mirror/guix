@@ -44,12 +44,12 @@
   #:use-module (guix build-system meson)
   #:use-module (guix build-system python))
 
-(define-public t
+(define-public t-todo-manager
   ;; Last release is more than 10 years old.  Using latest commit.
   (let ((changeset "89ad444c000b")
         (revision "97"))
     (package
-      (name "t")
+      (name "t-todo-manager")
       (version (git-version "1.2.0" revision changeset))
       (source
        (origin
