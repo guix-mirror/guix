@@ -7307,14 +7307,14 @@ those searches and pull data into their R sessions.")
 (define-public r-renv
   (package
     (name "r-renv")
-    (version "0.12.5")
+    (version "0.13.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "renv" version))
        (sha256
         (base32
-         "0wfq1z5glng6jrfxj25mjhp129z6468gaszr9ggks5gp8lrwszzh"))))
+         "16n2dz9jibc03f7q1wrzxss6l5jmaks7m2lnli9dz9anvcmxbdia"))))
     (properties `((upstream-name . "renv")))
     (build-system r-build-system)
     (native-inputs
