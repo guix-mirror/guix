@@ -11505,14 +11505,14 @@ Scientific.")
 (define-public r-activity
   (package
     (name "r-activity")
-    (version "1.3")
+    (version "1.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "activity" version))
        (sha256
         (base32
-         "12imqj366dp6pam5gap6ji56p5wf1073xz5g4iikfxf5l8snxw92"))))
+         "1wn2a0hx7wfr2jyj1b772w5fgl6bcqkkw8cybais2s1wyjx8kjr5"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-circular" ,r-circular)
