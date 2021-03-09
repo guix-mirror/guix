@@ -3984,7 +3984,7 @@ cache of unix and unix-like systems.")
        ("python-xlib" ,python-xlib)
        ("gtk+" ,gtk+)
        ("python-pygobject" ,python-pygobject)))
-    (home-page "https://smxi.org/docs/inxi.htm")
+    (home-page "https://pwr-solaar.github.io/Solaar/")
     (synopsis "Linux devices manager for the Logitech Unifying Receiver")
     (description "This package provides tools to manage clients of the
 Logitech Unifying Receiver.")
