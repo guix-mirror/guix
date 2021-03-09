@@ -995,8 +995,8 @@ This package provides the library for GLib applications.")
              #t)))))
     (synopsis "D-Bus API for C++")
     (description "This package provides D-Bus client API bindings for the C++
-programming language.  It also contains the utility
-@command{dbuscxx-xml2cpp}.")
+programming language.  It also provides the @command{dbusxx-xml2cpp} and
+@command{dbusxx-introspect} commands.")
     (home-page "https://sourceforge.net/projects/dbus-cplusplus/")
     (license license:lgpl2.1+)))
 
