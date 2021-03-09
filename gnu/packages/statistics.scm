@@ -1665,19 +1665,17 @@ like tidy evaluation.")
 (define-public r-tibble
   (package
     (name "r-tibble")
-    (version "3.0.6")
+    (version "3.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tibble" version))
        (sha256
         (base32
-         "0f41gnq0wwmy1z96lg3gicvm54jh685f7i3ag8yfk39r3ql2vzpv"))))
+         "0khmypf49la8n5gx72n7gr6dl6r6ja404i578g6sg0ail3g2i7lm"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-cli" ,r-cli)
-       ("r-crayon" ,r-crayon)
-       ("r-ellipsis" ,r-ellipsis)
+     `(("r-ellipsis" ,r-ellipsis)
        ("r-fansi" ,r-fansi)
        ("r-lifecycle" ,r-lifecycle)
        ("r-magrittr" ,r-magrittr)
