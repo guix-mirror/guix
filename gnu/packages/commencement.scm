@@ -2403,6 +2403,7 @@ exec " gcc "/bin/" program
 (define gnu-make-boot0
   (package
     (inherit gnu-make)
+    (outputs (delete "debug" (package-outputs gnu-make)))
     (source (bootstrap-origin (package-source gnu-make)))
     (name "make-boot0")
     (arguments
