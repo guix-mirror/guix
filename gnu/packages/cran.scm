@@ -26760,13 +26760,13 @@ implemented as @code{R6} classes.")
 (define-public r-mlr3
   (package
     (name "r-mlr3")
-    (version "0.10.0")
+    (version "0.11.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "mlr3" version))
               (sha256
                (base32
-                "1arqijbbmhv57mj8kyq30zxykah83ab1d1c7gs0cxs0xhfwln66g"))))
+                "0qh9vdac1als2123wf51bwa7spdqk33iydlawi5n5dpci892iahl"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-r6" ,r-r6)
@@ -26779,7 +26779,9 @@ implemented as @code{R6} classes.")
        ("r-mlbench" ,r-mlbench)
        ("r-mlr3measures" ,r-mlr3measures)
        ("r-mlr3misc" ,r-mlr3misc)
+       ("r-palmerpenguins" ,r-palmerpenguins)
        ("r-paradox" ,r-paradox)
+       ("r-parallelly" ,r-parallelly)
        ("r-uuid" ,r-uuid)))
     (home-page "https://mlr3.mlr-org.com/")
     (synopsis "Machine Learning in R - Next Generation")
