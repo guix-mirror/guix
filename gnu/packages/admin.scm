@@ -221,7 +221,7 @@ usual file attributes can be checked for inconsistencies.")
 (define-public progress
   (package
     (name "progress")
-    (version "0.15")
+    (version "0.16")
     (source
      (origin
        (method git-fetch)
@@ -229,7 +229,7 @@ usual file attributes can be checked for inconsistencies.")
              (url "https://github.com/Xfennec/progress")
              (commit (string-append "v" version))))
        (sha256
-        (base32 "1cnb4ixlhshn139mj5sr42k5m6gjjbyqvkn1324c47niwrgp7dqm"))
+        (base32 "0gf10j9zd8spain94b5kigknwbdqajiy6fjsa5hhwsc1biz34hcj"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (native-inputs
