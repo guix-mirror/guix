@@ -2707,6 +2707,7 @@ exec " gcc "/bin/" program
   (package
     (inherit gcc)
     (name "gcc-cross-boot0")
+    (outputs (delete "debug" (package-outputs gcc)))
     (source (bootstrap-origin (package-source gcc)))
     (arguments
      `(#:guile ,%bootstrap-guile
