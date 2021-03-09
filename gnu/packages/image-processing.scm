@@ -59,6 +59,7 @@
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages maths)
@@ -85,7 +86,7 @@
 (define-public dcmtk
   (package
     (name "dcmtk")
-    (version "3.6.5")
+    (version "3.6.6")
     (source
      (origin
        (method url-fetch)
@@ -94,11 +95,10 @@
                        "dcmtk" (string-join (string-split version #\.) "")
                        "/dcmtk-" version ".tar.gz"))
        (sha256
-        (base32 "1fdyz5wwjp4grys61mxb2ia9fi6i3ax6s43l16xnv291bxk7hld0"))))
+        (base32 "13j5yf3p6qj3mr17d77r3kcqchf055hgvk1w15vmdr8f54mwcnb8"))))
     (build-system cmake-build-system)
     (inputs
-     `(;; Our ICU is too recent: “error: ‘UChar’ does not name a type“.
-       ;; ("icu4c" ,icu4c)
+     `(("icu4c" ,icu4c)
        ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("libtiff" ,libtiff)
