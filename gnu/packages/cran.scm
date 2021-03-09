@@ -18127,6 +18127,41 @@ stress majorization by Gansner et al. (2004)
 emphasize hidden group structures in networks or focus on specific nodes.")
     (license license:expat)))
 
+(define-public r-terra
+  (package
+    (name "r-terra")
+    (version "1.1-4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "terra" version))
+       (sha256
+        (base32
+         "1vsh55sq56shc8s2vmkl27yvrdbrbn3l6jrigqf2hmvppkb2jsbg"))))
+    (properties `((upstream-name . "terra")))
+    (build-system r-build-system)
+    (inputs
+     `(("gdal" ,gdal)
+       ("geos" ,geos)
+       ("proj" ,proj)
+       ("sqlite" ,sqlite) ; needed for proj
+       ("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-raster" ,r-raster)
+       ("r-rcpp" ,r-rcpp)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://rspatial.org/terra")
+    (synopsis "Spatial data analysis")
+    (description
+     "This package provides methods for spatial data analysis, especially
+raster data.  The included methods allow for low-level data manipulation as
+well as high-level global, local, zonal, and focal computation.  The predict
+and interpolate methods facilitate the use of regression type (interpolation,
+machine learning) models for spatial prediction.  Processing of very large
+files is supported.")
+    (license license:gpl3+)))
+
 (define-public r-tidygraph
   (package
     (name "r-tidygraph")
