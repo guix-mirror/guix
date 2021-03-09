@@ -11,6 +11,7 @@
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,6 +36,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module ((guix utils) #:select (target-64bit?))
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages autotools)
@@ -104,6 +106,34 @@
 or more computers.  Jobs can consist of single commands or of scripts
 and they are executed on lists of files, hosts, users or other items.")
     (license license:gpl3+)))
+
+(define-public xe
+  (package
+    (name "xe")
+    (version "0.11")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/leahneukirchen/xe")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "04jr8f6jcijr0bsmn8ajm0aj35qh9my3xjsaq64h8lwg5bpyn29x"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f
+       #:make-flags (list (string-append "CC=" ,(cc-for-target))
+                          (string-append "PREFIX=" %output))
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure))))
+    (synopsis "Execute a command for every argument")
+    (description
+     "The xe utility constructs command lines from specified arguments,
+combining some of the best features of xargs(1) and apply(1).  Parallel
+execution is also possible.")
+    (home-page "https://github.com/leahneukirchen/xe")
+    (license license:public-domain)))
 
 (define-public slurm
   (package
