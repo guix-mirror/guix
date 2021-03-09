@@ -2720,14 +2720,14 @@ is configured appropriately so R can use them.")
 (define-public r-pkgload
   (package
     (name "r-pkgload")
-    (version "1.1.0")
+    (version "1.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "pkgload" version))
        (sha256
         (base32
-         "03bv8xq4s6s7m34y1kjs99jzlb95vwrfi76mbnhmzcx2pc6ld78q"))))
+         "185xr79z2vncq62bni7x4qv3p7dxvnfsbdnnglma0a196hz6pj7v"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cli" ,r-cli)
