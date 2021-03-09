@@ -3180,6 +3180,7 @@ memoized as a function of '%current-system'."
   (package
     (inherit glibc)
     (name "glibc-intermediate")
+    (outputs (delete "debug" (package-outputs glibc)))
     (source (bootstrap-origin (package-source glibc)))
     (arguments
      `(#:guile ,%bootstrap-guile
