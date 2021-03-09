@@ -3750,17 +3750,18 @@ data).  Weighted versions of MLE, MME and QME are available.")
 (define-public r-energy
   (package
     (name "r-energy")
-    (version "1.7-7")
+    (version "1.7-8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "energy" version))
        (sha256
         (base32
-         "13wnx5nwk7nsv7vf5sxhz4y0rxrnzm76ldgywk1bxrz67srqzf37"))))
+         "12a7gy681aq3l55iys044cs6sn1s2l5qihghpdl01cvv0ggfh26y"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-boot" ,r-boot)
+       ("r-gsl" ,r-gsl)
        ("r-rcpp" ,r-rcpp)))
     (home-page "https://cran.r-project.org/web/packages/energy")
     (synopsis "Multivariate inference via the energy of data")
