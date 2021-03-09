@@ -11531,14 +11531,14 @@ circular variables).")
 (define-public r-ouch
   (package
     (name "r-ouch")
-    (version "2.14-1")
+    (version "2.15-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ouch" version))
        (sha256
         (base32
-         "0ddf9bw5lhj8vb0ja78jf99i0smq4rgmm842k4a4ygap41vdyn2b"))))
+         "0myddn3b28pswyk42kvwhyvkj30q41f677vpxclxacdfkhgvrj6q"))))
     (build-system r-build-system)
     (propagated-inputs `(("r-subplex" ,r-subplex)))
     (home-page "https://kingaa.github.io/ouch/")
