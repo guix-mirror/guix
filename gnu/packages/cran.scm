@@ -16747,6 +16747,37 @@ matrix and displays the significance level on the plot.  It also includes a
 function for computing a matrix of correlation p-values.")
     (license license:gpl2)))
 
+(define-public r-gridtext
+  (package
+    (name "r-gridtext")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "gridtext" version))
+       (sha256
+        (base32
+         "131kw7nkfwksviwfifd2kk7lyvhxzzzv1nnj8rahkr3dik3akk61"))))
+    (properties `((upstream-name . "gridtext")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-jpeg" ,r-jpeg)
+       ("r-markdown" ,r-markdown)
+       ("r-png" ,r-png)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcurl" ,r-rcurl)
+       ("r-rlang" ,r-rlang)
+       ("r-stringr" ,r-stringr)
+       ("r-xml2" ,r-xml2)))
+    (home-page "https://wilkelab.org/gridtext/")
+    (synopsis "Improved text rendering support for Grid graphics")
+    (description
+     "This package provides support for rendering of formatted text using Grid
+graphics.  Text can be formatted via a minimal subset of Markdown, HTML, and
+inline CSS directives, and it can be rendered both with and without word
+wrap.")
+    (license license:expat)))
+
 ;; This package includes minified JavaScript files.  When upgrading please
 ;; check that there are no new minified JavaScript files.
 (define-public r-flexdashboard
