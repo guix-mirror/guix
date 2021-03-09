@@ -25612,14 +25612,14 @@ sliding windows are to be created.")
 (define-public r-rsample
   (package
     (name "r-rsample")
-    (version "0.0.8")
+    (version "0.0.9")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rsample" version))
        (sha256
         (base32
-         "1psmxk16d4bz1v05x0gb9hn4brkdjxw8hjbxmj62snichnix3q3i"))))
+         "03qwsvylgmj2a2h764mzy0x57pgzmvjvl0ypmbn4lcf912bvrd2c"))))
     (properties `((upstream-name . "rsample")))
     (build-system r-build-system)
     (propagated-inputs
@@ -25627,7 +25627,6 @@ sliding windows are to be created.")
        ("r-ellipsis" ,r-ellipsis)
        ("r-furrr" ,r-furrr)
        ("r-generics" ,r-generics)
-       ("r-modeldata" ,r-modeldata)
        ("r-purrr" ,r-purrr)
        ("r-rlang" ,r-rlang)
        ("r-slider" ,r-slider)
