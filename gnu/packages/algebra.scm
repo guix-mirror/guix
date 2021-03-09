@@ -44,7 +44,6 @@
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages image)
   #:use-module (gnu packages java)
-  #:use-module (gnu packages llvm)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages multiprecision)
@@ -971,11 +970,8 @@ algorithms from the FORTRAN library MINPACK.")
          "-DWITH_MPFR=on"
          "-DWITH_MPC=on"
          "-DINTEGER_CLASS=flint"
-         "-DWITH_LLVM=on"
          "-DWITH_SYMENGINE_THREAD_SAFE=on"
          "-DBUILD_SHARED_LIBS=on")))    ;also build libsymengine
-    (native-inputs
-     `(("llvm" ,llvm)))
     (inputs
      `(("flint" ,flint)
        ("gmp" ,gmp)
