@@ -175,14 +175,14 @@ visualization of their differences.")
 (define-public r-waldo
   (package
     (name "r-waldo")
-    (version "0.2.3")
+    (version "0.2.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "waldo" version))
        (sha256
         (base32
-         "0lsw8p4wiggqm9fvh5vgmf0ms0npcg3hcwyzlg5ahv5yx4pv5fhz"))))
+         "09jhwpgd6hg4qyip4r7wzpjz0jr139fyspd5ncriqimp522snqbr"))))
     (properties `((upstream-name . "waldo")))
     (build-system r-build-system)
     (propagated-inputs
