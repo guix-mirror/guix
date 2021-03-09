@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
-;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2021 Leo Famulari <leo@famulari.name>
@@ -220,7 +220,7 @@ format support.")
 (define-public sigrok-cli
   (package
     (name "sigrok-cli")
-    (version "0.7.1")
+    (version "0.7.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -228,7 +228,7 @@ format support.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "15vpn1psriadcbl6v9swwgws7dva85ld03yv6g1mgm27kx11697m"))))
+                "1f0a2k8qdcin0pqiqq5ni4khzsnv61l21v1dfdjzayw96qzl9l3i"))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
