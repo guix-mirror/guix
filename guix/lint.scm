@@ -6,7 +6,7 @@
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Alex Kost <alezost@gmail.com>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Chris Marusich <cmmarusich@gmail.com>
@@ -169,6 +169,18 @@
   (check       lint-checker-check)
   (requires-store? lint-checker-requires-store?
                    (default #f)))
+
+(define (check-name package)
+  "Check whether PACKAGE's name matches our guidelines."
+  (let ((name (package-name package)))
+    ;; Currently checks only whether the name is too short.
+    (if (and (<= (string-length name) 1)
+             (not (string=? name "r"))) ; common-sense exception
+        (list
+         (make-warning package
+                       (G_ "name should be longer than a single character")
+                       #:field 'name))
+        '())))
 
 (define (properly-starts-sentence? s)
   (string-match "^[(\"'`[:upper:][:digit:]]" s))
@@ -1446,6 +1458,10 @@ them for PACKAGE."
 
 (define %local-checkers
   (list
+   (lint-checker
+     (name        'name)
+     (description "Validate package names")
+     (check       check-name))
    (lint-checker
      (name        'description)
      (description "Validate package descriptions")
