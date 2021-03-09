@@ -25084,26 +25084,36 @@ censored data.")
 (define-public r-flexsurv
   (package
     (name "r-flexsurv")
-    (version "1.1.1")
+    (version "2.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "flexsurv" version))
        (sha256
         (base32
-         "0x7p1rv51pplfyyzcg63ssb8z56mig7y0363hkr0219w3cvyq9nr"))))
+         "0vshsijqlzsz0xh426vsswpai1v5c990ggyniqqzsjbg3mn8dbl9"))))
     (properties `((upstream-name . "flexsurv")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-desolve" ,r-desolve)
+     `(("r-assertthat" ,r-assertthat)
+       ("r-desolve" ,r-desolve)
+       ("r-dplyr" ,r-dplyr)
+       ("r-generics" ,r-generics)
+       ("r-magrittr" ,r-magrittr)
+       ("r-matrix" ,r-matrix)
        ("r-mstate" ,r-mstate)
        ("r-muhaz" ,r-muhaz)
        ("r-mvtnorm" ,r-mvtnorm)
+       ("r-numderiv" ,r-numderiv)
+       ("r-purrr" ,r-purrr)
        ("r-quadprog" ,r-quadprog)
        ("r-rcpp" ,r-rcpp)
+       ("r-rlang" ,r-rlang)
+       ("r-rstpm2" ,r-rstpm2)
        ("r-survival" ,r-survival)
        ("r-tibble" ,r-tibble)
-       ("r-tidyr" ,r-tidyr)))
+       ("r-tidyr" ,r-tidyr)
+       ("r-tidyselect" ,r-tidyselect)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/chjackson/flexsurv-dev")
