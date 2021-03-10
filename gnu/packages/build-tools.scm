@@ -462,7 +462,7 @@ a build worked by accident.")
 (define-public osc
   (package
     (name "osc")
-    (version "0.165.2")
+    (version "0.172.0")
     (source
      (origin
        (method git-fetch)
@@ -471,7 +471,7 @@ a build worked by accident.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0yjwvbvv9fgkpiyvrag89zxchyn3nbgp9jz0wn5p0z9450zwfyz6"))))
+        (base32 "1sqdnkka3c6b6hwnrmlwrgy7w62cp8raq8mph9pgd2lydzzbvwlp"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -485,6 +485,8 @@ a build worked by accident.")
                 (string-append bin "osc-wrapper.py")
                 (string-append bin "osc"))
                #t))))))
+    (native-inputs
+     `(("python-chardet" ,python-chardet)))
     (inputs
      `(("python-m2crypto" ,python-m2crypto)
        ("python-pycurl" ,python-pycurl)
