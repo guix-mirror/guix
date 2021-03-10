@@ -9675,8 +9675,40 @@ algorithms.")
 reallocations.")
     (license license:asl2.0)))
 
+(define-public rust-cssparser-0.28
+  (package
+    (name "rust-cssparser")
+    (version "0.28.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "cssparser" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1h924c5g2rwlmgk8hllciyky3ih3z9vf04xz3xsp3cv1jyd5kf0x"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cssparser-macros" ,rust-cssparser-macros-0.6)
+        ("rust-dtoa-short" ,rust-dtoa-short-0.3)
+        ("rust-itoa" ,rust-itoa-0.4)
+        ("rust-matches" ,rust-matches-0.1)
+        ("rust-phf" ,rust-phf-0.8)
+        ("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-smallvec" ,rust-smallvec-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/servo/rust-cssparser")
+    (synopsis "Rust implementation of CSS Syntax Level 3")
+    (description
+     "This package contains a Rust implementation of CSS Syntax Level 3.")
+    (license license:mpl2.0)))
+
 (define-public rust-cssparser-0.27
   (package
+    (inherit rust-cssparser-0.28)
     (name "rust-cssparser")
     (version "0.27.2")
     (source
@@ -9688,7 +9720,6 @@ reallocations.")
        (sha256
         (base32
          "02nbm690rmkaz1ca0383qq7mc1g066w3s85f17pdihnda79njjvm"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:tests? #f  ; Not all files included in the tarball.
        #:cargo-inputs
@@ -9705,12 +9736,7 @@ reallocations.")
        #:cargo-development-inputs
        (("rust-difference" ,rust-difference-2)
         ("rust-encoding-rs" ,rust-encoding-rs-0.8)
-        ("rust-serde-json" ,rust-serde-json-1))))
-    (home-page "https://github.com/servo/rust-cssparser")
-    (synopsis "Rust implementation of CSS Syntax Level 3")
-    (description
-     "This package contains a Rust implementation of CSS Syntax Level 3.")
-    (license license:mpl2.0)))
+        ("rust-serde-json" ,rust-serde-json-1))))))
 
 (define-public rust-cssparser-0.25
   (package
