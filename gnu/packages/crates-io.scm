@@ -9828,8 +9828,32 @@ reallocations.")
      "Bare bones CSV parsing with no_std support.")
     (license (list license:unlicense license:expat))))
 
+(define-public rust-ct-logs-0.8
+  (package
+    (name "rust-ct-logs")
+    (version "0.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ct-logs" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1j5as2h789c2gazq3drl5i58xk8zzx6sxd1wdr19x3d6dwc1da61"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-sct" ,rust-sct-0.6))))
+    (home-page "https://github.com/ctz/ct-logs")
+    (synopsis "Google's list of Certificate Transparency logs")
+    (description
+     "This package contains Google's list of Certificate Transparency logs for
+use with sct crate.")
+    (license (list license:asl2.0 license:isc license:expat))))
+
 (define-public rust-ct-logs-0.7
   (package
+    (inherit rust-ct-logs-0.8)
     (name "rust-ct-logs")
     (version "0.7.0")
     (source
@@ -9840,14 +9864,8 @@ reallocations.")
        (sha256
         (base32
          "0bk7pbmkjm18cgccm4a76vyn3wkaf2z4bh0jy9fk3dl4188i73lc"))))
-    (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs (("rust-sct" ,rust-sct-0.6))))
-    (home-page "https://github.com/ctz/ct-logs")
-    (synopsis "Google's list of Certificate Transparency logs")
-    (description "This package contains Google's list of Certificate
-Transparency logs for use with sct crate.")
-    (license (list license:asl2.0 license:isc license:expat))))
+     `(#:cargo-inputs (("rust-sct" ,rust-sct-0.6))))))
 
 (define-public rust-ct-logs-0.6
   (package
