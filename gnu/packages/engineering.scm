@@ -2458,7 +2458,7 @@ engineers for reverse engineers.")
 (define-public lib3mf
   (package
     (name "lib3mf")
-    (version "1.8.1")
+    (version "2.1.1")
     (source
      (origin
       (method git-fetch)
@@ -2467,20 +2467,21 @@ engineers for reverse engineers.")
       (file-name (git-file-name name version))
       (sha256
        (base32
-        "11wpk6n9ga2p57h1dcrp37w77mii0r7r6mlrgmykf7rvii1rzgqd"))))
+        "1417xlxc1y5jnipixhbjfrrjgkrprbbraj8647sff9051m3hpxc3"))))
     (build-system cmake-build-system)
-    (native-inputs
-     `(("googletest-source" ,(package-source googletest))))
-    (inputs
-     `(("libuuid" ,util-linux "lib")))
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'unpack-googletest
-           (lambda* (#:key inputs #:allow-other-keys)
-             (copy-recursively (assoc-ref inputs "googletest-source")
-                               "UnitTests/googletest")
-             #t)))))
+     `(#:configure-flags (list "-DUSE_INCLUDED_ZLIB=0"
+                               "-DUSE_INCLUDED_LIBZIP=0"
+                               "-DUSE_INCLUDED_GTEST=0"
+                               "-DUSE_INCLUDED_SSL=0")))
+    (native-inputs
+     `(("googletest" ,googletest)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libuuid" ,util-linux "lib")
+       ("libzip" ,libzip)
+       ("libressl" ,libressl)
+       ("zlib" ,zlib)))
     (synopsis "Implementation of the 3D Manufacturing Format (3MF) file standard")
     (description
      "Lib3MF is a C++ implementation of the 3D Manufacturing Format (3MF) file
