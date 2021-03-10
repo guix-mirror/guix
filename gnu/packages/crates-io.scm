@@ -18422,8 +18422,41 @@ SystemTime}}.")
 0.11.x.")
     (license license:expat)))
 
+(define-public rust-hyper-rustls-0.22
+  (package
+    (name "rust-hyper-rustls")
+    (version "0.22.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "hyper-rustls" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0r2szp06nzqx6gblcw69kwx8afjp218fc083kfpw0i3d66bpm7sz"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-ct-logs" ,rust-ct-logs-0.8)
+        ("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-hyper" ,rust-hyper-0.14)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-rustls" ,rust-rustls-0.19)
+        ("rust-rustls-native-certs" ,rust-rustls-native-certs-0.5)
+        ("rust-tokio" ,rust-tokio-1)
+        ("rust-tokio-rustls" ,rust-tokio-rustls-0.22)
+        ("rust-webpki" ,rust-webpki-0.21)
+        ("rust-webpki-roots" ,rust-webpki-roots-0.21))))
+    (home-page "https://github.com/ctz/hyper-rustls")
+    (synopsis "Rustls+Hyper integration for pure Rust HTTPS")
+    (description
+     "This package provides Rustls+Hyper integration for pure Rust HTTPS.")
+    (license
+     (list license:asl2.0 license:isc license:expat))))
+
 (define-public rust-hyper-rustls-0.21
   (package
+    (inherit rust-hyper-rustls-0.22)
     (name "rust-hyper-rustls")
     (version "0.21.0")
     (source
@@ -18434,7 +18467,6 @@ SystemTime}}.")
        (sha256
         (base32
          "1dmbj15fx6qyg26hji2jm7q9y383090jy3z9zjn5xs4f7v43qx1p"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-bytes" ,rust-bytes-0.5)
@@ -18449,13 +18481,7 @@ SystemTime}}.")
         ("rust-webpki" ,rust-webpki-0.21)
         ("rust-webpki-roots" ,rust-webpki-roots-0.20))
        #:cargo-development-inputs
-       (("rust-tokio" ,rust-tokio-0.2))))
-    (home-page "https://github.com/ctz/hyper-rustls")
-    (synopsis "Rustls+hyper integration for pure rust HTTPS")
-    (description "This package provides Rustls+hyper integration for pure rust
-HTTPS.")
-    (license
-     (list license:asl2.0 license:isc license:expat))))
+       (("rust-tokio" ,rust-tokio-0.2))))))
 
 (define-public rust-hyper-rustls-0.17
   (package
