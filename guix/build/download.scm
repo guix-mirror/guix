@@ -323,17 +323,24 @@ host name without trailing dot."
         (unless (port-closed? record)
           (close-port record)))
 
+      (define (unbuffered port)
+        (setvbuf port 'none)
+        port)
+
       (setvbuf record 'block)
 
       ;; Return a port that wraps RECORD to ensure that closing it also
       ;; closes PORT, the actual socket port, and its file descriptor.
+      ;; Make sure it does not introduce extra buffering (custom ports
+      ;; are buffered by default as of Guile 3.0.5).
       ;; XXX: This wrapper would be unnecessary if GnuTLS could
       ;; automatically close SESSION's file descriptor when RECORD is
       ;; closed, but that doesn't seem to be possible currently (as of
       ;; 3.6.9).
-      (make-custom-binary-input/output-port "gnutls wrapped port" read! write!
-                                            get-position set-position!
-                                            close))))
+      (unbuffered
+       (make-custom-binary-input/output-port "gnutls wrapped port" read! write!
+                                             get-position set-position!
+                                             close)))))
 
 (define (ensure-uri uri-or-string)                ;XXX: copied from (web http)
   (cond
