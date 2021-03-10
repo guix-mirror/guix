@@ -43734,8 +43734,39 @@ stream-based WebSocket implementation.")
     (description "Unix Domain sockets for Tokio.")
     (license license:expat)))
 
+(define-public rust-tokio-util-0.6
+  (package
+    (name "rust-tokio-util")
+    (version "0.6.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tokio-util" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0agvfvvgh225vgb2z9w83lwqcqsy3pvkcbvnaz7m7rj6dg6facgc"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bytes" ,rust-bytes-1)
+        ("rust-futures-core" ,rust-futures-core-0.3)
+        ("rust-futures-io" ,rust-futures-io-0.3)
+        ("rust-futures-sink" ,rust-futures-sink-0.3)
+        ("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-pin-project-lite" ,rust-pin-project-lite-0.2)
+        ("rust-slab" ,rust-slab-0.4)
+        ("rust-tokio" ,rust-tokio-1))))
+    (home-page "https://tokio.rs")
+    (synopsis "Additional utilities for working with Tokio")
+    (description
+     "This package provides additional utilities for working with Tokio.")
+    (license license:expat)))
+
 (define-public rust-tokio-util-0.3
   (package
+    (inherit rust-tokio-util-0.6)
     (name "rust-tokio-util")
     (version "0.3.1")
     (source
@@ -43746,7 +43777,6 @@ stream-based WebSocket implementation.")
        (sha256
         (base32
          "16b48dl6sbc9x944jgjvsd65ab1w2c2qcziddbrbwv1b3y4l50my"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:tests? #f
        #:cargo-inputs
@@ -43760,12 +43790,7 @@ stream-based WebSocket implementation.")
        #:cargo-development-inputs
        (("rust-futures" ,rust-futures-0.3)
         ("rust-tokio" ,rust-tokio-0.2)
-        ("rust-tokio-test" ,rust-tokio-test-0.2))))
-    (home-page "https://tokio.rs")
-    (synopsis "Additional utilities for working with Tokio")
-    (description "This package provides additional utilities for working with
-Tokio.")
-    (license license:expat)))
+        ("rust-tokio-test" ,rust-tokio-test-0.2))))))
 
 (define-public rust-tokio-util-0.2
   (package
