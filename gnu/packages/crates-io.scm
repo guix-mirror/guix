@@ -34369,8 +34369,35 @@ rustc compiler.")
         ("rust-serde-derive" ,rust-serde-derive-1)
         ("rust-webpki-roots" ,rust-webpki-roots-0.14))))))
 
+(define-public rust-rustls-native-certs-0.5
+  (package
+    (name "rust-rustls-native-certs")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rustls-native-certs" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "14i0bbbigk6r6262hvc51vz4dvqk1f3vg2f264wfvn2vi30vf1ss"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-openssl-probe" ,rust-openssl-probe-0.1)
+        ("rust-rustls" ,rust-rustls-0.19)
+        ("rust-schannel" ,rust-schannel-0.1)
+        ("rust-security-framework" ,rust-security-framework-2))))
+    (home-page "https://github.com/ctz/rustls-native-certs")
+    (synopsis "Use the platform native certificate store with rustls")
+    (description "@code{rustls-native-certs} allows rustls to use the platform
+native certificate store.")
+    (license
+     (list license:asl2.0 license:isc license:expat))))
+
 (define-public rust-rustls-native-certs-0.4
   (package
+    (inherit rust-rustls-native-certs-0.5)
     (name "rust-rustls-native-certs")
     (version "0.4.0")
     (source
@@ -34381,7 +34408,6 @@ rustc compiler.")
        (sha256
         (base32
          "1f2rkvdkz92qcmwryyqiw9phkqkf95g4962ljpfq5nkjfsd477b2"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-openssl-probe" ,rust-openssl-probe-0.1)
@@ -34393,13 +34419,7 @@ rustc compiler.")
        (("rust-ring" ,rust-ring-0.16)
         ("rust-untrusted" ,rust-untrusted-0.7)
         ("rust-webpki" ,rust-webpki-0.21)
-        ("rust-webpki-roots" ,rust-webpki-roots-0.20))))
-    (home-page "https://github.com/ctz/rustls-native-certs")
-    (synopsis "Use the platform native certificate store with rustls")
-    (description "@code{rustls-native-certs} allows rustls to use the platform
-native certificate store.")
-    (license
-     (list license:asl2.0 license:isc license:expat))))
+        ("rust-webpki-roots" ,rust-webpki-roots-0.20))))))
 
 (define-public rust-rusttype-0.9
   (package
