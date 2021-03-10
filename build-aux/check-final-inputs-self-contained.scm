@@ -83,5 +83,4 @@ refer to the bootstrap tools."
     (set-build-options store #:use-substitutes? #t)
 
     (for-each (cut test-final-inputs store <>)
-              %hydra-supported-systems)))
-
+              %cuirass-supported-systems)))

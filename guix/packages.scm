@@ -131,7 +131,7 @@
 
             %supported-systems
             %hurd-systems
-            %hydra-supported-systems
+            %cuirass-supported-systems
             supported-package?
 
             &package-error
@@ -351,7 +351,7 @@ name of its URI."
   ;; The GNU/Hurd systems for which support is being developed.
   '("i586-gnu" "i686-gnu"))
 
-(define %hydra-supported-systems
+(define %cuirass-supported-systems
   ;; This is the list of system types for which build machines are available.
   ;;
   ;; XXX: MIPS is unavailable in CI:

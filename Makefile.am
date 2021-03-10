@@ -608,14 +608,7 @@ EXTRA_DIST +=						\
   etc/historical-authorizations				\
   build-aux/build-self.scm				\
   build-aux/compile-all.scm				\
-  build-aux/hydra/evaluate.scm				\
-  build-aux/hydra/gnu-system.scm			\
-  build-aux/hydra/guix.scm				\
-  build-aux/hydra/guix-modular.scm			\
-  build-aux/cuirass/gnu-system.scm			\
-  build-aux/cuirass/guix-modular.scm			\
   build-aux/cuirass/hurd-manifest.scm			\
-  build-aux/cuirass/hydra-to-cuirass.scm		\
   build-aux/check-final-inputs-self-contained.scm	\
   build-aux/check-channel-news.scm			\
   build-aux/compile-as-derivation.scm			\
@@ -955,28 +948,18 @@ check-channel-news: $(GOBJECTS)
 	$(AM_V_at)$(top_builddir)/pre-inst-env "$(GUILE)"	\
 	  "$(top_srcdir)/build-aux/check-channel-news.scm"
 
-# Compute the Hydra jobs and write them in the target file.
-hydra-jobs.scm: $(GOBJECTS)
-	$(AM_V_at)$(MKDIR_P) "`dirname "$@"`"
+# Compute the Cuirass jobs.
+cuirass-jobs: $(GOBJECTS)
+	rm -rf "$@"
+	$(AM_V_at)$(MKDIR_P) "$@"
 	$(AM_V_GEN)$(top_builddir)/pre-inst-env "$(GUILE)"		\
-	  "$(top_srcdir)/build-aux/hydra/evaluate.scm"			\
-	  "$(top_srcdir)/build-aux/hydra/gnu-system.scm" > "$@.tmp"
-	$(AM_V_at)mv "$@.tmp" "$@"
-
-# Compute the Cuirass jobs and write them in the target file.
-cuirass-jobs.scm: $(GOBJECTS)
-	$(AM_V_at)$(MKDIR_P) "`dirname "$@"`"
-	$(AM_V_GEN)$(top_builddir)/pre-inst-env "$(GUILE)"		\
-	  "$(top_srcdir)/build-aux/hydra/evaluate.scm"			\
-	  "$(top_srcdir)/build-aux/cuirass/gnu-system.scm" 		\
-	  cuirass > "$@.tmp"
-	$(AM_V_at)mv "$@.tmp" "$@"
+	  "$(top_srcdir)/build-aux/cuirass/evaluate.scm" "$@"
 
 .PHONY: gen-ChangeLog gen-AUTHORS gen-tarball-version
 .PHONY: assert-no-store-file-names assert-binaries-available
 .PHONY: assert-final-inputs-self-contained check-channel-news
 .PHONY: clean-go make-go as-derivation authenticate
-.PHONY: update-guix-package update-NEWS release
+.PHONY: update-guix-package update-NEWS cuirass-jobs release
 
 # Downloading up-to-date PO files.
 
