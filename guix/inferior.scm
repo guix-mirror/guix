@@ -98,8 +98,7 @@
             gexp->derivation-in-inferior
 
             %inferior-cache-directory
-            channels->cached-profile
-            instances->cached-profile
+            cached-channel-instance
             inferior-for-channels))
 
 ;;; Commentary:
@@ -709,14 +708,22 @@ prefix, resolve it; and if 'commit' is unset, fetch CHANNEL's branch tip."
                                              #:check-out? #f)))
           commit))))
 
-(define* (cached-profile store instances
-                         #:key
-                         cache-directory
-                         commits ttl)
-  "Return a directory containing a guix filetree defined by INSTANCES, a
-procedure returning a list of channel instances.  The directory is a
-subdirectory of CACHE-DIRECTORY, where entries can be reclaimed after TTL
-seconds.  This procedure opens a new connection to the build daemon."
+(define* (cached-channel-instance store
+                                  channels
+                                  #:key
+                                  (authenticate? #t)
+                                  (cache-directory (%inferior-cache-directory))
+                                  (ttl (* 3600 24 30)))
+  "Return a directory containing a guix filetree defined by CHANNELS, a list of channels.
+The directory is a subdirectory of CACHE-DIRECTORY, where entries can be reclaimed after TTL seconds.
+This procedure opens a new connection to the build daemon.  AUTHENTICATE?
+determines whether CHANNELS are authenticated."
+  (define commits
+    ;; Since computing the instances of CHANNELS is I/O-intensive, use a
+    ;; cheaper way to get the commit list of CHANNELS.  This limits overhead
+    ;; to the minimum in case of a cache hit.
+    (map channel-full-commit channels))
+
   (define key
     (bytevector->base32-string
      (sha256
@@ -748,8 +755,12 @@ seconds.  This procedure opens a new connection to the build daemon."
   (if (file-exists? cached)
       cached
       (run-with-store store
-        (mlet* %store-monad ((profile
-                              (channel-instances->derivation (instances))))
+        (mlet* %store-monad ((instances
+                              -> (latest-channel-instances store channels
+                                                           #:authenticate?
+                                                           authenticate?))
+                             (profile
+                              (channel-instances->derivation instances)))
           (mbegin %store-monad
             (show-what-to-build* (list profile))
             (built-derivations (list profile))
@@ -759,45 +770,6 @@ seconds.  This procedure opens a new connection to the build daemon."
               (symlink* (derivation->output-path profile) cached)
               (add-indirect-root* cached))
             (return cached))))))
-
-(define* (channels->cached-profile store channels
-                                   #:key
-                                   (authenticate? #t)
-                                   (cache-directory
-                                    (%inferior-cache-directory))
-                                   (ttl (* 3600 24 30)))
-  "Return a cached profile from CHANNELS using the CACHED-PROFILE procedure.
-AUTHENTICATE? determines whether CHANNELS are authenticated."
-  (define commits
-    ;; Since computing the instances of CHANNELS is I/O-intensive, use a
-    ;; cheaper way to get the commit list of CHANNELS.  This limits overhead
-    ;; to the minimum in case of a cache hit.
-    (map channel-full-commit channels))
-
-  (define instances
-    (lambda ()
-      (latest-channel-instances store channels
-                                #:authenticate? authenticate?)))
-
-  (cached-profile store instances
-                  #:cache-directory cache-directory
-                  #:commits commits
-                  #:ttl ttl))
-
-(define* (instances->cached-profile store instances
-                                    #:key
-                                    (cache-directory
-                                     (%inferior-cache-directory))
-                                    (ttl (* 3600 24 30)))
-  "Return a cached profile from INSTANCES a list of channel instances using
-the CACHED-PROFILE procedure."
-  (define commits
-    (map channel-instance-commit instances))
-
-  (cached-profile store (lambda () instances)
-                  #:cache-directory cache-directory
-                  #:commits commits
-                  #:ttl ttl))
 
 (define* (inferior-for-channels channels
                                 #:key
@@ -811,10 +783,10 @@ This is a convenience procedure that people may use in manifests passed to
 'guix package -m', for instance."
   (define cached
     (with-store store
-      (channels->cached-profile store
-                                channels
-                                #:cache-directory cache-directory
-                                #:ttl ttl)))
+      (cached-channel-instance store
+                               channels
+                               #:cache-directory cache-directory
+                               #:ttl ttl)))
   (open-inferior cached))
 
 ;;; Local Variables:
