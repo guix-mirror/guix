@@ -29,7 +29,9 @@
 (define-module (gnu packages python-check)
   #:use-module (gnu packages)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages django)
   #:use-module (gnu packages openstack)
+  #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages web)
@@ -40,6 +42,31 @@
   #:use-module (guix git-download)
   #:use-module (guix download)
   #:use-module (guix build-system python))
+
+(define-public python-testfixtures
+  (package
+    (name "python-testfixtures")
+    (version "6.17.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "testfixtures" version))
+       (sha256
+        (base32 "1nlv2hz20czjp4a811ichl5kwg99rh84l0mw9wq4rk3idzfs1hsy"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))          ; PyTest-Django fails to build in master
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ;;("python-pytest-django" ,python-pytest-django)
+       ("python-twine" ,python-twine)
+       ("python-wheel" ,python-wheel)))
+    (synopsis "Tests components for Python")
+    (description "Testfixtures is a collection of helpers and mock objects that
+are useful when writing automated tests in Python.")
+    (home-page "https://testfixtures.readthedocs.io/en/latest/")
+    (license license:expat)))
 
 (define-public python-coveralls
   (package
