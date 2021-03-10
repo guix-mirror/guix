@@ -43108,8 +43108,35 @@ Rustls.")
 futures.")
     (license license:expat)))
 
+(define-public rust-tokio-socks-0.5
+  (package
+    (name "rust-tokio-socks")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tokio-socks" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1h6qixh17yjf98bjyw4q8i36pf2lyfbcr9hkjjb6aalx0bx5s5ji"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-either" ,rust-either-1)
+        ("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-thiserror" ,rust-thiserror-1)
+        ("rust-tokio" ,rust-tokio-1))))
+    (home-page "https://github.com/sticnarf/tokio-socks")
+    (synopsis "Asynchronous SOCKS proxy support for Rust")
+    (description
+     "This package provides asynchronous SOCKS proxy support for
+Rust.")
+    (license license:expat)))
+
 (define-public rust-tokio-socks-0.3
   (package
+    (inherit rust-tokio-socks-0.5)
     (name "rust-tokio-socks")
     (version "0.3.0")
     (source
@@ -43119,7 +43146,6 @@ futures.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "0f95zcvllb5byz4acwbnlsk9a2rdql4x78x0a8nkfwhq4ifzs4fn"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:tests? #false                  ;"tor_resolve_with_socket" not found
        #:cargo-inputs
@@ -43131,13 +43157,7 @@ futures.")
        #:cargo-development-inputs
        (("rust-hyper" ,rust-hyper-0.13)
         ("rust-once-cell" ,rust-once-cell-1)
-        ("rust-tokio" ,rust-tokio-0.2))))
-    (home-page "https://github.com/sticnarf/tokio-socks")
-    (synopsis "Asynchronous SOCKS proxy support for Rust")
-    (description
-     "This package provides asynchronous SOCKS proxy support for
-Rust.")
-    (license license:expat)))
+        ("rust-tokio" ,rust-tokio-0.2))))))
 
 (define-public rust-tokio-socks-0.2
   (package
