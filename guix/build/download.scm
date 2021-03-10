@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
@@ -28,7 +28,6 @@
   #:use-module (guix build utils)
   #:use-module (guix progress)
   #:use-module (rnrs io ports)
-  #:use-module ((ice-9 binary-ports) #:select (unget-bytevector))
   #:use-module (rnrs bytevectors)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
@@ -306,14 +305,10 @@ host name without trailing dot."
 
     (let ((record (session-record-port session)))
       (define (read! bv start count)
-        (define read-bv (get-bytevector-some record))
-        (if (eof-object? read-bv)
-            0  ; read! returns 0 on eof-object
-            (let ((read-bv-len (bytevector-length read-bv)))
-              (bytevector-copy! read-bv 0 bv start (min read-bv-len count))
-              (when (< count read-bv-len)
-                (unget-bytevector record bv count (- read-bv-len count)))
-              read-bv-len)))
+        (let ((read (get-bytevector-n! record bv start count)))
+          (if (eof-object? read)
+              0
+              read)))
       (define (write! bv start count)
         (put-bytevector record bv start count)
         (force-output record)
