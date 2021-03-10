@@ -833,7 +833,7 @@ auto-completion and syntax highlighting.")
 (define-public mysql
   (package
     (name "mysql")
-    (version "5.7.27")
+    (version "5.7.33")
     (source (origin
              (method url-fetch)
              (uri (list (string-append
@@ -845,7 +845,7 @@ auto-completion and syntax highlighting.")
                           name "-" version ".tar.gz")))
              (sha256
               (base32
-               "1fhv16zr46pxm1j8vb8x8mh3nwzglg01arz8gnazbmjqldr5idpq"))))
+               "1bb343mf7n0qg2qz497gxjsqprygrjz1q1pbz76hgqxnsy08sfxd"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
