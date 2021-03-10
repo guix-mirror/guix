@@ -347,13 +347,13 @@ wrapper.  It provides a backport of the @code{Path} object.")
 (define-public python-zstandard
   (package
     (name "python-zstandard")
-    (version "0.13.0")
+    (version "0.15.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "zstandard" version))
        (sha256
-        (base32 "0q9msi00s93iqm8vzd839r7yc51gz54z90h5bckqyjdxa6vxijz5"))))
+        (base32 "0by9z7nxnkzhmza075q6q91rs8lnpf91129k8ppv7kymbwshipjj"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-hypothesis" ,python-hypothesis)))
