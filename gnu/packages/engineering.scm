@@ -127,7 +127,7 @@
 (define-public librecad
   (package
     (name "librecad")
-    (version "2.1.3")
+    (version "2.2.0-rc2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -136,7 +136,7 @@
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "01nvc1g3si05r5np1pzn62ah9w84p8nxa32wqrjh6gdi17jfvi3l"))))
+                "0a7fzhxkkn2s3hkgqrw3s3wyspzfla3c5lgbsjyqzvlnrp3anxnm"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
