@@ -919,7 +919,7 @@ is part of the GNOME accessibility project.")
                                        "gtk2-respect-GUIX_GTK2_IM_MODULE_FILE.patch"
                                        "gtk2-theme-paths.patch"))))
     (build-system gnu-build-system)
-    (outputs '("out" "bin" "doc"))
+    (outputs '("out" "bin" "doc" "debug"))
     (propagated-inputs
      `(("atk" ,atk)
        ("cairo" ,cairo)
