@@ -37,6 +37,7 @@
   #:use-module (gnu packages maths)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages sphinx))
@@ -67,6 +68,33 @@
     (description "MultiVolumefile is a Python library that provides a
 file-object abstraction, making it possible to use multiple files as if they
 were a single file.")
+    (license license:lgpl2.1+)))
+
+(define-public python-bcj-cffi
+  (package
+    (name "python-bcj-cffi")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "bcj-cffi" version))
+       (sha256
+        (base32
+         "1jcczrb8zgg6w7v76w1wpz3nw75fghk3xwxkn09ll7kck7sdf68d"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-cffi" ,python-cffi)
+       ("python-toml" ,python-toml)
+       ("python-setuptools-scm" ,python-setuptools-scm/next)))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-coverage" ,python-coverage)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)))
+    (home-page "https://github.com/miurahr/bcj-cffi")
+    (synopsis "Branch / Call /Jump CFFI library in Python")
+    (description "This package provides an implementation of the Branch / Call /
+Jump conversion filter by CFFI for Python.")
     (license license:lgpl2.1+)))
 
 (define-public python-ppmd-cffi
