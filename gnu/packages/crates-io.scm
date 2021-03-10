@@ -3593,7 +3593,7 @@ built on the Actix ecosystem.")
 (define-public rust-backtrace-0.3
   (package
     (name "rust-backtrace")
-    (version "0.3.46")
+    (version "0.3.56")
     (source
      (origin
        (method url-fetch)
@@ -3602,28 +3602,24 @@ built on the Actix ecosystem.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "17hh1vrhfd01qpjilrdpy7q0lf2j2qv36achpg37q92rff4r5rmi"))))
+         "1g716jmrik0fx29va3js4gw8hwk5jlsmvqaa9ryp1c9qyh07c4cx"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-addr2line" ,rust-addr2line-0.11)
+       (("rust-addr2line" ,rust-addr2line-0.14)
         ("rust-backtrace-sys" ,rust-backtrace-sys-0.1)
-        ("rust-cfg-if" ,rust-cfg-if-0.1)
-        ("rust-compiler-builtins" ,rust-compiler-builtins-0.1)
-        ("rust-cpp-demangle" ,rust-cpp-demangle-0.2)
-        ("rust-findshlibs" ,rust-findshlibs-0.5)
-        ("rust-goblin" ,rust-goblin-0.2)
+        ("rust-cfg-if" ,rust-cfg-if-1)
+        ("rust-cpp-demangle" ,rust-cpp-demangle-0.3)
         ("rust-libc" ,rust-libc-0.2)
-        ("rust-memmap" ,rust-memmap-0.7)
+        ("rust-miniz-oxide" ,rust-miniz-oxide-0.4)
+        ("rust-object" ,rust-object-0.23)
         ("rust-rustc-demangle" ,rust-rustc-demangle-0.1)
         ("rust-rustc-serialize" ,rust-rustc-serialize-0.3)
-        ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1)
         ("rust-serde" ,rust-serde-1)
         ("rust-winapi" ,rust-winapi-0.3))))
     (home-page "https://github.com/rust-lang/backtrace-rs")
-    (synopsis
-     "Acquire a stack trace (backtrace) at runtime in a Rust program")
+    (synopsis "Acquire a stack trace (backtrace) at runtime in a Rust program")
     (description
      "This package provides a library to acquire a stack
 trace (backtrace) at runtime in a Rust program.")
