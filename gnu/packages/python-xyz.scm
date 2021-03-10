@@ -5814,13 +5814,13 @@ the OleFileIO module from PIL, the Python Image Library.")
 (define-public python-pikepdf
   (package
     (name "python-pikepdf")
-    (version "2.8.0.post1")
+    (version "2.8.0.post2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pikepdf" version))
        (sha256
-        (base32 "08miajml3mzlaqxr8phzymshmkkm93f8vv1dvq5gzkj15kysqhpp"))))
+        (base32 "0ya9bir41bz61y2njlcr5ni8l6cjsy0h5vg9ayxhw7dzgcibj0yp"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #false))                ;require python-xmp-toolkit
