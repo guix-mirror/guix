@@ -18134,6 +18134,25 @@ or response body.")
      "This package provides a tiny, safe, speedy, zero-copy HTTP/1.x parser.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-httpdate-0.3
+  (package
+    (name "rust-httpdate")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "httpdate" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0izbd3sf0625wm4rrfv85xa4xa8j4n1ldxhwlkgff4cm6rh4sjs9"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/pyfisch/httpdate")
+    (synopsis "HTTP date parsing and formatting")
+    (description
+     "This crates parses and formats HTTP datetime strings.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-humansize-1
   (package
     (name "rust-humansize")
