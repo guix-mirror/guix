@@ -1268,3 +1268,46 @@ methods:
 @item Callsign exercice.
 @end itemize\n")
     (license license:gpl3+)))
+
+(define-public unixcw
+  (package
+    (name "unixcw")
+    (version "3.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/unixcw/unixcw-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "15wriwv91583kmmyijbzam3dpclzmg4qjyfzjv5f75x9b0gqabxm"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("ncurses" ,ncurses)
+       ("pulseaudio" ,pulseaudio)
+       ("qtbase" ,qtbase)))
+    (arguments
+     `(#:configure-flags '("--disable-static")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* '("configure"
+                            "src/config.h.in"
+                            "src/cwcp/Makefile.am"
+                            "src/cwcp/Makefile.in")
+               (("-lcurses")
+                "-lncurses"))
+             (substitute* "src/libcw/libcw_pa.c"
+               (("libpulse-simple.so" all)
+                (string-append (assoc-ref inputs "pulseaudio")
+                               "/lib/" all))))))))
+    (home-page "http://unixcw.sourceforge.net/")
+    (synopsis "Morse code library and programs")
+    (description
+     "@code{unixcw} is a project providing the libcw library and a set of
+programs using the library: cw, cwgen, cwcp and xcwcp.  The programs are
+intended for people who want to learn receiving and sending morse code.")
+    (license license:gpl2+)))
