@@ -949,6 +949,7 @@ does not have the expected structure."
                       (#f name)
                       (('name name) name)))
               (url url)
+              (branch branch)
               (commit commit)
               (introduction
                (match (assq 'introduction rest)
