@@ -43884,6 +43884,30 @@ stream-based WebSocket implementation.")
      "This package provides additional utilities for working with Tokio.")
     (license license:expat)))
 
+(define-public rust-tokio-util-0.4
+  (package
+    (inherit rust-tokio-util-0.6)
+    (name "rust-tokio-util")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tokio-util" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1m4pdg2gciagc9c5psg4lm51mcg69xwxr1yjdr0s0nv6yjckcy94"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bytes" ,rust-bytes-0.5)
+        ("rust-futures-core" ,rust-futures-core-0.3)
+        ("rust-futures-io" ,rust-futures-io-0.3)
+        ("rust-futures-sink" ,rust-futures-sink-0.3)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-pin-project-lite" ,rust-pin-project-lite-0.1)
+        ("rust-slab" ,rust-slab-0.4)
+        ("rust-tokio" ,rust-tokio-0.3))))))
+
 (define-public rust-tokio-util-0.3
   (package
     (inherit rust-tokio-util-0.6)
