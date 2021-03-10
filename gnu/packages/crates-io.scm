@@ -44180,8 +44180,46 @@ recycle bin.")
      "This package provides a library for visualizing tree structured data.")
     (license license:expat)))
 
+(define-public rust-trust-dns-https-0.20
+  (package
+    (name "rust-trust-dns-https")
+    (version "0.20.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "trust-dns-https" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "19f0l1illl69ycb97652rjrjppilz2pz7l9572lrjpkasffgcqr6"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bytes" ,rust-bytes-1)
+        ("rust-cfg-if" ,rust-cfg-if-1)
+        ("rust-data-encoding" ,rust-data-encoding-2)
+        ("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-h2" ,rust-h2-0.3)
+        ("rust-http" ,rust-http-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-rustls" ,rust-rustls-0.19)
+        ("rust-thiserror" ,rust-thiserror-1)
+        ("rust-tokio" ,rust-tokio-1)
+        ("rust-tokio-rustls" ,rust-tokio-rustls-0.22)
+        ("rust-trust-dns-proto" ,rust-trust-dns-proto-0.20)
+        ("rust-trust-dns-rustls" ,rust-trust-dns-rustls-0.20)
+        ("rust-webpki" ,rust-webpki-0.21)
+        ("rust-webpki-roots" ,rust-webpki-roots-0.21))))
+    (home-page "http://www.trust-dns.org/index.html")
+    (synopsis "DNS over HTTPS extension for the Trust-DNS client")
+    (description
+     "Trust-DNS is a safe and secure DNS library.  This is an extension for
+the Trust-DNS client to use DNS over HTTPS.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-trust-dns-https-0.19
   (package
+    (inherit rust-trust-dns-https-0.20)
     (name "rust-trust-dns-https")
     (version "0.19.5")
     (source
@@ -44192,7 +44230,6 @@ recycle bin.")
        (sha256
         (base32
          "0s6yiqy98wddc2vid0dypj4cdnvycd4vrrj6l9s7yymq0iqpky5g"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:tests? #false
        #:cargo-inputs
@@ -44214,12 +44251,7 @@ recycle bin.")
         ("rust-webpki-roots" ,rust-webpki-roots-0.19))
        #:cargo-development-inputs
        (("rust-env-logger" ,rust-env-logger-0.7)
-        ("rust-futures" ,rust-futures-0.3))))
-    (home-page "http://www.trust-dns.org/index.html")
-    (synopsis "DNS over HTTPS extension for the Trust-DNS client")
-    (description "Trust-DNS is a safe and secure DNS library.  This is an
-extension for the Trust-DNS client to use DNS over HTTPS.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-futures" ,rust-futures-0.3))))))
 
 (define-public rust-trust-dns-https-0.18
   (package
