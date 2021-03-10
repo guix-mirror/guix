@@ -3228,6 +3228,26 @@ Betamax.")
 (define-public python2-betamax-matchers
   (package-with-python2 python-betamax-matchers))
 
+(define-public python-betamax-serializers
+  (package
+    (name "python-betamax-serializers")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "betamax-serializers" version))
+       (sha256
+        (base32 "0ja9isbjmzzhxdj69s0kdsvw8nkp073w6an6a4liy5vk3fdl2p1l"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-betamax" ,python-betamax)
+       ("python-pyyaml" ,python-pyyaml)))
+    (synopsis "Set of third-party serializers for Betamax")
+    (description "Betamax-Serializers are an experimental set of Serializers for
+Betamax that may possibly end up in the main package.")
+    (home-page "https://gitlab.com/betamax/serializers")
+    (license license:asl2.0)))
+
 (define-public python-s3transfer
   (package
     (name "python-s3transfer")
