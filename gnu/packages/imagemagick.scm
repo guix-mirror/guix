@@ -130,11 +130,14 @@ text, lines, polygons, ellipses and Bézier curves.")
 (define-public imagemagick/fixed
   (package
     (inherit imagemagick)
-    (version "6.9.12-2")
+    (version "6.9.12-2g") ;; 'g' for 'guix', appended character to retain
+    ;; version length so grafting works properly.
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://imagemagick/ImageMagick-"
-                                  version ".tar.xz"))
+                                  "6.9.12-2" ;; Hardcode version here since we
+                                  ;; had to change it up there.
+                                  ".tar.xz"))
               (sha256
                (base32
                 "17da5zihz58qm41y61sbvw626m5xfwr2nzszlikrvxyq1j1q7asa"))))))
