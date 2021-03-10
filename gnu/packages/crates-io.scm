@@ -32257,8 +32257,32 @@ uses finite automata and guarantees linear time matching on all inputs.")
        (("rust-doc-comment" ,rust-doc-comment-0.3)
         ("rust-libflate" ,rust-libflate-0.1))))))
 
+(define-public rust-resolv-conf-0.7
+  (package
+    (name "rust-resolv-conf")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "resolv-conf" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "005sk8r1php2g41yn7fdf1sn8cafyaqm6jxia42h2v88saa47r2j"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-hostname" ,rust-hostname-0.3)
+        ("rust-quick-error" ,rust-quick-error-1))))
+    (home-page "http://github.com/tailhook/resolv-conf")
+    (synopsis "Parser for @file{/etc/resolv.conf}")
+    (description
+     "This package provides a parser for @file{/etc/resolv.conf} file.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-resolv-conf-0.6
   (package
+    (inherit rust-resolv-conf-0.7)
     (name "rust-resolv-conf")
     (version "0.6.3")
     (source
@@ -32269,18 +32293,11 @@ uses finite automata and guarantees linear time matching on all inputs.")
         (sha256
          (base32
           "0jlzifww1h7j23jnjj49xz8q0fpd9rqpd0ks8c4y651vgw9lx0qi"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:tests? #f  ; Not all test files included.
        #:cargo-inputs
        (("rust-quick-error" ,rust-quick-error-1)
-        ("rust-hostname" ,rust-hostname-0.3))))
-    (home-page "https://github.com/tailhook/resolv-conf")
-    (synopsis "Parser for /etc/resolv.conf")
-    (description
-     "An /etc/resolv.conf parser crate for Rust.")
-    (license (list license:asl2.0
-                   license:expat))))
+        ("rust-hostname" ,rust-hostname-0.3))))))
 
 (define-public rust-result-1
   (package
