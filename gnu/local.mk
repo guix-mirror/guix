@@ -1740,6 +1740,26 @@ dist_patch_DATA =						\
   %D%/packages/patches/unzip-initialize-symlink-flag.patch	\
   %D%/packages/patches/unzip-overflow-long-fsize.patch		\
   %D%/packages/patches/unzip-remove-build-date.patch		\
+  %D%/packages/patches/unzip-case-insensitive.patch		\
+  %D%/packages/patches/unzip-COVSCAN-fix-unterminated-string.patch	\
+  %D%/packages/patches/unzip-CVE-2016-9844.patch		\
+  %D%/packages/patches/unzip-CVE-2018-1000035.patch		\
+  %D%/packages/patches/unzip-CVE-2018-18384.patch		\
+  %D%/packages/patches/unzip-alt-iconv-utf8-print.patch	\
+  %D%/packages/patches/unzip-alt-iconv-utf8.patch		\
+  %D%/packages/patches/unzip-close.patch			\
+  %D%/packages/patches/unzip-exec-shield.patch			\
+  %D%/packages/patches/unzip-fix-recmatch.patch		\
+  %D%/packages/patches/unzip-manpage-fix.patch			\
+  %D%/packages/patches/unzip-overflow.patch			\
+  %D%/packages/patches/unzip-symlink.patch			\
+  %D%/packages/patches/unzip-timestamp.patch			\
+  %D%/packages/patches/unzip-valgrind.patch			\
+  %D%/packages/patches/unzip-x-option.patch			\
+  %D%/packages/patches/unzip-zipbomb-manpage.patch		\
+  %D%/packages/patches/unzip-zipbomb-part1.patch		\
+  %D%/packages/patches/unzip-zipbomb-part2.patch		\
+  %D%/packages/patches/unzip-zipbomb-part3.patch		\
   %D%/packages/patches/ustr-fix-build-with-gcc-5.patch		\
   %D%/packages/patches/util-linux-tests.patch			\
   %D%/packages/patches/upower-builddir.patch			\
