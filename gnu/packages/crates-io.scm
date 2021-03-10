@@ -18268,8 +18268,46 @@ SystemTime}}.")
         ("rust-rand" ,rust-rand-0.4)
         ("rust-time" ,rust-time-0.1))))))
 
+(define-public rust-hyper-0.14
+  (package
+    (name "rust-hyper")
+    (version "0.14.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "hyper" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1ivaqbcvsws6svwykiq7fgma7wds72r83qianzh5b41ln714dsg8"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bytes" ,rust-bytes-1)
+        ("rust-futures-channel" ,rust-futures-channel-0.3)
+        ("rust-futures-core" ,rust-futures-core-0.3)
+        ("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-h2" ,rust-h2-0.3)
+        ("rust-http" ,rust-http-0.2)
+        ("rust-http-body" ,rust-http-body-0.4)
+        ("rust-httparse" ,rust-httparse-1)
+        ("rust-httpdate" ,rust-httpdate-0.3)
+        ("rust-itoa" ,rust-itoa-0.4)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-pin-project" ,rust-pin-project-1)
+        ("rust-socket2" ,rust-socket2-0.3)
+        ("rust-tokio" ,rust-tokio-1)
+        ("rust-tower-service" ,rust-tower-service-0.3)
+        ("rust-tracing" ,rust-tracing-0.1)
+        ("rust-want" ,rust-want-0.3))))
+    (home-page "https://hyper.rs")
+    (synopsis "Fast and correct HTTP library.")
+    (description "This package provides a fast and correct HTTP library.")
+    (license license:expat)))
+
 (define-public rust-hyper-0.13
   (package
+    (inherit rust-hyper-0.14)
     (name "rust-hyper")
     (version "0.13.7")
     (source
@@ -18280,7 +18318,6 @@ SystemTime}}.")
        (sha256
         (base32
          "1symcnba2y03b8lj6xp2wd994lk3xyk3wizacjg5s60njzfshs1y"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-bytes" ,rust-bytes-0.5)
@@ -18312,11 +18349,7 @@ SystemTime}}.")
         ("rust-tokio-test" ,rust-tokio-test-0.2)
         ("rust-tokio-util" ,rust-tokio-util-0.3)
         ("rust-tower-util" ,rust-tower-util-0.3)
-        ("rust-url" ,rust-url-1))))
-    (home-page "https://hyper.rs")
-    (synopsis "Fast and correct HTTP library.")
-    (description "This package provides a fast and correct HTTP library.")
-    (license license:expat)))
+        ("rust-url" ,rust-url-1))))))
 
 (define-public rust-hyper-0.12
   (package
