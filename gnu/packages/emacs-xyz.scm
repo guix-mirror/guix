@@ -15041,39 +15041,45 @@ close, copy, cut, paste, undo, redo.")
       (license license:gpl3+))))
 
 (define-public emacs-password-store
-  (package
-    (name "emacs-password-store")
-    (version "1.7.3")
-    (source (origin
-              (method url-fetch)
-              (uri
-               (string-append "https://git.zx2c4.com/password-store/snapshot/"
-                              "password-store-" version ".tar.xz"))
-              (sha256
-               (base32
-                "1x53k5dn3cdmvy8m4fqdld4hji5n676ksl0ql4armkmsds26av1b"))))
-    (build-system emacs-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'extract-el-file
-           (lambda _
-             (copy-file "contrib/emacs/password-store.el" "password-store.el")
-             (delete-file-recursively "contrib")
-             (delete-file-recursively "man")
-             (delete-file-recursively "src")
-             (delete-file-recursively "tests"))))))
-    (propagated-inputs
-     `(("emacs-f" ,emacs-f)
-       ("emacs-s" ,emacs-s)
-       ("emacs-with-editor" ,emacs-with-editor)
-       ("password-store" ,password-store)))
-    (home-page "https://git.zx2c4.com/password-store/tree/contrib/emacs")
-    (synopsis "Password store (pass) support for Emacs")
-    (description
-     "This package provides functions for working with pass (\"the
+  (let ((commit "918992c19231b33b3d4a3288a7288a620e608cb4")
+        (revision "1"))
+    (package
+      (name "emacs-password-store")
+      ;; The emacs package version does not match the password-store version,
+      ;; even though it is part of the same repository.  When updating, look
+      ;; at the version declared in password-store.el.
+      (version (git-version "2.1.4" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "git://git.zx2c4.com/password-store")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "0ni62f4pq96g0i0q66bch1dl9k4zqwhg7xaf746k3gbbqxcdh3vi"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'extract-el-file
+             (lambda _
+               (copy-file "contrib/emacs/password-store.el" "password-store.el")
+               (delete-file-recursively "contrib")
+               (delete-file-recursively "man")
+               (delete-file-recursively "src")
+               (delete-file-recursively "tests"))))))
+      (propagated-inputs
+       `(("emacs-auth-source-pass" ,emacs-auth-source-pass)
+         ("emacs-s" ,emacs-s)
+         ("emacs-with-editor" ,emacs-with-editor)
+         ("password-store" ,password-store)))
+      (home-page "https://git.zx2c4.com/password-store/tree/contrib/emacs")
+      (synopsis "Password store (pass) support for Emacs")
+      (description
+       "This package provides functions for working with pass (\"the
 standard Unix password manager\").")
-    (license license:gpl2+)))
+      (license license:gpl2+))))
 
 (define-public emacs-auth-source-pass
   (let ((commit "847a1f54ed48856b4dfaaa184583ef2c84173edf")
