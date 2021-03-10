@@ -16823,8 +16823,40 @@ standard printing of search results, similar to grep itself.")
 of gzip files based on the gzip header implementation in the @code{flate2} crate.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-h2-0.3
+  (package
+    (name "rust-h2")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "h2" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0y5fxy3sy0s3j1h6p0c2xk5n2gs4jk1dvmk88lvgwm22ywfv0cnq"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bytes" ,rust-bytes-1)
+        ("rust-fnv" ,rust-fnv-1)
+        ("rust-futures-core" ,rust-futures-core-0.3)
+        ("rust-futures-sink" ,rust-futures-sink-0.3)
+        ("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-http" ,rust-http-0.2)
+        ("rust-indexmap" ,rust-indexmap-1)
+        ("rust-slab" ,rust-slab-0.4)
+        ("rust-tokio" ,rust-tokio-1)
+        ("rust-tokio-util" ,rust-tokio-util-0.6)
+        ("rust-tracing" ,rust-tracing-0.1))))
+    (home-page "https://github.com/hyperium/h2")
+    (synopsis "HTTP/2.0 client and server")
+    (description "This package provides an HTTP/2.0 client and server.")
+    (license license:expat)))
+
 (define-public rust-h2-0.2
   (package
+    (inherit rust-h2-0.3)
     (name "rust-h2")
     (version "0.2.6")
     (source
@@ -16835,7 +16867,6 @@ of gzip files based on the gzip header implementation in the @code{flate2} crate
        (sha256
         (base32
          "0lvdrzn43iikl521dlrb7z96lsmy7l6nnm35ylf00q7dmq5rwgwr"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-bytes" ,rust-bytes-0.5)
@@ -16861,11 +16892,7 @@ of gzip files based on the gzip header implementation in the @code{flate2} crate
         ("rust-tokio-rustls" ,rust-tokio-rustls-0.12)
         ("rust-walkdir" ,rust-walkdir-1)
         ("rust-webpki" ,rust-webpki-0.21)
-        ("rust-webpki-roots" ,rust-webpki-roots-0.17))))
-    (home-page "https://github.com/hyperium/h2")
-    (synopsis "HTTP/2.0 client and server")
-    (description "This package provides an HTTP/2.0 client and server.")
-    (license license:expat)))
+        ("rust-webpki-roots" ,rust-webpki-roots-0.17))))))
 
 (define-public rust-h2-0.1
   (package
