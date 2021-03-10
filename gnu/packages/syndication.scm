@@ -23,6 +23,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (guix build-system cargo)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
@@ -36,6 +37,7 @@
   #:use-module (gnu packages crates-io)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
@@ -58,6 +60,67 @@
   #:use-module (gnu packages webkit)
   #:use-module (gnu packages xml)
   #:use-module (srfi srfi-1))
+
+(define-public giara
+  (package
+    (name "giara")
+    (version "0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.gnome.org/World/giara")
+             (commit version)))
+       (file-name (git-file-name name version))
+       ;; To fix authentication while adding accounts.
+       (patches (search-patches "giara-fix-login.patch"))
+       (sha256
+        (base32 "004qmkfrgd37axv0b6hfh6v7nx4pvy987k5yv4bmlmkj9sbqm6f9"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'glib-or-gtk-wrap 'wrap-paths
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin/"))
+                    (lib (string-append out "/lib/python"
+                                        ,(version-major+minor
+                                          (package-version python))
+                                        "/site-packages")))
+               (wrap-program (string-append bin "giara")
+                 `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH") ,lib))
+                 `("GI_TYPELIB_PATH" ":" prefix (,(getenv "GI_TYPELIB_PATH")))))
+             #t)))))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk+:bin" ,gtk+ "bin")
+       ("pkg-config" ,pkg-config)
+       ("xmllint" ,libxml2)))
+    (inputs
+     `(("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("gtksourceview" ,gtksourceview)
+       ("libhandy" ,libhandy)
+       ("python" ,python)
+       ("python-beautifulsoup" ,python-beautifulsoup4)
+       ("python-dateutil" ,python-dateutil)
+       ("python-mistune" ,python-mistune)
+       ("python-pillow" ,python-pillow)
+       ("python-praw" ,python-praw)
+       ("python-pycairo" ,python-pycairo)
+       ("python-pygobject" ,python-pygobject)
+       ("python-requests" ,python-requests)
+       ("webkitgtk" ,webkitgtk)))
+    (propagated-inputs
+     `(("dconf" ,dconf)))
+    (synopsis "Client for Reddit")
+    (description "Giara is a reddit app, built with Python, GTK and Handy.")
+    (home-page "https://giara.gabmus.org/")
+    (license license:gpl3+)))
 
 (define-public newsboat
   (package
