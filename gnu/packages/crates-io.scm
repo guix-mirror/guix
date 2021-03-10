@@ -18490,8 +18490,35 @@ HTTPS.")
      "This package provides glue code for Rustls and synchronous Hyper.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-hyper-tls-0.5
+  (package
+    (name "rust-hyper-tls")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "hyper-tls" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "01crgy13102iagakf6q4mb75dprzr7ps1gj0l5hxm1cvm7gks66n"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bytes" ,rust-bytes-1)
+        ("rust-hyper" ,rust-hyper-0.14)
+        ("rust-native-tls" ,rust-native-tls-0.2)
+        ("rust-tokio" ,rust-tokio-1)
+        ("rust-tokio-native-tls" ,rust-tokio-native-tls-0.3))))
+    (home-page "https://hyper.rs")
+    (synopsis "Default TLS implementation for use with hyper")
+    (description "This package provides the default TLS implementation for use
+with hyper.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-hyper-tls-0.4
   (package
+    (inherit rust-hyper-tls-0.5)
     (name "rust-hyper-tls")
     (version "0.4.3")
     (source
@@ -18502,7 +18529,6 @@ HTTPS.")
        (sha256
         (base32
          "1vcfyz7dxavf4brns15afmj5fxz88lbn05rrpbfqsnybdp2sqyfr"))))
-    (build-system cargo-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -18515,12 +18541,7 @@ HTTPS.")
         ("rust-tokio" ,rust-tokio-0.2)
         ("rust-tokio-tls" ,rust-tokio-tls-0.3))
        #:cargo-development-inputs
-       (("rust-tokio" ,rust-tokio-0.2))))
-    (home-page "https://hyper.rs")
-    (synopsis "Default TLS implementation for use with hyper")
-    (description "This package provides the default TLS implementation for use
-with hyper.")
-    (license (list license:expat license:asl2.0))))
+       (("rust-tokio" ,rust-tokio-0.2))))))
 
 (define-public rust-hyper-tls-0.3
   (package
