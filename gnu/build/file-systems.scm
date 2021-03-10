@@ -920,14 +920,8 @@ corresponds to the symbols listed in FLAGS."
                           ;; MS_REMOUNT call below fails with EPERM.
                           ;; See <https://bugs.gnu.org/46292>
                           (if (memq 'bind-mount (file-system-flags fs))
-                              (or (and=> (find (let ((devno (stat:dev
-                                                             (lstat source))))
-                                                 (lambda (mount)
-                                                   (= (mount-device-number mount)
-                                                      devno)))
-                                               (mounts))
-                                         mount-flags)
-                                  0)
+                              (statfs-flags->mount-flags
+                               (file-system-mount-flags (statfs source)))
                               0)))
          (options (file-system-options fs)))
     (when (file-system-check? fs)
