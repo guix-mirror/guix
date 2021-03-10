@@ -49273,8 +49273,33 @@ implementation that works everywhere, even WASM!")
 library.")
     (license license:expat)))
 
+(define-public rust-zstd-safe-3
+  (package
+    (name "rust-zstd-safe")
+    (version "3.0.1+zstd.1.4.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "zstd-safe" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "133gassn5zy4vf0hhgsff3gxv1q3nc0bzi3qrqq7n4iqv6ycm1qk"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-zstd-sys" ,rust-zstd-sys-1))))
+    (home-page "https://github.com/gyscos/zstd-rs")
+    (synopsis "Safe low-level bindings to the zstd compression library")
+    (description
+     "This package provides safe low-level bindings to the zstd compression
+library.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-zstd-safe-2
   (package
+    (inherit rust-zstd-safe-3)
     (name "rust-zstd-safe")
     (version "2.0.5+zstd.1.4.5")
     (source
@@ -49285,16 +49310,10 @@ library.")
        (sha256
         (base32
          "0m8h1x030cj5bj7zxxf6gdp91bp0ays2vi9rlqllgxi71lp69yqw"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
-        ("rust-zstd-sys" ,rust-zstd-sys-1))))
-    (home-page "https://github.com/gyscos/zstd-rs")
-    (synopsis "Safe low-level bindings to the zstd compression library")
-    (description "This package provides safe low-level bindings to the zstd
-compression library.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-zstd-sys" ,rust-zstd-sys-1))))))
 
 ;; TODO: Unbundle zstd.
 (define-public rust-zstd-sys-1
