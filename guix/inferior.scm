@@ -740,8 +740,16 @@ determines whether CHANNELS are authenticated."
            (string-append directory "/" file))
          (scandir directory base32-encoded-sha256?)))
 
+  (define (symlink/safe old new)
+    (catch 'system-error
+      (lambda ()
+        (symlink old new))
+      (lambda args
+        (unless (= EEXIST (system-error-errno args))
+          (apply throw args)))))
+
   (define symlink*
-    (lift2 symlink %store-monad))
+    (lift2 symlink/safe %store-monad))
 
   (define add-indirect-root*
     (store-lift add-indirect-root))
@@ -766,9 +774,8 @@ determines whether CHANNELS are authenticated."
             (built-derivations (list profile))
             ;; Note: Caching is fine even when AUTHENTICATE? is false because
             ;; we always call 'latest-channel-instances?'.
-            (unless (file-exists? cached)
-              (symlink* (derivation->output-path profile) cached)
-              (add-indirect-root* cached))
+            (symlink* (derivation->output-path profile) cached)
+            (add-indirect-root* cached)
             (return cached))))))
 
 (define* (inferior-for-channels channels
