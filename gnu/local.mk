@@ -917,6 +917,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/cursynth-wave-rand.patch			\
   %D%/packages/patches/cvs-CVE-2017-12836.patch		\
   %D%/packages/patches/cyrus-sasl-ac-try-run-fix.patch		\
+  %D%/packages/patches/cyrus-sasl-CVE-2019-19906.patch		\
   %D%/packages/patches/c++-gsl-find-system-gtest.patch		\
   %D%/packages/patches/date-output-pkg-config-files.patch	\
   %D%/packages/patches/datefudge-gettimeofday.patch		\
