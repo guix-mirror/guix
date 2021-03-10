@@ -49300,7 +49300,7 @@ compression library.")
 (define-public rust-zstd-sys-1
   (package
     (name "rust-zstd-sys")
-    (version "1.4.17+zstd.1.4.5")
+    (version "1.4.20+zstd.1.4.9")
     (source
      (origin
        (method url-fetch)
@@ -49309,15 +49309,13 @@ compression library.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "06zhk1j5v1sm04xxrw72lgzyi1wcq7kvj6vbd4ibamph9mj4k4mq"))))
+         "13kc3crvqg021fya48jw0spfbxdli5anmry3w93r8bfgswrvgmgb"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-libc" ,rust-libc-0.2)
-        ("rust-bindgen" ,rust-bindgen-0.54)
+       (("rust-bindgen" ,rust-bindgen-0.57)
         ("rust-cc" ,rust-cc-1)
-        ("rust-glob" ,rust-glob-0.3)
-        ("rust-itertools" ,rust-itertools-0.9)
+        ("rust-libc" ,rust-libc-0.2)
         ("rust-pkg-config" ,rust-pkg-config-0.3))))
     (home-page "https://github.com/gyscos/zstd-rs")
     (synopsis "Low-level bindings to the zstd compression library")
