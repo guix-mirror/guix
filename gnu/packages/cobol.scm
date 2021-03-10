@@ -30,7 +30,7 @@
 (define-public gnucobol
   (package
     (name "gnucobol")
-    (version "2.2")
+    (version "3.1.2")
     (source
       (origin
         (method url-fetch)
@@ -39,7 +39,7 @@
                version ".tar.xz"))
         (sha256
          (base32
-          "1814s1n95xax2dz938cf4fkcp0q94nkj1gjbdblbzpk9q92zq66w"))))
+          "0x15ybfm63g7c9340fc6712h9v59spnbyaz4rf85pmnp3zbhaw2r"))))
     (arguments
      '(#:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath="
                                               (assoc-ref %outputs "out")
@@ -49,7 +49,10 @@
          (add-after 'unpack 'place-cobol85-test-suite
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((newcob (assoc-ref inputs "newcob")))
-               (copy-file newcob "tests/cobol85/newcob.val.Z")))))
+               (copy-file newcob "tests/cobol85/newcob.val.Z"))))
+         (add-before 'check 'set-TERM
+           ;; Some tests expect a known terminal
+           (lambda _ (setenv "TERM" "xterm-256color"))))
        #:test-target "checkall"))
     (native-inputs
      `(("perl" ,perl)))
