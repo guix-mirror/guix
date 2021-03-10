@@ -12170,12 +12170,12 @@ hu.dwim systems.")
   (sbcl-package->ecl-package sbcl-hu.dwim.common))
 
 (define-public sbcl-hu.dwim.defclass-star
-  (let ((commit "39d458f1b1bc830d1f5e18a6a35bf0e96a2cfd61"))
+  (let ((commit "3086878a485074f9b2913c58267a9b764cd632fd"))
     (package
       (name "sbcl-hu.dwim.defclass-star")
       ;; We used to set version from the date when it was a darcs repo, so we
       ;; keep the year so that package gets updated on previous installs.
-      (version (git-version "2021" "1" commit))
+      (version (git-version "2021" "2" commit))
       (source
        (origin
          (method git-fetch)
@@ -12184,7 +12184,7 @@ hu.dwim systems.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0hfkq2wad98vkyxdg1wh18y86d9w9yqkm8lxkk96szvpwymm7lmq"))))
+          (base32 "19ipds9r71qymfdp4izg0l7zmvinp06adr8rdalhaq7v7mzpg83z"))))
       (build-system asdf-build-system/sbcl)
       (native-inputs
        `( ;; These 2 inputs are only needed tests which are disabled, see below.
