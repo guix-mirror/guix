@@ -1101,6 +1101,10 @@ provides drop-in compatibility with PyCrypto.")))
        (sha256
         (base32 "09yirf3w77w6f49q6nxhrjm9c3a4y9s30s1k09chqrw8zdgx8sjc"))))
     (build-system python-build-system)
+    (arguments
+     `(;; FIXME: Tests start failing with time due to date checks in TLS
+       ;; certificates.
+       #:tests? #f))
     (inputs `(("openssl" ,openssl)))
     (native-inputs `(("swig" ,swig)))
     (home-page "https://gitlab.com/m2crypto/m2crypto")
