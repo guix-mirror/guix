@@ -29,6 +29,7 @@
 ;;; Copyright © 2021 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2021 Matthew James Kraai <kraai@ftbfs.org>
 ;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6878,7 +6879,7 @@ box, and a calendar.  It uses GTK+, and will match your desktop theme.")
            (lambda _
              (chmod "xvfb-run" #o755)
              (substitute* "xvfb-run"
-               (("(\\(| )(fmt|stty|awk|kill|getopt|mktemp|touch|rm|mcookie)"
+               (("(\\(| )(fmt|stty|awk|cat|kill|getopt|mktemp|touch|rm|mcookie)"
                  _ prefix command)
                 (string-append prefix (which command)))
                ;; These also feature in UI messages, so be more strict.
@@ -6887,13 +6888,15 @@ box, and a calendar.  It uses GTK+, and will match your desktop theme.")
                 (string-append prefix (which command))))))
          (replace 'check
            ;; There are no tests included.  Here we test whether we can run
-           ;; a simple client without xvfb-run itself relying on $PATH.
+           ;; a simple client and whether xvfb-run --help succeeds
+           ;; without xvfb-run itself relying on $PATH.
            (lambda* (#:key tests? #:allow-other-keys)
              (when tests?
                (let ((old-PATH (getenv "PATH"))
                      (xterm (which "xterm")))
                  (unsetenv "PATH")
                  (invoke "./xvfb-run" xterm "-e" "true")
+                 (invoke "./xvfb-run" "--help")
                  (setenv "PATH" old-PATH)))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
