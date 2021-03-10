@@ -25756,8 +25756,38 @@ Foundation framework.")
      "This package provides utilities for testing Objective-C interop.")
     (license license:expat)))
 
+(define-public rust-object-0.23
+  (package
+    (name "rust-object")
+    (version "0.23.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "object" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1m658q2ci9hk8csbl17zwcg1hpvcxm2sspjb9bzg0kc1cifsp9x9"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-compiler-builtins" ,rust-compiler-builtins-0.1)
+        ("rust-crc32fast" ,rust-crc32fast-1)
+        ("rust-flate2" ,rust-flate2-1)
+        ("rust-indexmap" ,rust-indexmap-1)
+        ("rust-rustc-std-workspace-alloc" ,rust-rustc-std-workspace-alloc-1)
+        ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1)
+        ("rust-wasmparser" ,rust-wasmparser-0.57))))
+    (home-page "https://github.com/gimli-rs/object")
+    (synopsis "Unified interface for reading and writing object file formats")
+    (description
+     "This package provides a unified interface for reading and writing object
+file formats.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-object-0.17
   (package
+    (inherit rust-object-0.23)
     (name "rust-object")
     (version "0.17.0")
     (source
@@ -25769,7 +25799,6 @@ Foundation framework.")
         (sha256
          (base32
           "1bmgbg4k0725lchfy9j1wnpfmywh5qhs0k4k6j2g7c0acvys8i7a"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -25780,12 +25809,7 @@ Foundation framework.")
         ("rust-uuid" ,rust-uuid-0.8)
         ("rust-flate2" ,rust-flate2-1)
         ("rust-crc32fast" ,rust-crc32fast-1)
-        ("rust-indexmap" ,rust-indexmap-1))))
-    (home-page "https://github.com/gimli-rs/object")
-    (synopsis "Unified interface for reading and writing object file formats")
-    (description "This package provides a unified interface for reading and
-writing object file formats.")
-    (license (list license:asl2.0 license:expat))))
+        ("rust-indexmap" ,rust-indexmap-1))))))
 
 (define-public rust-object-0.12
   (package
