@@ -3,6 +3,7 @@
 ;;; Copyright © 2020 Helio Machado <0x2b3bfa0+guix@googlemail.com>
 ;;; Copyright © 2021 François Joulaud <francois.joulaud@radiofrance.com>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,6 +33,11 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix memoization)
   #:autoload   (htmlprag) (html->sxml)            ;from Guile-Lib
+  #:autoload   (guix git) (update-cached-checkout)
+  #:autoload   (gcrypt hash) (open-hash-port hash-algorithm sha256)
+  #:autoload   (guix serialization) (write-file)
+  #:autoload   (guix base32) (bytevector->nix-base32-string)
+  #:autoload   (guix build utils) (mkdir-p)
   #:use-module (ice-9 match)
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 receive)
@@ -407,6 +413,45 @@ source."
       goproxy-url
       (module-meta-repo-root meta-data)))
 
+;; XXX: Copied from (guix scripts hash).
+(define (vcs-file? file stat)
+  (case (stat:type stat)
+    ((directory)
+     (member (basename file) '(".bzr" ".git" ".hg" ".svn" "CVS")))
+    ((regular)
+     ;; Git sub-modules have a '.git' file that is a regular text file.
+     (string=? (basename file) ".git"))
+    (else
+     #f)))
+
+;; XXX: Adapted from 'file-hash' in (guix scripts hash).
+(define* (file-hash file #:optional (algorithm (hash-algorithm sha256)))
+  ;; Compute the hash of FILE.
+  (let-values (((port get-hash) (open-hash-port algorithm)))
+    (write-file file port #:select? (negate vcs-file?))
+    (force-output port)
+    (get-hash)))
+
+(define* (git-checkout-hash url reference algorithm)
+  "Return the ALGORITHM hash of the checkout of URL at REFERENCE, a commit or
+tag."
+  (define cache
+    (string-append (or (getenv "TMPDIR") "/tmp")
+                   "/guix-import-go-"
+                   (passwd:name (getpwuid (getuid)))))
+
+  ;; Use a custom cache to avoid cluttering the default one under
+  ;; ~/.cache/guix, but choose one under /tmp so that it's persistent across
+  ;; subsequent "guix import" invocations.
+  (mkdir-p cache)
+  (chmod cache #o700)
+  (let-values (((checkout commit _)
+                (parameterize ((%repository-cache-directory cache))
+                  (update-cached-checkout url
+                                          #:ref
+                                          `(tag-or-commit . ,reference)))))
+    (file-hash checkout algorithm)))
+
 (define (vcs->origin vcs-type vcs-repo-url version)
   "Generate the `origin' block of a package depending on what type of source
 control system is being used."
@@ -424,8 +469,9 @@ control system is being used."
           (file-name (git-file-name name version))
           (sha256
            (base32
-            ;; FIXME: populate hash for git repo checkout
-            "0000000000000000000000000000000000000000000000000000")))))
+            ,(bytevector->nix-base32-string
+              (git-checkout-hash vcs-repo-url (go-version->git-ref version)
+                                 (hash-algorithm sha256))))))))
     ((hg)
      `(origin
         (method hg-fetch)

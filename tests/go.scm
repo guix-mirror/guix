@@ -23,6 +23,8 @@
   #:use-module (guix base32)
   #:use-module (guix build-system go)
   #:use-module (guix import go)
+  #:use-module (guix base32)
+  #:use-module ((guix utils) #:select (call-with-temporary-directory))
   #:use-module (guix tests)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-19)
@@ -258,7 +260,7 @@ require github.com/kr/pretty v0.2.1
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0000000000000000000000000000000000000000000000000000"))))
+         "0sjjj9z1dhilhpc8pq4154czrb79z9cm044jvn75kxcjv6v5l2m5"))))
     (build-system go-build-system)
     (arguments
      (quote (#:import-path "github.com/go-check/check")))
@@ -271,11 +273,20 @@ require github.com/kr/pretty v0.2.1
     (license license:bsd-2))
 
   ;; Replace network resources with sample data.
-  (mock ((web client) http-get
-         (mock-http-get fixtures-go-check-test))
-    (mock ((guix http-client) http-fetch
-           (mock-http-fetch fixtures-go-check-test))
-       (go-module->guix-package "github.com/go-check/check"))))
+  (call-with-temporary-directory
+   (lambda (checkout)
+     (mock ((web client) http-get
+            (mock-http-get fixtures-go-check-test))
+           (mock ((guix http-client) http-fetch
+                  (mock-http-fetch fixtures-go-check-test))
+                 (mock ((guix git) update-cached-checkout
+                        (lambda* (url #:key ref)
+                          ;; Return an empty directory and its hash.
+                          (values checkout
+                                  (nix-base32-string->bytevector
+                                   "0sjjj9z1dhilhpc8pq4154czrb79z9cm044jvn75kxcjv6v5l2m5")
+                                  #f)))
+                       (go-module->guix-package "github.com/go-check/check")))))))
 
 (test-end "go")
 
