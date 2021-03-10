@@ -49243,8 +49243,33 @@ implementation that works everywhere, even WASM!")
      "This package provides a library for parsing compiled zoneinfo files.")
     (license license:expat)))
 
+(define-public rust-zstd-0.6
+  (package
+    (name "rust-zstd")
+    (version "0.6.1+zstd.1.4.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "zstd" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "18riavdrq4cy10ygvrxby87nxyxbazpy53qvavc0bwlqyxvmxrax"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-futures" ,rust-futures-0.1)
+        ("rust-tokio-io" ,rust-tokio-io-0.1)
+        ("rust-zstd-safe" ,rust-zstd-safe-3))))
+    (home-page "https://github.com/gyscos/zstd-rs")
+    (synopsis "Binding to the zstd compression library")
+    (description
+     "This package provides a binding to the zstd compression library.")
+    (license license:expat)))
+
 (define-public rust-zstd-0.5
   (package
+    (inherit rust-zstd-0.6)
     (name "rust-zstd")
     (version "0.5.3+zstd.1.4.5")
     (source
@@ -49255,7 +49280,6 @@ implementation that works everywhere, even WASM!")
        (sha256
         (base32
          "1n0cgj9i3dk90kn7jcahq5fligqrjfzmnq08hfg71yhyfypjxcq1"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-futures" ,rust-futures-0.1)
@@ -49266,12 +49290,7 @@ implementation that works everywhere, even WASM!")
         ("rust-humansize" ,rust-humansize-1)
         ("rust-partial-io" ,rust-partial-io-0.3)
         ("rust-quickcheck" ,rust-quickcheck-0.6)
-        ("rust-walkdir" ,rust-walkdir-2))))
-    (home-page "https://github.com/gyscos/zstd-rs")
-    (synopsis "Binding to the zstd compression library")
-    (description "This package provides a binding to the zstd compression
-library.")
-    (license license:expat)))
+        ("rust-walkdir" ,rust-walkdir-2))))))
 
 (define-public rust-zstd-safe-3
   (package
