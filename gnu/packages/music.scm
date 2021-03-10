@@ -3786,14 +3786,14 @@ with a number of bugfixes and changes to improve IT playback.")
 (define-public sooperlooper
   (package
     (name "sooperlooper")
-    (version "1.7.4")
+    (version "1.7.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://essej.net/sooperlooper/sooperlooper-"
                            version ".tar.gz"))
        (sha256
-        (base32 "1jjvq4aflbyr3nr8b318k1vkad16xfa1jkqn9ckzw4419qc6c1k5"))))
+        (base32 "0kbb1pj62rl32c88j6p7dg823kvs0gb5s42qy3bl6yg0wn10dksj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
