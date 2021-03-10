@@ -32331,8 +32331,69 @@ uses finite automata and guarantees linear time matching on all inputs.")
     (description "File reopening utility.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-reqwest-0.11
+  (package
+    (name "rust-reqwest")
+    (version "0.11.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "reqwest" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1m12j00if0gj0alhad4r7w0air4j0gqlpiwiqpsxna4l51zha4mz"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-async-compression" ,rust-async-compression-0.3)
+        ("rust-base64" ,rust-base64-0.13)
+        ("rust-bytes" ,rust-bytes-1)
+        ("rust-cookie" ,rust-cookie-0.14)
+        ("rust-cookie-store" ,rust-cookie-store-0.12)
+        ("rust-encoding-rs" ,rust-encoding-rs-0.8)
+        ("rust-futures-core" ,rust-futures-core-0.3)
+        ("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-http" ,rust-http-0.2)
+        ("rust-http-body" ,rust-http-body-0.4)
+        ("rust-hyper" ,rust-hyper-0.14)
+        ("rust-hyper-rustls" ,rust-hyper-rustls-0.22)
+        ("rust-hyper-tls" ,rust-hyper-tls-0.5)
+        ("rust-ipnet" ,rust-ipnet-2)
+        ("rust-js-sys" ,rust-js-sys-0.3)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-mime" ,rust-mime-0.3)
+        ("rust-mime-guess" ,rust-mime-guess-2)
+        ("rust-native-tls" ,rust-native-tls-0.2)
+        ("rust-percent-encoding" ,rust-percent-encoding-2)
+        ("rust-pin-project-lite" ,rust-pin-project-lite-0.2)
+        ("rust-rustls" ,rust-rustls-0.19)
+        ("rust-rustls-native-certs" ,rust-rustls-native-certs-0.5)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-serde-urlencoded" ,rust-serde-urlencoded-0.7)
+        ("rust-time" ,rust-time-0.2)
+        ("rust-tokio" ,rust-tokio-1)
+        ("rust-tokio-native-tls" ,rust-tokio-native-tls-0.3)
+        ("rust-tokio-rustls" ,rust-tokio-rustls-0.22)
+        ("rust-tokio-socks" ,rust-tokio-socks-0.5)
+        ("rust-tokio-util" ,rust-tokio-util-0.6)
+        ("rust-trust-dns-resolver" ,rust-trust-dns-resolver-0.20)
+        ("rust-url" ,rust-url-2)
+        ("rust-wasm-bindgen" ,rust-wasm-bindgen-0.2)
+        ("rust-wasm-bindgen-futures" ,rust-wasm-bindgen-futures-0.4)
+        ("rust-web-sys" ,rust-web-sys-0.3)
+        ("rust-webpki-roots" ,rust-webpki-roots-0.21)
+        ("rust-winreg" ,rust-winreg-0.7))))
+    (home-page "https://github.com/seanmonstar/reqwest")
+    (synopsis "High level HTTP client library")
+    (description "This package provides a high level HTTP client library.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-reqwest-0.10
   (package
+    (inherit rust-reqwest-0.11)
     (name "rust-reqwest")
     (version "0.10.10")
     (source
@@ -32343,7 +32404,6 @@ uses finite automata and guarantees linear time matching on all inputs.")
        (sha256
         (base32
          "0z7l46m1mjnvncscaq61zq6qmazrmb33vwjcnfrxpi0liqdgh607"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-test-flags '("--release" "--"
                             ;; These tests require internet access.
@@ -32404,11 +32464,7 @@ uses finite automata and guarantees linear time matching on all inputs.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("openssl" ,openssl)))
-    (home-page "https://github.com/seanmonstar/reqwest")
-    (synopsis "High level HTTP client library")
-    (description "This package provides a high level HTTP client library.")
-    (license (list license:expat license:asl2.0))))
+     `(("openssl" ,openssl)))))
 
 (define-public rust-reqwest-0.9
   (package
