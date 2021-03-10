@@ -8521,8 +8521,33 @@ intrinsics.")
         ("rust-foreign-types" ,rust-foreign-types-0.3)
         ("rust-libc" ,rust-libc-0.2))))))
 
+(define-public rust-cpp-demangle-0.3
+  (package
+    (name "rust-cpp-demangle")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "cpp_demangle" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "142knq32bpa2hbp4z0bldjd1x869664l0ff2gdrqx7pryv59x4a4"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-afl" ,rust-afl-0.8)
+        ("rust-cfg-if" ,rust-cfg-if-1)
+        ("rust-glob" ,rust-glob-0.3))))
+    (home-page "https://github.com/gimli-rs/cpp_demangle")
+    (synopsis "Demangle C++ symbols")
+    (description
+     "This package provides a crate for demangling C++ symbols.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-cpp-demangle-0.2
   (package
+    (inherit rust-cpp-demangle-0.3)
     (name "rust-cpp-demangle")
     (version "0.2.16")
     (source
@@ -8534,7 +8559,6 @@ intrinsics.")
        (sha256
         (base32
          "0bamx2c78xzjhhvpg6p9bjarl6qm6j8npm6756kiqdh784w29j8k"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -8543,12 +8567,7 @@ intrinsics.")
         ("rust-glob" ,rust-glob-0.3))
        #:cargo-development-inputs
        (("rust-clap" ,rust-clap-2)
-        ("rust-diff" ,rust-diff-0.1))))
-    (home-page "https://github.com/gimli-rs/cpp_demangle")
-    (synopsis "Demangle C++ symbols")
-    (description
-     "This package provides a crate for demangling C++ symbols.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-diff" ,rust-diff-0.1))))))
 
 (define-public rust-cpuid-bool-0.1
   (package
