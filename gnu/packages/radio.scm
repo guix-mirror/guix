@@ -68,6 +68,7 @@
   #:use-module (gnu packages tex)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages video)
+  #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (guix build-system cmake)
@@ -1240,3 +1241,30 @@ It can perform as:
 @item APRStt gateway
 @end itemize\n")
     (license license:gpl2+)))
+
+(define-public aldo
+  (package
+    (name "aldo")
+    (version "0.7.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://savannah/aldo/aldo-" version ".tar.bz2"))
+       (sha256
+        (base32 "14lzgldqzbbzydsy1cai3wln3hpyj1yhj8ji3wygyzr616fq9f7i"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("ao" ,ao)))
+    (home-page "https://www.nongnu.org/aldo/")
+    (synopsis "Morse code tutor")
+    (description
+     "Aldo is a morse code learning tool providing four type of training
+methods:
+
+@itemize
+@item Classic exercice,
+@item Koch method,
+@item Read from file,
+@item Callsign exercice.
+@end itemize\n")
+    (license license:gpl3+)))
