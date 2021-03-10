@@ -47250,6 +47250,26 @@ attribute that is not in the shared backend crate.")
      "Support for parsing WebIDL specific to wasm-bindgen.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-wasmparser-0.57
+  (package
+    (name "rust-wasmparser")
+    (version "0.57.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "wasmparser" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "19kslk9pv1bcyp85w63dn1adbp13kz7kjha80abnwz27bmbxvz9j"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/bytecodealliance/wasm-tools/tree/main/crates/wasmparser")
+    (synopsis "Simple event-driven library for parsing WebAssembly binary files")
+    (description
+     "This package provides a simple event-driven library for parsing
+WebAssembly binary files.")
+    (license license:asl2.0)))
+
 (define-public rust-web-sys-0.3
   (package
     (name "rust-web-sys")
