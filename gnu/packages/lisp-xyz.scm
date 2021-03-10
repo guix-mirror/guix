@@ -81,6 +81,7 @@
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages video)
   #:use-module (gnu packages web)
   #:use-module (gnu packages webkit)
   #:use-module (gnu packages xdisorg)
@@ -15262,3 +15263,56 @@ line tool @code{df} and get disk space information using @code{statvfs}.")
 
 (define-public cl-diskspace
   (sbcl-package->cl-source-package sbcl-cl-diskspace))
+
+(define-public sbcl-fof
+  (package
+    (name "sbcl-fof")
+    (version "0.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/ambrevar/fof")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1xdnlqrjfmgdgw58avkci881iwarv4am2vq09b14pfifmpxpzv10"))))
+    (build-system asdf-build-system/sbcl)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "ffprobe.lisp"
+               (("\\(defvar \\*ffprobe-command\\* \"ffprobe\"\\)")
+                (format #f "(defvar *ffprobe-command* \"~a/bin/ffprobe\")"
+                        (assoc-ref inputs "ffmpeg") )))
+             #t)))))
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("hu.dwim.defclass-star" ,sbcl-hu.dwim.defclass-star)
+       ("local-time" ,sbcl-local-time)
+       ("magicffi" ,sbcl-magicffi)
+       ("osicat" ,sbcl-osicat)
+       ("serapeum" ,sbcl-serapeum)
+       ("str" ,sbcl-cl-str)
+       ("trivia" ,sbcl-trivia)
+       ("trivial-package-local-nicknames" ,sbcl-trivial-package-local-nicknames)
+       ;; Non-CL deps:
+       ("ffmpeg" ,ffmpeg)))
+    (home-page "https://gitlab.com/ambrevar/fof")
+    (synopsis "File object finder library for Common Lisp")
+    (description
+     "This library enable rapid file search, inspection and manipulation
+straight from the REPL.
+It aims at replacing Unix tools such as @code{find} or @code{du}.
+It also offers a replacement to the @code{pathname} Common Lisp API.
+Slot writers which commit changes to disk, e.g. permissions, modification
+time, etc.")
+    (license license:gpl3+)))
+
+(define-public ecl-fof
+  (sbcl-package->ecl-package sbcl-fof))
+
+(define-public cl-fof
+  (sbcl-package->cl-source-package sbcl-fof))
