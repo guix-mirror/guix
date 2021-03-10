@@ -963,7 +963,8 @@ tarballs.")
               (uri (string-append home-page name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0j2zm3z271x5aw63mwhr3vymzn45p2vvrlrpm9cz2nywna41b0hq"))))
+                "0j2zm3z271x5aw63mwhr3vymzn45p2vvrlrpm9cz2nywna41b0hq"))
+              (patches (search-patches "bsdiff-CVE-2014-9862.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list "INSTALL=install"
