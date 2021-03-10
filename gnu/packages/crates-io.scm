@@ -44774,8 +44774,40 @@ other queries.")
         ("rust-trust-dns-rustls" ,rust-trust-dns-rustls-0.6)
         ("rust-webpki-roots" ,rust-webpki-roots-0.16))))))
 
+(define-public rust-trust-dns-rustls-0.20
+  (package
+    (name "rust-trust-dns-rustls")
+    (version "0.20.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "trust-dns-rustls" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "00i5jf6bkfxikna0093swl0yz246nabpm0xngdxb94wkr3rz0kq9"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-futures-channel" ,rust-futures-channel-0.3)
+        ("rust-futures-io" ,rust-futures-io-0.3)
+        ("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-rustls" ,rust-rustls-0.19)
+        ("rust-tokio" ,rust-tokio-1)
+        ("rust-tokio-rustls" ,rust-tokio-rustls-0.22)
+        ("rust-trust-dns-proto" ,rust-trust-dns-proto-0.20)
+        ("rust-webpki" ,rust-webpki-0.21))))
+    (home-page "http://www.trust-dns.org/index.html")
+    (synopsis "rustls extension for the Trust-DNS client")
+    (description
+     "Trust-DNS is a safe and secure DNS library.  This is an extension for
+the Trust-DNS client to use rustls for TLS.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-trust-dns-rustls-0.19
   (package
+    (inherit rust-trust-dns-rustls-0.20)
     (name "rust-trust-dns-rustls")
     (version "0.19.5")
     (source
@@ -44786,7 +44818,6 @@ other queries.")
        (sha256
         (base32
          "1hj4fx2x4ncj7v8pf6bbn7634zq76hjigm1s2h6b6yjzzmz4yprn"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:tests? #false                  ;missing file
        #:cargo-inputs
@@ -44802,12 +44833,7 @@ other queries.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("openssl" ,openssl)))
-    (home-page "http://www.trust-dns.org/index.html")
-    (synopsis "rustls extension for the Trust-DNS client")
-    (description "Trust-DNS is a safe and secure DNS library.  This is an
-extension for the Trust-DNS client to use rustls for TLS.")
-    (license (list license:expat license:asl2.0))))
+     `(("openssl" ,openssl)))))
 
 (define-public rust-trust-dns-rustls-0.18
   (package
