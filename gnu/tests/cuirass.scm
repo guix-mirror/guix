@@ -35,8 +35,7 @@
   #:use-module (guix gexp)
   #:use-module (guix store)
   #:export (%cuirass-test
-            %cuirass-remote-test
-            %cuirass-simple-test))
+            %cuirass-remote-test))
 
 (define %derivation-file
   (scheme-file
@@ -298,33 +297,3 @@
      (name "cuirass-remote")
      (description "Connect to a Cuirass server with remote build.")
      (value (run-cuirass-test name os)))))
-
-(define simple-cuirass-service
-  (service cuirass-service-type
-           (cuirass-configuration
-            (specifications
-             (simple-cuirass-configuration->specs
-              (simple-cuirass-configuration
-               (build 'all)
-               (channels
-                (list (channel
-                       (name 'guix)
-                       (url "file:///tmp/cuirass-main/")))))))
-            (host "0.0.0.0")
-            (use-substitutes? #t))))
-
-(define %cuirass-simple-test
-  (let ((os (operating-system
-              (inherit %simple-os)
-              (services
-               (append
-                (list cow-service
-                      (service dhcp-client-service-type)
-                      git-service
-                      simple-cuirass-service)
-                (operating-system-user-services %simple-os))))))
-    (system-test
-     (name "cuirass-simple")
-     (description "Connect to a simple Cuirass server.")
-     (value
-      (run-cuirass-test name os)))))
