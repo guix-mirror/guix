@@ -87,7 +87,7 @@
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages xml)
   #:use-module (ice-9 match)
-  #:use-module ((srfi srfi-1) #:select (last)))
+  #:use-module (srfi srfi-1))
 
 (define-public zlib
   (package
@@ -1728,6 +1728,7 @@ timestamps in the file header with a fixed time (1 January 2008).
               (sha256
                (base32
                 "0fbk9k7ryas2wh2ykwkvm1pbi40i88rfvc3dydh9xyd7w2jcki92"))))
+    (replacement zziplib/fixed)
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -1755,6 +1756,27 @@ timestamps in the file header with a fixed time (1 January 2008).
     ;; zziplib is dual licensed under LGPL2.0+ and MPL1.1.  Some example source
     ;; files carry the Zlib license; see "docs/copying.html" for details.
     (license (list license:lgpl2.0+ license:mpl1.1))))
+
+(define-public zziplib/fixed
+  (package
+    (inherit zziplib)
+    (name "zziplib")
+    (version "0.13.72")
+    (home-page "https://github.com/gdraheim/zziplib")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page)
+                                  (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0i6bpa2b13z19alm6ig80364dnin1w28cvif18k6wkkb0w3dzp8y"))))
+    (arguments `())
+    (native-inputs
+     `(("python" ,python)
+       ,@(alist-delete "python"
+                       (package-native-inputs zziplib))))
+    (build-system cmake-build-system)))
 
 (define-public libzip
   (package
