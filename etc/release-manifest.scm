@@ -103,7 +103,7 @@ TARGET."
                       (if (string=? system "i586-gnu")
                           %base-packages/hurd
                           %base-packages)))
-               %hydra-supported-systems)))
+               %cuirass-supported-systems)))
 
 (define %system-manifest
   (manifest
