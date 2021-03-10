@@ -887,14 +887,14 @@ SHA256, SHA512, SHA3, AICH, ED2K, Tiger, DC++ TTH, BitTorrent BTIH, GOST R
 (define-public botan
   (package
     (name "botan")
-    (version "2.12.1")
+    (version "2.17.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://botan.randombit.net/releases/"
                                   "Botan-" version ".tar.xz"))
               (sha256
                (base32
-                "1ada3ga7b0z4m0vjmxlvfi4nsic2l8kjcy85jwss3z2i58a5y0vy"))))
+                "121vn1aryk36cpks70kk4c4cfic5g0qs82bf92xap9258ijkn4kr"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -916,6 +916,8 @@ SHA256, SHA512, SHA3, AICH, ED2K, Tiger, DC++ TTH, BitTorrent BTIH, GOST R
 
                        ;; Recommended by upstream
                        "--with-zlib" "--with-bzip2" "--with-sqlite3"))))
+         (add-before 'check 'library-path-for-tests
+           (lambda _ (setenv "LD_LIBRARY_PATH" (getcwd))))
          (replace 'check
            (lambda _ (invoke "./botan-test"))))))
     (native-inputs
