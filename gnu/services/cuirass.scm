@@ -50,17 +50,7 @@
             <cuirass-remote-worker-configuration>
             cuirass-remote-worker-configuration
             cuirass-remote-worker-configuration?
-            cuirass-remote-worker-service-type
-
-            <build-manifest>
-            build-manifest
-            build-manifest?
-
-            <simple-cuirass-configuration>
-            simple-cuirass-configuration
-            simple-cuirass-configuration?
-
-            simple-cuirass-configuration->specs))
+            cuirass-remote-worker-service-type))
 
 ;;;; Commentary:
 ;;;
@@ -395,73 +385,3 @@ CONFIG."
                         cuirass-remote-worker-shepherd-service)))
    (description
     "Run the Cuirass remote build worker service.")))
-
-(define-record-type* <build-manifest>
-  build-manifest make-build-manifest
-  build-manifest?
-  (channel-name          build-manifest-channel-name) ;symbol
-  (manifest              build-manifest-manifest)) ;string
-
-(define-record-type* <simple-cuirass-configuration>
-  simple-cuirass-configuration make-simple-cuirass-configuration
-  simple-cuirass-configuration?
-  (build                 simple-cuirass-configuration-build
-                         (default 'all))  ;symbol or list of <build-manifest>
-  (channels              simple-cuirass-configuration-channels
-                         (default %default-channels))  ;list of <channel>
-  (non-package-channels  simple-cuirass-configuration-package-channels
-                         (default '())) ;list of channels name
-  (systems               simple-cuirass-configuration-systems
-                         (default (list (%current-system))))) ;list of strings
-
-(define* (simple-cuirass-configuration->specs config)
-  (define (format-name name)
-    (if (string? name)
-        name
-        (symbol->string name)))
-
-  (define (format-manifests build-manifests)
-    (map (lambda (build-manifest)
-           (match-record build-manifest <build-manifest>
-             (channel-name manifest)
-             (cons (format-name channel-name) manifest)))
-         build-manifests))
-
-  (define (channel->input channel)
-    (let ((name   (channel-name channel))
-          (url    (channel-url channel))
-          (branch (channel-branch channel)))
-      `((#:name . ,(format-name name))
-        (#:url . ,url)
-        (#:load-path . ".")
-        (#:branch . ,branch)
-        (#:no-compile? #t))))
-
-  (define (package-path channels non-package-channels)
-    (filter-map (lambda (channel)
-                  (let ((name (channel-name channel)))
-                    (and (not (member name non-package-channels))
-                         (not (eq? name 'guix))
-                         (format-name name))))
-                channels))
-
-  (define (config->spec config)
-    (match-record config <simple-cuirass-configuration>
-      (build channels non-package-channels systems)
-      `((#:name . "simple-config")
-        (#:load-path-inputs . ("guix"))
-        (#:package-path-inputs . ,(package-path channels
-                                                non-package-channels))
-        (#:proc-input . "guix")
-        (#:proc-file . "build-aux/cuirass/gnu-system.scm")
-        (#:proc . cuirass-jobs)
-        (#:proc-args . ((systems . ,systems)
-                        ,@(if (eq? build 'all)
-                              '()
-                              `((subset . "manifests")
-                                (manifests . ,(format-manifests build))))))
-        (#:inputs  . ,(map channel->input channels))
-        (#:build-outputs . ())
-        (#:priority . 1))))
-
-  #~(list '#$(config->spec config)))
