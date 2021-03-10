@@ -4331,38 +4331,36 @@ addition, removal, and random selection.")
   (sbcl-package->ecl-package sbcl-map-set))
 
 (define-public sbcl-quri
-  (let ((commit "d7f2720568146c6674187f625f115925e6364a7f")
-        (revision "4"))
-    (package
-      (name "sbcl-quri")
-      (version (git-version "0.1.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/fukamachi/quri")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "0yrcvz5ksfr7x8yx741vp65il0fxxaskppq3iyk9bq895s1jn37w"))))
-      (build-system asdf-build-system/sbcl)
-      (arguments
-       ;; Test system must be loaded before, otherwise tests fail with:
-       ;; Component QURI-ASD::QURI-TEST not found, required by #<SYSTEM
-       ;; "quri">.
-       '(#:asd-systems '("quri-test"
-                         "quri")))
-      (native-inputs `(("sbcl-prove" ,sbcl-prove)))
-      (inputs `(("sbcl-babel" ,sbcl-babel)
-                ("sbcl-split-sequence" ,sbcl-split-sequence)
-                ("sbcl-cl-utilities" ,sbcl-cl-utilities)
-                ("sbcl-alexandria" ,sbcl-alexandria)))
-      (home-page "https://github.com/fukamachi/quri")
-      (synopsis "Yet another URI library for Common Lisp")
-      (description
-       "QURI (pronounced \"Q-ree\") is yet another URI library for Common
+  (package
+    (name "sbcl-quri")
+    (version "0.3.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/fukamachi/quri")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1pkvpiwwhx2fcknr7x47h7036ypkg8xzsskqbl5z315ipfmi8s2m"))))
+    (build-system asdf-build-system/sbcl)
+    (arguments
+     ;; Test system must be loaded before, otherwise tests fail with:
+     ;; Component QURI-ASD::QURI-TEST not found, required by #<SYSTEM
+     ;; "quri">.
+     '(#:asd-systems '("quri-test"
+                       "quri")))
+    (native-inputs `(("sbcl-prove" ,sbcl-prove)))
+    (inputs `(("sbcl-babel" ,sbcl-babel)
+              ("sbcl-split-sequence" ,sbcl-split-sequence)
+              ("sbcl-cl-utilities" ,sbcl-cl-utilities)
+              ("sbcl-alexandria" ,sbcl-alexandria)))
+    (home-page "https://github.com/fukamachi/quri")
+    (synopsis "Yet another URI library for Common Lisp")
+    (description
+     "QURI (pronounced \"Q-ree\") is yet another URI library for Common
 Lisp. It is intended to be a replacement of PURI.")
-      (license license:bsd-3))))
+    (license license:bsd-3)))
 
 (define-public cl-quri
   (sbcl-package->cl-source-package sbcl-quri))
