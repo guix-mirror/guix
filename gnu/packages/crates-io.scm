@@ -17999,8 +17999,33 @@ requests and responses.")
         ("rust-serde" ,rust-serde-1)
         ("rust-serde-json" ,rust-serde-json-1))))))
 
+(define-public rust-http-body-0.4
+  (package
+    (name "rust-http-body")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "http-body" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "150rkibhyrcmsyi0qzwx4hp02c4lga1kkdg8j7l5wkh7xqkvsq98"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bytes" ,rust-bytes-1)
+        ("rust-http" ,rust-http-0.2))))
+    (home-page "https://github.com/hyperium/http-body")
+    (synopsis "Asynchronous, streaming, HTTP request or response body")
+    (description
+     "This crate provides a trait representing an asynchronous, streaming,
+HTTP request or response body.")
+    (license license:expat)))
+
 (define-public rust-http-body-0.3
   (package
+    (inherit rust-http-body-0.4)
     (name "rust-http-body")
     (version "0.3.1")
     (source
@@ -18010,16 +18035,10 @@ requests and responses.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "06qi0ni45lb92w3ml260c0bxbq5zd4snjmz0a9k69xq6021zzm8k"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-bytes" ,rust-bytes-0.5)
-        ("rust-http" ,rust-http-0.2))))
-    (home-page "https://github.com/hyperium/http-body")
-    (synopsis "Asynchronous, streaming, HTTP request or response body")
-    (description "Trait representing an asynchronous, streaming, HTTP request
-or response body.")
-    (license license:expat)))
+        ("rust-http" ,rust-http-0.2))))))
 
 (define-public rust-http-body-0.1
   (package/inherit rust-http-body-0.3
