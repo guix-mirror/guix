@@ -753,6 +753,7 @@
                     (resources      (string-append lib "/resources"))
                     (preferences    (assoc-ref inputs "master-preferences"))
                     (gtk+           (assoc-ref inputs "gtk+"))
+                    (xdg-utils      (assoc-ref inputs "xdg-utils"))
                     (sh             (which "sh")))
 
                (substitute* '("chrome/app/resources/manpage.1.in"
@@ -789,7 +790,8 @@
 
                  (wrap-program exe
                    ;; Avoid file manager crash.  See <https://bugs.gnu.org/26593>.
-                   `("XDG_DATA_DIRS" ":" prefix (,(string-append gtk+ "/share")))))
+                   `("XDG_DATA_DIRS" ":" prefix (,(string-append gtk+ "/share")))
+                   `("PATH" ":" prefix (,(string-append xdg-utils "/bin")))))
 
                (with-directory-excursion "chrome/app/theme/chromium"
                  (for-each
@@ -874,7 +876,8 @@
        ("udev" ,eudev)
        ("valgrind" ,valgrind)
        ("vulkan-headers" ,vulkan-headers)
-       ("wayland" ,wayland)))
+       ("wayland" ,wayland)
+       ("xdg-utils" ,xdg-utils)))
     (native-search-paths
      (list (search-path-specification
             (variable "CHROMIUM_EXTENSION_DIRECTORY")
