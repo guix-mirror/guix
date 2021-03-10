@@ -151,14 +151,14 @@ large and/or frequently changing (network) environment.")
 (define-public bindfs
   (package
     (name "bindfs")
-    (version "1.14.8")
+    (version "1.15.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://bindfs.org/downloads/bindfs-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "15y4brlcrqhxl6z73785m0dr1vp2q3wc6xss08x9jjr0apzmmjp5"))))
+                "1av8dj9i1g0105fs5r9srqqsp7yahlhwc0yl8i1szyfdls23bp84"))))
     (build-system gnu-build-system)
     (arguments
      ;; XXX: The tests have no hope of passing until there is a "nogroup"
