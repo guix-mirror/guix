@@ -19,6 +19,20 @@
 (channel-news
  (version 0)
 
+ (entry (commit "02e2e093e858e8a0ca7bd66c1f1f6fd0a1705edb")
+        (title
+         (en "New @command{guix import go} command"))
+        (body
+         (en "The new @command{guix import go} command allows packagers to
+generate a package definition or a template thereof given the name of a Go
+package available through @url{https://proxy.golang.org}, like so:
+
+@example
+guix import go golang.org/x/sys
+@end example
+
+Run @command{info \"(guix) Invoking guix import\"} for more info.")))
+
  (entry (commit "1b5b882120daf7d111aa351a919a90e818324347")
         (title
           (en "The @code{linux-libre} kernel is updated to 5.11.2")
