@@ -82,6 +82,21 @@
             file-system-fragment-size
             file-system-mount-flags
             statfs
+
+            ST_RDONLY
+            ST_NOSUID
+            ST_NODEV
+            ST_NOEXEC
+            ST_SYNCHRONOUS
+            ST_MANDLOCK
+            ST_WRITE
+            ST_APPEND
+            ST_IMMUTABLE
+            ST_NOATIME
+            ST_NODIRATIME
+            ST_RELATIME
+            statfs-flags->mount-flags
+
             free-disk-space
             device-in-use?
             add-to-entropy-count
@@ -754,6 +769,56 @@ fdatasync(2) on the underlying file descriptor."
 (define-syntax fsword                             ;fsword_t
   (identifier-syntax long))
 
+(define linux? (string-contains %host-type "linux-gnu"))
+
+(define-syntax define-statfs-flags
+  (syntax-rules (linux hurd)
+    "Define the statfs mount flags."
+    ((_ (name (linux linux-value) (hurd hurd-value)) rest ...)
+     (begin
+       (define name
+         (if linux? linux-value hurd-value))
+       (define-statfs-flags rest ...)))
+    ((_ (name value) rest ...)
+     (begin
+       (define name value)
+       (define-statfs-flags rest ...)))
+    ((_) #t)))
+
+(define-statfs-flags                              ;<bits/statfs.h>
+  (ST_RDONLY      1)
+  (ST_NOSUID      2)
+  (ST_NODEV       (linux 4) (hurd 0))
+  (ST_NOEXEC      8)
+  (ST_SYNCHRONOUS 16)
+  (ST_MANDLOCK    (linux 64) (hurd 0))
+  (ST_WRITE       (linux 128) (hurd 0))
+  (ST_APPEND      (linux 256) (hurd 0))
+  (ST_IMMUTABLE   (linux 512) (hurd 0))
+  (ST_NOATIME     (linux 1024) (hurd 32))
+  (ST_NODIRATIME  (linux 2048) (hurd 0))
+  (ST_RELATIME    (linux 4096) (hurd 64)))
+
+(define (statfs-flags->mount-flags flags)
+  "Convert FLAGS, a logical or of ST_* constants as returned by
+'file-system-mount-flags', to the corresponding logical or of MS_* constants."
+  (letrec-syntax ((match-flags (syntax-rules (=>)
+                                 ((_ (statfs => mount) rest ...)
+                                  (logior (if (zero? (logand flags statfs))
+                                              0
+                                              mount)
+                                          (match-flags rest ...)))
+                                 ((_)
+                                  0))))
+    (match-flags
+     (ST_RDONLY     => MS_RDONLY)
+     (ST_NOSUID     => MS_NOSUID)
+     (ST_NODEV      => MS_NODEV)
+     (ST_NOEXEC     => MS_NOEXEC)
+     (ST_NOATIME    => MS_NOATIME)
+     (ST_NODIRATIME => 0)                         ;FIXME
+     (ST_RELATIME   => MS_RELATIME))))
+
 (define-c-struct %statfs                          ;<bits/statfs.h>
   sizeof-statfs                                   ;slightly overestimated
   file-system
@@ -769,7 +834,7 @@ fdatasync(2) on the underlying file descriptor."
   (identifier       (array int 2))
   (name-length      fsword)
   (fragment-size    fsword)
-  (mount-flags      fsword)
+  (mount-flags      fsword)                       ;ST_*
   (spare            (array fsword 4)))
 
 (define statfs
