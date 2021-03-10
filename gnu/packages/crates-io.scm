@@ -23975,14 +23975,14 @@ IO of Windows's named pipes.")
 (define-public rust-native-tls-0.2
   (package
     (name "rust-native-tls")
-    (version "0.2.6")
+    (version "0.2.7")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "native-tls" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0grsinsgq1pd70c6k9mif7wambwq2jxh8jhvdgwf9i7dnlwpkk3g"))))
+        (base32 "1m6v16xl8h4pm32pw6yhrvgwznf60bqhj2qhb1yrb8wd3hp6pndq"))))
     (build-system cargo-build-system)
     (arguments
      `(#:tests? #f                      ; tests require network access
@@ -23998,16 +23998,17 @@ IO of Windows's named pipes.")
         ("rust-security-framework-sys" ,rust-security-framework-sys-2)
         ("rust-tempfile" ,rust-tempfile-3))
        #:cargo-development-inputs
-       (("rust-hex" ,rust-hex-0.4))))
+       (("rust-hex" ,rust-hex-0.4)
+        ("rust-test-cert-gen" ,rust-test-cert-gen-0.1))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("openssl" ,openssl)))
     (home-page "https://github.com/sfackler/rust-native-tls")
-    (synopsis
-     "Wrapper over a platform's native TLS implementation")
+    (synopsis "Wrapper over a platform's native TLS implementation")
     (description
-     "This package provides a wrapper over a platform's native TLS implementation.")
+     "This package provides a wrapper over a platform's native TLS
+implementation.")
     (license (list license:expat license:asl2.0))))
 
 (define-public rust-native-tls-0.1
