@@ -177,18 +177,16 @@ Python without keeping their credentials in a Docker configuration file.")
 (define-public containerd
   (package
     (name "containerd")
-    (version "1.2.5")
+    (version "1.3.10")
     (source
      (origin
-      (method git-fetch)
-      (uri (git-reference
-            (url "https://github.com/containerd/containerd")
-            (commit (string-append "v" version))))
-      (file-name (git-file-name name version))
-      (sha256
-       (base32 "0npbzixf3c0jvzm159vygvkydrr8h36c9sq50yv0mdinrys2bvg0"))
-      (patches
-        (search-patches "containerd-test-with-go1.13.patch"))))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/containerd/containerd")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "10fz7359aydbz0yb01qkrsq2diypayfal618lvvb1x0gvgkp526i"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/containerd/containerd"
