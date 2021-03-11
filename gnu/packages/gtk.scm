@@ -712,7 +712,7 @@ scaled, composited, modified, saved, or rendered.")
     (license license:lgpl2.1+)))
 
 ;; To build gdk-pixbuf with SVG support, we need librsvg, and librsvg depends
-;; on gdk-pixbuf, so this new varibale.  Also, librsvg adds 90MiB to the
+;; on gdk-pixbuf, so this new variable.  Also, librsvg adds 90MiB to the
 ;; closure size.
 (define-public gdk-pixbuf+svg
   (package/inherit gdk-pixbuf
