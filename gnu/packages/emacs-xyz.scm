@@ -26961,15 +26961,15 @@ s-expression.")
 (define-public emacs-map
   (package
     (name "emacs-map")
-    (version "2.1")
+    (version "3.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/map-"
-                           version ".el"))
+                           version ".tar"))
        (sha256
         (base32
-         "0ydz5w1n4vwhhzxxj003s7jv8n1wjijwfryk5z93bwhnr0cak0i0"))))
+         "00wf8lgh1b1i5l838y6di8194rf5gf5djklkhmxj1nlikz66j2ls"))))
     (build-system emacs-build-system)
     (home-page "http://elpa.gnu.org/packages/map.html")
     (synopsis "Map manipulation functions")
