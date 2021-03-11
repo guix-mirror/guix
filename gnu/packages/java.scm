@@ -2721,6 +2721,33 @@ modern, efficient, and fully featured toolkit for developing rich client
 applications.  This package contains media-related classes for the
 OpenJFX distribution.")))
 
+(define-public java-openjfx-controls
+  (package (inherit java-openjfx-build)
+    (name "java-openjfx-controls")
+    (propagated-inputs
+     `(("java-openjxf-graphics" ,java-openjfx-graphics)))
+    (arguments
+     `(#:jar-name "java-openjfx-controls.jar"
+       #:source-dir "modules/controls/src/main/java"
+       #:test-dir "modules/controls/src/test"
+       ;; TODO: tests require com.sun.javafx.pgstub,
+       ;; javafx.collections.MockSetObserver, and
+       ;; com.sun.javafx.binding.ExpressionHelperUtility
+       #:tests? #false
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'copy-resources
+           (lambda _
+             (copy-recursively "modules/controls/src/test/resources"
+                               "build/test-classes")
+             (copy-recursively "modules/controls/src/main/resources"
+                               "build/classes"))))))
+    (description "OpenJFX is a client application platform for desktop,
+mobile and embedded systems built on Java.  Its goal is to produce a
+modern, efficient, and fully featured toolkit for developing rich client
+applications.  This package contains UI control classes for the
+OpenJFX distribution.")))
+
 (define-public javacc-4
   (package
     (name "javacc")
