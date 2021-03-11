@@ -1406,7 +1406,7 @@ convert, manipulate, filter and display a wide variety of image formats.")
 (define-public jasper
   (package
     (name "jasper")
-    (version "2.0.25")
+    (version "2.0.26")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1415,7 +1415,7 @@ convert, manipulate, filter and display a wide variety of image formats.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "06s6z7qrcnbi9mbj2d0a6k7lxbjdh3ppjpx8bcdv73lxhm4z7pzr"))))
+                "0zh239v6gj1ndrsk4ds5faiiyakpddmbpcy4v6p6shicfbr04snf"))))
     (build-system cmake-build-system)
     (inputs
      `(("libjpeg" ,libjpeg-turbo)))
