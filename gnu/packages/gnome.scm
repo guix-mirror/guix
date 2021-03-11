@@ -4284,6 +4284,14 @@ passwords in the GNOME keyring.")
      '(#:configure-flags '("--enable-coverage")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-docbook-xml
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "doc/manual"
+               (substitute* '("manual.xml" "version.xml.in")
+                 (("http://www.oasis-open.org/docbook/xml/4.4/")
+                  (string-append (assoc-ref inputs "docbook-xml")
+                                 "/xml/dtd/docbook/"))))
+             #t))
          (add-before 'check 'pre-check
            (lambda _
              (setenv "CC" "gcc")
@@ -4293,6 +4301,8 @@ passwords in the GNOME keyring.")
                 (string-append m "$PKG_CONFIG_PATH:"))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("docbook-xml" ,docbook-xml-4.4)
+       ("docbook-xsl" ,docbook-xsl)
        ("flex" ,flex)
        ("bison" ,bison)
        ("xsltproc" ,libxslt)
