@@ -611,7 +611,7 @@ provisioning etc.")
             (commit (string-append "v" version))))
       (file-name (git-file-name name version))
       (sha256
-       (base32 "0wm5x8b8jll78h2zzncfdpxj0y3gv571z0nd39f036wsy7r23dsi"))))
+       (base32 "1asapjj8brvbkd5irgdq82fx1ihrc14qaq30jxvjwflfm5yb7lv0"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/docker/cli"
