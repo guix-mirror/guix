@@ -1380,14 +1380,14 @@ the boot loader configuration.")
 (define-public flatpak
   (package
    (name "flatpak")
-   (version "1.10.1")
+   (version "1.10.2")
    (source
     (origin
      (method url-fetch)
      (uri (string-append "https://github.com/flatpak/flatpak/releases/download/"
                          version "/flatpak-" version ".tar.xz"))
      (sha256
-      (base32 "1dywvfpmszvp2wy5hvpzy8z6gz2gzmi9p302njp52p9vpx14ydf1"))))
+      (base32 "1r6xw7r3ir2vaa30n3mily6m7d51cf4qv22fkqlzzy3js0wjf5fv"))))
 
    ;; Wrap 'flatpak' so that GIO_EXTRA_MODULES is set, thereby allowing GIO to
    ;; find the TLS backend in glib-networking.
