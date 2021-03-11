@@ -664,24 +664,27 @@ replacement for the code@{python-memcached} library.")
 (define-public mongodb
   (package
     (name "mongodb")
-    (version "3.4.24")
+    (version "3.4.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/mongodb/mongo/archive/r"
                                   version ".tar.gz"))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
-               (base32 "0y1669sqj8wyf0y0njhxs4qhn1qzjhrs2h2qllya5samxrlrjhkg"))
+               (base32 "0676lvkljj7a5hdhv78dbykqnqrj9lbn9799mi84b8vbnzsq961r"))
               (modules '((guix build utils)))
               (snippet
                '(begin
                   (for-each (lambda (dir)
                               (delete-file-recursively
                                 (string-append "src/third_party/" dir)))
-                            '("pcre-8.42" "scons-2.5.0" "snappy-1.1.3"
+                            '("pcre-8.41" "scons-2.5.0" "snappy-1.1.3"
                               "valgrind-3.11.0" "wiredtiger"
-                              "yaml-cpp-0.6.2" "zlib-1.2.11"))
-                  #t))))
+                              "yaml-cpp-0.5.3" "zlib-1.2.8"))
+                  #t))
+              (patches
+               (list
+                (search-patch "mongodb-support-unknown-linux-distributions.patch")))))
     (build-system scons-build-system)
     (inputs
      `(("openssl" ,openssl-1.0)
