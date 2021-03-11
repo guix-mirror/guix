@@ -39,9 +39,10 @@
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
-;; Copyright © 2020 Niklas Eklund <niklas.eklund@posteo.net>
+;;; Copyright © 2020 Niklas Eklund <niklas.eklund@posteo.net>
 ;;; Copyright © 2020 Robert Smith <robertsmith@posteo.net>
 ;;; Copyright © 2021 Zheng Junjie <873216071@qq.com>
+;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1783,8 +1784,8 @@ productive, customizable lisp based systems.")
            (delete 'cleanup)))))))
 
 (define stumpwm-contrib
-  (let ((commit "920f8fc1488f7953f205e1dda4c2ecbbbda56d63")
-        (revision "2"))
+  (let ((commit "a7dc1c663d04e6c73a4772c8a6ad56a34381096a")
+        (revision "3"))
     (package
       (name "stumpwm-contrib")
       (version (git-version "0.0.1" revision commit)) ;no upstream release
@@ -1796,7 +1797,7 @@ productive, customizable lisp based systems.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0giac390bq95ag41xkxqp8jjrhfx1wpgglz7jg5rkm0wjhcwmyml"))))
+          (base32 "09akdaaya7lga5lzbq1aj1filsyjwvflghkidpmr0nk0jz5xx1g7"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("stumpwm" ,stumpwm "lib")))
