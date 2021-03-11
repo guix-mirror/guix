@@ -36,11 +36,13 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages elf)
   #:use-module (gnu packages enlightenment)
   #:use-module (gnu packages file)
   #:use-module (gnu packages flex)
@@ -60,6 +62,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages selinux)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
@@ -171,7 +174,7 @@ shared NFS home directories.")
 (define glib
   (package
     (name "glib")
-    (version "2.62.6")
+    (version "2.68.0")
     (source
      (origin
        (method url-fetch)
@@ -180,9 +183,9 @@ shared NFS home directories.")
                        name "/" (string-take version 4) "/"
                        name "-" version ".tar.xz"))
        (sha256
-        (base32 "174bsmbmcvaw69ff9g60q5sx0fn23rkhqcwqz17h5s7sprps4kqh"))
+        (base32 "1sh3h6b734cxhdd1qlzvhxq6rc7k73dsisap5y3s419s9xc4ywv7"))
        (patches
-        (search-patches "glib-tests-timer.patch" "glib-appinfo-watch.patch"))
+        (search-patches "glib-appinfo-watch.patch"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -208,24 +211,31 @@ shared NFS home directories.")
                        (("test_timeout_slow = 120")
                         "test_timeout_slow = 180")))))
                '())
-         (add-after 'unpack 'patch-dbus-launch-path
+         (add-after 'unpack 'disable-failing-tests
+           (lambda _
+             (with-directory-excursion "glib/tests"
+               (substitute* '("unix.c" "utils.c")
+                 (("[ \t]*g_test_add_func.*;") "")))
+             (with-directory-excursion "gio/tests"
+               (substitute* '("contenttype.c" "gdbus-address-get-session.c"
+                              "gdbus-peer.c" "appinfo.c" "desktop-app-info.c")
+                 (("[ \t]*g_test_add_func.*;") "")))
+             #t))
+         ;; Python references are not being patched in patch-phase of build,
+         ;; despite using python-wrapper as input. So we patch them manually.
+         (add-after 'unpack 'patch-python-references
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((dbus (assoc-ref inputs "dbus")))
-               (substitute* "gio/gdbusaddress.c"
-                 (("command_line = g_strdup_printf \\(\"dbus-launch")
-                  (string-append "command_line = g_strdup_printf (\""
-                                 dbus "/bin/dbus-launch")))
-               #t)))
-         (add-after 'unpack 'patch-gio-launch-desktop
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               ;; See also <https://gitlab.gnome.org/GNOME/glib/issues/1633>
-               ;; for another future fix.
-               (substitute* "gio/gdesktopappinfo.c"
-                 (("gio-launch-desktop")
-                  (string-append out "/libexec/gio-launch-desktop")))
-               #t)))
-         (add-before 'build 'pre-build
+             (substitute* '("gio/gdbus-2.0/codegen/gdbus-codegen.in"
+                            "glib/gtester-report.in"
+                            "gobject/glib-genmarshal.in"
+                            "gobject/glib-mkenums.in")
+               (("@PYTHON@")
+                (string-append (assoc-ref inputs "python")
+                               "/bin/python"
+                               ,(version-major+minor
+                                 (package-version python)))))
+             #t))
+         (add-before 'check 'pre-check
            (lambda* (#:key inputs outputs #:allow-other-keys)
              ;; For tests/gdatetime.c.
              (setenv "TZDIR"
@@ -235,103 +245,23 @@ shared NFS home directories.")
              (setenv "HOME" (getcwd))
              (setenv "XDG_CACHE_HOME" (getcwd))
              #t))
-         (add-after 'unpack 'disable-failing-tests
-           (lambda _
-             (let ((disable
-                    (lambda (test-file test-paths)
-                      (define pattern+procs
-                        (map (lambda (test-path)
-                               (cons
-                                ;; XXX: only works for single line statements.
-                                (format #f "g_test_add_func.*\"~a\".*" test-path)
-                                (const "")))
-                             test-paths))
-                      (substitute test-file pattern+procs)))
-                   (failing-tests
-                    '(("glib/tests/thread.c"
-                       ( ;; prlimit(2) returns ENOSYS on Linux 2.6.32-5-xen-amd64
-                        ;; as found on hydra.gnu.org, and strace(1) doesn't
-                        ;; recognize it.
-                        "/thread/thread4"))
-                      ;; This tries to find programs in FHS directories.
-                      ("glib/tests/utils.c"
-                       ("/utils/find-program"))
-                      ;; This fails because "glib/tests/echo-script" cannot be
-                      ;; found.
-                      ("glib/tests/spawn-singlethread.c"
-                       ("/gthread/spawn-script"))
-                      ("glib/tests/timer.c"
-                       ( ;; fails if compiler optimizations are enabled, which they
-                        ;; are by default.
-                        "/timer/stop"))
-                      ("gio/tests/gapplication.c"
-                       ( ;; XXX: proven to be unreliable.  See:
-                        ;;  <https://bugs.debian.org/756273>
-                        ;;  <http://bugs.gnu.org/18445>
-                        "/gapplication/quit"
-                        ;; XXX: fails randomly for unknown reason. See:
-                        ;;  <https://lists.gnu.org/archive/html/guix-devel/2016-04/msg00215.html>
-                        "/gapplication/local-actions"))
-                      ("gio/tests/contenttype.c"
-                       ( ;; XXX: requires shared-mime-info.
-                        "/contenttype/guess"
-                        "/contenttype/guess_svg_from_data"
-                        "/contenttype/subtype"
-                        "/contenttype/list"
-                        "/contenttype/icon"
-                        "/contenttype/symbolic-icon"
-                        "/contenttype/tree"))
-                      ("gio/tests/appinfo.c"
-                       ( ;; XXX: requires update-desktop-database.
-                        "/appinfo/associations"))
-                      ("gio/tests/desktop-app-info.c"
-                       ( ;; XXX: requires update-desktop-database.
-                        "/desktop-app-info/delete"
-                        "/desktop-app-info/default"
-                        "/desktop-app-info/fallback"
-                        "/desktop-app-info/lastused"
-                        "/desktop-app-info/search"))
-                      ("gio/tests/gdbus-peer.c"
-                       ( ;; Requires /etc/machine-id.
-                        "/gdbus/codegen-peer-to-peer"))
-                      ("gio/tests/gdbus-address-get-session.c"
-                       ( ;; Requires /etc/machine-id.
-                        "/gdbus/x11-autolaunch"))
-                      ("gio/tests/gsocketclient-slow.c"
-                       ( ;; These tests tries to resolve "localhost", and fails.
-                        "/socket-client/happy-eyeballs/slow"
-                        "/socket-client/happy-eyeballs/cancellation/delayed")))))
-               (for-each (lambda (x) (apply disable x)) failing-tests)
-               #t)))
-         (replace 'check
-           (lambda _
-             (setenv "MESON_TESTTHREADS"
-                     (number->string (parallel-job-count)))
-             ;; Do not run tests marked as "flaky".
-             (invoke "meson" "test" "--no-suite" "flaky")))
-         ;; TODO: meson does not permit the bindir to be outside of prefix.
-         ;; See https://github.com/mesonbuild/meson/issues/2561
-         ;; We can remove this once meson is patched.
-         (add-after 'install 'move-executables
+         ;; Meson does not permit the bindir to be outside of prefix.
+         (add-after 'install 'move-bin
            (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out"))
-                   (bin (assoc-ref outputs "bin")))
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (assoc-ref outputs "bin")))
                (mkdir-p bin)
-               (rename-file (string-append out "/bin")
-                            (string-append bin "/bin"))
-               ;; This one is an implementation detail of glib.
-               ;; It is wrong that that's in "/bin" in the first place,
-               ;; but that's what upstream is doing right now.
-               ;; See <https://gitlab.gnome.org/GNOME/glib/issues/1633>.
-               (mkdir (string-append out "/libexec"))
-               (rename-file (string-append bin "/bin/gio-launch-desktop")
-                            (string-append out "/libexec/gio-launch-desktop"))
+               (rename-file
+                (string-append out "/bin")
+                (string-append bin "/bin"))
                ;; Do not refer to "bindir", which points to "${prefix}/bin".
                ;; We don't patch "bindir" to point to "$bin/bin", because that
                ;; would create a reference cycle between the "out" and "bin"
                ;; outputs.
-               (substitute* (list (string-append out "/lib/pkgconfig/gio-2.0.pc")
-                                  (string-append out "/lib/pkgconfig/glib-2.0.pc"))
+               (substitute*
+                   (list
+                    (string-append out "/lib/pkgconfig/gio-2.0.pc")
+                    (string-append out "/lib/pkgconfig/glib-2.0.pc"))
                  (("bindir=\\$\\{prefix\\}/bin") "")
                  (("=\\$\\{bindir\\}/") "="))
                #t))))))
@@ -340,15 +270,23 @@ shared NFS home directories.")
     ;;                                        (assoc-ref %outputs "bin")
     ;;                                        "/bin"))
     (native-inputs
-     `(("dbus" ,dbus)                   ; for GDBus tests
-       ("gettext" ,gettext-minimal)
+     `(("gettext" ,gettext-minimal)
+       ("libintl" ,intltool)
        ("m4" ,m4)                       ; for installing m4 macros
        ("perl" ,perl)                   ; needed by GIO tests
        ("pkg-config" ,pkg-config)
-       ("python" ,python-wrapper)
-       ("tzdata" ,tzdata-for-tests)))   ; for tests/gdatetime.c
+       ("python" ,python)               ; For 'patch-python-references
+       ("python-wrapper" ,python-wrapper)
+       ("tzdata" ,tzdata-for-tests)     ; for tests/gdatetime.c
+       ("xmllint" ,libxml2)
+       ("xsltproc" ,libxslt)))
+    (inputs
+     `(("bash-completion" ,bash-completion)
+       ("dbus" ,dbus)
+       ("libelf" ,libelf)))
     (propagated-inputs
      `(("libffi" ,libffi) ; in the Requires.private field of gobject-2.0.pc
+       ("libselinux" ,libselinux) ; in the Requires.private field of gio-2.0.pc
        ("pcre" ,pcre)   ; in the Requires.private field of glib-2.0.pc
        ("util-linux" ,util-linux "lib") ;for libmount
        ("zlib" ,zlib))) ; in the Requires.private field of glib-2.0.pc
