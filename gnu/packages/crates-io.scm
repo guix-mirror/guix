@@ -46522,7 +46522,7 @@ untrusted inputs in Rust.")
 (define-public rust-url-2
   (package
     (name "rust-url")
-    (version "2.2.0")
+    (version "2.2.1")
     (source
      (origin
        (method url-fetch)
@@ -46531,7 +46531,7 @@ untrusted inputs in Rust.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0vlpd0c7y9yv4x5vmb6qlnkxkj63r20wv2rysyg48l3kh6qg42ar"))))
+         "12qzdzgcvmc5l1fk4psldiipx80423mikb6g4a9qwb322d0rdkcw"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
