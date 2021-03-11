@@ -7826,14 +7826,14 @@ expression.")
 (define-public emacs-counsel
   (package
     (name "emacs-counsel")
-    (version "0.13.1")
+    (version "0.13.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
-                           "counsel-" version ".el"))
+                           "counsel-" version ".tar"))
        (sha256
-        (base32 "1y3hr3j5bh5mbyh1cqzxx04181qpvj4xyv1gym2gxcjd30nfllli"))))
+        (base32 "094zfapfn1l8wjf3djkipk0d9nks0g77sbk107pfsbr3skkzh031"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-swiper" ,emacs-swiper)))
