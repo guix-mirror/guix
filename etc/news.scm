@@ -1,7 +1,7 @@
 ;; GNU Guix news, for use by 'guix pull'.
 ;;
 ;; Copyright © 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
-;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;; Copyright © 2019–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;; Copyright © 2019, 2020 Miguel Ángel Arruga Vivas <rosen644835@gmail.com>
 ;; Copyright © 2019, 2020 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;; Copyright © 2019, 2020 Julien Lepiller <julien@lepiller.eu>
@@ -22,7 +22,8 @@
  (entry (commit "02e2e093e858e8a0ca7bd66c1f1f6fd0a1705edb")
         (title
          (en "New @command{guix import go} command")
-         (de "Neuer Befehl @command{guix import go}"))
+         (de "Neuer Befehl @command{guix import go}")
+         (nl "Nieuwe @command{guix import go}-opdracht"))
         (body
          (en "The new @command{guix import go} command allows packagers to
 generate a package definition or a template thereof given the name of a Go
@@ -43,7 +44,17 @@ guix import go golang.org/x/sys
 @end example
 
 Führen Sie @command{info \"(guix.de) Aufruf von guix import\"} aus, um mehr
-Informationen zu bekommen.")))
+Informationen zu bekommen.")
+                  (nl "Met de nieuwe @command{guix import go}-opdracht kunnen
+pakketschrijvers een pakketdefinitie of -sjabloon aanmaken, op basis van de
+naam van een Go-pakket te vinden op @url{https://proxy.golang.org}:
+
+@example
+guix import go golang.org/x/sys
+@end example
+
+Voer @command{info \"(guix) Invoking guix import\"} uit voor meer
+informatie.")))
 
  (entry (commit "1b5b882120daf7d111aa351a919a90e818324347")
         (title
