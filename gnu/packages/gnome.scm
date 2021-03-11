@@ -3279,15 +3279,13 @@ XML/CSS rendering engine.")
     (arguments
      '(#:configure-flags '("--disable-static")))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("gettext" ,gettext-minimal)
-
-       ;; For tests.
+     `(("gettext" ,gettext-minimal)
        ("perl" ,perl)
-       ("perl-xml-parser" ,perl-xml-parser)))
+       ("perl-xml-parser" ,perl-xml-parser)
+       ("pkg-config" ,pkg-config)))
     (inputs
-     `(("zlib" ,zlib)
-       ("bzip2" ,bzip2)))
+     `(("bzip2" ,bzip2)
+       ("zlib" ,zlib)))
     (propagated-inputs
      `(("gdk-pixbuf" ,gdk-pixbuf)
        ("glib" ,glib)
