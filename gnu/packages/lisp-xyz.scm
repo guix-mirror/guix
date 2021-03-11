@@ -15314,3 +15314,31 @@ time, etc.")
 
 (define-public cl-fof
   (sbcl-package->cl-source-package sbcl-fof))
+
+(define-public sbcl-computable-reals
+  (let ((commit "fdc73d75e79d0a4ce6d01c822c950ae2eb137d39"))
+    (package
+      (name "sbcl-computable-reals")
+      (version (git-version "1.1.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/stylewarning/computable-reals")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0f12axi53x14l12dgf4a1lfq3p1fx7fh7sjfc0db3lk88ph9qfwl"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/stylewarning/computable-reals")
+      (synopsis "Arbitrary-precision, re-computing real-numbers in Common Lisp")
+      (description
+       "This library provides arbitrary precision (floating point) real
+numbers in Common Lisp.")
+      (license license:bsd-3))))
+
+(define-public ecl-computable-reals
+  (sbcl-package->ecl-package sbcl-computable-reals))
+
+(define-public cl-computable-reals
+  (sbcl-package->cl-source-package sbcl-computable-reals))
