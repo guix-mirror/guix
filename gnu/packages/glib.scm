@@ -306,11 +306,12 @@ shared NFS home directories.")
        (variable "GIO_EXTRA_MODULES")
        (files '("lib/gio/modules")))))
     (search-paths native-search-paths)
-    (synopsis "Thread-safe general utility library; basis of GTK+ and GNOME")
-    (description "GLib provides data structure handling for C, portability
-wrappers, and interfaces for such runtime functionality as an event loop,
-threads, dynamic loading, and an object system.")
-    (home-page "https://developer.gnome.org/glib/")
+    (synopsis "Low-level core library for GNOME projects")
+    (description "GLib provides the core application building blocks for
+libraries and applications written in C.  It provides the core object system
+used in GNOME, the main loop implementation, and a large set of utility
+functions for strings and common data structures.")
+    (home-page "https://wiki.gnome.org/Projects/GLib")
     (license license:lgpl2.1+)))
 
 (define-public glib-with-documentation
