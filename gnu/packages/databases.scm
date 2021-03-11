@@ -661,6 +661,9 @@ replacement for the code@{python-memcached} library.")
 (define-public python2-pylibmc
   (package-with-python2 python-pylibmc))
 
+;; This is the last version of mongodb before they switched to the Server Side
+;; Public License (SSPL), which is not a FOSS license.  As such, this package
+;; cannot be updated.
 (define-public mongodb
   (package
     (name "mongodb")
