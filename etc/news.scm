@@ -21,7 +21,8 @@
 
  (entry (commit "02e2e093e858e8a0ca7bd66c1f1f6fd0a1705edb")
         (title
-         (en "New @command{guix import go} command"))
+         (en "New @command{guix import go} command")
+         (de "Neuer Befehl @command{guix import go}"))
         (body
          (en "The new @command{guix import go} command allows packagers to
 generate a package definition or a template thereof given the name of a Go
@@ -31,7 +32,18 @@ package available through @url{https://proxy.golang.org}, like so:
 guix import go golang.org/x/sys
 @end example
 
-Run @command{info \"(guix) Invoking guix import\"} for more info.")))
+Run @command{info \"(guix) Invoking guix import\"} for more info.")
+         (de "Mit dem neuen Befehl @command{guix import go} können
+Paketautoren eine Paketdefinition oder eine Vorlage dafür anhand des Namens
+eines auf @url{https://proxy.golang.org} verfügbaren Go-Pakets erzeugen, etwa
+so:
+
+@example
+guix import go golang.org/x/sys
+@end example
+
+Führen Sie @command{info \"(guix.de) Aufruf von guix import\"} aus, um mehr
+Informationen zu bekommen.")))
 
  (entry (commit "1b5b882120daf7d111aa351a919a90e818324347")
         (title
