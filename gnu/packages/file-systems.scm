@@ -849,7 +849,7 @@ APFS.")
 (define-public zfs
   (package
     (name "zfs")
-    (version "2.0.3")
+    (version "2.0.4")
     (outputs '("out" "module" "src"))
     (source
       (origin
@@ -858,7 +858,7 @@ APFS.")
                               "/download/zfs-" version
                               "/zfs-" version ".tar.gz"))
           (sha256
-           (base32 "0fg5hz1yy2z5ah0hzjv3xy5vcg1c214rps90dr80lfkalx5gd506"))))
+           (base32 "0v2zshimz5miyj8mbskb52pnzyl1s4rhpr6208zq549v8g2l84vx"))))
     (build-system linux-module-build-system)
     (arguments
      `(;; The ZFS kernel module should not be downloaded since the license
@@ -968,9 +968,9 @@ APFS.")
        ("util-linux:lib" ,util-linux "lib")
        ("zlib" ,zlib)))
     (home-page "https://zfsonlinux.org/")
-    (synopsis "Native ZFS on Linux")
+    (synopsis "OpenZFS on Linux")
     (description
-     "ZFS on Linux is an advanced file system and volume manager which was
+     "OpenZFS is an advanced file system and volume manager which was
 originally developed for Solaris and is now maintained by the OpenZFS
 community.")
     (license license:cddl1.0)))
