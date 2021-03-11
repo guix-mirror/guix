@@ -301,6 +301,7 @@ required structures.")
              (sha256
               (base32
                "0hjj1phcwkz69lx1lrvr9grhpl4y529mwqycqc1hdla1zqsnmgp8"))))
+   (replacement openssl/fixed)
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"         ;6.8 MiB of man3 pages and full HTML documentation
@@ -418,6 +419,24 @@ required structures.")
     "OpenSSL is an implementation of SSL/TLS.")
    (license license:openssl)
    (home-page "https://www.openssl.org/")))
+
+(define-public openssl/fixed
+  (package
+   (inherit openssl)
+   (version "1.1.1j")
+   (source (origin
+             (method url-fetch)
+             (uri (list (string-append "https://www.openssl.org/source/openssl-"
+                                       version ".tar.gz")
+                        (string-append "ftp://ftp.openssl.org/source/"
+                                       "openssl-" version ".tar.gz")
+                        (string-append "ftp://ftp.openssl.org/source/old/"
+                                       (string-trim-right version char-set:letter)
+                                       "/openssl-" version ".tar.gz")))
+             (patches (search-patches "openssl-1.1-c-rehash-in.patch"))
+             (sha256
+              (base32
+               "1gw17520vh13izy1xf5q0a2fqgcayymjjj5bk0dlkxndfnszrwma"))))))
 
 (define-public openssl-1.0
   (package
