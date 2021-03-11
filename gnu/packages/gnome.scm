@@ -3411,7 +3411,7 @@ for dealing with different structured file formats.")
               (snippet
                '(begin (delete-file-recursively "vendor")))))
     (build-system cargo-build-system)
-    (outputs '("out" "doc"))
+    (outputs '("out" "doc" "debug"))
     (arguments
      `(#:install-source? #f
        #:modules
