@@ -394,8 +394,7 @@ when typing parentheses directly or commenting out code line by line.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://elpa.gnu.org/packages/"
-                           "project-" version ".el"))
+       (uri (string-append "https://elpa.gnu.org/packages/project-" version ".tar"))
        (sha256
         (base32 "0arjvhzzcf8b80w94yvpgfdlhsjwf5jk1r7vcai5a4dg3bi9cxyb"))))
     (build-system emacs-build-system)
