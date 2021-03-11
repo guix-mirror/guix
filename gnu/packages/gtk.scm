@@ -760,8 +760,8 @@ scaled, composited, modified, saved, or rendered.")
     (description
      "The Assistive Technology Service Provider Interface, core components,
 is part of the GNOME accessibility project.")
-    (license license:lgpl2.0+)
-    (home-page "https://projects.gnome.org/accessibility/")))
+    (license license:lgpl2.1+)
+    (home-page "https://wiki.gnome.org/Accessibility/")))
 
 ;;; A minimal variant used to prevent a cycle with Inkscape.
 (define at-spi2-core-minimal
