@@ -11,6 +11,7 @@
 ;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;; Copyright © 2021 Leo Famulari <leo@famulari.name>
+;; Copyright © 2021 Zhu Zihao <all_but_last@163.com>
 ;;
 ;; Copying and distribution of this file, with or without modification, are
 ;; permitted in any medium without royalty provided the copyright notice and
