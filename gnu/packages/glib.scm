@@ -321,8 +321,8 @@ functions for strings and common data structures.")
     (properties (alist-delete 'hidden? (package-properties glib)))
     (outputs (cons "doc" (package-outputs glib))) ; 20 MiB of GTK-Doc reference
     (native-inputs
-     `(("gtk-doc" ,gtk-doc)             ; for the doc
-       ("docbook-xml" ,docbook-xml)
+     `(("docbook-xml" ,docbook-xml)
+       ("gtk-doc" ,gtk-doc)             ; for the doc
        ("libxml2" ,libxml2)
        ,@(package-native-inputs glib)))
     (arguments
@@ -333,12 +333,13 @@ functions for strings and common data structures.")
         `(modify-phases ,phases
            (add-after 'install 'move-doc
              (lambda* (#:key outputs #:allow-other-keys)
-               (let ((out (assoc-ref outputs "out"))
-                     (doc (assoc-ref outputs "doc"))
-                     (html (string-append "/share/gtk-doc")))
-                 (copy-recursively (string-append out html)
-                                   (string-append doc html))
-                 (delete-file-recursively (string-append out html))
+               (let* ((out (assoc-ref outputs "out"))
+                      (doc (assoc-ref outputs "doc"))
+                      (html (string-append "/share/gtk-doc")))
+                 (mkdir-p (string-append doc "/share"))
+                 (rename-file
+                  (string-append out html)
+                  (string-append doc html))
                  #t)))))))))
 
 ;;; TODO: Merge into glib as a 'static' output on core-updates.
