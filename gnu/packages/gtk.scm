@@ -643,6 +643,7 @@ highlighting and other features typical of a source code editor.")
                (base32
                 "0k9f9177qxaryaxprwrhqnv5p2gdq4a8i6y05gm98qa8izc5v77y"))))
     (build-system meson-build-system)
+    (outputs '("out" "debug"))
     (arguments
      `(#:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
        #:configure-flags '("-Dinstalled_tests=false" "-Djasper=true")
@@ -666,14 +667,12 @@ highlighting and other features typical of a source code editor.")
                   (string-append (assoc-ref ,(if (%current-target-system)
                                                  '(or native-inputs inputs)
                                                  'inputs) "docbook-xml")
-                                 "/xml/dtd/docbook/"))))
-             #t))
+                                 "/xml/dtd/docbook/"))))))
          (add-before 'configure 'disable-failing-tests
            (lambda _
              (substitute* "tests/meson.build"
                (("\\[ 'pixbuf-fail', \\['conform', 'slow'\\], \\],")
-                ""))
-             #t))
+                ""))))
          ;; The slow tests take longer than the specified timeout.
          ,@(if (any (cute string=? <> (%current-system))
                     '("armhf-linux" "aarch64-linux"))
