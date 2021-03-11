@@ -4279,28 +4279,28 @@ passwords in the GNOME keyring.")
               (sha256
                (base32
                 "1nx5xjarpkl9hgy0qbqfczx7d7clh5g1r8xr5xp8b97c5fsc2rb1"))))
-    (build-system gnu-build-system)
+    (build-system glib-or-gtk-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
          (add-before 'check 'pre-check
-                     (lambda _
-                       (setenv "CC" "gcc")
-                       (substitute* "valadoc/tests/libvaladoc\
+           (lambda _
+             (setenv "CC" "gcc")
+             (substitute* "valadoc/tests/libvaladoc\
 /tests-extra-environment.sh"
-                         (("export PKG_CONFIG_PATH=" m)
-                          (string-append m "$PKG_CONFIG_PATH:"))))))))
+               (("export PKG_CONFIG_PATH=" m)
+                (string-append m "$PKG_CONFIG_PATH:"))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("flex" ,flex)
        ("bison" ,bison)
        ("xsltproc" ,libxslt)
-       ("dbus" ,dbus)                                     ; for dbus tests
+       ("dbus" ,dbus)                   ; for dbus tests
        ("gobject-introspection" ,gobject-introspection))) ; for gir tests
     (inputs
      `(("graphviz" ,graphviz)))
     (propagated-inputs
-     `(("glib" ,glib))) ; required by libvala-0.40.pc
+     `(("glib" ,glib)))                 ; required by libvala-0.40.pc
     (home-page "https://wiki.gnome.org/Projects/Vala/")
     (synopsis "Compiler for the GObject type system")
     (description
