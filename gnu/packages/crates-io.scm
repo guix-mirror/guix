@@ -48073,14 +48073,14 @@ WebAssembly binary files.")
 (define-public rust-webpki-0.21
   (package
     (name "rust-webpki")
-    (version "0.21.2")
+    (version "0.21.4")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "webpki" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1vv3x2alvczfy6jhx79c9h00d1nliqf7s5jlvcd6npc6f8chxxgi"))))
+        (base32 "1sm4i8c5bw3bdhi7mjk0wpvwx55hvsmyn0k2lpa4cb161038rqxq"))))
     (build-system cargo-build-system)
     (arguments
      `(#:tests? #f ;; tests fail to build "missing file tests/ed25519/ee.der"
