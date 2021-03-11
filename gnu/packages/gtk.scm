@@ -236,7 +236,7 @@ affine transformation (scale, rotation, shear, etc.).")
 (define-public libdatrie
   (package
     (name "libdatrie")
-    (version "0.2.12")
+    (version "0.2.13")
     (source
      (origin
        (method url-fetch)
@@ -244,7 +244,7 @@ affine transformation (scale, rotation, shear, etc.).")
         (string-append "https://linux.thai.net/pub/ThaiLinux/software/"
                        "libthai/libdatrie-" version ".tar.xz"))
        (sha256
-        (base32 "0jdi01pcxv0b24zbjy7zahawsqqqw4mv94f2yy01zh4n796wqba5"))))
+        (base32 "1gplcx9ddglpxmqm10qn38kjmvdh4hnhj14rzgqag095psr1n8qj"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (arguments
