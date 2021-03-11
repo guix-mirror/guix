@@ -321,7 +321,8 @@ functions for strings and common data structures.")
     (properties (alist-delete 'hidden? (package-properties glib)))
     (outputs (cons "doc" (package-outputs glib))) ; 20 MiB of GTK-Doc reference
     (native-inputs
-     `(("docbook-xml" ,docbook-xml)
+     `(("docbook-xml-4.2" ,docbook-xml-4.2)
+       ("docbook-xml-4.5" ,docbook-xml)
        ("gtk-doc" ,gtk-doc)             ; for the doc
        ("libxml2" ,libxml2)
        ,@(package-native-inputs glib)))
@@ -331,6 +332,17 @@ functions for strings and common data structures.")
         `(cons "-Dgtk_doc=true" ,flags))
        ((#:phases phases)
         `(modify-phases ,phases
+           (add-after 'unpack 'patch-docbook-xml
+             (lambda* (#:key inputs #:allow-other-keys)
+               (with-directory-excursion "docs"
+                 (substitute* (find-files "." "\\.xml$")
+                   (("http://www.oasis-open.org/docbook/xml/4\\.5/")
+                    (string-append (assoc-ref inputs "docbook-xml-4.5")
+                                   "/xml/dtd/docbook/"))
+                   (("http://www.oasis-open.org/docbook/xml/4\\.2/")
+                    (string-append (assoc-ref inputs "docbook-xml-4.2")
+                                   "/xml/dtd/docbook/"))))
+               #t))
            (add-after 'install 'move-doc
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
