@@ -10607,7 +10607,7 @@ photo-booth-like software, such as Cheese.")
        ("clutter-gst" ,clutter-gst)
        ("clutter-gtk" ,clutter-gtk)
        ("libcanberra" ,libcanberra)
-       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("gdk-pixbuf" ,gdk-pixbuf+svg)
        ("glib" ,glib)
        ("gstreamer" ,gstreamer)))
     (inputs
