@@ -1476,12 +1476,15 @@ library.")
        ("xsltproc" ,libxslt)))
     (propagated-inputs
      `(("glibmm" ,glibmm) ("atk" ,atk)))
-    (home-page "https://www.gtkmm.org")
-    (synopsis "C++ interface to the ATK accessibility library")
-    (description
-     "ATKmm provides a C++ programming interface to the ATK accessibility
-toolkit.")
-    (license license:lgpl2.1+)))
+    (synopsis "C++ bindings for ATK")
+    (description "ATKmm is the C++ binding for the ATK library.")
+    (home-page "https://wiki.gnome.org/Accessibility")
+    (license
+     (list
+      ;; Library
+      license:lgpl2.1+
+      ;; Tools
+      license:gpl2+))))
 
 (define-public gtkmm
   (package
