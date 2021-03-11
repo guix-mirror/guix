@@ -325,7 +325,8 @@ applications.")
               "07qvxa2sk90chp1l12han6vxvy098mc37sdqcznyywyv2g6bd9b6"))))
    (build-system meson-build-system)
    (arguments
-    '(#:phases (modify-phases %standard-phases
+    '(#:glib-or-gtk? #t ; To wrap binaries and/or compile schemas
+      #:phases (modify-phases %standard-phases
                  (add-after 'unpack 'disable-cantarell-tests
                    (lambda _
                      (substitute* "tests/meson.build"
