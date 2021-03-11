@@ -336,24 +336,23 @@ applications.")
                        (("\\[ 'test-itemize'.*") "")
                        (("\\[ 'test-layout'.*") ""))
                      #t)))))
-   (propagated-inputs
-    ;; These are all in Requires or Requires.private of the '.pc' files.
-    `(("cairo" ,cairo)
-      ("fribidi" ,fribidi)
-      ("fontconfig" ,fontconfig)
-      ("freetype" ,freetype)
-      ("glib" ,glib)
-      ("harfbuzz" ,harfbuzz)
-
-      ;; Some packages, such as Openbox, expect Pango to be built with the
-      ;; optional libxft support.
-      ("libxft" ,libxft)))
-   (inputs
-    `(("zlib" ,zlib)))
-   (native-inputs
-    `(("pkg-config" ,pkg-config)
-      ("glib" ,glib "bin")                               ; glib-mkenums, etc.
-      ("gobject-introspection" ,gobject-introspection))) ; g-ir-compiler, etc.
+    (propagated-inputs
+     ;; These are all in Requires or Requires.private of the '.pc' files.
+     `(("cairo" ,cairo)
+       ("fontconfig" ,fontconfig)
+       ("freetype" ,freetype)
+       ("fribidi" ,fribidi)
+       ("glib" ,glib)
+       ("harfbuzz" ,harfbuzz)
+       ;; Some packages, such as Openbox, expect Pango to be built with the
+       ;; optional libxft support.
+       ("libxft" ,libxft)))
+    (inputs
+     `(("zlib" ,zlib)))
+    (native-inputs
+     `(("glib" ,glib "bin")             ; glib-mkenums, etc.
+       ("gobject-introspection" ,gobject-introspection) ; g-ir-compiler, etc.
+       ("pkg-config" ,pkg-config)))
    (synopsis "GNOME text and font handling library")
    (description
     "Pango is the core text and font handling library used in GNOME
