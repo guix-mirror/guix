@@ -973,6 +973,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/erlang-man-path.patch			\
   %D%/packages/patches/eudev-rules-directory.patch		\
   %D%/packages/patches/evilwm-lost-focus-bug.patch		\
+  %D%/packages/patches/evolution-data-server-CVE-2020-14928.patch	\
+  %D%/packages/patches/evolution-data-server-CVE-2020-16117.patch	\
   %D%/packages/patches/evolution-data-server-locales.patch	\
   %D%/packages/patches/evolution-data-server-libical-compat.patch	\
   %D%/packages/patches/exercism-disable-self-update.patch	\

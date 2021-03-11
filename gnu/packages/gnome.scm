@@ -7479,7 +7479,9 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
                                   (version-major+minor version) "/"
                                   name "-" version ".tar.xz"))
               (patches (search-patches "evolution-data-server-locales.patch"
-                                       "evolution-data-server-libical-compat.patch"))
+                                       "evolution-data-server-libical-compat.patch"
+                                       "evolution-data-server-CVE-2020-14928.patch"
+                                       "evolution-data-server-CVE-2020-16117.patch"))
               (sha256
                (base32
                 "16z85y6hhazcrp5ngw47w4x9r0j8zrj7awv5im58hhp0xs19zf1y"))))
