@@ -3275,6 +3275,7 @@ XML/CSS rendering engine.")
                (base32
                 "0kbpp9ksl7977xiga37sk1gdw1r039v6zviqznl7alvvg39yp26i"))))
     (build-system glib-or-gtk-build-system)
+    (outputs '("out" "bin"))
     (arguments
      '(#:configure-flags '("--disable-static")))
     (native-inputs
