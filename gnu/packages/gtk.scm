@@ -360,13 +360,14 @@ applications.")
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)))
-    (synopsis "GNOME text and font handling library")
-    (description
-     "Pango is the core text and font handling library used in GNOME
-applications.  It has extensive support for the different writing systems
-used throughout the world.")
-    (license license:lgpl2.0+)
-    (home-page "https://developer.gnome.org/pango/")))
+    (synopsis "Text and font handling library")
+    (description "Pango is a library for laying out and rendering of text, with
+an emphasis on internationalization.  Pango can be used anywhere that text
+layout is needed, though most of the work on Pango so far has been done in the
+context of the GTK+ widget toolkit.  Pango forms the core of text and font
+handling for GTK+-2.x.")
+    (home-page "https://pango.gnome.org/")
+    (license license:lgpl2.0+)))
 
 (define-public pango-1.42
   (package
