@@ -78,6 +78,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages m4)
   #:use-module (gnu packages man)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages perl)
@@ -1437,17 +1438,24 @@ library.")
 (define-public atkmm
   (package
     (name "atkmm")
-    (version "2.28.0")
+    (version "2.36.0")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://gnome/sources/" name "/"
-                                 (version-major+minor version)  "/"
-                                 name "-" version ".tar.xz"))
-             (sha256
-              (base32
-               "0fnxrspxkhhbrjphqrpvl3zjm66n50s4cywrrrwkhbflgy8zqk2c"))))
-    (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version)  "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0wwr0663jrqx2klsasffd9wpk3kqnwisj1y3ahdkjdk5hzrsjgy9"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t))   ; To wrap binaries and/or compile schemas
+    (native-inputs
+     `(("m4" ,m4)
+       ("mm-common" ,mm-common)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("xsltproc" ,libxslt)))
     (propagated-inputs
      `(("glibmm" ,glibmm) ("atk" ,atk)))
     (home-page "https://www.gtkmm.org")
