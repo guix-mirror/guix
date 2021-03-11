@@ -235,7 +235,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
   (package
     (inherit go-1.4)
     (name "go")
-    (version "1.14.10")
+    (version "1.14.15")
     (source
      (origin
        (method git-fetch)
@@ -245,7 +245,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0h1nmqzjc0xxpn6n2hjq7692gdqkznagzdmiq9490yzkrrii2lgk"))))
+         "1crh90qkvhlx23hwsi4wxy3l3h8973lr18135y6h1nnzzwr3n3ps"))))
     (arguments
      (substitute-keyword-arguments (package-arguments go-1.4)
        ((#:system system)
@@ -285,7 +285,10 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                     "cmd/go/testdata/script/cover_cgo.txt"
                     "cmd/go/testdata/script/cover_cgo_xtest.txt"
                     "cmd/go/testdata/script/cover_cgo_extra_test.txt"
-                    "cmd/go/testdata/script/cover_cgo_extra_file.txt"))
+                    "cmd/go/testdata/script/cover_cgo_extra_file.txt"
+                    "cmd/go/testdata/script/cgo_path_space.txt"
+                    "cmd/go/testdata/script/ldflag.txt"
+                    "cmd/go/testdata/script/cgo_path.txt"))
 
                  (for-each make-file-writable (find-files "."))
 
