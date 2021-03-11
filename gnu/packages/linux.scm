@@ -7149,7 +7149,7 @@ IP addresses and routes, and configure IPsec.")
 (define-public libinih
   (package
     (name "libinih")
-    (version "52")
+    (version "53")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -7158,7 +7158,7 @@ IP addresses and routes, and configure IPsec.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0lsvm34zabvi1xlximybzvgc58zb90mm3b9babwxlqs05jy871m4"))))
+                "0dqf5j2sw4hq68rqvxbrsf44ygfzx9ypiyzipk4cvp9aimbvsbc6"))))
     (build-system meson-build-system)
     (arguments
      '(#:configure-flags '("-Ddistro_install=true" "-Ddefault_library=shared")))
