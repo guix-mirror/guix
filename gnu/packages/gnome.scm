@@ -4281,7 +4281,8 @@ passwords in the GNOME keyring.")
                 "1nx5xjarpkl9hgy0qbqfczx7d7clh5g1r8xr5xp8b97c5fsc2rb1"))))
     (build-system glib-or-gtk-build-system)
     (arguments
-     '(#:phases
+     '(#:configure-flags '("--enable-coverage")
+       #:phases
        (modify-phases %standard-phases
          (add-before 'check 'pre-check
            (lambda _
