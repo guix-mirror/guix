@@ -3277,9 +3277,27 @@ XML/CSS rendering engine.")
     (build-system glib-or-gtk-build-system)
     (outputs '("out" "bin"))
     (arguments
-     '(#:configure-flags '("--disable-static")))
+     `(#:configure-flags
+       (list
+        "--disable-static"
+        "--enable-introspection"
+        (string-append "--with-gir-dir="
+                       (assoc-ref %outputs "out")
+                       "/share/gir-"
+                       ,(version-major
+                         (package-version gobject-introspection))
+                       ".0")
+        (string-append "--with-typelib-dir="
+                       (assoc-ref %outputs "out")
+                       "/lib/girepository-"
+                       ,(version-major
+                         (package-version gobject-introspection))
+                       ".0")
+        "--with-zlib"
+        "--with-bz2")))
     (native-inputs
      `(("gettext" ,gettext-minimal)
+       ("gobject-introspection" ,gobject-introspection)
        ("perl" ,perl)
        ("perl-xml-parser" ,perl-xml-parser)
        ("pkg-config" ,pkg-config)))
