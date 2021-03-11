@@ -1141,7 +1141,10 @@ that support this feature).")
        ("automake" ,automake)
        ("libtool" ,libtool)))
     (arguments
-     `(#:tests? #f ; Tests require a NUMA-enabled system.
+     `(#:configure-flags
+       (list (string-append "--docdir=" (assoc-ref %outputs "out")
+                            "/share/doc/" ,name "-" ,version))
+       #:tests? #f ; Tests require a NUMA-enabled system.
        #:phases
        (modify-phases %standard-phases
          (add-before 'build 'autogen-jemalloc
