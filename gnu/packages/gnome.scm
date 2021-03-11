@@ -11339,7 +11339,8 @@ these services on the Guix System.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "01cc921kyh3zxz07biqbdzkjgmdcc36kwjyajm4y382a75cl5zg7"))))
+                "01cc921kyh3zxz07biqbdzkjgmdcc36kwjyajm4y382a75cl5zg7"))
+              (patches (search-patches "geary-CVE-2020-24661.patch"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
