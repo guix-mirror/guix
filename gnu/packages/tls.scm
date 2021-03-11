@@ -576,13 +576,13 @@ netcat implementation that supports TLS.")
   (package
     (name "python-acme")
     ;; Remember to update the hash of certbot when updating python-acme.
-    (version "1.12.0")
+    (version "1.13.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "acme" version))
               (sha256
                (base32
-                "1wn2jvkg18z31nd060hfcp2yqvxjxykim2ybgaidv7qfsms38dma"))))
+                "1260a7bcgmha19drqzn6syz3cy61482b3w6lihgg1md6svgmfhkb"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -599,8 +599,7 @@ netcat implementation that supports TLS.")
                (install-file "docs/_build/man/acme-python.1" man)
                #t))))))
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)
+     `(("python-pytest" ,python-pytest)
        ;; For documentation
        ("python-sphinx" ,python-sphinx)
        ("python-sphinxcontrib-programoutput" ,python-sphinxcontrib-programoutput)
@@ -608,7 +607,6 @@ netcat implementation that supports TLS.")
        ("texinfo" ,texinfo)))
     (propagated-inputs
      `(("python-josepy" ,python-josepy)
-       ("python-six" ,python-six)
        ("python-requests" ,python-requests)
        ("python-requests-toolbelt" ,python-requests-toolbelt)
        ("python-pytz" ,python-pytz)
@@ -632,20 +630,12 @@ netcat implementation that supports TLS.")
               (uri (pypi-uri "certbot" version))
               (sha256
                (base32
-                "0nfzk6fzyfqy8lgs5lmxfndrdh5c2ljdvzj39rwvgg3r6ivkirsy"))))
+                "0n7lwajmlypkqgsd2cv74j41f5ag381skjlzhjfpsrppgnsl3kv4"))))
     (build-system python-build-system)
     (arguments
      `(,@(substitute-keyword-arguments (package-arguments python-acme)
            ((#:phases phases)
             `(modify-phases ,phases
-             (replace 'build-documentation
-               (lambda _
-                 ;; Fix building the manual page in 1.12.0:
-                 ;; https://github.com/certbot/certbot/issues/8633
-                 ;; TODO Remove the substitution in later releases.
-                 (substitute* "docs/conf.py"
-                   (("'man',") ""))
-             (invoke "make" "-C" "docs" "man" "info")))
               (replace 'install-documentation
                 (lambda* (#:key outputs #:allow-other-keys)
                   (let* ((out (assoc-ref outputs "out"))
@@ -676,7 +666,6 @@ netcat implementation that supports TLS.")
        ("python-distro" ,python-distro)
        ("python-zope-component" ,python-zope-component)
        ("python-parsedatetime" ,python-parsedatetime)
-       ("python-six" ,python-six)
        ("python-psutil" ,python-psutil)
        ("python-requests" ,python-requests)
        ("python-pytz" ,python-pytz)))
