@@ -416,11 +416,11 @@ functions for strings and common data structures.")
     (inputs
      `(("bison" ,bison)
        ("flex" ,flex)
-       ("glib" ,glib)
        ("python" ,python-wrapper)
        ("zlib" ,zlib)))
     (propagated-inputs
-     `(;; In practice, GIR users will need libffi when using
+     `(("glib" ,glib)
+       ;; In practice, GIR users will need libffi when using
        ;; gobject-introspection.
        ("libffi" ,libffi)))
     (native-search-paths
