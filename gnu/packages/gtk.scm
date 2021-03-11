@@ -98,30 +98,30 @@
 
 (define-public atk
   (package
-   (name "atk")
-   (version "2.34.1")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append "mirror://gnome/sources/" name "/"
-                                (version-major+minor version)  "/"
-                                name "-" version ".tar.xz"))
-            (sha256
-             (base32
-              "1jwp16r6p5z66k4b2v8zlzhyshhwlmyi27ippkrgqr8jsary7w6l"))))
-   (build-system meson-build-system)
-   (propagated-inputs `(("glib" ,glib))) ; required by atk.pc
-   (native-inputs
-    `(("pkg-config" ,pkg-config)
-      ("gettext" ,gettext-minimal)
-      ("glib" ,glib "bin")                               ; glib-mkenums, etc.
-      ("gobject-introspection" ,gobject-introspection))) ; g-ir-compiler, etc.
-   (synopsis "GNOME accessibility toolkit")
-   (description
-    "ATK provides the set of accessibility interfaces that are implemented
+    (name "atk")
+    (version "2.34.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version)  "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1jwp16r6p5z66k4b2v8zlzhyshhwlmyi27ippkrgqr8jsary7w6l"))))
+    (build-system meson-build-system)
+    (propagated-inputs `(("glib" ,glib))) ; required by atk.pc
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("glib" ,glib "bin")             ; glib-mkenums, etc.
+       ("gobject-introspection" ,gobject-introspection) ; g-ir-compiler, etc.
+       ("pkg-config" ,pkg-config)))
+    (synopsis "GNOME accessibility toolkit")
+    (description
+     "ATK provides the set of accessibility interfaces that are implemented
 by other toolkits and applications.  Using the ATK interfaces, accessibility
 tools have full access to view and control running applications.")
-   (license license:lgpl2.0+)
-   (home-page "https://developer.gnome.org/atk/")))
+    (license license:lgpl2.0+)
+    (home-page "https://developer.gnome.org/atk/")))
 
 (define-public cairo
   (package
