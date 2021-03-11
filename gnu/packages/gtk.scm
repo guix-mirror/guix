@@ -819,8 +819,8 @@ is part of the GNOME accessibility project.")
     (description
      "The Assistive Technology Service Provider Interface
 is part of the GNOME accessibility project.")
-    (license license:lgpl2.0+)
-    (home-page "https://projects.gnome.org/accessibility/")))
+    (license license:lgpl2.1+)
+    (home-page "https://wiki.gnome.org/Accessibility/")))
 
 (define-public gtk+-2
   (package
