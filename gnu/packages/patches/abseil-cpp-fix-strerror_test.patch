@@ -1,0 +1,42 @@
+From e2b1bab19a782cb62bb010d1c2925ab7314fb113 Mon Sep 17 00:00:00 2001
+diff --git a/absl/base/internal/strerror.cc b/absl/base/internal/strerror.cc
+index d66ba120..0d6226fd 100644
+--- a/absl/base/internal/strerror.cc
++++ b/absl/base/internal/strerror.cc
+@@ -51,7 +51,6 @@ const char* StrErrorAdaptor(int errnum, char* buf, size_t buflen) {
+ }
+ 
+ std::string StrErrorInternal(int errnum) {
+-  absl::base_internal::ErrnoSaver errno_saver;
+   char buf[100];
+   const char* str = StrErrorAdaptor(errnum, buf, sizeof buf);
+   if (*str == '\0') {
+@@ -76,6 +75,7 @@ std::array<std::string, kSysNerr>* NewStrErrorTable() {
+ }  // namespace
+ 
+ std::string StrError(int errnum) {
++  absl::base_internal::ErrnoSaver errno_saver;
+   static const auto* table = NewStrErrorTable();
+   if (errnum >= 0 && errnum < static_cast<int>(table->size())) {
+     return (*table)[errnum];
+diff --git a/absl/base/internal/strerror_test.cc b/absl/base/internal/strerror_test.cc
+index a53da97f..e32d5b5c 100644
+--- a/absl/base/internal/strerror_test.cc
++++ b/absl/base/internal/strerror_test.cc
+@@ -62,12 +62,14 @@ TEST(StrErrorTest, MultipleThreads) {
+       ++counter;
+       errno = ERANGE;
+       const std::string value = absl::base_internal::StrError(i);
++      // EXPECT_* could change errno. Stash it first.
++      int check_err = errno;
++      EXPECT_THAT(check_err, Eq(ERANGE));
+       // Only the GNU implementation is guaranteed to provide the
+       // string "Unknown error nnn". POSIX doesn't say anything.
+       if (!absl::StartsWith(value, "Unknown error ")) {
+-        EXPECT_THAT(absl::base_internal::StrError(i), Eq(expected_strings[i]));
++        EXPECT_THAT(value, Eq(expected_strings[i]));
+       }
+-      EXPECT_THAT(errno, Eq(ERANGE));
+     }
+   };
+ 
