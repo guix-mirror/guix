@@ -10629,6 +10629,34 @@ GF(2^n).  This trait is implemented for 64, 128 and 256 bit block
 sizes.  Big-endian order is used.  WARNING: Block must be aligned!")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-deadpool-0.7
+  (package
+    (name "rust-deadpool")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "deadpool" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0vb18xvhmyg6gvvq5vrcqmy4x26ryrmkqpsgwmb4bvkav1wn24ix"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-async-trait" ,rust-async-trait-0.1)
+        ("rust-config" ,rust-config-0.10)
+        ("rust-crossbeam-queue" ,rust-crossbeam-queue-0.3)
+        ("rust-num-cpus" ,rust-num-cpus-1)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-tokio" ,rust-tokio-1))))
+    (home-page "https://github.com/bikeshedder/deadpool")
+    (synopsis "Dead simple async pool")
+    (description
+     "Deadpool is a dead simple async pool for connections and objects of any
+type.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-decimal-2
   (package
     (name "rust-decimal")
