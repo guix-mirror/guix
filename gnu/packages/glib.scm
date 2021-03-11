@@ -1178,7 +1178,7 @@ Some codes examples can be find at:
        ("pkg-config" ,pkg-config)))
     (propagated-inputs
      `(("gcab" ,gcab) ; for .pc file
-       ("gdk-pixbuf" ,gdk-pixbuf) ; for .pc file
+       ("gdk-pixbuf" ,gdk-pixbuf+svg) ; for .pc file
        ("libuuid" ,util-linux "lib"))) ; for .pc file
     (inputs
      `(("glib" ,glib)
