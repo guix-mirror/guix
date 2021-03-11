@@ -2020,6 +2020,26 @@ layouts in StumpWM.")
     (description "Modeline support for CPU info.")
     (license license:gpl3+)))
 
+(define-public sbcl-stumpwm-disk
+  (package
+    (inherit stumpwm-contrib)
+    (name "sbcl-stumpwm-disk")
+    (arguments
+     '(#:asd-systems '("disk")
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _ (chdir "modeline/disk") #t)))))
+    (inputs
+     `(("stumpwm" ,stumpwm "lib")
+       ("cl-diskspace" ,sbcl-cl-diskspace)
+       ("cl-mount-info" ,sbcl-cl-mount-info)))
+    (home-page "https://github.com/stumpwm/stumpwm-contrib")
+    (synopsis "StumpWM modeline support to show disk usage")
+    (description "StumpWM modeline support to show disk usage")
+    (license (list license:gpl2+ license:gpl3+))))
+
 (define-public sbcl-stumpwm-mem
   (package
     (inherit stumpwm-contrib)
