@@ -7802,13 +7802,13 @@ hydras with one column per group of heads.")))
 (define-public emacs-ivy
   (package
     (name "emacs-ivy")
-    (version "0.13.1")
+    (version "0.13.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/ivy-" version ".tar"))
        (sha256
-        (base32 "0n0ixhdykbdpis4krkqq6zncbby28p34742q96n0l91w0p19slcx"))))
+        (base32 "0qpza1c45mr8fcpnm32cck4v22fnzz1yb7kww05rzgq1k9iivx5v"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-hydra" ,emacs-hydra)))
