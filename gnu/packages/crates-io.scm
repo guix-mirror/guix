@@ -32657,19 +32657,20 @@ functionality as retain but gives mutable borrow to the predicate.")
 (define-public rust-ring-0.16
   (package
     (name "rust-ring")
-    (version "0.16.12")
+    (version "0.16.20")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "ring" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "033sb54dlmiqdivc8v9ykkq3v08lzy0syjf5k1nag2gfcknai98v"))))
+        (base32 "1z682xp7v38ayq9g9nkbhhfpj6ygralmlx7wdmsfv8rnw99cylrh"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs
-       (("rust-lazy-static" ,rust-lazy-static-1)
-        ("rust-libc" ,rust-libc-0.2)
+     `(#:tests? #false                  ;missing file
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-once-cell" ,rust-once-cell-1)
         ("rust-spin" ,rust-spin-0.5)
         ("rust-untrusted" ,rust-untrusted-0.7)
         ("rust-web-sys" ,rust-web-sys-0.3)
@@ -32678,7 +32679,7 @@ functionality as retain but gives mutable borrow to the predicate.")
         ("rust-cc" ,rust-cc-1))
        #:cargo-development-inputs
        (("rust-libc" ,rust-libc-0.2)
-        ("rust-wasm-bindgen-test" ,rust-wasm-bindgen-test-0.2))))
+        ("rust-wasm-bindgen-test" ,rust-wasm-bindgen-test-0.3))))
     (home-page "https://github.com/briansmith/ring")
     (synopsis "Safe, fast, small crypto using Rust")
     (description "This package provided safe, fast, small crypto using Rust.")
