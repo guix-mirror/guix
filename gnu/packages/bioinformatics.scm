@@ -52,6 +52,7 @@
   #:use-module (guix build-system ocaml)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system qt)
   #:use-module (guix build-system r)
   #:use-module (guix build-system ruby)
   #:use-module (guix build-system scons)
@@ -125,6 +126,7 @@
   #:use-module (gnu packages python-science)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages rdf)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages ruby)
@@ -13186,6 +13188,64 @@ mainstream assemblers, miniasm does not have a consensus step.  It simply
 concatenates pieces of read sequences to generate the final unitig sequences.
 Thus the per-base error rate is similar to the raw input reads.")
    (license license:expat)))
+
+(define-public bandage
+  (package
+    (name "bandage")
+    (version "0.8.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rrwick/Bandage")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1bbsn5f5x8wlspg4pbibqz6m5vin8c19nl224f3z3km0pkc97rwv"))))
+    (build-system qt-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda _
+             (invoke "qmake" "Bandage.pro")))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (substitute* "tests/bandage_command_line_tests.sh"
+                 (("^bandagepath=.*")
+                  (string-append "bandagepath=" (getcwd) "/Bandage\n")))
+               (with-directory-excursion "tests"
+                 (setenv "XDG_RUNTIME_DIR" (getcwd))
+                 (invoke "./bandage_command_line_tests.sh")))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (install-file "Bandage" (string-append out "/bin"))
+               #t))))))
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)))
+    (native-inputs
+     `(("imagemagick" ,imagemagick)))
+    (home-page "https://rrwick.github.io/Bandage/")
+    (synopsis
+     "Bioinformatics Application for Navigating De novo Assembly Graphs Easily")
+    (description "Bandage is a program for visualising de novo assembly graphs.
+It allows users to interact with the assembly graphs made by de novo assemblers
+such as Velvet, SPAdes, MEGAHIT and others.  De novo assembly graphs contain not
+only assembled contigs but also the connections between those contigs, which
+were previously not easily accessible.  Bandage visualises assembly graphs, with
+connections, using graph layout algorithms.  Nodes in the drawn graph, which
+represent contigs, can be automatically labelled with their ID, length or depth.
+Users can interact with the graph by moving, labelling and colouring nodes.
+Sequence information can also be extracted directly from the graph viewer.  By
+displaying connections between contigs, Bandage opens up new possibilities for
+analysing and improving de novo assemblies that are not possible by looking at
+contigs alone.")
+    (license (list license:gpl2+        ; bundled ogdf
+                   license:gpl3+))))
 
 (define-public r-circus
   (package
