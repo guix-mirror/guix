@@ -7429,7 +7429,7 @@ to display dialog boxes from the commandline and shell scripts.")
        ;; mutter-clutter-1.0.pc and mutter-cogl-1.0.pc refer to these:
        ("atk" ,atk)
        ("cairo" ,cairo)
-       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("gdk-pixbuf" ,gdk-pixbuf+svg)
        ("glib" ,glib)
        ("json-glib" ,json-glib)
        ("libinput" ,libinput)
