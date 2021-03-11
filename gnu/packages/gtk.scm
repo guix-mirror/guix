@@ -659,10 +659,9 @@ scaled, composited, modified, saved, or rendered.")
      `(("librsvg" ,librsvg)
        ,@(package-inputs gdk-pixbuf)))
     (arguments
-     '(#:configure-flags '("-Dinstalled-tests=false")
-       #:tests? #f ; tested by the gdk-pixbuf package already
-       #:phases
-       (modify-phases %standard-phases
+     (substitute-keyword-arguments (package-arguments gdk-pixbuf)
+        ((#:phases phases)
+          `(modify-phases ,phases
          (add-after 'install 'register-svg-loader
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out     (assoc-ref outputs "out"))
@@ -676,9 +675,8 @@ scaled, composited, modified, saved, or rendered.")
                (apply invoke
                       gdk-pixbuf-query-loaders
                       "--update-cache"
-                      loaders)))))))
-    (synopsis
-     "GNOME image loading and manipulation library, with SVG support")))
+                      loaders))))))))
+    (synopsis "Image loading library, with SVG support")))
 
 (define-public at-spi2-core
   (package
