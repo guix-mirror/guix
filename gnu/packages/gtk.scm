@@ -636,12 +636,12 @@ highlighting and other features typical of a source code editor.")
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("xsltproc" ,libxslt)))
-    (synopsis "GNOME image loading and manipulation library")
-    (description
-     "GdkPixbuf is a library for image loading and manipulation developed
-in the GNOME project.")
-    (license license:lgpl2.0+)
-    (home-page "https://developer.gnome.org/gdk-pixbuf/")))
+    (synopsis "Image loading library")
+    (description "GdkPixbuf is a library that loads image data in various
+formats and stores it as linear buffers in memory.  The buffers can then be
+scaled, composited, modified, saved, or rendered.")
+    (home-page "https://wiki.gnome.org/Projects/GdkPixbuf")
+    (license license:lgpl2.1+)))
 
 ;; To build gdk-pixbuf with SVG support, we need librsvg, and librsvg depends
 ;; on gdk-pixbuf, so this new varibale.  Also, librsvg adds 90MiB to the
