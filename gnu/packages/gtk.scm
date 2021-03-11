@@ -122,8 +122,8 @@
      "ATK provides the set of accessibility interfaces that are implemented
 by other toolkits and applications.  Using the ATK interfaces, accessibility
 tools have full access to view and control running applications.")
-    (license license:lgpl2.0+)
-    (home-page "https://developer.gnome.org/atk/")))
+    (license license:lgpl2.1+)
+    (home-page "https://wiki.gnome.org/Accessibility")))
 
 (define-public cairo
   (package
