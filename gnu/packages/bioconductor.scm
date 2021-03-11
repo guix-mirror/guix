@@ -2,7 +2,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018, 2020 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2019, 2020 Simon Tournier <zimon.toutoune@gmail.com>
+;;; Copyright © 2019, 2020, 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2020 Peter Lo <peterloleungyau@gmail.com>
 ;;; Copyright © 2020, 2021 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
@@ -6813,14 +6813,14 @@ accessibility data.")
 (define-public r-circrnaprofiler
   (package
     (name "r-circrnaprofiler")
-    (version "1.4.0")
+    (version "1.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "circRNAprofiler" version))
        (sha256
         (base32
-         "1rwpl9a5p5242aiapik0vf4ywqh7m6phzl8z8qmzcy0imbx7mpbn"))))
+         "0r1hfm3pc7c71irzmxmdwc27ns9hkymz4vhb4pqbli4xn37q7cg8"))))
     (properties
      `((upstream-name . "circRNAprofiler")))
     (build-system r-build-system)
