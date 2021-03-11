@@ -3275,7 +3275,7 @@ XML/CSS rendering engine.")
                (base32
                 "0kbpp9ksl7977xiga37sk1gdw1r039v6zviqznl7alvvg39yp26i"))))
     (build-system glib-or-gtk-build-system)
-    (outputs '("out" "bin"))
+    (outputs '("out" "bin" "doc"))
     (arguments
      `(#:configure-flags
        (list
@@ -3293,10 +3293,24 @@ XML/CSS rendering engine.")
                        ,(version-major
                          (package-version gobject-introspection))
                        ".0")
+        (string-append "--with-html-dir="
+                       (assoc-ref %outputs "doc")
+                       "/share/gtk-doc/html")
         "--with-zlib"
-        "--with-bz2")))
+        "--with-bz2")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-docbook-xml
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "doc"
+               (substitute* "gsf-docs.xml"
+                 (("http://www.oasis-open.org/docbook/xml/4.5/")
+                  (string-append (assoc-ref inputs "docbook-xml")
+                                 "/xml/dtd/docbook/"))))
+             #t)))))
     (native-inputs
-     `(("gettext" ,gettext-minimal)
+     `(("docbook-xml" ,docbook-xml)
+       ("gettext" ,gettext-minimal)
        ("gobject-introspection" ,gobject-introspection)
        ("perl" ,perl)
        ("perl-xml-parser" ,perl-xml-parser)
