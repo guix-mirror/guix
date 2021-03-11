@@ -606,13 +606,14 @@ highlighting and other features typical of a source code editor.")
     (propagated-inputs
      `( ;; Required by gdk-pixbuf-2.0.pc
        ("glib" ,glib)
-       ("libpng" ,libpng)
+       ;; Required by gdk-pixbuf-xlib-2.0.pc
+       ("libx11" ,libx11)
        ;; Used for testing and required at runtime.
        ("shared-mime-info" ,shared-mime-info)))
     (inputs
      `(("libjpeg" ,libjpeg-turbo)
-       ("libtiff" ,libtiff)
-       ("libx11"  ,libx11)))
+       ("libpng"  ,libpng)
+       ("libtiff" ,libtiff)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("gettext" ,gettext-minimal)
