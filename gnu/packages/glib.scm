@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2014, 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2021 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
@@ -172,6 +172,7 @@ shared NFS home directories.")
   (package
    (name "glib")
    (version "2.62.6")
+   (replacement glib/fixed)
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/"
@@ -389,6 +390,33 @@ and interfaces for such runtime functionality as an event loop, threads,
 dynamic loading, and an object system.")
    (home-page "https://developer.gnome.org/glib/")
    (license license:lgpl2.1+)))
+
+(define glib/fixed
+  (package
+    (inherit glib)
+    (source (origin
+              (inherit (package-source glib))
+              (patches
+               (append (search-patches "glib-CVE-2021-27218.patch"
+                                       "glib-CVE-2021-27219-01.patch"
+                                       "glib-CVE-2021-27219-02.patch"
+                                       "glib-CVE-2021-27219-03.patch"
+                                       "glib-CVE-2021-27219-04.patch"
+                                       "glib-CVE-2021-27219-05.patch"
+                                       "glib-CVE-2021-27219-06.patch"
+                                       "glib-CVE-2021-27219-07.patch"
+                                       "glib-CVE-2021-27219-08.patch"
+                                       "glib-CVE-2021-27219-09.patch"
+                                       "glib-CVE-2021-27219-10.patch"
+                                       "glib-CVE-2021-27219-11.patch"
+                                       "glib-CVE-2021-27219-12.patch"
+                                       "glib-CVE-2021-27219-13.patch"
+                                       "glib-CVE-2021-27219-14.patch"
+                                       "glib-CVE-2021-27219-15.patch"
+                                       "glib-CVE-2021-27219-16.patch"
+                                       "glib-CVE-2021-27219-17.patch"
+                                       "glib-CVE-2021-27219-18.patch")
+                       (origin-patches (package-source glib))))))))
 
 (define-public glib-with-documentation
   ;; glib's doc must be built in a separate package since it requires gtk-doc,
