@@ -1513,7 +1513,10 @@ speed.")
        (uri (string-append "https://github.com/facebook/zstd/releases/download/"
                            "v" version "/zstd-" version ".tar.gz"))
        (sha256
-        (base32 "14yj7309gsvg39rki4xqnd6w5idmqi0655v1fc0mk1m2kvhp9b19"))))))
+        (base32 "14yj7309gsvg39rki4xqnd6w5idmqi0655v1fc0mk1m2kvhp9b19"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments zstd)
+       ((#:tests? _ #t) #f)))))
 
 (define-public pzstd
   (package
