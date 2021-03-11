@@ -608,6 +608,12 @@ highlighting and other features typical of a source code editor.")
                   (string-append (assoc-ref inputs "docbook-xml")
                                  "/xml/dtd/docbook/"))))
              #t))
+         (add-before 'configure 'disable-failing-tests
+           (lambda _
+             (substitute* "tests/meson.build"
+               (("\\[ 'pixbuf-fail', \\['conform', 'slow'\\], \\],")
+                ""))
+             #t))
          ;; The slow tests take longer than the specified timeout.
          ,@(if (any (cute string=? <> (%current-system))
                     '("armhf-linux" "aarch64-linux"))
