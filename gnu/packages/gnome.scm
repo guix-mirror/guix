@@ -4315,12 +4315,12 @@ passwords in the GNOME keyring.")
      `(("glib" ,glib)                   ; required by libvala-0.40.pc
        ("libgvc" ,graphviz)))
     (home-page "https://wiki.gnome.org/Projects/Vala/")
-    (synopsis "Compiler for the GObject type system")
-    (description
-     "Vala is a programming language that aims to bring modern programming
-language features to GNOME developers without imposing any additional runtime
-requirements and without using a different ABI compared to applications and
-libraries written in C.")
+    (synopsis "Compiler using the GObject type system")
+    (description "Vala is a programming language using modern high level
+abstractions without imposing additional runtime requirements and without using
+a different ABI compared to applications and libraries written in C.  Vala uses
+the GObject type system and has additional code generation routines that make
+targeting the GNOME stack simple.")
     (license license:lgpl2.1+)))
 
 (define-public vte
