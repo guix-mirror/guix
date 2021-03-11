@@ -592,10 +592,22 @@ highlighting and other features typical of a source code editor.")
     (build-system meson-build-system)
     (arguments
      `(#:meson ,meson-0.55
-       #:glib-or-gtk? #t ; To wrap binaries and/or compile schemas
+       #:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
        #:configure-flags '("-Dinstalled_tests=false" "-Djasper=true")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-docbook
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "docs"
+               (substitute* "meson.build"
+                 (("http://docbook.sourceforge.net/release/xsl/current/")
+                  (string-append (assoc-ref inputs "docbook-xsl")
+                                 "/xml/xsl/docbook-xsl-1.79.2/")))
+               (substitute* (find-files "." "\\.xml$")
+                 (("http://www.oasis-open.org/docbook/xml/4\\.3/")
+                  (string-append (assoc-ref inputs "docbook-xml")
+                                 "/xml/dtd/docbook/"))))
+             #t))
          ;; The slow tests take longer than the specified timeout.
          ,@(if (any (cute string=? <> (%current-system))
                     '("armhf-linux" "aarch64-linux"))
@@ -616,10 +628,12 @@ highlighting and other features typical of a source code editor.")
        ("libpng"  ,libpng)
        ("libtiff" ,libtiff)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("docbook-xml" ,docbook-xml-4.3)
+       ("docbook-xsl" ,docbook-xsl)
        ("gettext" ,gettext-minimal)
        ("glib" ,glib "bin")             ; glib-mkenums, etc.
-       ("gobject-introspection" ,gobject-introspection))) ; g-ir-compiler, etc.
+       ("gobject-introspection" ,gobject-introspection) ; g-ir-compiler, etc.
+       ("pkg-config" ,pkg-config)))
     (synopsis "GNOME image loading and manipulation library")
     (description
      "GdkPixbuf is a library for image loading and manipulation developed
