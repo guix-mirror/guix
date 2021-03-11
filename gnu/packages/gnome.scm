@@ -141,6 +141,7 @@
   #:use-module (gnu packages lirc)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages mail)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages music)
@@ -4270,7 +4271,7 @@ passwords in the GNOME keyring.")
 (define-public vala
   (package
     (name "vala")
-    (version "0.50.3")
+    (version "0.52.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/vala/"
@@ -4278,7 +4279,7 @@ passwords in the GNOME keyring.")
                                   "vala-" version ".tar.xz"))
               (sha256
                (base32
-                "1nx5xjarpkl9hgy0qbqfczx7d7clh5g1r8xr5xp8b97c5fsc2rb1"))))
+                "12y6p8wdjp01vmfhxg2cgh32xnyqq6ivblvrar9clnj6vc867qhx"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:configure-flags '("--enable-coverage")
@@ -4300,18 +4301,19 @@ passwords in the GNOME keyring.")
                (("export PKG_CONFIG_PATH=" m)
                 (string-append m "$PKG_CONFIG_PATH:"))))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("bison" ,bison)
+       ("dbus" ,dbus)                   ; for dbus tests
        ("docbook-xml" ,docbook-xml-4.4)
        ("docbook-xsl" ,docbook-xsl)
        ("flex" ,flex)
-       ("bison" ,bison)
-       ("xsltproc" ,libxslt)
-       ("dbus" ,dbus)                   ; for dbus tests
-       ("gobject-introspection" ,gobject-introspection))) ; for gir tests
-    (inputs
-     `(("graphviz" ,graphviz)))
+       ("gobject-introspection" ,gobject-introspection) ; for gir tests
+       ("help2man" ,help2man)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("xsltproc" ,libxslt)))
     (propagated-inputs
-     `(("glib" ,glib)))                 ; required by libvala-0.40.pc
+     `(("glib" ,glib)                   ; required by libvala-0.40.pc
+       ("libgvc" ,graphviz)))
     (home-page "https://wiki.gnome.org/Projects/Vala/")
     (synopsis "Compiler for the GObject type system")
     (description
