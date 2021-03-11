@@ -170,258 +170,208 @@ shared NFS home directories.")
 
 (define glib
   (package
-   (name "glib")
-   (version "2.62.6")
-   (replacement glib/fixed)
-   (source (origin
-            (method url-fetch)
-            (uri (string-append "mirror://gnome/sources/"
-                                name "/" (string-take version 4) "/"
-                                name "-" version ".tar.xz"))
-            (sha256
-             (base32
-              "174bsmbmcvaw69ff9g60q5sx0fn23rkhqcwqz17h5s7sprps4kqh"))
-            (patches (search-patches "glib-appinfo-watch.patch"
-                                     "glib-tests-timer.patch"))
-            (modules '((guix build utils)))
-            (snippet
-             '(begin
-                (substitute* "tests/spawn-test.c"
-                  (("/bin/sh") "sh"))
-                #t))))
-   (build-system meson-build-system)
-   (outputs '("out"           ; everything
-              "bin"           ; glib-mkenums, gtester, etc.; depends on Python
-              "debug"))
-   (propagated-inputs
-    `(("pcre" ,pcre)  ; in the Requires.private field of glib-2.0.pc
-      ("libffi" ,libffi) ; in the Requires.private field of gobject-2.0.pc
-      ;; These are in the Requires.private field of gio-2.0.pc
-      ("util-linux" ,util-linux "lib")  ;for libmount
-      ("zlib" ,zlib)))
-   (native-inputs
-    `(("gettext" ,gettext-minimal)
-      ("m4" ,m4) ; for installing m4 macros
-      ("dbus" ,dbus)                              ; for GDBus tests
-      ("pkg-config" ,pkg-config)
-      ("python" ,python-minimal-wrapper)
-      ("perl" ,perl)                              ; needed by GIO tests
-      ("tzdata" ,tzdata-for-tests)))                  ; for tests/gdatetime.c
-   (arguments
-    `(#:disallowed-references (,tzdata-for-tests)
-      #:configure-flags '("-Dselinux=disabled")
-      #:phases
-      (modify-phases %standard-phases
-        (add-after 'unpack 'patch-dbus-launch-path
-          (lambda* (#:key inputs #:allow-other-keys)
-            (let ((dbus (assoc-ref inputs "dbus")))
-              (substitute* "gio/gdbusaddress.c"
-                (("command_line = g_strdup_printf \\(\"dbus-launch")
-                 (string-append "command_line = g_strdup_printf (\""
-                                dbus "/bin/dbus-launch")))
-              #t)))
-        (add-after 'unpack 'patch-gio-launch-desktop
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let ((out (assoc-ref outputs "out")))
-              ;; See also <https://gitlab.gnome.org/GNOME/glib/issues/1633>
-              ;; for another future fix.
-              (substitute* "gio/gdesktopappinfo.c"
-               (("gio-launch-desktop")
-                (string-append out "/libexec/gio-launch-desktop")))
-              #t)))
-        ;; TODO: Remove the conditional in the next core-updates cycle.
-        ;; Needed to build glib on slower ARM nodes.
-        ,@(if (string-prefix? "arm" (%current-system))
-              `((add-after 'unpack 'increase-test-timeout
-                  (lambda _
-                    (substitute* "meson.build"
-                      (("test_timeout = 60")
-                       "test_timeout = 120")
-                      (("test_timeout_slow = 120")
-                       "test_timeout_slow = 180")))))
-              '())
-        (add-before 'build 'pre-build
-          (lambda* (#:key inputs outputs #:allow-other-keys)
-            ;; For tests/gdatetime.c.
-            (setenv "TZDIR"
-                    (string-append (assoc-ref inputs "tzdata")
-                                   "/share/zoneinfo"))
-
-            ;; Some tests want write access there.
-            (setenv "HOME" (getcwd))
-            (setenv "XDG_CACHE_HOME" (getcwd))
-            #t))
-        (add-after 'unpack 'disable-failing-tests
-          (lambda _
-            (let ((disable
-                   (lambda (test-file test-paths)
-                     (define pattern+procs
-                       (map (lambda (test-path)
-                              (cons
-                               ;; XXX: only works for single line statements.
-                               (format #f "g_test_add_func.*\"~a\".*" test-path)
-                               (const "")))
-                            test-paths))
-                     (substitute test-file pattern+procs)))
-                  (failing-tests
-                   '(("glib/tests/thread.c"
-                      (;; prlimit(2) returns ENOSYS on Linux 2.6.32-5-xen-amd64
-                       ;; as found on hydra.gnu.org, and strace(1) doesn't
-                       ;; recognize it.
-                       "/thread/thread4"))
-
-                     ;; This tries to find programs in FHS directories.
-                     ("glib/tests/utils.c"
-                      ("/utils/find-program"))
-
-                     ;; This fails because "glib/tests/echo-script" cannot be
-                     ;; found.
-                     ("glib/tests/spawn-singlethread.c"
-                      ("/gthread/spawn-script"))
-
-                     ("glib/tests/timer.c"
-                      (;; fails if compiler optimizations are enabled, which they
-                       ;; are by default.
-                       "/timer/stop"))
-
-                     ("gio/tests/gapplication.c"
-                      (;; XXX: proven to be unreliable.  See:
-                       ;;  <https://bugs.debian.org/756273>
-                       ;;  <http://bugs.gnu.org/18445>
-                       "/gapplication/quit"
-
-                       ;; XXX: fails randomly for unknown reason. See:
-                       ;;  <https://lists.gnu.org/archive/html/guix-devel/2016-04/msg00215.html>
-                       "/gapplication/local-actions"))
-
-                     ("gio/tests/contenttype.c"
-                      (;; XXX: requires shared-mime-info.
-                       "/contenttype/guess"
-                       "/contenttype/guess_svg_from_data"
-                       "/contenttype/subtype"
-                       "/contenttype/list"
-                       "/contenttype/icon"
-                       "/contenttype/symbolic-icon"
-                       "/contenttype/tree"))
-
-                     ("gio/tests/appinfo.c"
-                      (;; XXX: requires update-desktop-database.
-                       "/appinfo/associations"))
-
-                     ("gio/tests/desktop-app-info.c"
-                      (;; XXX: requires update-desktop-database.
-                       "/desktop-app-info/delete"
-                       "/desktop-app-info/default"
-                       "/desktop-app-info/fallback"
-                       "/desktop-app-info/lastused"
-                       "/desktop-app-info/search"))
-
-                     ("gio/tests/gdbus-peer.c"
-                      (;; Requires /etc/machine-id.
-                       "/gdbus/codegen-peer-to-peer"))
-
-                     ("gio/tests/gdbus-address-get-session.c"
-                      (;; Requires /etc/machine-id.
-                       "/gdbus/x11-autolaunch"))
-
-                     ("gio/tests/gsocketclient-slow.c"
-                      (;; These tests tries to resolve "localhost", and fails.
-                       "/socket-client/happy-eyeballs/slow"
-                       "/socket-client/happy-eyeballs/cancellation/delayed"))
-
-                     )))
-              (for-each (lambda (x) (apply disable x)) failing-tests)
-              #t)))
-        (replace 'check
-          (lambda* (#:key tests? #:allow-other-keys)
-            (if tests?
-                (begin
-                  (setenv "MESON_TESTTHREADS"
-                          (number->string (parallel-job-count)))
-                  ;; Do not run tests marked as "flaky".
-                  (invoke "meson" "test" "--no-suite" "flaky"))
-                #t)))
-        ;; TODO: meson does not permit the bindir to be outside of prefix.
-        ;; See https://github.com/mesonbuild/meson/issues/2561
-        ;; We can remove this once meson is patched.
-        (add-after 'install 'move-executables
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let ((out (assoc-ref outputs "out"))
-                  (bin (assoc-ref outputs "bin")))
-              (mkdir-p bin)
-              (rename-file (string-append out "/bin")
-                           (string-append bin "/bin"))
-              ;; This one is an implementation detail of glib.
-              ;; It is wrong that that's in "/bin" in the first place,
-              ;; but that's what upstream is doing right now.
-              ;; See <https://gitlab.gnome.org/GNOME/glib/issues/1633>.
-              (mkdir (string-append out "/libexec"))
-              (rename-file (string-append bin "/bin/gio-launch-desktop")
-                           (string-append out "/libexec/gio-launch-desktop"))
-              ;; Do not refer to "bindir", which points to "${prefix}/bin".
-              ;; We don't patch "bindir" to point to "$bin/bin", because that
-              ;; would create a reference cycle between the "out" and "bin"
-              ;; outputs.
-              (substitute* (list (string-append out "/lib/pkgconfig/gio-2.0.pc")
-                                 (string-append out "/lib/pkgconfig/glib-2.0.pc"))
-                (("bindir=\\$\\{prefix\\}/bin") "")
-                (("=\\$\\{bindir\\}/") "="))
-              #t))))))
-      ;; TODO: see above for explanation.
-      ;; #:configure-flags (list (string-append "--bindir="
-      ;;                                        (assoc-ref %outputs "bin")
-      ;;                                        "/bin"))
-
-   (native-search-paths
-    ;; This variable is not really "owned" by GLib, but several related
-    ;; packages refer to it: gobject-introspection's tools use it as a search
-    ;; path for .gir files, and it's also a search path for schemas produced
-    ;; by 'glib-compile-schemas'.
-    (list (search-path-specification
-           (variable "XDG_DATA_DIRS")
-           (files '("share")))
-          ;; To load extra gio modules from glib-networking, etc.
-          (search-path-specification
-           (variable "GIO_EXTRA_MODULES")
-           (files '("lib/gio/modules")))))
-   (search-paths native-search-paths)
-   (properties '((hidden? . #t)))
-
-   (synopsis "Thread-safe general utility library; basis of GTK+ and GNOME")
-   (description
-    "GLib provides data structure handling for C, portability wrappers,
-and interfaces for such runtime functionality as an event loop, threads,
-dynamic loading, and an object system.")
-   (home-page "https://developer.gnome.org/glib/")
-   (license license:lgpl2.1+)))
-
-(define glib/fixed
-  (package
-    (inherit glib)
-    (source (origin
-              (inherit (package-source glib))
-              (patches
-               (append (search-patches "glib-CVE-2021-27218.patch"
-                                       "glib-CVE-2021-27219-01.patch"
-                                       "glib-CVE-2021-27219-02.patch"
-                                       "glib-CVE-2021-27219-03.patch"
-                                       "glib-CVE-2021-27219-04.patch"
-                                       "glib-CVE-2021-27219-05.patch"
-                                       "glib-CVE-2021-27219-06.patch"
-                                       "glib-CVE-2021-27219-07.patch"
-                                       "glib-CVE-2021-27219-08.patch"
-                                       "glib-CVE-2021-27219-09.patch"
-                                       "glib-CVE-2021-27219-10.patch"
-                                       "glib-CVE-2021-27219-11.patch"
-                                       "glib-CVE-2021-27219-12.patch"
-                                       "glib-CVE-2021-27219-13.patch"
-                                       "glib-CVE-2021-27219-14.patch"
-                                       "glib-CVE-2021-27219-15.patch"
-                                       "glib-CVE-2021-27219-16.patch"
-                                       "glib-CVE-2021-27219-17.patch"
-                                       "glib-CVE-2021-27219-18.patch"
-                                       "glib-CVE-2021-28153.patch")
-                       (origin-patches (package-source glib))))))))
+    (name "glib")
+    (version "2.62.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://gnome/sources/"
+                       name "/" (string-take version 4) "/"
+                       name "-" version ".tar.xz"))
+       (sha256
+        (base32 "174bsmbmcvaw69ff9g60q5sx0fn23rkhqcwqz17h5s7sprps4kqh"))
+       (patches
+        (search-patches "glib-tests-timer.patch" "glib-appinfo-watch.patch"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (substitute* "tests/spawn-test.c"
+             (("/bin/sh") "sh"))
+           #t))))
+    (properties '((hidden? . #t)))
+    (build-system meson-build-system)
+    (outputs '("out"   ; everything
+               "bin")) ; glib-mkenums, gtester, etc.; depends on Python
+    (arguments
+     `(#:disallowed-references (,tzdata-for-tests)
+       #:phases
+       (modify-phases %standard-phases
+         ;; TODO: Remove the conditional in the next core-updates cycle.
+         ;; Needed to build glib on slower ARM nodes.
+         ,@(if (string-prefix? "arm" (%current-system))
+               `((add-after 'unpack 'increase-test-timeout
+                   (lambda _
+                     (substitute* "meson.build"
+                       (("test_timeout = 60")
+                        "test_timeout = 90")
+                       (("test_timeout_slow = 120")
+                        "test_timeout_slow = 180")))))
+               '())
+         (add-after 'unpack 'patch-dbus-launch-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((dbus (assoc-ref inputs "dbus")))
+               (substitute* "gio/gdbusaddress.c"
+                 (("command_line = g_strdup_printf \\(\"dbus-launch")
+                  (string-append "command_line = g_strdup_printf (\""
+                                 dbus "/bin/dbus-launch")))
+               #t)))
+         (add-after 'unpack 'patch-gio-launch-desktop
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               ;; See also <https://gitlab.gnome.org/GNOME/glib/issues/1633>
+               ;; for another future fix.
+               (substitute* "gio/gdesktopappinfo.c"
+                 (("gio-launch-desktop")
+                  (string-append out "/libexec/gio-launch-desktop")))
+               #t)))
+         (add-before 'build 'pre-build
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; For tests/gdatetime.c.
+             (setenv "TZDIR"
+                     (string-append (assoc-ref inputs "tzdata")
+                                    "/share/zoneinfo"))
+             ;; Some tests want write access there.
+             (setenv "HOME" (getcwd))
+             (setenv "XDG_CACHE_HOME" (getcwd))
+             #t))
+         (add-after 'unpack 'disable-failing-tests
+           (lambda _
+             (let ((disable
+                    (lambda (test-file test-paths)
+                      (define pattern+procs
+                        (map (lambda (test-path)
+                               (cons
+                                ;; XXX: only works for single line statements.
+                                (format #f "g_test_add_func.*\"~a\".*" test-path)
+                                (const "")))
+                             test-paths))
+                      (substitute test-file pattern+procs)))
+                   (failing-tests
+                    '(("glib/tests/thread.c"
+                       ( ;; prlimit(2) returns ENOSYS on Linux 2.6.32-5-xen-amd64
+                        ;; as found on hydra.gnu.org, and strace(1) doesn't
+                        ;; recognize it.
+                        "/thread/thread4"))
+                      ;; This tries to find programs in FHS directories.
+                      ("glib/tests/utils.c"
+                       ("/utils/find-program"))
+                      ;; This fails because "glib/tests/echo-script" cannot be
+                      ;; found.
+                      ("glib/tests/spawn-singlethread.c"
+                       ("/gthread/spawn-script"))
+                      ("glib/tests/timer.c"
+                       ( ;; fails if compiler optimizations are enabled, which they
+                        ;; are by default.
+                        "/timer/stop"))
+                      ("gio/tests/gapplication.c"
+                       ( ;; XXX: proven to be unreliable.  See:
+                        ;;  <https://bugs.debian.org/756273>
+                        ;;  <http://bugs.gnu.org/18445>
+                        "/gapplication/quit"
+                        ;; XXX: fails randomly for unknown reason. See:
+                        ;;  <https://lists.gnu.org/archive/html/guix-devel/2016-04/msg00215.html>
+                        "/gapplication/local-actions"))
+                      ("gio/tests/contenttype.c"
+                       ( ;; XXX: requires shared-mime-info.
+                        "/contenttype/guess"
+                        "/contenttype/guess_svg_from_data"
+                        "/contenttype/subtype"
+                        "/contenttype/list"
+                        "/contenttype/icon"
+                        "/contenttype/symbolic-icon"
+                        "/contenttype/tree"))
+                      ("gio/tests/appinfo.c"
+                       ( ;; XXX: requires update-desktop-database.
+                        "/appinfo/associations"))
+                      ("gio/tests/desktop-app-info.c"
+                       ( ;; XXX: requires update-desktop-database.
+                        "/desktop-app-info/delete"
+                        "/desktop-app-info/default"
+                        "/desktop-app-info/fallback"
+                        "/desktop-app-info/lastused"
+                        "/desktop-app-info/search"))
+                      ("gio/tests/gdbus-peer.c"
+                       ( ;; Requires /etc/machine-id.
+                        "/gdbus/codegen-peer-to-peer"))
+                      ("gio/tests/gdbus-address-get-session.c"
+                       ( ;; Requires /etc/machine-id.
+                        "/gdbus/x11-autolaunch"))
+                      ("gio/tests/gsocketclient-slow.c"
+                       ( ;; These tests tries to resolve "localhost", and fails.
+                        "/socket-client/happy-eyeballs/slow"
+                        "/socket-client/happy-eyeballs/cancellation/delayed")))))
+               (for-each (lambda (x) (apply disable x)) failing-tests)
+               #t)))
+         (replace 'check
+           (lambda _
+             (setenv "MESON_TESTTHREADS"
+                     (number->string (parallel-job-count)))
+             ;; Do not run tests marked as "flaky".
+             (invoke "meson" "test" "--no-suite" "flaky")))
+         ;; TODO: meson does not permit the bindir to be outside of prefix.
+         ;; See https://github.com/mesonbuild/meson/issues/2561
+         ;; We can remove this once meson is patched.
+         (add-after 'install 'move-executables
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (bin (assoc-ref outputs "bin")))
+               (mkdir-p bin)
+               (rename-file (string-append out "/bin")
+                            (string-append bin "/bin"))
+               ;; This one is an implementation detail of glib.
+               ;; It is wrong that that's in "/bin" in the first place,
+               ;; but that's what upstream is doing right now.
+               ;; See <https://gitlab.gnome.org/GNOME/glib/issues/1633>.
+               (mkdir (string-append out "/libexec"))
+               (rename-file (string-append bin "/bin/gio-launch-desktop")
+                            (string-append out "/libexec/gio-launch-desktop"))
+               ;; Do not refer to "bindir", which points to "${prefix}/bin".
+               ;; We don't patch "bindir" to point to "$bin/bin", because that
+               ;; would create a reference cycle between the "out" and "bin"
+               ;; outputs.
+               (substitute* (list (string-append out "/lib/pkgconfig/gio-2.0.pc")
+                                  (string-append out "/lib/pkgconfig/glib-2.0.pc"))
+                 (("bindir=\\$\\{prefix\\}/bin") "")
+                 (("=\\$\\{bindir\\}/") "="))
+               #t))))))
+    ;; TODO: see above for explanation.
+    ;; #:configure-flags (list (string-append "--bindir="
+    ;;                                        (assoc-ref %outputs "bin")
+    ;;                                        "/bin"))
+    (native-inputs
+     `(("dbus" ,dbus)                   ; for GDBus tests
+       ("gettext" ,gettext-minimal)
+       ("m4" ,m4)                       ; for installing m4 macros
+       ("perl" ,perl)                   ; needed by GIO tests
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)
+       ("tzdata" ,tzdata-for-tests)))   ; for tests/gdatetime.c
+    (propagated-inputs
+     `(("libffi" ,libffi) ; in the Requires.private field of gobject-2.0.pc
+       ("pcre" ,pcre)   ; in the Requires.private field of glib-2.0.pc
+       ("util-linux" ,util-linux "lib") ;for libmount
+       ("zlib" ,zlib))) ; in the Requires.private field of glib-2.0.pc
+    (native-search-paths
+     ;; This variable is not really "owned" by GLib, but several related
+     ;; packages refer to it: gobject-introspection's tools use it as a search
+     ;; path for .gir files, and it's also a search path for schemas produced
+     ;; by 'glib-compile-schemas'.
+     (list
+      (search-path-specification
+       (variable "XDG_DATA_DIRS")
+       (files '("share")))
+      ;; To load extra gio modules from glib-networking, etc.
+      (search-path-specification
+       (variable "GIO_EXTRA_MODULES")
+       (files '("lib/gio/modules")))))
+    (search-paths native-search-paths)
+    (synopsis "Thread-safe general utility library; basis of GTK+ and GNOME")
+    (description "GLib provides data structure handling for C, portability
+wrappers, and interfaces for such runtime functionality as an event loop,
+threads, dynamic loading, and an object system.")
+    (home-page "https://developer.gnome.org/glib/")
+    (license license:lgpl2.1+)))
 
 (define-public glib-with-documentation
   ;; glib's doc must be built in a separate package since it requires gtk-doc,

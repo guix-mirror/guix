@@ -1082,26 +1082,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/ghostscript-no-header-creationdate.patch \
   %D%/packages/patches/glib-appinfo-watch.patch			\
   %D%/packages/patches/glib-tests-timer.patch			\
-  %D%/packages/patches/glib-CVE-2021-27218.patch		\
-  %D%/packages/patches/glib-CVE-2021-27219-01.patch		\
-  %D%/packages/patches/glib-CVE-2021-27219-02.patch		\
-  %D%/packages/patches/glib-CVE-2021-27219-03.patch		\
-  %D%/packages/patches/glib-CVE-2021-27219-04.patch		\
-  %D%/packages/patches/glib-CVE-2021-27219-05.patch		\
-  %D%/packages/patches/glib-CVE-2021-27219-06.patch		\
-  %D%/packages/patches/glib-CVE-2021-27219-07.patch		\
-  %D%/packages/patches/glib-CVE-2021-27219-08.patch		\
-  %D%/packages/patches/glib-CVE-2021-27219-09.patch		\
-  %D%/packages/patches/glib-CVE-2021-27219-10.patch		\
-  %D%/packages/patches/glib-CVE-2021-27219-11.patch		\
-  %D%/packages/patches/glib-CVE-2021-27219-12.patch		\
-  %D%/packages/patches/glib-CVE-2021-27219-13.patch		\
-  %D%/packages/patches/glib-CVE-2021-27219-14.patch		\
-  %D%/packages/patches/glib-CVE-2021-27219-15.patch		\
-  %D%/packages/patches/glib-CVE-2021-27219-16.patch		\
-  %D%/packages/patches/glib-CVE-2021-27219-17.patch		\
-  %D%/packages/patches/glib-CVE-2021-27219-18.patch		\
-  %D%/packages/patches/glib-CVE-2021-28153.patch		\
   %D%/packages/patches/glibc-CVE-2018-11236.patch		\
   %D%/packages/patches/glibc-CVE-2018-11237.patch		\
   %D%/packages/patches/glibc-CVE-2019-7309.patch		\
