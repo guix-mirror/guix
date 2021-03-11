@@ -99,7 +99,7 @@
 (define-public atk
   (package
     (name "atk")
-    (version "2.34.1")
+    (version "2.36.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -107,8 +107,10 @@
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1jwp16r6p5z66k4b2v8zlzhyshhwlmyi27ippkrgqr8jsary7w6l"))))
+                "1217cmmykjgkkim0zr1lv5j13733m4w5vipmy4ivw0ll6rz28xpv"))))
     (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t))  ; To wrap binaries and/or compile schemas
     (propagated-inputs `(("glib" ,glib))) ; required by atk.pc
     (native-inputs
      `(("gettext" ,gettext-minimal)
