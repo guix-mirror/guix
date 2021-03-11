@@ -3323,14 +3323,16 @@ XML/CSS rendering engine.")
     (propagated-inputs
      `(("glib" ,glib)
        ("libxml2" ,libxml2)))
-    (home-page "https://www.gnome.org/projects/libgsf")
-    (synopsis "GNOME's Structured File Library")
-    (description
-     "Libgsf aims to provide an efficient extensible I/O abstraction for
-dealing with different structured file formats.")
-
-    ;; LGPLv2.1-only.
-    (license license:lgpl2.1)))
+    (synopsis "G Structured File Library")
+    (description "Libgsf aims to provide an efficient extensible I/O abstraction
+for dealing with different structured file formats.")
+    (home-page "https://gitlab.gnome.org/GNOME/libgsf")
+    (license
+     (list
+      ;; Library
+      license:lgpl2.1+
+      ;; Others
+      license:lgpl2.0+))))
 
 (define-public librsvg
   (package
