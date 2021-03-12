@@ -7976,7 +7976,7 @@ structures.")
        ("r-xml" ,r-xml)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
-    (home-page "https://github.com/TylerBackman/bioassayR")
+    (home-page "https://github.com/girke-lab/bioassayR")
     (synopsis "Cross-target analysis of small molecule bioactivity")
     (description
      "bioassayR is a computational tool that enables simultaneous analysis of
