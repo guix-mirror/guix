@@ -7942,13 +7942,13 @@ Python.")
 (define-public snakemake
   (package
     (name "snakemake")
-    (version "5.7.1")
+    (version "5.32.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "snakemake" version))
        (sha256
-        (base32 "1pnpvvn8n2a78cg360wz3ldmpqrsm2wzi0c0dmvki9fnsw6fxdas"))))
+        (base32 "13013gdavwvyj1qr9xfi9fpwhb3km8c3z53bja5b7ic3sb2z6dgz"))))
     (build-system python-build-system)
     (arguments
      ;; TODO: Package missing test dependencies.
@@ -7960,7 +7960,7 @@ Python.")
          ;; this by calling the snakemake wrapper instead.
          (add-after 'unpack 'call-wrapper-not-wrapped-snakemake
            (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* "snakemake/executors.py"
+             (substitute* "snakemake/executors/__init__.py"
                (("\\{sys.executable\\} -m snakemake")
                 (string-append (assoc-ref outputs "out")
                                "/bin/snakemake")))
