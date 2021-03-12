@@ -35,14 +35,18 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages curl)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages engineering)
   #:use-module (gnu packages fltk)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gd)
+  #:use-module (gnu packages geo)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
@@ -1310,4 +1314,45 @@ methods:
      "@code{unixcw} is a project providing the libcw library and a set of
 programs using the library: cw, cwgen, cwcp and xcwcp.  The programs are
 intended for people who want to learn receiving and sending morse code.")
+    (license license:gpl2+)))
+
+(define-public gnuais
+  (package
+    (name "gnuais")
+    (version "0.3.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rubund/gnuais")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1rik5fdfslszdn3yvj769jzmnv9pirzf76ki33bjjzk7nkabbnlm"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("mariadb-dev" ,mariadb "dev")
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("curl" ,curl)
+       ("gtk+" ,gtk+)
+       ("libsoup" ,libsoup-minimal)
+       ("mariadb-lib" ,mariadb "lib")
+       ("osm-gps-map" ,osm-gps-map)
+       ("pulseaudio" ,pulseaudio)))
+    (arguments
+     `(#:tests? #f ; No test suite
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "src/cfgfile.c"
+               (("/usr/share/")
+                (string-append (assoc-ref outputs "out") "/share/"))))))))
+    (home-page "http://gnuais.sourceforge.net/")
+    (synopsis "AIS message demodulator and decoder")
+    (description
+     "This program contains algorithms to demodulate and decode AIS (Automatic
+Identification System) messages sent by ships and coast stations.")
     (license license:gpl2+)))
