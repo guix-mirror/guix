@@ -1828,13 +1828,19 @@ information.")
        ("python-unittest2" ,python-unittest2)
        ("source-highlight" ,source-highlight)
        ("yelp-tools" ,yelp-tools)))
-    (home-page "https://www.gtk.org/gtk-doc/")
-    (synopsis "Documentation generator from C source code")
-    (description
-     "GTK-Doc generates API documentation from comments added to C code.  It is
-typically used to document the public API of GTK+ and GNOME libraries, but it
-can also be used to document application code.")
-    (license license:gpl2+)))
+    (home-page "https://wiki.gnome.org/DocumentationProject/GtkDoc")
+    (synopsis "GTK+ DocBook Documentation Generator")
+    (description "GtkDoc is a tool used to extract API documentation from C-code
+like Doxygen, but handles documentation of GObject (including signals and
+properties) that makes it very suitable for GTK+ apps and libraries.  It uses
+docbook for intermediate files and can produce html by default and pdf/man-pages
+with some extra work.")
+    (license
+     (list
+      ;; Docs.
+      license:fdl1.1+
+      ;; Others.
+      license:gpl2+))))
 
 (define-public gtk-engines
   (package
