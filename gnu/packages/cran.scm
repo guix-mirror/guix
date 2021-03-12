@@ -27313,3 +27313,43 @@ package online.")
       "This package provides a collection of templates to author
 preregistration documents for scientific studies in PDF format.")
     (license license:gpl3)))
+
+(define-public r-ez
+  (package
+    (name "r-ez")
+    (version "4.4-0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "ez" version))
+        (sha256
+          (base32
+            "0a58s94x576dfz7wcbivrr2hmdh5x1vy16zwkqp9fmdzqx38pagq"))))
+    (properties `((upstream-name . "ez")))
+    (build-system r-build-system)
+    (propagated-inputs
+      `(("r-car" ,r-car)
+        ("r-ggplot2" ,r-ggplot2)
+        ("r-lme4" ,r-lme4)
+        ("r-mass" ,r-mass)
+        ("r-matrix" ,r-matrix)
+        ("r-mgcv" ,r-mgcv)
+        ("r-plyr" ,r-plyr)
+        ("r-reshape2" ,r-reshape2)
+        ("r-scales" ,r-scales)
+        ("r-stringr" ,r-stringr)))
+    (home-page "https://github.com/mike-lawrence/ez")
+    (synopsis "Easy Analysis and Visualization of Factorial Experiments")
+    (description
+     "Facilitates easy analysis of factorial experiments, including purely
+within-Ss designs (a.k.a. \"repeated measures\"), purely between-Ss designs,
+and mixed within-and-between-Ss designs.  The functions in this package aim to
+provide simple, intuitive and consistent specification of data analysis and
+visualization.  Visualization functions also include design visualization for
+pre-analysis data auditing, and correlation matrix visualization.  Finally,
+this package includes functions for non-parametric analysis, including
+permutation tests and bootstrap resampling.  The bootstrap function obtains
+predictions either by cell means or by more advanced/powerful mixed effects
+models, yielding predictions and confidence intervals that may be easily
+visualized at any level of the experiment's design.")
+    (license license:gpl2+)))
