@@ -929,7 +929,7 @@ application suites.")
   (package
     (inherit gtk+-2)
     (name "gtk+")
-    (version "3.24.24")
+    (version "3.24.27")
     (source
      (origin
        (method url-fetch)
@@ -938,7 +938,7 @@ application suites.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "12ipk1d376bai9v820qzhxba93kkh5abi6mhyqr4hwjvqmkl77fc"))
+         "09ksflq5j257bf5zn8q2nnf2flicg9qqgfy7za79z7rkf1shc77p"))
        (patches (search-patches "gtk3-respect-GUIX_GTK3_PATH.patch"
                                 "gtk3-respect-GUIX_GTK3_IM_MODULE_FILE.patch"))))
     (propagated-inputs
