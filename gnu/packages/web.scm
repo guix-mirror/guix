@@ -293,14 +293,14 @@ the same, being completely separated from the Internet.")
     ;; ’stable’ and recommends that “in general you deploy the NGINX mainline
     ;; branch at all times” (https://www.nginx.com/blog/nginx-1-6-1-7-released/)
     ;; Consider updating the nginx-documentation package together with this one.
-    (version "1.19.7")
+    (version "1.19.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "03mmfnkhayn8vm2yhs3ngvif6275c368ymx8wvhsbls11h1dvr3s"))))
+                "01cb6hsaik1sfjihbrldmwrcn54gk4plfy350sl1b4rml6qik29h"))))
     (build-system gnu-build-system)
     (inputs `(("openssl" ,openssl)
               ("pcre" ,pcre)
