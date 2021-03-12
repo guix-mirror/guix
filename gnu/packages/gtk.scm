@@ -1742,7 +1742,7 @@ information.")
               (sha256
                (base32
                 "05apmwibkmn1icx05l8aw241lhymcx01zvk5i499cb150bijj7li"))))
-    (build-system gnu-build-system)
+    (build-system glib-or-gtk-build-system)
     (arguments
      `(#:parallel-tests? #f
        #:phases
@@ -1750,16 +1750,16 @@ information.")
          (add-after 'unpack 'patch-gtk-doc-scan
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "gtk-doc.xsl"
-              (("http://docbook.sourceforge.net/release/xsl/current/html/chunk.xsl")
-               (string-append (assoc-ref inputs "docbook-xsl")
-                              "/xml/xsl/docbook-xsl-"
-                              ,(package-version docbook-xsl)
-                              "/html/chunk.xsl"))
-              (("http://docbook.sourceforge.net/release/xsl/current/common/en.xml")
-               (string-append (assoc-ref inputs "docbook-xsl")
-                              "/xml/xsl/docbook-xsl-"
-                              ,(package-version docbook-xsl)
-                              "/common/en.xml")))
+               (("http://docbook.sourceforge.net/release/xsl/current/html/chunk.xsl")
+                (string-append (assoc-ref inputs "docbook-xsl")
+                               "/xml/xsl/docbook-xsl-"
+                               ,(package-version docbook-xsl)
+                               "/html/chunk.xsl"))
+               (("http://docbook.sourceforge.net/release/xsl/current/common/en.xml")
+                (string-append (assoc-ref inputs "docbook-xsl")
+                               "/xml/xsl/docbook-xsl-"
+                               ,(package-version docbook-xsl)
+                               "/common/en.xml")))
              #t))
          (add-after 'patch-gtk-doc-scan 'patch-test-out
            (lambda _
@@ -1768,7 +1768,7 @@ information.")
              ;; generator metafont outputs a lot of extra lines, this
              ;; test would always fail.  Disable it for now.
              (substitute* "tests/Makefile.in"
-              (("empty.sh sanity.sh") "empty.sh"))
+               (("empty.sh sanity.sh") "empty.sh"))
              #t))
          (add-before 'configure 'fix-docbook
            (lambda* (#:key inputs #:allow-other-keys)
