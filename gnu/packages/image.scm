@@ -616,6 +616,7 @@ collection of tools for doing simple manipulations of TIFF images.")
 (define-public libtiff/fixed
   (package
     (inherit libtiff)
+    (name "libtiff")
     (version "4.2.0")
     (source
      (origin
@@ -624,7 +625,14 @@ collection of tools for doing simple manipulations of TIFF images.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1jrkjv0xya9radddn8idxvs2gqzp3l2b1s8knlizmn7ad3jq817b"))))))
+         "1jrkjv0xya9radddn8idxvs2gqzp3l2b1s8knlizmn7ad3jq817b"))))
+    (arguments
+     ;; Instead of using --docdir, this package has its own --with-docdir.
+     `(#:configure-flags (list (string-append "--with-docdir="
+                                              (assoc-ref %outputs "doc")
+                                              "/share/doc/"
+                                              ,name "-" ,version)
+                               "--disable-static")))))
 
 (define-public leptonica
   (package
