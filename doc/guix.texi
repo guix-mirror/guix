@@ -19810,34 +19810,6 @@ Additional command line options to pass to @code{memcached}.
 @end table
 @end deftp
 
-@subsubheading MongoDB
-
-@defvr {Scheme Variable} mongodb-service-type
-This is the service type for @uref{https://www.mongodb.com/, MongoDB}.
-The value for the service type is a @code{mongodb-configuration} object.
-@end defvr
-
-@lisp
-(service mongodb-service-type)
-@end lisp
-
-@deftp {Data Type} mongodb-configuration
-Data type representing the configuration of mongodb.
-
-@table @asis
-@item @code{mongodb} (default: @code{mongodb})
-The MongoDB package to use.
-
-@item @code{config-file} (default: @code{%default-mongodb-configuration-file})
-The configuration file for MongoDB.
-
-@item @code{data-directory} (default: @code{"/var/lib/mongodb"})
-This value is used to create the directory, so that it exists and is
-owned by the mongodb user.  It should match the data-directory which
-MongoDB is configured to use through the configuration file.
-@end table
-@end deftp
-
 @subsubheading Redis
 
 @defvr {Scheme Variable} redis-service-type
