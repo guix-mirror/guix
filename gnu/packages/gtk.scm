@@ -825,7 +825,7 @@ is part of the GNOME accessibility project.")
 (define-public gtk+-2
   (package
     (name "gtk+")
-    (version "2.24.32")
+    (version "2.24.33")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -833,7 +833,7 @@ is part of the GNOME accessibility project.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0bjq7ja9gwcv6n5q4qkvdjjx40wsdiikksz1zqxvxsm5vlyskj5n"))
+                "1nn6kks1zyvb5xikr9y2k7r9bwjy1g4b0m0s66532bclymbwfamc"))
               (patches (search-patches "gtk2-respect-GUIX_GTK2_PATH.patch"
                                        "gtk2-respect-GUIX_GTK2_IM_MODULE_FILE.patch"
                                        "gtk2-theme-paths.patch"))))
