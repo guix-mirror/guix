@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014, 2015, 2017, 2018, 2019 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2017, 2018, 2019, 2021 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
@@ -557,6 +557,7 @@ highlighting and other features typical of a source code editor.")
   (package
    (name "gdk-pixbuf")
    (version "2.40.0")
+   (replacement gdk-pixbuf/fixed)
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -613,11 +614,20 @@ in the GNOME project.")
    (license license:lgpl2.0+)
    (home-page "https://developer.gnome.org/gdk-pixbuf/")))
 
+(define gdk-pixbuf/fixed
+  (package
+    (inherit gdk-pixbuf)
+    (source (origin
+              (inherit (package-source gdk-pixbuf))
+              (patches
+               (append (search-patches "gdk-pixbuf-CVE-2020-29385.patch")
+                       (origin-patches (package-source gdk-pixbuf))))))))
+
 ;; To build gdk-pixbuf with SVG support, we need librsvg, and librsvg depends
 ;; on gdk-pixbuf, so this new varibale.  Also, librsvg adds 90MiB to the
 ;; closure size.
 (define-public gdk-pixbuf+svg
-  (package (inherit gdk-pixbuf)
+  (package/inherit gdk-pixbuf
     (name "gdk-pixbuf+svg")
     (inputs
      `(("librsvg" ,librsvg)
