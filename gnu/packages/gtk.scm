@@ -841,26 +841,34 @@ is part of the GNOME accessibility project.")
     (outputs '("out" "bin" "doc"))
     (propagated-inputs
      `(("atk" ,atk)
+       ("cairo" ,cairo)
        ;; SVG support is optional and requires librsvg, which pulls in rust.
        ;; Rust is not supported well on every architecture yet.
        ("gdk-pixbuf" ,(if (string-prefix? "x86_64" (or (%current-target-system)
                                                        (%current-system)))
                           gdk-pixbuf+svg
                           gdk-pixbuf))
+       ("glib" ,glib)
        ("pango" ,pango)))
     (inputs
      `(("cups" ,cups)
+       ("libx11" ,libx11)
        ("libxcomposite" ,libxcomposite)
        ("libxcursor" ,libxcursor)
+       ("libxext" ,libxext)
        ("libxdamage" ,libxdamage)
        ("libxi" ,libxi)
        ("libxinerama" ,libxinerama)
-       ("libxrandr" ,libxrandr)))
+       ("libxkbcommon" ,libxkbcommon)
+       ("libxrandr" ,libxrandr)
+       ("libxrender" ,libxrender)
+       ("libxshmfence" ,libxshmfence)))
     (native-inputs
-     `(("perl" ,perl)
-       ("gettext" ,gettext-minimal)
+     `(("gettext" ,gettext-minimal)
        ("glib" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("python-wrapper" ,python-wrapper)
        ("xorg-server" ,xorg-server-for-tests)))
@@ -904,6 +912,7 @@ is part of the GNOME accessibility project.")
      (list (search-path-specification
             (variable "GUIX_GTK2_PATH")
             (files '("lib/gtk-2.0")))))
+    (search-paths native-search-paths)
     (synopsis "Cross-platform toolkit for creating graphical user interfaces")
     (description
      "GTK+, or the GIMP Toolkit, is a multi-platform toolkit for creating
