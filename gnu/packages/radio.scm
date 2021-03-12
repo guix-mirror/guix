@@ -6,6 +6,7 @@
 ;;; Copyright © 2020 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2020 Charlie Ritter <chewzerita@posteo.net>
 ;;; Copyright © 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2021 João Pedro Simas <jpsimas@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -67,6 +68,7 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages ruby)
+  #:use-module (gnu packages sdl)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages tcl)
@@ -286,32 +288,26 @@ used by RDS Spy, and audio files containing @dfn{multiplex} signals (MPX).")
 (define-public gnuradio
   (package
     (name "gnuradio")
-    (version "3.8.0.0")
+    (version "3.9.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.gnuradio.org/releases/gnuradio/"
                            "gnuradio-" version ".tar.xz"))
        (sha256
-        (base32 "0aw55gf5549b0fz2qdi7vplcmaf92bj34h40s34b2ycnqasv900r"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           ;; Delete bundled volk to use the shared one.
-           (delete-file-recursively "volk")
-           #t))))
+        (base32 "1jvm9xd0l2pz1fww4zii6hl7ccnvy256nrf70ljb594n7j9j49ha"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
        ("ghostscript" ,ghostscript)
        ("orc" ,orc)
        ("pkg-config" ,pkg-config)
+       ("pybind11" ,pybind11)
        ("python-cheetah" ,python-cheetah)
        ("python-mako" ,python-mako)
        ("python-pyzmq" ,python-pyzmq)
        ("python-scipy" ,python-scipy)
        ("python-sphinx" ,python-sphinx)
-       ("swig" ,swig)
        ("texlive" ,(texlive-union (list texlive-amsfonts
                                         texlive-latex-amsmath
                                         ;; TODO: Add newunicodechar.
@@ -343,6 +339,7 @@ used by RDS Spy, and audio files containing @dfn{multiplex} signals (MPX).")
        ("python-pyyaml" ,python-pyyaml)
        ("qtbase" ,qtbase)
        ("qwt" ,qwt)
+       ("sdl" ,sdl)
        ("volk" ,volk)
        ("zeromq" ,zeromq)))
     (arguments
@@ -354,8 +351,6 @@ used by RDS Spy, and audio files containing @dfn{multiplex} signals (MPX).")
        #:imported-modules (,@%cmake-build-system-modules
                            (guix build glib-or-gtk-build-system)
                            (guix build python-build-system))
-       #:configure-flags
-       '("-DENABLE_INTERNAL_VOLK=OFF")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-paths
@@ -371,8 +366,7 @@ used by RDS Spy, and audio files containing @dfn{multiplex} signals (MPX).")
              (substitute* "cmake/Modules/GrPython.cmake"
                (("dist-packages")
                 "site-packages"))
-             (substitute* '("gr-vocoder/swig/vocoder_swig.i"
-                            "gr-vocoder/include/gnuradio/vocoder/codec2.h"
+             (substitute* '("gr-vocoder/include/gnuradio/vocoder/codec2.h"
                             "gr-vocoder/include/gnuradio/vocoder/freedv_api.h")
                (("<codec2/")
                 "<"))
@@ -384,6 +378,19 @@ used by RDS Spy, and audio files containing @dfn{multiplex} signals (MPX).")
                                     "/bin/Xvfb :1 &"))
              (setenv "DISPLAY" ":1")
              #t))
+         (replace 'check
+           (lambda* (#:key tests? parallel-tests? #:allow-other-keys)
+             (invoke "ctest" "-j" (if parallel-tests?
+                                      (number->string (parallel-job-count))
+                                      "1")
+                     "--output-on-failure"
+                     ;;disable broken tests
+                     "-E" (string-join
+                           '(;; https://github.com/gnuradio/gnuradio/issues/3871
+                             "qa_header_payload_demux"
+                             ;; https://github.com/gnuradio/gnuradio/issues/4348
+                             "qa_packet_headerparser_b")
+                           "|"))))
          (add-after 'install 'wrap-python
            (assoc-ref python:%standard-phases 'wrap))
          (add-after 'wrap-python 'wrap-glib-or-gtk
