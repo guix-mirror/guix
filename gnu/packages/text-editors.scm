@@ -80,15 +80,15 @@
 (define-public vis
   (package
     (name "vis")
-    (version "0.6")                     ; also update the vis-test input
+    (version "0.7")                     ; also update the vis-test input
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/martanne/vis")
+             (url "https://git.sr.ht/~martanne/vis")
              (commit (string-append "v" version))))
        (sha256
-        (base32 "1zjm89cn3rfq8fxpwp66khy53s6vqlmw6q103qyyvix8ydzxdmsh"))
+        (base32 "1g05ncsnk57kcqm9wsv6sz8b24kyzj8r5rfpa1wfwj8qkjzx3vji"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
@@ -136,10 +136,10 @@
         ,(origin
            (method git-fetch)
            (uri (git-reference
-                 (url "https://github.com/martanne/vis-test")
-                 (commit "4c4f6645de77f697a45899e8645e0c2bbdc7208a")))
+                 (url "https://git.sr.ht/~martanne/vis-test")
+                 (commit "bbd2f34ff788e87a51a74069069273ad83c44f1f")))
            (sha256
-            (base32 "10vh1pxsqw88a5xwh5irkm85xr66dbycmgpmabyw9h0vm14cvcz2"))
+            (base32 "1jsvg2lg3xqfgi79x08kx94mc34mh62ivca10vsci6fqsk68jbd0"))
            (file-name (git-file-name "vis-test" version))))))
     (inputs `(("lua" ,lua)
               ("ncurses" ,ncurses)
