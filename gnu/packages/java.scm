@@ -2696,10 +2696,101 @@ distribution.")))
      `(#:jar-name "java-openjfx-graphics.jar"
        #:source-dir "modules/graphics/src/main/java"
        #:tests? #f; require X
-       #:test-dir "modules/graphics/src/test"))
+       #:test-dir "modules/graphics/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'copy-missing-file
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((target "modules/graphics/src/main/native-prism-sw/JNativeSurface.c"))
+               (copy-file (assoc-ref inputs "JNativeSurface.c") target)
+               ;; XXX: looks like the missing file we found isn't *quite*
+               ;; compatible...
+               (substitute* target
+                 (("case TYPE_INT_ARGB:") "")))))
+         (add-after 'build 'build-native
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((jdk (assoc-ref inputs "jdk"))
+                   (class-file->class-name
+                    (lambda (class-file)
+                      (string-map (lambda (c)
+                                    (if (char=? c #\/) #\. c))
+                                  (string-drop-right class-file
+                                                     (string-length ".class"))))))
+               (setenv "CPPFLAGS"
+                       (string-append "-DINLINE=inline "
+                                      "-DLINUX "
+                                      "-I" jdk "/include "
+                                      "-I" jdk "/include/linux "
+                                      "-I " (getcwd) "/build/classes/include "
+                                      "-I " (getcwd) "/modules/graphics/src/main/native-prism-sw"))
+
+               ;; Instructions have been adapted from buildSrc/linux.gradle
+               (with-directory-excursion "build/classes"
+                 ;; Build prism
+                 (mkdir-p "include")
+
+                 ;; Generate headers for prism
+                 (apply invoke "javah" "-d" "include" "-cp" "."
+                        (map class-file->class-name
+                             (append (find-files "com/sun/prism/impl" "\\.class$")
+                                     (find-files "com/sun/prism" "PresentableState.*\\.class$"))))
+
+                 ;; ...then for prism_sw
+                 (apply invoke "javah" "-d" "include" "-cp" "."
+                        (map class-file->class-name
+                             (find-files "com/sun/pisces" "\\.class$")))
+
+                 ;; ...and for prism_es2
+                 (apply invoke "javah" "-d" "include" "-cp" "."
+                        (map class-file->class-name
+                             (find-files "com/sun/prism/es2" "\\.class$")))))
+
+             (with-directory-excursion "netbeans/native-prism"
+               (invoke "make" "CONF=Release"))
+             (with-directory-excursion "netbeans/native-prism-sw"
+               (invoke "make" "CONF=Release"))
+             ;; TODO: This fails due to unknown EGL procedure names
+             #;
+             (with-directory-excursion "netbeans/native-prism-es2"
+               (invoke "make" "CONF=Release"))
+
+             (let* ((out (assoc-ref outputs "out"))
+                    (dir ,(match (%current-system)
+                            ("i686-linux"
+                             "i386")
+                            ((or "armhf-linux" "aarch64-linux")
+                             "arm")
+                            ((or "x86_64-linux")
+                             "amd64")
+                            (_ "unknown")))
+                    (target (string-append out "/share/" dir "/")))
+               (mkdir-p target)
+               (for-each (lambda (file)
+                           (let ((new-name
+                                  (string-append "lib"
+                                                 (string-map
+                                                  (lambda (c)
+                                                    (if (char=? c #\-) #\_ c))
+                                                  (string-drop (basename file)
+                                                               (string-length "libnative-"))))))
+                             (copy-file file
+                                        (string-append target new-name))))
+                         (find-files "netbeans" "\\.so$"))))))))
     (propagated-inputs
      `(("java-openjfx-base" ,java-openjfx-base)
        ("java-swt" ,java-swt)))
+    ;; XXX: for unknown reasons
+    ;; modules/graphics/src/main/native-prism-sw/JNativeSurface.c is missing
+    ;; in this revision.
+    (native-inputs
+     `(("JNativeSurface.c"
+        ,(origin
+           (method url-fetch)
+           (uri "https://raw.githubusercontent.com/openjdk/jfx/8u20-b02\
+/modules/graphics/src/main/native-prism-sw/JNativeSurface.c")
+           (sha256
+            (base32
+             "1kp15wbnd6rn0nciczp5ibq0ikby2yysvx1gnz5fa05vl2mm8mbm"))))))
     (description "OpenJFX is a client application platform for desktop,
 mobile and embedded systems built on Java.  Its goal is to produce a
 modern, efficient, and fully featured toolkit for developing rich client
