@@ -45,6 +45,7 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
   #:use-module ((ice-9 iconv) #:prefix iconv:)
+  #:autoload   (zlib) (make-zlib-input-port make-zlib-output-port)
   #:use-module (system foreign)
   #:re-export (<location>                         ;for backwards compatibility
                location
@@ -231,7 +232,8 @@ a symbol such as 'xz."
     ((or #f 'none) (values input '()))
     ('bzip2        (filtered-port `(,%bzip2 "-dc") input))
     ('xz           (filtered-port `(,%xz "-dc") input))
-    ('gzip         (filtered-port `(,%gzip "-dc") input))
+    ('gzip         (values (make-zlib-input-port input #:format 'gzip)
+                           '()))
     ('lzip         (values (lzip-port 'make-lzip-input-port input)
                            '()))
     ('zstd         (values (zstd-port 'make-zstd-input-port input)
@@ -292,7 +294,8 @@ program--e.g., '(\"--fast\")."
     ((or #f 'none) (values output '()))
     ('bzip2        (filtered-output-port `(,%bzip2 "-c" ,@options) output))
     ('xz           (filtered-output-port `(,%xz "-c" ,@options) output))
-    ('gzip         (filtered-output-port `(,%gzip "-c" ,@options) output))
+    ('gzip         (values (make-zlib-output-port output #:format 'gzip)
+                           '()))
     ('lzip         (values (lzip-port 'make-lzip-output-port output)
                            '()))
     ('zstd         (values (zstd-port 'make-zstd-output-port output)

@@ -831,7 +831,8 @@ Guile,, gnutls-guile, GnuTLS-Guile});
 @item
 @uref{https://notabug.org/guile-sqlite3/guile-sqlite3, Guile-SQLite3}, version 0.1.0
 or later;
-@item @uref{https://notabug.org/guile-zlib/guile-zlib, Guile-zlib};
+@item @uref{https://notabug.org/guile-zlib/guile-zlib, Guile-zlib},
+version 0.1.0 or later;
 @item @uref{https://notabug.org/guile-lzlib/guile-lzlib, Guile-lzlib};
 @item @uref{https://www.nongnu.org/guile-avahi/, Guile-Avahi};
 @item
