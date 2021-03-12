@@ -51,6 +51,7 @@
     ;; maintained. Don't update to 7 until we've made sure that the ImageMagick
     ;; users are ready for the 7-series API.
     (version "6.9.11-48")
+    (replacement imagemagick/fixed)
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://imagemagick/ImageMagick-"
@@ -58,7 +59,6 @@
              (sha256
               (base32
                "0m8nkmywkqwyrr01q7aiakj6mi4rb2psjgzv8n0x82x3s1rpfyql"))))
-    (replacement imagemagick/fixed)
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--with-frozenpaths" "--without-gcc-arch"
@@ -130,6 +130,7 @@ text, lines, polygons, ellipses and Bézier curves.")
 (define-public imagemagick/fixed
   (package
     (inherit imagemagick)
+    (name "imagemagick")
     (version "6.9.12-2g") ;; 'g' for 'guix', appended character to retain
     ;; version length so grafting works properly.
     (source (origin
@@ -140,7 +141,45 @@ text, lines, polygons, ellipses and Bézier curves.")
                                   ".tar.xz"))
               (sha256
                (base32
-                "17da5zihz58qm41y61sbvw626m5xfwr2nzszlikrvxyq1j1q7asa"))))))
+                "17da5zihz58qm41y61sbvw626m5xfwr2nzszlikrvxyq1j1q7asa"))))
+    (arguments
+     `(#:configure-flags '("--with-frozenpaths" "--without-gcc-arch"
+
+                           ;; Do not embed the build date in binaries.
+                           "--enable-reproducible-build")
+
+       ;; FIXME: The test suite succeeded before version 6.9.6-2.
+       ;; Try enabling it again with newer releases.
+       #:tests? #f
+       #:phases (modify-phases %standard-phases
+                  (add-before
+                   'build 'pre-build
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     (substitute* "Makefile"
+                       ;; Clear the `LIBRARY_PATH' setting, which otherwise
+                       ;; interferes with our own use.
+                       (("^LIBRARY_PATH[[:blank:]]*=.*$")
+                        "")
+
+                       ;; Since the Makefile overrides $docdir, modify it to
+                       ;; refer to what we want.
+                       (("^DOCUMENTATION_PATH[[:blank:]]*=.*$")
+                        (let ((doc (assoc-ref outputs "doc")))
+                          (string-append "DOCUMENTATION_PATH = "
+                                         doc "/share/doc/"
+                                         ,name "-" ,version "\n"))))
+                     #t))
+                  (add-before
+                   'configure 'strip-configure-xml
+                   (lambda _
+                     (substitute* "config/configure.xml.in"
+                       ;; Do not record 'configure' arguments in the
+                       ;; configure.xml file that gets installed: That would
+                       ;; include --docdir, and thus retain a reference to the
+                       ;; 'doc' output.
+                       (("@CONFIGURE_ARGS@")
+                        "not recorded"))
+                     #t)))))))
 
 (define-public perl-image-magick
   (package
