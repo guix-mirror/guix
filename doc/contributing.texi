@@ -1373,6 +1373,12 @@ you're confident, it's OK to commit.
 That last part is subject to being adjusted, allowing individuals to commit
 directly on non-controversial changes on parts they’re familiar with.
 
+In order to reduce the possibility of mistakes, committers will have
+their Savannah account removed from the Guix Savannah project and their
+key removed from @file{.guix-authorizations} after 12 months of
+inactivity; they can ask to regain commit access by emailing the
+maintainers, without going through the vouching process.
+
 One last thing: the project keeps moving forward because committers not
 only push their own awesome changes, but also offer some of their time
 @emph{reviewing} and pushing other people's changes.  As a committer,
