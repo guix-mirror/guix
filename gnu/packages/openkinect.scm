@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2020 Ekaitz Zarraga <ekaitz@elenq.tech>
+;;; Copyright © 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,7 +31,7 @@
   #:use-module (gnu packages image-processing))
 
 (define-public libfreenect
-  (let ((version "0.6.1"))
+  (let ((version "0.6.2"))
     (package
       (name "libfreenect")
       (version version)
@@ -42,7 +43,7 @@
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0was1va167rqshmpn382h36yyprpfi9cwillb6ylppmnfdrfrhrr"))))
+                  "02pb8mcl62kzdcgbnv3rw4nl0f08iw8pjiqqhfy3ycpkvyppw97w"))))
       (build-system cmake-build-system)
       (arguments
        '(#:tests? #f                    ; package has no tests
