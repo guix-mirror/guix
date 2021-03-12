@@ -595,8 +595,7 @@ It also includes runtime support libraries for these languages.")))
                                      "gcc-5.0-libvtv-runpath.patch"))))))
 
 ;; Note: When changing the default gcc version, update
-;;       the gcc-toolchain-* definitions and the gfortran definition
-;;       accordingly.
+;;       the gcc-toolchain-* definitions.
 (define-public gcc gcc-7)
 
 (define-public (make-libstdc++ gcc)
