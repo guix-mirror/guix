@@ -955,6 +955,7 @@ application suites.")
                           gdk-pixbuf+svg
                           gdk-pixbuf))
        ("glib" ,glib)
+       ("libcloudproviders" ,libcloudproviders)
        ("libepoxy" ,libepoxy)
        ("libx11" ,libx11)
        ("libxcomposite" ,libxcomposite)
@@ -1006,6 +1007,7 @@ application suites.")
        #:configure-flags (list (string-append "--with-html-dir="
                                               (assoc-ref %outputs "doc")
                                               "/share/gtk-doc/html")
+                               "--enable-cloudproviders"
                                ;; The header file <gdk/gdkwayland.h> is required
                                ;; by gnome-control-center
                                "--enable-wayland-backend"
