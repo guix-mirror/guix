@@ -8449,7 +8449,8 @@ properties, screen resolution, and other GNOME parameters.")
               (sha256
                (base32
                 "0l3mdn7g2c22mdhrqkxvvc1pk2w0v32f2v4a6n1phvaalwcg75nj"))
-              (patches (search-patches "gnome-shell-theme.patch"
+              (patches (search-patches "gnome-shell-CVE-2020-17489.patch"
+                                       "gnome-shell-theme.patch"
                                        "gnome-shell-disable-test.patch"))
               (modules '((guix build utils)))
               (snippet
