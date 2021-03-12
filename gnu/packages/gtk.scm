@@ -567,12 +567,12 @@ highlighting and other features typical of a source code editor.")
   (package
    (name "gdk-pixbuf")
    (version "2.40.0")
-   (replacement gdk-pixbuf/fixed)
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
                                 (version-major+minor version)  "/"
                                 name "-" version ".tar.xz"))
+            (patches (search-patches "gdk-pixbuf-CVE-2020-29385.patch"))
             (sha256
              (base32
               "1rnlx9yfw970maxi2x6niaxmih5la11q1ilr7gzshz2kk585k0hm"))))
@@ -623,15 +623,6 @@ highlighting and other features typical of a source code editor.")
 in the GNOME project.")
    (license license:lgpl2.0+)
    (home-page "https://developer.gnome.org/gdk-pixbuf/")))
-
-(define gdk-pixbuf/fixed
-  (package
-    (inherit gdk-pixbuf)
-    (source (origin
-              (inherit (package-source gdk-pixbuf))
-              (patches
-               (append (search-patches "gdk-pixbuf-CVE-2020-29385.patch")
-                       (origin-patches (package-source gdk-pixbuf))))))))
 
 ;; To build gdk-pixbuf with SVG support, we need librsvg, and librsvg depends
 ;; on gdk-pixbuf, so this new varibale.  Also, librsvg adds 90MiB to the
