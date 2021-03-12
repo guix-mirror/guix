@@ -1743,6 +1743,7 @@ information.")
                (base32
                 "0z4h1dggpimygdp719l457jvqilps4qcfpk31jmj3jqpzcsg03ny"))))
     (build-system glib-or-gtk-build-system)
+    (outputs '("out" "help"))
     (arguments
      `(#:parallel-tests? #f
        #:phases
@@ -1799,7 +1800,10 @@ information.")
        #:configure-flags
        (list (string-append "--with-xml-catalog="
                             (assoc-ref %build-inputs "docbook-xml")
-                            "/xml/dtd/docbook/catalog.xml"))))
+                            "/xml/dtd/docbook/catalog.xml")
+             (string-append "--with-help-dir="
+                            (assoc-ref %outputs "help")
+                            "/share/help"))))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")
