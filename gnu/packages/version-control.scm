@@ -36,6 +36,7 @@
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2021 Léo Le Bouter <lle-bout@zaclys.net>
+;;; Copyright © 2021 LibreMiami <packaging-guix@libremiami.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2196,7 +2197,7 @@ from Subversion to any supported Distributed Version Control System (DVCS).")
 (define-public tig
   (package
     (name "tig")
-    (version "2.5.1")
+    (version "2.5.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2204,7 +2205,7 @@ from Subversion to any supported Distributed Version Control System (DVCS).")
                     version "/tig-" version ".tar.gz"))
               (sha256
                (base32
-                "0r4y9hyvpkplaxrzslws3asz652d83qh3bjwvmp8assga8s5s3ah"))))
+                "1p1575yh4daxjifywxkd0hgyfwciylqcm2qakawvwn6mk620ca75"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)
