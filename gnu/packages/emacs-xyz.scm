@@ -9053,6 +9053,34 @@ duplicated a lot.  Org-mode makes the book keeping of tags and feeds
 much easier.")
       (license license:gpl3+))))
 
+(define-public emacs-elfeed-score
+  (package
+    (name "emacs-elfeed-score")
+    (version "0.7.7")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/sp1ff/elfeed-score")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "07xid0a31ghknbfwj8dxzbqkg4sfayjhlqvp17p2bzlf1mj0zjyd"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-elfeed" ,emacs-elfeed)))
+    (home-page "https://github.com/sp1ff/elfeed-score")
+    (synopsis "Gnus-style scoring for Elfeed")
+    (description
+     "@Elfeed-score is an add-on for Elfeed, an RSS reader for Emacs.  It
+brings Gnus-style scoring to your RSS feeds.  Elfeed, by default, displays
+feed entries by date.  This package allows you to setup rules for assigning
+numeric scores to entries, and sorting entries with higher scores ahead of
+those with lower, regardless of date.  The idea is to prioritize content
+important to you.")
+    (license license:gpl3+)))
+
 (define-public emacs-el-x
   (package
     (name "emacs-el-x")
