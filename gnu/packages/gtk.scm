@@ -125,11 +125,12 @@ tools have full access to view and control running applications.")
   (package
    (name "cairo")
    (version "1.16.0")
-   (replacement cairo/fixed)
    (source (origin
             (method url-fetch)
             (uri (string-append "https://cairographics.org/releases/cairo-"
                                 version ".tar.xz"))
+            (patches (search-patches "cairo-CVE-2018-19876.patch"
+                                     "cairo-CVE-2020-35492.patch"))
             (sha256
              (base32
               "0c930mk5xr2bshbdljv005j3j8zr47gqmkry3q6qgvqky6rjjysy"))))
@@ -175,15 +176,6 @@ antialiased text rendering.  All drawing operations can be transformed by any
 affine transformation (scale, rotation, shear, etc.).")
    (license license:lgpl2.1) ; or Mozilla Public License 1.1
    (home-page "https://cairographics.org/")))
-
-(define cairo/fixed
-  (package
-    (inherit cairo)
-    (source (origin
-              (inherit (package-source cairo))
-              (patches (append (search-patches "cairo-CVE-2018-19876.patch"
-                                               "cairo-CVE-2020-35492.patch")
-                               (origin-patches (package-source cairo))))))))
 
 (define-public cairo-sans-poppler
   ;; Variant used to break the dependency cycle between Poppler and Cairo.
