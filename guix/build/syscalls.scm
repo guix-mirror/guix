@@ -636,8 +636,9 @@ current process."
           (if (eof-object? line)
               (reverse result)
               (match (string-tokenize line)
+                ;; See the proc(5) man page for a description of the columns.
                 ((id parent-id major:minor root mount-point
-                     options _ type source _ ...)
+                     options _ ... "-" type source _)
                  (let ((devno (string->device-number major:minor)))
                    (loop (cons (%mount (octal-decode source)
                                        (octal-decode mount-point)
