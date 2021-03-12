@@ -2082,6 +2082,53 @@ shell scripts.  Example of how to use @code{yad} can be consulted at
 @url{https://sourceforge.net/p/yad-dialog/wiki/browse_pages/}.")
     (license license:gpl3+)))
 
+(define-public dragon-drop
+  (package
+   (name "dragon-drop")
+   (version "1.1.1")
+   (source (origin
+             (method git-fetch)
+             (uri
+              (git-reference
+               (url "https://github.com/mwh/dragon")
+               (commit (string-append "v" version))))
+             (file-name (git-file-name name version))
+             (sha256
+              (base32
+               "0fgzz39007fdjwq72scp0qygp2v3zc5f1xkm0sxaa8zxm25g1bra"))))
+   (build-system gnu-build-system)
+   (inputs `(("gtk+" ,gtk+)))
+   (native-inputs `(("pkg-config" ,pkg-config)))
+   (arguments
+    `(#:tests? #f                       ; no check
+      #:make-flags
+      (list (string-append "CC=" ,(cc-for-target))
+            ;; makefile uses PREFIX for the binary location
+            (string-append "PREFIX=" (assoc-ref %outputs "out")
+                           "/bin"))
+      #:phases
+      (modify-phases %standard-phases
+        (delete 'configure))))                    ; no configure script
+   (synopsis "Drag and drop source/target for X")
+   (description
+    "Dragon is a lightweight drag-and-drop source for X where you can run:
+
+@example
+dragon file.tar.gz
+@end example
+
+to get a window with just that file in it, ready to be dragged where you need it.
+What if you need to drag into something? Using:
+
+@example
+dragon --target
+@end example
+
+you get a window you can drag files and text into.  Dropped items are
+printed to standard output.")
+   (home-page "https://github.com/mwh/dragon")
+   (license license:gpl3+)))
+
 (define-public libdbusmenu
   (package
     (name "libdbusmenu")
