@@ -815,7 +815,7 @@ manipulate repositories of the Git version control system.")
 (define-public guile-zlib
   (package
     (name "guile-zlib")
-    (version "0.0.1")
+    (version "0.1.0")
     (source
      (origin
        ;; XXX: Do not use "git-fetch" method here that would create and
@@ -823,12 +823,13 @@ manipulate repositories of the Git version control system.")
        ;; in the same method.
        (method url-fetch)
        (uri
-        (string-append "https://notabug.org/guile-zlib/guile-zlib/archive/"
+        (string-append "https://notabug.org/guile-zlib/guile-zlib/archive/v"
                        version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
+        ;; content hash: 1ip18nzwnczqyhn9cpzxkm9vzpi5fz5sy96cgjhmp7cwhnkmv6zv
         (base32
-         "1caz6cbl6sg5567nk68z88rshp0m26zmb0a9ry1jkc1ivpk0n47i"))))
+         "1safz7rrbdf1d98x3lgx5v74kivpyf9n1v6pdyy22vd0f2sjdir5"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags
