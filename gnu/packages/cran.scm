@@ -26,7 +26,7 @@
 ;;; Copyright © 2020 Eric Brown <ecbrown@ericcbrown.com>
 ;;; Copyright © 2020 Peter Lo <peterloleungyau@gmail.com>
 ;;; Copyright © 2020 Rafael Luque Leiva <rafael.luque@osoco.es>
-;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
+;;; Copyright © 2020, 2021 Lars-Dominik Braun <ldb@leibniz-psychology.org>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Antoine Côté <antoine.cote@posteo.net>
 ;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
@@ -27290,3 +27290,26 @@ from a source package.  @code{pkgdown} converts your documentation, vignettes,
 README file, and more to HTML making it easy to share information about your
 package online.")
     (license license:expat)))
+
+(define-public r-prereg
+  (package
+    (name "r-prereg")
+    (version "0.5.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "prereg" version))
+        (sha256
+          (base32
+            "0bck13iiaxwpqh0rd45mp1s5d8z62ggg0wa7rmyi8a65aywiypsi"))))
+    (properties `((upstream-name . "prereg")))
+    (build-system r-build-system)
+    (propagated-inputs
+      `(("r-rmarkdown" ,r-rmarkdown)))
+    (home-page "https://github.com/crsh/prereg")
+    (synopsis
+      "R Markdown Templates to preregister Scientific Studies")
+    (description
+      "This package provides a collection of templates to author
+preregistration documents for scientific studies in PDF format.")
+    (license license:gpl3)))
