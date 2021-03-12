@@ -18183,14 +18183,14 @@ HTTP request or response body.")
 (define-public rust-http-client-6
   (package
     (name "rust-http-client")
-    (version "6.2.0")
+    (version "6.3.4")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "http-client" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "077jw39npmjgm27hij4r825qnxq7lvkmqqlm74llkvll3fvr4001"))))
+        (base32 "1i0mys38gsih9kkrdbfsmd8p9lnb2nd5wch76cpkjmqk8mm2mhcq"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -18198,7 +18198,11 @@ HTTP request or response body.")
        (("rust-async-h1" ,rust-async-h1-2)
         ("rust-async-native-tls" ,rust-async-native-tls-0.3)
         ("rust-async-std" ,rust-async-std-1)
+        ("rust-async-tls" ,rust-async-tls-0.10)
         ("rust-async-trait" ,rust-async-trait-0.1)
+        ("rust-cfg-if" ,rust-cfg-if-1)
+        ("rust-dashmap" ,rust-dashmap-4)
+        ("rust-deadpool" ,rust-deadpool-0.7)
         ("rust-futures" ,rust-futures-0.3)
         ("rust-futures-util" ,rust-futures-util-0.3)
         ("rust-http-types" ,rust-http-types-2)
