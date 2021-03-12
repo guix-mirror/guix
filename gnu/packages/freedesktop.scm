@@ -992,7 +992,10 @@ fullscreen) or other display servers.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (synopsis "Wayland protocols")
-    (description "This package contains XML definitions of the Wayland protocols.")
+    (description "Wayland-Protocols contains Wayland protocols that add
+functionality not available in the Wayland core protocol.  Such protocols either
+add completely new functionality, or extend the functionality of some other
+protocol either in Wayland core, or some other protocol in wayland-protocols.")
     (home-page "https://wayland.freedesktop.org")
     (license license:expat)))
 
