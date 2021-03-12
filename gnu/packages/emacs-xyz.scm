@@ -6658,6 +6658,32 @@ useful for sending tables, fontified source code, and inline images in
 email.")
     (license license:gpl3+)))
 
+(define-public emacs-org-msg
+  ;; No git tags.  The commit below corresponds to the release of version 3.3.
+  (let ((commit "89e746c0a864031eef940758230bc7263a6f2289"))
+    (package
+      (name "emacs-org-msg")
+      (version "3.3")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/jeremy-compostella/org-msg")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "15gd5zbxvdallyra9lmpb9i1r2mmwz0j0i0ra7j9imnbfiz3ln9r"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-htmlize" ,emacs-htmlize)))
+      (home-page "https://github.com/jeremy-compostella/org-msg")
+      (synopsis "Mix Org mode and Message mode to compose emails")
+      (description
+       "OrgMsg is a GNU Emacs global minor mode mixing up Org mode and your
+Mail User Agent Mode (Message, mu4e, or Notmuch) to compose and reply to
+emails in a Outlook HTML friendly style.")
+      (license license:gpl3+))))
+
 (define-public emacs-org-superstar
   (package
     (name "emacs-org-superstar")
