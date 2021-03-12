@@ -1095,6 +1095,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/glib-CVE-2021-27219-16.patch		\
   %D%/packages/patches/glib-CVE-2021-27219-17.patch		\
   %D%/packages/patches/glib-CVE-2021-27219-18.patch		\
+  %D%/packages/patches/glib-CVE-2021-28153.patch		\
   %D%/packages/patches/glibc-CVE-2018-11236.patch		\
   %D%/packages/patches/glibc-CVE-2018-11237.patch		\
   %D%/packages/patches/glibc-CVE-2019-7309.patch		\

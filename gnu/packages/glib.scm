@@ -415,7 +415,8 @@ dynamic loading, and an object system.")
                                        "glib-CVE-2021-27219-15.patch"
                                        "glib-CVE-2021-27219-16.patch"
                                        "glib-CVE-2021-27219-17.patch"
-                                       "glib-CVE-2021-27219-18.patch")
+                                       "glib-CVE-2021-27219-18.patch"
+                                       "glib-CVE-2021-28153.patch")
                        (origin-patches (package-source glib))))))))
 
 (define-public glib-with-documentation
