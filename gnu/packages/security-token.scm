@@ -104,7 +104,7 @@ readers and is needed to communicate with such devices through the
 (define-public eid-mw
   (package
     (name "eid-mw")
-    (version "5.0.11")
+    (version "5.0.14")
     (source
      (origin
        (method git-fetch)
@@ -113,7 +113,7 @@ readers and is needed to communicate with such devices through the
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0590cz00cny749p99srv880gpgzvxaf9fwm2lghv3nw0qdsilss8"))))
+        (base32 "1hyxsbxjjn9hh5p7jlcfb5yplf3n8dg49dfgi8fjp95phis3gbd4"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
