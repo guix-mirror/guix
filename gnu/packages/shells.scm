@@ -940,7 +940,7 @@ files and text.")
 (define-public nushell
   (package
     (name "nushell")
-    (version "0.27.1")
+    (version "0.28.0")
     (source
      (origin
        (method git-fetch)
@@ -949,7 +949,7 @@ files and text.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "19l42qdqmc9g2qxy4b856z0xlq2g4qrfxj8l7dmdv99vymyfik9j"))))
+        (base32 "0kbynyk4c0r2qi78mdchx6d0d0c7phz2sxj5cqwsz4gjziibhr7j"))))
     (build-system cargo-build-system)
     (arguments
      `(#:rust ,rust-1.47
@@ -961,38 +961,38 @@ files and text.")
         ("rust-futures" ,rust-futures-0.3)
         ("rust-itertools" ,rust-itertools-0.10)
         ("rust-log" ,rust-log-0.4)
-        ("rust-nu-cli" ,rust-nu-cli-0.27)
-        ("rust-nu-command" ,rust-nu-command-0.27)
-        ("rust-nu-data" ,rust-nu-data-0.27)
-        ("rust-nu-engine" ,rust-nu-engine-0.27)
-        ("rust-nu-errors" ,rust-nu-errors-0.27)
-        ("rust-nu-parser" ,rust-nu-parser-0.27)
-        ("rust-nu-plugin" ,rust-nu-plugin-0.27)
-        ("rust-nu-protocol" ,rust-nu-protocol-0.27)
-        ("rust-nu-source" ,rust-nu-source-0.27)
-        ("rust-nu-value-ext" ,rust-nu-value-ext-0.27)
-        ("rust-nu-plugin-binaryview" ,rust-nu-plugin-binaryview-0.27)
-        ("rust-nu-plugin-chart" ,rust-nu-plugin-chart-0.27)
-        ("rust-nu-plugin-fetch" ,rust-nu-plugin-fetch-0.27)
-        ("rust-nu-plugin-from-bson" ,rust-nu-plugin-from-bson-0.27)
-        ("rust-nu-plugin-from-sqlite" ,rust-nu-plugin-from-sqlite-0.27)
-        ("rust-nu-plugin-inc" ,rust-nu-plugin-inc-0.27)
-        ("rust-nu-plugin-match" ,rust-nu-plugin-match-0.27)
-        ("rust-nu-plugin-post" ,rust-nu-plugin-post-0.27)
-        ("rust-nu-plugin-ps" ,rust-nu-plugin-ps-0.27)
-        ("rust-nu-plugin-s3" ,rust-nu-plugin-s3-0.27)
-        ("rust-nu-plugin-selector" ,rust-nu-plugin-selector-0.27)
-        ("rust-nu-plugin-start" ,rust-nu-plugin-start-0.27)
-        ("rust-nu-plugin-sys" ,rust-nu-plugin-sys-0.27)
-        ("rust-nu-plugin-textview" ,rust-nu-plugin-textview-0.27)
-        ("rust-nu-plugin-to-bson" ,rust-nu-plugin-to-bson-0.27)
-        ("rust-nu-plugin-to-sqlite" ,rust-nu-plugin-to-sqlite-0.27)
-        ("rust-nu-plugin-tree" ,rust-nu-plugin-tree-0.27)
-        ("rust-nu-plugin-xpath" ,rust-nu-plugin-xpath-0.27)
+        ("rust-nu-cli" ,rust-nu-cli-0.28)
+        ("rust-nu-command" ,rust-nu-command-0.28)
+        ("rust-nu-data" ,rust-nu-data-0.28)
+        ("rust-nu-engine" ,rust-nu-engine-0.28)
+        ("rust-nu-errors" ,rust-nu-errors-0.28)
+        ("rust-nu-parser" ,rust-nu-parser-0.28)
+        ("rust-nu-plugin" ,rust-nu-plugin-0.28)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.28)
+        ("rust-nu-source" ,rust-nu-source-0.28)
+        ("rust-nu-value-ext" ,rust-nu-value-ext-0.28)
+        ("rust-nu-plugin-binaryview" ,rust-nu-plugin-binaryview-0.28)
+        ("rust-nu-plugin-chart" ,rust-nu-plugin-chart-0.28)
+        ("rust-nu-plugin-fetch" ,rust-nu-plugin-fetch-0.28)
+        ("rust-nu-plugin-from-bson" ,rust-nu-plugin-from-bson-0.28)
+        ("rust-nu-plugin-from-sqlite" ,rust-nu-plugin-from-sqlite-0.28)
+        ("rust-nu-plugin-inc" ,rust-nu-plugin-inc-0.28)
+        ("rust-nu-plugin-match" ,rust-nu-plugin-match-0.28)
+        ("rust-nu-plugin-post" ,rust-nu-plugin-post-0.28)
+        ("rust-nu-plugin-ps" ,rust-nu-plugin-ps-0.28)
+        ("rust-nu-plugin-s3" ,rust-nu-plugin-s3-0.28)
+        ("rust-nu-plugin-selector" ,rust-nu-plugin-selector-0.28)
+        ("rust-nu-plugin-start" ,rust-nu-plugin-start-0.28)
+        ("rust-nu-plugin-sys" ,rust-nu-plugin-sys-0.28)
+        ("rust-nu-plugin-textview" ,rust-nu-plugin-textview-0.28)
+        ("rust-nu-plugin-to-bson" ,rust-nu-plugin-to-bson-0.28)
+        ("rust-nu-plugin-to-sqlite" ,rust-nu-plugin-to-sqlite-0.28)
+        ("rust-nu-plugin-tree" ,rust-nu-plugin-tree-0.28)
+        ("rust-nu-plugin-xpath" ,rust-nu-plugin-xpath-0.28)
         ("rust-pretty-env-logger" ,rust-pretty-env-logger-0.4))
        #:cargo-development-inputs
        (("rust-dunce" ,rust-dunce-1)
-        ("rust-nu-test-support" ,rust-nu-test-support-0.27)
+        ("rust-nu-test-support" ,rust-nu-test-support-0.28)
         ("rust-serial-test" ,rust-serial-test-0.5))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1016,23 +1016,46 @@ directory.  These values can be piped through a series of steps, in a series
 of commands called a ``pipeline''.")
     (license license:expat)))
 
-(define-public rust-nu-cli-0.27
+(define-public rust-nu-ansi-term-0.28
+  (package
+    (name "rust-nu-ansi-term")
+    (version "0.28.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nu-ansi-term" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0j4ybp1bmlj9lakrp21i180c26x0i9ird08xshsr6607g8nvc73f"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-serde" ,rust-serde-1)
+        ("rust-winapi" ,rust-winapi-0.3))))
+    (home-page "https://www.nushell.sh")
+    (synopsis "Library for ANSI terminal colors and styles (bold, underline)")
+    (description
+     "This package is a library for ANSI terminal colors and styles (bold,
+underline).")
+    (license license:expat)))
+
+(define-public rust-nu-cli-0.28
   (package
     (name "rust-nu-cli")
-    (version "0.27.1")
+    (version "0.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu-cli" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0rv4g5vfs81gans9npa2yyz893jqnd1yqcc16h0w6xlbsgdx2712"))))
+        (base32 "0wz3n4b7sz5zynwhs2gn11w1b9cji231f613r23j64a8y26hdzhn"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-ansi-term" ,rust-ansi-term-0.12)
-        ("rust-arboard" ,rust-arboard-1)
+       (("rust-arboard" ,rust-arboard-1)
         ("rust-async-recursion" ,rust-async-recursion-0.3)
         ("rust-async-trait" ,rust-async-trait-0.1)
         ("rust-base64" ,rust-base64-0.13)
@@ -1069,19 +1092,20 @@ of commands called a ``pipeline''.")
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-log" ,rust-log-0.4)
         ("rust-meval" ,rust-meval-0.2)
-        ("rust-nu-command" ,rust-nu-command-0.27)
-        ("rust-nu-data" ,rust-nu-data-0.27)
-        ("rust-nu-engine" ,rust-nu-engine-0.27)
-        ("rust-nu-errors" ,rust-nu-errors-0.27)
-        ("rust-nu-json" ,rust-nu-json-0.27)
-        ("rust-nu-parser" ,rust-nu-parser-0.27)
-        ("rust-nu-plugin" ,rust-nu-plugin-0.27)
-        ("rust-nu-protocol" ,rust-nu-protocol-0.27)
-        ("rust-nu-source" ,rust-nu-source-0.27)
-        ("rust-nu-stream" ,rust-nu-stream-0.27)
-        ("rust-nu-table" ,rust-nu-table-0.27)
-        ("rust-nu-test-support" ,rust-nu-test-support-0.27)
-        ("rust-nu-value-ext" ,rust-nu-value-ext-0.27)
+        ("rust-nu-ansi-term" ,rust-nu-ansi-term-0.28)
+        ("rust-nu-command" ,rust-nu-command-0.28)
+        ("rust-nu-data" ,rust-nu-data-0.28)
+        ("rust-nu-engine" ,rust-nu-engine-0.28)
+        ("rust-nu-errors" ,rust-nu-errors-0.28)
+        ("rust-nu-json" ,rust-nu-json-0.28)
+        ("rust-nu-parser" ,rust-nu-parser-0.28)
+        ("rust-nu-plugin" ,rust-nu-plugin-0.28)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.28)
+        ("rust-nu-source" ,rust-nu-source-0.28)
+        ("rust-nu-stream" ,rust-nu-stream-0.28)
+        ("rust-nu-table" ,rust-nu-table-0.28)
+        ("rust-nu-test-support" ,rust-nu-test-support-0.28)
+        ("rust-nu-value-ext" ,rust-nu-value-ext-0.28)
         ("rust-num-bigint" ,rust-num-bigint-0.3)
         ("rust-num-format" ,rust-num-format-0.4)
         ("rust-num-traits" ,rust-num-traits-0.2)
@@ -1132,23 +1156,22 @@ of commands called a ``pipeline''.")
     (description "CLI for nushell")
     (license license:expat)))
 
-(define-public rust-nu-command-0.27
+(define-public rust-nu-command-0.28
   (package
     (name "rust-nu-command")
-    (version "0.27.1")
+    (version "0.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu-command" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1kpf72fw310mnywv3y678cgxkdzhfss14228p0ndhr2knxz8gdki"))))
+        (base32 "0n6967w99m4zi52lfb57ycckammcc4im92yl5v2a2r6avnxrby1d"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-ansi-term" ,rust-ansi-term-0.12)
-        ("rust-arboard" ,rust-arboard-1)
+       (("rust-arboard" ,rust-arboard-1)
         ("rust-async-recursion" ,rust-async-recursion-0.3)
         ("rust-async-trait" ,rust-async-trait-0.1)
         ("rust-base64" ,rust-base64-0.13)
@@ -1160,6 +1183,7 @@ of commands called a ``pipeline''.")
         ("rust-chrono-tz" ,rust-chrono-tz-0.5)
         ("rust-clap" ,rust-clap-2)
         ("rust-codespan-reporting" ,rust-codespan-reporting-0.11)
+        ("rust-crossterm" ,rust-crossterm-0.19)
         ("rust-csv" ,rust-csv-1)
         ("rust-ctrlc" ,rust-ctrlc-3)
         ("rust-derive-new" ,rust-derive-new-0.5)
@@ -1185,19 +1209,20 @@ of commands called a ``pipeline''.")
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-log" ,rust-log-0.4)
         ("rust-meval" ,rust-meval-0.2)
-        ("rust-nu-data" ,rust-nu-data-0.27)
-        ("rust-nu-engine" ,rust-nu-engine-0.27)
-        ("rust-nu-errors" ,rust-nu-errors-0.27)
-        ("rust-nu-json" ,rust-nu-json-0.27)
-        ("rust-nu-parser" ,rust-nu-parser-0.27)
-        ("rust-nu-plugin" ,rust-nu-plugin-0.27)
-        ("rust-nu-protocol" ,rust-nu-protocol-0.27)
-        ("rust-nu-source" ,rust-nu-source-0.27)
-        ("rust-nu-stream" ,rust-nu-stream-0.27)
-        ("rust-nu-table" ,rust-nu-table-0.27)
-        ("rust-nu-test-support"
-         ,rust-nu-test-support-0.27)
-        ("rust-nu-value-ext" ,rust-nu-value-ext-0.27)
+        ("rust-minus" ,rust-minus-3)
+        ("rust-nu-ansi-term" ,rust-nu-ansi-term-0.28)
+        ("rust-nu-data" ,rust-nu-data-0.28)
+        ("rust-nu-engine" ,rust-nu-engine-0.28)
+        ("rust-nu-errors" ,rust-nu-errors-0.28)
+        ("rust-nu-json" ,rust-nu-json-0.28)
+        ("rust-nu-parser" ,rust-nu-parser-0.28)
+        ("rust-nu-plugin" ,rust-nu-plugin-0.28)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.28)
+        ("rust-nu-source" ,rust-nu-source-0.28)
+        ("rust-nu-stream" ,rust-nu-stream-0.28)
+        ("rust-nu-table" ,rust-nu-table-0.28)
+        ("rust-nu-test-support" ,rust-nu-test-support-0.28)
+        ("rust-nu-value-ext" ,rust-nu-value-ext-0.28)
         ("rust-num-bigint" ,rust-num-bigint-0.3)
         ("rust-num-format" ,rust-num-format-0.4)
         ("rust-num-traits" ,rust-num-traits-0.2)
@@ -1245,23 +1270,22 @@ of commands called a ``pipeline''.")
     (description "CLI for nushell")
     (license license:expat)))
 
-(define-public rust-nu-data-0.27
+(define-public rust-nu-data-0.28
   (package
     (name "rust-nu-data")
-    (version "0.27.1")
+    (version "0.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu-data" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0v7rkbrbzjy9794isz1z3dz1kpciadgg7hdfr6107i3qw11j8pq3"))))
+        (base32 "1gq0izbpaw4lp92ia3d3i14x649r1s6jscabm6xdi2qcxfb420kz"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-ansi-term" ,rust-ansi-term-0.12)
-        ("rust-bigdecimal" ,rust-bigdecimal-0.2)
+       (("rust-bigdecimal" ,rust-bigdecimal-0.2)
         ("rust-byte-unit" ,rust-byte-unit-4)
         ("rust-chrono" ,rust-chrono-0.4)
         ("rust-derive-new" ,rust-derive-new-0.5)
@@ -1270,16 +1294,16 @@ of commands called a ``pipeline''.")
         ("rust-getset" ,rust-getset-0.1)
         ("rust-indexmap" ,rust-indexmap-1)
         ("rust-log" ,rust-log-0.4)
-        ("rust-nu-errors" ,rust-nu-errors-0.27)
-        ("rust-nu-protocol" ,rust-nu-protocol-0.27)
-        ("rust-nu-source" ,rust-nu-source-0.27)
-        ("rust-nu-table" ,rust-nu-table-0.27)
-        ("rust-nu-test-support" ,rust-nu-test-support-0.27)
-        ("rust-nu-value-ext" ,rust-nu-value-ext-0.27)
+        ("rust-nu-ansi-term" ,rust-nu-ansi-term-0.28)
+        ("rust-nu-errors" ,rust-nu-errors-0.28)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.28)
+        ("rust-nu-source" ,rust-nu-source-0.28)
+        ("rust-nu-table" ,rust-nu-table-0.28)
+        ("rust-nu-test-support" ,rust-nu-test-support-0.28)
+        ("rust-nu-value-ext" ,rust-nu-value-ext-0.28)
         ("rust-num-bigint" ,rust-num-bigint-0.3)
         ("rust-num-format" ,rust-num-format-0.4)
         ("rust-num-traits" ,rust-num-traits-0.2)
-        ("rust-parking-lot" ,rust-parking-lot-0.11)
         ("rust-query-interface" ,rust-query-interface-0.3)
         ("rust-serde" ,rust-serde-1)
         ("rust-toml" ,rust-toml-0.5)
@@ -1289,23 +1313,22 @@ of commands called a ``pipeline''.")
     (description "CLI for nushell")
     (license license:expat)))
 
-(define-public rust-nu-engine-0.27
+(define-public rust-nu-engine-0.28
   (package
     (name "rust-nu-engine")
-    (version "0.27.1")
+    (version "0.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu-engine" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0a1b8j7k2rawdimxr7yknw6yk0pbs69qj5p73sg4a24pyx0f7zkp"))))
+        (base32 "135bwcqvb8vhg417yzz90bj396f9hwpbqrdi9kw8fvmfz573z32s"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-ansi-term" ,rust-ansi-term-0.12)
-        ("rust-async-recursion" ,rust-async-recursion-0.3)
+       (("rust-async-recursion" ,rust-async-recursion-0.3)
         ("rust-async-trait" ,rust-async-trait-0.1)
         ("rust-bytes" ,rust-bytes-0.5)
         ("rust-derive-new" ,rust-derive-new-0.5)
@@ -1322,14 +1345,15 @@ of commands called a ``pipeline''.")
         ("rust-indexmap" ,rust-indexmap-1)
         ("rust-itertools" ,rust-itertools-0.10)
         ("rust-log" ,rust-log-0.4)
-        ("rust-nu-data" ,rust-nu-data-0.27)
-        ("rust-nu-errors" ,rust-nu-errors-0.27)
-        ("rust-nu-parser" ,rust-nu-parser-0.27)
-        ("rust-nu-plugin" ,rust-nu-plugin-0.27)
-        ("rust-nu-protocol" ,rust-nu-protocol-0.27)
-        ("rust-nu-source" ,rust-nu-source-0.27)
-        ("rust-nu-stream" ,rust-nu-stream-0.27)
-        ("rust-nu-value-ext" ,rust-nu-value-ext-0.27)
+        ("rust-nu-ansi-term" ,rust-nu-ansi-term-0.28)
+        ("rust-nu-data" ,rust-nu-data-0.28)
+        ("rust-nu-errors" ,rust-nu-errors-0.28)
+        ("rust-nu-parser" ,rust-nu-parser-0.28)
+        ("rust-nu-plugin" ,rust-nu-plugin-0.28)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.28)
+        ("rust-nu-source" ,rust-nu-source-0.28)
+        ("rust-nu-stream" ,rust-nu-stream-0.28)
+        ("rust-nu-value-ext" ,rust-nu-value-ext-0.28)
         ("rust-parking-lot" ,rust-parking-lot-0.11)
         ("rust-rayon" ,rust-rayon-1)
         ("rust-serde" ,rust-serde-1)
@@ -1337,6 +1361,7 @@ of commands called a ``pipeline''.")
         ("rust-tempfile" ,rust-tempfile-3)
         ("rust-term-size" ,rust-term-size-0.3)
         ("rust-termcolor" ,rust-termcolor-1)
+        ("rust-trash" ,rust-trash-1)
         ("rust-umask" ,rust-umask-1)
         ("rust-users" ,rust-users-0.11))))
     (home-page "https://www.nushell.sh")
@@ -1344,28 +1369,28 @@ of commands called a ``pipeline''.")
     (description "Core commands for nushell")
     (license license:expat)))
 
-(define-public rust-nu-errors-0.27
+(define-public rust-nu-errors-0.28
   (package
     (name "rust-nu-errors")
-    (version "0.27.1")
+    (version "0.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu-errors" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0h81034cmlra627bnq7kp46s3k61j5xhzbbk61lxybmyg1m5dr74"))))
+        (base32 "1zb5mmhzjh5cd27ry4z0vgw99ic9k3badxy3ywjk72nzpr5ra303"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-ansi-term" ,rust-ansi-term-0.12)
-        ("rust-bigdecimal" ,rust-bigdecimal-0.2)
+       (("rust-bigdecimal" ,rust-bigdecimal-0.2)
         ("rust-codespan-reporting" ,rust-codespan-reporting-0.11)
         ("rust-derive-new" ,rust-derive-new-0.5)
         ("rust-getset" ,rust-getset-0.1)
         ("rust-glob" ,rust-glob-0.3)
-        ("rust-nu-source" ,rust-nu-source-0.27)
+        ("rust-nu-ansi-term" ,rust-nu-ansi-term-0.28)
+        ("rust-nu-source" ,rust-nu-source-0.28)
         ("rust-num-bigint" ,rust-num-bigint-0.3)
         ("rust-num-traits" ,rust-num-traits-0.2)
         ("rust-serde" ,rust-serde-1)
@@ -1377,41 +1402,42 @@ of commands called a ``pipeline''.")
     (description "Core error subsystem for Nushell")
     (license license:expat)))
 
-(define-public rust-nu-json-0.27
+(define-public rust-nu-json-0.28
   (package
     (name "rust-nu-json")
-    (version "0.27.1")
+    (version "0.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu-json" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1ymdiv606kiw6m79rr7blflk1m7cnk96ahxx5j82ygamkr4mckf3"))))
+        (base32 "02w1lp7mp1fg7rf5zpdzllvsmd0jlgmig50xxag6a901ic85ddr7"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-linked-hash-map" ,rust-linked-hash-map-0.5)
         ("rust-num-traits" ,rust-num-traits-0.2)
         ("rust-regex" ,rust-regex-1)
-        ("rust-serde" ,rust-serde-0.8))))
+        ("rust-serde" ,rust-serde-1))))
     (home-page "https://www.nushell.sh")
     (synopsis "Fork of @code{serde-hjson}")
     (description "This package is a fork of @code{serde-hjson}.")
     (license license:expat)))
 
-(define-public rust-nu-parser-0.27
+(define-public rust-nu-parser-0.28
   (package
     (name "rust-nu-parser")
-    (version "0.27.1")
+    (version "0.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu-parser" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1zv68yzkrgdk8c50bbsrx3jfsg46621522zgg1glbv0809gcns5p"))))
+        (base32 "0sixgfj7nsg66gmsqchydkqbhf3dzg5igvcri7dz6qdadi578wb5"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -1424,10 +1450,10 @@ of commands called a ``pipeline''.")
         ("rust-indexmap" ,rust-indexmap-1)
         ("rust-itertools" ,rust-itertools-0.10)
         ("rust-log" ,rust-log-0.4)
-        ("rust-nu-errors" ,rust-nu-errors-0.27)
-        ("rust-nu-protocol" ,rust-nu-protocol-0.27)
-        ("rust-nu-source" ,rust-nu-source-0.27)
-        ("rust-nu-test-support" ,rust-nu-test-support-0.27)
+        ("rust-nu-errors" ,rust-nu-errors-0.28)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.28)
+        ("rust-nu-source" ,rust-nu-source-0.28)
+        ("rust-nu-test-support" ,rust-nu-test-support-0.28)
         ("rust-num-bigint" ,rust-num-bigint-0.3)
         ("rust-num-traits" ,rust-num-traits-0.2)
         ("rust-serde" ,rust-serde-1)
@@ -1438,10 +1464,10 @@ of commands called a ``pipeline''.")
     (description "Nushell parser")
     (license license:expat)))
 
-(define-public rust-nu-plugin-0.27
+(define-public rust-nu-plugin-0.28
   (package
     (name "rust-nu-plugin")
-    (version "0.27.1")
+    (version "0.28.0")
     (source
      (origin
        (method url-fetch)
@@ -1449,18 +1475,19 @@ of commands called a ``pipeline''.")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "12x01n7x9bqn0pp5pymmaxmd32gjm6lcs3hd3zhp1y15swrj2kr9"))))
+        (base32 "1bkxkffcywaam8r55v8ciq42mgimgxzl4x8vb5qzx49a5gjb1831"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-bigdecimal" ,rust-bigdecimal-0.2)
         ("rust-indexmap" ,rust-indexmap-1)
-        ("rust-nu-errors" ,rust-nu-errors-0.27)
-        ("rust-nu-protocol" ,rust-nu-protocol-0.27)
-        ("rust-nu-source" ,rust-nu-source-0.27)
-        ("rust-nu-test-support" ,rust-nu-test-support-0.27)
-        ("rust-nu-value-ext" ,rust-nu-value-ext-0.27)
+        ("rust-nu-errors" ,rust-nu-errors-0.28)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.28)
+        ("rust-nu-source" ,rust-nu-source-0.28)
+        ("rust-nu-test-support"
+         ,rust-nu-test-support-0.28)
+        ("rust-nu-value-ext" ,rust-nu-value-ext-0.28)
         ("rust-num-bigint" ,rust-num-bigint-0.3)
         ("rust-serde" ,rust-serde-1)
         ("rust-serde-json" ,rust-serde-json-1))))
@@ -1469,29 +1496,29 @@ of commands called a ``pipeline''.")
     (description "Nushell Plugin")
     (license license:expat)))
 
-(define-public rust-nu-plugin-binaryview-0.27
+(define-public rust-nu-plugin-binaryview-0.28
   (package
     (name "rust-nu-plugin-binaryview")
-    (version "0.27.1")
+    (version "0.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu_plugin_binaryview" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0py5wzzf0527dj43k5lah2da9ws9w4n4mi2i6dprswmy4pvplhq1"))))
+        (base32 "055pc3idf1jsrks0hpx55vazaivxdjfncvbqjjsp89dk1011a3yp"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-ansi-term" ,rust-ansi-term-0.12)
-        ("rust-crossterm" ,rust-crossterm-0.19)
+       (("rust-crossterm" ,rust-crossterm-0.19)
         ("rust-image" ,rust-image-0.22)
         ("rust-neso" ,rust-neso-0.5)
-        ("rust-nu-errors" ,rust-nu-errors-0.27)
-        ("rust-nu-plugin" ,rust-nu-plugin-0.27)
-        ("rust-nu-protocol" ,rust-nu-protocol-0.27)
-        ("rust-nu-source" ,rust-nu-source-0.27)
+        ("rust-nu-ansi-term" ,rust-nu-ansi-term-0.28)
+        ("rust-nu-errors" ,rust-nu-errors-0.28)
+        ("rust-nu-plugin" ,rust-nu-plugin-0.28)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.28)
+        ("rust-nu-source" ,rust-nu-source-0.28)
         ("rust-pretty-hex" ,rust-pretty-hex-0.2)
         ("rust-rawkey" ,rust-rawkey-0.1))))
     (home-page "https://www.nushell.sh")
@@ -1500,29 +1527,29 @@ of commands called a ``pipeline''.")
      "This package provides a binary viewer plugin for Nushell.")
     (license license:expat)))
 
-(define-public rust-nu-plugin-chart-0.27
+(define-public rust-nu-plugin-chart-0.28
   (package
     (name "rust-nu-plugin-chart")
-    (version "0.27.1")
+    (version "0.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu_plugin_chart" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "07im3fcd9lxfnj3b81j1jky3yl1sfx3gqgcf8n46gfqh5gmgismb"))))
+        (base32 "114kg6vspympi2fr14sgvwnlinwa7s2vwv8f9a9p1kwqg4qa281s"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-crossterm" ,rust-crossterm-0.19)
-        ("rust-nu-cli" ,rust-nu-cli-0.27)
-        ("rust-nu-data" ,rust-nu-data-0.27)
-        ("rust-nu-errors" ,rust-nu-errors-0.27)
-        ("rust-nu-plugin" ,rust-nu-plugin-0.27)
-        ("rust-nu-protocol" ,rust-nu-protocol-0.27)
-        ("rust-nu-source" ,rust-nu-source-0.27)
-        ("rust-nu-value-ext" ,rust-nu-value-ext-0.27)
+        ("rust-nu-cli" ,rust-nu-cli-0.28)
+        ("rust-nu-data" ,rust-nu-data-0.28)
+        ("rust-nu-errors" ,rust-nu-errors-0.28)
+        ("rust-nu-plugin" ,rust-nu-plugin-0.28)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.28)
+        ("rust-nu-source" ,rust-nu-source-0.28)
+        ("rust-nu-value-ext" ,rust-nu-value-ext-0.28)
         ("rust-tui" ,rust-tui-0.14))))
     (home-page "https://www.nushell.sh")
     (synopsis "Plugin to display charts")
@@ -1530,56 +1557,57 @@ of commands called a ``pipeline''.")
      "This package provides a plugin to display charts in Nushell.")
     (license license:expat)))
 
-(define-public rust-nu-plugin-fetch-0.27
+(define-public rust-nu-plugin-fetch-0.28
   (package
     (name "rust-nu-plugin-fetch")
-    (version "0.27.1")
+    (version "0.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu_plugin_fetch" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "06mgd7vis7g3br3acswq24v4ffi15zq5fi0i7v65jz418vapvmzp"))))
+        (base32 "1v7pc58m8gi5zscvyviy8j5zbn30hxqlb37c0grgda7635vqhq31"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-base64" ,rust-base64-0.13)
         ("rust-futures" ,rust-futures-0.3)
-        ("rust-nu-errors" ,rust-nu-errors-0.27)
-        ("rust-nu-plugin" ,rust-nu-plugin-0.27)
-        ("rust-nu-protocol" ,rust-nu-protocol-0.27)
-        ("rust-nu-source" ,rust-nu-source-0.27)
-        ("rust-surf" ,rust-surf-1)
+        ("rust-mime" ,rust-mime-0.3)
+        ("rust-nu-errors" ,rust-nu-errors-0.28)
+        ("rust-nu-plugin" ,rust-nu-plugin-0.28)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.28)
+        ("rust-nu-source" ,rust-nu-source-0.28)
+        ("rust-surf" ,rust-surf-2)
         ("rust-url" ,rust-url-2))))
     (home-page "https://www.nushell.sh")
     (synopsis "URL fetch plugin for Nushell")
     (description "This package provides a URL fetch plugin for Nushell.")
     (license license:expat)))
 
-(define-public rust-nu-plugin-from-bson-0.27
+(define-public rust-nu-plugin-from-bson-0.28
   (package
     (name "rust-nu-plugin-from-bson")
-    (version "0.27.1")
+    (version "0.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu_plugin_from_bson" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "16ksyzsxyy2wd138y1zz9sdq6s5zvrh7rrsvyhwdd4w7irk2q474"))))
+        (base32 "13k11dh2pc48181qcbqwwgwwqh5d2g99p0rq4ly75l5jwyyazi73"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-bigdecimal" ,rust-bigdecimal-0.2)
         ("rust-bson" ,rust-bson-0.14)
-        ("rust-nu-errors" ,rust-nu-errors-0.27)
-        ("rust-nu-plugin" ,rust-nu-plugin-0.27)
-        ("rust-nu-protocol" ,rust-nu-protocol-0.27)
-        ("rust-nu-source" ,rust-nu-source-0.27)
-        ("rust-nu-value-ext" ,rust-nu-value-ext-0.27)
+        ("rust-nu-errors" ,rust-nu-errors-0.28)
+        ("rust-nu-plugin" ,rust-nu-plugin-0.28)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.28)
+        ("rust-nu-source" ,rust-nu-source-0.28)
+        ("rust-nu-value-ext" ,rust-nu-value-ext-0.28)
         ("rust-num-traits" ,rust-num-traits-0.2))))
     (home-page "https://www.nushell.sh")
     (synopsis "Converter plugin to the bson format for Nushell")
@@ -1588,27 +1616,27 @@ of commands called a ``pipeline''.")
 Nushell.")
     (license license:expat)))
 
-(define-public rust-nu-plugin-from-sqlite-0.27
+(define-public rust-nu-plugin-from-sqlite-0.28
   (package
     (name "rust-nu-plugin-from-sqlite")
-    (version "0.27.1")
+    (version "0.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu_plugin_from_sqlite" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0z35aw6n2w4lmwp2797zd85ix64ch1msn5d0g3g2kdrihbpymxj2"))))
+        (base32 "0mpaz3vn7zf1ijccfd9rgrzl0fr3fci6j16w7a81x6dh7pqavxgn"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-bigdecimal" ,rust-bigdecimal-0.2)
-        ("rust-nu-errors" ,rust-nu-errors-0.27)
-        ("rust-nu-plugin" ,rust-nu-plugin-0.27)
-        ("rust-nu-protocol" ,rust-nu-protocol-0.27)
-        ("rust-nu-source" ,rust-nu-source-0.27)
-        ("rust-nu-value-ext" ,rust-nu-value-ext-0.27)
+        ("rust-nu-errors" ,rust-nu-errors-0.28)
+        ("rust-nu-plugin" ,rust-nu-plugin-0.28)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.28)
+        ("rust-nu-source" ,rust-nu-source-0.28)
+        ("rust-nu-value-ext" ,rust-nu-value-ext-0.28)
         ("rust-num-traits" ,rust-num-traits-0.2)
         ("rust-rusqlite" ,rust-rusqlite-0.24)
         ("rust-tempfile" ,rust-tempfile-3))))
@@ -1619,27 +1647,28 @@ Nushell.")
 Nushell.")
     (license license:expat)))
 
-(define-public rust-nu-plugin-inc-0.27
+(define-public rust-nu-plugin-inc-0.28
   (package
     (name "rust-nu-plugin-inc")
-    (version "0.27.1")
+    (version "0.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu_plugin_inc" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1ykrfixf642zv0h6349mxsidm9m7j933imnw978v96ymzp7hdalk"))))
+        (base32 "1dbayv8gcjpz46xgvh9b1pka2ygyhyalk1xzh43cvaccqn4qafrb"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-nu-errors" ,rust-nu-errors-0.27)
-        ("rust-nu-plugin" ,rust-nu-plugin-0.27)
-        ("rust-nu-protocol" ,rust-nu-protocol-0.27)
-        ("rust-nu-source" ,rust-nu-source-0.27)
-        ("rust-nu-test-support" ,rust-nu-test-support-0.27)
-        ("rust-nu-value-ext" ,rust-nu-value-ext-0.27)
+       (("rust-nu-errors" ,rust-nu-errors-0.28)
+        ("rust-nu-plugin" ,rust-nu-plugin-0.28)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.28)
+        ("rust-nu-source" ,rust-nu-source-0.28)
+        ("rust-nu-test-support"
+         ,rust-nu-test-support-0.28)
+        ("rust-nu-value-ext" ,rust-nu-value-ext-0.28)
         ("rust-semver" ,rust-semver-0.11))))
     (home-page "https://www.nushell.sh")
     (synopsis "Version incrementer plugin for Nushell")
@@ -1648,25 +1677,25 @@ Nushell.")
 Nushell.")
     (license license:expat)))
 
-(define-public rust-nu-plugin-match-0.27
+(define-public rust-nu-plugin-match-0.28
   (package
     (name "rust-nu-plugin-match")
-    (version "0.27.1")
+    (version "0.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu_plugin_match" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0ax8aanmr8clvz3abbc4mwhpp2bwwzfh03vydwa50dadnrhrh51s"))))
+        (base32 "1d19hwrrmbwxx3nn7gjs2wvzf6wfhdai9jsq35n7bgjx2qyip0ma"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-nu-errors" ,rust-nu-errors-0.27)
-        ("rust-nu-plugin" ,rust-nu-plugin-0.27)
-        ("rust-nu-protocol" ,rust-nu-protocol-0.27)
-        ("rust-nu-source" ,rust-nu-source-0.27)
+       (("rust-nu-errors" ,rust-nu-errors-0.28)
+        ("rust-nu-plugin" ,rust-nu-plugin-0.28)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.28)
+        ("rust-nu-source" ,rust-nu-source-0.28)
         ("rust-regex" ,rust-regex-1))))
     (home-page "https://www.nushell.sh")
     (synopsis "Regex match plugin for Nushell")
@@ -1674,27 +1703,27 @@ Nushell.")
      "This package provides a regex match plugin for Nushell.")
     (license license:expat)))
 
-(define-public rust-nu-plugin-post-0.27
+(define-public rust-nu-plugin-post-0.28
   (package
     (name "rust-nu-plugin-post")
-    (version "0.27.1")
+    (version "0.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu_plugin_post" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "19zsvddd5lb1y1jm1wldk8padxl3a4w55xh82hpxz4igvjblpcz6"))))
+        (base32 "1jha85gl422p9knr0m4xdx353nmm00zrj5yh9w2gdyzs6hbzf80q"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-base64" ,rust-base64-0.13)
         ("rust-futures" ,rust-futures-0.3)
-        ("rust-nu-errors" ,rust-nu-errors-0.27)
-        ("rust-nu-plugin" ,rust-nu-plugin-0.27)
-        ("rust-nu-protocol" ,rust-nu-protocol-0.27)
-        ("rust-nu-source" ,rust-nu-source-0.27)
+        ("rust-nu-errors" ,rust-nu-errors-0.28)
+        ("rust-nu-plugin" ,rust-nu-plugin-0.28)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.28)
+        ("rust-nu-source" ,rust-nu-source-0.28)
         ("rust-num-traits" ,rust-num-traits-0.2)
         ("rust-serde-json" ,rust-serde-json-1)
         ("rust-surf" ,rust-surf-1)
@@ -1704,27 +1733,27 @@ Nushell.")
     (description "This package is an HTTP POST plugin for Nushell.")
     (license license:expat)))
 
-(define-public rust-nu-plugin-ps-0.27
+(define-public rust-nu-plugin-ps-0.28
   (package
     (name "rust-nu-plugin-ps")
-    (version "0.27.1")
+    (version "0.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu_plugin_ps" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1d8i1hfpcjpiwikdi5i2gdnxxm43nnmmyfz1y7zivx5hzha1qjg1"))))
+        (base32 "0akgz7wi85ny2cfkcs9bn4hc97d4wdh9ayrzd6zasmird5kl1lv8"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-futures" ,rust-futures-0.3)
         ("rust-futures-timer" ,rust-futures-timer-3)
-        ("rust-nu-errors" ,rust-nu-errors-0.27)
-        ("rust-nu-plugin" ,rust-nu-plugin-0.27)
-        ("rust-nu-protocol" ,rust-nu-protocol-0.27)
-        ("rust-nu-source" ,rust-nu-source-0.27)
+        ("rust-nu-errors" ,rust-nu-errors-0.28)
+        ("rust-nu-plugin" ,rust-nu-plugin-0.28)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.28)
+        ("rust-nu-source" ,rust-nu-source-0.28)
         ("rust-num-bigint" ,rust-num-bigint-0.3)
         ("rust-sysinfo" ,rust-sysinfo-0.16))))
     (home-page "https://www.nushell.sh")
@@ -1733,80 +1762,80 @@ Nushell.")
      "This package provides a process list plugin for Nushell.")
     (license license:expat)))
 
-(define-public rust-nu-plugin-s3-0.27
+(define-public rust-nu-plugin-s3-0.28
   (package
     (name "rust-nu-plugin-s3")
-    (version "0.27.1")
+    (version "0.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu_plugin_s3" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "14kk07rm62am24fp7cks8gcfp7h67zlcmfzpixh0rfwkfgr87mwq"))))
+        (base32 "02b71ljsi7z2nbpm9djaxvdg7ql6xn0mqibpnzql0d39wfb0bxc2"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-futures" ,rust-futures-0.3)
-        ("rust-nu-errors" ,rust-nu-errors-0.27)
-        ("rust-nu-plugin" ,rust-nu-plugin-0.27)
-        ("rust-nu-protocol" ,rust-nu-protocol-0.27)
-        ("rust-nu-source" ,rust-nu-source-0.27)
+        ("rust-nu-errors" ,rust-nu-errors-0.28)
+        ("rust-nu-plugin" ,rust-nu-plugin-0.28)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.28)
+        ("rust-nu-source" ,rust-nu-source-0.28)
         ("rust-s3handler" ,rust-s3handler-0.6))))
     (home-page "https://www.nushell.sh")
     (synopsis "S3 plugin for Nushell")
     (description "This package is an S3 plugin for Nushell.")
     (license license:expat)))
 
-(define-public rust-nu-plugin-selector-0.27
+(define-public rust-nu-plugin-selector-0.28
   (package
     (name "rust-nu-plugin-selector")
-    (version "0.27.1")
+    (version "0.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu_plugin_selector" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1nvqp8lzyiyk3n8c5gqr6wrk2pirzpyxpwc4r67fr9rsllyrfhw2"))))
+        (base32 "0g1sjlvylclhhp41h6xx6vaa10478albjgh3n7kg3p0s6i8db5a7"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-nipper" ,rust-nipper-0.1)
-        ("rust-nu-errors" ,rust-nu-errors-0.27)
-        ("rust-nu-plugin" ,rust-nu-plugin-0.27)
-        ("rust-nu-protocol" ,rust-nu-protocol-0.27)
-        ("rust-nu-source" ,rust-nu-source-0.27))))
+        ("rust-nu-errors" ,rust-nu-errors-0.28)
+        ("rust-nu-plugin" ,rust-nu-plugin-0.28)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.28)
+        ("rust-nu-source" ,rust-nu-source-0.28))))
     (home-page "https://www.nushell.sh")
     (synopsis "Web scraping using CSS selector")
     (description
      "This package provides web scraping using CSS selector.")
     (license license:expat)))
 
-(define-public rust-nu-plugin-start-0.27
+(define-public rust-nu-plugin-start-0.28
   (package
     (name "rust-nu-plugin-start")
-    (version "0.27.1")
+    (version "0.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu_plugin_start" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1kznb1npqbbak3xk9w6m6ng6h7ir164il7xydrhwrl45mll2g4yw"))))
+        (base32 "1gqn6b1jpxcfx81c5c4yfs52gzxp9viyqj7hjs7fqvf5czi0bmz7"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-glob" ,rust-glob-0.3)
-        ("rust-nu-errors" ,rust-nu-errors-0.27)
-        ("rust-nu-errors" ,rust-nu-errors-0.27)
-        ("rust-nu-plugin" ,rust-nu-plugin-0.27)
-        ("rust-nu-protocol" ,rust-nu-protocol-0.27)
-        ("rust-nu-source" ,rust-nu-source-0.27)
-        ("rust-nu-source" ,rust-nu-source-0.27)
+        ("rust-nu-errors" ,rust-nu-errors-0.28)
+        ("rust-nu-errors" ,rust-nu-errors-0.28)
+        ("rust-nu-plugin" ,rust-nu-plugin-0.28)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.28)
+        ("rust-nu-source" ,rust-nu-source-0.28)
+        ("rust-nu-source" ,rust-nu-source-0.28)
         ("rust-open" ,rust-open-1)
         ("rust-url" ,rust-url-2))))
     (home-page "https://www.nushell.sh")
@@ -1816,10 +1845,10 @@ Nushell.")
 Nushell.")
     (license license:expat)))
 
-(define-public rust-nu-plugin-sys-0.27
+(define-public rust-nu-plugin-sys-0.28
   (package
     (name "rust-nu-plugin-sys")
-    (version "0.27.1")
+    (version "0.28.0")
     (source
      (origin
        (method url-fetch)
@@ -1827,17 +1856,17 @@ Nushell.")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1bdd745w5gmignfclp5fzwpyjfpqsmf6hrry3chn3jzdpl5gvgiw"))))
+        (base32 "16igj4z9f7kfy3x71ki3vaqdx6064l3k718vqfpabffjkz9qpfp5"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-futures" ,rust-futures-0.3)
         ("rust-futures-util" ,rust-futures-util-0.3)
-        ("rust-nu-errors" ,rust-nu-errors-0.27)
-        ("rust-nu-plugin" ,rust-nu-plugin-0.27)
-        ("rust-nu-protocol" ,rust-nu-protocol-0.27)
-        ("rust-nu-source" ,rust-nu-source-0.27)
+        ("rust-nu-errors" ,rust-nu-errors-0.28)
+        ("rust-nu-plugin" ,rust-nu-plugin-0.28)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.28)
+        ("rust-nu-source" ,rust-nu-source-0.28)
         ("rust-num-bigint" ,rust-num-bigint-0.3)
         ("rust-sysinfo" ,rust-sysinfo-0.16))))
     (home-page "https://www.nushell.sh")
@@ -1845,28 +1874,28 @@ Nushell.")
     (description "This package provides a system info plugin for Nushell.")
     (license license:expat)))
 
-(define-public rust-nu-plugin-textview-0.27
+(define-public rust-nu-plugin-textview-0.28
   (package
     (name "rust-nu-plugin-textview")
-    (version "0.27.1")
+    (version "0.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu_plugin_textview" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "10w5isqgc5mf7rhs49rglm3s6pcij0ch12xkvrq4930y8pr6cy9l"))))
+        (base32 "07m3x9bkq1qliicnshgs6yi6q5fbl6d6gxcd60kqcavkvdknnf8m"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-ansi-term" ,rust-ansi-term-0.12)
-        ("rust-bat" ,rust-bat-0.17)
-        ("rust-nu-data" ,rust-nu-data-0.27)
-        ("rust-nu-errors" ,rust-nu-errors-0.27)
-        ("rust-nu-plugin" ,rust-nu-plugin-0.27)
-        ("rust-nu-protocol" ,rust-nu-protocol-0.27)
-        ("rust-nu-source" ,rust-nu-source-0.27)
+       (("rust-bat" ,rust-bat-0.17)
+        ("rust-nu-ansi-term" ,rust-nu-ansi-term-0.28)
+        ("rust-nu-data" ,rust-nu-data-0.28)
+        ("rust-nu-errors" ,rust-nu-errors-0.28)
+        ("rust-nu-plugin" ,rust-nu-plugin-0.28)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.28)
+        ("rust-nu-source" ,rust-nu-source-0.28)
         ("rust-term-size" ,rust-term-size-0.3)
         ("rust-url" ,rust-url-2))))
     (home-page "https://www.nushell.sh")
@@ -1875,27 +1904,27 @@ Nushell.")
 Nushell.")
     (license license:expat)))
 
-(define-public rust-nu-plugin-to-bson-0.27
+(define-public rust-nu-plugin-to-bson-0.28
   (package
     (name "rust-nu-plugin-to-bson")
-    (version "0.27.1")
+    (version "0.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu_plugin_to_bson" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1x90r11wg46i2wx21gk42pyjjcpib66rrqgxrc690y376dn9ivlr"))))
+        (base32 "1rq2kwzrby8rh57gq4s4ljj4fgfgblrhjncjycpmkw2jzn7sa6xi"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-bson" ,rust-bson-0.14)
-        ("rust-nu-errors" ,rust-nu-errors-0.27)
-        ("rust-nu-plugin" ,rust-nu-plugin-0.27)
-        ("rust-nu-protocol" ,rust-nu-protocol-0.27)
-        ("rust-nu-source" ,rust-nu-source-0.27)
-        ("rust-nu-value-ext" ,rust-nu-value-ext-0.27)
+        ("rust-nu-errors" ,rust-nu-errors-0.28)
+        ("rust-nu-plugin" ,rust-nu-plugin-0.28)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.28)
+        ("rust-nu-source" ,rust-nu-source-0.28)
+        ("rust-nu-value-ext" ,rust-nu-value-ext-0.28)
         ("rust-num-traits" ,rust-num-traits-0.2))))
     (home-page "https://www.nushell.sh")
     (synopsis "Converter plugin to the bson format for Nushell")
@@ -1904,27 +1933,27 @@ Nushell.")
 Nushell.")
     (license license:expat)))
 
-(define-public rust-nu-plugin-to-sqlite-0.27
+(define-public rust-nu-plugin-to-sqlite-0.28
   (package
     (name "rust-nu-plugin-to-sqlite")
-    (version "0.27.1")
+    (version "0.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu_plugin_to_sqlite" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "055k5sksxv7q4ivy74c1ndxps30c5c97rz6v7dibckh9c0q1vbhk"))))
+        (base32 "0q07fv4i4rkzjna54mkcri5bfngqkkmpfj3vmiyzib0x84pvzfjf"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-hex" ,rust-hex-0.4)
-        ("rust-nu-errors" ,rust-nu-errors-0.27)
-        ("rust-nu-plugin" ,rust-nu-plugin-0.27)
-        ("rust-nu-protocol" ,rust-nu-protocol-0.27)
-        ("rust-nu-source" ,rust-nu-source-0.27)
-        ("rust-nu-value-ext" ,rust-nu-value-ext-0.27)
+        ("rust-nu-errors" ,rust-nu-errors-0.28)
+        ("rust-nu-plugin" ,rust-nu-plugin-0.28)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.28)
+        ("rust-nu-source" ,rust-nu-source-0.28)
+        ("rust-nu-value-ext" ,rust-nu-value-ext-0.28)
         ("rust-num-traits" ,rust-num-traits-0.2)
         ("rust-rusqlite" ,rust-rusqlite-0.24)
         ("rust-tempfile" ,rust-tempfile-3))))
@@ -1935,26 +1964,26 @@ Nushell.")
 Nushell.")
     (license license:expat)))
 
-(define-public rust-nu-plugin-tree-0.27
+(define-public rust-nu-plugin-tree-0.28
   (package
     (name "rust-nu-plugin-tree")
-    (version "0.27.1")
+    (version "0.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu_plugin_tree" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0bjir9f5fraz5n9bj99ba7djmnzb8ws0dbvdhwn5hz9lmb5ss0mg"))))
+        (base32 "0xifcyg0z025n6w0cqjnmrjcbynv437dkxpsxgbvm4iybj558590"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-derive-new" ,rust-derive-new-0.5)
-        ("rust-nu-errors" ,rust-nu-errors-0.27)
-        ("rust-nu-plugin" ,rust-nu-plugin-0.27)
-        ("rust-nu-protocol" ,rust-nu-protocol-0.27)
-        ("rust-nu-source" ,rust-nu-source-0.27)
+        ("rust-nu-errors" ,rust-nu-errors-0.28)
+        ("rust-nu-plugin" ,rust-nu-plugin-0.28)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.28)
+        ("rust-nu-source" ,rust-nu-source-0.28)
         ("rust-ptree" ,rust-ptree-0.3))))
     (home-page "https://www.nushell.sh")
     (synopsis "Tree viewer plugin for Nushell")
@@ -1962,27 +1991,27 @@ Nushell.")
 Nushell.")
     (license license:expat)))
 
-(define-public rust-nu-plugin-xpath-0.27
+(define-public rust-nu-plugin-xpath-0.28
   (package
     (name "rust-nu-plugin-xpath")
-    (version "0.27.1")
+    (version "0.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu_plugin_xpath" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1cyq7qb8bzzf599fq24pg7z0svsdffkd26fplggdg4nihjv28clv"))))
+        (base32 "0mwajr07489kgv2yhxsk0laydf8m8p736npvkcbsjxaxydnv5a5a"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-bigdecimal" ,rust-bigdecimal-0.2)
         ("rust-indexmap" ,rust-indexmap-1)
-        ("rust-nu-errors" ,rust-nu-errors-0.27)
-        ("rust-nu-plugin" ,rust-nu-plugin-0.27)
-        ("rust-nu-protocol" ,rust-nu-protocol-0.27)
-        ("rust-nu-source" ,rust-nu-source-0.27)
+        ("rust-nu-errors" ,rust-nu-errors-0.28)
+        ("rust-nu-plugin" ,rust-nu-plugin-0.28)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.28)
+        ("rust-nu-source" ,rust-nu-source-0.28)
         ("rust-sxd-document" ,rust-sxd-document-0.3)
         ("rust-sxd-xpath" ,rust-sxd-xpath-0.4))))
     (home-page "https://www.nushell.sh")
@@ -1990,17 +2019,17 @@ Nushell.")
     (description "Traverses XML")
     (license license:expat)))
 
-(define-public rust-nu-protocol-0.27
+(define-public rust-nu-protocol-0.28
   (package
     (name "rust-nu-protocol")
-    (version "0.27.1")
+    (version "0.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu-protocol" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1031mysphq7qczmilmdshcm4h6wh0132cvdc0346qz2q2b3qmrjr"))))
+        (base32 "0khpg2dnapyyimyq4ys1nfs1xzysxq2nb1ka2lmjfgdxrbwzrqnj"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -2012,8 +2041,8 @@ Nushell.")
         ("rust-getset" ,rust-getset-0.1)
         ("rust-indexmap" ,rust-indexmap-1)
         ("rust-log" ,rust-log-0.4)
-        ("rust-nu-errors" ,rust-nu-errors-0.27)
-        ("rust-nu-source" ,rust-nu-source-0.27)
+        ("rust-nu-errors" ,rust-nu-errors-0.28)
+        ("rust-nu-source" ,rust-nu-source-0.28)
         ("rust-num-bigint" ,rust-num-bigint-0.3)
         ("rust-num-integer" ,rust-num-integer-0.1)
         ("rust-num-traits" ,rust-num-traits-0.2)
@@ -2027,17 +2056,17 @@ Nushell.")
     (description "Core values and protocols for Nushell")
     (license license:expat)))
 
-(define-public rust-nu-source-0.27
+(define-public rust-nu-source-0.28
   (package
     (name "rust-nu-source")
-    (version "0.27.1")
+    (version "0.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu-source" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1akfcn7138sfaawb7sl5311vgmcba32c79lnkmdzpb48xdr9ybp8"))))
+        (base32 "13a590iff8bg6p38xs1hh5krmii6qz2w5k7ak57dyh3r3vbhvmmd"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -2054,46 +2083,46 @@ Nushell.")
 Nushell.")
     (license license:expat)))
 
-(define-public rust-nu-stream-0.27
+(define-public rust-nu-stream-0.28
   (package
     (name "rust-nu-stream")
-    (version "0.27.1")
+    (version "0.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu-stream" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "09xm93mk0kyi4nd6f1x89yfk3139ahamirs2zwnzr97f7xng216v"))))
+        (base32 "02dl4d9gzl2jhg71hfc04x9j4p29iwwcyvm6m9pihwfpwb3q2bhj"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-futures" ,rust-futures-0.3)
-        ("rust-nu-errors" ,rust-nu-errors-0.27)
-        ("rust-nu-protocol" ,rust-nu-protocol-0.27)
-        ("rust-nu-source" ,rust-nu-source-0.27))))
+        ("rust-nu-errors" ,rust-nu-errors-0.28)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.28)
+        ("rust-nu-source" ,rust-nu-source-0.28))))
     (home-page "https://www.nushell.sh")
     (synopsis "Nushell stream")
     (description "This package provides Nushell stream.")
     (license license:expat)))
 
-(define-public rust-nu-table-0.27
+(define-public rust-nu-table-0.28
   (package
     (name "rust-nu-table")
-    (version "0.27.1")
+    (version "0.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu-table" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1vkn0kf7rwywrj8d31mr4j64rwjay9syjsvg94yi9rdxbccd5jf2"))))
+        (base32 "15yd0wrl0y0rmjdvq2gmk97nxppdy5r424vy8v85gk876g82gi1s"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-ansi-term" ,rust-ansi-term-0.12)
+       (("rust-nu-ansi-term" ,rust-nu-ansi-term-0.28)
         ("rust-regex" ,rust-regex-1)
         ("rust-unicode-width" ,rust-unicode-width-0.1))))
     (home-page "https://www.nushell.sh")
@@ -2101,17 +2130,17 @@ Nushell.")
     (description "Nushell table printing")
     (license license:expat)))
 
-(define-public rust-nu-test-support-0.27
+(define-public rust-nu-test-support-0.28
   (package
     (name "rust-nu-test-support")
-    (version "0.27.1")
+    (version "0.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nu-test-support" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0yk1368by0s9p7j2diw5mdk88by00cw6q6wspasbprcr684g5kvn"))))
+        (base32 "1qphsvr1wpn26ak5g4bj106csm8bia12srpv1dwy4zif42if57gm"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -2122,10 +2151,10 @@ Nushell.")
         ("rust-getset" ,rust-getset-0.1)
         ("rust-glob" ,rust-glob-0.3)
         ("rust-indexmap" ,rust-indexmap-1)
-        ("rust-nu-errors" ,rust-nu-errors-0.27)
-        ("rust-nu-protocol" ,rust-nu-protocol-0.27)
-        ("rust-nu-source" ,rust-nu-source-0.27)
-        ("rust-nu-value-ext" ,rust-nu-value-ext-0.27)
+        ("rust-nu-errors" ,rust-nu-errors-0.28)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.28)
+        ("rust-nu-source" ,rust-nu-source-0.28)
+        ("rust-nu-value-ext" ,rust-nu-value-ext-0.28)
         ("rust-num-bigint" ,rust-num-bigint-0.3)
         ("rust-tempfile" ,rust-tempfile-3))))
     (home-page "https://www.nushell.sh")
@@ -2134,10 +2163,10 @@ Nushell.")
 tests.")
     (license license:expat)))
 
-(define-public rust-nu-value-ext-0.27
+(define-public rust-nu-value-ext-0.28
   (package
     (name "rust-nu-value-ext")
-    (version "0.27.1")
+    (version "0.28.0")
     (source
      (origin
        (method url-fetch)
@@ -2145,16 +2174,16 @@ tests.")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1yhzqzafg0l1fj4pwlbjl0h74b0rj0x4gdx2rgc3nzndc7j00axn"))))
+        (base32 "0kwx2s4gyss8gmj72kl0y2yzq5injwv9g9n53bal339b81dd7v90"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-indexmap" ,rust-indexmap-1)
         ("rust-itertools" ,rust-itertools-0.10)
-        ("rust-nu-errors" ,rust-nu-errors-0.27)
-        ("rust-nu-protocol" ,rust-nu-protocol-0.27)
-        ("rust-nu-source" ,rust-nu-source-0.27)
+        ("rust-nu-errors" ,rust-nu-errors-0.28)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.28)
+        ("rust-nu-source" ,rust-nu-source-0.28)
         ("rust-num-traits" ,rust-num-traits-0.2))))
     (home-page "https://www.nushell.sh")
     (synopsis "@code{Extension} traits for values in Nushell")
