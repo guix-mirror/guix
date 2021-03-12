@@ -965,14 +965,14 @@ Python.")
     (propagated-inputs
      `(("libffi" ,libffi)))
     (home-page "https://wayland.freedesktop.org/")
-    (synopsis "Display server protocol")
-    (description
-     "Wayland is a protocol for a compositor to talk to its clients as well as
-a C library implementation of that protocol.  The compositor can be a standalone
-display server running on Linux kernel modesetting and evdev input devices, an X
-application, or a wayland client itself.  The clients can be traditional
-applications, X servers (rootless or fullscreen) or other display servers.")
-    (license license:x11)))
+    (synopsis "Core Wayland window system code and protocol")
+    (description "Wayland is a project to define a protocol for a compositor to
+talk to its clients as well as a library implementation of the protocol.  The
+compositor can be a standalone display server running on Linux kernel
+modesetting and evdev input devices, an X application, or a wayland client
+itself.  The clients can be traditional applications, X servers (rootless or
+fullscreen) or other display servers.")
+    (license license:expat)))
 
 (define-public wayland-protocols
   (package
