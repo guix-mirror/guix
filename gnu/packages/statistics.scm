@@ -5931,3 +5931,24 @@ popular stats packages like SAS, Stata and SPSS.")
     (home-page "https://github.com/WizardMac/ReadStat")
     (license license:expat)))
 
+(define-public r-quantpsyc
+  (package
+    (name "r-quantpsyc")
+    (version "1.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "QuantPsyc" version))
+        (sha256
+          (base32
+            "1i9bh88r8zxndzjqsj14qw64gnvm5a9kvhjhzk3qsrvl3qzjgh93"))))
+    (properties `((upstream-name . "QuantPsyc")))
+    (build-system r-build-system)
+    (propagated-inputs
+      `(("r-boot" ,r-boot) ("r-mass" ,r-mass)))
+    (home-page "https://cran.r-project.org/web/packages/QuantPsyc/")
+    (synopsis "Quantitative Psychology Tools")
+    (description
+      "Contains functions useful for data screening, testing moderation,
+mediation and estimating power.")
+    (license license:gpl2+)))
