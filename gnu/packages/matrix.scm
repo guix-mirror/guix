@@ -61,13 +61,13 @@ an LDAP server.")
 (define-public synapse
   (package
     (name "synapse")
-    (version "1.25.0")
+    (version "1.29.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "matrix-synapse" version))
               (sha256
                (base32
-                "0382qcsmgvg24p0xvb37kn3y1kd3bn363kblgwg58iy92df0pga4"))))
+                "0if2yhpz8psg0661401mvxznldbfhk2j9rhbs25jdaqm9jsv6907"))))
     (build-system python-build-system)
     ;; TODO Run tests with ‘PYTHONPATH=. trial3 tests’.
     (propagated-inputs
