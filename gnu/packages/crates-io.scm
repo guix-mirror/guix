@@ -40063,21 +40063,21 @@ cryptographic implementations.")
 (define-public rust-surf-2
   (package
     (name "rust-surf")
-    (version "2.1.0")
+    (version "2.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "surf" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1sl2d1ka01qz3qh4m2l5f2fjs0lhsmvdwl29f3pqzqbgv63wg2bi"))))
+        (base32 "0a33kw06jspi54rf38ncyqjj8861bid0wxhwzpk1ypkbr8rls59a"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-async-std" ,rust-async-std-1)
         ("rust-async-trait" ,rust-async-trait-0.1)
-        ("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-cfg-if" ,rust-cfg-if-1)
         ("rust-encoding-rs" ,rust-encoding-rs-0.8)
         ("rust-futures-util" ,rust-futures-util-0.3)
         ("rust-http-client" ,rust-http-client-6)
@@ -40085,7 +40085,7 @@ cryptographic implementations.")
         ("rust-log" ,rust-log-0.4)
         ("rust-mime-guess" ,rust-mime-guess-2)
         ("rust-once-cell" ,rust-once-cell-1)
-        ("rust-pin-project-lite" ,rust-pin-project-lite-0.1)
+        ("rust-pin-project-lite" ,rust-pin-project-lite-0.2)
         ("rust-serde" ,rust-serde-1)
         ("rust-serde-json" ,rust-serde-json-1)
         ("rust-web-sys" ,rust-web-sys-0.3))))
