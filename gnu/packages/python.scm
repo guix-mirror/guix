@@ -32,7 +32,7 @@
 ;;; Copyright © 2016, 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016, 2017, 2018 Julien Lepiller <julien@lepiller.eu>
-;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016–2018, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2017 Frederick M. Muriithi <fredmanglis@gmail.com>
@@ -668,15 +668,15 @@ To function properly, this package should not be installed together with the
 (define-public micropython
   (package
     (name "micropython")
-    (version "1.13")
+    (version "1.14")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "https://github.com/micropython/micropython/"
                             "releases/download/v" version
-                            "/micropython-" version ".tar.gz"))
+                            "/micropython-" version ".tar.xz"))
         (sha256
-         (base32 "0lfl7dv5v9rqckslrjqy5swjri29x1nj5d79wxnjys4sq6r2xcws"))
+         (base32 "0k6ri3rxxnnmvcbi7z7x59r21f4vj9dcf9j64jhj1cgazmb62c4p"))
       (modules '((guix build utils)))
       (snippet
        '(begin
