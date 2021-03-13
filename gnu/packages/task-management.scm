@@ -44,6 +44,35 @@
   #:use-module (guix build-system meson)
   #:use-module (guix build-system python))
 
+(define-public clikan
+  (let ((commit "90fd60e485b46e49fcec7d029384fe1471c4443a")
+        (revision "0"))
+    (package
+      (name "clikan")
+      (version
+       (git-version "0.1.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/kitplummer/clikan/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "113kizm05v4cvyhdlg9zami54wk9qaiizq19mx36qvq9w7pg7a3k"))))
+      (build-system python-build-system)
+      (inputs
+       `(("click" ,python-click)
+         ("click-default-group" ,python-click-default-group)
+         ("pyyaml" ,python-pyyaml)
+         ("terminaltables" ,python-terminaltables)))
+      (synopsis "Command-line kanban (boarding) utility")
+      (description
+       "Clikan is a super simple command-line utility for tracking tasks
+following the Japanese kanban (boarding) style.")
+      (home-page "https://github.com/kitplummer/clikan/")
+      (license license:expat))))
+
 (define-public t-todo-manager
   ;; Last release is more than 10 years old.  Using latest commit.
   (let ((changeset "89ad444c000b")
