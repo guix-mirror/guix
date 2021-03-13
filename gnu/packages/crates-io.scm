@@ -32681,7 +32681,7 @@ uses finite automata and guarantees linear time matching on all inputs.")
        #:cargo-inputs
        (("rust-hostname" ,rust-hostname-0.3)
         ("rust-quick-error" ,rust-quick-error-1))))
-    (home-page "http://github.com/tailhook/resolv-conf")
+    (home-page "https://github.com/tailhook/resolv-conf")
     (synopsis "Parser for @file{/etc/resolv.conf}")
     (description
      "This package provides a parser for @file{/etc/resolv.conf} file.")
