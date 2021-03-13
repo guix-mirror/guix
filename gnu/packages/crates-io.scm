@@ -3969,6 +3969,29 @@ tracebacks.")
     (description "This package provides arbitrary precision decimal numbers.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-bigdecimal-0.1
+  (package
+    (inherit rust-bigdecimal-0.2)
+    (name "rust-bigdecimal")
+    (version "0.1.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "bigdecimal" version))
+        (file-name
+          (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32
+            "0i32g88sin9dzr4jn41wgg3pyx2xxm0m1a9s5vh9lpyj5lg1jx0k"))))
+    (arguments
+      `(#:cargo-inputs
+        (("rust-num-bigint" ,rust-num-bigint-0.2)
+         ("rust-num-integer" ,rust-num-integer-0.1)
+         ("rust-num-traits" ,rust-num-traits-0.2)
+         ("rust-serde" ,rust-serde-1))
+        #:cargo-development-inputs
+        (("rust-serde-json" ,rust-serde-json-1))))))
+
 (define-public rust-bincode-1
   (package
     (name "rust-bincode")
