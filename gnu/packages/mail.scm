@@ -58,6 +58,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages mail)
+  #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages aspell)
@@ -3923,6 +3924,45 @@ It is a replacement for the @command{urlview} program.")
     (description "This package provides a TNEF stream reader library and
 related tools to process winmail.dat files.")
     (license license:gpl2+)))
+
+(define-public l2md
+  ;; No official release.
+  (let ((commit "f7286b49bb5fce25c898c143712fe34ad4d7864e")
+        (revision "1"))
+    (package
+      (name "l2md")
+      (version (git-version "0.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://git.kernel.org/pub/scm/linux/kernel/git/dborkman/l2md.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0hxz8i70v1xgv30zjclfvmjqszn073c7i8nwmswi2lr6vd7cklvp"))))
+      (build-system gnu-build-system)
+      (inputs
+       `(("libgit2" ,libgit2)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (delete 'configure)          ;no configure scripts
+           (delete 'check)              ;no tests
+           (add-before 'install 'mkdir
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((l2md (string-append (assoc-ref outputs "out") "/bin")))
+                 (mkdir-p l2md)))))
+         #:make-flags
+         (list ,(string-append "CC=" (cc-for-target))
+               (string-append "PREFIX=" %output "/bin"))))
+      (home-page
+       "https://git.kernel.org/pub/scm/linux/kernel/git/dborkman/l2md.git")
+      (synopsis "Import public-inbox archives via Git")
+      (description
+       "The @command{l2md} command line tool imports public-inbox archives via
+Git and exports them in maildir format or to an MDA through a pipe.")
+      (license license:gpl2))))
 
 (define-public public-inbox
   (package
