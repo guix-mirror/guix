@@ -470,16 +470,29 @@ hosted on ftp.gnu.org, or not under that name (this is the case for
                               #:key
                               (base-url "https://kernel.org/pub")
                               (directory (string-append "/" package))
-                              (file->signature (cut string-append <> ".sig")))
+                              file->signature)
   "Return an <upstream-source> for the latest release of PACKAGE (a string) on
 SERVER under DIRECTORY, or #f.  BASE-URL should be the URL of an HTML page,
 typically a directory listing as found on 'https://kernel.org/pub'.
 
-FILE->SIGNATURE must be a procedure; it is passed a source file URL and must
-return the corresponding signature URL, or #f it signatures are unavailable."
-  (let* ((uri  (string->uri (string-append base-url directory "/")))
-         (port (http-fetch/cached uri #:ttl 3600))
-         (sxml (html->sxml port)))
+When FILE->SIGNATURE is omitted or #f, guess the detached signature file name,
+if any.  Otherwise, FILE->SIGNATURE must be a procedure; it is passed a source
+file URL and must return the corresponding signature URL, or #f it signatures
+are unavailable."
+  (let* ((uri   (string->uri (string-append base-url directory "/")))
+         (port  (http-fetch/cached uri #:ttl 3600))
+         (sxml  (html->sxml port))
+         (links (delete-duplicates (html-links sxml))))
+    (define (file->signature/guess url)
+      (let ((base (basename url)))
+        (any (lambda (link)
+               (any (lambda (extension)
+                      (and (string=? (string-append base extension)
+                                     (basename link))
+                           (string-append url extension)))
+                    '(".asc" ".sig" ".sign")))
+             links)))
+
     (define (url->release url)
       (let* ((base (basename url))
              (url  (if (string=? base url)
@@ -495,10 +508,10 @@ return the corresponding signature URL, or #f it signatures are unavailable."
                 (version version)
                 (urls (list url))
                 (signature-urls
-                 (list (file->signature url))))))))
+                 (list ((or file->signature file->signature/guess) url))))))))
 
     (define candidates
-      (filter-map url->release (html-links sxml)))
+      (filter-map url->release links))
 
     (close-port port)
     (match candidates
@@ -614,7 +627,7 @@ releases are on gnu.org."
 (define (url-prefix-rewrite old new)
   "Return a one-argument procedure that rewrites URL prefix OLD to NEW."
   (lambda (url)
-    (if (string-prefix? old url)
+    (if (and url (string-prefix? old url))
         (string-append new (string-drop url (string-length old)))
         url)))
 
@@ -646,9 +659,8 @@ releases are on gnu.org."
          (directory (dirname (uri-path uri)))
          (rewrite   (url-prefix-rewrite %savannah-base
                                         "mirror://savannah")))
-    ;; Note: We use the default 'file->signature', which adds ".sig", but not
-    ;; all projects on Savannah follow that convention: some use ".asc" and
-    ;; perhaps some lack signatures altogether.
+    ;; Note: We use the default 'file->signature', which adds ".sig", ".asc",
+    ;; or whichever detached signature naming scheme PACKAGE uses.
     (and=> (latest-html-release package
                                 #:base-url %savannah-base
                                 #:directory directory)
