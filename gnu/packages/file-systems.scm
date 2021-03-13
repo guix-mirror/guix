@@ -978,7 +978,7 @@ community.")
 (define-public mergerfs
   (package
     (name "mergerfs")
-    (version "2.31.0")
+    (version "2.32.4")
     (source
      (origin
        (method url-fetch)
@@ -986,7 +986,7 @@ community.")
                            version "/mergerfs-" version ".tar.gz"))
        (sha256
         (base32
-         "0k4asbg5n9dhy5jpjkw6simqqnr1zira2y4i71cq05091dfwm90p"))))
+         "0yz7nljx6axcj6hb09sgc0waspgfhp535228rjqvqgyd8y74jc3s"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; No tests exist.
