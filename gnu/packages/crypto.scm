@@ -47,9 +47,11 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crates-io)
   #:use-module (gnu packages cryptsetup)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages golang)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages image)
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages libbsd)
@@ -87,6 +89,57 @@
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26))
+
+(define-public libdecaf
+  (package
+    (name "libdecaf")
+    (version "1.0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "git://git.code.sf.net/p/ed448goldilocks/code")
+                    (commit
+                     (string-append "v" version))))
+              (file-name
+               (git-file-name name version))
+              (sha256
+               (base32 "1ajgmyvc6a4m1h2hg1g4wz7ibx10x1xys9m6ancnmmf1f2srlfly"))))
+    (build-system cmake-build-system)
+    (outputs '("out" "python" "doc"))
+    (arguments
+     `(#:configure-flags '("-DENABLE_STATIC=OFF")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-python-binding
+           (lambda _
+             (substitute* "python/setup.py"
+               (("gmake")
+                "make")
+               (("'\\.\\.', 'build', 'lib', 'libdecaf\\.so'")
+                "'..', '..', 'build', 'src', 'libdecaf.so'"))))
+         (add-after 'install 'install-python-binding
+           (lambda* (#:key outputs #:allow-other-keys)
+             (with-directory-excursion "../source/python"
+               (invoke "python" "setup.py" "install"
+                       (string-append "--prefix=" (assoc-ref outputs "python"))
+                       "--root=/"))))
+         (add-after 'install-python-binding 'install-documentation
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "make" "doc")
+             (let* ((doc (assoc-ref outputs "doc"))
+                    (dest (string-append doc "/share/doc")))
+               (copy-recursively "doc" dest)))))))
+    (native-inputs
+     `(("dot" ,graphviz)
+       ("doxygen" ,doxygen)
+       ("python" ,python-wrapper)))
+    (synopsis "Decaf Elliptic Curve Library")
+    (description "The libdecaf library is an implementation of elliptic curve
+cryptography using the Montgomery and Edwards curves Curve25519, Ed25519,
+Ed448-Goldilocks and Curve448, using the Decaf encoding.")
+    (home-page "http://ed448goldilocks.sourceforge.net/")
+    (license (list license:expat        ;library
+                   license:bsd-2))))    ;python bindings
 
 (define-public libsodium
   (package
