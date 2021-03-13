@@ -2595,8 +2595,9 @@ does not use SSH and requires a pre-shared symmetric key.")
     (version "1.2.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://savannah/quagga/quagga-"
-                                  version ".tar.gz"))
+              ;; Use archived sources; see <http://issues.guix.gnu.org/47123>.
+              (uri (string-append "https://fossies.org/linux/misc/"
+                                  "quagga-" version ".tar.gz"))
               (sha256
                (base32
                 "1lsksqxij5f1llqn86pkygrf5672kvrqn1kvxghi169hqf1c0r73"))
