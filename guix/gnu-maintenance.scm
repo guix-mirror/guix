@@ -499,12 +499,9 @@ are unavailable."
                        (string-append base-url directory "/" url)
                        url)))
         (and (release-file? package base)
-             (let-values (((name version)
-                           (package-name->name+version
-                            (tarball-sans-extension base)
-                            #\-)))
+             (let ((version (tarball->version base)))
                (upstream-source
-                (package name)
+                (package package)
                 (version version)
                 (urls (list url))
                 (signature-urls
