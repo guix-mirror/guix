@@ -23939,7 +23939,7 @@ zip utility (default is @code{zip}).")
         (revision "0"))
     (package
       (name "emacs-ox-gemini")
-      (version (git-version "2021-01-02" revision commit))
+      (version (git-version "0" revision commit))
       (source
        (origin
          (method git-fetch)
