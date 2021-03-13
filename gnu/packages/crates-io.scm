@@ -11325,28 +11325,31 @@ procedural macros.")
 (define-public rust-diesel-1
   (package
     (name "rust-diesel")
-    (version "1.4.5")
+    (version "1.4.6")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "diesel" version))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "134dy6gdbv30q388gsp5777w2qh63hdqsim1j8s1aylpmggfjb9y"))))
+         "0hpmwrc0zx3zvpgwp9zrm6wj8d8i8q8990grlrnfzlivbi6zqyq4"))))
     (build-system cargo-build-system)
+    (native-inputs
+     `(("sqlite" ,sqlite)))
     (arguments
      `(#:cargo-inputs
-       (("rust-bigdecimal" ,rust-bigdecimal-0.2)
+       (("rust-bigdecimal" ,rust-bigdecimal-0.1)
         ("rust-bitflags" ,rust-bitflags-1)
         ("rust-byteorder" ,rust-byteorder-1)
         ("rust-chrono" ,rust-chrono-0.4)
         ("rust-diesel-derives" ,rust-diesel-derives-1)
         ("rust-ipnetwork" ,rust-ipnetwork-0.17)
         ("rust-libc" ,rust-libc-0.2)
-        ("rust-libsqlite3-sys" ,rust-libsqlite3-sys-0.15)
+        ("rust-libsqlite3-sys" ,rust-libsqlite3-sys-0.20)
         ("rust-mysqlclient-sys" ,rust-mysqlclient-sys-0.2)
-        ("rust-num-bigint" ,rust-num-bigint-0.3)
+        ("rust-num-bigint" ,rust-num-bigint-0.2)
         ("rust-num-integer" ,rust-num-integer-0.1)
         ("rust-num-traits" ,rust-num-traits-0.2)
         ("rust-pq-sys" ,rust-pq-sys-0.4)
@@ -11355,14 +11358,21 @@ procedural macros.")
         ("rust-serde-json" ,rust-serde-json-1)
         ("rust-time" ,rust-time-0.1)
         ("rust-url" ,rust-url-1)
-        ("rust-uuid" ,rust-uuid-0.7))
+        ("rust-uuid" ,rust-uuid-0.5)
+        ("rust-uuid" ,rust-uuid-0.8))
        #:cargo-development-inputs
        (("rust-cfg-if" ,rust-cfg-if-0.1)
         ("rust-dotenv" ,rust-dotenv-0.10)
         ("rust-quickcheck" ,rust-quickcheck-0.4)
-        ("rust-tempdir" ,rust-tempdir-0.3))))
+        ("rust-tempdir" ,rust-tempdir-0.3))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "cargo" "test" "--features" "sqlite" "--"
+                     "--skip=expression::count::count"))))))
     (home-page "https://diesel.rs")
-    (synopsis "A safe, extensible ORM and Query Builder")
+    (synopsis "Safe, extensible ORM and Query Builder")
     (description "This package provides a safe, extensible ORM and Query
 Builder for PostgreSQL, SQLite, and MySQL.")
     (license (list license:expat license:asl2.0))))
