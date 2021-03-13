@@ -596,11 +596,12 @@ extracting icontainer icon files.")
               "doc"))                           ;1.3 MiB of HTML documentation
    (arguments
     ;; Instead of using --docdir, this package has its own --with-docdir.
-    `(#:configure-flags (list (string-append "--with-docdir="
-                                             (assoc-ref %outputs "doc")
-                                             "/share/doc/"
-                                             ,name "-" ,version)
-                              "--disable-static")))
+    `(#:configure-flags
+      (list (string-append "--with-docdir="
+                           (assoc-ref %outputs "doc")
+                           "/share/doc/"
+                           ,name "-" ,(package-version this-package))
+            "--disable-static")))
    (inputs `(("zlib" ,zlib)
              ("libjpeg" ,libjpeg-turbo)))
    (synopsis "Library for handling TIFF files")
@@ -625,14 +626,7 @@ collection of tools for doing simple manipulations of TIFF images.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1jrkjv0xya9radddn8idxvs2gqzp3l2b1s8knlizmn7ad3jq817b"))))
-    (arguments
-     ;; Instead of using --docdir, this package has its own --with-docdir.
-     `(#:configure-flags (list (string-append "--with-docdir="
-                                              (assoc-ref %outputs "doc")
-                                              "/share/doc/"
-                                              ,name "-" ,version)
-                               "--disable-static")))))
+         "1jrkjv0xya9radddn8idxvs2gqzp3l2b1s8knlizmn7ad3jq817b"))))))
 
 (define-public leptonica
   (package
