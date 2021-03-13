@@ -38,6 +38,7 @@
   #:use-module (guix upstream)
   #:use-module (guix packages)
   #:autoload   (zlib) (call-with-gzip-input-port)
+  #:autoload   (htmlprag) (html->sxml)            ;from Guile-Lib
   #:export (gnu-package-name
             gnu-package-mundane-name
             gnu-package-copyright-holder
@@ -446,18 +447,6 @@ hosted on ftp.gnu.org, or not under that name (this is the case for
 ;;;
 ;;; Latest HTTP release.
 ;;;
-
-(define (html->sxml port)
-  "Read HTML from PORT and return the corresponding SXML tree."
-  (let ((str (get-string-all port)))
-    (catch #t
-      (lambda ()
-        ;; XXX: This is the poor developer's HTML-to-XML converter.  It's good
-        ;; enough for directory listings at <https://kernel.org/pub> but if
-        ;; needed we could resort to (htmlprag) from Guile-Lib.
-        (call-with-input-string (string-replace-substring str "<hr>" "<hr />")
-          xml->sxml))
-      (const '(html)))))                          ;parse error
 
 (define (html-links sxml)
   "Return the list of links found in SXML, the SXML tree of an HTML page."

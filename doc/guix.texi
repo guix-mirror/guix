@@ -865,7 +865,8 @@ the @code{crate} importer (@pxref{Invoking guix import}).
 
 @item
 @uref{https://www.nongnu.org/guile-lib/doc/ref/htmlprag/, Guile-Lib} for
-the @code{go} importer (@pxref{Invoking guix import}).
+the @code{go} importer (@pxref{Invoking guix import}) and for some of
+the ``updaters'' (@pxref{Invoking guix refresh}).
 
 @item
 When @url{http://www.bzip.org, libbz2} is available,
