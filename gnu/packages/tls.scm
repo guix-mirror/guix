@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014, 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2021 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
@@ -165,6 +165,7 @@ living in the same process.")
   (package
     (name "gnutls")
     (version "3.6.15")
+    (replacement gnutls/fixed)
     (source (origin
               (method url-fetch)
               ;; Note: Releases are no longer on ftp.gnu.org since the
@@ -256,6 +257,15 @@ required structures.")
     (properties '((ftp-server . "ftp.gnutls.org")
                   (ftp-directory . "/gcrypt/gnutls")))))
 
+(define gnutls/fixed
+  (package
+    (inherit gnutls)
+    (source (origin
+              (inherit (package-source gnutls))
+              (patches (append (search-patches "gnutls-CVE-2021-20231.patch"
+                                               "gnutls-CVE-2021-20232.patch")
+                               (origin-patches (package-source gnutls))))))))
+
 (define-public gnutls/guile-2.0
   ;; GnuTLS for Guile 2.0.
   (package/inherit gnutls
@@ -274,8 +284,7 @@ required structures.")
               ,@(package-inputs gnutls)))))
 
 (define-public guile2.2-gnutls
-  (package
-    (inherit gnutls)
+  (package/inherit gnutls
     (name "guile2.2-gnutls")
     (inputs `(("guile" ,guile-2.2)
               ,@(alist-delete "guile"
