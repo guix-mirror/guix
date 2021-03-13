@@ -66,6 +66,12 @@
               (sha256
                (base32
                 "0za1b9lvrm3rhn0lrxja5f64r0aq1qs4m0pxn1ji2mbi8ndppyyx"))))
+
+    (properties
+     ;; Tell the 'generic-html' updater to monitor this URL for updates.
+     `((release-monitoring-url
+        . "https://www-lb.open-mpi.org/software/hwloc/current")))
+
     (build-system gnu-build-system)
     (outputs '("out"           ;'lstopo' & co., depends on Cairo, libx11, etc.
                "lib"           ;small closure
