@@ -23958,6 +23958,27 @@ format.  Many things were taken from the ASCII exporter, from which
 @code{ox-gemini} derives.")
       (license license:gpl3+))))
 
+(define-public emacs-ox-haunt
+  (package
+    (name "emacs-ox-haunt")
+    (version "0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.sr.ht/~jakob/ox-haunt")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1rs1n228c2fmpvirc57bqgf2616ijpphkgf4w9ln5j46snmkam25"))))
+    (build-system emacs-build-system)
+    (home-page "https://git.sr.ht/~jakob/ox-haunt")
+    (synopsis "Export Org files to HTML appropriate for Haunt")
+    (description
+     "This library implements an HTML back-end for the Org generic exporter,
+producing output appropriate for Haunt's @code{html-reader}.")
+    (license license:gpl3+)))
+
 (define-public emacs-ox-hugo
   (package
     (name "emacs-ox-hugo")
