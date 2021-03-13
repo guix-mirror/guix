@@ -61,8 +61,6 @@
 
 ;; Test the linter.
 
-;; Avoid collisions with other tests.
-
 (define %null-sha256
   ;; SHA256 of the empty string.
   (base32
