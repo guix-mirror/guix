@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;;
-;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
-;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020, 2021 Raghav Gururajan <raghavgururajan@disroot.org>
+;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -25,6 +25,7 @@
   #:use-module (gnu packages audio)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
@@ -127,28 +128,64 @@ writing, administering, and running unit tests in C.")
 (define-public bctoolbox
   (package
     (name "bctoolbox")
-    (version "0.6.0")
+    (version "4.4.34")
     (source
      (origin
-       (method url-fetch)
-       (uri
-        (string-append "https://www.linphone.org/releases/sources/" name
-                       "/" name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.linphone.org/BC/public/bctoolbox.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1a1i70pb4hhnykkwyhhc7fv67q556l8kprny8xzgfqpj1nby2ms6"))))
+        (base32 "0bfswwvvdshaahg4jd2j10f0sci8809s4khajd0m6b059zwc7y25"))))
     (build-system cmake-build-system)
+    (outputs '("out" "debug"))
     (arguments
-     '(#:tests? #f                      ; No test target
-       #:configure-flags
-       (list "-DENABLE_STATIC=OFF")))   ; Not required
+     `(#:configure-flags '("-DENABLE_STATIC=OFF")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-cmake
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Fix decaf dependency (see:
+             ;; https://gitlab.linphone.org/BC/public/bctoolbox/-/issues/3).
+             (let* ((decaf (assoc-ref inputs "decaf")))
+               (substitute* (find-files "." "CMakeLists.txt")
+                 (("find_package\\(Decaf CONFIG\\)")
+                  "set(DECAF_FOUND 1)")
+                 (("\\$\\{DECAF_INCLUDE_DIRS\\}")
+                  (string-append decaf "/include/decaf"))
+                 (("\\$\\{DECAF_TARGETNAME\\}")
+                  "decaf")))))
+         (add-after 'unpack 'skip-problematic-tests
+           (lambda _
+             ;; The following test relies on networking; disable it.
+             (substitute* "tester/port.c"
+               (("[ \t]*TEST_NO_TAG.*bctbx_addrinfo_sort_test\\)")
+                ""))))
+         (add-after 'unpack 'fix-installed-resource-directory-detection
+           (lambda _
+             ;; There's some broken logic in tester.c that checks if CWD, or
+             ;; if its parent exist, and if so, sets the prefix where the test
+             ;; resources are looked up to; disable it (see:
+             ;; https://gitlab.linphone.org/BC/public/bctoolbox/-/issues/4).
+             (substitute* "src/tester.c"
+               (("if \\(file_exists\\(\".\"\\)\\)")
+                "if (NULL)")
+               (("if \\(file_exists\\(\"..\"\\)\\)")
+                "if (NULL)"))))
+         (replace 'check
+           (lambda _
+             (with-directory-excursion "tester"
+               (invoke "./bctoolbox_tester")))))))
     (inputs
      `(("bcunit" ,bcunit)
+       ("decaf" ,libdecaf)
        ("mbedtls" ,mbedtls-apache)))
     (synopsis "Belledonne Communications Tool Box")
     (description "BcToolBox is an utilities library used by Belledonne
 Communications software like belle-sip, mediastreamer2 and linphone.")
     (home-page "https://gitlab.linphone.org/BC/public/bctoolbox")
-    (license license:gpl2+)))
+    (license license:gpl3+)))
 
 (define-public belr
   (package
