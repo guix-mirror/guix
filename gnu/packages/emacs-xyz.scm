@@ -40,7 +40,7 @@
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Alex Branham <alex.branham@gmail.com>
 ;;; Copyright © 2018 Thorsten Wilms <t_w_@freenet.de>
-;;; Copyright © 2018, 2019, 2020 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2018, 2019, 2020, 2021 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018, 2019, 2020, 2021 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2019, 2020 Dimakakos Dimos <bendersteed@teknik.io>
 ;;; Copyright © 2019, 2020 Brian Leung <bkleung89@gmail.com>
@@ -7962,30 +7962,35 @@ use it, call @code{M-x ivy-yasnippet} (but make sure you have enabled
 @code{yas-minor-mode} first).")
       (license license:gpl3+))))
 
+;; The 0.1.6 release is incompatible with newer ivy versions, so we instead
+;; pick a more recent snapshot of the repository, see
+;; https://github.com/Yevgnen/ivy-rich/pull/80.
 (define-public emacs-ivy-rich
-  (package
-    (name "emacs-ivy-rich")
-    (version "0.1.6")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/Yevgnen/ivy-rich")
-             (commit version)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "1ra18v6lgz3m6asm6d5b92zn1x22yiz4cwxd9b54dnvwi11121m7"))))
-    (build-system emacs-build-system)
-    (propagated-inputs
-     `(("emacs-ivy" ,emacs-ivy)))
-    (home-page "https://github.com/Yevgnen/ivy-rich")
-    (synopsis "More friendly interface for @code{ivy}")
-    (description
-     "This package extends Ivy by showing more information in the minibuffer
+  (let ((commit "7b9b7b20c3ead81da90232cd6707dfad3c1f1eb3")
+        (revision "1"))
+    (package
+      (name "emacs-ivy-rich")
+      (version (git-version "0.1.6" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Yevgnen/ivy-rich")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "03p13z609ighdq4axls93alqfl7pclx12g4vdd7lwpcy0r0cgyf8"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-ivy" ,emacs-ivy)))
+      (home-page "https://github.com/Yevgnen/ivy-rich")
+      (synopsis "More friendly interface for @code{ivy}")
+      (description
+       "This package extends Ivy by showing more information in the minibuffer
 for each candidate.  It adds columns showing buffer modes, file sizes,
 docstrings, etc.  If @code{emacs-all-the-icons} is installed, it can show
 icons as well.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-avy
   (package
