@@ -9099,7 +9099,7 @@ much easier.")
     (home-page "https://github.com/sp1ff/elfeed-score")
     (synopsis "Gnus-style scoring for Elfeed")
     (description
-     "@Elfeed-score is an add-on for Elfeed, an RSS reader for Emacs.  It
+     "Elfeed-score is an add-on for Elfeed, an RSS reader for Emacs.  It
 brings Gnus-style scoring to your RSS feeds.  Elfeed, by default, displays
 feed entries by date.  This package allows you to setup rules for assigning
 numeric scores to entries, and sorting entries with higher scores ahead of
