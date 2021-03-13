@@ -28,6 +28,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
   #:use-module (rnrs io ports)
   #:use-module (system foreign)
   #:use-module (guix http-client)
@@ -66,7 +67,8 @@
             %gnu-ftp-updater
             %savannah-updater
             %xorg-updater
-            %kernel.org-updater))
+            %kernel.org-updater
+            %generic-html-updater))
 
 ;;; Commentary:
 ;;;
@@ -697,6 +699,55 @@ releases are on gnu.org."
                                 #:file->signature file->signature)
            (cut adjusted-upstream-source <> rewrite))))
 
+(define html-updatable-package?
+  ;; Return true if the given package may be handled by the generic HTML
+  ;; updater.
+  (let ((hosting-sites '("github.com" "github.io" "gitlab.com"
+                         "notabug.org" "sr.ht"
+                         "gforge.inria.fr" "gitlab.inria.fr"
+                         "ftp.gnu.org" "download.savannah.gnu.org"
+                         "pypi.org" "crates.io" "rubygems.org"
+                         "bioconductor.org")))
+    (url-predicate (lambda (url)
+                     (match (string->uri url)
+                       (#f #f)
+                       (uri
+                        (let ((scheme (uri-scheme uri))
+                              (host   (uri-host uri)))
+                          (and (memq scheme '(http https))
+                               (not (member host hosting-sites))))))))))
+
+(define (latest-html-updatable-release package)
+  "Return the latest release of PACKAGE.  Do that by crawling the HTML page of
+the directory containing its source tarball."
+  (let* ((uri       (string->uri
+                     (match (origin-uri (package-source package))
+                       ((? string? url) url)
+                       ((url _ ...) url))))
+         (custom    (assoc-ref (package-properties package)
+                               'release-monitoring-url))
+         (base      (or custom
+                        (string-append (symbol->string (uri-scheme uri))
+                                       "://" (uri-host uri))))
+         (directory (if custom
+                        ""
+                        (dirname (uri-path uri))))
+         (package   (package-upstream-name package)))
+    (catch #t
+      (lambda ()
+        (guard (c ((http-get-error? c) #f))
+          (latest-html-release package
+                               #:base-url base
+                               #:directory directory)))
+      (lambda (key . args)
+        ;; Return false and move on upon connection failures and bogus HTTP
+        ;; servers.
+        (unless (memq key '(gnutls-error tls-certificate-error
+                                         system-error
+                                         bad-header bad-header-component))
+          (apply throw key args))
+        #f))))
+
 (define %gnu-updater
   ;; This is for everything at ftp.gnu.org.
   (upstream-updater
@@ -736,5 +787,12 @@ releases are on gnu.org."
    (description "Updater for packages hosted on kernel.org")
    (pred (url-prefix-predicate "mirror://kernel.org/"))
    (latest latest-kernel.org-release)))
+
+(define %generic-html-updater
+  (upstream-updater
+   (name 'generic-html)
+   (description "Updater that crawls HTML pages.")
+   (pred html-updatable-package?)
+   (latest latest-html-updatable-release)))
 
 ;;; gnu-maintenance.scm ends here

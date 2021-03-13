@@ -11707,6 +11707,9 @@ the updater for @uref{https://www.stackage.org, Stackage} packages.
 the updater for @uref{https://crates.io, Crates} packages.
 @item launchpad
 the updater for @uref{https://launchpad.net, Launchpad} packages.
+@item generic-html
+a generic updater that crawls the HTML page where the source tarball of
+the package is hosted, when applicable.
 @end table
 
 For instance, the following command only checks for updates of Emacs
