@@ -37,7 +37,7 @@
   #:use-module (guix records)
   #:use-module (guix upstream)
   #:use-module (guix packages)
-  #:use-module (zlib)
+  #:autoload   (zlib) (call-with-gzip-input-port)
   #:export (gnu-package-name
             gnu-package-mundane-name
             gnu-package-copyright-holder
