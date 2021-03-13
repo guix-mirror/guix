@@ -1495,7 +1495,7 @@ system administrator.")
 (define-public sudo
   (package
     (name "sudo")
-    (version "1.9.5p2")
+    (version "1.9.6")
     (source (origin
               (method url-fetch)
               (uri
@@ -1505,7 +1505,7 @@ system administrator.")
                                     version ".tar.gz")))
               (sha256
                (base32
-                "0y093z4f3822rc88g9asdch12nljdamp817vjxk04mca7ks2x7jk"))
+                "0m9szw1fxj319z7d2j9nm04cbwk0flczwp1v4zb7sbndj825ijb2"))
               (modules '((guix build utils)))
               (snippet
                '(begin
