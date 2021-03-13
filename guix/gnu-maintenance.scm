@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2012, 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
@@ -479,19 +479,21 @@ return the corresponding signature URL, or #f it signatures are unavailable."
          (port (http-fetch/cached uri #:ttl 3600))
          (sxml (html->sxml port)))
     (define (url->release url)
-      (and (string=? url (basename url))          ;relative reference?
-           (release-file? package url)
-           (let-values (((name version)
-                         (package-name->name+version
-                          (tarball-sans-extension url)
-                          #\-)))
-             (upstream-source
-              (package name)
-              (version version)
-              (urls (list (string-append base-url directory "/" url)))
-              (signature-urls
-               (list (file->signature
-                      (string-append base-url directory "/" url))))))))
+      (let* ((base (basename url))
+             (url  (if (string=? base url)
+                       (string-append base-url directory "/" url)
+                       url)))
+        (and (release-file? package base)
+             (let-values (((name version)
+                           (package-name->name+version
+                            (tarball-sans-extension base)
+                            #\-)))
+               (upstream-source
+                (package name)
+                (version version)
+                (urls (list url))
+                (signature-urls
+                 (list (file->signature url))))))))
 
     (define candidates
       (filter-map url->release (html-links sxml)))
