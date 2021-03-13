@@ -12134,7 +12134,8 @@ Rust.")
      `(#:cargo-inputs
        (("rust-derive-error-chain" ,rust-derive-error-chain-0.10)
         ("rust-error-chain" ,rust-error-chain-0.10)
-        ("rust-regex" ,rust-regex-0.2))))))
+        ("rust-regex" ,rust-regex-0.2)
+        ("rust-syn" ,rust-syn-0.11))))))
 
 (define-public rust-draw-state-0.8
   (package
