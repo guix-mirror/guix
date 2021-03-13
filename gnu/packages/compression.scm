@@ -953,45 +953,6 @@ possible and can compress in parallel.  This is especially useful for large
 tarballs.")
     (license license:bsd-2)))
 
-(define-public bsdiff
-  (package
-    (name "bsdiff")
-    (version "4.3")
-    (home-page "https://www.daemonology.net/bsdiff/")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append home-page name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0j2zm3z271x5aw63mwhr3vymzn45p2vvrlrpm9cz2nywna41b0hq"))
-              (patches (search-patches "bsdiff-CVE-2014-9862.patch"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:make-flags (list "INSTALL=install"
-                          (string-append "CC=" ,(cc-for-target))
-                          (string-append "PREFIX=" (assoc-ref %outputs "out")))
-       #:phases (modify-phases %standard-phases
-                  (delete 'configure)
-                  (add-before 'build 'fix-Makefile
-                    (lambda _
-                      (substitute* "Makefile"
-                        ;; Adjust syntax to make it compatible with GNU Make.
-                        (("^\\.") "")
-                        ;; Help install(1) create the target directory.
-                        (("\\$\\{PREFIX\\}") "-D -t ${PREFIX}"))
-                      #t)))
-       #:tests? #f)) ;no tests
-    (inputs
-     `(("bzip2" ,bzip2)))
-    (synopsis "Patch binary files")
-    (description
-     "@command{bsdiff} and @command{bspatch} are tools for building and
-applying patches to binary files.  By using suffix sorting (specifically
-Larsson and Sadakane's @code{qsufsort}) and taking advantage of how
-executable files change, bsdiff routinely produces binary patches 50-80%
-smaller than those produced by @code{Xdelta}.")
-    (license license:bsd-2)))
-
 (define-public cabextract
  (package
    (name "cabextract")
