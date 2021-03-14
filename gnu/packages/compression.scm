@@ -1676,7 +1676,10 @@ recreates the stored directory structure by default.")
                                 "unzip-zipbomb-manpage.patch"
                                 "unzip-zipbomb-part1.patch"
                                 "unzip-zipbomb-part2.patch"
-                                "unzip-zipbomb-part3.patch"))))))
+                                "unzip-zipbomb-part3.patch"
+
+                                ;; https://github.com/madler/unzip/issues/2
+                                "unzip-32bit-zipbomb-fix.patch"))))))
 
 (define-public ziptime
   (let ((commit "2a5bc9dfbf7c6a80e5f7cb4dd05b4036741478bc")
