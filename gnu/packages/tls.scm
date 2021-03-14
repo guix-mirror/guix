@@ -296,6 +296,7 @@ required structures.")
 (define-public openssl
   (package
    (name "openssl")
+   (replacement openssl/fixed)
    (version "1.1.1i")
    (source (origin
              (method url-fetch)
@@ -310,7 +311,6 @@ required structures.")
              (sha256
               (base32
                "0hjj1phcwkz69lx1lrvr9grhpl4y529mwqycqc1hdla1zqsnmgp8"))))
-   (replacement openssl/fixed)
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"         ;6.8 MiB of man3 pages and full HTML documentation
@@ -371,7 +371,8 @@ required structures.")
                       ;; PREFIX/ssl.  Change that to something more
                       ;; conventional.
                       (string-append "--openssldir=" out
-                                     "/share/openssl-" ,version)
+                                     "/share/openssl-"
+                                     ,(package-version this-package))
 
                       (string-append "--prefix=" out)
                       (string-append "-Wl,-rpath," lib)
@@ -411,7 +412,8 @@ required structures.")
            ;; scripts.  Remove them to avoid retaining a reference on Perl.
            (let ((out (assoc-ref outputs "out")))
              (delete-file-recursively (string-append out "/share/openssl-"
-                                                     ,version "/misc"))
+                                                     ,(package-version this-package)
+                                                     "/misc"))
              #t))))))
    (native-search-paths
     (list (search-path-specification
@@ -445,104 +447,7 @@ required structures.")
              (patches (search-patches "openssl-1.1-c-rehash-in.patch"))
              (sha256
               (base32
-               "1gw17520vh13izy1xf5q0a2fqgcayymjjj5bk0dlkxndfnszrwma"))))
-   (arguments
-    `(#:parallel-tests? #f
-      #:test-target "test"
-
-      ;; Changes to OpenSSL sometimes cause Perl to "sneak in" to the closure,
-      ;; so we explicitly disallow it here.
-      #:disallowed-references ,(list (canonical-package perl))
-      #:phases
-      (modify-phases %standard-phases
-       ,@(if (%current-target-system)
-           '((add-before
-               'configure 'set-cross-compile
-               (lambda* (#:key target outputs #:allow-other-keys)
-                 (setenv "CROSS_COMPILE" (string-append target "-"))
-                 (setenv "CONFIGURE_TARGET_ARCH"
-                         (cond
-                           ((string-prefix? "i586" target)
-                            "hurd-x86")
-                           ((string-prefix? "i686" target)
-                            "linux-x86")
-                           ((string-prefix? "x86_64" target)
-                            "linux-x86_64")
-                           ((string-prefix? "mips64el" target)
-                            "linux-mips64")
-                           ((string-prefix? "arm" target)
-                            "linux-armv4")
-                           ((string-prefix? "aarch64" target)
-                            "linux-aarch64")
-                           ((string-prefix? "powerpc64le" target)
-                            "linux-ppc64le")
-                           ((string-prefix? "powerpc64" target)
-                            "linux-ppc64")
-                           ((string-prefix? "powerpc" target)
-                            "linux-ppc")))
-                 #t)))
-           '())
-        (replace 'configure
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let* ((out (assoc-ref outputs "out"))
-                   (lib (string-append out "/lib")))
-              ;; It's not a shebang so patch-source-shebangs misses it.
-              (substitute* "config"
-                (("/usr/bin/env")
-                 (string-append (assoc-ref %build-inputs "coreutils")
-                                "/bin/env")))
-              (invoke ,@(if (%current-target-system)
-                          '("./Configure")
-                          '("./config"))
-                      "shared"       ;build shared libraries
-                      "--libdir=lib"
-
-                      ;; The default for this catch-all directory is
-                      ;; PREFIX/ssl.  Change that to something more
-                      ;; conventional.
-                      (string-append "--openssldir=" out
-                                     "/share/openssl-" ,version)
-
-                      (string-append "--prefix=" out)
-                      (string-append "-Wl,-rpath," lib)
-                      ,@(if (%current-target-system)
-                          '((getenv "CONFIGURE_TARGET_ARCH"))
-                          '())))))
-        (add-after 'install 'move-static-libraries
-          (lambda* (#:key outputs #:allow-other-keys)
-            ;; Move static libraries to the "static" output.
-            (let* ((out    (assoc-ref outputs "out"))
-                   (lib    (string-append out "/lib"))
-                   (static (assoc-ref outputs "static"))
-                   (slib   (string-append static "/lib")))
-              (for-each (lambda (file)
-                          (install-file file slib)
-                          (delete-file file))
-                        (find-files lib "\\.a$"))
-              #t)))
-        (add-after 'install 'move-extra-documentation
-          (lambda* (#:key outputs #:allow-other-keys)
-               ;; Move man3 pages and full HTML documentation to "doc".
-               (let* ((out    (assoc-ref outputs "out"))
-                      (man3   (string-append out "/share/man/man3"))
-                      (html (string-append out "/share/doc/openssl"))
-                      (doc    (assoc-ref outputs "doc"))
-                      (man-target (string-append doc "/share/man/man3"))
-                      (html-target (string-append doc "/share/doc/openssl")))
-                 (copy-recursively man3 man-target)
-                 (delete-file-recursively man3)
-                 (copy-recursively html html-target)
-                 (delete-file-recursively html)
-                 #t)))
-        (add-after
-         'install 'remove-miscellany
-         (lambda* (#:key outputs #:allow-other-keys)
-           ;; The 'misc' directory contains random undocumented shell and Perl
-           ;; scripts.  Remove them to avoid retaining a reference on Perl.
-           (let ((out (assoc-ref outputs "out")))
-             (delete-file-recursively (string-append out "/share/openssl-"
-                                                     ,version "/misc"))
-             #t))))))))
+               "1gw17520vh13izy1xf5q0a2fqgcayymjjj5bk0dlkxndfnszrwma"))))))
 
 (define-public openssl-1.0
   (package
