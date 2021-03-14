@@ -85,7 +85,8 @@
                         (let ((doc (assoc-ref outputs "doc")))
                           (string-append "DOCUMENTATION_PATH = "
                                          doc "/share/doc/"
-                                         ,name "-" ,version "\n"))))
+                                         ,name "-"
+                                         ,(package-version this-package) "\n"))))
                      #t))
                   (add-before
                    'configure 'strip-configure-xml
@@ -131,55 +132,18 @@ text, lines, polygons, ellipses and Bézier curves.")
   (package
     (inherit imagemagick)
     (name "imagemagick")
-    (version "6.9.12-2g") ;; 'g' for 'guix', appended character to retain
-    ;; version length so grafting works properly.
+    ;; 'g' for 'guix', appended character to retain version length so grafting
+    ;; works properly.
+    (version "6.9.12-2g")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://imagemagick/ImageMagick-"
-                                  "6.9.12-2" ;; Hardcode version here since we
-                                  ;; had to change it up there.
-                                  ".tar.xz"))
+                                  ;; Hardcode the version here since we had to
+                                  ;; change it above.
+                                  "6.9.12-2.tar.xz"))
               (sha256
                (base32
-                "17da5zihz58qm41y61sbvw626m5xfwr2nzszlikrvxyq1j1q7asa"))))
-    (arguments
-     `(#:configure-flags '("--with-frozenpaths" "--without-gcc-arch"
-
-                           ;; Do not embed the build date in binaries.
-                           "--enable-reproducible-build")
-
-       ;; FIXME: The test suite succeeded before version 6.9.6-2.
-       ;; Try enabling it again with newer releases.
-       #:tests? #f
-       #:phases (modify-phases %standard-phases
-                  (add-before
-                   'build 'pre-build
-                   (lambda* (#:key outputs #:allow-other-keys)
-                     (substitute* "Makefile"
-                       ;; Clear the `LIBRARY_PATH' setting, which otherwise
-                       ;; interferes with our own use.
-                       (("^LIBRARY_PATH[[:blank:]]*=.*$")
-                        "")
-
-                       ;; Since the Makefile overrides $docdir, modify it to
-                       ;; refer to what we want.
-                       (("^DOCUMENTATION_PATH[[:blank:]]*=.*$")
-                        (let ((doc (assoc-ref outputs "doc")))
-                          (string-append "DOCUMENTATION_PATH = "
-                                         doc "/share/doc/"
-                                         ,name "-" ,version "\n"))))
-                     #t))
-                  (add-before
-                   'configure 'strip-configure-xml
-                   (lambda _
-                     (substitute* "config/configure.xml.in"
-                       ;; Do not record 'configure' arguments in the
-                       ;; configure.xml file that gets installed: That would
-                       ;; include --docdir, and thus retain a reference to the
-                       ;; 'doc' output.
-                       (("@CONFIGURE_ARGS@")
-                        "not recorded"))
-                     #t)))))))
+                "17da5zihz58qm41y61sbvw626m5xfwr2nzszlikrvxyq1j1q7asa"))))))
 
 (define-public perl-image-magick
   (package
