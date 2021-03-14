@@ -5826,6 +5826,32 @@ that's written to go fast.  It allows the usage of the
 your code non-blocking and speedy.")
     (license license:expat)))
 
+(define-public python-socketio
+  (package
+    (name "python-socketio")
+    (version "5.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "python-socketio" version))
+       (sha256
+        (base32
+         "14vhpxdn54lz54mhcqlgcks0ssbws9gd1y7ii16a2g3gpfdc531k"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-aiohttp" ,python-aiohttp)
+       ("python-bidict" ,python-bidict)
+       ("python-engineio" ,python-engineio)
+       ("python-requests" ,python-requests)
+       ("python-websocket-client" ,python-websocket-client)
+       ("python-websockets" ,python-websockets)))
+    (arguments '(#:tests? #f))        ; Tests not included in release tarball.
+    (home-page "https://github.com/miguelgrinberg/python-socketio/")
+    (synopsis "Python Socket.IO server")
+    (description
+     "Python implementation of the Socket.IO realtime client and server.")
+    (license license:expat)))
+
 (define-public python-socks
   (package
     (name "python-socks")
