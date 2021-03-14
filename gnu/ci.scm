@@ -527,11 +527,10 @@ valid."
           (let ((all (all-packages)))
             (filter-map
              (lambda (package)
-               (match (package-channels package)
-                 ((channel . _)
-                  (and (member (channel-name channel) channels)
-                       (package->job store package system)))
-                 (else #f)))
+               (any (lambda (channel)
+                      (and (member (channel-name channel) channels)
+                           (package->job store package system)))
+                    (package-channels package)))
              all)))
          (('packages . rest)
           ;; Build selected list of packages only.
