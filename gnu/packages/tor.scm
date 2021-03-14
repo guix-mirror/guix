@@ -4,7 +4,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2017, 2018, 2019 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2017, 2018, 2019, 2021 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
@@ -221,10 +221,10 @@ tastes.  It has application for both stand-alone systems and multi-user
 networks.")
     (license license:gpl2+)))
 
-(define-public onionshare
+(define-public onionshare-cli
   (package
-    (name "onionshare")
-    (version "2.2")
+    (name "onionshare-cli")
+    (version "2.3.1")
     (source
       (origin
         (method git-fetch)
@@ -233,52 +233,140 @@ networks.")
               (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "0m8ygxcyp3nfzzhxs2dfnpqwh1vx0aws44lszpnnczz4fks3a5j4"))))
+         (base32 "1llvnvb676s2cs6a4y7isxdj75ddfvskw1p93v5m35vsw7f72kqz"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-install-path
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out        (assoc-ref outputs "out"))
-                    (onionshare (string-append out "/share/onionshare")))
-               (substitute* '("setup.py" "onionshare/common.py")
-                 (("sys.prefix,") (string-append "'" out "',")))
-               (substitute* "setup.py"
-                 ;; For the nautilus plugin.
-                 (("/usr/share/nautilus") "share/nautilus"))
-               (substitute* "install/org.onionshare.OnionShare.desktop"
-                 (("/usr") out))
-               #t)))
-         (delete 'check)
-         (add-before 'strip 'check
-           ;; After all the patching we run the tests after installing.
-           (lambda _
-             (setenv "HOME" "/tmp")     ; Some tests need a writable homedir
-             (invoke "pytest" "tests/")
-             #t)))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (inputs
-     `(("python-pycryptodome" ,python-pycryptodome)
+     ;; TODO: obfs4proxy
+     `(("python-click" ,python-click)
+       ("python-eventlet" ,python-eventlet)
        ("python-flask" ,python-flask)
        ("python-flask-httpauth" ,python-flask-httpauth)
-       ("python-nautilus" ,python-nautilus)
-       ("python-sip" ,python-sip)
-       ("python-stem" ,python-stem)
+       ("python-flask-socketio" ,python-flask-socketio)
+       ("python-psutil" ,python-psutil)
+       ("python-pycryptodome" ,python-pycryptodome)
        ("python-pysocks" ,python-pysocks)
-       ("python-pyqt" ,python-pyqt)))
+       ("python-requests" ,python-requests)
+       ("python-stem" ,python-stem)
+       ("python-unidecode" ,python-unidecode)
+       ("python-urllib3" ,python-urllib3)
+       ("tor" ,tor)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'bake-tor
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* (list "cli/onionshare_cli/common.py"
+                                "desktop/src/onionshare/gui_common.py")
+               (("shutil\\.which\\(\\\"tor\\\"\\)")
+                (string-append "\"" (which "tor") "\"")))
+             #t))
+         (add-before 'build 'change-directory
+           (lambda _ (chdir "cli") #t))
+         (replace 'check
+           (lambda _
+             (setenv "HOME" "/tmp")
+             ;; Greendns is not needed for testing, and if eventlet tries to
+             ;; load it, an OSError is thrown when getprotobyname is called.
+             ;; Thankfully there is an environment variable to disable the
+             ;; greendns import, so use it:
+             (setenv "EVENTLET_NO_GREENDNS" "yes")
+             (invoke "pytest" "-v" "./tests"))))))
     (home-page "https://onionshare.org/")
     (synopsis "Securely and anonymously share files")
-    (description "OnionShare is a tool for securely and anonymously sending
-and receiving files using Tor onion services.  It works by starting a web
-server directly on your computer and making it accessible as an unguessable
-Tor web address that others can load in a Tor-enabled web browser to download
-files from you, or upload files to you.  It doesn't require setting up a
-separate server, using a third party file-sharing service, or even logging
-into an account.")
-    ;; Bundled, minified jquery is expat licensed.
+    (description "OnionShare lets you securely and anonymously share files,
+host websites, and chat with friends using the Tor network.
+
+This package contains @code{onionshare-cli}, a command-line interface to
+OnionShare.")
+    ;; Bundled, minified jquery and socket.io are expat licensed.
     (license (list license:gpl3+ license:expat))))
+
+(define-public onionshare
+  (package (inherit onionshare-cli)
+    (name "onionshare")
+    (arguments
+     (substitute-keyword-arguments (package-arguments onionshare-cli)
+      ((#:phases phases)
+       `(modify-phases ,phases
+         (replace 'change-directory
+           (lambda _ (chdir "desktop/src") #t))
+         (add-after 'unpack 'patch-tests
+           (lambda _
+             ;; Disable tests that require starting servers, which will hang
+             ;; during build:
+             ;; - test_autostart_and_autostop_timer_mismatch
+             ;; - test_autostart_timer
+             ;; - test_autostart_timer_too_short
+             ;; - test_autostop_timer_too_short
+             (substitute* "desktop/tests/test_gui_share.py"
+               (("( *)def test_autost(art|op)_(timer(_too_short)?|and_[^(]*)\\(" & >)
+                (string-append > "@pytest.mark.skip\n" &)))
+             ;; - test_13_quit_with_server_started_should_warn
+             (substitute* "desktop/tests/test_gui_tabs.py"
+               (("( *)def test_13" & >)
+                (string-append > "@pytest.mark.skip\n" &)))
+             ;; Remove multiline load-path adjustment, so that onionshare-cli
+             ;; modules are loaded from input
+             (use-modules (ice-9 regex)
+                          (ice-9 rdelim))
+             (with-atomic-file-replacement "desktop/tests/conftest.py"
+               (let ((start-rx (make-regexp "^# Allow importing")))
+                 (lambda (in out)
+                   (let loop ()
+                     (let ((line (read-line in 'concat)))
+                       (if (regexp-exec start-rx line)
+                           (begin      ; slurp until closing paren
+                             (let slurp ()
+                               (let ((line (read-line in 'concat)))
+                                 (if (string=? line ")\n")
+                                     (dump-port in out) ; done
+                                     (slurp)))))
+                           (begin
+                             (display line out)
+                             (loop))))))))))
+         (replace 'check
+           (lambda _
+             ;; Some tests need a writable homedir:
+             (setenv "HOME" "/tmp")
+             ;; Ensure installed modules can be found:
+             (setenv "PYTHONPATH"
+                     (string-append %output "/lib/python"
+                                    ,(version-major+minor (package-version python))
+                                    "/site-packages:"
+                                    (getenv "PYTHONPATH")))
+             ;; Avoid `getprotobyname` issues:
+             (setenv "EVENTLET_NO_GREENDNS" "yes")
+             ;; Make Qt render "offscreen":
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             ;; Must be run from "desktop" dir:
+             (chdir "..")
+             (invoke "./tests/run.sh")))
+         (add-after 'install 'install-data
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (share (string-append out "/share")))
+               (install-file "org.onionshare.OnionShare.svg"
+                             (string-append share "/icons/hicolor/scalable/apps"))
+               (install-file "org.onionshare.OnionShare.desktop"
+                             (string-append share "/applications"))
+               #t)))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (inputs
+     ;; TODO: obfs4proxy
+     `(("onionshare-cli" ,onionshare-cli)
+       ("python-shiboken-2" ,python-shiboken-2)
+       ("python-pyside-2" ,python-pyside-2)
+       ("python-qrcode" ,python-qrcode)
+       ;; The desktop client uses onionshare-cli like a python module.  But
+       ;; propagating onionshare-cli's inputs is not great, since a user would
+       ;; not expect to have those installed when using onionshare-cli as a
+       ;; standalone utility.  So add onionshare-cli's inputs here.
+       ,@(package-inputs onionshare-cli)))
+    (description "OnionShare lets you securely and anonymously share files,
+host websites, and chat with friends using the Tor network.")))
 
 (define-public nyx
   (package
