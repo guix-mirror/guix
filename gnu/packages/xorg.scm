@@ -6087,7 +6087,19 @@ to answer a question.  Xmessage can also exit after a specified time.")
      '(#:configure-flags '("--enable-wide-chars" "--enable-load-vt-fonts"
                            "--enable-i18n" "--enable-doublechars"
                            "--enable-luit" "--enable-mini-luit")
-       #:tests? #f))
+       #:tests? #f                      ; no test suite
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'patch-file-names
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "uxterm"
+                 (("([ `\\|])(sh|sed|awk|xmessage) " _ prefix command)
+                  (string-append prefix (which command) " "))
+                 (("(`|\"|LANG=C )(locale) " _ prefix command)
+                  (string-append prefix (which command) " "))
+                 (("=xterm")
+                  (string-append "=" out "/bin/xterm")))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
