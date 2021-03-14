@@ -5489,6 +5489,27 @@ decorators and tools to describe your API and expose its documentation properly 
 Swagger.")
     (license license:bsd-3)))
 
+(define-public python-flask-socketio
+  (package
+    (name "python-flask-socketio")
+    (version "5.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Flask-SocketIO" version))
+       (sha256
+        (base32
+         "09r2gpj2nbn72v2zaf6xsvlazln77pgqzp2pg2021nja47sijhsw"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-flask" ,python-flask)
+       ("python-socketio" ,python-socketio)))
+    (arguments '(#:tests? #f))        ; Tests not included in release tarball.
+    (home-page "https://github.com/miguelgrinberg/Flask-SocketIO/")
+    (synopsis "Socket.IO integration for Flask applications")
+    (description "Socket.IO integration for Flask applications")
+    (license license:expat)))
+
 (define-public python-manuel
   (package
     (name "python-manuel")
