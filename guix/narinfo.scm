@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2018 Kyle Meyer <kyle@kyleam.com>
 ;;;
@@ -297,9 +297,21 @@ this is a rough approximation."
     (_      (or (string=? compression2 "none")
                 (string=? compression2 "gzip")))))
 
-(define (narinfo-best-uri narinfo)
+(define (decompresses-faster? compression1 compression2)
+  "Return true if COMPRESSION1 generally has a higher decompression throughput
+than COMPRESSION2."
+  (match compression1
+    ("none" #t)
+    ("zstd" #t)
+    ("gzip" (string=? compression2 "lzip"))
+    (_      #f)))
+
+(define* (narinfo-best-uri narinfo #:key fast-decompression?)
   "Select the \"best\" URI to download NARINFO's nar, and return three values:
-the URI, its compression method (a string), and the compressed file size."
+the URI, its compression method (a string), and the compressed file size.
+When FAST-DECOMPRESSION? is true, prefer substitutes with faster
+decompression (typically zstd) rather than substitutes with a higher
+compression ratio (typically lzip)."
   (define choices
     (filter (match-lambda
               ((uri compression file-size)
@@ -321,6 +333,13 @@ the URI, its compression method (a string), and the compressed file size."
           (compresses-better? compression1 compression2))))
       (_ #f)))                                    ;we can't tell
 
-  (match (sort choices file-size<?)
+  (define (speed<? c1 c2)
+    (match c1
+      ((uri1 compression1 . _)
+       (match c2
+         ((uri2 compression2 . _)
+          (decompresses-faster? compression2 compression1))))))
+
+  (match (sort choices (if fast-decompression? (negate speed<?) file-size<?))
     (((uri compression file-size) _ ...)
      (values uri compression file-size))))

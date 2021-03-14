@@ -258,6 +258,27 @@ Internal tool to substitute a pre-built binary to a local build.\n"))
 ;;; Daemon/substituter protocol.
 ;;;
 
+(define %prefer-fast-decompression?
+  ;; Whether to prefer fast decompression over good compression ratios.  This
+  ;; serves in particular to choose between lzip (high compression ratio but
+  ;; low decompression throughput) and zstd (lower compression ratio but high
+  ;; decompression throughput).
+  #f)
+
+(define (call-with-cpu-usage-monitoring proc)
+  (let ((before (times)))
+    (proc)
+    (let ((after (times)))
+      (if (= (tms:clock after) (tms:clock before))
+          0
+          (/ (- (tms:utime after) (tms:utime before))
+             (- (tms:clock after) (tms:clock before))
+             1.)))))
+
+(define-syntax-rule (with-cpu-usage-monitoring exp ...)
+  "Evaluate EXP...  Return its CPU usage as a fraction between 0 and 1."
+  (call-with-cpu-usage-monitoring (lambda () exp ...)))
+
 (define (display-narinfo-data narinfo)
   "Write to the current output port the contents of NARINFO in the format
 expected by the daemon."
@@ -270,7 +291,10 @@ expected by the daemon."
   (for-each (cute format #t "~a/~a~%" (%store-prefix) <>)
             (narinfo-references narinfo))
 
-  (let-values (((uri compression file-size) (narinfo-best-uri narinfo)))
+  (let-values (((uri compression file-size)
+                (narinfo-best-uri narinfo
+                                  #:fast-decompression?
+                                  %prefer-fast-decompression?)))
     (format #t "~a\n~a\n"
             (or file-size 0)
             (or (narinfo-size narinfo) 0))))
@@ -462,7 +486,9 @@ the current output port."
            store-item))
 
   (let-values (((uri compression file-size)
-                (narinfo-best-uri narinfo)))
+                (narinfo-best-uri narinfo
+                                  #:fast-decompression?
+                                  %prefer-fast-decompression?)))
     (unless print-build-trace?
       (format (current-error-port)
               (G_ "Downloading ~a...~%") (uri->string uri)))
@@ -500,11 +526,28 @@ the current output port."
                   ((hashed get-hash)
                    (open-hash-input-port algorithm input)))
       ;; Unpack the Nar at INPUT into DESTINATION.
-      (restore-file hashed destination
-                    #:dump-file (if (and destination-in-store?
-                                         deduplicate?)
-                                    dump-file/deduplicate*
-                                    dump-file))
+      (define cpu-usage
+        (with-cpu-usage-monitoring
+         (restore-file hashed destination
+                       #:dump-file (if (and destination-in-store?
+                                            deduplicate?)
+                                       dump-file/deduplicate*
+                                       dump-file))))
+
+      ;; Create a hysteresis: depending on CPU usage, favor compression
+      ;; methods with faster decompression (like ztsd) or methods with better
+      ;; compression ratios (like lzip).  This stems from the observation that
+      ;; substitution can be CPU-bound when high-speed networks are used:
+      ;; <https://lists.gnu.org/archive/html/guix-devel/2020-12/msg00177.html>.
+      ;; To simulate "slow" networking or changing conditions, run:
+      ;;   sudo tc qdisc add dev eno1 root tbf rate 512kbit latency 50ms burst 1540
+      ;; and then cancel with:
+      ;;   sudo tc qdisc del dev eno1 root
+      (when (> cpu-usage .8)
+        (set! %prefer-fast-decompression? #t))
+      (when (< cpu-usage .2)
+        (set! %prefer-fast-decompression? #f))
+
       (close-port hashed)
       (close-port input)
 
