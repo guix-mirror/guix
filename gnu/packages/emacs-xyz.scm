@@ -1306,8 +1306,8 @@ provides an optional IDE-like error list.")
 
 (define-public emacs-flymake-shellcheck
   ;; No tag, version grabbed from source .el file.
-  (let ((commit "78956f0e5bb9c4d35989657a55929e8e3f5691e6")
-        (revision "0"))
+  (let ((commit "ac534e9ef15c82ac86ae65fe5004d29dbc8c92c7")
+        (revision "1"))
     (package
       (name "emacs-flymake-shellcheck")
       (version (git-version "0.1" revision commit))
@@ -1319,7 +1319,7 @@ provides an optional IDE-like error list.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "068mx5p4drwgppy4ry1rfq6qi79w6d82b4rnpl2jm37grsg94lix"))))
+          (base32 "04yfb4sy41spjzk9mhm4gy0h8vnjx09p2g6nm1yzgd9a5ph9sqgl"))))
       (build-system emacs-build-system)
       (home-page "https://github.com/federicotdn/flymake-shellcheck")
       (synopsis "Flymake backend for Bash/Sh powered by ShellCheck")
