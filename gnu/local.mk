@@ -1752,7 +1752,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/unzip-fix-recmatch.patch		\
   %D%/packages/patches/unzip-manpage-fix.patch			\
   %D%/packages/patches/unzip-overflow.patch			\
-  %D%/packages/patches/unzip-symlink.patch			\
   %D%/packages/patches/unzip-timestamp.patch			\
   %D%/packages/patches/unzip-valgrind.patch			\
   %D%/packages/patches/unzip-x-option.patch			\
