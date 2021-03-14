@@ -3,7 +3,7 @@
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2018, 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2018, 2019, 2021 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
@@ -593,7 +593,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
     (name "mescc-tools-static")
     (arguments
      `(#:system "i686-linux"
-       ,@(substitute-keyword-arguments (package-arguments mescc-tools)
+       ,@(substitute-keyword-arguments (package-arguments mescc-tools-0.5.2)
            ((#:make-flags flags)
             `(cons "CC=gcc -static" ,flags)))))))
 
