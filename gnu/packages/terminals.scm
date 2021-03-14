@@ -1220,7 +1220,8 @@ made by suckless.")
         (base32 "1b9hy3ya72hhpl8nkayc7dy4f97xp75np48dm5na5pgyv8b45agi"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-test-flags '("--release" "--" "--skip=config_read_eof")
+     `(#:install-source? #f     ; virtual manifest
+       #:cargo-test-flags '("--release" "--" "--skip=config_read_eof")
        #:cargo-inputs
        (("rust-alacritty-config-derive" ,rust-alacritty-config-derive-0.1)
         ("rust-alacritty-terminal" ,rust-alacritty-terminal-0.12)
