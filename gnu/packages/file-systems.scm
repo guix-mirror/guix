@@ -1142,6 +1142,81 @@ originally developed for Solaris and is now maintained by the OpenZFS
 community.")
     (license license:cddl1.0)))
 
+(define-public zfs-auto-snapshot
+  (package
+    (name "zfs-auto-snapshot")
+    (version "1.2.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "https://github.com/zfsonlinux/zfs-auto-snapshot/archive/upstream/"
+               version ".tar.gz"))
+        (sha256
+          (base32 "16ry1w43i44xc67gr73x6fa48ninfhqxr498ad4m3kya93vp2zrh"))))
+    (build-system gnu-build-system)
+    (inputs
+      ;; Note: if you are inheriting from the above zfs package in order
+      ;; to provide a specific stable kernel version, you should also
+      ;; inherit this package and replace the sole input below.
+      `(("zfs" ,zfs)))
+    (arguments
+      `(#:tests? #f ; No tests
+        #:phases
+        (modify-phases %standard-phases
+          (delete 'configure)
+          (delete 'build)
+          ;; Guix System may not have a traditional cron system, but
+          ;; the cron scripts installed by this package are convenient
+          ;; to use as targets for an mcron job specification, so make
+          ;; sure they can be run in-store.
+          (add-before 'install 'fix-scripts
+            (lambda* (#:key outputs inputs #:allow-other-keys)
+              (let* ((out                (assoc-ref outputs "out"))
+                     (zfs-auto-snapshot  (string-append
+                                           out
+                                           "/sbin/zfs-auto-snapshot"))
+                     (zfs-package        (assoc-ref inputs "zfs"))
+                     (zpool              (string-append
+                                           zfs-package
+                                           "/sbin/zpool"))
+                     (zfs                (string-append
+                                           zfs-package
+                                           "/sbin/zfs")))
+                (substitute* '("etc/zfs-auto-snapshot.cron.daily"
+                               "etc/zfs-auto-snapshot.cron.frequent"
+                               "etc/zfs-auto-snapshot.cron.hourly"
+                               "etc/zfs-auto-snapshot.cron.monthly"
+                               "etc/zfs-auto-snapshot.cron.weekly")
+                  (("zfs-auto-snapshot")
+                   zfs-auto-snapshot))
+                (substitute* "src/zfs-auto-snapshot.sh"
+                  (("LC_ALL=C zfs list")
+                   (string-append "LC_ALL=C " zfs " list"))
+                  (("LC_ALL=C zpool status")
+                   (string-append "LC_ALL=C " zpool " status"))
+                  (("zfs snapshot")
+                   (string-append zfs " snapshot"))
+                  (("zfs destroy")
+                   (string-append zfs " destroy"))))))
+          ;; Provide DESTDIR and PREFIX on make command.
+          (replace 'install
+            (lambda* (#:key outputs #:allow-other-keys)
+              (let ((out (assoc-ref outputs "out")))
+                (invoke "make" "install"
+                        "PREFIX="
+                        (string-append "DESTDIR=" out)))
+              #t)))))
+    (home-page "https://github.com/zfsonlinux/zfs-auto-snapshot")
+    (synopsis "Automatically create, rotate, and destroy periodic ZFS snapshots")
+    (description
+      "An alternative implementation of the zfs-auto-snapshot service for Linux
+that is compatible with zfs-linux (now OpenZFS) and zfs-fuse.
+
+On Guix System, you will need to invoke the included shell scripts as @code{job}
+definitions in your @code{operating-system} declaration.")
+    (license license:gpl2+)))
+
 (define-public mergerfs
   (package
     (name "mergerfs")
