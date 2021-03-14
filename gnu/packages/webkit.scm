@@ -256,12 +256,7 @@ acceleration in mind, leveraging common 3D graphics APIs for best performance.")
                           ;; included.  More investigation is needed.  For
                           ;; now, we explicitly disable it to prevent an error
                           ;; at configuration time.
-                          "-DUSE_GSTREAMER_GL=OFF"
-
-                          ;; XXX Disable WOFF2 ‘web fonts’.  These were never
-                          ;; supported in our previous builds.  Enabling them
-                          ;; requires building libwoff2 and possibly woff2dec.
-                          "-DUSE_WOFF2=OFF")
+                          "-DUSE_GSTREAMER_GL=OFF")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'configure-bubblewrap-store-directory
@@ -338,6 +333,7 @@ acceleration in mind, leveraging common 3D graphics APIs for best performance.")
        ("mesa" ,mesa)
        ("openjpeg" ,openjpeg)
        ("sqlite" ,sqlite)
+       ("woff2" ,woff2)
        ("wpebackend-fdo" ,wpebackend-fdo)
        ("xdg-dbus-proxy" ,xdg-dbus-proxy)))
     (home-page "https://www.webkitgtk.org/")
