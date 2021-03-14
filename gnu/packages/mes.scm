@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2018, 2019, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2017, 2018, 2019, 2020, 2021 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
@@ -194,14 +194,16 @@ Guile.")
 (define-public mes
   (package
     (inherit mes-0.19)
-    (version "0.22")
+    (version "0.23")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/mes/"
                                   "mes-" version ".tar.gz"))
               (sha256
                (base32
-                "0p1jsrrmcbc0zrvbvnjbb6iyxr0in71km293q8qj6gnar6bw09av"))))
+                "0mnryfkl0dwbr5gxp16j5s95gw7z1vm1fqa1pxabp0aiar1hw53s"))))
+    (supported-systems '("armhf-linux" "aarch64-linux"
+                         "i686-linux" "x86_64-linux"))
     (propagated-inputs
      `(("mescc-tools" ,mescc-tools)
        ("nyacc" ,nyacc-1.00.2)))
@@ -223,6 +225,15 @@ Guile.")
   (package
     (inherit mes)
     (name "mes-rb5")
+    (version "0.22")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/mes/"
+                                  "mes-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0p1jsrrmcbc0zrvbvnjbb6iyxr0in71km293q8qj6gnar6bw09av"))))
+    (supported-systems '("i686-linux" "x86_64-linux"))
     (inputs '())
     (propagated-inputs '())
     (native-inputs
