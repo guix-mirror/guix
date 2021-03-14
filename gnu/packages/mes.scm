@@ -345,6 +345,8 @@ get_machine.")
        (sha256
         (base32
          "1p1ijia4rm3002f5sypidl9v5gq0mlch9b0n61rpxkdsaaxjqax3"))))
+    (supported-systems '("armhf-linux" "aarch64-linux"
+                         "i686-linux" "x86_64-linux"))
     (arguments
      (substitute-keyword-arguments (package-arguments mescc-tools-0.5.2)
        ((#:make-flags _)
