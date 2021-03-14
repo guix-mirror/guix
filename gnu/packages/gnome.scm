@@ -3386,7 +3386,8 @@ library.")
     (build-system cargo-build-system)
     (outputs '("out" "doc"))
     (arguments
-     `(#:modules
+     `(#:install-source? #f
+       #:modules
        ((guix build cargo-build-system)
         (guix build utils)
         ((guix build gnu-build-system) #:prefix gnu:))
