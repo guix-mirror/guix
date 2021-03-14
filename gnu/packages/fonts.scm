@@ -221,7 +221,7 @@ Cyrillic, Canadian Syllabics and most Latin based languages are supported.")
 (define-public font-cantarell
   (package
     (name "font-abattis-cantarell")
-    (version "0.201")
+    (version "0.301")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/cantarell-fonts/"
@@ -229,7 +229,7 @@ Cyrillic, Canadian Syllabics and most Latin based languages are supported.")
                                   "/cantarell-fonts-" version ".tar.xz"))
               (sha256
                (base32
-                "0qwqmkczqy09fdj8l11nr841ks0dwsydqg55qyms12m4yvjn87xn"))))
+                "10sycxscs9kzl451mhygyj2qj8qlny8pamskb86np7izq05dnd9x"))))
     (build-system meson-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)))   ; for msgfmt
