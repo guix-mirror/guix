@@ -1882,7 +1882,9 @@ standard.")
          "1hgz8jq19wlz8vwqj900ry8cjv578nz4scc91mlc8944yid6573c"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-greenlet" ,python-greenlet)))
+     `(("python-dnspython" ,python-dnspython)
+       ("python-greenlet" ,python-greenlet)
+       ("python-monotonic" ,python-monotonic)))
     (arguments
      ;; TODO: Requires unpackaged 'enum-compat'.
      '(#:tests? #f))
