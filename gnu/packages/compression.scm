@@ -1660,7 +1660,7 @@ recreates the stored directory structure by default.")
                                 "unzip-alt-iconv-utf8.patch"
                                 "unzip-alt-iconv-utf8-print.patch"
                                 "unzip-fix-recmatch.patch"
-                                "unzip-caseinsensitive.patch"
+                                "unzip-case-insensitive.patch"
                                 "unzip-close.patch"
                                 "unzip-COVSCAN-fix-unterminated-string.patch"
                                 "unzip-CVE-2016-9844.patch"
