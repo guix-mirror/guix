@@ -90,6 +90,7 @@
                   (guix build utils)
                   ((guix build gnu-build-system) #:prefix gnu:))
        #:vendor-dir "vendor"
+       #:install-source? #f
        #:cargo-inputs
        (("rust-backtrace" ,rust-backtrace-0.3)
         ("rust-bitflags" ,rust-bitflags-1)
