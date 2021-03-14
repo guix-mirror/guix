@@ -122,7 +122,7 @@ engine that uses Wayland for graphics output.")
 (define-public wpewebkit
   (package
     (name "wpewebkit")
-    (version "2.28.3")
+    (version "2.30.5")
     (source
      (origin
        (method url-fetch)
@@ -130,7 +130,7 @@ engine that uses Wayland for graphics output.")
         (string-append "https://wpewebkit.org/releases/"
                        name "-" version ".tar.xz"))
        (sha256
-        (base32 "12z9457ja1xm93kl3gpd6nvd5xn11mvm8pr0w2zhmh3k9lx2cf95"))))
+        (base32 "16imr0kmzhs7dz6jva9750xbsdz9v50playnagabajy30x7pymsb"))))
     (build-system cmake-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -140,8 +140,10 @@ engine that uses Wayland for graphics output.")
         "-DPORT=WPE"
         ;; XXX: To be enabled.
         ;; "-DENABLE_ACCELERATED_2D_CANVAS=ON"
-        "-DENABLE_ENCRYPTED_MEDIA=ON"
-        "-DENABLE_GTKDOC=ON")
+        "-DUSE_SYSTEMD=OFF"
+        "-DENABLE_ENCRYPTED_MEDIA=OFF"
+        "-DENABLE_GTKDOC=ON"
+        "-DUSE_GSTREAMER_GL=OFF")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'setenv
