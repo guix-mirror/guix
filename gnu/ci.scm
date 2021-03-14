@@ -23,6 +23,7 @@
 (define-module (gnu ci)
   #:use-module (guix channels)
   #:use-module (guix config)
+  #:use-module (guix describe)
   #:use-module (guix store)
   #:use-module (guix grafts)
   #:use-module (guix profiles)
@@ -521,6 +522,17 @@ valid."
           (let ((hello (specification->package "hello")))
             (list (package-job store (job-name hello)
                                hello system))))
+         (('channels . channels)
+          ;; Build only the packages from CHANNELS.
+          (let ((all (all-packages)))
+            (filter-map
+             (lambda (package)
+               (match (package-channels package)
+                 ((channel . _)
+                  (and (member (channel-name channel) channels)
+                       (package->job store package system)))
+                 (else #f)))
+             all)))
          (('packages . rest)
           ;; Build selected list of packages only.
           (let ((packages (map specification->package rest)))
