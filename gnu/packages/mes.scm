@@ -202,8 +202,7 @@ Guile.")
               (sha256
                (base32
                 "0mnryfkl0dwbr5gxp16j5s95gw7z1vm1fqa1pxabp0aiar1hw53s"))))
-    (supported-systems '("armhf-linux" "aarch64-linux"
-                         "i686-linux" "x86_64-linux"))
+    (supported-systems '("armhf-linux" "i686-linux" "x86_64-linux"))
     (propagated-inputs
      `(("mescc-tools" ,mescc-tools)
        ("nyacc" ,nyacc-1.00.2)))
