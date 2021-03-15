@@ -6058,3 +6058,28 @@ Helper functions to apply the Correcting for Outcome Reporting Bias (CORB)
 method to correct for outcome reporting bias in a meta-analysis (van Aert &
 Wicherts, 2020).")
     (license license:gpl2+)))
+
+(define-public r-esc
+  (package
+    (name "r-esc")
+    (version "0.5.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "esc" version))
+        (sha256
+          (base32
+            "0gns7gz55p6pha05413r3hlvd7f2v1amxkg13d197mab1ypqic7q"))))
+    (properties `((upstream-name . "esc")))
+    (build-system r-build-system)
+    (home-page "https://strengejacke.github.io/esc/")
+    (synopsis
+      "Effect Size Computation for Meta Analysis")
+    (description
+      "Implementation of the web-based
+@url{http://www.campbellcollaboration.org/escalc/html/EffectSizeCalculator-Home.php,'Practical
+Meta-Analysis Effect Size Calculator'} from David B. Wilson in R.  Based on the
+input, the effect size can be returned as standardized mean difference, Cohen's
+f, Hedges' g, Pearson's r or Fisher's transformation z, odds ratio or log odds,
+or eta squared effect size.")
+    (license license:gpl3)))
