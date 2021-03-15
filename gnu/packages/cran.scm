@@ -343,13 +343,13 @@ the system clipboards.")
 (define-public r-zoo
   (package
     (name "r-zoo")
-    (version "1.8-8")
+    (version "1.8-9")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "zoo" version))
               (sha256
                (base32
-                "1rrw431jwaxd9xljp73f15rhcxvwc0xlyrmr0ghi5fj7a03c932f"))))
+                "18vjywalpgzqyk66gajb8x1yp8avdaaf11ykynld9fd8cy82bgmp"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-lattice" ,r-lattice)))
