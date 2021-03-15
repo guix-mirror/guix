@@ -1621,6 +1621,44 @@ databases.  Packages produced are intended to be used with AnnotationDbi.")
 on Bioconductor or which replace R functions.")
     (license license:artistic2.0)))
 
+(define-public r-biomart
+  (package
+    (name "r-biomart")
+    (version "2.46.3")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "biomaRt" version))
+              (sha256
+               (base32
+                "0gwmd0ykpv0gyh34c56g5m12lil20fvig49f3ih1jxrxf3q4wmq7"))))
+    (properties
+     `((upstream-name . "biomaRt")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-biocfilecache" ,r-biocfilecache)
+       ("r-httr" ,r-httr)
+       ("r-openssl" ,r-openssl)
+       ("r-progress" ,r-progress)
+       ("r-rappdirs" ,r-rappdirs)
+       ("r-stringr" ,r-stringr)
+       ("r-xml" ,r-xml)
+       ("r-xml2" ,r-xml2)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://bioconductor.org/packages/biomaRt")
+    (synopsis "Interface to BioMart databases")
+    (description
+     "biomaRt provides an interface to a growing collection of databases
+implementing the @url{BioMart software suite, http://www.biomart.org}.  The
+package enables retrieval of large amounts of data in a uniform way without
+the need to know the underlying database schemas or write complex SQL queries.
+Examples of BioMart databases are Ensembl, COSMIC, Uniprot, HGNC, Gramene,
+Wormbase and dbSNP mapped to Ensembl.  These major databases give biomaRt
+users direct access to a diverse set of data and enable a wide range of
+powerful online queries from gene annotation to database mining.")
+    (license license:artistic2.0)))
+
 (define-public r-category
   (package
     (name "r-category")
