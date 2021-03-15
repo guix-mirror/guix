@@ -2518,11 +2518,12 @@ properly display animated cursors.")
        (sha256
         (base32 "1xd7iap0x4sidmy9dv02cdnxjhnbk9li7r7f39x9cg0i8xs50ly6"))))
     (build-system cargo-build-system)
-    (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-wayland-client" ,rust-wayland-client-0.28)
-        ("rust-wayland-sys" ,rust-wayland-sys-0.28))))
+    (inputs
+     `(("rust-wayland-client" ,rust-wayland-client-0.28)
+       ("rust-wayland-sys" ,rust-wayland-sys-0.28)))
+    ;; For the PKG_CONFIG_PATH environment variable.
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (home-page "https://github.com/smithay/wayland-rs")
     (synopsis "Bindings to libwayland-egl")
     (description
