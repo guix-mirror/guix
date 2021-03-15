@@ -24953,28 +24953,22 @@ for spatial data on a linear network.")
 (define-public r-spatstat
   (package
     (name "r-spatstat")
-    (version "1.64-1")
+    (version "2.0-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "spatstat" version))
        (sha256
         (base32
-         "06jmxfs9kz9qqi3ichfgn8dglwb87kq2nl578p83za5psv8cfgya"))))
+         "1xq11ijc0d0lbixxb3wnvyr4gplfj2d2i64ynsa089xd525zzzbw"))))
     (properties `((upstream-name . "spatstat")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-abind" ,r-abind)
-       ("r-deldir" ,r-deldir)
-       ("r-goftest" ,r-goftest)
-       ("r-matrix" ,r-matrix)
-       ("r-mgcv" ,r-mgcv)
-       ("r-nlme" ,r-nlme)
-       ("r-polyclip" ,r-polyclip)
-       ("r-rpart" ,r-rpart)
+     `(("r-spatstat-core" ,r-spatstat-core)
        ("r-spatstat-data" ,r-spatstat-data)
-       ("r-spatstat-utils" ,r-spatstat-utils)
-       ("r-tensor" ,r-tensor)))
+       ("r-spatstat-geom" ,r-spatstat-geom)
+       ("r-spatstat-linnet" ,r-spatstat-linnet)
+       ("r-spatstat-utils" ,r-spatstat-utils)))
     (home-page "http://www.spatstat.org")
     (synopsis "Spatial Point Pattern analysis, model-fitting, simulation, tests")
     (description
