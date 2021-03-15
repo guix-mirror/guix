@@ -91,11 +91,17 @@ Cargo.toml file present at its root."
       (mkdir-p "target/package")
       (mkdir-p vendor-dir)
       ;; TODO: copy only regular inputs to target/package, not native-inputs.
-      (for-each (lambda (input-crate)
-                  (copy-recursively (string-append input-crate
-                                                   "/share/cargo/registry")
-                                    "target/package"))
-                (delete-duplicates rust-inputs))
+      (for-each
+        (lambda (input-crate)
+          (for-each
+            (lambda (packaged-crate)
+              (unless
+                (file-exists?
+                  (string-append "target/package/" (basename packaged-crate)))
+                (install-file packaged-crate "target/package/")))
+            (find-files
+              (string-append input-crate "/share/cargo/registry") "\\.crate$")))
+        (delete-duplicates rust-inputs))
 
       (for-each (lambda (crate)
                   (invoke "tar" "xzf" crate "-C" vendor-dir))
