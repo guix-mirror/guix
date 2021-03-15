@@ -28045,3 +28045,34 @@ Application Program Interfaces (API)}.")
       "Imports plain-text ASC data files from EyeLink eye trackers into
 (relatively) tidy data frames for analysis and visualization.")
     (license license:gpl3)))
+
+(define-public r-btm
+  (package
+    (name "r-btm")
+    (version "0.3.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "BTM" version))
+        (sha256
+          (base32
+            "1x6bncb7r97z8bdyxnn2frdi9kyawfy6c2041mv9f42zdrfzm6jb"))))
+    (properties `((upstream-name . "BTM")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-rcpp" ,r-rcpp)))
+    (home-page "https://github.com/bnosac/BTM")
+    (synopsis "Biterm Topic Models for Short Text")
+    (description
+      "Biterm Topic Models find topics in collections of short texts.  It is a
+word co-occurrence based topic model that learns topics by modeling word-word
+co-occurrences patterns which are called biterms.  This in contrast to
+traditional topic models like Latent Dirichlet Allocation and Probabilistic
+Latent Semantic Analysis which are word-document co-occurrence topic models.  A
+biterm consists of two words co-occurring in the same short text window.  This
+context window can for example be a twitter message, a short answer on a
+survey, a sentence of a text or a document identifier.  The techniques are
+explained in detail in the paper 'A Biterm Topic Model For Short Text' by
+Xiaohui Yan, Jiafeng Guo, Yanyan Lan, Xueqi Cheng (2013)
+@url{https://github.com/xiaohuiyan/xiaohuiyan.github.io/blob/master/paper/\
+BTM-WWW13.pdf}.")
+    (license license:asl2.0)))
