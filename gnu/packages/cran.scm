@@ -100,6 +100,7 @@
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages tcl)
+  #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages web)
@@ -27745,3 +27746,44 @@ attachments and metadata from a PDF file.  Also supports high quality rendering
 of PDF documents into PNG, JPEG, TIFF format, or into raw bitmap vectors for
 further processing in R.")
     (license license:expat)))
+
+(define-public r-antiword
+  (package
+    (name "r-antiword")
+    (version "1.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "antiword" version))
+        (sha256
+          (base32
+            "034znb0g9wwb8gi1r3z75v3sbb4mh83qrc4y8mbfx5lbgh8zhj6j"))
+      (modules '((guix build utils)))
+      (snippet
+       '(begin
+           ;; unvendor libantiword
+          (delete-file-recursively "src")
+          #t))))
+    (properties `((upstream-name . "antiword")))
+    (build-system r-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'use-system-antiword
+           (lambda* (#:key inputs #:allow-other-keys)
+            (substitute* "R/antiword.R"
+             (("system.file\\(\"bin\", package = \"antiword\"\\)")
+              (string-append "\"" (assoc-ref inputs "antiword") "/bin\"")))
+             #t)))))
+    (inputs `(("antiword" ,antiword)))
+    (propagated-inputs `(("r-sys" ,r-sys)))
+    (home-page
+      "https://github.com/ropensci/antiword#readme")
+    (synopsis
+      "Extract Text from Microsoft Word Documents")
+    (description
+      "Wraps the @code{AntiWord} utility to extract text from Microsoft Word
+documents.  The utility only supports the old @code{doc} format, not the new
+xml based @code{docx} format.  Use the @code{xml2} package to read the
+latter.")
+    (license license:gpl2)))
