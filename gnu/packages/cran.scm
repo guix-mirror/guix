@@ -27426,3 +27426,41 @@ in same length matches).")
     (description
       "Tools that can be used to reshape and restructure text data.")
     (license license:gpl2)))
+
+(define-public r-syuzhet
+  (package
+    (name "r-syuzhet")
+    (version "1.0.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "syuzhet" version))
+        (sha256
+          (base32
+            "16iccqdbw02iw82nah6kwz3gwfghi864j2y698n4b9dyc386ijzv"))))
+    (properties `((upstream-name . "syuzhet")))
+    (build-system r-build-system)
+    (propagated-inputs
+      `(("r-dplyr" ,r-dplyr)
+        ("r-dtt" ,r-dtt)
+        ("r-nlp" ,r-nlp)
+        ("r-rlang" ,r-rlang)
+        ("r-textshape" ,r-textshape)
+        ("r-tidyr" ,r-tidyr)
+        ("r-zoo" ,r-zoo)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/mjockers/syuzhet")
+    (synopsis
+      "Extracts Sentiment and Sentiment-Derived Plot Arcs from Text")
+    (description
+      "Extracts sentiment and sentiment-derived plot arcs from text using a
+variety of sentiment dictionaries conveniently packaged for consumption by R
+users.  Implemented dictionaries include @dfn{syuzhet} (default) developed in the
+Nebraska Literary Lab, @dfn{afinn} developed by Finn Arup Nielsen, @dfn{bing}
+developed by Minqing Hu and Bing Liu, and @dfn{nrc} developed by Mohammad, Saif
+M.  and Turney, Peter D.  Applicable references are available in
+@file{README.md} and in the documentation for the @code{get_sentiment}
+function.  The package also provides a hack for implementing Stanford's coreNLP
+sentiment parser.  The package provides several methods for plot arc
+normalization.")
+    (license license:gpl3)))
