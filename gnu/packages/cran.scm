@@ -27510,3 +27510,38 @@ and word lists.")
 three, ...  Ordinals are also available, first, second, third, ...  and
 indefinite article choice, \"a\" or \"an\".")
     (license license:gpl2)))
+
+(define-public r-textclean
+  (package
+    (name "r-textclean")
+    (version "0.9.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "textclean" version))
+        (sha256
+          (base32
+            "0kgjh6c4f14qkjc4fds7q7rpf4nkma3p0igm54fplmm3p853nvrz"))))
+    (properties `((upstream-name . "textclean")))
+    (build-system r-build-system)
+    (propagated-inputs
+      `(("r-data-table" ,r-data-table)
+        ("r-english" ,r-english)
+        ("r-glue" ,r-glue)
+        ("r-lexicon" ,r-lexicon)
+        ("r-mgsub" ,r-mgsub)
+        ("r-qdapregex" ,r-qdapregex)
+        ("r-stringi" ,r-stringi)
+        ("r-textshape" ,r-textshape)))
+    (home-page
+      "https://github.com/trinker/textclean")
+    (synopsis "Text Cleaning Tools")
+    (description
+      "Tools to clean and process text.  Tools are geared at checking for
+substrings that are not optimal for analysis and replacing or removing them
+(normalizing) with more analysis friendly substrings (see Sproat, Black, Chen,
+Kumar, Ostendorf, & Richards (2001) @url{doi:10.1006/csla.2001.0169}) or
+extracting them into new variables.  For example, emoticons are often used in
+text but not always easily handled by analysis algorithms.  The
+@code{replace_emoticon()} function replaces emoticons with word equivalents.")
+    (license license:gpl2)))
