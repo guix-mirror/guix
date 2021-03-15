@@ -11801,6 +11801,11 @@ other data.")
         ("rust-libc" ,rust-libc-0.2)
         ("rust-redox-users" ,rust-redox-users-0.3)
         ("rust-winapi" ,rust-winapi-0.3))))
+    (inputs
+     `(("rust-cfg-if" ,rust-cfg-if-0.1)
+       ("rust-libc" ,rust-libc-0.2)
+       ("rust-redox-users" ,rust-redox-users-0.3)
+       ("rust-winapi" ,rust-winapi-0.3)))
     (home-page "https://github.com/soc/dirs-sys-rs")
     (synopsis
      "System-level helper functions for the dirs and directories crates")
