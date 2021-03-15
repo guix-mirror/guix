@@ -1250,7 +1250,6 @@ made by suckless.")
         ("rust-time" ,rust-time-0.1)
         ("rust-unicode-width" ,rust-unicode-width-0.1)
         ("rust-urlocator" ,rust-urlocator-0.1)
-        ("rust-wayland-client" ,rust-wayland-client-0.28)
         ("rust-winapi" ,rust-winapi-0.3)
         ("rust-x11-dl" ,rust-x11-dl-2)
         ("rust-xdg" ,rust-xdg-2))
@@ -1269,13 +1268,7 @@ made by suckless.")
                     (smithay-client-toolkit-src
                      (string-append smithay-client-toolkit-name "-"
                                     smithay-client-toolkit-version ".tar.gz/src"))
-                    (wayland-sys-name ,(package-name rust-wayland-sys-0.28))
-                    (wayland-sys-version ,(package-version rust-wayland-sys-0.28))
-                    (wayland-sys-src (string-append wayland-sys-name "-"
-                                                    wayland-sys-version
-                                                    ".tar.gz/src"))
                     (libxkbcommon (assoc-ref inputs "libxkbcommon"))
-                    (libwayland (assoc-ref inputs "wayland"))
                     (mesa (assoc-ref inputs "mesa")))
                ;; Fix dlopen()ing some libraries on pure Wayland (no $DISPLAY):
                ;; Failed to initialize any backend! Wayland status: NoWaylandLib
@@ -1288,22 +1281,6 @@ made by suckless.")
                                            "/seat/keyboard/ffi.rs")
                  (("libxkbcommon\\.so")
                   (string-append libxkbcommon "/lib/libxkbcommon.so")))
-               (substitute* (string-append vendor-dir "/" wayland-sys-src
-                                           "/server.rs")
-                 (("libwayland-server\\.so")
-                  (string-append libwayland "/lib/libwayland-server.so")))
-               (substitute* (string-append vendor-dir "/" wayland-sys-src
-                                           "/cursor.rs")
-                 (("libwayland-cursor\\.so")
-                  (string-append libwayland "/lib/libwayland-cursor.so")))
-               (substitute* (string-append vendor-dir "/" wayland-sys-src
-                                           "/egl.rs")
-                 (("libwayland-egl\\.so")
-                  (string-append libwayland "/lib/libwayland-egl.so")))
-               (substitute* (string-append vendor-dir "/" wayland-sys-src
-                                           "/client.rs")
-                 (("libwayland-client\\.so")
-                  (string-append libwayland "/lib/libwayland-client.so")))
 
                ;; Mesa is needed everywhere.
                (substitute*
@@ -1367,8 +1344,9 @@ made by suckless.")
        ("libxkbcommon" ,libxkbcommon)
        ("libxrandr" ,libxrandr)
        ("libxxf86vm" ,libxxf86vm)
-       ("wayland" ,wayland)
-       ("mesa" ,mesa)))
+       ("mesa" ,mesa)
+       ("rust-wayland-client" ,rust-wayland-client-0.28)
+       ("wayland" ,wayland)))
     (native-search-paths
      ;; FIXME: This should only be located in 'ncurses'.  Nonetheless it is
      ;; provided for usability reasons.  See <https://bugs.gnu.org/22138>.
