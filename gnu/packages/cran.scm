@@ -24859,6 +24859,33 @@ matrix calculations that are common in statistics, such as quadratic forms.")
 package.")
     (license license:gpl2+)))
 
+(define-public r-spatstat-geom
+  (package
+    (name "r-spatstat-geom")
+    (version "1.65-5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "spatstat.geom" version))
+       (sha256
+        (base32
+         "0g0m5b3nbzpyblbp77n56k6aiw3fn23jkk72h9fhqlg1ydn2fzpk"))))
+    (properties `((upstream-name . "spatstat.geom")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-deldir" ,r-deldir)
+       ("r-polyclip" ,r-polyclip)
+       ("r-spatstat-data" ,r-spatstat-data)
+       ("r-spatstat-sparse" ,r-spatstat-sparse)
+       ("r-spatstat-utils" ,r-spatstat-utils)))
+    (home-page "http://spatstat.org/")
+    (synopsis "Geometrical functionality of the spatstat package")
+    (description
+     "This is a subset of the original spatstat package, containing the
+user-level code from spatstat which performs geometrical operations, except
+for the geometry of linear networks.")
+    (license license:gpl2+)))
+
 (define-public r-spatstat
   (package
     (name "r-spatstat")
