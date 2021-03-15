@@ -44,6 +44,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages python-build)
+  #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages time))
@@ -736,12 +737,11 @@ executed during the Sphinx build process.")
        (uri (pypi-uri "sphobjinv" version))
        (sha256
         (base32
-         "126lgm54c94ay3fci512ap4l607gak90pbz0fk98syxvj5izrrzx"))
-       (patches (search-patches "python-sphobjinv-system-ca.patch"))))
+         "126lgm54c94ay3fci512ap4l607gak90pbz0fk98syxvj5izrrzx"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-attrs" ,python-attrs)
-       ;("python-certifi" ,python-certifi)
+       ("python-certifi" ,python-certifi)
        ("python-fuzzywuzzy" ,python-fuzzywuzzy)
        ("python-jsonschema" ,python-jsonschema)
        ("python-levenshtein" ,python-levenshtein)))
