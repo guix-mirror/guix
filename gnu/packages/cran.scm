@@ -28016,3 +28016,32 @@ Application Program Interfaces (API)}.")
     (description
       "Tools for working with and comparing sets of points and intervals.")
     (license license:artistic2.0)))
+
+(define-public r-eyelinker
+  (package
+    (name "r-eyelinker")
+    (version "0.2.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "eyelinker" version))
+        (sha256
+          (base32
+            "14rfcdxad9iazwd46q6bm8gg1ryh6s8kf7arj00hhb7xz3gvk9c2"))))
+    (properties `((upstream-name . "eyelinker")))
+    (build-system r-build-system)
+    (propagated-inputs
+      `(("r-intervals" ,r-intervals)
+        ("r-readr" ,r-readr)
+        ("r-stringi" ,r-stringi)
+        ("r-stringr" ,r-stringr)
+        ("r-tibble" ,r-tibble)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page
+      "https://github.com/a-hurst/eyelinker")
+    (synopsis
+      "Import ASC Files from EyeLink Eye Trackers")
+    (description
+      "Imports plain-text ASC data files from EyeLink eye trackers into
+(relatively) tidy data frames for analysis and visualization.")
+    (license license:gpl3)))
