@@ -873,18 +873,21 @@ single step.")
 (define-public r-rvest
   (package
     (name "r-rvest")
-    (version "0.3.6")
+    (version "1.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rvest" version))
        (sha256
-        (base32 "1yh2p429a0zr8pqmlw5rzf6m797j20j5w6xwxlqq0wrdbnif6bka"))))
+        (base32 "04spcv6nxlmx5bxncq0vybfqrs8jgjamzyrn6wmkdcwii8jvyn53"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-httr" ,r-httr)
+       ("r-lifecycle" ,r-lifecycle)
        ("r-magrittr" ,r-magrittr)
+       ("r-rlang" ,r-rlang)
        ("r-selectr" ,r-selectr)
+       ("r-tibble" ,r-tibble)
        ("r-xml2" ,r-xml2)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
