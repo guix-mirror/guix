@@ -14232,9 +14232,6 @@ control protocol to script against the Tor process and read descriptor data
 relays publish about themselves.")
     (license license:lgpl3)))
 
-(define-public python2-stem
-  (package-with-python2 python-stem))
-
 (define-public python-pyserial
   (package
     (name "python-pyserial")
