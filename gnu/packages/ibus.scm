@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
@@ -224,7 +224,7 @@ ZhuYin (Bopomofo) input method based on libpinyin for IBus.")
 (define-public libpinyin
   (package
     (name "libpinyin")
-    (version "2.3.0")
+    (version "2.6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/libpinyin/libpinyin/"
@@ -232,7 +232,7 @@ ZhuYin (Bopomofo) input method based on libpinyin for IBus.")
                                   "/libpinyin-" version ".tar.gz"))
               (sha256
                (base32
-                "14969v6w8n1aiqphl2386dws7dmsdwbzyqnlz4kr8ppm39m9rp5k"))))
+                "10h5mjgv4ibhispvr3s1k36a4aclx4dcvcc2knd4sg1xibw0dp4w"))))
     (build-system gnu-build-system)
     (inputs
      `(("glib" ,glib)
