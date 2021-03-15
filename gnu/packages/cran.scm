@@ -27996,3 +27996,23 @@ supply the workflow to create thematic maps.  This package also facilitates
 via @url{https://developer.twitter.com/en/docs,Twitter's REST and stream
 Application Program Interfaces (API)}.")
     (license license:expat)))
+
+(define-public r-intervals
+  (package
+    (name "r-intervals")
+    (version "0.15.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "intervals" version))
+        (sha256
+          (base32
+            "0mvwfwc03ifb30a3dzbmkv9adwqb8ajxhcw24d8xip8px063plhb"))))
+    (properties `((upstream-name . "intervals")))
+    (build-system r-build-system)
+    (home-page "https://github.com/edzer/intervals")
+    (synopsis
+      "Tools for Working with Points and Intervals")
+    (description
+      "Tools for working with and comparing sets of points and intervals.")
+    (license license:artistic2.0)))
