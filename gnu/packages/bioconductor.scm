@@ -1570,6 +1570,28 @@ microarrays.")
 databases.  Packages produced are intended to be used with AnnotationDbi.")
     (license license:artistic2.0)))
 
+(define-public r-biobase
+  (package
+    (name "r-biobase")
+    (version "2.50.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "Biobase" version))
+              (sha256
+               (base32
+                "11kgc4flywlm3i18603558l8ksv91c24vkc5fnnbcd375i2dhhd4"))))
+    (properties
+     `((upstream-name . "Biobase")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)))
+    (home-page "https://bioconductor.org/packages/Biobase")
+    (synopsis "Base functions for Bioconductor")
+    (description
+     "This package provides functions that are needed by many other packages
+on Bioconductor or which replace R functions.")
+    (license license:artistic2.0)))
+
 (define-public r-category
   (package
     (name "r-category")
