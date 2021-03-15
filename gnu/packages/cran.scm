@@ -27464,3 +27464,26 @@ function.  The package also provides a hack for implementing Stanford's coreNLP
 sentiment parser.  The package provides several methods for plot arc
 normalization.")
     (license license:gpl3)))
+
+(define-public r-lexicon
+  (package
+    (name "r-lexicon")
+    (version "1.2.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "lexicon" version))
+        (sha256
+          (base32
+            "0x7rscsh6par2lj11sby7bmz41cxn63iiw51lgh29z09cg8j606c"))))
+    (properties `((upstream-name . "lexicon")))
+    (build-system r-build-system)
+    (propagated-inputs
+      `(("r-data-table" ,r-data-table)
+        ("r-syuzhet" ,r-syuzhet)))
+    (home-page "https://github.com/trinker/lexicon")
+    (synopsis "Lexicons for Text Analysis")
+    (description
+      "This package provides a collection of lexical hash tables, dictionaries,
+and word lists.")
+    (license license:gpl3)))
