@@ -24809,6 +24809,33 @@ diagonals.  This package allows you to compute the tensor product of arrays.")
 which may also be useful for other purposes.")
     (license license:gpl2+)))
 
+(define-public r-spatstat-sparse
+  (package
+    (name "r-spatstat-sparse")
+    (version "1.2-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "spatstat.sparse" version))
+       (sha256
+        (base32
+         "1w312q7gxzchigxxzk9akscdsz66j5085lgjryamschjgp4f8yk2"))))
+    (properties
+     `((upstream-name . "spatstat.sparse")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-abind" ,r-abind)
+       ("r-matrix" ,r-matrix)
+       ("r-spatstat-utils" ,r-spatstat-utils)
+       ("r-tensor" ,r-tensor)))
+    (home-page "http://spatstat.org/")
+    (synopsis "Sparse three-dimensional arrays and linear algebra utilities")
+    (description
+     "This package defines sparse three-dimensional arrays and supports
+standard operations on them.  The package also includes utility functions for
+matrix calculations that are common in statistics, such as quadratic forms.")
+    (license license:gpl2+)))
+
 (define-public r-spatstat-data
   (package
     (name "r-spatstat-data")
