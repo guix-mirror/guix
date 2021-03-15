@@ -7387,33 +7387,6 @@ includes software to
 ")
       (license license:cc0))))
 
-(define-public r-grohmm
-  (package
-    (name "r-grohmm")
-    (version "1.24.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (bioconductor-uri "groHMM" version))
-       (sha256
-        (base32
-         "08pap9wsaxl4jjlc1py0rc019gmi6daa0f9cr3ih1d97wybncanx"))))
-    (properties `((upstream-name . "groHMM")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-genomeinfodb" ,r-genomeinfodb)
-       ("r-genomicalignments" ,r-genomicalignments)
-       ("r-genomicranges" ,r-genomicranges)
-       ("r-iranges" ,r-iranges)
-       ("r-mass" ,r-mass)
-       ("r-rtracklayer" ,r-rtracklayer)
-       ("r-s4vectors" ,r-s4vectors)))
-    (home-page "https://github.com/Kraus-Lab/groHMM")
-    (synopsis "GRO-seq analysis pipeline")
-    (description
-     "This package provides a pipeline for the analysis of GRO-seq data.")
-    (license license:gpl3+)))
-
 (define-public vsearch
   (package
     (name "vsearch")
