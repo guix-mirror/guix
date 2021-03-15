@@ -7,6 +7,7 @@
 ;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;; Copyright © 2020 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;; Copyright © 2021 raid5atemyhomework <raid5atemyhomework@protonmail.com>
+;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1174,7 +1175,16 @@ local file system using FUSE.")
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/oniony/TMSU"
-       #:unpack-path ".."))
+       #:unpack-path ".."
+       #:install-source? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'post-install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               ;; The go build system produces /bin/TMSU -> install as /bin/tmsu
+               (rename-file (string-append out "/bin/TMSU")
+                            (string-append out "/bin/tmsu"))))))))
     (inputs
      `(("go-github-com-mattn-go-sqlite3" ,go-github-com-mattn-go-sqlite3)
        ("go-github-com-hanwen-fuse" ,go-github-com-hanwen-fuse)))
