@@ -670,6 +670,3 @@ that after installing this package, you might still need to add appropriate
 udev rules to your system configuration to be able to configure the YubiKey as
 an unprivileged user.")
     (license license:bsd-2)))
-
-(define-public python2-yubikey-manager
-  (package-with-python2 python-yubikey-manager))
