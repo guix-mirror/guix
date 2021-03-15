@@ -27,7 +27,7 @@
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Marius Bakke <marius@gnu.org>
-;;; Copyright © 2016, 2017 Stefan Reichör <stefan@xsteve.at>
+;;; Copyright © 2016, 2017, 2021 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2016, 2017, 2019 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016, 2017, 2018, 2020, 2021 Julien Lepiller <julien@lepiller.eu>
@@ -14542,13 +14542,13 @@ command @command{natsort} that exposes this functionality in the command line.")
 (define-public glances
   (package
   (name "glances")
-  (version "3.1.4")
+  (version "3.1.6")
   (source
     (origin
       (method url-fetch)
       (uri (pypi-uri "Glances" version))
       (sha256
-        (base32 "0dc47gbvp9a3wxppdqihxpglxxaxbj3hcvzgcxxq8zcsciah3plq"))
+        (base32 "11xbm8jgcxha191ly7q76nab1ilabiz14mqf6i3y6aw5xvgg017c"))
       (modules '((guix build utils)))
       (snippet
        '(begin
