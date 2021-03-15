@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2020 Valentin Ignatev <valentignatev@gmail.com>
 ;;; Copyright © 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
-;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2020 Gabriel Arazas <foo.dogsquared@gmail.com>
 ;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
@@ -2748,12 +2748,27 @@ the wayland protocol, server side.")
         (base32 "16f03jsy7q6p2wpaazc4w4kycyyk0fz7lacpdbcizl9m1i7874v7"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-dlib" ,rust-dlib-0.4)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-libc" ,rust-libc-0.2)
-        ("rust-pkg-config" ,rust-pkg-config-0.3))))
+        ("rust-pkg-config" ,rust-pkg-config-0.3))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-libraries
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((libwayland (assoc-ref inputs "wayland")))
+               (substitute* (find-files "src" "\\.rs$")
+                 (("libwayland.*\\.so" shared-lib)
+                  (string-append libwayland "/lib/" shared-lib)))
+               #t))))))
+    (inputs
+     `(("rust-dlib" ,rust-dlib-0.4)
+       ("rust-lazy-static" ,rust-lazy-static-1)
+       ("rust-libc" ,rust-libc-0.2)
+       ("rust-pkg-config" ,rust-pkg-config-0.3)))
+    (propagated-inputs
+     `(("wayland" ,wayland)))
     (home-page "https://github.com/smithay/wayland-rs")
     (synopsis "FFI bindings to the various @file{libwayland-*.so} libraries")
     (description
@@ -2778,10 +2793,13 @@ crate @code{rust-wayland-client} for usable bindings.")
         (base32
          "1x2qafvj8hd2x5qfaan2dfpw9amg0f5g9sqrkdy7qvbddsl8jknr"))))
     (arguments
-     `(#:cargo-inputs
+     `(#:skip-build? #t
+       #:cargo-inputs
        (("rust-dlib" ,rust-dlib-0.4)
         ("rust-lazy-static" ,rust-lazy-static-1)
-        ("rust-libc" ,rust-libc-0.2))))))
+        ("rust-libc" ,rust-libc-0.2))))
+    (inputs `())
+    (propagated-inputs `())))
 
 (define-public rust-wayland-sys-0.21
   (package
