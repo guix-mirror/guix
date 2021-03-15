@@ -27615,3 +27615,29 @@ to read in plain ndjson files or compressed (@code{gz}) ndjson files and either
 validate the format of the records or create \"flat\" @code{data.table}
 structures from them.")
     (license license:expat)))
+
+(define-public r-streamr
+  (package
+    (name "r-streamr")
+    (version "0.4.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "streamR" version))
+        (sha256
+          (base32
+            "1clx3b0j2515r1nmnl6ki7qw5n54q3x2jvqv3zrc00kq71mlj7ix"))))
+    (properties `((upstream-name . "streamR")))
+    (build-system r-build-system)
+    (propagated-inputs
+      `(("r-ndjson" ,r-ndjson)
+        ("r-rcurl" ,r-rcurl)
+        ("r-rjson" ,r-rjson)))
+    (home-page
+      "https://cran.r-project.org/package=streamR")
+    (synopsis
+      "Access to Twitter Streaming API via R")
+    (description
+      "This package provides functions to access Twitter's filter, sample, and
+user streams, and to parse the output into data frames.")
+    (license license:gpl2)))
