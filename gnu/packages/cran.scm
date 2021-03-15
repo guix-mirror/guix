@@ -27787,3 +27787,42 @@ documents.  The utility only supports the old @code{doc} format, not the new
 xml based @code{docx} format.  Use the @code{xml2} package to read the
 latter.")
     (license license:gpl2)))
+
+(define-public r-readtext
+  (package
+    (name "r-readtext")
+    (version "0.80")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "readtext" version))
+        (sha256
+          (base32
+            "0q8ajnp99fwvh14ppkm2z3gqwdwmjrvxvsfb4q7ad0dhkqric05y"))))
+    (properties `((upstream-name . "readtext")))
+    (build-system r-build-system)
+    (propagated-inputs
+      `(("r-antiword" ,r-antiword)
+        ("r-data-table" ,r-data-table)
+        ("r-digest" ,r-digest)
+        ("r-httr" ,r-httr)
+        ("r-jsonlite" ,r-jsonlite)
+        ("r-pdftools" ,r-pdftools)
+        ("r-readods" ,r-readods)
+        ("r-readxl" ,r-readxl)
+        ("r-streamr" ,r-streamr)
+        ("r-stringi" ,r-stringi)
+        ("r-striprtf" ,r-striprtf)
+        ("r-tibble" ,r-tibble)
+        ("r-xml2" ,r-xml2)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page
+      "https://github.com/quanteda/readtext")
+    (synopsis
+      "Import and Handling for Plain and Formatted Text Files")
+    (description
+      "This package provides functions for importing and handling text files
+and formatted text files with additional meta-data, such including @code{.csv},
+@code{.tab}, @code{.json}, @code{.xml}, @code{.html}, @code{.pdf}, @code{.doc},
+@code{.docx}, @code{.rtf}, @code{.xls}, @code{.xlsx}, and others.")
+    (license license:gpl3)))
