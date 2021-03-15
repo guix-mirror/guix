@@ -82,7 +82,7 @@ server writers.")
                                   "See COPYING in the distribution."))
    (home-page "https://cyrusimap.org/sasl/")))
 
-(define-public cyrus-sasl/fixed
+(define cyrus-sasl/fixed
   (package
     (inherit cyrus-sasl)
     (version "2.1.27")
