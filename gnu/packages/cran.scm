@@ -24918,6 +24918,33 @@ for the geometry of linear networks.")
 user-level code from spatstat, except for the code for linear networks.")
     (license license:gpl2+)))
 
+(define-public r-spatstat-linnet
+  (package
+    (name "r-spatstat-linnet")
+    (version "1.65-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "spatstat.linnet" version))
+       (sha256
+        (base32
+         "1y088r26h5yv006ydgcb4iwpvnc7ql857gky0hbi7xqqciqr8wdv"))))
+    (properties
+     `((upstream-name . "spatstat.linnet")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-matrix" ,r-matrix)
+       ("r-spatstat-core" ,r-spatstat-core)
+       ("r-spatstat-data" ,r-spatstat-data)
+       ("r-spatstat-geom" ,r-spatstat-geom)
+       ("r-spatstat-utils" ,r-spatstat-utils)))
+    (home-page "http://spatstat.org/")
+    (synopsis "Linear networks functionality of the spatstat package")
+    (description
+     "This is a subset of the spatstat package, containing its functionality
+for spatial data on a linear network.")
+    (license license:gpl2+)))
+
 (define-public r-spatstat
   (package
     (name "r-spatstat")
