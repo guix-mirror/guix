@@ -27879,3 +27879,33 @@ and formatted text files with additional meta-data, such including @code{.csv},
 @url{https://github.com/postgis/postgis/tree/master/liblwgeom,liblwgeom}, the
 light-weight geometry library used by @url{http://postgis.net/,PostGIS}.")
     (license license:gpl2)))
+
+(define-public r-stars
+  (package
+    (name "r-stars")
+    (version "0.5-1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "stars" version))
+        (sha256
+          (base32
+            "0ybk899rc0rpf2cv5kwk78fvis5xnr255hfcy5khdxsxdqgl0m9j"))))
+    (properties `((upstream-name . "stars")))
+    (build-system r-build-system)
+    (propagated-inputs
+      `(("r-abind" ,r-abind)
+        ("r-classint" ,r-classint)
+        ("r-lwgeom" ,r-lwgeom)
+        ("r-rlang" ,r-rlang)
+        ("r-sf" ,r-sf)
+        ("r-units" ,r-units)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://r-spatial.github.io/stars/")
+    (synopsis
+      "Spatiotemporal Arrays, Raster and Vector Data Cubes")
+    (description
+      "Reading, manipulating, writing and plotting spatiotemporal arrays
+(raster and vector data cubes) in @code{R}, using @code{GDAL} bindings provided
+by @code{sf}, and @code{NetCDF} bindings by @code{ncmeta} and @code{RNetCDF}.")
+    (license license:asl2.0)))
