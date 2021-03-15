@@ -24886,6 +24886,38 @@ user-level code from spatstat which performs geometrical operations, except
 for the geometry of linear networks.")
     (license license:gpl2+)))
 
+(define-public r-spatstat-core
+  (package
+    (name "r-spatstat-core")
+    (version "1.65-5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "spatstat.core" version))
+       (sha256
+        (base32
+         "0wq61sd53hwyk3fzjdc2prrr66n67zbwb5i3ii7kvyhfwx0xikm3"))))
+    (properties `((upstream-name . "spatstat.core")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-abind" ,r-abind)
+       ("r-goftest" ,r-goftest)
+       ("r-matrix" ,r-matrix)
+       ("r-mgcv" ,r-mgcv)
+       ("r-nlme" ,r-nlme)
+       ("r-rpart" ,r-rpart)
+       ("r-spatstat-data" ,r-spatstat-data)
+       ("r-spatstat-geom" ,r-spatstat-geom)
+       ("r-spatstat-sparse" ,r-spatstat-sparse)
+       ("r-spatstat-utils" ,r-spatstat-utils)
+       ("r-tensor" ,r-tensor)))
+    (home-page "http://spatstat.org/")
+    (synopsis "Core functionality of the spatstat package")
+    (description
+     "This is a subset of the original spatstat package, containing all of the
+user-level code from spatstat, except for the code for linear networks.")
+    (license license:gpl2+)))
+
 (define-public r-spatstat
   (package
     (name "r-spatstat")
