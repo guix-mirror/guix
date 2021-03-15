@@ -27,7 +27,7 @@
 ;;; Copyright © 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2020 Lars-Dominik Braun <lars@6xq.net>
+;;; Copyright © 2020, 2021 Lars-Dominik Braun <lars@6xq.net>
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Léo Le Bouter <lle-bout@zaclys.net>
 ;;; Copyright © 2021 Antoine Côté <antoine.cote@posteo.net>
@@ -1224,6 +1224,12 @@ handles the 7z format which features very high compression ratios.")
      `(#:test-target "test"
        #:phases
        (modify-phases %standard-phases
+         ;; Enable PIC, so it can be used in shared libraries.
+         (add-after 'unpack 'use-pic
+           (lambda _
+             (substitute* "Makefile"
+               (("CPPFLAGS = " all) (string-append all "-fPIC ")))
+            #t))
          (delete 'configure)
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
