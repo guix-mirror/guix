@@ -907,8 +907,7 @@ EUI-64, also known as MAC-48 media access control addresses.")
         (base32 "18szbh4dixcr7pmymvbrpv21hv0wrpii5w03rv2534bb2ywwpq8s"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-android-glue" ,rust-android-glue-0.2)
         ("rust-cgl" ,rust-cgl-0.3)
         ("rust-cocoa" ,rust-cocoa-0.23)
@@ -924,10 +923,12 @@ EUI-64, also known as MAC-48 media access control addresses.")
         ("rust-objc" ,rust-objc-0.2)
         ("rust-osmesa-sys" ,rust-osmesa-sys-0.1)
         ("rust-parking-lot" ,rust-parking-lot-0.11)
-        ("rust-wayland-client" ,rust-wayland-client-0.28)
         ("rust-wayland-egl" ,rust-wayland-egl-0.28)
         ("rust-winapi" ,rust-winapi-0.3)
         ("rust-winit" ,rust-winit-0.24))))
+    (inputs
+     `(("rust-wayland-client" ,rust-wayland-client-0.28)
+       ("rust-wayland-egl" ,rust-wayland-egl-0.28)))
     (home-page "https://github.com/tomaka/glutin")
     (synopsis "Cross-platform OpenGL context provider")
     (description "This package provides an OpenGL context provider.")
