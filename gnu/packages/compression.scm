@@ -1636,7 +1636,7 @@ recreates the stored directory structure by default.")
     (license (license:non-copyleft "file://LICENSE"
                                    "See LICENSE in the distribution."))))
 
-(define-public unzip/fixed
+(define unzip/fixed
   (package
     (inherit unzip)
     (version "6.0")
