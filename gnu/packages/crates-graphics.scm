@@ -2882,10 +2882,11 @@ crate @code{rust-wayland-client} for usable bindings.")
         ("rust-smithay-client-toolkit" ,rust-smithay-client-toolkit-0.12)
         ("rust-stdweb" ,rust-stdweb-0.4)
         ("rust-wasm-bindgen" ,rust-wasm-bindgen-0.2)
-        ("rust-wayland-client" ,rust-wayland-client-0.28)
         ("rust-web-sys" ,rust-web-sys-0.3)
         ("rust-winapi" ,rust-winapi-0.3)
         ("rust-x11-dl" ,rust-x11-dl-2))))
+    (inputs
+     `(("rust-wayland-client" ,rust-wayland-client-0.28)))
     (home-page "https://github.com/rust-windowing/winit")
     (synopsis "Window creation library")
     (description
