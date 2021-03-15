@@ -27487,3 +27487,26 @@ normalization.")
       "This package provides a collection of lexical hash tables, dictionaries,
 and word lists.")
     (license license:gpl3)))
+
+(define-public r-english
+  (package
+    (name "r-english")
+    (version "1.2-5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "english" version))
+        (sha256
+          (base32
+            "0d6rin40wy2y6k75x8d5qvf03rfy139f309wrl8xwbdb1h8fjkd1"))))
+    (properties `((upstream-name . "english")))
+    (build-system r-build-system)
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page
+      "https://cran.r-project.org/package=english")
+    (synopsis "Translate Integers into English")
+    (description
+      "Allow numbers to be presented in an English language version, one, two,
+three, ...  Ordinals are also available, first, second, third, ...  and
+indefinite article choice, \"a\" or \"an\".")
+    (license license:gpl2)))
