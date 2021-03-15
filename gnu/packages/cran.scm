@@ -27379,3 +27379,27 @@ context of discourse analysis.  Tools include removal/extraction/replacement of
 abbreviations, dates, dollar amounts, email addresses, hash tags, numbers,
 percentages, citations, person tags, phone numbers, times, and zip codes.")
     (license license:gpl2)))
+
+(define-public r-mgsub
+  (package
+    (name "r-mgsub")
+    (version "1.7.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "mgsub" version))
+        (sha256
+          (base32
+            "02l1b96zv36ia0c97wgcwfhi037mbn3wy9c64hcw0n0w67yj77rr"))))
+    (properties `((upstream-name . "mgsub")))
+    (build-system r-build-system)
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page
+      "https://cran.r-project.org/package=mgsub")
+    (synopsis
+      "Safe, Multiple, Simultaneous String Substitution")
+    (description
+      "Designed to enable simultaneous substitution in strings in a safe
+fashion.  Safe means it does not rely on placeholders (which can cause errors
+in same length matches).")
+    (license license:expat)))
