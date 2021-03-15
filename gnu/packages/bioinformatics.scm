@@ -7691,29 +7691,6 @@ including VCF header and contents in RDF and JSON.")
     (home-page "https://github.com/vcflib/bio-vcf")
     (license license:expat)))
 
-(define-public r-genomeinfodbdata
-  (package
-    (name "r-genomeinfodbdata")
-    (version "1.2.0")
-    (source (origin
-              (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "https://bioconductor.org/packages/release/"
-                                  "data/annotation/src/contrib/GenomeInfoDbData_"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "0di6nlqpsyqf693k2na65ayqldih563x3zfrczpqc5q2hl5kg35c"))))
-    (properties
-     `((upstream-name . "GenomeInfoDbData")))
-    (build-system r-build-system)
-    (home-page "https://bioconductor.org/packages/GenomeInfoDbData")
-    (synopsis "Species and taxonomy ID look up tables for GenomeInfoDb")
-    (description "This package contains data for mapping between NCBI taxonomy
-ID and species.  It is used by functions in the GenomeInfoDb package.")
-    (license license:artistic2.0)))
-
 (define-public r-genomeinfodb
   (package
     (name "r-genomeinfodb")

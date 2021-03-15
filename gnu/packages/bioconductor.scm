@@ -3,6 +3,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2020 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019, 2020, 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2020 Peter Lo <peterloleungyau@gmail.com>
@@ -389,6 +390,25 @@ default."  )
      "This package provides full genome sequences for Mus
 musculus (Mouse) as provided by UCSC (mm10, December 2011) and stored
 in Biostrings objects.")
+    (license license:artistic2.0)))
+
+(define-public r-genomeinfodbdata
+  (package
+    (name "r-genomeinfodbdata")
+    (version "1.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "GenomeInfoDbData" version 'annotation))
+              (sha256
+               (base32
+                "0di6nlqpsyqf693k2na65ayqldih563x3zfrczpqc5q2hl5kg35c"))))
+    (properties
+     `((upstream-name . "GenomeInfoDbData")))
+    (build-system r-build-system)
+    (home-page "https://bioconductor.org/packages/GenomeInfoDbData")
+    (synopsis "Species and taxonomy ID look up tables for GenomeInfoDb")
+    (description "This package contains data for mapping between NCBI taxonomy
+ID and species.  It is used by functions in the GenomeInfoDb package.")
     (license license:artistic2.0)))
 
 (define-public r-homo-sapiens
