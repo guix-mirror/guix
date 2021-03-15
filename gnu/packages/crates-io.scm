@@ -29803,6 +29803,8 @@ in your code.")
        (("rust-unicode-xid" ,rust-unicode-xid-0.2))
        #:cargo-development-inputs
        (("rust-quote" ,rust-quote-1))))
+    (inputs
+     `(("rust-unicode-xid" ,rust-unicode-xid-0.2)))
     (home-page "https://github.com/alexcrichton/proc-macro2")
     (synopsis "Stable implementation of the upcoming new `proc_macro` API")
     (description "This package provides a stable implementation of the upcoming new
