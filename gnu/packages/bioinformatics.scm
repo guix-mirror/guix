@@ -7691,49 +7691,6 @@ including VCF header and contents in RDF and JSON.")
     (home-page "https://github.com/vcflib/bio-vcf")
     (license license:expat)))
 
-(define-public r-rsamtools
-  (package
-    (name "r-rsamtools")
-    (version "2.6.0")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "Rsamtools" version))
-              (sha256
-               (base32
-                "040pggkwglc6wy90qnc7xcdnaj0v3iqlykvvsl74241409qly554"))))
-    (properties
-     `((upstream-name . "Rsamtools")))
-    (build-system r-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'use-system-zlib
-           (lambda _
-             (substitute* "DESCRIPTION"
-               (("zlibbioc, ") ""))
-             (substitute* "NAMESPACE"
-               (("import\\(zlibbioc\\)") ""))
-             #t)))))
-    (propagated-inputs
-     `(("r-biocgenerics" ,r-biocgenerics)
-       ("r-biocparallel" ,r-biocparallel)
-       ("r-biostrings" ,r-biostrings)
-       ("r-bitops" ,r-bitops)
-       ("r-genomeinfodb" ,r-genomeinfodb)
-       ("r-genomicranges" ,r-genomicranges)
-       ("r-iranges" ,r-iranges)
-       ("r-rhtslib" ,r-rhtslib)
-       ("r-s4vectors" ,r-s4vectors)
-       ("r-xvector" ,r-xvector)))
-    (home-page "https://bioconductor.org/packages/release/bioc/html/Rsamtools.html")
-    (synopsis "Interface to samtools, bcftools, and tabix")
-    (description
-     "This package provides an interface to the @code{samtools},
-@code{bcftools}, and @code{tabix} utilities for manipulating SAM (Sequence
-Alignment / Map), FASTA, binary variant call (BCF) and compressed indexed
-tab-delimited (tabix) files.")
-    (license license:expat)))
-
 (define-public r-delayedarray
   (package
     (name "r-delayedarray")
