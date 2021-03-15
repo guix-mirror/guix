@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018, 2020 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019, 2020, 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2020 Peter Lo <peterloleungyau@gmail.com>
@@ -9153,6 +9154,33 @@ generated.")
      "This package provides a library of core pre-processing and normalization
 routines.")
     (license license:lgpl2.0+)))
+
+(define-public r-s4vectors
+  (package
+    (name "r-s4vectors")
+    (version "0.28.1")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "S4Vectors" version))
+              (sha256
+               (base32
+                "0fhf4lsfxrim7glazh6ng46ykzaly5ggwpg170vcz4cc24prv0rh"))))
+    (properties
+     `((upstream-name . "S4Vectors")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)))
+    (home-page "https://bioconductor.org/packages/S4Vectors")
+    (synopsis "S4 implementation of vectors and lists")
+    (description
+     "The S4Vectors package defines the @code{Vector} and @code{List} virtual
+classes and a set of generic functions that extend the semantic of ordinary
+vectors and lists in R.  Package developers can easily implement vector-like
+or list-like objects as concrete subclasses of @code{Vector} or @code{List}.
+In addition, a few low-level concrete subclasses of general interest (e.g.
+@code{DataFrame}, @code{Rle}, and @code{Hits}) are implemented in the
+S4Vectors package itself.")
+    (license license:artistic2.0)))
 
 ;; This is a CRAN package, but it depends on preprocessorcore, which is a
 ;; Bioconductor package.

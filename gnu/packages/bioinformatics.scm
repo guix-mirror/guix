@@ -7691,33 +7691,6 @@ including VCF header and contents in RDF and JSON.")
     (home-page "https://github.com/vcflib/bio-vcf")
     (license license:expat)))
 
-(define-public r-s4vectors
-  (package
-    (name "r-s4vectors")
-    (version "0.28.1")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "S4Vectors" version))
-              (sha256
-               (base32
-                "0fhf4lsfxrim7glazh6ng46ykzaly5ggwpg170vcz4cc24prv0rh"))))
-    (properties
-     `((upstream-name . "S4Vectors")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-biocgenerics" ,r-biocgenerics)))
-    (home-page "https://bioconductor.org/packages/S4Vectors")
-    (synopsis "S4 implementation of vectors and lists")
-    (description
-     "The S4Vectors package defines the @code{Vector} and @code{List} virtual
-classes and a set of generic functions that extend the semantic of ordinary
-vectors and lists in R.  Package developers can easily implement vector-like
-or list-like objects as concrete subclasses of @code{Vector} or @code{List}.
-In addition, a few low-level concrete subclasses of general interest (e.g.
-@code{DataFrame}, @code{Rle}, and @code{Hits}) are implemented in the
-S4Vectors package itself.")
-    (license license:artistic2.0)))
-
 (define-public r-iranges
   (package
     (name "r-iranges")
