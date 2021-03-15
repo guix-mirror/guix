@@ -27826,3 +27826,25 @@ and formatted text files with additional meta-data, such including @code{.csv},
 @code{.tab}, @code{.json}, @code{.xml}, @code{.html}, @code{.pdf}, @code{.doc},
 @code{.docx}, @code{.rtf}, @code{.xls}, @code{.xlsx}, and others.")
     (license license:gpl3)))
+
+(define-public r-packcircles
+  (package
+    (name "r-packcircles")
+    (version "0.3.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "packcircles" version))
+        (sha256
+          (base32
+            "05pv5c4k4njkr0xw6i6ksiy34hcyx2lbiqpv5gxw81yrkm0rxfyk"))))
+    (properties `((upstream-name . "packcircles")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-rcpp" ,r-rcpp)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page
+      "https://github.com/mbedward/packcircles")
+    (synopsis "Circle Packing")
+    (description
+      "Algorithms to find arrangements of non-overlapping circles.")
+    (license license:expat)))
