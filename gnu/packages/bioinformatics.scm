@@ -7718,34 +7718,6 @@ including VCF header and contents in RDF and JSON.")
     (home-page "https://github.com/vcflib/bio-vcf")
     (license license:expat)))
 
-(define-public r-biocstyle
-  (package
-    (name "r-biocstyle")
-    (version "2.18.1")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "BiocStyle" version))
-              (sha256
-               (base32
-                "0rsxyna4dd99x42vc82mlkxx774vb9375llpakg53max1hhwkrqp"))))
-    (properties
-     `((upstream-name . "BiocStyle")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-biocmanager" ,r-biocmanager)
-       ("r-bookdown" ,r-bookdown)
-       ("r-knitr" ,r-knitr)
-       ("r-rmarkdown" ,r-rmarkdown)
-       ("r-yaml" ,r-yaml)))
-    (native-inputs
-     `(("r-knitr" ,r-knitr)))
-    (home-page "https://bioconductor.org/packages/BiocStyle")
-    (synopsis "Bioconductor formatting styles")
-    (description "This package provides standard formatting styles for
-Bioconductor PDF and HTML documents.  Package vignettes illustrate use and
-functionality.")
-    (license license:artistic2.0)))
-
 (define-public r-bioccheck
   (package
     (name "r-bioccheck")
