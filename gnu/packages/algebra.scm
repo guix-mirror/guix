@@ -13,6 +13,7 @@
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2021 Lars-Dominik Braun <ldb@leibniz-psychology.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -63,6 +64,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system r)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix hg-download)
@@ -1584,3 +1586,24 @@ general purpose; they require that p satisfy some preconditions based on
 the dimension of the input matrix (usually p should be prime and should be
 no more than about 20 bits long).")
     (license license:bsd-3)))
+
+(define-public r-dtt
+  (package
+    (name "r-dtt")
+    (version "0.1-2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "dtt" version))
+        (sha256
+          (base32
+            "0n8gj5iylfagdbaqirpykb01a9difsy4zl6qq55f0ghvazxqdvmn"))))
+    (properties `((upstream-name . "dtt")))
+    (build-system r-build-system)
+    (home-page "http://www.r-project.org")
+    (synopsis "Discrete Trigonometric Transforms")
+    (description
+      "This package provides functions for 1D and 2D Discrete Cosine Transform
+(@dfn{DCT}), Discrete Sine Transform (@dfn{DST}) and Discrete Hartley Transform
+(@dfn{DHT}).")
+    (license license:gpl2+)))
