@@ -3246,7 +3246,7 @@ XML/CSS rendering engine.")
     ;; LGPLv2.1-only.
     (license license:lgpl2.1)))
 
-(define-public libcroco/fixed
+(define libcroco/fixed
   (package
     (inherit libcroco)
     (name "libcroco")
