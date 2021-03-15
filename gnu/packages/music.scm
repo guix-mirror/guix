@@ -3348,9 +3348,6 @@ APEv2 tags can be edited regardless of audio format.  It can also manipulate Ogg
 streams on an individual packet/page level.")
     (license license:gpl2))) ; "later version" never mentioned
 
-(define-public python2-mutagen
-  (package-with-python2 python-mutagen))
-
 (define-public python-mediafile
   (package
     (name "python-mediafile")
