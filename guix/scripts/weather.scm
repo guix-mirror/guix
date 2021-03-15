@@ -117,8 +117,8 @@ values."
          (end    (current-time time-monotonic)))
     (apply kont (time-difference end start) result)))
 
-(define-syntax-rule (let/time ((time result exp)) body ...)
-  (call-with-time (lambda () exp) (lambda (time result) body ...)))
+(define-syntax-rule (let/time ((time result ... exp)) body ...)
+  (call-with-time (lambda () exp) (lambda (time result ...) body ...)))
 
 (define (histogram field proc seed lst)
   "Return an alist giving a histogram of all the values of FIELD for elements
@@ -181,11 +181,12 @@ Return the coverage ratio, an exact number between 0 and 1."
   (format #t (G_ "looking for ~h store items on ~a...~%")
           (length items) server)
 
-  (let/time ((time narinfos (lookup-narinfos
-                             server items
-                             #:make-progress-reporter
-                             (lambda* (total #:key url #:allow-other-keys)
-                               (progress-reporter/bar total)))))
+  (let/time ((time narinfos requests-made
+                   (lookup-narinfos
+                    server items
+                    #:make-progress-reporter
+                    (lambda* (total #:key url #:allow-other-keys)
+                      (progress-reporter/bar total)))))
     (format #t "~a~%" server)
     (let ((obtained  (length narinfos))
           (requested (length items))
@@ -212,9 +213,9 @@ Return the coverage ratio, an exact number between 0 and 1."
       (format #t (G_ "  ~,1h MiB on disk (uncompressed)~%")
               (/ (reduce + 0 (map narinfo-size narinfos)) MiB))
       (format #t (G_ "  ~,3h seconds per request (~,1h seconds in total)~%")
-              (/ time requested 1.) time)
+              (/ time requests-made 1.) time)
       (format #t (G_ "  ~,1h requests per second~%")
-              (/ requested time 1.))
+              (/ requests-made time 1.))
 
       (guard (c ((http-get-error? c)
                  (if (= 404 (http-get-error-code c))
