@@ -4219,14 +4219,14 @@ provided.")
 (define-public r-ipred
   (package
     (name "r-ipred")
-    (version "0.9-10")
+    (version "0.9-11")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ipred" version))
        (sha256
         (base32
-         "0p9cd2v47h71jbz8q0z6xykkaqpcp0mkpsfmd2bn961n1hfgpa63"))))
+         "04hfg27c72v0fz4091w3rgbc2vd7g6yl78y9plvsvh0vjlx8ymmp"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-class" ,r-class)
