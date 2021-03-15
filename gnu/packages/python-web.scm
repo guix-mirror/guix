@@ -2987,9 +2987,6 @@ upload, and reCAPTCHA.")
 for overriding static files.")
     (license license:gpl3+)))
 
-(define-public python2-flask-multistatic
-  (package-with-python2 python-flask-multistatic))
-
 (define-public python-cookies
   (package
     (name "python-cookies")
