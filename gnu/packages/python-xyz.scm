@@ -16264,9 +16264,6 @@ exception message with a traceback that points to the culprit.")
 make common patterns shorter and easier.")
     (license license:bsd-2)))
 
-(define-public python2-utils
-  (package-with-python2 python-utils))
-
 (define-public python-diff-match-patch
   (package
     (name "python-diff-match-patch")
