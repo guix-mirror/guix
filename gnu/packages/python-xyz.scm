@@ -11586,6 +11586,27 @@ numbers with uncertainties. It can also yield the derivatives of any
 expression.")
     (license license:bsd-3)))
 
+(define-public python-asteval
+  (package
+    (name "python-asteval")
+    (version "0.9.23")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "asteval" version))
+       (sha256
+        (base32
+         "0f54sd4w1a72ij1bcxs2x7dk9xf8bzclawijf1z18bqx9f96l2gm"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/newville/asteval")
+    (synopsis "Minimalistic evaluator of Python expressions")
+    (description
+     "This package provides a minimalistic evaluator of Python expression
+using the @code{ast} module")
+    (license license:expat)))
+
 (define-public python-boto
   (package
     (name "python-boto")
