@@ -242,20 +242,51 @@ IETF.")
 (define-public belcard
   (package
     (name "belcard")
-    (version "1.0.2")
+    (version "4.4.34")
     (source
      (origin
-       (method url-fetch)
-       (uri
-        (string-append "https://www.linphone.org/releases/sources/" name
-                       "/" name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.linphone.org/BC/public/belcard.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0iiyrll1shnbb0561pkvdqcmx9b2cdr76xpsbaqdirc3s4xzcl0k"))))
+        (base32 "16x2xp8d0a115132zhy1kpxkyj86ia7vrsnpjdg78fnbvmvysc8m"))))
     (build-system cmake-build-system)
+    (outputs '("out" "debug" "tester"))
     (arguments
-     `(#:tests? #f                      ; No test target
-       #:configure-flags
-       (list "-DENABLE_STATIC=OFF")))   ; Not required
+     `(#:tests? #t
+       #:configure-flags '("-DENABLE_STATIC=OFF")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-vcard-grammar-location
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (vcard-grammar
+                     (string-append out "/share/belr/grammars/vcard_grammar")))
+               (substitute* "include/belcard/vcard_grammar.hpp"
+                 (("define VCARD_GRAMMAR \"vcard_grammar\"")
+                  (format #f "define VCARD_GRAMMAR ~s" vcard-grammar))))))
+         (add-after 'install 'install-tester
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (tester (assoc-ref outputs "tester"))
+                   (test-name (string-append ,name "_tester")))
+               (for-each mkdir-p
+                         (list (string-append tester "/bin")
+                               (string-append tester "/share")))
+               (rename-file (string-append out "/bin/" test-name)
+                            (string-append tester "/bin/" test-name))
+               (rename-file (string-append out "/share/" test-name)
+                            (string-append tester "/share/" test-name)))))
+         (delete 'check)
+         (add-after 'install-tester 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (let* ((tester (assoc-ref outputs "tester"))
+                      (belcard_tester (string-append tester
+                                                     "/bin/belcard_tester")))
+                 (invoke belcard_tester))))))))
     (inputs
      `(("bctoolbox" ,bctoolbox)
        ("belr" ,belr)))
