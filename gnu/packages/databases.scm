@@ -3353,9 +3353,6 @@ processing them in the background with workers.  It is backed by Redis and it
 is designed to have a low barrier to entry.")
     (license license:bsd-2)))
 
-(define-public python2-rq
-  (package-with-python2 python-rq))
-
 (define-public python-rq-scheduler
   (package
     (name "python-rq-scheduler")
