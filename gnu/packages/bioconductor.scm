@@ -2,6 +2,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018, 2020 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
+;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019, 2020, 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2020 Peter Lo <peterloleungyau@gmail.com>
@@ -1243,6 +1244,35 @@ and evaluate clustering results.")
     (description "This package provides functions to plot data associated with
 arbitrary genomic intervals along chromosomal ideogram.")
     (license license:gpl2)))
+
+(define-public r-iranges
+  (package
+    (name "r-iranges")
+    (version "2.24.1")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "IRanges" version))
+              (sha256
+               (base32
+                "01mx46a82vd3gz705pj0kk4wpxg683s8jqxchzjia3gz00b4qw52"))))
+    (properties
+     `((upstream-name . "IRanges")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-s4vectors" ,r-s4vectors)))
+    (home-page "https://bioconductor.org/packages/IRanges")
+    (synopsis "Infrastructure for manipulating intervals on sequences")
+    (description
+     "This package provides efficient low-level and highly reusable S4 classes
+for storing ranges of integers, RLE vectors (Run-Length Encoding), and, more
+generally, data that can be organized sequentially (formally defined as
+@code{Vector} objects), as well as views on these @code{Vector} objects.
+Efficient list-like classes are also provided for storing big collections of
+instances of the basic classes.  All classes in the package use consistent
+naming and share the same rich and consistent \"Vector API\" as much as
+possible.")
+    (license license:artistic2.0)))
 
 ;; This is a CRAN package, but it depends on r-bsgenome-hsapiens-ucsc-hg19
 ;; from Bioconductor.
