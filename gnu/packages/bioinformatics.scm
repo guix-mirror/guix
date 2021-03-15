@@ -7691,39 +7691,6 @@ including VCF header and contents in RDF and JSON.")
     (home-page "https://github.com/vcflib/bio-vcf")
     (license license:expat)))
 
-(define-public r-delayedarray
-  (package
-    (name "r-delayedarray")
-    (version "0.16.2")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "DelayedArray" version))
-              (sha256
-               (base32
-                "09lpj951v1afxkrnjvnhzp4qgklq23ykdwlny7k1lyfcdy9q6wm0"))))
-    (properties
-     `((upstream-name . "DelayedArray")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-biocgenerics" ,r-biocgenerics)
-       ("r-s4vectors" ,r-s4vectors)
-       ("r-iranges" ,r-iranges)
-       ("r-matrix" ,r-matrix)
-       ("r-matrixgenerics" ,r-matrixgenerics)))
-    (native-inputs
-     `(("r-knitr" ,r-knitr)))
-    (home-page "https://bioconductor.org/packages/DelayedArray")
-    (synopsis "Delayed operations on array-like objects")
-    (description
-     "Wrapping an array-like object (typically an on-disk object) in a
-@code{DelayedArray} object allows one to perform common array operations on it
-without loading the object in memory.  In order to reduce memory usage and
-optimize performance, operations on the object are either delayed or executed
-using a block processing mechanism.  Note that this also works on in-memory
-array-like objects like @code{DataFrame} objects (typically with Rle columns),
-@code{Matrix} objects, and ordinary arrays and data frames.")
-    (license license:artistic2.0)))
-
 (define-public r-summarizedexperiment
   (package
     (name "r-summarizedexperiment")
