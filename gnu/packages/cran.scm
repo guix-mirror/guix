@@ -91,6 +91,7 @@
   #:use-module (gnu packages networking)
   #:use-module (gnu packages node)
   #:use-module (gnu packages pcre)
+  #:use-module (gnu packages pdf)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)  ;libsndfile
@@ -27668,3 +27669,49 @@ user streams, and to parse the output into data frames.")
       "Import @dfn{OpenDocument Spreadsheet} (ODS) into R as a data frame.
 Also support writing data frame into ODS file.")
     (license license:gpl3)))
+
+(define-public r-qpdf
+  (package
+    (name "r-qpdf")
+    (version "1.1")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (cran-uri "qpdf" version))
+      (sha256
+       (base32
+        "03lnfncw8qd1fwfyqh1mjvnsjr3b63wxbah0wp5g7z7gba90dwbi"))
+      (modules '((guix build utils)))
+      (snippet
+       '(begin
+           ;; unvendor libqpdf
+          (delete-file-recursively "src/libqpdf")
+          (delete-file-recursively "src/include/qpdf")
+          #t))))
+    (properties `((upstream-name . "qpdf")))
+    (build-system r-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'configure
+           (lambda _
+             (setenv "EXTERNAL_QPDF" "1")
+             #t)))))
+    (inputs
+      `(("zlib" ,zlib)
+        ("qpdf" ,qpdf)))
+    (propagated-inputs
+      `(("r-askpass" ,r-askpass)
+        ("r-curl" ,r-curl)
+        ("r-rcpp" ,r-rcpp)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/ropensci/qpdf")
+    (synopsis
+      "Split, Combine and Compress PDF Files")
+    (description
+      "Content-preserving transformations transformations of PDF files such as
+split, combine, and compress.  This package interfaces directly to the
+@code{qpdf} C++ API and does not require any command line utilities.  Note that
+@code{qpdf} does not read actual content from PDF files: to extract text and
+data you need the @code{pdftools} package.")
+    (license license:asl2.0)))
