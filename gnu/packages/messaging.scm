@@ -1017,9 +1017,6 @@ of xmpppy.")
     (home-page "https://dev.gajim.org/gajim/python-nbxmpp")
     (license license:gpl3+)))
 
-(define-public python2-nbxmpp
-  (package-with-python2 python-nbxmpp))
-
 (define-public gajim
   (package
     (name "gajim")
