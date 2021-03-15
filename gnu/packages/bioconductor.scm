@@ -8477,6 +8477,34 @@ monograph.")
 different graph related packages produced by Bioconductor.")
     (license license:artistic2.0)))
 
+(define-public r-biocviews
+  (package
+    (name "r-biocviews")
+    (version "1.58.1")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "biocViews" version))
+              (sha256
+               (base32
+                "1by2639z7n62z84dr8rj9jz12gsd1k8q42zsnxacxbwfwp6h0cl4"))))
+    (properties
+     `((upstream-name . "biocViews")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-biocmanager" ,r-biocmanager)
+       ("r-graph" ,r-graph)
+       ("r-rbgl" ,r-rbgl)
+       ("r-rcurl" ,r-rcurl)
+       ("r-xml" ,r-xml)
+       ("r-runit" ,r-runit)))
+    (home-page "https://bioconductor.org/packages/biocViews")
+    (synopsis "Bioconductor package categorization helper")
+    (description "The purpose of biocViews is to create HTML pages that
+categorize packages in a Bioconductor package repository according to keywords,
+also known as views, in a controlled vocabulary.")
+    (license license:artistic2.0)))
+
 (define-public r-experimenthub
   (package
     (name "r-experimenthub")
