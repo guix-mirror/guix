@@ -28726,7 +28726,16 @@ written with declarative macros.")
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-development-inputs
-       (("rust-lazy-static" ,rust-lazy-static-1))))
+       (("rust-lazy-static" ,rust-lazy-static-1))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'hardcode-pkg-config-loation
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "src/lib.rs"
+               (("\"pkg-config\"")
+                (string-append "\"" (assoc-ref inputs "pkg-config")
+                               "/bin/pkg-config\"")))
+             #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "https://github.com/rust-lang/pkg-config-rs")
