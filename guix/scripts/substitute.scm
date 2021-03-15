@@ -45,6 +45,7 @@
                 #:select (uri-abbreviation nar-uri-abbreviation
                           (open-connection-for-uri
                            . guix:open-connection-for-uri)))
+  #:autoload   (gnutls) (error/invalid-session)
   #:use-module (guix progress)
   #:use-module ((guix build syscalls)
                 #:select (set-thread-name))
@@ -377,6 +378,32 @@ server certificates."
                     (drain-input socket)
                     socket))))))))
 
+(define (call-with-cached-connection uri proc)
+  (let ((port (open-connection-for-uri/cached uri
+                                              #:verify-certificate? #f)))
+    (catch #t
+      (lambda ()
+        (proc port))
+      (lambda (key . args)
+        ;; If PORT was cached and the server closed the connection in the
+        ;; meantime, we get EPIPE.  In that case, open a fresh connection
+        ;; and retry.  We might also get 'bad-response or a similar
+        ;; exception from (web response) later on, once we've sent the
+        ;; request, or a ERROR/INVALID-SESSION from GnuTLS.
+        (if (or (and (eq? key 'system-error)
+                     (= EPIPE (system-error-errno `(,key ,@args))))
+                (and (eq? key 'gnutls-error)
+                     (eq? (first args) error/invalid-session))
+                (memq key '(bad-response bad-header bad-header-component)))
+            (proc (open-connection-for-uri/cached uri
+                                                  #:verify-certificate? #f
+                                                  #:fresh? #t))
+            (apply throw key args))))))
+
+(define-syntax-rule (with-cached-connection uri port exp ...)
+  "Bind PORT with EXP... to a socket connected to URI."
+  (call-with-cached-connection uri (lambda (port) exp ...)))
+
 (define* (process-substitution store-item destination
                                #:key cache-urls acl
                                deduplicate? print-build-trace?)
@@ -424,11 +451,11 @@ the current output port."
            (call-with-connection-error-handling
             uri
             (lambda ()
-              (http-fetch uri #:text? #f
-                          #:open-connection open-connection-for-uri/cached
-                          #:keep-alive? #t
-                          #:buffered? #f
-                          #:verify-certificate? #f))))))
+              (with-cached-connection uri port
+                (http-fetch uri #:text? #f
+                            #:port port
+                            #:keep-alive? #t
+                            #:buffered? #f)))))))
       (else
        (leave (G_ "unsupported substitute URI scheme: ~a~%")
               (uri->string uri)))))
@@ -715,6 +742,8 @@ if needed, as expected by the daemon's agent."
 ;;; Local Variables:
 ;;; eval: (put 'with-timeout 'scheme-indent-function 1)
 ;;; eval: (put 'with-redirected-error-port 'scheme-indent-function 0)
+;;; eval: (put 'with-cached-connection 'scheme-indent-function 2)
+;;; eval: (put 'call-with-cached-connection 'scheme-indent-function 1)
 ;;; End:
 
 ;;; substitute.scm ends here
