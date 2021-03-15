@@ -6999,14 +6999,14 @@ sequential way to mimic the manual gating strategy.")
 (define-public r-cytoml
   (package
     (name "r-cytoml")
-    (version "2.2.1")
+    (version "2.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "CytoML" version))
        (sha256
         (base32
-         "1d8x49aqc95x1vx456hya5r7mal80pj9l6wmr5x5pb5r8qyzz6yq"))))
+         "0ckjb7bkz0cy46scrv4vl9w37g54c0yihvzmbkzilip1ikpvhxd1"))))
     (properties `((upstream-name . "CytoML")))
     (build-system r-build-system)
     (arguments
@@ -7021,7 +7021,8 @@ sequential way to mimic the manual gating strategy.")
                 (string-append match "/libhdf5.a")))
              #t)))))
     (inputs
-     `(("libxml2" ,libxml2)))
+     `(("libxml2" ,libxml2)
+       ("zlib" ,zlib)))
     (propagated-inputs
      `(("r-base64enc" ,r-base64enc)
        ("r-bh" ,r-bh)
