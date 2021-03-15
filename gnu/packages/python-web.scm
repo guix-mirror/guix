@@ -2932,9 +2932,6 @@ and Jinja2 template engine.  It is called a micro framework because it does not
 presume or force a developer to use a particular tool or library.")
     (license license:bsd-3)))
 
-(define-public python2-flask
-  (package-with-python2 python-flask))
-
 (define-public python-flask-wtf
   (package
     (name "python-flask-wtf")
