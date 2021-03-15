@@ -7691,25 +7691,6 @@ including VCF header and contents in RDF and JSON.")
     (home-page "https://github.com/vcflib/bio-vcf")
     (license license:expat)))
 
-(define-public r-limma
-  (package
-    (name "r-limma")
-    (version "3.46.0")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "limma" version))
-              (sha256
-               (base32
-                "1xxv493q1kip9bjfv7v7k5dnq7hz7gvl80i983v4mvwavhgnbxfz"))))
-    (build-system r-build-system)
-    (home-page "http://bioinf.wehi.edu.au/limma")
-    (synopsis "Package for linear models for microarray and RNA-seq data")
-    (description "This package can be used for the analysis of gene expression
-studies, especially the use of linear models for analysing designed experiments
-and the assessment of differential expression.  The analysis methods apply to
-different technologies, including microarrays, RNA-seq, and quantitative PCR.")
-    (license license:gpl2+)))
-
 (define-public r-xvector
   (package
     (name "r-xvector")
