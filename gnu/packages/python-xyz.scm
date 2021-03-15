@@ -14665,9 +14665,6 @@ This library is a port of @url{https://github.com/graphql/graphql-js,graphql-js}
 to Python.")
     (license license:expat)))
 
-(define-public python2-graphql-core
-  (package-with-python2 python-graphql-core))
-
 (define-public python-graphql-relay
   (package
     (name "python-graphql-relay")
