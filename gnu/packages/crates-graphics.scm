@@ -2324,16 +2324,23 @@ applications.")
         (base32 "1mxnflzv9s3qpcp0z7kqvrzki5bknfar9n9yky06f8ivs00vxgdx"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-bitflags" ,rust-bitflags-1)
         ("rust-downcast-rs" ,rust-downcast-rs-1)
         ("rust-libc" ,rust-libc-0.2)
         ("rust-nix" ,rust-nix-0.18)
-        ("rust-scoped-tls" ,rust-scoped-tls-1)
-        ("rust-wayland-commons" ,rust-wayland-commons-0.28)
-        ("rust-wayland-scanner" ,rust-wayland-scanner-0.28)
-        ("rust-wayland-sys" ,rust-wayland-sys-0.28))))
+        ("rust-scoped-tls" ,rust-scoped-tls-1))
+       #:cargo-development-inputs
+       (("rust-tempfile" ,rust-tempfile-3))))
+    (inputs
+     `(("rust-bitflags" ,rust-bitflags-1)
+       ("rust-downcast-rs" ,rust-downcast-rs-1)
+       ("rust-libc" ,rust-libc-0.2)
+       ("rust-nix" ,rust-nix-0.18)
+       ("rust-scoped-tls" ,rust-scoped-tls-1)
+       ("rust-wayland-commons" ,rust-wayland-commons-0.28)
+       ("rust-wayland-scanner" ,rust-wayland-scanner-0.28)
+       ("rust-wayland-sys" ,rust-wayland-sys-0.28)))
     (home-page "https://github.com/smithay/wayland-rs")
     (synopsis
      "Rust bindings to the standard C implementation of the wayland protocol")
@@ -2357,7 +2364,8 @@ the wayland protocol, client side.")
         (base32
          "1nmw2kz70llc5mxwzg6bglnqy0qnyr9224zjmq9czazgw3mq045g"))))
     (arguments
-     `(#:cargo-inputs
+     `(#:skip-build? #t
+       #:cargo-inputs
        (("rust-bitflags" ,rust-bitflags-1)
         ("rust-calloop" ,rust-calloop-0.4)
         ("rust-downcast-rs" ,rust-downcast-rs-1)
@@ -2369,7 +2377,8 @@ the wayland protocol, client side.")
         ("rust-wayland-scanner" ,rust-wayland-scanner-0.23))
        #:cargo-development-inputs
        (("rust-byteorder" ,rust-byteorder-1)
-        ("rust-tempfile" ,rust-tempfile-3))))))
+        ("rust-tempfile" ,rust-tempfile-3))))
+    (inputs `())))
 
 (define-public rust-wayland-client-0.21
   (package
