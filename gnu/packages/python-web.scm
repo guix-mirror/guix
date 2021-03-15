@@ -2970,9 +2970,6 @@ presume or force a developer to use a particular tool or library.")
 upload, and reCAPTCHA.")
     (license license:bsd-3)))
 
-(define-public python2-flask-wtf
-  (package-with-python2 python-flask-wtf))
-
 (define-public python-flask-multistatic
   (package
     (name "python-flask-multistatic")
