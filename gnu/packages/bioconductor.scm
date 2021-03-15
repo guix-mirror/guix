@@ -1684,6 +1684,34 @@ testing.  The package also provides functions for the visualization and
 exploration of the results.")
     (license license:gpl3+)))
 
+(define-public r-edger
+  (package
+    (name "r-edger")
+    (version "3.32.1")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "edgeR" version))
+              (sha256
+               (base32
+                "1gaic8qf6a6sy0bmydh1xzf52w0wnq31aanpvw3a30pfsi218bcp"))))
+    (properties `((upstream-name . "edgeR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-limma" ,r-limma)
+       ("r-locfit" ,r-locfit)
+       ("r-rcpp" ,r-rcpp)
+       ("r-statmod" ,r-statmod))) ;for estimateDisp
+    (home-page "http://bioinf.wehi.edu.au/edgeR")
+    (synopsis "EdgeR does empirical analysis of digital gene expression data")
+    (description "This package can do differential expression analysis of
+RNA-seq expression profiles with biological replication.  It implements a range
+of statistical methodology based on the negative binomial distributions,
+including empirical Bayes estimation, exact tests, generalized linear models
+and quasi-likelihood tests.  It be applied to differential signal analysis of
+other types of genomic data that produce counts, including ChIP-seq, SAGE and
+CAGE.")
+    (license license:gpl2+)))
+
 (define-public r-genefilter
   (package
     (name "r-genefilter")
