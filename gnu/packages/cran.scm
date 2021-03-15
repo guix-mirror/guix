@@ -27909,3 +27909,35 @@ light-weight geometry library used by @url{http://postgis.net/,PostGIS}.")
 (raster and vector data cubes) in @code{R}, using @code{GDAL} bindings provided
 by @code{sf}, and @code{NetCDF} bindings by @code{ncmeta} and @code{RNetCDF}.")
     (license license:asl2.0)))
+
+(define-public r-tmaptools
+  (package
+    (name "r-tmaptools")
+    (version "3.1-1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "tmaptools" version))
+        (sha256
+          (base32
+            "0bal3czrdr93qig8s5cf5szld5vjbbks67rismfhlkmlgw6wp2gx"))))
+    (properties `((upstream-name . "tmaptools")))
+    (build-system r-build-system)
+    (propagated-inputs
+      `(("r-dichromat" ,r-dichromat)
+        ("r-lwgeom" ,r-lwgeom)
+        ("r-magrittr" ,r-magrittr)
+        ("r-rcolorbrewer" ,r-rcolorbrewer)
+        ("r-sf" ,r-sf)
+        ("r-stars" ,r-stars)
+        ("r-units" ,r-units)
+        ("r-viridislite" ,r-viridislite)
+        ("r-xml" ,r-xml)))
+    (home-page
+      "https://github.com/mtennekes/tmaptools")
+    (synopsis "Thematic Map Tools")
+    (description
+      "Set of tools for reading and processing spatial data.  The aim is to
+supply the workflow to create thematic maps.  This package also facilitates
+@code{tmap}, the package for visualizing thematic maps.")
+    (license license:gpl3)))
