@@ -10408,9 +10408,6 @@ interactive computing.")
 notebooks.")
     (license license:bsd-3)))
 
-(define-public python2-widgetsnbextension
-  (package-with-python2 python-widgetsnbextension))
-
 (define-public python-ipywidgets
   (package
     (name "python-ipywidgets")
