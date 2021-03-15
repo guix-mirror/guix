@@ -3657,9 +3657,6 @@ handles the common tasks of logging in, logging out, and remembering your
 users' sessions over extended periods of time.")
     (license license:expat)))
 
-(define-public python2-flask-login
-  (package-with-python2 python-flask-login))
-
 (define-public python-oauth2client
   (package
     (name "python-oauth2client")
