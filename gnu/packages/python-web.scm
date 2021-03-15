@@ -3604,9 +3604,6 @@ It comes with safe defaults and easily configurable options.")
      "Minify @code{text/html} MIME type responses when using @code{Flask}.")
     (license license:bsd-3)))
 
-(define-public python2-flask-htmlmin
-  (package-with-python2 python-flask-htmlmin))
-
 (define-public python-jsmin
   (package
     (name "python-jsmin")
