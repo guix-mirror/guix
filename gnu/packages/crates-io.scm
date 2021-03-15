@@ -28714,7 +28714,7 @@ written with declarative macros.")
 (define-public rust-pkg-config-0.3
   (package
     (name "rust-pkg-config")
-    (version "0.3.17")
+    (version "0.3.19")
     (source
       (origin
         (method url-fetch)
@@ -28722,7 +28722,7 @@ written with declarative macros.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0xynnaxdv0gzadlw4h79j855k0q7rj4zb9xb1vk00nc6ss559nh5"))))
+          "0k4860955riciibxr8bhnklp79jydp4xfylwdn5v9kj96hxlac9q"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-development-inputs
