@@ -9,7 +9,7 @@
 ;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;; Copyright © 2020, 2021 Mathieu Othacehe <m.othacehe@gmail.com>
 ;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
-;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;; Copyright © 2021 Leo Famulari <leo@famulari.name>
 ;; Copyright © 2021 Zhu Zihao <all_but_last@163.com>
 ;;
@@ -19,6 +19,17 @@
 
 (channel-news
  (version 0)
+
+ (entry (commit "77c2f4e2068ebec3f384c826c5a99785125ff72c")
+        (title
+         (en "@code{qemu-binfmt-service-type} is usable for any container"))
+        (body
+         (en "The service now makes use of the statically built QEMU binaries
+along with the fix binary (F) @code{binfmt_misc} flag, which allows the kernel
+to fully pre-load it in memory.  QEMU can thus now be used with any container
+without extra configuration.  The @code{guix-support?} field of the
+@code{qemu-binfmt-configuration} record is removed, as it is no longer
+necessary.")))
 
  (entry (commit "02e2e093e858e8a0ca7bd66c1f1f6fd0a1705edb")
         (title
