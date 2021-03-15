@@ -1538,6 +1538,35 @@ structure.")
 microarrays.")
     (license license:artistic2.0)))
 
+(define-public r-annotationdbi
+  (package
+    (name "r-annotationdbi")
+    (version "1.52.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "AnnotationDbi" version))
+              (sha256
+               (base32
+                "0zqxgh3nx6y8ry12s2vss2f4axz5vpqxha1y4ifhhcx4zhpzsglr"))))
+    (properties
+     `((upstream-name . "AnnotationDbi")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-dbi" ,r-dbi)
+       ("r-iranges" ,r-iranges)
+       ("r-rsqlite" ,r-rsqlite)
+       ("r-s4vectors" ,r-s4vectors)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://bioconductor.org/packages/AnnotationDbi")
+    (synopsis "Annotation database interface")
+    (description
+     "This package provides user interface and database connection code for
+annotation data packages using SQLite data storage.")
+    (license license:artistic2.0)))
+
 (define-public r-annotationforge
   (package
     (name "r-annotationforge")
