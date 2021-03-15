@@ -310,13 +310,14 @@ information is available locally."
                        '()
                        '()
                        paths)))
-    (if (null? missing)
-        cached
-        (let ((missing (fetch-narinfos cache missing
-                                       #:open-connection open-connection
-                                       #:make-progress-reporter
-                                       make-progress-reporter)))
-          (append cached (or missing '()))))))
+    (values (if (null? missing)
+                cached
+                (let ((missing (fetch-narinfos cache missing
+                                               #:open-connection open-connection
+                                               #:make-progress-reporter
+                                               make-progress-reporter)))
+                  (append cached (or missing '()))))
+            (length missing))))
 
 (define* (lookup-narinfos/diverse caches paths authorized?
                                   #:key (open-connection
