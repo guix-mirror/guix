@@ -790,17 +790,6 @@ of programming tools as well as libraries with equivalent functionality.")
         (base32
          "153vcvj8gvgwakzr4j0kndc0b7wn91c2g1vy2vg24s6spxcc23gn"))))))
 
-(define-public clang-runtime-3.6
-  (clang-runtime-from-llvm
-   llvm-3.6
-   "11qx8d3pbfqjaj2x207pvlvzihbs1z2xbw4crpz7aid6h1yz6bqg"
-     '("clang-runtime-asan-build-fixes.patch")))
-
-(define-public clang-3.6
-  (clang-from-llvm llvm-3.6 clang-runtime-3.6
-                   "1wwr8s6lzr324hv4s1k6na4j5zv6n9kdhi14s4kb9b13d93814df"
-                   #:patches '("clang-3.5-libc-search-path.patch")))
-
 (define-public llvm-3.5
   (package (inherit llvm-3.6)
     (version "3.5.2")
