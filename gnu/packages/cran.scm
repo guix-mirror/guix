@@ -16471,6 +16471,32 @@ visualizations and provides the same flexible approach to building up plots
 layer by layer.")
     (license license:gpl3)))
 
+(define-public r-gkmsvm
+  (package
+    (name "r-gkmsvm")
+    (version "0.81.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "gkmSVM" version))
+       (sha256
+        (base32
+         "119g5rhc7ffyviz04r04aj5z1g6abnj3ddd01g7db505sdr6lapj"))))
+    (properties `((upstream-name . "gkmSVM")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-kernlab" ,r-kernlab)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rocr" ,r-rocr)
+       ("r-seqinr" ,r-seqinr)))
+    (home-page "https://cran.r-project.org/web/packages/gkmSVM")
+    (synopsis "Gapped-kmer support vector machine")
+    (description
+     "This R package provides tools for training gapped-kmer SVM classifiers
+for DNA and protein sequences.  This package supports several sequence
+kernels, including: gkmSVM, kmer-SVM, mismatch kernel and wildcard kernel.")
+    (license license:gpl2+)))
+
 (define-public r-varselrf
   (package
     (name "r-varselrf")
