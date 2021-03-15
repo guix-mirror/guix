@@ -27353,3 +27353,29 @@ predictions either by cell means or by more advanced/powerful mixed effects
 models, yielding predictions and confidence intervals that may be easily
 visualized at any level of the experiment's design.")
     (license license:gpl2+)))
+
+(define-public r-qdapregex
+  (package
+    (name "r-qdapregex")
+    (version "0.7.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "qdapRegex" version))
+        (sha256
+          (base32
+            "1xa8q1way3gjadrjh3mv3xr4c6b4h16nd2c6lgl969difplpfz9p"))))
+    (properties `((upstream-name . "qdapRegex")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-stringi" ,r-stringi)))
+    (home-page
+      "https://trinker.github.com/qdapRegex/")
+    (synopsis
+      "Regular Expression Removal, Extraction, and Replacement Tools")
+    (description
+      "This package provides a collection of regular expression tools
+associated with the @code{qdap} package that may be useful outside of the
+context of discourse analysis.  Tools include removal/extraction/replacement of
+abbreviations, dates, dollar amounts, email addresses, hash tags, numbers,
+percentages, citations, person tags, phone numbers, times, and zip codes.")
+    (license license:gpl2)))
