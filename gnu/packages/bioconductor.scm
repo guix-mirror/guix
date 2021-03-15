@@ -1705,6 +1705,34 @@ powerful online queries from gene annotation to database mining.")
     (properties
      `((upstream-name . "BiocParallel")))
     (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'make-reproducible
+           (lambda _
+             ;; Remove generated documentation.
+             (for-each delete-file
+                       '("inst/doc/BiocParallel_BatchtoolsParam.pdf"
+                         "inst/doc/Introduction_To_BiocParallel.pdf"
+                         "inst/doc/Errors_Logs_And_Debugging.pdf"
+                         "inst/doc/BiocParallel_BatchtoolsParam.R"
+                         "inst/doc/Introduction_To_BiocParallel.R"
+                         "inst/doc/Errors_Logs_And_Debugging.R"))
+
+             ;; Remove time-dependent macro
+             (substitute* '("inst/doc/BiocParallel_BatchtoolsParam.Rnw"
+                            "inst/doc/Introduction_To_BiocParallel.Rnw"
+                            "inst/doc/Errors_Logs_And_Debugging.Rnw"
+                            "vignettes/BiocParallel_BatchtoolsParam.Rnw"
+                            "vignettes/Introduction_To_BiocParallel.Rnw"
+                            "vignettes/Errors_Logs_And_Debugging.Rnw")
+               (("\\today") "later"))
+
+             ;; Initialize the random number generator seed when building.
+             (substitute* "R/internal_rng_stream.R"
+               (("\"L'Ecuyer-CMRG\"\\)" m)
+                (string-append
+                 m "; if (!is.na(Sys.getenv(\"SOURCE_DATE_EPOCH\"))) {set.seed(100)}\n"))))))))
     (propagated-inputs
      `(("r-futile-logger" ,r-futile-logger)
        ("r-snow" ,r-snow)
