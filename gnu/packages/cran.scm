@@ -27941,3 +27941,27 @@ by @code{sf}, and @code{NetCDF} bindings by @code{ncmeta} and @code{RNetCDF}.")
 supply the workflow to create thematic maps.  This package also facilitates
 @code{tmap}, the package for visualizing thematic maps.")
     (license license:gpl3)))
+
+(define-public r-rworldmap
+  (package
+    (name "r-rworldmap")
+    (version "1.3-6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "rworldmap" version))
+        (sha256
+          (base32
+            "1q1h0n9qr0m5pdx10swrh9ddsvdj8kv5nqngrf3lnx9rg9iwivjk"))))
+    (properties `((upstream-name . "rworldmap")))
+    (build-system r-build-system)
+    (propagated-inputs
+      `(("r-fields" ,r-fields)
+        ("r-maptools" ,r-maptools)
+        ("r-sp" ,r-sp)))
+    (home-page
+      "https://github.com/AndySouth/rworldmap/")
+    (synopsis "Mapping Global Data")
+    (description
+      "Enables mapping of country level and gridded user datasets.")
+    (license license:gpl2+)))
