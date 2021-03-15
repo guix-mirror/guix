@@ -1017,9 +1017,6 @@ support for Flask.  This is based on the Python babel module as well as pytz -
 both of which are installed automatically if you install this library.")
     (license license:bsd-3)))
 
-(define-public python2-flask-babel
-  (package-with-python2 python-flask-babel))
-
 (define-public python-flask-cors
   (package
     (name "python-flask-cors")
