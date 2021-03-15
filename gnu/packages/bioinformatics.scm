@@ -13147,6 +13147,36 @@ create connections between analogous cells in different batches without
 altering the counts or PCA space.")
     (license license:expat)))
 
+(define-public python-drep
+  (package
+    (name "python-drep")
+    (version "3.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "drep" version))
+       (sha256
+        (base32
+         "08vk0x6v5c5n7afgd5pcjhsvb424absypxy22hw1cm1n9kirbi77"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-biopython" ,python-biopython)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-numpy" ,python-numpy)
+       ("python-pandas" ,python-pandas)
+       ("python-pytest" ,python-pytest)
+       ("python-scikit-learn" ,python-scikit-learn)
+       ("python-seaborn" ,python-seaborn)
+       ("python-tqdm" ,python-tqdm)))
+    (home-page "https://github.com/MrOlm/drep")
+    (synopsis "De-replication of microbial genomes assembled from multiple samples")
+    (description
+     "dRep is a Python program for rapidly comparing large numbers of genomes.
+dRep can also \"de-replicate\" a genome set by identifying groups of highly
+similar genomes and choosing the best representative genome for each genome
+set.")
+    (license license:expat)))
+
 (define-public gffcompare
   (let ((commit "be56ef4349ea3966c12c6397f85e49e047361c41")
         (revision "1"))
