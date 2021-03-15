@@ -2051,6 +2051,44 @@ experimental designs is facilitated by a consistently implemented sample
 annotation infrastructure.")
     (license license:artistic2.0)))
 
+(define-public r-variantannotation
+  (package
+    (name "r-variantannotation")
+    (version "1.36.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "VariantAnnotation" version))
+              (sha256
+               (base32
+                "1sl0l6v05lfglj281nszma0h5k234md7rn2pdah8vs2d4iq3kimw"))))
+    (properties
+     `((upstream-name . "VariantAnnotation")))
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biostrings" ,r-biostrings)
+       ("r-bsgenome" ,r-bsgenome)
+       ("r-dbi" ,r-dbi)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-matrixgenerics" ,r-matrixgenerics)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)
+       ("r-rhtslib" ,r-rhtslib)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-xvector" ,r-xvector)
+       ("r-zlibbioc" ,r-zlibbioc)))
+    (build-system r-build-system)
+    (home-page "https://bioconductor.org/packages/VariantAnnotation")
+    (synopsis "Package for annotation of genetic variants")
+    (description "This R package can annotate variants, compute amino acid
+coding changes and predict coding outcomes.")
+    (license license:artistic2.0)))
+
 (define-public r-geneplotter
   (package
     (name "r-geneplotter")
