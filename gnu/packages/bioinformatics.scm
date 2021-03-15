@@ -7691,36 +7691,6 @@ including VCF header and contents in RDF and JSON.")
     (home-page "https://github.com/vcflib/bio-vcf")
     (license license:expat)))
 
-(define-public r-genomeinfodb
-  (package
-    (name "r-genomeinfodb")
-    (version "1.26.2")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "GenomeInfoDb" version))
-              (sha256
-               (base32
-                "092izc49maxjhf6m4b0qx21ad16dz7bmxy5pysp3vkyhdrfa2f7v"))))
-    (properties
-     `((upstream-name . "GenomeInfoDb")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-biocgenerics" ,r-biocgenerics)
-       ("r-genomeinfodbdata" ,r-genomeinfodbdata)
-       ("r-iranges" ,r-iranges)
-       ("r-rcurl" ,r-rcurl)
-       ("r-s4vectors" ,r-s4vectors)))
-    (native-inputs
-     `(("r-knitr" ,r-knitr)))
-    (home-page "https://bioconductor.org/packages/GenomeInfoDb")
-    (synopsis "Utilities for manipulating chromosome identifiers")
-    (description
-     "This package contains data and functions that define and allow
-translation between different chromosome sequence naming conventions (e.g.,
-\"chr1\" versus \"1\"), including a function that attempts to place sequence
-names in their natural, rather than lexicographic, order.")
-    (license license:artistic2.0)))
-
 (define-public r-edger
   (package
     (name "r-edger")
