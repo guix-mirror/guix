@@ -27848,3 +27848,34 @@ and formatted text files with additional meta-data, such including @code{.csv},
     (description
       "Algorithms to find arrangements of non-overlapping circles.")
     (license license:expat)))
+
+;; Cannot unbundle liblwgeom, because PostGIS does not support building it on
+;; its own.
+(define-public r-lwgeom
+  (package
+    (name "r-lwgeom")
+    (version "0.2-5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "lwgeom" version))
+        (sha256
+          (base32
+            "0byhjqa2acns8mznl1ngnfygxxxyszvnq66qfg0smhhhdkwr67aa"))))
+    (properties `((upstream-name . "lwgeom")))
+    (build-system r-build-system)
+    (inputs `(("geos" ,geos) ("proj" ,proj) ("sqlite" ,sqlite)))
+    (propagated-inputs
+      `(("r-rcpp" ,r-rcpp)
+        ("r-sf" ,r-sf)
+        ("r-units" ,r-units)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (home-page
+      "https://github.com/r-spatial/lwgeom/")
+    (synopsis
+      "Bindings to Selected 'liblwgeom' Functions for Simple Features")
+    (description
+      "Access to selected functions found in
+@url{https://github.com/postgis/postgis/tree/master/liblwgeom,liblwgeom}, the
+light-weight geometry library used by @url{http://postgis.net/,PostGIS}.")
+    (license license:gpl2)))
