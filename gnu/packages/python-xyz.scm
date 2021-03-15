@@ -15310,9 +15310,6 @@ protocols written in pure Python.")
     ;; Can be used with either license.
     (license (list license:asl2.0 license:gpl2+))))
 
-(define-public python2-dulwich
-  (package-with-python2 python-dulwich))
-
 (define-public python-pbkdf2
   (package
     (name "python-pbkdf2")
