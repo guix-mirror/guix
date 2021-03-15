@@ -11558,6 +11558,34 @@ document.")
 manipulation library.")
     (license license:expat)))
 
+(define-public python-uncertainties
+  (package
+    (name "python-uncertainties")
+    (version "3.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "uncertainties" version))
+       (sha256
+        (base32
+         "00z9xl40czmqk0vmxjvmjvwb41r893l4dad7nj1nh6blw3kw28li"))))
+    (build-system python-build-system)
+    ;; While there are test files, there is no "tests" directory, so the tests
+    ;; fail.
+    (arguments '(#:tests? #false))
+    (propagated-inputs
+     `(("python-future" ,python-future)))
+    (native-inputs
+     `(("python-nose" ,python-nose)
+       ("python-numpy" ,python-numpy)))
+    (home-page "https://uncertainties-python-package.readthedocs.io/")
+    (synopsis "Calculations with uncertainties")
+    (description
+     "The uncertainties package transparently handles calculations with
+numbers with uncertainties. It can also yield the derivatives of any
+expression.")
+    (license license:bsd-3)))
+
 (define-public python-boto
   (package
     (name "python-boto")
