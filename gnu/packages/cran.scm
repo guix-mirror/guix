@@ -27641,3 +27641,30 @@ structures from them.")
       "This package provides functions to access Twitter's filter, sample, and
 user streams, and to parse the output into data frames.")
     (license license:gpl2)))
+
+(define-public r-readods
+  (package
+    (name "r-readods")
+    (version "1.7.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "readODS" version))
+        (sha256
+          (base32
+            "1hi217ab7hp15jsbzi5ak57cqf8jn2rv78bnn74q72gn9mrfra7n"))))
+    (properties `((upstream-name . "readODS")))
+    (build-system r-build-system)
+    (propagated-inputs
+      `(("r-cellranger" ,r-cellranger)
+        ("r-readr" ,r-readr)
+        ("r-stringi" ,r-stringi)
+        ("r-xml2" ,r-xml2)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page
+      "https://cran.r-project.org/package=readODS")
+    (synopsis "Read and Write ODS Files")
+    (description
+      "Import @dfn{OpenDocument Spreadsheet} (ODS) into R as a data frame.
+Also support writing data frame into ODS file.")
+    (license license:gpl3)))
