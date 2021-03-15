@@ -631,9 +631,6 @@ implementing a Relying Party.")
     ;; files for internal use, so they are not really a bundled dependency.
     (license (list license:bsd-2 license:asl2.0))))
 
-(define-public python2-fido2
-  (package-with-python2 python-fido2))
-
 (define-public python-yubikey-manager
   (package
     (name "python-yubikey-manager")
