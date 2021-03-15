@@ -27403,3 +27403,26 @@ percentages, citations, person tags, phone numbers, times, and zip codes.")
 fashion.  Safe means it does not rely on placeholders (which can cause errors
 in same length matches).")
     (license license:expat)))
+
+(define-public r-textshape
+  (package
+    (name "r-textshape")
+    (version "1.7.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "textshape" version))
+        (sha256
+          (base32
+            "02111kj3kka84mpx7s19bjna9cas8diw5fxz51v5ggz0ldswa5pa"))))
+    (properties `((upstream-name . "textshape")))
+    (build-system r-build-system)
+    (propagated-inputs
+      `(("r-data-table" ,r-data-table)
+        ("r-slam" ,r-slam)
+        ("r-stringi" ,r-stringi)))
+    (home-page "http://github.com/trinker/textshape")
+    (synopsis "Tools for Reshaping Text")
+    (description
+      "Tools that can be used to reshape and restructure text data.")
+    (license license:gpl2)))
