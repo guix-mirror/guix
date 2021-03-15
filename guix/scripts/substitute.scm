@@ -448,14 +448,11 @@ the current output port."
              (warning (G_ "while fetching ~a: server is somewhat slow~%")
                       (uri->string uri))
              (warning (G_ "try `--no-substitutes' if the problem persists~%")))
-           (call-with-connection-error-handling
-            uri
-            (lambda ()
-              (with-cached-connection uri port
-                (http-fetch uri #:text? #f
-                            #:port port
-                            #:keep-alive? #t
-                            #:buffered? #f)))))))
+           (with-cached-connection uri port
+             (http-fetch uri #:text? #f
+                         #:port port
+                         #:keep-alive? #t
+                         #:buffered? #f)))))
       (else
        (leave (G_ "unsupported substitute URI scheme: ~a~%")
               (uri->string uri)))))
