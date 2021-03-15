@@ -11607,6 +11607,36 @@ expression.")
 using the @code{ast} module")
     (license license:expat)))
 
+(define-public python-lmfit
+  (package
+    (name "python-lmfit")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "lmfit" version))
+       (sha256
+        (base32
+         "0iab33jjb60f8kn0k0cqb0vjp1mdskks2n3kpn97zkw5cvjhq2b7"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-asteval" ,python-asteval)
+       ("python-numpy" ,python-numpy)
+       ("python-scipy" ,python-scipy)
+       ("python-uncertainties" ,python-uncertainties)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://lmfit.github.io/lmfit-py/")
+    (synopsis "Least-Squares minimization with bounds and constraints")
+    (description
+     "Lmfit provides a high-level interface to non-linear optimization and
+curve fitting problems for Python.  It builds on and extends many of the
+optimization methods of @code{scipy.optimize}.  Initially inspired by (and
+named for) extending the Levenberg-Marquardt method from
+@code{scipy.optimize.leastsq}, lmfit now provides a number of useful
+enhancements to optimization and data fitting problems.")
+    (license license:bsd-3)))
+
 (define-public python-boto
   (package
     (name "python-boto")
