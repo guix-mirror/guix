@@ -5032,6 +5032,31 @@ package namespace prefix is ​​hidden by a colon.")
 an easy way to bind keys under a configurable prefix key.")
     (license license:gpl3+)))
 
+(define-public emacs-evil-tex
+  (package
+    (name "emacs-evil-tex")
+    (version "1.0.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/iyefrat/evil-tex")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1wrx8ihimn1sx3vzzfppcwv0yfh3x95jrkxqvzj0ykckipm3zk0b"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-evil" ,emacs-evil)
+       ("emacs-auctex" ,emacs-auctex)))
+    (home-page "https://github.com/iyefrat/evil-tex")
+    (synopsis "Evil oriented additions for editing LaTeX")
+    (description "This package is a toolbox for LaTeX editing with Evil.  It
+provides many text objects fully utilizing @code{evil-surround}, some useful
+movements, and keymaps for quickly entering environments or
+@code{cdlatex}-like accents.")
+    (license license:gpl3+)))
+
 (define-public emacs-evil-textobj-syntax
   (let ((commit "2d9ba8c75c754b409aea7469f46a5cfa52a872f3")
         (version "0")
