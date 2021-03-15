@@ -353,7 +353,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/logging.scm			\
   %D%/packages/logo.scm				\
   %D%/packages/loko.scm				\
-  %D%/packages/lolcode.scm                      \
   %D%/packages/lsof.scm				\
   %D%/packages/lua.scm				\
   %D%/packages/lxde.scm				\
