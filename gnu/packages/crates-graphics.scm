@@ -2682,18 +2682,25 @@ wayland-client crate for usable bindings.")
         (base32 "09jfdjfqhjfcpiz4csgh60ymfkmz1cl3jmxyzq9hzcp0kyyxix93"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-bitflags" ,rust-bitflags-1)
         ("rust-downcast-rs" ,rust-downcast-rs-1)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-libc" ,rust-libc-0.2)
         ("rust-nix" ,rust-nix-0.18)
         ("rust-parking-lot" ,rust-parking-lot-0.11)
-        ("rust-scoped-tls" ,rust-scoped-tls-1)
-        ("rust-wayland-commons" ,rust-wayland-commons-0.28)
-        ("rust-wayland-scanner" ,rust-wayland-scanner-0.28)
-        ("rust-wayland-sys" ,rust-wayland-sys-0.28))))
+        ("rust-scoped-tls" ,rust-scoped-tls-1))))
+    (inputs
+     `(("rust-bitflags" ,rust-bitflags-1)
+       ("rust-downcast-rs" ,rust-downcast-rs-1)
+       ("rust-lazy-static" ,rust-lazy-static-1)
+       ("rust-libc" ,rust-libc-0.2)
+       ("rust-nix" ,rust-nix-0.18)
+       ("rust-parking-lot" ,rust-parking-lot-0.11)
+       ("rust-scoped-tls" ,rust-scoped-tls-1)
+       ("rust-wayland-commons" ,rust-wayland-commons-0.28)
+       ("rust-wayland-scanner" ,rust-wayland-scanner-0.28)
+       ("rust-wayland-sys" ,rust-wayland-sys-0.28)))
     (home-page "https://github.com/smithay/wayland-rs")
     (synopsis
      "Bindings to the standard C implementation of the wayland protocol")
@@ -2717,7 +2724,8 @@ the wayland protocol, server side.")
         (base32
          "1ccsalq6gnf07klnbjx2dxcbibhw03rqsgi578p913s3zsjlcg8a"))))
     (arguments
-     `(#:cargo-inputs
+     `(#:skip-build? #t
+       #:cargo-inputs
        (("rust-bitflags" ,rust-bitflags-1)
         ("rust-calloop" ,rust-calloop-0.4)
         ("rust-downcast-rs" ,rust-downcast-rs-1)
@@ -2726,7 +2734,8 @@ the wayland protocol, server side.")
         ("rust-nix" ,rust-nix-0.14)
         ("rust-wayland-commons" ,rust-wayland-commons-0.23)
         ("rust-wayland-sys" ,rust-wayland-sys-0.23)
-        ("rust-wayland-scanner" ,rust-wayland-scanner-0.23))))))
+        ("rust-wayland-scanner" ,rust-wayland-scanner-0.23))))
+    (inputs `())))
 
 (define-public rust-wayland-server-0.21
   (package
