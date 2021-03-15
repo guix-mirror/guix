@@ -27545,3 +27545,26 @@ extracting them into new variables.  For example, emoticons are often used in
 text but not always easily handled by analysis algorithms.  The
 @code{replace_emoticon()} function replaces emoticons with word equivalents.")
     (license license:gpl2)))
+
+(define-public r-striprtf
+  (package
+    (name "r-striprtf")
+    (version "0.5.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "striprtf" version))
+        (sha256
+          (base32
+            "1ra6aalalig6drsj26z9s24lmb10zssagqrvgqqi4358zbm8gwcd"))))
+    (properties `((upstream-name . "striprtf")))
+    (build-system r-build-system)
+    (propagated-inputs
+      `(("r-magrittr" ,r-magrittr)
+        ("r-rcpp" ,r-rcpp)
+        ("r-stringr" ,r-stringr)))
+    (home-page "https://github.com/kota7/striprtf")
+    (synopsis "Extract Text from RTF File")
+    (description
+      "Extracts plain text from @dfn{Rich Text Format} (RTF) file.")
+    (license license:expat)))
