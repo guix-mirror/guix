@@ -10444,9 +10444,6 @@ widgets are used.  Users gain control of their data and can visualize changes
 in the data.")
     (license license:bsd-3)))
 
-(define-public python2-ipywidgets
-  (package-with-python2 python-ipywidgets))
-
 (define-public python-jupyter-console
   (package
     (name "python-jupyter-console")
