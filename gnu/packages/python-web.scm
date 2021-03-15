@@ -623,9 +623,6 @@ over a different origin than that of the web application.")
 @code{urllib} and @code{urlparse} modules for manipulating URLs.")
     (license license:unlicense)))
 
-(define-public python2-furl
-  (package-with-python2 python-furl))
-
 (define-public python-httplib2
   (package
     (name "python-httplib2")
