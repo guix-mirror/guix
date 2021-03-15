@@ -190,20 +190,45 @@ Communications software like belle-sip, mediastreamer2 and linphone.")
 (define-public belr
   (package
     (name "belr")
-    (version "0.1.3")
+    (version "4.4.34")
     (source
      (origin
-       (method url-fetch)
-       (uri
-        (string-append "https://www.linphone.org/releases/sources/" name
-                       "/" name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.linphone.org/BC/public/belr.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1fwv2cg3qy9vdc7dimcda7nqcqc1h2cdd7ikhk7ng7q4ys8m96c1"))))
+        (base32 "0w2canwwm0qb99whnangvaybvjzq8xg6vksqxykgr8fbx7clw03h"))))
     (build-system cmake-build-system)
+    (outputs '("out" "debug" "tester"))
     (arguments
-     `(#:tests? #f                      ; No test target
-       #:configure-flags
-       (list "-DENABLE_STATIC=OFF")))   ; Not required
+     `(#:configure-flags '("-DENABLE_STATIC=OFF")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'check)                ;moved after the install phase
+         (add-after 'install 'check
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((tester (assoc-ref outputs "tester"))
+                    (belr_tester (string-append tester "/bin/belr_tester"))
+                    (tester-share (string-append tester "/share/belr_tester")))
+               (invoke belr_tester))))
+         (add-after 'install 'move-tester
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (tester (assoc-ref outputs "tester")))
+               (for-each mkdir-p
+                         (list (string-append tester "/bin")
+                               (string-append tester "/share")))
+               (rename-file
+                (string-append out "/bin/belr_tester")
+                (string-append tester "/bin/belr_tester"))
+               (rename-file
+                (string-append out "/share/belr-tester")
+                ;; The detect_res_prefix procedure in bctoolbox's tester.c
+                ;; resolves the resource path based on the executable path and
+                ;; name, so have it match.
+                (string-append tester "/share/belr_tester"))))))))
     (inputs
      `(("bctoolbox" ,bctoolbox)))
     (synopsis "Belledonne Communications Language Recognition Library")
