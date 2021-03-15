@@ -27715,3 +27715,33 @@ split, combine, and compress.  This package interfaces directly to the
 @code{qpdf} does not read actual content from PDF files: to extract text and
 data you need the @code{pdftools} package.")
     (license license:asl2.0)))
+
+(define-public r-pdftools
+  (package
+    (name "r-pdftools")
+    (version "2.3.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "pdftools" version))
+        (sha256
+          (base32
+            "01i5g2mjkshis0zlm7lrvi7kkzl4dn3if1hzwkgzf9n2mi33ndsx"))))
+    (properties `((upstream-name . "pdftools")))
+    (build-system r-build-system)
+    (inputs
+      `(("zlib" ,zlib)
+        ("poppler" ,poppler)))
+    (propagated-inputs
+      `(("r-qpdf" ,r-qpdf) ("r-rcpp" ,r-rcpp)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (home-page
+      "https://docs.ropensci.org/pdftools/")
+    (synopsis
+      "Text Extraction, Rendering and Converting of PDF Documents")
+    (description
+      "Utilities based on @code{libpoppler} for extracting text, fonts,
+attachments and metadata from a PDF file.  Also supports high quality rendering
+of PDF documents into PNG, JPEG, TIFF format, or into raw bitmap vectors for
+further processing in R.")
+    (license license:expat)))
