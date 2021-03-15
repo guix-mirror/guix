@@ -992,9 +992,6 @@ concepts.")
 @code{subprocess} feature.")
     (license license:expat)))
 
-(define-public python2-sh
-  (package-with-python2 python-sh))
-
 (define-public python-cftime
   (package
     (name "python-cftime")
