@@ -2491,11 +2491,13 @@ and wayland-server.")
         (base32 "0pvf96a9hg7b40vyvamcg491sa0006fr9bzf1xkaf8q22qn15syn"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-nix" ,rust-nix-0.18)
-        ("rust-wayland-client" ,rust-wayland-client-0.28)
         ("rust-xcursor" ,rust-xcursor-0.3))))
+    (inputs
+     `(("rust-nix" ,rust-nix-0.18)
+       ("rust-wayland-client" ,rust-wayland-client-0.28)
+       ("rust-xcursor" ,rust-xcursor-0.3)))
     (home-page "https://github.com/smithay/wayland-rs")
     (synopsis "Bindings to libwayland-cursor")
     (description
