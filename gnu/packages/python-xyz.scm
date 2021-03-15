@@ -6425,9 +6425,6 @@ graphics library with support for multiple backends including image buffers,
 PNG, PostScript, PDF, and SVG file output.")
     (license license:bsd-3)))
 
-(define-public python2-cairocffi
-  (package-with-python2 python-cairocffi))
-
 (define-public python-decorator
   (package
     (name "python-decorator")
