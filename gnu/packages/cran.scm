@@ -25603,14 +25603,14 @@ more.")
 (define-public r-workflows
   (package
     (name "r-workflows")
-    (version "0.2.1")
+    (version "0.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "workflows" version))
        (sha256
         (base32
-         "1mk0pnmpqlhf143mvj9rwvjrrshirz6s83s5hbfalhnyw7hzkfb9"))))
+         "19ipcxx4qfz28cjkgr1vny03yhmbd3m2v64v30gk5pf73nazvmaz"))))
     (properties `((upstream-name . "workflows")))
     (build-system r-build-system)
     (propagated-inputs
@@ -25621,7 +25621,8 @@ more.")
        ("r-hardhat" ,r-hardhat)
        ("r-parsnip" ,r-parsnip)
        ("r-rlang" ,r-rlang)
-       ("r-tidyselect" ,r-tidyselect)))
+       ("r-tidyselect" ,r-tidyselect)
+       ("r-vctrs" ,r-vctrs)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/tidymodels/workflows")
