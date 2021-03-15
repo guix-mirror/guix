@@ -7691,42 +7691,6 @@ including VCF header and contents in RDF and JSON.")
     (home-page "https://github.com/vcflib/bio-vcf")
     (license license:expat)))
 
-(define-public r-xvector
-  (package
-    (name "r-xvector")
-    (version "0.30.0")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "XVector" version))
-              (sha256
-               (base32
-                "1pqljikg4f6jb7wgm5537zwgq5b013nyz1agjrwfq2cljb0ym6lq"))))
-    (properties
-     `((upstream-name . "XVector")))
-    (build-system r-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'use-system-zlib
-           (lambda _
-             (substitute* "DESCRIPTION"
-               (("zlibbioc, ") ""))
-             (substitute* "NAMESPACE"
-               (("import\\(zlibbioc\\)") ""))
-             #t)))))
-    (inputs
-     `(("zlib" ,zlib)))
-    (propagated-inputs
-     `(("r-biocgenerics" ,r-biocgenerics)
-       ("r-iranges" ,r-iranges)
-       ("r-s4vectors" ,r-s4vectors)))
-    (home-page "https://bioconductor.org/packages/XVector")
-    (synopsis "Representation and manpulation of external sequences")
-    (description
-     "This package provides memory efficient S4 classes for storing sequences
-\"externally\" (behind an R external pointer, or on disk).")
-    (license license:artistic2.0)))
-
 (define-public r-genomicranges
   (package
     (name "r-genomicranges")
