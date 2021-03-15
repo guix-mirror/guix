@@ -28076,3 +28076,30 @@ Xiaohui Yan, Jiafeng Guo, Yanyan Lan, Xueqi Cheng (2013)
 @url{https://github.com/xiaohuiyan/xiaohuiyan.github.io/blob/master/paper/\
 BTM-WWW13.pdf}.")
     (license license:asl2.0)))
+
+(define-public r-textplot
+  (package
+    (name "r-textplot")
+    (version "0.1.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "textplot" version))
+        (sha256
+          (base32
+            "1sgkndy2cxk8c76h8hwajn6f78w5jj2n8vsmaxh9kj931crzn8cy"))))
+    (properties `((upstream-name . "textplot")))
+    (build-system r-build-system)
+    (propagated-inputs
+      `(("r-data-table" ,r-data-table)
+        ("r-lattice" ,r-lattice)
+        ("r-matrix" ,r-matrix)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/bnosac/textplot")
+    (synopsis "Text Plots")
+    (description
+      "Visualise complex relations in texts.  This is done by providing
+functionalities for displaying text co-occurrence networks, text correlation
+networks, dependency relationships as well as text clustering.  Feel free to
+join the effort of providing interesting text visualisations.")
+    (license license:gpl2)))
