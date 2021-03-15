@@ -6209,9 +6209,6 @@ response.  This exists to cover all kinds of HTTP scenarios.  All endpoint respo
 JSON-encoded.")
     (license license:isc)))
 
-(define-public python2-httpbin
-  (package-with-python2 python-httpbin))
-
 (define-public python-pytest-httpbin
   (package
     (name "python-pytest-httpbin")
