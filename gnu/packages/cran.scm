@@ -27568,3 +27568,50 @@ text but not always easily handled by analysis algorithms.  The
     (description
       "Extracts plain text from @dfn{Rich Text Format} (RTF) file.")
     (license license:expat)))
+
+(define-public r-ndjson
+  (package
+    (name "r-ndjson")
+    (version "0.8.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "ndjson" version))
+        (sha256
+          (base32
+            "0lvzbgfi1sg4kya1mvv67z14qk3vz9q57x22qh57xq8ampdkg812"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin
+            ;; unvendor gzstream
+            (for-each delete-file '("src/gzstream.cpp" "src/gzstream.h"))
+            #t))))
+    (properties `((upstream-name . "ndjson")))
+    (build-system r-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'use-system-gzstream
+           (lambda* (#:key inputs #:allow-other-keys)
+            (substitute* "src/Makevars"
+             (("PKG_LIBS = " all)
+              (string-append all "-lgzstream ")))
+             #t)))))
+    (inputs `(("zlib" ,zlib) ("gzstream" ,gzstream)))
+    (propagated-inputs
+      `(("r-data-table" ,r-data-table)
+        ("r-rcpp" ,r-rcpp)
+        ("r-tibble" ,r-tibble)))
+    (home-page "https://gitlab.com/hrbrmstr/ndjson")
+    (synopsis
+      "Wicked-Fast @dfn{Streaming JSON} (ndjson) Reader")
+    (description
+      "@dfn{Streaming JSON} (ndjson) has one JSON record per-line and many
+modern ndjson files contain large numbers of records.  These constructs may not
+be columnar in nature, but it is often useful to read in these files and
+\"flatten\" the structure out to enable working with the data in an R
+@code{data.frame}-like context.  Functions are provided that make it possible
+to read in plain ndjson files or compressed (@code{gz}) ndjson files and either
+validate the format of the records or create \"flat\" @code{data.table}
+structures from them.")
+    (license license:expat)))
