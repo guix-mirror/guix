@@ -13177,6 +13177,59 @@ similar genomes and choosing the best representative genome for each genome
 set.")
     (license license:expat)))
 
+(define-public instrain
+  (package
+    (name "instrain")
+    (version "1.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "inStrain" version))
+       (sha256
+        (base32
+         "0ykqlpf6yz4caihsaz3ys00cyvlr7wdj4s9a8rh56q5r8xf80ic0"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-relative-imports
+           (lambda _
+             (substitute* "docker/run_instrain.py"
+               (("from s3_utils")
+                "from .s3_utils")
+               (("from job_utils")
+                "from .job_utils")))))))
+    (inputs
+     `(("python-biopython" ,python-biopython)
+       ("python-boto3" ,python-boto3)
+       ("python-h5py" ,python-h5py)
+       ("python-lmfit" ,python-lmfit)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-networkx" ,python-networkx)
+       ("python-numba" ,python-numba)
+       ("python-numpy" ,python-numpy)
+       ("python-pandas" ,python-pandas)
+       ("python-psutil" ,python-psutil)
+       ("python-pysam" ,python-pysam)
+       ("python-scikit-learn" ,python-scikit-learn)
+       ("python-seaborn" ,python-seaborn)
+       ("python-tqdm" ,python-tqdm)
+       ;; drep is needed for deprecated plot utilities
+       ("python-drep" ,python-drep)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/MrOlm/inStrain")
+    (synopsis "Calculation of strain-level metrics")
+    (description
+     "inStrain is a Python program for analysis of co-occurring genome
+populations from metagenomes that allows highly accurate genome comparisons,
+analysis of coverage, microdiversity, and linkage, and sensitive SNP detection
+with gene localization and synonymous non-synonymous identification.")
+    ;; The tool itself says that the license is "MIT", but the repository
+    ;; contains a LICENSE file with the GPLv3.
+    ;; See https://github.com/MrOlm/inStrain/issues/51
+    (license license:expat)))
+
 (define-public gffcompare
   (let ((commit "be56ef4349ea3966c12c6397f85e49e047361c41")
         (revision "1"))
