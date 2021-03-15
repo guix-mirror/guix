@@ -2413,12 +2413,15 @@ the wayland protocol, client side.")
         (base32 "0mid1sgy3bmiywnrhsr31b8w6zvk1ll2ci2as15ddv8pczvm0128"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-nix" ,rust-nix-0.18)
         ("rust-once-cell" ,rust-once-cell-1)
-        ("rust-smallvec" ,rust-smallvec-1)
-        ("rust-wayland-sys" ,rust-wayland-sys-0.28))))
+        ("rust-smallvec" ,rust-smallvec-1))))
+    (inputs
+     `(("rust-nix" ,rust-nix-0.18)
+       ("rust-once-cell" ,rust-once-cell-1)
+       ("rust-smallvec" ,rust-smallvec-1)
+       ("rust-wayland-sys" ,rust-wayland-sys-0.28)))
     (home-page "https://github.com/smithay/wayland-rs")
     (synopsis "Types and structures used by wayland-client and wayland-server")
     (description
@@ -2441,9 +2444,11 @@ and wayland-server.")
         (base32
          "1nyvcs6xxxzqgh0wvc7z0fgi89bf3h9p4qrbf77bnfbwlb8v0rmv"))))
     (arguments
-     `(#:cargo-inputs
+     `(#:skip-build? #t
+       #:cargo-inputs
        (("rust-nix" ,rust-nix-0.14)
-        ("rust-wayland-sys" ,rust-wayland-sys-0.23))))))
+        ("rust-wayland-sys" ,rust-wayland-sys-0.23))))
+    (inputs `())))
 
 (define-public rust-wayland-commons-0.21
   (package
