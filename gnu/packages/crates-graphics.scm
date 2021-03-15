@@ -2546,13 +2546,14 @@ initializing an OpenGL or Vulkan context.")
         (base32 "0c0sw13qssrvf3jgygwqpiimpaagz3haxn9jridd4k85sfs856ii"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-bitflags" ,rust-bitflags-1)
-        ("rust-wayland-client" ,rust-wayland-client-0.28)
-        ("rust-wayland-commons" ,rust-wayland-commons-0.28)
-        ("rust-wayland-scanner" ,rust-wayland-scanner-0.28)
-        ("rust-wayland-server" ,rust-wayland-server-0.28))))
+     `(#:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1))))
+    (inputs
+     `(("rust-bitflags" ,rust-bitflags-1)
+       ("rust-wayland-client" ,rust-wayland-client-0.28)
+       ("rust-wayland-commons" ,rust-wayland-commons-0.28)
+       ("rust-wayland-scanner" ,rust-wayland-scanner-0.28)
+       ("rust-wayland-server" ,rust-wayland-server-0.28)))
     (home-page "https://github.com/smithay/wayland-rs")
     (synopsis "Generated API for the officials Wayland protocol extensions")
     (description
@@ -2575,12 +2576,14 @@ extensions.")
         (base32
          "1ygwbzqlnks5xzafka3c8ag6k92g2h6ygj2xsmvjfx2n6rj8dhkc"))))
     (arguments
-     `(#:cargo-inputs
+     `(#:skip-build? #t
+       #:cargo-inputs
        (("rust-bitflags" ,rust-bitflags-1)
         ("rust-wayland-client" ,rust-wayland-client-0.23)
         ("rust-wayland-commons" ,rust-wayland-commons-0.23)
         ("rust-wayland-server" ,rust-wayland-server-0.23)
-        ("rust-wayland-scanner" ,rust-wayland-scanner-0.23))))))
+        ("rust-wayland-scanner" ,rust-wayland-scanner-0.23))))
+    (inputs `())))
 
 (define-public rust-wayland-protocols-0.21
   (package
