@@ -448,9 +448,6 @@ converting dates, times, and timestamps.  It implements and updates the
 datetime type.")
     (license asl2.0)))
 
-(define-public python2-arrow
-  (package-with-python2 python-arrow))
-
 (define-public python-aniso8601
   (package
     (name "python-aniso8601")
