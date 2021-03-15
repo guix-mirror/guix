@@ -7691,55 +7691,6 @@ including VCF header and contents in RDF and JSON.")
     (home-page "https://github.com/vcflib/bio-vcf")
     (license license:expat)))
 
-(define-public r-bioccheck
-  (package
-    (name "r-bioccheck")
-    (version "1.26.0")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "BiocCheck" version))
-              (sha256
-               (base32
-                "1hyncn9zqj432da95k86rm5b28nbwrvzm52jbhisifkxj1j43cib"))))
-    (properties
-     `((upstream-name . "BiocCheck")))
-    (build-system r-build-system)
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         ;; This package can be used by calling BiocCheck(<package>) from
-         ;; within R, or by running R CMD BiocCheck <package>.  This phase
-         ;; makes sure the latter works.  For this to work, the BiocCheck
-         ;; script must be somewhere on the PATH (not the R bin directory).
-         (add-after 'install 'install-bioccheck-subcommand
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (dest-dir (string-append out "/bin"))
-                    (script-dir
-                     (string-append out "/site-library/BiocCheck/script/")))
-               (mkdir-p dest-dir)
-               (symlink (string-append script-dir "/checkBadDeps.R")
-                        (string-append dest-dir "/checkBadDeps.R"))
-               (symlink (string-append script-dir "/BiocCheck")
-                        (string-append dest-dir "/BiocCheck")))
-             #t)))))
-    (propagated-inputs
-     `(("r-codetools" ,r-codetools)
-       ("r-graph" ,r-graph)
-       ("r-httr" ,r-httr)
-       ("r-knitr" ,r-knitr)
-       ("r-optparse" ,r-optparse)
-       ("r-biocmanager" ,r-biocmanager)
-       ("r-biocviews" ,r-biocviews)
-       ("r-stringdist" ,r-stringdist)))
-    (native-inputs
-     `(("r-knitr" ,r-knitr)))
-    (home-page "https://bioconductor.org/packages/BiocCheck")
-    (synopsis "Executes Bioconductor-specific package checks")
-    (description "This package contains tools to perform additional quality
-checks on R packages that are to be submitted to the Bioconductor repository.")
-    (license license:artistic2.0)))
-
 (define-public r-s4vectors
   (package
     (name "r-s4vectors")
