@@ -24118,14 +24118,14 @@ vignette for more information and examples.")
 (define-public r-brms
   (package
     (name "r-brms")
-    (version "2.14.4")
+    (version "2.15.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "brms" version))
        (sha256
         (base32
-         "0mzwihhgmn405l6zq11a180q4k3chggj9qj0j7q838b9vrszg59j"))))
+         "0byc3fyvf9qbvvgwf55ih5d4br1nnxlbaidq9fvr11bmv38h25y1"))))
     (properties `((upstream-name . "brms")))
     (build-system r-build-system)
     (propagated-inputs
