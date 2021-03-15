@@ -9528,9 +9528,6 @@ tasks, sockets, files, locks, and queues.")
 designed to efficiently cope with extremely large amounts of data.")
     (license license:bsd-3)))
 
-(define-public python2-tables
-  (package-with-python2 python-tables))
-
 (define-public python-sniffio
   (package
     (name "python-sniffio")
