@@ -21236,23 +21236,26 @@ library.")
 (define-public rust-libloading-0.6
   (package
     (name "rust-libloading")
-    (version "0.6.3")
+    (version "0.6.7")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "libloading" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1ygliqa518jjxwa5ih4b2f8m984ib596vxmjb28pa5lb8zqdhhr4"))))
+        (base32 "10wq4a4jkman8k6y0v2cw3d38y1h3rw6d2in5klggm8jg90k46im"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #true
        #:cargo-inputs
-       (("rust-cfg-if" ,rust-cfg-if-0.1)
+       (("rust-cfg-if" ,rust-cfg-if-1)
         ("rust-winapi" ,rust-winapi-0.3))
        #:cargo-development-inputs
        (("rust-libc" ,rust-libc-0.2)
         ("rust-static-assertions" ,rust-static-assertions-1))))
+    (inputs
+     `(("rust-cfg-if" ,rust-cfg-if-1)
+       ("rust-winapi" ,rust-winapi-0.3)))
     (home-page "https://github.com/nagisa/rust_libloading/")
     (synopsis "Safer binding to dynamic library loading utilities")
     (description "This package provides a safer binding to dynamic library
@@ -24872,7 +24875,12 @@ while still providing platform specific APIs.")
         ("rust-rand" ,rust-rand-0.6)
         ("rust-semver" ,rust-semver-0.9)
         ("rust-sysctl" ,rust-sysctl-0.1)
-        ("rust-tempfile" ,rust-tempfile-3))))))
+        ("rust-tempfile" ,rust-tempfile-3))))
+    (inputs
+     `(("rust-bitflags" ,rust-bitflags-1)
+       ("rust-cc" ,rust-cc-1)
+       ("rust-cfg-if" ,rust-cfg-if-0.1)
+       ("rust-libc" ,rust-libc-0.2)))))
 
 (define-public rust-nix-0.17
   (package
