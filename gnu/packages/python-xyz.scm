@@ -7983,6 +7983,30 @@ of the structure, dynamics, and functions of complex networks.")
 Python.")
     (license license:lgpl2.1+)))
 
+(define-public python-amply
+  (package
+    (name "python-amply")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "amply" version))
+       (sha256
+        (base32
+         "0f1db9zp0rsfzxvaz55xwh8h5rfdgr9a2a715g06ic8nknsdq4nb"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-docutils" ,python-docutils)
+       ("python-pyparsing" ,python-pyparsing)))
+    (native-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)))
+    (home-page "https://github.com/willu47/amply")
+    (synopsis "Load and manipulate AMPL/GLPK data as Python data structures")
+    (description
+     "Amply allows you to load and manipulate AMPL/GLPK data as Python data
+structures.")
+    (license license:epl1.0)))
+
 (define-public snakemake
   (package
     (name "snakemake")
