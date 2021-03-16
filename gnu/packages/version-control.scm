@@ -194,7 +194,7 @@ as well as the classic centralized workflow.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "1aiabqbc6mg23r19g2cwd4iajf55cpkxqylwn14hgpg64piaqr2y"))))
+            "1v40wwj130k76xf2w6vwhvfpkk765q1gcy5bqcrqssxf66ydqp8q"))))
       ;; For subtree documentation.
       ("asciidoc" ,asciidoc-py3)
       ("docbook-xsl" ,docbook-xsl)
