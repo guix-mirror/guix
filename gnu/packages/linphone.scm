@@ -23,6 +23,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages audio)
+  #:use-module (gnu packages avahi)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
@@ -493,12 +494,21 @@ including both ARM and x86.")
     (build-system cmake-build-system)
     (outputs '("out" "tester"))
     (arguments
-     `(#:configure-flags
-       (list "-DENABLE_STATIC=NO")      ; Not required
+     `(#:configure-flags (list "-DENABLE_STATIC=NO"
+                               "-DENABLE_MDNS=ON")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch
-           (lambda _
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Fix mDNS dependency.
+             (let* ((avahi (assoc-ref inputs "avahi")))
+               (substitute* (find-files "." "CMakeLists.txt")
+                 (("find_package\\(DNSSD REQUIRED\\)")
+                  "set(DNSSD_FOUND 1)")
+                 (("\\$\\{DNSSD_INCLUDE_DIRS\\}")
+                  (string-append avahi "/include/avahi-compat-libdns_sd"))
+                 (("\\$\\{DNSSD_LIBRARIES\\}")
+                  "dns_sd")))
              (substitute* "src/CMakeLists.txt"
                ;; ANTLR would use multithreaded DFA generation otherwise,
                ;; which would not be reproducible.
@@ -538,7 +548,8 @@ including both ARM and x86.")
                                ;;"HTTP stack"
                                "Object"))))))))
     (inputs
-     `(("bctoolbox" ,bctoolbox)
+     `(("avahi" ,avahi)
+       ("bctoolbox" ,bctoolbox)
        ("zlib" ,zlib)))
     (synopsis "Belledonne Communications SIP Library")
     (description "Belle-sip is a modern library implementing SIP transport,
