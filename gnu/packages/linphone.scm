@@ -243,24 +243,68 @@ tracks in one file. ")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "git://git.linphone.org/bcg729.git")
+             (url "git://git.linphone.org/bcg729")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1hal6b3w6f8y5r1wa0xzj8sj2jjndypaxyw62q50p63garp2h739"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f                      ; No test target
-       #:configure-flags
-       (list "-DENABLE_STATIC=NO")))    ; Not required
+     `(#:configure-flags (list "-DENABLE_STATIC=NO"
+                               "-DENABLE_TESTS=YES")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'copy-inputs
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((test-patterns (assoc-ref inputs "test-patterns"))
+                   (dest (string-append "test/bcg729-patterns.zip")))
+               (copy-recursively test-patterns dest))))
+         (replace 'check
+           (lambda _
+             (with-directory-excursion "test"
+               (invoke "unzip" "bcg729-patterns.zip")
+               (for-each
+                (lambda (test-name)
+                  (invoke "./testCampaign" "-s" test-name))
+                (list "fixedCodebookSearch"
+                      "postProcessing"
+                      "adaptativeCodebookSearch"
+                      "computeLP"
+                      "computeAdaptativeCodebookGain"
+                      "postFilter"
+                      "decoder"
+                      "LPSynthesisFilter"
+                      "decodeLSP"
+                      ;; "encoder"
+                      ;; "LSPQuantization"
+                      "preProcessing"
+                      "decodeFixedCodeVector"
+                      "CNGdecoder"
+                      ;; "LP2LSPConversion"
+                      "gainQuantization"
+                      "findOpenLoopPitchDelay"
+                      "decodeGains"
+                      "computeWeightedSpeech"
+                      "interpolateqLSPAndConvert2LP"
+                      "decodeAdaptativeCodeVector"))))))))
+    (native-inputs
+     `(("perl" ,perl)
+       ("test-patterns"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append "http://www.belledonne-communications.com/"
+                               "bc-downloads/bcg729-patterns.zip"))
+           (sha256
+            (base32 "1kivarhh3izrl9sg0szs6x6pbq2ap0y6xsraw0gbgspi4gnfihrh"))))
+       ("unzip" ,unzip)))
     (synopsis "Belledonne Communications G729 Codec")
     (description "BcG729 is an implementation of both encoder and decoder of
 the ITU G729 speech codec.  The library written in C 99 is fully portable and
 can be executed on many platforms including both ARM and x86 processors.  It
 supports concurrent channels encoding and decoding for multi call application
 such as conferencing.")
-    (home-page "https://gitlab.linphone.org/BC/public/belcard")
-    (license license:gpl2+)))
+    (home-page "https://linphone.org/technical-corner/bcg729")
+    (license license:gpl3+)))
 
 (define-public ortp
   (package
