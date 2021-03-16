@@ -2769,7 +2769,7 @@ supports url redirection and retries, and also gzip and deflate decoding.")
 
 
 (define-public python2-urllib3
-  (let ((base (package-with-python2 (strip-python2-variant python-urllib3))))
+  (let ((base (package-with-python2 (strip-python2-variant python-urllib3/fixed))))
     (package/inherit
      base
      (propagated-inputs
