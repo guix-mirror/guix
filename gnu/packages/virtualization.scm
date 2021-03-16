@@ -43,6 +43,7 @@
   #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages build-tools)
   #:use-module (gnu packages check)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
@@ -162,7 +163,9 @@
                              "{ MK_STRUCT(STRUCT_ifmap_ifreq) };\n"))
              (("^([[:blank:]]*)target_ifreq_size[[:blank:]]=.*$" _ indent)
               (string-append indent "target_ifreq_size = "
-                             "thunk_type_size(ifreq_max_type, 0);")))))))
+                             "thunk_type_size(ifreq_max_type, 0);")))
+           ;; Delete the bundled meson copy.
+           (delete-file-recursively "meson")))))
     (outputs '("out" "static" "doc"))   ;5.3 MiB of HTML docs
     (build-system gnu-build-system)
     (arguments
@@ -351,6 +354,8 @@ exec smbd $@")))
                      ("perl" ,perl)
                      ("flex" ,flex)
                      ("bison" ,bison)
+                     ;; Using meson 0.57.1 enables reproducible QEMU builds.
+                     ("meson" ,meson-next)
                      ("ninja" ,ninja)
                      ("pkg-config" ,pkg-config)
                      ("python-wrapper" ,python-wrapper)
