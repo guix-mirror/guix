@@ -480,15 +480,16 @@ including both ARM and x86.")
 (define-public belle-sip
   (package
     (name "belle-sip")
-    (version "1.6.3")
+    (version "4.4.34")
     (source
      (origin
-       (method url-fetch)
-       (uri
-        (string-append "https://www.linphone.org/releases/sources/" name
-                       "/" name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "git://git.linphone.org/belle-sip")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0s55kggmgxap54dkw5856bgk4xg7yvbzialpxnjm0zhpic3hff1z"))))
+        (base32 "1kknnlczq7dpqaj1dwxvy092dzrqjy11ndkv90rqwmdryigkjk6z"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; Requires network access
@@ -513,8 +514,8 @@ including both ARM and x86.")
     (description "Belle-sip is a modern library implementing SIP transport,
 transaction and dialog layers.  It is written in C, with an object-oriented
 API.  It also comprises a simple HTTP/HTTPS client implementation.")
-    (home-page "https://gitlab.linphone.org/BC/public/belle-sip")
-    (license license:gpl2+)))
+    (home-page "https://linphone.org/technical-corner/belle-sip")
+    (license license:gpl3+)))
 
 (define-public mediastreamer2
   (package
