@@ -2726,6 +2726,7 @@ authenticated session objects providing things like keep-alive.")
         (sha256
          (base32
           "024yldjwjavps39yb77sc422z8fa9bn20wcqrcncjwrqjab8y60r"))))
+    (replacement python-urllib3/fixed)
     (build-system python-build-system)
     (arguments `(#:tests? #f))
     (propagated-inputs
@@ -2743,6 +2744,17 @@ can reuse the same socket connection for multiple requests, it can POST files,
 supports url redirection and retries, and also gzip and deflate decoding.")
     (properties `((python2-variant . ,(delay python2-urllib3))))
     (license license:expat)))
+
+(define python-urllib3/fixed
+  (package/inherit python-urllib3
+    (version "1.26.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "urllib3" version))
+       (sha256
+        (base32
+         "0dw9w9bs3hmr5dp3r3h43jyzzb1g1046ag7lj8pqf58i4kvj3c77"))))))
 
 ;; Some software requires an older version of urllib3, notably Docker.
 (define-public python-urllib3-1.24
