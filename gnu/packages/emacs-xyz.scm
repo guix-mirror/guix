@@ -14255,14 +14255,14 @@ and shell-command prompts that are based on Bash completion.")
 (define-public emacs-easy-kill
   (package
     (name "emacs-easy-kill")
-    (version "0.9.3")
+    (version "0.9.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://elpa.gnu.org/packages/easy-kill-"
                                   version ".tar"))
               (sha256
                (base32
-                "17nw0mglmg877axwg1d0gs03yc0p04lzmd3pl0nsnqbh3303fnqb"))))
+                "1pqqv4dhfm00wqch4wy3n2illsvxlz9r6r64925cvq3i7wq4la1x"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/leoliu/easy-kill")
     (synopsis "Kill and mark things easily in Emacs")
