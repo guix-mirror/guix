@@ -397,20 +397,44 @@ such as conferencing.")
 (define-public ortp
   (package
     (name "ortp")
-    (version "1.0.2")
+    (version "4.4.34")
     (source
      (origin
-       (method url-fetch)
-       (uri
-        (string-append "https://www.linphone.org/releases/sources/" name
-                       "/" name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.linphone.org/BC/public/ortp.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "016qg0lmdgmqh2kv19w9qhi4kkiyi5h1xp35g2s65b1j8ccm25d5"))))
+        (base32 "1r1kvjzyfvkf66in4p51wi87balzg3sw3aq6r4xr609mz86spi5m"))))
     (build-system cmake-build-system)
+    (outputs '("out""tester"
+               "doc"))                  ;1.5 MiB of HTML doc
     (arguments
-     `(#:tests? #f                      ; No test target
-       #:configure-flags
-       (list "-DENABLE_STATIC=NO")))    ; Not required
+     `(#:tests? #f                      ;requires networking
+       #:configure-flags (list "-DENABLE_STATIC=NO"
+                               "-DENABLE_TESTS=YES")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-version-strings
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("VERSION 4.4.0")
+                (string-append "VERSION " ,version))
+               (("\\$\\{ORTP_DOC_VERSION\\}")
+                ,version))))
+         (add-after 'install 'separate-outputs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (assoc-ref outputs "doc"))
+                    (doc-src (string-append out "/share/doc/ortp-" ,version))
+                    (doc-dest (string-append doc "/share/doc/ortp-" ,version))
+                    (tester (assoc-ref outputs "tester")))
+               (for-each mkdir-p (list (string-append doc "/share/doc")
+                                       (string-append tester "/bin")))
+               (rename-file doc-src doc-dest)
+               (rename-file (string-append out "/bin")
+                            (string-append tester "/bin"))))))))
     (native-inputs
      `(("dot" ,graphviz)
        ("doxygen" ,doxygen)))
@@ -419,8 +443,8 @@ such as conferencing.")
     (synopsis "Belledonne Communications RTP Library")
     (description "oRTP is a C library implementing the RTP protocol.  It
 implements the RFC 3550 standard.")
-    (home-page "https://gitlab.linphone.org/BC/public/ortp")
-    (license license:gpl2+)))
+    (home-page "https://linphone.org/technical-corner/ortp")
+    (license license:gpl3+)))
 
 (define-public bzrtp
   (package
