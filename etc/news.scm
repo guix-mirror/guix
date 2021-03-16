@@ -22,14 +22,22 @@
 
  (entry (commit "77c2f4e2068ebec3f384c826c5a99785125ff72c")
         (title
-         (en "@code{qemu-binfmt-service-type} is usable for any container"))
+         (en "@code{qemu-binfmt-service-type} is usable for any container")
+         (de "@code{qemu-binfmt-service-type} funktioniert mit jedem Container"))
         (body
          (en "The service now makes use of the statically built QEMU binaries
 along with the fix binary (F) @code{binfmt_misc} flag, which allows the kernel
 to fully pre-load it in memory.  QEMU can thus now be used with any container
 without extra configuration.  The @code{guix-support?} field of the
 @code{qemu-binfmt-configuration} record is removed, as it is no longer
-necessary.")))
+necessary.")
+         (de "Der Dienst benutzt jetzt statisch gebundene QEMU-Binärdateien
+zusammen mit der Fix-Binary-Flag (F) von @code{binfmt_misc}.  Dadurch kann der
+Kernel die QEMU-Binärdatei als Ganzes vorab in den Speicher laden.  Dann kann
+sie auch ohne weitere Konfiguration in jeder Art von isolierter Umgebung
+benutzt werden. Darum wurde das Feld @code{guix-support?} des
+@code{qemu-binfmt-configuration}-Verbundsobjekts entfernt; es wird nicht mehr
+gebraucht.")))
 
  (entry (commit "02e2e093e858e8a0ca7bd66c1f1f6fd0a1705edb")
         (title
