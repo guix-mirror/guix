@@ -13,6 +13,7 @@
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2021 qblade <qblade@protonmail.com>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -312,6 +313,19 @@ resembles Python.")
               (sha256
                (base32
                 "1070kjiirxxdfppmrhi3wsc6rykay1zlciqrzayjhjg0hkw42mrv"))))))
+
+(define-public meson-next
+  (package
+    (inherit meson)
+    (version "0.57.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/mesonbuild/meson/"
+                                  "releases/download/" version  "/meson-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "19n8alcpzv6npgp27iqljkmvdmr7s2c7zm8y997j1nlvpa1cgqbj"))))))
 
 (define-public meson-for-build
   (package
