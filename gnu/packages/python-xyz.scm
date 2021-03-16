@@ -8029,6 +8029,25 @@ generate MPS or LP files and call GLPK, COIN CLP/CBC, CPLEX, and GUROBI to
 solve linear problems.")
     (license license:expat)))
 
+(define-public python-toposort
+  (package
+    (name "python-toposort")
+    (version "1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "toposort" version))
+       (sha256
+        (base32
+         "1b2hppzjg3p006qya3yfdnp76dwq8frl97lypdam0kw4xxb8yhm7"))))
+    (build-system python-build-system)
+    (home-page "https://gitlab.com/ericvsmith/toposort")
+    (synopsis "Topological sort algorithm")
+    (description
+     "This package provides an implementation of a topological sort
+algorithm.")
+    (license license:asl2.0)))
+
 (define-public snakemake
   (package
     (name "snakemake")
