@@ -485,15 +485,15 @@ including both ARM and x86.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "git://git.linphone.org/belle-sip")
+             (url "https://gitlab.linphone.org/BC/public/belle-sip.git")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1kknnlczq7dpqaj1dwxvy092dzrqjy11ndkv90rqwmdryigkjk6z"))))
     (build-system cmake-build-system)
+    (outputs '("out" "tester"))
     (arguments
-     `(#:tests? #f                      ; Requires network access
-       #:configure-flags
+     `(#:configure-flags
        (list "-DENABLE_STATIC=NO")      ; Not required
        #:phases
        (modify-phases %standard-phases
@@ -502,13 +502,43 @@ including both ARM and x86.")
              (substitute* "src/CMakeLists.txt"
                ;; ANTLR would use multithreaded DFA generation otherwise,
                ;; which would not be reproducible.
-               (("-Xmultithreaded ") ""))
-             #t)))))
+               (("-Xmultithreaded ") ""))))
+         (delete 'check)                ;move after install
+         (add-after 'install 'separate-outputs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (tester (assoc-ref outputs "tester"))
+                    (tester-name "belle_sip_tester"))
+               (for-each mkdir-p (list (string-append tester "/bin")
+                                       (string-append tester "/share")))
+               (rename-file (string-append out "/bin")
+                            (string-append tester "/bin"))
+               (rename-file (string-append out "/share/" tester-name)
+                            (string-append tester "/share/" tester-name)))))
+         (add-after 'separate-outputs 'check
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((tester (string-append (assoc-ref outputs "tester")
+                                          "/bin/belle_sip_tester")))
+               (for-each (lambda (suite-name)
+                           (invoke tester "--suite" suite-name))
+                         (list "Object inheritance"
+                               "SIP URI"
+                               "FAST SIP URI"
+                               "FAST SIP URI 2"
+                               "Generic uri"
+                               "Headers"
+                               "Core"
+                               "SDP"
+                               ;;"Resolver"
+                               "Message"
+                               "Authentication helper"
+                               ;;"Register"
+                               ;;"Dialog"
+                               "Refresher"
+                               ;;"HTTP stack"
+                               "Object"))))))))
     (inputs
-     `(("antlr3" ,antlr3-3.3)
-       ("antlr3c" ,libantlr3c)
-       ("bctoolbox" ,bctoolbox)
-       ("java" ,icedtea)
+     `(("bctoolbox" ,bctoolbox)
        ("zlib" ,zlib)))
     (synopsis "Belledonne Communications SIP Library")
     (description "Belle-sip is a modern library implementing SIP transport,
