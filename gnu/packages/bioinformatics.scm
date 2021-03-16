@@ -3819,15 +3819,17 @@ particular, reads spanning multiple exons.")
 (define-public hisat2
   (package
     (name "hisat2")
-    (version "2.0.5")
+    (version "2.2.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "ftp://ftp.ccb.jhu.edu/pub/infphilo/hisat2"
-                           "/downloads/hisat2-" version "-source.zip"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/DaehwanKimLab/hisat2/")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0lywnr8kijwsc2aw10dwxic0n0yvip6fl3rjlvc8zzwahamy4x7g"))))
+         "0lmzdhzjkvxw7n5w40pbv5fgzd4cz0f9pxczswn3d4cr0k10k754"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no check target
@@ -3840,9 +3842,12 @@ particular, reads spanning multiple exons.")
          (add-after 'unpack 'make-deterministic
            (lambda _
              (substitute* "Makefile"
-               (("`date`") "0"))
-             #t))
+               (("`date`") "0"))))
          (delete 'configure)
+         (add-before 'build 'build-manual
+           (lambda _
+             (mkdir-p "doc")
+             (invoke "make" "doc")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -3853,13 +3858,13 @@ particular, reads spanning multiple exons.")
                 (find-files "."
                             "hisat2(-(build|align|inspect)(-(s|l)(-debug)*)*)*$"))
                (mkdir-p doc)
-               (install-file "doc/manual.inc.html" doc))
-             #t)))))
+               (install-file "doc/manual.inc.html" doc)))))))
     (native-inputs
-     `(("unzip" ,unzip)                 ; needed for archive from ftp
-       ("perl" ,perl)
+     `(("perl" ,perl)
        ("pandoc" ,pandoc)))             ; for documentation
-    (home-page "https://ccb.jhu.edu/software/hisat2/index.shtml")
+    (inputs
+     `(("python" ,python-wrapper)))
+    (home-page "https://daehwankimlab.github.io/hisat2/")
     (synopsis "Graph-based alignment of genomic sequencing reads")
     (description "HISAT2 is a fast and sensitive alignment program for mapping
 next-generation sequencing reads (both DNA and RNA) to a population of human
