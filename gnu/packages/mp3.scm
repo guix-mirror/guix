@@ -408,7 +408,9 @@ command-line tool as well as a C library, libmpg123.")
                                  version "/mpg321-" version ".tar.gz"))
              (sha256
               (base32
-               "0ki8mh76bbmdh77qsiw682dvi8y468yhbdabqwg05igmwc1wqvq5"))))
+               "0ki8mh76bbmdh77qsiw682dvi8y468yhbdabqwg05igmwc1wqvq5"))
+             (patches
+              (search-patches "mpg321-CVE-2019-14247.patch"))))
     (build-system gnu-build-system)
     (arguments '(#:configure-flags '("--disable-alsa")))
     (inputs
