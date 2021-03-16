@@ -532,7 +532,12 @@ API.  It also comprises a simple HTTP/HTTPS client implementation.")
     (outputs '("out" "doc" "tester"))
     (build-system cmake-build-system)
     (arguments
-     `(#:configure-flags (list "-DENABLE_STATIC=NO")
+     `(#:configure-flags (list "-DENABLE_STATIC=NO"
+                               "-DENABLE_PCAP=YES"
+                               ;; Do not fail on compile warnings.
+                               "-DENABLE_STRICT=NO"
+                               "-DENABLE_PORTAUDIO=YES"
+                               "-DENABLE_G729B_CNG=YES")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-version
@@ -540,6 +545,10 @@ API.  It also comprises a simple HTTP/HTTPS client implementation.")
              (substitute* "CMakeLists.txt"
                (("VERSION [0-9]+\\.[0-9]+\\.[0-9]+")
                 (string-append "VERSION " ,version)))))
+         (add-after 'unpack 'patch-source
+           (lambda _
+             (substitute* "src/otherfilters/mspcapfileplayer.c"
+               (("O_BINARY") "L_INCR"))))
          (add-before 'check 'pre-check
            (lambda _
              ;; Tests require a running X server.
