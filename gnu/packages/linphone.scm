@@ -425,20 +425,22 @@ implements the RFC 3550 standard.")
 (define-public bzrtp
   (package
     (name "bzrtp")
-    (version "1.0.6")
+    (version "4.4.34")
     (source
      (origin
-       (method url-fetch)
-       (uri
-        (string-append "https://www.linphone.org/releases/sources/" name
-                       "/" name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.linphone.org/BC/public/bzrtp")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "12y0kkh90pixaaxfyx26ca2brhy6nw57fsypp6vh8jk1illv0j5z"))))
+        (base32 "1yjmsbqmymzl4r7sba6w4a2yld8m6hzafr6jf7sj0syhwpnc3zv6"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f                      ; No test target
-       #:configure-flags
-       (list "-DENABLE_STATIC=NO")))    ; Not required
+     `(#:configure-flags
+       (list
+        "-DENABLE_STATIC=NO"
+        "-DENABLE_TESTS=YES")))
     (inputs
      `(("bctoolbox" ,bctoolbox)
        ("sqlite3" ,sqlite)
@@ -448,7 +450,7 @@ implements the RFC 3550 standard.")
 written in C.  It is fully portable and can be executed on many platforms
 including both ARM and x86.")
     (home-page "https://gitlab.linphone.org/BC/public/bzrtp")
-    (license license:gpl2+)))
+    (license license:gpl3+)))
 
 (define-public belle-sip
   (package
