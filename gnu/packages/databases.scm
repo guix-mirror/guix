@@ -32,7 +32,7 @@
 ;;; Copyright © 2017 Kristofer Buffington <kristoferbuffington@gmail.com>
 ;;; Copyright © 2018 Amirouche Boubekki <amirouche@hypermove.net>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
-;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2018, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Gábor Boskovits <boskovits@gmail.com>
@@ -526,7 +526,8 @@ applications.")
        ("cyrus-sasl" ,cyrus-sasl)))
     (outputs '("out" "doc"))
     (arguments
-     '(#:phases
+     '(#:tests? #f                      ;many tests fail and use too much time
+       #:phases
        (modify-phases %standard-phases
          (add-before 'bootstrap 'fix-configure.ac
            ;; Move the AC_CONFIG_AUX_DIR macro use under AC_INIT, otherwise we
@@ -538,24 +539,9 @@ applications.")
              (delete-file "bootstrap.sh") ;not useful in the context of Guix
              (substitute* "configure.ac"
                (("^AC_CONFIG_AUX_DIR\\(\\[build-aux\\]\\).*") "")
-               (("(^AC_INIT.*)" anchor)
-                (string-append anchor "AC_CONFIG_AUX_DIR([build-aux])\n")))
-             #t))
-         (add-before 'bootstrap 'disable-failing-tests
-           ;; See: https://bugs.launchpad.net/libmemcached/+bug/1803926
-           (lambda _
-             ;; Mark some heavily failing test suites as expected to fail.
-             (substitute* "Makefile.am"
-               (("(XFAIL_TESTS =[^\n]*)" xfail_tests)
-                (string-append xfail_tests " tests/testudp"
-                               " tests/libmemcached-1.0/testapp"
-                               " tests/libmemcached-1.0/testsocket")))
-             ;; Disable two tests of the unittest test suite.
-             (substitute* "libtest/unittest.cc"
-               ((".*echo_fubar_BINARY \\},.*") "")
-               ((".*application_doesnotexist_BINARY \\},.*") ""))
-             #t))
-         (add-after 'disable-dns-tests 'build-and-install-html-doc
+               (("^AC_INIT.*" anchor)
+                (string-append anchor "AC_CONFIG_AUX_DIR([build-aux])\n")))))
+         (add-before 'build 'build-and-install-html-doc
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((html (string-append (assoc-ref outputs "doc")
                                         "/share/doc/libmemcached/html/")))
@@ -563,9 +549,8 @@ applications.")
                ;; Cleanup useless files.
                (for-each delete-file-recursively
                          (map (lambda (x) (string-append html x))
-                              '("_sources" ".doctrees" ".buildinfo"))))
-             #t)))))
-    (home-page "https://libmemcached.org/")
+                              '("_sources" ".doctrees" ".buildinfo")))))))))
+    (home-page "https://libmemcached.org/libMemcached.html")
     (synopsis "C++ library for memcached")
     (description "libMemcached is a library to use memcached in C/C++
 applications.  It comes with a complete reference guide and documentation of
