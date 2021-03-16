@@ -8007,6 +8007,28 @@ Python.")
 structures.")
     (license license:epl1.0)))
 
+(define-public python-pulp
+  (package
+    (name "python-pulp")
+    (version "2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "PuLP" version))
+       (sha256
+        (base32
+         "1dammrg0f1v0r028i3rpxbf2bsyxmjq0q6ihb4x2wsdki44z3bxj"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-amply" ,python-amply)))
+    (home-page "https://github.com/coin-or/pulp")
+    (synopsis "Linear Programming modeler")
+    (description
+     "PuLP is a Linear Programming modeler written in Python.  PuLP can
+generate MPS or LP files and call GLPK, COIN CLP/CBC, CPLEX, and GUROBI to
+solve linear problems.")
+    (license license:expat)))
+
 (define-public snakemake
   (package
     (name "snakemake")
