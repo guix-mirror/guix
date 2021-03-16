@@ -5938,14 +5938,14 @@ configuration language.")
   (package
     (name "varnish-modules")
     (home-page "https://github.com/varnish/varnish-modules")
-    (version "0.17.0")
+    (version "0.17.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference (url home-page) (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0zg8y2sgkygdani70zp9rbx278431fmssj26d47c5qsiw939i519"))))
+                "1mzkad9r4rpm1fi7j7skwrsyzzbwcapfnlvvl1ls3rng2djcqb5j"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
