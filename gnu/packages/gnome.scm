@@ -8593,6 +8593,9 @@ properties, screen resolution, and other GNOME parameters.")
        ;; Missing propagation? See also: <https://bugs.gnu.org/27264>
        ("librsvg" ,librsvg)
        ("geoclue" ,geoclue)))
+    ;; CVE-2019-3820 was fixed before GNOME 3.34 was released, in upstream
+    ;; commit f0a7395b3006360905ccdc642982f9fc67378927.
+    (properties '((lint-hidden-cve . ("CVE-2019-3820"))))
     (synopsis "Desktop shell for GNOME")
     (home-page "https://wiki.gnome.org/Projects/GnomeShell")
     (description
