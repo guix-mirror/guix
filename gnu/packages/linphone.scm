@@ -417,9 +417,10 @@ such as conferencing.")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-version-strings
+           ;; See: https://gitlab.linphone.org/BC/public/ortp/-/issues/5.
            (lambda _
              (substitute* "CMakeLists.txt"
-               (("VERSION 4.4.0")
+               (("VERSION [0-9]+\\.[0-9]+\\.[0-9]+")
                 (string-append "VERSION " ,version))
                (("\\$\\{ORTP_DOC_VERSION\\}")
                 ,version))))
@@ -518,56 +519,52 @@ API.  It also comprises a simple HTTP/HTTPS client implementation.")
 (define-public mediastreamer2
   (package
     (name "mediastreamer2")
-    (version "2.16.1")
+    (version "4.4.34")
     (source
      (origin
-       (method url-fetch)
-       (uri
-        (string-append "https://www.linphone.org/releases/sources/"
-                       "mediastreamer/mediastreamer-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.linphone.org/BC/public/mediastreamer2.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0whpqr69wz0pnzvragkpfblxhd0rds8k06c3mw5a0ag216a1yd9k"))
-       (patches (search-patches "mediastreamer2-srtp2.patch"))))
+        (base32 "0989h3d0h7qrx4kjx8gg09j8c5hvvi3h8qi1iq1dqbppwbaxbz8c"))))
     (outputs '("out" "doc" "tester"))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; No test target
-       #:configure-flags
-       (list "-DENABLE_STATIC=NO"      ; Not required
-             "-DENABLE_STRICT=NO"      ; Would otherwise treat warnings as err
-             "-DENABLE_BV16=NO"        ; Not available
-             "-DCMAKE_C_FLAGS=-DMS2_GIT_VERSION=\\\"unknown\\\""
-             "-DCMAKE_CXX_FLAGS=-DMS2_GIT_VERSION=\\\"unknown\\\"")
+       #:configure-flags (list "-DENABLE_STATIC=NO")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-version
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("VERSION [0-9]+\\.[0-9]+\\.[0-9]+")
+                (string-append "VERSION " ,version)))))
          (add-after 'install 'separate-outputs
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (doc (assoc-ref outputs "doc"))
                     (tester (assoc-ref outputs "tester"))
-                    (tester-name (string-append ,name "_tester")))
+                    (tester-name (string-append ,name "_tester"))
+                    (doc (assoc-ref outputs "doc"))
+                    (doc-name (string-append ,name "-" ,version)))
+               (for-each mkdir-p
+                         (list (string-append tester "/bin")
+                               (string-append tester "/share")
+                               (string-append doc "/share/doc")))
                ;; Copy the tester executable.
-               (mkdir-p (string-append tester "/bin"))
                (rename-file (string-append out "/bin/" tester-name)
                             (string-append tester "/bin/" tester-name))
                ;; Copy the tester data files.
-               (copy-recursively (string-append out "/share/" tester-name)
-                                 (string-append tester "/share/" tester-name))
-               (delete-file-recursively (string-append out "/share/"
-                                                       tester-name))
+               (rename-file (string-append out "/share/" tester-name)
+                            (string-append tester "/share/" tester-name))
                ;; Copy the HTML documentation.
-               (copy-recursively (string-append out "/share/doc/"
-                                                ,name "-" ,version "/html")
-                                 (string-append doc "/share/doc/"
-                                                ,name "-" ,version "/html"))
-               (delete-file-recursively (string-append out "/share/doc/"
-                                                       ,name "-" ,version
-                                                       "/html"))
-               #t))))))
+               (rename-file (string-append out "/share/doc/" doc-name)
+                            (string-append doc "/share/doc/" doc-name))))))))
     (native-inputs
      `(("dot" ,graphviz)
        ("doxygen" ,doxygen)
-       ("python" ,python)))
+       ("python" ,python-wrapper)))
     (inputs
      `(("alsa" ,alsa-lib)
        ("bcg729" ,bcg729)
@@ -600,8 +597,8 @@ API.  It also comprises a simple HTTP/HTTPS client implementation.")
 for telephony applications.  This media processing and streaming toolkit is
 responsible for receiving and sending all multimedia streams in Linphone,
 including media capture, encoding and decoding, and rendering.")
-    (home-page "https://gitlab.linphone.org/BC/public/mediastreamer2")
-    (license license:gpl2+)))
+    (home-page "https://linphone.org/technical-corner/mediastreamer2")
+    (license license:gpl3+)))
 
 (define-public liblinphone
   (package
