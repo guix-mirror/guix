@@ -6515,6 +6515,10 @@ part of udev-extras, then udev, then systemd.  It's now a project on its own.")
        ("openssh" ,openssh)
        ("polkit" ,polkit)
        ("udisks" ,udisks)))
+    ;; CVE-2019-{12447,12448,12449} are fixed in the 1.40.2 release.
+    (properties '((lint-hidden-cve . ("CVE-2019-12447"
+                                      "CVE-2019-12448"
+                                      "CVE-2019-12449"))))
     (home-page "https://wiki.gnome.org/gvfs/")
     (synopsis "Userspace virtual file system for GIO")
     (description
