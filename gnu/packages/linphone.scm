@@ -209,31 +209,26 @@ format.")
     (version "0.23")
     (source
      (origin
-       (method url-fetch)
-       (uri
-        (string-append "https://www.linphone.org/releases/sources/" name
-                       "/" name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.linphone.org/BC/public/bcmatroska2.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1a0vlk4fhh189pfzrwbc3xbc5vyx6cnxy642d1h40045jz9y4h15"))))
+        (base32 "1avl9w18kh4dxm3g8j0bkw39bksd7bz3nfxvyibqqnz63ds8vfi2"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f                      ; No test target
-       #:configure-flags
-       (list
-        "-DENABLE_STATIC=NO")))         ; Not required
+     `(#:tests? #f                                     ; No test target
+       #:configure-flags (list "-DENABLE_STATIC=NO"))) ; Not required
     (synopsis "Belledonne Communications Media Container")
     (description "BcMatroska is a free and open standard multi-media container
 format.  It can hold an unlimited number of video, audio, picture, or subtitle
-tracks in one file. ")
+tracks in one file.  This project provides a convenient distribution of the
+Matroska multimedia container format.")
     (home-page "https://gitlab.linphone.org/BC/public/bcmatroska2")
-    (license
-     (list
-      ;; For Core C and LibEBML2.
-      ;; https://www.matroska.org/node/47
-      license:bsd-4
-      ;; For LibMatroska2.
-      ;; https://www.matroska.org/node/47
-      license:lgpl2.1+))))
+    (license (list license:gpl2+        ;for this package (build system files)
+                   license:bsd-4        ;for Core C and LibEBML2
+                   license:lgpl2.1+)))) ;for LibMatroska2
 
 (define-public bcg729
   (package
