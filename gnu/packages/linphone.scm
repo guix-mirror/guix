@@ -532,8 +532,7 @@ API.  It also comprises a simple HTTP/HTTPS client implementation.")
     (outputs '("out" "doc" "tester"))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f                      ; No test target
-       #:configure-flags (list "-DENABLE_STATIC=NO")
+     `(#:configure-flags (list "-DENABLE_STATIC=NO")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-version
@@ -541,6 +540,14 @@ API.  It also comprises a simple HTTP/HTTPS client implementation.")
              (substitute* "CMakeLists.txt"
                (("VERSION [0-9]+\\.[0-9]+\\.[0-9]+")
                 (string-append "VERSION " ,version)))))
+         (add-before 'check 'pre-check
+           (lambda _
+             ;; Tests require a running X server.
+             (system "Xvfb :1 +extension GLX &")
+             (setenv "DISPLAY" ":1")
+             ;; Tests write to $HOME.
+             (setenv "HOME" (getenv "TEMP"))))
+         (delete 'check)                ;move after install
          (add-after 'install 'separate-outputs
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -552,19 +559,37 @@ API.  It also comprises a simple HTTP/HTTPS client implementation.")
                          (list (string-append tester "/bin")
                                (string-append tester "/share")
                                (string-append doc "/share/doc")))
-               ;; Copy the tester executable.
+               ;; Move the tester executable.
                (rename-file (string-append out "/bin/" tester-name)
                             (string-append tester "/bin/" tester-name))
-               ;; Copy the tester data files.
+               ;; Move the tester data files.
                (rename-file (string-append out "/share/" tester-name)
                             (string-append tester "/share/" tester-name))
-               ;; Copy the HTML documentation.
+               ;; Move the HTML documentation.
                (rename-file (string-append out "/share/doc/" doc-name)
-                            (string-append doc "/share/doc/" doc-name))))))))
+                            (string-append doc "/share/doc/" doc-name)))))
+         (add-after 'separate-outputs 'check
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((tester (string-append  (assoc-ref outputs "tester")
+                                           "/bin/mediastreamer2_tester")))
+               (for-each (lambda (suite-name)
+                           (invoke tester "--suite" suite-name))
+                         ;; Some tests fail, due to requiring access to the
+                         ;; sound card or the network.
+                           (list "Basic Audio"
+                                 ;; "Sound Card"
+                                 ;; "AdaptiveAlgorithm"
+                                 ;; "AudioStream"
+                                 ;; "VideoStream"
+                                 "H26x Tools"
+                                 "Framework"
+                                 ;; "Player"
+                                 "TextStream"))))))))
     (native-inputs
      `(("dot" ,graphviz)
        ("doxygen" ,doxygen)
-       ("python" ,python-wrapper)))
+       ("python" ,python-wrapper)
+       ("xorg-server" ,xorg-server-for-tests)))
     (inputs
      `(("alsa" ,alsa-lib)
        ("bcg729" ,bcg729)
