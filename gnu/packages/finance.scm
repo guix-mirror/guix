@@ -22,6 +22,7 @@
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Carlo Holl <carloholl@gmail.com>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
+;;; Copyright © 2021 ZmnSCPxj jxPCSnmZ <ZmnSCPxj@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -52,6 +53,7 @@
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system go)
   #:use-module (guix build-system qt)
+  #:use-module (guix deprecation)
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages aidc)
@@ -108,10 +110,10 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages gnuzilla))
 
-(define-public bitcoin-core
+(define-public bitcoin-core-0.21
   (package
     (name "bitcoin-core")
-    (version "0.20.1")
+    (version "0.21.0")
     (source (origin
               (method url-fetch)
               (uri
@@ -119,7 +121,7 @@
                               version "/bitcoin-" version ".tar.gz"))
               (sha256
                (base32
-                "0y5rad68b398arh0abr2wgiwybdw0i5a4dxz9s3fk9fgdbyn5gab"))))
+                "0dszcn4r43w0ffsmgwmyzkzr5lqws3bbhlkssmjgnjgfc8n2148s"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -185,6 +187,24 @@ collectively by the network.  Bitcoin Core is the reference implementation
 of the bitcoin protocol.  This package provides the Bitcoin Core command
 line client and a client based on Qt.")
     (license license:expat)))
+
+(define-public bitcoin-core-0.20
+  (package
+    (inherit bitcoin-core-0.21)
+    (version "0.20.1")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "https://bitcoincore.org/bin/bitcoin-core-"
+                              version "/bitcoin-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0y5rad68b398arh0abr2wgiwybdw0i5a4dxz9s3fk9fgdbyn5gab"))))))
+
+;; The support lifetimes for bitcoin-core versions can be found in
+;; <https://bitcoincore.org/en/lifecycle/#schedule>.
+
+(define-public bitcoin-core bitcoin-core-0.21)
 
 (define-public hledger
   (package
