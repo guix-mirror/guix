@@ -27275,3 +27275,27 @@ and prefered services can easily be configured.")
     (description
      "This package adds a \"C-'\" binding to Ivy minibuffer that uses Avy.")
     (license license:gpl3+)))
+
+(define-public emacs-ivy-hydra
+  (package
+    (name "emacs-ivy-hydra")
+    (version "0.13.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://elpa.gnu.org/packages/"
+             "ivy-hydra-" version ".tar"))
+       (sha256
+        (base32 "06rln9bnq5hli5rqlm47fb68b8llpqrmzwqqv4rn7mx3854i9a5x"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-ivy" ,emacs-ivy)
+       ("emacs-hydra" ,emacs-hydra)))
+    (home-page "https://github.com/abo-abo/swiper")
+    (synopsis "Additional key bindings for Ivy")
+    (description
+     "This package provides the `hydra-ivy/body' command, which is a
+quasi-prefix map, with many useful bindings.  These bindings are
+shorter than usual, using mostly unprefixed keys.")
+    (license license:gpl3+)))
