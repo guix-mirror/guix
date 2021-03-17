@@ -31,6 +31,7 @@
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system ruby)
+  #:use-module (guix utils)
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gawk)
@@ -303,7 +304,8 @@ automatically.")
    (build-system gnu-build-system)
    (arguments
     `(#:make-flags
-      (list "CC=gcc" (string-append "PREFIX=" (assoc-ref %outputs "out")))
+      (list (string-append "CC=" ,(cc-for-target))
+            (string-append "PREFIX=" (assoc-ref %outputs "out")))
       #:phases
       (modify-phases %standard-phases
         (delete 'configure))))
