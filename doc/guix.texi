@@ -11581,10 +11581,10 @@ Consider the packages specified, and all the packages upon which they depend.
 
 @example
 $ guix refresh --recursive coreutils
-gnu/packages/acl.scm:35:2: warning: no updater for acl
-gnu/packages/m4.scm:30:12: info: 1.4.18 is already the latest version of m4
+gnu/packages/acl.scm:40:13: acl would be upgraded from 2.2.53 to 2.3.1
+gnu/packages/m4.scm:30:12: 1.4.18 is already the latest version of m4
 gnu/packages/xml.scm:68:2: warning: no updater for expat
-gnu/packages/multiprecision.scm:40:12: info: 6.1.2 is already the latest version of gmp
+gnu/packages/multiprecision.scm:40:12: 6.1.2 is already the latest version of gmp
 @dots{}
 @end example
 
@@ -11824,7 +11824,7 @@ gpg --no-default-keyring --keyring mykeyring.kbx \
   --recv-keys @value{OPENPGP-SIGNING-KEY-ID}
 @end example
 
-@ref{GPG Configuration Options, @option{--keyring},, gnupg, Using the GNU
+@xref{GPG Configuration Options, @option{--keyring},, gnupg, Using the GNU
 Privacy Guard}, for more information on GPG's @option{--keyring} option.
 
 @item --key-download=@var{policy}
