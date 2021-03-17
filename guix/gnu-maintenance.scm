@@ -327,15 +327,10 @@ name/directory pairs."
                              #:key
                              (server "ftp.gnu.org")
                              (directory (string-append "/gnu/" project))
-                             (keep-file? (const #t))
-                             (file->signature (cut string-append <> ".sig"))
-                             (ftp-open ftp-open) (ftp-close ftp-close))
+                             (file->signature (cut string-append <> ".sig")))
   "Return an <upstream-source> for the latest release of PROJECT on SERVER
 under DIRECTORY, or #f.  Use FTP-OPEN and FTP-CLOSE to open (resp. close) FTP
 connections; this can be useful to reuse connections.
-
-KEEP-FILE? is a predicate to decide whether to enter a directory and to
-consider a given file (source tarball) as a valid candidate based on its name.
 
 FILE->SIGNATURE must be a procedure; it is passed a source file URL and must
 return the corresponding signature URL, or #f it signatures are unavailable."
@@ -394,7 +389,6 @@ return the corresponding signature URL, or #f it signatures are unavailable."
            (releases (filter-map (match-lambda
                                    ((file 'file . _)
                                     (and (release-file? project file)
-                                         (keep-file? file)
                                          (file->source directory file)))
                                    (_ #f))
                                  entries)))
