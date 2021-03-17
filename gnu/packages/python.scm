@@ -31,8 +31,8 @@
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016, 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2016, 2017, 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2016–2018, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2021 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2017 Frederick M. Muriithi <fredmanglis@gmail.com>
@@ -295,7 +295,16 @@
                                             (not
                                              (string-prefix? "test_support."
                                                              file))))))
-                      (call-with-output-file "__init__.py" (const #t)))))))))
+                      (call-with-output-file "__init__.py" (const #t))))
+                  (let ((libdir (string-append out "/lib/" pythonX.Y)))
+                    (for-each
+                     (lambda (directory)
+                       (let ((dir (string-append libdir "/" directory)))
+                         (when (file-exists? dir)
+                           (delete-file-recursively dir))))
+                     '("email/test" "ctypes/test" "unittest/test" "tkinter/test"
+                       "sqlite3/test" "bsddb/test" "lib-tk/test" "lib2to3/tests"
+                       "json/tests" "distutils/tests"))))))))
          (add-after 'remove-tests 'rebuild-bytecode
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
@@ -416,6 +425,9 @@ data types.")
                   (substitute* "Modules/Setup"
                     ;; Link Expat instead of embedding the bundled one.
                     (("^#pyexpat.*") "pyexpat pyexpat.c -lexpat\n"))
+                  ;; Delete windows binaries
+                  (for-each delete-file
+                            (find-files "Lib/distutils/command" "\\.exe$"))
                   #t))))
     (arguments
      (substitute-keyword-arguments (package-arguments python-2)
@@ -461,6 +473,23 @@ data types.")
            ,@(if (hurd-system?)
                  `((delete 'patch-regen-for-hurd)) ;regen was removed after 3.5.9
                  '())
+           (add-after 'unpack 'remove-windows-binaries
+             (lambda _
+               ;; Delete .exe from embedded .whl (zip) files
+               (for-each
+                (lambda (whl)
+                  (let ((dir "whl-content"))
+                    (mkdir-p dir)
+                    (with-directory-excursion dir
+                      (let ((whl (string-append "../" whl)))
+                        (invoke "unzip" whl)
+                        (for-each delete-file
+                                  (find-files "." "\\.exe$"))
+                        (delete-file whl)
+                        (apply invoke "zip" "-X" whl
+                               (find-files "." ".*" #:directories? #t))))
+                    (delete-file-recursively dir)))
+                (find-files "Lib/ensurepip" "\\.whl$"))))
            (add-before 'check 'set-TZDIR
              (lambda* (#:key inputs native-inputs #:allow-other-keys)
                ;; test_email requires the Olson time zone database.
@@ -495,6 +524,8 @@ data types.")
              ,(customize-site version))))))
     (native-inputs
      `(("tzdata" ,tzdata-for-tests)
+       ("unzip" ,unzip)
+       ("zip" ,(@ (gnu packages compression) zip))
        ,@(if (%current-target-system)
              `(("python3" ,this-package))
              '())

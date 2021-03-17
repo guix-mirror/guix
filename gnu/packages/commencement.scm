@@ -11,6 +11,7 @@
 ;;; Copyright © 2020 Guy Fleury Iteriteka <gfleury@disroot.org>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2021 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3091,7 +3092,12 @@ memoized as a function of '%current-system'."
                    (delete-file-recursively "Modules/expat")
                    (substitute* "Modules/Setup.dist"
                      ;; Link Expat instead of embedding the bundled one.
-                     (("^#pyexpat.*") "pyexpat pyexpat.c -lexpat\n")))))))
+                     (("^#pyexpat.*") "pyexpat pyexpat.c -lexpat\n"))
+                   ;; Delete windows binaries
+                   (for-each delete-file
+                             (find-files "Lib/distutils/command" ".*.exe$"))
+                   (for-each delete-file
+                             (find-files "Lib/ensurepip" ".*.whl$")))))))
     (inputs
      `(,@(%boot0-inputs)
        ("expat" ,expat-sans-tests)))              ;remove OpenSSL, zlib, etc.
@@ -3122,6 +3128,7 @@ memoized as a function of '%current-system'."
                                          ('add-after unpack apply-alignment-patch _))
                                        `(modify-phases ,original-phases ,@changes))
                                       (_ phases)))
+               (delete 'remove-windows-binaries)
                (add-before 'configure 'disable-modules
                  (lambda _
                    (substitute* "setup.py"
