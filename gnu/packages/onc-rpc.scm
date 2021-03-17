@@ -78,7 +78,7 @@ IPv4 and IPv6.  ONC RPC is notably used by the network file system (NFS).")
   (package/inherit libtirpc
     (name "libtirpc-hurd")
     (source (origin (inherit (package-source libtirpc))
-                    (patches (append (origin-patches libtirpc)
+                    (patches (append (origin-patches (package-source libtirpc))
                                      (search-patches "libtirpc-hurd.patch"
                                                      "libtirpc-hurd-client.patch")))))
     (arguments
