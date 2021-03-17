@@ -3782,7 +3782,8 @@ The drivers officially supported by @code{libdbi} are:
                (base32
                 "14x2gjblkgpflv75wl144cyjp1sis5rbxnr9r2gj3yw16v2av0bp"))))
     (build-system cmake-build-system)
-    (inputs
+    (propagated-inputs
+     ;; Headers of soci has include-references to headers of these inputs.
      `(("firebird" ,firebird)
        ("postgresql" ,postgresql)
        ("sqlite" ,sqlite)
