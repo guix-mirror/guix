@@ -6,7 +6,7 @@
 ;;; Copyright © 2016 Nikita <nikita@n0.is>
 ;;; Copyright © 2016, 2017, 2018, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
-;;; Copyright © 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018, 2019, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -302,17 +302,17 @@ also known as DXTn or DXTC) for Mesa.")
               '("-Dgallium-drivers=iris,nouveau,r300,r600,radeonsi,svga,swrast,virgl")))
          ;; Enable various optional features.  TODO: opencl requires libclc,
          ;; omx requires libomxil-bellagio
-         "-Dplatforms=x11,drm,surfaceless,wayland"
+         "-Dplatforms=x11,wayland"
          "-Dglx=dri"        ;Thread Local Storage, improves performance
          ;; "-Dopencl=true"
          ;; "-Domx=true"
          "-Dosmesa=gallium"
-         "-Dgallium-xa=true"
+         "-Dgallium-xa=enabled"
 
          ;; features required by wayland
-         "-Dgles2=true"
-         "-Dgbm=true"
-         "-Dshared-glapi=true"
+         "-Dgles2=enabled"
+         "-Dgbm=enabled"
+         "-Dshared-glapi=enabled"
 
          ;; Enable Vulkan on i686-linux and x86-64-linux.
          ,@(match (%current-system)
@@ -336,7 +336,7 @@ also known as DXTn or DXTC) for Mesa.")
          ,@(match (%current-system)
              ((or "x86_64-linux" "i686-linux")
               '("-Ddri-drivers=i915,i965,nouveau,r200,r100"
-                "-Dllvm=true"))         ; default is x86/x86_64 only
+                "-Dllvm=enabled"))      ; default is x86/x86_64 only
              (_
               '("-Ddri-drivers=nouveau,r200,r100"))))
 
