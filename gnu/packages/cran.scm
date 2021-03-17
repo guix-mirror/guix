@@ -26618,33 +26618,6 @@ include Markov models of discrete and continuous trait evolution and constant
 rate speciation and extinction.")
     (license license:gpl2+)))
 
-(define-public r-absfiltergsea
-  (package
-    (name "r-absfiltergsea")
-    (version "1.5.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "AbsFilterGSEA" version))
-       (sha256
-        (base32 "15srxkxsvn38kd5frdrwfdf0ad8gskrd0h01wmdf9hglq8fjrp7w"))))
-    (properties `((upstream-name . "AbsFilterGSEA")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-biobase" ,r-biobase)
-       ("r-deseq" ,r-deseq)
-       ("r-limma" ,r-limma)
-       ("r-rcpp" ,r-rcpp)
-       ("r-rcpparmadillo" ,r-rcpparmadillo)))
-    (home-page "https://cran.r-project.org/web/packages/AbsFilterGSEA/")
-    (synopsis "Improved false positive control of gene-permuting with absolute filtering")
-    (description
-     "This package provides a function that performs gene-permuting of a gene-set
-enrichment analysis (GSEA) calculation with or without the absolute filtering.
-  Without filtering, users can perform (original) two-tailed or one-tailed
-absolute GSEA.")
-    (license license:gpl2)))
-
 (define-public r-calculus
   (package
     (name "r-calculus")
