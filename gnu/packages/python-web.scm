@@ -708,8 +708,7 @@ Swartz.")
 
 (define-public python2-html2text
   (let ((base (package-with-python2 python-html2text)))
-    (package
-      (inherit base)
+    (package/inherit base
       ;; This is the last version with support for Python 2.
       (version "2019.8.11")
       (source (origin
@@ -1725,7 +1724,7 @@ connection to each user.")
 
 (define-public python2-tornado
   (let ((tornado (package-with-python2 (strip-python2-variant python-tornado))))
-    (package (inherit tornado)
+    (package/inherit tornado
       (propagated-inputs
        `(("python2-backport-ssl-match-hostname"
           ,python2-backport-ssl-match-hostname)
@@ -1784,7 +1783,7 @@ term.js Javascript terminal emulator library.")
 
 (define-public python2-terminado
   (let ((terminado (package-with-python2 (strip-python2-variant python-terminado))))
-    (package (inherit terminado)
+    (package/inherit terminado
       (propagated-inputs
        `(("python2-backport-ssl-match-hostname"
           ,python2-backport-ssl-match-hostname)
@@ -2371,7 +2370,7 @@ verification of the SSL peer.")
 ;; python2-openssl requires special care, so package-with-python2 is
 ;; insufficient.
 (define-public python2-ndg-httpsclient
-  (package (inherit python-ndg-httpsclient)
+  (package/inherit python-ndg-httpsclient
     (name "python2-ndg-httpsclient")
     (arguments
      (substitute-keyword-arguments (package-arguments python-ndg-httpsclient)
@@ -2403,8 +2402,7 @@ WebSocket usage in Python programs.")
 (define-public python2-websocket-client
   (let ((base (package-with-python2
                 (strip-python2-variant python-websocket-client))))
-    (package
-      (inherit base)
+    (package/inherit base
       (native-inputs
        `(("python2-backport-ssl-match-hostname"
           ,python2-backport-ssl-match-hostname)
@@ -2710,8 +2708,7 @@ authenticated session objects providing things like keep-alive.")
 
 (define-public python2-rauth
   (let ((base (package-with-python2 (strip-python2-variant python-rauth))))
-    (package
-      (inherit base)
+    (package/inherit base
       (native-inputs `(("python2-unittest2" ,python2-unittest2)
                        ,@(package-native-inputs base))))))
 
@@ -3211,7 +3208,7 @@ provide an easy-to-use Python interface for building OAuth1 and OAuth2 clients."
 
 (define-public python2-url
   (let ((base (package-with-python2 (strip-python2-variant python-url))))
-    (package (inherit base)
+    (package/inherit base
       (propagated-inputs
        `(("python2-publicsuffix" ,python2-publicsuffix))))))
 
@@ -3373,8 +3370,7 @@ transfers.")
 
 (define-public python2-s3transfer
   (let ((base (package-with-python2 (strip-python2-variant python-s3transfer))))
-    (package
-      (inherit base)
+    (package/inherit base
       (native-inputs
        `(("python2-futures" ,python2-futures)
          ,@(package-native-inputs base))))))

@@ -128,8 +128,7 @@ is usually the formatter of \"man\" documentation pages.")
 (define-public groff-minimal
   ;; Minimialist groff for use by man-db.  Its closure size is less than half
   ;; that of the full-blown groff.
-  (package
-    (inherit groff)
+  (package/inherit groff
     (name "groff-minimal")
     (synopsis "Minimalist variant of Groff for use by man-db")
     (outputs '("out"))

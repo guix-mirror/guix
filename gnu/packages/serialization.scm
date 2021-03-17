@@ -220,7 +220,7 @@ that implements both the msgpack and msgpack-rpc specifications.")
     (synopsis "Lua bindings for the libmpack binary serialization library")))
 
 (define-public lua5.1-libmpack
-  (package (inherit lua-libmpack)
+  (package/inherit lua-libmpack
     (name "lua5.1-libmpack")
     (arguments
      (substitute-keyword-arguments (package-arguments lua-libmpack)
@@ -240,7 +240,7 @@ that implements both the msgpack and msgpack-rpc specifications.")
      `(("lua" ,lua-5.1)))))
 
 (define-public lua5.2-libmpack
-  (package (inherit lua-libmpack)
+  (package/inherit lua-libmpack
     (name "lua5.2-libmpack")
     (arguments
      (substitute-keyword-arguments (package-arguments lua-libmpack)

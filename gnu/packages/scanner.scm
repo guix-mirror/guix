@@ -147,8 +147,7 @@ package contains the library, but no drivers.")
 ;; support for HP scanners whose backends are not maintained by the SANE
 ;; project, and builds all of those backends.
 (define-public sane-backends
-  (package
-    (inherit sane-backends-minimal)
+  (package/inherit sane-backends-minimal
     (name "sane-backends")
     (inputs
      `(("hplip" ,(@ (gnu packages cups) hplip-minimal))

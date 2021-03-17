@@ -300,7 +300,7 @@ software vendors, application developers and computer science researchers.")
 
 ;; TODO: javadoc files contain timestamps.
 (define-public java-openmpi
-  (package (inherit openmpi)
+  (package/inherit openmpi
     (name "java-openmpi")
     (inputs
      `(("openmpi" ,openmpi)
@@ -344,8 +344,7 @@ software vendors, application developers and computer science researchers.")
     (synopsis "Java bindings for MPI")))
 
 (define-public openmpi-thread-multiple
-  (package
-    (inherit openmpi)
+  (package/inherit openmpi
     (name "openmpi-thread-multiple")
     (arguments
      (substitute-keyword-arguments (package-arguments openmpi)

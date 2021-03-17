@@ -101,7 +101,7 @@ boolean settings).")
     (license license:lgpl2.1+)))
 
 (define-public checkpolicy
-  (package (inherit libsepol)
+  (package/inherit libsepol
     (name "checkpolicy")
     (arguments
      `(#:tests? #f ; there is no check target
@@ -139,7 +139,7 @@ module into a binary representation.")
     (license license:gpl2)))
 
 (define-public libselinux
-  (package (inherit libsepol)
+  (package/inherit libsepol
     (name "libselinux")
     (outputs '("out" "python"))
     (arguments
@@ -193,7 +193,7 @@ the core SELinux management utilities.")
     (license license:public-domain)))
 
 (define-public libsemanage
-  (package (inherit libsepol)
+  (package/inherit libsepol
     (name "libsemanage")
     (arguments
      (substitute-keyword-arguments (package-arguments libsepol)
@@ -241,7 +241,7 @@ binary policies.")
     (license license:lgpl2.1+)))
 
 (define-public secilc
-  (package (inherit libsepol)
+  (package/inherit libsepol
     (name "secilc")
     (arguments
      (substitute-keyword-arguments (package-arguments libsepol)
@@ -268,7 +268,7 @@ binary policies.")
     (license license:bsd-2)))
 
 (define-public python-sepolgen
-  (package (inherit libsepol)
+  (package/inherit libsepol
     (name "python-sepolgen")
     (arguments
      `(#:modules ((srfi srfi-1)
@@ -373,7 +373,7 @@ tools, and libraries designed to facilitate SELinux policy analysis.")
                    license:gpl2+))))
 
 (define-public policycoreutils
-  (package (inherit libsepol)
+  (package/inherit libsepol
     (name "policycoreutils")
     (arguments
      `(#:test-target "test"

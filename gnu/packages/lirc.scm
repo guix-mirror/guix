@@ -140,8 +140,7 @@ on just one button press.")
 
   (define-public python2-lirc
     (let ((base (package-with-python2 (strip-python2-variant python-lirc))))
-      (package
-        (inherit base)
+      (package/inherit base
         (arguments
          `(#:tests? #f ; the only tests that exist are human-interactive
            #:phases

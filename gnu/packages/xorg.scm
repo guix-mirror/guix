@@ -6479,8 +6479,7 @@ and embedded platforms.")
                    license:bsd-3))))
 
 (define-public uim-gtk
-  (package
-    (inherit uim)
+  (package/inherit uim
     (name "uim-gtk")
     (inputs
      `(("gtk" ,gtk+)
@@ -6489,8 +6488,7 @@ and embedded platforms.")
     (synopsis "Multilingual input method framework (GTK+ support)")))
 
 (define-public uim-qt
-  (package
-    (inherit uim)
+  (package/inherit uim
     (name "uim-qt")
     (inputs
      `(("qt" ,qtbase)

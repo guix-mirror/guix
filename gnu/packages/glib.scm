@@ -833,32 +833,33 @@ useful for C++.")
     (properties `((python2-variant . ,(delay python2-pygobject))))))
 
 (define-public python2-pygobject
-  (package (inherit (strip-python2-variant python-pygobject))
-    (name "python2-pygobject")
+  (let ((base (strip-python2-variant python-pygobject)))
+    (package/inherit base
+      (name "python2-pygobject")
 
-    ;; Note: We use python-build-system here, because Meson only supports
-    ;; Python 3, and needs PYTHONPATH etc set up correctly, which makes it
-    ;; difficult to use for Python 2 projects.
-    (build-system python-build-system)
-    (arguments
-     `(#:python ,python-2
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'delete-broken-tests
-           (lambda _
-             ;; FIXME: this test freezes and times out.
-             (delete-file "tests/test_mainloop.py")
-             ;; FIXME: this test fails with this kind of error:
-             ;; AssertionError: <Handlers.SIG_IGN: 1> != <built-in function default_int_handler
-             (delete-file "tests/test_ossig.py")
-             #t)))))
-    (inputs
-     `(("python-pycairo" ,python2-pycairo)
-       ("gobject-introspection" ,gobject-introspection)))
-    (native-inputs
-     `(("glib-bin" ,glib "bin")
-       ("pkg-config" ,pkg-config)
-       ("python-pytest" ,python2-pytest)))))
+      ;; Note: We use python-build-system here, because Meson only supports
+      ;; Python 3, and needs PYTHONPATH etc set up correctly, which makes it
+      ;; difficult to use for Python 2 projects.
+      (build-system python-build-system)
+      (arguments
+       `(#:python ,python-2
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'delete-broken-tests
+             (lambda _
+               ;; FIXME: this test freezes and times out.
+               (delete-file "tests/test_mainloop.py")
+               ;; FIXME: this test fails with this kind of error:
+               ;; AssertionError: <Handlers.SIG_IGN: 1> != <built-in function default_int_handler
+               (delete-file "tests/test_ossig.py")
+               #t)))))
+      (inputs
+       `(("python-pycairo" ,python2-pycairo)
+         ("gobject-introspection" ,gobject-introspection)))
+      (native-inputs
+       `(("glib-bin" ,glib "bin")
+         ("pkg-config" ,pkg-config)
+         ("python-pytest" ,python2-pytest))))))
 
 (define-public perl-glib
   (package

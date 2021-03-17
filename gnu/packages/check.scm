@@ -836,7 +836,7 @@ have been used.")
 (define-public python2-mock
   (let ((base (package-with-python2
                (strip-python2-variant python-mock))))
-    (package (inherit base)
+    (package/inherit base
       (propagated-inputs
        `(("python2-functools32" ,python2-functools32)
          ("python2-funcsigs" ,python2-funcsigs)
@@ -1240,7 +1240,7 @@ same arguments.")
 (define-public python2-pytest-mock
   (let ((base (package-with-python2
                 (strip-python2-variant python-pytest-mock))))
-    (package (inherit base)
+    (package/inherit base
       (propagated-inputs
        `(("python2-mock" ,python2-mock)
          ,@(package-propagated-inputs base))))))

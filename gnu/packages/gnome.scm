@@ -2433,8 +2433,7 @@ GNOME Desktop.")
 
 ;;; A minimal variant used to break a cycle with Inkscape.
 (define-public gdl-minimal
-  (package
-    (inherit gdl)
+  (package/inherit gdl
     (name "gdl-minimal")
     (arguments
      '(#:phases
@@ -4899,8 +4898,7 @@ and the GLib main loop, to integrate well with GNOME applications.")
 
 ;;; A minimal version of libsoup used to prevent a cycle with Inkscape.
 (define-public libsoup-minimal
-  (package
-    (inherit libsoup)
+  (package/inherit libsoup
     (name "libsoup-minimal")
     (outputs (delete "doc" (package-outputs libsoup)))
     (arguments
@@ -10099,8 +10097,7 @@ accessibility infrastructure.")
     (properties '((upstream-name . "pyatspi")))))
 
 (define-public python2-pyatspi
-  (package
-    (inherit python-pyatspi)
+  (package/inherit python-pyatspi
     (name "python2-pyatspi")
     (inputs
      `(("python" ,python-2)))

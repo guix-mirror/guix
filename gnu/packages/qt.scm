@@ -2030,7 +2030,7 @@ module provides support functions to the automatically generated code.")
     (license license:gpl3)))
 
 (define-public python2-sip
-  (package (inherit python-sip)
+  (package/inherit python-sip
     (name "python2-sip")
     (native-inputs
      `(("python" ,python-2)))))
@@ -2215,13 +2215,13 @@ itself.")
 ;; Ultimately, it would be nicer to have a more modular set of python-pyqt-*
 ;; packages that could be used together.
 (define-public python-pyqt-without-qtwebkit
-  (package (inherit python-pyqt)
+  (package/inherit python-pyqt
     (name "python-pyqt-without-qtwebkit")
     (inputs
      (alist-delete "qtwebkit" (package-inputs python-pyqt)))))
 
 (define-public python2-pyqt
-  (package (inherit python-pyqt)
+  (package/inherit python-pyqt
     (name "python2-pyqt")
     (propagated-inputs
      `(("python-enum34" ,python2-enum34)
@@ -2367,7 +2367,7 @@ indicators, code completion and call tips.")
     (license license:gpl3+)))
 
 (define-public python-qscintilla
-  (package (inherit qscintilla)
+  (package/inherit qscintilla
     (name "python-qscintilla")
     (arguments
      `(#:configure-flags
@@ -2415,7 +2415,7 @@ This package provides the Python bindings.")))
 ;; variables such as PYTHONPATH, so we need to build a union package to make
 ;; it work.
 (define-public python-pyqt+qscintilla
-  (package (inherit python-pyqt)
+  (package/inherit python-pyqt
     (name "python-pyqt+qscintilla")
     (source #f)
     (build-system trivial-build-system)

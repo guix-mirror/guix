@@ -648,8 +648,7 @@ interface.")
     (license lgpl3+)))
 
 (define-public guile3.0-sdl2
-  (package
-    (inherit guile-sdl2)
+  (package/inherit guile-sdl2
     (name "guile3.0-sdl2")
     (native-inputs
      `(("guile" ,guile-3.0)

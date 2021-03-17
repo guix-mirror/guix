@@ -794,7 +794,7 @@ cosine/ sine transforms or DCT/DST).")
     (license license:gpl2+)))
 
 (define-public fftwf
-  (package (inherit fftw)
+  (package/inherit fftw
     (name "fftwf")
     (arguments
      (substitute-keyword-arguments (package-arguments fftw)
@@ -812,7 +812,7 @@ cosine/ sine transforms or DCT/DST).")
                     "  Single-precision version."))))
 
 (define-public fftw-openmpi
-  (package (inherit fftw)
+  (package/inherit fftw
     (name "fftw-openmpi")
     (inputs
      `(("openmpi" ,openmpi)

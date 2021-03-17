@@ -4918,8 +4918,7 @@ edited, converted, compressed and saved.")
     (license license:lgpl2.1)))
 
 (define-public ztoolkit-rsvg
-  (package
-    (inherit ztoolkit)
+  (package/inherit ztoolkit
     (name "ztoolkit-rsvg")
     (arguments
      `(#:configure-flags `("-Denable_rsvg=true")))

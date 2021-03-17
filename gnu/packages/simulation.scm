@@ -602,7 +602,7 @@ user interface to the FEniCS core components and external libraries.")
                    license:lgpl3+))))
 
 (define-public fenics
-  (package (inherit fenics-dolfin)
+  (package/inherit fenics-dolfin
     (name "fenics")
     (build-system python-build-system)
     (inputs

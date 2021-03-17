@@ -1193,8 +1193,7 @@ Libxml2).")
                                 "See 'COPYING' in the distribution."))))
 
 (define-public xmlsec-nss
-  (package
-    (inherit xmlsec)
+  (package/inherit xmlsec
     (name "xmlsec-nss")
     (native-inputs
      ;; For tests.

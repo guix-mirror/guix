@@ -105,7 +105,7 @@ null) and is designed to be portable.")
     (license lgpl2.1+)))
 
 (define-public libcanberra/gtk+-2
-  (package (inherit libcanberra)
+  (package/inherit libcanberra
     (name "libcanberra-gtk2")
     (inputs `(,@(alist-delete "gtk+" (package-inputs libcanberra))
               ("gtk+" ,gtk+-2)))))

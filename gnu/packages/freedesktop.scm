@@ -508,7 +508,7 @@ other applications that need to directly deal with input devices.")
     (license license:x11)))
 
 (define-public libinput-minimal
-  (package (inherit libinput)
+  (package/inherit libinput
     (name "libinput-minimal")
     (inputs
      (fold alist-delete (package-inputs libinput)

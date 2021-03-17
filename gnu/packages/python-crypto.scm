@@ -334,7 +334,7 @@ etc.).  The package is structured to make adding new modules easy.")
 
 (define-public python2-pycrypto
   (let ((pycrypto (package-with-python2 python-pycrypto)))
-    (package (inherit pycrypto)
+    (package/inherit pycrypto
       (inputs
        `(("python" ,python-2)
          ,@(alist-delete
@@ -553,7 +553,7 @@ message digests and key derivation functions.")
 (define-public python2-cryptography
   (let ((crypto (package-with-python2
                  (strip-python2-variant python-cryptography))))
-    (package (inherit crypto)
+    (package/inherit crypto
       (propagated-inputs
        `(("python2-ipaddress" ,python2-ipaddress)
          ("python2-backport-ssl-match-hostname"
@@ -1122,7 +1122,7 @@ through the Engine interface.")
 (define-public python2-m2crypto
   (let ((m2crypto (package-with-python2
                    (strip-python2-variant python-m2crypto))))
-    (package (inherit m2crypto)
+    (package/inherit m2crypto
              (propagated-inputs
               `(("python2-typing" ,python2-typing))))))
 

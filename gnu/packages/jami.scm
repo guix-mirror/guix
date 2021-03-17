@@ -365,8 +365,7 @@ of Jami."
           '())))
 
 (define-public ffmpeg-jami
-  (package
-    (inherit ffmpeg)
+  (package/inherit ffmpeg
     (name "ffmpeg-jami")
     (native-inputs
      `(("sfl-patches" ,%sfl-patches)

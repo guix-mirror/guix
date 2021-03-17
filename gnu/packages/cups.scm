@@ -676,8 +676,7 @@ should only be used as part of the Guix cups-pk-helper service.")
        ("pkg-config" ,pkg-config)))))
 
 (define-public hplip-minimal
-  (package
-    (inherit hplip)
+  (package/inherit hplip
     (name "hplip-minimal")
     (arguments
       (substitute-keyword-arguments (package-arguments hplip)

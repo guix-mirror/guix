@@ -580,8 +580,7 @@ iotop, uptime, pidof, tty, taskset, pmap.")
 
 (define-public python2-psutil
   (let ((base (package-with-python2 (strip-python2-variant python-psutil))))
-    (package
-      (inherit base)
+    (package/inherit base
       (propagated-inputs
        `(("python2-enum34" ,python2-enum34)         ;optional
          ,@(package-propagated-inputs base))))))
@@ -1183,8 +1182,7 @@ other machines, such as over the network.")
 
 (define-public python2-serpent
   (let ((base (package-with-python2 (strip-python2-variant python-serpent))))
-    (package
-      (inherit base)
+    (package/inherit base
       (propagated-inputs
        `(("python-enum34" ,python2-enum34)
          ,@(package-propagated-inputs base))))))
@@ -1357,7 +1355,7 @@ helpers.")
 (define-public python2-humanfriendly
   (let ((base (package-with-python2
                 (strip-python2-variant python-humanfriendly))))
-    (package (inherit base)
+    (package/inherit base
       (propagated-inputs
        `(("python2-monotonic" ,python2-monotonic)
          ,@(package-propagated-inputs base))))))
@@ -2184,8 +2182,7 @@ commands.")
 
 (define-public python2-empy
   (let ((base (package-with-python2 (strip-python2-variant python-empy))))
-    (package
-      (inherit base)
+    (package/inherit base
       (arguments `(,@(package-arguments base)
                    #:tests? #t)))))
 
@@ -2314,7 +2311,7 @@ backported for previous versions of Python from 2.4 to 3.3.")
 (define-public python2-parse-type
   (let ((base (package-with-python2
                 (strip-python2-variant python-parse-type))))
-    (package (inherit base)
+    (package/inherit base
       (propagated-inputs
        `(("python2-enum34" ,python2-enum34)
          ,@(package-propagated-inputs base))))))
@@ -2363,8 +2360,7 @@ existing ones.")
 
 (define-public python2-polib
   (let ((base (package-with-python2 (strip-python2-variant python-polib))))
-    (package
-      (inherit base)
+    (package/inherit base
       (arguments `(,@(package-arguments base)
                    ;; Tests don't work with python2.
                    #:tests? #f)))))
@@ -2962,7 +2958,7 @@ compare, diff, and patch JSON and JSON-like structures in Python.")
 (define-public python2-jsonschema
   (let ((jsonschema (package-with-python2
                      (strip-python2-variant python-jsonschema))))
-    (package (inherit jsonschema)
+    (package/inherit jsonschema
              (propagated-inputs
               `(("python2-functools32" ,python2-functools32)
                 ,@(package-propagated-inputs jsonschema))))))
@@ -3459,15 +3455,16 @@ logic-free templating system Mustache.")
     (properties `((python2-variant . ,(delay python2-pystache))))))
 
 (define-public python2-pystache
-  (package (inherit (package-with-python2
-                     (strip-python2-variant python-pystache)))
-           (arguments
-            `(#:python ,python-2
-              #:phases
-              (modify-phases %standard-phases
-                (replace 'check
-                  (lambda _
-                    (invoke "python" "test_pystache.py"))))))))
+  (let ((base (package-with-python2
+               (strip-python2-variant python-pystache))))
+    (package/inherit base
+      (arguments
+       `(#:python ,python-2
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'check
+             (lambda _
+               (invoke "python" "test_pystache.py")))))))))
 
 (define-public python-joblib
   (package
@@ -4524,8 +4521,7 @@ writing C extensions for Python as easy as Python itself.")
 
 (define-public python2-cython
   (let ((base (package-with-python2 (strip-python2-variant python-cython))))
-    (package
-      (inherit base)
+    (package/inherit base
       (name "python2-cython")
       (inputs
        `(("python-2" ,python-2)))       ;this is not automatically changed
@@ -5075,8 +5071,7 @@ that client code uses to construct the grammar directly in Python code.")
 (define-public python2-numpydoc
   (let ((base (package-with-python2
                (strip-python2-variant python-numpydoc))))
-    (package
-      (inherit base)
+    (package/inherit base
       (propagated-inputs
        `(("python2-jinja2" ,python2-jinja2)
          ,@(package-propagated-inputs base))))))
@@ -7120,8 +7115,7 @@ CLI scripts:
 
 (define-public python2-ipyparallel
   (let ((ipyparallel (package-with-python2 python-ipyparallel)))
-    (package
-      (inherit ipyparallel)
+    (package/inherit ipyparallel
       (propagated-inputs
        `(("python2-futures" ,python2-futures)
          ,@(package-propagated-inputs ipyparallel))))))
@@ -7209,8 +7203,7 @@ without using the configuration machinery.")
 
 (define-public python2-traitlets
   (let ((traitlets (package-with-python2 (strip-python2-variant python-traitlets))))
-    (package
-      (inherit traitlets)
+    (package/inherit traitlets
       (propagated-inputs
        `(("python2-enum34" ,python2-enum34)
          ,@(package-propagated-inputs traitlets))))))
@@ -7762,7 +7755,7 @@ implementation of D-Bus.")
     (license license:expat)))
 
 (define-public python2-dbus
-  (package (inherit python-dbus)
+  (package/inherit python-dbus
     (name "python2-dbus")
     (inputs `(("python" ,python-2)
               ,@(alist-delete "python"
@@ -7836,10 +7829,10 @@ converts incoming documents to Unicode and outgoing documents to UTF-8.")
     (properties `((python2-variant . ,(delay python2-beautifulsoup4))))))
 
 (define-public python2-beautifulsoup4
-  (package
-    (inherit (package-with-python2
-              (strip-python2-variant python-beautifulsoup4)))
-    (arguments `(#:python ,python-2))))
+  (let ((base (package-with-python2
+               (strip-python2-variant python-beautifulsoup4))))
+   (package/inherit base
+     (arguments `(#:python ,python-2)))))
 
 (define-public python-soupsieve
   (package
@@ -8561,8 +8554,7 @@ PEP 8.")
 (define-public python2-pep517
   (let ((base (package-with-python2
                 (strip-python2-variant python-pep517))))
-    (package
-      (inherit base)
+    (package/inherit base
       (name "python2-pep517")
       (arguments
        `(#:tests? #f
@@ -8654,7 +8646,7 @@ complexity of Python source code.")
 
 (define-public python2-flake8
   (let ((base (package-with-python2 (strip-python2-variant python-flake8))))
-    (package (inherit base)
+    (package/inherit base
       (propagated-inputs
        `(("python2-configparser" ,python2-configparser)
          ("python2-enum34" ,python2-enum34)
@@ -9180,9 +9172,10 @@ third-party code.")
     (properties `((python2-variant . ,(delay python2-llfuse))))))
 
 (define-public python2-llfuse
-  (package (inherit (package-with-python2
-                 (strip-python2-variant python-llfuse)))
-    (propagated-inputs `(("python2-contextlib2" ,python2-contextlib2)))))
+  (let ((base (package-with-python2
+               (strip-python2-variant python-llfuse))))
+    (package/inherit base
+      (propagated-inputs `(("python2-contextlib2" ,python2-contextlib2))))))
 
 (define-public python-msgpack
   (package
@@ -9930,8 +9923,7 @@ a hash value.")
     (license license:asl2.0)))
 
 (define-public python2-tlsh
-  (package
-    (inherit python-tlsh)
+  (package/inherit python-tlsh
     (name "python2-tlsh")
     (inputs `(("python" ,python-2)))))
 
@@ -10020,8 +10012,7 @@ Python's @code{ctypes} foreign function interface (FFI).")
   (package-with-python2 python-libarchive-c))
 
 (define-public python-file
-  (package
-    (inherit file)
+  (package/inherit file
     (name "python-file")
     (build-system python-build-system)
     (arguments
@@ -10379,7 +10370,7 @@ interactive computing.")
 (define-public python2-notebook
   (let ((base (package-with-python2
                 (strip-python2-variant python-notebook))))
-    (package (inherit base)
+    (package/inherit base
       (native-inputs
        `(("python2-mock" ,python2-mock)
          ,@(package-native-inputs base)))
@@ -10513,8 +10504,7 @@ Jupyter kernels such as IJulia and IRKernel.")
 ;; the functionality in both packages working, strip down the
 ;; python-jupyter-console package when using it as an input to python-ipython.
 (define python-jupyter-console-minimal
-  (package
-    (inherit python-jupyter-console)
+  (package/inherit python-jupyter-console
     (name "python-jupyter-console-minimal")
     (arguments
      (substitute-keyword-arguments
@@ -10854,8 +10844,7 @@ the standard library.")
 (define-public python2-contextlib2
   (let ((base (package-with-python2
                (strip-python2-variant python-contextlib2))))
-    (package
-      (inherit base)
+    (package/inherit base
       (arguments
        (substitute-keyword-arguments (package-arguments base)
          ((#:phases phases)
@@ -11325,7 +11314,7 @@ concurrent.futures package from Python 3.2")
 (define-public python2-promise
   (let ((promise (package-with-python2
                    (strip-python2-variant python-promise))))
-    (package (inherit promise)
+    (package/inherit promise
       (arguments (substitute-keyword-arguments (package-arguments promise)
                    ((#:tests? _) #t)))
       (native-inputs
@@ -12029,8 +12018,7 @@ and provides a uniform API regardless of which JSON implementation is used.")
 (define-public python2-anyjson
   (let ((anyjson (package-with-python2
                   (strip-python2-variant python-anyjson))))
-    (package
-      (inherit anyjson)
+    (package/inherit anyjson
       (arguments `(;; Unlike the python 3 variant, we do run tests.  See above!
                    #:tests? #t
                    ,@(package-arguments anyjson)))
@@ -12067,8 +12055,7 @@ alternative when librabbitmq is not available.")
 (define-public python2-amqp
   (let ((amqp (package-with-python2
                (strip-python2-variant python-amqp))))
-    (package
-      (inherit amqp)
+    (package/inherit amqp
       (arguments `(;; Tries to run coverage tests with nose-cover3, which seems
                    ;; unmaintained.  Weirdly, does not do this on the python 3
                    ;; version?
@@ -12140,8 +12127,7 @@ RabbitMQ messaging server is the most popular implementation.")
 (define-public python2-kombu
   (let ((kombu (package-with-python2
                 (strip-python2-variant python-kombu))))
-    (package
-      (inherit kombu)
+    (package/inherit kombu
       (arguments `(;; FIXME: 'TestTransport.test_del_sync' fails on python2.
                    ;; It works fine on the python3 variant.
                    #:tests? #f
@@ -12178,8 +12164,7 @@ Python 2.4 and 2.5, and will draw its fixes/improvements from python-trunk.")
 (define-public python2-billiard
   (let ((billiard (package-with-python2
                    (strip-python2-variant python-billiard))))
-    (package
-      (inherit billiard)
+    (package/inherit billiard
       (native-inputs `(("python2-unittest2" ,python2-unittest2)
                        ("python2-mock" ,python2-mock)
                        ,@(package-native-inputs billiard))))))
@@ -12229,8 +12214,7 @@ synchronously (wait until ready).")
 (define-public python2-celery
   (let ((celery (package-with-python2
                  (strip-python2-variant python-celery))))
-    (package
-      (inherit celery)
+    (package/inherit celery
       (native-inputs `(("python2-unittest2" ,python2-unittest2)
                        ("python2-mock" ,python2-mock)
                        ,@(package-native-inputs celery))))))
@@ -12384,7 +12368,7 @@ checking library.")
 
 (define-public python2-whoosh
   (let ((whoosh (package-with-python2 (strip-python2-variant python-whoosh))))
-    (package (inherit whoosh)
+    (package/inherit whoosh
       (propagated-inputs
        `(("python2-backport-ssl-match-hostname"
           ,python2-backport-ssl-match-hostname)
@@ -12498,7 +12482,7 @@ encoding algorithms to do fuzzy string matching.")
 (define-public python2-jellyfish
   (let ((jellyfish (package-with-python2
                      (strip-python2-variant python-jellyfish))))
-    (package (inherit jellyfish)
+    (package/inherit jellyfish
       (native-inputs `(("python2-unicodecsv" ,python2-unicodecsv)
                        ,@(package-native-inputs jellyfish))))))
 
@@ -12913,8 +12897,7 @@ to occurrences in strings and comments.")
     (license license:gpl2)))
 
 (define-public python-rope
-  (package
-    (inherit python2-rope)
+  (package/inherit python2-rope
     (name "python-rope")
     (arguments `(#:python ,python-wrapper
                  ;; XXX: Only partial python3 support, results in some failing
@@ -14217,8 +14200,7 @@ etc.")
 
 (define-public ptpython-2
   (let ((base (package-with-python2 (strip-python2-variant ptpython))))
-    (package
-      (inherit base)
+    (package/inherit base
       (name "ptpython2"))))
 
 (define-public python-stem
@@ -14361,7 +14343,7 @@ binary or text.")
 
 (define-public python2-binaryornot
   (let ((base (package-with-python2 (strip-python2-variant python-binaryornot))))
-    (package (inherit base)
+    (package/inherit base
       (propagated-inputs
        `(("python2-enum34" ,python2-enum34)
          ,@(package-propagated-inputs base))))))
@@ -14878,8 +14860,7 @@ is used by PostgreSQL and the OpenSSH Server for example.")
 (define-public python2-setproctitle
   (let ((base (package-with-python2
                (strip-python2-variant python-setproctitle))))
-    (package
-      (inherit base)
+    (package/inherit base
       (native-inputs `(("python2-nose" ,python2-nose)
                        ,@(package-native-inputs base))))))
 
@@ -15070,8 +15051,7 @@ network.")
 (define-public python2-argcomplete
   (let ((variant (package-with-python2
                   (strip-python2-variant python-argcomplete))))
-    (package
-      (inherit variant)
+    (package/inherit variant
       (arguments
        (substitute-keyword-arguments (package-arguments variant)
          ((#:phases phases '%standard-phases)
@@ -15195,8 +15175,7 @@ possible on all supported Python versions.")
 (define-public python2-xopen
   (let ((base (package-with-python2
                (strip-python2-variant python-xopen))))
-    (package
-      (inherit base)
+    (package/inherit base
       (propagated-inputs `(("python2-bz2file" ,python2-bz2file)
                            ,@(package-propagated-inputs base))))))
 
@@ -16061,7 +16040,7 @@ editors.")
 (define-public python2-isort
   (let ((base (package-with-python2
                (strip-python2-variant python-isort))))
-    (package (inherit base)
+    (package/inherit base
       (native-inputs
        `(("python2-futures" ,python2-futures)
          ,@(package-native-inputs base))))))
@@ -16632,8 +16611,7 @@ Supported metrics are:
 
 (define-public python2-radon
   (let ((base (package-with-python2 (strip-python2-variant python-radon))))
-    (package
-      (inherit base)
+    (package/inherit base
       (propagated-inputs
        `(("python-configparser" ,python2-configparser)
          ("python-future" ,python2-future)
@@ -16932,8 +16910,7 @@ and integration into other projects.")
 (define-public python2-rfc6555
   (let ((base (package-with-python2
                (strip-python2-variant python-rfc6555))))
-    (package
-      (inherit base)
+    (package/inherit base
       (propagated-inputs
        `(("python2-selectors2" ,python2-selectors2))))))
 
@@ -18058,8 +18035,7 @@ such as figshare or Zenodo.")
 (define-public python2-activepapers
   (let ((base (package-with-python2
                (strip-python2-variant python-activepapers))))
-    (package
-      (inherit base)
+    (package/inherit base
       (arguments
        (substitute-keyword-arguments (package-arguments base)
          ((#:phases phases)
@@ -18293,17 +18269,18 @@ user's @file{~/Trash} directory.")
     (license license:bsd-3)))
 
 (define-public python2-send2trash
-  (package
-    (inherit (package-with-python2 (strip-python2-variant python-send2trash)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments python-send2trash)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (add-before 'check 'setenv
-             (lambda _
-               (setenv "PYTHONPATH"
-                       (string-append (getcwd) ":" (getenv "PYTHONPATH")))
-               #t))))))))
+  (let ((base (package-with-python2
+               (strip-python2-variant python-send2trash))))
+    (package/inherit base
+      (arguments
+       (substitute-keyword-arguments (package-arguments python-send2trash)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-before 'check 'setenv
+               (lambda _
+                 (setenv "PYTHONPATH"
+                         (string-append (getcwd) ":" (getenv "PYTHONPATH")))
+                 #t)))))))))
 
 (define-public python-pyfavicon
   (package
@@ -20164,8 +20141,7 @@ data.")
 
 (define-public python2-cloudpickle
   (let ((base (package-with-python2 (strip-python2-variant python-cloudpickle))))
-    (package
-      (inherit base)
+    (package/inherit base
       (native-inputs
        `(("python-mock" ,python2-mock)
          ,@(package-native-inputs base)))
@@ -20405,7 +20381,7 @@ on regular expressions.")
 (define-public python2-reparser
   (let ((reparser (package-with-python2
                    (strip-python2-variant python-reparser))))
-    (package (inherit reparser)
+    (package/inherit reparser
              (propagated-inputs
               `(("python2-enum34" ,python2-enum34)
                 ,@(package-propagated-inputs reparser))))))

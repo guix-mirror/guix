@@ -1981,7 +1981,7 @@ inference for statistical models.")
 
 (define-public python2-statsmodels
   (let ((stats (package-with-python2 python-statsmodels)))
-    (package (inherit stats)
+    (package/inherit stats
       (propagated-inputs
        `(("python2-pytz" ,python2-pytz)
          ("python2-numpy" ,python2-numpy)

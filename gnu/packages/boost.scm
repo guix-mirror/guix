@@ -200,8 +200,7 @@ across a broad spectrum of applications.")
                                 "Some components have other similar licences."))))
 
 (define-public boost-with-python2
-  (package
-    (inherit boost)
+  (package/inherit boost
     (name "boost-python2")
     (native-inputs
      `(("python" ,python-2)

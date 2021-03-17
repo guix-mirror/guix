@@ -98,8 +98,7 @@ pre-defined variants."
 
      ;; Otherwise build the new package object graph.
      ((eq? (package-build-system p) python-build-system)
-      (package
-        (inherit p)
+      (package/inherit p
         (location (package-location p))
         (name (let ((name (package-name p)))
                 (string-append new-prefix
@@ -131,8 +130,7 @@ pre-defined variants."
 
 (define (strip-python2-variant p)
   "Remove the 'python2-variant' property from P."
-  (package
-    (inherit p)
+  (package/inherit p
     (properties (alist-delete 'python2-variant (package-properties p)))))
 
 (define* (lower name

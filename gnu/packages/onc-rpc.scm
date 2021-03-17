@@ -75,12 +75,12 @@ IPv4 and IPv6.  ONC RPC is notably used by the network file system (NFS).")
     (license bsd-3)))
 
 (define-public libtirpc/hurd
-  (package
-    (inherit libtirpc)
+  (package/inherit libtirpc
     (name "libtirpc-hurd")
     (source (origin (inherit (package-source libtirpc))
-                    (patches (search-patches "libtirpc-hurd.patch"
-                                             "libtirpc-hurd-client.patch"))))
+                    (patches (append (origin-patches libtirpc)
+                                     (search-patches "libtirpc-hurd.patch"
+                                                     "libtirpc-hurd-client.patch")))))
     (arguments
      (substitute-keyword-arguments (package-arguments libtirpc)
        ((#:configure-flags flags ''())

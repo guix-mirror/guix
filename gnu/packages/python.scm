@@ -366,8 +366,7 @@ data types.")
   ;; Both 2.x and 3.x used to be called "python".  In commit
   ;; a7714d42de2c3082f3609d1e63c83d703fb39cf9 (March 2018), we renamed the
   ;; Python 2.x package to "python2".
-  (package
-    (inherit python-2)
+  (package/inherit python-2
     (name "python")
     (properties `((superseded . ,python-2)))))
 

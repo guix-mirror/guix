@@ -2744,8 +2744,7 @@ trees (phylogenies) and characters.")
 
 (define-public python2-dendropy
   (let ((base (package-with-python2 python-dendropy)))
-    (package
-      (inherit base)
+    (package/inherit base
       (arguments
        `(#:phases
          (modify-phases %standard-phases
