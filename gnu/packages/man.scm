@@ -293,13 +293,13 @@ automatically.")
    (version "1.10.1")
    (source
     (origin
-     (method url-fetch)
-     (uri (string-append "https://git.sr.ht/%7Esircmpwn/scdoc/archive/" version
-                         ".tar.gz"))
-     (file-name (string-append name "-" version ".tar.gz"))
+     (method git-fetch)
+     (uri (git-reference
+           (url "https://git.sr.ht/~sircmpwn/scdoc")
+           (commit version)))
+     (file-name (git-file-name name version))
      (sha256
-      (base32
-       "13x7g1r56bshvfmlvapvz35ywnbgsh337kywb5kcv8nc6b3j3q40"))))
+      (base32 "1xmh6fnp378xmiycslg4migs1vx7yly4i1cf2vbbnwim9c9g0aw7"))))
    (build-system gnu-build-system)
    (arguments
     `(#:make-flags
