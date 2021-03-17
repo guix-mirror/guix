@@ -2751,7 +2751,11 @@ you can go ahead and install it (run this command as a regular user,
 guix install emacs
 @end example
 
-You've installed your first package, congrats!  In the process, you've
+@cindex profile
+You've installed your first package, congrats!  The package is now
+visible in your default @dfn{profile}, @file{$HOME/.guix-profile}---a
+profile is a directory containing installed packages.
+In the process, you've
 probably noticed that Guix downloaded pre-built binaries; or, if you
 explicitly chose to @emph{not} use pre-built binaries, then probably
 Guix is still building software (@pxref{Substitutes}, for more info).
@@ -3059,9 +3063,13 @@ retaining precise @dfn{provenance tracking} of the software.
 @cindex removing packages
 @cindex package installation
 @cindex package removal
+@cindex profile
 The @command{guix package} command is the tool that allows users to
 install, upgrade, and remove packages, as well as rolling back to
-previous configurations.  It operates only on the user's own profile,
+previous configurations.  These operations work on a user
+@dfn{profile}---a directory of installed packages.  Each user has a
+default profile in @file{$HOME/.guix-profile}.
+The command operates only on the user's own profile,
 and works with normal user privileges (@pxref{Features}).  Its syntax
 is:
 
@@ -3386,6 +3394,7 @@ variable, even though, taken individually, neither @file{foo} nor
 @file{bar} would lead to that recommendation.
 
 
+@cindex profile, choosing
 @item --profile=@var{profile}
 @itemx -p @var{profile}
 Use @var{profile} instead of the user's default profile.
