@@ -3701,6 +3701,7 @@ text styles of documentation.")
        (sha256
         (base32
          "05mps9r966r3dpqw6zrs1nlwjdf5y4960hl9m7abwb3qyfnarwyc"))))
+    (replacement python-pygments/fixed)
     (build-system python-build-system)
     (arguments
      ;; FIXME: Tests require sphinx, which depends on this.
@@ -3711,6 +3712,17 @@ text styles of documentation.")
      "Pygments is a syntax highlighting package written in Python.")
     (license license:bsd-2)
     (properties `((python2-variant . ,(delay python2-pygments))))))
+
+(define python-pygments/fixed
+  (package/inherit python-pygments
+    (version "2.7.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Pygments" version))
+       (sha256
+        (base32
+         "0dy35ry5qa8dpklk4fkj9kfpw2qb4mh5ha9866kw30wf96dx0jfz"))))))
 
 ;; Pygments 2.6 and later does not support Python 2.
 (define-public python2-pygments
