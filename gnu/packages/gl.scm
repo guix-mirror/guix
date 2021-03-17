@@ -236,7 +236,7 @@ also known as DXTn or DXTC) for Mesa.")
 (define-public mesa
   (package
     (name "mesa")
-    (version "20.2.4")
+    (version "20.2.6")
     (source
       (origin
         (method url-fetch)
@@ -248,7 +248,7 @@ also known as DXTn or DXTC) for Mesa.")
                                   version "/mesa-" version ".tar.xz")))
         (sha256
          (base32
-          "14m09bk7akj0k02lg8fhvvzbdsashlbdsgl2cw7wbqfj2mhdqwh5"))
+          "1nw5k2qrlcrp5bljy1lmyybgl525y0h44synkbbirw92qv3a6b7i"))
         (patches
          (search-patches "mesa-skip-tests.patch"))))
     (build-system meson-build-system)
