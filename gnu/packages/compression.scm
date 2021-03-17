@@ -1486,11 +1486,9 @@ speed.")
        ((#:tests? _ #t) #f)))))
 
 (define-public pzstd
-  (package
+  (package/inherit zstd
     (name "pzstd")
-    (version (package-version zstd))
-    (source (package-source zstd))
-    (build-system gnu-build-system)
+    (outputs '("out"))
     (inputs
      `(,@(if (%current-target-system)
            `(("googletest" ,googletest))
