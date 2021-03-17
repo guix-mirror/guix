@@ -27,6 +27,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
@@ -674,6 +675,58 @@ for telephony applications.  This media processing and streaming toolkit is
 responsible for receiving and sending all multimedia streams in Linphone,
 including media capture, encoding and decoding, and rendering.")
     (home-page "https://linphone.org/technical-corner/mediastreamer2")
+    (license license:gpl3+)))
+
+(define-public lime
+  (package
+    (name "lime")
+    (version "4.4.34")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.linphone.org/BC/public/lime.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "14jg1zisjbzflw3scfqdbwy48wq3cp93l867vigb8l40lkc6n26z"))))
+    (build-system cmake-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:configure-flags (list "-DENABLE_STATIC=NO"
+                               "-DENABLE_C_INTERFACE=YES")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda _
+             ;; Disable tests that require networking.
+             (substitute* "tester/CMakeLists.txt"
+               (("add_test\\(?.*\"Hello World\"\\)") "")
+               (("add_test\\(?.*\"lime\"\\)") "")
+               (("add_test\\(?.*\"FFI\"\\)") ""))))
+         (add-after 'build 'build-doc
+           (lambda _
+             (invoke "make" "doc")))
+         (add-after 'install 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((doc (assoc-ref outputs "doc"))
+                    (dir (string-append doc "/share/doc"))
+                    (dest (string-append dir "/" ,name "-" ,version)))
+               (mkdir-p dest)
+               (copy-recursively "doc" dest)))))))
+    (native-inputs
+     `(("dot" ,graphviz)
+       ("doxygen" ,doxygen)))
+    (inputs
+     `(("bctoolbox" ,bctoolbox)
+       ("belle-sip" ,belle-sip)
+       ("soci" ,soci)))
+    (synopsis "Belledonne Communications Encryption Library")
+    (description "LIME is an encryption library for one-to-one and group
+instant messaging, allowing users to exchange messages privately and
+asynchronously.  It supports multiple devices per user and multiple users per
+device.")
+    (home-page "https://linphone.org/technical-corner/lime")
     (license license:gpl3+)))
 
 (define-public liblinphone
