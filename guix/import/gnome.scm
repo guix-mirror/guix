@@ -83,7 +83,10 @@ not be determined."
 
                   ;; ftp.gnome.org supports 'if-Modified-Since', so the local
                   ;; cache can expire early.
-                  #:ttl (* 60 10)))
+                  #:ttl (* 60 10)
+
+                  ;; Hide messages about URL redirects.
+                  #:log-port (%make-void-port "w")))
            (json (json->scm port)))
       (close-port port)
       (match json
