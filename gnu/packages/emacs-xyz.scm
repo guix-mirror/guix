@@ -14636,6 +14636,32 @@ navigation with the grails mode.")
 from @code{groovy-mode} for editing Jenkins declarative pipeline files.")
       (license license:gpl3+))))
 
+(define-public emacs-kotlin-mode
+  (let ((commit "0e4bafb31d1fc2a0a420a521c2723d5526646c0b")
+        (revision "1"))
+    (package
+      (name "emacs-kotlin-mode")
+      (version (git-version "0.0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Emacs-Kotlin-Mode-Maintainers/kotlin-mode")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "09inpgwmnnqaakyn4r4xs8kax8b89dw94kvl521x6d43h9zl5i70"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:tests? #t
+         #:test-command '("ert-runner" "-L" "." "-L" "test")))
+      (native-inputs `(("emacs-ert-runner" ,emacs-ert-runner)))
+      (home-page "https://github.com/Emacs-Kotlin-Mode-Maintainers/kotlin-mode")
+      (synopsis "Major major-mode for editing Kotlin files")
+      (description
+       "This package provides a @code{kotlin-mode} for editing Kotlin files.")
+      (license license:gpl3+))))
+
 (define-public emacs-org-tree-slide
   (let ((commit "036a36eec1cf712d3db155572aed325daa372eb5")
         (revision "2"))
