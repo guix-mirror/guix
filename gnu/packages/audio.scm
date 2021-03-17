@@ -1052,6 +1052,40 @@ performances.  The plugins include a cellular automaton synthesizer, an
 envelope follower, distortion effects, tape effects and more.")
     (license license:gpl2+)))
 
+(define-public snapcast
+  (package
+    (name "snapcast")
+    (version "0.24.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/badaix/snapcast")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "13yz8alplnqwkcns3mcli01qbyy6l3h62xx0v71ygcrz371l4g9g"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:tests? #f))                    ; no included tests
+    (inputs
+     `(("boost" ,boost)
+       ("libvorbis" ,libvorbis)
+       ("soxr" ,soxr)
+       ("alsa-lib" ,alsa-lib)
+       ("avahi" ,avahi)
+       ("pulseaudio" ,pulseaudio)
+       ("flac" ,flac)
+       ("opus" ,opus)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/badaix/snapcast")
+    (synopsis "Synchronous multiroom audio player")
+    (description
+     "Snapcast is a multi-room client-server audio player.  Clients are time
+synchronized with the server to play synced audio.")
+    (license license:gpl3+)))
+
 (define-public swh-plugins
   (package
     (name "swh-plugins")
