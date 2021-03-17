@@ -166,6 +166,7 @@
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-compression)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
@@ -11949,7 +11950,7 @@ integrated profiler via Sysprof, debugging support, and more.")
 (define-public komikku
   (package
     (name "komikku")
-    (version "0.26.1")
+    (version "0.27.0")
     (source
      (origin
        (method git-fetch)
@@ -11959,7 +11960,7 @@ integrated profiler via Sysprof, debugging support, and more.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1mas409c14p6g0v10w4cf5hsjbs0922h6h9k9pyj9s8y7yi2ikz2"))))
+         "0mj4bsy7jp9wjj1dqz9zdq5aj0ib813wkz5k1481k80jp9dnlqnv"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -11991,6 +11992,7 @@ integrated profiler via Sysprof, debugging support, and more.")
        ("libnotify" ,libnotify)
        ("libsecret" ,libsecret)
        ("python-beautifulsoup4" ,python-beautifulsoup4)
+       ("python-brotli" ,python-brotli)
        ("python-dateparser" ,python-dateparser)
        ("python-keyring" ,python-keyring)
        ("python-lxml" ,python-lxml)
@@ -12000,7 +12002,8 @@ integrated profiler via Sysprof, debugging support, and more.")
        ("python-pycairo" ,python-pycairo)
        ("python-pygobject" ,python-pygobject)
        ("python-requests" ,python-requests)
-       ("python-unidecode" ,python-unidecode)))
+       ("python-unidecode" ,python-unidecode)
+       ("webkitgtk" ,webkitgtk)))
     (native-inputs
      `(("desktop-file-utils" ,desktop-file-utils)
        ("gettext" ,gettext-minimal)
