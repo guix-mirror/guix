@@ -31378,6 +31378,21 @@ instantiated as:
          (sysctl-configuration
            (settings '(("net.ipv4.ip_forward" . "1")))))
 @end lisp
+
+Since @code{sysctl-service-type} is used in the default lists of
+services, @code{%base-services} and @code{%desktop-services}, you can
+use @code{modify-services} to change its configuration and add the
+kernel parameters that you want (@pxref{Service Reference,
+@code{modify-services}}).
+
+@lisp
+(modify-services %base-services
+  (sysctl-service-type config =>
+                       (sysctl-configuration
+                         (settings (append '(("net.ipv4.ip_forward" . "1"))
+                                           %default-sysctl-settings)))))
+@end lisp
+
 @end defvr
 
 @deftp {Data Type} sysctl-configuration
@@ -31387,10 +31402,15 @@ The data type representing the configuration of @command{sysctl}.
 @item @code{sysctl} (default: @code{(file-append procps "/sbin/sysctl"})
 The @command{sysctl} executable to use.
 
-@item @code{settings} (default: @code{'()})
+@item @code{settings} (default: @code{%default-sysctl-settings})
 An association list specifies kernel parameters and their values.
 @end table
 @end deftp
+
+@defvr {Scheme Variable} %default-sysctl-settings
+An association list specifying the default @command{sysctl} parameters
+on Guix System.
+@end defvr
 
 @cindex pcscd
 @subsubheading PC/SC Smart Card Daemon Service
