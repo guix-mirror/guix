@@ -90,7 +90,7 @@
 ;;; Copyright © 2020 Jonathan Rostran <rostranjj@gmail.com>
 ;;; Copyright © 2020, 2021 Noah Evans <noah@nevans.me>
 ;;; Copyright © 2020 Brit Butler <brit@kingcons.io>
-;;; Copyright © 2021 Alexandr Vityazev <avityazew@gmail.com>
+;;; Copyright © 2021 Alexandr Vityazev <avityazev@posteo.org>
 ;;; Copyright © 2021 Yurii Kholodkov <urist.mckorobochka@gmail.com>
 ;;; Copyright © 2021 Alexey Abramov <levenson@mmer.org>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
@@ -27253,3 +27253,25 @@ and prefered services can easily be configured.")
        "This package provides an Elisp wrapper around the Java
 @command{keytool} command and major mode for viewing Java keystores.")
       (license license:expat))))
+
+(define-public emacs-ivy-avy
+  (package
+    (name "emacs-ivy-avy")
+    (version "0.13.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://elpa.gnu.org/packages/"
+             "ivy-avy-" version ".tar"))
+       (sha256
+        (base32 "1q5caxm4rnh4jy5n88dhkdbx1afsshmfki5dl8xsqbdb3y0zq7yi"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-ivy" ,emacs-ivy)
+       ("emacs-avy" ,emacs-avy)))
+    (home-page "https://github.com/abo-abo/swiper")
+    (synopsis "Avy integration for Ivy")
+    (description
+     "This package adds a \"C-'\" binding to Ivy minibuffer that uses Avy.")
+    (license license:gpl3+)))
