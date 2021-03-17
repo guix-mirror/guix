@@ -1233,6 +1233,39 @@ data.  In addition, provides numerous plotting functions for commonly
 used visualizations.")
    (license license:artistic2.0)))
 
+(define-public r-delayedarray
+  (package
+    (name "r-delayedarray")
+    (version "0.16.2")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "DelayedArray" version))
+              (sha256
+               (base32
+                "09lpj951v1afxkrnjvnhzp4qgklq23ykdwlny7k1lyfcdy9q6wm0"))))
+    (properties
+     `((upstream-name . "DelayedArray")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-iranges" ,r-iranges)
+       ("r-matrix" ,r-matrix)
+       ("r-matrixgenerics" ,r-matrixgenerics)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://bioconductor.org/packages/DelayedArray")
+    (synopsis "Delayed operations on array-like objects")
+    (description
+     "Wrapping an array-like object (typically an on-disk object) in a
+@code{DelayedArray} object allows one to perform common array operations on it
+without loading the object in memory.  In order to reduce memory usage and
+optimize performance, operations on the object are either delayed or executed
+using a block processing mechanism.  Note that this also works on in-memory
+array-like objects like @code{DataFrame} objects (typically with Rle columns),
+@code{Matrix} objects, and ordinary arrays and data frames.")
+    (license license:artistic2.0)))
+
 (define-public r-bluster
   (package
    (name "r-bluster")
@@ -1613,6 +1646,35 @@ structure.")
 microarrays.")
     (license license:artistic2.0)))
 
+(define-public r-annotationdbi
+  (package
+    (name "r-annotationdbi")
+    (version "1.52.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "AnnotationDbi" version))
+              (sha256
+               (base32
+                "0zqxgh3nx6y8ry12s2vss2f4axz5vpqxha1y4ifhhcx4zhpzsglr"))))
+    (properties
+     `((upstream-name . "AnnotationDbi")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-dbi" ,r-dbi)
+       ("r-iranges" ,r-iranges)
+       ("r-rsqlite" ,r-rsqlite)
+       ("r-s4vectors" ,r-s4vectors)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://bioconductor.org/packages/AnnotationDbi")
+    (synopsis "Annotation database interface")
+    (description
+     "This package provides user interface and database connection code for
+annotation data packages using SQLite data storage.")
+    (license license:artistic2.0)))
+
 (define-public r-annotationforge
   (package
     (name "r-annotationforge")
@@ -1643,6 +1705,148 @@ microarrays.")
     (description
      "This package provides code for generating Annotation packages and their
 databases.  Packages produced are intended to be used with AnnotationDbi.")
+    (license license:artistic2.0)))
+
+(define-public r-biobase
+  (package
+    (name "r-biobase")
+    (version "2.50.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "Biobase" version))
+              (sha256
+               (base32
+                "11kgc4flywlm3i18603558l8ksv91c24vkc5fnnbcd375i2dhhd4"))))
+    (properties
+     `((upstream-name . "Biobase")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)))
+    (home-page "https://bioconductor.org/packages/Biobase")
+    (synopsis "Base functions for Bioconductor")
+    (description
+     "This package provides functions that are needed by many other packages
+on Bioconductor or which replace R functions.")
+    (license license:artistic2.0)))
+
+(define-public r-biomart
+  (package
+    (name "r-biomart")
+    (version "2.46.3")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "biomaRt" version))
+              (sha256
+               (base32
+                "0gwmd0ykpv0gyh34c56g5m12lil20fvig49f3ih1jxrxf3q4wmq7"))))
+    (properties
+     `((upstream-name . "biomaRt")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-biocfilecache" ,r-biocfilecache)
+       ("r-httr" ,r-httr)
+       ("r-openssl" ,r-openssl)
+       ("r-progress" ,r-progress)
+       ("r-rappdirs" ,r-rappdirs)
+       ("r-stringr" ,r-stringr)
+       ("r-xml" ,r-xml)
+       ("r-xml2" ,r-xml2)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://bioconductor.org/packages/biomaRt")
+    (synopsis "Interface to BioMart databases")
+    (description
+     "biomaRt provides an interface to a growing collection of databases
+implementing the @url{BioMart software suite, http://www.biomart.org}.  The
+package enables retrieval of large amounts of data in a uniform way without
+the need to know the underlying database schemas or write complex SQL queries.
+Examples of BioMart databases are Ensembl, COSMIC, Uniprot, HGNC, Gramene,
+Wormbase and dbSNP mapped to Ensembl.  These major databases give biomaRt
+users direct access to a diverse set of data and enable a wide range of
+powerful online queries from gene annotation to database mining.")
+    (license license:artistic2.0)))
+
+(define-public r-biocparallel
+  (package
+    (name "r-biocparallel")
+    (version "1.24.1")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "BiocParallel" version))
+              (sha256
+               (base32
+                "1iryicvmcagcrj29kp49mqhiq2kn72j4idj380hi9illmdrg9ism"))))
+    (properties
+     `((upstream-name . "BiocParallel")))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'make-reproducible
+           (lambda _
+             ;; Remove generated documentation.
+             (for-each delete-file
+                       '("inst/doc/BiocParallel_BatchtoolsParam.pdf"
+                         "inst/doc/Introduction_To_BiocParallel.pdf"
+                         "inst/doc/Errors_Logs_And_Debugging.pdf"
+                         "inst/doc/BiocParallel_BatchtoolsParam.R"
+                         "inst/doc/Introduction_To_BiocParallel.R"
+                         "inst/doc/Errors_Logs_And_Debugging.R"))
+
+             ;; Remove time-dependent macro
+             (substitute* '("inst/doc/BiocParallel_BatchtoolsParam.Rnw"
+                            "inst/doc/Introduction_To_BiocParallel.Rnw"
+                            "inst/doc/Errors_Logs_And_Debugging.Rnw"
+                            "vignettes/BiocParallel_BatchtoolsParam.Rnw"
+                            "vignettes/Introduction_To_BiocParallel.Rnw"
+                            "vignettes/Errors_Logs_And_Debugging.Rnw")
+               (("\\today") "later"))
+
+             ;; Initialize the random number generator seed when building.
+             (substitute* "R/internal_rng_stream.R"
+               (("\"L'Ecuyer-CMRG\"\\)" m)
+                (string-append
+                 m "; if (!is.na(Sys.getenv(\"SOURCE_DATE_EPOCH\"))) {set.seed(100)}\n"))))))))
+    (propagated-inputs
+     `(("r-futile-logger" ,r-futile-logger)
+       ("r-snow" ,r-snow)
+       ("r-bh" ,r-bh)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://bioconductor.org/packages/BiocParallel")
+    (synopsis "Bioconductor facilities for parallel evaluation")
+    (description
+     "This package provides modified versions and novel implementation of
+functions for parallel evaluation, tailored to use with Bioconductor
+objects.")
+    (license (list license:gpl2+ license:gpl3+))))
+
+(define-public r-biostrings
+  (package
+    (name "r-biostrings")
+    (version "2.58.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "Biostrings" version))
+              (sha256
+               (base32
+                "1rbqhs73mhfr1gi0rx28jiyan7i3hb45ai3jpl1656fnrhgjfxq5"))))
+    (properties
+     `((upstream-name . "Biostrings")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-crayon" ,r-crayon)
+       ("r-iranges" ,r-iranges)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-xvector" ,r-xvector)))
+    (home-page "https://bioconductor.org/packages/Biostrings")
+    (synopsis "String objects and algorithms for biological sequences")
+    (description
+     "This package provides memory efficient string containers, string
+matching algorithms, and other utilities, for fast manipulation of large
+biological sequences or sets of sequences.")
     (license license:artistic2.0)))
 
 (define-public r-category
@@ -1845,6 +2049,37 @@ translation between different chromosome sequence naming conventions (e.g.,
 names in their natural, rather than lexicographic, order.")
     (license license:artistic2.0)))
 
+(define-public r-genomicranges
+  (package
+    (name "r-genomicranges")
+    (version "1.42.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "GenomicRanges" version))
+              (sha256
+               (base32
+                "0j4py5g6pdj35xhlaqhxxhg55j9l4mcdk3yck4dgyavv5f2dh24i"))))
+    (properties
+     `((upstream-name . "GenomicRanges")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-iranges" ,r-iranges)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-xvector" ,r-xvector)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://bioconductor.org/packages/GenomicRanges")
+    (synopsis "Representation and manipulation of genomic intervals")
+    (description
+     "This package provides tools to efficiently represent and manipulate
+genomic annotations and alignments is playing a central role when it comes to
+analyzing high-throughput sequencing data (a.k.a. NGS data).  The
+GenomicRanges package defines general purpose containers for storing and
+manipulating genomic intervals and variables defined along a genome.")
+    (license license:artistic2.0)))
+
 (define-public r-gostats
   (package
     (name "r-gostats")
@@ -1924,6 +2159,25 @@ Enrichment Analysis} (GSEA).")
     (description "This package provides a simple interface to and data from
 the Human Protein Atlas project.")
     (license license:artistic2.0)))
+
+(define-public r-limma
+  (package
+    (name "r-limma")
+    (version "3.46.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "limma" version))
+              (sha256
+               (base32
+                "1xxv493q1kip9bjfv7v7k5dnq7hz7gvl80i983v4mvwavhgnbxfz"))))
+    (build-system r-build-system)
+    (home-page "http://bioinf.wehi.edu.au/limma")
+    (synopsis "Package for linear models for microarray and RNA-seq data")
+    (description "This package can be used for the analysis of gene expression
+studies, especially the use of linear models for analysing designed experiments
+and the assessment of differential expression.  The analysis methods apply to
+different technologies, including microarrays, RNA-seq, and quantitative PCR.")
+    (license license:gpl2+)))
 
 (define-public r-rbgl
   (package
@@ -2028,6 +2282,49 @@ package, users can also produce a table of contents page to link various
 reports together for a particular project that can be viewed in a web
 browser.")
     (license license:artistic2.0)))
+
+(define-public r-rsamtools
+  (package
+    (name "r-rsamtools")
+    (version "2.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "Rsamtools" version))
+              (sha256
+               (base32
+                "040pggkwglc6wy90qnc7xcdnaj0v3iqlykvvsl74241409qly554"))))
+    (properties
+     `((upstream-name . "Rsamtools")))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'use-system-zlib
+           (lambda _
+             (substitute* "DESCRIPTION"
+               (("zlibbioc, ") ""))
+             (substitute* "NAMESPACE"
+               (("import\\(zlibbioc\\)") ""))
+             #t)))))
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-biostrings" ,r-biostrings)
+       ("r-bitops" ,r-bitops)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-rhtslib" ,r-rhtslib)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-xvector" ,r-xvector)))
+    (home-page "https://bioconductor.org/packages/release/bioc/html/Rsamtools.html")
+    (synopsis "Interface to samtools, bcftools, and tabix")
+    (description
+     "This package provides an interface to the @code{samtools},
+@code{bcftools}, and @code{tabix} utilities for manipulating SAM (Sequence
+Alignment / Map), FASTA, binary variant call (BCF) and compressed indexed
+tab-delimited (tabix) files.")
+    (license license:expat)))
 
 (define-public r-shortread
   (package
@@ -2162,6 +2459,42 @@ annotation infrastructure.")
     (synopsis "Package for annotation of genetic variants")
     (description "This R package can annotate variants, compute amino acid
 coding changes and predict coding outcomes.")
+    (license license:artistic2.0)))
+
+(define-public r-xvector
+  (package
+    (name "r-xvector")
+    (version "0.30.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "XVector" version))
+              (sha256
+               (base32
+                "1pqljikg4f6jb7wgm5537zwgq5b013nyz1agjrwfq2cljb0ym6lq"))))
+    (properties
+     `((upstream-name . "XVector")))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'use-system-zlib
+           (lambda _
+             (substitute* "DESCRIPTION"
+               (("zlibbioc, ") ""))
+             (substitute* "NAMESPACE"
+               (("import\\(zlibbioc\\)") ""))
+             #t)))))
+    (inputs
+     `(("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-iranges" ,r-iranges)
+       ("r-s4vectors" ,r-s4vectors)))
+    (home-page "https://bioconductor.org/packages/XVector")
+    (synopsis "Representation and manpulation of external sequences")
+    (description
+     "This package provides memory efficient S4 classes for storing sequences
+\"externally\" (behind an R external pointer, or on disk).")
     (license license:artistic2.0)))
 
 (define-public r-geneplotter
