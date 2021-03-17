@@ -226,6 +226,24 @@ AC_DEFUN([GUIX_CHECK_GUILE_GIT], [
      fi])
 ])
 
+dnl GUIX_CHECK_GUILE_ZLIB
+dnl
+dnl Check whether a recent-enough Guile-zlib is available.
+AC_DEFUN([GUIX_CHECK_GUILE_ZLIB], [
+  dnl Check whether we're using Guile-zlib 0.1.0 or later.
+  dnl 0.1.0 introduced the 'make-zlib-input-port' and related code.
+  AC_CACHE_CHECK([whether Guile-zlib is available and recent enough],
+    [guix_cv_have_recent_guile_zlib],
+    [GUILE_CHECK([retval],
+      [(use-modules (zlib))
+       make-zlib-input-port])
+     if test "$retval" = 0; then
+       guix_cv_have_recent_guile_zlib="yes"
+     else
+       guix_cv_have_recent_guile_zlib="no"
+     fi])
+])
+
 dnl GUIX_TEST_ROOT_DIRECTORY
 AC_DEFUN([GUIX_TEST_ROOT_DIRECTORY], [
   AC_CACHE_CHECK([for unit test root directory],

@@ -151,9 +151,9 @@ if test "x$guix_cv_have_recent_guile_git" != "xyes"; then
 fi
 
 dnl Check for Guile-zlib.
-GUILE_MODULE_AVAILABLE([have_guile_zlib], [(zlib)])
-if test "x$have_guile_zlib" != "xyes"; then
-  AC_MSG_ERROR([Guile-zlib is missing; please install it.])
+GUIX_CHECK_GUILE_ZLIB
+if test "x$guix_cv_have_recent_guile_zlib" != "xyes"; then
+  AC_MSG_ERROR([A recent Guile-zlib could not be found; please install it.])
 fi
 
 dnl Check for Guile-lzlib.
