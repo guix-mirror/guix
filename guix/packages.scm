@@ -751,7 +751,7 @@ specifies modules in scope when evaluating SNIPPET."
                    ((and=> (compressor #+source) (cut string= "unzip" <>))
                     ;; Note: Referring to the store unzip here (#+unzip)
                     ;; would introduce a cycle.
-                    ("unzip" (invoke "unzip" #+source)))
+                    (invoke "unzip" #+source))
                    (else
                     (copy-file #+source name)
                     (when command
