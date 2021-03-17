@@ -345,7 +345,7 @@ return the corresponding signature URL, or #f it signatures are unavailable."
     ;; Return #t for patch directory names such as 'bash-4.2-patches'.
     (cut string-suffix? "patches" <>))
 
-  (define conn (ftp-open server))
+  (define conn (ftp-open server #:timeout 5))
 
   (define (file->url directory file)
     (string-append "ftp://" server directory "/" file))
