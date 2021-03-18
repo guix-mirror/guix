@@ -65,6 +65,7 @@
             (sha256
              (base32
               "1bj936svd8i5g25xd1bj52hj4zca01fgl3sqkj86z9q5pkz4wa32"))))
+   (replacement sqlite/fixed)
    (build-system gnu-build-system)
    (inputs `(("readline" ,readline)))
    (native-inputs (if (hurd-target?)
@@ -121,6 +122,27 @@ zero-configuration, transactional SQL database engine.  SQLite is the most
 widely deployed SQL database engine in the world.  The source code for SQLite
 is in the public domain.")
    (license license:public-domain)))
+
+(define-public sqlite/fixed
+  (package
+    (inherit sqlite)
+    (version "3.32.3")
+    (source (origin
+              (method url-fetch)
+              (uri (let ((numeric-version
+                          (match (string-split version #\.)
+                            ((first-digit other-digits ...)
+                             (string-append first-digit
+                                            (string-pad-right
+                                             (string-concatenate
+                                              (map (cut string-pad <> 2 #\0)
+                                                   other-digits))
+                                             6 #\0))))))
+                     (string-append "https://sqlite.org/2020/sqlite-autoconf-"
+                                    numeric-version ".tar.gz")))
+              (sha256
+               (base32
+                "0rlbaq177gcgk5dswd3akbhv2nvvzljrbhgy18hklbhw7h90f5d3"))))))
 
 ;; Column metadata support was added to the regular 'sqlite' package with
 ;; commit fad5b1a6d8d9c36bea5785ae4fbc1beb37e644d7.
