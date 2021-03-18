@@ -15,7 +15,7 @@
 ;;; Copyright © 2017, 2018, 2019, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018, 2019, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
@@ -3306,6 +3306,13 @@ in C using Gtk+-3 and WebKitGtk.")
          (sha256
           (base32 "03ym14g9qhjqmryr5z065kynqm8yhmvnbs2djl6vp3i9cmqln8cl"))))
       (build-system gnu-build-system)
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("gettext" ,gettext-minimal)
+         ("libtool" ,libtool)
+         ("makeinfo" ,texinfo)
+         ("pkg-config" ,pkg-config)))
       (inputs
        `(("guile" ,guile-2.2)
          ("guile-lib" ,guile2.2-lib)
