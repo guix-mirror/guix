@@ -12118,14 +12118,14 @@ performance-oriented and tidy.")
 (define-public emacs-leaf
   (package
     (name "emacs-leaf")
-    (version "4.4.0")
+    (version "4.4.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "leaf-" version ".tar"))
        (sha256
-        (base32 "0wgf3ksrk6b77fvy3sr9hqazq0snbvqyrrql6v1hryqjfq5nwfx7"))))
+        (base32 "1npg06zmy21kg2qsqgfm03l7vjib697i96awypcdb0hw5mvmc1a1"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/conao3/leaf.el")
     (synopsis "Simplify your init.el configuration, extended use-package")
