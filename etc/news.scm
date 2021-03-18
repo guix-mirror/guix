@@ -22,6 +22,22 @@
 
  (entry (commit "ec7fb669945bfb47c5e1fdf7de3a5d07f7002ccf")
         (title
+         (en "Update on previous @command{guix-daemon} local privilege escalation"))
+        (body
+         (en "The previous news item described a potential local privilege
+escalation in @command{guix-daemon}, and claimed that systems with the Linux
+@uref{https://www.kernel.org/doc/Documentation/sysctl/fs.txt,
+``protected hardlink''} feature enabled were unaffected by the vulnerability.
+
+This is not entirely correct.  Exploiting the bug on such systems is harder,
+but not impossible.  To avoid unpleasant surprises, all users are advised to
+upgrade @command{guix-daemon}.  Run @command{info \"(guix) Upgrading Guix\"}
+for info on how to do that.  See
+@uref{http://guix.gnu.org/en/blog/2021/risk-of-local-privilege-escalation-via-guix-daemon/}
+for more information on this bug.")))
+
+ (entry (commit "ec7fb669945bfb47c5e1fdf7de3a5d07f7002ccf")
+        (title
          (en "Risk of local privilege escalation @i{via} @command{guix-daemon}")
          (de "Risiko lokaler Rechteausweitung über @command{guix-daemon}")
          (fr "Risque d'élévation locale de privilèges @i{via} @command{guix-daemon}")
