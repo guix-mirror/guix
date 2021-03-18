@@ -20,7 +20,7 @@
 (channel-news
  (version 0)
 
- (entry (commit "ec7fb669945bfb47c5e1fdf7de3a5d07f7002ccf")
+ (entry (commit "9ade2b720af91acecf76278b4d9b99ace406781e")
         (title
          (en "Update on previous @command{guix-daemon} local privilege escalation"))
         (body
@@ -33,7 +33,7 @@ This is not entirely correct.  Exploiting the bug on such systems is harder,
 but not impossible.  To avoid unpleasant surprises, all users are advised to
 upgrade @command{guix-daemon}.  Run @command{info \"(guix) Upgrading Guix\"}
 for info on how to do that.  See
-@uref{http://guix.gnu.org/en/blog/2021/risk-of-local-privilege-escalation-via-guix-daemon/}
+@uref{https://guix.gnu.org/en/blog/2021/risk-of-local-privilege-escalation-via-guix-daemon/}
 for more information on this bug.")))
 
  (entry (commit "ec7fb669945bfb47c5e1fdf7de3a5d07f7002ccf")
