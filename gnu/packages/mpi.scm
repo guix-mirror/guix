@@ -203,6 +203,12 @@ bind processes, and much more.")
       (sha256
        (base32 "02f0r9d3xgs08svkmj8v7lzviyxqnkk4yd3z0wql550xnriki3y5"))
       (patches (search-patches "openmpi-mtl-priorities.patch"))))
+
+    (properties
+     ;; Tell the 'generic-html' updater to monitor this URL for updates.
+     `((release-monitoring-url
+        . "https://www.open-mpi.org/software/ompi/current")))
+
     (build-system gnu-build-system)
     (inputs
      `(("hwloc" ,hwloc-2 "lib")
