@@ -17,20 +17,16 @@ diff --git a/Rendering/FreeType/vtkFreeTypeTools.cxx b/Rendering/FreeType/vtkFre
 index c54289dc60..03b899c4da 100644
 --- a/Rendering/FreeType/vtkFreeTypeTools.cxx
 +++ b/Rendering/FreeType/vtkFreeTypeTools.cxx
-@@ -387,11 +387,8 @@ FTC_CMapCache* vtkFreeTypeTools::GetCMapCache()
+@@ -378,8 +378,7 @@ FTC_CMapCache* vtkFreeTypeTools::GetCMapCache()
  }
- 
+
  //----------------------------------------------------------------------------
 -FT_CALLBACK_DEF(FT_Error)
--vtkFreeTypeToolsFaceRequester(FTC_FaceID face_id,
--                              FT_Library lib,
--                              FT_Pointer request_data,
--                              FT_Face* face)
+-vtkFreeTypeToolsFaceRequester(
 +static FT_Error vtkFreeTypeToolsFaceRequester(
-+  FTC_FaceID face_id, FT_Library lib, FT_Pointer request_data, FT_Face* face)
+   FTC_FaceID face_id, FT_Library lib, FT_Pointer request_data, FT_Face* face)
  {
  #if VTK_FTFC_DEBUG_CD
-   printf("vtkFreeTypeToolsFaceRequester()\n");
--- 
+--
 2.30.1
 

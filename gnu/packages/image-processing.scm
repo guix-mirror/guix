@@ -14,6 +14,7 @@
 ;;; Copyright © 2020 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2021 Oleh Malyi <astroclubzp@gmail.com>
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
+;;; Copyright © 2021 Andy Tai <atai@atai.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -246,7 +247,7 @@ many popular formats.")
 (define-public vtk
   (package
     (name "vtk")
-    (version "8.2.0")
+    (version "9.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://vtk.org/files/release/"
@@ -254,7 +255,7 @@ many popular formats.")
                                   "/VTK-" version ".tar.gz"))
               (sha256
                (base32
-                "1fspgp8k0myr6p2a6wkc21ldcswb4bvmb484m12mxgk1a9vxrhrl"))
+                "1ir2lq9i45ls374lcmjzw0nrm5l5hnm1w47lg8g8d0n2j7hsaf8v"))
               (patches
                (search-patches "vtk-fix-freetypetools-build-failure.patch"))
               (modules '((guix build utils)))
@@ -264,35 +265,46 @@ many popular formats.")
                     (lambda (dir)
                       (delete-file-recursively
                         (string-append "ThirdParty/" dir "/vtk" dir)))
-                    ;; ogg, pugixml depended upon unconditionally
+                    ;; pugixml depended upon unconditionally
                     '("doubleconversion" "eigen" "expat" "freetype" "gl2ps"
                       "glew" "hdf5" "jpeg" "jsoncpp" "libproj" "libxml2" "lz4"
-                      "netcdf" "png" "sqlite" "theora" "tiff" "zlib"))
+                      "netcdf" "ogg" "png" "sqlite" "theora" "tiff" "zlib"))
                   #t))))
     (build-system cmake-build-system)
     (arguments
      '(#:build-type "Release"           ;Build without '-g' to save space.
        #:configure-flags '(;"-DBUILD_TESTING:BOOL=TRUE"
-                           ;"-DVTK_MODULE_USE_EXTERNAL_vtkogg:BOOL=TRUE"    ; not honored
-                           "-DVTK_USE_SYSTEM_DOUBLECONVERSION:BOOL=TRUE"
-                           "-DVTK_USE_SYSTEM_EIGEN:BOOL=TRUE"
-                           "-DVTK_USE_SYSTEM_EXPAT:BOOL=TRUE"
-                           "-DVTK_USE_SYSTEM_FREETYPE:BOOL=TRUE"
-                           "-DVTK_USE_SYSTEM_GL2PS:BOOL=TRUE"
-                           "-DVTK_USE_SYSTEM_GLEW:BOOL=TRUE"
-                           "-DVTK_USE_SYSTEM_HDF5:BOOL=TRUE"
-                           "-DVTK_USE_SYSTEM_JPEG:BOOL=TRUE"
-                           "-DVTK_USE_SYSTEM_JSONCPP:BOOL=TRUE"
-                           "-DVTK_USE_SYSTEM_LIBPROJ:BOOL=TRUE"
-                           "-DVTK_USE_SYSTEM_LIBXML2:BOOL=TRUE"
-                           "-DVTK_USE_SYSTEM_LZ4:BOOL=TRUE"
-                           "-DVTK_USE_SYSTEM_NETCDF:BOOL=TRUE"
-                           "-DVTK_USE_SYSTEM_PNG:BOOL=TRUE"
-                           ;"-DVTK_USE_SYSTEM_PUGIXML:BOOL=TRUE"    ; breaks IO/CityGML
-                           "-DVTK_USE_SYSTEM_SQLITE:BOOL=TRUE"
-                           "-DVTK_USE_SYSTEM_THEORA:BOOL=TRUE"
-                           "-DVTK_USE_SYSTEM_TIFF:BOOL=TRUE"
-                           "-DVTK_USE_SYSTEM_ZLIB:BOOL=TRUE")
+                           ;    ; not honored
+                           "-DVTK_USE_EXTERNAL=OFF" ;; default
+                           "-DVTK_MODULE_USE_EXTERNAL_VTK_doubleconversion=ON"
+                           "-DVTK_MODULE_USE_EXTERNAL_VTK_eigen=ON"
+                           "-DVTK_MODULE_USE_EXTERNAL_VTK_expat=ON"
+                           "-DVTK_MODULE_USE_EXTERNAL_VTK_freetype=ON"
+                           "-DVTK_MODULE_USE_EXTERNAL_VTK_gl2ps=ON"
+                           "-DVTK_MODULE_USE_EXTERNAL_VTK_glew=ON"
+                           "-DVTK_MODULE_USE_EXTERNAL_VTK_hdf5=ON"
+                           "-DVTK_MODULE_USE_EXTERNAL_VTK_jpeg=ON"
+                           "-DVTK_MODULE_USE_EXTERNAL_VTK_jsoncpp=ON"
+                           "-DVTK_MODULE_USE_EXTERNAL_VTK_libproj=ON"
+                           "-DVTK_MODULE_USE_EXTERNAL_VTK_libxml2=ON"
+                           "-DVTK_MODULE_USE_EXTERNAL_VTK_lz4=ON"
+                           "-DVTK_MODULE_USE_EXTERNAL_VTK_netcdf=ON"
+                           "-DVTK_MODULE_USE_EXTERNAL_VTK_ogg=ON"
+                           "-DVTK_MODULE_USE_EXTERNAL_VTK_png=ON"
+                           ;"-DVTK_MODULE_USE_EXTERNAL_VTK_pugixml=ON"    ; breaks IO/CityGML
+                           "-DVTK_MODULE_USE_EXTERNAL_VTK_sqlite=ON"
+                           "-DVTK_MODULE_USE_EXTERNAL_VTK_theora=ON"
+                           "-DVTK_MODULE_USE_EXTERNAL_VTK_tiff=ON"
+                           "-DVTK_MODULE_USE_EXTERNAL_VTK_zlib=ON"
+                           )
+       #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-sources
+             (lambda _
+               (substitute* "Common/Core/vtkFloatingPointExceptions.cxx"
+                 (("<fenv.h>") "<cfenv>"))
+               (substitute* "Common/Core/CMakeLists.txt"
+                 (("fenv.h") "cfenv")))))
        #:tests? #f))        ;XXX: test data not included
     (inputs
      `(("double-conversion" ,double-conversion)
@@ -305,7 +317,6 @@ many popular formats.")
        ("hdf5" ,hdf5)
        ("jpeg" ,libjpeg-turbo)
        ("jsoncpp" ,jsoncpp)
-       ;("libogg" ,libogg)
        ("libtheora" ,libtheora)
        ("libX11" ,libx11)
        ("libxml2" ,libxml2)
@@ -320,6 +331,10 @@ many popular formats.")
        ("tiff" ,libtiff)
        ("xorgproto" ,xorgproto)
        ("zlib" ,zlib)))
+    (propagated-inputs
+     ;; VTK's 'VTK-vtk-module-find-packages.cmake' calls
+     ;; 'find_package(THEORA)', which in turns looks for libogg.
+     `(("libogg" ,libogg)))
     (home-page "https://vtk.org/")
     (synopsis "Libraries for 3D computer graphics")
     (description
