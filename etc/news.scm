@@ -22,7 +22,8 @@
 
  (entry (commit "9ade2b720af91acecf76278b4d9b99ace406781e")
         (title
-         (en "Update on previous @command{guix-daemon} local privilege escalation"))
+         (en "Update on previous @command{guix-daemon} local privilege escalation")
+         (nl "Aanvulling bij escalatie van bevoegdheden via @command{guix-daemon}"))
         (body
          (en "The previous news item described a potential local privilege
 escalation in @command{guix-daemon}, and claimed that systems with the Linux
@@ -34,7 +35,20 @@ but not impossible.  To avoid unpleasant surprises, all users are advised to
 upgrade @command{guix-daemon}.  Run @command{info \"(guix) Upgrading Guix\"}
 for info on how to do that.  See
 @uref{https://guix.gnu.org/en/blog/2021/risk-of-local-privilege-escalation-via-guix-daemon/}
-for more information on this bug.")))
+for more information on this bug.")
+         (nl "Het vorige nieuwsbericht beschreef een beveiligingsprobleem in
+@command{guix-daemon} dat kan leiden tot de escalatie van lokale bevoegdheden.
+Het bericht stelde dat machines waarop de
+@uref{https://www.kernel.org/doc/Documentation/sysctl/fs.txt,
+``protected hardlink''}-optie van Linux is inschakeld niet kwetsbaar zijn.
+
+Dit is niet volledig juist.  De optie maakt het uitbuiten van de fout
+moeilijker maar niet onmogelijk.  Om onaangename verrassingen te voorkomen
+is het voor iedereen aangeraden om @command{guix-daemon} op te waarderen.
+Voer @command{info \"(guix) Upgrading Guix\"} uit voor meer informatie
+daarover.  Lees
+@uref{https://guix.gnu.org/en/blog/2021/risk-of-local-privilege-escalation-via-guix-daemon/}
+voor meer informatie over het probleem.")))
 
  (entry (commit "ec7fb669945bfb47c5e1fdf7de3a5d07f7002ccf")
         (title
