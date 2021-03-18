@@ -475,7 +475,9 @@ When FILE->SIGNATURE is omitted or #f, guess the detached signature file name,
 if any.  Otherwise, FILE->SIGNATURE must be a procedure; it is passed a source
 file URL and must return the corresponding signature URL, or #f it signatures
 are unavailable."
-  (let* ((uri   (string->uri (string-append base-url directory "/")))
+  (let* ((uri   (string->uri (if (string-null? directory)
+                                 base-url
+                                 (string-append base-url directory "/"))))
          (port  (http-fetch/cached uri #:ttl 3600))
          (sxml  (html->sxml port))
          (links (delete-duplicates (html-links sxml))))
