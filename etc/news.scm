@@ -20,6 +20,64 @@
 (channel-news
  (version 0)
 
+ (entry (commit "ec7fb669945bfb47c5e1fdf7de3a5d07f7002ccf")
+        (title
+         (en "Risk of local privilege escalation @i{via} @command{guix-daemon}")
+         (fr "Risque d'élévation locale de privilèges @i{via} @command{guix-daemon}"))
+        (body
+         (en "A security vulnerability that can lead to local privilege
+escalation has been found in @command{guix-daemon}.  It affects multi-user
+setups in which @command{guix-daemon} runs locally.
+
+It does @emph{not} affect multi-user setups where @command{guix-daemon} runs
+on a separate machine and is accessed over the network, @i{via}
+@env{GUIX_DAEMON_SOCKET}, as is customary on cluster setups.  Machines where
+the Linux @uref{https://www.kernel.org/doc/Documentation/sysctl/fs.txt,
+``protected hardlink''} feature is enabled, which is common, are also
+unaffected---this is the case when the contents of
+@file{/proc/sys/fs/protected_hardlinks} are @code{1}.
+
+The attack consists in having an unprivileged user spawn a build process, for
+instance with @command{guix build}, that makes its build directory
+world-writable.  The user then creates a hardlink within the build directory
+to a root-owned file from outside of the build directory, such as
+@file{/etc/shadow}.  If the user passed the @option{--keep-failed} option and
+the build eventually fails, the daemon changes ownership of the whole build
+tree, including the hardlink, to the user.  At that point, the user has write
+access to the target file.
+
+You are advised to upgrade @command{guix-daemon}.  Run @command{info \"(guix)
+Upgrading Guix\"}, for info on how to do that.  See
+@uref{https://issues.guix.gnu.org/47229} for more information on this bug.")
+         (fr "Une faille de sécurité pouvant mener à une élévation locale de
+privilèges a été trouvée dans @command{guix-daemon}.  Elle touche les
+installations multi-utilisateur·ices dans lesquelles @command{guix-daemon}
+tourne en local.
+
+Elle @emph{n'affecte pas} les installations où @command{guix-daemon} tourne
+sur une machine séparée et qu'on y accède à travers le réseau, @i{via}
+@env{GUIX_DAEMON_SOCKET}, comme c'est typiquement le cas sur les grappes de
+calcul (@i{clusters}).  Les machines où les
+@uref{https://www.kernel.org/doc/Documentation/sysctl/fs.txt, ``liens
+protégés''} de Linux sont activés, ce qui est courant, ne sont pas non plus
+touchées ; cette fonctionnalité est activée si le contenu de
+@file{/proc/sys/fs/protected_hardlinks} est @code{1}.
+
+Pour mener cette attaque, un·e utilisateur·rice démarre un processus de
+compilation, par exemple avec @command{guix build}, qui rend le répertoire de
+compilation inscriptible pour tout le monde.  La personne créée ensuite un
+lien dur (@i{hard link}) dans ce répertoire vers un fichier appartenant à
+@code{root}, tel que @file{/etc/shadow}.  Si on a passé l'option
+@option{--keep-failed} et que la compilation finit par échouer, le démon met
+l'utilisateur·rice appelant·e comme propriétaire de l'ensemble du répertoire
+de compilation, y compris le lien.  À ce stade, cette personne a accès en
+écriture sur le fichier cible.
+
+Nous conseillons de mettre à jour @command{guix-daemon}.  Lancer @command{info
+\"(guix.fr) Mettre à niveau Guix\"} pour voir comment faire.  Voir
+@uref{https://issues.guix.gnu.org/47229} pour plus d'informations sur cette
+faille.")))
+
  (entry (commit "77c2f4e2068ebec3f384c826c5a99785125ff72c")
         (title
          (en "@code{qemu-binfmt-service-type} is usable for any container")
