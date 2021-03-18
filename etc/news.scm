@@ -24,7 +24,8 @@
         (title
          (en "Risk of local privilege escalation @i{via} @command{guix-daemon}")
          (de "Risiko lokaler Rechteausweitung über @command{guix-daemon}")
-         (fr "Risque d'élévation locale de privilèges @i{via} @command{guix-daemon}"))
+         (fr "Risque d'élévation locale de privilèges @i{via} @command{guix-daemon}")
+         (nl "Risico op escalatie van bevoegdheden via @command{guix-daemon}"))
         (body
          (en "A security vulnerability that can lead to local privilege
 escalation has been found in @command{guix-daemon}.  It affects multi-user
@@ -105,7 +106,33 @@ de compilation, y compris le lien.  À ce stade, cette personne a accès en
 Nous conseillons de mettre à jour @command{guix-daemon}.  Lancer @command{info
 \"(guix.fr) Mettre à niveau Guix\"} pour voir comment faire.  Voir
 @uref{https://issues.guix.gnu.org/47229} pour plus d'informations sur cette
-faille.")))
+faille.")
+                  (nl "In @command{guix-daemon} werd een beveiligingsprobleem
+gevonden dat kan leiden tot de escalatie van locale bevoegdheden.  Het
+probleem doet zich voor bij installaties met meerdere gebruikers waarop een
+lokale @command{guix-daemon} draait.
+
+Het heeft @emph{geen} invloed op systemen met meerdere gebruikers waarbij de
+@command{guix-daemon} op een afzonderlijke machine draait en via
+@env{GUIX_DAEMON_SOCKET} over het netwerk wordt aangesproken, zoals
+gebruikelijk bij computerclusters.  Ook machines waarop de
+@uref{https://www.kernel.org/doc/Documentation/sysctl/fs.txt,
+``protected hardlink''}-optie van Linux is inschakeld, wat vaak het geval is,
+zijn niet kwetsbaar.
+
+De aanval bestaat erin dat een gebruiker zonder privileges een bouwproces
+opstart, bijvoorbeeld met @command{guix build}, dat zijn werkmap beschrijfbaar
+maakt voor alle gebruikers.  Vervolgens maakt de gebruiker vanuit deze map een
+harde link naar een bestand erbuiten met @code{root} als eigenaar, zoals
+@file{/etc/shadow}.  Als de gebruiker de @option{--keep-failed}-optie opgaf
+en de bouw faalt, maakt @command{guix-daemon} de gebruiker eigenaar van de
+volledige inhoud van de werkmap, met inbegrip van de harde link.  Op dat
+moment bezit de gebruiker schrijfrechten over het doelbestand.
+
+Het is aangeraden om @command{guix-daemon} op te waarderen.  Voer
+@command{info \"(guix) Upgrading Guix\"} uit voor meer informatie daarover.
+Lees @uref{https://issues.guix.gnu.org/47229} voor meer informatie over het
+probleem.")))
 
  (entry (commit "77c2f4e2068ebec3f384c826c5a99785125ff72c")
         (title
