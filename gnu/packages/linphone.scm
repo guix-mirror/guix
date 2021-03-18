@@ -25,6 +25,7 @@
   #:use-module (gnu packages audio)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages cpp)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages databases)
@@ -732,95 +733,61 @@ device.")
 (define-public liblinphone
   (package
     (name "liblinphone")
-    (version "3.12.0")
+    (version "4.4.34")
     (source
      (origin
-       (method url-fetch)
-       (uri
-        (string-append "https://www.linphone.org/releases/sources/linphone"
-                       "/linphone-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.linphone.org/BC/public/liblinphone.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0phhkx55xdyg28d4wn8l8q4yvsmdgzmjiw584d4s190sq1azm91x"))))
-    (outputs '("out" "doc" "tester"))
+        (base32 "1lwabr93jw24y04pdqnw9dgg8jb3lzfplyx19f83jgp9dj8kmfq9"))))
+    (outputs '("out" "tester"))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f                      ; No test target
-       #:configure-flags
-       (list (string-append "-DGTK2_GDKCONFIG_INCLUDE_DIR="
-                            (string-append (assoc-ref %build-inputs "gtk2")
-                                           "/lib/gtk-2.0/include"))
-             (string-append "-DGTK2_GLIBCONFIG_INCLUDE_DIR="
-                            (string-append (assoc-ref %build-inputs "glib")
-                                           "/lib/glib-2.0/include"))
-             "-DENABLE_STATIC=NO"       ; Not required
-             "-DENABLE_STRICT=NO"
-             "-DENABLE_GTK_UI=YES")     ; for legacy UI
-       #:imported-modules (,@%cmake-build-system-modules
-                           (guix build glib-or-gtk-build-system))
-       #:modules ((guix build cmake-build-system)
-                  ((guix build glib-or-gtk-build-system) #:prefix glib-or-gtk:)
-                  (guix build utils))
+     `(#:tests? #f                      ; Tests require networking
+       #:configure-flags (list "-DENABLE_STATIC=NO"
+                               "-DENABLE_DOC=NO" ;requires unpackaged javasphinx
+                               "-DENABLE_LDAP=YES")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch
-           (lambda _
-             (substitute* "gtk/main.c"
-               (("#include \"liblinphone_gitversion.h\"")
-                ""))
-             #t))
          (add-after 'install 'separate-outputs
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (doc (assoc-ref outputs "doc"))
                     (tester (assoc-ref outputs "tester"))
                     (tester-name (string-append ,name "_tester")))
-               ;; Copy the tester executable.
-               (mkdir-p (string-append tester "/bin"))
+               (for-each mkdir-p
+                         (list (string-append tester "/bin")
+                               (string-append tester "/share")))
                (rename-file (string-append out "/bin/" tester-name)
                             (string-append tester "/bin/" tester-name))
-               ;; Copy the tester data files.
-               (mkdir-p (string-append tester "/share/"))
+               (rename-file (string-append out "/bin/groupchat_benchmark")
+                            (string-append tester "/bin/groupchat_benchmark"))
                (rename-file (string-append out "/share/" tester-name)
-                            (string-append tester "/share/" tester-name))
-               ;; Copy the HTML and XML documentation.
-               (copy-recursively
-                (string-append out "/share/doc/linphone-" ,version)
-                (string-append doc "/share/doc/" ,name "-" ,version))
-               (delete-file-recursively
-                (string-append out "/share/doc/linphone-" ,version))
-               #t)))
-         (add-after 'install 'install-man-pages
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (man (string-append out "/share/man/man1")))
-               (for-each (lambda (file)
-                           (install-file file man))
-                         (find-files ".." ".*.1$"))
-               #t)))
-         (add-after 'separate-outputs 'glib-or-gtk-compile-schemas
-           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-compile-schemas))
-         (add-after 'glib-or-gtk-compile-schemas 'glib-or-gtk-wrap
-           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap)))))
+                            (string-append tester "/share/" tester-name))))))))
     (native-inputs
-     `(("gettext" ,gettext-minimal)
-       ("udev" ,eudev)                  ;for libudev.h
-       ;; For generating the C++ wrappers.
-       ("dot" ,graphviz)
+     `(("dot" ,graphviz)
        ("doxygen" ,doxygen)
-       ("python" ,python)
+       ("gettext" ,gettext-minimal)
+       ("perl" ,perl)
+       ("python" ,python-wrapper)
        ("pystache" ,python-pystache)
-       ("six" ,python-six)))
+       ("six" ,python-six)
+       ("udev" ,eudev)))
     (inputs
      `(("bctoolbox" ,bctoolbox)
        ("belcard" ,belcard)
        ("bellesip" ,belle-sip)
+       ("belr" ,belr)
        ("bzrtp" ,bzrtp)
        ("iconv" ,libiconv)
-       ("glib" ,glib)
-       ("gtk2" ,gtk+-2)
+       ("libxsd" ,xsd)
+       ("lime" ,lime)
        ("mediastreamer2" ,mediastreamer2)
        ("notify" ,libnotify)
        ("ortp" ,ortp)
+       ("soci" ,soci)
        ("sqlite" ,sqlite)
        ("xml2" ,libxml2)
        ("zlib" ,zlib)))
@@ -830,8 +797,8 @@ all calling and instant messaging features into an unified
 easy-to-use API.  It is the cross-platform VoIP library on which the
 Linphone application is based on, and that anyone can use to add audio
 and video calls or instant messaging capabilities to an application.")
-    (home-page "https://gitlab.linphone.org/BC/public/liblinphone")
-    (license license:gpl2+)))
+    (home-page "https://linphone.org/technical-corner/liblinphone")
+    (license license:gpl3+)))
 
 (define-public linphoneqt
   (package
