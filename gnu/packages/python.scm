@@ -184,7 +184,10 @@
              "--with-system-expat"      ;for XML support
              "--with-system-ffi"        ;build ctypes
              "--with-ensurepip=install" ;install pip and setuptools
+             "--with-computed-gotos"    ;main interpreter loop optimization
+             "--with-lto"               ;increase size by 20MB, but 15% speedup
              "--enable-unicode=ucs4"
+             "--enable-optimizations"
 
              ;; Prevent the installed _sysconfigdata.py from retaining a reference
              ;; to coreutils.
@@ -198,8 +201,13 @@
                      "ac_cv_file__dev_ptmx=no"
                      "ac_cv_file__dev_ptc=no")
                    '())
+             ;; -fno-semantic-interposition reinstates some optimizations by gcc
+             ;; leading to around 15% speedup. This is the default starting from
+             ;; python 3.10.
+             "CFLAGS=-fno-semantic-interposition"
              (string-append "LDFLAGS=-Wl,-rpath="
-                            (assoc-ref %outputs "out") "/lib"))
+                            (assoc-ref %outputs "out") "/lib"
+                            " -fno-semantic-interposition"))
        ;; With no -j argument tests use all available cpus, so provide one.
        #:make-flags
        (list (string-append
