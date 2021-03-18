@@ -923,7 +923,7 @@ aws-c-http, aws-c-io, aws-c-mqtt, aws-checksums, and s2n.")
 (define-public aws-sdk-cpp
   (package
     (name "aws-sdk-cpp")
-    (version "1.8.159")
+    (version "1.9.92")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -932,7 +932,12 @@ aws-c-http, aws-c-io, aws-c-mqtt, aws-checksums, and s2n.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0jpfv9x82nq7hcix9in7qgrc8009dwpg6gr96hlgmcvqrqckd2r9"))))
+                "0nbq1qivykfg8jmrn8d0k6fcfa5dw9s90wnwddh7ia4zafmby7pd"))
+              (patches
+               (search-patches
+                "aws-sdk-cpp-cmake-prefix.patch"
+                "aws-sdk-cpp-disable-networking-tests.patch"
+                "aws-sdk-cpp-disable-werror.patch"))))
     (build-system cmake-build-system)
     (arguments
      '(;; Tests are run during the build phase.
@@ -941,11 +946,9 @@ aws-c-http, aws-c-io, aws-c-mqtt, aws-checksums, and s2n.")
        '("-DBUILD_SHARED_LIBS=ON"
          "-DBUILD_DEPS=OFF")))
     (propagated-inputs
-     `(("aws-c-common" ,aws-c-common)
-       ("aws-c-event-stream" ,aws-c-event-stream)))
+     `(("aws-crt-cpp" ,aws-crt-cpp)))
     (inputs
-     `(("aws-checksums" ,aws-checksums)
-       ("curl" ,curl)
+     `(("curl" ,curl)
        ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (synopsis "Amazon Web Services SDK for C++")
