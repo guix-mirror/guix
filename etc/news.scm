@@ -23,6 +23,7 @@
  (entry (commit "9ade2b720af91acecf76278b4d9b99ace406781e")
         (title
          (en "Update on previous @command{guix-daemon} local privilege escalation")
+         (de "Nachtrag zur lokalen Rechteausweitung bei @command{guix-daemon}")
          (nl "Aanvulling bij escalatie van bevoegdheden via @command{guix-daemon}"))
         (body
          (en "The previous news item described a potential local privilege
@@ -36,6 +37,20 @@ upgrade @command{guix-daemon}.  Run @command{info \"(guix) Upgrading Guix\"}
 for info on how to do that.  See
 @uref{https://guix.gnu.org/en/blog/2021/risk-of-local-privilege-escalation-via-guix-daemon/}
 for more information on this bug.")
+         (de "In der letzten Neuigkeit wurde eine mögliche lokale
+Rechteausweitung im @command{guix-daemon} beschrieben und behauptet, dass
+Systeme, auf denen Linux’
+@uref{https://www.kernel.org/doc/Documentation/sysctl/fs.txt,
+„Geschützte-Hardlinks“-Funktionalität} aktiviert ist, von der Sicherheitslücke
+nicht betroffen seien.
+
+Das stimmt nicht ganz.  Die Lücke auf solchen Systemen auszunutzen, ist
+schwerer, aber nicht unmöglich.  Um unangenehme Überraschungen zu vermeiden,
+empfehlen wir allen Nutzern, @command{guix-daemon} zu aktualisieren.  Führen
+Sie @command{info \"(guix.de) Aktualisieren von Guix\"} aus, um zu erfahren,
+wie Sie ihn aktualisieren können.  Siehe
+@uref{https://guix.gnu.org/de/blog/2021/risk-of-local-privilege-escalation-via-guix-daemon/}
+für mehr Informationen zu diesem Fehler.")
          (nl "Het vorige nieuwsbericht beschreef een beveiligingsprobleem in
 @command{guix-daemon} dat kan leiden tot de escalatie van lokale bevoegdheden.
 Het bericht stelde dat machines waarop de
