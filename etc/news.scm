@@ -23,6 +23,7 @@
  (entry (commit "ec7fb669945bfb47c5e1fdf7de3a5d07f7002ccf")
         (title
          (en "Risk of local privilege escalation @i{via} @command{guix-daemon}")
+         (de "Risiko lokaler Rechteausweitung über @command{guix-daemon}")
          (fr "Risque d'élévation locale de privilèges @i{via} @command{guix-daemon}"))
         (body
          (en "A security vulnerability that can lead to local privilege
@@ -49,6 +50,34 @@ access to the target file.
 You are advised to upgrade @command{guix-daemon}.  Run @command{info \"(guix)
 Upgrading Guix\"}, for info on how to do that.  See
 @uref{https://issues.guix.gnu.org/47229} for more information on this bug.")
+         (de "Eine Sicherheitslücke, die zu einer lokalen Rechteausweitung
+führen kann, wurde in @command{guix-daemon} gefunden.  Sie betrifft
+Mehrbenutzersysteme, auf denen @command{guix-daemon} lokal läuft.
+
+@emph{Nicht} betroffen sind Mehrbenutzersysteme, auf denen
+@command{guix-daemon} auf einer separaten Maschine läuft und darauf über das
+Netzwerk mittels @env{GUIX_DAEMON_SOCKET} zugegriffen wird, was auf
+Rechen-Clustern üblich ist.  Auch Maschinen, auf denen Linux’
+@uref{https://www.kernel.org/doc/Documentation/sysctl/fs.txt,
+„Geschützte-Hardlinks“-Funktionalität} aktiviert ist@tie{}– was häufig der
+Fall ist@tie{}–, sind nicht betroffen; sie ist aktiviert, wenn
+@file{/proc/sys/fs/protected_hardlinks} den Inhalt @code{1} hat.
+
+Der Angriff besteht darin, dass ein unprivilegierter Benutzer einen
+Erstellungsprozess startet, etwa mit @command{guix build}, der allen
+Schreibberechtigung auf sein Erstellungsverzeichnis erteilt.  In diesem
+Erstellungsverzeichnis erzeugt der Benutzer nun eine harte Verknüpfung auf
+eine Datei außerhalb des Erstellungsverzeichnisses, die dem
+Administratornutzer root gehört, etwa @file{/etc/shadow}.  Wenn der Nutzer die
+Befehlszeilenoption @option{--keep-failed} angegeben hat und die Erstellung
+irgendwann fehlschlägt, trägt der Daemon als Besitzer des gesamten
+Erstellungsverzeichnisses den Benutzer ein, Hardlink eingeschlossen.  Jetzt
+hat der Benutzer Schreibzugriff auf die Zieldatei bekommen.
+
+Wir empfehlen, dass Sie @command{guix-daemon} aktualisieren.  Führen Sie
+@command{info \"(guix.de) Aktualisieren von Guix\"} aus, um zu erfahren, wie
+Sie ihn aktualisieren können.  Siehe @uref{https://issues.guix.gnu.org/47229}
+für mehr Informationen zu diesem Fehler.")
          (fr "Une faille de sécurité pouvant mener à une élévation locale de
 privilèges a été trouvée dans @command{guix-daemon}.  Elle touche les
 installations multi-utilisateur·ices dans lesquelles @command{guix-daemon}
