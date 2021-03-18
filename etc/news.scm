@@ -108,7 +108,7 @@ Nous conseillons de mettre à jour @command{guix-daemon}.  Lancer @command{info
 @uref{https://issues.guix.gnu.org/47229} pour plus d'informations sur cette
 faille.")
                   (nl "In @command{guix-daemon} werd een beveiligingsprobleem
-gevonden dat kan leiden tot de escalatie van locale bevoegdheden.  Het
+gevonden dat kan leiden tot de escalatie van lokale bevoegdheden.  Het
 probleem doet zich voor bij installaties met meerdere gebruikers waarop een
 lokale @command{guix-daemon} draait.
 
