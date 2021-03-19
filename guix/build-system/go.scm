@@ -31,6 +31,7 @@
             go-build
             go-build-system
 
+            go-pseudo-version?
             go-version->git-ref))
 
 ;; Commentary:
@@ -40,17 +41,19 @@
 ;;
 ;; Code:
 
-(define %go-version-rx
+(define %go-pseudo-version-rx
+  ;; Match only the end of the version string; this is so that matching the
+  ;; more complex leading semantic version pattern is not required.
   (make-regexp (string-append
-                "(v?[0-9]\\.[0-9]\\.[0-9])" ;"v" prefix can be omitted in version prefix
-                "(-|-pre\\.0\\.|-0\\.)"     ;separator
-                "([0-9]{14})-"              ;timestamp
-                "([0-9A-Fa-f]{12})")))      ;commit hash
+                "([0-9]{14}-)"                 ;timestamp
+                "([0-9A-Fa-f]{12})"            ;commit hash
+                "(\\+incompatible)?$")))       ;optional +incompatible tag
 
 (define (go-version->git-ref version)
   "Parse VERSION, a \"pseudo-version\" as defined at
 <https://golang.org/ref/mod#pseudo-versions>, and extract the commit hash from
-it, defaulting to full VERSION if a pseudo-version pattern is not recognized."
+it, defaulting to full VERSION (stripped from the \"+incompatible\" suffix if
+present) if a pseudo-version pattern is not recognized."
   ;; A module version like v1.2.3 is introduced by tagging a revision in the
   ;; underlying source repository.  Untagged revisions can be referred to
   ;; using a "pseudo-version" like v0.0.0-yyyymmddhhmmss-abcdefabcdef, where
@@ -65,10 +68,15 @@ it, defaulting to full VERSION if a pseudo-version pattern is not recognized."
           (if (string-suffix? "+incompatible" version)
               (string-drop-right version 13)
               version))
-         (match (regexp-exec %go-version-rx version)))
+         (match (regexp-exec %go-pseudo-version-rx version)))
     (if match
-        (match:substring match 4)
+        (match:substring match 2)
         version)))
+
+(define (go-pseudo-version? version)
+  "True if VERSION is a Go pseudo-version, i.e., a version string made of a
+commit hash and its date rather than a proper release tag."
+  (regexp-exec %go-pseudo-version-rx version))
 
 (define %go-build-system-modules
   ;; Build-side modules imported and used by default.

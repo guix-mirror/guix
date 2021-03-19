@@ -50,6 +50,7 @@
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
   #:use-module (sxml match)
   #:use-module ((sxml xpath) #:renamer (lambda (s)
                                          (if (eq? 'filter s)
@@ -92,9 +93,7 @@
 ;;; assumption that there will be no collision.
 
 ;;; TODO list
-;;; - get correct hash in vcs->origin
-;;; - print partial result during recursive imports (need to catch
-;;;   exceptions)
+;;; - get correct hash in vcs->origin for Mercurial and Subversion
 
 ;;; Code:
 
@@ -121,12 +120,26 @@ https://godoc.org/golang.org/x/mod/module#hdr-Escaped_Paths)."
 (define (go.pkg.dev-info name)
   (http-fetch* (string-append "https://pkg.go.dev/" name)))
 
-(define (go-module-latest-version goproxy-url module-path)
-  "Fetch the version number of the latest version for MODULE-PATH from the
-given GOPROXY-URL server."
-  (assoc-ref (json-fetch* (format #f "~a/~a/@latest" goproxy-url
-                                  (go-path-escape module-path)))
-             "Version"))
+(define* (go-module-version-string goproxy name #:key version)
+  "Fetch the version string of the latest version for NAME from the given
+GOPROXY server, or for VERSION when specified."
+  (let ((file (if version
+                  (string-append "@v/" version ".info")
+                  "@latest")))
+    (assoc-ref (json-fetch* (format #f "~a/~a/~a"
+                                    goproxy (go-path-escape name) file))
+               "Version")))
+
+(define* (go-module-available-versions goproxy name)
+  "Retrieve the available versions for a given module from the module proxy.
+Versions are being returned **unordered** and may contain different versioning
+styles for the same package."
+  (let* ((url (string-append goproxy "/" (go-path-escape name) "/@v/list"))
+         (body (http-fetch* url))
+         (versions (remove string-null? (string-split body #\newline))))
+    (if (null? versions)
+        (list (go-module-version-string goproxy name)) ;latest version
+        versions)))
 
 (define (go-package-licenses name)
   "Retrieve the list of licenses that apply to NAME, a Go package or module
@@ -238,119 +251,119 @@ and VERSION and return an input port."
   ;; the end.
   (make-regexp
    (string-append
-    "^[[:blank:]]*"
-    "([^[:blank:]]+)[[:blank:]]+([^[:blank:]]+)"
-    "([[:blank:]]+//.*)?")))
+    "^[[:blank:]]*([^[:blank:]]+)[[:blank:]]+" ;the module path
+    "([^[:blank:]]+)"                          ;the version
+    "([[:blank:]]+//.*)?")))                   ;an optional comment
 
 (define %go.mod-replace-directive-rx
   ;; ReplaceSpec = ModulePath [ Version ] "=>" FilePath newline
   ;;             | ModulePath [ Version ] "=>" ModulePath Version newline .
   (make-regexp
    (string-append
-    "([^[:blank:]]+)([[:blank:]]+([^[:blank:]]+))?"
-    "[[:blank:]]+" "=>" "[[:blank:]]+"
-    "([^[:blank:]]+)([[:blank:]]+([^[:blank:]]+))?")))
+    "([^[:blank:]]+)"                   ;the module path
+    "([[:blank:]]+([^[:blank:]]+))?"    ;optional version
+    "[[:blank:]]+=>[[:blank:]]+"
+    "([^[:blank:]]+)"                   ;the file or module path
+    "([[:blank:]]+([^[:blank:]]+))?"))) ;the version (if a module path)
 
 (define (parse-go.mod content)
   "Parse the go.mod file CONTENT, returning a list of requirements."
-  (define-record-type <results>
-    (make-results requirements replacements)
-    results?
-    (requirements results-requirements)
-    (replacements results-replacements))
   ;; We parse only a subset of https://golang.org/ref/mod#go-mod-file-grammar
   ;; which we think necessary for our use case.
-  (define (toplevel results)
-    "Main parser, RESULTS is a pair of alist serving as accumulator for
-     all encountered requirements and replacements."
+  (define (toplevel requirements replaced)
+    "This is the main parser.  The results are accumulated in THE REQUIREMENTS
+and REPLACED lists."
     (let ((line (read-line)))
       (cond
        ((eof-object? line)
         ;; parsing ended, give back the result
-        results)
+        (values requirements replaced))
        ((string=? line "require (")
         ;; a require block begins, delegate parsing to IN-REQUIRE
-        (in-require results))
+        (in-require requirements replaced))
        ((string=? line "replace (")
         ;; a replace block begins, delegate parsing to IN-REPLACE
-        (in-replace results))
+        (in-replace requirements replaced))
        ((string-prefix? "require " line)
-        ;; a standalone require directive
-        (let* ((stripped-line (string-drop line 8))
-               (new-results (require-directive results stripped-line)))
-          (toplevel new-results)))
+        ;; a require directive by itself
+        (let* ((stripped-line (string-drop line 8)))
+          (call-with-values
+              (lambda ()
+                (require-directive requirements replaced stripped-line))
+            toplevel)))
        ((string-prefix? "replace " line)
-        ;; a standalone replace directive
-        (let* ((stripped-line (string-drop line 8))
-               (new-results (replace-directive results stripped-line)))
-          (toplevel new-results)))
+        ;; a replace directive by itself
+        (let* ((stripped-line (string-drop line 8)))
+          (call-with-values
+              (lambda ()
+                (replace-directive requirements replaced stripped-line))
+            toplevel)))
        (#t
         ;; unrecognised line, ignore silently
-        (toplevel results)))))
+        (toplevel requirements replaced)))))
 
-  (define (in-require results)
+  (define (in-require requirements replaced)
     (let ((line (read-line)))
       (cond
        ((eof-object? line)
         ;; this should never happen here but we ignore silently
-        results)
+        (values requirements replaced))
        ((string=? line ")")
         ;; end of block, coming back to toplevel
-        (toplevel results))
+        (toplevel requirements replaced))
        (#t
-        (in-require (require-directive results line))))))
+        (call-with-values (lambda ()
+                            (require-directive requirements replaced line))
+          in-require)))))
 
-  (define (in-replace results)
+  (define (in-replace requirements replaced)
     (let ((line (read-line)))
       (cond
        ((eof-object? line)
         ;; this should never happen here but we ignore silently
-        results)
+        (values requirements replaced))
        ((string=? line ")")
         ;; end of block, coming back to toplevel
-        (toplevel results))
+        (toplevel requirements replaced))
        (#t
-        (in-replace (replace-directive results line))))))
+        (call-with-values (lambda ()
+                            (replace-directive requirements replaced line))
+          in-replace)))))
 
-  (define (replace-directive results line)
-    "Extract replaced modules and new requirements from replace directive
-    in LINE and add to RESULTS."
-    (match results
-      (($ <results> requirements replaced)
-       (let* ((rx-match (regexp-exec %go.mod-replace-directive-rx line))
-              (module-path (match:substring rx-match 1))
-              (version (match:substring rx-match 3))
-              (new-module-path (match:substring rx-match 4))
-              (new-version (match:substring rx-match 6))
-              (new-replaced (alist-cons module-path version replaced))
-              (new-requirements
-               (if (string-match "^\\.?\\./" new-module-path)
-                   requirements
-                   (alist-cons new-module-path new-version requirements))))
-         (make-results new-requirements new-replaced)))))
-  (define (require-directive results line)
-    "Extract requirement from LINE and add it to RESULTS."
+  (define (replace-directive requirements replaced line)
+    "Extract replaced modules and new requirements from the replace directive
+in LINE and add them to the REQUIREMENTS and REPLACED lists."
+    (let* ((rx-match (regexp-exec %go.mod-replace-directive-rx line))
+           (module-path (match:substring rx-match 1))
+           (version (match:substring rx-match 3))
+           (new-module-path (match:substring rx-match 4))
+           (new-version (match:substring rx-match 6))
+           (new-replaced (cons (list module-path version) replaced))
+           (new-requirements
+            (if (string-match "^\\.?\\./" new-module-path)
+                requirements
+                (cons (list new-module-path new-version) requirements))))
+      (values new-requirements new-replaced)))
+
+  (define (require-directive requirements replaced line)
+    "Extract requirement from LINE and augment the REQUIREMENTS and REPLACED
+lists."
     (let* ((rx-match (regexp-exec %go.mod-require-directive-rx line))
            (module-path (match:substring rx-match 1))
-           ;; we saw double-quoted string in the wild without escape
-           ;; sequences so we just trim the quotes
+           ;; Double-quoted strings were seen in the wild without escape
+           ;; sequences; trim the quotes to be on the safe side.
            (module-path (string-trim-both module-path #\"))
            (version (match:substring rx-match 2)))
-      (match results
-        (($ <results> requirements replaced)
-         (make-results (alist-cons module-path version requirements) replaced)))))
+      (values (cons (list module-path version) requirements) replaced)))
 
-  (let ((results (with-input-from-string content
-                   (lambda _
-                     (toplevel (make-results '() '()))))))
-    (match results
-      (($ <results> requirements replaced)
-       ;; At last we remove replaced modules from the requirements list
-       (fold
-        (lambda (replacedelem requirements)
-          (alist-delete! (car replacedelem) requirements))
-        requirements
-        replaced)))))
+  (with-input-from-string content
+    (lambda ()
+      (receive (requirements replaced)
+          (toplevel '() '())
+        ;; At last remove the replaced modules from the requirements list.
+        (remove (lambda (r)
+                  (assoc (car r) replaced))
+                requirements)))))
 
 ;; Prevent inlining of this procedure, which is accessed by unit tests.
 (set! parse-go.mod parse-go.mod)
@@ -553,17 +566,32 @@ control system is being used."
                          vcs-type vcs-repo-url)))))
 
 (define* (go-module->guix-package module-path #:key
-                                  (goproxy-url "https://proxy.golang.org"))
-  (let* ((latest-version (go-module-latest-version goproxy-url module-path))
-         (content (fetch-go.mod goproxy-url module-path latest-version))
-         (dependencies (map car (parse-go.mod content)))
+                                  (goproxy "https://proxy.golang.org")
+                                  version
+                                  pin-versions?)
+  "Return the package S-expression corresponding to MODULE-PATH at VERSION, a Go package.
+The meta-data is fetched from the GOPROXY server and https://pkg.go.dev/.
+When VERSION is unspecified, the latest version available is used."
+  (let* ((available-versions (go-module-available-versions goproxy module-path))
+         (version* (or version
+                       (go-module-version-string goproxy module-path))) ;latest
+         ;; Pseudo-versions do not appear in the versions list; skip the
+         ;; following check.
+         (_ (unless (or (go-pseudo-version? version*)
+                        (member version* available-versions))
+              (error (format #f "error: version ~s is not available
+hint: use one of the following available versions ~a\n"
+                             version* available-versions))))
+         (content (fetch-go.mod goproxy module-path version*))
+         (dependencies+versions (parse-go.mod content))
+         (dependencies (map car dependencies+versions))
          (guix-name (go-module->guix-package-name module-path))
          (root-module-path (module-path->repository-root module-path))
          ;; The VCS type and URL are not included in goproxy information. For
          ;; this we need to fetch it from the official module page.
          (meta-data (fetch-module-meta-data root-module-path))
          (vcs-type (module-meta-vcs meta-data))
-         (vcs-repo-url (module-meta-data-repo-url meta-data goproxy-url))
+         (vcs-repo-url (module-meta-data-repo-url meta-data goproxy))
          (synopsis (go-package-synopsis root-module-path))
          (description (go-package-description module-path))
          (licenses (go-package-licenses module-path)))
@@ -571,14 +599,14 @@ control system is being used."
      `(package
         (name ,guix-name)
         ;; Elide the "v" prefix Go uses
-        (version ,(string-trim latest-version #\v))
+        (version ,(string-trim version* #\v))
         (source
-         ,(vcs->origin vcs-type vcs-repo-url latest-version))
+         ,(vcs->origin vcs-type vcs-repo-url version*))
         (build-system go-build-system)
         (arguments
          '(#:import-path ,root-module-path))
-        ,@(maybe-propagated-inputs
-           (map go-module->guix-package-name dependencies))
+        ,@(maybe-propagated-inputs (map go-module->guix-package-name
+                                        dependencies))
         (home-page ,(format #f "https://~a" root-module-path))
         (synopsis ,synopsis)
         (description ,(and=> description beautify-description))
@@ -588,16 +616,37 @@ control system is being used."
                      license)
                     ((license ...)      ;a list of licenses
                      `(list ,@license)))))
-     dependencies)))
+     (if pin-versions?
+         dependencies+versions
+         dependencies))))
 
 (define go-module->guix-package* (memoize go-module->guix-package))
 
 (define* (go-module-recursive-import package-name
-                                     #:key (goproxy-url "https://proxy.golang.org"))
+                                     #:key (goproxy "https://proxy.golang.org")
+                                     version
+                                     pin-versions?)
+
   (recursive-import
    package-name
-   #:repo->guix-package (lambda* (name . _)
-                          (go-module->guix-package*
-                           name
-                           #:goproxy-url goproxy-url))
-   #:guix-name go-module->guix-package-name))
+   #:repo->guix-package
+   (lambda* (name #:key version repo)
+     ;; Disable output buffering so that the following warning gets printed
+     ;; consistently.
+     (setvbuf (current-error-port) 'none)
+     (guard (c ((http-get-error? c)
+                (warning (G_ "Failed to import package ~s.
+reason: ~s could not be fetched: HTTP error ~a (~s).
+This package and its dependencies won't be imported.~%")
+                         name
+                         (uri->string (http-get-error-uri c))
+                         (http-get-error-code c)
+                         (http-get-error-reason c))
+                (values '() '())))
+       (receive (package-sexp dependencies)
+           (go-module->guix-package* name #:goproxy goproxy
+                                     #:version version
+                                     #:pin-versions? pin-versions?)
+         (values package-sexp dependencies))))
+   #:guix-name go-module->guix-package-name
+   #:version version))

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright � 2020 Katherine Cox-Buday <cox.katherine.e@gmail.com>
+;;; Copyright © 2020 Katherine Cox-Buday <cox.katherine.e@gmail.com>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,28 +28,30 @@
   #:use-module (srfi srfi-37)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
+  #:use-module (ice-9 receive)
   #:export (guix-import-go))
 
-
+
 ;;;
 ;;; Command-line options.
 ;;;
 
 (define %default-options
-  '())
+  '((goproxy . "https://proxy.golang.org")))
 
 (define (show-help)
-  (display (G_ "Usage: guix import go PACKAGE-PATH
-Import and convert the Go module for PACKAGE-PATH.\n"))
+  (display (G_ "Usage: guix import go PACKAGE-PATH[@VERSION]
+Import and convert the Go module for PACKAGE-PATH.  Optionally, a version
+can be specified after the arobas (@) character.\n"))
   (display (G_ "
   -h, --help             display this help and exit"))
   (display (G_ "
-  -V, --version          display version information and exit"))
-  (display (G_ "
-  -r, --recursive        generate package expressions for all Go modules\
- that are not yet in Guix"))
+  -r, --recursive        generate package expressions for all Go modules
+that are not yet in Guix"))
   (display (G_ "
   -p, --goproxy=GOPROXY  specify which goproxy server to use"))
+  (display (G_ "
+  --pin-versions         use the exact versions of a module's dependencies"))
   (newline)
   (show-bug-report-information))
 
@@ -58,9 +61,6 @@ Import and convert the Go module for PACKAGE-PATH.\n"))
                  (lambda args
                    (show-help)
                    (exit 0)))
-         (option '(#\V "version") #f #f
-                 (lambda args
-                   (show-version-and-exit "guix import go")))
          (option '(#\r "recursive") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'recursive #t result)))
@@ -69,9 +69,12 @@ Import and convert the Go module for PACKAGE-PATH.\n"))
                    (alist-cons 'goproxy
                                (string->symbol arg)
                                (alist-delete 'goproxy result))))
+         (option '("pin-versions") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'pin-versions? #t result)))
          %standard-import-options))
 
-
+
 ;;;
 ;;; Entry point.
 ;;;
@@ -93,25 +96,28 @@ Import and convert the Go module for PACKAGE-PATH.\n"))
                              (_ #f))
                            (reverse opts))))
     (match args
-      ((module-name)
-       (if (assoc-ref opts 'recursive)
-           (map (match-lambda
-                  ((and ('package ('name name) . rest) pkg)
-                   `(define-public ,(string->symbol name)
-                      ,pkg))
-                  (_ #f))
-                (go-module-recursive-import module-name
-                                            #:goproxy-url
-                                            (or (assoc-ref opts 'goproxy)
-                                                "https://proxy.golang.org")))
-           (let ((sexp (go-module->guix-package module-name
-                                                #:goproxy-url
-                                                (or (assoc-ref opts 'goproxy)
-                                                    "https://proxy.golang.org"))))
-             (unless sexp
-               (leave (G_ "failed to download meta-data for module '~a'~%")
-                      module-name))
-             sexp)))
+      ((spec)                         ;e.g., github.com/golang/protobuf@v1.3.1
+       (receive (name version)
+           (package-name->name+version spec)
+         (let ((arguments (list name
+                                #:goproxy (assoc-ref opts 'goproxy)
+                                #:version version
+                                #:pin-versions?
+                                (assoc-ref opts 'pin-versions?))))
+           (if (assoc-ref opts 'recursive)
+               ;; Recursive import.
+               (map (match-lambda
+                      ((and ('package ('name name) . rest) pkg)
+                       `(define-public ,(string->symbol name)
+                          ,pkg))
+                      (_ #f))
+                    (apply go-module-recursive-import arguments))
+               ;; Single import.
+               (let ((sexp (apply go-module->guix-package arguments)))
+                 (unless sexp
+                   (leave (G_ "failed to download meta-data for module '~a'~%")
+                          module-name))
+                 sexp)))))
       (()
        (leave (G_ "too few arguments~%")))
       ((many ...)
