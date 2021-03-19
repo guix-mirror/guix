@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
@@ -27,7 +27,14 @@
   #:use-module (guix packages)
   #:use-module (guix modules)
   #:autoload   (guix build-system gnu) (standard-packages)
-  #:use-module (git)
+  #:autoload   (git repository) (repository-open
+                                 repository-close!
+                                 repository-discover
+                                 repository-head
+                                 repository-working-directory)
+  #:autoload   (git commit)     (commit-lookup commit-tree)
+  #:autoload   (git reference)  (reference-target)
+  #:autoload   (git tree)       (tree-list)
   #:use-module (ice-9 match)
   #:use-module (ice-9 vlist)
   #:use-module (srfi srfi-1)
