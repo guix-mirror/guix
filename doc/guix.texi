@@ -34060,6 +34060,38 @@ This is the list of modules that must be in scope when @code{start} and
 @end table
 @end deftp
 
+The example below defines a Shepherd service that spawns
+@command{syslogd}, the system logger from the GNU Networking Utilities
+(@pxref{syslogd invocation, @command{syslogd},, inetutils, GNU
+Inetutils}):
+
+@example
+(let ((config (plain-file "syslogd.conf" "@dots{}")))
+  (shepherd-service
+    (documentation "Run the syslog daemon (syslogd).")
+    (provision '(syslogd))
+    (requirement '(user-processes))
+    (start #~(make-forkexec-constructor
+               (list #$(file-append inetutils "/libexec/syslogd")
+                     "--rcfile" #$config)
+               #:pid-file "/var/run/syslog.pid"))
+    (stop #~(make-kill-destructor))))
+@end example
+
+Key elements in this example are the @code{start} and @code{stop}
+fields: they are @dfn{staged} code snippets that use the
+@code{make-forkexec-constructor} procedure provided by the Shepherd and
+its dual, @code{make-kill-destructor} (@pxref{Service De- and
+Constructors,,, shepherd, The GNU Shepherd Manual}).  The @code{start}
+field will have @command{shepherd} spawn @command{syslogd} with the
+given option; note that we pass @code{config} after @option{--rcfile},
+which is a configuration file declared above (contents of this file are
+omitted).  Likewise, the @code{stop} field tells how this service is to
+be stopped; in this case, it is stopped by making the @code{kill} system
+call on its PID@.  Code staging is achieved using G-expressions:
+@code{#~} stages code, while @code{#$} ``escapes'' back to host code
+(@pxref{G-Expressions}).
+
 @deftp {Data Type} shepherd-action
 This is the data type that defines additional actions implemented by a
 Shepherd service (see above).
