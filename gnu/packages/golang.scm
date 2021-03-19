@@ -6890,3 +6890,29 @@ programs that use traditional command lines.")
      "This package provides simple wrappers for primitive types to enforce
 atomic access.")
     (license license:expat)))
+
+(define-public go-go-uber-org-multierr
+  (package
+    (name "go-go-uber-org-multierr")
+    (version "1.6.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/uber-go/multierr")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "162941s8f6a9x2w04qm4qa3zz0zylwag9149hywrj9ibp2nzcsqz"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "go.uber.org/multierr"))
+    (native-inputs
+     `(("go-github-com-stretchr-testify" ,go-github-com-stretchr-testify)))
+    (propagated-inputs
+     `(("go-go-uber-org-atomic" ,go-go-uber-org-atomic)))
+    (home-page "https://go.uber.org/multierr")
+    (synopsis "Error combination fo Go")
+    (description
+     "@code{multierr} allows combining one or more Go errors together.")
+    (license license:expat)))
