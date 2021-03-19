@@ -6841,3 +6841,26 @@ sinks and sources.")
        "This packages provides Cgo bindings to PulseAudio's Simple API, to play
 or capture raw audio.")
       (license license:expat))))
+
+(define-public go-github-com-pborman-getopt
+  (package
+    (name "go-github-com-pborman-getopt")
+    (version "2.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/pborman/getopt")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0sacv6g8cxfibxd3gnfjnzp7fynrnc4s2aaz5wbxivqqhvflc22l"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/pborman/getopt"))
+    (home-page "https://github.com/pborman/getopt")
+    (synopsis "Getopt style option parsing for Go")
+    (description
+     "This package provides traditional getopt processing for implementing
+programs that use traditional command lines.")
+    (license license:bsd-3)))
