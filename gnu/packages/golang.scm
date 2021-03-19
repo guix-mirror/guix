@@ -6864,3 +6864,29 @@ or capture raw audio.")
      "This package provides traditional getopt processing for implementing
 programs that use traditional command lines.")
     (license license:bsd-3)))
+
+(define-public go-go-uber-org-atomic
+  (package
+    (name "go-go-uber-org-atomic")
+    (version "1.7.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/uber-go/atomic")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0yxvb5sixh76cl9j8dpa97gznj0p8pmg2cdw0ypfwhd3ipx9wph1"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "go.uber.org/atomic"))
+    (native-inputs
+     `(("go-github-com-stretchr-testify" ,go-github-com-stretchr-testify)
+       ("go-github-com-davecgh-go-spew" ,go-github-com-davecgh-go-spew)))
+    (home-page "https://go.uber.org/atomic")
+    (synopsis "Wrapper types for sync/atomic")
+    (description
+     "This package provides simple wrappers for primitive types to enforce
+atomic access.")
+    (license license:expat)))
