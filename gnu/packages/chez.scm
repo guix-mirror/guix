@@ -30,6 +30,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix utils)
+  #:use-module (guix gexp)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages ncurses)
@@ -79,21 +80,41 @@
              (commit (string-append "v" version))))
        (sha256
         (base32 "0prgn2z9l888j93ydxaf04ph424g0fi3a8w7f8m0b2r7fr1v7388"))
-       (file-name (git-file-name name version))))
+       (file-name (git-file-name name version))
+       (patches
+        (search-patches
+         ;; backported from upstream: remove on next release
+         "chez-scheme-build-util-paths-backport.patch"))
+       (snippet
+        ;; remove bundled libraries
+        (with-imported-modules '((guix build utils))
+          #~(begin
+              (use-modules (guix build utils))
+              (for-each (lambda (dir)
+                          (when (directory-exists? dir)
+                            (delete-file-recursively dir)))
+                        '("stex"
+                          "nanopass"
+                          "lz4"
+                          "zlib")))))))
     (build-system gnu-build-system)
     (inputs
-     `(("ncurses" ,ncurses)
-       ("libuuid" ,util-linux "lib")
-       ("libx11" ,libx11)
-       ("lz4" ,lz4)
-       ("lz4:static" ,lz4 "static")
-       ("xorg-rgb" ,xorg-rgb)
-       ("nanopass" ,nanopass)
+     `(("libuuid" ,util-linux "lib")
        ("zlib" ,zlib)
        ("zlib:static" ,zlib "static")
-       ("stex" ,stex)))
+       ("lz4" ,lz4)
+       ("lz4:static" ,lz4 "static")
+       ;; for expeditor:
+       ("ncurses" ,ncurses)
+       ;; for X11 clipboard support in expeditor:
+       ;; https://github.com/cisco/ChezScheme/issues/9#issuecomment-222057232
+       ("libx11" ,libx11)))
     (native-inputs
-     `(("texlive" ,(texlive-union (list texlive-latex-oberdiek
+     `(("nanopass" ,nanopass) ; source only
+       ;; for docs
+       ("stex" ,stex)
+       ("xorg-rgb" ,xorg-rgb)
+       ("texlive" ,(texlive-union (list texlive-latex-oberdiek
                                         texlive-generic-epsf)))
        ("ghostscript" ,ghostscript)
        ("netpbm" ,netpbm)))
@@ -103,96 +124,54 @@
             (files (list (string-append "lib/csv" version "-site"))))))
     (outputs '("out" "doc"))
     (arguments
-     `(#:modules ((guix build gnu-build-system)
-                  (guix build utils)
-                  (ice-9 match))
+     `(#:modules
+       ((guix build gnu-build-system)
+        (guix build utils)
+        (ice-9 ftw)
+        (ice-9 match))
        #:test-target "test"
        #:configure-flags
-       (list ,(match (or (%current-target-system) (%current-system))
-                ("x86_64-linux" '(list "--machine=ta6le"))
-                ("i686-linux" '(list "--machine=ti3le"))
-                ;; Let autodetection have its attempt on other architectures.
-                (_
-                 '())))
+       '("--threads") ;; TODO when we fix armhf, it doesn't support --threads
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-processor-detection
-           (lambda _ (substitute* "configure"
-                       (("uname -a") "uname -m"))
-                   #t))
-         ;; Adapt the custom 'configure' script.
+         ;; put these where configure expects them to be
+         (add-after 'unpack 'unpack-nanopass+stex
+           (lambda* (#:key native-inputs inputs #:allow-other-keys)
+             (for-each (lambda (dep)
+                         (define src
+                           (assoc-ref (or native-inputs inputs) dep))
+                         (copy-recursively src dep
+                                           #:keep-mtime? #t))
+                       '("nanopass" "stex"))
+               #t))
+         ;; NOTE: the custom Chez 'configure' script doesn't allow
+         ;; unrecognized flags, such as those automatically added
+         ;; by `gnu-build-system`.
          (replace 'configure
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out"))
-                   (nanopass (assoc-ref inputs "nanopass"))
-                   (stex (assoc-ref inputs "stex"))
-                   (lz4-static (assoc-ref inputs "lz4:static"))
-                   (zlib-static (assoc-ref inputs "zlib:static"))
-                   (unpack (assoc-ref %standard-phases 'unpack))
-                   (patch-source-shebangs
-                    (assoc-ref %standard-phases 'patch-source-shebangs)))
-               (map (match-lambda
-                      ((src orig-name new-name)
-                       (with-directory-excursion "."
-                         (apply unpack (list #:source src))
-                         (apply patch-source-shebangs (list #:source src)))
-                       (delete-file-recursively new-name)
-                       (invoke "mv" orig-name new-name)))
-                    `((,nanopass "source" "nanopass")
-                      (,stex "source" "stex")))
-               ;; The configure step wants to CURL all submodules as it
-               ;; detects a checkout without submodules. Disable curling,
-               ;; and manually patch the needed modules for compilation.
-               (substitute* "configure"
-                 (("! -f '") "-d '")) ; working around CURL.
-               (substitute* (find-files "mats" "Mf-.*")
-                 (("^[[:space:]]+(cc ) *") "\tgcc "))
-               (substitute*
-                   (find-files "." (string-append
-                                    "("
-                                    "Mf-[a-zA-Z0-9.]+"
-                                    "|Makefile[a-zA-Z0-9.]*"
-                                    "|checkin"
-                                    "|stex\\.stex"
-                                    "|newrelease"
-                                    "|workarea"
-                                    "|unix\\.ms"
-                                    "|^6\\.ms"
-                                    ;;"|[a-zA-Z0-9.]+\\.ms" ; guile can't read
-                                    ")"))
-                 (("/bin/rm") (which "rm"))
-                 (("/bin/ln") (which "ln"))
-                 (("/bin/cp") (which "cp"))
-                 (("/bin/echo") (which "echo")))
-               (substitute* "makefiles/installsh"
-                 (("/bin/true") (which "true")))
-               (substitute* "stex/Makefile"
-                 (("PREFIX=/usr") (string-append "PREFIX=" out)))
-               (invoke "./configure" "--threads"
-                       (string-append "ZLIB=" zlib-static "/lib/libz.a")
-                       (string-append "LZ4=" lz4-static "/lib/liblz4.a")
-                       (string-append "--installprefix=" out)))))
-         ;; Installation of the documentation requires a running "chez".
-         (add-after 'install 'install-doc
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((doc (string-append (assoc-ref outputs "doc")
-                                       "/share/doc/" ,name "-" ,version)))
-               (invoke "make" "docs")
-               (with-directory-excursion "csug"
-                 (substitute* "Makefile"
-                   ;; The ‘installdir=’ can't be overruled on the command line.
-                   (("/tmp/csug9") doc)
-                   ;; $m is the ‘machine type’, e.g. ‘ta6le’ on x86_64, but is
-                   ;; set incorrectly for some reason, e.g. to ‘a6le’ on x86_64.
-                   ;; Avoid the whole mess by running the (machine-independent)
-                   ;; ‘installsh’ script at its original location.
-                   (("\\$m/installsh") "makefiles/installsh"))
-                 (invoke "make" "install")
-                 (install-file "csug.pdf" doc))
-               (with-directory-excursion "release_notes"
-                 (install-file "release_notes.pdf" doc))
+           (lambda* (#:key inputs outputs
+                           (configure-flags '())
+                           #:allow-other-keys)
+             (let* ((zlib-static (assoc-ref inputs "zlib:static"))
+                    (lz4-static (assoc-ref inputs "lz4:static"))
+                    (out (assoc-ref outputs "out"))
+                    ;; add flags which are always required:
+                    (flags (cons*
+                            (string-append "--installprefix=" out)
+                            (string-append "ZLIB=" zlib-static "/lib/libz.a")
+                            (string-append "LZ4=" lz4-static "/lib/liblz4.a")
+                            ;; Guix will do compress man pages,
+                            ;; and letting Chez try causes an error
+                            "--nogzip-man-pages"
+                            configure-flags)))
+               (format #t "configure flags: ~s~%" flags)
+               ;; Some makefiles (for tests) don't seem to propagate CC
+               ;; properly, so we take it out of their hands:
+               (setenv "CC" ,(cc-for-target))
+               (apply invoke
+                      "./configure"
+                      flags)
                #t)))
-         ;; The binary file name is called "scheme" as the one from MIT/GNU
+         ;; The binary file name is called "scheme" as is the one from MIT/GNU
          ;; Scheme.  We add a symlink to use in case both are installed.
          (add-after 'install 'install-symlink
            (lambda* (#:key outputs #:allow-other-keys)
@@ -207,16 +186,75 @@
                                                    "/" name ".boot")))
                     (find-files lib "scheme.boot"))
                #t)))
-         (add-before 'reset-gzip-timestamps 'make-manpages-writable
-           (lambda* (#:key outputs #:allow-other-keys)
-             (map (lambda (file)
-                    (make-file-writable file))
-                  (find-files (string-append (assoc-ref outputs "out")
-                                             "/share/man")
-                              ".*\\.gz$"))
-             #t)))))
-    ;; According to the documentation MIPS is not supported.
-    ;; Cross-compiling for the Raspberry Pi is supported, but not native ARM.
+         ;; Building explicitly lets us avoid using substitute*
+         ;; to re-write makefiles.
+         (add-after 'install-symlink 'prepare-stex
+           (lambda* (#:key native-inputs inputs outputs #:allow-other-keys)
+             (let* ((stex+version
+                     (strip-store-file-name
+                      (assoc-ref (or native-inputs inputs) "stex")))
+                    ;; Eventually we want to install stex as a real
+                    ;; package so it's reusable. For now:
+                    (stex-output "/tmp")
+                    (doc-dir (string-append stex-output
+                                            "/share/doc/"
+                                            stex+version)))
+               (with-directory-excursion "stex"
+                 (invoke "make"
+                         "install"
+                         (string-append "LIB="
+                                        stex-output
+                                        "/lib/"
+                                        stex+version)
+                         (string-append "Scheme="
+                                        (assoc-ref outputs "out")
+                                        "/bin/scheme"))
+                 (for-each (lambda (pth)
+                             (install-file pth doc-dir))
+                           '("ReadMe" ; includes the license
+                             "doc/stex.html"
+                             "doc/stex.css"
+                             "doc/stex.pdf"))
+                 #t))))
+         ;; Building the documentation requires stex and a running scheme.
+         ;; FIXME: this is probably wrong for cross-compilation
+         (add-after 'prepare-stex 'install-doc
+           (lambda* (#:key native-inputs inputs outputs #:allow-other-keys)
+             (let* ((chez+version (strip-store-file-name
+                                   (assoc-ref outputs "out")))
+                    (stex+version
+                     (strip-store-file-name
+                      (assoc-ref (or native-inputs inputs) "stex")))
+                    (scheme (string-append (assoc-ref outputs "out")
+                                           "/bin/scheme"))
+                    ;; see note on stex-output in phase build-stex, above:
+                    (stexlib (string-append "/tmp"
+                                            "/lib/"
+                                            stex+version))
+                    (doc-dir (string-append (assoc-ref outputs "doc")
+                                            "/share/doc/"
+                                            chez+version)))
+               (define* (stex-make #:optional (suffix ""))
+                 (invoke "make"
+                         "install"
+                         (string-append "Scheme=" scheme)
+                         (string-append "STEXLIB=" stexlib)
+                         (string-append "installdir=" doc-dir suffix)))
+               (with-directory-excursion "csug"
+                 (stex-make "/csug"))
+               (with-directory-excursion "release_notes"
+                 (stex-make "/release_notes"))
+               (with-directory-excursion doc-dir
+                 (symlink "release_notes/release_notes.pdf"
+                          "release_notes.pdf")
+                 (symlink "csug/csug9_5.pdf"
+                          "csug.pdf"))
+               #t))))))
+    ;; Chez Scheme does not have a  MIPS backend.
+    ;; FIXME: Debian backports patches to get armhf working.
+    ;; We should too. It is the Chez machine type arm32le
+    ;; (no threaded version upstream yet, though there is in
+    ;; Racket's fork), more specifically (per the release notes) ARMv6.
     (supported-systems (fold delete %supported-systems
                              '("mips64el-linux" "armhf-linux")))
     (home-page "https://cisco.github.io/ChezScheme/")
