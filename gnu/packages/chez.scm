@@ -54,13 +54,17 @@
       (file-name (git-file-name "nanopass" version)))))
 
 (define stex
-  (let ((version "1.2.2"))
+  ;; This commit includes a fix, which we would otherwise want to use as
+  ;; patch.  Let's revert to tagged releases as soon as one becomes available.
+  (let* ((commit "54051494434a197772bf6ca5b4e6cf6be55f39a5")
+         (version "1.2.2")
+         (version (git-version version "1" commit)))
     (origin
       (method git-fetch)
       (uri (git-reference
             (url "https://github.com/dybvig/stex")
-            (commit (string-append "v" version))))
-      (sha256 (base32 "1q5i8pf4cdfjsj6r2k1rih7ljbfggyxdng2p2fvsgarzihpsin2i"))
+            (commit commit)))
+      (sha256 (base32 "01jnvw8qw33gnpzwrakwhsr05h6b609lm180jnspcrb7lds2p23d"))
       (file-name (git-file-name "stex" version)))))
 
 (define-public chez-scheme
