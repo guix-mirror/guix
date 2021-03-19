@@ -4,6 +4,7 @@
 ;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Brendan Tildesley <mail@brendan.scot>
+;;; Copyright © 2021 Philip McGrath <philip@philipmcgrath.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,13 +44,13 @@
   #:use-module (srfi srfi-1))
 
 (define nanopass
-  (let ((version "1.9.1"))
+  (let ((version "1.9.2"))
     (origin
       (method git-fetch)
       (uri (git-reference
             (url "https://github.com/nanopass/nanopass-framework-scheme")
             (commit (string-append "v" version))))
-      (sha256 (base32 "1synadgaycca39jfx525975ss9y0lkl516sdrc62wrrllamm8n21"))
+      (sha256 (base32 "16vjsik9rrzbabbhbxbaha51ppi3f9n8rk59pc6zdyffs0vziy4i"))
       (file-name (git-file-name "nanopass" version)))))
 
 (define stex
