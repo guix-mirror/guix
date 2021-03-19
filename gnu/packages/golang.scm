@@ -6916,3 +6916,31 @@ atomic access.")
     (description
      "@code{multierr} allows combining one or more Go errors together.")
     (license license:expat)))
+
+(define-public go-golang-org-x-lint
+  (let ((commit "83fdc39ff7b56453e3793356bcff3070b9b96445")
+        (revision "0"))
+    (package
+      (name "go-golang-org-x-lint")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://go.googlesource.com/lint")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0ms3rs5hvpnm9bxbr5f9743i7hn2bbmqdmvzxq6nmi0f24ypv1l3"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "golang.org/x/lint"
+         #:tests? #f)) ;; TODO: Fix tests
+      (propagated-inputs
+       `(("go-golang-org-x-tools" ,go-golang-org-x-tools)))
+      (home-page "https://golang.org/x/lint")
+      (synopsis "Linter for Go source code")
+      (description
+       "This is a linter for Go source code.  Unlike gofmt, it doesn't
+reformat the source code, it only prints out style mistakes.")
+      (license license:bsd-3))))
