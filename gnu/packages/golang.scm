@@ -6813,3 +6813,31 @@ algorithm.")
        "This is a Pulseaudio client library in Golang for creating virtual
 sinks and sources.")
       (license license:expat))))
+
+(define-public go-github-com-mesilliac-pulse-simple
+  (let ((commit "75ac54e19fdff88f4fbd82f45125134b602230b0")
+        (revision "0"))
+    (package
+      (name "go-github-com-mesilliac-pulse-simple")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/mesilliac/pulse-simple")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1awwczsa9yy99p035ckajqfs8m6mab0lz82mzlj1c5cj9lnmwplj"))))
+      (build-system go-build-system)
+      (propagated-inputs
+       `(("pkg-config" ,pkg-config)
+         ("pulseaudio" ,pulseaudio)))
+      (arguments
+       '(#:import-path "github.com/mesilliac/pulse-simple"))
+      (home-page "https://github.com/mesilliac/pulse-simple")
+      (synopsis "Cgo bindings to PulseAudio's Simple API")
+      (description
+       "This packages provides Cgo bindings to PulseAudio's Simple API, to play
+or capture raw audio.")
+      (license license:expat))))
