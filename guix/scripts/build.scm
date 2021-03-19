@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
@@ -22,7 +22,7 @@
 (define-module (guix scripts build)
   #:use-module (guix ui)
   #:use-module (guix scripts)
-  #:use-module (guix import json)
+  #:autoload   (guix import json) (json->scheme-file)
   #:use-module (guix store)
   #:use-module (guix derivations)
   #:use-module (guix packages)
