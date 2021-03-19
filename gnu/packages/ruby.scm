@@ -11096,13 +11096,13 @@ functionality from Prawn.")
 (define-public ruby-kramdown
   (package
     (name "ruby-kramdown")
-    (version "2.3.0")
+    (version "2.3.1")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "kramdown" version))
               (sha256
                (base32
-                "1vmw752c26ny2jwl0npn0gbyqwgz4hdmlpxnsld9qi9xhk5b1qh7"))))
+                "0jdbcjv4v7sj888bv3vc6d1dg4ackkh7ywlmn9ln2g9alk7kisar"))))
     (build-system ruby-build-system)
     (arguments `(#:tests? #f)); FIXME: some test failures
     (native-inputs
