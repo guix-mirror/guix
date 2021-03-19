@@ -1029,7 +1029,7 @@ feature set with a simple and intuitive interface.")
 (define-public caf
   (package
     (name "caf")
-    (version "0.18.0")
+    (version "0.18.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1038,7 +1038,7 @@ feature set with a simple and intuitive interface.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1c3spd6vm1h9qhlk5c4fdwi6nbqx5vwz2zvv6qp0rj1hx6xpq3cx"))))
+                "04b4kjisb5wzq6pilh8xzbxn7qcjgppl8k65hfv0zi0ja8fyp1xk"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
