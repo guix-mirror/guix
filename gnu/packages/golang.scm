@@ -6944,3 +6944,27 @@ atomic access.")
        "This is a linter for Go source code.  Unlike gofmt, it doesn't
 reformat the source code, it only prints out style mistakes.")
       (license license:bsd-3))))
+
+(define-public go-github-com-kisielk-gotool
+  (package
+    (name "go-github-com-kisielk-gotool")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/kisielk/gotool")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "14af2pa0ssyp8bp2mvdw184s5wcysk6akil3wzxmr05wwy951iwn"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/kisielk/gotool"))
+    (home-page "https://github.com/kisielk/gotool")
+    (synopsis "Go library of utility functions")
+    (description
+     "This package contains utility functions used to implement the standard
+@code{cmd/go} tool, provided as a convenience to developers who want to write
+tools with similar semantics.")
+    (license license:expat)))
