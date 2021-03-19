@@ -872,6 +872,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/blender-2.79-python-3.7-fix.patch	\
   %D%/packages/patches/blender-2.79-python-3.8-fix.patch	\
   %D%/packages/patches/bpftrace-disable-bfd-disasm.patch	\
+  %D%/packages/patches/busybox-CVE-2021-28831.patch		\
   %D%/packages/patches/byobu-writable-status.patch		\
   %D%/packages/patches/cairo-CVE-2018-19876.patch		\
   %D%/packages/patches/cairo-CVE-2020-35492.patch		\

@@ -41,7 +41,8 @@
                     version ".tar.bz2"))
               (sha256
                (base32
-                "1vhd59qmrdyrr1q7rvxmyl96z192mxl089hi87yl0hcp6fyw8mwx"))))
+                "1vhd59qmrdyrr1q7rvxmyl96z192mxl089hi87yl0hcp6fyw8mwx"))
+              (patches (search-patches "busybox-CVE-2021-28831.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
