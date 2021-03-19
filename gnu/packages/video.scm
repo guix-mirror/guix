@@ -2646,7 +2646,7 @@ device without having to bother about the decryption.")
 (define-public srt2vtt
   (package
     (name "srt2vtt")
-    (version "0.1")
+    (version "0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2654,10 +2654,29 @@ device without having to bother about the decryption.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "16b377znjm6qlga5yb8aj7b7bcisa1ghcnj2lrb1d30lvxp4liif"))))
+                "1ravl635x81fcai4h2xnsn926i69pafgr6zkghq6319iprkw8ffv"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-srt2vtt
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (bin  (string-append out "/bin"))
+                    (version ,(let ((v (package-version guile-3.0)))
+                                (string-append (car (string-split v #\.))
+                                               ".0")))
+                    (site (string-append out "/share/guile/site/" version))
+                    (compiled (string-append
+                               out "/lib/guile/" version
+                               "/site-ccache")))
+               (wrap-program (string-append bin "/srt2vtt")
+                 `("GUILE_LOAD_PATH" ":" prefix (,site))
+                 `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,compiled)))))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("guile" ,guile-2.0)))
+     `(("guile" ,guile-3.0)))
     (synopsis "SubRip to WebVTT subtitle converter")
     (description "srt2vtt converts SubRip formatted subtitles to WebVTT format
 for use with HTML5 video.")
