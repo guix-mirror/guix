@@ -24,6 +24,7 @@
 ;;; Copyright © 2020 raingloom <raingloom@riseup.net>
 ;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2021 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,14 +52,15 @@
   #:use-module (guix build-system go)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages glib)
-  #:use-module (gnu packages base)
-  #:use-module (gnu packages perl)
-  #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages pcre)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages mp3)
+  #:use-module (gnu packages pcre)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
@@ -6773,3 +6775,41 @@ compressed streams in Go.")
       (description "Package ed25519 implements the Ed25519 signature
 algorithm.")
       (license license:bsd-3))))
+
+(define-public go-github-com-akosmarton-papipes
+  (let ((commit "3c63b4919c769c9c2b2d07e69a98abb0eb47fe64")
+        (revision "0"))
+    (package
+      (name "go-github-com-akosmarton-papipes")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/akosmarton/papipes")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "16p77p3d1v26qd3knxn087jqlad2qm23q8m796cdr66hrdc0gahq"))))
+      (build-system go-build-system)
+      (inputs
+       `(("pulseaudio" ,pulseaudio)))
+      (arguments
+       `(#:import-path "github.com/akosmarton/papipes"
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* '("src/github.com/akosmarton/papipes/common.go"
+                              "src/github.com/akosmarton/papipes/sink.go"
+                              "src/github.com/akosmarton/papipes/source.go")
+                 (("exec.Command\\(\"pactl\"")
+                  (string-append "exec.Command(\""
+                                 (assoc-ref inputs "pulseaudio")
+                                 "/bin/pactl\""))))))))
+      (home-page "https://github.com/akosmarton/papipes")
+      (synopsis "Pulseaudio client library for Go")
+      (description
+       "This is a Pulseaudio client library in Golang for creating virtual
+sinks and sources.")
+      (license license:expat))))
