@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -23,8 +23,7 @@
   #:use-module (guix colors)
   #:use-module (guix progress)
   #:autoload   (guix build syscalls) (terminal-columns)
-  #:use-module ((guix build download)
-                #:select (nar-uri-abbreviation))
+  #:autoload   (guix build download) (nar-uri-abbreviation)
   #:use-module (guix store)
   #:use-module (guix derivations)
   #:use-module (guix memoization)
