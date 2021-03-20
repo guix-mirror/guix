@@ -918,30 +918,34 @@ and video calls or instant messaging capabilities to an application.")
       (license license:gpl2+))))
 
 (define-public mssilk
-  (package
-    (name "mssilk")
-    (version "1.1.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri
-        (string-append "https://www.linphone.org/releases/sources/plugins/"
-                       name "/" name "-" version ".tar.gz"))
-       (sha256
-        (base32 "07ip0vd29d1n98lnqs5wpimcsmpm65yl7g5vk4hbqghcbsjw94lj"))))
-    (build-system cmake-build-system)
-    (arguments
-     `(#:tests? #f                      ; No test target
-       #:configure-flags
-       (list "-DENABLE_STATIC=NO")))    ; Not required
-    (inputs
-     `(("mediastreamer2" ,mediastreamer2)
-       ("ortp" ,ortp)))
-    (synopsis "Media Streamer SILK Codec")
-    (description "MSSILK is a plugin of MediaStreamer, adding support for AMR
+  (let ((commit "dd0f31ee795faa7ea89e601b072dae4cd1df7e3f")
+        (revision "0"))
+    (package
+      (name "mssilk")
+      (version (git-version "1.1.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.linphone.org/BC/public/mssilk.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1dann5fnzqp6wjlwc6bl2k9b6rvn6bznqb3qsi1kgv9dnq44cbr0"))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:tests? #f                    ; No test target
+         #:configure-flags
+         (list "-DENABLE_STATIC=NO")))  ; Not required
+      (inputs
+       `(("bctoolbox" ,bctoolbox)
+         ("mediastreamer2" ,mediastreamer2)
+         ("ortp" ,ortp)))
+      (synopsis "Media Streamer SILK Codec")
+      (description "MSSILK is a plugin of MediaStreamer, adding support for AMR
 codec.  It is based on the Skype's SILK implementation.")
-    (home-page "https://gitlab.linphone.org/BC/public/mssilk")
-    (license license:gpl2+)))
+      (home-page "https://gitlab.linphone.org/BC/public/mssilk")
+      (license license:gpl2+))))
 
 (define-public mswebrtc
   (package
