@@ -1001,30 +1001,34 @@ WebRTC codec.  It includes features from WebRTC, such as, iSAC and AECM.")
       (license license:gpl2+))))
 
 (define-public msamr
-  (package
-    (name "msamr")
-    (version "1.1.3")
-    (source
-     (origin
-       (method url-fetch)
-       (uri
-        (string-append "https://www.linphone.org/releases/sources/plugins/"
-                       name "/" name "-" version ".tar.gz"))
-       (sha256
-        (base32 "16c9f3z4wnj73k7y8gb0fgpr4axsm7b5zrbjvy8vsgz9gyg3agm5"))))
-    (build-system cmake-build-system)
-    (arguments
-     `(#:tests? #f                      ; No test target
-       #:configure-flags
-       (list "-DENABLE_STATIC=NO"       ; Not required
-             "-DENABLE_WIDEBAND=YES")))
-    (inputs
-     `(("mediastreamer2" ,mediastreamer2)
-       ("opencoreamr" ,opencore-amr)
-       ("ortp" ,ortp)
-       ("voamrwbenc" ,vo-amrwbenc)))
-    (synopsis "Media Streamer AMR Codec")
-    (description "MSAMR is a plugin of MediaStreamer, adding support for AMR
+  (let ((commit "5ab5c098299107048dfcbfc741f7392faef167bd")
+        (revision "0"))
+    (package
+      (name "msamr")
+      (version (git-version "1.1.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.linphone.org/BC/public/msamr")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1g79lw1qi1mlw3v1b0cixmqiwjql81gz9naakb15n8pvaag9aaqm"))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:tests? #f                    ; No test target
+         #:configure-flags
+         (list "-DENABLE_STATIC=NO"     ; Not required
+               "-DENABLE_WIDEBAND=YES")))
+      (inputs
+       `(("bctoolbox" ,bctoolbox)
+         ("mediastreamer2" ,mediastreamer2)
+         ("opencoreamr" ,opencore-amr)
+         ("ortp" ,ortp)
+         ("voamrwbenc" ,vo-amrwbenc)))
+      (synopsis "Media Streamer AMR Codec")
+      (description "MSAMR is a plugin of MediaStreamer, adding support for AMR
 codec.  It is based on the opencore-amr implementation.")
-    (home-page "https://gitlab.linphone.org/BC/public/msamr")
-    (license license:gpl3+)))
+      (home-page "https://gitlab.linphone.org/BC/public/msamr")
+      (license license:gpl3+))))
