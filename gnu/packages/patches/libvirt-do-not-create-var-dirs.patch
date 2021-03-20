@@ -1,0 +1,30 @@
+We define localstatedir as /var, and so we shouldn't be installing empty
+directories there.
+
+diff --git a/src/meson.build b/src/meson.build
+index f13b85b74e..58040f2c5d 100644
+--- a/src/meson.build
++++ b/src/meson.build
+@@ -893,22 +893,6 @@ if conf.has('WITH_DTRACE_PROBES')
+   )
+ endif
+
+-
+-# Install empty directories
+-
+-virt_install_dirs += [
+-  localstatedir / 'cache' / 'libvirt',
+-  localstatedir / 'lib' / 'libvirt' / 'images',
+-  localstatedir / 'lib' / 'libvirt' / 'filesystems',
+-  localstatedir / 'lib' / 'libvirt' / 'boot',
+-]
+-
+-meson.add_install_script(
+-  meson_python_prog.path(), python3_prog.path(), meson_install_dirs_prog.path(),
+-  virt_install_dirs,
+-)
+-
+-
+ # Check driver files
+
+ if host_machine.system() == 'linux'
