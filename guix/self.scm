@@ -878,7 +878,8 @@ itself."
                    ("guix/store/schema.sql"
                     ,(local-file "../guix/store/schema.sql")))
 
-                 #:extensions (list guile-gcrypt)
+                 #:extensions (list guile-gcrypt
+                                    guile-json)   ;for (guix swh)
                  #:guile-for-build guile-for-build))
 
   (define *extra-modules*

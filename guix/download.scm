@@ -406,12 +406,19 @@
   (plain-file "content-addressed-mirrors"
               (object->string %content-addressed-mirrors)))
 
+(define %disarchive-mirrors
+  '("https://disarchive.ngyro.com/"))
+
+(define %disarchive-mirror-file
+  (plain-file "disarchive-mirrors" (object->string %disarchive-mirrors)))
+
 (define built-in-builders*
   (store-lift built-in-builders))
 
 (define* (built-in-download file-name url
                             #:key system hash-algo hash
                             mirrors content-addressed-mirrors
+                            disarchive-mirrors
                             executable?
                             (guile 'unused))
   "Download FILE-NAME from URL using the built-in 'download' builder.  When
@@ -422,13 +429,16 @@ explicitly depend on Guile, GnuTLS, etc.  Instead, the daemon performs the
 download by itself using its own dependencies."
   (mlet %store-monad ((mirrors (lower-object mirrors))
                       (content-addressed-mirrors
-                       (lower-object content-addressed-mirrors)))
+                       (lower-object content-addressed-mirrors))
+                      (disarchive-mirrors (lower-object disarchive-mirrors)))
     (raw-derivation file-name "builtin:download" '()
                     #:system system
                     #:hash-algo hash-algo
                     #:hash hash
                     #:recursive? executable?
-                    #:sources (list mirrors content-addressed-mirrors)
+                    #:sources (list mirrors
+                                    content-addressed-mirrors
+                                    disarchive-mirrors)
 
                     ;; Honor the user's proxy and locale settings.
                     #:leaked-env-vars '("http_proxy" "https_proxy"
@@ -439,6 +449,7 @@ download by itself using its own dependencies."
                                  ("mirrors" . ,mirrors)
                                  ("content-addressed-mirrors"
                                   . ,content-addressed-mirrors)
+                                 ("disarchive-mirrors" . ,disarchive-mirrors)
                                  ,@(if executable?
                                        '(("executable" . "1"))
                                        '()))
@@ -492,7 +503,9 @@ name in the store."
                              #:executable? executable?
                              #:mirrors %mirror-file
                              #:content-addressed-mirrors
-                             %content-addressed-mirror-file)))))
+                             %content-addressed-mirror-file
+                             #:disarchive-mirrors
+                             %disarchive-mirror-file)))))
 
 (define* (url-fetch/executable url hash-algo hash
                                #:optional name
