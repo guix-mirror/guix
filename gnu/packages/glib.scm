@@ -235,7 +235,7 @@ shared NFS home directories.")
                   (lambda _
                     (substitute* "meson.build"
                       (("test_timeout = 60")
-                       "test_timeout = 90")
+                       "test_timeout = 120")
                       (("test_timeout_slow = 120")
                        "test_timeout_slow = 180")))))
               '())
@@ -391,9 +391,10 @@ dynamic loading, and an object system.")
    (home-page "https://developer.gnome.org/glib/")
    (license license:lgpl2.1+)))
 
-(define glib/fixed
+(define-public glib/fixed
   (package
     (inherit glib)
+    (properties '())
     (source (origin
               (inherit (package-source glib))
               (patches
