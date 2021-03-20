@@ -1155,15 +1155,15 @@ to integrate other virtualization mechanisms if needed.")
 (define-public libvirt-glib
   (package
     (name "libvirt-glib")
-    (version "3.0.0")
+    (version "4.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://libvirt.org/libvirt/glib/"
-                                  "libvirt-glib-" version ".tar.gz"))
+                                  "libvirt-glib-" version ".tar.xz"))
               (sha256
                (base32
-                "1zpbv4ninc57c9rw4zmmkvvqn7154iv1qfr20kyxn8xplalqrzvz"))))
-    (build-system gnu-build-system)
+                "1gdcvqz88qkp402zra9csc6391f2xki1270x683n6ixakl3gf8w4"))))
+    (build-system meson-build-system)
     (inputs
      `(("openssl" ,openssl)
        ("cyrus-sasl" ,cyrus-sasl)
