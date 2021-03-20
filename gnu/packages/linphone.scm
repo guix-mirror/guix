@@ -948,32 +948,57 @@ codec.  It is based on the Skype's SILK implementation.")
       (license license:gpl2+))))
 
 (define-public mswebrtc
-  (package
-    (name "mswebrtc")
-    (version "1.1.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri
-        (string-append "https://www.linphone.org/releases/sources/plugins/"
-                       name "/" name "-" version ".tar.gz"))
-       (sha256
-        (base32 "1wj28hl9myhshqmn64xg0jf07aw75gmnilb5rff6rcbdxim87mqr"))))
-    (build-system cmake-build-system)
-    (arguments
-     `(#:tests? #f                      ; No test target
-       #:configure-flags
-       (list
-        "-DENABLE_STATIC=NO")))         ; Not required
-    (inputs
-     `(("bctoolbox" ,bctoolbox)
-       ("mediastreamer2" ,mediastreamer2)
-       ("ortp" ,ortp)))
-    (synopsis "Media Streamer WebRTC Codec")
-    (description "MSWebRTC is a plugin of MediaStreamer, adding support for
+  (let ((commit "946ca706733f36a6b4923f04e569531125462d1d")
+        (revision "0"))
+    (package
+      (name "mswebrtc")
+      (version (git-version "1.1.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.linphone.org/BC/public/mswebrtc")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1pfg9m6bpbv0f53nx72rdxhlyriax9pg4yj0gpwq8ha6lqnpwg1x"))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:tests? #f                    ; No test target
+         #:configure-flags
+         (list
+          "-DENABLE_STATIC=NO")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'copy-inputs
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((webrtc-from (assoc-ref inputs "webrtc"))
+                      (webrtc-to (string-append (getcwd) "/webrtc")))
+                 (copy-recursively webrtc-from webrtc-to))
+               #t)))))
+      (native-inputs
+       `(("webrtc"
+          ,(origin
+             (method git-fetch)
+             (uri
+              (git-reference
+               (url "https://gitlab.linphone.org/BC/public/external/webrtc")
+               (commit "583acd27665cfadef8ab03eb85a768d308bd29dd")))
+             (file-name
+              (git-file-name "webrtc-for-mswebrtc" version))
+             (sha256
+              (base32
+               "1maqychrgwy0z4zypa03qp726l2finw64z6cymdzhd58ql3p1lvm"))))
+         ("python" ,python-wrapper)))
+      (inputs
+       `(("bctoolbox" ,bctoolbox)
+         ("mediastreamer2" ,mediastreamer2)
+         ("ortp" ,ortp)))
+      (synopsis "Media Streamer WebRTC Codec")
+      (description "MSWebRTC is a plugin of MediaStreamer, adding support for
 WebRTC codec.  It includes features from WebRTC, such as, iSAC and AECM.")
-    (home-page "https://gitlab.linphone.org/BC/public/mswebrtc")
-    (license license:gpl2+)))
+      (home-page "https://gitlab.linphone.org/BC/public/mswebrtc")
+      (license license:gpl2+))))
 
 (define-public msamr
   (package
