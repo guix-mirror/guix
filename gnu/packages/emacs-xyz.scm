@@ -15164,6 +15164,32 @@ close, copy, cut, paste, undo, redo.")
 standard Unix password manager\").")
       (license license:gpl2+))))
 
+(define-public emacs-password-store-otp
+  (package
+    (name "emacs-password-store-otp")
+    (version "0.1.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/volrath/password-store-otp.el")
+             (commit version)))
+       (sha256
+        (base32 "0gb48blvnn6ci2wl45z81p41ny7vbgl610hqy6b2hyr2171qjd60"))
+       (file-name (git-file-name name version))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-password-store" ,emacs-password-store)
+       ("emacs-s" ,emacs-s)))
+    (home-page "https://github.com/volrath/password-store-otp.el")
+    (synopsis
+     "Interact with the @code{pass-otp} extension for @code{pass} from Emacs")
+    (description "This package provides Emacs functions to interact with the
+@code{pass-otp} extension for @code{pass}.  It includes functions to import
+OTP URIs from screenshots of QR codes, and to export them back to QR codes if
+needed.")
+    (license license:gpl3+)))
+
 (define-public emacs-auth-source-pass
   (let ((commit "847a1f54ed48856b4dfaaa184583ef2c84173edf")
         (revision "2"))
