@@ -42,6 +42,7 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
@@ -802,55 +803,59 @@ and video calls or instant messaging capabilities to an application.")
     (home-page "https://linphone.org/technical-corner/liblinphone")
     (license license:gpl3+)))
 
-(define-public linphoneqt
+(define-public linphone-desktop
   (package
-    (name "linphoneqt")
-    (version "4.1.1")
+    (name "linphone-desktop")
+    (version "4.2.5")
     (source
      (origin
-       (method url-fetch)
-       (uri
-        (string-append "https://www.linphone.org/releases/sources/" name
-                       "/" name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.linphone.org/BC/public/linphone-desktop")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1g2zrr9li0g1hgs6vys06vr98h5dx36z22hx7a6ry231536c002a"))
-       (patches (search-patches "linphoneqt-tabbutton.patch"))))
+        (base32 "1gq4l9p21rbrcksa7fbkzn9fzbbynqmn6ni6lhnvzk359sb1xvbz"))
+       (patches (search-patches "linphone-desktop-without-sdk.patch"))))
     (build-system qt-build-system)
+    (outputs '("out" "debug"))
     (arguments
      `(#:tests? #f                      ; No test target
+       #:configure-flags (list "-DENABLE_UPDATE_CHECK=NO"
+                               "-DENABLE_DAEMON=YES"
+                               "-DENABLE_CONSOLE_UI=YES")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'fix-cmake-error
+         (add-after 'unpack 'pre-configure
            (lambda _
-             ;; This is fixed in commit efed2fd8 of the master branch.
-             (substitute* "CMakeLists.txt"
-               (("js)\\$\"")
-                "js$\""))
-             #t))
-         (add-after 'unpack 'set-version-string
-           (lambda _
-             (substitute* "src/app/AppController.cpp"
-               (("LINPHONE_QT_GIT_VERSION")
-                (format #f "~s" ,version)))
-             #t))
-         (add-after 'install 'extend-shared-resources
-           ;; Not using the FHS exposes an issue where the client refers to
-           ;; its own "share" directory, which lacks sound files installed by
-           ;; liblinphone.
+             (make-file-writable "linphone-app/linphoneqt_version.cmake")
+             (substitute* "linphone-app/linphoneqt_version.cmake"
+               (("\\$\\{GUIX-SET-VERSION\\}") ,version))))
+         (add-after 'install 'post-install
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((liblinphone (assoc-ref inputs "linphone"))
-                    (out (assoc-ref outputs "out")))
+             (let* ((out (assoc-ref outputs "out"))
+                    (liblinphone (assoc-ref inputs "liblinphone"))
+                    (grammar-dest (string-append out "/share/belr/grammars")))
+               ;; Remove unnecessary Qt configuration file.
+               (delete-file (string-append out "/bin/qt.conf"))
+               ;; Not using the FHS exposes an issue where the client
+               ;; refers to its own "share" directory, which lacks files
+               ;; installed by the dependencies.
                (symlink (string-append liblinphone "/share/sounds")
                         (string-append out "/share/sounds"))
-               #t))))))
+               (mkdir-p (dirname grammar-dest))
+               (symlink (string-append liblinphone "/share/belr/grammars")
+                        grammar-dest)))))))
     (native-inputs
-     `(("qttools" ,qttools)))
+     `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))
     (inputs
      `(("bctoolbox" ,bctoolbox)
        ("belcard" ,belcard)
-       ("bellesip" ,belle-sip)
-       ("linphone" ,liblinphone)
+       ("belr" ,belr)
+       ("liblinphone" ,liblinphone)
        ("mediastreamer2" ,mediastreamer2)
+       ("ortp" ,ortp)
        ("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)
        ("qtgraphicaleffects" ,qtgraphicaleffects)
@@ -875,8 +880,11 @@ and video calls or instant messaging capabilities to an application.")
 @item Audio codecs: opus, speex, g711, g729, gsm, iLBC, g722, SILK, etc.
 @item Video codecs: VP8, H.264 and H.265 with resolutions up to 1080P, MPEG4
 @end itemize")
-    (home-page "https://gitlab.linphone.org/BC/public/linphone-desktop")
-    (license license:gpl2+)))
+    (home-page "https://linphone.org/technical-corner/linphone")
+    (license license:gpl3+)))
+
+(define-public linphoneqt
+  (deprecated-package "linphoneqt" linphone-desktop))
 
 (define-public msopenh264
   (package
