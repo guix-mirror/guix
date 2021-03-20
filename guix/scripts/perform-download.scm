@@ -54,7 +54,8 @@ actual output is different from that when we're doing a 'bmCheck' or
                        (output* "out")
                        (executable "executable")
                        (mirrors "mirrors")
-                       (content-addressed-mirrors "content-addressed-mirrors"))
+                       (content-addressed-mirrors "content-addressed-mirrors")
+                       (disarchive-mirrors "disarchive-mirrors"))
     (unless url
       (leave (G_ "~a: missing URL~%") (derivation-file-name drv)))
 
@@ -78,6 +79,10 @@ actual output is different from that when we're doing a 'bmCheck' or
                            (call-with-input-file content-addressed-mirrors
                              (lambda (port)
                                (eval (read port) %user-module)))
+                           '())
+                       #:disarchive-mirrors
+                       (if disarchive-mirrors
+                           (call-with-input-file disarchive-mirrors read)
                            '())
                        #:hashes `((,algo . ,hash))
 
