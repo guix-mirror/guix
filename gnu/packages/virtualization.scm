@@ -1191,14 +1191,14 @@ three libraries:
 (define-public python-libvirt
   (package
     (name "python-libvirt")
-    (version "5.8.0")
+    (version "7.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://libvirt.org/sources/python/libvirt-python-"
                            version ".tar.gz"))
        (sha256
-        (base32 "0kyz3lx49d8p75mvbzinxc1zgs8g7adn77y9bm15b8b4ad9zl5s6"))))
+        (base32 "0dq0qn0xx5hflaq5apj5pm79ba0wcl3w0j9klx8bg73z80gd7bzs"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
