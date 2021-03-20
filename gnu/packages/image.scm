@@ -8,7 +8,7 @@
 ;;; Copyright © 2015 Amirouche Boubekki <amirouche@hypermove.net>
 ;;; Copyright © 2014, 2017 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016, 2017, 2018, 2020 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2017, 2020 Arun Isaac <arunisaac@systemreboot.net>
@@ -582,7 +582,7 @@ extracting icontainer icon files.")
 (define-public libtiff
   (package
    (name "libtiff")
-   (version "4.1.0")
+   (version "4.2.0")
    (source
      (origin
        (method url-fetch)
@@ -590,10 +590,10 @@ extracting icontainer icon files.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0d46bdvxdiv59lxnb0xz9ywm8arsr6xsapi5s6y6vnys2wjz6aax"))))
+         "1jrkjv0xya9radddn8idxvs2gqzp3l2b1s8knlizmn7ad3jq817b"))))
    (build-system gnu-build-system)
    (outputs '("out"
-              "doc"))                           ;1.3 MiB of HTML documentation
+              "doc"))                           ;1.8 MiB of HTML documentation
    (arguments
     ;; Instead of using --docdir, this package has its own --with-docdir.
     `(#:configure-flags (list (string-append "--with-docdir="
