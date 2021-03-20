@@ -7001,3 +7001,36 @@ tools with similar semantics.")
 Using static analysis, it finds bugs and performance issues, offers
 simplifications, and enforces style rules.")
     (license license:expat)))
+
+(define-public go-go-uber-org-zap
+  (package
+    (name "go-go-uber-org-zap")
+    (version "1.16.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/uber-go/zap")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "05ix5wg1r8pgi7fb6084lg4x7mrkvzkh1nxa7zj337w5b9xj0myr"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "go.uber.org/zap"
+       #:tests? #f)) ; TODO: Fix tests
+    (native-inputs
+     `(("go-github-com-stretchr-testify" ,go-github-com-stretchr-testify)
+       ("go-golang-org-x-lint" ,go-golang-org-x-lint)
+       ("go-honnef-co-go-tools" ,go-honnef-co-go-tools)))
+    (propagated-inputs
+     `(("go-github-com-pkg-errors" ,go-github-com-pkg-errors)
+       ("go-go-uber-org-atomic" ,go-go-uber-org-atomic)
+       ("go-go-uber-org-multierr" ,go-go-uber-org-multierr)
+       ("go-gopkg-in-yaml-v2" ,go-gopkg-in-yaml-v2)))
+    (home-page "https://go.uber.org/zap")
+    (synopsis "Logging library for Go")
+    (description
+     "This package provides a library for fast, structured, leveled logging in
+Go.")
+    (license license:expat)))
