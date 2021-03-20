@@ -391,10 +391,9 @@ dynamic loading, and an object system.")
    (home-page "https://developer.gnome.org/glib/")
    (license license:lgpl2.1+)))
 
-(define-public glib/fixed
+(define glib/fixed
   (package
     (inherit glib)
-    (properties '())
     (source (origin
               (inherit (package-source glib))
               (patches
