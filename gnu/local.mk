@@ -1249,7 +1249,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/lcalc-default-parameters-2.patch		\
   %D%/packages/patches/lcalc-lcommon-h.patch    		\
   %D%/packages/patches/lcalc-using-namespace-std.patch 		\
-  %D%/packages/patches/lcms-CVE-2018-16435.patch		\
   %D%/packages/patches/ldc-bootstrap-disable-tests.patch	\
   %D%/packages/patches/ldc-disable-phobos-tests.patch		\
   %D%/packages/patches/ldns-drill-examples.patch		\

@@ -4,7 +4,7 @@
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2013, 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018, 2019, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2020 Marius Bakke <mbakke@fastmail.com>
@@ -49,15 +49,14 @@
 (define-public lcms
   (package
    (name "lcms")
-   (version "2.9")
+   (version "2.12")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://sourceforge/lcms/lcms/" version
                                 "/lcms2-" version ".tar.gz"))
 
-            (patches (search-patches "lcms-CVE-2018-16435.patch"))
             (sha256 (base32
-                     "083xisy6z01zhm7p7rgk4bx9d6zlr8l20qkfv1g29ylnhgwzvij8"))))
+                     "1x8hzq8kw16lgjxmqpnqah1p3hrqqhjpcl1ymiah8434x22kjrhq"))))
    (build-system gnu-build-system)
    (arguments
     `(#:configure-flags '("--disable-static")))
@@ -70,7 +69,7 @@
 focus on accuracy and performance.  It uses the International Color
 Consortium standard (ICC), approved as ISO 15076-1.")
    (license license:x11)
-   (home-page "http://www.littlecms.com/")
+   (home-page "https://www.littlecms.com/")
    (properties '((cpe-name . "little_cms_color_engine")))))
 
 (define-public libpaper
