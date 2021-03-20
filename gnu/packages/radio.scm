@@ -47,6 +47,7 @@
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages golang)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
@@ -78,6 +79,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system go)
   #:use-module (guix build-system python)
   #:use-module (guix build-system qt))
 
@@ -1356,3 +1358,45 @@ intended for people who want to learn receiving and sending morse code.")
      "This program contains algorithms to demodulate and decode AIS (Automatic
 Identification System) messages sent by ships and coast stations.")
     (license license:gpl2+)))
+
+(define-public kappanhang
+  (package
+    (name "kappanhang")
+    (version "1.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/nonoo/kappanhang")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1ycy8avq5s7zspfi0d9klqcwwkpmcaz742cigd7pmcnbbhspcicp"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/nonoo/kappanhang"
+       #:install-source? #f))
+    (inputs
+     `(("go-github-com-akosmarton-papipes",go-github-com-akosmarton-papipes)
+       ("go-github-com-fatih-color" ,go-github-com-fatih-color)
+       ("go-github-com-google-goterm" ,go-github-com-google-goterm)
+       ("go-github-com-mattn-go-isatty" ,go-github-com-mattn-go-isatty)
+       ("go-github-com-mesilliac-pulse-simple"
+        ,go-github-com-mesilliac-pulse-simple)
+       ("go-github-com-pborman-getopt" ,go-github-com-pborman-getopt)
+       ("go-go-uber-org-multierr" ,go-go-uber-org-multierr)
+       ("go-go-uber-org-zap" ,go-go-uber-org-zap)))
+    (home-page "https://github.com/nonoo/kappanhang")
+    (synopsis "Client for Icom RS-BA1 server")
+    (description
+     "Kappanhang remotely opens audio channels and a serial port to an Icom
+RS-BA1 server.  The application is mainly developed for connecting to the Icom
+IC-705 transceiver, which has built-in WiFi and RS-BA1 server.
+
+Compatible hardware/software:
+@itemize
+@item Icom RS-BA1 server software,
+@item Icom IC-705
+@item Icom IC-9700
+@end itemize\n")
+    (license license:expat)))
