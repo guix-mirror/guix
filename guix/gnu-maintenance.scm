@@ -241,7 +241,8 @@ network to check in GNU's database."
   ;; The .zip extensions is notably used for freefont-ttf.
   ;; The "-src" pattern is for "TeXmacs-1.0.7.9-src.tar.gz".
   ;; The "-gnu[0-9]" pattern is for "icecat-38.4.0-gnu1.tar.bz2".
-  (make-regexp "^([^.]+)-([0-9]|[^-])+(-(src|gnu[0-9]))?\\.(tar\\.|zip$)"))
+  ;; Accept underscores as in "PKG_1.2.tar.gz" for some non-GNU packages.
+  (make-regexp "^([^.]+)[-_]([0-9]|[^-])+(-(src|gnu[0-9]))?\\.(tar\\.|zip$)"))
 
 (define %alpha-tarball-rx
   (make-regexp "^.*-.*[0-9](-|~)?(alpha|beta|rc|RC|cvs|svn|git)-?[0-9\\.]*\\.tar\\."))
@@ -594,7 +595,7 @@ list available from %GNU-FILE-LIST-URI over HTTP(S)."
 (define %package-name-rx
   ;; Regexp for a package name, e.g., "foo-X.Y".  Since TeXmacs uses
   ;; "TeXmacs-X.Y-src", the `-src' suffix is allowed.
-  (make-regexp "^(.*)-(([0-9]|\\.)+)(-src)?"))
+  (make-regexp "^(.*)[-_](([0-9]|\\.)+)(-src)?"))
 
 (define (gnu-package-name->name+version name+version)
   "Return the package name and version number extracted from NAME+VERSION."

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,7 +29,8 @@
               '(("gcc" "gcc-5.3.0.tar.bz2")
                 ("texmacs" "TeXmacs-1.0.7.9-src.tar.gz")
                 ("icecat" "icecat-38.4.0-gnu1.tar.bz2")
-                ("mit-scheme" "mit-scheme-9.2.tar.gz")))
+                ("mit-scheme" "mit-scheme-9.2.tar.gz")
+                ("mediainfo" "mediainfo_20.09.tar.xz")))
        (every (lambda (project+file)
                 (not (apply release-file? project+file)))
               '(("guile" "guile-www-1.1.1.tar.gz")
