@@ -5267,7 +5267,7 @@ The meta-data file should contain a simple S-expression like this:
  (version 0)
  (dependencies
   (channel
-   (name 'some-collection)
+   (name some-collection)
    (url "https://example.org/first-collection.git")
 
    ;; The 'introduction' bit below is optional: you would
@@ -5278,7 +5278,7 @@ The meta-data file should contain a simple S-expression like this:
       (commit "a8883b58dc82e167c96506cf05095f37c2c2c6cd")
       (signer "CABB A931 C0FF EEC6 900D  0CFB 090B 1199 3D9A EBB5"))))
   (channel
-   (name 'some-other-collection)
+   (name some-other-collection)
    (url "https://example.org/second-collection.git")
    (branch "testing"))))
 @end lisp
