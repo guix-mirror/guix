@@ -403,10 +403,12 @@ the current build phase."
                             #:optional (port (current-error-port))
                             #:key
                             (colorize? (color-output? port))
+                            (print-urls? #t)
                             (print-log? #t))
   "Print information about EVENT and STATUS to PORT.  When COLORIZE? is true,
 produce colorful output.  When PRINT-LOG? is true, display the build log in
-addition to build events."
+addition to build events.  When PRINT-URLS? is true, display the URL of
+substitutes being downloaded."
   (define info
     (if colorize?
         (cute colorize-string <> (color BOLD))
@@ -526,9 +528,10 @@ addition to build events."
        (format port (info (G_ "substituting ~a...")) item)
        (newline port)))
     (('download-started item uri _ ...)
-     (erase-current-line*)
-     (format port (info (G_ "downloading from ~a ...")) uri)
-     (newline port))
+     (when print-urls?
+       (erase-current-line*)
+       (format port (info (G_ "downloading from ~a ...")) uri)
+       (newline port)))
     (('download-progress item uri
                          (= string->number size)
                          (= string->number transferred))
@@ -602,6 +605,17 @@ addition to build events."
                                   (colorize? (color-output? port)))
   (print-build-event event old-status status port
                      #:colorize? colorize?
+                     #:print-urls? #f
+                     #:print-log? #f))
+
+(define* (print-build-event/quiet-with-urls event old-status status
+                                            #:optional
+                                            (port (current-error-port))
+                                            #:key
+                                            (colorize? (color-output? port)))
+  (print-build-event event old-status status port
+                     #:colorize? colorize?
+                     #:print-urls? #t             ;show download URLs
                      #:print-log? #f))
 
 (define* (build-status-updater #:optional (on-change (const #t)))
@@ -787,6 +801,7 @@ evaluate EXP... in that context."
   "Return the logging procedure that corresponds to LEVEL."
   (cond ((<= level 0) (const #t))
         ((= level 1)  print-build-event/quiet)
+        ((= level 2)  print-build-event/quiet-with-urls)
         (else         print-build-event)))
 
 (define (call-with-status-verbosity level thunk)
