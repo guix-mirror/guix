@@ -27,6 +27,7 @@
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module ((guix utils) #:select (%current-system))
+  #:use-module (gnu packages linux)
   #:export (pam-service
             pam-service-name
             pam-service-account
@@ -207,14 +208,16 @@ dumped in /etc/pam.d/NAME, where NAME is the name of SERVICE."
         (env  (pam-entry ; to honor /etc/environment.
                (control "required")
                (module "pam_env.so"))))
-    (lambda* (name #:key allow-empty-passwords? (allow-root? #f) motd
-                   login-uid?)
+    (lambda* (name #:key allow-empty-passwords? allow-root? motd
+              login-uid? gnupg?)
       "Return a standard Unix-style PAM service for NAME.  When
 ALLOW-EMPTY-PASSWORDS? is true, allow empty passwords.  When ALLOW-ROOT? is
 true, allow root to run the command without authentication.  When MOTD is
 true, it should be a file-like object used as the message-of-the-day.
 When LOGIN-UID? is true, require the 'pam_loginuid' module; that module sets
-/proc/self/loginuid, which the libc 'getlogin' function relies on."
+/proc/self/loginuid, which the libc 'getlogin' function relies on.  When
+GNUPG? is true, require the 'pam_gnupg.so' module; that module hands over
+the login password to 'gpg-agent'."
       ;; See <http://www.linux-pam.org/Linux-PAM-html/sag-configuration-example.html>.
       (pam-service
        (name name)
@@ -229,7 +232,12 @@ When LOGIN-UID? is true, require the 'pam_loginuid' module; that module sets
                                 (control "required")
                                 (module "pam_unix.so")
                                 (arguments '("nullok")))
-                               unix))))
+                               unix))
+                     (if gnupg?
+                         (list (pam-entry
+                                (control "required")
+                                (module (file-append pam-gnupg "/lib/security/pam_gnupg.so"))))
+                         '())))
        (password (list (pam-entry
                         (control "required")
                         (module "pam_unix.so")
@@ -246,6 +254,11 @@ When LOGIN-UID? is true, require the 'pam_loginuid' module; that module sets
                         (list (pam-entry       ;to fill in /proc/self/loginuid
                                (control "required")
                                (module "pam_loginuid.so")))
+                        '())
+                  ,@(if gnupg?
+                        (list (pam-entry
+                               (control "required")
+                               (module (file-append pam-gnupg "/lib/security/pam_gnupg.so"))))
                         '())
                   ,env ,unix))))))
 

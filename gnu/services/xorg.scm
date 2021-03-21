@@ -9,6 +9,7 @@
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2021 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -543,6 +544,8 @@ a `service-extension', as used by `set-xorg-configuration'."
         (default slim))
   (allow-empty-passwords? slim-configuration-allow-empty-passwords?
                           (default #t))
+  (gnupg? slim-configuration-gnupg?
+          (default #f))
   (auto-login? slim-configuration-auto-login?
                (default #f))
   (default-user slim-configuration-default-user
@@ -572,7 +575,9 @@ a `service-extension', as used by `set-xorg-configuration'."
          "slim"
          #:login-uid? #t
          #:allow-empty-passwords?
-         (slim-configuration-allow-empty-passwords? config))))
+         (slim-configuration-allow-empty-passwords? config)
+         #:gnupg?
+         (slim-configuration-gnupg? config))))
 
 (define (slim-shepherd-service config)
   (let* ((xinitrc (xinitrc #:fallback-session

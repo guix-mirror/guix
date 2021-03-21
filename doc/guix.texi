@@ -18065,6 +18065,14 @@ Data type representing the configuration of @code{slim-service-type}.
 @item @code{allow-empty-passwords?} (default: @code{#t})
 Whether to allow logins with empty passwords.
 
+@item @code{gnupg?} (default: @code{#f})
+If enabled, @code{pam-gnupg} will attempt to automatically unlock the
+user's GPG keys with the login password via @code{gpg-agent}.  The
+keygrips of all keys to be unlocked should be written to
+@file{~/.pam-gnupg}, and can be queried with @code{gpg -K
+--with-keygrip}.  Presetting passphrases must be enabled by adding
+@code{allow-preset-passphrase} in @file{~/.gnupg/gpg-agent.conf}.
+
 @item @code{auto-login?} (default: @code{#f})
 @itemx @code{default-user} (default: @code{""})
 When @code{auto-login?} is false, SLiM presents a log-in screen.
