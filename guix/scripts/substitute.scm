@@ -555,8 +555,11 @@ the current output port."
       (every (compose zero? cdr waitpid) pids)
 
       ;; Skip a line after what 'progress-reporter/file' printed, and another
-      ;; one to visually separate substitutions.
-      (display "\n\n" (current-error-port))
+      ;; one to visually separate substitutions.  When PRINT-BUILD-TRACE? is
+      ;; true, leave it up to (guix status) to prettify things.
+      (newline (current-error-port))
+      (unless print-build-trace?
+        (newline (current-error-port)))
 
       ;; Check whether we got the data announced in NARINFO.
       (let ((actual (get-hash)))
