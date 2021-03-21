@@ -18,6 +18,7 @@
 ;;; Copyright © 2020 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Simon South <simon@simonsouth.net>
+;;; Copyright © 2021 Zheng Junjie <873216071@qq.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1111,20 +1112,17 @@ attempts the update when it has changed.")
     (license license:gpl2+)))
 
 (define-public hnsd
-  ;; There have been no releases yet, hence this commit.
-  (let ((revision "0")
-        (commit "895d89c25d316d18df9d374fe78aae3902bc89fb"))
    (package
      (name "hnsd")
-     (version (git-version "0.0" revision commit))
+     (version "1.0.0")
      (source (origin
                (method git-fetch)
                (uri (git-reference
                      (url "https://github.com/handshake-org/hnsd")
-                     (commit commit)))
+                     (commit (string-append "v" version))))
                (sha256
                 (base32
-                 "0704y73sddn24jga9csw4gxyfb3pnrfnk0vdcph84n1h38490l16"))
+                 "1kdgff8rf8gmvwz2p758ilbjxpvz4xm6z41pa5353asg6xb853bb"))
                (file-name (git-file-name name version))
                (modules '((guix build utils)))
                (snippet
@@ -1161,7 +1159,7 @@ attempts the update when it has changed.")
      (description
       "@command{hnsd} is a @dfn{host name resolver} for the Handshake Naming
 System (HNS) peer-to-peer network.")
-     (license license:expat))))
+     (license license:expat)))
 
 (define-public libmicrodns
   (package
