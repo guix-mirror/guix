@@ -3624,14 +3624,14 @@ tools and applications:
 (define-public balsa
   (package
     (name "balsa")
-    (version "2.6.1")
+    (version "2.6.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://pawsa.fedorapeople.org/balsa/"
                            "balsa-" version ".tar.bz2"))
        (sha256
-        (base32 "1xkxx801p7sbfkn0bh3cz85wra4xf1z1zhjqqc80z1z1nln7fhb4"))))
+        (base32 "1w0239i01mw4wwwy7xh8gz7zgl5khwvfm5wy35x0swvvax021mai"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -3653,8 +3653,9 @@ tools and applications:
        ("gnutls" ,gnutls)
        ("gpgme" ,gpgme)
        ("gtk+" ,gtk+)
-       ("gtksourceview" ,gtksourceview-3)
+       ("gtksourceview" ,gtksourceview)
        ("gtkspell3" ,gtkspell3)
+       ("libassuan" ,libassuan)         ; in gpgme.pc Requires
        ("libcanberra" ,libcanberra)
        ("libesmtp" ,libesmtp)
        ("libical" ,libical)
