@@ -423,16 +423,12 @@ valid."
 
 (define (arguments->manifests arguments channels)
   "Return the list of manifests extracted from ARGUMENTS."
-  (define (channel-name->checkout name)
-    (let ((channel (find (lambda (channel)
-                           (eq? (channel-name channel) name))
-                         channels)))
-      (channel-url channel)))
-
-  (map (match-lambda
-         ((name . path)
-          (let ((checkout (channel-name->checkout name)))
-            (in-vicinity checkout path))))
+  (map (lambda (manifest)
+         (any (lambda (checkout)
+                (let ((path (in-vicinity checkout manifest)))
+                  (and (file-exists? path)
+                       path)))
+              (map channel-url channels)))
        arguments))
 
 (define (manifests->packages store manifests)
