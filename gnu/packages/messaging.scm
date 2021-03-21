@@ -2777,6 +2777,49 @@ as phones, embedded computers or microcontrollers.")
     ;; Dual licensed.
     (license (list license:epl1.0 license:edl1.0))))
 
+(define-public movim-desktop
+  (let ((commit "83d583b83629dbd2ec448da9a1ffd81f6c1fb295")
+        (revision "3"))
+    (package
+      (name "movim-desktop")
+      (version
+       (git-version "0.14.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/movim/movim_desktop")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1lsa3k3wx1d2lk0qs0k5jc5bmapnmpzwynprjf2wihh8c8y3iwlz"))))
+      (build-system qt-build-system)
+      (arguments
+       `(#:tests? #f                    ; No target
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch
+             (lambda* (#:key outputs #:allow-other-keys)
+               (substitute* `("CMakeLists.txt" "movim.desktop")
+                 (("/usr")
+                  (assoc-ref outputs "out"))
+                 (("\"build")
+                  "\"../build"))
+               #t)))))
+      (inputs
+       `(("qtbase" ,qtbase)
+         ("qtdeclarative" ,qtdeclarative)
+         ("qtwebchannel" ,qtwebchannel)))
+      (propagated-inputs
+       `(("qtwebengine" ,qtwebengine)))
+      (home-page "https://movim.eu/")
+      (synopsis "Desktop Application for Movim")
+      (description
+       "Movim-Desktop is a desktop application, relying on Qt, for the Movim
+social and chat platform.")
+      (license license:gpl3+))))
+
 (define-public psi-plus
   (package
     (name "psi-plus")
