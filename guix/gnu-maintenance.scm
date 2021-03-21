@@ -610,11 +610,12 @@ list available from %GNU-FILE-LIST-URI over HTTP(S)."
 (define (pure-gnu-package? package)
   "Return true if PACKAGE is a non-Emacs and non-GNOME GNU package.  This
 excludes AucTeX, for instance, whose releases are now uploaded to
-elpa.gnu.org, and all the GNOME packages; EMMS is included though, because its
-releases are on gnu.org."
+elpa.gnu.org, GNU Radio, which has releases at www.gnuradio.org, and all the
+GNOME packages; EMMS is included though, because its releases are on gnu.org."
   (and (or (not (string-prefix? "emacs-" (package-name package)))
            (gnu-hosted? package))
        (not (gnome-package? package))
+       (not (string-prefix? "gnuradio" (package-name package)))
        (gnu-package? package)))
 
 (define gnu-hosted?
