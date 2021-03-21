@@ -4071,7 +4071,7 @@ is limited to http and https.")
 (define-public perl-net-http
   (package
     (name "perl-net-http")
-    (version "6.20")
+    (version "6.21")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -4079,7 +4079,7 @@ is limited to http and https.")
                    "Net-HTTP-" version ".tar.gz"))
              (sha256
               (base32
-               "07lzfycza7qqxli18xgsnqwiwxapl0b64z33wfw62aai4hm7nllj"))))
+               "1i7fk6q1iaxzgf82mjd5hg77hvy7dbb79488cijg16dyfrds6nip"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-io-socket-ssl" ,perl-io-socket-ssl)
