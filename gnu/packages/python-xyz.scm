@@ -3815,7 +3815,7 @@ to deprecate classes, functions or methods.")
 (define-public python-pygithub
   (package
     (name "python-pygithub")
-    (version "1.43.8")
+    (version "1.54.1")
     (source
      ;; We fetch from the Git repo because there are no tests in the PyPI
      ;; archive.
@@ -3826,30 +3826,24 @@ to deprecate classes, functions or methods.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1625v558xga5mwhl9jqmibywy5qafmg1vqrirqz6zfq1la1d22mw"))))
+        (base32 "1nl74bp5ikdnrc8xq0qr25ryl1mvarf0xi43k8w5jzlrllhq0nkq"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases (modify-phases %standard-phases
-                  ;; Some tests rely on the network.
-                  (add-after 'unpack 'disable-failing-tests
-                    (lambda _
-                      (substitute* "tests/Issue142.py"
-                        (("testDecodeJson") "disabled_testDecodeJson"))
-                      #t))
-                  (add-before 'check 'prepare-for-tests
-                    (lambda _
-                      (for-each (lambda (f)
-                                  (chmod f #o666))
-                                (find-files "./tests"))
-                      (system* "python" "-m" "lib2to3" "-w" "-n" "tests")
-                      (setenv "PYTHONPATH"
-                              (string-append "./tests:" (getenv "PYTHONPATH")))
-                      #t)))))
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest"))
+             #t)))))
     (propagated-inputs
-     `(("python-deprecated" ,python-deprecated)
+     `(("python-cryptography" ,python-cryptography)
+       ("python-deprecated" ,python-deprecated)
        ("python-pyjwt" ,python-pyjwt)
        ("python-requests" ,python-requests)))
-    (native-inputs `(("python-httpretty" ,python-httpretty)))
+    (native-inputs
+     `(("python-httpretty" ,python-httpretty)
+       ("python-pytest" ,python-pytest)))
     (home-page "https://pygithub.readthedocs.io/en/latest/")
     (synopsis "Python library for the GitHub API")
     (description "This library allows managing GitHub resources such as
