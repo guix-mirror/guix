@@ -5797,7 +5797,7 @@ cpufreq sub-system is enabled or not.")
 (define-public haveged
   (package
     (name "haveged")
-    (version "1.9.13")
+    (version "1.9.14")
     (source
      (origin
        (method git-fetch)
@@ -5806,7 +5806,7 @@ cpufreq sub-system is enabled or not.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0g3hcvpky76cabgcfqh65fay7nnjkms32sgmlf33q969833hijqz"))))
+        (base32 "050hmnh5s2s4mb83f4d1fk23mk27pprg840c1aagc6v1sz6x5dhq"))))
     (build-system gnu-build-system)
     (home-page "https://www.issihosts.com/haveged")
     (synopsis "Entropy source for the Linux random number generator")
