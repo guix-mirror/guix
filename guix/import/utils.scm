@@ -274,8 +274,9 @@ snippet generated is for regular inputs."
   (maybe-inputs package-names output #:type 'propagated))
 
 (define* (package->definition guix-package #:optional append-version?/string)
-  "If APPEND-VERSION?/STRING is #t, append the package's major+minor
-version. If APPEND-VERSION?/string is a string, append this string."
+  "If APPEND-VERSION?/STRING is #t, append the package's major+minor version.
+If it is the symbol 'full, append the package's complete version.  If
+APPEND-VERSION?/string is a string, append this string."
   (match guix-package
     ((or
       ('package ('name name) ('version version) . rest)
@@ -287,6 +288,8 @@ version. If APPEND-VERSION?/string is a string, append this string."
                          (string-append name "-" append-version?/string))
                         ((eq? append-version?/string #t)
                          (string-append name "-" (version-major+minor version)))
+                        ((eq? 'full append-version?/string)
+                         (string-append name "-" version))
                         (else name)))
         ,guix-package))))
 

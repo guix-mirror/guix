@@ -22,9 +22,11 @@
   #:use-module (guix utils)
   #:use-module (guix scripts)
   #:use-module (guix import go)
+  #:use-module (guix import utils)
   #:use-module (guix scripts import)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
+  #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-37)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
@@ -94,7 +96,12 @@ that are not yet in Guix"))
                              (('argument . value)
                               value)
                              (_ #f))
-                           (reverse opts))))
+                           (reverse opts)))
+         ;; Append the full version to the package symbol name when using
+         ;; pinned versions.
+         (package->definition* (if (assoc-ref opts 'pin-versions?)
+                                   (cut package->definition <> 'full)
+                                   package->definition)))
     (match args
       ((spec)                         ;e.g., github.com/golang/protobuf@v1.3.1
        (receive (name version)
@@ -106,18 +113,14 @@ that are not yet in Guix"))
                                 (assoc-ref opts 'pin-versions?))))
            (if (assoc-ref opts 'recursive)
                ;; Recursive import.
-               (map (match-lambda
-                      ((and ('package ('name name) . rest) pkg)
-                       `(define-public ,(string->symbol name)
-                          ,pkg))
-                      (_ #f))
+               (map package->definition*
                     (apply go-module-recursive-import arguments))
                ;; Single import.
                (let ((sexp (apply go-module->guix-package arguments)))
                  (unless sexp
                    (leave (G_ "failed to download meta-data for module '~a'~%")
                           module-name))
-                 sexp)))))
+                 (package->definition* sexp))))))
       (()
        (leave (G_ "too few arguments~%")))
       ((many ...)

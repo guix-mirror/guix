@@ -11553,12 +11553,12 @@ Select the given repository (a repository name).  Possible values include:
 Import metadata for a Go module using
 @uref{https://proxy.golang.org, proxy.golang.org}.
 
-This importer is highly experimental. See the source code for more info
-about the current state.
-
 @example
 guix import go gopkg.in/yaml.v2
 @end example
+
+It is possible to use a package specification with a @code{@@VERSION}
+suffix to import a specific version.
 
 Additional options include:
 
@@ -11568,6 +11568,14 @@ Additional options include:
 Traverse the dependency graph of the given upstream package recursively
 and generate package expressions for all those packages that are not yet
 in Guix.
+@item --pin-versions
+When using this option, the importer preserves the exact versions of the
+Go modules dependencies instead of using their latest available
+versions.  This can be useful when attempting to import packages that
+recursively depend on former versions of themselves to build.  When
+using this mode, the symbol of the package is made by appending the
+version to its name, so that multiple versions of the same package can
+coexist.
 @end table
 @end table
 

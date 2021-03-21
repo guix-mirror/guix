@@ -428,15 +428,19 @@ hence the need to derive this information."
       (vcs-qualified-module-path->root-repo-url module-path)
       module-path))
 
-(define (go-module->guix-package-name module-path)
-  "Converts a module's path to the canonical Guix format for Go packages."
-  (string-downcase (string-append "go-" (string-replace-substring
-                                         (string-replace-substring
-                                          (string-replace-substring
-                                           module-path
-                                           "." "-")
-                                          "/" "-")
-                                         "_" "-"))))
+(define* (go-module->guix-package-name module-path #:optional version)
+  "Converts a module's path to the canonical Guix format for Go packages.
+Optionally include a VERSION string to append to the name."
+  ;; Map dot, slash and underscore characters to hyphens.
+  (let ((module-path* (string-map (lambda (c)
+                                    (if (member c '(#\. #\/ #\_))
+                                        #\-
+                                        c))
+                                  module-path)))
+    (string-downcase (string-append "go-" module-path*
+                                    (if version
+                                        (string-append "-" version)
+                                        "")))))
 
 (define (strip-.git-suffix/maybe repo-url)
   "Strip a repository URL '.git' suffix from REPO-URL if hosted at GitHub."
@@ -575,6 +579,8 @@ When VERSION is unspecified, the latest version available is used."
   (let* ((available-versions (go-module-available-versions goproxy module-path))
          (version* (or version
                        (go-module-version-string goproxy module-path))) ;latest
+         ;; Elide the "v" prefix Go uses.
+         (strip-v-prefix (cut string-trim <> #\v))
          ;; Pseudo-versions do not appear in the versions list; skip the
          ;; following check.
          (_ (unless (or (go-pseudo-version? version*)
@@ -584,7 +590,9 @@ hint: use one of the following available versions ~a\n"
                              version* available-versions))))
          (content (fetch-go.mod goproxy module-path version*))
          (dependencies+versions (parse-go.mod content))
-         (dependencies (map car dependencies+versions))
+         (dependencies (if pin-versions?
+                           dependencies+versions
+                           (map car dependencies+versions)))
          (guix-name (go-module->guix-package-name module-path))
          (root-module-path (module-path->repository-root module-path))
          ;; The VCS type and URL are not included in goproxy information. For
@@ -598,23 +606,27 @@ hint: use one of the following available versions ~a\n"
     (values
      `(package
         (name ,guix-name)
-        ;; Elide the "v" prefix Go uses
-        (version ,(string-trim version* #\v))
+        (version ,(strip-v-prefix version*))
         (source
          ,(vcs->origin vcs-type vcs-repo-url version*))
         (build-system go-build-system)
         (arguments
          '(#:import-path ,root-module-path))
-        ,@(maybe-propagated-inputs (map go-module->guix-package-name
-                                        dependencies))
+        ,@(maybe-propagated-inputs
+           (map (match-lambda
+                  ((name version)
+                   (go-module->guix-package-name name (strip-v-prefix version)))
+                  (name
+                   (go-module->guix-package-name name)))
+                dependencies))
         (home-page ,(format #f "https://~a" root-module-path))
         (synopsis ,synopsis)
         (description ,(and=> description beautify-description))
         (license ,(match (list->licenses licenses)
-                    (() #f)             ;unknown license
-                    ((license)          ;a single license
+                    (() #f)                        ;unknown license
+                    ((license)                     ;a single license
                      license)
-                    ((license ...)      ;a list of licenses
+                    ((license ...)     ;a list of licenses
                      `(list ,@license)))))
      (if pin-versions?
          dependencies+versions
