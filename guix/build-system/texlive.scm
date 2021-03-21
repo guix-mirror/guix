@@ -44,8 +44,8 @@
 
 ;; These variables specify the SVN tag and the matching SVN revision.  They
 ;; are taken from https://www.tug.org/svn/texlive/tags/
-(define %texlive-tag "texlive-2019.3")
-(define %texlive-revision 51265)
+(define %texlive-tag "texlive-2020.0")
+(define %texlive-revision 54632)
 
 (define (texlive-origin name version locations hash)
   "Return an <origin> object for a TeX Live package consisting of multiple
