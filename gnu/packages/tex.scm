@@ -120,7 +120,7 @@ copied to their outputs; otherwise the TEXLIVE-BUILD-SYSTEM is used."
                           (string-append doc "/doc")))
                        '())
                  (mkdir-p out)
-                 (copy-recursively (assoc-ref inputs "source") out)
+                 (copy-recursively "." out)
                  ,@(if with-documentation?
                        '((delete-file-recursively (string-append out "/doc")))
                        '())
