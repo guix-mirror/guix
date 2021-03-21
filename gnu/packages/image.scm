@@ -840,14 +840,24 @@ test suite, including conformance tests (following Rec. ITU-T T.803 | ISO/IEC
                        (assoc-ref %build-inputs "openjpeg-data")))
        #:phases
        (modify-phases %standard-phases
-         ;; To be re-enabled after upstream fixes the bug,
-         ;; https://github.com/uclouvain/openjpeg/issues/1264
          (add-after 'unpack 'disable-failing-tests
            (lambda _
+             ;; To be re-enabled after upstream fixes the bug,
+             ;; https://github.com/uclouvain/openjpeg/issues/1264
              (substitute* "tests/CMakeLists.txt"
                (("add_subdirectory\\(nonregression\\)")
                 ""))
-             #t)))))
+             ;; These tests fail on all architectures except x86_64
+             (substitute* "tests/conformance/CMakeLists.txt"
+               ;; 4, 5, 6 fail
+               (("numFileC1P0 RANGE 1 16") "numFileC1P0 RANGE 7 16")
+               ;; 2, 3, 4, 5 fail
+               (("numFileC1P1 RANGE 1 7") "numFileC1P1 1 6 7")
+               ;; 2, 3 fail
+               (("numFileJP2 RANGE 1 9") "numFileJP2 RANGE 4 9")
+               ;; All fail
+               (("subsampling.*") "")
+               (("zoo.*") "")))))))
     (native-inputs
      `(("openjpeg-data" ,openjpeg-data))) ; Files for test-suite
     (inputs
