@@ -10,7 +10,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
@@ -6311,27 +6311,31 @@ message stream (in a web server that is per connection).")
 (define-public python-httpretty
   (package
     (name "python-httpretty")
-    (version "0.9.6")
+    (version "1.0.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "httpretty" version))
        (sha256
-        (base32 "1p1rb4mpngh0632xrmdfhvc8yink519yfkqz97d2ww3y0x2jvd81"))))
+        (base32 "1dg0nfl7i9kjnq98ww98x2afzav4mpgiwzvjc43ily1x9my94g75"))))
     (build-system python-build-system)
-    (propagated-inputs
-     `(("python-six" ,python-six)))
+    (arguments
+     `(#:tests? #f  ; Tests require network access.
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "nosetests"))
+             #t)))))
     (native-inputs
      `(("python-coverage" ,python-coverage)
-       ("python-httplib2" ,python-httplib2)
-       ("python-mock" ,python-mock)
+       ("python-eventlet" ,python-eventlet)
        ("python-nose" ,python-nose)
-       ("python-nose-randomly" ,python-nose-randomly)
        ("python-rednose" ,python-rednose)
        ("python-requests" ,python-requests)
        ("python-sure" ,python-sure)
-       ("python-tornado" ,python-tornado)
-       ("python-urllib3" ,python-urllib3)))
+       ("python-tornado" ,python-tornado)))
     (home-page "https://httpretty.readthedocs.io")
     (synopsis "HTTP client mock for Python")
     (description "@code{httpretty} is a helper for faking web requests,
