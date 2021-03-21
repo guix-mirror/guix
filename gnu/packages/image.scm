@@ -816,19 +816,16 @@ test suite, including conformance tests (following Rec. ITU-T T.803 | ISO/IEC
 (define-public openjpeg
   (package
     (name "openjpeg")
-    (version "2.3.1")
+    (version "2.4.0")
     (source
      (origin
        (method git-fetch)
-       (uri
-        (git-reference
-         (url "https://github.com/uclouvain/openjpeg")
-         (commit
-          (string-append "v" version))))
-       (file-name
-        (git-file-name "openjpeg" version))
+       (uri (git-reference
+             (url "https://github.com/uclouvain/openjpeg")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1dn98d2dfa1lqyxxmab6rrcv52dyhjr4g7i4xf2w54fqsx14ynrb"))))
+        (base32 "143dvy5g6v6129lzvl0r8mrgva2fppkn0zl099qmi9yi9l9h7yyf"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
