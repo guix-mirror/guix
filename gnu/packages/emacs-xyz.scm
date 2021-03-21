@@ -19512,6 +19512,8 @@ image, rotate it, save modified images, and more.")
          (sha256
           (base32
            "1zifiqmpj9j14fnrm3jxapady25m1nlm514nfry0jfrhhikvj6i8"))))
+      (arguments
+       '(#:include (cons "^data/" %default-include)))
       (build-system emacs-build-system)
       (home-page "https://github.com/purcell/package-lint")
       (synopsis "Linting library for elisp package authors")
