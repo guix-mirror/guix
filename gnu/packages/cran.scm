@@ -26204,6 +26204,32 @@ statistical analysis that share the underlying design philosophy, grammar, and
 data structures of the tidyverse.")
     (license license:gpl3)))
 
+(define-public r-lsa
+  (package
+    (name "r-lsa")
+    (version "0.73.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "lsa" version))
+       (sha256
+        (base32
+         "1a33irqa6qvbc02z12rgbgv8kxq2gmahy7j5bg8b23lvvaxif06b"))))
+    (properties `((upstream-name . "lsa")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-snowballc" ,r-snowballc)))
+    (home-page "https://cran.r-project.org/package=lsa")
+    (synopsis "Latent semantic analysis")
+    (description
+     "The basic idea of latent semantic analysis (LSA) is, that text do have a
+higher order (=latent semantic) structure which, however, is obscured by word
+usage (e.g. through the use of synonyms or polysemy).  By using conceptual
+indices that are derived statistically via a truncated singular value
+decomposition (a two-mode factor analysis) over a given document-term matrix,
+this variability problem can be overcome.")
+    (license license:gpl2+)))
+
 (define-public r-mlecens
   (package
     (name "r-mlecens")
