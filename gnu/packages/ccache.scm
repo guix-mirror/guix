@@ -2,6 +2,7 @@
 ;;; Copyright © 2014, 2015, 2016, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,7 +23,7 @@
   #:use-module (guix packages)
   #:use-module ((guix licenses) #:select (gpl3+))
   #:use-module (guix download)
-  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages compression))
@@ -30,25 +31,32 @@
 (define-public ccache
   (package
     (name "ccache")
-    (version "3.7.12")
+    (version "4.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/ccache/ccache/releases/download/v"
                            version "/ccache-" version ".tar.xz"))
        (sha256
-        (base32 "005liq8csgxdn7m9hj2ah07hishww855p8sc96y1hrnwc21lwbx0"))))
-    (build-system gnu-build-system)
+        (base32 "0kx9ggbbm899zwyyxvm4dgzn1b95zi1niz0l734pi5y3i0cb251g"))))
+    (build-system cmake-build-system)
     (native-inputs `(("perl" ,perl)     ; for test/run
                      ("which" ,(@ (gnu packages base) which))))
-    (inputs `(("zlib" ,zlib)))
+    (inputs `(("zlib" ,zlib)
+              ("zstd" ,zstd "lib")))
     (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (add-before 'check 'setup-tests
-                    (lambda _
-                      (substitute* '("unittest/test_hashutil.c" "test/suites/base.bash")
-                        (("#!/bin/sh") (string-append "#!" (which "sh"))))
-                      #t)))))
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'setup-tests
+           (lambda _
+             (substitute* '("unittest/test_hashutil.cpp" "test/suites/base.bash")
+               (("#!/bin/sh") (string-append "#!" (which "sh"))))
+             #t))
+         ;; tests require a writable HOME
+         (add-before 'check 'set-home
+           (lambda _
+             (setenv "HOME" (getenv "TMPDIR"))
+	     #t)))))
     (home-page "https://ccache.dev/")
     (synopsis "Compiler cache")
     (description
