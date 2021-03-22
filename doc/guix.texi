@@ -34280,6 +34280,28 @@ configuration when you use @command{guix system reconfigure},
 @command{guix system init}, or @command{guix deploy}.
 @end defvr
 
+@defvr {Scheme Variable} linux-loadable-module-service-type
+Type of the service that collects lists of packages containing
+kernel-loadable modules, and adds them to the set of kernel-loadable
+modules.
+
+This service type is intended to be extended by other service types,
+such as below:
+
+@lisp
+(define module-installing-service-type
+  (service-type
+    (name 'module-installing-service)
+    (extensions (list (service-extension linux-loadable-module-service-type
+                                         (const (list module-to-install-1
+                                                      module-to-install-2)))))
+    (default-value #f)))
+@end lisp
+
+This does not actually load modules at bootup, only adds it to the
+kernel profile so that it @emph{can} be loaded by other means.
+@end defvr
+
 @node Shepherd Services
 @subsection Shepherd Services
 

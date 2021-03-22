@@ -2,6 +2,7 @@
 ;;; Copyright © 2019 Jakob L. Kreuze <zerodaysfordays@sdf.org>
 ;;; Copyright © 2020 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2021 raid5atemyhomework <raid5atemyhomework@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,7 +35,10 @@
   #:use-module (guix utils)
   #:export (%test-loadable-kernel-modules-0
             %test-loadable-kernel-modules-1
-            %test-loadable-kernel-modules-2))
+            %test-loadable-kernel-modules-2
+            %test-loadable-kernel-modules-service-0
+            %test-loadable-kernel-modules-service-1
+            %test-loadable-kernel-modules-service-2))
 
 ;;; Commentary:
 ;;;
@@ -66,17 +70,11 @@ that MODULES are actually loaded."
                        (member module modules string=?))
                      '#$modules))))))
 
-(define* (run-loadable-kernel-modules-test module-packages module-names)
-  "Run a test of an OS having MODULE-PACKAGES, and verify that MODULE-NAMES
-are loaded in memory."
+(define* (run-loadable-kernel-modules-test-base base-os module-names)
+  "Run a test of BASE-OS, verifying that MODULE-NAMES are loaded in memory."
   (define os
     (marionette-operating-system
-     (operating-system
-      (inherit (simple-operating-system))
-      (services (cons (service kernel-module-loader-service-type module-names)
-                      (operating-system-user-services
-                       (simple-operating-system))))
-      (kernel-loadable-modules module-packages))
+     base-os
      #:imported-modules '((guix combinators))))
   (define vm (virtual-machine os))
   (define (test script)
@@ -97,6 +95,36 @@ are loaded in memory."
           (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
   (gexp->derivation "loadable-kernel-modules"
                     (test (modules-loaded?-program os module-names))))
+
+(define* (run-loadable-kernel-modules-test module-packages module-names)
+  "Run a test of an OS having MODULE-PACKAGES, and verify that MODULE-NAMES
+are loaded in memory."
+  (run-loadable-kernel-modules-test-base
+    (operating-system
+      (inherit (simple-operating-system))
+      (services (cons (service kernel-module-loader-service-type module-names)
+                      (operating-system-user-services
+                       (simple-operating-system))))
+      (kernel-loadable-modules module-packages))
+    module-names))
+
+(define* (run-loadable-kernel-modules-service-test module-packages module-names)
+  "Run a test of an OS having MODULE-PACKAGES, which are loaded by creating a
+service that extends LINUXL-LOADABLE-MODULE-SERVICE-TYPE. Then verify that
+MODULE-NAMES are loaded in memory."
+  (define module-installing-service-type
+    (service-type
+      (name 'module-installing-service)
+      (extensions (list (service-extension linux-loadable-module-service-type
+                                           (const module-packages))))
+      (default-value #f)))
+  (run-loadable-kernel-modules-test-base
+    (operating-system
+      (inherit (simple-operating-system))
+      (services (cons* (service module-installing-service-type)
+                       (operating-system-user-services
+                        (simple-operating-system)))))
+    module-names))
 
 (define %test-loadable-kernel-modules-0
   (system-test
@@ -120,6 +148,38 @@ with one extra module.")
    (description "Tests loadable kernel modules facility of <operating-system>
 with two extra modules.")
    (value (run-loadable-kernel-modules-test
+           (list acpi-call-linux-module
+                 (package
+                   (inherit ddcci-driver-linux)
+                   (arguments
+                    `(#:linux #f
+                      ,@(strip-keyword-arguments '(#:linux)
+                                                 (package-arguments
+                                                  ddcci-driver-linux))))))
+           '("acpi_call" "ddcci")))))
+
+(define %test-loadable-kernel-modules-service-0
+  (system-test
+   (name "loadable-kernel-modules-service-0")
+   (description "Tests loadable kernel modules extensible service with no
+extra modules.")
+   (value (run-loadable-kernel-modules-service-test '() '()))))
+
+(define %test-loadable-kernel-modules-service-1
+  (system-test
+   (name "loadable-kernel-modules-service-1")
+   (description "Tests loadable kernel modules extensible service with one
+extra module.")
+   (value (run-loadable-kernel-modules-service-test
+           (list ddcci-driver-linux)
+           '("ddcci")))))
+
+(define %test-loadable-kernel-modules-service-2
+  (system-test
+   (name "loadable-kernel-modules-service-2")
+   (description "Tests loadable kernel modules extensible service with two
+extra modules.")
+   (value (run-loadable-kernel-modules-service-test
            (list acpi-call-linux-module
                  (package
                    (inherit ddcci-driver-linux)
