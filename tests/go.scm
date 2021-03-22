@@ -180,13 +180,9 @@ require github.com/kr/pretty v0.2.1
 (define (testing-parse-mod name expected input)
   (define (inf? p1 p2)
     (string<? (car p1) (car p2)))
-  (let ((input-port (open-input-string input)))
-    (test-equal name
-      (sort expected inf?)
-      (sort
-       ( (@@ (guix import go) parse-go.mod)
-         input-port)
-       inf?))))
+  (test-equal name
+    (sort expected inf?)
+    (sort ((@@ (guix import go) parse-go.mod) input) inf?)))
 
 (testing-parse-mod "parse-go.mod-simple"
                    '(("good/thing" . "v1.4.5")
@@ -249,44 +245,43 @@ require github.com/kr/pretty v0.2.1
 
 (test-equal "go-module->guix-package"
   '(package
-    (name "go-github-com-go-check-check")
-    (version "0.0.0-20201130134442-10cb98267c6c")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/go-check/check.git")
-             (commit (go-version->git-ref version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "0sjjj9z1dhilhpc8pq4154czrb79z9cm044jvn75kxcjv6v5l2m5"))))
-    (build-system go-build-system)
-    (arguments
-     (quote (#:import-path "github.com/go-check/check")))
-    (inputs
-     (quasiquote (("go-github-com-kr-pretty"
-                   (unquote go-github-com-kr-pretty)))))
-    (home-page "https://github.com/go-check/check")
-    (synopsis "Instructions")
-    (description #f)
-    (license license:bsd-2))
+     (name "go-github-com-go-check-check")
+     (version "0.0.0-20201130134442-10cb98267c6c")
+     (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/go-check/check")
+              (commit (go-version->git-ref version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "0sjjj9z1dhilhpc8pq4154czrb79z9cm044jvn75kxcjv6v5l2m5"))))
+     (build-system go-build-system)
+     (arguments
+      '(#:import-path "github.com/go-check/check"))
+     (propagated-inputs
+      `(("go-github-com-kr-pretty" ,go-github-com-kr-pretty)))
+     (home-page "https://github.com/go-check/check")
+     (synopsis "Instructions")
+     (description "Package check is a rich testing extension for Go's testing \
+package.")
+     (license license:bsd-2))
 
   ;; Replace network resources with sample data.
   (call-with-temporary-directory
    (lambda (checkout)
      (mock ((web client) http-get
             (mock-http-get fixtures-go-check-test))
-           (mock ((guix http-client) http-fetch
-                  (mock-http-fetch fixtures-go-check-test))
-                 (mock ((guix git) update-cached-checkout
-                        (lambda* (url #:key ref)
-                          ;; Return an empty directory and its hash.
-                          (values checkout
-                                  (nix-base32-string->bytevector
-                                   "0sjjj9z1dhilhpc8pq4154czrb79z9cm044jvn75kxcjv6v5l2m5")
-                                  #f)))
-                       (go-module->guix-package "github.com/go-check/check")))))))
+         (mock ((guix http-client) http-fetch
+                (mock-http-fetch fixtures-go-check-test))
+             (mock ((guix git) update-cached-checkout
+                    (lambda* (url #:key ref)
+                      ;; Return an empty directory and its hash.
+                      (values checkout
+                              (nix-base32-string->bytevector
+                               "0sjjj9z1dhilhpc8pq4154czrb79z9cm044jvn75kxcjv6v5l2m5")
+                              #f)))
+                 (go-module->guix-package "github.com/go-check/check")))))))
 
 (test-end "go")
-

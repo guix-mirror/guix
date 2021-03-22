@@ -446,8 +446,8 @@ obtain a node's uniquely identifying \"key\"."
   "Return a list of package expressions for PACKAGE-NAME and all its
 dependencies, sorted in topological order.  For each package,
 call (REPO->GUIX-PACKAGE NAME :KEYS version repo), which should return a
-package expression and a list of dependencies; call (GUIX-NAME NAME) to
-obtain the Guix package name corresponding to the upstream name."
+package expression and a list of dependencies; call (GUIX-NAME PACKAGE-NAME)
+to obtain the Guix package name corresponding to the upstream name."
   (define-record-type <node>
     (make-node name version package dependencies)
     node?

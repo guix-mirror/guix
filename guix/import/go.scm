@@ -33,7 +33,7 @@
   #:use-module (guix http-client)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix memoization)
-  #:autoload   (htmlprag) (html->sxml)            ;from Guile-Lib
+  #:use-module (htmlprag)               ;from Guile-Lib
   #:autoload   (guix git) (update-cached-checkout)
   #:autoload   (gcrypt hash) (open-hash-port hash-algorithm sha256)
   #:autoload   (guix serialization) (write-file)
@@ -43,19 +43,27 @@
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 receive)
   #:use-module (ice-9 regex)
+  #:use-module (ice-9 textual-ports)
   #:use-module ((rnrs io ports) #:select (call-with-port))
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-2)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
-  #:use-module (sxml xpath)
+  #:use-module (sxml match)
+  #:use-module ((sxml xpath) #:renamer (lambda (s)
+                                         (if (eq? 'filter s)
+                                             'xfilter
+                                             s)))
   #:use-module (web client)
   #:use-module (web response)
   #:use-module (web uri)
 
-  #:export (go-path-escape
-            go-module->guix-package
+  #:export (go-module->guix-package
             go-module-recursive-import))
+
+;;; Parameterize htmlprag to parse valid HTML more reliably.
+(%strict-tokenizer? #t)
 
 ;;; Commentary:
 ;;;
@@ -90,6 +98,14 @@
 
 ;;; Code:
 
+(define http-fetch*
+  ;; Like http-fetch, but memoized and returning the body as a string.
+  (memoize (lambda args
+             (call-with-port (apply http-fetch args) get-string-all))))
+
+(define json-fetch*
+  (memoize json-fetch))
+
 (define (go-path-escape path)
   "Escape a module path by replacing every uppercase letter with an
 exclamation mark followed with its lowercase equivalent, as per the module
@@ -99,54 +115,73 @@ https://godoc.org/golang.org/x/mod/module#hdr-Escaped_Paths)."
     (string-append "!" (string-downcase (match:substring occurrence))))
   (regexp-substitute/global #f "[A-Z]" path 'pre escape 'post))
 
+;; Prevent inlining of this procedure, which is accessed by unit tests.
+(set! go-path-escape go-path-escape)
+
+(define (go.pkg.dev-info name)
+  (http-fetch* (string-append "https://pkg.go.dev/" name)))
+
 (define (go-module-latest-version goproxy-url module-path)
   "Fetch the version number of the latest version for MODULE-PATH from the
 given GOPROXY-URL server."
-  (assoc-ref (json-fetch (format #f "~a/~a/@latest" goproxy-url
-                                 (go-path-escape module-path)))
+  (assoc-ref (json-fetch* (format #f "~a/~a/@latest" goproxy-url
+                                  (go-path-escape module-path)))
              "Version"))
-
 
 (define (go-package-licenses name)
   "Retrieve the list of licenses that apply to NAME, a Go package or module
-name (e.g. \"github.com/golang/protobuf/proto\").  The data is scraped from
-the https://pkg.go.dev/ web site."
-  (let*-values (((url) (string-append "https://pkg.go.dev/" name
-                                      "?tab=licenses"))
-                ((response body) (http-get url))
-                ;; Extract the text contained in a h2 child node of any
-                ;; element marked with a "License" class attribute.
-                ((select) (sxpath `(// (* (@ (equal? (class "License"))))
-                                       h2 // *text*))))
-    (and (eq? (response-code response) 200)
-         (match (select (html->sxml body))
-           (() #f)                      ;nothing selected
-           (licenses licenses)))))
+name (e.g. \"github.com/golang/protobuf/proto\")."
+  (let* ((body (go.pkg.dev-info (string-append name "?tab=licenses")))
+         ;; Extract the text contained in a h2 child node of any
+         ;; element marked with a "License" class attribute.
+         (select (sxpath `(// (* (@ (equal? (class "License"))))
+                              h2 // *text*))))
+    (select (html->sxml body))))
 
-(define (go.pkg.dev-info name)
-  (http-get (string-append "https://pkg.go.dev/" name)))
-(define go.pkg.dev-info*
-  (memoize go.pkg.dev-info))
+(define (sxml->texi sxml-node)
+  "A very basic SXML to Texinfo converter which attempts to preserve HTML
+formatting and links as text."
+  (sxml-match sxml-node
+    ((strong ,text)
+     (format #f "@strong{~a}" text))
+    ((a (@ (href ,url)) ,text)
+     (format #f "@url{~a,~a}" url text))
+    ((code ,text)
+     (format #f "@code{~a}" text))
+    (,something-else something-else)))
 
 (define (go-package-description name)
   "Retrieve a short description for NAME, a Go package name,
-e.g. \"google.golang.org/protobuf/proto\".  The data is scraped from the
-https://pkg.go.dev/ web site."
-  (let*-values (((response body) (go.pkg.dev-info* name))
-                ;; Extract the text contained in a h2 child node of any
-                ;; element marked with a "License" class attribute.
-                ((select) (sxpath
-                           `(// (section
-                                 (@ (equal? (class "Documentation-overview"))))
-                                (p 1)))))
-    (and (eq? (response-code response) 200)
-         (match (select (html->sxml body))
-           (() #f)                      ;nothing selected
-           (((p . strings))
-            ;; The paragraph text is returned as a list of strings embedding
-            ;; newline characters.  Join them and strip the newline
-            ;; characters.
-            (string-delete #\newline (string-join strings)))))))
+e.g. \"google.golang.org/protobuf/proto\"."
+  (let* ((body (go.pkg.dev-info name))
+         (sxml (html->sxml body))
+         (overview ((sxpath
+                     `(//
+                       (* (@ (equal? (class "Documentation-overview"))))
+                       (p 1))) sxml))
+         ;; Sometimes, the first paragraph just contains images/links that
+         ;; has only "\n" for text.  The following filter is designed to
+         ;; omit it.
+         (contains-text? (lambda (node)
+                           (remove string-null?
+                                   (map string-trim-both
+                                        (filter (node-typeof? '*text*)
+                                                (cdr node))))))
+         (select-content (sxpath
+                          `(//
+                            (* (@ (equal? (class "UnitReadme-content"))))
+                            div // p ,(xfilter contains-text?))))
+         ;; Fall-back to use content; this is less desirable as it is more
+         ;; verbose, but not every page has an overview.
+         (description (if (not (null? overview))
+                          overview
+                          (select-content sxml)))
+         (description* (and (not (null? description))
+                            (first description))))
+    (match description*
+      (() #f)                           ;nothing selected
+      ((p elements ...)
+       (apply string-append (filter string? (map sxml->texi elements)))))))
 
 (define (go-package-synopsis module-name)
   "Retrieve a short synopsis for a Go module named MODULE-NAME,
@@ -154,17 +189,17 @@ e.g. \"google.golang.org/protobuf\".  The data is scraped from
 the https://pkg.go.dev/ web site."
   ;; Note: Only the *module* (rather than package) page has the README title
   ;; used as a synopsis on the https://pkg.go.dev web site.
-  (let*-values (((response body) (go.pkg.dev-info* module-name))
-                ;; Extract the text contained in a h2 child node of any
-                ;; element marked with a "License" class attribute.
-                ((select) (sxpath
-                           `(// (div (@ (equal? (class "UnitReadme-content"))))
-                                // h3 *text*))))
-    (and (eq? (response-code response) 200)
-         (match (select (html->sxml body))
-           (() #f)                      ;nothing selected
-           ((title more ...)            ;title is the first string of the list
-            (string-trim-both title))))))
+  (let* ((url (string-append "https://pkg.go.dev/" module-name))
+         (body (http-fetch* url))
+         ;; Extract the text contained in a h2 child node of any
+         ;; element marked with a "License" class attribute.
+         (select-title (sxpath
+                        `(// (div (@ (equal? (class "UnitReadme-content"))))
+                             // h3 *text*))))
+    (match (select-title (html->sxml body))
+      (() #f)                           ;nothing selected
+      ((title more ...)                 ;title is the first string of the list
+       (string-trim-both title)))))
 
 (define (list->licenses licenses)
   "Given a list of LICENSES mostly following the SPDX conventions, return the
@@ -189,13 +224,13 @@ corresponding Guix license or 'unknown-license!"
                          'unknown-license!)))
               licenses))
 
-(define (fetch-go.mod goproxy-url module-path version)
-  "Fetches go.mod from the given GOPROXY-URL server for the given MODULE-PATH
-and VERSION."
-  (let ((url (format #f "~a/~a/@v/~a.mod" goproxy-url
+(define (fetch-go.mod goproxy module-path version)
+  "Fetch go.mod from the given GOPROXY server for the given MODULE-PATH
+and VERSION and return an input port."
+  (let ((url (format #f "~a/~a/@v/~a.mod" goproxy
                      (go-path-escape module-path)
                      (go-path-escape version))))
-    (http-fetch url)))
+    (http-fetch* url)))
 
 (define %go.mod-require-directive-rx
   ;; A line in a require directive is composed of a module path and
@@ -216,9 +251,8 @@ and VERSION."
     "[[:blank:]]+" "=>" "[[:blank:]]+"
     "([^[:blank:]]+)([[:blank:]]+([^[:blank:]]+))?")))
 
-(define (parse-go.mod port)
-  "Parse the go.mod file accessible via the input PORT, returning a list of
-requirements."
+(define (parse-go.mod content)
+  "Parse the go.mod file CONTENT, returning a list of requirements."
   (define-record-type <results>
     (make-results requirements replacements)
     results?
@@ -229,7 +263,7 @@ requirements."
   (define (toplevel results)
     "Main parser, RESULTS is a pair of alist serving as accumulator for
      all encountered requirements and replacements."
-    (let ((line (read-line port)))
+    (let ((line (read-line)))
       (cond
        ((eof-object? line)
         ;; parsing ended, give back the result
@@ -255,7 +289,7 @@ requirements."
         (toplevel results)))))
 
   (define (in-require results)
-    (let ((line (read-line port)))
+    (let ((line (read-line)))
       (cond
        ((eof-object? line)
         ;; this should never happen here but we ignore silently
@@ -267,7 +301,7 @@ requirements."
         (in-require (require-directive results line))))))
 
   (define (in-replace results)
-    (let ((line (read-line port)))
+    (let ((line (read-line)))
       (cond
        ((eof-object? line)
         ;; this should never happen here but we ignore silently
@@ -306,7 +340,9 @@ requirements."
         (($ <results> requirements replaced)
          (make-results (alist-cons module-path version requirements) replaced)))))
 
-  (let ((results (toplevel (make-results '() '()))))
+  (let ((results (with-input-from-string content
+                   (lambda _
+                     (toplevel (make-results '() '()))))))
     (match results
       (($ <results> requirements replaced)
        ;; At last we remove replaced modules from the requirements list
@@ -325,8 +361,10 @@ requirements."
   (url-prefix vcs-url-prefix)
   (root-regex vcs-root-regex)
   (type vcs-type))
+
 (define (make-vcs prefix regexp type)
-    (%make-vcs prefix (make-regexp regexp) type))
+  (%make-vcs prefix (make-regexp regexp) type))
+
 (define known-vcs
   ;; See the following URL for the official Go equivalent:
   ;; https://github.com/golang/go/blob/846dce9d05f19a1f53465e62a304dea21b99f910/src/cmd/go/internal/vcs/vcs.go#L1026-L1087
@@ -387,6 +425,14 @@ hence the need to derive this information."
                                           "/" "-")
                                          "_" "-"))))
 
+(define (strip-.git-suffix/maybe repo-url)
+  "Strip a repository URL '.git' suffix from REPO-URL if hosted at GitHub."
+  (match repo-url
+    ((and (? (cut string-prefix? "https://github.com" <>))
+          (? (cut string-suffix? ".git" <>)))
+     (string-drop-right repo-url 4))
+    (_ repo-url)))
+
 (define-record-type <module-meta>
   (make-module-meta import-prefix vcs repo-root)
   module-meta?
@@ -399,21 +445,22 @@ hence the need to derive this information."
 because goproxy servers don't currently provide all the information needed to
 build a package."
   ;; <meta name="go-import" content="import-prefix vcs repo-root">
-  (let* ((port (http-fetch (format #f "https://~a?go-get=1" module-path)))
+  (let* ((meta-data (http-fetch* (format #f "https://~a?go-get=1" module-path)))
          (select (sxpath `(// head (meta (@ (equal? (name "go-import"))))
                               // content))))
-    (match (select (call-with-port port html->sxml))
-      (() #f)                         ;nothing selected
+    (match (select (html->sxml meta-data))
+      (() #f)                           ;nothing selected
       (((content content-text))
        (match (string-split content-text #\space)
          ((root-path vcs repo-url)
-          (make-module-meta root-path (string->symbol vcs) repo-url)))))))
+          (make-module-meta root-path (string->symbol vcs)
+                            (strip-.git-suffix/maybe repo-url))))))))
 
-(define (module-meta-data-repo-url meta-data goproxy-url)
+(define (module-meta-data-repo-url meta-data goproxy)
   "Return the URL where the fetcher which will be used can download the
 source."
   (if (member (module-meta-vcs meta-data) '(fossil mod))
-      goproxy-url
+      goproxy
       (module-meta-repo-root meta-data)))
 
 ;; XXX: Copied from (guix scripts hash).
@@ -466,6 +513,9 @@ control system is being used."
           (method git-fetch)
           (uri (git-reference
                 (url ,vcs-repo-url)
+                ;; This is done because the version field of the package,
+                ;; which the generated quoted expression refers to, has been
+                ;; stripped of any 'v' prefixed.
                 (commit ,(if (and plain-version? v-prefixed?)
                              '(string-append "v" version)
                              '(go-version->git-ref version)))))
@@ -505,8 +555,8 @@ control system is being used."
 (define* (go-module->guix-package module-path #:key
                                   (goproxy-url "https://proxy.golang.org"))
   (let* ((latest-version (go-module-latest-version goproxy-url module-path))
-         (port (fetch-go.mod goproxy-url module-path latest-version))
-         (dependencies (map car (call-with-port port parse-go.mod)))
+         (content (fetch-go.mod goproxy-url module-path latest-version))
+         (dependencies (map car (parse-go.mod content)))
          (guix-name (go-module->guix-package-name module-path))
          (root-module-path (module-path->repository-root module-path))
          ;; The VCS type and URL are not included in goproxy information. For
@@ -527,14 +577,17 @@ control system is being used."
         (build-system go-build-system)
         (arguments
          '(#:import-path ,root-module-path))
-        ,@(maybe-inputs (map go-module->guix-package-name dependencies))
+        ,@(maybe-propagated-inputs
+           (map go-module->guix-package-name dependencies))
         (home-page ,(format #f "https://~a" root-module-path))
         (synopsis ,synopsis)
-        (description ,description)
-        (license ,(match (and=> licenses list->licenses)
-                    ((license) license)
-                    ((licenses ...) `(list ,@licenses))
-                    (x x))))
+        (description ,(and=> description beautify-description))
+        (license ,(match (list->licenses licenses)
+                    (() #f)             ;unknown license
+                    ((license)          ;a single license
+                     license)
+                    ((license ...)      ;a list of licenses
+                     `(list ,@license)))))
      dependencies)))
 
 (define go-module->guix-package* (memoize go-module->guix-package))
