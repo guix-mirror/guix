@@ -6288,12 +6288,10 @@ spreadsheet file.")
         (base32 "1bx2pj0ysmyd1ryd5s43m3c7n5k067x1aciqiiyg4kjswlcs6xjf"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-futures" ,rust-futures-0.1)
-        ("rust-quickcheck" ,rust-quickcheck-0.2))
+     `(#:cargo-inputs
+       (("rust-quickcheck" ,rust-quickcheck-0.9))
        #:cargo-development-inputs
-       (("rust-quickcheck" ,rust-quickcheck-0.2))))
+       (("rust-quickcheck" ,rust-quickcheck-0.9))))
     (home-page "https://github.com/capnproto/capnproto-rust")
     (synopsis "Runtime library for Cap'n Proto data encoding")
     (description "This package provides a runtime library for Cap'n Proto data
