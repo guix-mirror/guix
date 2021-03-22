@@ -34,6 +34,7 @@
 ;;; Copyright © 2019 Riku Viitanen <riku.viitanen0@gmail.com>
 ;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
 ;;; Copyright © 2021 Leo Prikler <leo.prikler@student.tugraz.at>
+;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -152,6 +153,7 @@
   #:use-module (gnu packages video)
   #:use-module (gnu packages vim)       ;for 'xxd'
   #:use-module (gnu packages web)
+  #:use-module (gnu packages webkit)
   #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
@@ -4783,6 +4785,67 @@ plugin formats; the MIDI sequencer provides a piano roll, a drum editor, a
 list view, and a score editor.  MusE aims to be a complete multitrack virtual
 studio.")
     (license license:gpl2+)))
+
+(define-public gsequencer
+  (package
+    (name "gsequencer")
+    (version "3.7.48")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.savannah.gnu.org/git/gsequencer.git/")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0pqaj09x3lzcj0zbbkqpyaky9i1w462bhhvg1akh73nzwvyy46zd"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'prepare-x-for-test
+           (lambda _
+             (system "Xvfb &")
+             (setenv "DISPLAY" ":0")
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("cunit" ,cunit)
+       ("gettext" ,gettext-minimal)
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk-doc" ,gtk-doc)
+       ("libtool" ,libtool)
+       ("libxslt" ,libxslt)
+       ("pkg-config" ,pkg-config)
+       ("xorg-server" ,xorg-server-for-tests)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("dssi" ,dssi)
+       ("fftw" ,fftw)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("gstreamer" ,gstreamer)
+       ("gtk+" ,gtk+)
+       ("jack" ,jack-1)
+       ("ladspa" ,ladspa)
+       ("libinstpatch" ,libinstpatch)
+       ("libsamplerate" ,libsamplerate)
+       ("libsndfile" ,libsndfile)
+       ("libsoup" ,libsoup)
+       ("libuuid" ,util-linux "lib")
+       ("libxml2" ,libxml2)
+       ("lv2" ,lv2)
+       ("pulseaudio" ,pulseaudio)
+       ("webkitgtk" ,webkitgtk)))
+    (home-page "https://nongnu.org/gsequencer/")
+    (synopsis "Advanced Gtk+ Sequencer")
+    (description
+     "GSequencer allows you to play, capture and create music.  There is a piano
+roll, automation and wave form editor.  It has machines for playing drum samples,
+Soundfont2 sound containers and synthesizers.  They usually can be connected to a
+MIDI input source (instrument).  It has support for various audio backends like
+ALSA, Pulseaudio, JACK, OSSv4 and CoreAudio.")
+    (license license:gpl3+)))
 
 (define-public dssi
   (package
