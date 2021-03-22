@@ -10643,6 +10643,44 @@ large-scale and fully automated analysis.")
 the earlier snpMatrix package, allowing for uncertainty in genotypes.")
     (license license:gpl3)))
 
+(define-public r-chromstar
+  (package
+    (name "r-chromstar")
+    (version "1.16.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "chromstaR" version))
+       (sha256
+        (base32
+         "0vgpb7g2cncdn82hia2yzzachyns2zbd7906662g990qjnp2xlm1"))))
+    (properties `((upstream-name . "chromstaR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bamsignals" ,r-bamsignals)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-chromstardata" ,r-chromstardata)
+       ("r-doparallel" ,r-doparallel)
+       ("r-foreach" ,r-foreach)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicalignments" ,r-genomicalignments)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-iranges" ,r-iranges)
+       ("r-mvtnorm" ,r-mvtnorm)
+       ("r-reshape2" ,r-reshape2)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-s4vectors" ,r-s4vectors)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/ataudt/chromstaR")
+    (synopsis "Chromatin state analysis for ChIP-Seq data")
+    (description
+     "This package implements functions for combinatorial and differential
+analysis of ChIP-seq data.  It includes uni- and multivariate peak-calling,
+export to genome browser viewable files, and functi ons for enrichment
+analyses.")
+    (license license:artistic2.0)))
+
 (define-public r-sushi
   (package
     (name "r-sushi")
