@@ -707,7 +707,7 @@ old-fashioned output methods with powerful ascii-art renderer.")
 (define-public celluloid
   (package
     (name "celluloid")
-    (version "0.20")
+    (version "0.21")
     (source
      (origin
        (method url-fetch)
@@ -715,7 +715,7 @@ old-fashioned output methods with powerful ascii-art renderer.")
                            "/releases/download/v" version
                            "/celluloid-" version ".tar.xz"))
        (sha256
-        (base32 "0kjjv2pcdvwcn4yi8kbpsca7pnx6cx6xdznv7ppqm0fssx68qyb3"))))
+        (base32 "1dvyf21iv9hrgv99szc24386vkacmhidm5b4d31hqqjs3b6di692"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("intltool" ,intltool)
