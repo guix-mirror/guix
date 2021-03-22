@@ -6345,6 +6345,28 @@ encoding.")
 messages.")
     (license license:expat)))
 
+(define-public rust-capnp-futures-0.10
+  (package
+    (inherit rust-capnp-futures-0.13)
+    (name "rust-capnp-futures")
+    (version "0.10.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "capnp-futures" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0qdiqkp9mh4acpa0dqhpzv2gwf949rj3m85mgwl1rih6gvgbh1zs"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-capnp" ,rust-capnp-0.10)
+        ("rust-futures" ,rust-futures-0.1))
+       #:cargo-development-inputs
+       (("rust-capnp" ,rust-capnp-0.10)
+        ("rust-quickcheck" ,rust-quickcheck-0.2))))))
+
 (define-public rust-capnp-rpc-0.13
   (package
     (name "rust-capnp-rpc")
