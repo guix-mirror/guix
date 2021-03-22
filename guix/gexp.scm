@@ -258,14 +258,17 @@ OBJ must be an object that has an associated gexp compiler, such as a
         (#f
          (raise (condition (&gexp-input-error (input obj)))))
         (lower
-         ;; Cache in STORE the result of lowering OBJ.
-         (mcached (mlet %store-monad ((lowered (lower obj system target)))
-                    (if (and (struct? lowered)
-                             (not (derivation? lowered)))
-                        (loop lowered)
-                        (return lowered)))
-                  obj
-                  system target graft?))))))
+         ;; Cache in STORE the result of lowering OBJ.  If OBJ is a
+         ;; derivation, bypass the cache.
+         (if (derivation? obj)
+             (return obj)
+             (mcached (mlet %store-monad ((lowered (lower obj system target)))
+                        (if (and (struct? lowered)
+                                 (not (derivation? lowered)))
+                            (loop lowered)
+                            (return lowered)))
+                      obj
+                      system target graft?)))))))
 
 (define* (lower+expand-object obj
                               #:optional (system (%current-system))
@@ -280,9 +283,11 @@ expand to file names, but it's possible to expand to a plain data type."
        (raise (condition (&gexp-input-error (input obj)))))
       (lower
        (mlet* %store-monad ((graft?  (grafting?))
-                            (lowered (mcached (lower obj system target)
-                                              obj
-                                              system target graft?)))
+                            (lowered (if (derivation? obj)
+                                         (return obj)
+                                         (mcached (lower obj system target)
+                                                  obj
+                                                  system target graft?))))
          ;; LOWER might return something that needs to be further
          ;; lowered.
          (if (struct? lowered)
