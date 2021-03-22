@@ -1264,7 +1264,8 @@ try again later")
           ((? origin? origin)
            ;; Since "save" origins are not supported for non-VCS source, all
            ;; we can do is tell whether a given tarball is available or not.
-           (if (origin-hash origin)               ;XXX: for ungoogled-chromium
+           (if (and=> (origin-hash origin)          ;XXX: for ungoogled-chromium
+                      content-hash-value)           ;& icecat
                (let ((hash (origin-hash origin)))
                  (match (lookup-content (content-hash-value hash)
                                         (symbol->string
