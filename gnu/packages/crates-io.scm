@@ -40589,14 +40589,14 @@ browsers.")
 (define-public rust-syn-1
   (package
     (name "rust-syn")
-    (version "1.0.60")
+    (version "1.0.64")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "syn" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1080gw6mlja7yl26crya3k403wjdp7v3wx9mxcmpcnlar9z5j067"))))
+        (base32 "0vsx3448kyym7s5kybrl0qixgya33gzjxaidahya00k1jzlx3n9z"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
