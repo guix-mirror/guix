@@ -591,40 +591,12 @@ vim editor and also easily configurable during runtime.  Vimb is mostly keyboard
 driven and does not detract you from your daily work.")
     (license license:gpl3+)))
 
-;; Nyxt 2 pre-release 5 is incompatible with the new nickname "class*" of defclass-star.
-;; Use the older commit then.
-(define sbcl-hu.dwim.defclass-star--no-nickname
-  (let ((commit "2cf30b37006824ec912cf7732fe6c4f4b414597f"))
-    (package
-      (name "sbcl-hu.dwim.defclass-star")
-      ;; We used to set version from the date when it was a darcs repo, so we
-      ;; keep the year so that package gets updated on previous installs.
-      (version (git-version "2015-07-09" "1" commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/hu-dwim/hu.dwim.defclass-star")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "0zmzvwgcp6lpkqxnfphd05v20xqsvz392mx1v98469kavh4zd7hf"))))
-      (build-system asdf-build-system/sbcl)
-      (native-inputs
-       `(("hu.dwim.asdf" ,sbcl-hu.dwim.asdf)))
-      (arguments
-       '(#:tests? #f))
-      (home-page "https://github.com/hu-dwim/hu.dwim.defclass-star")
-      (synopsis "See sbcl-hu.dwim.defclass-star")
-      (description "See sbcl-hu.dwim.defclass-star.")
-      (license license:public-domain))))
-
 (define-public nyxt
   (package
     (name "nyxt")
     ;; Package the pre-release because latest stable 1.5.0 does not build
     ;; anymore.
-    (version "2-pre-release-5")
+    (version "2-pre-release-6")
     (source
      (origin
        (method git-fetch)
@@ -635,7 +607,7 @@ driven and does not detract you from your daily work.")
              (commit version)))
        (sha256
         (base32
-         "1sdafyhiicasd4wyzqnzdyrr16mz55y4b2hf5ya6i7nvm2vyhywl"))
+         "0kcqp3p070i6x2jj27h8pxzvmhrzsl4kl3vkc8m76abkxc9lvn03"))
        (file-name (git-file-name "nyxt" version))))
     (build-system gnu-build-system)
     (arguments
@@ -696,6 +668,8 @@ driven and does not detract you from your daily work.")
        ("cl-calispel" ,sbcl-calispel)
        ("cl-containers" ,sbcl-cl-containers)
        ("cl-css" ,sbcl-cl-css)
+       ("cl-custom-hash-table" ,sbcl-custom-hash-table)
+       ("cl-html-diff" ,sbcl-cl-html-diff)
        ("cl-json" ,sbcl-cl-json)
        ("cl-markup" ,sbcl-cl-markup)
        ("cl-ppcre" ,sbcl-cl-ppcre)
@@ -704,16 +678,15 @@ driven and does not detract you from your daily work.")
        ("cluffer" ,sbcl-cluffer)
        ("dexador" ,sbcl-dexador)
        ("enchant" ,sbcl-enchant)
+       ("file-attributes" ,sbcl-file-attributes)
        ("fset" ,sbcl-fset)
-       ;; TODO: Use latest upstream for 2 pre-release 6 onward.
-       ("hu.dwim.defclass-star" ,sbcl-hu.dwim.defclass-star--no-nickname)
+       ("hu.dwim.defclass-star" ,sbcl-hu.dwim.defclass-star)
        ("iolib" ,sbcl-iolib)
        ("local-time" ,sbcl-local-time)
        ("log4cl" ,sbcl-log4cl)
        ("mk-string-metrics" ,sbcl-mk-string-metrics)
        ("moptilities" ,sbcl-moptilities)
        ("named-readtables" ,sbcl-named-readtables)
-       ("osicat" ,sbcl-osicat)
        ("parenscript" ,sbcl-parenscript)
        ("plump" ,sbcl-plump)
        ("quri" ,sbcl-quri)
@@ -726,7 +699,6 @@ driven and does not detract you from your daily work.")
        ("trivial-package-local-nicknames" ,sbcl-trivial-package-local-nicknames)
        ("trivial-types" ,sbcl-trivial-types)
        ("unix-opts" ,sbcl-unix-opts)
-       ("usocket" ,sbcl-usocket)
        ;; WebKitGTK deps
        ("cl-cffi-gtk" ,sbcl-cl-cffi-gtk)
        ("cl-webkit" ,sbcl-cl-webkit)
