@@ -20,6 +20,7 @@
 ;;; Copyright © 2020 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2020 Bonface Munyoki Kilyungi <bonfacemunyoki@gmail.com>
 ;;; Copyright © 2021 Tim Howes <timhowes@lavabit.com>
+;;; Copyright © 2021 Hong Li <hli@mdc-berlin.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -15353,3 +15354,64 @@ biological processes.  SBML is useful for models of metabolism, cell
 signaling, and more.  It continues to be evolved and expanded by an
 international community.")
     (license license:lgpl2.1+)))
+
+(define-public r-signac
+  (let ((commit "e0512d348adeda4a3f23a2e8f56d1fe09840e03c")
+        (revision "1"))
+    (package
+      (name "r-signac")
+      (version (git-version "1.1.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/timoast/signac/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1yihhrv7zs87ax61la1nb4y12lg3knraw4b20k5digbcwm8488lb"))))
+      (properties `((upstream-name . "Signac")))
+      (build-system r-build-system)
+      (inputs `(("zlib" ,zlib)))
+      (propagated-inputs
+       `(("r-annotationfilter" ,r-annotationfilter)
+         ("r-biocgenerics" ,r-biocgenerics)
+         ("r-biostrings" ,r-biostrings)
+         ("r-biovizbase" ,r-biovizbase)
+         ("r-data-table" ,r-data-table)
+         ("r-dplyr" ,r-dplyr)
+         ("r-fastmatch" ,r-fastmatch)
+         ("r-future" ,r-future)
+         ("r-future-apply" ,r-future-apply)
+         ("r-genomeinfodb" ,r-genomeinfodb)
+         ("r-genomicranges" ,r-genomicranges)
+         ("r-ggbio" ,r-ggbio)
+         ("r-ggforce" ,r-ggforce)
+         ("r-ggplot2" ,r-ggplot2)
+         ("r-ggrepel" ,r-ggrepel)
+         ("r-ggseqlogo" ,r-ggseqlogo)
+         ("r-iranges" ,r-iranges)
+         ("r-irlba" ,r-irlba)
+         ("r-lsa" ,r-lsa)
+         ("r-matrix" ,r-matrix)
+         ("r-patchwork" ,r-patchwork)
+         ("r-pbapply" ,r-pbapply)
+         ("r-rcpp" ,r-rcpp)
+         ("r-rcpproll" ,r-rcpproll)
+         ("r-rsamtools" ,r-rsamtools)
+         ("r-s4vectors" ,r-s4vectors)
+         ("r-scales" ,r-scales)
+         ("r-seurat" ,r-seurat)
+         ("r-seuratobject" ,r-seuratobject)
+         ("r-stringi" ,r-stringi)
+         ("r-tidyr" ,r-tidyr)))
+      (home-page "https://github.com/timoast/signac/")
+      (synopsis "Analysis of single-cell chromatin data")
+      (description
+       "This package provides a framework for the analysis and exploration of
+single-cell chromatin data.  The Signac package contains functions for
+quantifying single-cell chromatin data, computing per-cell quality control
+metrics, dimension reduction and normalization, visualization, and DNA
+sequence motif analysis.")
+      (license license:expat))))
