@@ -6381,11 +6381,10 @@ messages.")
     (native-inputs
      `(("capnproto" ,capnproto)))
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-capnp" ,rust-capnp-0.13)
         ("rust-capnp-futures" ,rust-capnp-futures-0.13)
-        ("rust-futures" ,rust-futures-0.1))
+        ("rust-futures" ,rust-futures-0.3))
        #:cargo-development-inputs
        (("rust-capnpc" ,rust-capnpc-0.13))))
     (home-page "https://github.com/capnproto/capnproto-rust")
