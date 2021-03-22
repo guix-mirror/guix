@@ -2192,16 +2192,18 @@ displayed on the other side of the bus.")
 (define-public gtk-layer-shell
   (package
     (name "gtk-layer-shell")
-    (version "0.1.0")
+    (version "0.6.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/wmww/gtk-layer-shell/releases/download/v"
-             version "/gtk-layer-shell-" version ".tar.xz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/wmww/gtk-layer-shell")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0ncklk3z0fzlz6p76jdcrr1ykyp1f4ykjjch4x2hfp9bwsnl4a3m"))))
+        (base32 "1kcp4p3s7sdh9lwniybjdarfy8z69j2j23hfrw98amhwhq39gdcc"))))
     (build-system meson-build-system)
+    (arguments `(#:configure-flags (list "-Dtests=true")))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("gobject-introspection" ,gobject-introspection)))
     (inputs `(("wayland" ,wayland)
