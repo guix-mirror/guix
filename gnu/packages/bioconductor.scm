@@ -9,6 +9,7 @@
 ;;; Copyright © 2020 Peter Lo <peterloleungyau@gmail.com>
 ;;; Copyright © 2020, 2021 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2021 Hong Li <hli@mdc-berlin.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -926,6 +927,26 @@ All datasets are restricted to protein coding genes.")
      "This package provides raw beta values from 36 samples across 3 groups
 from Illumina 450k methylation arrays.")
     (license license:artistic2.0)))
+
+(define-public r-chromstardata
+  (package
+    (name "r-chromstardata")
+    (version "1.16.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "chromstaRData" version 'experiment))
+       (sha256
+        (base32
+         "0ph80d53598635bb8g61acg5rqwnj8644a0gh297r4hgbvwlflab"))))
+    (properties `((upstream-name . "chromstaRData")))
+    (build-system r-build-system)
+    (home-page "https://bioconductor.org/packages/chromstaRData/")
+    (synopsis "ChIP-seq data for demonstration purposes")
+    (description
+     "This package provides ChIP-seq data for demonstration purposes in the
+chromstaR package.")
+    (license license:gpl3)))
 
 (define-public r-genelendatabase
   (package
