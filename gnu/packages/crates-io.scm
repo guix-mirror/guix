@@ -6332,13 +6332,12 @@ encoding.")
         (base32 "18q93ncbfcnjq7zhvy9idnifypmi2qcp775q7454y3r4lvvdcyyw"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-capnp" ,rust-capnp-0.13)
-        ("rust-futures" ,rust-futures-0.1))
+        ("rust-futures" ,rust-futures-0.3))
        #:cargo-development-inputs
        (("rust-capnp" ,rust-capnp-0.13)
-        ("rust-quickcheck" ,rust-quickcheck-0.2))))
+        ("rust-quickcheck" ,rust-quickcheck-0.9))))
     (home-page "https://github.com/capnproto/capnproto-rust")
     (synopsis "Async serialization for Cap'n Proto messages")
     (description "This package provides async serialization for Cap'n Proto
