@@ -203,3 +203,19 @@
 several crates, providing both a low-level and a high-level API for dealing
 with OpenPGP data.")
     (license license:gpl2+)))
+
+(define-public sequoia4pEp
+  ;; Currently pEp Engine requires sequoia in not-so-current version
+  (package/inherit sequoia
+    (name "sequoia")
+    (version "0.15.0-pEp")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/sequoia-pgp/sequoia.git")
+             (commit "0eb1b6cd846ea8c36b3dfdf01ec88383fc64f2fe")))
+       (sha256
+        (base32 "06dqs9whwp9lfibwp8dqm0aw4nm3s3v4jp2n4fz51zcvsld40nfh"))
+       (file-name (git-file-name name version))))
+    (properties `((hidden? . #t)))))
