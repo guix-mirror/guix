@@ -6395,6 +6395,27 @@ messages.")
 remote procedure call protocol")
     (license license:expat)))
 
+(define-public rust-capnp-rpc-0.10
+  (package
+    (inherit rust-capnp-rpc-0.13)
+    (name "rust-capnp-rpc")
+    (version "0.10.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "capnp-rpc" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1j6xg7yays1hlm1045wviyn1642yvvi2p4kba26yk07a0kafr3jn"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-capnp" ,rust-capnp-0.10)
+        ("rust-capnp-futures" ,rust-capnp-futures-0.10)
+        ("rust-capnpc" ,rust-capnpc-0.10)
+        ("rust-futures" ,rust-futures-0.1))))))
+
 (define-public rust-capnpc-0.13
   (package
     (name "rust-capnpc")
