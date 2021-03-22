@@ -6393,6 +6393,24 @@ remote procedure call protocol")
     (description "Cap'n Proto code generation")
     (license license:expat)))
 
+(define-public rust-capnpc-0.10
+  (package
+    (inherit rust-capnpc-0.13)
+    (name "rust-capnpc")
+    (version "0.10.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "capnpc" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1zxbmdkr0xfzkfq9p8zn7pp9jjq275qhr8fh9a0cc0ab37yfvbyj"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-capnp" ,rust-capnp-0.10))))))
+
 (define-public rust-caps-0.3
   (package
     (name "rust-caps")
