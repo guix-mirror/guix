@@ -3464,7 +3464,7 @@ match, cannon keep, and grave-itation pit.")
 (define-public minetest
   (package
     (name "minetest")
-    (version "5.3.0")
+    (version "5.4.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3473,7 +3473,7 @@ match, cannon keep, and grave-itation pit.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "03ga3j3cg38w4lg4d4qxasmnjdl8n3lbizidrinanvyfdyvznyh6"))
+                "1a17g6cmxrscnqwpwrd4w2ck3dgvplyfq4kzyimilfpqar1q69j9"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -3541,7 +3541,7 @@ in different ways.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1liciwlh013z5h08ib0psjbwn5wkvlr937ir7kslfk4vly984cjx"))))
+                "11dz36z0pj2r7i8xm8v5lskzws81ckj6sc0avlmvdl8qdc9x83w5"))))
     (build-system trivial-build-system)
     (native-inputs
      `(("source" ,source)))
