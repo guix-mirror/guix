@@ -6163,15 +6163,17 @@ interface to the variable facility of UEFI boot firmware.")
 (define-public efibootmgr
   (package
     (name "efibootmgr")
-    (version "16")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/rhinstaller/efibootmgr"
-                                  "/releases/download/" version "/efibootmgr"
-                                  "-" version ".tar.bz2"))
-              (sha256
-               (base32
-                "0pzn67vxxaf7jna4cd0i4kqm60h04kb21hckksv9z82q9gxra1wm"))))
+    (version "17")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rhinstaller/efibootmgr")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1niicijxg59rsmiw3rsjwy4bvi1n42dynvm01lnp9haixdzdpq03"))
+       (patches (search-patches "efibootmgr-remove-extra-decl.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ;no tests
