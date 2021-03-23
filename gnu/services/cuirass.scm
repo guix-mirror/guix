@@ -66,9 +66,11 @@
   cuirass-remote-server-configuration make-cuirass-remote-server-configuration
   cuirass-remote-server-configuration?
   (backend-port     cuirass-remote-server-configuration-backend-port ;int
-                    (default #f))
+                    (default 5555))
+  (log-port         cuirass-remote-server-configuration-log-port ;int
+                    (default 5556))
   (publish-port     cuirass-remote-server-configuration-publish-port ;int
-                    (default #f))
+                    (default 5557))
   (log-file         cuirass-remote-server-log-file ;string
                     (default "/var/log/cuirass-remote-server.log"))
   (cache            cuirass-remote-server-configuration-cache ;string
@@ -328,7 +330,7 @@
   (log-file         cuirass-remote-worker-log-file ;string
                     (default "/var/log/cuirass-remote-worker.log"))
   (publish-port     cuirass-remote-worker-configuration-publish-port ;int
-                    (default #f))
+                    (default 5558))
   (public-key       cuirass-remote-worker-configuration-public-key ;string
                     (default #f))
   (private-key      cuirass-remote-worker-configuration-private-key ;string
