@@ -718,7 +718,7 @@ more.")
 (define-public cgal
   (package
     (name "cgal")
-    (version "5.2")
+    (version "5.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -726,9 +726,7 @@ more.")
                     "/CGAL-" version ".tar.xz"))
               (sha256
                (base32
-                "08sr2k2dm4zasfbvisqpvs6djqw3rywzwpzr701an870nvnqck3l"))
-              (patches (search-patches "cgal-security-pr-5371.patch"))
-              (patch-flags '("-p2"))))
+                "1rhrpjsp4081nn2q215h78kc4msrj0081zg65k1gfp5hl88bg03y"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f))                    ; no test target
