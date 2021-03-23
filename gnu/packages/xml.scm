@@ -2311,6 +2311,48 @@ outputting XML data from Java code.")
 and back again.")
     (license license:bsd-3)))
 
+(define-public java-mxparser
+  (package
+    (name "java-mxparser")
+    (version "1.2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/x-stream/mxparser")
+              (commit (string-append "v-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0i3jrjbz4hgf62fm1ix7nlcmhi4kcv4flqsfvh7a3l2v7nsp5ryb"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "mxparser.jar"
+       #:source-dir "src/main/java"
+       #:test-dir "src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "src/main/resources" "build/classes")
+             #t)))))
+    (propagated-inputs
+     `(("java-xmlpull-api-v1" ,java-xmlpull-api-v1)))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "https://github.com/x-stream/mxparser")
+    (synopsis "Streaming pull XML parser forked from @code{java-xpp3}")
+    (description "Xml Pull Parser (in short XPP) is a streaming pull XML
+parser and should be used when there is a need to process quickly and
+efficiently all input elements (for example in SOAP processors). This
+package is a stable XmlPull parsing engine that is based on ideas from XPP
+and in particular XPP2 but completely revised and rewritten to take the best
+advantage of JIT JVMs.
+
+MXParser is a fork of xpp3_min 1.1.7 containing only the parser with merged
+changes of the Plexus fork. It is an implementation of the XMLPULL V1 API
+(parser only).")
+    (license (license:non-copyleft "file://LICENSE.txt"))))
+
 (define-public xmlrpc-c
   (package
     (name "xmlrpc-c")
