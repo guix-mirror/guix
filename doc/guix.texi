@@ -27085,9 +27085,9 @@ The verbosity level of the daemon.
 @subsection Continuous Integration
 
 @cindex continuous integration
-@uref{https://git.savannah.gnu.org/cgit/guix/guix-cuirass.git, Cuirass} is a
-continuous integration tool for Guix.  It can be used both for development and
-for providing substitutes to others (@pxref{Substitutes}).
+@uref{https://guix.gnu.org/cuirass/, Cuirass} is a continuous
+integration tool for Guix.  It can be used both for development and for
+providing substitutes to others (@pxref{Substitutes}).
 
 The @code{(gnu services cuirass)} module provides the following service.
 
@@ -27096,44 +27096,43 @@ The type of the Cuirass service.  Its value must be a
 @code{cuirass-configuration} object, as described below.
 @end defvr
 
-To add build jobs, you have to set the @code{specifications} field of the
-configuration.  Here is an example of a service that polls the Guix repository
-and builds the packages from a manifest.  Some of the packages are defined in
-the @code{"custom-packages"} input, which is the equivalent of
-@env{GUIX_PACKAGE_PATH}.
+To add build jobs, you have to set the @code{specifications} field of
+the configuration.  For instance, the following example will build all
+the packages provided by the @code{my-channel} channel.
 
 @lisp
 (define %cuirass-specs
-  #~(list
-     '((#:name . "my-manifest")
-       (#:load-path-inputs . ("guix"))
-       (#:package-path-inputs . ("custom-packages"))
-       (#:proc-input . "guix")
-       (#:proc-file . "build-aux/cuirass/gnu-system.scm")
-       (#:proc . cuirass-jobs)
-       (#:proc-args . ((subset . "manifests")
-                       (systems . ("x86_64-linux"))
-                       (manifests . (("config" . "guix/manifest.scm")))))
-       (#:inputs . (((#:name . "guix")
-                     (#:url . "git://git.savannah.gnu.org/guix.git")
-                     (#:load-path . ".")
-                     (#:branch . "master")
-                     (#:no-compile? . #t))
-                    ((#:name . "config")
-                     (#:url . "https://git.example.org/config.git")
-                     (#:load-path . ".")
-                     (#:branch . "master")
-                     (#:no-compile? . #t))
-                    ((#:name . "custom-packages")
-                     (#:url . "https://git.example.org/custom-packages.git")
-                     (#:load-path . ".")
-                     (#:branch . "master")
-                     (#:no-compile? . #t)))))))
+  #~(list (specification
+           (name "my-channel")
+           (build '(channels my-channel))
+           (channels
+            (cons (channel
+                   (name 'my-channel)
+                   (url "https://my-channel.git"))
+                  %default-channels)))))
 
 (service cuirass-service-type
          (cuirass-configuration
           (specifications %cuirass-specs)))
 @end lisp
+
+To build the @code{linux-libre} package defined by the default Guix
+channel, one can use the following configuration.
+
+@lisp
+(define %cuirass-specs
+  #~(list (specification
+           (name "my-linux")
+           (build '(packages "linux-libre")))))
+
+(service cuirass-service-type
+         (cuirass-configuration
+          (specifications %cuirass-specs)))
+@end lisp
+
+The other configuration possibilities, as well as the specification
+record itself are described in the Cuirass manual
+(@pxref{Specifications,,, cuirass, Cuirass}).
 
 While information related to build jobs is located directly in the
 specifications, global settings for the @command{cuirass} process are
@@ -27143,19 +27142,14 @@ accessible in other @code{cuirass-configuration} fields.
 Data type representing the configuration of Cuirass.
 
 @table @asis
+@item @code{cuirass} (default: @code{cuirass})
+The Cuirass package to use.
+
 @item @code{log-file} (default: @code{"/var/log/cuirass.log"})
 Location of the log file.
 
 @item @code{web-log-file} (default: @code{"/var/log/cuirass-web.log"})
 Location of the log file used by the web interface.
-
-@item @code{queries-log-file} (default: @code{#f})
-Location of the SQL queries log file.  By default, SQL queries logging is
-disabled.
-
-@item @code{web-queries-log-file} (default: @code{#f})
-Location of the web SQL queries log file.  By default, web SQL queries
-logging is disabled.
 
 @item @code{cache-directory} (default: @code{"/var/cache/cuirass"})
 Location of the repository cache.
@@ -27170,17 +27164,19 @@ Owner's group of the @code{cuirass} process.
 Number of seconds between the poll of the repositories followed by the
 Cuirass jobs.
 
-@item @code{queue-size} (default: @code{1})
-Size of the database writer queue.
+@item @code{parameters} (default: @code{#f})
+Read parameters from the given @var{parameters} file.  The supported
+parameters are described here (@pxref{Parameters,,, cuirass, Cuirass}).
 
-@item @code{database} (default: @code{"/var/lib/cuirass/cuirass.db"})
-Location of sqlite database which contains the build results and previously
-added specifications.
+@item @code{remote-server} (default: @code{#f})
+A @code{cuirass-remote-server-configuration} record to use the build
+remote mechanism or @code{#f} to use the default build mechanism.
 
-@item @code{ttl} (default: @code{(* 30 24 3600)})
-Specifies the time-to-live (TTL) in seconds of garbage collector roots that
-are registered for build results.  This means that build results are protected
-from garbage collection for at least @var{ttl} seconds.
+@item @code{database} (default: @code{"dbname=cuirass host=/var/run/postgresql"})
+Use @var{database} as the database containing the jobs and the past
+build results. Since Cuirass uses PostgreSQL as a database engine,
+@var{database} must be a string such as @code{"dbname=cuirass
+host=localhost"}.
 
 @item @code{port} (default: @code{8081})
 Port number used by the HTTP server.
@@ -27190,11 +27186,9 @@ Listen on the network interface for @var{host}.  The default is to
 accept connections from localhost.
 
 @item @code{specifications} (default: @code{#~'()})
-A gexp (@pxref{G-Expressions}) that evaluates to a list of specifications,
-where a specification is an association list
-(@pxref{Associations Lists,,, guile, GNU Guile Reference Manual}) whose
-keys are keywords (@code{#:keyword-example}) as shown in the example
-above.
+A gexp (@pxref{G-Expressions}) that evaluates to a list of
+specifications records.  The specification record is described in the
+Cuirass manual (@pxref{Specifications,,, cuirass, Cuirass}).
 
 @item @code{use-substitutes?} (default: @code{#f})
 This allows using substitutes to avoid building every dependencies of a job
@@ -27210,8 +27204,100 @@ packages locally.
 @item @code{extra-options} (default: @code{'()})
 Extra options to pass when running the Cuirass processes.
 
+@end table
+@end deftp
+
+@cindex remote build
+@subsubheading Cuirass remote building
+
+Cuirass supports two mechanisms to build derivations.
+
+@itemize
+@item Using the local Guix daemon.
+This is the default build mechanism.  Once the build jobs are
+evaluated, they are sent to the local Guix daemon.  Cuirass then
+listens to the Guix daemon output to detect the various build events.
+
+@item Using the remote build mechanism.
+The build jobs are not submitted to the local Guix daemon.  Instead, a
+remote server dispatches build requests to the connect remote workers,
+according to the build priorities.
+
+@end itemize
+
+To enable this build mode a @code{cuirass-remote-server-configuration}
+record must be passed as @code{remote-server} argument of the
+@code{cuirass-configuration} record.  The
+@code{cuirass-remote-server-configuration} record is described below.
+
+This build mode scales way better than the default build mode.  This is
+the build mode that is used on the GNU Guix build farm at
+@url{https://ci.guix.gnu.org}.  It should be preferred when using
+Cuirass to build large amount of packages.
+
+@deftp {Data Type} cuirass-remote-server-configuration
+Data type representing the configuration of the Cuirass remote-server.
+
+@table @asis
+@item @code{backend-port} (default: @code{5555})
+The TCP port for communicating with @code{remote-worker} processes
+using ZMQ.  It defaults to @code{5555}.
+
+@item @code{log-port} (default: @code{5556})
+The TCP port of the log server.  It defaults to @code{5556}.
+
+@item @code{publish-port} (default: @code{5557})
+The TCP port of the publish server.  It defaults to @code{5557}.
+
+@item @code{log-file} (default: @code{"/var/log/cuirass-remote-server.log"})
+Location of the log file.
+
+@item @code{cache} (default: @code{"/var/cache/cuirass/remote"})
+Use @var{cache} directory to cache build log files.
+
+@item @code{trigger-url} (default: @code{#f})
+Once a substitute is successfully fetched, trigger substitute baking at
+@var{trigger-url}.
+
+@item @code{public-key}
+@item @code{private-key}
+Use the specific @var{file}s as the public/private key pair used to sign
+the store items being published.
+
+@end table
+@end deftp
+
+At least one remote worker must also be started on any machine of the
+local network to actually perform the builds and report their status.
+
+@deftp {Data Type} cuirass-remote-worker-configuration
+Data type representing the configuration of the Cuirass remote-worker.
+
+@table @asis
 @item @code{cuirass} (default: @code{cuirass})
 The Cuirass package to use.
+
+@item @code{workers} (default: @code{1})
+Start @var{workers} parallel workers.
+
+@item @code{server} (default: @code{#f})
+Do not use Avahi discovery and connect to the given @code{server} IP
+address instead.
+
+@item @code{systems} (default: @code{(list (%current-system))})
+Only request builds for the given @var{systems}.
+
+@item @code{log-file} (default: @code{"/var/log/cuirass-remote-worker.log"})
+Location of the log file.
+
+@item @code{publish-port} (default: @code{5558})
+The TCP port of the publish server.  It defaults to @code{5558}.
+
+@item @code{public-key}
+@item @code{private-key}
+Use the specific @var{file}s as the public/private key pair used to sign
+the store items being published.
+
 @end table
 @end deftp
 
