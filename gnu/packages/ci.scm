@@ -66,11 +66,11 @@
                 (file-name (string-append name "-" version "-checkout")))))))
 
 (define-public cuirass
-  (let ((commit "88f3cf65e0b5974c6525d498ebffc607bc62baf0")
-        (revision "77"))
+  (let ((commit "0497e0d6c4184223034855b61312d38ffae0b766")
+        (revision "1"))
     (package
       (name "cuirass")
-      (version (git-version "0.0.1" revision commit))
+      (version (git-version "1.0.0" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -80,7 +80,7 @@
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1mwi6i400kjdkfccvbc49fka18dhkcl0rbiqylgpb7lh0pzss9j7"))))
+           "1y6030kx6c8h927gr30b78b3flwlqx15iakrc2lgw5xw0367gqhg"))))
       (build-system gnu-build-system)
       (arguments
        '(#:modules ((guix build utils)
@@ -88,6 +88,7 @@
                     (ice-9 rdelim)
                     (ice-9 popen))
          #:configure-flags '("--localstatedir=/var") ;for /var/log/cuirass
+         #:parallel-tests? #f
          #:phases
          (modify-phases %standard-phases
            (add-before 'check 'set-PATH-for-tests
@@ -96,6 +97,12 @@
                      (path (getenv "PATH")))
                  (setenv "PATH" (string-append pg "/bin:" path))
                  #t)))
+           ;; Disable the remote tests that require a Guix daemon connection.
+           (add-before 'check 'disable-remote-tests
+             (lambda _
+               (substitute* "Makefile.am"
+                 (("tests/remote.scm") ""))
+               #t))
            (add-after 'install 'wrap-program
              (lambda* (#:key inputs outputs #:allow-other-keys)
                ;; Wrap the 'cuirass' command to refer to the right modules.
@@ -135,15 +142,11 @@
                                                     "/site-ccache:")
                                      'suffix)
                         1)))
-                 ;; Make sure 'cuirass' can find the 'evaluate' command, as
-                 ;; well as the relevant Guile modules.
-                 (for-each
-                  (lambda (name)
-                    (wrap-program (string-append out "/bin/" name)
-                      `("PATH" ":" prefix (,(string-append out "/bin")))
-                      `("GUILE_LOAD_PATH" ":" prefix (,mods))
-                      `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,objs))))
-                  '("cuirass" "remote-server" "remote-worker"))
+                 ;; Make sure 'cuirass' can find the relevant Guile modules.
+                 (wrap-program (string-append out "/bin/cuirass")
+                   `("PATH" ":" prefix (,(string-append out "/bin")))
+                   `("GUILE_LOAD_PATH" ":" prefix (,mods))
+                   `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,objs)))
                  #t))))))
       (inputs
        `(("guile" ,guile-3.0/libgc-7)
