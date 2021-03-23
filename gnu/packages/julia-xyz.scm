@@ -121,6 +121,32 @@ operations.  It can wrap any @code{IO} type automatically making incremental
 reading and writing faster.")
     (license license:expat)))
 
+(define-public julia-colortypes
+  (package
+    (name "julia-colortypes")
+    (version "0.10.12")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaGraphics/ColorTypes.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "176hr3qbz7lncmykks2qaj3cqisnzim7wi5jwsca9ld26wwyvyqq"))))
+    (arguments
+     '(#:tests? #f))                    ;require Documenter, not packaged yet
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-fixedpointnumbers" ,julia-fixedpointnumbers)))
+    (home-page "https://github.com/JuliaGraphics/ColorTypes.jl")
+    (synopsis "Basic color types and constructor")
+    (description "This minimalistic package serves as the foundation for
+working with colors in Julia.  It defines basic color types and their
+constructors, and sets up traits and show methods to make them easier to work
+with.")
+    (license license:expat)))
+
 (define-public julia-compat
   (package
     (name "julia-compat")
