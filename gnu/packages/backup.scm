@@ -588,6 +588,8 @@ detection, and lossless compression.")
            ;; generate the wrong list.
            (for-each delete-file
                      '("src/borg/algorithms/checksums.c"
+                       "src/borg/algorithms/msgpack/_packer.cpp"
+                       "src/borg/algorithms/msgpack/_unpacker.cpp"
                        "src/borg/chunker.c"
                        "src/borg/compress.c"
                        "src/borg/crypto/low_level.c"
