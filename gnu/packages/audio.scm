@@ -197,7 +197,7 @@ promoting the market for advanced audio.")
 (define-public wildmidi
   (package
     (name "wildmidi")
-    (version "0.4.3")
+    (version "0.4.4")
     (source
      (origin
        (method git-fetch)
@@ -207,7 +207,7 @@ promoting the market for advanced audio.")
          (commit (string-append name "-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "01f4a9c5xlap5a4pkfnlgkzk5pjlk43zkq6fnw615ghya04g6hrl"))))
+        (base32 "08fbbsvw6pkwwqarjwcvdp8mq4zn5sgahf025hynwc6rvf4sp167"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; No target
