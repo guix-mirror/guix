@@ -47573,6 +47573,20 @@ updated when the crate version changes.")
      "This package provides a parser for implementing terminal emulators.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-vte-0.9
+  (package
+    (inherit rust-vte-0.10)
+    (name "rust-vte")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "vte" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0yjl1jzlrk617kwk445mg9zmc71nxvwghhgsxfqhmm9401hlaxvf"))))))
+
 (define-public rust-vte-0.3
   (package
     (inherit rust-vte-0.10)
