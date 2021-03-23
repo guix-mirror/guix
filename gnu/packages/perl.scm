@@ -15,7 +15,7 @@
 ;;; Copyright © 2017 Raoul J.P. Bonnal <ilpuccio.febo@gmail.com>
 ;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
-;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2018, 2019 Oleg Pykhalov <go.wigust@gmail.com>
@@ -6806,14 +6806,14 @@ private methods are not.")
 (define-public perl-moosex-getopt
   (package
     (name "perl-moosex-getopt")
-    (version "0.74")
+    (version "0.75")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "MooseX-Getopt-" version ".tar.gz"))
        (sha256
-        (base32 "091crga5gjyhj2lz55w3ba37xq6pmjg5dx5xccsrzghy8cxxzq0x"))))
+        (base32 "1j7b2jnf0blxr4czp3vfcnv1h5zj601mrfdm92g1wf5wn9dvxwv3"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
