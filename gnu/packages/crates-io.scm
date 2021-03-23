@@ -45829,14 +45829,14 @@ or dashboards.")
 (define-public rust-tuikit-0.4
   (package
     (name "rust-tuikit")
-    (version "0.4.3")
+    (version "0.4.5")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "tuikit" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1hf6pgclb2lj08jzb45q0mpjq2a9zw27h7kwyi5cibjz5skd054b"))))
+        (base32 "07x5218f9da6cbvmwpfyfymqyl7nksvkxxycxcrll9ajazy8qqlc"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
