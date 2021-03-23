@@ -705,7 +705,7 @@ features of Stow with some extensions.")
 (define-public rpm
   (package
     (name "rpm")
-    (version "4.16.1.2")
+    (version "4.16.1.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://ftp.rpm.org/releases/rpm-"
@@ -713,7 +713,7 @@ features of Stow with some extensions.")
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "1k6ank2aad7r503w12m6m494mxr6iccj52wqhwbc94pwxsf34mw3"))))
+                "07g2g0adgjm29wqy94iqhpp5dk0hacfw1yf7kzycrrxnfbwwfgai"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--with-external-db"   ;use the system's bdb
