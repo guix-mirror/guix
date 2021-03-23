@@ -3482,7 +3482,7 @@ match, cannon keep, and grave-itation pit.")
                   #t))))
     (build-system cmake-build-system)
     (arguments
-     '(#:configure-flags
+     `(#:configure-flags
        (list "-DRUN_IN_PLACE=0"
              "-DENABLE_FREETYPE=1"
              "-DENABLE_GETTEXT=1"
@@ -3493,7 +3493,27 @@ match, cannon keep, and grave-itation pit.")
              (string-append "-DCURL_INCLUDE_DIR="
                             (assoc-ref %build-inputs "curl")
                             "/include/curl"))
-       #:tests? #f))                    ;no check target
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-sources
+           (lambda _
+             (substitute* "src/CMakeLists.txt"
+               (("set\\(EXECUTABLE_OUTPUT_PATH .*\\)") ""))
+             (substitute* "src/unittest/test_servermodmanager.cpp"
+               ;; do no override MINETEST_SUBGAME_PATH
+               (("(un)?setenv\\(\"MINETEST_SUBGAME_PATH\".*\\);")
+                "(void)0;"))
+             (setenv "MINETEST_SUBGAME_PATH"
+                     (string-append (getcwd) "/games")) ; for check
+             #t))
+         (replace 'check
+           (lambda _
+             ;; Thanks to our substitutions, the tests should also run
+             ;; when invoked on the target outside of `guix build'.
+             (unless ,(%current-target-system)
+               (setenv "HOME" "/tmp")
+               (invoke "src/minetest" "--run-unittests"))
+             #t)))))
     (native-search-paths
      (list (search-path-specification
             (variable "MINETEST_SUBGAME_PATH")
