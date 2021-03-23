@@ -3586,7 +3586,7 @@ in different ways.")
 (define-public minetest-mineclone
   (package
     (name "minetest-mineclone")
-    (version "0.66.2")
+    (version "0.71.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3595,7 +3595,7 @@ in different ways.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0miszzlzplpvaj0j1yii9867ydr42wsaqa9g6grxdrci75p05g00"))))
+                "0qm809dqvxc7pa1cr9skmglq9vrbq5hhm4c4m5yi46ldh1v96dgf"))))
     (build-system copy-build-system)
     (arguments
      `(#:install-plan
