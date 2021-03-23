@@ -143,6 +143,7 @@
         (requirement '(guix-daemon postgres postgres-roles networking))
         (start #~(make-forkexec-constructor
                   (list (string-append #$cuirass "/bin/cuirass")
+                        "register"
                         "--cache-directory" #$cache-directory
                         "--specifications"
                         #$(scheme-file "cuirass-specs.scm" specs)
@@ -174,19 +175,15 @@
         (requirement '(cuirass))
         (start #~(make-forkexec-constructor
                   (list (string-append #$cuirass "/bin/cuirass")
-                        "--cache-directory" #$cache-directory
+                        "web"
                         "--database" #$database
-                        "--web"
-                        "--port" #$(number->string port)
                         "--listen" #$host
-                        "--interval" #$(number->string interval)
+                        "--port" #$(number->string port)
                         #$@(if parameters
                                (list (string-append
                                       "--parameters="
                                       parameters))
                                '())
-                        #$@(if use-substitutes? '("--use-substitutes") '())
-                        #$@(if fallback? '("--fallback") '())
                         #$@extra-options)
 
                   #:user #$user
@@ -203,7 +200,8 @@
                 (provision '(cuirass-remote-server))
                 (requirement '(avahi-daemon cuirass))
                 (start #~(make-forkexec-constructor
-                          (list (string-append #$cuirass "/bin/remote-server")
+                          (list (string-append #$cuirass "/bin/cuirass")
+                                "remote-server"
                                 (string-append "--database=" #$database)
                                 (string-append "--cache=" #$cache)
                                 (string-append "--user=" #$user)
@@ -347,7 +345,8 @@ CONFIG."
            (provision '(cuirass-remote-worker))
            (requirement '(avahi-daemon guix-daemon networking))
            (start #~(make-forkexec-constructor
-                     (list (string-append #$cuirass "/bin/remote-worker")
+                     (list (string-append #$cuirass "/bin/cuirass")
+                           "remote-worker"
                            (string-append "--workers="
                                           #$(number->string workers))
                            #$@(if server
