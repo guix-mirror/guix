@@ -52,7 +52,7 @@
 (define-public xcb-imdkit
   (package
     (name "xcb-imdkit")
-    (version "1.0.2")
+    (version "1.0.3")
     (source
      (origin
        (method url-fetch)
@@ -60,7 +60,7 @@
              "https://download.fcitx-im.org/fcitx5/xcb-imdkit/xcb-imdkit-"
              version ".tar.xz"))
        (sha256
-        (base32 "16f7jdnrr8lrll7qvnj0gh3gwzgn5idfsc9rwi1gp1n2mnjrs7w0"))
+        (base32 "1s58vjkdrgr8h183jz4b4mjn7pbvdc9cli01cn66mgczl9p65hh9"))
        (modules '((guix build utils)))
        (snippet
         '(begin
