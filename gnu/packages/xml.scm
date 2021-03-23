@@ -2272,7 +2272,7 @@ outputting XML data from Java code.")
 (define-public java-xstream
   (package
     (name "java-xstream")
-    (version "1.4.15")
+    (version "1.4.16")
     (source
      (origin
        (method git-fetch)
@@ -2284,7 +2284,7 @@ outputting XML data from Java code.")
                                   version)))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1178qryrjwjp44439pi5dxzd32896r5zs429z1qhlc09951r7mi9"))))
+        (base32 "16k2mc63h2fw7lxv74qmhg4p8q9hfrw114daa6nxwnpv08cnq755"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "xstream.jar"
@@ -2299,6 +2299,7 @@ outputting XML data from Java code.")
        ("java-joda-time" ,java-joda-time)
        ("java-jettison" ,java-jettison)
        ("java-xom" ,java-xom)
+       ("java-mxparser" ,java-mxparser)
        ("java-xpp3" ,java-xpp3)
        ("java-dom4j" ,java-dom4j)
        ("java-stax2-api" ,java-stax2-api)
