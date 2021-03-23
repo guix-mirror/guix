@@ -121,6 +121,30 @@ operations.  It can wrap any @code{IO} type automatically making incremental
 reading and writing faster.")
     (license license:expat)))
 
+(define-public julia-calculus
+  (package
+    (name "julia-calculus")
+    (version "0.5.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaMath/Calculus.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0xh0ak2ycsjw2h86ja24ch3kn2d18zx3frrds78aimwdnqb1gdc2"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/JuliaMath/Calculus.jl")
+    (synopsis "Common utilities for automatic differentiation")
+    (description "This package provides tools for working with the basic
+calculus operations of differentiation and integration.  The @code{Calculus}
+package produces approximate derivatives by several forms of finite
+differencing or produces exact derivative using symbolic differentiation.  It
+can also be used to compute definite integrals by different numerical
+methods.")
+    (license license:expat)))
+
 (define-public julia-chainrulescore
   (package
     (name "julia-chainrulescore")
