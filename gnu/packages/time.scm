@@ -97,14 +97,14 @@ expressions.")
 (define-public python-pytzdata
   (package
     (name "python-pytzdata")
-    (version "2019.3")
+    (version "2020.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytzdata" version))
        (sha256
         (base32
-         "0ppfc6kz4p41mxyqxq1g1zp6gvns99g6b344qj6ih0x9vxy6zh7s"))))
+         "0h0md0ldhb8ghlwjslkzh3wcj4fxg3n43bj5sghqs2m06nri7yiy"))))
     (build-system python-build-system)
     ;; XXX: The PyPI distribution contains no tests, and the upstream
     ;; repository lacks a setup.py!  How to build from git?
