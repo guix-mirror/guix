@@ -49986,7 +49986,7 @@ configuration file and/or environment variables.")
 (define-public skim
   (package
     (name "skim")
-    (version "0.9.3")
+    (version "0.9.4")
     (source
       (origin
         (method url-fetch)
@@ -49995,30 +49995,31 @@ configuration file and/or environment variables.")
           (string-append name "-" version ".tar.gz"))
         (sha256
           (base32
-            "0qir6m4cpd63bnp0lqq4si1ccgd6rbv4m1662v771fkyynrdrj0s"))))
+            "1d5v9vq8frkdjm7bnw3455h6xf3c277d51il2qasn7r20kwik7ab"))))
     (build-system cargo-build-system)
     (arguments
       `(#:cargo-inputs
-        (("rust-beef" ,rust-beef-0.4)
+        (("rust-atty-0.2" ,rust-atty-0.2)
+         ("rust-beef" ,rust-beef-0.5)
          ("rust-bitflags" ,rust-bitflags-1)
          ("rust-chrono" ,rust-chrono-0.4)
          ("rust-clap" ,rust-clap-2)
-         ("rust-crossbeam" ,rust-crossbeam-0.7)
+         ("rust-crossbeam" ,rust-crossbeam-0.8)
          ("rust-defer-drop" ,rust-defer-drop-1)
          ("rust-derive-builder" ,rust-derive-builder-0.9)
-         ("rust-env-logger" ,rust-env-logger-0.6)
+         ("rust-env-logger" ,rust-env-logger-0.8)
          ("rust-fuzzy-matcher" ,rust-fuzzy-matcher-0.3)
          ("rust-lazy-static" ,rust-lazy-static-1)
          ("rust-log" ,rust-log-0.4)
-         ("rust-nix" ,rust-nix-0.14)
+         ("rust-nix" ,rust-nix-0.19)
          ("rust-rayon" ,rust-rayon-1)
          ("rust-regex" ,rust-regex-1)
          ("rust-shlex" ,rust-shlex-0.1)
-         ("rust-time" ,rust-time-0.1)
+         ("rust-time" ,rust-time-0.2)
          ("rust-timer" ,rust-timer-0.2)
          ("rust-tuikit" ,rust-tuikit-0.4)
          ("rust-unicode-width" ,rust-unicode-width-0.1)
-         ("rust-vte" ,rust-vte-0.3))
+         ("rust-vte" ,rust-vte-0.9))
         #:phases
         (modify-phases %standard-phases
           (add-after 'install 'install-extras
