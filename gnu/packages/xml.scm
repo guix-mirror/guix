@@ -28,6 +28,7 @@
 ;;; Copyright © 2020 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2021 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2007,6 +2008,60 @@ parser and should be used when there is a need to process quickly and
 efficiently all input elements (for example in SOAP processors).  This
 package is in maintenance mode.")
     (license (license:non-copyleft "file:///LICENSE.txt"))))
+
+(define-public java-xmlpull-api-v1
+  (package
+    (name "java-xmlpull-api-v1")
+    (version "1.1.3.4b")
+    (source (origin
+              ;; The package is originally from Extreme! Lab, but the website
+              ;; is now gone.  This repositories contains the sources of the
+              ;; latest version.
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/aslom/xmlpull-api-v1")
+                     ;; No releases, this is the latest commit
+                     (commit "abeaa4aa87b2625af70c32f658f44e11355fe568")))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "15bdqxfncnakskna4m9gsh4f9iczxy83qxn2anqiqd15z406a5ih"))
+              (modules '((guix build utils)))
+              (snippet
+               `(begin
+                  (delete-file-recursively "lib")
+                  (mkdir-p "lib")
+                  ;; prevents a failure in "dist_lite"
+                  (substitute* "build.xml"
+                    (("README.html") "README.md"))))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:test-target "junit"
+       #:build-target "dist"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/" ,name "-" ,version))
+                    (java (string-append out "/share/java"))
+                    (project (string-append
+                               "xmlpull_"
+                               ,(string-join (string-split version #\.) "_"))))
+               (mkdir-p doc)
+               (copy-recursively (string-append "build/dist/" project "/doc/")
+                                 doc)
+               (mkdir-p java)
+               (copy-file (string-append "build/dist/" project "/" project ".jar")
+                          (string-append java "/" project ".jar")))
+             )))))
+    (home-page "https://github.com/aslom/xmlpull-api-v1")
+    (synopsis "XML pull parsing API")
+    (description "XmlPull v1 API is a simple to use XML pull parsing API.  XML
+pull parsing allows incremental (sometimes called streaming) parsing of XML
+where application is in control - the parsing can be interrupted at any given
+moment and resumed when application is ready to consume more input.")
+    (license license:public-domain)))
 
 (define-public java-dom4j
   (package
