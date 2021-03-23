@@ -13071,14 +13071,14 @@ convert enum to u8 slice ref.")
 (define-public rust-env-logger-0.8
   (package
     (name "rust-env-logger")
-    (version "0.8.2")
+    (version "0.8.3")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "env-logger" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "07k6m6igz02g2b1v7nims7vd8azwxrav43xl14a6rjmxnikcnvpj"))))
+        (base32 "0gwx1pvbv99fj9wpicknyv4p2vj997xpva8ac5dg03m35q0jlf8p"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
