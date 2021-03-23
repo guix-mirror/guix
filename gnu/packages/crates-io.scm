@@ -42306,15 +42306,14 @@ fixed set of worker threads.")
 (define-public rust-time-0.2
   (package
     (name "rust-time")
-    (version "0.2.19")
+    (version "0.2.23")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "time" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "18bhl0nmfyd8drksskw830ybw9pr47pisfn4245wabqijgys3hc0"))))
+        (base32 "12z95k0005rmyn9pf9v4hq80khsns7y5wfydnjr5jpci2yiyxnmw"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
