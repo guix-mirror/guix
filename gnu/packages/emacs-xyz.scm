@@ -2675,9 +2675,9 @@ using the DOT syntax, and use Graphviz to convert these files to diagrams.")
     (license license:gpl2+)))
 
 (define-public emacs-imenu-list
-  (let ((commit "46008738f8fef578a763c308cf6695e5b4d4aa77")
+  (let ((commit "b50222378412fbe321622a84cb2b036e084c697a")
         (revision "0")
-        (version "0.8"))
+        (version "0.9"))
     (package
       (name "emacs-imenu-list")
       (version (git-version version revision commit))
@@ -2690,7 +2690,7 @@ using the DOT syntax, and use Graphviz to convert these files to diagrams.")
            (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "14l3yw9y1nk103s7z5i1fmd6kvlb2p6ayi6sf9l1x1ydg9glrpl8"))))
+          (base32 "1936dd41fa05ndzf2bwhllvjz97iz0rflkazjipr7dvz5q072wj2"))))
       (build-system emacs-build-system)
       (home-page "https://github.com/bmag/imenu-list")
       (synopsis
