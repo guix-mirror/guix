@@ -2421,13 +2421,13 @@ because lxml.etree already has it's own implementation of XPath 1.0.")
 (define-public python-lxml
   (package
     (name "python-lxml")
-    (version "4.5.2")
+    (version "4.6.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "lxml" version))
        (sha256
-        (base32 "1xhx76hr1w3lllfcg9a01f2y0zwyf59ijnvlh08299mjh8b3mhfd"))))
+        (base32 "0s14r1w2x9sdlcsw8mxiqgw4rz5zs5lpqpxrfyn4a1mkndqqbdrr"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
