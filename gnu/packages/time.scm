@@ -123,14 +123,15 @@ expressions.")
 (define-public python-pytz
   (package
     (name "python-pytz")
-    (version "2020.4")
+    ;; This package should be kept in sync with tzdata in (gnu packages base).
+    (version "2021.1")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "pytz" version))
       (sha256
        (base32
-        "0s72lz9q7rm2xgl2in0nvhn5cp0cyrxa257fpj2919g0s797ssry"))))
+        "1nn459q7zg20n75akxl3ljkykgw1ydc8nb05rx1y4f5zjh4ak943"))))
     (build-system python-build-system)
     (home-page "http://pythonhosted.org/pytz")
     (synopsis "Python timezone library")
