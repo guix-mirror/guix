@@ -250,7 +250,7 @@ for GTK+2/GTK+3 application.")
 (define-public fcitx5-qt
   (package
     (name "fcitx5-qt")
-    (version "5.0.2")
+    (version "5.0.5")
     (source
      (origin
        (method url-fetch)
@@ -258,7 +258,7 @@ for GTK+2/GTK+3 application.")
                            "/fcitx5-qt/fcitx5-qt-"
                            version ".tar.xz"))
        (sha256
-        (base32 "15rn111mrp6lcgm0ka3vb6a6qwkv6kqkqn563wsm49n16iy1dhqj"))))
+        (base32 "0vsvrfv0b21pfrz5n0v6p458vfr8k7km50h9bhjp1bnssampjfsb"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
