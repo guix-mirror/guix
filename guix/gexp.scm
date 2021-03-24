@@ -1735,21 +1735,26 @@ TARGET, a GNU triplet."
               'guile-3.0))
 
 (define* (load-path-expression modules #:optional (path %load-path)
-                               #:key (extensions '()) system target)
+                               #:key (extensions '()) system target
+                               (guile (default-guile)))
   "Return as a monadic value a gexp that sets '%load-path' and
 '%load-compiled-path' to point to MODULES, a list of module names.  MODULES
-are searched for in PATH.  Return #f when MODULES and EXTENSIONS are empty."
+are searched for in PATH.  Return #f when MODULES and EXTENSIONS are empty.
+Assume MODULES are compiled with GUILE."
   (if (and (null? modules) (null? extensions))
       (with-monad %store-monad
         (return #f))
-      (mlet %store-monad ((modules  (imported-modules modules
-                                                      #:module-path path
-                                                      #:system system))
-                          (compiled (compiled-modules modules
-                                                      #:extensions extensions
-                                                      #:module-path path
-                                                      #:system system
-                                                      #:target target)))
+      (mlet* %store-monad ((guile    (lower-object guile system #:target #f))
+                           (compiled (compiled-modules modules
+                                                       #:guile guile
+                                                       #:extensions extensions
+                                                       #:module-path path
+                                                       #:system system
+                                                       #:target target))
+                           (modules  (imported-modules modules
+                                                       #:guile guile
+                                                       #:module-path path
+                                                       #:system system)))
         (return
          (gexp (eval-when (expand load eval)
                  ;; Augment the load paths and delete duplicates.  Do that
