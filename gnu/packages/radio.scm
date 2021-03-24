@@ -590,6 +590,7 @@ to the fix block above.
        ("gnuradio-iqbalance" ,gnuradio-iqbalance)
        ("gnuradio-osmosdr" ,gnuradio-osmosdr)
        ("jack" ,jack-1)
+       ("libsndfile" ,libsndfile)
        ("log4cpp" ,log4cpp)
        ("portaudio" ,portaudio)
        ("pulseaudio" ,pulseaudio)
