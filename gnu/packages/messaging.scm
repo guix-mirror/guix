@@ -78,10 +78,12 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages kde)
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages less)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages libidn)
+  #:use-module (gnu packages libreoffice)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages logging)
   #:use-module (gnu packages lua)
@@ -104,6 +106,7 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages ruby)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tcl)
@@ -131,10 +134,66 @@
   #:use-module (guix packages)
   #:use-module (guix utils))
 
+(define-public psi
+  (package
+    (name "psi")
+    (version "1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://sourceforge/psi/Psi/"
+                       version "/psi-" version ".tar.xz"))
+       (modules '((guix build utils)))
+       (snippet
+        `(begin
+           (delete-file-recursively "3rdparty")))
+       (sha256
+        (base32 "1dxmm1d1zr0pfs51lba732ipm6hm2357jlfb934lvarzsh7karri"))))
+    (build-system qt-build-system)
+    (arguments
+     `(#:tests? #f                      ; No target
+       #:configure-flags
+       (list
+        "-DUSE_ENCHANT=ON"
+        "-DUSE_CCACHE=OFF")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-cmake
+           (lambda _
+             (substitute* "cmake/modules/FindHunspell.cmake"
+               (("hunspell-1.6")
+                "hunspell-1.7"))
+             #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)
+       ("ruby" ,ruby)))
+    (inputs
+     `(("aspell" ,aspell)
+       ("enchant" ,enchant-1.6)
+       ("hunspell" ,hunspell)
+       ("libidn" ,libidn)
+       ("qca" ,qca)
+       ("qtbase" ,qtbase)
+       ("qtmultimedia" ,qtmultimedia)
+       ("qtsvg" ,qtsvg)
+       ("qtwebkit" ,qtwebkit)
+       ("qtx11extras" ,qtx11extras)
+       ("x11" ,libx11)
+       ("xext" ,libxext)
+       ("xcb" ,libxcb)
+       ("zlib" ,zlib)))
+    (synopsis "Qt-based XMPP Client")
+    (description "Psi is a capable XMPP client aimed at experienced users.
+Its design goals are simplicity and stability.")
+    (home-page "https://psi-im.org")
+    (license license:gpl2+)))
+
 (define-public libgnt
   (package
     (name "libgnt")
-    (version "2.14.0")
+    (version "2.14.1")
     (source
      (origin
        (method url-fetch)
@@ -142,7 +201,7 @@
         (string-append "mirror://sourceforge/pidgin/libgnt/"
                        version "/libgnt-" version ".tar.xz"))
        (sha256
-        (base32 "1grs9fxl404rscscxk1ff55fzjnwjqrisjxbasbssmcp1h1s4zkb"))))
+        (base32 "1n2bxg0ignn53c08cp69pj4sdg53kwlqn23rincyjmpr327fdhsy"))))
     (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -932,14 +991,14 @@ simultaneously and therefore appear under the same nickname on IRC.")
 (define-public python-nbxmpp
   (package
     (name "python-nbxmpp")
-    (version "2.0.1")
+    (version "2.0.2")
     (source
      (origin
        (method url-fetch)
        (uri
         (pypi-uri "nbxmpp" version))
        (sha256
-        (base32 "0184nklbpzriq081lghsfavw9m8jr5kc45qqy4v4rdnxn64j7njc"))))
+        (base32 "1482fva70i01w60fk70c0fhqmqgzi1fb4xflllz2v6c8mdqkd1m3"))))
     (build-system python-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin")))
@@ -958,13 +1017,10 @@ of xmpppy.")
     (home-page "https://dev.gajim.org/gajim/python-nbxmpp")
     (license license:gpl3+)))
 
-(define-public python2-nbxmpp
-  (package-with-python2 python-nbxmpp))
-
 (define-public gajim
   (package
     (name "gajim")
-    (version "1.3.0")
+    (version "1.3.1")
     (source
      (origin
        (method url-fetch)
@@ -973,7 +1029,7 @@ of xmpppy.")
                        (version-major+minor version)
                        "/gajim-" version ".tar.gz"))
        (sha256
-        (base32 "1v0cx8r1zr9aj17ik5apxxfpr9rv5w8p1i7hfys6wp9292gc7s25"))
+        (base32 "070h1n3miq99z6ln77plk3jlisgfqfs2yyn4rhchpf25zd8is1ba"))
        (patches (search-patches "gajim-honour-GAJIM_PLUGIN_PATH.patch"))))
     (build-system python-build-system)
     (arguments
@@ -989,7 +1045,9 @@ of xmpppy.")
        (modify-phases %standard-phases
          (add-after 'unpack 'disable-failing-tests
            (lambda _
-             ;; https://dev.gajim.org/gajim/gajim/-/issues/10427
+             ;; ModuleNotFoundError: No module named 'gajim.gui.emoji_data'
+             ;; https://dev.gajim.org/gajim/gajim/-/issues/10478
+             (delete-file "test/lib/gajim_mocks.py")
              (delete-file "test/unit/test_gui_interface.py")
              #t))
          (replace 'check
@@ -2438,13 +2496,13 @@ QMatrixClient project.")
 (define-public hangups
   (package
     (name "hangups")
-    (version "0.4.11")
+    (version "0.4.13")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "hangups" version))
        (sha256
-        (base32 "165lravvlsgkv6pp3vgg785ihycvs43qzqxw2d2yygrc6pbhqlyv"))))
+        (base32 "015g635vnrxk5lf9n80rdcmh6chv8kmla1k2j7m1iijijs519ngn"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -2715,5 +2773,183 @@ as phones, embedded computers or microcontrollers.")
     (home-page "https://mosquitto.org/")
     ;; Dual licensed.
     (license (list license:epl1.0 license:edl1.0))))
+
+(define-public movim-desktop
+  (let ((commit "83d583b83629dbd2ec448da9a1ffd81f6c1fb295")
+        (revision "3"))
+    (package
+      (name "movim-desktop")
+      (version
+       (git-version "0.14.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/movim/movim_desktop")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1lsa3k3wx1d2lk0qs0k5jc5bmapnmpzwynprjf2wihh8c8y3iwlz"))))
+      (build-system qt-build-system)
+      (arguments
+       `(#:tests? #f                    ; No target
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch
+             (lambda* (#:key outputs #:allow-other-keys)
+               (substitute* `("CMakeLists.txt" "movim.desktop")
+                 (("/usr")
+                  (assoc-ref outputs "out"))
+                 (("\"build")
+                  "\"../build"))
+               #t)))))
+      (inputs
+       `(("qtbase" ,qtbase)
+         ("qtdeclarative" ,qtdeclarative)
+         ("qtwebchannel" ,qtwebchannel)))
+      (propagated-inputs
+       `(("qtwebengine" ,qtwebengine)))
+      (home-page "https://movim.eu/")
+      (synopsis "Desktop Application for Movim")
+      (description
+       "Movim-Desktop is a desktop application, relying on Qt, for the Movim
+social and chat platform.")
+      (license license:gpl3+))))
+
+(define-public psi-plus
+  (package
+    (name "psi-plus")
+    (version "1.5.1482")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/psi-plus/psi-plus-snapshots")
+         (commit version)))
+       (file-name (git-file-name name version))
+       (modules '((guix build utils)))
+       (snippet
+        `(begin
+           (delete-file-recursively "3rdparty")))
+       (sha256
+        (base32 "0lcx616hchwf492m1dm8ddb4qd2pmgf703ajnnb0y9ky99kgg8q2"))))
+    (build-system qt-build-system)
+    (arguments
+     `(#:tests? #f                      ; No target
+       #:imported-modules
+       (,@%qt-build-system-modules
+        (guix build glib-or-gtk-build-system))
+       #:modules
+       ((guix build qt-build-system)
+        ((guix build glib-or-gtk-build-system)
+         #:prefix glib-or-gtk:)
+        (guix build utils))
+       #:configure-flags
+       (list
+        "-DBUILD_PSIMEDIA=ON"           ; For A/V support
+        "-DENABLE_PLUGINS=ON"
+        "-DUSE_HUNSPELL=OFF"            ; Use Enchant instead
+        "-DUSE_ENCHANT=ON"
+        "-DUSE_CCACHE=OFF")             ; Not required
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("\\$\\{PROJECT_SOURCE_DIR\\}/3rdparty/http-parser/http_parser.h")
+                "")
+               (("\\$\\{PROJECT_SOURCE_DIR\\}/3rdparty/qhttp/qhttp.pro")
+                "")
+               (("\\$\\{PROJECT_SOURCE_DIR\\}/3rdparty/qite/qite.pro")
+                "")
+               (("add_subdirectory\\( 3rdparty \\)")
+                ""))
+             (substitute* "src/CMakeLists.txt"
+               (("\\$\\{PROJECT_SOURCE_DIR\\}/3rdparty/qite/libqite")
+                "")
+               (("\\$\\{PROJECT_SOURCE_DIR\\}/3rdparty/http-parser")
+                "")
+               (("\\$\\{PROJECT_SOURCE_DIR\\}/3rdparty/qhttp/src/private")
+                "")
+               (("\\$\\{PROJECT_SOURCE_DIR\\}/3rdparty/qhttp/src")
+                "")
+               (("\\$\\{PROJECT_SOURCE_DIR\\}/3rdparty")
+                "")
+               (("add_dependencies\\(\\$\\{PROJECT_NAME\\} qhttp\\)")
+                "target_link_libraries(${PROJECT_NAME} qhttp)"))
+             (substitute* "src/src.cmake"
+               (("include\\(\\$\\{PROJECT_SOURCE_DIR\\}/3rdparty/qite/libqite/libqite.cmake\\)")
+                "list(APPEND EXTRA_LIBS qite)"))
+             (substitute* '("src/filesharingmanager.h" "src/widgets/psirichtext.cpp"
+                            "src/filesharingmanager.cpp" "src/widgets/psitextview.cpp"
+                            "src/chatview_te.cpp" "src/msgmle.cpp")
+               (("qite.h")
+                "qite/qite.h")
+               (("qiteaudio.h")
+                "qite/qiteaudio.h")
+               (("qiteaudiorecorder.h")
+                "qite/qiteaudiorecorder.h"))
+             #t))
+         (add-after 'install 'wrap-env
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (for-each
+                (lambda (name)
+                  (let ((file (string-append out "/bin/" name))
+                        (gst-plugin-path (getenv "GST_PLUGIN_SYSTEM_PATH"))
+                        (gi-typelib-path (getenv "GI_TYPELIB_PATH")))
+                    (wrap-program file
+                      `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path))
+                      `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path)))))
+                '("psi-plus")))
+             #t))
+         (add-after 'wrap-env 'glib-or-gtk-compile-schemas
+           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-compile-schemas))
+         (add-after 'glib-or-gtk-compile-schemas 'glib-or-gtk-wrap
+           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap)))))
+    (native-inputs
+     `(("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)
+       ("ruby" ,ruby)))
+    (inputs
+     `(("blake2" ,libb2)
+       ("dbus" ,dbus)
+       ("enchant" ,enchant)
+       ("glib" ,glib)
+       ("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("http-parser" ,http-parser)
+       ("libgcrypt" ,libgcrypt)
+       ("libgpg-error" ,libgpg-error)
+       ("libidn" ,libidn)
+       ("libotr" ,libotr)
+       ("libsignal-protocol-c" ,libsignal-protocol-c)
+       ("libtidy" ,tidy-html)
+       ("openssl" ,openssl)
+       ("qca" ,qca)
+       ("qhttp" ,qhttp)
+       ("qite" ,qite)
+       ("qtbase" ,qtbase)
+       ("qtkeychain" ,qtkeychain)
+       ("qtmultimedia" ,qtmultimedia)
+       ("qtsvg" ,qtsvg)
+       ("qtx11extras" ,qtx11extras)
+       ("usrsctp" ,usrsctp)
+       ("x11" ,libx11)
+       ("xext" ,libxext)
+       ("xcb" ,libxcb)
+       ("xss" ,libxscrnsaver)
+       ("zlib" ,zlib)))
+    (home-page "https://psi-plus.com/")
+    (synopsis "Qt-based XMPP Client")
+    (description
+     "Psi+ is a spin-off of Psi XMPP client.  It is a powerful XMPP client
+designed for experienced users.")
+    (license license:gpl2+)))
 
 ;;; messaging.scm ends here

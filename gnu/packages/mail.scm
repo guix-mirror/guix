@@ -41,6 +41,7 @@
 ;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
 ;;; Copyright © 2020 divoplade <d@divoplade.fr>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -58,6 +59,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages mail)
+  #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages aspell)
@@ -411,7 +413,7 @@ to run without any changes.")
 (define-public fetchmail
   (package
     (name "fetchmail")
-    (version "6.4.16")
+    (version "6.4.17")
     (source
      (origin
        (method url-fetch)
@@ -419,7 +421,7 @@ to run without any changes.")
                            (version-major+minor version) "/"
                            "fetchmail-" version ".tar.xz"))
        (sha256
-        (base32 "1fagi10fv8pdil6gss6a3ca3jbp3wbiyz7cp8ivsxyrsq059ljq4"))))
+        (base32 "1ijh9l7pg2yk5s5h1yj3vpd1az31giqy9bjrna10daj13gqws6x4"))))
     (build-system gnu-build-system)
     (inputs
      `(("openssl" ,openssl)))
@@ -446,7 +448,7 @@ aliasing facilities to work just as they would on normal mail.")
 (define-public mutt
   (package
     (name "mutt")
-    (version "2.0.5")
+    (version "2.0.6")
     (source (origin
              (method url-fetch)
              (uri (list
@@ -456,7 +458,7 @@ aliasing facilities to work just as they would on normal mail.")
                                    version ".tar.gz")))
              (sha256
               (base32
-               "0k80s27sf7djb7zxj81ihksr8jkr71mfaa8976fzh41i1pn5l7g2"))
+               "165mpivdhvhavglykwlz0hss2akxd6i6l40rgxs29mjzi52irqw1"))
              (patches (search-patches "mutt-store-references.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -1439,14 +1441,14 @@ pairs have previously synchronized.")
 (define-public getmail
   (package
     (name "getmail")
-    (version "5.14")
+    (version "5.15")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://pyropus.ca/software/getmail/old-versions/"
                            "getmail-" version ".tar.gz"))
        (sha256
-        (base32 "1hcrd9h4g12f5gvl1djsbchcjry02ghq4icdr897s8v48pkrzagk"))))
+        (base32 "0ahn2jyj4ka996qzs99id59pwxv6sqxp61g7drcf53rzzigq0lyl"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
@@ -1475,7 +1477,7 @@ useful features.")
              (sha256
                (base32 "0g7an003simfdn7ihg9yjv7hl2czsmjsndjrp39i7cad8icixscn"))))
     (build-system gnu-build-system)
-    (native-inputs `(("autoconf" ,autoconf-wrapper)
+    (native-inputs `(("autoconf" ,autoconf)
                      ("automake" ,automake)
                      ("libtool" ,libtool)
                      ("pkg-config" ,pkg-config)))
@@ -1592,14 +1594,14 @@ addons which can add many functionalities to the base client.")
 (define-public msmtp
   (package
     (name "msmtp")
-    (version "1.8.14")
+    (version "1.8.15")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://marlam.de/msmtp/releases/"
                            "/msmtp-" version ".tar.xz"))
        (sha256
-        (base32 "1d3knxpwpglg20z4zcsi82mqv9285ah1b1b16k1fk1hlf5fhcvym"))))
+        (base32 "1klrj2a77671xb6xa0a0iyszhjb7swxhmzpzd4qdybmzkrixqr92"))))
     (build-system gnu-build-system)
     (inputs
      `(("libsecret" ,libsecret)
@@ -3622,14 +3624,14 @@ tools and applications:
 (define-public balsa
   (package
     (name "balsa")
-    (version "2.6.1")
+    (version "2.6.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://pawsa.fedorapeople.org/balsa/"
                            "balsa-" version ".tar.bz2"))
        (sha256
-        (base32 "1xkxx801p7sbfkn0bh3cz85wra4xf1z1zhjqqc80z1z1nln7fhb4"))))
+        (base32 "1w0239i01mw4wwwy7xh8gz7zgl5khwvfm5wy35x0swvvax021mai"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -3651,8 +3653,9 @@ tools and applications:
        ("gnutls" ,gnutls)
        ("gpgme" ,gpgme)
        ("gtk+" ,gtk+)
-       ("gtksourceview" ,gtksourceview-3)
+       ("gtksourceview" ,gtksourceview)
        ("gtkspell3" ,gtkspell3)
+       ("libassuan" ,libassuan)         ; in gpgme.pc Requires
        ("libcanberra" ,libcanberra)
        ("libesmtp" ,libesmtp)
        ("libical" ,libical)
@@ -3909,7 +3912,9 @@ It is a replacement for the @command{urlview} program.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "07h48s5qf08503pp9kafqbwipdqghiif22ghki7z8j67gyp04l6l"))))
+                "07h48s5qf08503pp9kafqbwipdqghiif22ghki7z8j67gyp04l6l"))
+              (patches (search-patches "ytnef-CVE-2021-3403.patch"
+                                       "ytnef-CVE-2021-3404.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -3920,6 +3925,45 @@ It is a replacement for the @command{urlview} program.")
     (description "This package provides a TNEF stream reader library and
 related tools to process winmail.dat files.")
     (license license:gpl2+)))
+
+(define-public l2md
+  ;; No official release.
+  (let ((commit "f7286b49bb5fce25c898c143712fe34ad4d7864e")
+        (revision "1"))
+    (package
+      (name "l2md")
+      (version (git-version "0.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://git.kernel.org/pub/scm/linux/kernel/git/dborkman/l2md.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0hxz8i70v1xgv30zjclfvmjqszn073c7i8nwmswi2lr6vd7cklvp"))))
+      (build-system gnu-build-system)
+      (inputs
+       `(("libgit2" ,libgit2)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (delete 'configure)          ;no configure scripts
+           (delete 'check)              ;no tests
+           (add-before 'install 'mkdir
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((l2md (string-append (assoc-ref outputs "out") "/bin")))
+                 (mkdir-p l2md)))))
+         #:make-flags
+         (list ,(string-append "CC=" (cc-for-target))
+               (string-append "PREFIX=" %output "/bin"))))
+      (home-page
+       "https://git.kernel.org/pub/scm/linux/kernel/git/dborkman/l2md.git")
+      (synopsis "Import public-inbox archives via Git")
+      (description
+       "The @command{l2md} command line tool imports public-inbox archives via
+Git and exports them in maildir format or to an MDA through a pipe.")
+      (license license:gpl2))))
 
 (define-public public-inbox
   (package

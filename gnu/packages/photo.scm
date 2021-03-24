@@ -4,7 +4,7 @@
 ;;; Copyright © 2015, 2017 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2020 Sebastian Schott <sschott@mailbox.org>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
@@ -585,7 +585,7 @@ and enhance them.")
 (define-public photoflare
   (package
     (name "photoflare")
-    (version "1.6.6")
+    (version "1.6.7")
     (source
      (origin
        (method git-fetch)
@@ -594,7 +594,7 @@ and enhance them.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "07lrlxagv1bljj607s8m0zsbzx9jrvi18bnxahnm7r4i5car5x2d"))))
+        (base32 "0rh5gvnc1zwx4p9h599s82m69gsxp19nnfcxsblx3b2ddwzxh78v"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ;no tests

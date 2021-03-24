@@ -7,10 +7,11 @@
 ;;; Copyright © 2016, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
-;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,6 +36,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module ((guix utils) #:select (target-64bit?))
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages autotools)
@@ -55,14 +57,14 @@
 (define-public parallel
   (package
     (name "parallel")
-    (version "20210222")
+    (version "20210322")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnu/parallel/parallel-"
                           version ".tar.bz2"))
       (sha256
-       (base32 "0az73cpl04k3j9hwyxgych5cr95ls8qrsmy6zni4xxv2xc5b0saf"))))
+       (base32 "152np0jg4n94sbl2p2fzxjfnssiyp5sg7r5wx6s8p893b921pxwq"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -104,6 +106,34 @@
 or more computers.  Jobs can consist of single commands or of scripts
 and they are executed on lists of files, hosts, users or other items.")
     (license license:gpl3+)))
+
+(define-public xe
+  (package
+    (name "xe")
+    (version "0.11")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/leahneukirchen/xe")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "04jr8f6jcijr0bsmn8ajm0aj35qh9my3xjsaq64h8lwg5bpyn29x"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f
+       #:make-flags (list (string-append "CC=" ,(cc-for-target))
+                          (string-append "PREFIX=" %output))
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure))))
+    (synopsis "Execute a command for every argument")
+    (description
+     "The xe utility constructs command lines from specified arguments,
+combining some of the best features of xargs(1) and apply(1).  Parallel
+execution is also possible.")
+    (home-page "https://github.com/leahneukirchen/xe")
+    (license license:public-domain)))
 
 (define-public slurm
   (package

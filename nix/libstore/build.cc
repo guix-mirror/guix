@@ -1621,6 +1621,24 @@ void DerivationGoal::startBuilder()
     auto drvName = storePathToName(drvPath);
     tmpDir = createTempDir("", "guix-build-" + drvName, false, false, 0700);
 
+    if (useChroot) {
+	/* Make the build directory seen by the build process a sub-directory.
+	   That way, "/tmp/guix-build-foo.drv-0" is root-owned, and thus its
+	   permissions cannot be changed by the build process, while
+	   "/tmp/guix-build-foo.drv-0/top" is owned by the build user.  This
+	   cannot be done when !useChroot because then $NIX_BUILD_TOP would
+	   be inaccessible to the build user by its full file name.
+
+	   If the build user could make the build directory world-writable,
+	   then an attacker could create in it a hardlink to a root-owned file
+	   such as /etc/shadow.  If 'keepFailed' is true, the daemon would
+	   then chown that hardlink to the user, giving them write access to
+	   that file.  */
+	tmpDir += "/top";
+	if (mkdir(tmpDir.c_str(), 0700) == 1)
+	    throw SysError("creating top-level build directory");
+    }
+
     /* In a sandbox, for determinism, always use the same temporary
        directory. */
     tmpDirInSandbox = useChroot ? canonPath("/tmp", true) + "/guix-build-" + drvName + "-0" : tmpDir;
@@ -2626,20 +2644,41 @@ static void _chown(const Path & path, uid_t uid, gid_t gid)
 void DerivationGoal::deleteTmpDir(bool force)
 {
     if (tmpDir != "") {
+	// When useChroot is true, tmpDir looks like
+	// "/tmp/guix-build-foo.drv-0/top".  Its parent is root-owned.
+	string top;
+	if (useChroot) {
+	    if (baseNameOf(tmpDir) != "top") abort();
+	    top = dirOf(tmpDir);
+	} else top = tmpDir;
+
         if (settings.keepFailed && !force) {
             printMsg(lvlError,
                 format("note: keeping build directory `%2%'")
-                % drvPath % tmpDir);
+                % drvPath % top);
             chmod(tmpDir.c_str(), 0755);
+
             // Change the ownership if clientUid is set. Never change the
             // ownership or the group to "root" for security reasons.
             if (settings.clientUid != (uid_t) -1 && settings.clientUid != 0) {
                 _chown(tmpDir, settings.clientUid,
                        settings.clientGid != 0 ? settings.clientGid : -1);
+
+		if (top != tmpDir) {
+		    // Rename tmpDir to its parent, with an intermediate step.
+		    string pivot = top + ".pivot";
+		    if (rename(top.c_str(), pivot.c_str()) == -1)
+			throw SysError("pivoting failed build tree");
+		    if (rename((pivot + "/top").c_str(), top.c_str()) == -1)
+			throw SysError("renaming failed build tree");
+		    rmdir(pivot.c_str());
+		}
             }
         }
-        else
+        else {
             deletePath(tmpDir);
+	    if (top != tmpDir) rmdir(dirOf(tmpDir).c_str());
+	}
         tmpDir = "";
     }
 }

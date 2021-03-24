@@ -10,6 +10,7 @@
 ;;; Copyright © 2020 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2020 Guy Fleury Iteriteka <gfleury@disroot.org>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2728,7 +2729,8 @@ exec " gcc "/bin/" program
                            "--disable-shared"
                            "--enable-languages=c,c++"
 
-                           ,@(if (equal? "powerpc64le-linux-gnu" (boot-triplet))
+                           ;; boot-triplet inserts "guix" in the triplet.
+                           ,@(if (equal? "powerpc64le-guix-linux-gnu" (boot-triplet))
                                  ;; On POWER9 (little endian) glibc needs the
                                  ;; 128-bit long double type.
                                  '("--with-long-double-128")
@@ -3216,7 +3218,11 @@ memoized as a function of '%current-system'."
      `(("bison" ,bison-boot0)
        ("texinfo" ,texinfo-boot0)
        ("perl" ,perl-boot0)
-       ("python" ,python-boot0)))
+       ("python" ,python-boot0)
+       ,@(if (target-powerpc?)
+           `(("powerpc64le-patch" ,@(search-patches
+                                      "glibc-ldd-powerpc.patch")))
+           '())))
     (inputs
      `( ;; The boot inputs.  That includes the bootstrap libc.  We don't want
        ;; it in $CPATH, hence the 'pre-configure' phase above.
@@ -3360,6 +3366,10 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
 
    ;; This time we need 'msgfmt' to install all the libc.mo files.
    (native-inputs `(,@(package-native-inputs glibc-final-with-bootstrap-bash)
+                     ,@(if (target-powerpc?)
+                         `(("powerpc64le-patch" ,@(search-patches
+                                                    "glibc-ldd-powerpc.patch")))
+                         '())
                     ("gettext" ,gettext-boot0)))
 
    (propagated-inputs
@@ -3400,9 +3410,19 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
     (arguments
      `(#:guile ,%bootstrap-guile
        #:implicit-inputs? #f
-       #:allowed-references ("out" ,glibc-final)
+       #:allowed-references
+       ,@(match (%current-system)
+         ((? target-powerpc?)
+          `(("out" ,glibc-final ,static-bash-for-glibc)))
+         (_
+          `(("out" ,glibc-final))))
        ,@(package-arguments binutils)))
-    (inputs (%boot2-inputs))))
+    (inputs
+     (match (%current-system)
+       ((? target-powerpc?)
+        `(("bash" ,static-bash-for-glibc)
+          ,@(%boot2-inputs)))
+       (_ (%boot2-inputs))))))
 
 (define libstdc++
   ;; Intermediate libstdc++ that will allow us to build the final GCC

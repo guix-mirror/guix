@@ -120,6 +120,15 @@
   (packages inferior-package-promise)            ;promise of inferior packages
   (table    inferior-package-table))             ;promise of vhash
 
+(define (write-inferior inferior port)
+  (match inferior
+    (($ <inferior> pid _ _ version)
+     (format port "#<inferior ~a ~a ~a>"
+             pid version
+             (number->string (object-address inferior) 16)))))
+
+(set-record-type-printer! <inferior> write-inferior)
+
 (define* (inferior-pipe directory command error-port)
   "Return an input/output pipe on the Guix instance in DIRECTORY.  This runs
 'DIRECTORY/COMMAND repl' if it exists, or falls back to some other method if
@@ -740,8 +749,16 @@ determines whether CHANNELS are authenticated."
            (string-append directory "/" file))
          (scandir directory base32-encoded-sha256?)))
 
+  (define (symlink/safe old new)
+    (catch 'system-error
+      (lambda ()
+        (symlink old new))
+      (lambda args
+        (unless (= EEXIST (system-error-errno args))
+          (apply throw args)))))
+
   (define symlink*
-    (lift2 symlink %store-monad))
+    (lift2 symlink/safe %store-monad))
 
   (define add-indirect-root*
     (store-lift add-indirect-root))

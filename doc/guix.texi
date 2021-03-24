@@ -32,7 +32,7 @@ Copyright @copyright{} 2015, 2016, 2017, 2019, 2020, 2021 Leo Famulari@*
 Copyright @copyright{} 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus@*
 Copyright @copyright{} 2016 Ben Woodcroft@*
 Copyright @copyright{} 2016, 2017, 2018 Chris Marusich@*
-Copyright @copyright{} 2016, 2017, 2018, 2019, 2020 Efraim Flashner@*
+Copyright @copyright{} 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner@*
 Copyright @copyright{} 2016 John Darrington@*
 Copyright @copyright{} 2016, 2017 Nikita Gillmann@*
 Copyright @copyright{} 2016, 2017, 2018, 2019, 2020 Jan Nieuwenhuizen@*
@@ -86,6 +86,7 @@ Copyright @copyright{} 2020 raingloom@*
 Copyright @copyright{} 2020 Daniel Brooks@*
 Copyright @copyright{} 2020 John Soo@*
 Copyright @copyright{} 2020 Jonathan Brielmaier@*
+Copyright @copyright{} 2020 Edgar Vincent@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -830,7 +831,8 @@ Guile,, gnutls-guile, GnuTLS-Guile});
 @item
 @uref{https://notabug.org/guile-sqlite3/guile-sqlite3, Guile-SQLite3}, version 0.1.0
 or later;
-@item @uref{https://notabug.org/guile-zlib/guile-zlib, Guile-zlib};
+@item @uref{https://notabug.org/guile-zlib/guile-zlib, Guile-zlib},
+version 0.1.0 or later;
 @item @uref{https://notabug.org/guile-lzlib/guile-lzlib, Guile-lzlib};
 @item @uref{https://www.nongnu.org/guile-avahi/, Guile-Avahi};
 @item
@@ -860,6 +862,11 @@ substitutes (@pxref{Invoking guix publish}).
 @item
 @uref{https://ngyro.com/software/guile-semver.html, Guile-Semver} for
 the @code{crate} importer (@pxref{Invoking guix import}).
+
+@item
+@uref{https://www.nongnu.org/guile-lib/doc/ref/htmlprag/, Guile-Lib} for
+the @code{go} importer (@pxref{Invoking guix import}) and for some of
+the ``updaters'' (@pxref{Invoking guix refresh}).
 
 @item
 When @url{http://www.bzip.org, libbz2} is available,
@@ -2625,7 +2632,7 @@ Note that @command{sudo guix} runs your user's @command{guix} command and
 explicitly run root's @command{guix}, type @command{sudo -i guix @dots{}}.
 
 The difference matters here, because @command{guix pull} updates
-the @command{guix} command and package definitions only for the user it is ran
+the @command{guix} command and package definitions only for the user it is run
 as.  This means that if you choose to use @command{guix system reconfigure} in
 root's login shell, you'll need to @command{guix pull} separately.
 @end quotation
@@ -2745,7 +2752,11 @@ you can go ahead and install it (run this command as a regular user,
 guix install emacs
 @end example
 
-You've installed your first package, congrats!  In the process, you've
+@cindex profile
+You've installed your first package, congrats!  The package is now
+visible in your default @dfn{profile}, @file{$HOME/.guix-profile}---a
+profile is a directory containing installed packages.
+In the process, you've
 probably noticed that Guix downloaded pre-built binaries; or, if you
 explicitly chose to @emph{not} use pre-built binaries, then probably
 Guix is still building software (@pxref{Substitutes}, for more info).
@@ -3053,9 +3064,13 @@ retaining precise @dfn{provenance tracking} of the software.
 @cindex removing packages
 @cindex package installation
 @cindex package removal
+@cindex profile
 The @command{guix package} command is the tool that allows users to
 install, upgrade, and remove packages, as well as rolling back to
-previous configurations.  It operates only on the user's own profile,
+previous configurations.  These operations work on a user
+@dfn{profile}---a directory of installed packages.  Each user has a
+default profile in @file{$HOME/.guix-profile}.
+The command operates only on the user's own profile,
 and works with normal user privileges (@pxref{Features}).  Its syntax
 is:
 
@@ -3380,6 +3395,7 @@ variable, even though, taken individually, neither @file{foo} nor
 @file{bar} would lead to that recommendation.
 
 
+@cindex profile, choosing
 @item --profile=@var{profile}
 @itemx -p @var{profile}
 Use @var{profile} instead of the user's default profile.
@@ -5253,7 +5269,7 @@ The meta-data file should contain a simple S-expression like this:
  (version 0)
  (dependencies
   (channel
-   (name 'some-collection)
+   (name some-collection)
    (url "https://example.org/first-collection.git")
 
    ;; The 'introduction' bit below is optional: you would
@@ -5264,7 +5280,7 @@ The meta-data file should contain a simple S-expression like this:
       (commit "a8883b58dc82e167c96506cf05095f37c2c2c6cd")
       (signer "CABB A931 C0FF EEC6 900D  0CFB 090B 1199 3D9A EBB5"))))
   (channel
-   (name 'some-other-collection)
+   (name some-other-collection)
    (url "https://example.org/second-collection.git")
    (branch "testing"))))
 @end lisp
@@ -7445,8 +7461,10 @@ supports builds of packages using Cargo, the build tool of the
 It adds @code{rustc} and @code{cargo} to the set of inputs.
 A different Rust package can be specified with the @code{#:rust} parameter.
 
-Regular cargo dependencies should be added to the package definition via the
-@code{#:cargo-inputs} parameter as a list of name and spec pairs, where the
+Regular cargo dependencies should be added to the package definition similarly
+to other packages; those needed only at build time to native-inputs, others to
+inputs.  If you need to add source-only crates then you should add them to via
+the @code{#:cargo-inputs} parameter as a list of name and spec pairs, where the
 spec can be a package or a source definition.  Note that the spec must
 evaluate to a path to a gzipped tarball which includes a @code{Cargo.toml}
 file at its root, or it will be ignored.  Similarly, cargo dev-dependencies
@@ -7457,8 +7475,11 @@ In its @code{configure} phase, this build system will make any source inputs
 specified in the @code{#:cargo-inputs} and @code{#:cargo-development-inputs}
 parameters available to cargo.  It will also remove an included
 @code{Cargo.lock} file to be recreated by @code{cargo} during the
-@code{build} phase.  The @code{install} phase installs the binaries
-defined by the crate.
+@code{build} phase.  The @code{package} phase will run @code{cargo package}
+to create a source crate for future use.  The @code{install} phase installs
+the binaries defined by the crate.  Unless @code{install-source? #f} is
+defined it will also install a source crate repository of itself and unpacked
+sources, to ease in future hacking on rust packages.
 @end defvr
 
 @defvr {Scheme Variable} chicken-build-system
@@ -7730,13 +7751,34 @@ julia} packages, which essentially is similar to running @samp{julia -e
 Tests are run by calling @code{/test/runtests.jl}.
 
 The Julia package name is read from the file @file{Project.toml}.  This
-value can be overridden by passing the argument @code{#:julia-file-name}
+value can be overridden by passing the argument @code{#:julia-package-name}
 (which must be correctly capitalized).
 
-For packages requiring shared library dependencies, you may need to write the
-@file{/deps/deps.jl} file manually.  It's usually a line of @code{const
-variable = /gnu/store/library.so} for each dependency, plus a void function
-@code{check_deps() = nothing}.
+Julia packages usually manage they binary dependencies via
+@code{JLLWrappers.jl}, a Julia package that creates a module (named
+after the wrapped library followed by @code{_jll.jl}.
+
+To add the binary path @code{_jll.jl} packages, you need to patch the
+files under @file{src/wrappers/}, replacing the call to the macro
+@code{JLLWrappers.@@generate_wrapper_header}, adding as a secound
+argument containing the store path the binary.
+
+As an example, in the MbedTLS Julia package, we add a build phase
+(@pxref{Build Phases}) to insert the absolute file name of the wrapped
+MbedTLS package:
+
+@lisp
+(add-after 'unpack 'override-binary-path
+  (lambda* (#:key inputs #:allow-other-keys)
+    (for-each (lambda (wrapper)
+                (substitute* wrapper
+                  (("generate_wrapper_header.*")
+                   (string-append
+                    "generate_wrapper_header(\"MbedTLS\", \""
+                    (assoc-ref inputs "mbedtls-apache") "\")\n"))))
+              ;; There's a Julia file for each platform, override them all.
+              (find-files "src/wrappers/" "\\.jl$"))))
+@end lisp
 
 Some older packages that aren't using @file{Package.toml} yet, will require
 this file to be created, too.  The function @code{julia-create-package-toml}
@@ -11503,6 +11545,28 @@ Select the given repository (a repository name).  Possible values include:
       of coq packages.
 @end itemize
 @end table
+
+@item go
+@cindex go
+Import metadata for a Go module using
+@uref{https://proxy.golang.org, proxy.golang.org}.
+
+This importer is highly experimental. See the source code for more info
+about the current state.
+
+@example
+guix import go gopkg.in/yaml.v2
+@end example
+
+Additional options include:
+
+@table @code
+@item --recursive
+@itemx -r
+Traverse the dependency graph of the given upstream package recursively
+and generate package expressions for all those packages that are not yet
+in Guix.
+@end table
 @end table
 
 The structure of the @command{guix import} code is modular.  It would be
@@ -11548,10 +11612,10 @@ Consider the packages specified, and all the packages upon which they depend.
 
 @example
 $ guix refresh --recursive coreutils
-gnu/packages/acl.scm:35:2: warning: no updater for acl
-gnu/packages/m4.scm:30:12: info: 1.4.18 is already the latest version of m4
+gnu/packages/acl.scm:40:13: acl would be upgraded from 2.2.53 to 2.3.1
+gnu/packages/m4.scm:30:12: 1.4.18 is already the latest version of m4
 gnu/packages/xml.scm:68:2: warning: no updater for expat
-gnu/packages/multiprecision.scm:40:12: info: 6.1.2 is already the latest version of gmp
+gnu/packages/multiprecision.scm:40:12: 6.1.2 is already the latest version of gmp
 @dots{}
 @end example
 
@@ -11674,6 +11738,9 @@ the updater for @uref{https://www.stackage.org, Stackage} packages.
 the updater for @uref{https://crates.io, Crates} packages.
 @item launchpad
 the updater for @uref{https://launchpad.net, Launchpad} packages.
+@item generic-html
+a generic updater that crawls the HTML page where the source tarball of
+the package is hosted, when applicable.
 @end table
 
 For instance, the following command only checks for updates of Emacs
@@ -11788,7 +11855,7 @@ gpg --no-default-keyring --keyring mykeyring.kbx \
   --recv-keys @value{OPENPGP-SIGNING-KEY-ID}
 @end example
 
-@ref{GPG Configuration Options, @option{--keyring},, gnupg, Using the GNU
+@xref{GPG Configuration Options, @option{--keyring},, gnupg, Using the GNU
 Privacy Guard}, for more information on GPG's @option{--keyring} option.
 
 @item --key-download=@var{policy}
@@ -19787,34 +19854,6 @@ Additional command line options to pass to @code{memcached}.
 @end table
 @end deftp
 
-@subsubheading MongoDB
-
-@defvr {Scheme Variable} mongodb-service-type
-This is the service type for @uref{https://www.mongodb.com/, MongoDB}.
-The value for the service type is a @code{mongodb-configuration} object.
-@end defvr
-
-@lisp
-(service mongodb-service-type)
-@end lisp
-
-@deftp {Data Type} mongodb-configuration
-Data type representing the configuration of mongodb.
-
-@table @asis
-@item @code{mongodb} (default: @code{mongodb})
-The MongoDB package to use.
-
-@item @code{config-file} (default: @code{%default-mongodb-configuration-file})
-The configuration file for MongoDB.
-
-@item @code{data-directory} (default: @code{"/var/lib/mongodb"})
-This value is used to create the directory, so that it exists and is
-owned by the mongodb user.  It should match the data-directory which
-MongoDB is configured to use through the configuration file.
-@end table
-@end deftp
-
 @subsubheading Redis
 
 @defvr {Scheme Variable} redis-service-type
@@ -27056,9 +27095,9 @@ The verbosity level of the daemon.
 @subsection Continuous Integration
 
 @cindex continuous integration
-@uref{https://git.savannah.gnu.org/cgit/guix/guix-cuirass.git, Cuirass} is a
-continuous integration tool for Guix.  It can be used both for development and
-for providing substitutes to others (@pxref{Substitutes}).
+@uref{https://guix.gnu.org/cuirass/, Cuirass} is a continuous
+integration tool for Guix.  It can be used both for development and for
+providing substitutes to others (@pxref{Substitutes}).
 
 The @code{(gnu services cuirass)} module provides the following service.
 
@@ -27067,44 +27106,43 @@ The type of the Cuirass service.  Its value must be a
 @code{cuirass-configuration} object, as described below.
 @end defvr
 
-To add build jobs, you have to set the @code{specifications} field of the
-configuration.  Here is an example of a service that polls the Guix repository
-and builds the packages from a manifest.  Some of the packages are defined in
-the @code{"custom-packages"} input, which is the equivalent of
-@env{GUIX_PACKAGE_PATH}.
+To add build jobs, you have to set the @code{specifications} field of
+the configuration.  For instance, the following example will build all
+the packages provided by the @code{my-channel} channel.
 
 @lisp
 (define %cuirass-specs
-  #~(list
-     '((#:name . "my-manifest")
-       (#:load-path-inputs . ("guix"))
-       (#:package-path-inputs . ("custom-packages"))
-       (#:proc-input . "guix")
-       (#:proc-file . "build-aux/cuirass/gnu-system.scm")
-       (#:proc . cuirass-jobs)
-       (#:proc-args . ((subset . "manifests")
-                       (systems . ("x86_64-linux"))
-                       (manifests . (("config" . "guix/manifest.scm")))))
-       (#:inputs . (((#:name . "guix")
-                     (#:url . "git://git.savannah.gnu.org/guix.git")
-                     (#:load-path . ".")
-                     (#:branch . "master")
-                     (#:no-compile? . #t))
-                    ((#:name . "config")
-                     (#:url . "https://git.example.org/config.git")
-                     (#:load-path . ".")
-                     (#:branch . "master")
-                     (#:no-compile? . #t))
-                    ((#:name . "custom-packages")
-                     (#:url . "https://git.example.org/custom-packages.git")
-                     (#:load-path . ".")
-                     (#:branch . "master")
-                     (#:no-compile? . #t)))))))
+  #~(list (specification
+           (name "my-channel")
+           (build '(channels my-channel))
+           (channels
+            (cons (channel
+                   (name 'my-channel)
+                   (url "https://my-channel.git"))
+                  %default-channels)))))
 
 (service cuirass-service-type
          (cuirass-configuration
           (specifications %cuirass-specs)))
 @end lisp
+
+To build the @code{linux-libre} package defined by the default Guix
+channel, one can use the following configuration.
+
+@lisp
+(define %cuirass-specs
+  #~(list (specification
+           (name "my-linux")
+           (build '(packages "linux-libre")))))
+
+(service cuirass-service-type
+         (cuirass-configuration
+          (specifications %cuirass-specs)))
+@end lisp
+
+The other configuration possibilities, as well as the specification
+record itself are described in the Cuirass manual
+(@pxref{Specifications,,, cuirass, Cuirass}).
 
 While information related to build jobs is located directly in the
 specifications, global settings for the @command{cuirass} process are
@@ -27114,19 +27152,14 @@ accessible in other @code{cuirass-configuration} fields.
 Data type representing the configuration of Cuirass.
 
 @table @asis
+@item @code{cuirass} (default: @code{cuirass})
+The Cuirass package to use.
+
 @item @code{log-file} (default: @code{"/var/log/cuirass.log"})
 Location of the log file.
 
 @item @code{web-log-file} (default: @code{"/var/log/cuirass-web.log"})
 Location of the log file used by the web interface.
-
-@item @code{queries-log-file} (default: @code{#f})
-Location of the SQL queries log file.  By default, SQL queries logging is
-disabled.
-
-@item @code{web-queries-log-file} (default: @code{#f})
-Location of the web SQL queries log file.  By default, web SQL queries
-logging is disabled.
 
 @item @code{cache-directory} (default: @code{"/var/cache/cuirass"})
 Location of the repository cache.
@@ -27141,17 +27174,19 @@ Owner's group of the @code{cuirass} process.
 Number of seconds between the poll of the repositories followed by the
 Cuirass jobs.
 
-@item @code{queue-size} (default: @code{1})
-Size of the database writer queue.
+@item @code{parameters} (default: @code{#f})
+Read parameters from the given @var{parameters} file.  The supported
+parameters are described here (@pxref{Parameters,,, cuirass, Cuirass}).
 
-@item @code{database} (default: @code{"/var/lib/cuirass/cuirass.db"})
-Location of sqlite database which contains the build results and previously
-added specifications.
+@item @code{remote-server} (default: @code{#f})
+A @code{cuirass-remote-server-configuration} record to use the build
+remote mechanism or @code{#f} to use the default build mechanism.
 
-@item @code{ttl} (default: @code{(* 30 24 3600)})
-Specifies the time-to-live (TTL) in seconds of garbage collector roots that
-are registered for build results.  This means that build results are protected
-from garbage collection for at least @var{ttl} seconds.
+@item @code{database} (default: @code{"dbname=cuirass host=/var/run/postgresql"})
+Use @var{database} as the database containing the jobs and the past
+build results. Since Cuirass uses PostgreSQL as a database engine,
+@var{database} must be a string such as @code{"dbname=cuirass
+host=localhost"}.
 
 @item @code{port} (default: @code{8081})
 Port number used by the HTTP server.
@@ -27161,11 +27196,9 @@ Listen on the network interface for @var{host}.  The default is to
 accept connections from localhost.
 
 @item @code{specifications} (default: @code{#~'()})
-A gexp (@pxref{G-Expressions}) that evaluates to a list of specifications,
-where a specification is an association list
-(@pxref{Associations Lists,,, guile, GNU Guile Reference Manual}) whose
-keys are keywords (@code{#:keyword-example}) as shown in the example
-above.
+A gexp (@pxref{G-Expressions}) that evaluates to a list of
+specifications records.  The specification record is described in the
+Cuirass manual (@pxref{Specifications,,, cuirass, Cuirass}).
 
 @item @code{use-substitutes?} (default: @code{#f})
 This allows using substitutes to avoid building every dependencies of a job
@@ -27181,122 +27214,102 @@ packages locally.
 @item @code{extra-options} (default: @code{'()})
 Extra options to pass when running the Cuirass processes.
 
+@end table
+@end deftp
+
+@cindex remote build
+@subsubheading Cuirass remote building
+
+Cuirass supports two mechanisms to build derivations.
+
+@itemize
+@item Using the local Guix daemon.
+This is the default build mechanism.  Once the build jobs are
+evaluated, they are sent to the local Guix daemon.  Cuirass then
+listens to the Guix daemon output to detect the various build events.
+
+@item Using the remote build mechanism.
+The build jobs are not submitted to the local Guix daemon.  Instead, a
+remote server dispatches build requests to the connect remote workers,
+according to the build priorities.
+
+@end itemize
+
+To enable this build mode a @code{cuirass-remote-server-configuration}
+record must be passed as @code{remote-server} argument of the
+@code{cuirass-configuration} record.  The
+@code{cuirass-remote-server-configuration} record is described below.
+
+This build mode scales way better than the default build mode.  This is
+the build mode that is used on the GNU Guix build farm at
+@url{https://ci.guix.gnu.org}.  It should be preferred when using
+Cuirass to build large amount of packages.
+
+@deftp {Data Type} cuirass-remote-server-configuration
+Data type representing the configuration of the Cuirass remote-server.
+
+@table @asis
+@item @code{backend-port} (default: @code{5555})
+The TCP port for communicating with @code{remote-worker} processes
+using ZMQ.  It defaults to @code{5555}.
+
+@item @code{log-port} (default: @code{5556})
+The TCP port of the log server.  It defaults to @code{5556}.
+
+@item @code{publish-port} (default: @code{5557})
+The TCP port of the publish server.  It defaults to @code{5557}.
+
+@item @code{log-file} (default: @code{"/var/log/cuirass-remote-server.log"})
+Location of the log file.
+
+@item @code{cache} (default: @code{"/var/cache/cuirass/remote"})
+Use @var{cache} directory to cache build log files.
+
+@item @code{trigger-url} (default: @code{#f})
+Once a substitute is successfully fetched, trigger substitute baking at
+@var{trigger-url}.
+
+@item @code{public-key}
+@item @code{private-key}
+Use the specific @var{file}s as the public/private key pair used to sign
+the store items being published.
+
+@end table
+@end deftp
+
+At least one remote worker must also be started on any machine of the
+local network to actually perform the builds and report their status.
+
+@deftp {Data Type} cuirass-remote-worker-configuration
+Data type representing the configuration of the Cuirass remote-worker.
+
+@table @asis
 @item @code{cuirass} (default: @code{cuirass})
 The Cuirass package to use.
-@end table
-@end deftp
 
-@cindex simple cuirass
-@subsubheading Simple Cuirass
+@item @code{workers} (default: @code{1})
+Start @var{workers} parallel workers.
 
-The Cuirass service configuration described above can be a little
-intimidating.  In particular, getting the right @code{specifications}
-can prove difficult.  The @code{simple-cuirass-configuration->specs}
-procedure offers a way to generate those @code{specifications} and thus
-setup a continuous integration server more readily.
-
-@deffn {Scheme Procedure} simple-cuirass-configuration->specs @var{configuration}
-This procedure takes a @code{simple-cuirass-configuration} record as
-argument and returns the corresponding Cuirass specifications gexp.
-@end deffn
-
-@deftp {Data Type} simple-cuirass-configuration
-Data type representing the configuration of a simple Cuirass instance.
-
-@table @asis
-@item @code{build} (default: @code{all})
-The packages to be built by Cuirass.  It defaults to @code{all}, which
-means that all the discovered packages in the subsequent @code{channels}
-field are to be selected.
-
-It is also possible to set this field to a list of @code{build-manifest}
-records, so that only the packages that are part of the declared
-manifests are built.  This record is described below.
-
-@deftp {Data Type} build-manifest
-@table @asis
-@item @code{channel-name}
-The name of the channel where the manifest is located.
-
-@item @code{manifest}
-The manifest path inside the channel.
-
-@end table
-@end deftp
-
-@item @code{channels} (default: @code{%default-channels})
-The channels to be fetched by Cuirass (@pxref{Channels}).
-
-@item @code{non-package-channels} (default: @code{'()})
-List the channel names that must not be searched for packages.  That is
-often the case for the channel containing the manifest.
+@item @code{server} (default: @code{#f})
+Do not use Avahi discovery and connect to the given @code{server} IP
+address instead.
 
 @item @code{systems} (default: @code{(list (%current-system))})
-Build every discovered package for each system in this list.  By default
-only the current system is selected.
+Only request builds for the given @var{systems}.
+
+@item @code{log-file} (default: @code{"/var/log/cuirass-remote-worker.log"})
+Location of the log file.
+
+@item @code{publish-port} (default: @code{5558})
+The TCP port of the publish server.  It defaults to @code{5558}.
+
+@item @code{public-key}
+@item @code{private-key}
+Use the specific @var{file}s as the public/private key pair used to sign
+the store items being published.
 
 @end table
 @end deftp
-
-Here is an example of how to setup a Cuirass instance that builds all
-the packages declared by Guix and a user repository.  The package list
-is re-evaluated each time a commit is pushed in one of the declared
-channels.
-
-@lisp
-(service cuirass-service-type
-         (cuirass-configuration
-          (specifications
-           (simple-cuirass-configuration->specs
-            (simple-cuirass-configuration
-             (build 'all)
-             (channels (cons (channel
-                              (name 'my-guix)
-                              (url "https://my-git-repo/guix.git"))
-                             %default-channels)))))))
-@end lisp
-
-In the same spirit, this builds all the packages that are part of the
-@code{guix} or @code{my-guix} channels and declared in the manifest
-located in the @code{conf} channel.
-
-@lisp
-(service cuirass-service-type
-         (cuirass-configuration
-          (specifications
-           (simple-cuirass-configuration->specs
-            (simple-cuirass-configuration
-             (build (list
-                     (build-manifest
-                      (channel-name 'conf)
-                      (manifest "guix/manifest.scm"))))
-             (channels (cons* (channel
-                               (name 'my-guix)
-                               (url "https://my-git-repo/guix.git"))
-                              (channel
-                               (name 'conf)
-                               (url "https://my-git-repo/conf.git"))
-                              %default-channels))
-             (non-package-channels '(conf)))))))
-@end lisp
-
-Finally, @code{simple-cuirass-services} takes as a second optional
-argument a @code{cuirass-configuration} record.  It can be used to
-customize the configuration of the Cuirass instance.
-
-@lisp
-(simple-cuirass-services
- (simple-cuirass-configuration
-  (build 'all)
-  (channels (cons (channel
-                   (name 'my-guix)
-                   (url "https://my-git-repo/guix.git"))
-                  %default-channels))
-  (non-package-channels '(conf)))
- (cuirass-configuration
-  (inherit %default-cuirass-config)
-  (host "0.0.0.0"))) ;listen on all interfaces.
-@end lisp
 
 @node Power Management Services
 @subsection Power Management Services
@@ -28700,13 +28713,6 @@ This is the configuration for the @code{qemu-binfmt} service.
 The list of emulated QEMU platforms.  Each item must be a @dfn{platform
 object} as returned by @code{lookup-qemu-platforms} (see below).
 
-@item @code{guix-support?} (default: @code{#t})
-When it is true, QEMU and all its dependencies are added to the build
-environment of @command{guix-daemon} (@pxref{Invoking guix-daemon,
-@option{--chroot-directory} option}).  This allows the @code{binfmt_misc}
-handlers to be used within the build environment, which in turn means
-that you can transparently build programs for another architecture.
-
 For example, let's suppose you're on an x86_64 machine and you have this
 service:
 
@@ -28714,7 +28720,6 @@ service:
 (service qemu-binfmt-service-type
          (qemu-binfmt-configuration
            (platforms (lookup-qemu-platforms "arm"))
-           (guix-support? #t)))
 @end lisp
 
 You can run:
@@ -28728,10 +28733,6 @@ and it will build Inkscape for ARMv7 @emph{as if it were a native
 build}, transparently using QEMU to emulate the ARMv7 CPU@.  Pretty handy
 if you'd like to test a package build for an architecture you don't have
 access to!
-
-When @code{guix-support?} is set to @code{#f}, programs for other
-architectures can still be executed transparently, but invoking commands
-like @command{guix build -s armhf-linux @dots{}} will fail.
 
 @item @code{qemu} (default: @code{qemu})
 The QEMU package to use.
@@ -31382,6 +31383,21 @@ instantiated as:
          (sysctl-configuration
            (settings '(("net.ipv4.ip_forward" . "1")))))
 @end lisp
+
+Since @code{sysctl-service-type} is used in the default lists of
+services, @code{%base-services} and @code{%desktop-services}, you can
+use @code{modify-services} to change its configuration and add the
+kernel parameters that you want (@pxref{Service Reference,
+@code{modify-services}}).
+
+@lisp
+(modify-services %base-services
+  (sysctl-service-type config =>
+                       (sysctl-configuration
+                         (settings (append '(("net.ipv4.ip_forward" . "1"))
+                                           %default-sysctl-settings)))))
+@end lisp
+
 @end defvr
 
 @deftp {Data Type} sysctl-configuration
@@ -31391,10 +31407,15 @@ The data type representing the configuration of @command{sysctl}.
 @item @code{sysctl} (default: @code{(file-append procps "/sbin/sysctl"})
 The @command{sysctl} executable to use.
 
-@item @code{settings} (default: @code{'()})
+@item @code{settings} (default: @code{%default-sysctl-settings})
 An association list specifies kernel parameters and their values.
 @end table
 @end deftp
+
+@defvr {Scheme Variable} %default-sysctl-settings
+An association list specifying the default @command{sysctl} parameters
+on Guix System.
+@end defvr
 
 @cindex pcscd
 @subsubheading PC/SC Smart Card Daemon Service
@@ -34043,6 +34064,38 @@ This is the list of modules that must be in scope when @code{start} and
 
 @end table
 @end deftp
+
+The example below defines a Shepherd service that spawns
+@command{syslogd}, the system logger from the GNU Networking Utilities
+(@pxref{syslogd invocation, @command{syslogd},, inetutils, GNU
+Inetutils}):
+
+@example
+(let ((config (plain-file "syslogd.conf" "@dots{}")))
+  (shepherd-service
+    (documentation "Run the syslog daemon (syslogd).")
+    (provision '(syslogd))
+    (requirement '(user-processes))
+    (start #~(make-forkexec-constructor
+               (list #$(file-append inetutils "/libexec/syslogd")
+                     "--rcfile" #$config)
+               #:pid-file "/var/run/syslog.pid"))
+    (stop #~(make-kill-destructor))))
+@end example
+
+Key elements in this example are the @code{start} and @code{stop}
+fields: they are @dfn{staged} code snippets that use the
+@code{make-forkexec-constructor} procedure provided by the Shepherd and
+its dual, @code{make-kill-destructor} (@pxref{Service De- and
+Constructors,,, shepherd, The GNU Shepherd Manual}).  The @code{start}
+field will have @command{shepherd} spawn @command{syslogd} with the
+given option; note that we pass @code{config} after @option{--rcfile},
+which is a configuration file declared above (contents of this file are
+omitted).  Likewise, the @code{stop} field tells how this service is to
+be stopped; in this case, it is stopped by making the @code{kill} system
+call on its PID@.  Code staging is achieved using G-expressions:
+@code{#~} stages code, while @code{#$} ``escapes'' back to host code
+(@pxref{G-Expressions}).
 
 @deftp {Data Type} shepherd-action
 This is the data type that defines additional actions implemented by a

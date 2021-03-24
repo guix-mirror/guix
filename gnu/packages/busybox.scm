@@ -33,7 +33,7 @@
 (define-public busybox
   (package
     (name "busybox")
-    (version "1.32.1")
+    (version "1.33.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -41,7 +41,8 @@
                     version ".tar.bz2"))
               (sha256
                (base32
-                "1vhd59qmrdyrr1q7rvxmyl96z192mxl089hi87yl0hcp6fyw8mwx"))))
+                "1gcg7ggg79apdlp5qnrh9pbjl10fx30yn33p21kxqpm8j4f6hs6m"))
+              (patches (search-patches "busybox-CVE-2021-28831.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2020 Valentin Ignatev <valentignatev@gmail.com>
 ;;; Copyright © 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
-;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2020 Gabriel Arazas <foo.dogsquared@gmail.com>
 ;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
@@ -907,8 +907,7 @@ EUI-64, also known as MAC-48 media access control addresses.")
         (base32 "18szbh4dixcr7pmymvbrpv21hv0wrpii5w03rv2534bb2ywwpq8s"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-android-glue" ,rust-android-glue-0.2)
         ("rust-cgl" ,rust-cgl-0.3)
         ("rust-cocoa" ,rust-cocoa-0.23)
@@ -924,10 +923,12 @@ EUI-64, also known as MAC-48 media access control addresses.")
         ("rust-objc" ,rust-objc-0.2)
         ("rust-osmesa-sys" ,rust-osmesa-sys-0.1)
         ("rust-parking-lot" ,rust-parking-lot-0.11)
-        ("rust-wayland-client" ,rust-wayland-client-0.28)
         ("rust-wayland-egl" ,rust-wayland-egl-0.28)
         ("rust-winapi" ,rust-winapi-0.3)
         ("rust-winit" ,rust-winit-0.24))))
+    (inputs
+     `(("rust-wayland-client" ,rust-wayland-client-0.28)
+       ("rust-wayland-egl" ,rust-wayland-egl-0.28)))
     (home-page "https://github.com/tomaka/glutin")
     (synopsis "Cross-platform OpenGL context provider")
     (description "This package provides an OpenGL context provider.")
@@ -2324,16 +2325,23 @@ applications.")
         (base32 "1mxnflzv9s3qpcp0z7kqvrzki5bknfar9n9yky06f8ivs00vxgdx"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-bitflags" ,rust-bitflags-1)
         ("rust-downcast-rs" ,rust-downcast-rs-1)
         ("rust-libc" ,rust-libc-0.2)
         ("rust-nix" ,rust-nix-0.18)
-        ("rust-scoped-tls" ,rust-scoped-tls-1)
-        ("rust-wayland-commons" ,rust-wayland-commons-0.28)
-        ("rust-wayland-scanner" ,rust-wayland-scanner-0.28)
-        ("rust-wayland-sys" ,rust-wayland-sys-0.28))))
+        ("rust-scoped-tls" ,rust-scoped-tls-1))
+       #:cargo-development-inputs
+       (("rust-tempfile" ,rust-tempfile-3))))
+    (inputs
+     `(("rust-bitflags" ,rust-bitflags-1)
+       ("rust-downcast-rs" ,rust-downcast-rs-1)
+       ("rust-libc" ,rust-libc-0.2)
+       ("rust-nix" ,rust-nix-0.18)
+       ("rust-scoped-tls" ,rust-scoped-tls-1)
+       ("rust-wayland-commons" ,rust-wayland-commons-0.28)
+       ("rust-wayland-scanner" ,rust-wayland-scanner-0.28)
+       ("rust-wayland-sys" ,rust-wayland-sys-0.28)))
     (home-page "https://github.com/smithay/wayland-rs")
     (synopsis
      "Rust bindings to the standard C implementation of the wayland protocol")
@@ -2357,7 +2365,8 @@ the wayland protocol, client side.")
         (base32
          "1nmw2kz70llc5mxwzg6bglnqy0qnyr9224zjmq9czazgw3mq045g"))))
     (arguments
-     `(#:cargo-inputs
+     `(#:skip-build? #t
+       #:cargo-inputs
        (("rust-bitflags" ,rust-bitflags-1)
         ("rust-calloop" ,rust-calloop-0.4)
         ("rust-downcast-rs" ,rust-downcast-rs-1)
@@ -2369,7 +2378,8 @@ the wayland protocol, client side.")
         ("rust-wayland-scanner" ,rust-wayland-scanner-0.23))
        #:cargo-development-inputs
        (("rust-byteorder" ,rust-byteorder-1)
-        ("rust-tempfile" ,rust-tempfile-3))))))
+        ("rust-tempfile" ,rust-tempfile-3))))
+    (inputs `())))
 
 (define-public rust-wayland-client-0.21
   (package
@@ -2413,12 +2423,15 @@ the wayland protocol, client side.")
         (base32 "0mid1sgy3bmiywnrhsr31b8w6zvk1ll2ci2as15ddv8pczvm0128"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-nix" ,rust-nix-0.18)
         ("rust-once-cell" ,rust-once-cell-1)
-        ("rust-smallvec" ,rust-smallvec-1)
-        ("rust-wayland-sys" ,rust-wayland-sys-0.28))))
+        ("rust-smallvec" ,rust-smallvec-1))))
+    (inputs
+     `(("rust-nix" ,rust-nix-0.18)
+       ("rust-once-cell" ,rust-once-cell-1)
+       ("rust-smallvec" ,rust-smallvec-1)
+       ("rust-wayland-sys" ,rust-wayland-sys-0.28)))
     (home-page "https://github.com/smithay/wayland-rs")
     (synopsis "Types and structures used by wayland-client and wayland-server")
     (description
@@ -2441,9 +2454,11 @@ and wayland-server.")
         (base32
          "1nyvcs6xxxzqgh0wvc7z0fgi89bf3h9p4qrbf77bnfbwlb8v0rmv"))))
     (arguments
-     `(#:cargo-inputs
+     `(#:skip-build? #t
+       #:cargo-inputs
        (("rust-nix" ,rust-nix-0.14)
-        ("rust-wayland-sys" ,rust-wayland-sys-0.23))))))
+        ("rust-wayland-sys" ,rust-wayland-sys-0.23))))
+    (inputs `())))
 
 (define-public rust-wayland-commons-0.21
   (package
@@ -2477,11 +2492,13 @@ and wayland-server.")
         (base32 "0pvf96a9hg7b40vyvamcg491sa0006fr9bzf1xkaf8q22qn15syn"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-nix" ,rust-nix-0.18)
-        ("rust-wayland-client" ,rust-wayland-client-0.28)
         ("rust-xcursor" ,rust-xcursor-0.3))))
+    (inputs
+     `(("rust-nix" ,rust-nix-0.18)
+       ("rust-wayland-client" ,rust-wayland-client-0.28)
+       ("rust-xcursor" ,rust-xcursor-0.3)))
     (home-page "https://github.com/smithay/wayland-rs")
     (synopsis "Bindings to libwayland-cursor")
     (description
@@ -2502,11 +2519,12 @@ properly display animated cursors.")
        (sha256
         (base32 "1xd7iap0x4sidmy9dv02cdnxjhnbk9li7r7f39x9cg0i8xs50ly6"))))
     (build-system cargo-build-system)
-    (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-wayland-client" ,rust-wayland-client-0.28)
-        ("rust-wayland-sys" ,rust-wayland-sys-0.28))))
+    (inputs
+     `(("rust-wayland-client" ,rust-wayland-client-0.28)
+       ("rust-wayland-sys" ,rust-wayland-sys-0.28)))
+    ;; For the PKG_CONFIG_PATH environment variable.
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (home-page "https://github.com/smithay/wayland-rs")
     (synopsis "Bindings to libwayland-egl")
     (description
@@ -2529,13 +2547,14 @@ initializing an OpenGL or Vulkan context.")
         (base32 "0c0sw13qssrvf3jgygwqpiimpaagz3haxn9jridd4k85sfs856ii"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-bitflags" ,rust-bitflags-1)
-        ("rust-wayland-client" ,rust-wayland-client-0.28)
-        ("rust-wayland-commons" ,rust-wayland-commons-0.28)
-        ("rust-wayland-scanner" ,rust-wayland-scanner-0.28)
-        ("rust-wayland-server" ,rust-wayland-server-0.28))))
+     `(#:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1))))
+    (inputs
+     `(("rust-bitflags" ,rust-bitflags-1)
+       ("rust-wayland-client" ,rust-wayland-client-0.28)
+       ("rust-wayland-commons" ,rust-wayland-commons-0.28)
+       ("rust-wayland-scanner" ,rust-wayland-scanner-0.28)
+       ("rust-wayland-server" ,rust-wayland-server-0.28)))
     (home-page "https://github.com/smithay/wayland-rs")
     (synopsis "Generated API for the officials Wayland protocol extensions")
     (description
@@ -2558,12 +2577,14 @@ extensions.")
         (base32
          "1ygwbzqlnks5xzafka3c8ag6k92g2h6ygj2xsmvjfx2n6rj8dhkc"))))
     (arguments
-     `(#:cargo-inputs
+     `(#:skip-build? #t
+       #:cargo-inputs
        (("rust-bitflags" ,rust-bitflags-1)
         ("rust-wayland-client" ,rust-wayland-client-0.23)
         ("rust-wayland-commons" ,rust-wayland-commons-0.23)
         ("rust-wayland-server" ,rust-wayland-server-0.23)
-        ("rust-wayland-scanner" ,rust-wayland-scanner-0.23))))))
+        ("rust-wayland-scanner" ,rust-wayland-scanner-0.23))))
+    (inputs `())))
 
 (define-public rust-wayland-protocols-0.21
   (package
@@ -2600,12 +2621,10 @@ extensions.")
        (sha256
         (base32 "0g8ky63qk27in7zajycj3fyydsxlj19hanfcvr8d7z5kcxbvl43h"))))
     (build-system cargo-build-system)
-    (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-proc-macro2" ,rust-proc-macro2-1)
-        ("rust-quote" ,rust-quote-1)
-        ("rust-xml-rs" ,rust-xml-rs-0.8))))
+    (inputs
+     `(("rust-proc-macro2" ,rust-proc-macro2-1)
+       ("rust-quote" ,rust-quote-1)
+       ("rust-xml-rs" ,rust-xml-rs-0.8)))
     (home-page "https://github.com/smithay/wayland-rs")
     (synopsis "Generate Rust APIs from XML Wayland protocol files")
     (description
@@ -2630,7 +2649,8 @@ wayland-client crate for usable bindings.")
         (base32
          "0g8wcphykjrcpslznyi3qccx1pckw97rckq5b295nfbg6r3j5c4k"))))
     (arguments
-     `(#:cargo-inputs
+     `(#:skip-build? #t
+       #:cargo-inputs
        (("rust-proc-macro2" ,rust-proc-macro2-0.4)
         ("rust-quote" ,rust-quote-0.6)
         ("rust-xml-rs" ,rust-xml-rs-0.8))))))
@@ -2663,18 +2683,25 @@ wayland-client crate for usable bindings.")
         (base32 "09jfdjfqhjfcpiz4csgh60ymfkmz1cl3jmxyzq9hzcp0kyyxix93"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-bitflags" ,rust-bitflags-1)
         ("rust-downcast-rs" ,rust-downcast-rs-1)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-libc" ,rust-libc-0.2)
         ("rust-nix" ,rust-nix-0.18)
         ("rust-parking-lot" ,rust-parking-lot-0.11)
-        ("rust-scoped-tls" ,rust-scoped-tls-1)
-        ("rust-wayland-commons" ,rust-wayland-commons-0.28)
-        ("rust-wayland-scanner" ,rust-wayland-scanner-0.28)
-        ("rust-wayland-sys" ,rust-wayland-sys-0.28))))
+        ("rust-scoped-tls" ,rust-scoped-tls-1))))
+    (inputs
+     `(("rust-bitflags" ,rust-bitflags-1)
+       ("rust-downcast-rs" ,rust-downcast-rs-1)
+       ("rust-lazy-static" ,rust-lazy-static-1)
+       ("rust-libc" ,rust-libc-0.2)
+       ("rust-nix" ,rust-nix-0.18)
+       ("rust-parking-lot" ,rust-parking-lot-0.11)
+       ("rust-scoped-tls" ,rust-scoped-tls-1)
+       ("rust-wayland-commons" ,rust-wayland-commons-0.28)
+       ("rust-wayland-scanner" ,rust-wayland-scanner-0.28)
+       ("rust-wayland-sys" ,rust-wayland-sys-0.28)))
     (home-page "https://github.com/smithay/wayland-rs")
     (synopsis
      "Bindings to the standard C implementation of the wayland protocol")
@@ -2698,7 +2725,8 @@ the wayland protocol, server side.")
         (base32
          "1ccsalq6gnf07klnbjx2dxcbibhw03rqsgi578p913s3zsjlcg8a"))))
     (arguments
-     `(#:cargo-inputs
+     `(#:skip-build? #t
+       #:cargo-inputs
        (("rust-bitflags" ,rust-bitflags-1)
         ("rust-calloop" ,rust-calloop-0.4)
         ("rust-downcast-rs" ,rust-downcast-rs-1)
@@ -2707,7 +2735,8 @@ the wayland protocol, server side.")
         ("rust-nix" ,rust-nix-0.14)
         ("rust-wayland-commons" ,rust-wayland-commons-0.23)
         ("rust-wayland-sys" ,rust-wayland-sys-0.23)
-        ("rust-wayland-scanner" ,rust-wayland-scanner-0.23))))))
+        ("rust-wayland-scanner" ,rust-wayland-scanner-0.23))))
+    (inputs `())))
 
 (define-public rust-wayland-server-0.21
   (package
@@ -2748,12 +2777,27 @@ the wayland protocol, server side.")
         (base32 "16f03jsy7q6p2wpaazc4w4kycyyk0fz7lacpdbcizl9m1i7874v7"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-dlib" ,rust-dlib-0.4)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-libc" ,rust-libc-0.2)
-        ("rust-pkg-config" ,rust-pkg-config-0.3))))
+        ("rust-pkg-config" ,rust-pkg-config-0.3))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-libraries
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((libwayland (assoc-ref inputs "wayland")))
+               (substitute* (find-files "src" "\\.rs$")
+                 (("libwayland.*\\.so" shared-lib)
+                  (string-append libwayland "/lib/" shared-lib)))
+               #t))))))
+    (inputs
+     `(("rust-dlib" ,rust-dlib-0.4)
+       ("rust-lazy-static" ,rust-lazy-static-1)
+       ("rust-libc" ,rust-libc-0.2)
+       ("rust-pkg-config" ,rust-pkg-config-0.3)))
+    (propagated-inputs
+     `(("wayland" ,wayland)))
     (home-page "https://github.com/smithay/wayland-rs")
     (synopsis "FFI bindings to the various @file{libwayland-*.so} libraries")
     (description
@@ -2778,10 +2822,13 @@ crate @code{rust-wayland-client} for usable bindings.")
         (base32
          "1x2qafvj8hd2x5qfaan2dfpw9amg0f5g9sqrkdy7qvbddsl8jknr"))))
     (arguments
-     `(#:cargo-inputs
+     `(#:skip-build? #t
+       #:cargo-inputs
        (("rust-dlib" ,rust-dlib-0.4)
         ("rust-lazy-static" ,rust-lazy-static-1)
-        ("rust-libc" ,rust-libc-0.2))))))
+        ("rust-libc" ,rust-libc-0.2))))
+    (inputs `())
+    (propagated-inputs `())))
 
 (define-public rust-wayland-sys-0.21
   (package
@@ -2836,10 +2883,11 @@ crate @code{rust-wayland-client} for usable bindings.")
         ("rust-smithay-client-toolkit" ,rust-smithay-client-toolkit-0.12)
         ("rust-stdweb" ,rust-stdweb-0.4)
         ("rust-wasm-bindgen" ,rust-wasm-bindgen-0.2)
-        ("rust-wayland-client" ,rust-wayland-client-0.28)
         ("rust-web-sys" ,rust-web-sys-0.3)
         ("rust-winapi" ,rust-winapi-0.3)
         ("rust-x11-dl" ,rust-x11-dl-2))))
+    (inputs
+     `(("rust-wayland-client" ,rust-wayland-client-0.28)))
     (home-page "https://github.com/rust-windowing/winit")
     (synopsis "Window creation library")
     (description

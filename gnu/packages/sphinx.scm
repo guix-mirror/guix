@@ -14,6 +14,7 @@
 ;;; Copyright © 2019 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
+;;; Copyright © 2021 Eric Bavier <bavier@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,6 +44,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages python-build)
+  #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages time))
@@ -669,6 +671,33 @@ documentation when a change is detected.  It also includes a livereload
 enabled web server.")
     (license license:expat)))
 
+(define-public python-sphinx-autodoc-typehints
+  (package
+    (name "python-sphinx-autodoc-typehints")
+    (version "1.11.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "sphinx-autodoc-typehints" version))
+       (sha256
+        (base32
+         "086v9mg21pvfx0lfqjx2xf36hnzrsripfg345xi59f7xwb9scjr4"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-sphinx" ,python-sphinx)))
+    (native-inputs
+     `(("python-dataclasses" ,python-dataclasses)
+       ("python-pytest" ,python-pytest)
+       ("python-sphinx" ,python-sphinx)
+       ("python-sphobjinv" ,python-sphobjinv)
+       ("python-typing-extensions" ,python-typing-extensions)))
+    (home-page "https://pypi.org/project/sphinx-autodoc-typehints/")
+    (synopsis "Type hints for the Sphinx autodoc extension")
+    (description "This extension allows you to use Python 3 annotations for
+documenting acceptable argument types and return value types of functions.")
+    (license license:expat)))
+
 (define-public python-nbsphinx
   (package
     (name "python-nbsphinx")
@@ -696,4 +725,27 @@ directives are used to show Jupyter Notebook code cells (and of course
 their results) in both HTML and LaTeX output.  Un-evaluated notebooks
 - i.e. notebooks without stored output cells - will be automatically
 executed during the Sphinx build process.")
+    (license license:expat)))
+
+(define-public python-sphobjinv
+  (package
+    (name "python-sphobjinv")
+    (version "2.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "sphobjinv" version))
+       (sha256
+        (base32
+         "126lgm54c94ay3fci512ap4l607gak90pbz0fk98syxvj5izrrzx"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-attrs" ,python-attrs)
+       ("python-certifi" ,python-certifi)
+       ("python-fuzzywuzzy" ,python-fuzzywuzzy)
+       ("python-jsonschema" ,python-jsonschema)
+       ("python-levenshtein" ,python-levenshtein)))
+    (home-page "https://github.com/bskinn/sphobjinv")
+    (synopsis "Sphinx cross-reference tool")
+    (description "Sphinx objects.inv inspection/manipulation tool.")
     (license license:expat)))

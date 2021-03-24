@@ -1,28 +1,28 @@
-From 951f2269f67d618d376656db831796c119f4f6b3 Mon Sep 17 00:00:00 2001
+From 0c57874ebb5982154da127ae338f9190b1581804 Mon Sep 17 00:00:00 2001
 From: Leo Prikler <leo.prikler@student.tugraz.at>
 Date: Fri, 26 Jun 2020 18:20:04 +0200
 Subject: [PATCH] ppsspp: disable upgrade and gold
 
 ---
- Core/Config.cpp             | 11 -------
+ Core/Config.cpp             | 11 ------
  Core/Config.h               |  2 --
  Qt/QtMain.cpp               |  6 ----
  SDL/SDLMain.cpp             |  6 ----
  UI/DevScreens.cpp           |  3 --
  UI/GameSettingsScreen.cpp   |  1 -
- UI/MainScreen.cpp           | 63 +------------------------------------
- UI/MiscScreens.cpp          | 31 ++----------------
+ UI/MainScreen.cpp           | 70 +------------------------------------
+ UI/MiscScreens.cpp          | 31 ++--------------
  UWP/PPSSPP_UWPMain.cpp      |  6 ----
  Windows/MainWindowMenu.cpp  |  2 +-
  Windows/main.cpp            |  6 ----
  android/jni/app-android.cpp |  6 ----
- 12 files changed, 5 insertions(+), 138 deletions(-)
+ 12 files changed, 5 insertions(+), 145 deletions(-)
 
 diff --git a/Core/Config.cpp b/Core/Config.cpp
-index 214aeb433..04e3b151d 100644
+index 1c53e8e57..2fa74a6b8 100644
 --- a/Core/Config.cpp
 +++ b/Core/Config.cpp
-@@ -428,7 +428,6 @@ static ConfigSetting generalSettings[] = {
+@@ -439,7 +439,6 @@ static ConfigSetting generalSettings[] = {
  	ConfigSetting("IgnoreBadMemAccess", &g_Config.bIgnoreBadMemAccess, true, true),
  	ConfigSetting("CurrentDirectory", &g_Config.currentDirectory, ""),
  	ConfigSetting("ShowDebuggerOnLoad", &g_Config.bShowDebuggerOnLoad, false),
@@ -30,7 +30,7 @@ index 214aeb433..04e3b151d 100644
  	ConfigSetting("Language", &g_Config.sLanguageIni, &DefaultLangRegion),
  	ConfigSetting("ForceLagSync2", &g_Config.bForceLagSync, false, true, true),
  	ConfigSetting("DiscordPresence", &g_Config.bDiscordPresence, true, true, false),  // Or maybe it makes sense to have it per-game? Race conditions abound...
-@@ -1229,16 +1228,6 @@ void Config::Load(const char *iniFileName, const char *controllerIniFilename) {
+@@ -1293,16 +1292,6 @@ void Config::Load(const char *iniFileName, const char *controllerIniFilename) {
  		upgradeMessage = "";
  	}
  
@@ -48,29 +48,29 @@ index 214aeb433..04e3b151d 100644
  	bSaveSettings = true;
  
 diff --git a/Core/Config.h b/Core/Config.h
-index 084eacc94..e7134cab5 100644
+index 13bce8a36..70d6c8aaf 100644
 --- a/Core/Config.h
 +++ b/Core/Config.h
-@@ -99,7 +99,6 @@ struct Config {
- 	bool bIgnoreBadMemAccess;
+@@ -101,7 +101,6 @@ struct Config {
+ 
  	bool bFastMemory;
  	int iCpuCore;
 -	bool bCheckForNewVersion;
  	bool bForceLagSync;
  	bool bFuncReplacements;
  	bool bHideSlowWarnings;
-@@ -521,4 +520,3 @@ std::string CreateRandMAC();
+@@ -540,4 +539,3 @@ std::string CreateRandMAC();
  // TODO: Find a better place for this.
  extern http::Downloader g_DownloadManager;
  extern Config g_Config;
 -
 diff --git a/Qt/QtMain.cpp b/Qt/QtMain.cpp
-index 7713b6587..1d92d1175 100644
+index 5be0cefa0..b11cb1c64 100644
 --- a/Qt/QtMain.cpp
 +++ b/Qt/QtMain.cpp
-@@ -194,12 +194,6 @@ bool System_GetPropertyBool(SystemProperty prop) {
- 		return true;
+@@ -218,12 +218,6 @@ bool System_GetPropertyBool(SystemProperty prop) {
  	case SYSPROP_HAS_FILE_BROWSER:
+ 	case SYSPROP_HAS_FOLDER_BROWSER:
  		return true;
 -	case SYSPROP_APP_GOLD:
 -#ifdef GOLD
@@ -82,10 +82,10 @@ index 7713b6587..1d92d1175 100644
  		return false;
  	}
 diff --git a/SDL/SDLMain.cpp b/SDL/SDLMain.cpp
-index 52028d087..d8697d210 100644
+index 98b56fe91..6af0fcb1a 100644
 --- a/SDL/SDLMain.cpp
 +++ b/SDL/SDLMain.cpp
-@@ -356,12 +356,6 @@ bool System_GetPropertyBool(SystemProperty prop) {
+@@ -380,12 +380,6 @@ bool System_GetPropertyBool(SystemProperty prop) {
  	switch (prop) {
  	case SYSPROP_HAS_BACK_BUTTON:
  		return true;
@@ -99,10 +99,10 @@ index 52028d087..d8697d210 100644
  		return false;
  	}
 diff --git a/UI/DevScreens.cpp b/UI/DevScreens.cpp
-index f146d099e..625ee124c 100644
+index 8daac5bc8..c0c09ce79 100644
 --- a/UI/DevScreens.cpp
 +++ b/UI/DevScreens.cpp
-@@ -603,9 +603,6 @@ void SystemInfoScreen::CreateViews() {
+@@ -605,9 +605,6 @@ void SystemInfoScreen::CreateViews() {
  #ifdef _M_SSE
  	buildConfig->Add(new InfoItem("_M_SSE", StringFromFormat("0x%x", _M_SSE)));
  #endif
@@ -113,35 +113,35 @@ index f146d099e..625ee124c 100644
  	ViewGroup *cpuExtensionsScroll = new ScrollView(ORIENT_VERTICAL, new LinearLayoutParams(FILL_PARENT, FILL_PARENT));
  	cpuExtensionsScroll->SetTag("DevSystemInfoCPUExt");
 diff --git a/UI/GameSettingsScreen.cpp b/UI/GameSettingsScreen.cpp
-index 8202870c7..81112f822 100644
+index 2f1e157ee..38c586b06 100644
 --- a/UI/GameSettingsScreen.cpp
 +++ b/UI/GameSettingsScreen.cpp
-@@ -796,7 +796,6 @@ void GameSettingsScreen::CreateViews() {
+@@ -914,7 +914,6 @@ void GameSettingsScreen::CreateViews() {
+ 		}
  	}
  #endif
- 
 -	systemSettings->Add(new CheckBox(&g_Config.bCheckForNewVersion, sy->T("VersionCheck", "Check for new versions of PPSSPP")));
  	const std::string bgPng = GetSysDirectory(DIRECTORY_SYSTEM) + "background.png";
  	const std::string bgJpg = GetSysDirectory(DIRECTORY_SYSTEM) + "background.jpg";
  	if (File::Exists(bgPng) || File::Exists(bgJpg)) {
 diff --git a/UI/MainScreen.cpp b/UI/MainScreen.cpp
-index 43535913d..36834020d 100644
+index ca870ab8f..84cde88ac 100644
 --- a/UI/MainScreen.cpp
 +++ b/UI/MainScreen.cpp
-@@ -1054,11 +1054,7 @@ void MainScreen::CreateViews() {
+@@ -1064,11 +1064,7 @@ void MainScreen::CreateViews() {
  	sprintf(versionString, "%s", PPSSPP_GIT_VERSION);
  	rightColumnItems->SetSpacing(0.0f);
- 	LinearLayout *logos = new LinearLayout(ORIENT_HORIZONTAL);
+ 	AnchorLayout *logos = new AnchorLayout(new AnchorLayoutParams(FILL_PARENT, 60.0f, false));
 -	if (System_GetPropertyBool(SYSPROP_APP_GOLD)) {
--		logos->Add(new ImageView(ImageID("I_ICONGOLD"), IS_DEFAULT, new AnchorLayoutParams(64, 64, 10, 10, NONE, NONE, false)));
+-		logos->Add(new ImageView(ImageID("I_ICONGOLD"), IS_DEFAULT, new AnchorLayoutParams(64, 64, 0, 0, NONE, NONE, false)));
 -	} else {
--		logos->Add(new ImageView(ImageID("I_ICON"), IS_DEFAULT, new AnchorLayoutParams(64, 64, 10, 10, NONE, NONE, false)));
+-		logos->Add(new ImageView(ImageID("I_ICON"), IS_DEFAULT, new AnchorLayoutParams(64, 64, 0, 0, NONE, NONE, false)));
 -	}
-+	logos->Add(new ImageView(ImageID("I_ICON"), IS_DEFAULT, new AnchorLayoutParams(64, 64, 10, 10, NONE, NONE, false)));
- 	logos->Add(new ImageView(ImageID("I_LOGO"), IS_DEFAULT, new LinearLayoutParams(Margins(-12, 0, 0, 0))));
- 	rightColumnItems->Add(logos);
- 	TextView *ver = rightColumnItems->Add(new TextView(versionString, new LinearLayoutParams(Margins(70, -6, 0, 0))));
-@@ -1070,11 +1066,6 @@ void MainScreen::CreateViews() {
++	logos->Add(new ImageView(ImageID("I_ICON"), IS_DEFAULT, new AnchorLayoutParams(64, 64, 0, 0, NONE, NONE, false)));
+ 	logos->Add(new ImageView(ImageID("I_LOGO"), IS_DEFAULT, new AnchorLayoutParams(180, 64, 64, -5.0f, NONE, NONE, false)));
+ 
+ #if !defined(MOBILE_DEVICE)
+@@ -1089,11 +1085,6 @@ void MainScreen::CreateViews() {
  	rightColumnItems->Add(new Choice(mm->T("Game Settings", "Settings")))->OnClick.Handle(this, &MainScreen::OnGameSettings);
  	rightColumnItems->Add(new Choice(mm->T("Credits")))->OnClick.Handle(this, &MainScreen::OnCredits);
  	rightColumnItems->Add(new Choice(mm->T("www.ppsspp.org")))->OnClick.Handle(this, &MainScreen::OnPPSSPPOrg);
@@ -153,7 +153,7 @@ index 43535913d..36834020d 100644
  
  #if !PPSSPP_PLATFORM(UWP)
  	// Having an exit button is against UWP guidelines.
-@@ -1099,28 +1090,6 @@ void MainScreen::CreateViews() {
+@@ -1118,32 +1109,6 @@ void MainScreen::CreateViews() {
  	} else if (tabHolder_->GetVisibility() != V_GONE) {
  		root_->SetDefaultFocusView(tabHolder_);
  	}
@@ -169,7 +169,11 @@ index 43535913d..36834020d 100644
 -		UI::Drawable solid(0xFFbd9939);
 -		upgradeBar_->SetBG(solid);
 -		upgradeBar_->Add(new TextView(u->T("New version of PPSSPP available") + std::string(": ") + g_Config.upgradeVersion, new LinearLayoutParams(1.0f, textMargins)));
+-#if PPSSPP_PLATFORM(ANDROID) || PPSSPP_PLATFORM(WINDOWS)
 -		upgradeBar_->Add(new Button(u->T("Download"), new LinearLayoutParams(buttonMargins)))->OnClick.Handle(this, &MainScreen::OnDownloadUpgrade);
+-#else
+-		upgradeBar_->Add(new Button(u->T("Details"), new LinearLayoutParams(buttonMargins)))->OnClick.Handle(this, &MainScreen::OnDownloadUpgrade);
+-#endif
 -		upgradeBar_->Add(new Button(u->T("Dismiss"), new LinearLayoutParams(buttonMargins)))->OnClick.Handle(this, &MainScreen::OnDismissUpgrade);
 -
 -		// Slip in under root_
@@ -182,7 +186,7 @@ index 43535913d..36834020d 100644
  }
  
  UI::EventReturn MainScreen::OnAllowStorage(UI::EventParams &e) {
-@@ -1128,27 +1097,6 @@ UI::EventReturn MainScreen::OnAllowStorage(UI::EventParams &e) {
+@@ -1151,30 +1116,6 @@ UI::EventReturn MainScreen::OnAllowStorage(UI::EventParams &e) {
  	return UI::EVENT_DONE;
  }
  
@@ -194,9 +198,12 @@ index 43535913d..36834020d 100644
 -	} else {
 -		LaunchBrowser("market://details?id=org.ppsspp.ppsspp");
 -	}
+-#elif PPSSPP_PLATFORM(WINDOWS)
+-	LaunchBrowser("https://www.ppsspp.org/downloads.html");
 -#else
 -	// Go directly to ppsspp.org and let the user sort it out
--	LaunchBrowser("https://www.ppsspp.org/downloads.html");
+-	// (for details and in case downloads doesn't have their platform.)
+-	LaunchBrowser("https://www.ppsspp.org/");
 -#endif
 -	return UI::EVENT_DONE;
 -}
@@ -210,7 +217,7 @@ index 43535913d..36834020d 100644
  void MainScreen::sendMessage(const char *message, const char *value) {
  	// Always call the base class method first to handle the most common messages.
  	UIScreenWithBackground::sendMessage(message, value);
-@@ -1319,15 +1267,6 @@ UI::EventReturn MainScreen::OnCredits(UI::EventParams &e) {
+@@ -1390,15 +1331,6 @@ UI::EventReturn MainScreen::OnCredits(UI::EventParams &e) {
  	return UI::EVENT_DONE;
  }
  
@@ -227,10 +234,10 @@ index 43535913d..36834020d 100644
  	LaunchBrowser("https://www.ppsspp.org");
  	return UI::EVENT_DONE;
 diff --git a/UI/MiscScreens.cpp b/UI/MiscScreens.cpp
-index a6542c65d..f5f101594 100644
+index a7284654b..2413d6c89 100644
 --- a/UI/MiscScreens.cpp
 +++ b/UI/MiscScreens.cpp
-@@ -498,11 +498,7 @@ void LogoScreen::render() {
+@@ -539,11 +539,7 @@ void LogoScreen::render() {
  	char temp[256];
  	// Manually formatting UTF-8 is fun.  \xXX doesn't work everywhere.
  	snprintf(temp, sizeof(temp), "%s Henrik Rydg%c%crd", cr->T("created", "Created by"), 0xC3, 0xA5);
@@ -243,7 +250,7 @@ index a6542c65d..f5f101594 100644
  	dc.Draw()->DrawImage(ImageID("I_LOGO"), bounds.centerX() + 40, bounds.centerY() - 30, 1.5f, textColor, ALIGN_CENTER);
  	//dc.Draw()->DrawTextShadow(UBUNTU48, "PPSSPP", xres / 2, yres / 2 - 30, textColor, ALIGN_CENTER);
  	dc.SetFontScale(1.0f, 1.0f);
-@@ -538,10 +534,6 @@ void CreditsScreen::CreateViews() {
+@@ -579,10 +575,6 @@ void CreditsScreen::CreateViews() {
  	// Really need to redo this whole layout with some linear layouts...
  
  	int rightYOffset = 0;
@@ -254,7 +261,7 @@ index a6542c65d..f5f101594 100644
  	root_->Add(new Button(cr->T("PPSSPP Forums"), new AnchorLayoutParams(260, 64, 10, NONE, NONE, 158, false)))->OnClick.Handle(this, &CreditsScreen::OnForums);
  	root_->Add(new Button(cr->T("Discord"), new AnchorLayoutParams(260, 64, 10, NONE, NONE, 232, false)))->OnClick.Handle(this, &CreditsScreen::OnDiscord);
  	root_->Add(new Button("www.ppsspp.org", new AnchorLayoutParams(260, 64, 10, NONE, NONE, 10, false)))->OnClick.Handle(this, &CreditsScreen::OnPPSSPPOrg);
-@@ -550,20 +542,7 @@ void CreditsScreen::CreateViews() {
+@@ -591,20 +583,7 @@ void CreditsScreen::CreateViews() {
  #if PPSSPP_PLATFORM(ANDROID) || PPSSPP_PLATFORM(IOS)
  	root_->Add(new Button(cr->T("Share PPSSPP"), new AnchorLayoutParams(260, 64, NONE, NONE, 10, rightYOffset + 158, false)))->OnClick.Handle(this, &CreditsScreen::OnShare);
  #endif
@@ -276,7 +283,7 @@ index a6542c65d..f5f101594 100644
  }
  
  UI::EventReturn CreditsScreen::OnTwitter(UI::EventParams &e) {
-@@ -747,11 +726,7 @@ void CreditsScreen::render() {
+@@ -794,11 +773,7 @@ void CreditsScreen::render() {
  
  	// TODO: This is kinda ugly, done on every frame...
  	char temp[256];
@@ -290,10 +297,10 @@ index a6542c65d..f5f101594 100644
  
  	UIContext &dc = *screenManager()->getUIContext();
 diff --git a/UWP/PPSSPP_UWPMain.cpp b/UWP/PPSSPP_UWPMain.cpp
-index 24f3b964d..1d66ba7ee 100644
+index 0ba7fac4b..d1b687c47 100644
 --- a/UWP/PPSSPP_UWPMain.cpp
 +++ b/UWP/PPSSPP_UWPMain.cpp
-@@ -399,12 +399,6 @@ bool System_GetPropertyBool(SystemProperty prop) {
+@@ -433,12 +433,6 @@ bool System_GetPropertyBool(SystemProperty prop) {
  		return false;
  	case SYSPROP_HAS_BACK_BUTTON:
  		return true;
@@ -307,10 +314,10 @@ index 24f3b964d..1d66ba7ee 100644
  		return false;
  	}
 diff --git a/Windows/MainWindowMenu.cpp b/Windows/MainWindowMenu.cpp
-index b5e1bb0eb..71b29b48a 100644
+index 979a60ecb..a57927544 100644
 --- a/Windows/MainWindowMenu.cpp
 +++ b/Windows/MainWindowMenu.cpp
-@@ -1377,7 +1377,7 @@ namespace MainWindow {
+@@ -1393,7 +1393,7 @@ namespace MainWindow {
  		{
  			W32Util::CenterWindow(hDlg);
  			HWND versionBox = GetDlgItem(hDlg, IDC_VERSION);
@@ -320,10 +327,10 @@ index b5e1bb0eb..71b29b48a 100644
  			SetWindowText(versionBox, ConvertUTF8ToWString(windowText).c_str());
  		}
 diff --git a/Windows/main.cpp b/Windows/main.cpp
-index 3795597e2..fd98d0453 100644
+index 4d948cfe5..e609cc1e0 100644
 --- a/Windows/main.cpp
 +++ b/Windows/main.cpp
-@@ -268,12 +268,6 @@ bool System_GetPropertyBool(SystemProperty prop) {
+@@ -301,12 +301,6 @@ bool System_GetPropertyBool(SystemProperty prop) {
  		return true;
  	case SYSPROP_HAS_BACK_BUTTON:
  		return true;
@@ -337,13 +344,13 @@ index 3795597e2..fd98d0453 100644
  		return false;
  	}
 diff --git a/android/jni/app-android.cpp b/android/jni/app-android.cpp
-index 086371085..0a340c0ae 100644
+index 10fdf97e5..736b1fa66 100644
 --- a/android/jni/app-android.cpp
 +++ b/android/jni/app-android.cpp
-@@ -372,12 +372,6 @@ bool System_GetPropertyBool(SystemProperty prop) {
- 		return true;
- 	case SYSPROP_HAS_IMAGE_BROWSER:
- 		return true;
+@@ -437,12 +437,6 @@ bool System_GetPropertyBool(SystemProperty prop) {
+ 	case SYSPROP_HAS_FOLDER_BROWSER:
+ 		// Uses OPEN_DOCUMENT_TREE to let you select a folder.
+ 		return androidVersion >= 21;
 -	case SYSPROP_APP_GOLD:
 -#ifdef GOLD
 -		return true;
@@ -354,5 +361,5 @@ index 086371085..0a340c0ae 100644
  		return false;
  	}
 -- 
-2.26.2
+2.30.1
 

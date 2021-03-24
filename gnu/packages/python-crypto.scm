@@ -335,7 +335,7 @@ etc.).  The package is structured to make adding new modules easy.")
 
 (define-public python2-pycrypto
   (let ((pycrypto (package-with-python2 python-pycrypto)))
-    (package (inherit pycrypto)
+    (package/inherit pycrypto
       (inputs
        `(("python" ,python-2)
          ,@(alist-delete
@@ -554,7 +554,7 @@ message digests and key derivation functions.")
 (define-public python2-cryptography
   (let ((crypto (package-with-python2
                  (strip-python2-variant python-cryptography))))
-    (package (inherit crypto)
+    (package/inherit crypto
       (propagated-inputs
        `(("python2-ipaddress" ,python2-ipaddress)
          ("python2-backport-ssl-match-hostname"
@@ -1091,6 +1091,10 @@ provides drop-in compatibility with PyCrypto.")))
        (sha256
         (base32 "09yirf3w77w6f49q6nxhrjm9c3a4y9s30s1k09chqrw8zdgx8sjc"))))
     (build-system python-build-system)
+    (arguments
+     `(;; FIXME: Tests start failing with time due to date checks in TLS
+       ;; certificates.
+       #:tests? #f))
     (inputs `(("openssl" ,openssl)))
     (native-inputs `(("swig" ,swig)))
     (home-page "https://gitlab.com/m2crypto/m2crypto")
@@ -1108,7 +1112,7 @@ through the Engine interface.")
 (define-public python2-m2crypto
   (let ((m2crypto (package-with-python2
                    (strip-python2-variant python-m2crypto))))
-    (package (inherit m2crypto)
+    (package/inherit m2crypto
              (propagated-inputs
               `(("python2-typing" ,python2-typing))))))
 

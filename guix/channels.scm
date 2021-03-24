@@ -86,6 +86,7 @@
             latest-channel-instances
             checkout->channel-instance
             latest-channel-derivation
+            channel-instance->sexp
             channel-instances->manifest
             %channel-profile-hooks
             channel-instances->derivation
@@ -948,6 +949,7 @@ does not have the expected structure."
                       (#f name)
                       (('name name) name)))
               (url url)
+              (branch branch)
               (commit commit)
               (introduction
                (match (assq 'introduction rest)

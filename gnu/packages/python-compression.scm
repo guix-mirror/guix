@@ -202,8 +202,7 @@ algorithm within the Numpy framework.")
     (license license:expat)))
 
 (define-public bitshuffle-for-snappy
-  (package
-    (inherit bitshuffle)
+  (package/inherit bitshuffle
     (name "bitshuffle-for-snappy")
     (build-system gnu-build-system)
     (arguments

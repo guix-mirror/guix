@@ -236,7 +236,7 @@ external dependencies.")
        ("cmocka" ,cmocka)
        ("cups" ,cups)
        ("gamin" ,gamin)
-       ("dbus", dbus)
+       ("dbus" ,dbus)
        ("gpgme" ,gpgme)
        ("gnutls" ,gnutls)
        ("heimdal" ,heimdal)
@@ -265,7 +265,7 @@ external dependencies.")
        ("docbook-xml" ,docbook-xml-4.2)
        ("docbook-xsl" ,docbook-xsl)
        ("xsltproc" ,libxslt)
-       ("libxml2", libxml2)))           ;for XML_CATALOG_FILES
+       ("libxml2" ,libxml2)))           ;for XML_CATALOG_FILES
     (home-page "https://www.samba.org/")
     (synopsis
      "The standard Windows interoperability suite of programs for GNU and Unix")

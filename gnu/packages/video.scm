@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015, 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2014, 2015, 2016, 2018, 2020 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2015, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Alex Vong <alexvong1995@gmail.com>
@@ -707,7 +707,7 @@ old-fashioned output methods with powerful ascii-art renderer.")
 (define-public celluloid
   (package
     (name "celluloid")
-    (version "0.20")
+    (version "0.21")
     (source
      (origin
        (method url-fetch)
@@ -715,7 +715,7 @@ old-fashioned output methods with powerful ascii-art renderer.")
                            "/releases/download/v" version
                            "/celluloid-" version ".tar.xz"))
        (sha256
-        (base32 "0kjjv2pcdvwcn4yi8kbpsca7pnx6cx6xdznv7ppqm0fssx68qyb3"))))
+        (base32 "1dvyf21iv9hrgv99szc24386vkacmhidm5b4d31hqqjs3b6di692"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -772,7 +772,7 @@ television and DVD.  It is also known as AC-3.")
 (define-public libaom
   (package
     (name "libaom")
-    (version "2.0.1")
+    (version "2.0.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -781,7 +781,7 @@ television and DVD.  It is also known as AC-3.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1vakwmcwvmmrdw7460m8hzq96y71lxqix8b2g07c6s12br0rrdhl"))))
+                "0f3i983s9yvh9zc6mpy1ck5sjcg9l09lpw9v4md3mv8gbih9f0z0"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("perl" ,perl)
@@ -1014,7 +1014,7 @@ H.264 (MPEG-4 AVC) video streams.")
 (define-public straw-viewer
   (package
     (name "straw-viewer")
-    (version "0.1.2")
+    (version "0.1.3")
     (source
      (origin
        (method git-fetch)
@@ -1023,7 +1023,7 @@ H.264 (MPEG-4 AVC) video streams.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1s6w8m9377ajy21x7lf6mbgp5yk5i70nhzmqscibjnarr3xfg9zs"))))
+        (base32 "1n21byn7hqykpm94jmmnir1fwsskq6dp9wgj0bd2qf0qx5nq33cl"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
@@ -1234,7 +1234,9 @@ ASS/SSA (Advanced Substation Alpha/SubStation Alpha) subtitle format.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1x3j6yfyxl52adgnabycr0n38j9hx2j74la0hz0n8cnh9ry4d2qj"))))
+                "1x3j6yfyxl52adgnabycr0n38j9hx2j74la0hz0n8cnh9ry4d2qj"))
+              (patches (search-patches "libcaca-CVE-2021-3410-pt1.patch"
+                                       "libcaca-CVE-2021-3410-pt2.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
@@ -1610,27 +1612,6 @@ convert and stream audio and video.  It includes the libavcodec
 audio/video codec library.")
     (license license:gpl2+)))
 
-;; ungoogled-chromium crashes with ffmpeg 4.3, so stick with this version for
-;; now.  See <https://issues.guix.gnu.org/41987>.
-(define-public ffmpeg-4.2
-  (package
-    (inherit ffmpeg)
-    (version "4.2.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
-                                  version ".tar.xz"))
-              (sha256
-               (base32
-                "0cddkb5sma9dzy8i59sfls19rhjlq40zn9mh3x666dqkxl5ckxlx"))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments ffmpeg)
-       ((#:configure-flags flags)
-        `(delete "--enable-librav1e" ,flags))))
-    (inputs (fold alist-delete
-                  (package-inputs ffmpeg)
-                  '("rav1e")))))
-
 (define-public ffmpeg-3.4
   (package
     (inherit ffmpeg)
@@ -1790,6 +1771,7 @@ videoformats depend on the configuration flags of ffmpeg.")
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("avahi" ,avahi)
+       ("dav1d" ,dav1d)
        ("dbus" ,dbus)
        ("eudev" ,eudev)
        ("flac" ,flac)
@@ -2197,14 +2179,14 @@ To load this plugin, specify the following option when starting mpv:
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2021.03.03")
+    (version "2021.03.14")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://youtube-dl.org/downloads/latest/"
                                   "youtube-dl-" version ".tar.gz"))
               (sha256
                (base32
-                "11z2v8mdii0bl13850mc6hgz80d0kgzb4hdxyikc3wa4jqfwrq7f"))
+                "1bh74f9q6dv17ah5x8zcxw03dq6jbh959xd39kw374cf9ifrgnd3"))
               (snippet
                '(begin
                   ;; Delete the pre-generated files, except for the man page
@@ -2664,7 +2646,7 @@ device without having to bother about the decryption.")
 (define-public srt2vtt
   (package
     (name "srt2vtt")
-    (version "0.1")
+    (version "0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2672,10 +2654,29 @@ device without having to bother about the decryption.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "16b377znjm6qlga5yb8aj7b7bcisa1ghcnj2lrb1d30lvxp4liif"))))
+                "1ravl635x81fcai4h2xnsn926i69pafgr6zkghq6319iprkw8ffv"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-srt2vtt
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (bin  (string-append out "/bin"))
+                    (version ,(let ((v (package-version guile-3.0)))
+                                (string-append (car (string-split v #\.))
+                                               ".0")))
+                    (site (string-append out "/share/guile/site/" version))
+                    (compiled (string-append
+                               out "/lib/guile/" version
+                               "/site-ccache")))
+               (wrap-program (string-append bin "/srt2vtt")
+                 `("GUILE_LOAD_PATH" ":" prefix (,site))
+                 `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,compiled)))))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("guile" ,guile-2.0)))
+     `(("guile" ,guile-3.0)))
     (synopsis "SubRip to WebVTT subtitle converter")
     (description "srt2vtt converts SubRip formatted subtitles to WebVTT format
 for use with HTML5 video.")
@@ -4283,7 +4284,7 @@ It counts more than 100 plugins.")
               (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf-wrapper)
+     `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
@@ -4569,7 +4570,7 @@ transitions, and effects and then export your film to many common formats.")
 (define-public dav1d
   (package
     (name "dav1d")
-    (version "0.8.1")
+    (version "0.8.2")
     (source
       (origin
         (method git-fetch)
@@ -4578,7 +4579,7 @@ transitions, and effects and then export your film to many common formats.")
                (commit version)))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "1820fpmmq1vxjzjmza6ydk4fgxipb8gmcc5skybki64qn7410v7x"))))
+         (base32 "0plmnxpz66yv3nqv1kgbyyfnwfqi9dqs0zbsdj488i6464a1m6si"))))
     (build-system meson-build-system)
     (native-inputs `(("nasm" ,nasm)))
     (home-page "https://code.videolan.org/videolan/dav1d")
@@ -4798,7 +4799,7 @@ applications.  It only supports Intel-compatible CPUs (x86).")
               (sha256
                (base32
                 "1ypdiw4cq22llvm8jyszxdq6r1aydkj80dsxjarjn5b7c1f2q3ar"))))
-    ;; SVT-AV1 only supports 64-bit Intel-compatible CPUs.
+    ;; SVT-VP9 only supports 64-bit Intel-compatible CPUs.
     (supported-systems '("x86_64-linux"))
     (build-system cmake-build-system)
     (arguments
@@ -5032,7 +5033,7 @@ brightness, contrast, and frame rate.")
 (define-public get-iplayer
   (package
     (name "get-iplayer")
-    (version "3.26")
+    (version "3.27")
     (source
       (origin
         (method git-fetch)
@@ -5041,11 +5042,10 @@ brightness, contrast, and frame rate.")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32
-          "0lsz5hz1ia5j612540rb0f31y7j2k5gf7x5i43l8k06b90wi73d6"))))
+         (base32 "077y31gg020wjpx5pcivqgkqawcjxh5kjnvq97x2gd7i3wwc30qi"))))
     (build-system perl-build-system)
     (arguments
-     `(#:tests? #f  ; no tests
+     `(#:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)

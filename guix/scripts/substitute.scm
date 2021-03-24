@@ -45,6 +45,7 @@
                 #:select (uri-abbreviation nar-uri-abbreviation
                           (open-connection-for-uri
                            . guix:open-connection-for-uri)))
+  #:autoload   (gnutls) (error/invalid-session)
   #:use-module (guix progress)
   #:use-module ((guix build syscalls)
                 #:select (set-thread-name))
@@ -257,6 +258,27 @@ Internal tool to substitute a pre-built binary to a local build.\n"))
 ;;; Daemon/substituter protocol.
 ;;;
 
+(define %prefer-fast-decompression?
+  ;; Whether to prefer fast decompression over good compression ratios.  This
+  ;; serves in particular to choose between lzip (high compression ratio but
+  ;; low decompression throughput) and zstd (lower compression ratio but high
+  ;; decompression throughput).
+  #f)
+
+(define (call-with-cpu-usage-monitoring proc)
+  (let ((before (times)))
+    (proc)
+    (let ((after (times)))
+      (if (= (tms:clock after) (tms:clock before))
+          0
+          (/ (- (tms:utime after) (tms:utime before))
+             (- (tms:clock after) (tms:clock before))
+             1.)))))
+
+(define-syntax-rule (with-cpu-usage-monitoring exp ...)
+  "Evaluate EXP...  Return its CPU usage as a fraction between 0 and 1."
+  (call-with-cpu-usage-monitoring (lambda () exp ...)))
+
 (define (display-narinfo-data narinfo)
   "Write to the current output port the contents of NARINFO in the format
 expected by the daemon."
@@ -269,7 +291,10 @@ expected by the daemon."
   (for-each (cute format #t "~a/~a~%" (%store-prefix) <>)
             (narinfo-references narinfo))
 
-  (let-values (((uri compression file-size) (narinfo-best-uri narinfo)))
+  (let-values (((uri compression file-size)
+                (narinfo-best-uri narinfo
+                                  #:fast-decompression?
+                                  %prefer-fast-decompression?)))
     (format #t "~a\n~a\n"
             (or file-size 0)
             (or (narinfo-size narinfo) 0))))
@@ -288,12 +313,30 @@ authorized substitutes."
         (lambda (obj)
           (valid-narinfo? obj acl))))
 
+  (define* (make-progress-reporter total #:key url)
+    (define done 0)
+
+    (define (report-progress)
+      (erase-current-line (current-error-port)) ;erase current line
+      (force-output (current-error-port))
+      (format (current-error-port)
+              (G_ "updating substitutes from '~a'... ~5,1f%")
+              url (* 100. (/ done total)))
+      (set! done (+ 1 done)))
+
+    (progress-reporter
+     (start report-progress)
+     (report report-progress)
+     (stop (lambda ()
+             (newline (current-error-port))))))
+
   (match (string-tokenize command)
     (("have" paths ..1)
      ;; Return the subset of PATHS available in CACHE-URLS.
      (let ((substitutable (lookup-narinfos/diverse
                            cache-urls paths valid?
-                           #:open-connection open-connection-for-uri/cached)))
+                           #:open-connection open-connection-for-uri/cached
+                           #:make-progress-reporter make-progress-reporter)))
        (for-each (lambda (narinfo)
                    (format #t "~a~%" (narinfo-path narinfo)))
                  substitutable)
@@ -302,7 +345,8 @@ authorized substitutes."
      ;; Reply info about PATHS if it's in CACHE-URLS.
      (let ((substitutable (lookup-narinfos/diverse
                            cache-urls paths valid?
-                           #:open-connection open-connection-for-uri/cached)))
+                           #:open-connection open-connection-for-uri/cached
+                           #:make-progress-reporter make-progress-reporter)))
        (for-each display-narinfo-data substitutable)
        (newline)))
     (wtf
@@ -358,6 +402,32 @@ server certificates."
                     (drain-input socket)
                     socket))))))))
 
+(define (call-with-cached-connection uri proc)
+  (let ((port (open-connection-for-uri/cached uri
+                                              #:verify-certificate? #f)))
+    (catch #t
+      (lambda ()
+        (proc port))
+      (lambda (key . args)
+        ;; If PORT was cached and the server closed the connection in the
+        ;; meantime, we get EPIPE.  In that case, open a fresh connection
+        ;; and retry.  We might also get 'bad-response or a similar
+        ;; exception from (web response) later on, once we've sent the
+        ;; request, or a ERROR/INVALID-SESSION from GnuTLS.
+        (if (or (and (eq? key 'system-error)
+                     (= EPIPE (system-error-errno `(,key ,@args))))
+                (and (eq? key 'gnutls-error)
+                     (eq? (first args) error/invalid-session))
+                (memq key '(bad-response bad-header bad-header-component)))
+            (proc (open-connection-for-uri/cached uri
+                                                  #:verify-certificate? #f
+                                                  #:fresh? #t))
+            (apply throw key args))))))
+
+(define-syntax-rule (with-cached-connection uri port exp ...)
+  "Bind PORT with EXP... to a socket connected to URI."
+  (call-with-cached-connection uri (lambda (port) exp ...)))
+
 (define* (process-substitution store-item destination
                                #:key cache-urls acl
                                deduplicate? print-build-trace?)
@@ -402,14 +472,11 @@ the current output port."
              (warning (G_ "while fetching ~a: server is somewhat slow~%")
                       (uri->string uri))
              (warning (G_ "try `--no-substitutes' if the problem persists~%")))
-           (call-with-connection-error-handling
-            uri
-            (lambda ()
-              (http-fetch uri #:text? #f
-                          #:open-connection open-connection-for-uri/cached
-                          #:keep-alive? #t
-                          #:buffered? #f
-                          #:verify-certificate? #f))))))
+           (with-cached-connection uri port
+             (http-fetch uri #:text? #f
+                         #:port port
+                         #:keep-alive? #t
+                         #:buffered? #f)))))
       (else
        (leave (G_ "unsupported substitute URI scheme: ~a~%")
               (uri->string uri)))))
@@ -419,7 +486,9 @@ the current output port."
            store-item))
 
   (let-values (((uri compression file-size)
-                (narinfo-best-uri narinfo)))
+                (narinfo-best-uri narinfo
+                                  #:fast-decompression?
+                                  %prefer-fast-decompression?)))
     (unless print-build-trace?
       (format (current-error-port)
               (G_ "Downloading ~a...~%") (uri->string uri)))
@@ -457,11 +526,28 @@ the current output port."
                   ((hashed get-hash)
                    (open-hash-input-port algorithm input)))
       ;; Unpack the Nar at INPUT into DESTINATION.
-      (restore-file hashed destination
-                    #:dump-file (if (and destination-in-store?
-                                         deduplicate?)
-                                    dump-file/deduplicate*
-                                    dump-file))
+      (define cpu-usage
+        (with-cpu-usage-monitoring
+         (restore-file hashed destination
+                       #:dump-file (if (and destination-in-store?
+                                            deduplicate?)
+                                       dump-file/deduplicate*
+                                       dump-file))))
+
+      ;; Create a hysteresis: depending on CPU usage, favor compression
+      ;; methods with faster decompression (like ztsd) or methods with better
+      ;; compression ratios (like lzip).  This stems from the observation that
+      ;; substitution can be CPU-bound when high-speed networks are used:
+      ;; <https://lists.gnu.org/archive/html/guix-devel/2020-12/msg00177.html>.
+      ;; To simulate "slow" networking or changing conditions, run:
+      ;;   sudo tc qdisc add dev eno1 root tbf rate 512kbit latency 50ms burst 1540
+      ;; and then cancel with:
+      ;;   sudo tc qdisc del dev eno1 root
+      (when (> cpu-usage .8)
+        (set! %prefer-fast-decompression? #t))
+      (when (< cpu-usage .2)
+        (set! %prefer-fast-decompression? #f))
+
       (close-port hashed)
       (close-port input)
 
@@ -696,6 +782,8 @@ if needed, as expected by the daemon's agent."
 ;;; Local Variables:
 ;;; eval: (put 'with-timeout 'scheme-indent-function 1)
 ;;; eval: (put 'with-redirected-error-port 'scheme-indent-function 0)
+;;; eval: (put 'with-cached-connection 'scheme-indent-function 2)
+;;; eval: (put 'call-with-cached-connection 'scheme-indent-function 1)
 ;;; End:
 
 ;;; substitute.scm ends here

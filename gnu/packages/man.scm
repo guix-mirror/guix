@@ -31,6 +31,7 @@
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system ruby)
+  #:use-module (guix utils)
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gawk)
@@ -224,7 +225,7 @@ the traditional flat-text whatis databases.")
 (define-public man-pages
   (package
     (name "man-pages")
-    (version "5.10")
+    (version "5.11")
     (source
      (origin
        (method url-fetch)
@@ -234,7 +235,7 @@ the traditional flat-text whatis databases.")
               (string-append "mirror://kernel.org/linux/docs/man-pages/Archive/"
                              "man-pages-" version ".tar.xz")))
        (sha256
-        (base32 "0ql7fqs0w2nbwv1b6ffnzyjz1sysvkhq8kb77wi2z7qip8sja43m"))))
+        (base32 "1aiwn6yi19idg4jbf7x4x5i06macjv7r8d5fgp1rwnc4a775vniy"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases (delete 'configure))
@@ -304,17 +305,18 @@ automatically.")
    (version "1.10.1")
    (source
     (origin
-     (method url-fetch)
-     (uri (string-append "https://git.sr.ht/%7Esircmpwn/scdoc/archive/" version
-                         ".tar.gz"))
-     (file-name (string-append name "-" version ".tar.gz"))
+     (method git-fetch)
+     (uri (git-reference
+           (url "https://git.sr.ht/~sircmpwn/scdoc")
+           (commit version)))
+     (file-name (git-file-name name version))
      (sha256
-      (base32
-       "13x7g1r56bshvfmlvapvz35ywnbgsh337kywb5kcv8nc6b3j3q40"))))
+      (base32 "1xmh6fnp378xmiycslg4migs1vx7yly4i1cf2vbbnwim9c9g0aw7"))))
    (build-system gnu-build-system)
    (arguments
     `(#:make-flags
-      (list "CC=gcc" (string-append "PREFIX=" (assoc-ref %outputs "out")))
+      (list (string-append "CC=" ,(cc-for-target))
+            (string-append "PREFIX=" (assoc-ref %outputs "out")))
       #:phases
       (modify-phases %standard-phases
         (delete 'configure))))

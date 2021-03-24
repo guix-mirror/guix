@@ -3464,7 +3464,7 @@ match, cannon keep, and grave-itation pit.")
 (define-public minetest
   (package
     (name "minetest")
-    (version "5.3.0")
+    (version "5.4.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3473,7 +3473,7 @@ match, cannon keep, and grave-itation pit.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "03ga3j3cg38w4lg4d4qxasmnjdl8n3lbizidrinanvyfdyvznyh6"))
+                "1a17g6cmxrscnqwpwrd4w2ck3dgvplyfq4kzyimilfpqar1q69j9"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -3482,7 +3482,7 @@ match, cannon keep, and grave-itation pit.")
                   #t))))
     (build-system cmake-build-system)
     (arguments
-     '(#:configure-flags
+     `(#:configure-flags
        (list "-DRUN_IN_PLACE=0"
              "-DENABLE_FREETYPE=1"
              "-DENABLE_GETTEXT=1"
@@ -3493,7 +3493,27 @@ match, cannon keep, and grave-itation pit.")
              (string-append "-DCURL_INCLUDE_DIR="
                             (assoc-ref %build-inputs "curl")
                             "/include/curl"))
-       #:tests? #f))                    ;no check target
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-sources
+           (lambda _
+             (substitute* "src/CMakeLists.txt"
+               (("set\\(EXECUTABLE_OUTPUT_PATH .*\\)") ""))
+             (substitute* "src/unittest/test_servermodmanager.cpp"
+               ;; do no override MINETEST_SUBGAME_PATH
+               (("(un)?setenv\\(\"MINETEST_SUBGAME_PATH\".*\\);")
+                "(void)0;"))
+             (setenv "MINETEST_SUBGAME_PATH"
+                     (string-append (getcwd) "/games")) ; for check
+             #t))
+         (replace 'check
+           (lambda _
+             ;; Thanks to our substitutions, the tests should also run
+             ;; when invoked on the target outside of `guix build'.
+             (unless ,(%current-target-system)
+               (setenv "HOME" "/tmp")
+               (invoke "src/minetest" "--run-unittests"))
+             #t)))))
     (native-search-paths
      (list (search-path-specification
             (variable "MINETEST_SUBGAME_PATH")
@@ -3541,7 +3561,7 @@ in different ways.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1liciwlh013z5h08ib0psjbwn5wkvlr937ir7kslfk4vly984cjx"))))
+                "11dz36z0pj2r7i8xm8v5lskzws81ckj6sc0avlmvdl8qdc9x83w5"))))
     (build-system trivial-build-system)
     (native-inputs
      `(("source" ,source)))
@@ -3566,7 +3586,7 @@ in different ways.")
 (define-public minetest-mineclone
   (package
     (name "minetest-mineclone")
-    (version "0.66.2")
+    (version "0.71.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3575,7 +3595,7 @@ in different ways.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0miszzlzplpvaj0j1yii9867ydr42wsaqa9g6grxdrci75p05g00"))))
+                "0qm809dqvxc7pa1cr9skmglq9vrbq5hhm4c4m5yi46ldh1v96dgf"))))
     (build-system copy-build-system)
     (arguments
      `(#:install-plan
@@ -4071,7 +4091,7 @@ falling, themeable graphics and sounds, and replays.")
 (define-public wesnoth
   (package
     (name "wesnoth")
-    (version "1.14.15")
+    (version "1.14.16")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/wesnoth/wesnoth-"
@@ -4080,7 +4100,7 @@ falling, themeable graphics and sounds, and replays.")
                                   "wesnoth-" version ".tar.bz2"))
               (sha256
                (base32
-                "05iapxj3nzaqh10y42yq1jf7spxgm4iwjw4qj1c4lnb25xp4mc2h"))))
+                "1d9hq3dcx0sgs2v4400rg2nw98v46m7bwiqqjv8z8n7vw8kx8lhg"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ;no check target
@@ -6301,14 +6321,14 @@ with the mouse isn’t always trivial.")
 (define-public chroma
   (package
     (name "chroma")
-    (version "1.17")
+    (version "1.18")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://level7.org.uk/chroma/download/chroma-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "047sf00x71xbmi8bqrhfbmr9bk89l2gbykkqsfpw4wz6yfjscs6y"))))
+                "12bjisf5nlqinw8n4r223vld52p0p2mw3fca92vi175c46bycbzn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests included

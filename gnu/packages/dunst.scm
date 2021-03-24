@@ -3,6 +3,7 @@
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2021 Alexandru-Sergiu Marton <brown121407@posteo.ro>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,6 +24,7 @@
   #:use-module (guix packages)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix utils)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages base)
   #:use-module (gnu packages freedesktop)
@@ -36,7 +38,7 @@
 (define-public dunst
   (package
     (name "dunst")
-    (version "1.5.0")
+    (version "1.6.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -45,25 +47,20 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0irwkqcgwkqaylcpvqgh25gn2ysbdm2kydipxfzcq1ddj9ns6f9c"))))
+                "0lga1kj2vjbj9g9rl93nivngjmk5fkxdxwal8w96x9whwk9jvdga"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f                      ; no check target
-       #:make-flags (list "CC=gcc"
+     `(#:tests? #f                      ; no check target
+       #:make-flags (list (string-append "CC=" ,(cc-for-target))
                           (string-append "PREFIX=" %output)
+                          (string-append "SYSCONFDIR=" %output "/etc")
                           ;; Otherwise it tries to install service file
                           ;; to "dbus" store directory.
                           (string-append "SERVICEDIR_DBUS=" %output
                                          "/share/dbus-1/services")
                           "dunstify")
        #:phases (modify-phases %standard-phases
-                  (delete 'configure)
-                  (add-after 'install 'install-dunstify
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (let ((out (assoc-ref outputs "out")))
-                        (install-file "dunstify"
-                                      (string-append out "/bin")))
-                      #t)))))
+                  (delete 'configure))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("perl" ,perl)                   ; for pod2man
@@ -79,7 +76,8 @@
        ("libxscrnsaver" ,libxscrnsaver)
        ("libxinerama" ,libxinerama)
        ("libxrandr" ,libxrandr)
-       ("libxdg-basedir" ,libxdg-basedir)))
+       ("libxdg-basedir" ,libxdg-basedir)
+       ("wayland" ,wayland)))           ; for wayland support
     (home-page "https://dunst-project.org/")
     (synopsis "Customizable and lightweight notification daemon")
     (description

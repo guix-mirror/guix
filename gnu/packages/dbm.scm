@@ -5,6 +5,7 @@
 ;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2021 Leo Le Bouter <lle-bout@zaclys.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -74,6 +75,11 @@
                        ;; Bdb doesn't recognize aarch64 as an architecture.
                        ,@(if (string=? "aarch64-linux" (%current-system))
                              '("--build=aarch64-unknown-linux-gnu")
+                             '())
+
+                       ;; Bdb doesn't recognize powerpc64le as an architecture.
+                       ,@(if (string=? "powerpc64le-linux" (%current-system))
+                             '("--build=powerpc64le-unknown-linux-gnu")
                              '())
 
                        ,@(if (%current-target-system)         ; cross building

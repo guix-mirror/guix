@@ -20,6 +20,7 @@
 ;;; Copyright © 2020 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2020 Bonface Munyoki Kilyungi <bonfacemunyoki@gmail.com>
 ;;; Copyright © 2021 Tim Howes <timhowes@lavabit.com>
+;;; Copyright © 2021 Hong Li <hli@mdc-berlin.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -52,6 +53,7 @@
   #:use-module (guix build-system ocaml)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system qt)
   #:use-module (guix build-system r)
   #:use-module (guix build-system ruby)
   #:use-module (guix build-system scons)
@@ -125,6 +127,7 @@
   #:use-module (gnu packages python-science)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages rdf)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages ruby)
@@ -2692,8 +2695,7 @@ trees (phylogenies) and characters.")
 
 (define-public python2-dendropy
   (let ((base (package-with-python2 python-dendropy)))
-    (package
-      (inherit base)
+    (package/inherit base
       (arguments
        `(#:phases
          (modify-phases %standard-phases
@@ -3762,15 +3764,17 @@ particular, reads spanning multiple exons.")
 (define-public hisat2
   (package
     (name "hisat2")
-    (version "2.0.5")
+    (version "2.2.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "ftp://ftp.ccb.jhu.edu/pub/infphilo/hisat2"
-                           "/downloads/hisat2-" version "-source.zip"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/DaehwanKimLab/hisat2/")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0lywnr8kijwsc2aw10dwxic0n0yvip6fl3rjlvc8zzwahamy4x7g"))))
+         "0lmzdhzjkvxw7n5w40pbv5fgzd4cz0f9pxczswn3d4cr0k10k754"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no check target
@@ -3783,9 +3787,12 @@ particular, reads spanning multiple exons.")
          (add-after 'unpack 'make-deterministic
            (lambda _
              (substitute* "Makefile"
-               (("`date`") "0"))
-             #t))
+               (("`date`") "0"))))
          (delete 'configure)
+         (add-before 'build 'build-manual
+           (lambda _
+             (mkdir-p "doc")
+             (invoke "make" "doc")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -3796,13 +3803,13 @@ particular, reads spanning multiple exons.")
                 (find-files "."
                             "hisat2(-(build|align|inspect)(-(s|l)(-debug)*)*)*$"))
                (mkdir-p doc)
-               (install-file "doc/manual.inc.html" doc))
-             #t)))))
+               (install-file "doc/manual.inc.html" doc)))))))
     (native-inputs
-     `(("unzip" ,unzip)                 ; needed for archive from ftp
-       ("perl" ,perl)
+     `(("perl" ,perl)
        ("pandoc" ,pandoc)))             ; for documentation
-    (home-page "https://ccb.jhu.edu/software/hisat2/index.shtml")
+    (inputs
+     `(("python" ,python-wrapper)))
+    (home-page "https://daehwankimlab.github.io/hisat2/")
     (synopsis "Graph-based alignment of genomic sequencing reads")
     (description "HISAT2 is a fast and sensitive alignment program for mapping
 next-generation sequencing reads (both DNA and RNA) to a population of human
@@ -6534,7 +6541,7 @@ writing files into the .sra format.")
      `(("source" ,source)
        ("tar" ,tar)
        ("xz" ,xz)))
-    (home-page "http://www.seqan.de")
+    (home-page "https://www.seqan.de")
     (synopsis "Library for nucleotide sequence analysis")
     (description
      "SeqAn is a C++ library of efficient algorithms and data structures for
@@ -6550,7 +6557,7 @@ bioinformatics file formats, sequence alignment, and more.")
     (version "1.4.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://packages.seqan.de/seqan-library/"
+              (uri (string-append "https://packages.seqan.de/seqan-library/"
                                   "seqan-library-" version ".tar.bz2"))
               (sha256
                (base32
@@ -7311,387 +7318,6 @@ includes software to
 ")
       (license license:cc0))))
 
-(define-public r-genefilter
-  (package
-    (name "r-genefilter")
-    (version "1.72.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (bioconductor-uri "genefilter" version))
-       (sha256
-        (base32
-         "1c6h3qnjvphs977qhv5vafvsb108r0q7xhaayly6qv6adqfn94rn"))))
-    (build-system r-build-system)
-    (native-inputs
-     `(("gfortran" ,gfortran)
-       ("r-knitr" ,r-knitr)))
-    (propagated-inputs
-     `(("r-annotate" ,r-annotate)
-       ("r-annotationdbi" ,r-annotationdbi)
-       ("r-biobase" ,r-biobase)
-       ("r-biocgenerics" ,r-biocgenerics)
-       ("r-survival" ,r-survival)))
-    (home-page "https://bioconductor.org/packages/genefilter")
-    (synopsis "Filter genes from high-throughput experiments")
-    (description
-     "This package provides basic functions for filtering genes from
-high-throughput sequencing experiments.")
-    (license license:artistic2.0)))
-
-(define-public r-deseq2
-  (package
-    (name "r-deseq2")
-    (version "1.30.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (bioconductor-uri "DESeq2" version))
-       (sha256
-        (base32
-         "0q2f9cywrcmp1p7ii8f45g4dk4hsnjflq3yqhsxgnpv9fw338qpp"))))
-    (properties `((upstream-name . "DESeq2")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-biobase" ,r-biobase)
-       ("r-biocgenerics" ,r-biocgenerics)
-       ("r-biocparallel" ,r-biocparallel)
-       ("r-genefilter" ,r-genefilter)
-       ("r-geneplotter" ,r-geneplotter)
-       ("r-genomicranges" ,r-genomicranges)
-       ("r-ggplot2" ,r-ggplot2)
-       ("r-iranges" ,r-iranges)
-       ("r-locfit" ,r-locfit)
-       ("r-rcpp" ,r-rcpp)
-       ("r-rcpparmadillo" ,r-rcpparmadillo)
-       ("r-s4vectors" ,r-s4vectors)
-       ("r-summarizedexperiment" ,r-summarizedexperiment)))
-    (native-inputs
-     `(("r-knitr" ,r-knitr)))
-    (home-page "https://bioconductor.org/packages/DESeq2")
-    (synopsis "Differential gene expression analysis")
-    (description
-     "This package provides functions to estimate variance-mean dependence in
-count data from high-throughput nucleotide sequencing assays and test for
-differential expression based on a model using the negative binomial
-distribution.")
-    (license license:lgpl3+)))
-
-(define-public r-dexseq
-  (package
-    (name "r-dexseq")
-    (version "1.36.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (bioconductor-uri "DEXSeq" version))
-       (sha256
-        (base32
-         "0wfjb42xcr4wjy8a654b74411dky8hp6sp8xdwf0sxqgsxy106qi"))))
-    (properties `((upstream-name . "DEXSeq")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-annotationdbi" ,r-annotationdbi)
-       ("r-biobase" ,r-biobase)
-       ("r-biocgenerics" ,r-biocgenerics)
-       ("r-biocparallel" ,r-biocparallel)
-       ("r-biomart" ,r-biomart)
-       ("r-deseq2" ,r-deseq2)
-       ("r-genefilter" ,r-genefilter)
-       ("r-geneplotter" ,r-geneplotter)
-       ("r-genomicranges" ,r-genomicranges)
-       ("r-hwriter" ,r-hwriter)
-       ("r-iranges" ,r-iranges)
-       ("r-rcolorbrewer" ,r-rcolorbrewer)
-       ("r-rsamtools" ,r-rsamtools)
-       ("r-s4vectors" ,r-s4vectors)
-       ("r-statmod" ,r-statmod)
-       ("r-stringr" ,r-stringr)
-       ("r-summarizedexperiment" ,r-summarizedexperiment)))
-    (native-inputs
-     `(("r-knitr" ,r-knitr)))
-    (home-page "https://bioconductor.org/packages/DEXSeq")
-    (synopsis "Inference of differential exon usage in RNA-Seq")
-    (description
-     "This package is focused on finding differential exon usage using RNA-seq
-exon counts between samples with different experimental designs.  It provides
-functions that allows the user to make the necessary statistical tests based
-on a model that uses the negative binomial distribution to estimate the
-variance between biological replicates and generalized linear models for
-testing.  The package also provides functions for the visualization and
-exploration of the results.")
-    (license license:gpl3+)))
-
-(define-public r-annotationforge
-  (package
-    (name "r-annotationforge")
-    (version "1.32.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (bioconductor-uri "AnnotationForge" version))
-       (sha256
-        (base32
-         "0y3820dkvwz09wlmz9drx6gqpsr9cwppaiz40zafwfxbz65y8px7"))))
-    (properties
-     `((upstream-name . "AnnotationForge")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-annotationdbi" ,r-annotationdbi)
-       ("r-biobase" ,r-biobase)
-       ("r-biocgenerics" ,r-biocgenerics)
-       ("r-dbi" ,r-dbi)
-       ("r-rcurl" ,r-rcurl)
-       ("r-rsqlite" ,r-rsqlite)
-       ("r-s4vectors" ,r-s4vectors)
-       ("r-xml" ,r-xml)))
-    (native-inputs
-     `(("r-knitr" ,r-knitr)))
-    (home-page "https://bioconductor.org/packages/AnnotationForge")
-    (synopsis "Code for building annotation database packages")
-    (description
-     "This package provides code for generating Annotation packages and their
-databases.  Packages produced are intended to be used with AnnotationDbi.")
-    (license license:artistic2.0)))
-
-(define-public r-rbgl
-  (package
-    (name "r-rbgl")
-    (version "1.66.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (bioconductor-uri "RBGL" version))
-       (sha256
-        (base32
-         "016vyzgixb3gjpzi21rbs6ngnnqcxr77krwjjf1ldnzzj8vqrqsz"))))
-    (properties `((upstream-name . "RBGL")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-bh" ,r-bh)
-       ("r-graph" ,r-graph)))
-    (home-page "https://www.bioconductor.org/packages/RBGL")
-    (synopsis "Interface to the Boost graph library")
-    (description
-     "This package provides a fairly extensive and comprehensive interface to
-the graph algorithms contained in the Boost library.")
-    (license license:artistic2.0)))
-
-(define-public r-gseabase
-  (package
-    (name "r-gseabase")
-    (version "1.52.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (bioconductor-uri "GSEABase" version))
-       (sha256
-        (base32
-         "0dawh1kjmf6921jm77j2s2phrq5237pjc4sdh8fkln89gf48zx6i"))))
-    (properties `((upstream-name . "GSEABase")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-annotate" ,r-annotate)
-       ("r-annotationdbi" ,r-annotationdbi)
-       ("r-biobase" ,r-biobase)
-       ("r-biocgenerics" ,r-biocgenerics)
-       ("r-graph" ,r-graph)
-       ("r-xml" ,r-xml)))
-    (native-inputs
-     `(("r-knitr" ,r-knitr)))
-    (home-page "https://bioconductor.org/packages/GSEABase")
-    (synopsis "Gene set enrichment data structures and methods")
-    (description
-     "This package provides classes and methods to support @dfn{Gene Set
-Enrichment Analysis} (GSEA).")
-    (license license:artistic2.0)))
-
-(define-public r-category
-  (package
-    (name "r-category")
-    (version "2.56.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (bioconductor-uri "Category" version))
-       (sha256
-        (base32
-         "0m77wpnica0h2ia9ajdaiga4plgz1s9wls6pdnxzk7kwl8a68wkr"))))
-    (properties `((upstream-name . "Category")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-annotate" ,r-annotate)
-       ("r-annotationdbi" ,r-annotationdbi)
-       ("r-biobase" ,r-biobase)
-       ("r-biocgenerics" ,r-biocgenerics)
-       ("r-genefilter" ,r-genefilter)
-       ("r-graph" ,r-graph)
-       ("r-gseabase" ,r-gseabase)
-       ("r-matrix" ,r-matrix)
-       ("r-rbgl" ,r-rbgl)
-       ("r-dbi" ,r-dbi)))
-    (home-page "https://bioconductor.org/packages/Category")
-    (synopsis "Category analysis")
-    (description
-     "This package provides a collection of tools for performing category
-analysis.")
-    (license license:artistic2.0)))
-
-(define-public r-gostats
-  (package
-    (name "r-gostats")
-    (version "2.56.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (bioconductor-uri "GOstats" version))
-       (sha256
-        (base32
-         "18q8p0fv9fl2r6zjxknfjwqxr69dlyxy6c8amzn6c6dwjq1cxk6j"))))
-    (properties `((upstream-name . "GOstats")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-annotate" ,r-annotate)
-       ("r-annotationdbi" ,r-annotationdbi)
-       ("r-annotationforge" ,r-annotationforge)
-       ("r-biobase" ,r-biobase)
-       ("r-category" ,r-category)
-       ("r-go-db" ,r-go-db)
-       ("r-graph" ,r-graph)
-       ("r-rgraphviz" ,r-rgraphviz)
-       ("r-rbgl" ,r-rbgl)))
-    (home-page "https://bioconductor.org/packages/GOstats")
-    (synopsis "Tools for manipulating GO and microarrays")
-    (description
-     "This package provides a set of tools for interacting with GO and
-microarray data.  A variety of basic manipulation tools for graphs, hypothesis
-testing and other simple calculations.")
-    (license license:artistic2.0)))
-
-(define-public r-shortread
-  (package
-    (name "r-shortread")
-    (version "1.48.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (bioconductor-uri "ShortRead" version))
-       (sha256
-        (base32
-         "0w4m8d3h660mmr2ymp206r1n4aqssxmkv8yxkbr5y1swrahxzfk9"))))
-    (properties `((upstream-name . "ShortRead")))
-    (build-system r-build-system)
-    (inputs
-     `(("zlib" ,zlib)))
-    (propagated-inputs
-     `(("r-biobase" ,r-biobase)
-       ("r-biocgenerics" ,r-biocgenerics)
-       ("r-biocparallel" ,r-biocparallel)
-       ("r-biostrings" ,r-biostrings)
-       ("r-genomeinfodb" ,r-genomeinfodb)
-       ("r-genomicalignments" ,r-genomicalignments)
-       ("r-genomicranges" ,r-genomicranges)
-       ("r-rhtslib" ,r-rhtslib)
-       ("r-hwriter" ,r-hwriter)
-       ("r-iranges" ,r-iranges)
-       ("r-lattice" ,r-lattice)
-       ("r-latticeextra" ,r-latticeextra)
-       ("r-rsamtools" ,r-rsamtools)
-       ("r-s4vectors" ,r-s4vectors)
-       ("r-xvector" ,r-xvector)
-       ("r-zlibbioc" ,r-zlibbioc)))
-    (home-page "https://bioconductor.org/packages/ShortRead")
-    (synopsis "FASTQ input and manipulation tools")
-    (description
-     "This package implements sampling, iteration, and input of FASTQ files.
-It includes functions for filtering and trimming reads, and for generating a
-quality assessment report.  Data are represented as
-@code{DNAStringSet}-derived objects, and easily manipulated for a diversity of
-purposes.  The package also contains legacy support for early single-end,
-ungapped alignment formats.")
-    (license license:artistic2.0)))
-
-(define-public r-systempiper
-  (package
-    (name "r-systempiper")
-    (version "1.24.3")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (bioconductor-uri "systemPipeR" version))
-       (sha256
-        (base32
-         "0ffazyl2q9plbhwlxi04s3fvnli6qj95n7bkjc21535bbi08xfki"))))
-    (properties `((upstream-name . "systemPipeR")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-annotate" ,r-annotate)
-       ("r-assertthat" ,r-assertthat)
-       ("r-batchtools" ,r-batchtools)
-       ("r-biostrings" ,r-biostrings)
-       ("r-deseq2" ,r-deseq2)
-       ("r-dot" ,r-dot)
-       ("r-edger" ,r-edger)
-       ("r-genomicfeatures" ,r-genomicfeatures)
-       ("r-genomicranges" ,r-genomicranges)
-       ("r-ggplot2" ,r-ggplot2)
-       ("r-go-db" ,r-go-db)
-       ("r-gostats" ,r-gostats)
-       ("r-iranges" ,r-iranges)
-       ("r-limma" ,r-limma)
-       ("r-magrittr" ,r-magrittr)
-       ("r-pheatmap" ,r-pheatmap)
-       ("r-rjson" ,r-rjson)
-       ("r-rsamtools" ,r-rsamtools)
-       ("r-rsvg" ,r-rsvg)
-       ("r-shortread" ,r-shortread)
-       ("r-stringr" ,r-stringr)
-       ("r-summarizedexperiment" ,r-summarizedexperiment)
-       ("r-yaml" ,r-yaml)
-       ("r-variantannotation" ,r-variantannotation)))
-    (native-inputs
-     `(("r-knitr" ,r-knitr)))
-    (home-page "https://github.com/tgirke/systemPipeR")
-    (synopsis "Next generation sequencing workflow and reporting environment")
-    (description
-     "This R package provides tools for building and running automated
-end-to-end analysis workflows for a wide range of @dfn{next generation
-sequence} (NGS) applications such as RNA-Seq, ChIP-Seq, VAR-Seq and Ribo-Seq.
-Important features include a uniform workflow interface across different NGS
-applications, automated report generation, and support for running both R and
-command-line software, such as NGS aligners or peak/variant callers, on local
-computers or compute clusters.  Efficient handling of complex sample sets and
-experimental designs is facilitated by a consistently implemented sample
-annotation infrastructure.")
-    (license license:artistic2.0)))
-
-(define-public r-grohmm
-  (package
-    (name "r-grohmm")
-    (version "1.24.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (bioconductor-uri "groHMM" version))
-       (sha256
-        (base32
-         "08pap9wsaxl4jjlc1py0rc019gmi6daa0f9cr3ih1d97wybncanx"))))
-    (properties `((upstream-name . "groHMM")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-genomeinfodb" ,r-genomeinfodb)
-       ("r-genomicalignments" ,r-genomicalignments)
-       ("r-genomicranges" ,r-genomicranges)
-       ("r-iranges" ,r-iranges)
-       ("r-mass" ,r-mass)
-       ("r-rtracklayer" ,r-rtracklayer)
-       ("r-s4vectors" ,r-s4vectors)))
-    (home-page "https://github.com/Kraus-Lab/groHMM")
-    (synopsis "GRO-seq analysis pipeline")
-    (description
-     "This package provides a pipeline for the analysis of GRO-seq data.")
-    (license license:gpl3+)))
-
 (define-public vsearch
   (package
     (name "vsearch")
@@ -7996,286 +7622,6 @@ including VCF header and contents in RDF and JSON.")
     (home-page "https://github.com/vcflib/bio-vcf")
     (license license:expat)))
 
-(define-public r-biocviews
-  (package
-    (name "r-biocviews")
-    (version "1.58.1")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "biocViews" version))
-              (sha256
-               (base32
-                "1by2639z7n62z84dr8rj9jz12gsd1k8q42zsnxacxbwfwp6h0cl4"))))
-    (properties
-     `((upstream-name . "biocViews")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-biobase" ,r-biobase)
-       ("r-biocmanager" ,r-biocmanager)
-       ("r-graph" ,r-graph)
-       ("r-rbgl" ,r-rbgl)
-       ("r-rcurl" ,r-rcurl)
-       ("r-xml" ,r-xml)
-       ("r-runit" ,r-runit)))
-    (home-page "https://bioconductor.org/packages/biocViews")
-    (synopsis "Bioconductor package categorization helper")
-    (description "The purpose of biocViews is to create HTML pages that
-categorize packages in a Bioconductor package repository according to keywords,
-also known as views, in a controlled vocabulary.")
-    (license license:artistic2.0)))
-
-(define-public r-biocstyle
-  (package
-    (name "r-biocstyle")
-    (version "2.18.1")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "BiocStyle" version))
-              (sha256
-               (base32
-                "0rsxyna4dd99x42vc82mlkxx774vb9375llpakg53max1hhwkrqp"))))
-    (properties
-     `((upstream-name . "BiocStyle")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-biocmanager" ,r-biocmanager)
-       ("r-bookdown" ,r-bookdown)
-       ("r-knitr" ,r-knitr)
-       ("r-rmarkdown" ,r-rmarkdown)
-       ("r-yaml" ,r-yaml)))
-    (native-inputs
-     `(("r-knitr" ,r-knitr)))
-    (home-page "https://bioconductor.org/packages/BiocStyle")
-    (synopsis "Bioconductor formatting styles")
-    (description "This package provides standard formatting styles for
-Bioconductor PDF and HTML documents.  Package vignettes illustrate use and
-functionality.")
-    (license license:artistic2.0)))
-
-(define-public r-bioccheck
-  (package
-    (name "r-bioccheck")
-    (version "1.26.0")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "BiocCheck" version))
-              (sha256
-               (base32
-                "1hyncn9zqj432da95k86rm5b28nbwrvzm52jbhisifkxj1j43cib"))))
-    (properties
-     `((upstream-name . "BiocCheck")))
-    (build-system r-build-system)
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         ;; This package can be used by calling BiocCheck(<package>) from
-         ;; within R, or by running R CMD BiocCheck <package>.  This phase
-         ;; makes sure the latter works.  For this to work, the BiocCheck
-         ;; script must be somewhere on the PATH (not the R bin directory).
-         (add-after 'install 'install-bioccheck-subcommand
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (dest-dir (string-append out "/bin"))
-                    (script-dir
-                     (string-append out "/site-library/BiocCheck/script/")))
-               (mkdir-p dest-dir)
-               (symlink (string-append script-dir "/checkBadDeps.R")
-                        (string-append dest-dir "/checkBadDeps.R"))
-               (symlink (string-append script-dir "/BiocCheck")
-                        (string-append dest-dir "/BiocCheck")))
-             #t)))))
-    (propagated-inputs
-     `(("r-codetools" ,r-codetools)
-       ("r-graph" ,r-graph)
-       ("r-httr" ,r-httr)
-       ("r-knitr" ,r-knitr)
-       ("r-optparse" ,r-optparse)
-       ("r-biocmanager" ,r-biocmanager)
-       ("r-biocviews" ,r-biocviews)
-       ("r-stringdist" ,r-stringdist)))
-    (native-inputs
-     `(("r-knitr" ,r-knitr)))
-    (home-page "https://bioconductor.org/packages/BiocCheck")
-    (synopsis "Executes Bioconductor-specific package checks")
-    (description "This package contains tools to perform additional quality
-checks on R packages that are to be submitted to the Bioconductor repository.")
-    (license license:artistic2.0)))
-
-(define-public r-s4vectors
-  (package
-    (name "r-s4vectors")
-    (version "0.28.1")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "S4Vectors" version))
-              (sha256
-               (base32
-                "0fhf4lsfxrim7glazh6ng46ykzaly5ggwpg170vcz4cc24prv0rh"))))
-    (properties
-     `((upstream-name . "S4Vectors")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-biocgenerics" ,r-biocgenerics)))
-    (home-page "https://bioconductor.org/packages/S4Vectors")
-    (synopsis "S4 implementation of vectors and lists")
-    (description
-     "The S4Vectors package defines the @code{Vector} and @code{List} virtual
-classes and a set of generic functions that extend the semantic of ordinary
-vectors and lists in R.  Package developers can easily implement vector-like
-or list-like objects as concrete subclasses of @code{Vector} or @code{List}.
-In addition, a few low-level concrete subclasses of general interest (e.g.
-@code{DataFrame}, @code{Rle}, and @code{Hits}) are implemented in the
-S4Vectors package itself.")
-    (license license:artistic2.0)))
-
-(define-public r-iranges
-  (package
-    (name "r-iranges")
-    (version "2.24.1")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "IRanges" version))
-              (sha256
-               (base32
-                "01mx46a82vd3gz705pj0kk4wpxg683s8jqxchzjia3gz00b4qw52"))))
-    (properties
-     `((upstream-name . "IRanges")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-biocgenerics" ,r-biocgenerics)
-       ("r-s4vectors" ,r-s4vectors)))
-    (home-page "https://bioconductor.org/packages/IRanges")
-    (synopsis "Infrastructure for manipulating intervals on sequences")
-    (description
-     "This package provides efficient low-level and highly reusable S4 classes
-for storing ranges of integers, RLE vectors (Run-Length Encoding), and, more
-generally, data that can be organized sequentially (formally defined as
-@code{Vector} objects), as well as views on these @code{Vector} objects.
-Efficient list-like classes are also provided for storing big collections of
-instances of the basic classes.  All classes in the package use consistent
-naming and share the same rich and consistent \"Vector API\" as much as
-possible.")
-    (license license:artistic2.0)))
-
-(define-public r-genomeinfodbdata
-  (package
-    (name "r-genomeinfodbdata")
-    (version "1.2.0")
-    (source (origin
-              (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "https://bioconductor.org/packages/release/"
-                                  "data/annotation/src/contrib/GenomeInfoDbData_"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "0di6nlqpsyqf693k2na65ayqldih563x3zfrczpqc5q2hl5kg35c"))))
-    (properties
-     `((upstream-name . "GenomeInfoDbData")))
-    (build-system r-build-system)
-    (home-page "https://bioconductor.org/packages/GenomeInfoDbData")
-    (synopsis "Species and taxonomy ID look up tables for GenomeInfoDb")
-    (description "This package contains data for mapping between NCBI taxonomy
-ID and species.  It is used by functions in the GenomeInfoDb package.")
-    (license license:artistic2.0)))
-
-(define-public r-genomeinfodb
-  (package
-    (name "r-genomeinfodb")
-    (version "1.26.2")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "GenomeInfoDb" version))
-              (sha256
-               (base32
-                "092izc49maxjhf6m4b0qx21ad16dz7bmxy5pysp3vkyhdrfa2f7v"))))
-    (properties
-     `((upstream-name . "GenomeInfoDb")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-biocgenerics" ,r-biocgenerics)
-       ("r-genomeinfodbdata" ,r-genomeinfodbdata)
-       ("r-iranges" ,r-iranges)
-       ("r-rcurl" ,r-rcurl)
-       ("r-s4vectors" ,r-s4vectors)))
-    (native-inputs
-     `(("r-knitr" ,r-knitr)))
-    (home-page "https://bioconductor.org/packages/GenomeInfoDb")
-    (synopsis "Utilities for manipulating chromosome identifiers")
-    (description
-     "This package contains data and functions that define and allow
-translation between different chromosome sequence naming conventions (e.g.,
-\"chr1\" versus \"1\"), including a function that attempts to place sequence
-names in their natural, rather than lexicographic, order.")
-    (license license:artistic2.0)))
-
-(define-public r-edger
-  (package
-    (name "r-edger")
-    (version "3.32.1")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "edgeR" version))
-              (sha256
-               (base32
-                "1gaic8qf6a6sy0bmydh1xzf52w0wnq31aanpvw3a30pfsi218bcp"))))
-    (properties `((upstream-name . "edgeR")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-limma" ,r-limma)
-       ("r-locfit" ,r-locfit)
-       ("r-rcpp" ,r-rcpp)
-       ("r-statmod" ,r-statmod))) ;for estimateDisp
-    (home-page "http://bioinf.wehi.edu.au/edgeR")
-    (synopsis "EdgeR does empirical analysis of digital gene expression data")
-    (description "This package can do differential expression analysis of
-RNA-seq expression profiles with biological replication.  It implements a range
-of statistical methodology based on the negative binomial distributions,
-including empirical Bayes estimation, exact tests, generalized linear models
-and quasi-likelihood tests.  It be applied to differential signal analysis of
-other types of genomic data that produce counts, including ChIP-seq, SAGE and
-CAGE.")
-    (license license:gpl2+)))
-
-(define-public r-variantannotation
-  (package
-    (name "r-variantannotation")
-    (version "1.36.0")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "VariantAnnotation" version))
-              (sha256
-               (base32
-                "1sl0l6v05lfglj281nszma0h5k234md7rn2pdah8vs2d4iq3kimw"))))
-    (properties
-     `((upstream-name . "VariantAnnotation")))
-    (propagated-inputs
-     `(("r-annotationdbi" ,r-annotationdbi)
-       ("r-biobase" ,r-biobase)
-       ("r-biocgenerics" ,r-biocgenerics)
-       ("r-biostrings" ,r-biostrings)
-       ("r-bsgenome" ,r-bsgenome)
-       ("r-dbi" ,r-dbi)
-       ("r-genomeinfodb" ,r-genomeinfodb)
-       ("r-genomicfeatures" ,r-genomicfeatures)
-       ("r-genomicranges" ,r-genomicranges)
-       ("r-iranges" ,r-iranges)
-       ("r-matrixgenerics" ,r-matrixgenerics)
-       ("r-summarizedexperiment" ,r-summarizedexperiment)
-       ("r-rhtslib" ,r-rhtslib)
-       ("r-rsamtools" ,r-rsamtools)
-       ("r-rtracklayer" ,r-rtracklayer)
-       ("r-s4vectors" ,r-s4vectors)
-       ("r-xvector" ,r-xvector)
-       ("r-zlibbioc" ,r-zlibbioc)))
-    (build-system r-build-system)
-    (home-page "https://bioconductor.org/packages/VariantAnnotation")
-    (synopsis "Package for annotation of genetic variants")
-    (description "This R package can annotate variants, compute amino acid
-coding changes and predict coding outcomes.")
-    (license license:artistic2.0)))
-
 (define-public r-limma
   (package
     (name "r-limma")
@@ -8551,13 +7897,13 @@ tab-delimited (tabix) files.")
 (define-public r-delayedarray
   (package
     (name "r-delayedarray")
-    (version "0.16.1")
+    (version "0.16.2")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "DelayedArray" version))
               (sha256
                (base32
-                "1d75zrhha1v7dhbvjp6a4iap441l5k268w0jjxklpqywbqns7l3d"))))
+                "09lpj951v1afxkrnjvnhzp4qgklq23ykdwlny7k1lyfcdy9q6wm0"))))
     (properties
      `((upstream-name . "DelayedArray")))
     (build-system r-build-system)
@@ -8699,13 +8045,13 @@ as well as query and modify the browser state, such as the current viewport.")
 (define-public r-genomicfeatures
   (package
     (name "r-genomicfeatures")
-    (version "1.42.1")
+    (version "1.42.2")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "GenomicFeatures" version))
               (sha256
                (base32
-                "17dyd9hcw6pw16y353dh55wfhxmkxka99lbsxsp9xyrhffwrxi0s"))))
+                "17ns5hvx5q8mrmkgb6linspwml62mi34i6al5bxlib5xi9d9f04s"))))
     (properties
      `((upstream-name . "GenomicFeatures")))
     (build-system r-build-system)
@@ -10954,7 +10300,7 @@ with narrow binding events such as transcription factor ChIP-seq.")
 (define-public trim-galore
   (package
     (name "trim-galore")
-    (version "0.6.1")
+    (version "0.6.6")
     (source
      (origin
        (method git-fetch)
@@ -10964,7 +10310,7 @@ with narrow binding events such as transcription factor ChIP-seq.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1y31wbxwkm9xqzr5zv1pk5q418whnmlmgmfyxxpnl12h83m2i9iv"))))
+         "0yrwg6325j4sb9vnplvl3jplzab0qdhp92wl480qjinpfq88j4rs"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
@@ -13109,6 +12455,64 @@ concatenates pieces of read sequences to generate the final unitig sequences.
 Thus the per-base error rate is similar to the raw input reads.")
    (license license:expat)))
 
+(define-public bandage
+  (package
+    (name "bandage")
+    (version "0.8.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rrwick/Bandage")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1bbsn5f5x8wlspg4pbibqz6m5vin8c19nl224f3z3km0pkc97rwv"))))
+    (build-system qt-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda _
+             (invoke "qmake" "Bandage.pro")))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (substitute* "tests/bandage_command_line_tests.sh"
+                 (("^bandagepath=.*")
+                  (string-append "bandagepath=" (getcwd) "/Bandage\n")))
+               (with-directory-excursion "tests"
+                 (setenv "XDG_RUNTIME_DIR" (getcwd))
+                 (invoke "./bandage_command_line_tests.sh")))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (install-file "Bandage" (string-append out "/bin"))
+               #t))))))
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)))
+    (native-inputs
+     `(("imagemagick" ,imagemagick)))
+    (home-page "https://rrwick.github.io/Bandage/")
+    (synopsis
+     "Bioinformatics Application for Navigating De novo Assembly Graphs Easily")
+    (description "Bandage is a program for visualising de novo assembly graphs.
+It allows users to interact with the assembly graphs made by de novo assemblers
+such as Velvet, SPAdes, MEGAHIT and others.  De novo assembly graphs contain not
+only assembled contigs but also the connections between those contigs, which
+were previously not easily accessible.  Bandage visualises assembly graphs, with
+connections, using graph layout algorithms.  Nodes in the drawn graph, which
+represent contigs, can be automatically labelled with their ID, length or depth.
+Users can interact with the graph by moving, labelling and colouring nodes.
+Sequence information can also be extracted directly from the graph viewer.  By
+displaying connections between contigs, Bandage opens up new possibilities for
+analysing and improving de novo assemblies that are not possible by looking at
+contigs alone.")
+    (license (list license:gpl2+        ; bundled ogdf
+                   license:gpl3+))))
+
 (define-public r-circus
   (package
     (name "r-circus")
@@ -13357,6 +12761,89 @@ combats this effect by splitting your data into batches and finding a smaller
 number of neighbours for each cell within each of the groups.  This helps
 create connections between analogous cells in different batches without
 altering the counts or PCA space.")
+    (license license:expat)))
+
+(define-public python-drep
+  (package
+    (name "python-drep")
+    (version "3.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "drep" version))
+       (sha256
+        (base32
+         "08vk0x6v5c5n7afgd5pcjhsvb424absypxy22hw1cm1n9kirbi77"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-biopython" ,python-biopython)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-numpy" ,python-numpy)
+       ("python-pandas" ,python-pandas)
+       ("python-pytest" ,python-pytest)
+       ("python-scikit-learn" ,python-scikit-learn)
+       ("python-seaborn" ,python-seaborn)
+       ("python-tqdm" ,python-tqdm)))
+    (home-page "https://github.com/MrOlm/drep")
+    (synopsis "De-replication of microbial genomes assembled from multiple samples")
+    (description
+     "dRep is a Python program for rapidly comparing large numbers of genomes.
+dRep can also \"de-replicate\" a genome set by identifying groups of highly
+similar genomes and choosing the best representative genome for each genome
+set.")
+    (license license:expat)))
+
+(define-public instrain
+  (package
+    (name "instrain")
+    (version "1.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "inStrain" version))
+       (sha256
+        (base32
+         "0ykqlpf6yz4caihsaz3ys00cyvlr7wdj4s9a8rh56q5r8xf80ic0"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-relative-imports
+           (lambda _
+             (substitute* "docker/run_instrain.py"
+               (("from s3_utils")
+                "from .s3_utils")
+               (("from job_utils")
+                "from .job_utils")))))))
+    (inputs
+     `(("python-biopython" ,python-biopython)
+       ("python-boto3" ,python-boto3)
+       ("python-h5py" ,python-h5py)
+       ("python-lmfit" ,python-lmfit)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-networkx" ,python-networkx)
+       ("python-numba" ,python-numba)
+       ("python-numpy" ,python-numpy)
+       ("python-pandas" ,python-pandas)
+       ("python-psutil" ,python-psutil)
+       ("python-pysam" ,python-pysam)
+       ("python-scikit-learn" ,python-scikit-learn)
+       ("python-seaborn" ,python-seaborn)
+       ("python-tqdm" ,python-tqdm)
+       ;; drep is needed for deprecated plot utilities
+       ("python-drep" ,python-drep)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/MrOlm/inStrain")
+    (synopsis "Calculation of strain-level metrics")
+    (description
+     "inStrain is a Python program for analysis of co-occurring genome
+populations from metagenomes that allows highly accurate genome comparisons,
+analysis of coverage, microdiversity, and linkage, and sensitive SNP detection
+with gene localization and synonymous non-synonymous identification.")
+    ;; The tool itself says that the license is "MIT", but the repository
+    ;; contains a LICENSE file with the GPLv3.
+    ;; See https://github.com/MrOlm/inStrain/issues/51
     (license license:expat)))
 
 (define-public gffcompare
@@ -14367,14 +13854,14 @@ is a Cython wrapper for FIt-SNE.")
 (define-public bbmap
   (package
     (name "bbmap")
-    (version "35.82")
+    (version "38.90")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "mirror://sourceforge/bbmap/BBMap_" version ".tar.gz"))
               (sha256
                (base32
-                "1q4rfhxcb6z3gm8zg2davjz98w22lkf4hm9ikxz9kdl93pil3wkd"))))
+                "1wb94bcc006qq86x77z2rz0lc8m9f1kpnw6gdhjfg9bdaqf56rm3"))))
     (build-system ant-build-system)
     (arguments
      `(#:build-target "dist"
@@ -15785,3 +15272,64 @@ biological processes.  SBML is useful for models of metabolism, cell
 signaling, and more.  It continues to be evolved and expanded by an
 international community.")
     (license license:lgpl2.1+)))
+
+(define-public r-signac
+  (let ((commit "e0512d348adeda4a3f23a2e8f56d1fe09840e03c")
+        (revision "1"))
+    (package
+      (name "r-signac")
+      (version (git-version "1.1.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/timoast/signac/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1yihhrv7zs87ax61la1nb4y12lg3knraw4b20k5digbcwm8488lb"))))
+      (properties `((upstream-name . "Signac")))
+      (build-system r-build-system)
+      (inputs `(("zlib" ,zlib)))
+      (propagated-inputs
+       `(("r-annotationfilter" ,r-annotationfilter)
+         ("r-biocgenerics" ,r-biocgenerics)
+         ("r-biostrings" ,r-biostrings)
+         ("r-biovizbase" ,r-biovizbase)
+         ("r-data-table" ,r-data-table)
+         ("r-dplyr" ,r-dplyr)
+         ("r-fastmatch" ,r-fastmatch)
+         ("r-future" ,r-future)
+         ("r-future-apply" ,r-future-apply)
+         ("r-genomeinfodb" ,r-genomeinfodb)
+         ("r-genomicranges" ,r-genomicranges)
+         ("r-ggbio" ,r-ggbio)
+         ("r-ggforce" ,r-ggforce)
+         ("r-ggplot2" ,r-ggplot2)
+         ("r-ggrepel" ,r-ggrepel)
+         ("r-ggseqlogo" ,r-ggseqlogo)
+         ("r-iranges" ,r-iranges)
+         ("r-irlba" ,r-irlba)
+         ("r-lsa" ,r-lsa)
+         ("r-matrix" ,r-matrix)
+         ("r-patchwork" ,r-patchwork)
+         ("r-pbapply" ,r-pbapply)
+         ("r-rcpp" ,r-rcpp)
+         ("r-rcpproll" ,r-rcpproll)
+         ("r-rsamtools" ,r-rsamtools)
+         ("r-s4vectors" ,r-s4vectors)
+         ("r-scales" ,r-scales)
+         ("r-seurat" ,r-seurat)
+         ("r-seuratobject" ,r-seuratobject)
+         ("r-stringi" ,r-stringi)
+         ("r-tidyr" ,r-tidyr)))
+      (home-page "https://github.com/timoast/signac/")
+      (synopsis "Analysis of single-cell chromatin data")
+      (description
+       "This package provides a framework for the analysis and exploration of
+single-cell chromatin data.  The Signac package contains functions for
+quantifying single-cell chromatin data, computing per-cell quality control
+metrics, dimension reduction and normalization, visualization, and DNA
+sequence motif analysis.")
+      (license license:expat))))

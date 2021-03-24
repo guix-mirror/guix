@@ -10,7 +10,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
@@ -78,6 +78,7 @@
   #:use-module (guix build-system ant)
   #:use-module (guix build-system cargo)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system copy)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
@@ -171,6 +172,79 @@
   #:use-module (gnu packages xml)
   #:use-module ((srfi srfi-1) #:select (delete-duplicates)))
 
+(define-public qhttp
+  (package
+    (name "qhttp")
+    (version "3.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/azadkuh/qhttp")
+         (commit (string-append "version-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0cx23g4y4k4v9p5ph6h7gfhp8sfy1gcdv1g6bl44hppar1y0zfdq"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no target
+       #:imported-modules
+       ((guix build copy-build-system)
+        ,@%gnu-build-system-modules)
+       #:modules
+       (((guix build copy-build-system) #:prefix copy:)
+        (guix build gnu-build-system)
+        (guix build utils))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "commondir.pri"
+               (("\\$\\$PRJDIR/xbin")
+                (string-append (assoc-ref outputs "out") "/lib"))
+               (("-L")
+                "-lhttp_parser -L")
+               (("\\$\\$PRJDIR/3rdparty")
+                ""))
+             (substitute* "src/src.pro"
+               (("SOURCES  \\+= \\$\\$PRJDIR/3rdparty/http-parser/http_parser.c")
+                "")
+               (("HEADERS  \\+= \\$\\$PRJDIR/3rdparty/http-parser/http_parser.h")
+                ""))
+             (substitute* '("src/private/qhttpbase.hpp" "src/qhttpabstracts.cpp")
+               (("http-parser/http_parser.h")
+                "http_parser.h"))
+             #t))
+         (replace 'configure
+           (lambda _ (invoke "qmake")))
+         (replace 'install
+           (lambda args
+             (apply (assoc-ref copy:%standard-phases 'install)
+                    #:install-plan
+                    '(("src" "include"
+                       #:include-regexp ("\\.hpp$")))
+                    args)))
+         (add-after 'install 'remove-examples
+           (lambda* (#:key outputs #:allow-other-keys)
+             (with-directory-excursion
+                 (string-append (assoc-ref outputs "out") "/lib")
+               (for-each delete-file
+                         (list
+                          "basic-server"
+                          "helloworld"
+                          "postcollector")))
+             #t)))))
+    (inputs
+     `(("http-parser" ,http-parser)
+       ("qtbase" ,qtbase)))
+    (home-page "https://github.com/azadkuh/qhttp/")
+    (synopsis "Qt-based HTTP Library")
+    (description
+     "Qhttp is a light-weight and asynchronous HTTP library
+(both server & client) in Qt5 and C++14.")
+    (license license:expat)))
+
 (define-public httpd
   (package
     (name "httpd")
@@ -243,7 +317,7 @@ Interface} specification.")
 (define-public monolith
   (package
     (name "monolith")
-    (version "2.4.0")
+    (version "2.4.1")
     (source
      (origin
        (method git-fetch)
@@ -252,17 +326,18 @@ Interface} specification.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "18c6bsv9m3spiyfhqp08v807m93r6n9hrlv4qbfiqp4kw5aryb4h"))))
+        (base32 "1z0bcvk2cvx2cd0hs8addzcb070xvrkcxvg25691xw0ikiynpkwz"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-base64" ,rust-base64-0.13)
+       (("rust-atty" ,rust-atty-0.2)
+        ("rust-base64" ,rust-base64-0.13)
         ("rust-chrono" ,rust-chrono-0.4)
         ("rust-clap" ,rust-clap-2)
-        ("rust-cssparser" ,rust-cssparser-0.27)
+        ("rust-cssparser" ,rust-cssparser-0.28)
         ("rust-html5ever" ,rust-html5ever-0.24)
         ("rust-regex" ,rust-regex-1)
-        ("rust-reqwest" ,rust-reqwest-0.10)
+        ("rust-reqwest" ,rust-reqwest-0.11)
         ("rust-sha2" ,rust-sha2-0.9)
         ("rust-url" ,rust-url-2))
        #:cargo-development-inputs
@@ -293,14 +368,14 @@ the same, being completely separated from the Internet.")
     ;; ’stable’ and recommends that “in general you deploy the NGINX mainline
     ;; branch at all times” (https://www.nginx.com/blog/nginx-1-6-1-7-released/)
     ;; Consider updating the nginx-documentation package together with this one.
-    (version "1.19.6")
+    (version "1.19.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1d9kzks8x1226prjbpdin4dz93fjnv304zlqybfqachx5fh9a4di"))))
+                "01cb6hsaik1sfjihbrldmwrcn54gk4plfy350sl1b4rml6qik29h"))))
     (build-system gnu-build-system)
     (inputs `(("openssl" ,openssl)
               ("pcre" ,pcre)
@@ -383,9 +458,9 @@ and as a proxy to reduce the load on back-end HTTP or mail servers.")
 
 (define-public nginx-documentation
   ;; This documentation should be relevant for the current nginx package.
-  (let ((version "1.19.6")
-        (revision 2636)
-        (changeset "a0824dab33ff"))
+  (let ((version "1.19.8")
+        (revision 2673)
+        (changeset "4398fd0f0341"))
     (package
       (name "nginx-documentation")
       (version (simple-format #f "~A-~A-~A" version revision changeset))
@@ -397,7 +472,7 @@ and as a proxy to reduce the load on back-end HTTP or mail servers.")
                (file-name (string-append name "-" version))
                (sha256
                 (base32
-                 "06w6fg33pnkqpaagzp9rqizill61vj7db7083mrd6i6by0j7cp1b"))))
+                 "1pds76h19fadmymyr6pnfh72ql6vizpv2628lqcrpqhxgwa6hcbg"))))
       (build-system gnu-build-system)
       (arguments
        '(#:tests? #f                    ; no test suite
@@ -3995,7 +4070,7 @@ is limited to http and https.")
 (define-public perl-net-http
   (package
     (name "perl-net-http")
-    (version "6.20")
+    (version "6.21")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -4003,7 +4078,7 @@ is limited to http and https.")
                    "Net-HTTP-" version ".tar.gz"))
              (sha256
               (base32
-               "07lzfycza7qqxli18xgsnqwiwxapl0b64z33wfw62aai4hm7nllj"))))
+               "1i7fk6q1iaxzgf82mjd5hg77hvy7dbb79488cijg16dyfrds6nip"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-io-socket-ssl" ,perl-io-socket-ssl)
@@ -5936,14 +6011,14 @@ configuration language.")
   (package
     (name "varnish-modules")
     (home-page "https://github.com/varnish/varnish-modules")
-    (version "0.17.0")
+    (version "0.17.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference (url home-page) (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0zg8y2sgkygdani70zp9rbx278431fmssj26d47c5qsiw939i519"))))
+                "1mzkad9r4rpm1fi7j7skwrsyzzbwcapfnlvvl1ls3rng2djcqb5j"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -6133,9 +6208,6 @@ response.  This exists to cover all kinds of HTTP scenarios.  All endpoint respo
 JSON-encoded.")
     (license license:isc)))
 
-(define-public python2-httpbin
-  (package-with-python2 python-httpbin))
-
 (define-public python-pytest-httpbin
   (package
     (name "python-pytest-httpbin")
@@ -6235,27 +6307,31 @@ message stream (in a web server that is per connection).")
 (define-public python-httpretty
   (package
     (name "python-httpretty")
-    (version "0.9.6")
+    (version "1.0.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "httpretty" version))
        (sha256
-        (base32 "1p1rb4mpngh0632xrmdfhvc8yink519yfkqz97d2ww3y0x2jvd81"))))
+        (base32 "1dg0nfl7i9kjnq98ww98x2afzav4mpgiwzvjc43ily1x9my94g75"))))
     (build-system python-build-system)
-    (propagated-inputs
-     `(("python-six" ,python-six)))
+    (arguments
+     `(#:tests? #f  ; Tests require network access.
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "nosetests"))
+             #t)))))
     (native-inputs
      `(("python-coverage" ,python-coverage)
-       ("python-httplib2" ,python-httplib2)
-       ("python-mock" ,python-mock)
+       ("python-eventlet" ,python-eventlet)
        ("python-nose" ,python-nose)
-       ("python-nose-randomly" ,python-nose-randomly)
        ("python-rednose" ,python-rednose)
        ("python-requests" ,python-requests)
        ("python-sure" ,python-sure)
-       ("python-tornado" ,python-tornado)
-       ("python-urllib3" ,python-urllib3)))
+       ("python-tornado" ,python-tornado)))
     (home-page "https://httpretty.readthedocs.io")
     (synopsis "HTTP client mock for Python")
     (description "@code{httpretty} is a helper for faking web requests,

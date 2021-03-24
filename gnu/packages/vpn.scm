@@ -388,7 +388,7 @@ this process.  It is compatible with Fortinet VPNs.")
 (define-public openvpn
   (package
     (name "openvpn")
-    (version "2.4.10")
+    (version "2.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -396,7 +396,7 @@ this process.  It is compatible with Fortinet VPNs.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "0xx378ja2rdfaayc257z0z5ddsp8h0jcpqnd1a6bdw3rlsam6a6g"))))
+                "157ikzap2bbkzx34hkh33bpk2i14xjx1x3pkadhmzh1pr24h94s0"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-iproute2=yes")))
@@ -683,7 +683,7 @@ WireGuard was added to Linux 5.6.")
 (define-public wireguard-tools
   (package
     (name "wireguard-tools")
-    (version "1.0.20200827")
+    (version "1.0.20210223")
     (source
      (origin
        (method git-fetch)
@@ -692,7 +692,7 @@ WireGuard was added to Linux 5.6.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1h351hn531z6z85sx9ya27xjz1jszgn1pkwibacjj49mds15f7gn"))))
+        (base32 "1pz7rir7bzj7rv1lqy45pqnr6jxsb4war31f9492757fql7kcrf4"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags

@@ -120,7 +120,7 @@ default Emacs configuration, but it carries a much lighter feature set.")
          ,@(package-inputs zile)))
       (native-inputs
        `(("m4" ,m4)                               ;for 'bootstrap'
-         ("autoconf" ,autoconf-wrapper)
+         ("autoconf" ,autoconf)
          ("automake" ,automake)
 
          ;; For some reason, 'bootstrap' insists on having these.

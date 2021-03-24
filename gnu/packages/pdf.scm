@@ -1276,7 +1276,7 @@ python-pypdf2 instead.")
 (define-public pdfarranger
   (package
     (name "pdfarranger")
-    (version "1.7.0")
+    (version "1.7.1")
     (source
      (origin
        (method git-fetch)
@@ -1285,7 +1285,7 @@ python-pypdf2 instead.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0dmgmvpghsm938iznalbg8h8k17a5h3q466yfc67mcll428n4nx3"))))
+        (base32 "1c2mafnz8pv32wzkc2wx4q8y2x7xffpn6ag12dj7ga5n772fb6s3"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f                      ;no tests

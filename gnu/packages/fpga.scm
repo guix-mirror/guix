@@ -502,7 +502,7 @@ using different abstraction levels.")
 (define-public verilator
   (package
     (name "verilator")
-    (version "4.108")
+    (version "4.110")
     (source
      (origin
        (method git-fetch)
@@ -511,7 +511,7 @@ using different abstraction levels.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0kcs0p8i2hiw348xqqh49pmllqspbzh2ljwmia03b42md5h4x5vf"))))
+        (base32 "1lm2nyn7wzxj5y0ffwazhb4ygnmqf4d61sl937vmnmrpvdihsrrq"))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)

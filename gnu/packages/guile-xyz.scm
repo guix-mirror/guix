@@ -15,14 +15,14 @@
 ;;; Copyright © 2017, 2018, 2019, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2017, 2018, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018, 2019, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2019 swedebugia <swedebugia@riseup.net>
 ;;; Copyright © 2019, 2020 Amar Singh <nly@disroot.org>
-;;; Copyright © 2019 Timothy Sample <samplet@ngyro.com>
+;;; Copyright © 2019, 2021 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2019, 2020 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2020 Evan Straw <evan.straw99@gmail.com>
 ;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
@@ -34,6 +34,8 @@
 ;;; Copyright © 2020 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2020, 2021 pukkamustard <pukkamustard@posteo.net>
 ;;; Copyright © 2021 Bonface Munyoki Kilyungi <me@bonfacemunyoki.com>
+;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
+;;; Copyright © 2021 Leo Le Bouter <lle-bout@zaclys.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -116,6 +118,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system guile)
   #:use-module (guix utils)
+  #:use-module ((guix build utils) #:select (alist-replace))
   #:use-module (ice-9 match)
   #:use-module ((srfi srfi-1) #:select (alist-delete)))
 
@@ -235,6 +238,30 @@ frameworks, session management, URL-remapping for RESTful, page caching, and
 more.")
     (home-page "https://www.gnu.org/software/artanis/")
     (license (list license:gpl3+ license:lgpl3+)))) ;dual license
+
+(define-public guile-f-scm
+  (package
+    (name "guile-f-scm")
+    (version "0.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.sr.ht/~brown121407/f.scm")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "14wyrs3m1649l3km4pl2175dmap1372j5h8nkhykrbxg5xqp6ivd"))))
+    (build-system guile-build-system)
+    (native-inputs
+     `(("guile" ,guile-3.0)))
+    (home-page "https://git.sr.ht/~brown121407/f.scm")
+    (synopsis "Library for working with files and directories")
+    (description
+     "f.scm is a library intended to facilitate working with files and
+directories (the file system in general).  It was initially inspired by the
+f library for Emacs.")
+    (license license:gpl3+)))
 
 ;; There has not been any release yet.
 (define-public guildhall
@@ -367,7 +394,7 @@ dictionary and suggesting spelling corrections.")
                (string-append "--libdir=" (assoc-ref %outputs "out")
                               "/lib/bash"))))
       (native-inputs `(("pkg-config" ,pkg-config)
-                       ("autoconf" ,autoconf-wrapper)
+                       ("autoconf" ,autoconf)
                        ("automake" ,automake)
                        ("libtool" ,libtool)
                        ;; Gettext brings 'AC_LIB_LINKFLAGS_FROM_LIBS'.
@@ -634,7 +661,7 @@ is not available for Guile 2.0.")
                 "1shmkc0y9r2sj3kw7hrsnamnp7y8xifkhf3m3rnfxczqg63k67vy"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf-wrapper)
+     `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("pkg-config" ,pkg-config)
        ("texinfo" ,texinfo)))
@@ -1001,8 +1028,8 @@ convenient nested tree operations.")
     (license license:gpl3+)))
 
 (define-public guile-simple-zmq
-  (let ((commit "e9446173280117e98ab4208e2aa5273128650e19")
-        (revision "8"))
+  (let ((commit "b2ea97e5a0e7417ce718b27b6fd55a3146364b82")
+        (revision "9"))
     (package
       (name "guile-simple-zmq")
       (version (git-version "0.0.0" revision commit))
@@ -1014,7 +1041,7 @@ convenient nested tree operations.")
                (commit commit)))
          (sha256
           (base32
-           "1nhlp5kl1095k1irvv0kgdbc7lp5qki3d3wg9rla6f7822hkmrzw"))
+           "08qvcxx0njz9545xa0lq3wpf55v9cl9nbb640ry1lig11wpymqxb"))
          (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
@@ -1211,7 +1238,7 @@ format.")
     (license license:agpl3+)))
 
 (define-public guile-email-latest
-  (let ((commit "03e9cacb826bd4a56d3d834fe5526e497d7c57eb")
+  (let ((commit "ca0520a33c9042a68691d85c6849f88412ca8357")
         (revision "1"))
     (package
       (inherit guile-email)
@@ -1226,7 +1253,7 @@ format.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1a15gdlbmzx220xg82fgyd0zk2wqn13ddmzs13nhgfzx8d5cns68"))))
+           "1l5mikalawq83786rnb9zky908ncsd5dna9vyz6bx6kc2frrl7xv"))))
       (native-inputs
        `(("pkg-config" ,pkg-config)
          ("autoconf" ,autoconf)
@@ -1697,7 +1724,7 @@ provides tight coupling to Guix.")
                   #t))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf-wrapper)
+     `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("texinfo" ,texinfo)
        ;; Gettext brings 'AC_LIB_LINKFLAGS_FROM_LIBS'.
@@ -1830,7 +1857,7 @@ users and in some situations.")
                 "1l6csncjqnx58c6c3wdl7rshnhk4pzhjq2q8lnkg483564s9w5py"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf-wrapper)
+     `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("gettext" ,gettext-minimal)
        ("libtool" ,libtool)
@@ -2166,29 +2193,17 @@ library.")
 (define-public guile-lib
   (package
     (name "guile-lib")
-    (version "0.2.6.1")
+    (version "0.2.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/guile-lib/guile-lib-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0aizxdif5dpch9cvs8zz5g8ds5s4xhfnwza2il5ji7fv2h7ks7bd"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; Work around miscompilation on Guile 3.0.0 at -O2:
-                  ;; <https://bugs.gnu.org/39251>.
-                  (substitute* "src/md5.scm"
-                    (("\\(define f-ash ash\\)")
-                     "(define f-ash (@ (guile) ash))\n")
-                    (("\\(define f-add \\+\\)")
-                     "(define f-add (@ (guile) +))\n"))
-                  #t))))
+                "1ph4z4a64m75in36pdb4dw63dzdq3hdgh16gq33q460jby23pvz4"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:make-flags
-       '("GUILE_AUTO_COMPILE=0")        ; to prevent guild errors
+     '(#:make-flags '("GUILE_AUTO_COMPILE=0") ;placate guild warnings
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-module-dir
@@ -2198,13 +2213,15 @@ library.")
                 "moddir = $(datadir)/guile/site/@GUILE_EFFECTIVE_VERSION@\n")
                (("^godir = ([[:graph:]]+)")
                 "godir = \
-$(libdir)/guile/@GUILE_EFFECTIVE_VERSION@/site-ccache\n"))
-             #t)))))
+$(libdir)/guile/@GUILE_EFFECTIVE_VERSION@/site-ccache\n")))))))
     (native-inputs
-     `(("guile" ,guile-3.0)
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gettext-minimal)
+       ("guile" ,guile-3.0)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("guile" ,guile-3.0)))
+     `(("guile" ,guile-3.0)))           ;for cross-compilation
     (home-page "https://www.nongnu.org/guile-lib/")
     (synopsis "Collection of useful Guile Scheme modules")
     (description
@@ -2212,7 +2229,6 @@ $(libdir)/guile/@GUILE_EFFECTIVE_VERSION@/site-ccache\n"))
 modules, allowing for people to cooperate integrating their generic Guile
 modules into a coherent library.  Think \"a down-scaled, limited-scope CPAN
 for Guile\".")
-
     ;; The whole is under GPLv3+, but some modules are under laxer
     ;; distribution terms such as LGPL and public domain.  See `COPYING' for
     ;; details.
@@ -2222,15 +2238,23 @@ for Guile\".")
   (package
     (inherit guile-lib)
     (name "guile2.0-lib")
-    (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("guile" ,guile-2.0)))))
+    (native-inputs
+     (alist-replace "guile" (list guile-2.0)
+                    (package-native-inputs guile-lib)))
+    (inputs
+     (alist-replace "guile" (list guile-2.0)
+                    (package-inputs guile-lib)))))
 
 (define-public guile2.2-lib
   (package
     (inherit guile-lib)
     (name "guile2.2-lib")
-    (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("guile" ,guile-2.2)))))
+    (native-inputs
+     (alist-replace "guile" (list guile-2.2)
+                    (package-native-inputs guile-lib)))
+    (inputs
+     (alist-replace "guile" (list guile-2.2)
+                    (package-inputs guile-lib)))))
 
 (define-public guile3.0-lib
   (deprecated-package "guile3.0-lib" guile-lib))
@@ -3254,6 +3278,13 @@ in C using Gtk+-3 and WebKitGtk.")
          (sha256
           (base32 "03ym14g9qhjqmryr5z065kynqm8yhmvnbs2djl6vp3i9cmqln8cl"))))
       (build-system gnu-build-system)
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("gettext" ,gettext-minimal)
+         ("libtool" ,libtool)
+         ("makeinfo" ,texinfo)
+         ("pkg-config" ,pkg-config)))
       (inputs
        `(("guile" ,guile-2.2)
          ("guile-lib" ,guile2.2-lib)
@@ -4232,6 +4263,9 @@ errors.")
                              ,@%gnu-build-system-modules)
          #:make-flags
          '("GUILE_AUTO_COMPILE=0")    ;to prevent guild warnings
+         ;; Parallel builds fail on powerpc64le-linux.
+         ;; See https://lists.nongnu.org/archive/html/guile-avahi-bugs/2021-01/msg00000.html
+         #:parallel-build? #f
          #:phases
          (modify-phases %standard-phases
            (add-before 'check 'fix-guile-avahi-file-name
@@ -4588,4 +4622,29 @@ a binary data serialization format.  CBOR is similar to JSON but serializes to
 binary which is smaller and faster to generate and parse.  This package provides
 a Guile implementation of CBOR.")
     (home-page "https://inqlab.net/git/guile-cbor.git")
+    (license license:gpl3+)))
+
+(define-public guile-quickcheck
+  (package
+    (name "guile-quickcheck")
+    (version "0.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://files.ngyro.com/"
+                                  "guile-quickcheck/guile-quickcheck-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "03mwi1l3354x52nar0zwhcm0x29yai9xjln4p4gbchwvx5dsr6fb"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("guile" ,guile-3.0)))
+    (home-page "https://ngyro.com/software/guile-quickcheck.html")
+    (synopsis "Randomized property-based testing for Guile")
+    (description "Guile-Quickcheck is a library for random testing of program
+properties inspired by ghc-quickcheck.  You can use it to express properties,
+which functions should satisfy, as Scheme code and then check whether they hold
+in a large number of randomly generated test cases.")
     (license license:gpl3+)))

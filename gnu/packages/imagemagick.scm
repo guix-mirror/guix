@@ -51,6 +51,7 @@
     ;; maintained. Don't update to 7 until we've made sure that the ImageMagick
     ;; users are ready for the 7-series API.
     (version "6.9.11-48")
+    (replacement imagemagick/fixed)
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://imagemagick/ImageMagick-"
@@ -84,7 +85,8 @@
                         (let ((doc (assoc-ref outputs "doc")))
                           (string-append "DOCUMENTATION_PATH = "
                                          doc "/share/doc/"
-                                         ,name "-" ,version "\n"))))
+                                         ,name "-"
+                                         ,(package-version this-package) "\n"))))
                      #t))
                   (add-before
                    'configure 'strip-configure-xml
@@ -125,6 +127,45 @@ and TIFF.  Use ImageMagick to resize, flip, mirror, rotate, distort, shear and
 transform images, adjust image colors, apply various special effects, or draw
 text, lines, polygons, ellipses and Bézier curves.")
     (license (license:fsf-free "http://www.imagemagick.org/script/license.php"))))
+
+(define-public imagemagick/fixed
+  (package
+    (inherit imagemagick)
+    (name "imagemagick")
+    ;; 'g' for 'guix', appended character to retain version length so grafting
+    ;; works properly.
+    (version "6.9.12-2g")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://imagemagick/ImageMagick-"
+                                  ;; Hardcode the version here since we had to
+                                  ;; change it above.
+                                  "6.9.12-2.tar.xz"))
+              (sha256
+               (base32
+                "17da5zihz58qm41y61sbvw626m5xfwr2nzszlikrvxyq1j1q7asa"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments imagemagick)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'install 'fix-compat-cheat-rename-so
+             (lambda* (#:key outputs #:allow-other-keys)
+               (with-directory-excursion
+                   (string-append (assoc-ref outputs "out")
+                                  "/lib")
+                 (symlink "libMagick++-6.Q16.so.9.0.0"
+                          "libMagick++-6.Q16.so.8.0.0")
+                 (symlink "libMagick++-6.Q16.so.9"
+                          "libMagick++-6.Q16.so.8")
+                 (symlink "libMagickCore-6.Q16.so.7.0.0"
+                          "libMagickCore-6.Q16.so.6.0.0")
+                 (symlink "libMagickCore-6.Q16.so.7"
+                          "libMagickCore-6.Q16.so.6")
+                 (symlink "libMagickWand-6.Q16.so.7.0.0"
+                          "libMagickWand-6.Q16.so.6.0.0")
+                 (symlink "libMagickWand-6.Q16.so.7"
+                          "libMagickWand-6.Q16.so.6"))
+               #t))))))))
 
 (define-public perl-image-magick
   (package

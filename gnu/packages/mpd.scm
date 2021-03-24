@@ -307,9 +307,6 @@ information about tracks being played to a scrobbler, such as Libre.FM.")
 interface for the Music Player Daemon.")
     (license license:lgpl3+)))
 
-(define-public python2-mpd2
-  (package-with-python2 python-mpd2))
-
 (define-public sonata
   (package
     (name "sonata")
@@ -444,7 +441,7 @@ support")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("eudev", eudev)
+     `(("eudev" ,eudev)
        ("ffmpeg" ,ffmpeg)
        ("libcdio-paranoia" ,libcdio-paranoia)
        ("libebur128" ,libebur128)

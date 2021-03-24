@@ -139,8 +139,7 @@ translated messages from the catalogs.  Nearly all GNU packages use Gettext.")
 ;; module when there's a #:renamer, and that module may be empty at that point
 ;; in case or circular dependencies.
 (define-public gnu-gettext
-  (package
-    (inherit gettext-minimal)
+  (package/inherit gettext-minimal
     (name "gettext")
     (arguments
      (substitute-keyword-arguments (package-arguments gettext-minimal)

@@ -81,6 +81,7 @@
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages video)
   #:use-module (gnu packages web)
   #:use-module (gnu packages webkit)
   #:use-module (gnu packages xdisorg)
@@ -580,6 +581,65 @@ compatible with ANSI-compliant Common Lisp implementations.")
 
 (define-public ecl-cl-ppcre
   (sbcl-package->ecl-package sbcl-cl-ppcre))
+
+(define-public sbcl-parse
+  (let ((commit "2351ee78acac065fcf10b8713d3f404e2e910786")
+        (revision "1"))
+    (package
+     (name "sbcl-parse")
+      (version (git-version "1.0" revision commit))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/massung/parse")
+             (commit commit)))
+       (file-name (git-file-name "parse" version))
+       (sha256
+        (base32 "0l18yabyh7jizm5lgvra0jxi8s1cfwghidi6ix1pyixjkdbjlmvy"))))
+     (build-system asdf-build-system/sbcl)
+     (home-page "https://github.com/massung/parse")
+     (synopsis "Monadic parsing for Common Lisp")
+     (description
+      "PARSE is a simple token parsing library for Common Lisp.")
+     (license license:asl2.0))))
+
+(define-public ecl-parse
+  (sbcl-package->ecl-package sbcl-parse))
+
+(define-public cl-parse
+  (sbcl-package->cl-source-package sbcl-parse))
+
+(define-public sbcl-re
+  (let ((commit "cfbc1f482970221e80d445080a188fd5c755cd2c")
+        (revision "1"))
+    (package
+     (name "sbcl-re")
+      (version (git-version "1.0" revision commit))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/massung/re")
+             (commit commit)))
+       (file-name (git-file-name "re" version))
+       (sha256
+        (base32 "1y2gq2sckspnq8118bix55p2j43dk9qn3p8a2rplp1ip2qxqbb1i"))))
+     (build-system asdf-build-system/sbcl)
+     (inputs
+      `(("parse" ,sbcl-parse)))
+     (home-page "https://github.com/massung/re")
+     (synopsis "Lua-style Pattern Matching for Common Lisp")
+     (description
+      "RE is a small, portable, lightweight, and quick, regular
+expression library for Common Lisp.  It is a non-recursive, backtracing VM.")
+     (license license:asl2.0))))
+
+(define-public ecl-re
+  (sbcl-package->ecl-package sbcl-re))
+
+(define-public cl-re
+  (sbcl-package->cl-source-package sbcl-re))
 
 (define-public sbcl-ubiquitous
   (let ((commit "35eb7bd9e1b3daee1705f6b41260775180cce8af")
@@ -4271,38 +4331,36 @@ addition, removal, and random selection.")
   (sbcl-package->ecl-package sbcl-map-set))
 
 (define-public sbcl-quri
-  (let ((commit "d7f2720568146c6674187f625f115925e6364a7f")
-        (revision "4"))
-    (package
-      (name "sbcl-quri")
-      (version (git-version "0.1.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/fukamachi/quri")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "0yrcvz5ksfr7x8yx741vp65il0fxxaskppq3iyk9bq895s1jn37w"))))
-      (build-system asdf-build-system/sbcl)
-      (arguments
-       ;; Test system must be loaded before, otherwise tests fail with:
-       ;; Component QURI-ASD::QURI-TEST not found, required by #<SYSTEM
-       ;; "quri">.
-       '(#:asd-systems '("quri-test"
-                         "quri")))
-      (native-inputs `(("sbcl-prove" ,sbcl-prove)))
-      (inputs `(("sbcl-babel" ,sbcl-babel)
-                ("sbcl-split-sequence" ,sbcl-split-sequence)
-                ("sbcl-cl-utilities" ,sbcl-cl-utilities)
-                ("sbcl-alexandria" ,sbcl-alexandria)))
-      (home-page "https://github.com/fukamachi/quri")
-      (synopsis "Yet another URI library for Common Lisp")
-      (description
-       "QURI (pronounced \"Q-ree\") is yet another URI library for Common
+  (package
+    (name "sbcl-quri")
+    (version "0.3.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/fukamachi/quri")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1pkvpiwwhx2fcknr7x47h7036ypkg8xzsskqbl5z315ipfmi8s2m"))))
+    (build-system asdf-build-system/sbcl)
+    (arguments
+     ;; Test system must be loaded before, otherwise tests fail with:
+     ;; Component QURI-ASD::QURI-TEST not found, required by #<SYSTEM
+     ;; "quri">.
+     '(#:asd-systems '("quri-test"
+                       "quri")))
+    (native-inputs `(("sbcl-prove" ,sbcl-prove)))
+    (inputs `(("sbcl-babel" ,sbcl-babel)
+              ("sbcl-split-sequence" ,sbcl-split-sequence)
+              ("sbcl-cl-utilities" ,sbcl-cl-utilities)
+              ("sbcl-alexandria" ,sbcl-alexandria)))
+    (home-page "https://github.com/fukamachi/quri")
+    (synopsis "Yet another URI library for Common Lisp")
+    (description
+     "QURI (pronounced \"Q-ree\") is yet another URI library for Common
 Lisp. It is intended to be a replacement of PURI.")
-      (license license:bsd-3))))
+    (license license:bsd-3)))
 
 (define-public cl-quri
   (sbcl-package->cl-source-package sbcl-quri))
@@ -4811,6 +4869,39 @@ Long Painful History of Time\".")
 (define-public ecl-local-time
   (sbcl-package->ecl-package sbcl-local-time))
 
+(define-public sbcl-chronicity
+  (package
+    (name "sbcl-chronicity")
+    (version "0.4.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/chaitanyagupta/chronicity")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name "chronicity" version))
+       (sha256
+        (base32 "0rzrl9is2v1aqbm0sym0qx3blnpd0bl13dkkmll6mb3983k2mkax"))))
+    (build-system asdf-build-system/sbcl)
+    (native-inputs
+     `(("lisp-unit" ,sbcl-lisp-unit)))
+    (inputs
+     `(("cl-interpol" ,sbcl-cl-interpol)
+       ("cl-ppcre" ,sbcl-cl-ppcre)
+       ("local-time" ,sbcl-local-time)))
+    (home-page "https://github.com/chaitanyagupta/chronicity")
+    (synopsis "Natural language date and time parser for Common Lisp")
+    (description
+     "CHRONICITY is Common Lisp natural language date and time parser inspired
+by Ruby's @code{Chronic}.")
+    (license license:bsd-3)))
+
+(define-public ecl-chronicity
+  (sbcl-package->ecl-package sbcl-chronicity))
+
+(define-public cl-chronicity
+  (sbcl-package->cl-source-package sbcl-chronicity))
+
 (define-public sbcl-trivial-mimes
   (let ((commit "a741fc2f567a4f86b853fd4677d75e62c03e51d9")
         (revision "2"))
@@ -5089,6 +5180,36 @@ macro for Common Lisp.")
 
 (define-public cl-printv
   (sbcl-package->cl-source-package sbcl-printv))
+
+(define-public sbcl-cl-debug
+  (let ((commit "b334280806104ee7f7d3aec666bf7e08d2f89b31")
+        (revision "1"))
+    (package
+     (name "sbcl-cl-debug")
+      (version (git-version "1.0.0" revision commit))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/kmx-io/cl-debug")
+             (commit commit)))
+       (file-name (git-file-name "cl-debug" version))
+       (sha256
+        (base32 "0w5vxbjsgr3zfpivdmghmhzxskfdvm1p34c8whwps2xlhypxsa78"))))
+     (build-system asdf-build-system/sbcl)
+     (home-page "https://github.com/kmx-io/cl-debug")
+     (synopsis "Common Lisp cross-package debugging facility")
+     (description
+      "CL-DEBUG provides a unified way to enable or disable debug-specific code.
+Debugging code can be enabled or disabled relative to program features denoted
+by either a symbol or a keyword.")
+     (license license:isc))))
+
+(define-public ecl-cl-debug
+  (sbcl-package->ecl-package sbcl-cl-debug))
+
+(define-public cl-debug
+  (sbcl-package->cl-source-package sbcl-cl-debug))
 
 (define-public sbcl-verbose
   (let ((commit "c5b7ecd465be61b35af17ef57564697b88397174")
@@ -7991,21 +8112,21 @@ intending to program in Lisp.")
   (sbcl-package->cl-source-package sbcl-antik))
 
 (define-public sbcl-cl-interpol
-  (let ((commit "1fd288d861db85bc4677cff3cdd6af75fda1afb4")
+  (let ((commit "70a1137f41dd8889004dbab9536b1adeac2497aa")
         (revision "1"))
     (package
       (name "sbcl-cl-interpol")
-      (version (git-version "0.2.6" revision commit))
+      (version (git-version "0.2.7" revision commit))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
                (url "https://github.com/edicl/cl-interpol")
                (commit commit)))
-         (file-name (git-file-name name version))
+         (file-name (git-file-name "cl-interpol" version))
          (sha256
           (base32
-           "1hnikak52hmcq1r5f616m6qq1108qnkw80pja950nv1fq5p0ppjn"))))
+           "1kr00zf62m7la7rxa2m5w49r9cyzamc106hvjcc8ffmi7a4jw490"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("cl-unicode" ,sbcl-cl-unicode)
@@ -9000,20 +9121,20 @@ for reading and writing JPEG image files.")
   (sbcl-package->ecl-package sbcl-cl-jpeg))
 
 (define-public sbcl-nodgui
-  (let ((commit "bc59ed9b787dfc9e68ae3bd7f7e8507c5c619212")
+  (let ((commit "4a9c2e7714b278fbe97d198c56f54ea87290001d")
         (revision "1"))
     (package
       (name "sbcl-nodgui")
-      (version (git-version "0.0.5" revision commit))
+      (version (git-version "0.1.1" revision commit))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
                (url "https://notabug.org/cage/nodgui.git")
                (commit commit)))
-         (file-name (git-file-name name version))
+         (file-name (git-file-name "nodgui" version))
          (sha256
-          (base32 "0xx0dk54d882i598ydnwmy7mnfk0b7vib3ddsgpqxhjck1rwq8l8"))))
+          (base32 "1vgzzw459h32v2mi41cia6i940jqmvxlc8w3xj3516hbc2mqkaib"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("alexandria" ,sbcl-alexandria)
@@ -12048,12 +12169,12 @@ hu.dwim systems.")
   (sbcl-package->ecl-package sbcl-hu.dwim.common))
 
 (define-public sbcl-hu.dwim.defclass-star
-  (let ((commit "39d458f1b1bc830d1f5e18a6a35bf0e96a2cfd61"))
+  (let ((commit "3086878a485074f9b2913c58267a9b764cd632fd"))
     (package
       (name "sbcl-hu.dwim.defclass-star")
       ;; We used to set version from the date when it was a darcs repo, so we
       ;; keep the year so that package gets updated on previous installs.
-      (version (git-version "2021" "1" commit))
+      (version (git-version "2021" "2" commit))
       (source
        (origin
          (method git-fetch)
@@ -12062,7 +12183,7 @@ hu.dwim systems.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0hfkq2wad98vkyxdg1wh18y86d9w9yqkm8lxkk96szvpwymm7lmq"))))
+          (base32 "19ipds9r71qymfdp4izg0l7zmvinp06adr8rdalhaq7v7mzpg83z"))))
       (build-system asdf-build-system/sbcl)
       (native-inputs
        `( ;; These 2 inputs are only needed tests which are disabled, see below.
@@ -15062,3 +15183,162 @@ Lisp.")
 
 (define-public cl-percent-encoding
   (sbcl-package->cl-source-package sbcl-percent-encoding))
+
+(define-public sbcl-cl-mount-info
+  (let ((commit "2024f5037a7f63db3e3587dc9972cd7b9318f06b")
+        (revision "1"))
+    (package
+     (name "sbcl-cl-mount-info")
+     (version (git-version "0.0.1" revision commit))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://notabug.org/cage/cl-mount-info.git")
+             (commit commit)))
+       (file-name (git-file-name "cl-mount-info" version))
+       (sha256
+        (base32 "0vza9gj9q42nzb5v8aj22lmn4aqx9vrddsb5a343nbwfz89hbh9x"))))
+     (build-system asdf-build-system/sbcl)
+     (inputs
+      `(("alexandria" ,sbcl-alexandria)
+        ("cffi" ,sbcl-cffi)
+        ("cl-ppcre" ,sbcl-cl-ppcre)))
+     (home-page "https://notabug.org/cage/cl-mount-info.git")
+     (synopsis "Library to get information about mounted filesystems")
+     (description
+      "CL-MOUNT-INFO is a Common Lisp wrapper around @code{getmntent(3)} and
+related C functions to get information about the mounted file system.")
+     (license license:lgpl3))))
+
+(define-public ecl-cl-mount-info
+  (sbcl-package->ecl-package sbcl-cl-mount-info))
+
+(define-public cl-mount-info
+  (sbcl-package->cl-source-package sbcl-cl-mount-info))
+
+(define-public sbcl-cl-diskspace
+  (let ((commit "2dce2d0387d58221c452bd76c7b9b7a7de81ef55")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-diskspace")
+      (version (git-version "0.3.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/muyinliu/cl-diskspace")
+               (commit commit)))
+         (file-name (git-file-name "cl-diskspace" version))
+         (sha256
+          (base32 "0l19hxqw6b8i5i1jdbr45k1xib9axcwdagsp3y8wkb35g6wwc0s7"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "src/unix/cl-diskspace-list-all-disks-with-df.lisp"
+                 (("grep")
+                  (string-append (assoc-ref inputs "grep") "/bin/grep")))
+               (substitute* "src/unix/cl-diskspace-list-all-disks-with-df.lisp"
+                 (("/bin/df")
+                  (which "df")))
+               #t)))))
+      (inputs
+       `(("cl-ppcre" ,sbcl-cl-ppcre)
+         ("cffi" ,sbcl-cffi)
+         ("grep" ,grep)))
+      (home-page "https://github.com/muyinliu/cl-diskspace")
+      (synopsis "Disk space information library for Common Lisp")
+      (description
+       "CL-DISKSPACE is a Common Lisp library to list disks with the command
+line tool @code{df} and get disk space information using @code{statvfs}.")
+      (license license:isc))))
+
+(define-public ecl-cl-diskspace
+  (sbcl-package->ecl-package sbcl-cl-diskspace))
+
+(define-public cl-diskspace
+  (sbcl-package->cl-source-package sbcl-cl-diskspace))
+
+(define-public sbcl-fof
+  (package
+    (name "sbcl-fof")
+    (version "0.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/ambrevar/fof")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1xdnlqrjfmgdgw58avkci881iwarv4am2vq09b14pfifmpxpzv10"))))
+    (build-system asdf-build-system/sbcl)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "ffprobe.lisp"
+               (("\\(defvar \\*ffprobe-command\\* \"ffprobe\"\\)")
+                (format #f "(defvar *ffprobe-command* \"~a/bin/ffprobe\")"
+                        (assoc-ref inputs "ffmpeg") )))
+             #t)))))
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("hu.dwim.defclass-star" ,sbcl-hu.dwim.defclass-star)
+       ("local-time" ,sbcl-local-time)
+       ("magicffi" ,sbcl-magicffi)
+       ("osicat" ,sbcl-osicat)
+       ("serapeum" ,sbcl-serapeum)
+       ("str" ,sbcl-cl-str)
+       ("trivia" ,sbcl-trivia)
+       ("trivial-package-local-nicknames" ,sbcl-trivial-package-local-nicknames)
+       ;; Non-CL deps:
+       ("ffmpeg" ,ffmpeg)))
+    (home-page "https://gitlab.com/ambrevar/fof")
+    (synopsis "File object finder library for Common Lisp")
+    (description
+     "This library enable rapid file search, inspection and manipulation
+straight from the REPL.
+It aims at replacing Unix tools such as @code{find} or @code{du}.
+It also offers a replacement to the @code{pathname} Common Lisp API.
+Slot writers which commit changes to disk, e.g. permissions, modification
+time, etc.")
+    (license license:gpl3+)))
+
+(define-public ecl-fof
+  (sbcl-package->ecl-package sbcl-fof))
+
+(define-public cl-fof
+  (sbcl-package->cl-source-package sbcl-fof))
+
+(define-public sbcl-computable-reals
+  (let ((commit "fdc73d75e79d0a4ce6d01c822c950ae2eb137d39"))
+    (package
+      (name "sbcl-computable-reals")
+      (version (git-version "1.1.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/stylewarning/computable-reals")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0f12axi53x14l12dgf4a1lfq3p1fx7fh7sjfc0db3lk88ph9qfwl"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/stylewarning/computable-reals")
+      (synopsis "Arbitrary-precision, re-computing real-numbers in Common Lisp")
+      (description
+       "This library provides arbitrary precision (floating point) real
+numbers in Common Lisp.")
+      (license license:bsd-3))))
+
+(define-public ecl-computable-reals
+  (sbcl-package->ecl-package sbcl-computable-reals))
+
+(define-public cl-computable-reals
+  (sbcl-package->cl-source-package sbcl-computable-reals))

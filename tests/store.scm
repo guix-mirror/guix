@@ -50,7 +50,7 @@
   (open-connection-for-tests))
 
 (define %shell
-  (or (getenv "SHELL") (getenv "CONFIG_SHELL")))
+  (or (getenv "SHELL") (getenv "CONFIG_SHELL") "/bin/sh"))
 
 
 (test-begin "store")

@@ -415,13 +415,13 @@ announcement.")
 (define-public ruby-rake-compiler
   (package
     (name "ruby-rake-compiler")
-    (version "1.1.0")
+    (version "1.1.1")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "rake-compiler" version))
               (sha256
                (base32
-                "0l4hg21v0phfrfsc2hilgmwvn2imxr0byqh8dv16bya1s5d3km0q"))))
+                "11sxgw10jrd6a4irb51jjwam9wikixn5kss11pw4b80cmh32yvpf"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; needs cucumber
@@ -6112,13 +6112,13 @@ interface so that Terraform can be more easily invoked from Ruby code.")
 (define-public ruby-pstree
   (package
     (name "ruby-pstree")
-    (version "0.1.0")
+    (version "0.3.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "pstree" version))
               (sha256
                (base32
-                "1mig1sv5qx1cdyhjaipy8jlh9j8pnja04vprrzihyfr54x0215p1"))))
+                "0ld3ng37y92kv9vqnachw1l3n07hsc8hrnjs9d840liw0mysf1vp"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("ruby-gem-hadar" ,ruby-gem-hadar)
@@ -7342,7 +7342,6 @@ run.")
              #t)))))
     (native-inputs
      `(("ruby-bump" ,ruby-bump)
-       ("ruby-memory-profiler" ,ruby-memory-profiler)
        ("ruby-pry" ,ruby-pry)
        ("ruby-rake" ,ruby-rake)
        ("ruby-rspec" ,ruby-rspec)
@@ -7807,8 +7806,6 @@ Profiling multiple threads simultaneously is supported.
          (base32
           "07yqv11q68xg2fqkrhs6ysngryk8b9zq6qzh24rgx9xqv6qfnj0w"))))
     (build-system ruby-build-system)
-    (native-inputs
-     `(("ruby-rake" ,ruby-rake)))
     (synopsis "Memory profiling routines for Ruby")
     (description
      "This package provides memory profiling routines for Ruby.")
@@ -11057,13 +11054,13 @@ functionality from Prawn.")
 (define-public ruby-kramdown
   (package
     (name "ruby-kramdown")
-    (version "2.3.0")
+    (version "2.3.1")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "kramdown" version))
               (sha256
                (base32
-                "1vmw752c26ny2jwl0npn0gbyqwgz4hdmlpxnsld9qi9xhk5b1qh7"))))
+                "0jdbcjv4v7sj888bv3vc6d1dg4ackkh7ywlmn9ln2g9alk7kisar"))))
     (build-system ruby-build-system)
     (arguments `(#:tests? #f)); FIXME: some test failures
     (native-inputs

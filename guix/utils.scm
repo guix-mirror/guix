@@ -10,6 +10,7 @@
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
+;;; Copyright © 2021 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -48,6 +49,7 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
   #:use-module ((ice-9 iconv) #:prefix iconv:)
+  #:autoload   (zlib) (make-zlib-input-port make-zlib-output-port)
   #:use-module (system foreign)
   #:re-export (<location>                         ;for backwards compatibility
                location
@@ -83,6 +85,7 @@
             target-arm32?
             target-aarch64?
             target-arm?
+            target-powerpc?
             target-64bit?
             cc-for-target
             cxx-for-target
@@ -234,8 +237,9 @@ a symbol such as 'xz."
   (match compression
     ((or #f 'none) (values input '()))
     ('bzip2        (filtered-port `(,%bzip2 "-dc") input))
-    ('xz           (filtered-port `(,%xz "-dc" ,@(%xz-parallel-args)) input))
-    ('gzip         (filtered-port `(,%gzip "-dc") input))
+    ('xz           (filtered-port `(,%xz "-dc") input))
+    ('gzip         (values (make-zlib-input-port input #:format 'gzip)
+                           '()))
     ('lzip         (values (lzip-port 'make-lzip-input-port input)
                            '()))
     ('zstd         (values (zstd-port 'make-zstd-input-port input)
@@ -307,9 +311,9 @@ program--e.g., '(\"--fast\")."
   (match compression
     ((or #f 'none) (values output '()))
     ('bzip2        (filtered-output-port `(,%bzip2 "-c" ,@options) output))
-    ('xz           (filtered-output-port `(,%xz "-c" ,@(%xz-parallel-args)
-                                                ,@options) output))
-    ('gzip         (filtered-output-port `(,%gzip "-c" ,@options) output))
+    ('xz           (filtered-output-port `(,%xz "-c" ,@options) output))
+    ('gzip         (values (make-zlib-output-port output #:format 'gzip)
+                           '()))
     ('lzip         (values (lzip-port 'make-lzip-output-port output)
                            '()))
     ('zstd         (values (zstd-port 'make-zstd-output-port output)
@@ -555,9 +559,13 @@ a character other than '@'."
                                              (%current-system))))
   (or (target-arm32? target) (target-aarch64? target)))
 
+(define* (target-powerpc? #:optional (target (or (%current-target-system)
+                                                 (%current-system))))
+  (string-prefix? "powerpc" target))
+
 (define* (target-64bit? #:optional (system (or (%current-target-system)
                                                (%current-system))))
-  (any (cut string-prefix? <> system) '("x86_64" "aarch64" "mips64" "ppc64")))
+  (any (cut string-prefix? <> system) '("x86_64" "aarch64" "mips64" "powerpc64")))
 
 (define* (cc-for-target #:optional (target (%current-target-system)))
   (if target

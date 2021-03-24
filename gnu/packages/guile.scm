@@ -44,6 +44,7 @@
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages gperf)
   #:use-module (gnu packages hurd)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages libunistring)
@@ -318,9 +319,6 @@ without requiring the source code to be rewritten.")
   ;; The latest 3.0.x version.
   guile-3.0)
 
-(define-public guile-next
-  (deprecated-package "guile-next" guile-3.0))
-
 (define-public guile-3.0/libgc-7
   ;; Using libgc-7 avoid crashes that can occur, particularly when loading
   ;; data in to the Guix Data Service:
@@ -341,6 +339,44 @@ without requiring the source code to be rewritten.")
                   (timeout . 72000)             ;20 hours
                   (max-silent-time . 36000))))) ;10 hours (needed on ARM
                                                 ;  when heavily loaded)
+
+(define-public guile-next
+  (let ((version "3.0.5")
+        (revision "0")
+        (commit "91547abf54d5e0795afda2781259ab8923eb527b"))
+    (package
+      (inherit guile-3.0)
+      (name "guile-next")
+      (version (git-version version revision commit))
+      (source (origin
+                ;; The main goal here is to allow for '--with-branch'.
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://git.savannah.gnu.org/git/guile.git")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "09i1c77h2shygylfk0av31jsc1my6zjl230b2cx6vyl58q8c0cqy"))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments guile-3.0)
+         ((#:phases phases '%standard-phases)
+          `(modify-phases ,phases
+             (add-before 'check 'skip-failing-tests
+               (lambda _
+                 (substitute* "test-suite/standalone/test-out-of-memory"
+                   (("!#") "!#\n\n(exit 77)\n"))
+                 (delete-file "test-suite/tests/version.test")
+                 #t))))))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("libtool" ,libtool)
+         ("flex" ,flex)
+         ("gettext" ,gnu-gettext)
+         ("texinfo" ,texinfo)
+         ("gperf" ,gperf)
+         ,@(package-native-inputs guile-3.0)))
+      (synopsis "Development version of GNU Guile"))))
 
 (define* (make-guile-readline guile #:optional (name "guile-readline"))
   (package
@@ -683,7 +719,7 @@ Guile's foreign function interface.")
 (define-public guile-bytestructures
   (package
     (name "guile-bytestructures")
-    (version "1.0.9")
+    (version "1.0.10")
     (home-page "https://github.com/TaylanUB/scheme-bytestructures")
     (source (origin
               (method git-fetch)
@@ -693,7 +729,7 @@ Guile's foreign function interface.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0r59sqrvwbsknw21bf44bppi6wdhd2rl2v5dw9i2vij3v8w7pgkm"))))
+                "14k50jln32kkxv41hvsdgjkkfj6xlv06vc1caz01qkgk1fzh72nk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags '("GUILE_AUTO_COMPILE=0")     ;to prevent guild warnings
@@ -773,7 +809,7 @@ manipulate repositories of the Git version control system.")
 (define-public guile-zlib
   (package
     (name "guile-zlib")
-    (version "0.0.1")
+    (version "0.1.0")
     (source
      (origin
        ;; XXX: Do not use "git-fetch" method here that would create and
@@ -781,12 +817,13 @@ manipulate repositories of the Git version control system.")
        ;; in the same method.
        (method url-fetch)
        (uri
-        (string-append "https://notabug.org/guile-zlib/guile-zlib/archive/"
+        (string-append "https://notabug.org/guile-zlib/guile-zlib/archive/v"
                        version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
+        ;; content hash: 1ip18nzwnczqyhn9cpzxkm9vzpi5fz5sy96cgjhmp7cwhnkmv6zv
         (base32
-         "1caz6cbl6sg5567nk68z88rshp0m26zmb0a9ry1jkc1ivpk0n47i"))))
+         "1safz7rrbdf1d98x3lgx5v74kivpyf9n1v6pdyy22vd0f2sjdir5"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags

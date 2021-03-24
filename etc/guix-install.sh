@@ -8,6 +8,7 @@
 # Copyright © 2020 Simon Tournier <zimon.toutoune@gmail.com>
 # Copyright © 2020 Daniel Brooks <db48x@db48x.net>
 # Copyright © 2021 Jakub Kądziołka <kuba@kadziolka.net>
+# Copyright © 2021 Chris Marusich <cmmarusich@gmail.com>
 #
 # This file is part of GNU Guix.
 #
@@ -186,6 +187,9 @@ chk_sys_arch()
             ;;
         armv7l)
             local arch=armhf
+            ;;
+        ppc64le | powerpc64le)
+            local arch=powerpc64le
             ;;
         *)
             _err "${ERR}Unsupported CPU type: ${arch}"

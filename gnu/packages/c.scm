@@ -10,7 +10,7 @@
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020 Katherine Cox-Buday <cox.katherine.e@gmail.com>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
-;;; Copyright © 2020 Greg Hogan <code@greghogan.com>
+;;; Copyright © 2020, 2021 Greg Hogan <code@greghogan.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -52,6 +52,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages xml))
 
 (define-public tcc
@@ -447,7 +448,7 @@ more, like escaping special characters.")
 (define-public libfastjson
   (package
     (name "libfastjson")
-    (version "0.99.8")
+    (version "0.99.9")
     (source
      (origin
        (method git-fetch)
@@ -456,8 +457,7 @@ more, like escaping special characters.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0qhs0g9slj3p0v2z4s3cnsx44msrlb4k78ljg7714qiziqbrbwyl"))))
+        (base32 "12rqcdqxazw8czzxbivdapdgj19pcswpw1jp2915sxbljis83g6q"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -546,7 +546,7 @@ portability.")
 (define-public aws-c-common
   (package
     (name "aws-c-common")
-    (version "0.4.63")
+    (version "0.5.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -555,8 +555,11 @@ portability.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "16bc6fn1gq3nqcrzgpi2kjphq7xkkr73aljakrg89ysm6hyzyim9"))))
+                "0rd2qzaa9mmn5f6f2bl1wgv54f17pqx3vwyy9f8ylh59qfnilpmg"))))
     (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags
+       '("-DBUILD_SHARED_LIBS=ON")))
     (synopsis "Amazon Web Services core C library")
     (description
      "This library provides common C99 primitives, configuration, data
@@ -567,7 +570,7 @@ portability.")
 (define-public aws-checksums
   (package
     (name "aws-checksums")
-    (version "0.1.10")
+    (version "0.1.11")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -576,9 +579,12 @@ portability.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1f9scl5734pgjlsixspwljrrlndzhllwlfygdcr1gx5p0za08zjb"))
+                "1pjs31x3cq9wyw511y00kksz660m8im9zxk30hid8iwlilcbnyvx"))
               (patches (search-patches "aws-checksums-cmake-prefix.patch"))))
     (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags
+       '("-DBUILD_SHARED_LIBS=ON")))
     (inputs
      `(("aws-c-common" ,aws-c-common)))
     (synopsis "Amazon Web Services checksum library")
@@ -591,7 +597,7 @@ with fallback to efficient C99 software implementations.")
 (define-public aws-c-event-stream
   (package
     (name "aws-c-event-stream")
-    (version "0.1.6")
+    (version "0.2.7")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -600,17 +606,83 @@ with fallback to efficient C99 software implementations.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1vl9ainc4klv0g9gk1iv4833bsllni6jxn6mwb0fnv2dnlz7zv9q"))
+                "0xwwr7gdgfrphk6j7vk12rgimfim6m4qnj6hg8hgg16cplhvsfzh"))
               (patches (search-patches "aws-c-event-stream-cmake-prefix.patch"))))
     (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags
+       '("-DBUILD_SHARED_LIBS=ON")))
     (propagated-inputs
-     `(("aws-c-common" ,aws-c-common)))
+     `(("aws-c-common" ,aws-c-common)
+       ("aws-c-io" ,aws-c-io)
+       ("aws-checksums" ,aws-checksums)))
     (inputs
-     `(("aws-checksums" ,aws-checksums)))
+     `(("aws-c-cal" ,aws-c-cal)
+       ("s2n" ,s2n)))
     (synopsis "Amazon Web Services client-server message format library")
     (description
      "This library is a C99 implementation for @acronym{AWS,Amazon Web Services}
 event stream encoding, a binary format for bidirectional client-server
 communication.")
     (home-page "https://github.com/awslabs/aws-c-event-stream")
+    (license license:asl2.0)))
+
+(define-public aws-c-io
+  (package
+    (name "aws-c-io")
+    (version "0.9.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url (string-append "https://github.com/awslabs/" name))
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1vwyf1pm0hhcypyjc9xh9x7y50ic79xlbck1yf9d9wz0bnh43p7v"))
+              (patches
+               (search-patches
+                "aws-c-io-cmake-prefix.patch"
+                "aws-c-io-disable-networking-tests.patch"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags
+       '("-DBUILD_SHARED_LIBS=ON")))
+    (propagated-inputs
+     `(("aws-c-cal" ,aws-c-cal)
+       ("aws-c-common" ,aws-c-common)
+       ("s2n" ,s2n)))
+    (synopsis "Event driven framework for implementing application protocols")
+    (description "This library provides a C99 framework for constructing
+event-driven, asynchronous network application protocols.")
+    (home-page "https://github.com/awslabs/aws-c-io")
+    (license license:asl2.0)))
+
+(define-public aws-c-cal
+  (package
+    (name "aws-c-cal")
+    (version "0.4.5")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url (string-append "https://github.com/awslabs/" name))
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "04acra1mnzw9q7jycs5966akfbgnx96hkrq90nq0dhw8pvarlyv6"))
+              (patches (search-patches "aws-c-cal-cmake-prefix.patch"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags
+       '("-DBUILD_SHARED_LIBS=ON")))
+    (propagated-inputs
+     `(("aws-c-common" ,aws-c-common)))
+    (inputs
+     `(("openssl" ,openssl)
+       ("openssl:static" ,openssl "static")))
+    (synopsis "Amazon Web Services Crypto Abstraction Layer")
+    (description "This library provides a C99 wrapper for hash, HMAC, and ECC
+cryptographic primitives for the @acronym{AWS,Amazon Web Services} SDK.")
+    (home-page "https://github.com/awslabs/aws-c-cal")
     (license license:asl2.0)))

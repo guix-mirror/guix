@@ -2,6 +2,7 @@ dnl GNU Guix --- Functional package management for GNU
 dnl Copyright © 2012, 2013, 2014, 2015, 2016, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 dnl Copyright © 2014 Mark H Weaver <mhw@netris.org>
 dnl Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+dnl Copyright © 2021 Chris Marusich <cmmarusich@gmail.com>
 dnl
 dnl This file is part of GNU Guix.
 dnl
@@ -88,7 +89,7 @@ courageous and port the GNU System distribution to it (see
   # Currently only Linux-based systems are supported, and only on some
   # platforms.
   case "$guix_system" in
-    x86_64-linux|i686-linux|armhf-linux|aarch64-linux)
+    x86_64-linux|i686-linux|armhf-linux|aarch64-linux|powerpc64le-linux)
       ;;
     *)
       if test "x$guix_courageous" = "xyes"; then
@@ -223,6 +224,24 @@ AC_DEFUN([GUIX_CHECK_GUILE_GIT], [
        guix_cv_have_recent_guile_git="yes"
      else
        guix_cv_have_recent_guile_git="no"
+     fi])
+])
+
+dnl GUIX_CHECK_GUILE_ZLIB
+dnl
+dnl Check whether a recent-enough Guile-zlib is available.
+AC_DEFUN([GUIX_CHECK_GUILE_ZLIB], [
+  dnl Check whether we're using Guile-zlib 0.1.0 or later.
+  dnl 0.1.0 introduced the 'make-zlib-input-port' and related code.
+  AC_CACHE_CHECK([whether Guile-zlib is available and recent enough],
+    [guix_cv_have_recent_guile_zlib],
+    [GUILE_CHECK([retval],
+      [(use-modules (zlib))
+       make-zlib-input-port])
+     if test "$retval" = 0; then
+       guix_cv_have_recent_guile_zlib="yes"
+     else
+       guix_cv_have_recent_guile_zlib="no"
      fi])
 ])
 

@@ -152,7 +152,7 @@ and many other languages.")
              #t)))))))
 
 (define-public wxwidgets-gtk2
-  (package (inherit wxwidgets)
+  (package/inherit wxwidgets
            (inputs `(("gtk+" ,gtk+-2)
                      ,@(alist-delete
                         "gtk+"
@@ -183,7 +183,7 @@ and many other languages.")
                `(cons "--enable-mediactrl" ,flags))))))
 
 (define-public wxwidgets-gtk2-3.1
-  (package (inherit wxwidgets-3.1)
+  (package/inherit wxwidgets-3.1
            (inputs `(("gtk+" ,gtk+-2)
                      ,@(alist-delete
                         "gtk+"

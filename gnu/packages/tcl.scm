@@ -95,6 +95,56 @@
     (description "The Tcl (Tool Command Language) scripting language.")
     (license license:tcl/tk)))
 
+(define-public itcl
+  (package
+    (name "itcl")
+    (version "4.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://sourceforge/incrtcl/%5Bincr%20Tcl_Tk%5D-4-source/itcl%20"
+             version "/itcl" version ".tar.gz"))
+       (file-name (string-append "incrtcl-" version ".tar.gz"))
+       (sha256
+        (base32 "0w28v0zaraxcq1s9pa6cihqqwqvvwfgz275lks7w4gl7hxjxmasw"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list
+        (string-append
+         "--exec-prefix=" (assoc-ref %outputs "out"))
+        (string-append
+         "--with-tclinclude=" (assoc-ref %build-inputs "tcl") "/include")
+        (string-append
+         "--with-tcl=" (assoc-ref %build-inputs "tcl") "/lib"))
+       #:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'cleanup-bin-and-lib
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; NOTE: (Sharlatan-20210213T204336+0000): libraries appearer in
+             ;; "out/lib/itcl{{version}}" and there are no binaries, some extra
+             ;; rename and remove spells are to be applied.
+             (let ((out (assoc-ref outputs "out")))
+               (rmdir
+                (string-append out "/bin"))
+               (rename-file
+                (string-append out "/lib/itcl" ,version) (string-append out "/libtmp"))
+               (rename-file
+                (string-append out "/libtmp") (string-append out "/lib")))
+             #t)))))
+    (native-inputs
+     `(("tcl" ,tcl)))
+    (inputs
+     `(("tcllib" ,tcllib)))
+    (home-page "http://incrtcl.sourceforge.net/")
+    (synopsis "Object Oriented programming (OOP) extension for Tcl")
+    (description
+     "[incr Tcl] is a widely used object-oriented system for Tcl.  The name is
+a play on C++, and [incr Tcl] provides a similar object model, including
+multiple inheritence and public and private classes and variables.")
+    (license license:public-domain)))
 
 (define-public expect
   (package

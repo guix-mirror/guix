@@ -13,6 +13,7 @@
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2021 qblade <qblade@protonmail.com>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -313,6 +314,30 @@ resembles Python.")
                (base32
                 "19cjy24mfaswxyvqmns6rd7hx05ybqb663zlgklspfr8l4jjmvbb"))))))
 
+(define-public meson-next
+  (package
+    (inherit meson)
+    (version "0.57.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/mesonbuild/meson/"
+                                  "releases/download/" version  "/meson-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "19n8alcpzv6npgp27iqljkmvdmr7s2c7zm8y997j1nlvpa1cgqbj"))))))
+
+(define-public meson-for-build
+  (package
+    (inherit meson)
+    (name "meson-for-build")
+    (source (origin
+              (inherit (package-source meson))
+              (patches (search-patches "meson-for-build-rpath.patch"))))
+
+    ;; People should probably install "meson", not "meson-for-build".
+    (properties `((hidden? . #t)))))
+
 (define-public premake4
   (package
     (name "premake")
@@ -451,7 +476,7 @@ a build worked by accident.")
 (define-public osc
   (package
     (name "osc")
-    (version "0.165.2")
+    (version "0.172.0")
     (source
      (origin
        (method git-fetch)
@@ -460,7 +485,7 @@ a build worked by accident.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0yjwvbvv9fgkpiyvrag89zxchyn3nbgp9jz0wn5p0z9450zwfyz6"))))
+        (base32 "1sqdnkka3c6b6hwnrmlwrgy7w62cp8raq8mph9pgd2lydzzbvwlp"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -474,6 +499,8 @@ a build worked by accident.")
                 (string-append bin "osc-wrapper.py")
                 (string-append bin "osc"))
                #t))))))
+    (native-inputs
+     `(("python-chardet" ,python-chardet)))
     (inputs
      `(("python-m2crypto" ,python-m2crypto)
        ("python-pycurl" ,python-pycurl)

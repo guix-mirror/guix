@@ -61,9 +61,6 @@
 
 ;; Test the linter.
 
-;; Avoid collisions with other tests.
-(%http-server-port 9999)
-
 (define %null-sha256
   ;; SHA256 of the empty string.
   (base32
@@ -500,16 +497,16 @@
                (home-page "http://does-not-exist"))))
     (warning-contains? "domain not found" (check-home-page pkg))))
 
-(test-skip (if (http-server-can-listen?) 0 1))
-(test-equal "home-page: Connection refused"
-  "URI http://localhost:9999/foo/bar unreachable: Connection refused"
-  (let ((pkg (package
-               (inherit (dummy-package "x"))
-               (home-page (%local-url)))))
-    (single-lint-warning-message
-     (check-home-page pkg))))
+(parameterize ((%http-server-port 9999))
+  ;; TODO skip this test if some process is currently listening at 9999
+  (test-equal "home-page: Connection refused"
+    "URI http://localhost:9999/foo/bar unreachable: Connection refused"
+    (let ((pkg (package
+                 (inherit (dummy-package "x"))
+                 (home-page (%local-url)))))
+      (single-lint-warning-message
+       (check-home-page pkg)))))
 
-(test-skip (if (http-server-can-listen?) 0 1))
 (test-equal "home-page: 200"
   '()
   (with-http-server `((200 ,%long-string))
@@ -518,10 +515,10 @@
                  (home-page (%local-url)))))
       (check-home-page pkg))))
 
-(test-skip (if (http-server-can-listen?) 0 1))
-(test-equal "home-page: 200 but short length"
-  "URI http://localhost:9999/foo/bar returned suspiciously small file (18 bytes)"
-  (with-http-server `((200 "This is too small."))
+(with-http-server `((200 "This is too small."))
+  (test-equal "home-page: 200 but short length"
+    (format #f "URI ~a returned suspiciously small file (18 bytes)"
+            (%local-url))
     (let ((pkg (package
                  (inherit (dummy-package "x"))
                  (home-page (%local-url)))))
@@ -529,54 +526,51 @@
       (single-lint-warning-message
        (check-home-page pkg)))))
 
-(test-skip (if (http-server-can-listen?) 0 1))
-(test-equal "home-page: 404"
-  "URI http://localhost:9999/foo/bar not reachable: 404 (\"Such is life\")"
-  (with-http-server `((404 ,%long-string))
+(with-http-server `((404 ,%long-string))
+  (test-equal "home-page: 404"
+    (format #f "URI ~a not reachable: 404 (\"Such is life\")" (%local-url))
     (let ((pkg (package
                  (inherit (dummy-package "x"))
                  (home-page (%local-url)))))
       (single-lint-warning-message
        (check-home-page pkg)))))
 
-(test-skip (if (http-server-can-listen?) 0 1))
-(test-equal "home-page: 301, invalid"
-  "invalid permanent redirect from http://localhost:9999/foo/bar"
-  (with-http-server `((301 ,%long-string))
+(with-http-server `((301 ,%long-string))
+  (test-equal "home-page: 301, invalid"
+    (format #f "invalid permanent redirect from ~a" (%local-url))
     (let ((pkg (package
                  (inherit (dummy-package "x"))
                  (home-page (%local-url)))))
       (single-lint-warning-message
        (check-home-page pkg)))))
 
-(test-skip (if (http-server-can-listen?) 0 1))
-(test-equal "home-page: 301 -> 200"
-  "permanent redirect from http://localhost:10000/foo/bar to http://localhost:9999/foo/bar"
-  (with-http-server `((200 ,%long-string))
-    (let* ((initial-url (%local-url))
-           (redirect    (build-response #:code 301
-                                        #:headers
-                                        `((location
-                                           . ,(string->uri initial-url))))))
-      (parameterize ((%http-server-port (+ 1 (%http-server-port))))
-        (with-http-server `((,redirect ""))
+(with-http-server `((200 ,%long-string))
+  (let* ((initial-url (%local-url))
+         (redirect (build-response #:code 301
+                                   #:headers
+                                   `((location
+                                      . ,(string->uri initial-url))))))
+    (parameterize ((%http-server-port 0))
+      (with-http-server `((,redirect ""))
+        (test-equal "home-page: 301 -> 200"
+          (format #f "permanent redirect from ~a to ~a"
+                  (%local-url) initial-url)
           (let ((pkg (package
                        (inherit (dummy-package "x"))
                        (home-page (%local-url)))))
             (single-lint-warning-message
              (check-home-page pkg))))))))
 
-(test-skip (if (http-server-can-listen?) 0 1))
-(test-equal "home-page: 301 -> 404"
-  "URI http://localhost:10000/foo/bar not reachable: 404 (\"Such is life\")"
-  (with-http-server '((404 "booh!"))
-    (let* ((initial-url (%local-url))
-           (redirect    (build-response #:code 301
-                                        #:headers
-                                        `((location
-                                           . ,(string->uri initial-url))))))
-      (parameterize ((%http-server-port (+ 1 (%http-server-port))))
-        (with-http-server `((,redirect ""))
+(with-http-server `((404 "booh!"))
+  (let* ((initial-url (%local-url))
+         (redirect    (build-response #:code 301
+                                      #:headers
+                                      `((location
+                                         . ,(string->uri initial-url))))))
+    (parameterize ((%http-server-port 0))
+      (with-http-server `((,redirect ""))
+        (test-equal "home-page: 301 -> 404"
+          (format #f "URI ~a not reachable: 404 (\"Such is life\")" (%local-url))
           (let ((pkg (package
                        (inherit (dummy-package "x"))
                        (home-page (%local-url)))))
@@ -706,7 +700,6 @@
                                (sha256 %null-sha256))))))
     (check-source-unstable-tarball pkg)))
 
-(test-skip (if (http-server-can-listen?) 0 1))
 (test-equal "source: 200"
   '()
   (with-http-server `((200 ,%long-string))
@@ -718,10 +711,10 @@
                            (sha256 %null-sha256))))))
       (check-source pkg))))
 
-(test-skip (if (http-server-can-listen?) 0 1))
-(test-equal "source: 200 but short length"
-  "URI http://localhost:9999/foo/bar returned suspiciously small file (18 bytes)"
-  (with-http-server '((200 "This is too small."))
+(with-http-server '((200 "This is too small."))
+  (test-equal "source: 200 but short length"
+    (format #f "URI ~a returned suspiciously small file (18 bytes)"
+            (%local-url))
     (let ((pkg (package
                  (inherit (dummy-package "x"))
                  (source (origin
@@ -733,10 +726,10 @@
           (and (? lint-warning?) second-warning))
          (lint-warning-message second-warning))))))
 
-(test-skip (if (http-server-can-listen?) 0 1))
-(test-equal "source: 404"
-  "URI http://localhost:9999/foo/bar not reachable: 404 (\"Such is life\")"
-  (with-http-server `((404 ,%long-string))
+(with-http-server `((404 ,%long-string))
+  (test-equal "source: 404"
+    (format #f "URI ~a not reachable: 404 (\"Such is life\")"
+            (%local-url))
     (let ((pkg (package
                  (inherit (dummy-package "x"))
                  (source (origin
@@ -748,7 +741,6 @@
           (and (? lint-warning?) second-warning))
          (lint-warning-message second-warning))))))
 
-(test-skip (if (http-server-can-listen?) 0 1))
 (test-equal "source: 404 and 200"
   '()
   (with-http-server `((404 ,%long-string))
@@ -765,17 +757,17 @@
             ;; list.
             (check-source pkg)))))))
 
-(test-skip (if (http-server-can-listen?) 0 1))
-(test-equal "source: 301 -> 200"
-  "permanent redirect from http://localhost:10000/foo/bar to http://localhost:9999/foo/bar"
-  (with-http-server `((200 ,%long-string))
-    (let* ((initial-url (%local-url))
-           (redirect    (build-response #:code 301
-                                        #:headers
-                                        `((location
-                                           . ,(string->uri initial-url))))))
-      (parameterize ((%http-server-port (+ 1 (%http-server-port))))
-        (with-http-server `((,redirect ""))
+(with-http-server `((200 ,%long-string))
+  (let* ((initial-url (%local-url))
+         (redirect    (build-response #:code 301
+                                      #:headers
+                                      `((location
+                                         . ,(string->uri initial-url))))))
+    (parameterize ((%http-server-port 0))
+      (with-http-server `((,redirect ""))
+        (test-equal "source: 301 -> 200"
+          (format #f "permanent redirect from ~a to ~a"
+                  (%local-url) initial-url)
           (let ((pkg (package
                        (inherit (dummy-package "x"))
                        (source (origin
@@ -787,17 +779,17 @@
                 (and (? lint-warning?) second-warning))
                (lint-warning-message second-warning)))))))))
 
-(test-skip (if (http-server-can-listen?) 0 1))
-(test-equal "source, git-reference: 301 -> 200"
-  "permanent redirect from http://localhost:10000/foo/bar to http://localhost:9999/foo/bar"
-  (with-http-server `((200 ,%long-string))
-    (let* ((initial-url (%local-url))
-           (redirect    (build-response #:code 301
-                                        #:headers
-                                        `((location
-                                           . ,(string->uri initial-url))))))
-      (parameterize ((%http-server-port (+ 1 (%http-server-port))))
-        (with-http-server `((,redirect ""))
+(with-http-server `((200 ,%long-string))
+  (let* ((initial-url (%local-url))
+         (redirect    (build-response #:code 301
+                                      #:headers
+                                      `((location
+                                         . ,(string->uri initial-url))))))
+    (parameterize ((%http-server-port 0))
+      (with-http-server `((,redirect ""))
+        (test-equal "source, git-reference: 301 -> 200"
+          (format #f "permanent redirect from ~a to ~a"
+                  (%local-url) initial-url)
           (let ((pkg (dummy-package
                       "x"
                       (source (origin
@@ -807,17 +799,17 @@
                                 (sha256 %null-sha256))))))
             (single-lint-warning-message (check-source pkg))))))))
 
-(test-skip (if (http-server-can-listen?) 0 1))
-(test-equal "source: 301 -> 404"
-  "URI http://localhost:10000/foo/bar not reachable: 404 (\"Such is life\")"
-  (with-http-server '((404 "booh!"))
-    (let* ((initial-url (%local-url))
-           (redirect    (build-response #:code 301
-                                        #:headers
-                                        `((location
-                                           . ,(string->uri initial-url))))))
-      (parameterize ((%http-server-port (+ 1 (%http-server-port))))
-        (with-http-server `((,redirect ""))
+(with-http-server '((404 "booh!"))
+  (let* ((initial-url (%local-url))
+         (redirect    (build-response #:code 301
+                                      #:headers
+                                      `((location
+                                         . ,(string->uri initial-url))))))
+    (parameterize ((%http-server-port 0))
+      (with-http-server `((,redirect ""))
+        (test-equal "source: 301 -> 404"
+          (format #f "URI ~a not reachable: 404 (\"Such is life\")"
+                  (%local-url))
           (let ((pkg (package
                        (inherit (dummy-package "x"))
                        (source (origin
@@ -847,7 +839,6 @@
     (single-lint-warning-message
      (check-mirror-url (dummy-package "x" (source source))))))
 
-(test-skip (if (http-server-can-listen?) 0 1))
 (test-equal "github-url"
   '()
   (with-http-server `((200 ,%long-string))
@@ -859,7 +850,6 @@
                            (sha256 %null-sha256)))))))
 
 (let ((github-url "https://github.com/foo/bar/bar-1.0.tar.gz"))
-  (test-skip (if (http-server-can-listen?) 0 1))
   (test-equal "github-url: one suggestion"
     (string-append
      "URL should be '" github-url "'")
@@ -873,7 +863,7 @@
                                             #:headers
                                             `((location
                                                . ,(string->uri initial-url))))))
-          (parameterize ((%http-server-port (+ 1 (%http-server-port))))
+          (parameterize ((%http-server-port 0))
             (with-http-server `((,redirect ""))
               (single-lint-warning-message
                (check-github-url
@@ -883,7 +873,6 @@
                                       (uri (%local-url))
                                       (sha256 %null-sha256))))))))))))
 
-  (test-skip (if (http-server-can-listen?) 0 1))
   (test-equal "github-url: already the correct github url"
     '()
     (check-github-url
@@ -1007,7 +996,6 @@
   '()
   (check-formatting (dummy-package "x")))
 
-(test-skip (if (http-server-can-listen?) 0 1))
 (test-assert "archival: missing content"
   (let* ((origin   (origin
                      (method url-fetch)
@@ -1019,7 +1007,6 @@
                                                       (source origin)))))))
     (warning-contains? "not archived" warnings)))
 
-(test-skip (if (http-server-can-listen?) 0 1))
 (test-equal "archival: content available"
   '()
   (let* ((origin   (origin
@@ -1033,7 +1020,6 @@
       (parameterize ((%swh-base-url (%local-url)))
         (check-archival (dummy-package "x" (source origin)))))))
 
-(test-skip (if (http-server-can-listen?) 0 1))
 (test-assert "archival: missing revision"
   (let* ((origin   (origin
                      (method git-fetch)
@@ -1053,7 +1039,6 @@
                        (check-archival (dummy-package "x" (source origin)))))))
     (warning-contains? "scheduled" warnings)))
 
-(test-skip (if (http-server-can-listen?) 0 1))
 (test-equal "archival: revision available"
   '()
   (let* ((origin   (origin
@@ -1069,7 +1054,6 @@
       (parameterize ((%swh-base-url (%local-url)))
         (check-archival (dummy-package "x" (source origin)))))))
 
-(test-skip (if (http-server-can-listen?) 0 1))
 (test-assert "archival: rate limit reached"
   ;; We should get a single warning stating that the rate limit was reached,
   ;; and nothing more, in particular no other HTTP requests.
@@ -1091,7 +1075,6 @@
     (string-contains (single-lint-warning-message warnings)
                      "rate limit reached")))
 
-(test-skip (if (http-server-can-listen?) 0 1))
 (test-assert "haskell-stackage"
   (let* ((stackage (string-append "{ \"packages\": [{"
                                   "    \"name\":\"x\","

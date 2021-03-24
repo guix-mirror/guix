@@ -821,8 +821,7 @@ of programming tools as well as libraries with equivalent functionality.")
                   '("clang-runtime-asan-build-fixes.patch"
                     "clang-runtime-3.5-libsanitizer-mode-field.patch"
                     "clang-3.5-libsanitizer-ustat-fix.patch"))))
-    (package
-      (inherit runtime)
+    (package/inherit runtime
       (arguments
        (substitute-keyword-arguments (package-arguments runtime)
          ((#:phases phases '%standard-phases)

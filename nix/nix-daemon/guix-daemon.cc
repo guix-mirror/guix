@@ -1,5 +1,5 @@
 /* GNU Guix --- Functional package management for GNU
-   Copyright (C) 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+   Copyright (C) 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2021 Ludovic Courtès <ludo@gnu.org>
    Copyright (C) 2006, 2010, 2012, 2014 Eelco Dolstra <e.dolstra@tudelft.nl>
 
    This file is part of GNU Guix.
@@ -268,7 +268,7 @@ parse_opt (int key, char *arg, struct argp_state *state)
       break;
     case GUIX_OPT_DISCOVER:
       useDiscover = string_to_bool (arg);
-      settings.set("discover", arg);
+      settings.set ("discover", useDiscover ? "true" : "false");
       break;
     case GUIX_OPT_DEBUG:
       verbosity = lvlDebug;

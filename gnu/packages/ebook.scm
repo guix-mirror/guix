@@ -4,7 +4,7 @@
 ;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017, 2019, 2020 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Zheng Junjie <873216071@qq.com>
@@ -542,7 +542,7 @@ Some of the current features:
 (define-public xchm
   (package
     (name "xchm")
-    (version "1.31")
+    (version "1.32")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/rzvncj/xCHM"
@@ -550,7 +550,7 @@ Some of the current features:
                                   version "/xchm-" version ".tar.gz"))
               (sha256
                (base32
-                "0aw6bysqiwbw75n3ad229ihlmh7chqs1wlxm0398z3lfp2y6n7qf"))))
+                "0b12ym7cn65wy268kbksyhakicwb053c8xfn76q2dawrvbras9dj"))))
     (build-system gnu-build-system)
     (inputs
      `(("wxwidgets" ,wxwidgets)

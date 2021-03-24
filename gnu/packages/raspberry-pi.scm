@@ -59,7 +59,7 @@
      `(#:tests? #f))    ; Would need to be root
     ;; doc/html docs would not be installed anyway.
     ;(native-inputs
-    ; `(("doxygen", doxygen)))
+    ; `(("doxygen" ,doxygen)))
     (synopsis "C library for Broadcom BCM 2835 as used in Raspberry Pi")
     (description "This package provides a C library for Broadcom BCM 2835 as
 used in the Raspberry Pi")

@@ -19,6 +19,7 @@
 ;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2021 LibreMiami <packaging-guix@libremiami.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -525,26 +526,27 @@ address of one of the participants.")
               (sha256
                (base32
                 "14v0rgy1a5alxmz7ly95y38bdj0hx79yysgkcd8r8p9qqfzlwpv1"))
-              (modules '((guix build utils)))
+              (modules '((guix build utils)
+                         (ice-9 ftw)
+                         (srfi srfi-1)))
               (snippet
                `(begin
-                  ;; Remove bundled software.  Keep arc4random, celt-0.7.0,
-                  ;; celt-0.11.0, qqbonjour, rnnoise, smallft.
-                  (for-each
-                    delete-file-recursively
-                    '("3rdparty/GL" ; in mesa
-                      "3rdparty/mach-override-build" ; for macx
-                      "3rdparty/mach-override-src"
-                      "3rdparty/minhook-build" ; for win32
-                      "3rdparty/minhook-src"
-                      "3rdparty/opus-build" ; in opus
-                      "3rdparty/opus-src"
-                      "3rdparty/speex-build" ; in speex
-                      "3rdparty/speex-src"
-                      "3rdparty/speexdsp-src" ; in speexdsp
-                      "3rdparty/xinputcheck-build" ; for win32
-                      "3rdparty/xinputcheck-src"))
-                  #t))))
+                  (let ((keep
+                         '("arc4random-src"
+                           "celt-0.7.0-build"
+                           "celt-0.7.0-src"
+                           "celt-0.11.0-build"
+                           "celt-0.11.0-src"
+                           "qqbonjour-src"
+                           "rnnoise-build"
+                           "rnnoise-src"
+                           "smallft-src")))
+	            (with-directory-excursion "3rdparty"
+	              (for-each delete-file-recursively
+			        (lset-difference string=?
+                                                 (scandir ".")
+                                                 (cons* "." ".." keep))))
+                    #t)))))
     (build-system qt-build-system)
     (arguments
      `(#:tests? #f  ; no "check" target

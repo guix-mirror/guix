@@ -23,6 +23,7 @@
 (define-module (gnu ci)
   #:use-module (guix channels)
   #:use-module (guix config)
+  #:use-module (guix describe)
   #:use-module (guix store)
   #:use-module (guix grafts)
   #:use-module (guix profiles)
@@ -155,6 +156,7 @@ SYSTEM."
     "arm-linux-gnueabihf"
     "aarch64-linux-gnu"
     "powerpc-linux-gnu"
+    "powerpc64le-linux-gnu"
     "riscv64-linux-gnu"
     "i586-pc-gnu"                                 ;aka. GNU/Hurd
     "i686-w64-mingw32"
@@ -422,16 +424,12 @@ valid."
 
 (define (arguments->manifests arguments channels)
   "Return the list of manifests extracted from ARGUMENTS."
-  (define (channel-name->checkout name)
-    (let ((channel (find (lambda (channel)
-                           (eq? (channel-name channel) name))
-                         channels)))
-      (channel-url channel)))
-
-  (map (match-lambda
-         ((name . path)
-          (let ((checkout (channel-name->checkout name)))
-            (in-vicinity checkout path))))
+  (map (lambda (manifest)
+         (any (lambda (checkout)
+                (let ((path (in-vicinity checkout manifest)))
+                  (and (file-exists? path)
+                       path)))
+              (map channel-url channels)))
        arguments))
 
 (define (manifests->packages store manifests)
@@ -521,6 +519,16 @@ valid."
           (let ((hello (specification->package "hello")))
             (list (package-job store (job-name hello)
                                hello system))))
+         (('channels . channels)
+          ;; Build only the packages from CHANNELS.
+          (let ((all (all-packages)))
+            (filter-map
+             (lambda (package)
+               (any (lambda (channel)
+                      (and (member (channel-name channel) channels)
+                           (package->job store package system)))
+                    (package-channels package)))
+             all)))
          (('packages . rest)
           ;; Build selected list of packages only.
           (let ((packages (map specification->package rest)))

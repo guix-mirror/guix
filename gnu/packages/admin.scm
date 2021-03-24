@@ -222,7 +222,7 @@ usual file attributes can be checked for inconsistencies.")
 (define-public progress
   (package
     (name "progress")
-    (version "0.15")
+    (version "0.16")
     (source
      (origin
        (method git-fetch)
@@ -230,7 +230,7 @@ usual file attributes can be checked for inconsistencies.")
              (url "https://github.com/Xfennec/progress")
              (commit (string-append "v" version))))
        (sha256
-        (base32 "1cnb4ixlhshn139mj5sr42k5m6gjjbyqvkn1324c47niwrgp7dqm"))
+        (base32 "0gf10j9zd8spain94b5kigknwbdqajiy6fjsa5hhwsc1biz34hcj"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (native-inputs
@@ -1052,7 +1052,7 @@ connection alive.")
 (define-public isc-dhcp
   (let* ((bind-major-version "9")
          (bind-minor-version "11")
-         (bind-patch-version "28")
+         (bind-patch-version "29")
          (bind-release-type "")         ; for patch release, use "-P"
          (bind-release-version "")      ; for patch release, e.g. "6"
          (bind-version (string-append bind-major-version
@@ -1189,7 +1189,7 @@ connection alive.")
                                         "/bind-" bind-version ".tar.gz"))
                     (sha256
                      (base32
-                      "0x2yjy0d8p7i5mr2s5y65fdax0jjgvd8fn07s42c8dxsrbkcp40h"))))
+                      "01vvkvlhsxz4ffz2fw86z0fsf170b93jjnn5710ai6vfri8wgfy7"))))
 
                 ("coreutils*" ,coreutils)
                 ("sed*" ,sed)))
@@ -1503,7 +1503,7 @@ system administrator.")
 (define-public sudo
   (package
     (name "sudo")
-    (version "1.9.5p2")
+    (version "1.9.6p1")
     (source (origin
               (method url-fetch)
               (uri
@@ -1513,7 +1513,7 @@ system administrator.")
                                     version ".tar.gz")))
               (sha256
                (base32
-                "0y093z4f3822rc88g9asdch12nljdamp817vjxk04mca7ks2x7jk"))
+                "146alf6cwnzjcckia8m0ibcj9ram2z469f5z7v6vkzpsb30cvsd9"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -2002,13 +2002,13 @@ development, not the kernel implementation of ACPI.")
 (define-public s-tui
   (package
     (name "s-tui")
-    (version "1.0.2")
+    (version "1.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "s-tui" version))
        (sha256
-        (base32 "0xkfdaz5np21311ffdvhks58155qby8j8scbcixhvjd913pj66qx"))))
+        (base32 "1clk59wf6v1lq33h4x5qwxvz5ng9mfkp1s6ynxa58w2raq8dbmy5"))))
     (build-system python-build-system)
     (inputs
      `(("python-psutil" ,python-psutil)
@@ -2928,13 +2928,13 @@ a new command using the matched rule, and runs it.")
 (define-public di
   (package
     (name "di")
-    (version "4.48.0.1")
+    (version "4.49")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://gentoo.com/di/di-" version ".tar.gz"))
+       (uri (string-append "mirror://sourceforge/diskinfo-di/di-" version ".tar.gz"))
        (sha256
-        (base32 "0rxli3bcm6vlcfx2jminviv8aawwczrpp9kja5zniawy6528al30"))))
+        (base32 "1y38jhp2bpwbwzdzjlhgfqc7bxxz9cwapxd61799zjf54jkslkf0"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; obscure test failures
@@ -3550,7 +3550,7 @@ make it a perfect utility on modern distros.")
 (define-public thermald
   (package
     (name "thermald")
-    (version "2.4.2")
+    (version "2.4.3")
     (source
      (origin
       (method git-fetch)
@@ -3559,7 +3559,7 @@ make it a perfect utility on modern distros.")
              (commit (string-append "v" version))))
       (file-name (git-file-name name version))
       (sha256
-       (base32 "0nzjfiis4d3ml765s65bywk5dhx5x2fb3hpiixpxzzrs50ajwasj"))))
+       (base32 "1ibihgpmx038xci0k2h471scs5ssn7z5kcvjrfz63qf2ppdf9yh8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -3748,7 +3748,7 @@ Python loading in HPC environments.")
   (let ((real-name "inxi"))
     (package
       (name "inxi-minimal")
-      (version "3.2.02-2")
+      (version "3.3.03-1")
       (source
        (origin
          (method git-fetch)
@@ -3757,7 +3757,7 @@ Python loading in HPC environments.")
                (commit version)))
          (file-name (git-file-name real-name version))
          (sha256
-          (base32 "0fwx798v9kwiwkgbj97w6rjdanwf7ap65vvq1fqy7gd9x78xcxsq"))))
+          (base32 "1pahns10i5farw47v9v8cykrk5arq8218vpsa8c0bmaia0rf2n1q"))))
       (build-system trivial-build-system)
       (inputs
        `(("bash" ,bash-minimal)
@@ -3961,7 +3961,7 @@ cache of unix and unix-like systems.")
 (define-public solaar
   (package
     (name "solaar")
-    (version "1.0.4")
+    (version "1.0.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3970,7 +3970,7 @@ cache of unix and unix-like systems.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "15wzxxr2m5349kkvcs3k5clg1rsmvh6by2066qm4hlgvjwmigggy"))))
+                "17gkr2lf1kzp1198gcdr30j3c8xd81kg7ly12aar1jrgi6lc7klk"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -3988,7 +3988,7 @@ cache of unix and unix-like systems.")
        ("python-xlib" ,python-xlib)
        ("gtk+" ,gtk+)
        ("python-pygobject" ,python-pygobject)))
-    (home-page "https://smxi.org/docs/inxi.htm")
+    (home-page "https://pwr-solaar.github.io/Solaar/")
     (synopsis "Linux devices manager for the Logitech Unifying Receiver")
     (description "This package provides tools to manage clients of the
 Logitech Unifying Receiver.")

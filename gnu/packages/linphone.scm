@@ -35,6 +35,8 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
@@ -57,28 +59,70 @@
   #:use-module (guix build-system gnu))
 
 (define-public bcunit
-  (package
-    (name "bcunit")
-    (version "3.0.2")
-    (source
-     (origin
-       (method url-fetch)
-       (uri
-        (string-append "https://www.linphone.org/releases/sources/" name
-                       "/" name "-" version ".tar.gz"))
-       (sha256
-        (base32 "0ylchj8w98ic2fkqpxc6yk4s6s0h0ql2zsz5n49jd7126m4h8dqk"))))
-    (build-system cmake-build-system)
-    (arguments
-     '(#:tests? #f                      ; No test target
-       #:configure-flags
-       (list "-DENABLE_STATIC=NO")))    ; Not required
-    (synopsis "Belledonne Communications Unit Testing Framework")
-    (description "BCUnit is a fork of the defunct project CUnit, with several
-fixes and patches applied.  It is an unit testing framework for writing,
-administering, and running unit tests in C.")
-    (home-page "https://gitlab.linphone.org/BC/public/bcunit")
-    (license license:lgpl2.0+)))
+  (let ((commit "74021cc7cb20a4e177748dd2948173e1f9c270ae")
+        (revision "0"))
+    (package
+      (name "bcunit")
+      (version (git-version "3.0.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "git://git.linphone.org/bcunit")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0npdwvanjkfg9vrqs5yi8vh6wliv50ycdli8pzavir84nb31nq1b"))))
+      (build-system cmake-build-system)
+      (outputs '("out" "doc"))
+      (arguments
+       `(#:configure-flags (list "-DENABLE_STATIC=NO"
+                                 "-DENABLE_CURSES=ON"
+                                 "-DENABLE_DOC=ON"
+                                 "-DENABLE_EXAMPLES=ON"
+                                 "-DENABLE_TEST=ON"
+                                 "-DENABLE_MEMTRACE=ON")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-source
+             (lambda _
+               ;; Include BCunit headers for examples.
+               (substitute* "Examples/CMakeLists.txt"
+                 (("\\$\\{CMAKE_CURRENT_SOURCE_DIR\\}")
+                  (string-append "${CMAKE_CURRENT_SOURCE_DIR} "
+                                 "${PROJECT_SOURCE_DIR}/BCUnit/Headers "
+                                 "${CMAKE_BINARY_DIR}/BCUnit/Headers")))
+               ;; Link bcunit and bcunit_tests libraries.
+               (substitute* "BCUnit/Sources/CMakeLists.txt"
+                 (("target_include_directories\\(bcunit_test PUBLIC Test\\)")
+                  (string-append
+                   "target_include_directories(bcunit_test PUBLIC Test)\n"
+                   "target_link_libraries(bcunit_test bcunit)")))))
+           (replace 'check
+             (lambda _
+               (with-directory-excursion "BCUnit/Sources/Test"
+                 (invoke "./test_bcunit"))))
+           (add-after 'install 'move-doc
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out"))
+                     (doc (assoc-ref outputs "doc")))
+                 (for-each mkdir-p
+                           `(,(string-append doc "/share/doc")
+                             ,(string-append doc "/share/BCUnit")))
+                 (rename-file
+                  (string-append out "/share/doc/BCUnit")
+                  (string-append doc "/share/doc/BCUnit"))
+                 (rename-file
+                  (string-append out "/share/BCUnit/Examples")
+                  (string-append doc "/share/BCUnit/Examples"))))))))
+      (inputs
+       `(("ncurses" ,ncurses)))
+      (synopsis "Belledonne Communications Unit Testing Framework")
+      (description "BCUnit is a fork of the defunct project CUnit, with
+several fixes and patches applied.  It is a unit testing framework for
+writing, administering, and running unit tests in C.")
+      (home-page "https://gitlab.linphone.org/BC/public/bcunit")
+      (license license:lgpl2.0+))))
 
 (define-public bctoolbox
   (package

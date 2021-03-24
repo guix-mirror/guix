@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2017–2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
@@ -487,14 +487,14 @@ should only be used as part of the Guix cups-pk-helper service.")
 (define-public hplip
   (package
     (name "hplip")
-    (version "3.20.11")
+    (version "3.21.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/hplip/hplip/" version
                                   "/hplip-" version ".tar.gz"))
               (sha256
                (base32
-                "04fvdyjyjbkviy3awgm7g43p3lrvrsmgaqz8bwra22g7v2rpa5hb"))
+                "0hbwx9d4c8177vi0gavz9pxi7rc97jciacndp90ms8327shj2121"))
               (modules '((guix build utils)))
               (patches (search-patches "hplip-remove-imageprocessor.patch"))
               (snippet
@@ -671,8 +671,7 @@ should only be used as part of the Guix cups-pk-helper service.")
        ("pkg-config" ,pkg-config)))))
 
 (define-public hplip-minimal
-  (package
-    (inherit hplip)
+  (package/inherit hplip
     (name "hplip-minimal")
     (arguments
       (substitute-keyword-arguments (package-arguments hplip)
@@ -850,7 +849,7 @@ HP@tie{}LaserJet, and possibly other printers.  See @file{README} for details.")
 (define-public epson-inkjet-printer-escpr
   (package
     (name "epson-inkjet-printer-escpr")
-    (version "1.7.8")
+    (version "1.7.9")
     ;; XXX: This currently works.  But it will break as soon as a newer
     ;; version is available since the URLs for older versions are not
     ;; preserved.  An alternative source will be added as soon as
@@ -858,11 +857,11 @@ HP@tie{}LaserJet, and possibly other printers.  See @file{README} for details.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://download3.ebz.epson.net/dsc/f/03/00/12/04/32/"
-                           "1a455ef8618def65700ca4e446311c2fb43cd839/"
-                           "epson-inkjet-printer-escpr-1.7.8-1lsb3.2.tar.gz"))
+       (uri (string-append "https://download3.ebz.epson.net/dsc/f/03/00/12/50/95/"
+                           "322b8d6b915ab85add33d41f04ba5130866aadbe/"
+                           "epson-inkjet-printer-escpr-1.7.9-1lsb3.2.tar.gz"))
        (sha256
-        (base32 "1pygg2bd2gh27dc65h3dzwrpvi6bq5c87wl0ldchqlc2b3blsx6p"))))
+        (base32 "136hhvhimxfnrdn3ksbiswjxgsifrwlp3zz8h0v63w4k1vkzpgc0"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules

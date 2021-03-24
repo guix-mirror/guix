@@ -7,6 +7,7 @@
 ;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;; Copyright © 2020 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;; Copyright © 2021 raid5atemyhomework <raid5atemyhomework@protonmail.com>
+;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -151,14 +152,14 @@ large and/or frequently changing (network) environment.")
 (define-public bindfs
   (package
     (name "bindfs")
-    (version "1.14.8")
+    (version "1.15.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://bindfs.org/downloads/bindfs-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "15y4brlcrqhxl6z73785m0dr1vp2q3wc6xss08x9jjr0apzmmjp5"))))
+                "1av8dj9i1g0105fs5r9srqqsp7yahlhwc0yl8i1szyfdls23bp84"))))
     (build-system gnu-build-system)
     (arguments
      ;; XXX: The tests have no hope of passing until there is a "nogroup"
@@ -264,7 +265,7 @@ always possible.")
 (define-public fsarchiver
   (package
     (name "fsarchiver")
-    (version "0.8.5")
+    (version "0.8.6")
     (source
      (origin
        (method git-fetch)
@@ -274,7 +275,7 @@ always possible.")
          (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1rvwq5v3rl14bqxjm1ibfapyicf0sa44nw7451v10kx39lp56ylp"))))
+        (base32 "1ry2sdkfbg4bwcldk42g1i3wa3z4pr9yh9dil6ilhwcvhqiw41zc"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -849,7 +850,7 @@ APFS.")
 (define-public zfs
   (package
     (name "zfs")
-    (version "2.0.3")
+    (version "2.0.4")
     (outputs '("out" "module" "src"))
     (source
       (origin
@@ -858,7 +859,7 @@ APFS.")
                               "/download/zfs-" version
                               "/zfs-" version ".tar.gz"))
           (sha256
-           (base32 "0fg5hz1yy2z5ah0hzjv3xy5vcg1c214rps90dr80lfkalx5gd506"))))
+           (base32 "0v2zshimz5miyj8mbskb52pnzyl1s4rhpr6208zq549v8g2l84vx"))))
     (build-system linux-module-build-system)
     (arguments
      `(;; The ZFS kernel module should not be downloaded since the license
@@ -968,9 +969,9 @@ APFS.")
        ("util-linux:lib" ,util-linux "lib")
        ("zlib" ,zlib)))
     (home-page "https://zfsonlinux.org/")
-    (synopsis "Native ZFS on Linux")
+    (synopsis "OpenZFS on Linux")
     (description
-     "ZFS on Linux is an advanced file system and volume manager which was
+     "OpenZFS is an advanced file system and volume manager which was
 originally developed for Solaris and is now maintained by the OpenZFS
 community.")
     (license license:cddl1.0)))
@@ -978,7 +979,7 @@ community.")
 (define-public mergerfs
   (package
     (name "mergerfs")
-    (version "2.31.0")
+    (version "2.32.4")
     (source
      (origin
        (method url-fetch)
@@ -986,7 +987,7 @@ community.")
                            version "/mergerfs-" version ".tar.gz"))
        (sha256
         (base32
-         "0k4asbg5n9dhy5jpjkw6simqqnr1zira2y4i71cq05091dfwm90p"))))
+         "0yz7nljx6axcj6hb09sgc0waspgfhp535228rjqvqgyd8y74jc3s"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; No tests exist.
@@ -1174,7 +1175,16 @@ local file system using FUSE.")
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/oniony/TMSU"
-       #:unpack-path ".."))
+       #:unpack-path ".."
+       #:install-source? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'post-install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               ;; The go build system produces /bin/TMSU -> install as /bin/tmsu
+               (rename-file (string-append out "/bin/TMSU")
+                            (string-append out "/bin/tmsu"))))))))
     (inputs
      `(("go-github-com-mattn-go-sqlite3" ,go-github-com-mattn-go-sqlite3)
        ("go-github-com-hanwen-fuse" ,go-github-com-hanwen-fuse)))

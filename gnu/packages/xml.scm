@@ -28,6 +28,7 @@
 ;;; Copyright © 2020 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2021 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1201,8 +1202,7 @@ Libxml2).")
                                 "See 'COPYING' in the distribution."))))
 
 (define-public xmlsec-nss
-  (package
-    (inherit xmlsec)
+  (package/inherit xmlsec
     (name "xmlsec-nss")
     (native-inputs
      ;; For tests.
@@ -2017,6 +2017,60 @@ efficiently all input elements (for example in SOAP processors).  This
 package is in maintenance mode.")
     (license (license:non-copyleft "file:///LICENSE.txt"))))
 
+(define-public java-xmlpull-api-v1
+  (package
+    (name "java-xmlpull-api-v1")
+    (version "1.1.3.4b")
+    (source (origin
+              ;; The package is originally from Extreme! Lab, but the website
+              ;; is now gone.  This repositories contains the sources of the
+              ;; latest version.
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/aslom/xmlpull-api-v1")
+                     ;; No releases, this is the latest commit
+                     (commit "abeaa4aa87b2625af70c32f658f44e11355fe568")))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "15bdqxfncnakskna4m9gsh4f9iczxy83qxn2anqiqd15z406a5ih"))
+              (modules '((guix build utils)))
+              (snippet
+               `(begin
+                  (delete-file-recursively "lib")
+                  (mkdir-p "lib")
+                  ;; prevents a failure in "dist_lite"
+                  (substitute* "build.xml"
+                    (("README.html") "README.md"))))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:test-target "junit"
+       #:build-target "dist"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/" ,name "-" ,version))
+                    (java (string-append out "/share/java"))
+                    (project (string-append
+                               "xmlpull_"
+                               ,(string-join (string-split version #\.) "_"))))
+               (mkdir-p doc)
+               (copy-recursively (string-append "build/dist/" project "/doc/")
+                                 doc)
+               (mkdir-p java)
+               (copy-file (string-append "build/dist/" project "/" project ".jar")
+                          (string-append java "/" project ".jar")))
+             )))))
+    (home-page "https://github.com/aslom/xmlpull-api-v1")
+    (synopsis "XML pull parsing API")
+    (description "XmlPull v1 API is a simple to use XML pull parsing API.  XML
+pull parsing allows incremental (sometimes called streaming) parsing of XML
+where application is in control - the parsing can be interrupted at any given
+moment and resumed when application is ready to consume more input.")
+    (license license:public-domain)))
+
 (define-public java-dom4j
   (package
     (name "java-dom4j")
@@ -2226,7 +2280,7 @@ outputting XML data from Java code.")
 (define-public java-xstream
   (package
     (name "java-xstream")
-    (version "1.4.15")
+    (version "1.4.16")
     (source
      (origin
        (method git-fetch)
@@ -2238,7 +2292,7 @@ outputting XML data from Java code.")
                                   version)))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1178qryrjwjp44439pi5dxzd32896r5zs429z1qhlc09951r7mi9"))))
+        (base32 "16k2mc63h2fw7lxv74qmhg4p8q9hfrw114daa6nxwnpv08cnq755"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "xstream.jar"
@@ -2253,6 +2307,7 @@ outputting XML data from Java code.")
        ("java-joda-time" ,java-joda-time)
        ("java-jettison" ,java-jettison)
        ("java-xom" ,java-xom)
+       ("java-mxparser" ,java-mxparser)
        ("java-xpp3" ,java-xpp3)
        ("java-dom4j" ,java-dom4j)
        ("java-stax2-api" ,java-stax2-api)
@@ -2264,6 +2319,48 @@ outputting XML data from Java code.")
     (description "XStream is a simple library to serialize Java objects to XML
 and back again.")
     (license license:bsd-3)))
+
+(define-public java-mxparser
+  (package
+    (name "java-mxparser")
+    (version "1.2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/x-stream/mxparser")
+              (commit (string-append "v-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0i3jrjbz4hgf62fm1ix7nlcmhi4kcv4flqsfvh7a3l2v7nsp5ryb"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "mxparser.jar"
+       #:source-dir "src/main/java"
+       #:test-dir "src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "src/main/resources" "build/classes")
+             #t)))))
+    (propagated-inputs
+     `(("java-xmlpull-api-v1" ,java-xmlpull-api-v1)))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "https://github.com/x-stream/mxparser")
+    (synopsis "Streaming pull XML parser forked from @code{java-xpp3}")
+    (description "Xml Pull Parser (in short XPP) is a streaming pull XML
+parser and should be used when there is a need to process quickly and
+efficiently all input elements (for example in SOAP processors). This
+package is a stable XmlPull parsing engine that is based on ideas from XPP
+and in particular XPP2 but completely revised and rewritten to take the best
+advantage of JIT JVMs.
+
+MXParser is a fork of xpp3_min 1.1.7 containing only the parser with merged
+changes of the Plexus fork. It is an implementation of the XMLPULL V1 API
+(parser only).")
+    (license (license:non-copyleft "file://LICENSE.txt"))))
 
 (define-public xmlrpc-c
   (package

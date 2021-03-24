@@ -68,7 +68,7 @@
        ("ki18n" ,ki18n)
        ("kio" ,kio)
        ("libkcddb" ,libkcddb)
-       ("libkcompactdisc", libkcompactdisc)
+       ("libkcompactdisc" ,libkcompactdisc)
        ("libvorbis" ,libvorbis)
        ("phonon" ,phonon)
        ("qtbase" ,qtbase)))

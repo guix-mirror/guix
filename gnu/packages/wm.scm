@@ -31,7 +31,7 @@
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2019 Noodles! <nnoodle@chiru.no>
 ;;; Copyright © 2019, 2020 Alexandru-Sergiu Marton <brown121407@member.fsf.org>
-;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Boris A. Dekshteyn <harlequin78@gmail.com>
 ;;; Copyright © 2020 Marcin Karpezo <sirmacik@wioo.waw.pl>
@@ -39,9 +39,11 @@
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
-;; Copyright © 2020 Niklas Eklund <niklas.eklund@posteo.net>
+;;; Copyright © 2020 Niklas Eklund <niklas.eklund@posteo.net>
 ;;; Copyright © 2020 Robert Smith <robertsmith@posteo.net>
 ;;; Copyright © 2021 Zheng Junjie <873216071@qq.com>
+;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
+;;; Copyright © 2021 qblade <qblade@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1343,14 +1345,14 @@ its size
 (define-public polybar
   (package
     (name "polybar")
-    (version "3.5.4")
+    (version "3.5.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/polybar/polybar/releases/"
                            "download/" version "/polybar-" version ".tar.gz"))
        (sha256
-        (base32 "0awwjp3l0y9yhmrl914710ipawp2xr43jxrvmnanahlznblg8fhk"))))
+        (base32 "1c8br9972x1qw7l2shj9aqzv0gsx58fdh3r0f1z5i1bqdwxmsqky"))))
     (build-system cmake-build-system)
     (arguments
      ;; Test is disabled because it requires downloading googletest from the
@@ -1783,8 +1785,8 @@ productive, customizable lisp based systems.")
            (delete 'cleanup)))))))
 
 (define stumpwm-contrib
-  (let ((commit "920f8fc1488f7953f205e1dda4c2ecbbbda56d63")
-        (revision "2"))
+  (let ((commit "a7dc1c663d04e6c73a4772c8a6ad56a34381096a")
+        (revision "3"))
     (package
       (name "stumpwm-contrib")
       (version (git-version "0.0.1" revision commit)) ;no upstream release
@@ -1796,7 +1798,7 @@ productive, customizable lisp based systems.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0giac390bq95ag41xkxqp8jjrhfx1wpgglz7jg5rkm0wjhcwmyml"))))
+          (base32 "09akdaaya7lga5lzbq1aj1filsyjwvflghkidpmr0nk0jz5xx1g7"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("stumpwm" ,stumpwm "lib")))
@@ -2018,6 +2020,26 @@ layouts in StumpWM.")
     (synopsis "Modeline support for CPU info")
     (description "Modeline support for CPU info.")
     (license license:gpl3+)))
+
+(define-public sbcl-stumpwm-disk
+  (package
+    (inherit stumpwm-contrib)
+    (name "sbcl-stumpwm-disk")
+    (arguments
+     '(#:asd-systems '("disk")
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _ (chdir "modeline/disk") #t)))))
+    (inputs
+     `(("stumpwm" ,stumpwm "lib")
+       ("cl-diskspace" ,sbcl-cl-diskspace)
+       ("cl-mount-info" ,sbcl-cl-mount-info)))
+    (home-page "https://github.com/stumpwm/stumpwm-contrib")
+    (synopsis "StumpWM modeline support to show disk usage")
+    (description "StumpWM modeline support to show disk usage")
+    (license (list license:gpl2+ license:gpl3+))))
 
 (define-public sbcl-stumpwm-mem
   (package
@@ -2325,7 +2347,7 @@ shows a notification for the user on the screen.")
 (define-public cagebreak
   (package
     (name "cagebreak")
-    (version "1.4.4")
+    (version "1.6.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2334,7 +2356,7 @@ shows a notification for the user on the screen.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0mnxs1m7jrqdl0asx39nxfzvkp7d4jqpdchi63w2yd1igpj2frb2"))))
+                "02gxmypfj75amdd8lwdkkk7imw7lwmghpyk8h9asljy9aq6ymdqp"))))
     (build-system meson-build-system)
     (arguments '(#:configure-flags '("-Dxwayland=true")))
     (native-inputs
@@ -2350,3 +2372,31 @@ shows a notification for the user on the screen.")
 for wayland conceptually based on the X11 window manager
 @command{ratpoison}.")
     (license license:expat)))
+
+(define-public libucl
+  (package
+    (name "libucl")
+    (version "0.8.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/vstakhov/libucl/")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1h52ldxankyhbbm1qbqz1f2q0j03c1b4mig7343bs3mc6fpm18gf"))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)
+       ("libtool" ,libtool)))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f)) ;; no tests
+    (home-page "https://github.com/vstakhov/libucl")
+    (synopsis "Universal configuration language (UCL) parser")
+     (description "libucl implements a configuration language that is easy to
+read and write, and compatible with JSON.")
+    (license license:bsd-2)))

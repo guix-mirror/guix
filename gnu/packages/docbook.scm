@@ -254,7 +254,7 @@ by no means limited to these applications.)  This package provides XML DTDs.")
     (inputs
      `(("docbook-dsssl-doc" ,docbook-dsssl-doc)))
     (native-inputs
-     `(("bzip2", bzip2)
+     `(("bzip2" ,bzip2)
        ("tar" ,tar)))
     (home-page "https://docbook.org/")
     (synopsis "DSSSL style sheets for DocBook")
@@ -292,7 +292,7 @@ by no means limited to these applications.)  This package provides XML DTDs.")
                    "--no-same-owner" "-C" docdir
                    (string-append "docbook-dsssl-" ,version "/doc"))))))
     (native-inputs
-     `(("bzip2", bzip2)
+     `(("bzip2" ,bzip2)
        ("tar" ,tar)))
     (home-page "https://docbook.org/")
     (synopsis "DocBook DSSSL style sheets documentation")

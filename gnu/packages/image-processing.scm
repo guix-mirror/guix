@@ -9,10 +9,11 @@
 ;;; Copyright © 2018 Lprndn <guix@lprndn.info>
 ;;; Copyright © 2019, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
-;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2020 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2021 Oleh Malyi <astroclubzp@gmail.com>
+;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -58,6 +59,7 @@
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages maths)
@@ -84,7 +86,7 @@
 (define-public dcmtk
   (package
     (name "dcmtk")
-    (version "3.6.5")
+    (version "3.6.6")
     (source
      (origin
        (method url-fetch)
@@ -93,11 +95,10 @@
                        "dcmtk" (string-join (string-split version #\.) "")
                        "/dcmtk-" version ".tar.gz"))
        (sha256
-        (base32 "1fdyz5wwjp4grys61mxb2ia9fi6i3ax6s43l16xnv291bxk7hld0"))))
+        (base32 "13j5yf3p6qj3mr17d77r3kcqchf055hgvk1w15vmdr8f54mwcnb8"))))
     (build-system cmake-build-system)
     (inputs
-     `(;; Our ICU is too recent: “error: ‘UChar’ does not name a type“.
-       ;; ("icu4c" ,icu4c)
+     `(("icu4c" ,icu4c)
        ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("libtiff" ,libtiff)
@@ -254,6 +255,8 @@ many popular formats.")
               (sha256
                (base32
                 "1fspgp8k0myr6p2a6wkc21ldcswb4bvmb484m12mxgk1a9vxrhrl"))
+              (patches
+               (search-patches "vtk-fix-freetypetools-build-failure.patch"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -603,17 +606,28 @@ due to its architecture which automatically parallelises the image workflows.")
 (define-public gmic
   (package
     (name "gmic")
-    (version "2.9.2")
+    (version "2.9.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://gmic.eu/files/source/gmic_"
                            version ".tar.gz"))
        (sha256
-        (base32 "14acph914a8lp6qqfmp319ggqjg3i3hmalmnpk3mp07m7vpv2p9q"))))
+        (base32 "06n1dcskky7aqg3a0cp7biwz8agc4xqvr8091l2wsvgib98yhbyj"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f))                    ;there are no tests
+     `(#:tests? #f ;there are no tests
+       #:configure-flags '("-DBUILD_LIB_STATIC=OFF"
+                           "-DENABLE_DYNAMIC_LINKING=ON"
+                           "-DENABLE_LTO=ON")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'set-LDFLAGS
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (setenv "LDFLAGS"
+                     (string-append
+                      "-Wl,-rpath="
+                      (assoc-ref outputs "out") "/lib")))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -636,6 +650,42 @@ signals to 3D+t sequences of multi-spectral volumetric images, hence
 including 2D color images.")
     ;; Dual-licensed, either license applies.
     (license (list license:cecill license:cecill-c))))
+
+(define-public gmic-qt
+  (package
+    (inherit gmic)
+    (name "gmic-qt")
+    (arguments
+     (substitute-keyword-arguments (package-arguments gmic)
+       ((#:configure-flags _)
+        `(list "-DGMIC_QT_HOST=none" "-DENABLE_DYNAMIC_LINKING=ON"
+               (string-append "-DGMIC_LIB_PATH="
+                              (assoc-ref %build-inputs "gmic") "/lib")))
+        ((#:phases phases)
+         `(modify-phases ,phases
+            (add-after 'unpack 'qt-chdir
+              (lambda _ (chdir "gmic-qt") #t))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("gmic" ,gmic)
+       ("qtbase" ,qtbase)
+       ,@(package-inputs gmic)))
+    (synopsis "Qt frontend for the G'MIC image processing framework")
+    (license license:gpl3+)))
+
+(define-public gmic-qt-krita
+  (package
+    (inherit gmic-qt)
+    (name "gmic-qt-krita")
+    (arguments
+     (substitute-keyword-arguments (package-arguments gmic-qt)
+       ((#:configure-flags flags)
+        '(list "-DGMIC_QT_HOST=krita" "-DENABLE_DYNAMIC_LINKING=ON"
+               (string-append "-DGMIC_LIB_PATH="
+                              (assoc-ref %build-inputs "gmic") "/lib")))))
+    (synopsis "Krita plugin for the G'MIC image processing framework")))
 
 (define-public nip2
   (package

@@ -47,9 +47,11 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crates-io)
   #:use-module (gnu packages cryptsetup)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages golang)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages image)
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages libbsd)
@@ -88,6 +90,57 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26))
 
+(define-public libdecaf
+  (package
+    (name "libdecaf")
+    (version "1.0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "git://git.code.sf.net/p/ed448goldilocks/code")
+                    (commit
+                     (string-append "v" version))))
+              (file-name
+               (git-file-name name version))
+              (sha256
+               (base32 "1ajgmyvc6a4m1h2hg1g4wz7ibx10x1xys9m6ancnmmf1f2srlfly"))))
+    (build-system cmake-build-system)
+    (outputs '("out" "python" "doc"))
+    (arguments
+     `(#:configure-flags '("-DENABLE_STATIC=OFF")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-python-binding
+           (lambda _
+             (substitute* "python/setup.py"
+               (("gmake")
+                "make")
+               (("'\\.\\.', 'build', 'lib', 'libdecaf\\.so'")
+                "'..', '..', 'build', 'src', 'libdecaf.so'"))))
+         (add-after 'install 'install-python-binding
+           (lambda* (#:key outputs #:allow-other-keys)
+             (with-directory-excursion "../source/python"
+               (invoke "python" "setup.py" "install"
+                       (string-append "--prefix=" (assoc-ref outputs "python"))
+                       "--root=/"))))
+         (add-after 'install-python-binding 'install-documentation
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "make" "doc")
+             (let* ((doc (assoc-ref outputs "doc"))
+                    (dest (string-append doc "/share/doc")))
+               (copy-recursively "doc" dest)))))))
+    (native-inputs
+     `(("dot" ,graphviz)
+       ("doxygen" ,doxygen)
+       ("python" ,python-wrapper)))
+    (synopsis "Decaf Elliptic Curve Library")
+    (description "The libdecaf library is an implementation of elliptic curve
+cryptography using the Montgomery and Edwards curves Curve25519, Ed25519,
+Ed448-Goldilocks and Curve448, using the Decaf encoding.")
+    (home-page "http://ed448goldilocks.sourceforge.net/")
+    (license (list license:expat        ;library
+                   license:bsd-2))))    ;python bindings
+
 (define-public libsodium
   (package
     (name "libsodium")
@@ -114,7 +167,7 @@ communication, encryption, decryption, signatures, etc.")
 (define-public libmd
   (package
     (name "libmd")
-    (version "1.0.1")
+    (version "1.0.3")
     (source (origin
             (method url-fetch)
             (uri
@@ -125,7 +178,7 @@ communication, encryption, decryption, signatures, etc.")
                              version ".tar.xz")))
             (sha256
              (base32
-              "0waclg2d5qin3r26gy5jvy4584ik60njc8pqbzwk0lzq3j9ynkp1"))))
+              "0jmga8y94h857ilra3qjaiax3wd5pd6mx1h120zhl9fcjmzhj0js"))))
     (build-system gnu-build-system)
     (synopsis "Message Digest functions from BSD systems")
     (description
@@ -887,14 +940,14 @@ SHA256, SHA512, SHA3, AICH, ED2K, Tiger, DC++ TTH, BitTorrent BTIH, GOST R
 (define-public botan
   (package
     (name "botan")
-    (version "2.12.1")
+    (version "2.17.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://botan.randombit.net/releases/"
                                   "Botan-" version ".tar.xz"))
               (sha256
                (base32
-                "1ada3ga7b0z4m0vjmxlvfi4nsic2l8kjcy85jwss3z2i58a5y0vy"))))
+                "121vn1aryk36cpks70kk4c4cfic5g0qs82bf92xap9258ijkn4kr"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -916,6 +969,8 @@ SHA256, SHA512, SHA3, AICH, ED2K, Tiger, DC++ TTH, BitTorrent BTIH, GOST R
 
                        ;; Recommended by upstream
                        "--with-zlib" "--with-bzip2" "--with-sqlite3"))))
+         (add-before 'check 'library-path-for-tests
+           (lambda _ (setenv "LD_LIBRARY_PATH" (getcwd))))
          (replace 'check
            (lambda _ (invoke "./botan-test"))))))
     (native-inputs

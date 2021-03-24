@@ -596,11 +596,12 @@ extracting icontainer icon files.")
               "doc"))                           ;1.8 MiB of HTML documentation
    (arguments
     ;; Instead of using --docdir, this package has its own --with-docdir.
-    `(#:configure-flags (list (string-append "--with-docdir="
-                                             (assoc-ref %outputs "doc")
-                                             "/share/doc/"
-                                             ,name "-" ,version)
-                              "--disable-static")))
+    `(#:configure-flags
+      (list (string-append "--with-docdir="
+                           (assoc-ref %outputs "doc")
+                           "/share/doc/"
+                           ,name "-" ,(package-version this-package))
+            "--disable-static")))
    (inputs `(("zlib" ,zlib)
              ("libjpeg" ,libjpeg-turbo)))
    (synopsis "Library for handling TIFF files")
@@ -1417,7 +1418,7 @@ convert, manipulate, filter and display a wide variety of image formats.")
 (define-public jasper
   (package
     (name "jasper")
-    (version "2.0.25")
+    (version "2.0.27")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1426,7 +1427,7 @@ convert, manipulate, filter and display a wide variety of image formats.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "06s6z7qrcnbi9mbj2d0a6k7lxbjdh3ppjpx8bcdv73lxhm4z7pzr"))))
+                "0mrnazk8qla7nn59xad86gmrf5fzqcv74j5xhcdrxbgfw67l17zd"))))
     (build-system cmake-build-system)
     (inputs
      `(("libjpeg" ,libjpeg-turbo)))
@@ -2135,7 +2136,7 @@ This package can be used to create @code{favicon.ico} files for web sites.")
 (define-public libavif
   (package
     (name "libavif")
-    (version "0.8.4")
+    (version "0.9.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2144,7 +2145,7 @@ This package can be used to create @code{favicon.ico} files for web sites.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1qvjd3xi9r89pcblxdgz4c6hqp67ss53b1x9zkg7lrik7g3lwq8d"))))
+                "1aw41m8ddrckq375w0lv2zd4ybhccsy1hw4f9kipppwxhgvk17gf"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DAVIF_CODEC_AOM=ON" "-DAVIF_CODEC_DAV1D=ON"
@@ -2172,6 +2173,42 @@ by AOM, including with alpha.")
     (home-page "https://github.com/AOMediaCodec/libavif")
     (license (list license:bsd-2    ; libavif itself
                    license:expat)))) ; cJSON in the test suite
+
+(define-public libheif
+  (package
+    (name "libheif")
+    (version "1.11.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/strukturag/libheif")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "036n63vlk4sk7y25q2kzyvvw4r5vv323ysbmbrcaprg9hdyjqgf5"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f)) ;no test target although there is a tests folder
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("dav1d" ,dav1d)
+       ("gdk-pixbuf" ,gdk-pixbuf) ;optional
+       ("libaom" ,libaom)
+       ("libde265" ,libde265)
+       ("libjpeg" ,libjpeg-turbo)
+       ("libpng" ,libpng)
+       ("x265" ,x265)))
+    (home-page "https://github.com/strukturag/libheif")
+    (synopsis "HEIF and AVIF file format decoder and encoder")
+    (description
+     "@code{libheif} is an ISO/IEC 23008-12:2017 HEIF and AVIF (AV1 Image File
+Format) file format decoder and encoder.")
+    (license license:lgpl3+)))
 
 (define-public mtpaint
   (package

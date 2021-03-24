@@ -79,6 +79,7 @@
                      (keep-alive? #f)
                      (verify-certificate? #t)
                      (headers '((user-agent . "GNU Guile")))
+                     (log-port (current-error-port))
                      timeout)
   "Return an input port containing the data at URI, and the expected number of
 bytes available or #f.  If TEXT? is true, the data at URI is considered to be
@@ -93,6 +94,8 @@ When VERIFY-CERTIFICATE? is true, verify HTTPS server certificates.
 
 TIMEOUT specifies the timeout in seconds for connection establishment; when
 TIMEOUT is #f, connection establishment never times out.
+
+Write information about redirects to LOG-PORT.
 
 Raise an '&http-get-error' condition if downloading fails."
   (let loop ((uri (if (string? uri)
@@ -128,7 +131,7 @@ Raise an '&http-get-error' condition if downloading fails."
             308)                                  ; permanent redirection
            (let ((uri (resolve-uri-reference (response-location resp) uri)))
              (close-port port)
-             (format (current-error-port) (G_ "following redirection to `~a'...~%")
+             (format log-port (G_ "following redirection to `~a'...~%")
                      (uri->string uri))
              (loop uri)))
           (else
@@ -276,6 +279,7 @@ returning."
 (define* (http-fetch/cached uri #:key (ttl (%http-cache-ttl)) text?
                             (write-cache dump-port)
                             (cache-miss (const #t))
+                            (log-port (current-error-port))
                             (timeout 10))
   "Like 'http-fetch', return an input port, but cache its contents in
 ~/.cache/guix.  The cache remains valid for TTL seconds.
@@ -284,7 +288,9 @@ Call WRITE-CACHE with the HTTP input port and the cache output port to write
 the data to cache.  Call CACHE-MISS with URI just before fetching data from
 URI.
 
-TIMEOUT specifies the timeout in seconds for connection establishment."
+TIMEOUT specifies the timeout in seconds for connection establishment.
+
+Write information about redirects to LOG-PORT."
   (let ((file (cache-file-for-uri uri)))
     (define (update-cache cache-port)
       (define cache-time
@@ -306,6 +312,7 @@ TIMEOUT specifies the timeout in seconds for connection establishment."
                        cache-port)
                      (raise c))))
         (let ((port (http-fetch uri #:text? text?
+                                #:log-port log-port
                                 #:headers headers #:timeout timeout)))
           (cache-miss uri)
           (mkdir-p (dirname file))

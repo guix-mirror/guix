@@ -16,7 +16,7 @@
 ;;; Copyright © 2016 Troy Sankey <sankeytms@gmail.com>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
@@ -562,7 +562,7 @@ and it supports a very flexible form of test discovery.")
 (define-public doctest
   (package
     (name "doctest")
-    (version "2.4.4")
+    (version "2.4.5")
     (home-page "https://github.com/onqtam/doctest")
     (source (origin
               (method git-fetch)
@@ -570,7 +570,7 @@ and it supports a very flexible form of test discovery.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0xldd6cr1w3bn33rdb7yc6p57w143cgnjb48ig1b99iwvvkw599n"))))
+                "1pc34dvpgdzx3paqdf0khgs87kvjncx27yn434f5ic33r1lwr9r4"))))
     (build-system cmake-build-system)
     (synopsis "C++ test framework")
     (description
@@ -837,7 +837,7 @@ have been used.")
 (define-public python2-mock
   (let ((base (package-with-python2
                (strip-python2-variant python-mock))))
-    (package (inherit base)
+    (package/inherit base
       (propagated-inputs
        `(("python2-functools32" ,python2-functools32)
          ("python2-funcsigs" ,python2-funcsigs)
@@ -1197,7 +1197,7 @@ same arguments.")
 (define-public python2-pytest-mock
   (let ((base (package-with-python2
                 (strip-python2-variant python-pytest-mock))))
-    (package (inherit base)
+    (package/inherit base
       (propagated-inputs
        `(("python2-mock" ,python2-mock)
          ,@(package-propagated-inputs base))))))
@@ -2811,15 +2811,27 @@ system.  The code under test requires no modification to work with pyfakefs.")
 (define-public python-aiounittest
   (package
     (name "python-aiounittest")
-    (version "1.3.1")
+    (version "1.4.0")
+    ;; Pypi package lacks tests.
     (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "aiounittest" version))
-       (sha256
-        (base32
-         "1q4bhmi80smaa1lknvdna0sx3915naczlfna1fp435nf6cjyrjl1"))))
+     (origin (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/kwarunek/aiounittest.git")
+                   (commit version)))
+             (file-name (git-file-name name version))
+             (sha256
+              (base32
+               "0hql5mw62lclrpblbh7xvinwjfcdcfvhhlvl7xlq2hi9isjq1c8r"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (if tests?
+                          (invoke "nosetests" "-v")
+                          (format #t "test suite not run~%"))
+                      #t)))))
+    (propagated-inputs `(("python-wrapt" ,python-wrapt)))
     (native-inputs
      `(("python-coverage" ,python-coverage)
        ("python-nose" ,python-nose)))

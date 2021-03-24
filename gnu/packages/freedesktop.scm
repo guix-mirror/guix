@@ -58,8 +58,10 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cryptsetup)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages disk)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
@@ -75,6 +77,7 @@
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages language)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages libunwind)
   #:use-module (gnu packages libusb)
@@ -100,6 +103,101 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (srfi srfi-1))
+
+(define-public appstream
+  (package
+    (name "appstream")
+    (version "0.13.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://www.freedesktop.org/software/"
+                       "appstream/releases/"
+                       "AppStream-" version ".tar.xz"))
+       (sha256
+        (base32 "09l6ixz1w29pi0nb0flz14m4r3f2hpqpp1fq8y66v9xa4c9fczds"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-libstemmer
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "meson.build"
+               (("/usr/include")
+                (string-append (assoc-ref inputs "libstemmer")
+                               "/include")))
+             #t))
+         (add-after 'patch-libstemmer 'patch-docbook-xml
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "docs/api"
+               (substitute* "appstream-docs.xml"
+                 (("http://www.oasis-open.org/docbook/xml/4.3/")
+                  (string-append (assoc-ref inputs "docbook-xml-4.3")
+                                 "/xml/dtd/docbook/"))))
+             (for-each (lambda (file)
+                         (substitute* file
+                           (("http://www.oasis-open.org/docbook/xml/4.5/")
+                            (string-append (assoc-ref inputs "docbook-xml")
+                                           "/xml/dtd/docbook/"))))
+                       (find-files "scripts/desc" "\\.xml$"))
+             #t))
+         (add-after 'patch-docbook-xml 'disable-failing-tests
+           (lambda _
+             (substitute* "tests/test-pool.c"
+               (("[ \t]*g_test_add_func \\(\"/AppStream/PoolRead?.*;")
+                "")
+               (("[ \t]*g_test_add_func \\(\"/AppStream/PoolReadAsync?.*;")
+                "")
+               (("[ \t]*g_test_add_func \\(\"/AppStream/PoolEmpty?.*;")
+                "")
+               (("[ \t]*g_test_add_func \\(\"/AppStream/Cache?.*;")
+                "")
+               (("[ \t]*g_test_add_func \\(\"/AppStream/Merges?.*;")
+                ""))
+             #t))
+         (add-after 'disable-failing-tests 'patch-install-dir
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "data/meson.build"
+               (("/etc")
+                (string-append (assoc-ref outputs "out")
+                               "/etc")))
+             #t)))))
+    (native-inputs
+     `(("cmake" ,cmake)
+       ("docbook-xml-4.3" ,docbook-xml-4.3)
+       ("docbook-xml" ,docbook-xml)
+       ("docbook-xsl" ,docbook-xsl)
+       ("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("gperf" ,gperf)
+       ("gtk-doc" ,gtk-doc)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)
+       ("xsltproc" ,libxslt)))
+    (inputs
+     `(("libsoup" ,libsoup)
+       ("libstemmer" ,libstemmer)
+       ("libxml2" ,libxml2)
+       ("libyaml" ,libyaml)
+       ("lmdb" ,lmdb)))
+    (propagated-inputs
+     `(("glib" ,glib)))
+    (synopsis "Tools and libraries to work with AppStream metadata")
+    (description "AppStream is a cross-distribution effort for enhancing the way
+we interact with the software repositories provided by distributions by
+standardizing software component metadata.  It provides the foundation to build
+software-center applications, by providing metadata necessary for an
+application-centric view on package repositories.  It additionally provides
+specifications for things like an unified software metadata database, screenshot
+services and various other things needed to create user-friendly
+application-centers for distributions.")
+    (home-page "https://www.freedesktop.org/wiki/Distributions/AppStream/")
+    ;; XXX: meson.build claims both, headers just indicate lgpl2.1+
+    ;;      there are also some (irrelevant) wtfpl2 examples
+    (license (list license:gpl2+ license:lgpl2.1+))))
 
 (define-public farstream
   (package
@@ -410,7 +508,7 @@ other applications that need to directly deal with input devices.")
     (license license:x11)))
 
 (define-public libinput-minimal
-  (package (inherit libinput)
+  (package/inherit libinput
     (name "libinput-minimal")
     (inputs
      (fold alist-delete (package-inputs libinput)

@@ -101,6 +101,7 @@ guix/scripts/import/cpan.scm
 guix/scripts/import/crate.scm
 guix/scripts/import/gem.scm
 guix/scripts/import/gnu.scm
+guix/scripts/import/go.scm
 guix/scripts/import/hackage.scm
 guix/scripts/import/json.scm
 guix/scripts/import/nix.scm

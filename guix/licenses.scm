@@ -39,7 +39,7 @@
             apsl2
             asl1.1 asl2.0
             boost1.0
-            bsd-2 bsd-3 bsd-4
+            bsd-0 bsd-2 bsd-3 bsd-4
             non-copyleft
             cc0
             cc-by2.0 cc-by3.0 cc-by4.0
@@ -158,6 +158,11 @@
   (license "Boost 1.0"
            "http://directory.fsf.org/wiki/License:Boost1.0"
            "https://www.gnu.org/licenses/license-list#boost"))
+
+(define bsd-0
+  (license "Zero-Clause BSD"
+           "https://spdx.org/licenses/0BSD.html"
+           "https://opensource.org/licenses/0BSD"))
 
 (define bsd-2
   (license "FreeBSD"

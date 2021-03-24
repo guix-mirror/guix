@@ -16,6 +16,7 @@
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Vitaliy Shatrov <D0dyBo0D0dyBo0@protonmail.com>
 ;;; Copyright © 2020 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2021 Leo Le Bouter <lle-bout@zaclys.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -873,6 +874,14 @@ the store.")
                                          (map (cut string-append slib "/" <>)
                                               files))))))
 
+                 ,@(if (target-powerpc?)
+                     '((add-after 'unpack 'apply-patch
+                         (lambda* (#:key inputs #:allow-other-keys)
+                           (let ((patch (assoc-ref inputs
+                                                   "powerpc64le-patch")))
+                             (invoke "patch" "--force" "-p1"
+                                     "-i" patch)))))
+                     '())
                  ,@(if (hurd-target?)
                        '((add-after 'install 'augment-libc.so
                            (lambda* (#:key outputs #:allow-other-keys)
@@ -893,6 +902,10 @@ the store.")
                     ("gettext" ,gettext-minimal)
                     ("python" ,python-minimal)
 
+                    ,@(if (target-powerpc?)
+                        `(("powerpc64le-patch" ,@(search-patches
+                                                   "glibc-ldd-powerpc.patch")))
+                        '())
                     ,@(if (hurd-target?)
                           `(("mig" ,mig)
                             ("perl" ,perl))

@@ -24,7 +24,7 @@
 ;;; Copyright © 2019 Jakob L. Kreuze <zerodaysfordays@sdf.org>
 ;;; Copyright © 2019 raingloom <raingloom@protonmail.com>
 ;;; Copyright © 2019 David Wilson <david@daviwil.com>
-;;; Copyright © 2019, 2020 Alexandros Theodotou <alex@zrythm.org>
+;;; Copyright © 2019, 2020, 2021 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Lars-Dominik Braun <lars@6xq.net>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
@@ -1035,6 +1035,45 @@ are helpful when working in problem spaces where timing is important (such as
 audio and video).")
     (license license:bsd-2)))
 
+(define-public fluida-lv2
+  (package
+   (name "fluida-lv2")
+   (version "0.6")
+   (source
+    (origin
+      (method git-fetch)
+      (uri
+       (git-reference
+        (url "https://github.com/brummer10/Fluida.lv2")
+        (commit (string-append "v" version))
+        (recursive? #t))) ; references specific commit of libxputty
+      (file-name (git-file-name name version))
+      (sha256
+       (base32
+        "1v0bh4wcx79y832qigc3my8ixq0r4ica6z5fg2rg946pkh20x1a2"))))
+   (build-system gnu-build-system)
+   (arguments
+    `(#:tests? #f  ; no "check" target
+      #:make-flags
+      (list (string-append "INSTALL_DIR="
+                           (assoc-ref %outputs "out") "/lib/lv2")
+            "CC=gcc")
+      #:phases
+      (modify-phases %standard-phases
+        (delete 'configure))))
+   (inputs
+    `(("cairo" ,cairo)
+      ("libx11" ,libx11)
+      ("lv2" ,lv2)
+      ("fluidsynth" ,fluidsynth)))
+   (native-inputs
+    `(("pkg-config" ,pkg-config)))
+   (home-page "https://github.com/brummer10/Fluida.lv2")
+   (synopsis "Fluidsynth as an LV2 audio plugin")
+   (description "Fluida is an audio plugin in the LV2 format that acts as
+a frontend for fluidsynth.")
+   (license license:gpl2+)))
+
 (define-public surge-synth
   (package
    (name "surge-synth")
@@ -1813,7 +1852,7 @@ for path in [path for path in sys.path if 'site-packages' in path]: site.addsite
        ("txt2man" ,txt2man)
        ("libxml2" ,libxml2) ; for tests
        ("ghostscript" ,ghostscript)
-       ("texinfo" ,texinfo)))
+       ("texinfo" ,texinfo-5)))
     (home-page "https://www.gnu.org/software/solfege/")
     (synopsis "Ear training")
     (description
@@ -1917,7 +1956,7 @@ users to select LV2 plugins and run them with jalv.")
 (define-public synthv1
   (package
     (name "synthv1")
-    (version "0.9.20")
+    (version "0.9.21")
     (source (origin
               (method url-fetch)
               (uri
@@ -1925,7 +1964,7 @@ users to select LV2 plugins and run them with jalv.")
                               "/synthv1-" version ".tar.gz"))
               (sha256
                (base32
-                "1g2i79gkl1j7i49djz6igkbvdmfwxhcg6kx97n63bcqcvvy03rqz"))))
+                "0wg4ywkqf307vln0y923p083xacb5ahr2ghzvb9gmqyszd7k2v15"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
@@ -1949,7 +1988,7 @@ oscillators and stereo effects.")
 (define-public drumkv1
   (package
     (name "drumkv1")
-    (version "0.9.20")
+    (version "0.9.21")
     (source (origin
               (method url-fetch)
               (uri
@@ -1957,7 +1996,7 @@ oscillators and stereo effects.")
                               "/drumkv1-" version ".tar.gz"))
               (sha256
                (base32
-                "0y6njh1n0yai4g9dhg24hwc9khba44l4n5xizqcs6i4q7lyr9z48"))))
+                "1ym7kns7hfgxdwm2nzvpdm5vjxpkwb9dssjiic6rrpicv1p2v59m"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
@@ -1982,7 +2021,7 @@ effects.")
 (define-public samplv1
   (package
     (name "samplv1")
-    (version "0.9.20")
+    (version "0.9.21")
     (source (origin
               (method url-fetch)
               (uri
@@ -1990,7 +2029,7 @@ effects.")
                               "/samplv1-" version ".tar.gz"))
               (sha256
                (base32
-                "06nni00dgn8fvbyam1v44aq4yfns1vf7hw1mwmwzv2vxapdbpngn"))))
+                "1kz8hcpzhrkvxpah6irz5gbah4m7knjhi4rk5hs1kwiikn7p6vgk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
@@ -2015,7 +2054,7 @@ effects.")
 (define-public padthv1
   (package
     (name "padthv1")
-    (version "0.9.20")
+    (version "0.9.21")
     (source (origin
               (method url-fetch)
               (uri
@@ -2023,7 +2062,7 @@ effects.")
                               "/padthv1-" version ".tar.gz"))
               (sha256
                (base32
-                "1x3qjkby29xd7y0dg22ms19c8h8drqf55m9nxz6jlc58sfha2ss0"))))
+                "0s28l8vp9b85s4bdm18qm57dh8dx8rx7659r05p44828g4053ipl"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
@@ -2991,14 +3030,14 @@ from the command line.")
 (define-public qtractor
   (package
     (name "qtractor")
-    (version "0.9.19")
+    (version "0.9.21")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://downloads.sourceforge.net/qtractor/"
                                   "qtractor-" version ".tar.gz"))
               (sha256
                (base32
-                "0gdr1hvda56vmv4998z9xcqsp7da6lplj00f217x9g2i2snyvkzp"))))
+                "12hn17hqs3jndv6238wj8yhw07n99s0zachab4kfvhwa0qfflsbl"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; no "check" target
@@ -3299,9 +3338,6 @@ Xing headers to accurately calculate the bitrate and length of MP3s.  ID3 and
 APEv2 tags can be edited regardless of audio format.  It can also manipulate Ogg
 streams on an individual packet/page level.")
     (license license:gpl2))) ; "later version" never mentioned
-
-(define-public python2-mutagen
-  (package-with-python2 python-mutagen))
 
 (define-public python-mediafile
   (package
@@ -3738,14 +3774,14 @@ with a number of bugfixes and changes to improve IT playback.")
 (define-public sooperlooper
   (package
     (name "sooperlooper")
-    (version "1.7.4")
+    (version "1.7.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://essej.net/sooperlooper/sooperlooper-"
                            version ".tar.gz"))
        (sha256
-        (base32 "1jjvq4aflbyr3nr8b318k1vkad16xfa1jkqn9ckzw4419qc6c1k5"))))
+        (base32 "0kbb1pj62rl32c88j6p7dg823kvs0gb5s42qy3bl6yg0wn10dksj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -5815,6 +5851,51 @@ of percussion such as kicks, snares, hit-hats, shakers, claps and sticks.
 It can also play and mix samples.")
     (home-page "https://gitlab.com/iurie-sw/geonkick")
     (license license:gpl3+)))
+
+(define-public mamba
+  (package
+   (name "mamba")
+   (version "2.1")
+   (source
+    (origin
+      (method git-fetch)
+      (uri
+       (git-reference
+        (url "https://github.com/brummer10/Mamba")
+        (commit (string-append "v" version))
+        (recursive? #t))) ; references specific commit of libxputty
+      (file-name (git-file-name name version))
+      (sha256
+       (base32
+        "1bq6sqsij3cdwcsj3wpsnivi4c7jl4l5gwfywhqnib70v60smdja"))))
+   (build-system gnu-build-system)
+   (arguments
+    `(#:tests? #f  ; no "check" target
+      #:make-flags
+      (list (string-append "PREFIX="
+                           (assoc-ref %outputs "out"))
+            "CC=gcc")
+      #:phases
+      (modify-phases %standard-phases
+        (delete 'configure))))
+   (inputs
+    `(("alsa-lib" ,alsa-lib)
+      ("cairo" ,cairo)
+      ("fluidsynth" ,fluidsynth)
+      ("jack" ,jack-1)
+      ("liblo" ,liblo)
+      ("libsigc++" ,libsigc++)
+      ("libsmf" ,libsmf)
+      ("libx11" ,libx11)))
+   (native-inputs
+    `(("pkg-config" ,pkg-config)))
+   (home-page "https://github.com/brummer10/Mamba")
+   (synopsis "Virtual MIDI keyboard and MIDI file player/recorder for JACK")
+   (description "Mamba is a virtual MIDI keyboard and MIDI file
+player/recorder for the JACK Audio Connection Kit.  It comes with predefined
+keymaps for QWERTZ, QWERTY and AZERTY keyboards and also allows custom
+ones.")
+   (license license:bsd-0)))
 
 (define-public dpf-plugins
   (package

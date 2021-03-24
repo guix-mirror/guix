@@ -66,20 +66,21 @@
                 (file-name (string-append name "-" version "-checkout")))))))
 
 (define-public cuirass
-  (let ((commit "543e26addc6e2304611e2feb8dd3a5a0646507b6")
-        (revision "72"))
+  (let ((commit "6f4a203a0bb2d441d091d561c1735fbe2d170cf7")
+        (revision "2"))
     (package
       (name "cuirass")
-      (version (git-version "0.0.1" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://git.savannah.gnu.org/git/guix/guix-cuirass.git")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "01cxg0nwafzfg0phbv1b4cv24w7yaalkkdib3qfwf6jqagbfg85y"))))
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://git.savannah.gnu.org/git/guix/guix-cuirass.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "120cnnjy4j2dinfmas1ddmqzzc7ikj9c76sl4li6g6dn8g7s8f69"))))
       (build-system gnu-build-system)
       (arguments
        '(#:modules ((guix build utils)
@@ -87,9 +88,21 @@
                     (ice-9 rdelim)
                     (ice-9 popen))
          #:configure-flags '("--localstatedir=/var") ;for /var/log/cuirass
-         #:tests? #f  ;requires a PostgreSQL database.
+         #:parallel-tests? #f
          #:phases
          (modify-phases %standard-phases
+           (add-before 'check 'set-PATH-for-tests
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((pg (assoc-ref inputs "ephemeralpg"))
+                     (path (getenv "PATH")))
+                 (setenv "PATH" (string-append pg "/bin:" path))
+                 #t)))
+           ;; Disable the remote tests that require a Guix daemon connection.
+           (add-before 'check 'disable-remote-tests
+             (lambda _
+               (substitute* "Makefile.am"
+                 (("tests/remote.scm") ""))
+               #t))
            (add-after 'install 'wrap-program
              (lambda* (#:key inputs outputs #:allow-other-keys)
                ;; Wrap the 'cuirass' command to refer to the right modules.
@@ -110,31 +123,30 @@
                       (deps   (list avahi gcrypt json zmq squee git bytes
                                     fibers zlib matd tls mail guix))
                       (guile  (assoc-ref %build-inputs "guile"))
-                      (effective (read-line
-                                  (open-pipe* OPEN_READ
-                                              (string-append guile "/bin/guile")
-                                              "-c" "(display (effective-version))")))
-                      (mods   (string-drop-right  ;drop trailing colon
-                               (string-join deps
-                                            (string-append "/share/guile/site/"
-                                                           effective ":")
-                                            'suffix)
-                               1))
-                      (objs   (string-drop-right
-                               (string-join deps
-                                            (string-append "/lib/guile/" effective
-                                                           "/site-ccache:")
-                                            'suffix)
-                               1)))
-                 ;; Make sure 'cuirass' can find the 'evaluate' command, as
-                 ;; well as the relevant Guile modules.
-                 (for-each
-                  (lambda (name)
-                    (wrap-program (string-append out "/bin/" name)
-                      `("PATH" ":" prefix (,(string-append out "/bin")))
-                      `("GUILE_LOAD_PATH" ":" prefix (,mods))
-                      `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,objs))))
-                  '("cuirass" "remote-server" "remote-worker"))
+                      (effective
+                       (read-line
+                        (open-pipe* OPEN_READ
+                                    (string-append guile "/bin/guile")
+                                    "-c" "(display (effective-version))")))
+                      (mods
+                       (string-drop-right  ;drop trailing colon
+                        (string-join deps
+                                     (string-append "/share/guile/site/"
+                                                    effective ":")
+                                     'suffix)
+                        1))
+                      (objs
+                       (string-drop-right
+                        (string-join deps
+                                     (string-append "/lib/guile/" effective
+                                                    "/site-ccache:")
+                                     'suffix)
+                        1)))
+                 ;; Make sure 'cuirass' can find the relevant Guile modules.
+                 (wrap-program (string-append out "/bin/cuirass")
+                   `("PATH" ":" prefix (,(string-append out "/bin")))
+                   `("GUILE_LOAD_PATH" ":" prefix (,mods))
+                   `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,objs)))
                  #t))))))
       (inputs
        `(("guile" ,guile-3.0/libgc-7)
@@ -157,7 +169,8 @@
        `(("autoconf" ,autoconf)
          ("automake" ,automake)
          ("pkg-config" ,pkg-config)
-         ("texinfo" ,texinfo)))
+         ("texinfo" ,texinfo)
+         ("ephemeralpg" ,ephemeralpg)))
       (native-search-paths
        ;; For HTTPS access, Cuirass itself honors these variables, with the
        ;; same semantics as Git and OpenSSL (respectively).

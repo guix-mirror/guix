@@ -8,7 +8,7 @@
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018, 2019, 2020 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019, 2020, 2021 Guillaume Le Vaillant <glv@posteo.net>
-;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
@@ -1170,7 +1170,13 @@ map display.  Downloads map data from a number of websites, including
                 "0xzsm8pr0zjk3f8j880fg5n82jyxn8xf1330qmmq1fqv7rsrg9ia"))
               (modules '((guix build utils)))
               (snippet
-               '(begin (delete-file-recursively "data/fonts") #t))))
+               '(begin
+                  (delete-file-recursively "data/fonts")
+                  ;; Fixes compilation, can be removed with the next release.
+                  ;; Upstream link: https://github.com/opengribs/XyGrib/pull/255
+                  (substitute* "src/SkewT.h"
+                    (("QMessageBox>") "QMessageBox>\n#include <QPainterPath>"))
+                  #t))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases

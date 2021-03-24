@@ -2,7 +2,7 @@
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Ivan Petkov <ivanppetkov@gmail.com>
-;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;;
@@ -72,6 +72,44 @@ Cargo.toml file present at its root."
                              (string-append "tar -tf " path
                                             " | cut -d/ -f2"
                                             " | grep -q '^Cargo.toml$'")))))
+
+(define* (unpack-rust-crates #:key inputs vendor-dir #:allow-other-keys)
+  (define (inputs->rust-inputs inputs)
+    "Filter using the label part from INPUTS."
+    (filter (lambda (input)
+              (match input
+                ((name . _) (rust-package? name))))
+            inputs))
+  (define (inputs->directories inputs)
+    "Extract the directory part from INPUTS."
+    (match inputs
+      (((names . directories) ...)
+       directories)))
+
+  (let ((rust-inputs (inputs->directories (inputs->rust-inputs inputs))))
+    (unless (null? rust-inputs)
+      (mkdir-p "target/package")
+      (mkdir-p vendor-dir)
+      ;; TODO: copy only regular inputs to target/package, not native-inputs.
+      (for-each
+        (lambda (input-crate)
+          (for-each
+            (lambda (packaged-crate)
+              (unless
+                (file-exists?
+                  (string-append "target/package/" (basename packaged-crate)))
+                (install-file packaged-crate "target/package/")))
+            (find-files
+              (string-append input-crate "/share/cargo/registry") "\\.crate$")))
+        (delete-duplicates rust-inputs))
+
+      (for-each (lambda (crate)
+                  (invoke "tar" "xzf" crate "-C" vendor-dir))
+                (find-files "target/package" "\\.crate$"))))
+  #t)
+
+(define (rust-package? name)
+  (string-prefix? "rust-" name))
 
 (define* (configure #:key inputs
                     (vendor-dir "guix-vendor")
@@ -170,9 +208,27 @@ directory = '" port)
       (apply invoke "cargo" "test" cargo-test-flags)
       #t))
 
-(define* (install #:key inputs outputs skip-build? features #:allow-other-keys)
+(define* (package #:key
+                  install-source?
+                  (cargo-package-flags '("--no-metadata" "--no-verify"))
+                  #:allow-other-keys)
+  "Run 'cargo-package' for a given Cargo package."
+  (if install-source?
+    (apply invoke `("cargo" "package" ,@cargo-package-flags))
+    (format #t "Not installing cargo sources, skipping `cargo package`.~%"))
+  #t)
+
+(define* (install #:key
+                  inputs
+                  outputs
+                  skip-build?
+                  install-source?
+                  features
+                  #:allow-other-keys)
   "Install a given Cargo package."
-  (let* ((out (assoc-ref outputs "out")))
+  (let* ((out      (assoc-ref outputs "out"))
+         (registry (string-append out "/share/cargo/registry"))
+         (sources  (string-append out "/share/cargo/src")))
     (mkdir-p out)
 
     ;; Make cargo reuse all the artifacts we just built instead
@@ -186,6 +242,18 @@ directory = '" port)
         (invoke "cargo" "install" "--no-track" "--path" "." "--root" out
                 "--features" (string-join features)))
 
+    (when install-source?
+      ;; Install crate tarballs and unpacked sources for later use.
+      ;; TODO: Is there a better format/directory for these files?
+      (mkdir-p sources)
+      (for-each (lambda (crate)
+                  (install-file crate registry))
+                (find-files "target/package" "\\.crate$"))
+
+      (for-each (lambda (crate)
+                  (invoke "tar" "xzf" crate "-C" sources))
+                (find-files registry "\\.crate$")))
+
     #t))
 
 (define %standard-phases
@@ -195,6 +263,8 @@ directory = '" port)
     (replace 'build build)
     (replace 'check check)
     (replace 'install install)
+    (add-after 'build 'package package)
+    (add-after 'unpack 'unpack-rust-crates unpack-rust-crates)
     (add-after 'patch-generated-file-shebangs 'patch-cargo-checksums patch-cargo-checksums)))
 
 (define* (cargo-build #:key inputs (phases %standard-phases)

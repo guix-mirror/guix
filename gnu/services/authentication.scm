@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,6 +32,7 @@
   #:use-module (guix gexp)
   #:use-module (guix records)
   #:use-module (guix packages)
+  #:use-module (guix modules)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
@@ -521,6 +523,16 @@ password.")
 (define (pam-ldap-pam-services config)
   (list (pam-ldap-pam-service config)))
 
+(define %nslcd-activation
+  (with-imported-modules (source-module-closure '((gnu build activation)))
+    #~(begin
+        (use-modules (gnu build activation))
+        (let ((rundir "/var/run/nslcd")
+              (user (getpwnam "nslcd")))
+          (mkdir-p/perms rundir user #o755)
+          (when (file-exists? "/etc/nslcd.conf")
+            (chmod "/etc/nslcd.conf" #o400))))))
+
 (define nslcd-service-type
   (service-type
    (name 'nslcd)
@@ -531,15 +543,7 @@ password.")
           (service-extension etc-service-type
                              nslcd-etc-service)
           (service-extension activation-service-type
-                             (const #~(begin
-                                        (use-modules (guix build utils))
-                                        (let ((rundir "/var/run/nslcd")
-                                              (user (getpwnam "nslcd")))
-                                          (mkdir-p rundir)
-                                          (chown rundir (passwd:uid user) (passwd:gid user))
-                                          (chmod rundir #o755)
-                                          (when (file-exists? "/etc/nslcd.conf")
-                                            (chmod "/etc/nslcd.conf" #o400))))))
+                             (const %nslcd-activation))
           (service-extension pam-root-service-type
                              pam-ldap-pam-services)
           (service-extension nscd-service-type

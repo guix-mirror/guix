@@ -27,7 +27,7 @@
 ;;; Copyright © 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2020 Lars-Dominik Braun <lars@6xq.net>
+;;; Copyright © 2020, 2021 Lars-Dominik Braun <lars@6xq.net>
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Léo Le Bouter <lle-bout@zaclys.net>
 ;;; Copyright © 2021 Antoine Côté <antoine.cote@posteo.net>
@@ -87,7 +87,7 @@
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages xml)
   #:use-module (ice-9 match)
-  #:use-module ((srfi srfi-1) #:select (last)))
+  #:use-module (srfi srfi-1))
 
 (define-public zlib
   (package
@@ -953,44 +953,6 @@ possible and can compress in parallel.  This is especially useful for large
 tarballs.")
     (license license:bsd-2)))
 
-(define-public bsdiff
-  (package
-    (name "bsdiff")
-    (version "4.3")
-    (home-page "https://www.daemonology.net/bsdiff/")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append home-page name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0j2zm3z271x5aw63mwhr3vymzn45p2vvrlrpm9cz2nywna41b0hq"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:make-flags (list "INSTALL=install"
-                          (string-append "CC=" ,(cc-for-target))
-                          (string-append "PREFIX=" (assoc-ref %outputs "out")))
-       #:phases (modify-phases %standard-phases
-                  (delete 'configure)
-                  (add-before 'build 'fix-Makefile
-                    (lambda _
-                      (substitute* "Makefile"
-                        ;; Adjust syntax to make it compatible with GNU Make.
-                        (("^\\.") "")
-                        ;; Help install(1) create the target directory.
-                        (("\\$\\{PREFIX\\}") "-D -t ${PREFIX}"))
-                      #t)))
-       #:tests? #f)) ;no tests
-    (inputs
-     `(("bzip2" ,bzip2)))
-    (synopsis "Patch binary files")
-    (description
-     "@command{bsdiff} and @command{bspatch} are tools for building and
-applying patches to binary files.  By using suffix sorting (specifically
-Larsson and Sadakane's @code{qsufsort}) and taking advantage of how
-executable files change, bsdiff routinely produces binary patches 50-80%
-smaller than those produced by @code{Xdelta}.")
-    (license license:bsd-2)))
-
 (define-public cabextract
  (package
    (name "cabextract")
@@ -1110,15 +1072,14 @@ human-readable output.")
 (define-public lrzip
   (package
     (name "lrzip")
-    (version "0.640")
+    (version "0.641")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "http://ck.kolivas.org/apps/lrzip/lrzip-" version ".tar.xz"))
        (sha256
-        (base32
-         "175466drfpz8rsfr0pzfn5rqrj3wmcmcs3i2sfmw366w2kbjm4j9"))))
+        (base32 "0ziyanspd96dc3lp2qdcylc7aq8dhb511jhqrhxvlp502fjqjqrc"))))
     (build-system gnu-build-system)
     (native-inputs
      `(;; nasm is only required when building for 32-bit x86 platforms
@@ -1263,6 +1224,12 @@ handles the 7z format which features very high compression ratios.")
      `(#:test-target "test"
        #:phases
        (modify-phases %standard-phases
+         ;; Enable PIC, so it can be used in shared libraries.
+         (add-after 'unpack 'use-pic
+           (lambda _
+             (substitute* "Makefile"
+               (("CPPFLAGS = " all) (string-append all "-fPIC ")))
+            #t))
          (delete 'configure)
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
@@ -1508,11 +1475,9 @@ speed.")
                    license:zlib))))      ; zlibWrapper/{gz*.c,gzguts.h}
 
 (define-public pzstd
-  (package
+  (package/inherit zstd
     (name "pzstd")
-    (version (package-version zstd))
-    (source (package-source zstd))
-    (build-system gnu-build-system)
+    (outputs '("out"))
     (inputs
      `(,@(if (%current-target-system)
            `(("googletest" ,googletest))
@@ -1622,6 +1587,7 @@ Compression ratios of 2:1 to 3:1 are common for text files.")
                                 "unzip-overflow-on-invalid-input.patch"
                                 "unzip-format-secure.patch"
                                 "unzip-overflow-long-fsize.patch"))))
+    (replacement unzip/fixed)
     (build-system gnu-build-system)
     ;; no inputs; bzip2 is not supported, since not compiled with BZ_NO_STDIO
     (arguments
@@ -1656,6 +1622,57 @@ subdirectories below it, all files from the specified zipfile.  UnZip
 recreates the stored directory structure by default.")
     (license (license:non-copyleft "file://LICENSE"
                                    "See LICENSE in the distribution."))))
+
+(define unzip/fixed
+  (package
+    (inherit unzip)
+    (version "6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/infozip"
+                           "/UnZip%206.x%20%28latest%29/UnZip%206.0/unzip60.tar.gz"))
+       (sha256
+        (base32
+         "0dxx11knh3nk95p2gg2ak777dd11pr7jx5das2g49l262scrcv83"))
+       (patches (search-patches "unzip-CVE-2014-8139.patch"
+                                "unzip-CVE-2014-8140.patch"
+                                "unzip-CVE-2014-8141.patch"
+                                "unzip-CVE-2014-9636.patch"
+                                "unzip-CVE-2015-7696.patch"
+                                "unzip-CVE-2015-7697.patch"
+                                "unzip-allow-greater-hostver-values.patch"
+                                "unzip-initialize-symlink-flag.patch"
+                                "unzip-remove-build-date.patch"
+                                "unzip-attribs-overflow.patch"
+                                "unzip-overflow-on-invalid-input.patch"
+                                "unzip-format-secure.patch"
+                                "unzip-overflow-long-fsize.patch"
+
+                                ;; From Fedora
+                                "unzip-alt-iconv-utf8.patch"
+                                "unzip-alt-iconv-utf8-print.patch"
+                                "unzip-fix-recmatch.patch"
+                                "unzip-case-insensitive.patch"
+                                "unzip-close.patch"
+                                "unzip-COVSCAN-fix-unterminated-string.patch"
+                                "unzip-CVE-2016-9844.patch"
+                                "unzip-CVE-2018-1000035.patch"
+                                "unzip-CVE-2018-18384.patch"
+                                "unzip-exec-shield.patch"
+                                "unzip-manpage-fix.patch"
+                                "unzip-overflow.patch"
+                                "unzip-timestamp.patch"
+                                "unzip-valgrind.patch"
+                                "unzip-x-option.patch"
+                                ;; CVE-2019-13232
+                                "unzip-zipbomb-manpage.patch"
+                                "unzip-zipbomb-part1.patch"
+                                "unzip-zipbomb-part2.patch"
+                                "unzip-zipbomb-part3.patch"
+
+                                ;; https://github.com/madler/unzip/issues/2
+                                "unzip-32bit-zipbomb-fix.patch"))))))
 
 (define-public ziptime
   (let ((commit "2a5bc9dfbf7c6a80e5f7cb4dd05b4036741478bc")

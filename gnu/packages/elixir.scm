@@ -3,7 +3,7 @@
 ;;; Copyright © 2016, 2017 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 nee <nee.git@cock.li>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Nikita <nikita@n0.is>
 ;;; Copyright © 2021 Oskar Köök <oskar@maatriks.ee>
 ;;;
@@ -34,7 +34,7 @@
 (define-public elixir
   (package
     (name "elixir")
-    (version "1.11.3")
+    (version "1.11.4")
     (source
      (origin
        (method git-fetch)
@@ -43,7 +43,7 @@
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0ivah4117z75pinvb3gr22d05ihfwcdgw5zvvpv7kbgiqaj8ma8f"))
+        (base32 "1y8fbhli29agf84ja0fwz6gf22a46738b50nwy26yvcl2n2zl9d8"))
        (patches (search-patches "elixir-path-length.patch"))))
     (build-system gnu-build-system)
     (arguments

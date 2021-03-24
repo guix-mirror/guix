@@ -356,14 +356,17 @@ interface (FFI) of Guile.")
 
                            (display
                             (and=>
-                             (run-with-store store
-                               (guix-derivation source version
-                                                #$guile-version
-                                                #:channel-metadata
-                                                '#$channel-metadata
-                                                #:pull-version
-                                                #$pull-version)
-                               #:system system)
+                             ;; Silence autoload warnings and the likes.
+                             (parameterize ((current-warning-port
+                                             (%make-void-port "w")))
+                               (run-with-store store
+                                 (guix-derivation source version
+                                                  #$guile-version
+                                                  #:channel-metadata
+                                                  '#$channel-metadata
+                                                  #:pull-version
+                                                  #$pull-version)
+                                 #:system system))
                              derivation-file-name))))))
                   #:module-path (list source))))
 

@@ -27,7 +27,7 @@
   #:use-module (guix derivations)
   #:use-module (guix packages)
   #:use-module (guix store)
-  #:use-module ((guix build download) #:prefix build:)
+  #:autoload   (guix build download) (url-fetch)
   #:use-module (guix monads)
   #:use-module (guix gexp)
   #:use-module (guix utils)
@@ -35,7 +35,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:export (%mirrors
-            url-fetch
+            (url-fetch* . url-fetch)
             url-fetch/executable
             url-fetch/tarbomb
             url-fetch/zipbomb
@@ -449,11 +449,11 @@ download by itself using its own dependencies."
                     ;; for that built-in is widespread.
                     #:local-build? #t)))
 
-(define* (url-fetch url hash-algo hash
-                    #:optional name
-                    #:key (system (%current-system))
-                    (guile (default-guile))
-                    executable?)
+(define* (url-fetch* url hash-algo hash
+                     #:optional name
+                     #:key (system (%current-system))
+                     (guile (default-guile))
+                     executable?)
   "Return a fixed-output derivation that fetches data from URL (a string, or a
 list of strings denoting alternate URLs), which is expected to have hash HASH
 of type HASH-ALGO (a symbol).  By default, the file name is the base name of
@@ -499,10 +499,10 @@ name in the store."
                                #:key (system (%current-system))
                                (guile (default-guile)))
   "Like 'url-fetch', but make the downloaded file executable."
-  (url-fetch url hash-algo hash name
-             #:system system
-             #:guile guile
-             #:executable? #t))
+  (url-fetch* url hash-algo hash name
+              #:system system
+              #:guile guile
+              #:executable? #t))
 
 (define* (url-fetch/tarbomb url hash-algo hash
                             #:optional name
@@ -521,11 +521,11 @@ own.  This helper makes it easier to deal with \"tar bombs\"."
   (define tar
     (module-ref (resolve-interface '(gnu packages base)) 'tar))
 
-  (mlet %store-monad ((drv (url-fetch url hash-algo hash
-                                      (string-append "tarbomb-"
-                                                     (or name file-name))
-                                      #:system system
-                                      #:guile guile))
+  (mlet %store-monad ((drv (url-fetch* url hash-algo hash
+                                       (string-append "tarbomb-"
+                                                      (or name file-name))
+                                       #:system system
+                                       #:guile guile))
                       (guile (package->derivation guile system)))
     ;; Take the tar bomb, and simply unpack it as a directory.
     ;; Use ungrafted tar/gzip so that the resulting tarball doesn't depend on
@@ -559,11 +559,11 @@ own.  This helper makes it easier to deal with \"zip bombs\"."
   (define unzip
     (module-ref (resolve-interface '(gnu packages compression)) 'unzip))
 
-  (mlet %store-monad ((drv (url-fetch url hash-algo hash
-                                      (string-append "zipbomb-"
-                                                     (or name file-name))
-                                      #:system system
-                                      #:guile guile))
+  (mlet %store-monad ((drv (url-fetch* url hash-algo hash
+                                       (string-append "zipbomb-"
+                                                      (or name file-name))
+                                       #:system system
+                                       #:guile guile))
                       (guile (package->derivation guile system)))
     ;; Take the zip bomb, and simply unpack it as a directory.
     ;; Use ungrafted unzip so that the resulting tarball doesn't depend on
@@ -598,10 +598,9 @@ whether or not to validate HTTPS server certificates."
        (lambda (temp port)
          (let ((result
                 (parameterize ((current-output-port log))
-                  (build:url-fetch url temp
-                                   #:mirrors %mirrors
-                                   #:verify-certificate?
-                                   verify-certificate?))))
+                  (url-fetch url temp
+                             #:mirrors %mirrors
+                             #:verify-certificate? verify-certificate?))))
            (close port)
            (and result
                 (add-to-store store name recursive? "sha256" temp)))))))

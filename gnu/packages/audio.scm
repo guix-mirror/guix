@@ -197,7 +197,7 @@ promoting the market for advanced audio.")
 (define-public wildmidi
   (package
     (name "wildmidi")
-    (version "0.4.3")
+    (version "0.4.4")
     (source
      (origin
        (method git-fetch)
@@ -207,7 +207,7 @@ promoting the market for advanced audio.")
          (commit (string-append name "-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "01f4a9c5xlap5a4pkfnlgkzk5pjlk43zkq6fnw615ghya04g6hrl"))))
+        (base32 "08fbbsvw6pkwwqarjwcvdp8mq4zn5sgahf025hynwc6rvf4sp167"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; No target
@@ -1052,6 +1052,40 @@ performances.  The plugins include a cellular automaton synthesizer, an
 envelope follower, distortion effects, tape effects and more.")
     (license license:gpl2+)))
 
+(define-public snapcast
+  (package
+    (name "snapcast")
+    (version "0.24.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/badaix/snapcast")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "13yz8alplnqwkcns3mcli01qbyy6l3h62xx0v71ygcrz371l4g9g"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:tests? #f))                    ; no included tests
+    (inputs
+     `(("boost" ,boost)
+       ("libvorbis" ,libvorbis)
+       ("soxr" ,soxr)
+       ("alsa-lib" ,alsa-lib)
+       ("avahi" ,avahi)
+       ("pulseaudio" ,pulseaudio)
+       ("flac" ,flac)
+       ("opus" ,opus)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/badaix/snapcast")
+    (synopsis "Synchronous multiroom audio player")
+    (description
+     "Snapcast is a multi-room client-server audio player.  Clients are time
+synchronized with the server to play synced audio.")
+    (license license:gpl3+)))
+
 (define-public swh-plugins
   (package
     (name "swh-plugins")
@@ -1622,7 +1656,7 @@ follower.")
 (define-public fluidsynth
   (package
     (name "fluidsynth")
-    (version "2.1.5")
+    (version "2.1.8")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1631,7 +1665,7 @@ follower.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0ccpq4p1h1g53ng3961g3lh590qnwvpzwdzpl6ai4j6iazq0bh73"))))
+                "0r944ndn138ak9s3ivgd1wgkwkh6zp7jjnxd30hryczc6kbhkpmr"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f                      ; no check target
@@ -2678,14 +2712,14 @@ different audio devices such as ALSA or PulseAudio.")
 (define-public qjackctl
   (package
     (name "qjackctl")
-    (version "0.9.0")
+    (version "0.9.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/qjackctl/qjackctl/"
                                   version "/qjackctl-" version ".tar.gz"))
               (sha256
                (base32
-                "1gaabf2ncd5xd846fjm3k5d0kzphlyc33k9pralc2j3r3g0cb5ji"))))
+                "0m72kglwwvn91dxnka4lx765p3r0bcpqw251svymxr2wxjc4rgjg"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f))                    ; no check target
@@ -4918,8 +4952,7 @@ edited, converted, compressed and saved.")
     (license license:lgpl2.1)))
 
 (define-public ztoolkit-rsvg
-  (package
-    (inherit ztoolkit)
+  (package/inherit ztoolkit
     (name "ztoolkit-rsvg")
     (arguments
      `(#:configure-flags `("-Denable_rsvg=true")))

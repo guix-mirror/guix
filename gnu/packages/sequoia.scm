@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019, 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +23,7 @@
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages check) ;; python-pytest
   #:use-module (gnu packages crates-io)
@@ -203,3 +205,77 @@
 several crates, providing both a low-level and a high-level API for dealing
 with OpenPGP data.")
     (license license:gpl2+)))
+
+(define-public sequoia4pEp
+  ;; Currently pEp Engine requires sequoia in not-so-current version
+  (package/inherit sequoia
+    (name "sequoia")
+    (version "0.15.0-pEp")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/sequoia-pgp/sequoia.git")
+             (commit "0eb1b6cd846ea8c36b3dfdf01ec88383fc64f2fe")))
+       (sha256
+        (base32 "06dqs9whwp9lfibwp8dqm0aw4nm3s3v4jp2n4fz51zcvsld40nfh"))
+       (file-name (git-file-name name version))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sequoia)
+       ((#:cargo-inputs _)
+        `(("rust-anyhow" ,rust-anyhow-1)
+          ("rust-base64" ,rust-base64-0.11)
+          ("rust-bzip2" ,rust-bzip2-0.3)
+          ("rust-capnp" ,rust-capnp-0.10)
+          ("rust-capnp-rpc" ,rust-capnp-rpc-0.10)
+          ("rust-chrono" ,rust-chrono-0.4)
+          ("rust-clap" ,rust-clap-2)
+          ("rust-crossterm" ,rust-crossterm-0.13)
+          ("rust-dirs" ,rust-dirs-2)
+          ("rust-flate2" ,rust-flate2-1)
+          ("rust-fs2" ,rust-fs2-0.4)
+          ("rust-futures" ,rust-futures-0.1)
+          ("rust-http" ,rust-http-0.1)
+          ("rust-hyper" ,rust-hyper-0.12)
+          ("rust-hyper-tls" ,rust-hyper-tls-0.3)
+          ("rust-idna" ,rust-idna-0.2)
+          ("rust-itertools" ,rust-itertools-0.8)
+          ("rust-lalrpop" ,rust-lalrpop-0.17)
+          ("rust-lalrpop-util" ,rust-lalrpop-util-0.17)
+          ("rust-lazy-static" ,rust-lazy-static-1)
+          ("rust-libc" ,rust-libc-0.2)
+          ("rust-memsec" ,rust-memsec-0.5)
+          ("rust-native-tls" ,rust-native-tls-0.2)
+          ("rust-nettle" ,rust-nettle-7)
+          ("rust-percent-encoding" ,rust-percent-encoding-2)
+          ("rust-prettytable-rs" ,rust-prettytable-rs-0.8)
+          ("rust-proc-macro2" ,rust-proc-macro2-1)
+          ("rust-quickcheck" ,rust-quickcheck-0.9)
+          ("rust-quote" ,rust-quote-1)
+          ("rust-rand" ,rust-rand-0.7)
+          ("rust-regex" ,rust-regex-1)
+          ("rust-rpassword" ,rust-rpassword-4)
+          ("rust-rusqlite" ,rust-rusqlite-0.19)
+          ("rust-sha2" ,rust-sha2-0.8)
+          ("rust-syn" ,rust-syn-1)
+          ("rust-tempfile" ,rust-tempfile-3)
+          ("rust-thiserror" ,rust-thiserror-1)
+          ("rust-tokio" ,rust-tokio-0.1)
+          ("rust-tokio-core" ,rust-tokio-core-0.1)
+          ("rust-tokio-io" ,rust-tokio-io-0.1)
+          ("rust-unicode-normalization" ,rust-unicode-normalization-0.1)
+          ("rust-url" ,rust-url-2)
+          ("rust-zbase32" ,rust-zbase32-0.1)))
+       ((#:cargo-development-inputs _)
+        `(("rust-assert-cli" ,rust-assert-cli-0.6)
+          ("rust-colored" ,rust-colored-1)
+          ("rust-filetime" ,rust-filetime-0.2)))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'unpin-deps
+             (lambda _
+               (substitute* (find-files "." "Cargo.toml")
+                 (("= \"<") "= \"")
+                 (("= \"=") "= \""))
+               #t))))))
+    (properties `((hidden? . #t)))))

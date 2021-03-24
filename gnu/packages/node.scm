@@ -212,8 +212,7 @@ devices.")
                   (timeout . 21600)))))        ;6h
 
 (define-public libnode
-  (package
-    (inherit node)
+  (package/inherit node
     (name "libnode")
     (arguments
      (substitute-keyword-arguments (package-arguments node)

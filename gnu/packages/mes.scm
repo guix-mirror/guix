@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2018, 2019, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2017, 2018, 2019, 2020, 2021 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
@@ -117,6 +117,35 @@ $prefix/share/guile/site/$GUILE_EFFECTIVE_VERSION\n"))
     (inputs
      `(("guile" ,guile-3.0)))))
 
+(define-public nyacc-1.00.2
+  (package
+    (inherit nyacc)
+    (version "1.00.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://savannah/nyacc/nyacc-"
+                                  version ".tar.gz"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (substitute* (find-files "." "^Makefile\\.in$")
+                    (("^SITE_SCM_DIR =.*")
+                     "SITE_SCM_DIR = \
+@prefix@/share/guile/site/@GUILE_EFFECTIVE_VERSION@\n")
+                    (("^SITE_SCM_GO_DIR =.*")
+                     "SITE_SCM_GO_DIR = \
+@prefix@/lib/guile/@GUILE_EFFECTIVE_VERSION@/site-ccache\n")
+                    (("^INFODIR =.*")
+                     "INFODIR = @prefix@/share/info\n")
+                    (("^DOCDIR =.*")
+                     "DOCDIR = @prefix@/share/doc/$(PACKAGE_TARNAME)\n"))
+                  #t))
+              (sha256
+               (base32
+                "065ksalfllbdrzl12dz9d9dcxrv97wqxblslngsc6kajvnvlyvpk"))))
+    (inputs
+     `(("guile" ,guile-2.2)))))
+
 (define-public mes-0.19
   ;; Mes used for bootstrap.
   (package
@@ -165,17 +194,18 @@ Guile.")
 (define-public mes
   (package
     (inherit mes-0.19)
-    (version "0.22")
+    (version "0.23")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/mes/"
                                   "mes-" version ".tar.gz"))
               (sha256
                (base32
-                "0p1jsrrmcbc0zrvbvnjbb6iyxr0in71km293q8qj6gnar6bw09av"))))
+                "0mnryfkl0dwbr5gxp16j5s95gw7z1vm1fqa1pxabp0aiar1hw53s"))))
+    (supported-systems '("armhf-linux" "i686-linux" "x86_64-linux"))
     (propagated-inputs
      `(("mescc-tools" ,mescc-tools)
-       ("nyacc" ,nyacc-0.99)))
+       ("nyacc" ,nyacc-1.00.2)))
     (native-search-paths
      (list (search-path-specification
             (variable "C_INCLUDE_PATH")
@@ -194,6 +224,15 @@ Guile.")
   (package
     (inherit mes)
     (name "mes-rb5")
+    (version "0.22")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/mes/"
+                                  "mes-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0p1jsrrmcbc0zrvbvnjbb6iyxr0in71km293q8qj6gnar6bw09av"))))
+    (supported-systems '("i686-linux" "x86_64-linux"))
     (inputs '())
     (propagated-inputs '())
     (native-inputs
@@ -293,21 +332,32 @@ get_machine.")
   (package
     (inherit mescc-tools-0.5.2)
     (name "mescc-tools")
-    (version "0.6.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://git.savannah.nongnu.org/r/mescc-tools.git")
-                    (commit (string-append "Release_" version))))
-              (file-name (string-append "mescc-tools-" version "-checkout"))
-              (sha256
-               (base32
-                "1cgxcdza6ws725x84i31la7jxmlk5a3nsij5shz1zljg0i36kj99"))))
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://git.savannah.nongnu.org/cgit/mescc-tools.git/snapshot/"
+             name "-Release_" version
+             ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1p1ijia4rm3002f5sypidl9v5gq0mlch9b0n61rpxkdsaaxjqax3"))))
+    (supported-systems '("armhf-linux" "aarch64-linux"
+                         "i686-linux" "x86_64-linux"))
     (arguments
      (substitute-keyword-arguments (package-arguments mescc-tools-0.5.2)
        ((#:make-flags _)
         `(list (string-append "PREFIX=" (assoc-ref %outputs "out"))
-               "CC=gcc"))))))
+               "CC=gcc"))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'patch-prefix
+             (lambda _
+               (substitute* "sha256.sh"
+                 (("/usr/bin/sha256sum") (which "sha256sum")))
+               #t))))))))
 
 (define-public m2-planet
   (let ((commit "b87ddb0051b168ea45f8d49a610dcd069263336a")

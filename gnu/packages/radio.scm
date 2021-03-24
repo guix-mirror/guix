@@ -35,14 +35,19 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages curl)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages engineering)
   #:use-module (gnu packages fltk)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gd)
+  #:use-module (gnu packages geo)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
+  #:use-module (gnu packages golang)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
@@ -68,11 +73,13 @@
   #:use-module (gnu packages tex)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages video)
+  #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system go)
   #:use-module (guix build-system python)
   #:use-module (guix build-system qt))
 
@@ -1240,3 +1247,156 @@ It can perform as:
 @item APRStt gateway
 @end itemize\n")
     (license license:gpl2+)))
+
+(define-public aldo
+  (package
+    (name "aldo")
+    (version "0.7.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://savannah/aldo/aldo-" version ".tar.bz2"))
+       (sha256
+        (base32 "14lzgldqzbbzydsy1cai3wln3hpyj1yhj8ji3wygyzr616fq9f7i"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("ao" ,ao)))
+    (home-page "https://www.nongnu.org/aldo/")
+    (synopsis "Morse code tutor")
+    (description
+     "Aldo is a morse code learning tool providing four type of training
+methods:
+
+@itemize
+@item Classic exercice,
+@item Koch method,
+@item Read from file,
+@item Callsign exercice.
+@end itemize\n")
+    (license license:gpl3+)))
+
+(define-public unixcw
+  (package
+    (name "unixcw")
+    (version "3.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/unixcw/unixcw-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "15wriwv91583kmmyijbzam3dpclzmg4qjyfzjv5f75x9b0gqabxm"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("ncurses" ,ncurses)
+       ("pulseaudio" ,pulseaudio)
+       ("qtbase" ,qtbase)))
+    (arguments
+     `(#:configure-flags '("--disable-static")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* '("configure"
+                            "src/config.h.in"
+                            "src/cwcp/Makefile.am"
+                            "src/cwcp/Makefile.in")
+               (("-lcurses")
+                "-lncurses"))
+             (substitute* "src/libcw/libcw_pa.c"
+               (("libpulse-simple.so" all)
+                (string-append (assoc-ref inputs "pulseaudio")
+                               "/lib/" all))))))))
+    (home-page "http://unixcw.sourceforge.net/")
+    (synopsis "Morse code library and programs")
+    (description
+     "@code{unixcw} is a project providing the libcw library and a set of
+programs using the library: cw, cwgen, cwcp and xcwcp.  The programs are
+intended for people who want to learn receiving and sending morse code.")
+    (license license:gpl2+)))
+
+(define-public gnuais
+  (package
+    (name "gnuais")
+    (version "0.3.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rubund/gnuais")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1rik5fdfslszdn3yvj769jzmnv9pirzf76ki33bjjzk7nkabbnlm"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("mariadb-dev" ,mariadb "dev")
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("curl" ,curl)
+       ("gtk+" ,gtk+)
+       ("libsoup" ,libsoup-minimal)
+       ("mariadb-lib" ,mariadb "lib")
+       ("osm-gps-map" ,osm-gps-map)
+       ("pulseaudio" ,pulseaudio)))
+    (arguments
+     `(#:tests? #f ; No test suite
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "src/cfgfile.c"
+               (("/usr/share/")
+                (string-append (assoc-ref outputs "out") "/share/"))))))))
+    (home-page "http://gnuais.sourceforge.net/")
+    (synopsis "AIS message demodulator and decoder")
+    (description
+     "This program contains algorithms to demodulate and decode AIS (Automatic
+Identification System) messages sent by ships and coast stations.")
+    (license license:gpl2+)))
+
+(define-public kappanhang
+  (package
+    (name "kappanhang")
+    (version "1.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/nonoo/kappanhang")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1ycy8avq5s7zspfi0d9klqcwwkpmcaz742cigd7pmcnbbhspcicp"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/nonoo/kappanhang"
+       #:install-source? #f))
+    (inputs
+     `(("go-github-com-akosmarton-papipes",go-github-com-akosmarton-papipes)
+       ("go-github-com-fatih-color" ,go-github-com-fatih-color)
+       ("go-github-com-google-goterm" ,go-github-com-google-goterm)
+       ("go-github-com-mattn-go-isatty" ,go-github-com-mattn-go-isatty)
+       ("go-github-com-mesilliac-pulse-simple"
+        ,go-github-com-mesilliac-pulse-simple)
+       ("go-github-com-pborman-getopt" ,go-github-com-pborman-getopt)
+       ("go-go-uber-org-multierr" ,go-go-uber-org-multierr)
+       ("go-go-uber-org-zap" ,go-go-uber-org-zap)))
+    (home-page "https://github.com/nonoo/kappanhang")
+    (synopsis "Client for Icom RS-BA1 server")
+    (description
+     "Kappanhang remotely opens audio channels and a serial port to an Icom
+RS-BA1 server.  The application is mainly developed for connecting to the Icom
+IC-705 transceiver, which has built-in WiFi and RS-BA1 server.
+
+Compatible hardware/software:
+@itemize
+@item Icom RS-BA1 server software,
+@item Icom IC-705
+@item Icom IC-9700
+@end itemize\n")
+    (license license:expat)))

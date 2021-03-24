@@ -40,9 +40,6 @@
              nil "Integrated environment for *TeX*" tar
              ((:url . "http://www.gnu.org/software/auctex/"))])))
 
-;; Avoid collisions with other tests.
-(%http-server-port 10300)
-
 (test-begin "elpa")
 
 (define (eval-test-with-elpa pkg)

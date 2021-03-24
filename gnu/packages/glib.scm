@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2014, 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2021 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
@@ -172,6 +172,7 @@ shared NFS home directories.")
   (package
    (name "glib")
    (version "2.62.6")
+   (replacement glib/fixed)
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/"
@@ -235,7 +236,7 @@ shared NFS home directories.")
                   (lambda _
                     (substitute* "meson.build"
                       (("test_timeout = 60")
-                       "test_timeout = 90")
+                       "test_timeout = 120")
                       (("test_timeout_slow = 120")
                        "test_timeout_slow = 180")))))
               '())
@@ -394,6 +395,34 @@ dynamic loading, and an object system.")
    (home-page "https://developer.gnome.org/glib/")
    (license license:lgpl2.1+)))
 
+(define glib/fixed
+  (package
+    (inherit glib)
+    (source (origin
+              (inherit (package-source glib))
+              (patches
+               (append (search-patches "glib-CVE-2021-27218.patch"
+                                       "glib-CVE-2021-27219-01.patch"
+                                       "glib-CVE-2021-27219-02.patch"
+                                       "glib-CVE-2021-27219-03.patch"
+                                       "glib-CVE-2021-27219-04.patch"
+                                       "glib-CVE-2021-27219-05.patch"
+                                       "glib-CVE-2021-27219-06.patch"
+                                       "glib-CVE-2021-27219-07.patch"
+                                       "glib-CVE-2021-27219-08.patch"
+                                       "glib-CVE-2021-27219-09.patch"
+                                       "glib-CVE-2021-27219-10.patch"
+                                       "glib-CVE-2021-27219-11.patch"
+                                       "glib-CVE-2021-27219-12.patch"
+                                       "glib-CVE-2021-27219-13.patch"
+                                       "glib-CVE-2021-27219-14.patch"
+                                       "glib-CVE-2021-27219-15.patch"
+                                       "glib-CVE-2021-27219-16.patch"
+                                       "glib-CVE-2021-27219-17.patch"
+                                       "glib-CVE-2021-27219-18.patch"
+                                       "glib-CVE-2021-28153.patch")
+                       (origin-patches (package-source glib))))))))
+
 (define-public glib-with-documentation
   ;; glib's doc must be built in a separate package since it requires gtk-doc,
   ;; which in turn depends on glib.
@@ -420,6 +449,34 @@ dynamic loading, and an object system.")
                                    (string-append doc html))
                  (delete-file-recursively (string-append out html))
                  #t)))))))))
+
+;;; TODO: Merge into glib as a 'static' output on core-updates.
+(define-public glib-static
+  (hidden-package
+   (package
+     (inherit glib)
+     (name "glib-static")
+     (outputs '("out"))
+     (arguments
+      (substitute-keyword-arguments (package-arguments glib)
+        ((#:configure-flags flags ''())
+         `(cons* "--default-library=static"
+                 "-Dselinux=disabled"
+                 "-Dman=false"
+                 "-Dgtk_doc=false"
+                 "-Dinternal_pcre=false"
+                 ,flags))
+        ((#:phases phases)
+         `(modify-phases ,phases
+            (delete 'move-executables)
+            (replace 'install
+              ;; Only install the static libraries.
+              (lambda* (#:key outputs #:allow-other-keys)
+                (let* ((out (assoc-ref outputs "out"))
+                       (lib (string-append out "/lib")))
+                  (for-each (lambda (f)
+                              (install-file f lib))
+                            (find-files "." "\\.a$"))))))))))))
 
 (define gobject-introspection
   (package
@@ -777,32 +834,33 @@ useful for C++.")
     (properties `((python2-variant . ,(delay python2-pygobject))))))
 
 (define-public python2-pygobject
-  (package (inherit (strip-python2-variant python-pygobject))
-    (name "python2-pygobject")
+  (let ((base (strip-python2-variant python-pygobject)))
+    (package/inherit base
+      (name "python2-pygobject")
 
-    ;; Note: We use python-build-system here, because Meson only supports
-    ;; Python 3, and needs PYTHONPATH etc set up correctly, which makes it
-    ;; difficult to use for Python 2 projects.
-    (build-system python-build-system)
-    (arguments
-     `(#:python ,python-2
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'delete-broken-tests
-           (lambda _
-             ;; FIXME: this test freezes and times out.
-             (delete-file "tests/test_mainloop.py")
-             ;; FIXME: this test fails with this kind of error:
-             ;; AssertionError: <Handlers.SIG_IGN: 1> != <built-in function default_int_handler
-             (delete-file "tests/test_ossig.py")
-             #t)))))
-    (inputs
-     `(("python-pycairo" ,python2-pycairo)
-       ("gobject-introspection" ,gobject-introspection)))
-    (native-inputs
-     `(("glib-bin" ,glib "bin")
-       ("pkg-config" ,pkg-config)
-       ("python-pytest" ,python2-pytest)))))
+      ;; Note: We use python-build-system here, because Meson only supports
+      ;; Python 3, and needs PYTHONPATH etc set up correctly, which makes it
+      ;; difficult to use for Python 2 projects.
+      (build-system python-build-system)
+      (arguments
+       `(#:python ,python-2
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'delete-broken-tests
+             (lambda _
+               ;; FIXME: this test freezes and times out.
+               (delete-file "tests/test_mainloop.py")
+               ;; FIXME: this test fails with this kind of error:
+               ;; AssertionError: <Handlers.SIG_IGN: 1> != <built-in function default_int_handler
+               (delete-file "tests/test_ossig.py")
+               #t)))))
+      (inputs
+       `(("python-pycairo" ,python2-pycairo)
+         ("gobject-introspection" ,gobject-introspection)))
+      (native-inputs
+       `(("glib-bin" ,glib "bin")
+         ("pkg-config" ,pkg-config)
+         ("python-pytest" ,python2-pytest))))))
 
 (define-public perl-glib
   (package
@@ -939,8 +997,8 @@ This package provides the library for GLib applications.")
              #t)))))
     (synopsis "D-Bus API for C++")
     (description "This package provides D-Bus client API bindings for the C++
-programming language.  It also contains the utility
-@command{dbuscxx-xml2cpp}.")
+programming language.  It also provides the @command{dbusxx-xml2cpp} and
+@command{dbusxx-introspect} commands.")
     (home-page "https://sourceforge.net/projects/dbus-cplusplus/")
     (license license:lgpl2.1+)))
 

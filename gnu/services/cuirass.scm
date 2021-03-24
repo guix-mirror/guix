@@ -50,17 +50,7 @@
             <cuirass-remote-worker-configuration>
             cuirass-remote-worker-configuration
             cuirass-remote-worker-configuration?
-            cuirass-remote-worker-service-type
-
-            <build-manifest>
-            build-manifest
-            build-manifest?
-
-            <simple-cuirass-configuration>
-            simple-cuirass-configuration
-            simple-cuirass-configuration?
-
-            simple-cuirass-configuration->specs))
+            cuirass-remote-worker-service-type))
 
 ;;;; Commentary:
 ;;;
@@ -76,9 +66,11 @@
   cuirass-remote-server-configuration make-cuirass-remote-server-configuration
   cuirass-remote-server-configuration?
   (backend-port     cuirass-remote-server-configuration-backend-port ;int
-                    (default #f))
+                    (default 5555))
+  (log-port         cuirass-remote-server-configuration-log-port ;int
+                    (default 5556))
   (publish-port     cuirass-remote-server-configuration-publish-port ;int
-                    (default #f))
+                    (default 5557))
   (log-file         cuirass-remote-server-log-file ;string
                     (default "/var/log/cuirass-remote-server.log"))
   (cache            cuirass-remote-server-configuration-cache ;string
@@ -153,6 +145,7 @@
         (requirement '(guix-daemon postgres postgres-roles networking))
         (start #~(make-forkexec-constructor
                   (list (string-append #$cuirass "/bin/cuirass")
+                        "register"
                         "--cache-directory" #$cache-directory
                         "--specifications"
                         #$(scheme-file "cuirass-specs.scm" specs)
@@ -184,19 +177,15 @@
         (requirement '(cuirass))
         (start #~(make-forkexec-constructor
                   (list (string-append #$cuirass "/bin/cuirass")
-                        "--cache-directory" #$cache-directory
+                        "web"
                         "--database" #$database
-                        "--web"
-                        "--port" #$(number->string port)
                         "--listen" #$host
-                        "--interval" #$(number->string interval)
+                        "--port" #$(number->string port)
                         #$@(if parameters
                                (list (string-append
                                       "--parameters="
                                       parameters))
                                '())
-                        #$@(if use-substitutes? '("--use-substitutes") '())
-                        #$@(if fallback? '("--fallback") '())
                         #$@extra-options)
 
                   #:user #$user
@@ -213,7 +202,8 @@
                 (provision '(cuirass-remote-server))
                 (requirement '(avahi-daemon cuirass))
                 (start #~(make-forkexec-constructor
-                          (list (string-append #$cuirass "/bin/remote-server")
+                          (list (string-append #$cuirass "/bin/cuirass")
+                                "remote-server"
                                 (string-append "--database=" #$database)
                                 (string-append "--cache=" #$cache)
                                 (string-append "--user=" #$user)
@@ -280,8 +270,6 @@
          (remote-cache   (and remote-server
                               (cuirass-remote-server-configuration-cache
                                remote-server)))
-         (db             (dirname
-                          (cuirass-configuration-database config)))
          (user           (cuirass-configuration-user config))
          (log            "/var/log/cuirass")
          (group          (cuirass-configuration-group config)))
@@ -290,7 +278,6 @@
           (use-modules (guix build utils))
 
           (mkdir-p #$cache)
-          (mkdir-p #$db)
           (mkdir-p #$log)
 
           (when #$remote-cache
@@ -299,7 +286,6 @@
           (let ((uid (passwd:uid (getpw #$user)))
                 (gid (group:gid (getgr #$group))))
             (chown #$cache uid gid)
-            (chown #$db uid gid)
             (chown #$log uid gid)
 
             (when #$remote-cache
@@ -344,7 +330,7 @@
   (log-file         cuirass-remote-worker-log-file ;string
                     (default "/var/log/cuirass-remote-worker.log"))
   (publish-port     cuirass-remote-worker-configuration-publish-port ;int
-                    (default #f))
+                    (default 5558))
   (public-key       cuirass-remote-worker-configuration-public-key ;string
                     (default #f))
   (private-key      cuirass-remote-worker-configuration-private-key ;string
@@ -361,7 +347,8 @@ CONFIG."
            (provision '(cuirass-remote-worker))
            (requirement '(avahi-daemon guix-daemon networking))
            (start #~(make-forkexec-constructor
-                     (list (string-append #$cuirass "/bin/remote-worker")
+                     (list (string-append #$cuirass "/bin/cuirass")
+                           "remote-worker"
                            (string-append "--workers="
                                           #$(number->string workers))
                            #$@(if server
@@ -399,73 +386,3 @@ CONFIG."
                         cuirass-remote-worker-shepherd-service)))
    (description
     "Run the Cuirass remote build worker service.")))
-
-(define-record-type* <build-manifest>
-  build-manifest make-build-manifest
-  build-manifest?
-  (channel-name          build-manifest-channel-name) ;symbol
-  (manifest              build-manifest-manifest)) ;string
-
-(define-record-type* <simple-cuirass-configuration>
-  simple-cuirass-configuration make-simple-cuirass-configuration
-  simple-cuirass-configuration?
-  (build                 simple-cuirass-configuration-build
-                         (default 'all))  ;symbol or list of <build-manifest>
-  (channels              simple-cuirass-configuration-channels
-                         (default %default-channels))  ;list of <channel>
-  (non-package-channels  simple-cuirass-configuration-package-channels
-                         (default '())) ;list of channels name
-  (systems               simple-cuirass-configuration-systems
-                         (default (list (%current-system))))) ;list of strings
-
-(define* (simple-cuirass-configuration->specs config)
-  (define (format-name name)
-    (if (string? name)
-        name
-        (symbol->string name)))
-
-  (define (format-manifests build-manifests)
-    (map (lambda (build-manifest)
-           (match-record build-manifest <build-manifest>
-             (channel-name manifest)
-             (cons (format-name channel-name) manifest)))
-         build-manifests))
-
-  (define (channel->input channel)
-    (let ((name   (channel-name channel))
-          (url    (channel-url channel))
-          (branch (channel-branch channel)))
-      `((#:name . ,(format-name name))
-        (#:url . ,url)
-        (#:load-path . ".")
-        (#:branch . ,branch)
-        (#:no-compile? #t))))
-
-  (define (package-path channels non-package-channels)
-    (filter-map (lambda (channel)
-                  (let ((name (channel-name channel)))
-                    (and (not (member name non-package-channels))
-                         (not (eq? name 'guix))
-                         (format-name name))))
-                channels))
-
-  (define (config->spec config)
-    (match-record config <simple-cuirass-configuration>
-      (build channels non-package-channels systems)
-      `((#:name . "simple-config")
-        (#:load-path-inputs . ("guix"))
-        (#:package-path-inputs . ,(package-path channels
-                                                non-package-channels))
-        (#:proc-input . "guix")
-        (#:proc-file . "build-aux/cuirass/gnu-system.scm")
-        (#:proc . cuirass-jobs)
-        (#:proc-args . ((systems . ,systems)
-                        ,@(if (eq? build 'all)
-                              '()
-                              `((subset . "manifests")
-                                (manifests . ,(format-manifests build))))))
-        (#:inputs  . ,(map channel->input channels))
-        (#:build-outputs . ())
-        (#:priority . 1))))
-
-  #~(list '#$(config->spec config)))

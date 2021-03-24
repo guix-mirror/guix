@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2018, 2019 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017 Dave Love <fx@gnu.org>
@@ -66,6 +66,12 @@
               (sha256
                (base32
                 "0za1b9lvrm3rhn0lrxja5f64r0aq1qs4m0pxn1ji2mbi8ndppyyx"))))
+
+    (properties
+     ;; Tell the 'generic-html' updater to monitor this URL for updates.
+     `((release-monitoring-url
+        . "https://www-lb.open-mpi.org/software/hwloc/current")))
+
     (build-system gnu-build-system)
     (outputs '("out"           ;'lstopo' & co., depends on Cairo, libx11, etc.
                "lib"           ;small closure
@@ -142,18 +148,18 @@ bind processes, and much more.")
     (license license:bsd-3)))
 
 (define-public hwloc-2
-  ;; Note: 2.0 isn't the default yet, see above.
+  ;; Note: 2.x isn't the default yet, see above.
   (package
     (inherit hwloc-1)
-    (version "2.2.0")
+    (version "2.4.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://www.open-mpi.org/software/hwloc/v"
+              (uri (string-append "https://download.open-mpi.org/release/hwloc/v"
                                   (version-major+minor version)
-                                  "/downloads/hwloc-" version ".tar.bz2"))
+                                  "/hwloc-" version ".tar.bz2"))
               (sha256
                (base32
-                "0li27a3lnmb77qxpijj0kpblz32wmqd3b386sypq8ar7vy9vhw5f"))))
+                "0qyywmyns2jf3is3axrwmffvdd7ji7liy5axp650q4i6kzk2291r"))))
 
     ;; libnuma is no longer needed.
     (inputs (alist-delete "numactl" (package-inputs hwloc-1)))
@@ -187,7 +193,7 @@ bind processes, and much more.")
 (define-public openmpi
   (package
     (name "openmpi")
-    (version "4.0.5")
+    (version "4.1.0")
     (source
      (origin
       (method url-fetch)
@@ -195,8 +201,14 @@ bind processes, and much more.")
                           (version-major+minor version)
                           "/downloads/openmpi-" version ".tar.bz2"))
       (sha256
-       (base32 "02f0r9d3xgs08svkmj8v7lzviyxqnkk4yd3z0wql550xnriki3y5"))
+       (base32 "1dfmkyilgml9w9s5p0jmfj3xcdwdccwqbjw5iim9p0chf2vnz1kk"))
       (patches (search-patches "openmpi-mtl-priorities.patch"))))
+
+    (properties
+     ;; Tell the 'generic-html' updater to monitor this URL for updates.
+     `((release-monitoring-url
+        . "https://www.open-mpi.org/software/ompi/current")))
+
     (build-system gnu-build-system)
     (inputs
      `(("hwloc" ,hwloc-2 "lib")
@@ -300,7 +312,7 @@ software vendors, application developers and computer science researchers.")
 
 ;; TODO: javadoc files contain timestamps.
 (define-public java-openmpi
-  (package (inherit openmpi)
+  (package/inherit openmpi
     (name "java-openmpi")
     (inputs
      `(("openmpi" ,openmpi)
@@ -344,8 +356,7 @@ software vendors, application developers and computer science researchers.")
     (synopsis "Java bindings for MPI")))
 
 (define-public openmpi-thread-multiple
-  (package
-    (inherit openmpi)
+  (package/inherit openmpi
     (name "openmpi-thread-multiple")
     (arguments
      (substitute-keyword-arguments (package-arguments openmpi)

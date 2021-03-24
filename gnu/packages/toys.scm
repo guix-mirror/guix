@@ -3,6 +3,7 @@
 ;;; Copyright © 2019 Jesse Gibbons <jgibbons2357+guix@gmail.com>
 ;;; Copyright © 2019, 2020 Timotej Lazar <timotej.lazar@araneo.si>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2021 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -236,3 +237,41 @@ and various scenery elements.")
      "This is an animated, color, ANSI-text telnet server that renders a loop
 of the Nyan Cat / Poptart Cat animation.")
     (license license:ncsa)))
+
+(define-public cbonsai
+  (package
+    (name "cbonsai")
+    (version "1.0.4")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://gitlab.com/jallbrit/cbonsai.git")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0a5lqc0il0dq26j4wxg1z2siqanra2905x9akwi86zriq65ayb77"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; No test suite
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure) ; No ./configure script
+         (add-after 'install 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/" ,name "-"
+                                        ,(package-version this-package))))
+               (install-file "README.md" doc)))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("ncurses" ,ncurses)))
+    (home-page "https://gitlab.com/jallbrit/cbonsai")
+    (synopsis "Grow bonsai trees in a terminal")
+    (description "Cbonsai is a bonsai tree generator using ASCII art.  It
+creates, colors, and positions a bonsai tree, and is configurable.")
+    (license license:gpl3+)))

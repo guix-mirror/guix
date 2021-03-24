@@ -1119,7 +1119,7 @@ that support this feature).")
 (define-public memkind
   (package
     (name "memkind")
-    (version "1.10.1")
+    (version "1.11.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1128,7 +1128,7 @@ that support this feature).")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "11iz887f3cp5pzf1bzm644wzab8gkbhz3b7x1w6pcps71yd94ylj"))))
+                "0w5hws12l167mbr4n6a6fl0mhf8mci61fsn55lh2cxz33f7q8n2x"))))
     (build-system gnu-build-system)
     (inputs
      `(;; memkind patched jemalloc to add je_arenalookupx,
@@ -1141,7 +1141,10 @@ that support this feature).")
        ("automake" ,automake)
        ("libtool" ,libtool)))
     (arguments
-     `(#:tests? #f ; Tests require a NUMA-enabled system.
+     `(#:configure-flags
+       (list (string-append "--docdir=" (assoc-ref %outputs "out")
+                            "/share/doc/" ,name "-" ,version))
+       #:tests? #f ; Tests require a NUMA-enabled system.
        #:phases
        (modify-phases %standard-phases
          (add-before 'build 'autogen-jemalloc

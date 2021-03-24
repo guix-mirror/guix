@@ -3200,17 +3200,14 @@ supported, and the RENDER extension is not accelerated by this driver.")
 (define-public xf86-video-nouveau
   (package
     (name "xf86-video-nouveau")
-    (version "1.0.16")
+    (version "1.0.17")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "mirror://xorg/individual/driver/xf86-video-nouveau-"
-             version
-             ".tar.bz2"))
+       (uri (string-append "mirror://xorg/individual/driver/xf86-video-nouveau-"
+                           version ".tar.bz2"))
        (sha256
-        (base32
-         "01mz8gnq7j6bvrqb2ljm3d1wpjhi9p2z2w8zbkdrqmqmcj060h1h"))))
+        (base32 "0sqm1jwjg15sp8v7039y2hsbhph8gpjd2bdzcqqiij2mgbi254s9"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -6091,7 +6088,19 @@ to answer a question.  Xmessage can also exit after a specified time.")
      '(#:configure-flags '("--enable-wide-chars" "--enable-load-vt-fonts"
                            "--enable-i18n" "--enable-doublechars"
                            "--enable-luit" "--enable-mini-luit")
-       #:tests? #f))
+       #:tests? #f                      ; no test suite
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'patch-file-names
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "uxterm"
+                 (("([ `\\|])(sh|sed|awk|xmessage) " _ prefix command)
+                  (string-append prefix (which command) " "))
+                 (("(`|\"|LANG=C )(locale) " _ prefix command)
+                  (string-append prefix (which command) " "))
+                 (("=xterm")
+                  (string-append "=" out "/bin/xterm")))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -6471,8 +6480,7 @@ and embedded platforms.")
                    license:bsd-3))))
 
 (define-public uim-gtk
-  (package
-    (inherit uim)
+  (package/inherit uim
     (name "uim-gtk")
     (inputs
      `(("gtk" ,gtk+)
@@ -6481,8 +6489,7 @@ and embedded platforms.")
     (synopsis "Multilingual input method framework (GTK+ support)")))
 
 (define-public uim-qt
-  (package
-    (inherit uim)
+  (package/inherit uim
     (name "uim-qt")
     (inputs
      `(("qt" ,qtbase)
@@ -6635,7 +6642,7 @@ output.")
 (define-public console-setup
   (package
     (name "console-setup")
-    (version "1.197")
+    (version "1.201")
     (source
      (origin
        (method git-fetch)
@@ -6643,7 +6650,7 @@ output.")
              (url "https://salsa.debian.org/installer-team/console-setup.git")
              (commit version)))
        (sha256
-        (base32 "0m2q30f94vd1wb2zqpiyplpgfchjlm8j41xiyxcqdjzdgqbs7l27"))
+        (base32 "0xkynb8d1813wph3p0sdvbpimx7zqkzh4c3mmqymp3pibcg7af5a"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
@@ -6786,3 +6793,78 @@ are easier to see and use, and Xdialog adds more functionality such as a help
 button and box, a treeview, an editbox, file and directory selectors, a range
 box, and a calendar.  It uses GTK+, and will match your desktop theme.")
     (license license:gpl2+)))
+
+(define-public xvfb-run
+  (package
+    (name "xvfb-run")
+    (version "1.20.10-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://debian/pool/main/x/xorg-server/"
+                           "xorg-server_" version ".diff.gz"))
+       (sha256
+        (base32 "08gs9ni8ss8rw4n9cql1s8q05mj517vk1vm1varj1dsx75k4j25v"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'unpack
+           ;; Apply the source patch to an empty directory.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((source (assoc-ref inputs "source"))
+                    (diff.gz (basename source))
+                    (diff (substring diff.gz 0 (string-rindex diff.gz #\.))))
+               (mkdir "source")
+               (chdir "source")
+               (copy-file source diff.gz)
+               (invoke "gunzip" diff.gz)
+               (invoke "patch" "-Np1" "-i" diff)
+               (chdir "debian/local"))))
+         (delete 'configure)            ; nothing to configure
+         (replace 'build
+           (lambda _
+             (chmod "xvfb-run" #o755)
+             (substitute* "xvfb-run"
+               (("(\\(| )(fmt|stty|awk|kill|getopt|mktemp|touch|rm|mcookie)"
+                 _ prefix command)
+                (string-append prefix (which command)))
+               ;; These also feature in UI messages, so be more strict.
+               (("(AUTHFILE |command -v |exec )(Xvfb|xauth)"
+                 _ prefix command)
+                (string-append prefix (which command))))))
+         (replace 'check
+           ;; There are no tests included.  Here we test whether we can run
+           ;; a simple client without xvfb-run itself relying on $PATH.
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (let ((old-PATH (getenv "PATH"))
+                     (xterm (which "xterm")))
+                 (unsetenv "PATH")
+                 (invoke "./xvfb-run" xterm "-e" "true")
+                 (setenv "PATH" old-PATH)))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (man (string-append out "/share/man/man1")))
+               (install-file "xvfb-run" bin)
+               (install-file "xvfb-run.1" man)))))))
+    (inputs
+     `(("util-linux" ,util-linux)       ; for getopt
+       ("xauth" ,xauth)
+       ("xorg-server" ,xorg-server)))
+    (native-inputs
+     `(("xterm" ,xterm)))               ; for the test
+    ;; This script is not part of the upstream xorg-server.  It is provided only
+    ;; as a patch added to Debian's package.
+    (home-page "https://packages.debian.org/sid/xorg-server-source")
+    (synopsis "Run X11 client or command in a virtual X server environment")
+    (description
+     "The @command{xvfb-run} wrapper simplifies running commands and scripts
+within a virtual X server environment.  It sets up an X authority file or uses
+an existing user-specified one, writes a cookie to it, and then starts the
+@command{Xvfb} X server as a background process.  It also takes care of killing
+the server and cleaning up before returning the exit status of the command.")
+    (license (list license:x11                    ; the script
+                   license:gpl2+))))              ; the man page

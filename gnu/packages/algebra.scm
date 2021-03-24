@@ -13,6 +13,7 @@
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2021 Lars-Dominik Braun <ldb@leibniz-psychology.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -44,7 +45,6 @@
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages image)
   #:use-module (gnu packages java)
-  #:use-module (gnu packages llvm)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages multiprecision)
@@ -64,6 +64,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system r)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix hg-download)
@@ -340,7 +341,7 @@ precision.")
 (define-public giac
   (package
     (name "giac")
-    (version "1.6.0-47")
+    (version "1.7.0-1")
     (source
      (origin
        (method url-fetch)
@@ -352,7 +353,7 @@ precision.")
                            "~parisse/debian/dists/stable/main/source/"
                            "giac_" version ".tar.gz"))
        (sha256
-        (base32 "15sgsr8l6njp5spagbqclqkdy3x7ra23wi6wvpc8vzlbivy3v43k"))))
+        (base32 "0s926aza2larfz02hrhdlpxn77yjlrhjg844b3fhwz11yj942p9q"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((ice-9 ftw)
@@ -795,7 +796,7 @@ cosine/ sine transforms or DCT/DST).")
     (license license:gpl2+)))
 
 (define-public fftwf
-  (package (inherit fftw)
+  (package/inherit fftw
     (name "fftwf")
     (arguments
      (substitute-keyword-arguments (package-arguments fftw)
@@ -813,7 +814,7 @@ cosine/ sine transforms or DCT/DST).")
                     "  Single-precision version."))))
 
 (define-public fftw-openmpi
-  (package (inherit fftw)
+  (package/inherit fftw
     (name "fftw-openmpi")
     (inputs
      `(("openmpi" ,openmpi)
@@ -973,11 +974,8 @@ algorithms from the FORTRAN library MINPACK.")
          "-DWITH_MPFR=on"
          "-DWITH_MPC=on"
          "-DINTEGER_CLASS=flint"
-         "-DWITH_LLVM=on"
          "-DWITH_SYMENGINE_THREAD_SAFE=on"
          "-DBUILD_SHARED_LIBS=on")))    ;also build libsymengine
-    (native-inputs
-     `(("llvm" ,llvm)))
     (inputs
      `(("flint" ,flint)
        ("gmp" ,gmp)
@@ -1590,3 +1588,24 @@ general purpose; they require that p satisfy some preconditions based on
 the dimension of the input matrix (usually p should be prime and should be
 no more than about 20 bits long).")
     (license license:bsd-3)))
+
+(define-public r-dtt
+  (package
+    (name "r-dtt")
+    (version "0.1-2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "dtt" version))
+        (sha256
+          (base32
+            "0n8gj5iylfagdbaqirpykb01a9difsy4zl6qq55f0ghvazxqdvmn"))))
+    (properties `((upstream-name . "dtt")))
+    (build-system r-build-system)
+    (home-page "http://www.r-project.org")
+    (synopsis "Discrete Trigonometric Transforms")
+    (description
+      "This package provides functions for 1D and 2D Discrete Cosine Transform
+(@dfn{DCT}), Discrete Sine Transform (@dfn{DST}) and Discrete Hartley Transform
+(@dfn{DHT}).")
+    (license license:gpl2+)))

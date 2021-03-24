@@ -518,6 +518,8 @@ MyPaint.")
                (mkdir-p target)
                #t))))))
     (native-inputs
+     ;; avoid ./autogen.sh: ./configure: /bin/sh: bad interpreter:
+     ;; No such file or directory
      `(("autoconf" ,autoconf-wrapper)
        ("automake" ,automake)
        ("glib" ,glib "bin")                       ; glib-gettextize
@@ -590,7 +592,7 @@ transferring the style of an image.")
                    (format port "for dir in '~a'.split(':'):~%" pythonpath)
                    (format port "    site.addsitedir(dir)~%")))))))))
     (native-inputs
-     `(("autoconf" ,autoconf-wrapper)
+     `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("gtk-doc" ,gtk-doc)
        ("intltool" ,intltool)

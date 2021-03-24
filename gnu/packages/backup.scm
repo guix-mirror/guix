@@ -18,6 +18,7 @@
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Marcin Karpezo <sirmacik@wioo.waw.pl>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2021 Timothy Sample <samplet@ngyro.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -62,6 +63,7 @@
   #:use-module (gnu packages golang)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages guile-xyz)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages mcrypt)
   #:use-module (gnu packages ncurses)
@@ -570,13 +572,13 @@ detection, and lossless compression.")
 (define-public borg
   (package
     (name "borg")
-    (version "1.1.15")
+    (version "1.1.16")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "borgbackup" version))
        (sha256
-        (base32 "1g62sdzcw3zx4ccky125ciwnzx6z9kwyvskvp7ijmqxqk3nrxjs9"))
+        (base32 "0l1dqfwrd9l34rg30cmzmq5bs6yha6kg4vy313jq611jsqj94mmw"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -586,6 +588,8 @@ detection, and lossless compression.")
            ;; generate the wrong list.
            (for-each delete-file
                      '("src/borg/algorithms/checksums.c"
+                       "src/borg/algorithms/msgpack/_packer.cpp"
+                       "src/borg/algorithms/msgpack/_unpacker.cpp"
                        "src/borg/chunker.c"
                        "src/borg/compress.c"
                        "src/borg/crypto/low_level.c"
@@ -1083,3 +1087,35 @@ interactive mode.")
 to reduce network traffic and the amount of space that is used by each
 backup.")
     (license license:agpl3)))
+
+(define-public disarchive
+  (package
+    (name "disarchive")
+    (version "0.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://files.ngyro.com/disarchive/"
+                                  "disarchive-" version ".tar.gz"))
+              (sha256
+               (base32
+                "12d4r4i7vi8fxilr2aww6kzq56jax5ymhjfm3cpgx26vj4c70kb6"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)
+       ("guile-quickcheck" ,guile-quickcheck)))
+    (inputs
+     `(("guile" ,guile-3.0)
+       ("zlib" ,zlib)))
+    (propagated-inputs
+     `(("guile-gcrypt" ,guile-gcrypt)))
+    (home-page "https://ngyro.com/software/disarchive.html")
+    (synopsis "Software archive disassembler")
+    (description "Disarchive can disassemble software archives into data
+and metadata.  The goal is to create a small amount of metadata that
+can be used to recreate a software archive bit-for-bit from the
+original files.  For example, a software archive made using tar and
+Gzip will need to describe the order of files in the tarball and the
+compression parameters used by Gzip.")
+    (license license:gpl3+)))

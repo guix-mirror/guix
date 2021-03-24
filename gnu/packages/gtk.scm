@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014, 2015, 2017, 2018, 2019 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2017, 2018, 2019, 2021 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
@@ -125,6 +125,7 @@ tools have full access to view and control running applications.")
   (package
    (name "cairo")
    (version "1.16.0")
+   (replacement cairo/fixed)
    (source (origin
             (method url-fetch)
             (uri (string-append "https://cairographics.org/releases/cairo-"
@@ -175,6 +176,15 @@ affine transformation (scale, rotation, shear, etc.).")
    (license license:lgpl2.1) ; or Mozilla Public License 1.1
    (home-page "https://cairographics.org/")))
 
+(define cairo/fixed
+  (package
+    (inherit cairo)
+    (source (origin
+              (inherit (package-source cairo))
+              (patches (append (search-patches "cairo-CVE-2018-19876.patch"
+                                               "cairo-CVE-2020-35492.patch")
+                               (origin-patches (package-source cairo))))))))
+
 (define-public cairo-sans-poppler
   ;; Variant used to break the dependency cycle between Poppler and Cairo.
   (package/inherit cairo
@@ -182,8 +192,7 @@ affine transformation (scale, rotation, shear, etc.).")
     (properties `((hidden? . #t)))))
 
 (define-public cairo-xcb
-  (package
-    (inherit cairo)
+  (package/inherit cairo
     (name "cairo-xcb")
     (inputs
      `(("mesa" ,mesa)
@@ -237,7 +246,7 @@ affine transformation (scale, rotation, shear, etc.).")
 (define-public libdatrie
   (package
     (name "libdatrie")
-    (version "0.2.12")
+    (version "0.2.13")
     (source
      (origin
        (method url-fetch)
@@ -245,7 +254,7 @@ affine transformation (scale, rotation, shear, etc.).")
         (string-append "https://linux.thai.net/pub/ThaiLinux/software/"
                        "libthai/libdatrie-" version ".tar.xz"))
        (sha256
-        (base32 "0jdi01pcxv0b24zbjy7zahawsqqqw4mv94f2yy01zh4n796wqba5"))))
+        (base32 "1gplcx9ddglpxmqm10qn38kjmvdh4hnhj14rzgqag095psr1n8qj"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -558,6 +567,7 @@ highlighting and other features typical of a source code editor.")
   (package
    (name "gdk-pixbuf")
    (version "2.42.2")
+   (replacement gdk-pixbuf/fixed)
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -601,11 +611,20 @@ in the GNOME project.")
    (license license:lgpl2.0+)
    (home-page "https://developer.gnome.org/gdk-pixbuf/")))
 
+(define gdk-pixbuf/fixed
+  (package
+    (inherit gdk-pixbuf)
+    (source (origin
+              (inherit (package-source gdk-pixbuf))
+              (patches
+               (append (search-patches "gdk-pixbuf-CVE-2020-29385.patch")
+                       (origin-patches (package-source gdk-pixbuf))))))))
+
 ;; To build gdk-pixbuf with SVG support, we need librsvg, and librsvg depends
 ;; on gdk-pixbuf, so this new varibale.  Also, librsvg adds 90MiB to the
 ;; closure size.
 (define-public gdk-pixbuf+svg
-  (package (inherit gdk-pixbuf)
+  (package/inherit gdk-pixbuf
     (name "gdk-pixbuf+svg")
     (inputs
      `(("librsvg" ,librsvg)
@@ -2055,6 +2074,53 @@ shell scripts.  Example of how to use @code{yad} can be consulted at
 @url{https://sourceforge.net/p/yad-dialog/wiki/browse_pages/}.")
     (license license:gpl3+)))
 
+(define-public dragon-drop
+  (package
+   (name "dragon-drop")
+   (version "1.1.1")
+   (source (origin
+             (method git-fetch)
+             (uri
+              (git-reference
+               (url "https://github.com/mwh/dragon")
+               (commit (string-append "v" version))))
+             (file-name (git-file-name name version))
+             (sha256
+              (base32
+               "0fgzz39007fdjwq72scp0qygp2v3zc5f1xkm0sxaa8zxm25g1bra"))))
+   (build-system gnu-build-system)
+   (inputs `(("gtk+" ,gtk+)))
+   (native-inputs `(("pkg-config" ,pkg-config)))
+   (arguments
+    `(#:tests? #f                       ; no check
+      #:make-flags
+      (list (string-append "CC=" ,(cc-for-target))
+            ;; makefile uses PREFIX for the binary location
+            (string-append "PREFIX=" (assoc-ref %outputs "out")
+                           "/bin"))
+      #:phases
+      (modify-phases %standard-phases
+        (delete 'configure))))                    ; no configure script
+   (synopsis "Drag and drop source/target for X")
+   (description
+    "Dragon is a lightweight drag-and-drop source for X where you can run:
+
+@example
+dragon file.tar.gz
+@end example
+
+to get a window with just that file in it, ready to be dragged where you need it.
+What if you need to drag into something? Using:
+
+@example
+dragon --target
+@end example
+
+you get a window you can drag files and text into.  Dropped items are
+printed to standard output.")
+   (home-page "https://github.com/mwh/dragon")
+   (license license:gpl3+)))
+
 (define-public libdbusmenu
   (package
     (name "libdbusmenu")
@@ -2118,16 +2184,18 @@ displayed on the other side of the bus.")
 (define-public gtk-layer-shell
   (package
     (name "gtk-layer-shell")
-    (version "0.1.0")
+    (version "0.6.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/wmww/gtk-layer-shell/releases/download/v"
-             version "/gtk-layer-shell-" version ".tar.xz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/wmww/gtk-layer-shell")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0ncklk3z0fzlz6p76jdcrr1ykyp1f4ykjjch4x2hfp9bwsnl4a3m"))))
+        (base32 "1kcp4p3s7sdh9lwniybjdarfy8z69j2j23hfrw98amhwhq39gdcc"))))
     (build-system meson-build-system)
+    (arguments `(#:configure-flags (list "-Dtests=true")))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("gobject-introspection" ,gobject-introspection)))
     (inputs `(("wayland" ,wayland)

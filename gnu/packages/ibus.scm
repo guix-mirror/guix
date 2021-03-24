@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
@@ -173,7 +173,7 @@ may also simplify input method development.")
 (define-public ibus-libpinyin
   (package
     (name "ibus-libpinyin")
-    (version "1.11.1")
+    (version "1.12.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/libpinyin/ibus-libpinyin/"
@@ -181,10 +181,12 @@ may also simplify input method development.")
                                   "/ibus-libpinyin-" version ".tar.gz"))
               (sha256
                (base32
-                "1bl1cgicd2df797dx1x0q904438bsn8i23djzcfcai4dp3631xc0"))))
+                "0xl2lmffy42f6h6za05z4vpazpza1a9gsrva65giwyv3kpf652dd"))))
     (build-system glib-or-gtk-build-system)
     (arguments
-     `(#:phases
+     `(#:configure-flags
+       '("--enable-opencc")
+       #:phases
        (modify-phases %standard-phases
          (add-after 'wrap-program 'wrap-with-additional-paths
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -195,18 +197,22 @@ may also simplify input method development.")
                  `("GUIX_PYTHONPATH" ":" prefix
                    (,(getenv "GUIX_PYTHONPATH")
                     ,(string-append (assoc-ref inputs "ibus")
-                                    "/lib/girepository-1.0")))
+                                    "/lib/girepository-1.0")
+                    ,(string-append (assoc-ref outputs "out")
+                                    "/share/ibus-libpinyin/setup/")))
                  `("GI_TYPELIB_PATH" ":" prefix
                    (,(string-append (assoc-ref inputs "ibus")
-                                    "/lib/girepository-1.0"))))
+                                    "/lib/girepository-1.0")
+                    ,(string-append (assoc-ref outputs "out")
+                                    "/share/ibus-libpinyin/setup/"))))
                #t))))))
     (inputs
      `(("ibus" ,ibus)
        ("libpinyin" ,libpinyin)
        ("bdb" ,bdb)
        ("sqlite" ,sqlite)
+       ("opencc" ,opencc)
        ("python" ,python)
-       ("pyxdg" ,python-pyxdg)
        ("pygobject2" ,python-pygobject)
        ("gtk+" ,gtk+)))
     (native-inputs
@@ -218,12 +224,12 @@ may also simplify input method development.")
      "This package includes a Chinese pinyin input method and a Chinese
 ZhuYin (Bopomofo) input method based on libpinyin for IBus.")
     (home-page "https://github.com/libpinyin/ibus-libpinyin")
-    (license gpl2+)))
+    (license gpl3+)))
 
 (define-public libpinyin
   (package
     (name "libpinyin")
-    (version "2.3.0")
+    (version "2.6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/libpinyin/libpinyin/"
@@ -231,7 +237,7 @@ ZhuYin (Bopomofo) input method based on libpinyin for IBus.")
                                   "/libpinyin-" version ".tar.gz"))
               (sha256
                (base32
-                "14969v6w8n1aiqphl2386dws7dmsdwbzyqnlz4kr8ppm39m9rp5k"))))
+                "10h5mjgv4ibhispvr3s1k36a4aclx4dcvcc2knd4sg1xibw0dp4w"))))
     (build-system gnu-build-system)
     (inputs
      `(("glib" ,glib)

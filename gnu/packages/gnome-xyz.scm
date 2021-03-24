@@ -781,6 +781,70 @@ dark elements.  It supports GNOME, Unity, Xfce, and Openbox.")
 (define-public numix-theme
   (deprecated-package "numix-theme" numix-gtk-theme))
 
+(define-public orchis-theme
+  (package
+    (name "orchis-theme")
+    (version "2021-02-28")
+    (source
+      (origin
+        (method git-fetch)
+        (uri
+          (git-reference
+            (url "https://github.com/vinceliuice/Orchis-theme")
+            (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+          (base32
+           "1qp3phiza93qllrjm5xjjca5b7l2sbng8c382khy9m97grxvcq0y"))
+        (modules '((guix build utils)
+                   (ice-9 regex)
+                   (srfi srfi-26)))
+        (snippet
+         '(begin
+            (for-each
+             (lambda (f)
+               (let* ((r (make-regexp "\\.scss"))
+                      (f* (regexp-substitute #f (regexp-exec r f) 'pre ".css")))
+                 (if (file-exists? f*)
+                     (delete-file f*))))
+             (find-files "." ".*\\.scss"))
+            #t))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags (list
+                          "--dest" (string-append
+                                    (assoc-ref %outputs "out")
+                                    "/share/themes")
+                          "--theme" "all"
+                          "--radio-color")
+       #:tests? #f ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'bootstrap)
+         (delete 'configure)
+         (replace 'build (lambda _ (invoke "./parse-sass.sh")))
+         (replace 'install
+           (lambda* (#:key configure-flags #:allow-other-keys)
+             (mkdir-p
+              (cadr (or (member "--dest" configure-flags)
+                        (member "-d" configure-flags))))
+             (apply invoke "./install.sh" configure-flags)
+             #t)))))
+    (inputs
+     `(("gtk-engines" ,gtk-engines)))
+    (native-inputs
+     `(;("coreutils" ,coreutils)
+       ("gtk+" ,gtk+)
+       ("sassc" ,sassc)))
+    (home-page "https://github.com/vinceliuice/Orchis-theme")
+    (synopsis "Material Design theme for a wide range of environments")
+    (description "Orchis is a Material Design them for GNOME/GTK based
+desktop environments.  It is based on materia-theme and adds more color
+variants.")
+    (license (list license:gpl3            ; According to COPYING.
+                   license:lgpl2.1         ; Some style sheets.
+                   license:cc-by-sa4.0)))) ; Some icons
+
 (define-public markets
   (package
     (name "markets")

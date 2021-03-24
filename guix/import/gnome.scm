@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2019, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -64,8 +64,9 @@ not be determined."
     (match (string-tokenize version %not-dot)
       (((= string->number major) (= string->number minor) . rest)
        (and minor (even? minor)))
-      (_
-       #t)))                                      ;cross fingers
+      (((= string->number major) . _)
+       ;; It should at last start with a digit.
+       major)))
 
   (define upstream-name
     ;; Some packages like "NetworkManager" have camel-case names.
@@ -82,7 +83,10 @@ not be determined."
 
                   ;; ftp.gnome.org supports 'if-Modified-Since', so the local
                   ;; cache can expire early.
-                  #:ttl (* 60 10)))
+                  #:ttl (* 60 10)
+
+                  ;; Hide messages about URL redirects.
+                  #:log-port (%make-void-port "w")))
            (json (json->scm port)))
       (close-port port)
       (match json

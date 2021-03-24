@@ -104,7 +104,7 @@ readers and is needed to communicate with such devices through the
 (define-public eid-mw
   (package
     (name "eid-mw")
-    (version "5.0.11")
+    (version "5.0.14")
     (source
      (origin
        (method git-fetch)
@@ -113,7 +113,7 @@ readers and is needed to communicate with such devices through the
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0590cz00cny749p99srv880gpgzvxaf9fwm2lghv3nw0qdsilss8"))))
+        (base32 "1hyxsbxjjn9hh5p7jlcfb5yplf3n8dg49dfgi8fjp95phis3gbd4"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -631,9 +631,6 @@ implementing a Relying Party.")
     ;; files for internal use, so they are not really a bundled dependency.
     (license (list license:bsd-2 license:asl2.0))))
 
-(define-public python2-fido2
-  (package-with-python2 python-fido2))
-
 (define-public python-yubikey-manager
   (package
     (name "python-yubikey-manager")
@@ -670,6 +667,3 @@ that after installing this package, you might still need to add appropriate
 udev rules to your system configuration to be able to configure the YubiKey as
 an unprivileged user.")
     (license license:bsd-2)))
-
-(define-public python2-yubikey-manager
-  (package-with-python2 python-yubikey-manager))

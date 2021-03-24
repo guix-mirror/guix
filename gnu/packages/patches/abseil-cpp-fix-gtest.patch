@@ -1,0 +1,16 @@
+The GTEST_ALLOW_UNINSTANTIATED_PARAMTERIZED_TEST macro was added to googletest
+in commit 0b024bd9 on master. It has been used in an abseil-cpp release before
+a googletest release.
+
+--- a/absl/container/internal/unordered_map_modifiers_test.h
++++ b/absl/container/internal/unordered_map_modifiers_test.h
+@@ -286,7 +286,9 @@ class UniquePtrModifiersTest : public ::testing::Test {
+   }
+ };
+
++#ifdef GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST
+ GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(UniquePtrModifiersTest);
++#endif
+
+ TYPED_TEST_SUITE_P(UniquePtrModifiersTest);
+

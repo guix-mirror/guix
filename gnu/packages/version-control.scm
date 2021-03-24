@@ -7,7 +7,7 @@
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2016, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2015, 2018, 2020 Kyle Meyer <kyle@kyleam.com>
+;;; Copyright © 2015, 2018, 2020, 2021 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015, 2017, 2018, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017, 2018 Nikita <nikita@n0.is>
@@ -36,6 +36,8 @@
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2021 Léo Le Bouter <lle-bout@zaclys.net>
+;;; Copyright © 2021 LibreMiami <packaging-guix@libremiami.org>
+;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -170,14 +172,14 @@ as well as the classic centralized workflow.")
 (define-public git
   (package
    (name "git")
-   (version "2.30.1")
+   (version "2.31.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0rwlbps9x8kgk2hsm0bvsrkpsk9bnbnz8alknbd7i688jnhai27r"))))
+              "0h4sg3xqa9pd2agrd7m18sqg319ls978d39qswyf30rjvg5n5wg8"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -194,7 +196,7 @@ as well as the classic centralized workflow.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "015rqnz3ly1h6z6k9hfikgh401s3mzkmys8srai1kfv4v75pxz1h"))))
+            "1v40wwj130k76xf2w6vwhvfpkk765q1gcy5bqcrqssxf66ydqp8q"))))
       ;; For subtree documentation.
       ("asciidoc" ,asciidoc-py3)
       ("docbook-xsl" ,docbook-xsl)
@@ -598,6 +600,31 @@ everything from small to very large projects with speed and efficiency.")
        ("openssl" ,openssl)
        ("perl" ,perl)
        ("zlib" ,zlib)))))
+
+(define-public git2cl
+  (let ((commit "1d74d4c0d933fc69ed5cec838c73502584dead05"))
+    (package
+      (name "git2cl")
+      (version (string-append "20120919." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://git.savannah.nongnu.org/git/git2cl.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0wnnbm2sjvfj0qrksj89jlnl69miwl0vk3wrrvgvpclgys3na2g1"))))
+      (build-system copy-build-system)
+      (inputs
+       `(("perl" ,perl)))
+      (arguments
+       `(#:install-plan '(("git2cl" "bin/git2cl"))))
+      (home-page "https://savannah.nongnu.org/projects/git2cl")
+      (synopsis "Convert Git logs to GNU ChangeLog format")
+      (description "@code{git2cl} is a command line tool for converting Git
+logs to GNU ChangeLog format.")
+      (license license:gpl2+))))
 
 (define-public gitless
   (package
@@ -2196,7 +2223,7 @@ from Subversion to any supported Distributed Version Control System (DVCS).")
 (define-public tig
   (package
     (name "tig")
-    (version "2.5.1")
+    (version "2.5.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2204,7 +2231,7 @@ from Subversion to any supported Distributed Version Control System (DVCS).")
                     version "/tig-" version ".tar.gz"))
               (sha256
                (base32
-                "0r4y9hyvpkplaxrzslws3asz652d83qh3bjwvmp8assga8s5s3ah"))))
+                "1p1575yh4daxjifywxkd0hgyfwciylqcm2qakawvwn6mk620ca75"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)
@@ -2347,7 +2374,15 @@ based on a manifest file published by servers.")
        (method url-fetch)
        (uri (pypi-uri "b4" version))
        (sha256
-        (base32 "1j904dy9cwxl85k2ngc498q5cdnqwsmw3jibjr1m55w8aqdck68z"))))
+        (base32 "1j904dy9cwxl85k2ngc498q5cdnqwsmw3jibjr1m55w8aqdck68z"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Fixes issue with dependency requirements being too strict. See upstream commit:
+           ;; https://git.kernel.org/pub/scm/utils/b4/b4.git/commit/?id=31348a14afdb1d39e7faf9576eaddea1ced76e19
+           (substitute* "setup.py"
+             (("~=") ">="))
+           #t))))
     (build-system python-build-system)
     (arguments '(#:tests? #f))          ; No tests.
     (inputs

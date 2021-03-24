@@ -132,8 +132,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "1.2.0")
-        (commit "112692c0d546d35cd67c5dc70dbd1dc609b18f64")
-        (revision 14))
+        (commit "ec7fb669945bfb47c5e1fdf7de3a5d07f7002ccf")
+        (revision 17))
     (package
       (name "guix")
 
@@ -149,7 +149,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "081m6zcgscmh3xbz1wrm7bjwj5d1fnwd8w89qbmd8z44a1iknf49"))
+                  "1v9pwsqx8n4l6f7aj9vxv6m7vb4lyw8j5qg6mxf5zksia0qlcv2z"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -304,6 +304,7 @@ $(prefix)/etc/init.d\n")))
                                              '((assoc-ref inputs "guile"))))
                                (avahi  (assoc-ref inputs "guile-avahi"))
                                (gcrypt (assoc-ref inputs "guile-gcrypt"))
+                               (guile-lib   (assoc-ref inputs "guile-lib"))
                                (json   (assoc-ref inputs "guile-json"))
                                (sqlite (assoc-ref inputs "guile-sqlite3"))
                                (zlib   (assoc-ref inputs "guile-zlib"))
@@ -367,6 +368,7 @@ $(prefix)/etc/init.d\n")))
                              `(("guile-avahi" ,guile-avahi)))
                        ("guile-gcrypt" ,guile-gcrypt)
                        ("guile-json" ,guile-json-4)
+                       ("guile-lib" ,guile-lib)
                        ("guile-sqlite3" ,guile-sqlite3)
                        ("guile-zlib" ,guile-zlib)
                        ("guile-lzlib" ,guile-lzlib)
@@ -377,7 +379,7 @@ $(prefix)/etc/init.d\n")))
                        ;; XXX: Keep the development inputs here even though
                        ;; they're unnecessary, just so that 'guix environment
                        ;; guix' always contains them.
-                       ("autoconf" ,autoconf-wrapper)
+                       ("autoconf" ,autoconf)
                        ("automake" ,automake)
                        ("gettext" ,gettext-minimal)
                        ("texinfo" ,texinfo)
@@ -422,6 +424,7 @@ $(prefix)/etc/init.d\n")))
                `(("guile-avahi" ,guile-avahi)))
          ("guile-gcrypt" ,guile-gcrypt)
          ("guile-json" ,guile-json-4)
+         ("guile-lib" ,guile-lib)
          ("guile-sqlite3" ,guile-sqlite3)
          ("guile-ssh" ,guile-ssh)
          ("guile-git" ,guile-git)
@@ -702,7 +705,7 @@ features of Stow with some extensions.")
 (define-public rpm
   (package
     (name "rpm")
-    (version "4.16.1.2")
+    (version "4.16.1.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://ftp.rpm.org/releases/rpm-"
@@ -710,7 +713,7 @@ features of Stow with some extensions.")
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "1k6ank2aad7r503w12m6m494mxr6iccj52wqhwbc94pwxsf34mw3"))))
+                "07g2g0adgjm29wqy94iqhpp5dk0hacfw1yf7kzycrrxnfbwwfgai"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--with-external-db"   ;use the system's bdb
@@ -1377,14 +1380,14 @@ the boot loader configuration.")
 (define-public flatpak
   (package
    (name "flatpak")
-   (version "1.10.1")
+   (version "1.10.2")
    (source
     (origin
      (method url-fetch)
      (uri (string-append "https://github.com/flatpak/flatpak/releases/download/"
                          version "/flatpak-" version ".tar.xz"))
      (sha256
-      (base32 "1dywvfpmszvp2wy5hvpzy8z6gz2gzmi9p302njp52p9vpx14ydf1"))))
+      (base32 "1r6xw7r3ir2vaa30n3mily6m7d51cf4qv22fkqlzzy3js0wjf5fv"))))
 
    ;; Wrap 'flatpak' so that GIO_EXTRA_MODULES is set, thereby allowing GIO to
    ;; find the TLS backend in glib-networking.

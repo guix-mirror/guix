@@ -18,8 +18,6 @@
 
 (define-module (guix build-system node)
   #:use-module (guix store)
-  #:use-module (guix build json)
-  #:use-module (guix build union)
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix derivations)

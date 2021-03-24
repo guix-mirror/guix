@@ -3,6 +3,7 @@
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2021 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
+;;; Copyright © 2021 LibreMiami <packaging-guix@libremiami.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,13 +33,71 @@
   #:use-module (gnu packages lua)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages tls)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix hg-download)
   #:use-module (guix utils)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system go)
-  #:use-module (guix build-system meson))
+  #:use-module (guix build-system meson)
+  #:use-module (guix build-system python))
+
+(define-public clikan
+  (let ((commit "90fd60e485b46e49fcec7d029384fe1471c4443a")
+        (revision "0"))
+    (package
+      (name "clikan")
+      (version
+       (git-version "0.1.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/kitplummer/clikan/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "113kizm05v4cvyhdlg9zami54wk9qaiizq19mx36qvq9w7pg7a3k"))))
+      (build-system python-build-system)
+      (inputs
+       `(("click" ,python-click)
+         ("click-default-group" ,python-click-default-group)
+         ("pyyaml" ,python-pyyaml)
+         ("terminaltables" ,python-terminaltables)))
+      (synopsis "Command-line kanban (boarding) utility")
+      (description
+       "Clikan is a super simple command-line utility for tracking tasks
+following the Japanese kanban (boarding) style.")
+      (home-page "https://github.com/kitplummer/clikan/")
+      (license license:expat))))
+
+(define-public t-todo-manager
+  ;; Last release is more than 10 years old.  Using latest commit.
+  (let ((changeset "89ad444c000b")
+        (revision "97"))
+    (package
+      (name "t-todo-manager")
+      (version (git-version "1.2.0" revision changeset))
+      (source
+       (origin
+         (method hg-fetch)
+         (uri (hg-reference
+               (url "https://hg.stevelosh.com/t")
+               (changeset changeset)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32 "0c8zn7l0xq65wp07h7mxnb5ww56d1443l2vkjvx5sj6wpcchfn0s"))))
+      (build-system python-build-system)
+      (native-inputs
+       `(("python-cram" ,python-cram)))
+      (synopsis "Command-line todo list manager")
+      (description
+       "@command{t} is a command-line todo list manager for people that want
+to finish tasks, not organize them.")
+      (home-page "https://stevelosh.com/projects/t/")
+      (license license:expat))))
 
 (define-public taskwarrior
   (package

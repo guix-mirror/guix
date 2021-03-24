@@ -86,7 +86,7 @@ manner.  It also features an interactive interpreter.")
 (define-public swi-prolog
   (package
     (name "swi-prolog")
-    (version "8.3.10")
+    (version "8.3.20")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -96,7 +96,7 @@ manner.  It also features an interactive interpreter.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "15q40qpxz472lp190zbk0lyap2xgaxzib55l0c3qwgf9haz46j1p"))))
+                "1g0v9cmz8zvzc1n0si7sn6522xwzbhj2b8967ibs6prinrpjc8d6"))))
     (build-system cmake-build-system)
     (arguments
      `(#:parallel-build? #t

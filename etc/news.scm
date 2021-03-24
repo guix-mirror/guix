@@ -1,16 +1,17 @@
 ;; GNU Guix news, for use by 'guix pull'.
 ;;
 ;; Copyright © 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
-;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;; Copyright © 2019–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;; Copyright © 2019, 2020 Miguel Ángel Arruga Vivas <rosen644835@gmail.com>
 ;; Copyright © 2019, 2020 Konrad Hinsen <konrad.hinsen@fastmail.net>
-;; Copyright © 2019, 2020 Julien Lepiller <julien@lepiller.eu>
+;; Copyright © 2019, 2020, 2021 Julien Lepiller <julien@lepiller.eu>
 ;; Copyright © 2019, 2020, 2021 Florian Pelz <pelzflorian@pelzflorian.de>
 ;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;; Copyright © 2020, 2021 Mathieu Othacehe <m.othacehe@gmail.com>
 ;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
-;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;; Copyright © 2021 Leo Famulari <leo@famulari.name>
+;; Copyright © 2021 Zhu Zihao <all_but_last@163.com>
 ;;
 ;; Copying and distribution of this file, with or without modification, are
 ;; permitted in any medium without royalty provided the copyright notice and
@@ -18,6 +19,239 @@
 
 (channel-news
  (version 0)
+
+ (entry (commit "9ade2b720af91acecf76278b4d9b99ace406781e")
+        (title
+         (en "Update on previous @command{guix-daemon} local privilege escalation")
+         (de "Nachtrag zur lokalen Rechteausweitung bei @command{guix-daemon}")
+         (nl "Aanvulling bij escalatie van bevoegdheden via @command{guix-daemon}"))
+        (body
+         (en "The previous news item described a potential local privilege
+escalation in @command{guix-daemon}, and claimed that systems with the Linux
+@uref{https://www.kernel.org/doc/Documentation/sysctl/fs.txt,
+``protected hardlink''} feature enabled were unaffected by the vulnerability.
+
+This is not entirely correct.  Exploiting the bug on such systems is harder,
+but not impossible.  To avoid unpleasant surprises, all users are advised to
+upgrade @command{guix-daemon}.  Run @command{info \"(guix) Upgrading Guix\"}
+for info on how to do that.  See
+@uref{https://guix.gnu.org/en/blog/2021/risk-of-local-privilege-escalation-via-guix-daemon/}
+for more information on this bug.")
+         (de "In der letzten Neuigkeit wurde eine mögliche lokale
+Rechteausweitung im @command{guix-daemon} beschrieben und behauptet, dass
+Systeme, auf denen Linux’
+@uref{https://www.kernel.org/doc/Documentation/sysctl/fs.txt,
+„Geschützte-Hardlinks“-Funktionalität} aktiviert ist, von der Sicherheitslücke
+nicht betroffen seien.
+
+Das stimmt nicht ganz.  Die Lücke auf solchen Systemen auszunutzen, ist
+schwerer, aber nicht unmöglich.  Um unangenehme Überraschungen zu vermeiden,
+empfehlen wir allen Nutzern, @command{guix-daemon} zu aktualisieren.  Führen
+Sie @command{info \"(guix.de) Aktualisieren von Guix\"} aus, um zu erfahren,
+wie Sie ihn aktualisieren können.  Siehe
+@uref{https://guix.gnu.org/de/blog/2021/risk-of-local-privilege-escalation-via-guix-daemon/}
+für mehr Informationen zu diesem Fehler.")
+         (nl "Het vorige nieuwsbericht beschreef een beveiligingsprobleem in
+@command{guix-daemon} dat kan leiden tot de escalatie van lokale bevoegdheden.
+Het bericht stelde dat machines waarop de
+@uref{https://www.kernel.org/doc/Documentation/sysctl/fs.txt,
+``protected hardlink''}-optie van Linux is inschakeld niet kwetsbaar zijn.
+
+Dit is niet volledig juist.  De optie maakt het uitbuiten van de fout
+moeilijker maar niet onmogelijk.  Om onaangename verrassingen te voorkomen
+is het voor iedereen aangeraden om @command{guix-daemon} op te waarderen.
+Voer @command{info \"(guix) Upgrading Guix\"} uit voor meer informatie
+daarover.  Lees
+@uref{https://guix.gnu.org/en/blog/2021/risk-of-local-privilege-escalation-via-guix-daemon/}
+voor meer informatie over het probleem.")))
+
+ (entry (commit "ec7fb669945bfb47c5e1fdf7de3a5d07f7002ccf")
+        (title
+         (en "Risk of local privilege escalation @i{via} @command{guix-daemon}")
+         (de "Risiko lokaler Rechteausweitung über @command{guix-daemon}")
+         (fr "Risque d'élévation locale de privilèges @i{via} @command{guix-daemon}")
+         (nl "Risico op escalatie van bevoegdheden via @command{guix-daemon}"))
+        (body
+         (en "A security vulnerability that can lead to local privilege
+escalation has been found in @command{guix-daemon}.  It affects multi-user
+setups in which @command{guix-daemon} runs locally.
+
+It does @emph{not} affect multi-user setups where @command{guix-daemon} runs
+on a separate machine and is accessed over the network, @i{via}
+@env{GUIX_DAEMON_SOCKET}, as is customary on cluster setups.  Machines where
+the Linux @uref{https://www.kernel.org/doc/Documentation/sysctl/fs.txt,
+``protected hardlink''} feature is enabled, which is common, are also
+unaffected---this is the case when the contents of
+@file{/proc/sys/fs/protected_hardlinks} are @code{1}.
+
+The attack consists in having an unprivileged user spawn a build process, for
+instance with @command{guix build}, that makes its build directory
+world-writable.  The user then creates a hardlink within the build directory
+to a root-owned file from outside of the build directory, such as
+@file{/etc/shadow}.  If the user passed the @option{--keep-failed} option and
+the build eventually fails, the daemon changes ownership of the whole build
+tree, including the hardlink, to the user.  At that point, the user has write
+access to the target file.
+
+You are advised to upgrade @command{guix-daemon}.  Run @command{info \"(guix)
+Upgrading Guix\"}, for info on how to do that.  See
+@uref{https://issues.guix.gnu.org/47229} for more information on this bug.")
+         (de "Eine Sicherheitslücke, die zu einer lokalen Rechteausweitung
+führen kann, wurde in @command{guix-daemon} gefunden.  Sie betrifft
+Mehrbenutzersysteme, auf denen @command{guix-daemon} lokal läuft.
+
+@emph{Nicht} betroffen sind Mehrbenutzersysteme, auf denen
+@command{guix-daemon} auf einer separaten Maschine läuft und darauf über das
+Netzwerk mittels @env{GUIX_DAEMON_SOCKET} zugegriffen wird, was auf
+Rechen-Clustern üblich ist.  Auch Maschinen, auf denen Linux’
+@uref{https://www.kernel.org/doc/Documentation/sysctl/fs.txt,
+„Geschützte-Hardlinks“-Funktionalität} aktiviert ist@tie{}– was häufig der
+Fall ist@tie{}–, sind nicht betroffen; sie ist aktiviert, wenn
+@file{/proc/sys/fs/protected_hardlinks} den Inhalt @code{1} hat.
+
+Der Angriff besteht darin, dass ein unprivilegierter Benutzer einen
+Erstellungsprozess startet, etwa mit @command{guix build}, der allen
+Schreibberechtigung auf sein Erstellungsverzeichnis erteilt.  In diesem
+Erstellungsverzeichnis erzeugt der Benutzer nun eine harte Verknüpfung auf
+eine Datei außerhalb des Erstellungsverzeichnisses, die dem
+Administratornutzer root gehört, etwa @file{/etc/shadow}.  Wenn der Nutzer die
+Befehlszeilenoption @option{--keep-failed} angegeben hat und die Erstellung
+irgendwann fehlschlägt, trägt der Daemon als Besitzer des gesamten
+Erstellungsverzeichnisses den Benutzer ein, Hardlink eingeschlossen.  Jetzt
+hat der Benutzer Schreibzugriff auf die Zieldatei bekommen.
+
+Wir empfehlen, dass Sie @command{guix-daemon} aktualisieren.  Führen Sie
+@command{info \"(guix.de) Aktualisieren von Guix\"} aus, um zu erfahren, wie
+Sie ihn aktualisieren können.  Siehe @uref{https://issues.guix.gnu.org/47229}
+für mehr Informationen zu diesem Fehler.")
+         (fr "Une faille de sécurité pouvant mener à une élévation locale de
+privilèges a été trouvée dans @command{guix-daemon}.  Elle touche les
+installations multi-utilisateur·ices dans lesquelles @command{guix-daemon}
+tourne en local.
+
+Elle @emph{n'affecte pas} les installations où @command{guix-daemon} tourne
+sur une machine séparée et qu'on y accède à travers le réseau, @i{via}
+@env{GUIX_DAEMON_SOCKET}, comme c'est typiquement le cas sur les grappes de
+calcul (@i{clusters}).  Les machines où les
+@uref{https://www.kernel.org/doc/Documentation/sysctl/fs.txt, ``liens
+protégés''} de Linux sont activés, ce qui est courant, ne sont pas non plus
+touchées ; cette fonctionnalité est activée si le contenu de
+@file{/proc/sys/fs/protected_hardlinks} est @code{1}.
+
+Pour mener cette attaque, un·e utilisateur·rice démarre un processus de
+compilation, par exemple avec @command{guix build}, qui rend le répertoire de
+compilation inscriptible pour tout le monde.  La personne créée ensuite un
+lien dur (@i{hard link}) dans ce répertoire vers un fichier appartenant à
+@code{root}, tel que @file{/etc/shadow}.  Si on a passé l'option
+@option{--keep-failed} et que la compilation finit par échouer, le démon met
+l'utilisateur·rice appelant·e comme propriétaire de l'ensemble du répertoire
+de compilation, y compris le lien.  À ce stade, cette personne a accès en
+écriture sur le fichier cible.
+
+Nous conseillons de mettre à jour @command{guix-daemon}.  Lancer @command{info
+\"(guix.fr) Mettre à niveau Guix\"} pour voir comment faire.  Voir
+@uref{https://issues.guix.gnu.org/47229} pour plus d'informations sur cette
+faille.")
+                  (nl "In @command{guix-daemon} werd een beveiligingsprobleem
+gevonden dat kan leiden tot de escalatie van lokale bevoegdheden.  Het
+probleem doet zich voor bij installaties met meerdere gebruikers waarop een
+lokale @command{guix-daemon} draait.
+
+Het heeft @emph{geen} invloed op systemen met meerdere gebruikers waarbij de
+@command{guix-daemon} op een afzonderlijke machine draait en via
+@env{GUIX_DAEMON_SOCKET} over het netwerk wordt aangesproken, zoals
+gebruikelijk bij computerclusters.  Ook machines waarop de
+@uref{https://www.kernel.org/doc/Documentation/sysctl/fs.txt,
+``protected hardlink''}-optie van Linux is inschakeld, wat vaak het geval is,
+zijn niet kwetsbaar.
+
+De aanval bestaat erin dat een gebruiker zonder privileges een bouwproces
+opstart, bijvoorbeeld met @command{guix build}, dat zijn werkmap beschrijfbaar
+maakt voor alle gebruikers.  Vervolgens maakt de gebruiker vanuit deze map een
+harde link naar een bestand erbuiten met @code{root} als eigenaar, zoals
+@file{/etc/shadow}.  Als de gebruiker de @option{--keep-failed}-optie opgaf
+en de bouw faalt, maakt @command{guix-daemon} de gebruiker eigenaar van de
+volledige inhoud van de werkmap, met inbegrip van de harde link.  Op dat
+moment bezit de gebruiker schrijfrechten over het doelbestand.
+
+Het is aangeraden om @command{guix-daemon} op te waarderen.  Voer
+@command{info \"(guix) Upgrading Guix\"} uit voor meer informatie daarover.
+Lees @uref{https://issues.guix.gnu.org/47229} voor meer informatie over het
+probleem.")))
+
+ (entry (commit "77c2f4e2068ebec3f384c826c5a99785125ff72c")
+        (title
+         (en "@code{qemu-binfmt-service-type} is usable for any container")
+         (de "@code{qemu-binfmt-service-type} funktioniert mit jedem Container")
+         (fr "@code{qemu-binfmt-service-type} fonctionne avec tous les conteneurs"))
+        (body
+         (en "The service now makes use of the statically built QEMU binaries
+along with the fix binary (F) @code{binfmt_misc} flag, which allows the kernel
+to fully pre-load it in memory.  QEMU can thus now be used with any container
+without extra configuration.  The @code{guix-support?} field of the
+@code{qemu-binfmt-configuration} record is removed, as it is no longer
+necessary.")
+         (de "Der Dienst benutzt jetzt statisch gebundene QEMU-Binärdateien
+zusammen mit der Fix-Binary-Flag (F) von @code{binfmt_misc}.  Dadurch kann der
+Kernel die QEMU-Binärdatei als Ganzes vorab in den Speicher laden.  Dann kann
+sie auch ohne weitere Konfiguration in jeder Art von isolierter Umgebung
+benutzt werden. Darum wurde das Feld @code{guix-support?} des
+@code{qemu-binfmt-configuration}-Verbundsobjekts entfernt; es wird nicht mehr
+gebraucht.")
+         (fr "Le service utilise maintenant les binaire QEMU statiques avec
+le drapeau « fixed » (F) de @code{binfmt_misc}, ce qui permet au noyau
+de le charger entièrement en mémoire.  On peut donc maintenant utiliser QEMU
+avec n'importe quel conteneur sans configuration supplémentaire.  Le champ
+@code{guix-support?} de l'enregistrement @code{qemu-binfmt-configuration} a
+été supprimé car il n'est pas nécessaire.")))
+
+ (entry (commit "02e2e093e858e8a0ca7bd66c1f1f6fd0a1705edb")
+        (title
+         (en "New @command{guix import go} command")
+         (de "Neuer Befehl @command{guix import go}")
+         (fr "Nouvelle commande @command{guix import go}")
+         (nl "Nieuwe @command{guix import go}-opdracht"))
+        (body
+         (en "The new @command{guix import go} command allows packagers to
+generate a package definition or a template thereof given the name of a Go
+package available through @url{https://proxy.golang.org}, like so:
+
+@example
+guix import go golang.org/x/sys
+@end example
+
+Run @command{info \"(guix) Invoking guix import\"} for more info.")
+         (de "Mit dem neuen Befehl @command{guix import go} können
+Paketautoren eine Paketdefinition oder eine Vorlage dafür anhand des Namens
+eines auf @url{https://proxy.golang.org} verfügbaren Go-Pakets erzeugen, etwa
+so:
+
+@example
+guix import go golang.org/x/sys
+@end example
+
+Führen Sie @command{info \"(guix.de) Aufruf von guix import\"} aus, um mehr
+Informationen zu bekommen.")
+         (fr "La nouvelle commande @command{guix import go} permet aux
+empaqueteur·ice·s de générer une définition de paquet ou un modèle de
+définition à partir du nom d'un paquet Go disponible via
+@url{https://proxy.golang.org}, comme ceci :
+
+@example
+guix import go golang.org/x/sys
+@end example
+
+Lancez @command{info \"(guix.fr) Invoquer guix import\"} pour en savoir plus.")
+                  (nl "Met de nieuwe @command{guix import go}-opdracht kunnen
+pakketschrijvers een pakketdefinitie of -sjabloon aanmaken, op basis van de
+naam van een Go-pakket te vinden op @url{https://proxy.golang.org}:
+
+@example
+guix import go golang.org/x/sys
+@end example
+
+Voer @command{info \"(guix) Invoking guix import\"} uit voor meer
+informatie.")))
 
  (entry (commit "1b5b882120daf7d111aa351a919a90e818324347")
         (title
@@ -373,7 +607,8 @@ l'instant grâce à la librairie Guile-Avahi.")))
  (entry (commit "a9a2fdaabcc78e7a54d9a6bcfa4ee3de308e9a90")
         (title (en "Logical Volume Manager (LVM) now supported on Guix System")
                (de "Logical Volume Manager (LVM) wird jetzt auf Guix System unterstützt")
-               (es "El sistema Guix ahora implementa también volúmenes lógicos LVM"))
+               (es "El sistema Guix ahora implementa también volúmenes lógicos LVM")
+               (fr "Le gestionnaire de volumes logiques (LVM) est maintenant pris en charge par le système Guix"))
         (body
          (en "On Guix System, the new @code{lvm-device-mapping} variable
 allows you to declare ``mapped devices'' for LVM, the Linux Logical Volume
@@ -415,7 +650,20 @@ los volúmenes lógicos «alfa» y «beta» del grupo de volúmenes «vg0»:
 @end lisp
 
 Véase @command{info \"(guix.es) Dispositivos traducidos\"} para obtener más
-información.")))
+información.")
+         (fr "Sur le système Guix, la nouvelle variable @code{lvm-device-mapping}
+vous permet de déclarer des « périphériques mappés » pour LVM, le gestionnaire
+de volumes logiques.  Par exemple, vous pouvez déclarer les volumes logiques
+« alpha » et « beta » du groupe « vg0 » comme ceci :
+
+@lisp
+(mapped-device
+  (source \"vg0\")
+  (target (list \"vg0-alpha\" \"vg0-beta\"))
+  (type lvm-device-mapping))
+@end lisp
+
+Voir @command{info \"(guix.fr) Périphériques mappés\"} pour en savoir plus.")))
 
  (entry (commit "3b6e4e5fd05e72b8a32ff1a2d5e21464260e21e6")
         (title (en "List of substitute keys is now declarative on Guix System")
@@ -1066,7 +1314,8 @@ engine")
                (es "@command{guix pack -RR} introduce un nuevo motor
 de ejecución")
                (de "@command{guix pack -RR} führt neuen Ausführungstreiber
-ein"))
+ein")
+               (fr "@command{guix pack -RR} introduit un nouveau moteur d'exécution"))
         (body
          (en "The @command{guix pack -RR} command allows you to create a
 tarball containing @dfn{relocatable binaries}.  Until now, those would rely
@@ -1125,12 +1374,30 @@ export GUIX_EXECUTION_ENGINE
 @end example
 
 Führen Sie @command{info \"(guix.de) Aufruf von guix pack\"} aus, wenn Sie
-mehr wissen wollen.")))
+mehr wissen wollen.")
+         (fr "La commande @command{guix pack -RR} vous permet de créer une
+archive tar contenant des @dfn{binaires repositionnables}.  Jusqu'ici, ils
+s'appuyaient sur les « espaces de noms non privilégiés » de Linux ou sur
+PRoot, quand les espaces de noms non privilégiés n'étaient pas disponibles.
+Cependant, PRoot ralenti significativement certains profils d'exécution.
+
+Pour éviter cela, @command{guix pack -RR} introduit une troisième possibilité
+basée sur une extension de l'éditeur des liens à l'exécution de GNU (ld.so) et
+sur Fakechroot, qui ralenti très peu l'exécution.  Vous pouvez choisir l'option
+la plus rapide à l'exécution d'un binaire relocalisable de cette manière :
+
+@example
+GUIX_EXECUTION_ENGINE=performance
+export GUIX_EXECUTION_ENGINE
+@end example
+
+Lancez @command{info \"(guix.fr) Invoquer guix pack\"} pour en savoir plus.")))
 
  (entry (commit "88a96c568c47c97d05d883ada5afbc4e1200b10f")
         (title (en "New @option{--path} option for @command{guix graph}")
                (es "Nueva opción @option{--path} para @command{guix graph}")
-               (de "Neue Option @option{--path} für @command{guix graph}"))
+               (de "Neue Option @option{--path} für @command{guix graph}")
+               (fr "Nouvelle option @option{--path} pour @command{guix graph}"))
         (body
          (en "The @command{guix graph} command has a new @option{--path}
 option that instructs it to display the shortest path between two packages,
@@ -1165,7 +1432,18 @@ guix graph --path libreoffice libunistring
 @end example
 
 Führen Sie @code{info \"(guix.de) Aufruf von guix graph\"} aus, um mehr zu
-erfahren.")))
+erfahren.")
+         (fr "La commande @command{guix graph} a une nouvelle option
+@option{--path} qui lui dit d'afficer le plus court chemin entre deux
+paquets, dérivations ou éléments du dépôt.  Par exemple, la commande ci-dessous
+affiche le plus court chemin entre le paquet @code{libreoffice} et
+@code{libunistring} :
+
+@example
+guix graph --path libreoffice libunistring
+@end example
+
+Lancez @code{info \"(guix.fr) Invoquer guix graph\"} pour en savoir plus.")))
 
  (entry (commit "a33eac038a811603c8b9ed106ae405a5f80a0e9d")
         (title (en "GNU C Library upgraded")
@@ -1271,7 +1549,8 @@ Rezepte mit uns zu teilen!")))
 
  (entry (commit "2ca7af43fe17d9acf082dce85d137a27a8ac4887")
         (title (en "Further reduced binary seed bootstrap")
-               (de "Bootstrapping jetzt mit noch kleinerem Seed"))
+               (de "Bootstrapping jetzt mit noch kleinerem Seed")
+               (fr "Le bootstrap binaire est encore plus réduit"))
         (body
          (en "The package graph on x86_64 and i686 is now rooted in a further
 @dfn{reduced set of binary seeds}.  The initial set of binaries from which
@@ -1283,11 +1562,18 @@ the talk at @uref{https://fosdem.org/2020/schedule/event/gnumes/}.")
 Menge an Binärdateien, aus denen heraus Pakete erstellt werden, machen nun
 ungefähr 60 MiB aus, ein Viertel der früheren Größe. Führen Sie @code{info
 \"(guix.de) Bootstrapping\"} aus, um mehr zu erfahren, oder schauen Sie sich
-den Vortrag auf @uref{https://fosdem.org/2020/schedule/event/gnumes/} an.")))
+den Vortrag auf @uref{https://fosdem.org/2020/schedule/event/gnumes/} an.")
+         (fr "Le graphe des paquets sur x86_64 et i686 prend maintenant racine
+dans un @dfn{ensemble de graines binaires} plus réduit.  L'ensemble initial
+des binaires à partir desquels les paquets sont désormais construit pèse
+environ 60 Mo, un quart de ce qu'il était.  Lancez
+@code{info \"(guix.fr) Bootstrapping\"} pour en savoir plus, ou regardez
+la présentation sur @uref{https://fosdem.org/2020/schedule/event/gnumes/}.")))
 
  (entry (commit "0468455e7d279c89ea3ad1b51935efb2b785ec47")
         (title (en "Rottlog service added to @code{%base-services}")
-               (de "Rottlog-Dienst ist nun Teil der @code{%base-services}"))
+               (de "Rottlog-Dienst ist nun Teil der @code{%base-services}")
+               (fr "Le service rottlog a été ajouté à @code{%base-services}"))
         (body (en "An instance of @code{rottlog-service-type}, the system
 service responsible for log rotation, has been added to @code{%base-services}.
 If your operating system configuration for Guix System is explicitly adding
@@ -1297,11 +1583,18 @@ the ``Log Rotation'' section of the manual for more information.")
 Log-Rotation wurde zu den @code{%base-services} hinzugefügt.  Wenn der
 Systemdienst bereits in Ihrer Konfiguration für Guix System ausdrücklich
 genannt wurde, sollten Sie ihn jetzt daraus entfernen.  Siehe den Abschnitt
-„Log-Rotation“ im Handbuch für weitere Informationen.")))
+„Log-Rotation“ im Handbuch für weitere Informationen.")
+              (fr "Une instance de @code{rottlog-service-type}, le service
+système responsable de la rotation des journaux, a été ajoutée à
+@code{%base-services}.  Si votre configuration de système d'exploitation Guix
+System ajoute @code{rottlog-service-type} explicitement, vous devriez maintenant
+le supprimer.  Voir la section « Rotation des journaux » dans le manuel
+pour en savoir plus.")))
 
  (entry (commit "b6bee63bed4f013064c0d902e7c8b83ed7514ade")
         (title (en "@code{guile} package now refers to version 3.0")
-               (de "Das @code{guile}-Paket bezeichnet jetzt Version 3.0"))
+               (de "Das @code{guile}-Paket bezeichnet jetzt Version 3.0")
+               (fr "Le paquet @code{guile} se réfère maintenant à la version 3.0"))
         (body (en "The @code{guile} package has been upgraded to version 3.0
  (instead of 2.2).  The @code{guile3.0-} packages have been renamed to their
 original name, and @code{guile2.2-} variants of these packages have been
@@ -1312,7 +1605,12 @@ system services also run on 3.0.")
 beginnen, wurden umbenannt, so dass sie nun den unveränderten Namen tragen,
 während ihre Varianten mit @code{guile2.2-} hinzugefügt wurden.  Des Weiteren
 werden jetzt alle Ableitungen mit Guile 3.0 erstellt und die Systemdienste
-laufen auch auf 3.0.")))
+laufen auch auf 3.0.")
+              (fr "Le paquet @code{guile} a été mis à jour vers la version 3.0
+(au lieu de la 2.2).  Les paquets @code{guile3.0-} ont été renommés en leur
+nom d'origine et les variantes @code{guile2.2-} de ces paquets ont été définis.
+En plus, les dérivation sont maintenant construites avec Guile 3.0, et les
+services systèmes utilisent aussi la 3.0.")))
 
  (entry (commit "e3e1a7ba08af2d58c47264c543617e499c239444")
         (title (en "@command{guix pull} now supports SSH authenticated
@@ -1418,7 +1716,9 @@ historique.")))
  (entry (commit "3e962e59d849e4300e447d94487684102d9d412e")
         (title (en "@command{guix graph} now supports package
 transformations")
-               (de "@command{guix graph} unterstützt nun Paketumwandlungen"))
+               (de "@command{guix graph} unterstützt nun Paketumwandlungen")
+               (fr "@command{guix graph} prend maintenant en charge les
+transformations de paquets"))
         (body
          (en "The @command{guix graph} command now supports the common package
 transformation options (see @command{info \"(guix) Package Transformation
@@ -1433,7 +1733,11 @@ Abhängigkeitsgraphen zu sehen.")
 comunes de transformación de paquetes (véase @command{info \"(guix.es)
 Opciones de transformación de paquetes\"}). Esto es particularmente
 útil para comprobar el efecto de la opción de reescritura del grafo
-de dependencias @option{--with-input}.")))
+de dependencias @option{--with-input}.")
+         (fr "La commande @command{guix graph} prend maintenant en charge les
+transformations de paquets communes (voir @command{info \"(guix.fr) Options de
+transformation de paquets\"}).  C'est particulièrement utile pour voir l'effet
+de l'option @option{--with-input} qui réécrit de graphe de dépendance.")))
 
  (entry (commit "49af34cfac89d384c46269bfd9388b2c73b1220a")
         (title (en "@command{guix pull} now honors

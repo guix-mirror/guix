@@ -91,7 +91,7 @@
     (description "Range-v3 is an extension of the Standard Template Library that
 makes its iterators and algorithms more powerful by making them composable.
 Unlike other range-like solutions which, seek to do away with iterators, in
-range-v3 ranges are an abstration layer on top of iterators.")
+range-v3 ranges are an abstraction layer on top of iterators.")
     (home-page "https://github.com/ericniebler/range-v3/")
     (license
      (list
@@ -678,7 +678,7 @@ point and then, after each tween step, plugging back the result.")
 (define-public abseil-cpp
   (package
     (name "abseil-cpp")
-    (version "20200225.2")
+    (version "20200923.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -687,11 +687,17 @@ point and then, after each tween step, plugging back the result.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0dwxg54pv6ihphbia0iw65r64whd7v8nm4wwhcz219642cgpv54y"))))
+                "1p4djhm1f011ficbjjxx3n8428p8481p20j4glpaawnpsi362hkl"))
+              ;; Remove after next googletest release and update.
+              (patches
+               (search-patches
+                "abseil-cpp-fix-gtest.patch"
+                "abseil-cpp-fix-strerror_test.patch"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags (list "-DBUILD_SHARED_LIBS=ON"
                                "-DABSL_RUN_TESTS=ON"
+                               "-DABSL_USE_EXTERNAL_GOOGLETEST=ON"
                                ;; Needed, else we get errors like:
                                ;;
                                ;; ld: CMakeFiles/absl_periodic_sampler_test.dir/internal/periodic_sampler_test.cc.o:
@@ -813,7 +819,7 @@ of C++14 components that complements @code{std} and Boost.")
 (define-public aws-sdk-cpp
   (package
     (name "aws-sdk-cpp")
-    (version "1.8.102")
+    (version "1.8.159")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -822,13 +828,13 @@ of C++14 components that complements @code{std} and Boost.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1w8x2vakg5ngjyyg08n4g3dqy8wqnz0k3gkrlqrh460s2pvdivba"))))
+                "0jpfv9x82nq7hcix9in7qgrc8009dwpg6gr96hlgmcvqrqckd2r9"))))
     (build-system cmake-build-system)
     (arguments
      '(;; Tests are run during the build phase.
        #:tests? #f
        #:configure-flags
-       '("-DBUILD_SHARED_LIBS=OFF"
+       '("-DBUILD_SHARED_LIBS=ON"
          "-DBUILD_DEPS=OFF")))
     (propagated-inputs
      `(("aws-c-common" ,aws-c-common)

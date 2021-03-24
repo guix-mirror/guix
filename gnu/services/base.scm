@@ -35,6 +35,7 @@
   #:use-module (gnu services)
   #:use-module (gnu services admin)
   #:use-module (gnu services shepherd)
+  #:use-module (gnu services sysctl)
   #:use-module (gnu system pam)
   #:use-module (gnu system shadow)                ; 'user-account', etc.
   #:use-module (gnu system uuid)
@@ -2531,6 +2532,8 @@ to handle."
         (service udev-service-type
                  (udev-configuration
                    (rules (list lvm2 fuse alsa-utils crda))))
+
+        (service sysctl-service-type)
 
         (service special-files-service-type
                  `(("/bin/sh" ,(file-append bash "/bin/sh"))

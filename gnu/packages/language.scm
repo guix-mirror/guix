@@ -61,9 +61,7 @@
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (guix build-system qt)
-  #:use-module ((guix licenses)
-                #:select
-                (bsd-3 gpl2 gpl2+ gpl3 gpl3+ lgpl2.1 lgpl2.1+ lgpl3+ perl-license zpl2.1 fdl1.2+))
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix utils))
@@ -85,7 +83,7 @@
        (sha256
         (base32 "01qi7flmaqrn2fk03sa42r0caks9d8lsv88s0bgxahhxwk1x76gc"))))
     (build-system glib-or-gtk-build-system)
-    (outputs '("out" "doc"))
+    (outputs '("out" "gtk" "qt" "doc"))
     (arguments
      `(#:imported-modules
        (,@%glib-or-gtk-build-system-modules
@@ -105,7 +103,15 @@
                        "/share/gtk-doc/html"))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-flags
+         (add-after 'unpack 'disable-qt4
+           (lambda _
+             (substitute* '("configure.ac" "modules/clients/Makefile.am")
+               (("\\[QtGui\\]")
+                "[Qt5Gui]")
+               ((" qt4")
+                ""))
+             #t))
+         (add-after 'disable-qt4 'patch-flags
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "configure.ac"
                (("-Werror")
@@ -134,18 +140,14 @@
                                "/bin:$GTK2_LIBDIR/libgtk2.0-0")))
              (substitute* "modules/clients/gtk/Makefile.am"
                (("\\$\\(GTK3_LIBDIR\\)")
-                (string-append (assoc-ref outputs "out")
+                (string-append (assoc-ref outputs "gtk")
                                "/lib"))
                (("\\$\\(GTK2_LIBDIR\\)")
-                (string-append (assoc-ref outputs "out")
-                               "/lib")))
-             (substitute* "modules/clients/qt4/Makefile.am"
-               (("\\$\\(QT4_LIB_DIR\\)")
-                (string-append (assoc-ref outputs "out")
+                (string-append (assoc-ref outputs "gtk")
                                "/lib")))
              (substitute* "modules/clients/qt5/Makefile.am"
                (("\\$\\(QT5_IM_MODULE_DIR\\)")
-                (string-append (assoc-ref outputs "out")
+                (string-append (assoc-ref outputs "qt")
                                "/lib/qt5/plugins/inputmethods")))
              (substitute* '("bin/nimf-settings/Makefile.am"
                             "data/apparmor-abstractions/Makefile.am"
@@ -182,7 +184,6 @@
        ("hangul" ,libhangul)
        ("m17n-db" ,m17n-db)
        ("m17n-lib" ,m17n-lib)
-       ("qt-4" ,qt-4)
        ("qtbase" ,qtbase)
        ("rime" ,librime)
        ("rsvg" ,librsvg)
@@ -198,7 +199,7 @@
 framework.  This package provides a fork of the original nimf project, that
 focusses especially on Korean input (Hangul, Hanja, ...).")
     (home-page "https://github.com/hamonikr/nimf/")
-    (license lgpl3+)))
+    (license license:lgpl3+)))
 
 (define-public hime
   (package
@@ -262,12 +263,8 @@ is lightweight, stable, powerful and supports many commonly used input methods,
 including Cangjie, Zhuyin, Dayi, Ranked, Shrimp, Greek, Anthy, Korean, Latin,
 Random Cage Fighting Birds, Cool Music etc.")
     (home-page "http://hime-ime.github.io/")
-    (license
-     (list
-      gpl2+
-      lgpl2.1+
-      ;; Documentation
-      fdl1.2+))))
+    (license (list license:gpl2+ license:lgpl2.1+
+                   license:fdl1.2+)))) ; documentation
 
 (define-public libchewing
   (package
@@ -328,7 +325,7 @@ Random Cage Fighting Birds, Cool Music etc.")
     (description "Chewing is an intelligent phonetic (Zhuyin/Bopomofo) input
 method, one of the most popular choices for Traditional Chinese users.")
     (home-page "http://chewing.im/")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public liblouis
   (package
@@ -380,8 +377,8 @@ support a rule- or dictionary based approach.  Tools for testing and debugging
 tables are also included.  Liblouis also supports math braille, Nemeth and
 Marburg.")
     (home-page "http://liblouis.org/")
-    (license (list lgpl2.1+             ; library
-                   gpl3+))))            ; tools
+    (license (list license:lgpl2.1+     ; library
+                   license:gpl3+))))    ; tools
 
 (define-public liblouisutdml
   (package
@@ -421,8 +418,8 @@ transcription services for xml, html and text documents.  It translates into
 appropriate braille codes and formats according to its style sheet and the
 specifications in the document.")
     (home-page "http://liblouis.org/")
-    (license (list lgpl3+               ; library
-                   gpl3+))))            ; tools
+    (license (list license:lgpl3+       ; library
+                   license:gpl3+))))    ; tools
 
 (define-public libstemmer
   (package
@@ -459,7 +456,7 @@ specifications in the document.")
     (description "LibStemmer provides stemming library, supporting several
 languages.")
     (home-page "https://snowballstem.org/")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public perl-lingua-en-findnumber
   (package
@@ -481,7 +478,7 @@ languages.")
     (description "This module provides a regular expression for finding
 numbers in English text.  It also provides functions for extracting and
 manipulating such numbers.")
-    (license perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-lingua-en-inflect
   (package
@@ -504,7 +501,7 @@ manipulating such numbers.")
 words.  Plural forms of all nouns, most verbs, and some adjectives are
 provided.  Where appropriate, \"classical\" variants (for example: \"brother\"
 -> \"brethren\", \"dogma\" -> \"dogmata\", etc.) are also provided.")
-    (license perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-lingua-en-inflect-number
   (package
@@ -526,7 +523,7 @@ provided.  Where appropriate, \"classical\" variants (for example: \"brother\"
     (description "This module extends the functionality of Lingua::EN::Inflect
 with three new functions for determining plurality of a word and forcefully
 converting a word to singular or plural.")
-    (license perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-lingua-en-inflect-phrase
   (package
@@ -553,7 +550,7 @@ converting a word to singular or plural.")
     (synopsis "Inflect short English phrases")
     (description "This module attempts to pluralize or singularize short
 English phrases.")
-    (license perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-lingua-en-number-isordinal
   (package
@@ -577,7 +574,7 @@ English phrases.")
     (synopsis "Detect if English number is ordinal or cardinal")
     (description "This module will tell you if a number, either in words or as
 digits, is a cardinal or ordinal number.")
-    (license perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-lingua-en-tagger
   (package
@@ -607,7 +604,7 @@ appropriate tag for the current word.  Unknown words are classified according
 to word morphology or can be set to be treated as nouns or other parts of
 speech.  The tagger also extracts as many nouns and noun phrases as it can,
 using a set of regular expressions.")
-    (license gpl3)))
+    (license license:gpl3)))
 
 (define-public perl-lingua-en-words2nums
   (package
@@ -626,7 +623,7 @@ using a set of regular expressions.")
     (synopsis "Convert English text to numbers")
     (description "This module converts English text into numbers.  It supports
 both ordinal and cardinal numbers, negative numbers, and very large numbers.")
-    (license perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-lingua-pt-stemmer
   (package
@@ -646,7 +643,7 @@ both ordinal and cardinal numbers, negative numbers, and very large numbers.")
     (description "This module implements a Portuguese stemming algorithm
 proposed in the paper A Stemming Algorithm for the Portuguese Language by
 Moreira, V. and Huyck, C.")
-    (license perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-lingua-stem
   (package
@@ -676,7 +673,7 @@ Moreira, V. and Huyck, C.")
     (synopsis "Stemming of words in various languages")
     (description "This routine applies stemming algorithms to its parameters,
 returning the stemmed words as appropriate to the selected locale.")
-    (license perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-lingua-stem-fr
   (package
@@ -695,7 +692,7 @@ returning the stemmed words as appropriate to the selected locale.")
     (synopsis "Porter's stemming algorithm for French")
     (description "This module uses a modified version of the Porter Stemming
 Algorithm to return a stemmed French word.")
-    (license perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-lingua-stem-it
   (package
@@ -714,7 +711,7 @@ Algorithm to return a stemmed French word.")
     (synopsis "Porter's stemming algorithm for Italian")
     (description "This module applies the Porter Stemming Algorithm to its
 parameters, returning the stemmed Italian word.")
-    (license perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-lingua-stem-ru
   (package
@@ -733,7 +730,7 @@ parameters, returning the stemmed Italian word.")
     (synopsis "Porter's stemming algorithm for Russian")
     (description "This module applies the Porter Stemming Algorithm to its
 parameters, returning the stemmed Russian (KOI8-R only) word.")
-    (license perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-lingua-stem-snowball-da
   (package
@@ -753,7 +750,7 @@ parameters, returning the stemmed Russian (KOI8-R only) word.")
     (description "Lingua::Stem::Snowball::Da is a perl port of the danish
 stemmer at http://snowball.sourceforge.net, it was originally altered from the
 Lingua::Stem::Snowball::Se.")
-    (license gpl2)))
+    (license license:gpl2)))
 
 (define-public perl-snowball-norwegian
   (package
@@ -773,7 +770,7 @@ Lingua::Stem::Snowball::Se.")
     (synopsis "Porters stemming algorithm for Norwegian")
     (description "Lingua::Stem::Snowball::No is a perl port of the norwegian
 stemmer at http://snowball.tartarus.org.")
-    (license perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-snowball-swedish
   (package
@@ -793,7 +790,7 @@ stemmer at http://snowball.tartarus.org.")
     (synopsis "Porters stemming algorithm for Swedish")
     (description "Lingua::Stem::Snowball::Se is a perl port of the swedish
 stemmer at http://snowball.sourceforge.net.")
-    (license perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-string-toidentifier-en
   (package
@@ -819,7 +816,7 @@ converting an arbitrary string into a readable representation using the ASCII
 subset of \"\\w\" for use as an identifier in a computer program.  The intent
 is to make unique identifier names from which the content of the original
 string can be easily inferred by a human just by reading the identifier.")
-    (license perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-text-german
   (package
@@ -838,7 +835,7 @@ string can be easily inferred by a human just by reading the identifier.")
     (synopsis "German grundform reduction")
     (description "This module is a rather incomplete implementation of work
 done by Gudrun Putze-Meier.")
-    (license perl-license)))
+    (license license:perl-license)))
 
 (define* (tegaki-release-uri proj version
                              #:optional (ext "tar.gz"))
@@ -905,7 +902,7 @@ extensions in EXTS."
 modern implementation of handwriting recognition software, specifically
 designed for Chinese (simplified and traditional) and Japanese, and that is
 suitable for both the desktop and mobile devices.")
-    (license gpl2+))) ; all files
+    (license license:gpl2+))) ; all files
 
 (define-public python2-tegaki-python
   (package
@@ -950,9 +947,9 @@ suitable for both the desktop and mobile devices.")
        ("python2-zinnia" ,python2-zinnia)))
     (synopsis
      "Chinese and Japanese Handwriting Recognition (Base python library)")
-    (license (list gpl2+ ; all files except...
-                   bsd-3 ; dictutils.py
-                   zpl2.1)))) ; minjson.py
+    (license (list license:gpl2+        ; all files except...
+                   license:bsd-3        ; dictutils.py
+                   license:zpl2.1))))   ; minjson.py
 
 (define-public python2-tegaki-pygtk
   (package
@@ -988,7 +985,7 @@ suitable for both the desktop and mobile devices.")
      `(("python2-pygtk" ,python2-pygtk)
        ("python2-tegaki-python" ,python2-tegaki-python)))
     (synopsis "Chinese and Japanese Handwriting Recognition (Base UI library)")
-    (license gpl2+))) ; all files
+    (license license:gpl2+)))
 
 (define-public python2-tegaki-tools
   (package
@@ -1015,7 +1012,7 @@ suitable for both the desktop and mobile devices.")
     (synopsis "Chinese and Japanese Handwriting Recognition (Advanced tools)")
     ;; Files in gifenc/ are licensed under gpl3+ while other files are licensed
     ;; under gpl2+. Therefore, the combined work is licensed under gpl3+.
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public python2-tegaki-recognize
   (let ((commit "eceec69fe651d0733c8c8752dae569d2283d0f3c")
@@ -1067,7 +1064,7 @@ suitable for both the desktop and mobile devices.")
                          "--root=/")
                  #t))))))
       (synopsis "Chinese and Japanese Handwriting Recognition (Main program)")
-      (license gpl2+)))) ; all files
+      (license license:gpl2+))))
 
 (define-public tegaki-zinnia-japanese
   (package
@@ -1104,7 +1101,7 @@ suitable for both the desktop and mobile devices.")
             (variable "TEGAKI_MODEL_PATH")
             (files '("share/tegaki/models")))))
     (synopsis "Chinese and Japanese Handwriting Recognition (Model)")
-    (license lgpl2.1))) ; all files
+    (license license:lgpl2.1)))
 
 (define-public tegaki-zinnia-japanese-light
   (package
@@ -1120,7 +1117,7 @@ suitable for both the desktop and mobile devices.")
          "0x0fs29ylqzxd6xvg51h7rigpbisd7q8v11df425ib2j792yfyf8"))
        (modules remove-pre-compiled-files-modules)
        (snippet (remove-pre-compiled-files "model"))))
-    (license lgpl2.1))) ; all files
+    (license license:lgpl2.1)))
 
 (define-public tegaki-zinnia-japanese-kyoiku
   (package
@@ -1136,7 +1133,7 @@ suitable for both the desktop and mobile devices.")
          "0am94bcpmbzplxdnwn9gk15sgaizvcfhmv13mk14jjvx3419cvvx"))
        (modules remove-pre-compiled-files-modules)
        (snippet (remove-pre-compiled-files "model"))))
-    (license lgpl2.1))) ; all files
+    (license license:lgpl2.1)))
 
 (define-public tegaki-zinnia-japanese-joyo
   (package
@@ -1152,7 +1149,7 @@ suitable for both the desktop and mobile devices.")
          "1v0j40lzdyiz01ayws0b8r7fsdy2mr32658382kz4wyk883wzx2z"))
        (modules remove-pre-compiled-files-modules)
        (snippet (remove-pre-compiled-files "model"))))
-    (license lgpl2.1))) ; all files
+    (license license:lgpl2.1)))
 
 (define-public tegaki-zinnia-simplified-chinese
   (package
@@ -1168,7 +1165,7 @@ suitable for both the desktop and mobile devices.")
          "18wq0jccv7lpnrfnzspyc110d6pj2v1i21xcx4fmgzz1lnln3fs5"))
        (modules remove-pre-compiled-files-modules)
        (snippet (remove-pre-compiled-files "model"))))
-    (license lgpl2.1))) ; all files
+    (license license:lgpl2.1)))
 
 (define-public tegaki-zinnia-simplified-chinese-light
   (package
@@ -1184,7 +1181,7 @@ suitable for both the desktop and mobile devices.")
          "0v24yf0w0p03lb7fyx128a75mwzad166bigvlbrzqnad789qg1sr"))
        (modules remove-pre-compiled-files-modules)
        (snippet (remove-pre-compiled-files "model"))))
-    (license lgpl2.1))) ; all files
+    (license license:lgpl2.1)))
 
 (define-public tegaki-zinnia-traditional-chinese
   (package
@@ -1200,7 +1197,7 @@ suitable for both the desktop and mobile devices.")
          "140nlp6hynrai2svs5670jjfw1za6ayflhyj2dl0bzsfgbk3447l"))
        (modules remove-pre-compiled-files-modules)
        (snippet (remove-pre-compiled-files "model"))))
-    (license lgpl2.1))) ; all files
+    (license license:lgpl2.1)))
 
 (define-public tegaki-zinnia-traditional-chinese-light
   (package
@@ -1216,7 +1213,7 @@ suitable for both the desktop and mobile devices.")
          "1m6yk6a57vs9wg5y50qciwi1ahhmklp2mgsjysbj4mnyzv6yhcr2"))
        (modules remove-pre-compiled-files-modules)
        (snippet (remove-pre-compiled-files "model"))))
-    (license lgpl2.1))) ; all files
+    (license license:lgpl2.1)))
 
 (define-public tegaki-wagomu-japanese
   (package
@@ -1232,7 +1229,7 @@ suitable for both the desktop and mobile devices.")
          "0flj5id8xwsn7csrrzqz9prdikswnwm2wms0as2vzdpxzph1az4k"))
        (modules remove-pre-compiled-files-modules)
        (snippet (remove-pre-compiled-files "model"))))
-    (license lgpl2.1))) ; all files
+    (license license:lgpl2.1)))
 
 (define-public tegaki-wagomu-japanese-kyoiku
   (package
@@ -1248,7 +1245,7 @@ suitable for both the desktop and mobile devices.")
          "0v8crfh8rdf6ndp16g52s5jlrrlwh73xp38zjn5i9dlacx8kfqg1"))
        (modules remove-pre-compiled-files-modules)
        (snippet (remove-pre-compiled-files "model"))))
-    (license lgpl2.1))) ; all files
+    (license license:lgpl2.1)))
 
 (define-public tegaki-wagomu-japanese-joyo
   (package
@@ -1264,7 +1261,7 @@ suitable for both the desktop and mobile devices.")
          "0wk8shpr963zp328g991qs6abpnacq4242003m687z2d6yp7nph2"))
        (modules remove-pre-compiled-files-modules)
        (snippet (remove-pre-compiled-files "model"))))
-    (license lgpl2.1))) ; all files
+    (license license:lgpl2.1)))
 
 (define-public tegaki-wagomu-simplified-chinese
   (package
@@ -1280,7 +1277,7 @@ suitable for both the desktop and mobile devices.")
          "0wqprynigqxqxv128i1smh81gxvmjj056d9qpznxa3n9f5ymlbj6"))
        (modules remove-pre-compiled-files-modules)
        (snippet (remove-pre-compiled-files "model"))))
-    (license lgpl2.1))) ; all files
+    (license license:lgpl2.1)))
 
 ;;; Upstream does not provide the source for tegaki-wagomu-traditional-chinese.
 ;;; Therefore, we use the source for tegaki-zinnia-traditional-chinese and
@@ -1301,7 +1298,7 @@ suitable for both the desktop and mobile devices.")
                (substitute* "Makefile"
                  (("zinnia") "wagomu"))
                #t))))))
-    (license lgpl2.1))) ; all files
+    (license license:lgpl2.1)))
 
 (define-public link-grammar
   (package
@@ -1325,7 +1322,7 @@ system assigns to it a syntactic structure, which consists of a set of
 labelled links connecting pairs of words.  The parser also produces a
 \"constituent\" (HPSG style phrase tree) representation of a sentence (showing
 noun phrases, verb phrases, etc.).")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public praat
   (package
@@ -1368,4 +1365,4 @@ noun phrases, verb phrases, etc.).")
     (description "Praat is a tool to perform phonetics tasks.  It can do speech
 analysis (pitch, formant, intensity, ...), speech synthesis, labelling, segmenting
 and manipulation.")
-    (license gpl2+)))
+    (license license:gpl2+)))

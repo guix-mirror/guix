@@ -167,7 +167,7 @@ feature detection and cosmetic corrections.")
 (define-public wcslib
   (package
     (name "wcslib")
-    (version "7.4")
+    (version "7.5")
     (source
      (origin
        (method url-fetch)
@@ -175,7 +175,7 @@ feature detection and cosmetic corrections.")
              "ftp://ftp.atnf.csiro.au/pub/software/wcslib/wcslib-" version
              ".tar.bz2"))
        (sha256
-        (base32 "072i1id4zk08mwi2c1zpy8zxrabl8dqyklx9ikbd2nh56r0rc752"))))
+        (base32 "1536gmcpm6pckn9xrb6j8s4pm1vryjhzvhfaj9wx3jwxcpbdy0dw"))))
     (inputs
      `(("cfitsio" ,cfitsio)))
     (build-system gnu-build-system)

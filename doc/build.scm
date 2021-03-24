@@ -182,32 +182,6 @@ as well as images, OS examples, and translations."
     "-c" "EXTRA_HEAD=<meta name=\"viewport\" \
 content=\"width=device-width, initial-scale=1\" />"))
 
-(define guile-lib/htmlprag-fixed
-  ;; Guile-Lib with a hotfix for (htmlprag).
-  (package
-    (inherit guile-lib)
-    (arguments
-     (substitute-keyword-arguments (package-arguments guile-lib)
-       ((#:phases phases '%standard-phases)
-        `(modify-phases ,phases
-           (add-before 'build 'fix-htmlprag
-             (lambda _
-               ;; When parsing
-               ;; "<body><blockquote><p>foo</p>\n</blockquote></body>",
-               ;; 'html->shtml' would mistakenly close 'blockquote' right
-               ;; before <p>.  This patch removes 'p' from the
-               ;; 'parent-constraints' alist to fix that.
-               (substitute* "src/htmlprag.scm"
-                 (("^[[:blank:]]*\\(p[[:blank:]]+\\. \\(body td th\\)\\).*")
-                  ""))
-               #t))
-           (add-before 'check 'skip-known-failure
-             (lambda _
-               ;; XXX: The above change causes one test failure among
-               ;; the htmlprag tests.
-               (setenv "XFAIL_TESTS" "htmlprag.scm")
-               #t))))))))
-
 (define (normalize-language-code language)        ;XXX: deduplicate
   ;; Normalize LANGUAGE.  For instance, "zh_CN" becomes "zh-cn".
   (string-map (match-lambda
@@ -224,7 +198,7 @@ key is an identifier and the associated value is the URL reference pointing to
 that identifier.  The URL is constructed by concatenating BASE-URL to the
 actual file name."
   (define build
-    (with-extensions (list guile-lib/htmlprag-fixed)
+    (with-extensions (list guile-lib)
       (with-imported-modules '((guix build utils))
         #~(begin
             (use-modules (guix build utils)
@@ -235,6 +209,8 @@ actual file name."
                          (ice-9 match)
                          (ice-9 threads)
                          (ice-9 pretty-print))
+
+            (%strict-tokenizer? #t)
 
             (define file-url
               (let ((prefix (string-append #$manual "/")))
@@ -380,7 +356,7 @@ actual file name."
 to (1) add them a link to SYNTAX-CSS-URL, and (2) highlight the syntax of all
 its <pre class=\"lisp\"> blocks (as produced by 'makeinfo --html')."
   (define build
-    (with-extensions (list guile-lib/htmlprag-fixed guile-syntax-highlight)
+    (with-extensions (list guile-lib guile-syntax-highlight)
       (with-imported-modules '((guix build utils))
         #~(begin
             (use-modules (htmlprag)
@@ -393,6 +369,8 @@ its <pre class=\"lisp\"> blocks (as produced by 'makeinfo --html')."
                          (ice-9 match)
                          (ice-9 threads)
                          (ice-9 vlist))
+
+            (%strict-tokenizer? #t)
 
             (define (pair-open/close lst)
               ;; Pair 'open' and 'close' tags produced by 'highlights' and

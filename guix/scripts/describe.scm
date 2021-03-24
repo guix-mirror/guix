@@ -28,7 +28,7 @@
   #:use-module (guix profiles)
   #:autoload   (guix openpgp) (openpgp-format-fingerprint)
   #:use-module (git)
-  #:use-module (json)
+  #:autoload   (json builder) (scm->json-string)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-37)

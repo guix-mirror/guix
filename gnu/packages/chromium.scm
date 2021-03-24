@@ -65,7 +65,6 @@
   #:use-module (gnu packages regex)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages speech)
-  #:use-module (gnu packages tls)
   #:use-module (gnu packages valgrind)
   #:use-module (gnu packages vulkan)
   #:use-module (gnu packages video)
@@ -96,7 +95,6 @@
     "net/third_party/quiche" ;BSD-3
     "net/third_party/uri_template" ;ASL2.0
     "third_party/abseil-cpp" ;ASL2.0
-    "third_party/adobe/flash/flapper_version.h" ;no license, trivial
     "third_party/angle" ;BSD-3
     "third_party/angle/src/common/third_party/base" ;BSD-3
     "third_party/angle/src/common/third_party/smhasher" ;Public domain
@@ -105,10 +103,6 @@
     "third_party/angle/src/third_party/libXNVCtrl" ;Expat
     "third_party/angle/src/third_party/trace_event" ;BSD-3
     "third_party/angle/src/third_party/volk" ;Expat
-    "third_party/angle/third_party/vulkan-headers" ;ASL2.0
-    "third_party/angle/third_party/vulkan-loader" ;ASL2.0
-    "third_party/angle/third_party/vulkan-tools" ;ASL2.0
-    "third_party/angle/third_party/vulkan-validation-layers" ;ASL2.0
     "third_party/apple_apsl" ;APSL2.0
     "third_party/axe-core" ;MPL2.0
     "third_party/blink" ;BSD-3, LGPL2+
@@ -161,7 +155,6 @@
     "third_party/emoji-segmenter" ;ASL2.0
     "third_party/flatbuffers" ;ASL2.0
     "third_party/fusejs" ;ASL2.0
-    "third_party/glslang" ;BSD-3, Expat, ASL2.0
     "third_party/google_input_tools" ;ASL2.0
     "third_party/google_input_tools/third_party/closure_library" ;ASL2.0
     "third_party/google_input_tools/third_party/closure_library/third_party/closure" ;Expat
@@ -189,6 +182,8 @@
     "third_party/libsrtp" ;BSD-3
     "third_party/libsync" ;ASL2.0
     "third_party/libudev" ;LGPL2.1+
+    "third_party/liburlpattern" ;Expat
+    "third_party/libva_protected_content" ;Expat
 
     ;; FIXME: build/linux/unbundle/libvpx.gn does not work for all users.
     "third_party/libvpx" ;BSD-3
@@ -203,6 +198,7 @@
     "third_party/markupsafe" ;BSD-3
     "third_party/mesa_headers" ;Expat, SGI
     "third_party/metrics_proto" ;BSD-3
+    "third_party/minigbm" ;BSD-3
     "third_party/modp_b64" ;BSD-3
     "third_party/nasm" ;BSD-2
     "third_party/nearby" ;ASL2.0
@@ -220,7 +216,8 @@
     "third_party/pdfium/third_party/skia_shared" ;BSD-3
     "third_party/pdfium/third_party/freetype/include/pstables.h" ;FreeType
     "third_party/perfetto" ;ASL2.0
-    "third_party/pffft" ;the "FFTPACK" license, similar to BSD-3
+    "third_party/perfetto/protos/third_party/chromium" ;BSD-3
+    "third_party/pffft" ;the "FFTPACK" license
     "third_party/ply" ;BSD-3
     "third_party/polymer" ;BSD-3
     "third_party/private_membership" ;ASL2.0
@@ -236,7 +233,6 @@
     "third_party/s2cellid" ;ASL2.0
     "third_party/schema_org" ;CC-BY-SA3.0
     "third_party/securemessage" ;ASL2.0
-    "third_party/shaka-player" ;ASL2.0
     "third_party/shell-encryption" ;ASL2.0
     "third_party/skia" ;BSD-3
     "third_party/skia/include/third_party/skcms" ;BSD-3
@@ -244,8 +240,6 @@
     "third_party/skia/third_party/vulkanmemoryallocator" ;BSD-3, Expat
     "third_party/smhasher" ;Expat, public domain
     "third_party/speech-dispatcher" ;GPL2+
-    "third_party/spirv-headers" ;ASL2.0
-    "third_party/SPIRV-Tools" ;ASL2.0
     "third_party/sqlite" ;Public domain
     "third_party/swiftshader" ;ASL2.0
     "third_party/swiftshader/third_party/astc-encoder" ;ASL2.0
@@ -258,6 +252,7 @@
     "third_party/ukey2" ;ASL2.0
     "third_party/usb_ids" ;BSD-3
     "third_party/usrsctp" ;BSD-2
+    "third_party/vulkan-deps" ;ASL2.0, BSD-3, Expat
     "third_party/vulkan_memory_allocator" ;Expat
     "third_party/wayland/protocol" ;Expat
     "third_party/wayland/stubs" ;BSD-3, Expat
@@ -310,8 +305,7 @@
                   (string-append "ungoogled-chromium-" category "-" name))))
     (sha256 (base32 hash))))
 
-(define %chromium-version "88.0.4324.182")
-(define %ungoogled-revision "b98f2d51406c84a75df96f0da9dee3c0d790963d")
+(define %ungoogled-revision "89.0.4389.90-1")
 (define %debian-revision "debian/84.0.4147.105-1")
 
 (define %debian-patches
@@ -326,15 +320,20 @@
     (uri (git-reference (url "https://github.com/Eloston/ungoogled-chromium")
                         (commit %ungoogled-revision)))
     (file-name (git-file-name "ungoogled-chromium"
-                              (string-take %ungoogled-revision 7)))
+                              (if (= 40 (string-length %ungoogled-revision))
+                                  (string-take %ungoogled-revision 7)
+                                  %ungoogled-revision)))
     (sha256
      (base32
-      "1c9y1dn9s06pskkjw2r8lsbplak8m2rwh4drixvjpif7b4cgdhay"))))
+      "0pr756d1b4wc67d61b21yszi7mx1hsjy14i44j0kvcwm05pgnf79"))))
 
 (define %guix-patches
   (list (local-file
          (assume-valid-file-name
           (search-patch "ungoogled-chromium-system-nspr.patch")))
+        (local-file
+         (assume-valid-file-name
+          (search-patch "ungoogled-chromium-system-opus.patch")))
         (local-file
          (assume-valid-file-name
           (search-patch "ungoogled-chromium-extension-search-path.patch")))))
@@ -418,7 +417,7 @@
 (define libvpx/chromium
   (package
     (inherit libvpx)
-    (version "1.9.0-88-g12059d956")
+    (version "1.9.0-104-gb5d77a48d")
     (source (origin
               (inherit (package-source libvpx))
               (uri (git-reference
@@ -427,7 +426,7 @@
               (file-name (git-file-name "libvpx" version))
               (sha256
                (base32
-                "14knnvfaskfz97vs3lfqrdpcbcx22s6qp16213wdnvnsf4c1lx1b"))))))
+                "07nkpx8myw5nd4bkaj6l4wr5ipk2c6lg9cwirz0i5qbr659051rk"))))))
 
 ;; 'make-ld-wrapper' can only work with an 'ld' executable, so we need
 ;; this trick to make it wrap 'lld'.
@@ -457,17 +456,17 @@
 (define-public ungoogled-chromium
   (package
     (name "ungoogled-chromium")
-    (version (string-append %chromium-version "-0."
-                            (string-take %ungoogled-revision 7)))
+    (version %ungoogled-revision)
     (synopsis "Graphical web browser")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://commondatastorage.googleapis.com"
                                   "/chromium-browser-official/chromium-"
-                                  %chromium-version ".tar.xz"))
+                                  (string-drop-right %ungoogled-revision 2)
+                                  ".tar.xz"))
               (sha256
                (base32
-                "10av060ix6lgsvv99lyvyy03r0m3zwdg4hddbi6dycrdxk1iyh9h"))
+                "16i7bgk2jbcqs2p28nk5mlf0k6wah594pcsfm8b154nxbyf0iihi"))
               (modules '((guix build utils)))
               (snippet (force ungoogled-chromium-snippet))))
     (build-system gnu-build-system)
@@ -488,9 +487,6 @@
              ;; Use the "official" release optimizations, as opposed to
              ;; a developer build.
              "is_official_build=true"
-             (string-append "max_jobs_per_link="
-                            ;; Respect the default cap of 8 jobs.
-                            (number->string (min 8 (parallel-job-count))))
              "clang_use_chrome_plugins=false"
              "chrome_pgo_phase=0"
              "use_sysroot=false"
@@ -533,7 +529,6 @@
 
              "use_system_zlib=true"
              "use_gnome_keyring=false"  ;deprecated by libsecret
-             "use_openh264=true"
              "use_pulseaudio=true"
              "link_pulseaudio=true"
              "icu_use_data_file=false"
@@ -548,6 +543,10 @@
                    '("use_vaapi=true")
                    '())
 
+             "media_use_ffmpeg=true"
+             "media_use_libvpx=true"
+             "media_use_openh264=true"
+
              ;; Do not artifically restrict formats supported by system ffmpeg.
              "proprietary_codecs=true"
              "ffmpeg_branding=\"Chrome\""
@@ -556,17 +555,15 @@
              "rtc_use_h264=true"
              "rtc_use_pipewire=true"
              "rtc_link_pipewire=true"
+             "rtc_pipewire_version=\"0.3\""
              ;; Don't use bundled sources.
              "rtc_build_json=true"      ;FIXME: libc++ std::string ABI difference
              "rtc_build_libevent=false"
              "rtc_build_libvpx=false"
              "rtc_build_opus=false"
-             "rtc_build_ssl=false"
              "rtc_build_libsrtp=true"   ;FIXME: fails to find headers
              "rtc_build_usrsctp=true"   ;TODO: package this
-             (string-append "rtc_ssl_root=\""
-                            (assoc-ref %build-inputs "openssl")
-                            "/include/openssl\""))
+             "rtc_build_ssl=true")      ;XXX: the bundled BoringSSL is required?
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-stuff
@@ -603,12 +600,6 @@
              (substitute* (find-files "chrome" "\\.cc$")
                (("third_party/icu/source/(common|i18n)/")
                 ""))
-
-             ;; Fix faulty ICU call.  Likely fixed in M89.
-             (substitute*
-                 "third_party/blink/renderer/platform/wtf/text/text_codec_icu.cc"
-               (("ideographicSpaceCharacter")
-                "kIdeographicSpaceCharacter"))
 
              ;; XXX: Should be unnecessary when use_system_lcms2=true.
              (substitute* "third_party/pdfium/core/fxcodec/icc/iccmodule.h"
@@ -753,6 +744,7 @@
                     (resources      (string-append lib "/resources"))
                     (preferences    (assoc-ref inputs "master-preferences"))
                     (gtk+           (assoc-ref inputs "gtk+"))
+                    (xdg-utils      (assoc-ref inputs "xdg-utils"))
                     (sh             (which "sh")))
 
                (substitute* '("chrome/app/resources/manpage.1.in"
@@ -789,7 +781,8 @@
 
                  (wrap-program exe
                    ;; Avoid file manager crash.  See <https://bugs.gnu.org/26593>.
-                   `("XDG_DATA_DIRS" ":" prefix (,(string-append gtk+ "/share")))))
+                   `("XDG_DATA_DIRS" ":" prefix (,(string-append gtk+ "/share")))
+                   `("PATH" ":" prefix (,(string-append xdg-utils "/bin")))))
 
                (with-directory-excursion "chrome/app/theme/chromium"
                  (for-each
@@ -863,18 +856,18 @@
        ("nss" ,nss)
        ("openh264" ,openh264)
        ("openjpeg" ,openjpeg)                          ;PDFium only
-       ("openssl" ,openssl)
        ("opus" ,opus+custom)
        ("pango" ,pango)
        ("pciutils" ,pciutils)
-       ("pipewire" ,pipewire)
+       ("pipewire" ,pipewire-0.3)
        ("pulseaudio" ,pulseaudio)
        ("snappy" ,snappy)
        ("speech-dispatcher" ,speech-dispatcher)
        ("udev" ,eudev)
        ("valgrind" ,valgrind)
        ("vulkan-headers" ,vulkan-headers)
-       ("wayland" ,wayland)))
+       ("wayland" ,wayland)
+       ("xdg-utils" ,xdg-utils)))
     (native-search-paths
      (list (search-path-specification
             (variable "CHROMIUM_EXTENSION_DIRECTORY")

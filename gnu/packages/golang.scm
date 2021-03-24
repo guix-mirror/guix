@@ -7,7 +7,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Sergei Trofimovich <slyfox@inbox.ru>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2018 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
@@ -24,6 +24,7 @@
 ;;; Copyright © 2020 raingloom <raingloom@riseup.net>
 ;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2021 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,14 +52,15 @@
   #:use-module (guix build-system go)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages glib)
-  #:use-module (gnu packages base)
-  #:use-module (gnu packages perl)
-  #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages pcre)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages mp3)
+  #:use-module (gnu packages pcre)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
@@ -235,7 +237,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
   (package
     (inherit go-1.4)
     (name "go")
-    (version "1.14.10")
+    (version "1.14.15")
     (source
      (origin
        (method git-fetch)
@@ -245,7 +247,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0h1nmqzjc0xxpn6n2hjq7692gdqkznagzdmiq9490yzkrrii2lgk"))))
+         "1crh90qkvhlx23hwsi4wxy3l3h8973lr18135y6h1nnzzwr3n3ps"))))
     (arguments
      (substitute-keyword-arguments (package-arguments go-1.4)
        ((#:system system)
@@ -285,7 +287,10 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                     "cmd/go/testdata/script/cover_cgo.txt"
                     "cmd/go/testdata/script/cover_cgo_xtest.txt"
                     "cmd/go/testdata/script/cover_cgo_extra_test.txt"
-                    "cmd/go/testdata/script/cover_cgo_extra_file.txt"))
+                    "cmd/go/testdata/script/cover_cgo_extra_file.txt"
+                    "cmd/go/testdata/script/cgo_path_space.txt"
+                    "cmd/go/testdata/script/ldflag.txt"
+                    "cmd/go/testdata/script/cgo_path.txt"))
 
                  (for-each make-file-writable (find-files "."))
 
@@ -1470,7 +1475,7 @@ optimized for performance yet simple to use.")
 (define-public go-github-com-tomnomnom-gron
   (package
     (name "gron")
-    (version "0.6.0")
+    (version "0.6.1")
     (home-page "https://github.com/tomnomnom/gron")
     (source
      (origin
@@ -1480,7 +1485,7 @@ optimized for performance yet simple to use.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "05f3w4zr15wd7xk75l12y5kip4gnv719a2x9w2hy23q3pnss9wk0"))))
+        (base32 "0qmzawkhg0qn9kxxrssbdjni2khvamhrcklv3yxc0ljmh77mh61m"))))
     (build-system go-build-system)
     (arguments
      (let ((import-path "github.com/tomnomnom/gron"))
@@ -6770,3 +6775,262 @@ compressed streams in Go.")
       (description "Package ed25519 implements the Ed25519 signature
 algorithm.")
       (license license:bsd-3))))
+
+(define-public go-github-com-akosmarton-papipes
+  (let ((commit "3c63b4919c769c9c2b2d07e69a98abb0eb47fe64")
+        (revision "0"))
+    (package
+      (name "go-github-com-akosmarton-papipes")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/akosmarton/papipes")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "16p77p3d1v26qd3knxn087jqlad2qm23q8m796cdr66hrdc0gahq"))))
+      (build-system go-build-system)
+      (inputs
+       `(("pulseaudio" ,pulseaudio)))
+      (arguments
+       `(#:import-path "github.com/akosmarton/papipes"
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* '("src/github.com/akosmarton/papipes/common.go"
+                              "src/github.com/akosmarton/papipes/sink.go"
+                              "src/github.com/akosmarton/papipes/source.go")
+                 (("exec.Command\\(\"pactl\"")
+                  (string-append "exec.Command(\""
+                                 (assoc-ref inputs "pulseaudio")
+                                 "/bin/pactl\""))))))))
+      (home-page "https://github.com/akosmarton/papipes")
+      (synopsis "Pulseaudio client library for Go")
+      (description
+       "This is a Pulseaudio client library in Golang for creating virtual
+sinks and sources.")
+      (license license:expat))))
+
+(define-public go-github-com-mesilliac-pulse-simple
+  (let ((commit "75ac54e19fdff88f4fbd82f45125134b602230b0")
+        (revision "0"))
+    (package
+      (name "go-github-com-mesilliac-pulse-simple")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/mesilliac/pulse-simple")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1awwczsa9yy99p035ckajqfs8m6mab0lz82mzlj1c5cj9lnmwplj"))))
+      (build-system go-build-system)
+      (propagated-inputs
+       `(("pkg-config" ,pkg-config)
+         ("pulseaudio" ,pulseaudio)))
+      (arguments
+       '(#:import-path "github.com/mesilliac/pulse-simple"))
+      (home-page "https://github.com/mesilliac/pulse-simple")
+      (synopsis "Cgo bindings to PulseAudio's Simple API")
+      (description
+       "This packages provides Cgo bindings to PulseAudio's Simple API, to play
+or capture raw audio.")
+      (license license:expat))))
+
+(define-public go-github-com-pborman-getopt
+  (package
+    (name "go-github-com-pborman-getopt")
+    (version "2.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/pborman/getopt")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0sacv6g8cxfibxd3gnfjnzp7fynrnc4s2aaz5wbxivqqhvflc22l"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/pborman/getopt"))
+    (home-page "https://github.com/pborman/getopt")
+    (synopsis "Getopt style option parsing for Go")
+    (description
+     "This package provides traditional getopt processing for implementing
+programs that use traditional command lines.")
+    (license license:bsd-3)))
+
+(define-public go-go-uber-org-atomic
+  (package
+    (name "go-go-uber-org-atomic")
+    (version "1.7.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/uber-go/atomic")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0yxvb5sixh76cl9j8dpa97gznj0p8pmg2cdw0ypfwhd3ipx9wph1"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "go.uber.org/atomic"))
+    (native-inputs
+     `(("go-github-com-stretchr-testify" ,go-github-com-stretchr-testify)
+       ("go-github-com-davecgh-go-spew" ,go-github-com-davecgh-go-spew)))
+    (home-page "https://go.uber.org/atomic")
+    (synopsis "Wrapper types for sync/atomic")
+    (description
+     "This package provides simple wrappers for primitive types to enforce
+atomic access.")
+    (license license:expat)))
+
+(define-public go-go-uber-org-multierr
+  (package
+    (name "go-go-uber-org-multierr")
+    (version "1.6.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/uber-go/multierr")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "162941s8f6a9x2w04qm4qa3zz0zylwag9149hywrj9ibp2nzcsqz"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "go.uber.org/multierr"))
+    (native-inputs
+     `(("go-github-com-stretchr-testify" ,go-github-com-stretchr-testify)))
+    (propagated-inputs
+     `(("go-go-uber-org-atomic" ,go-go-uber-org-atomic)))
+    (home-page "https://go.uber.org/multierr")
+    (synopsis "Error combination fo Go")
+    (description
+     "@code{multierr} allows combining one or more Go errors together.")
+    (license license:expat)))
+
+(define-public go-golang-org-x-lint
+  (let ((commit "83fdc39ff7b56453e3793356bcff3070b9b96445")
+        (revision "0"))
+    (package
+      (name "go-golang-org-x-lint")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://go.googlesource.com/lint")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0ms3rs5hvpnm9bxbr5f9743i7hn2bbmqdmvzxq6nmi0f24ypv1l3"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "golang.org/x/lint"
+         #:tests? #f)) ;; TODO: Fix tests
+      (propagated-inputs
+       `(("go-golang-org-x-tools" ,go-golang-org-x-tools)))
+      (home-page "https://golang.org/x/lint")
+      (synopsis "Linter for Go source code")
+      (description
+       "This is a linter for Go source code.  Unlike gofmt, it doesn't
+reformat the source code, it only prints out style mistakes.")
+      (license license:bsd-3))))
+
+(define-public go-github-com-kisielk-gotool
+  (package
+    (name "go-github-com-kisielk-gotool")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/kisielk/gotool")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "14af2pa0ssyp8bp2mvdw184s5wcysk6akil3wzxmr05wwy951iwn"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/kisielk/gotool"))
+    (home-page "https://github.com/kisielk/gotool")
+    (synopsis "Go library of utility functions")
+    (description
+     "This package contains utility functions used to implement the standard
+@code{cmd/go} tool, provided as a convenience to developers who want to write
+tools with similar semantics.")
+    (license license:expat)))
+
+(define-public go-honnef-co-go-tools
+  (package
+    (name "go-honnef-co-go-tools")
+    (version "0.1.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dominikh/go-tools")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "17li8jbw3cpn59kpcl3j3r2an4wkx3fc81xn0j4xgbjpkxh9493n"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "honnef.co/go/tools"
+       #:tests? #f
+       ;; Source-only package
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'build))))
+    (propagated-inputs
+     `(("go-golang-org-x-tools" ,go-golang-org-x-tools)
+       ("go-github-com-kisielk-gotool",go-github-com-kisielk-gotool)
+       ("go-github-com-burntsushi-toml" ,go-github-com-burntsushi-toml)))
+    (home-page "https://honnef.co/go/tools")
+    (synopsis "Staticcheck advanced Go linter")
+    (description
+     "Staticcheck is a state of the art linter for the Go programming language.
+Using static analysis, it finds bugs and performance issues, offers
+simplifications, and enforces style rules.")
+    (license license:expat)))
+
+(define-public go-go-uber-org-zap
+  (package
+    (name "go-go-uber-org-zap")
+    (version "1.16.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/uber-go/zap")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "05ix5wg1r8pgi7fb6084lg4x7mrkvzkh1nxa7zj337w5b9xj0myr"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "go.uber.org/zap"
+       #:tests? #f)) ; TODO: Fix tests
+    (native-inputs
+     `(("go-github-com-stretchr-testify" ,go-github-com-stretchr-testify)
+       ("go-golang-org-x-lint" ,go-golang-org-x-lint)
+       ("go-honnef-co-go-tools" ,go-honnef-co-go-tools)))
+    (propagated-inputs
+     `(("go-github-com-pkg-errors" ,go-github-com-pkg-errors)
+       ("go-go-uber-org-atomic" ,go-go-uber-org-atomic)
+       ("go-go-uber-org-multierr" ,go-go-uber-org-multierr)
+       ("go-gopkg-in-yaml-v2" ,go-gopkg-in-yaml-v2)))
+    (home-page "https://go.uber.org/zap")
+    (synopsis "Logging library for Go")
+    (description
+     "This package provides a library for fast, structured, leveled logging in
+Go.")
+    (license license:expat)))

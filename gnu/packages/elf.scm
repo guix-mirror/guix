@@ -8,6 +8,7 @@
 ;;; Copyright © 2018, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Mark Wielaard <mark@klomp.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2021 Leo Le Bouter <lle-bout@zaclys.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -211,6 +212,10 @@ static analysis of the ELF binaries at hand.")
                (setenv "CONFIG_SHELL" (which "bash"))
                (invoke "./configure"
                        (string-append "--prefix=" out)
+                       ,@(if (string=? "powerpc64le-linux"
+                                       (%current-system))
+                             '("--host=powerpc64le-unknown-linux-gnu")
+                             '())
                        ,@(if (string=? "aarch64-linux"
                                        (%current-system))
                              '("--host=aarch64-unknown-linux-gnu")

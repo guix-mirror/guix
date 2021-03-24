@@ -22,6 +22,7 @@
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Carlo Holl <carloholl@gmail.com>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
+;;; Copyright © 2021 ZmnSCPxj jxPCSnmZ <ZmnSCPxj@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -52,6 +53,7 @@
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system go)
   #:use-module (guix build-system qt)
+  #:use-module (guix deprecation)
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages aidc)
@@ -108,10 +110,10 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages gnuzilla))
 
-(define-public bitcoin-core
+(define-public bitcoin-core-0.21
   (package
     (name "bitcoin-core")
-    (version "0.20.1")
+    (version "0.21.0")
     (source (origin
               (method url-fetch)
               (uri
@@ -119,7 +121,7 @@
                               version "/bitcoin-" version ".tar.gz"))
               (sha256
                (base32
-                "0y5rad68b398arh0abr2wgiwybdw0i5a4dxz9s3fk9fgdbyn5gab"))))
+                "0dszcn4r43w0ffsmgwmyzkzr5lqws3bbhlkssmjgnjgfc8n2148s"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -185,6 +187,24 @@ collectively by the network.  Bitcoin Core is the reference implementation
 of the bitcoin protocol.  This package provides the Bitcoin Core command
 line client and a client based on Qt.")
     (license license:expat)))
+
+(define-public bitcoin-core-0.20
+  (package
+    (inherit bitcoin-core-0.21)
+    (version "0.20.1")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "https://bitcoincore.org/bin/bitcoin-core-"
+                              version "/bitcoin-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0y5rad68b398arh0abr2wgiwybdw0i5a4dxz9s3fk9fgdbyn5gab"))))))
+
+;; The support lifetimes for bitcoin-core versions can be found in
+;; <https://bitcoincore.org/en/lifecycle/#schedule>.
+
+(define-public bitcoin-core bitcoin-core-0.21)
 
 (define-public hledger
   (package
@@ -559,7 +579,7 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
 (define-public electron-cash
   (package
     (name "electron-cash")
-    (version "4.2.3")
+    (version "4.2.4")
     (source
      (origin
        (method git-fetch)
@@ -568,7 +588,7 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1q18p86a3a3wpf9nbpymhyilmaw9vffvwxh4hhx29bywfzvav11f"))))
+        (base32 "1a4jqsfadv6xr7ydj79my71jyrp0sjlznsbxdxjsjgnsqk8r48w6"))))
     (build-system python-build-system)
     (inputs
      `(("libevent" ,libevent)
@@ -1109,13 +1129,13 @@ Luhn and family of ISO/IEC 7064 check digit algorithms. ")
 (define-public python-duniterpy
   (package
     (name "python-duniterpy")
-    (version "0.61.0")
+    (version "0.62.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "duniterpy" version))
        (sha256
-        (base32 "1dr5zx7hi1ps36p1zw2n66lmikp2frwi3sp4rf2zyd216dl3r1jp"))))
+        (base32 "1ldiw5j2g92cib9v06kgv4z8dw2zi0x1dmpisf8w78h4kg6712w1"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: Tests fail with: "TypeError: block_uid() missing 1 required

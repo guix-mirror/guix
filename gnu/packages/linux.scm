@@ -354,7 +354,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 
 ;; The current "stable" kernels. That is, the most recently released major
 ;; versions that are still supported upstream.
-(define-public linux-libre-5.11-version "5.11.3")
+(define-public linux-libre-5.11-version "5.11.8")
 (define deblob-scripts-5.11
   (linux-libre-deblob-scripts
    linux-libre-5.11-version
@@ -362,7 +362,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0yvr80g200hdryz54gdnzj4fl38pf7g4qbgj475rhcfwixhp1j7n")))
 (define-public linux-libre-5.11-pristine-source
   (let ((version linux-libre-5.11-version)
-        (hash (base32 "1znbn7n2jzm2rd7gsfj897lgrvaw48ljqfyza3166mw0nc5wfn1m")))
+        (hash (base32 "17y8q0gy4b00rms6pgglzmzz4msvmn2frqvln9vac39m78k3kyci")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.11)))
@@ -370,7 +370,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 ;; The "longterm" kernels — the older releases with long-term upstream support.
 ;; Here are the support timelines:
 ;; <https://www.kernel.org/category/releases.html>
-(define-public linux-libre-5.10-version "5.10.20")
+(define-public linux-libre-5.10-version "5.10.25")
 (define deblob-scripts-5.10
   (linux-libre-deblob-scripts
    linux-libre-5.10-version
@@ -378,12 +378,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0hh27ccqimagr3aij7ygwikxw66y63sqwd0xlf49bhpjd090r9a7")))
 (define-public linux-libre-5.10-pristine-source
   (let ((version linux-libre-5.10-version)
-        (hash (base32 "18rh56aqc7ysr309prfml6sr0a81v6kh1ybw2c2vwhmszr373qwv")))
+        (hash (base32 "1p8s8vp5b6vjmvhj3plm0pr0d9qp5lrwm6l40a4bjr1vk9myf2lk")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.10)))
 
-(define-public linux-libre-5.4-version "5.4.102")
+(define-public linux-libre-5.4-version "5.4.107")
 (define deblob-scripts-5.4
   (linux-libre-deblob-scripts
    linux-libre-5.4-version
@@ -391,12 +391,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1xghbbnaisjd0k1klbyn1p7r6r4x5a1bpmkm56a3gh2zvw4s7mj8")))
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "1vcscg7cn8qycay913nbc1xl1691anhvakkxwx54s0pnqghpqsgx")))
+        (hash (base32 "0q3m4d96d0hhhzn71aarh314i4cx9h3qvhhi5hrmcsrnbxafyg0w")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.178")
+(define-public linux-libre-4.19-version "4.19.182")
 (define deblob-scripts-4.19
   (linux-libre-deblob-scripts
    linux-libre-4.19-version
@@ -404,12 +404,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1jiaw0as1ippkrjdpd52657w5mz9qczg3y2hlra7m9k0xawwiqlf")))
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "1vln86ksignzw3d2xk5qgc5a2vghngczfsk949dn3r5dxygvlx8b")))
+        (hash (base32 "0r93mgvjypmj0glg0912vfq9zbagi59w4d88ynz5gm8sl05pbnq5")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.223")
+(define-public linux-libre-4.14-version "4.14.226")
 (define deblob-scripts-4.14
   (linux-libre-deblob-scripts
    linux-libre-4.14-version
@@ -417,12 +417,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1qij18inijj6c3ma8hv98yjagnzxdxyn134da9fd23ky8q6hbvky")))
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "04zn74k1b7hfnfdi9fgifrn4jz0j00d4ymp8vhgbrdj75jrmynhs")))
+        (hash (base32 "09llp8jl5xgxxzj0f2sfx32annwyz82k1zmgd26zy90lz0d09p3s")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.259")
+(define-public linux-libre-4.9-version "4.9.262")
 (define deblob-scripts-4.9
   (linux-libre-deblob-scripts
    linux-libre-4.9-version
@@ -430,12 +430,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0fxajshb75siq39lj5h8xvhdj8lcmddkslwlyj65rhlwk6g2r4b2")))
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "1r71vgbw17srsjdmsdr1jra7v412mhiysi4kpa77y29r2h3zk5r3")))
+        (hash (base32 "1zq77x9zf1wbk8n17rnblm5lfwlkin1xnxb3sxirwb9njm07cbmj")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.259")
+(define-public linux-libre-4.4-version "4.4.262")
 (define deblob-scripts-4.4
   (linux-libre-deblob-scripts
    linux-libre-4.4-version
@@ -443,7 +443,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0hhin1jpfkd6nwrb6xqxjzl3hdxy4pn8a15hy2d3d83yw6pflbsf")))
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
-        (hash (base32 "18mw4xgza2szgz9x7lq3nzbf48cfkg2g4rli5p5ix4w3ni34h0sr")))
+        (hash (base32 "0yz9qi4i46ndshxmb99kvv7lk6cbb09y7bzagq7sgvqaj4lwaw6j")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.4)))
@@ -965,6 +965,18 @@ It has been modified to remove all non-free binary blobs.")
 (define-public linux-libre-arm-veyron
   (deprecated-package "linux-libre-arm-veyron" linux-libre-arm-generic))
 
+(define-public linux-libre-arm-generic-5.10
+  (make-linux-libre* linux-libre-5.10-version
+                     linux-libre-5.10-source
+                     '("armhf-linux")
+                     #:defconfig "multi_v7_defconfig"
+                     #:extra-version "arm-generic"
+                     #:extra-options
+                     (append
+                      `(;; needed to fix the RTC on rockchip platforms
+                        ("CONFIG_RTC_DRV_RK808" . #t))
+                      %default-extra-linux-options)))
+
 (define-public linux-libre-arm-generic-5.4
   (make-linux-libre* linux-libre-5.4-version
                      linux-libre-5.4-source
@@ -1015,6 +1027,27 @@ It has been modified to remove all non-free binary blobs.")
 (define-public linux-libre-arm64-generic
   (make-linux-libre* linux-libre-version
                      linux-libre-source
+                     '("aarch64-linux")
+                     #:defconfig "defconfig"
+                     #:extra-version "arm64-generic"
+                     #:extra-options
+                     (append
+                      `(;; needed to fix the RTC on rockchip platforms
+                        ("CONFIG_RTC_DRV_RK808" . #t)
+                        ;; Pinebook display, battery, charger and usb
+                        ("CONFIG_DRM_ANALOGIX_ANX6345" . m)
+                        ("CONFIG_CHARGER_AXP20X" . m)
+                        ("CONFIG_INPUT_AXP20X_PEK" . m)
+                        ("CONFIG_CHARGER_AXP20X" . m)
+                        ("CONFIG_BATTERY_AXP20X" . m)
+                        ("CONFIG_PINCTRL_AXP209" . m)
+                        ("CONFIG_AXP20X_POWER" . m)
+                        ("CONFIG_AXP20X_ADC" . m))
+                      %default-extra-linux-options)))
+
+(define-public linux-libre-arm64-generic-5.10
+  (make-linux-libre* linux-libre-5.10-version
+                     linux-libre-5.10-source
                      '("aarch64-linux")
                      #:defconfig "defconfig"
                      #:extra-version "arm64-generic"
@@ -4941,7 +4974,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "5.10.1")
+    (version "5.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -4949,7 +4982,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "0i03vajakg1glbql1cv7xy0k71zvpd2whdwymmrz9rza3xrwqy8k"))))
+                "0dq1ryji9hmq10zbyk083lp9r212524a3naai47whq11m6q626fl"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of the binaries in "out"
@@ -5658,7 +5691,7 @@ The collection contains a set of bandwidth and latency benchmark such as:
   (package
     (name "rng-tools")
     (home-page "https://github.com/nhorman/rng-tools")
-    (version "6.11")
+    (version "6.12")
     (source (origin
               (method git-fetch)
               (uri (git-reference (url home-page)
@@ -5666,7 +5699,7 @@ The collection contains a set of bandwidth and latency benchmark such as:
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0wwvi8a8k2ahhmwln4w970b8gd3in3g13jkbsapkpnspwmlqj5xa"))))
+                "0z4j3kqh9k3zsrx6257hwh4fa51vqg79c6dnfrj6lhpcll0wh0hm"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Disable support for various hardware entropy sources as they need
@@ -5767,7 +5800,7 @@ cpufreq sub-system is enabled or not.")
 (define-public haveged
   (package
     (name "haveged")
-    (version "1.9.13")
+    (version "1.9.14")
     (source
      (origin
        (method git-fetch)
@@ -5776,7 +5809,7 @@ cpufreq sub-system is enabled or not.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0g3hcvpky76cabgcfqh65fay7nnjkms32sgmlf33q969833hijqz"))))
+        (base32 "050hmnh5s2s4mb83f4d1fk23mk27pprg840c1aagc6v1sz6x5dhq"))))
     (build-system gnu-build-system)
     (home-page "https://www.issihosts.com/haveged")
     (synopsis "Entropy source for the Linux random number generator")
@@ -6133,15 +6166,17 @@ interface to the variable facility of UEFI boot firmware.")
 (define-public efibootmgr
   (package
     (name "efibootmgr")
-    (version "16")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/rhinstaller/efibootmgr"
-                                  "/releases/download/" version "/efibootmgr"
-                                  "-" version ".tar.bz2"))
-              (sha256
-               (base32
-                "0pzn67vxxaf7jna4cd0i4kqm60h04kb21hckksv9z82q9gxra1wm"))))
+    (version "17")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rhinstaller/efibootmgr")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1niicijxg59rsmiw3rsjwy4bvi1n42dynvm01lnp9haixdzdpq03"))
+       (patches (search-patches "efibootmgr-remove-extra-decl.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ;no tests
@@ -6971,7 +7006,7 @@ interface to this kernel feature.")
 (define-public mbpfan
   (package
     (name "mbpfan")
-    (version "2.1.1")
+    (version "2.2.1")
     (source
      (origin
        (method git-fetch)
@@ -6980,7 +7015,7 @@ interface to this kernel feature.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0aijyxrqh01x0s80yr4cgxgd001iiqqph65pxvby7f0wz8lnxnqj"))))
+        (base32 "0gc9ypxi55vxs77nx8ihhh9zk7fr9v0m0zfm76q7x0bi6jz11mbr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; tests ask to be run as root
@@ -7152,7 +7187,7 @@ IP addresses and routes, and configure IPsec.")
 (define-public libinih
   (package
     (name "libinih")
-    (version "52")
+    (version "53")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -7161,7 +7196,7 @@ IP addresses and routes, and configure IPsec.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0lsvm34zabvi1xlximybzvgc58zb90mm3b9babwxlqs05jy871m4"))))
+                "0dqf5j2sw4hq68rqvxbrsf44ygfzx9ypiyzipk4cvp9aimbvsbc6"))))
     (build-system meson-build-system)
     (arguments
      '(#:configure-flags '("-Ddistro_install=true" "-Ddefault_library=shared")))
@@ -7177,7 +7212,7 @@ compatible with Python's ConfigParser style of .INI files, including RFC
 (define-public xfsprogs
   (package
     (name "xfsprogs")
-    (version "5.10.0")
+    (version "5.11.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -7185,7 +7220,7 @@ compatible with Python's ConfigParser style of .INI files, including RFC
                     "xfsprogs-" version ".tar.gz"))
               (sha256
                (base32
-                "1wcvcv9fl955g3zl68057hq7pp9bm7i733vc7j6xr6wnfd8qf6sr"))))
+                "1byj53qdwsii35d0f11nz0dl618mpvwy5aa44pc9zg281g2r27ab"))))
     (build-system gnu-build-system)
     (outputs (list "out" "python"))
     (arguments

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
@@ -28,7 +28,6 @@
   #:use-module (guix build utils)
   #:use-module (guix progress)
   #:use-module (rnrs io ports)
-  #:use-module ((ice-9 binary-ports) #:select (unget-bytevector))
   #:use-module (rnrs bytevectors)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
@@ -306,14 +305,22 @@ host name without trailing dot."
 
     (let ((record (session-record-port session)))
       (define (read! bv start count)
-        (define read-bv (get-bytevector-some record))
-        (if (eof-object? read-bv)
-            0  ; read! returns 0 on eof-object
-            (let ((read-bv-len (bytevector-length read-bv)))
-              (bytevector-copy! read-bv 0 bv start (min read-bv-len count))
-              (when (< count read-bv-len)
-                (unget-bytevector record bv count (- read-bv-len count)))
-              read-bv-len)))
+        (define read
+          (catch 'gnutls-error
+            (lambda ()
+              (get-bytevector-n! record bv start count))
+            (lambda (key err proc . rest)
+              ;; When responding to "Connection: close" requests, some
+              ;; servers close the connection abruptly after sending the
+              ;; response body, without doing a proper TLS connection
+              ;; termination.  Treat it as EOF.
+              (if (eq? err error/premature-termination)
+                  the-eof-object
+                  (apply throw key err proc rest)))))
+
+        (if (eof-object? read)
+            0
+            read))
       (define (write! bv start count)
         (put-bytevector record bv start count)
         (force-output record)
@@ -328,17 +335,24 @@ host name without trailing dot."
         (unless (port-closed? record)
           (close-port record)))
 
+      (define (unbuffered port)
+        (setvbuf port 'none)
+        port)
+
       (setvbuf record 'block)
 
       ;; Return a port that wraps RECORD to ensure that closing it also
       ;; closes PORT, the actual socket port, and its file descriptor.
+      ;; Make sure it does not introduce extra buffering (custom ports
+      ;; are buffered by default as of Guile 3.0.5).
       ;; XXX: This wrapper would be unnecessary if GnuTLS could
       ;; automatically close SESSION's file descriptor when RECORD is
       ;; closed, but that doesn't seem to be possible currently (as of
       ;; 3.6.9).
-      (make-custom-binary-input/output-port "gnutls wrapped port" read! write!
-                                            get-position set-position!
-                                            close))))
+      (unbuffered
+       (make-custom-binary-input/output-port "gnutls wrapped port" read! write!
+                                             get-position set-position!
+                                             close)))))
 
 (define (ensure-uri uri-or-string)                ;XXX: copied from (web http)
   (cond

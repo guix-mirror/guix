@@ -2,6 +2,7 @@
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +29,7 @@
   #:use-module (guix packages)
   #:use-module (guix records)
   #:use-module (guix gexp)
+  #:use-module (guix modules)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
@@ -607,17 +609,14 @@
           (shell (file-append shadow "/sbin/nologin")))))
 
 (define (knot-activation config)
-  #~(begin
-      (use-modules (guix build utils))
-      (define (mkdir-p/perms directory owner perms)
-        (mkdir-p directory)
-        (chown directory (passwd:uid owner) (passwd:gid owner))
-        (chmod directory perms))
-      (mkdir-p/perms #$(knot-configuration-run-directory config)
-                     (getpwnam "knot") #o755)
-      (mkdir-p/perms "/var/lib/knot" (getpwnam "knot") #o755)
-      (mkdir-p/perms "/var/lib/knot/keys" (getpwnam "knot") #o755)
-      (mkdir-p/perms "/var/lib/knot/keys/keys" (getpwnam "knot") #o755)))
+  (with-imported-modules (source-module-closure '((gnu build activation)))
+    #~(begin
+        (use-modules (gnu build activation))
+        (mkdir-p/perms #$(knot-configuration-run-directory config)
+                       (getpwnam "knot") #o755)
+        (mkdir-p/perms "/var/lib/knot" (getpwnam "knot") #o755)
+        (mkdir-p/perms "/var/lib/knot/keys" (getpwnam "knot") #o755)
+        (mkdir-p/perms "/var/lib/knot/keys/keys" (getpwnam "knot") #o755))))
 
 (define (knot-shepherd-service config)
   (let* ((config-file (knot-config-file config))

@@ -718,15 +718,15 @@ more.")
 (define-public cgal
   (package
     (name "cgal")
-    (version "4.14.2")
+    (version "5.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://github.com/CGAL/cgal/releases/download/releases/"
-                    "CGAL-" version "/CGAL-" version ".tar.xz"))
+                    "https://github.com/CGAL/cgal/releases/download/v" version
+                    "/CGAL-" version ".tar.xz"))
               (sha256
                (base32
-                "08lrp3hfwdypggz4138bnkh6bjxn441zg2y9xnq5mrjfc5ini6w1"))))
+                "1rhrpjsp4081nn2q215h78kc4msrj0081zg65k1gfp5hl88bg03y"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f))                    ; no test target

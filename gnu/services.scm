@@ -617,13 +617,21 @@ ACTIVATION-SCRIPT-TYPE."
   "Return a gexp that runs the activation script containing GEXPS."
   #~(primitive-load #$(activation-script gexps)))
 
+(define (activation-profile-entry gexps)
+  "Return, as a monadic value, an entry for the activation script in the
+system directory."
+  (mlet %store-monad ((activate (lower-object (activation-script gexps))))
+    (return `(("activate" ,activate)))))
+
 (define (second-argument a b) b)
 
 (define activation-service-type
   (service-type (name 'activate)
                 (extensions
                  (list (service-extension boot-service-type
-                                          gexps->activation-gexp)))
+                                          gexps->activation-gexp)
+                       (service-extension system-service-type
+                                          activation-profile-entry)))
                 (compose identity)
                 (extend second-argument)
                 (description

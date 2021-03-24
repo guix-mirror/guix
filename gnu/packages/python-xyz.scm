@@ -3,7 +3,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014, 2015, 2016, 2019 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2014, 2017 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2017, 2021 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2014, 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Omar Radwan <toxemicsquire4@gmail.com>
 ;;; Copyright © 2015 Pierre-Antoine Rault <par@rigelk.eu>
@@ -27,7 +27,7 @@
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Marius Bakke <marius@gnu.org>
-;;; Copyright © 2016, 2017 Stefan Reichör <stefan@xsteve.at>
+;;; Copyright © 2016, 2017, 2021 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2016, 2017, 2019 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016, 2017, 2018, 2020, 2021 Julien Lepiller <julien@lepiller.eu>
@@ -98,6 +98,7 @@
 ;;; Copyright © 2020 EuAndreh <eu@euandre.org>
 ;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;; Copyright © 2021 Ellis Kenyő <me@elken.dev>
+;;; Copyright © 2021 LibreMiami <packaging-guix@libremiami.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -569,8 +570,7 @@ iotop, uptime, pidof, tty, taskset, pmap.")
 
 (define-public python2-psutil
   (let ((base (package-with-python2 (strip-python2-variant python-psutil))))
-    (package
-      (inherit base)
+    (package/inherit base
       (propagated-inputs
        `(("python2-enum34" ,python2-enum34)         ;optional
          ,@(package-propagated-inputs base))))))
@@ -652,25 +652,31 @@ module and then similar looking characters are removed.")
 (define-public python-logwrap
   (package
     (name "python-logwrap")
-    (version "3.2.1")
+    (version "8.2.0.post0")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "logwrap" version ".zip"))
+       (uri (pypi-uri "logwrap" version))
        (sha256
         (base32
-         "1d2k0hvpbi51vl410y8fbs5m0nxnlh2k7gr2nrh3k81ibhzscsra"))))
+         "1dv7gny3rfci5cal2ipr6d0pcz3yhka7af96dfsd3ir1mxy8p1j9"))))
     (build-system python-build-system)
-    (propagated-inputs
-     `(("python-six" ,python-six)
-       ("python-typing" ,python-typing)))
+    (arguments
+     `(#:tests? #f  ; Tests not included in pypi release.
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest"))
+             #t)))))
     (native-inputs
-     `(("unzip" ,unzip)
-       ("python-cython" ,python-cython)
+     `(("python-cython" ,python-cython)
        ("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-pytest-runner" ,python-pytest-runner)))
-    (home-page "https://github.com/penguinolog/logwrap")
+       ("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-toml" ,python-toml)
+       ("python-wheel" ,python-wheel)))
+    (home-page "https://github.com/python-useful-helpers/logwrap")
     (synopsis "Decorator for logging function arguments")
     (description "This package provides a decorator to log function arguments
 and function call return values in a human-readable way.")
@@ -762,6 +768,47 @@ earlier versions of Python.  The function checks the hostname in the
 certificate returned by the server to which a connection has been established,
 and verifies that it matches the intended target hostname.")
     (license license:psfl)))
+
+(define-public python-bidict
+  (package
+    (name "python-bidict")
+    (version "0.21.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "bidict" version))
+       (sha256
+        (base32
+         "02dy0b1k7qlhn7ajyzkrvxhyhjj0hzcq6ws3zjml9hkdz5znz92g"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-hypothesis" ,python-hypothesis)
+       ("python-pre-commit" ,python-pre-commit)
+       ("python-py" ,python-py)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-benchmark" ,python-pytest-benchmark)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-sortedcollections" ,python-sortedcollections)
+       ("python-sortedcontainers" ,python-sortedcontainers)
+       ("python-sphinx" ,python-sphinx)
+       ("python-sphinx-autodoc-typehints" ,python-sphinx-autodoc-typehints)
+       ("python-tox" ,python-tox)))
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'relax-reqs
+                    (lambda _
+                      (substitute* "setup.py"
+                        (("sortedcollections < 2") "sortedcollections"))
+                      #t))
+                  (replace 'check
+                    (lambda _ (invoke "./run_tests.py"))))))
+    (home-page "https://bidict.readthedocs.io")
+    (synopsis "Bidirectional mapping library")
+    (description "The @code{bidict} library provides several data structures
+for working with bidirectional mappings in Python.")
+    (license license:mpl2.0)))
 
 (define-public python-bitarray
   (package
@@ -927,9 +974,6 @@ concepts.")
     (description "This package provides a replacement for Python's
 @code{subprocess} feature.")
     (license license:expat)))
-
-(define-public python2-sh
-  (package-with-python2 python-sh))
 
 (define-public python-cftime
   (package
@@ -1118,8 +1162,7 @@ other machines, such as over the network.")
 
 (define-public python2-serpent
   (let ((base (package-with-python2 (strip-python2-variant python-serpent))))
-    (package
-      (inherit base)
+    (package/inherit base
       (propagated-inputs
        `(("python-enum34" ,python2-enum34)
          ,@(package-propagated-inputs base))))))
@@ -1292,7 +1335,7 @@ helpers.")
 (define-public python2-humanfriendly
   (let ((base (package-with-python2
                 (strip-python2-variant python-humanfriendly))))
-    (package (inherit base)
+    (package/inherit base
       (propagated-inputs
        `(("python2-monotonic" ,python2-monotonic)
          ,@(package-propagated-inputs base))))))
@@ -1814,7 +1857,9 @@ standard.")
          "1hgz8jq19wlz8vwqj900ry8cjv578nz4scc91mlc8944yid6573c"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-greenlet" ,python-greenlet)))
+     `(("python-dnspython" ,python-dnspython)
+       ("python-greenlet" ,python-greenlet)
+       ("python-monotonic" ,python-monotonic)))
     (arguments
      ;; TODO: Requires unpackaged 'enum-compat'.
      '(#:tests? #f))
@@ -2116,8 +2161,7 @@ commands.")
 
 (define-public python2-empy
   (let ((base (package-with-python2 (strip-python2-variant python-empy))))
-    (package
-      (inherit base)
+    (package/inherit base
       (arguments `(,@(package-arguments base)
                    #:tests? #t)))))
 
@@ -2246,7 +2290,7 @@ backported for previous versions of Python from 2.4 to 3.3.")
 (define-public python2-parse-type
   (let ((base (package-with-python2
                 (strip-python2-variant python-parse-type))))
-    (package (inherit base)
+    (package/inherit base
       (propagated-inputs
        `(("python2-enum34" ,python2-enum34)
          ,@(package-propagated-inputs base))))))
@@ -2295,8 +2339,7 @@ existing ones.")
 
 (define-public python2-polib
   (let ((base (package-with-python2 (strip-python2-variant python-polib))))
-    (package
-      (inherit base)
+    (package/inherit base
       (arguments `(,@(package-arguments base)
                    ;; Tests don't work with python2.
                    #:tests? #f)))))
@@ -2878,7 +2921,7 @@ compare, diff, and patch JSON and JSON-like structures in Python.")
 (define-public python2-jsonschema
   (let ((jsonschema (package-with-python2
                      (strip-python2-variant python-jsonschema))))
-    (package (inherit jsonschema)
+    (package/inherit jsonschema
              (propagated-inputs
               `(("python2-functools32" ,python2-functools32)
                 ,@(package-propagated-inputs jsonschema))))))
@@ -3381,15 +3424,16 @@ logic-free templating system Mustache.")
     (properties `((python2-variant . ,(delay python2-pystache))))))
 
 (define-public python2-pystache
-  (package (inherit (package-with-python2
-                     (strip-python2-variant python-pystache)))
-           (arguments
-            `(#:python ,python-2
-              #:phases
-              (modify-phases %standard-phases
-                (replace 'check
-                  (lambda _
-                    (invoke "python" "test_pystache.py"))))))))
+  (let ((base (package-with-python2
+               (strip-python2-variant python-pystache))))
+    (package/inherit base
+      (arguments
+       `(#:python ,python-2
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'check
+             (lambda _
+               (invoke "python" "test_pystache.py")))))))))
 
 (define-public python-joblib
   (package
@@ -3728,7 +3772,7 @@ to deprecate classes, functions or methods.")
 (define-public python-pygithub
   (package
     (name "python-pygithub")
-    (version "1.43.8")
+    (version "1.54.1")
     (source
      ;; We fetch from the Git repo because there are no tests in the PyPI
      ;; archive.
@@ -3739,27 +3783,24 @@ to deprecate classes, functions or methods.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1625v558xga5mwhl9jqmibywy5qafmg1vqrirqz6zfq1la1d22mw"))))
+        (base32 "1nl74bp5ikdnrc8xq0qr25ryl1mvarf0xi43k8w5jzlrllhq0nkq"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases (modify-phases %standard-phases
-                  ;; Some tests rely on the network.
-                  (add-after 'unpack 'disable-failing-tests
-                    (lambda _
-                      (substitute* "tests/Issue142.py"
-                        (("testDecodeJson")
-                         "disabled_testDecodeJson"))))
-                  (add-before 'check 'prepare-for-tests
-                    (lambda _
-                      (for-each (lambda (f)
-                                  (chmod f #o666))
-                                (find-files "./tests"))
-                      (system* "python" "-m" "lib2to3" "-w" "-n" "tests"))))))
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest"))
+             #t)))))
     (propagated-inputs
-     `(("python-deprecated" ,python-deprecated)
+     `(("python-cryptography" ,python-cryptography)
+       ("python-deprecated" ,python-deprecated)
        ("python-pyjwt" ,python-pyjwt)
        ("python-requests" ,python-requests)))
-    (native-inputs `(("python-httpretty" ,python-httpretty)))
+    (native-inputs
+     `(("python-httpretty" ,python-httpretty)
+       ("python-pytest" ,python-pytest)))
     (home-page "https://pygithub.readthedocs.io/en/latest/")
     (synopsis "Python library for the GitHub API")
     (description "This library allows managing GitHub resources such as
@@ -4450,8 +4491,7 @@ writing C extensions for Python as easy as Python itself.")
 
 (define-public python2-cython
   (let ((base (package-with-python2 (strip-python2-variant python-cython))))
-    (package
-      (inherit base)
+    (package/inherit base
       (name "python2-cython")
       (inputs
        `(("python-2" ,python-2)))       ;this is not automatically changed
@@ -5001,8 +5041,7 @@ that client code uses to construct the grammar directly in Python code.")
 (define-public python2-numpydoc
   (let ((base (package-with-python2
                (strip-python2-variant python-numpydoc))))
-    (package
-      (inherit base)
+    (package/inherit base
       (propagated-inputs
        `(("python2-jinja2" ,python2-jinja2)
          ,@(package-propagated-inputs base))))))
@@ -5769,13 +5808,13 @@ the OleFileIO module from PIL, the Python Image Library.")
 (define-public python-pikepdf
   (package
     (name "python-pikepdf")
-    (version "2.8.0")
+    (version "2.9.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pikepdf" version))
        (sha256
-        (base32 "1dfc8a7gp6ib6a2gdx6fz2zvvk4yx8vr2m7b6044rk91vpyrdzvl"))))
+        (base32 "1n53fhdgnq9yxvm2m039vl8l2kg3fkln3pm0wv4rzj0gvpq9rhcr"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #false))                ;require python-xmp-toolkit
@@ -6334,9 +6373,6 @@ Python bindings and object-oriented API for cairo.  Cairo is a 2D vector
 graphics library with support for multiple backends including image buffers,
 PNG, PostScript, PDF, and SVG file output.")
     (license license:bsd-3)))
-
-(define-public python2-cairocffi
-  (package-with-python2 python-cairocffi))
 
 (define-public python-decorator
   (package
@@ -7031,8 +7067,7 @@ CLI scripts:
 
 (define-public python2-ipyparallel
   (let ((ipyparallel (package-with-python2 python-ipyparallel)))
-    (package
-      (inherit ipyparallel)
+    (package/inherit ipyparallel
       (propagated-inputs
        `(("python2-futures" ,python2-futures)
          ,@(package-propagated-inputs ipyparallel))))))
@@ -7121,8 +7156,7 @@ without using the configuration machinery.")
 
 (define-public python2-traitlets
   (let ((traitlets (package-with-python2 (strip-python2-variant python-traitlets))))
-    (package
-      (inherit traitlets)
+    (package/inherit traitlets
       (propagated-inputs
        `(("python2-enum34" ,python2-enum34)
          ,@(package-propagated-inputs traitlets))))))
@@ -7674,7 +7708,7 @@ implementation of D-Bus.")
     (license license:expat)))
 
 (define-public python2-dbus
-  (package (inherit python-dbus)
+  (package/inherit python-dbus
     (name "python2-dbus")
     (inputs `(("python" ,python-2)
               ,@(alist-delete "python"
@@ -7748,10 +7782,10 @@ converts incoming documents to Unicode and outgoing documents to UTF-8.")
     (properties `((python2-variant . ,(delay python2-beautifulsoup4))))))
 
 (define-public python2-beautifulsoup4
-  (package
-    (inherit (package-with-python2
-              (strip-python2-variant python-beautifulsoup4)))
-    (arguments `(#:python ,python-2))))
+  (let ((base (package-with-python2
+               (strip-python2-variant python-beautifulsoup4))))
+   (package/inherit base
+     (arguments `(#:python ,python-2)))))
 
 (define-public python-soupsieve
   (package
@@ -7895,16 +7929,81 @@ of the structure, dynamics, and functions of complex networks.")
 Python.")
     (license license:lgpl2.1+)))
 
+(define-public python-amply
+  (package
+    (name "python-amply")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "amply" version))
+       (sha256
+        (base32
+         "0f1db9zp0rsfzxvaz55xwh8h5rfdgr9a2a715g06ic8nknsdq4nb"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-docutils" ,python-docutils)
+       ("python-pyparsing" ,python-pyparsing)))
+    (native-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)))
+    (home-page "https://github.com/willu47/amply")
+    (synopsis "Load and manipulate AMPL/GLPK data as Python data structures")
+    (description
+     "Amply allows you to load and manipulate AMPL/GLPK data as Python data
+structures.")
+    (license license:epl1.0)))
+
+(define-public python-pulp
+  (package
+    (name "python-pulp")
+    (version "2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "PuLP" version))
+       (sha256
+        (base32
+         "1dammrg0f1v0r028i3rpxbf2bsyxmjq0q6ihb4x2wsdki44z3bxj"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-amply" ,python-amply)))
+    (home-page "https://github.com/coin-or/pulp")
+    (synopsis "Linear Programming modeler")
+    (description
+     "PuLP is a Linear Programming modeler written in Python.  PuLP can
+generate MPS or LP files and call GLPK, COIN CLP/CBC, CPLEX, and GUROBI to
+solve linear problems.")
+    (license license:expat)))
+
+(define-public python-toposort
+  (package
+    (name "python-toposort")
+    (version "1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "toposort" version))
+       (sha256
+        (base32
+         "1b2hppzjg3p006qya3yfdnp76dwq8frl97lypdam0kw4xxb8yhm7"))))
+    (build-system python-build-system)
+    (home-page "https://gitlab.com/ericvsmith/toposort")
+    (synopsis "Topological sort algorithm")
+    (description
+     "This package provides an implementation of a topological sort
+algorithm.")
+    (license license:asl2.0)))
+
 (define-public snakemake
   (package
     (name "snakemake")
-    (version "5.7.1")
+    (version "5.32.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "snakemake" version))
        (sha256
-        (base32 "1pnpvvn8n2a78cg360wz3ldmpqrsm2wzi0c0dmvki9fnsw6fxdas"))))
+        (base32 "13013gdavwvyj1qr9xfi9fpwhb3km8c3z53bja5b7ic3sb2z6dgz"))))
     (build-system python-build-system)
     (arguments
      ;; TODO: Package missing test dependencies.
@@ -7916,7 +8015,7 @@ Python.")
          ;; this by calling the snakemake wrapper instead.
          (add-after 'unpack 'call-wrapper-not-wrapped-snakemake
            (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* "snakemake/executors.py"
+             (substitute* "snakemake/executors/__init__.py"
                (("\\{sys.executable\\} -m snakemake")
                 (string-append (assoc-ref outputs "out")
                                "/bin/snakemake")))
@@ -7929,11 +8028,14 @@ Python.")
        ("python-gitpython" ,python-gitpython)
        ("python-jinja2" ,python-jinja2)
        ("python-jsonschema" ,python-jsonschema)
+       ("python-nbformat" ,python-nbformat)
        ("python-networkx" ,python-networkx)
        ("python-psutil" ,python-psutil)
+       ("python-pulp" ,python-pulp)
        ("python-pyyaml" ,python-pyyaml)
        ("python-ratelimiter" ,python-ratelimiter)
        ("python-requests" ,python-requests)
+       ("python-toposort" ,python-toposort)
        ("python-wrapt" ,python-wrapt)))
     (home-page "https://snakemake.readthedocs.io")
     (synopsis "Python-based execution environment for make-like workflows")
@@ -8403,8 +8505,7 @@ PEP 8.")
 (define-public python2-pep517
   (let ((base (package-with-python2
                 (strip-python2-variant python-pep517))))
-    (package
-      (inherit base)
+    (package/inherit base
       (name "python2-pep517")
       (arguments
        `(#:tests? #f
@@ -8496,7 +8597,7 @@ cyclomatic complexity of Python source code.")
 
 (define-public python2-flake8
   (let ((base (package-with-python2 (strip-python2-variant python-flake8))))
-    (package (inherit base)
+    (package/inherit base
       (propagated-inputs
        `(("python2-configparser" ,python2-configparser)
          ("python2-enum34" ,python2-enum34)
@@ -9019,9 +9120,10 @@ third-party code.")
     (properties `((python2-variant . ,(delay python2-llfuse))))))
 
 (define-public python2-llfuse
-  (package (inherit (package-with-python2
-                 (strip-python2-variant python-llfuse)))
-    (propagated-inputs `(("python2-contextlib2" ,python2-contextlib2)))))
+  (let ((base (package-with-python2
+               (strip-python2-variant python-llfuse))))
+    (package/inherit base
+      (propagated-inputs `(("python2-contextlib2" ,python2-contextlib2))))))
 
 (define-public python-msgpack
   (package
@@ -9366,9 +9468,6 @@ tasks, sockets, files, locks, and queues.")
     (description "PyTables is a package for managing hierarchical datasets and
 designed to efficiently cope with extremely large amounts of data.")
     (license license:bsd-3)))
-
-(define-public python2-tables
-  (package-with-python2 python-tables))
 
 (define-public python-sniffio
   (package
@@ -9763,8 +9862,7 @@ a hash value.")
     (license license:asl2.0)))
 
 (define-public python2-tlsh
-  (package
-    (inherit python-tlsh)
+  (package/inherit python-tlsh
     (name "python2-tlsh")
     (inputs `(("python" ,python-2)))))
 
@@ -9853,8 +9951,7 @@ Python's @code{ctypes} foreign function interface (FFI).")
   (package-with-python2 python-libarchive-c))
 
 (define-public python-file
-  (package
-    (inherit file)
+  (package/inherit file
     (name "python-file")
     (build-system python-build-system)
     (arguments
@@ -10212,7 +10309,7 @@ interactive computing.")
 (define-public python2-notebook
   (let ((base (package-with-python2
                 (strip-python2-variant python-notebook))))
-    (package (inherit base)
+    (package/inherit base
       (native-inputs
        `(("python2-mock" ,python2-mock)
          ,@(package-native-inputs base)))
@@ -10253,9 +10350,6 @@ interactive computing.")
 notebooks.")
     (license license:bsd-3)))
 
-(define-public python2-widgetsnbextension
-  (package-with-python2 python-widgetsnbextension))
-
 (define-public python-ipywidgets
   (package
     (name "python-ipywidgets")
@@ -10282,9 +10376,6 @@ notebooks and the IPython kernel.  Notebooks come alive when interactive
 widgets are used.  Users gain control of their data and can visualize changes
 in the data.")
     (license license:bsd-3)))
-
-(define-public python2-ipywidgets
-  (package-with-python2 python-ipywidgets))
 
 (define-public python-jupyter-console
   (package
@@ -10346,8 +10437,7 @@ Jupyter kernels such as IJulia and IRKernel.")
 ;; the functionality in both packages working, strip down the
 ;; python-jupyter-console package when using it as an input to python-ipython.
 (define python-jupyter-console-minimal
-  (package
-    (inherit python-jupyter-console)
+  (package/inherit python-jupyter-console
     (name "python-jupyter-console-minimal")
     (arguments
      (substitute-keyword-arguments
@@ -10687,8 +10777,7 @@ the standard library.")
 (define-public python2-contextlib2
   (let ((base (package-with-python2
                (strip-python2-variant python-contextlib2))))
-    (package
-      (inherit base)
+    (package/inherit base
       (arguments
        (substitute-keyword-arguments (package-arguments base)
          ((#:phases phases)
@@ -10796,6 +10885,27 @@ applications.")
 applications.")
     (home-page "https://github.com/click-contrib/click-log")
     (license license:expat)))
+
+(define-public python-click-default-group
+  (package
+    (name "python-click-default-group")
+    (version "1.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "click-default-group" version))
+              (sha256
+               (base32
+                "015r78jk8gznfw0dphpwaqcx5mhg5822b55w5xbb6i7sin70wmnr"))))
+    (build-system python-build-system)
+    (arguments
+      `(#:tests? #f)) ; no target
+    (propagated-inputs
+     `(("python-click" ,python-click)))
+    (synopsis "Extends click.Group")
+    (description "This package extends click.Group to invoke a command without
+explicit subcommand name.")
+    (home-page "https://github.com/click-contrib/click-default-group")
+    (license license:bsd-3)))
 
 (define-public python-structlog
   (package
@@ -11138,7 +11248,7 @@ concurrent.futures package from Python 3.2")
 (define-public python2-promise
   (let ((promise (package-with-python2
                    (strip-python2-variant python-promise))))
-    (package (inherit promise)
+    (package/inherit promise
       (arguments (substitute-keyword-arguments (package-arguments promise)
                    ((#:tests? _) #t)))
       (native-inputs
@@ -11436,6 +11546,85 @@ document.")
      "This library provides a Python wrapper to SymEngine, a fast C++ symbolic
 manipulation library.")
     (license license:expat)))
+
+(define-public python-uncertainties
+  (package
+    (name "python-uncertainties")
+    (version "3.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "uncertainties" version))
+       (sha256
+        (base32
+         "00z9xl40czmqk0vmxjvmjvwb41r893l4dad7nj1nh6blw3kw28li"))))
+    (build-system python-build-system)
+    ;; While there are test files, there is no "tests" directory, so the tests
+    ;; fail.
+    (arguments '(#:tests? #false))
+    (propagated-inputs
+     `(("python-future" ,python-future)))
+    (native-inputs
+     `(("python-nose" ,python-nose)
+       ("python-numpy" ,python-numpy)))
+    (home-page "https://uncertainties-python-package.readthedocs.io/")
+    (synopsis "Calculations with uncertainties")
+    (description
+     "The uncertainties package transparently handles calculations with
+numbers with uncertainties. It can also yield the derivatives of any
+expression.")
+    (license license:bsd-3)))
+
+(define-public python-asteval
+  (package
+    (name "python-asteval")
+    (version "0.9.23")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "asteval" version))
+       (sha256
+        (base32
+         "0f54sd4w1a72ij1bcxs2x7dk9xf8bzclawijf1z18bqx9f96l2gm"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/newville/asteval")
+    (synopsis "Minimalistic evaluator of Python expressions")
+    (description
+     "This package provides a minimalistic evaluator of Python expression
+using the @code{ast} module")
+    (license license:expat)))
+
+(define-public python-lmfit
+  (package
+    (name "python-lmfit")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "lmfit" version))
+       (sha256
+        (base32
+         "0iab33jjb60f8kn0k0cqb0vjp1mdskks2n3kpn97zkw5cvjhq2b7"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-asteval" ,python-asteval)
+       ("python-numpy" ,python-numpy)
+       ("python-scipy" ,python-scipy)
+       ("python-uncertainties" ,python-uncertainties)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://lmfit.github.io/lmfit-py/")
+    (synopsis "Least-Squares minimization with bounds and constraints")
+    (description
+     "Lmfit provides a high-level interface to non-linear optimization and
+curve fitting problems for Python.  It builds on and extends many of the
+optimization methods of @code{scipy.optimize}.  Initially inspired by (and
+named for) extending the Levenberg-Marquardt method from
+@code{scipy.optimize.leastsq}, lmfit now provides a number of useful
+enhancements to optimization and data fitting problems.")
+    (license license:bsd-3)))
 
 (define-public python-boto
   (package
@@ -11761,8 +11950,7 @@ and provides a uniform API regardless of which JSON implementation is used.")
 (define-public python2-anyjson
   (let ((anyjson (package-with-python2
                   (strip-python2-variant python-anyjson))))
-    (package
-      (inherit anyjson)
+    (package/inherit anyjson
       (arguments `(;; Unlike the python 3 variant, we do run tests.  See above!
                    #:tests? #t
                    ,@(package-arguments anyjson)))
@@ -11799,8 +11987,7 @@ alternative when librabbitmq is not available.")
 (define-public python2-amqp
   (let ((amqp (package-with-python2
                (strip-python2-variant python-amqp))))
-    (package
-      (inherit amqp)
+    (package/inherit amqp
       (arguments `(;; Tries to run coverage tests with nose-cover3, which seems
                    ;; unmaintained.  Weirdly, does not do this on the python 3
                    ;; version?
@@ -11872,8 +12059,7 @@ RabbitMQ messaging server is the most popular implementation.")
 (define-public python2-kombu
   (let ((kombu (package-with-python2
                 (strip-python2-variant python-kombu))))
-    (package
-      (inherit kombu)
+    (package/inherit kombu
       (arguments `(;; FIXME: 'TestTransport.test_del_sync' fails on python2.
                    ;; It works fine on the python3 variant.
                    #:tests? #f
@@ -11910,8 +12096,7 @@ Python 2.4 and 2.5, and will draw its fixes/improvements from python-trunk.")
 (define-public python2-billiard
   (let ((billiard (package-with-python2
                    (strip-python2-variant python-billiard))))
-    (package
-      (inherit billiard)
+    (package/inherit billiard
       (native-inputs `(("python2-unittest2" ,python2-unittest2)
                        ("python2-mock" ,python2-mock)
                        ,@(package-native-inputs billiard))))))
@@ -11961,8 +12146,7 @@ synchronously (wait until ready).")
 (define-public python2-celery
   (let ((celery (package-with-python2
                  (strip-python2-variant python-celery))))
-    (package
-      (inherit celery)
+    (package/inherit celery
       (native-inputs `(("python2-unittest2" ,python2-unittest2)
                        ("python2-mock" ,python2-mock)
                        ,@(package-native-inputs celery))))))
@@ -12116,7 +12300,7 @@ checking library.")
 
 (define-public python2-whoosh
   (let ((whoosh (package-with-python2 (strip-python2-variant python-whoosh))))
-    (package (inherit whoosh)
+    (package/inherit whoosh
       (propagated-inputs
        `(("python2-backport-ssl-match-hostname"
           ,python2-backport-ssl-match-hostname)
@@ -12230,7 +12414,7 @@ encoding algorithms to do fuzzy string matching.")
 (define-public python2-jellyfish
   (let ((jellyfish (package-with-python2
                      (strip-python2-variant python-jellyfish))))
-    (package (inherit jellyfish)
+    (package/inherit jellyfish
       (native-inputs `(("python2-unicodecsv" ,python2-unicodecsv)
                        ,@(package-native-inputs jellyfish))))))
 
@@ -12645,8 +12829,7 @@ to occurrences in strings and comments.")
     (license license:gpl2)))
 
 (define-public python-rope
-  (package
-    (inherit python2-rope)
+  (package/inherit python2-rope
     (name "python-rope")
     (arguments `(#:python ,python-wrapper
                  ;; XXX: Only partial python3 support, results in some failing
@@ -13408,7 +13591,7 @@ database, file, dict stores.  Cachy supports python versions 2.7+ and 3.2+.")
 (define-public poetry
   (package
     (name "poetry")
-    (version "1.1.4")
+    (version "1.1.5")
     ;; Poetry can only be built from source with Poetry.
     (source
      (origin
@@ -13416,7 +13599,7 @@ database, file, dict stores.  Cachy supports python versions 2.7+ and 3.2+.")
        (uri (pypi-uri "poetry" version))
        (sha256
         (base32
-         "1a2kgfiw66fvxhlqk5qc83s6l38czfh5hcsrbiy7qq5yfc8mlsll"))))
+         "1dvx08ksv5wnsj45db23921rj136akmcnxa0kmlsddf3wbh6wcka"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ;; Pypi does not have tests.
@@ -13951,8 +14134,7 @@ etc.")
 
 (define-public ptpython-2
   (let ((base (package-with-python2 (strip-python2-variant ptpython))))
-    (package
-      (inherit base)
+    (package/inherit base
       (name "ptpython2"))))
 
 (define-public python-stem
@@ -13986,9 +14168,6 @@ etc.")
 control protocol to script against the Tor process and read descriptor data
 relays publish about themselves.")
     (license license:lgpl3)))
-
-(define-public python2-stem
-  (package-with-python2 python-stem))
 
 (define-public python-pyserial
   (package
@@ -14095,7 +14274,7 @@ binary or text.")
 
 (define-public python2-binaryornot
   (let ((base (package-with-python2 (strip-python2-variant python-binaryornot))))
-    (package (inherit base)
+    (package/inherit base
       (propagated-inputs
        `(("python2-enum34" ,python2-enum34)
          ,@(package-propagated-inputs base))))))
@@ -14324,13 +14503,13 @@ command @command{natsort} that exposes this functionality in the command line.")
 (define-public glances
   (package
   (name "glances")
-  (version "3.1.4")
+  (version "3.1.6")
   (source
     (origin
       (method url-fetch)
       (uri (pypi-uri "Glances" version))
       (sha256
-        (base32 "0dc47gbvp9a3wxppdqihxpglxxaxbj3hcvzgcxxq8zcsciah3plq"))
+        (base32 "11xbm8jgcxha191ly7q76nab1ilabiz14mqf6i3y6aw5xvgg017c"))
       (modules '((guix build utils)))
       (snippet
        '(begin
@@ -14393,9 +14572,6 @@ runtime designed and used to request and deliver data to mobile and web apps.
 This library is a port of @url{https://github.com/graphql/graphql-js,graphql-js}
 to Python.")
     (license license:expat)))
-
-(define-public python2-graphql-core
-  (package-with-python2 python-graphql-core))
 
 (define-public python-graphql-relay
   (package
@@ -14592,8 +14768,7 @@ is used by PostgreSQL and the OpenSSH Server for example.")
 (define-public python2-setproctitle
   (let ((base (package-with-python2
                (strip-python2-variant python-setproctitle))))
-    (package
-      (inherit base)
+    (package/inherit base
       (native-inputs `(("python2-nose" ,python2-nose)
                        ,@(package-native-inputs base))))))
 
@@ -14770,8 +14945,7 @@ network.")
 (define-public python2-argcomplete
   (let ((variant (package-with-python2
                   (strip-python2-variant python-argcomplete))))
-    (package
-      (inherit variant)
+    (package/inherit variant
       (arguments
        (substitute-keyword-arguments (package-arguments variant)
          ((#:phases phases '%standard-phases)
@@ -14895,8 +15069,7 @@ possible on all supported Python versions.")
 (define-public python2-xopen
   (let ((base (package-with-python2
                (strip-python2-variant python-xopen))))
-    (package
-      (inherit base)
+    (package/inherit base
       (propagated-inputs `(("python2-bz2file" ,python2-bz2file)
                            ,@(package-propagated-inputs base))))))
 
@@ -15009,9 +15182,6 @@ Features:
 protocols written in pure Python.")
     ;; Can be used with either license.
     (license (list license:asl2.0 license:gpl2+))))
-
-(define-public python2-dulwich
-  (package-with-python2 python-dulwich))
 
 (define-public python-pbkdf2
   (package
@@ -15782,7 +15952,16 @@ version, is suitable to be include as a dependency in other projects.")
 imports alphabetically, and automatically separated into sections.  It
 provides a command line utility, a python library and plugins for various
 editors.")
-    (license license:expat)))
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-isort))))))
+
+(define-public python2-isort
+  (let ((base (package-with-python2
+               (strip-python2-variant python-isort))))
+    (package/inherit base
+      (native-inputs
+       `(("python2-futures" ,python2-futures)
+         ,@(package-native-inputs base))))))
 
 (define-public python2-backports-functools-lru-cache
   (package
@@ -16017,9 +16196,6 @@ exception message with a traceback that points to the culprit.")
       "Python Utils is a collection of small Python functions and classes which
 make common patterns shorter and easier.")
     (license license:bsd-2)))
-
-(define-public python2-utils
-  (package-with-python2 python-utils))
 
 (define-public python-diff-match-patch
   (package
@@ -16362,8 +16538,7 @@ Supported metrics are:
 
 (define-public python2-radon
   (let ((base (package-with-python2 (strip-python2-variant python-radon))))
-    (package
-      (inherit base)
+    (package/inherit base
       (propagated-inputs
        `(("python-configparser" ,python2-configparser)
          ("python-future" ,python2-future)
@@ -16650,8 +16825,7 @@ and integration into other projects.")
 (define-public python2-rfc6555
   (let ((base (package-with-python2
                (strip-python2-variant python-rfc6555))))
-    (package
-      (inherit base)
+    (package/inherit base
       (propagated-inputs
        `(("python2-selectors2" ,python2-selectors2))))))
 
@@ -17768,8 +17942,7 @@ such as figshare or Zenodo.")
 (define-public python2-activepapers
   (let ((base (package-with-python2
                (strip-python2-variant python-activepapers))))
-    (package
-      (inherit base)
+    (package/inherit base
       (arguments
        (substitute-keyword-arguments (package-arguments base)
          ((#:phases phases)
@@ -18003,7 +18176,18 @@ user's @file{~/Trash} directory.")
     (license license:bsd-3)))
 
 (define-public python2-send2trash
-  (package-with-python2 (strip-python2-variant python-send2trash)))
+  (let ((base (package-with-python2
+               (strip-python2-variant python-send2trash))))
+    (package/inherit base
+      (arguments
+       (substitute-keyword-arguments (package-arguments python-send2trash)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-before 'check 'setenv
+               (lambda _
+                 (setenv "PYTHONPATH"
+                         (string-append (getcwd) ":" (getenv "PYTHONPATH")))
+                 #t)))))))))
 
 (define-public python-pyfavicon
   (package
@@ -19148,6 +19332,31 @@ library: to minimize boilerplate code in traditional extension modules by
 inferring type information using compile-time introspection.")
     (license license:bsd-3)))
 
+(define-public python-pooch
+  (package
+    (name "python-pooch")
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pooch" version))
+       (sha256
+        (base32 "1618adsg9r8fsv422sv35z1i723q3a1iir5v7dv2sklh4pl4im1h"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)) ;requires online data
+    (propagated-inputs
+     `(("python-appdirs" ,python-appdirs)
+       ("python-packaging" ,python-packaging)
+       ("python-requests" ,python-requests)))
+    (home-page "https://github.com/fatiando/pooch")
+    (synopsis "Manage your Python library's sample data files")
+    (description
+     "Pooch manages your Python library's sample data files: it automatically
+downloads and stores them in a local directory, with support for versioning
+and corruption checks.")
+    (license license:bsd-3)))
+
 (define-public python-fasteners
   (package
     (name "python-fasteners")
@@ -19724,6 +19933,26 @@ main differences are that @code{cytoolz} is faster and cytoolz offers a C API
 that is accessible to other projects developed in Cython.")
     (license license:bsd-3)))
 
+(define-public python-sortedcollections
+  (package
+    (name "python-sortedcollections")
+    (version "2.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "sortedcollections" version))
+       (sha256
+        (base32
+         "1kfabpnjyjm5ml2zspry9jy3xq49aybchgaa4ahic2jqdjfn1sfq"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-sortedcontainers" ,python-sortedcontainers)))
+    (arguments '(#:tests? #f))  ; Tests not included in release tarball.
+    (home-page "http://www.grantjenks.com/docs/sortedcollections/")
+    (synopsis "Python Sorted Collections")
+    (description "Sorted Collections is a Python sorted collections library.")
+    (license license:asl2.0)))
+
 (define-public python-sortedcontainers
   (package
     (name "python-sortedcontainers")
@@ -19792,8 +20021,7 @@ data.")
 
 (define-public python2-cloudpickle
   (let ((base (package-with-python2 (strip-python2-variant python-cloudpickle))))
-    (package
-      (inherit base)
+    (package/inherit base
       (native-inputs
        `(("python-mock" ,python2-mock)
          ,@(package-native-inputs base)))
@@ -20033,7 +20261,7 @@ on regular expressions.")
 (define-public python2-reparser
   (let ((reparser (package-with-python2
                    (strip-python2-variant python-reparser))))
-    (package (inherit reparser)
+    (package/inherit reparser
              (propagated-inputs
               `(("python2-enum34" ,python2-enum34)
                 ,@(package-propagated-inputs reparser))))))
@@ -20994,14 +21222,14 @@ register custom encoders and decoders.")
 (define-public python-ujson
   (package
     (name "python-ujson")
-    (version "4.0.1")
+    (version "4.0.2")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "ujson" version))
         (sha256
          (base32
-          "1lr9lbm76y3ah1463jggwg2hjcb709mpns5f752wxxbgnd0n5kr6"))
+          "0k9w0kypy7vlskzzp2vsjswaw8lbqdrplzkbflxki9vqwglsj5f6"))
         (modules '((guix build utils)))
         (snippet
          '(begin (delete-file-recursively "deps") #t))))
@@ -21439,29 +21667,6 @@ and cuts down boilerplate code when testing libraries for asyncio.")
     (description "This project allows Python code to extend built-in types.")
     (license (list license:gpl3+ license:expat))))
 
-(define-public python-shouldbe
-  (package
-    (name "python-shouldbe")
-    (version "0.1.2")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "shouldbe" version))
-       (sha256
-        (base32
-         "16zbvjxf71dl4yfbgcr6idyim3mdrfvix1dv8b95p0s9z07372pj"))
-       (patches (search-patches "python-shouldbe-0.1.2-cpy3.8.patch"))))
-    (build-system python-build-system)
-    (propagated-inputs
-      `(("python-forbiddenfruit" ,python-forbiddenfruit)))
-    (native-inputs
-     `(("python-nose" ,python-nose)))
-    (home-page "https://github.com/directxman12/should_be")
-    (synopsis "Python Assertion Helpers inspired by Shouldly")
-    (description
-     "Python Assertion Helpers inspired by Shouldly.")
-    (license license:isc)))
-
 (define-public python-k5test
   (package
     (name "python-k5test")
@@ -21499,31 +21704,15 @@ tests.")
 (define-public python-gssapi
   (package
     (name "python-gssapi")
-    (version "1.6.9")
+    (version "1.6.12")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "gssapi" version))
        (sha256
         (base32
-         "1fa78pn5jzfbwf3y6mj4fc8sh11wjf1hwh5qv39cdlxb71qsq2hb"))))
+         "1j2idrbrbczykzlb56q1bn0ivc9c0rjjljpk4yz86xn3gxfkpv8n"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         ;; Work around
-         ;; https://github.com/pythongssapi/python-gssapi/issues/220.
-         (add-before 'check 'disable-failing-tests
-           (lambda _
-             (let ((reason "Disabled failing test (see: \
-https://github.com/pythongssapi/python-gssapi/issues/220)."))
-               (substitute* "gssapi/tests/test_high_level.py"
-                 ((".*def test_add_with_impersonate.*" all)
-                  (string-append all "        self.skipTest('" reason "')\n")))
-               (substitute* "gssapi/tests/test_raw.py"
-                 ((".*def test_.*impersonate_name.*" all)
-                  (string-append all "        self.skipTest('" reason "')\n")))
-               #t))))))
     (propagated-inputs
      `(("python-decorator" ,python-decorator)
        ("python-six" ,python-six)))
@@ -21531,8 +21720,7 @@ https://github.com/pythongssapi/python-gssapi/issues/220)."))
      `(("mit-krb5" ,mit-krb5)))
     ;; for tests
     (native-inputs
-     `(("python-shouldbe" ,python-shouldbe)
-       ("python-parameterized" ,python-parameterized)
+     `(("python-parameterized" ,python-parameterized)
        ("python-k5test" ,python-k5test)
        ("python-nose" ,python-nose)))
     (home-page "https://github.com/pythongssapi/python-gssapi")
@@ -23515,14 +23703,14 @@ process.")
 (define-public python-aiofiles
   (package
     (name "python-aiofiles")
-    (version "0.5.0")
+    (version "0.6.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "aiofiles" version))
         (sha256
           (base32
-            "1bqmv019x16qa3zah0z915cw6z4va3fjs60fk2s7vyah3gyvrrlq"))))
+            "14m01kjxm2j7zyljjj6xlhlgygcsriymbx730gc5jp9xglaina70"))))
     (build-system python-build-system)
     (home-page "https://github.com/Tinche/aiofiles")
     (synopsis "File support for @code{asyncio}")
@@ -23903,3 +24091,48 @@ and frame grabber interface.")
      "This package provides a command-line interface (CLI) to the Jinja2
 template engine.")
     (license license:bsd-3)))
+
+(define-public python-readability
+  (package
+    (name "python-readability")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "readability" version))
+       (sha256
+        (base32
+         "1b8gq3g2zwvx0aivvdg56cc0bn7xw6f2v6psmxdx9aiipkw0s0zr"))))
+    (build-system python-build-system)
+    (home-page
+     "https://github.com/andreasvc/readability/")
+    (synopsis
+     "Measure the readability of a given text using surface
+characteristics")
+    (description
+     "This package provides a Python library that is an implementation of
+traditional readability measures based on simple surface
+characteristics. These measures are basically linear regressions based on the
+number of words, syllables, and sentences.")
+    (license license:asl2.0)))
+
+(define-public python-listparser
+  (package
+    (name "python-listparser")
+    (version "0.18")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "listparser" version))
+       (sha256
+        (base32
+         "0hdqs1mmayw1r8yla43hgb4d9y3zqs5483vgf8j9ygczkd2wrq2b"))))
+    (build-system python-build-system)
+    (home-page
+     "https://github.com/kurtmckee/listparser")
+    (synopsis
+     "Parse subscription lists in Python")
+    (description
+     "This package provides a Python library that can parse OPML, FOAF, and
+iGoogle subscription lists.")
+    (license license:expat)))

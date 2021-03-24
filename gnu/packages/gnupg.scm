@@ -695,6 +695,8 @@ PGP keysigning parties.")
                 "1aig5ssabzbk4mih7xd04vgr931bw0flbi8dz902wlr610gyv5s5"))))
     (build-system gnu-build-system)
     (native-inputs
+     ;; autoconf-wrapper is required due to the non-standard
+     ;; 'configure phase.
      `(("autoconf" ,autoconf-wrapper)
        ("automake" ,automake)))
     (inputs `(("perl" ,perl)
@@ -1144,17 +1146,16 @@ over.")
 (define-public jetring
   (package
     (name "jetring")
-    (version "0.29")
+    (version "0.30")
     (source
       (origin
         (method git-fetch)
         (uri (git-reference
                (url "https://salsa.debian.org/debian/jetring")
-               (commit (string-append "debian/" version))))
+               (commit "535380166eb1b222ba34864af07f3e36f4fb52c9")))
         (file-name (git-file-name name version))
         (sha256
-         (base32
-          "1acbx2vnbkms1c0wgcnh05d4g359sg5z0aiw541vx2qq9sgdhlv6"))))
+         (base32 "19m7rj446pr4nql44khwq0cfxfrm8cslj5v9jll08p7nk6glq5px"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;;
@@ -122,7 +122,7 @@ engine that uses Wayland for graphics output.")
 (define-public wpewebkit
   (package
     (name "wpewebkit")
-    (version "2.28.3")
+    (version "2.30.5")
     (source
      (origin
        (method url-fetch)
@@ -130,7 +130,7 @@ engine that uses Wayland for graphics output.")
         (string-append "https://wpewebkit.org/releases/"
                        name "-" version ".tar.xz"))
        (sha256
-        (base32 "12z9457ja1xm93kl3gpd6nvd5xn11mvm8pr0w2zhmh3k9lx2cf95"))))
+        (base32 "16imr0kmzhs7dz6jva9750xbsdz9v50playnagabajy30x7pymsb"))))
     (build-system cmake-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -140,8 +140,10 @@ engine that uses Wayland for graphics output.")
         "-DPORT=WPE"
         ;; XXX: To be enabled.
         ;; "-DENABLE_ACCELERATED_2D_CANVAS=ON"
-        "-DENABLE_ENCRYPTED_MEDIA=ON"
-        "-DENABLE_GTKDOC=ON")
+        "-DUSE_SYSTEMD=OFF"
+        "-DENABLE_ENCRYPTED_MEDIA=OFF"
+        "-DENABLE_GTKDOC=ON"
+        "-DUSE_GSTREAMER_GL=OFF")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'setenv
@@ -224,14 +226,14 @@ acceleration in mind, leveraging common 3D graphics APIs for best performance.")
 (define-public webkitgtk
   (package
     (name "webkitgtk")
-    (version "2.30.5")
+    (version "2.30.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.webkitgtk.org/releases/"
                                   "webkitgtk-" version ".tar.xz"))
               (sha256
                (base32
-                "07vzbbnvz69rn9pciji4axfpclp98bpj4a0br2z0gbn5wc4an3bx"))
+                "07kwkn7gnlfw4idl5vyyzhzbj2bjzvjrclbikn9vaw0pm73nwwsh"))
               (patches (search-patches "webkitgtk-share-store.patch"
                                        "webkitgtk-bind-all-fonts.patch"))))
     (build-system cmake-build-system)
@@ -254,12 +256,7 @@ acceleration in mind, leveraging common 3D graphics APIs for best performance.")
                           ;; included.  More investigation is needed.  For
                           ;; now, we explicitly disable it to prevent an error
                           ;; at configuration time.
-                          "-DUSE_GSTREAMER_GL=OFF"
-
-                          ;; XXX Disable WOFF2 ‘web fonts’.  These were never
-                          ;; supported in our previous builds.  Enabling them
-                          ;; requires building libwoff2 and possibly woff2dec.
-                          "-DUSE_WOFF2=OFF")
+                          "-DUSE_GSTREAMER_GL=OFF")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'configure-bubblewrap-store-directory
@@ -336,6 +333,7 @@ acceleration in mind, leveraging common 3D graphics APIs for best performance.")
        ("mesa" ,mesa)
        ("openjpeg" ,openjpeg)
        ("sqlite" ,sqlite)
+       ("woff2" ,woff2)
        ("wpebackend-fdo" ,wpebackend-fdo)
        ("xdg-dbus-proxy" ,xdg-dbus-proxy)))
     (home-page "https://www.webkitgtk.org/")
