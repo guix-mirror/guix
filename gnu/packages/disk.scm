@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2016, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
@@ -363,6 +363,8 @@ scheme.")
       (sha256
        (base32 "0qqh38izl5ppap9a5izf3hijh94k65s3zbfkczd4b7x04syqwlyf"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags (list (string-append "CXX=" ,(cxx-for-target)))))
     (home-page "https://www.gnu.org/software/ddrescue/ddrescue.html")
     (synopsis "Data recovery utility")
     (native-inputs `(("lzip" ,lzip)))
