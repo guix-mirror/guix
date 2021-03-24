@@ -192,7 +192,7 @@ shared NFS home directories.")
            (substitute* "tests/spawn-test.c"
              (("/bin/sh") "sh"))
            #t))))
-    (properties '((hidden? . #t)))
+    ;; (properties '((hidden? . #t)))
     (build-system meson-build-system)
     (outputs '("out"   ; everything
                "bin")) ; glib-mkenums, gtester, etc.; depends on Python
@@ -318,7 +318,8 @@ functions for strings and common data structures.")
   ;; glib's doc must be built in a separate package since it requires gtk-doc,
   ;; which in turn depends on glib.
   (package/inherit glib
-    (properties (alist-delete 'hidden? (package-properties glib)))
+    ;; (properties (alist-delete 'hidden? (package-properties glib)))
+    (properties '((hidden? . #t)))
     (outputs (cons "doc" (package-outputs glib))) ; 20 MiB of GTK-Doc reference
     (native-inputs
      `(("docbook-xml-4.2" ,docbook-xml-4.2)
