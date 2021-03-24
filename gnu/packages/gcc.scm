@@ -274,13 +274,10 @@ where the OS part is overloaded to denote a specific ABI---into GCC
 ~a"
                                libc line))))
 
-                  ;; TODO: Make this unconditional in core-updates.
-                  ,@(if (target-powerpc?)
-                      `((when (file-exists? "gcc/config/rs6000")
-                          ;; Force powerpc libdir to be /lib and not /lib64
-                          (substitute* (find-files "gcc/config/rs6000")
-                            (("/lib64") "/lib"))))
-                      `())
+                  (when (file-exists? "gcc/config/rs6000")
+                    ;; Force powerpc libdir to be /lib and not /lib64
+                    (substitute* (find-files "gcc/config/rs6000")
+                      (("/lib64") "/lib")))
 
                   ;; Don't retain a dependency on the build-time sed.
                   (substitute* "fixincludes/fixincl.x"
