@@ -438,40 +438,44 @@ environment.")
     (license license:gpl3+)))
 
 (define-public gnuradio-osmosdr
-  (package
-    (name "gnuradio-osmosdr")
-    (version "0.2.2")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://git.osmocom.org/gr-osmosdr")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "1aqj5cylipmmjh1x1kb2j8262hxq6mi86dgb2zphj94wvsab2ghx"))))
-    (build-system cmake-build-system)
-    (native-inputs
-     `(("doxygen" ,doxygen)
-       ("pkg-config" ,pkg-config)
-       ("python" ,python)
-       ("python-mako" ,python-mako)
-       ("python-six" ,python-six)
-       ("swig" ,swig)))
-    (inputs
-     `(("boost" ,boost)
-       ("fftwf" ,fftwf)
-       ("gmp" ,gmp)
-       ("gnuradio" ,gnuradio)
-       ("hackrf" ,hackrf)
-       ("log4cpp" ,log4cpp)
-       ("rtl-sdr" ,rtl-sdr)
-       ("volk" ,volk)))
-    (synopsis "GNU Radio block for interfacing with various radio hardware")
-    (description "This is a block for GNU Radio allowing to use a common API
+  ;; No tag for version supporting Gnuradio 3.9; use commit.
+  (let ((commit "a100eb024c0210b95e4738b6efd836d48225bd03")
+        (revision "0"))
+    (package
+      (name "gnuradio-osmosdr")
+      (version (git-version "0.2.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://git.osmocom.org/gr-osmosdr")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1pk5gnyznfyy510lbqzg9ijcb1fnhmn547n24aiqyrxd6i6vv1ki"))))
+      (build-system cmake-build-system)
+      (native-inputs
+       `(("doxygen" ,doxygen)
+         ("pkg-config" ,pkg-config)
+         ("pybind11" ,pybind11)
+         ("python" ,python)
+         ("python-mako" ,python-mako)
+         ("python-six" ,python-six)))
+      (inputs
+       `(("boost" ,boost)
+         ("fftwf" ,fftwf)
+         ("gmp" ,gmp)
+         ("gnuradio" ,gnuradio)
+         ("hackrf" ,hackrf)
+         ("libsndfile" ,libsndfile)
+         ("log4cpp" ,log4cpp)
+         ("rtl-sdr" ,rtl-sdr)
+         ("volk" ,volk)))
+      (synopsis "GNU Radio block for interfacing with various radio hardware")
+      (description "This is a block for GNU Radio allowing to use a common API
 to access different radio hardware.")
-    (home-page "https://osmocom.org/projects/gr-osmosdr/wiki/GrOsmoSDR")
-    (license license:gpl3+)))
+      (home-page "https://osmocom.org/projects/gr-osmosdr/wiki/GrOsmoSDR")
+      (license license:gpl3+))))
 
 (define-public libosmo-dsp
   (package
