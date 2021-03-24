@@ -47,24 +47,6 @@
   #:use-module (gnu packages xml)
   #:use-module (guix build-system gnu))
 
-(define-public guile-mastodon-dev
-  (let ((commit "88115d85221876b1baea4accb7c76995da32f479")
-        (revision "1"))
-    (package
-      (inherit guile-mastodon)
-      (name "guile-mastodon")
-      (version (git-version "0.0.1" revision commit))
-      (home-page "https://framagit.org/mothacehe/guile-mastodon.git")
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url home-page)
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "04dgxliz9bmhn0f7h1n0dj0r5h0fzhg80nxl1rpbxh4zs1yw9qvj"))
-                (file-name (string-append name "-" version "-checkout")))))))
-
 (define-public cuirass
   (let ((commit "6f4a203a0bb2d441d091d561c1735fbe2d170cf7")
         (revision "2"))
@@ -158,7 +140,7 @@
          ("guile-squee" ,guile-squee)
          ("guile-git" ,guile-git)
          ("guile-zlib" ,guile-zlib)
-         ("guile-mastodon" ,guile-mastodon-dev)
+         ("guile-mastodon" ,guile-mastodon)
          ("gnutls" ,gnutls)
          ("mailutils" ,mailutils)
          ;; FIXME: this is propagated by "guile-git", but it needs to be among
