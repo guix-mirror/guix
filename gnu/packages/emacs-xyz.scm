@@ -21470,6 +21470,31 @@ stored playlists.")
 display a terminal in an Emacs buffer.")
       (license license:gpl3+))))
 
+(define-public emacs-vterm-toggle
+  ;; There have been no releases.
+  (let ((commit "d10239b7bb89b78dddb82f66ac2286bc0b02747b")
+        (revision "1"))
+    (package
+      (name "emacs-vterm-toggle")
+      (version (git-version "0.0.4" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/jixiuf/vterm-toggle")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0r9n23wg9cfy10h5f9zqr8jpkvw34f9rylri3nxq870awjab7rqi"))))
+      (build-system emacs-build-system)
+      (propagated-inputs `(("emacs-vterm" ,emacs-vterm)))
+      (home-page "https://github.com/jixiuf/vterm-toggle")
+      (synopsis "Toggle between a vterm buffer and other buffers")
+      (description
+       "This package provides a DWIM way to switch from an Emacs buffer to
+a vterm buffer and back again.")
+      (license license:gpl3+))))
+
 (define-public emacs-simple-mpc
   ;; There have been no releases.
   (let ((commit "bee8520e81292b4c7353e45b193f9a13b482f5b2")
