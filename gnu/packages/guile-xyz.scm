@@ -1313,44 +1313,37 @@ Scheme by using Guile’s foreign function interface.")
   (deprecated-package "guile3.0-newt" guile-newt))
 
 (define-public guile-mastodon
-  (package
-    (name "guile-mastodon")
-    (version "0.0.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://framagit.org/prouby/guile-mastodon.git")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1vblf3d1bbwna3l09p2ap5y8ycvl549bz6whgk78imyfmn28ygry"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; Allow builds with Guile 3.0.
-                  (substitute* "configure.ac"
-                    (("^PKG_CHECK.*") "")
-                    (("^GUILE_PKG.*")
-                     "GUILE_PKG([3.0 2.2])\n"))
-                  #t))))
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("emacs" ,emacs-minimal)
-       ("pkg-config" ,pkg-config)
-       ("texinfo" ,texinfo)))
-    (inputs
-     `(("guile" ,guile-3.0)
-       ("gnutls" ,gnutls)
-       ("guile-json" ,guile-json-4)))
-    (home-page "https://framagit.org/prouby/guile-mastodon")
-    (synopsis "Guile Mastodon REST API module")
-    (description "This package provides Guile modules to access the
+  (let ((commit "74b75bcf547df92acee1e0466ecd7ec07f775392")
+        (revision "1"))
+    (package
+      (name "guile-mastodon")
+      (version (git-version "0.0.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://framagit.org/prouby/guile-mastodon.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "1wx5h6wa9c0na8mrnr2nv1nzjvq68zyrly8yyp11dsskhaw4y33h"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("emacs" ,emacs-minimal)
+         ("pkg-config" ,pkg-config)
+         ("texinfo" ,texinfo)))
+      (inputs
+       `(("guile" ,guile-3.0)
+         ("gnutls" ,gnutls)
+         ("guile-json" ,guile-json-4)))
+      (home-page "https://framagit.org/prouby/guile-mastodon")
+      (synopsis "Guile Mastodon REST API module")
+      (description "This package provides Guile modules to access the
 @uref{https://docs.joinmastodon.org/api/, REST API of Mastodon}, a federated
 microblogging service.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public guile-parted
   (package
