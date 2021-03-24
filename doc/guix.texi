@@ -28709,7 +28709,7 @@ service:
 @lisp
 (service qemu-binfmt-service-type
          (qemu-binfmt-configuration
-           (platforms (lookup-qemu-platforms "arm"))
+           (platforms (lookup-qemu-platforms "arm"))))
 @end lisp
 
 You can run:
