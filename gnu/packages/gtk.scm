@@ -78,6 +78,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -312,30 +313,31 @@ applications.")
 
 (define-public pango
   (package
-   (name "pango")
-   (version "1.44.7")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append "mirror://gnome/sources/pango/"
-                                (version-major+minor version) "/"
-                                name "-" version ".tar.xz"))
-            (patches (search-patches "pango-skip-libthai-test.patch"))
-            (sha256
-             (base32
-              "07qvxa2sk90chp1l12han6vxvy098mc37sdqcznyywyv2g6bd9b6"))))
-   (build-system meson-build-system)
-   (arguments
-    '(#:glib-or-gtk? #t ; To wrap binaries and/or compile schemas
-      #:phases (modify-phases %standard-phases
-                 (add-after 'unpack 'disable-cantarell-tests
-                   (lambda _
-                     (substitute* "tests/meson.build"
-                       ;; XXX FIXME: These tests require "font-cantarell", but
-                       ;; adding it here would introduce a circular dependency.
-                       (("\\[ 'test-harfbuzz'.*") "")
-                       (("\\[ 'test-itemize'.*") "")
-                       (("\\[ 'test-layout'.*") ""))
-                     #t)))))
+    (name "pango")
+    (version "1.48.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/pango/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (patches (search-patches "pango-skip-libthai-test.patch"))
+              (sha256
+               (base32
+                "0ijbkcs6217ygzphlpi0vajxkccifdbsl0jdjpy8wz11h9f19sin"))))
+    (build-system meson-build-system)
+    (arguments
+     '(#:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'disable-cantarell-tests
+                    (lambda _
+                      (substitute* "tests/meson.build"
+                        ;; XXX FIXME: These tests require "font-cantarell", but
+                        ;; adding it here would introduce a circular dependency.
+                        (("\\[ 'test-layout'.*") "")
+                        (("\\[ 'test-itemize'.*") "")
+                        (("\\[ 'test-font'.*") "")
+                        (("\\[ 'test-harfbuzz'.*") ""))
+                      #t)))))
     (propagated-inputs
      ;; These are all in Requires or Requires.private of the '.pc' files.
      `(("cairo" ,cairo)
@@ -344,22 +346,27 @@ applications.")
        ("fribidi" ,fribidi)
        ("glib" ,glib)
        ("harfbuzz" ,harfbuzz)
+       ("libthai" ,libthai)
        ;; Some packages, such as Openbox, expect Pango to be built with the
        ;; optional libxft support.
-       ("libxft" ,libxft)))
+       ("libxft" ,libxft)
+       ("libxrender" ,libxrender)))
     (inputs
      `(("zlib" ,zlib)))
     (native-inputs
      `(("glib" ,glib "bin")             ; glib-mkenums, etc.
        ("gobject-introspection" ,gobject-introspection) ; g-ir-compiler, etc.
-       ("pkg-config" ,pkg-config)))
-   (synopsis "GNOME text and font handling library")
-   (description
-    "Pango is the core text and font handling library used in GNOME
+       ("help2man" ,help2man)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)))
+    (synopsis "GNOME text and font handling library")
+    (description
+     "Pango is the core text and font handling library used in GNOME
 applications.  It has extensive support for the different writing systems
 used throughout the world.")
-   (license license:lgpl2.0+)
-   (home-page "https://developer.gnome.org/pango/")))
+    (license license:lgpl2.0+)
+    (home-page "https://developer.gnome.org/pango/")))
 
 (define-public pango-1.42
   (package
