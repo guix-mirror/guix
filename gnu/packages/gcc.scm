@@ -596,25 +596,16 @@ using compilers other than GCC."
     (arguments
      `(#:out-of-source? #t
        #:phases
-       ;; TODO: Use the target-powerpc arm for everyone.
-        ,(if (target-powerpc?)
-           `(modify-phases %standard-phases
-              ;; Force rs6000 (i.e., powerpc) libdir to be /lib and not /lib64.
-              (add-before 'chdir 'fix-rs6000-libdir
-                (lambda _
-                  (when (file-exists? "gcc/config/rs6000")
-                    (substitute* (find-files "gcc/config/rs6000")
-                      (("/lib64") "/lib")))
-                  #t))
-              (add-before 'configure 'chdir
-                (lambda _
-                  (chdir "libstdc++-v3")
-                  #t)))
-           `(alist-cons-before 'configure 'chdir
-              (lambda _
-                (chdir "libstdc++-v3")
-                #t)
-              %standard-phases))
+       (modify-phases %standard-phases
+         ;; Force rs6000 (i.e., powerpc) libdir to be /lib and not /lib64.
+         (add-before 'chdir 'fix-rs6000-libdir
+           (lambda _
+             (when (file-exists? "gcc/config/rs6000")
+               (substitute* (find-files "gcc/config/rs6000")
+                 (("/lib64") "/lib")))))
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "libstdc++-v3"))))
 
        #:configure-flags `("--disable-libstdcxx-pch"
                            ,(string-append "--with-gxx-include-dir="
