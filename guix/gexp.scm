@@ -1885,10 +1885,13 @@ imported modules in its search path.  Look up EXP's modules in MODULE-PATH."
                        (set-load-path
                         (load-path-expression (gexp-modules exp)
                                               module-path
+                                              #:guile guile
                                               #:extensions
                                               (gexp-extensions exp)
                                               #:system system
-                                              #:target target)))
+                                              #:target target))
+                       (guile-for-build
+                        (lower-object guile system #:target #f)))
     (gexp->derivation name
                       (gexp
                        (call-with-output-file (ungexp output)
@@ -1911,6 +1914,7 @@ imported modules in its search path.  Look up EXP's modules in MODULE-PATH."
                       #:system system
                       #:target target
                       #:module-path module-path
+                      #:guile-for-build guile-for-build
 
                       ;; These derivations are not worth offloading or
                       ;; substituting.
