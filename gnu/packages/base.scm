@@ -678,7 +678,8 @@ the store.")
             (sha256
              (base32
               "0di848ibffrnwq7g2dvgqrnn4xqhj3h96csn69q4da51ymafl9qn"))
-            (patches (search-patches "glibc-ldd-x86_64.patch"
+            (patches (search-patches "glibc-ldd-powerpc.patch"
+                                     "glibc-ldd-x86_64.patch"
                                      "glibc-dl-cache.patch"
                                      "glibc-hidden-visibility-ldconfig.patch"
                                      "glibc-versioned-locpath.patch"
@@ -874,14 +875,6 @@ the store.")
                                          (map (cut string-append slib "/" <>)
                                               files))))))
 
-                 ,@(if (target-powerpc?)
-                     '((add-after 'unpack 'apply-patch
-                         (lambda* (#:key inputs #:allow-other-keys)
-                           (let ((patch (assoc-ref inputs
-                                                   "powerpc64le-patch")))
-                             (invoke "patch" "--force" "-p1"
-                                     "-i" patch)))))
-                     '())
                  ,@(if (hurd-target?)
                        '((add-after 'install 'augment-libc.so
                            (lambda* (#:key outputs #:allow-other-keys)
@@ -902,10 +895,6 @@ the store.")
                     ("gettext" ,gettext-minimal)
                     ("python" ,python-minimal)
 
-                    ,@(if (target-powerpc?)
-                        `(("powerpc64le-patch" ,@(search-patches
-                                                   "glibc-ldd-powerpc.patch")))
-                        '())
                     ,@(if (hurd-target?)
                           `(("mig" ,mig)
                             ("perl" ,perl))

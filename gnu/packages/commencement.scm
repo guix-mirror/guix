@@ -3218,11 +3218,7 @@ memoized as a function of '%current-system'."
      `(("bison" ,bison-boot0)
        ("texinfo" ,texinfo-boot0)
        ("perl" ,perl-boot0)
-       ("python" ,python-boot0)
-       ,@(if (target-powerpc?)
-           `(("powerpc64le-patch" ,@(search-patches
-                                      "glibc-ldd-powerpc.patch")))
-           '())))
+       ("python" ,python-boot0)))
     (inputs
      `( ;; The boot inputs.  That includes the bootstrap libc.  We don't want
        ;; it in $CPATH, hence the 'pre-configure' phase above.
@@ -3366,10 +3362,6 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
 
    ;; This time we need 'msgfmt' to install all the libc.mo files.
    (native-inputs `(,@(package-native-inputs glibc-final-with-bootstrap-bash)
-                     ,@(if (target-powerpc?)
-                         `(("powerpc64le-patch" ,@(search-patches
-                                                    "glibc-ldd-powerpc.patch")))
-                         '())
                     ("gettext" ,gettext-boot0)))
 
    (propagated-inputs
