@@ -27600,7 +27600,7 @@ in same length matches).")
       `(("r-data-table" ,r-data-table)
         ("r-slam" ,r-slam)
         ("r-stringi" ,r-stringi)))
-    (home-page "http://github.com/trinker/textshape")
+    (home-page "https://github.com/trinker/textshape")
     (synopsis "Tools for Reshaping Text")
     (description
       "Tools that can be used to reshape and restructure text data.")
