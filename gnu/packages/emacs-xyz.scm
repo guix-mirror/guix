@@ -8760,6 +8760,46 @@ the help system and the debugger.  It is recommended that you use this minor
 mode with the package emacs-julia-mode.")
     (license license:expat)))
 
+(define-public emacs-julia-snail
+  (package
+    (name "emacs-julia-snail")
+    (version "1.0.0rc4")               ;rc5 requires CSTParser (julia package)
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/gcv/julia-snail")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "065ix3jycsx3wvkq7a6060i93caxisdvgxgqb1l6rq15n4qln78y"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'JuliaSnail-jl
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (install-file "JuliaSnail.jl"
+                             (string-append out "/share/emacs/site-lisp/")))
+             #t)))))
+    (inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-s" ,emacs-s)
+       ("emacs-spinner" ,emacs-spinner)
+       ("emacs-xref" ,emacs-xref)))
+    (propagated-inputs
+     `(("libvterm" ,libvterm)
+       ("emacs-julia-mode" ,emacs-julia-mode) ;required by parser
+       ("emacs-parsec" ,emacs-parsec)         ;required by parser
+       ("emacs-vterm" ,emacs-vterm)))
+    (home-page "https://github.com/gcv/julia-snail")
+    (synopsis "Development environment and REPL interaction package for Julia")
+    (description "This package provides a development environment and REPL
+interaction package for Julia in the spirit of Common Lisp’s SLIME and
+Clojure’s CIDER.  It enables convenient and dynamic REPL-driven development.")
+    (license license:gpl3)))
+
 (define-public emacs-smex
   (package
     (name "emacs-smex")
