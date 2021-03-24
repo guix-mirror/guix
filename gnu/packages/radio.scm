@@ -52,6 +52,7 @@
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages javascript)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages logging)
@@ -300,6 +301,7 @@ used by RDS Spy, and audio files containing @dfn{multiplex} signals (MPX).")
     (native-inputs
      `(("doxygen" ,doxygen)
        ("ghostscript" ,ghostscript)
+       ("js-mathjax" ,js-mathjax)
        ("orc" ,orc)
        ("pkg-config" ,pkg-config)
        ("pybind11" ,pybind11)
@@ -325,6 +327,7 @@ used by RDS Spy, and audio files containing @dfn{multiplex} signals (MPX).")
        ("gsm" ,gsm)
        ("gtk+" ,gtk+)
        ("jack" ,jack-1)
+       ("libsndfile" ,libsndfile)
        ("log4cpp" ,log4cpp)
        ("pango" ,pango)
        ("portaudio" ,portaudio)
@@ -351,6 +354,10 @@ used by RDS Spy, and audio files containing @dfn{multiplex} signals (MPX).")
        #:imported-modules (,@%cmake-build-system-modules
                            (guix build glib-or-gtk-build-system)
                            (guix build python-build-system))
+       #:configure-flags
+       (list (string-append "-DMATHJAX2_ROOT="
+                            (assoc-ref %build-inputs "js-mathjax")
+                            "/share/javascript/mathjax"))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-paths
