@@ -95,6 +95,7 @@
 ;;; Copyright © 2021 Alexey Abramov <levenson@mmer.org>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
+;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -8735,6 +8736,29 @@ E-Prime forbids the use of the \"to be\" form to strengthen your writing.")
       (description "This Emacs package provides a mode for the Julia
 programming language.")
       (license license:expat)))
+
+(define-public emacs-julia-repl
+  (package
+    (name "emacs-julia-repl")
+    (version "1.3.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/tpapp/julia-repl")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "11vpqqnxqj9nxh8kccj4y6h3f8lib6jxnsk6vxc2j2fqw6alnafm"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/tpapp/julia-repl")
+    (synopsis "Minor mode for interacting with a Julia REPL")
+    (description "This package provides a minor mode for interacting with a
+Julia REPL running inside Emacs.  The julia process is started in an ANSI
+terminal (term), which allows text formatting and colors, and interaction with
+the help system and the debugger.  It is recommended that you use this minor
+mode with the package emacs-julia-mode.")
+    (license license:expat)))
 
 (define-public emacs-smex
   (package
