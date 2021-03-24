@@ -936,6 +936,7 @@ second element is the derivation to compile them."
   (mcached equal?
            (mlet %store-monad ((modules  (if (pair? modules)
                                              (imported-modules modules
+                                                               #:guile guile
                                                                #:system system
                                                                #:module-path module-path)
                                              (return #f)))
