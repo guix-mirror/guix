@@ -343,6 +343,28 @@ including, @code{CircularBuffer}, @code{Queue}, @code{Stack},
 @code{Accumulators}, @code{LinkedLists}, @code{SortedDicts} and many others.")
     (license license:expat)))
 
+(define-public julia-diffresults
+  (package
+    (name "julia-diffresults")
+    (version "1.0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaDiff/DiffResults.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1w6p3yxajvclax5b9g7cr2jmbc7lvr5nk4gq0aljxdycdq1d2y3v"))))
+    (propagated-inputs
+     `(("julia-staticarrays" ,julia-staticarrays)))
+    (build-system julia-build-system)
+    (home-page "https://github.com/JuliaDiff/DiffResults.jl")
+    (synopsis "In-place differentiation methods of primal values at multi-order")
+    (description "This package provides the @code{DiffResult} type, which can
+be passed to in-place differentiation methods instead of an output buffer.")
+    (license license:expat)))
+
 (define-public julia-example
   (let ((commit "f968c69dea24f851d0c7e686db23fa55826b5388"))
     (package
