@@ -592,6 +592,38 @@ scaled by a constant factor.  Consequently, they have a fixed number of
 digits (bits) after the decimal (radix) point.")
     (license license:expat)))
 
+(define-public julia-forwarddiff
+  (package
+    (name "julia-forwarddiff")
+    (version "0.10.17")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaDiff/ForwardDiff.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "17xaz4v0zr46p7w873w1fwf31phdnhr0vbdym9yr4flmpzi528jw"))))
+    (build-system julia-build-system)
+    (inputs                             ;required for tests
+     `(("julia-calculus" ,julia-calculus)
+       ("julia-difftests" ,julia-difftests)))
+    (propagated-inputs
+     `(("julia-commonsubexpressions" ,julia-commonsubexpressions)
+       ("julia-diffresults" ,julia-diffresults)
+       ("julia-diffrules" ,julia-diffrules)
+       ("julia-nanmath" ,julia-nanmath)
+       ("julia-specialfunctions" ,julia-specialfunctions)
+       ("julia-staticarrays" ,julia-staticarrays)))
+    (home-page "https://github.com/JuliaDiff/ForwardDiff.jl")
+    (synopsis "Methods to take multidimensional derivatives")
+    (description "This package implements methods to take derivatives,
+gradients, Jacobians, Hessians, and higher-order derivatives of native Julia
+functions (or any callable object, really) using forward mode automatic
+differentiation (AD).")
+    (license license:expat)))
+
 (define-public julia-http
   (package
     (name "julia-http")
