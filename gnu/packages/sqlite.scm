@@ -48,7 +48,7 @@
 (define-public sqlite
   (package
    (name "sqlite")
-   (version "3.34.0")
+   (version "3.35.2")
    (source (origin
             (method url-fetch)
             (uri (let ((numeric-version
@@ -60,12 +60,12 @@
                                             (map (cut string-pad <> 2 #\0)
                                                  other-digits))
                                            6 #\0))))))
-                   (string-append "https://sqlite.org/2020/sqlite-autoconf-"
+                   (string-append "https://sqlite.org/2021/sqlite-autoconf-"
                                   numeric-version ".tar.gz")))
             (patches (search-patches "sqlite-hurd.patch"))
             (sha256
              (base32
-              "1vlsvlp5nvhd5pdjpmdczfsv7mml2gsalykl6x3palbxwgxbfvdz"))))
+              "1bfczv5006ycwr1vw7xbq7cmys0jvfr8awmx7wi1b40zyj0yss8j"))))
    (build-system gnu-build-system)
    (inputs `(("readline" ,readline)))
    (outputs '("out" "static"))
