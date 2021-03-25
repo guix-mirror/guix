@@ -49,6 +49,7 @@
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libffi)
@@ -581,8 +582,36 @@ by GDBus included in Glib.")
                (base32
                 "1kn57b039lg20182lnchl1ys27vf34brn43f895cal8nc7sdq3mp"))))
     (build-system meson-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:configure-flags
+       (list
+        "-Dbuild-documentation=true")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-docbook-xml
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "docs"
+               (substitute* (find-files "." "\\.xml$")
+                 (("http://www.oasis-open.org/docbook/xml/4\\.1\\.2/")
+                  (string-append (assoc-ref inputs "docbook-xml")
+                                 "/xml/dtd/docbook/"))))
+             #t))
+         (add-after 'install 'move-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (assoc-ref outputs "doc")))
+               (mkdir-p (string-append doc "/share"))
+               (rename-file
+                (string-append out "/share/doc")
+                (string-append doc "/share/doc"))
+               #t))))))
     (native-inputs
-     `(("m4" ,m4)
+     `(("docbook-xml" ,docbook-xml-4.1.2)
+       ("docbook-xsl" ,docbook-xsl)
+       ("dot" ,graphviz)
+       ("doxygen" ,doxygen)
+       ("m4" ,m4)
        ("mm-common" ,mm-common)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
@@ -594,12 +623,12 @@ by GDBus included in Glib.")
     (synopsis "Type-safe callback system for standard C++")
     (description
      "Libsigc++ implements a type-safe callback system for standard C++.  It
-allows you to define signals and to connect those signals to any callback
-function, either global or a member function, regardless of whether it is
-static or virtual.
+     allows you to define signals and to connect those signals to any callback
+     function, either global or a member function, regardless of whether it is
+     static or virtual.
 
-It also contains adaptor classes for connection of dissimilar callbacks and
-has an ease of use unmatched by other C++ callback libraries.")
+     It also contains adaptor classes for connection of dissimilar callbacks and
+     has an ease of use unmatched by other C++ callback libraries.")
     (license license:lgpl3+)))
 
 (define glibmm
@@ -631,8 +660,8 @@ has an ease of use unmatched by other C++ callback libraries.")
              ;; to open a TLS session; just skip it.
              (substitute* "tests/giomm_tls_client/main.cc"
                (("Gio::init.*$")
-                "return 77;\n"))
-             #t)))))
+                "return 77              ;\n"))
+     #t)))))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("glib" ,glib "bin")))
     (propagated-inputs
