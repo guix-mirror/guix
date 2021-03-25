@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2020, 2021 Nicolò Balzarotti <nicolo@nixo.xyz>
+;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -116,6 +117,27 @@ between older and newer versions of the Julia language.  The Compat package
 provides a macro that lets you use the latest syntax in a backwards-compatible
 way.")
     (license license:expat)))
+
+(define-public julia-constructionbase
+  (let ((commit "de77e2865b554f9b078fd8c35b593cce0554ae02"))
+    (package
+      (name "julia-constructionbase")
+      (version "1.1.0")                 ;tag not created upstream
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/JuliaObjects/ConstructionBase.jl")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1y79sfj0rds1skl9j16p9161hwa9khm0xc2m4hgjcbh5zzvyr57v"))))
+      (build-system julia-build-system)
+      (home-page "https://juliaobjects.github.io/ConstructionBase.jl/dev/")
+      (synopsis "Primitive functions for construction of objects")
+      (description "This very lightweight package provides primitive functions
+for construction of objects.")
+      (license license:expat))))
 
 (define-public julia-datastructures
   (package
