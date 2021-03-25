@@ -146,6 +146,38 @@ reading and writing faster.")
 sensitivities for functions without the need to depend on ChainRules itself.")
     (license license:expat)))
 
+(define-public julia-chainrulestestutils
+  (package
+    (name "julia-chainrulestestutils")
+    (version "0.6.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaDiff/ChainRulesTestUtils.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1pzs947adnb3cx1qd0cxp2fidk9szz0zsqbas90z1lhydykkvkil"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-chainrulescore" ,julia-chainrulescore)
+       ("julia-compat" ,julia-compat)
+       ("julia-finitedifference" ,julia-finitedifferences)))
+    (home-page "https://github.com/JuliaDiff/ChainRulesTestUtils.jl")
+    (synopsis "Common utilities used by downstream automatic differentiation tools")
+    (description "This package is designed to help in testing
+@code{ChainRulesCore.frule} and @code{ChainRulesCore.rrule} methods.  The main
+entry points are @code{ChainRulesTestUtils.frule_test},
+@code{ChainRulesTestUtils.rrule_test}, and
+@code{ChainRulesTestUtils.test_scalar}. Currently this is done via testing the
+rules against numerical differentiation (using @code{FiniteDifferences.jl}).
+
+@code{ChainRulesTestUtils.jl} is separated from @code{ChainRulesCore.jl} so that it
+can be a test-only dependency, allowing it to have potentially heavy
+dependencies, while keeping @code{ChainRulesCore.jl} as light-weight as possible.")
+    (license license:expat)))
+
 (define-public julia-colors
   (package
     (name "julia-colors")
