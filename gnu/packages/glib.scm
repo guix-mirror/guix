@@ -634,36 +634,36 @@ by GDBus included in Glib.")
 (define glibmm
   (package
     (name "glibmm")
-    (version "2.62.0")
+    (version "2.68.0")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://gnome/sources/glibmm/"
-                                 (version-major+minor version)
-                                 "/glibmm-" version ".tar.xz"))
-             (sha256
-              (base32
-               "1ziwx6r7k7wbvg4qq1rgrv8zninapgrmhn1hs6926a3krh9ryr9n"))))
-    (build-system gnu-build-system)
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/glibmm/"
+                                  (version-major+minor version)
+                                  "/glibmm-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0xgkyhb2876mcyyib5rk3ya9aingyj68h02nl22yvkhx35rqbwy1"))))
+    (build-system meson-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'build 'pre-build
+         (add-after 'unpack 'disable-failing-tests
            (lambda _
-             ;; This test uses /etc/fstab as an example file to read
-             ;; from; choose a better example.
-             (substitute* "tests/giomm_simple/main.cc"
-               (("/etc/fstab")
-                (string-append (getcwd)
-                               "/tests/giomm_simple/main.cc")))
-
-             ;; This test does a DNS lookup, and then expects to be able
-             ;; to open a TLS session; just skip it.
-             (substitute* "tests/giomm_tls_client/main.cc"
-               (("Gio::init.*$")
-                "return 77              ;\n"))
-     #t)))))
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("glib" ,glib "bin")))
+             (substitute* "tests/meson.build"
+               ;; This test uses /etc/fstab as an example file to read
+               ;; from; disable it.
+               (("[ \t]*.*giomm_simple.*$") "")
+               ;; This test does a DNS lookup, and then expects to be able
+               ;; to open a TLS session; just skip it.
+               (("[ \t]*.*giomm_tls_client.*$") ""))
+             #t)))))
+    (native-inputs
+     `(("glib:bin" ,glib "bin")
+       ("m4" ,m4)
+       ("mm-common" ,mm-common)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("xsltproc" ,libxslt)))
     (propagated-inputs
      `(("libsigc++" ,libsigc++)
        ("glib" ,glib)))
