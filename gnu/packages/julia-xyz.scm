@@ -240,6 +240,26 @@ including, @code{CircularBuffer}, @code{Queue}, @code{Stack},
 @code{Accumulators}, @code{LinkedLists}, @code{SortedDicts} and many others.")
     (license license:expat)))
 
+(define-public julia-example
+  (let ((commit "f968c69dea24f851d0c7e686db23fa55826b5388"))
+    (package
+      (name "julia-example")
+      (version "0.5.4")                   ;tag not created upstream
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/JuliaLang/Example.jl")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1v3z0d6gh6wfbypffy9m9rhh36px6fm5wjzq0y6rbmc95r0qpqlx"))))
+      (build-system julia-build-system)
+      (home-page "https://github.com/JuliaLang/Example.jl")
+      (synopsis "Module providing examples")
+      (description "This package provides various examples.")
+      (license license:expat))))
+
 (define-public julia-fixedpointnumbers
   (package
     (name "julia-fixedpointnumbers")
