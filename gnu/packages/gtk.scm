@@ -58,6 +58,7 @@
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages build-tools)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages check)
@@ -1264,19 +1265,24 @@ guile-gnome-platform (GNOME developer libraries), and guile-gtksourceview.")
 (define-public cairomm
   (package
     (name "cairomm")
-    (version "1.12.2")
+    (version "1.16.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.cairographics.org/releases/"
-                                  name "-" version ".tar.gz"))
+                                  name "-" version ".tar.xz"))
               (sha256
                (base32
-                "16fmigxsaz85c3lgcls7biwyz8zy8c8h3jndfm54cxxas3a7zi25"))))
-    (build-system gnu-build-system)
+                "1ya4y7qa000cjawqwswbqv26y5icfkmhs5iiiil4dxgrqn91923y"))))
+    (build-system meson-build-system)
     (arguments
-     ;; The examples lack -lcairo.
-     '(#:make-flags '("LDFLAGS=-lcairo")))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+     `(#:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
+       #:configure-flags
+       (list
+        "-Dboost-shared=true")))
+    (native-inputs
+     `(("boost" ,boost)
+       ("mm-common" ,mm-common)
+       ("pkg-config" ,pkg-config)))
     (propagated-inputs
      `(("libsigc++" ,libsigc++)
        ("freetype" ,freetype)
