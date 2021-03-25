@@ -1363,12 +1363,31 @@ library.")
                (base32
                 "0y2vyp6azvhrii6rzs89kr08wg8z1p562awyr812131zqdsd83ly"))))
     (build-system meson-build-system)
+    (outputs '("out" "doc"))
     (arguments
-     `(#:glib-or-gtk? #t))   ; To wrap binaries and/or compile schemas
+     `(#:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
+       #:configure-flags
+       (list
+        "-Dbuild-documentation=true")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'move-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (assoc-ref outputs "doc")))
+               (mkdir-p (string-append doc "/share"))
+               (rename-file
+                (string-append out "/share/doc")
+                (string-append doc "/share/doc"))
+               #t))))))
     (native-inputs
-     `(("m4" ,m4)
+     `(("dot" ,graphviz)
+       ("doxygen" ,doxygen)
+       ("m4" ,m4)
        ("mm-common" ,mm-common)
-       ("pkg-config" ,pkg-config)))
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("xsltproc" ,libxslt)))
     (propagated-inputs
      `(("cairo" ,cairo)
        ("cairomm" ,cairomm)
