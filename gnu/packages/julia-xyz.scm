@@ -121,6 +121,32 @@ operations.  It can wrap any @code{IO} type automatically making incremental
 reading and writing faster.")
     (license license:expat)))
 
+(define-public julia-colors
+  (package
+    (name "julia-colors")
+    (version "0.12.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaGraphics/Colors.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "156zsszgwh6bmznsan0zyha6yvcxw3c5mvc5vr2qfsgxbyh36ln6"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-colortypes" ,julia-colortypes)
+       ("julia-fixedpointnumbers" ,julia-fixedpointnumbers)
+       ("julia-reexport" ,julia-reexport)))
+    (home-page "https://github.com/JuliaGraphics/Colors.jl")
+    (synopsis "Tools for dealing with color")
+    (description "This package provides a wide array of functions for dealing
+with color.  This includes conversion between colorspaces, measuring distance
+between colors, simulating color blindness, parsing colors, and generating
+color scales for graphics.")
+    (license license:expat)))
+
 (define-public julia-colortypes
   (package
     (name "julia-colortypes")
