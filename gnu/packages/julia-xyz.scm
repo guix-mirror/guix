@@ -285,6 +285,32 @@ including, @code{CircularBuffer}, @code{Queue}, @code{Stack},
       (description "This package provides various examples.")
       (license license:expat))))
 
+(define-public julia-finitedifferences
+  (package
+    (name "julia-finitedifferences")
+    (version "0.12.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaDiff/FiniteDifferences.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0dcx34026xdpfmbjls3mrknl8ww62kxxfr77kfihbazsfg2gp5b4"))))
+    (build-system julia-build-system)
+    (inputs
+     `(("julia-benchmarktools" ,julia-benchmarktools)))
+    (propagated-inputs
+     `(("julia-chainrulescore" ,julia-chainrulescore)
+       ("julia-richardson" ,julia-richardson)
+       ("julia-staticarrays" ,julia-staticarrays)))
+    (home-page "https://github.com/JuliaDiff/FiniteDifferences.jl")
+    (synopsis "Estimates derivatives with finite differences")
+    (description "This package calculates approximate derivatives numerically
+using finite difference.")
+    (license license:expat)))
+
 (define-public julia-fixedpointnumbers
   (package
     (name "julia-fixedpointnumbers")
