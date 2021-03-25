@@ -1274,15 +1274,32 @@ guile-gnome-platform (GNOME developer libraries), and guile-gtksourceview.")
                (base32
                 "1ya4y7qa000cjawqwswbqv26y5icfkmhs5iiiil4dxgrqn91923y"))))
     (build-system meson-build-system)
+    (outputs '("out" "doc"))
     (arguments
      `(#:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
        #:configure-flags
        (list
-        "-Dboost-shared=true")))
+        "-Dbuild-documentation=true"
+        "-Dboost-shared=true")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'move-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (assoc-ref outputs "doc")))
+               (mkdir-p (string-append doc "/share"))
+               (rename-file
+                (string-append out "/share/doc")
+                (string-append doc "/share/doc"))
+               #t))))))
     (native-inputs
      `(("boost" ,boost)
+       ("dot" ,graphviz)
+       ("doxygen" ,doxygen)
        ("mm-common" ,mm-common)
-       ("pkg-config" ,pkg-config)))
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("xsltproc" ,libxslt)))
     (propagated-inputs
      `(("libsigc++" ,libsigc++)
        ("freetype" ,freetype)
