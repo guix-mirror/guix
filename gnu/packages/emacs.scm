@@ -15,7 +15,7 @@
 ;;; Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Jesse John Gildersleve <jessejohngildersleve@zohomail.eu>
 ;;; Copyright © 2019 Valentin Ignatev <valentignatev@gmail.com>
 ;;; Copyright © 2019 Leo Prikler <leo.prikler@student.tugraz.at>
@@ -76,14 +76,14 @@
 (define-public emacs
   (package
     (name "emacs")
-    (version "27.1")
+    (version "27.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/emacs/emacs-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0h9f2wpmp6rb5rfwvqwv1ia1nw86h74p7hnz3vb3gjazj67i4k2a"))
+                "1ff182gjw9wqsbx1kj5gl2r5pbqhp4ar54g04j33fgz6g17cr9xl"))
               (patches (search-patches "emacs-exec-path.patch"
                                        "emacs-fix-scheme-indent-function.patch"
                                        "emacs-ignore-empty-xim-styles.patch"
