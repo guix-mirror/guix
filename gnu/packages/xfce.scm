@@ -313,7 +313,7 @@ upstream occasionally.")
 (define-public exo
   (package
     (name "exo")
-    (version "4.16.0")
+    (version "4.16.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
@@ -321,7 +321,7 @@ upstream occasionally.")
                                   "exo-" version ".tar.bz2"))
               (sha256
                (base32
-                "1k5sfm9cmg8k5zzzv0wb2cciqwwklnpfzcpak7wa32lsxl7b0x8r"))))
+                "0fxm2aczzbi0z4y6x24934964y9jg4cl4frvlnjc5zqmccjsr3aj"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
