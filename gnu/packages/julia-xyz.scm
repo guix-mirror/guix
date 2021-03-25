@@ -715,6 +715,33 @@ another package is loaded, so that explicit dependencies (and long load times)
 can be avoided.")
     (license license:expat)))
 
+(define-public julia-richardson
+  (package
+    (name "julia-richardson")
+    (version "1.4.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaMath/Richardson.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "06v9ii3d7hh41fsrfklaa8ap55z5s017f888mrd1c18y4fx9i4nx"))))
+    (build-system julia-build-system)
+    (home-page "https://juliapackages.com/p/richardson")
+    (synopsis "Extrapolate function using Richardson method")
+    (description "This package provides a function extrapolate that
+extrapolates a given function @code{f(x)} to @code{f(x0)}, evaluating @code{f}
+only at a geometric sequence of points @code{> x0} (or optionally @code{<
+x0}).  The key algorithm is Richardson extrapolation using a Neville–Aitken
+tableau, which adaptively increases the degree of an extrapolation polynomial
+until convergence is achieved to a desired tolerance (or convergence stalls
+due to e.g. floating-point errors).  This allows one to obtain @code{f(x0)} to
+high-order accuracy, assuming that @code{f(x0+h)} has a Taylor series or some
+other power series in @code{h}.")
+    (license license:expat)))
+
 (define-public julia-staticarrays
   (package
     (name "julia-staticarrays")
