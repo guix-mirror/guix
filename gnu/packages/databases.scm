@@ -734,6 +734,7 @@ Language.")
                             (append (find-files "extra/wolfssl")
                                     (find-files "zlib")))
                   #t))))
+    (replacement mariadb/fixed)
     (build-system cmake-build-system)
     (outputs '("out" "lib" "dev"))
     (arguments
@@ -968,6 +969,13 @@ Language.")
      "MariaDB is a multi-user and multi-threaded SQL database server, designed
 as a drop-in replacement of MySQL.")
     (license license:gpl2)))
+
+(define mariadb/fixed
+  (package
+    (inherit mariadb)
+    (source (origin
+              (inherit (package-source mariadb))
+              (patches (search-patches "mariadb-CVE-2021-27928.patch"))))))
 
 (define-public mariadb-connector-c
   (package
