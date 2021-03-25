@@ -365,6 +365,26 @@ including, @code{CircularBuffer}, @code{Queue}, @code{Stack},
 be passed to in-place differentiation methods instead of an output buffer.")
     (license license:expat)))
 
+(define-public julia-difftests
+  (package
+    (name "julia-difftests")
+    (version "0.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaDiff/DiffTests.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1rxpnd5zi3pxgdd38l5jm2sxc3q6p7g57fqgll2dsiin07y3my57"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/JuliaDiff/DiffTests.jl")
+    (synopsis "Common test functions for differentiation tools")
+    (description "This package contains a common suite of test functions for
+stressing the robustness of differentiation tools.")
+    (license license:expat)))
+
 (define-public julia-example
   (let ((commit "f968c69dea24f851d0c7e686db23fa55826b5388"))
     (package
