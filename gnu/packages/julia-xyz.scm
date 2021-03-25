@@ -625,3 +625,25 @@ linear algebra operations.")
 working with @acronym{URIs,Uniform Resource Identifiers}, as defined in RFC
 3986.")
     (license license:expat)))
+
+(define-public julia-unitful
+  (package
+    (name "julia-unitful")
+    (version "1.6.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/PainterQubits/Unitful.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0g5bhlvay9yk11c5dqwbzmb3q7lzj0cq5zchyk39d59fkvvmxvq3"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-constructionbase" ,julia-constructionbase)))
+    (home-page "https://painterqubits.github.io/Unitful.jl/stable/")
+    (synopsis "Physical units in Julia")
+    (description "This package supports SI units and also many other unit
+system.")
+    (license license:expat)))
