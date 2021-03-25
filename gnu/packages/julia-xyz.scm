@@ -317,6 +317,30 @@ including, @code{CircularBuffer}, @code{Queue}, @code{Stack},
       (description "This package provides various examples.")
       (license license:expat))))
 
+(define-public julia-fillarrays
+  (package
+    (name "julia-fillarrays")
+    (version "0.11.7")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaArrays/FillArrays.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1q1qn9pb5dmppddnmf8gggdqyvivqh3ffvbblhn37smcf9r5sy7d"))))
+    (build-system julia-build-system)
+    (inputs                             ;required by tests
+     `(("julia-staticarrays" ,julia-staticarrays)))
+    (home-page "https://github.com/JuliaArrays/FillArrays.jl")
+    (synopsis "Lazy matrix representation")
+    (description "This package allows to lazily represent matrices filled with
+a single entry, as well as identity matrices.  This package exports the
+following types: @code{Eye}, @code{Fill}, @code{Ones}, @code{Zeros},
+@code{Trues} and @code{Falses}.")
+    (license license:expat)))
+
 (define-public julia-finitedifferences
   (package
     (name "julia-finitedifferences")
