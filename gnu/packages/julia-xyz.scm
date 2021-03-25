@@ -121,6 +121,31 @@ operations.  It can wrap any @code{IO} type automatically making incremental
 reading and writing faster.")
     (license license:expat)))
 
+(define-public julia-chainrulescore
+  (package
+    (name "julia-chainrulescore")
+    (version "0.9.29")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaDiff/ChainRulesCore.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1k0iayw39n1ikkkhvyi4498vsnzc94skqs41gnd15632gxjfvki4"))))
+    (build-system julia-build-system)
+    (inputs                             ;required for tests
+     `(("julia-benchmarktools" ,julia-benchmarktools)
+       ("julia-staticarrays" ,julia-staticarrays)))
+    (propagated-inputs
+     `(("julia-compat" ,julia-compat)))
+    (home-page "https://github.com/JuliaDiff/ChainRulesCore.jl")
+    (synopsis "Common utilities used by downstream automatic differentiation tools")
+    (description "The package provides a light-weight dependency for defining
+sensitivities for functions without the need to depend on ChainRules itself.")
+    (license license:expat)))
+
 (define-public julia-colors
   (package
     (name "julia-colors")
