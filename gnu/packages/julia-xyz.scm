@@ -567,6 +567,31 @@ utilities for Julia.")
     (description "This package provides tools to re-export modules and symbols.")
     (license license:expat)))
 
+(define-public julia-staticarrays
+  (package
+    (name "julia-staticarrays")
+    (version "1.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaArrays/StaticArrays.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "01z8bcqwpfkp8p1h1r36pr5cc3798y76zkas7g3206pcsdhvlkz1"))))
+    (build-system julia-build-system)
+    (inputs
+     `(("julia-benchmarktools" ,julia-benchmarktools)))
+    (home-page "https://github.com/JuliaArrays/StaticArrays.jl")
+    (synopsis "Statically sized arrays")
+    (description "This package provides a framework for implementing
+statically sized arrays in Julia, using the abstract type
+@code{StaticArray{Size,T,N} <: AbstractArray{T,N}}.  Subtypes of
+@code{StaticArray} will provide fast implementations of common array and
+linear algebra operations.")
+    (license license:expat)))
+
 (define-public julia-uris
   (package
     (name "julia-uris")
