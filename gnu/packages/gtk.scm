@@ -1353,17 +1353,22 @@ library.")
 (define-public pangomm
   (package
     (name "pangomm")
-    (version "2.42.0")
+    (version "2.48.0")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://gnome/sources/" name "/"
-                                 (version-major+minor version)  "/"
-                                 name "-" version ".tar.xz"))
-             (sha256
-              (base32
-               "0mmzxp3wniaafkxr30sb22mq9x44xckb5d60h1bl99lkzxks0vfa"))))
-    (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version)  "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0y2vyp6azvhrii6rzs89kr08wg8z1p562awyr812131zqdsd83ly"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t))   ; To wrap binaries and/or compile schemas
+    (native-inputs
+     `(("m4" ,m4)
+       ("mm-common" ,mm-common)
+       ("pkg-config" ,pkg-config)))
     (propagated-inputs
      `(("cairo" ,cairo)
        ("cairomm" ,cairomm)
