@@ -411,6 +411,31 @@ including, @code{CircularBuffer}, @code{Queue}, @code{Stack},
 be passed to in-place differentiation methods instead of an output buffer.")
     (license license:expat)))
 
+(define-public julia-diffrules
+  (package
+    (name "julia-diffrules")
+    (version "1.0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaDiff/DiffRules.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0cwjvj4gma7924fm3yas0nf0jlnwwx4v7fi79ii3s290lkdldzfl"))))
+    (propagated-inputs
+     `(("julia-nanmath" ,julia-nanmath)
+       ("julia-specialfunctions" ,julia-specialfunctions)))
+    (build-system julia-build-system)
+    (home-page "https://github.com/JuliaDiff/DiffRules.jl")
+    (synopsis "Primitive differentiation rules")
+    (description "This package provides primitive differentiation rules that
+can be composed via various formulations of the chain rule.  Using
+@code{DiffRules}, new differentiation rules can defined, query whether or not
+a given rule exists, and symbolically apply rules to simple Julia expressions.")
+    (license license:expat)))
+
 (define-public julia-difftests
   (package
     (name "julia-difftests")
