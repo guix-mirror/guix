@@ -21335,6 +21335,33 @@ DBI, and provides DB-accessing API and the simple management UI.")
 to open SQLite databases.")
       (license license:gpl3+))))
 
+(define-public emacs-nice-citation
+  (let ((commit "1013b56d9d1495a335f40a5f76203034dc5fa0ea")
+        (revision "0"))
+    (package
+      (name "emacs-nice-citation")
+      (version (git-version "0.0.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/damiencollard/nice-citation")
+               (commit commit)))
+         (sha256
+          (base32 "00xqr7haca5vd0bzd043lc6x4fjb903z96frz9b8cbd7spp63z7q"))
+         (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/damiencollard/nice-citation")
+      (synopsis "Depth-colored citations for Gnus")
+      (description
+       "This package replaces the traditional chevron citation marks @samp{>}
+with a Unicode vertical bar with the same color as the text it is quoting.
+
+It is purely presentation: the underlying text is unchanged.  In particular,
+if you send a message containing a citation, it will contain the traditional
+chevron marks.")
+      (license license:gpl3+))))
+
 (define-public emacs-nix-mode
   (package
     (name "emacs-nix-mode")
