@@ -1199,3 +1199,25 @@ working with @acronym{URIs,Uniform Resource Identifiers}, as defined in RFC
     (description "This package supports SI units and also many other unit
 system.")
     (license license:expat)))
+
+(define-public julia-zygoterules
+  (package
+    (name "julia-zygoterules")
+    (version "0.2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/FluxML/ZygoteRules.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "07i2mf6rr5b8i6l82qgwl5arsb5pwyyzyfasgnszhdqllk9501bs"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-macrotools" ,julia-macrotools)))
+    (home-page "https://github.com/FluxML/ZygoteRules.jl")
+    (synopsis "Add minimal custom gradients to Zygote")
+    (description "Minimal package which enables to add custom gradients to
+Zygote, without depending on Zygote itself.")
+    (license license:expat)))
