@@ -198,6 +198,7 @@ shared NFS home directories.")
                "bin")) ; glib-mkenums, gtester, etc.; depends on Python
     (arguments
      `(#:disallowed-references (,tzdata-for-tests)
+       #:configure-flags '("-Dman=true")
        #:phases
        (modify-phases %standard-phases
          ;; TODO: Remove the conditional in the next core-updates cycle.
@@ -270,7 +271,8 @@ shared NFS home directories.")
     ;;                                        (assoc-ref %outputs "bin")
     ;;                                        "/bin"))
     (native-inputs
-     `(("gettext" ,gettext-minimal)
+     `(("docbook-xsl" ,docbook-xsl)
+       ("gettext" ,gettext-minimal)
        ("libintl" ,intltool)
        ("m4" ,m4)                       ; for installing m4 macros
        ("perl" ,perl)                   ; needed by GIO tests
