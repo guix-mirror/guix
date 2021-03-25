@@ -4,7 +4,7 @@
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2018 Lprndn <guix@lprndn.info>
 ;;; Copyright © 2019, 2021 Efraim Flashner <efraim@flashner.co.il>
@@ -556,7 +556,7 @@ vision algorithms.  It can be used to do things like:
 (define-public vips
   (package
     (name "vips")
-    (version "8.10.5")
+    (version "8.10.6")
     (source
      (origin
        (method url-fetch)
@@ -564,7 +564,7 @@ vision algorithms.  It can be used to do things like:
              "https://github.com/libvips/libvips/releases/download/v"
              version "/vips-" version ".tar.gz"))
        (sha256
-        (base32 "1n6gw7cw66rfn1wdb92ydpkv7gfmjiinsg6d6gqxpdja6gsz5vm4"))))
+        (base32 "0vjsh3i0861f6h9as3bch956cidz824zz499pvhjs3lfjn6hhs14"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gobject-introspection" ,gobject-introspection)
