@@ -11742,6 +11742,12 @@ gnu/packages/statistics.scm:819:13: r-testthat would be upgraded from 0.10.0 to 
 gnu/packages/emacs.scm:856:13: emacs-auctex would be upgraded from 11.88.6 to 11.88.9
 @end example
 
+@item --list-updaters
+@itemx -L
+List available updaters and exit (see @option{--type} above).
+
+For each updater, display the fraction of packages it covers; at the
+end, display the fraction of packages covered by all these updaters.
 @end table
 
 In addition, @command{guix refresh} can be passed one or more package
@@ -11762,13 +11768,6 @@ should be checked for compatibility.  For this the following option may
 be used when passing @command{guix refresh} one or more package names:
 
 @table @code
-
-@item --list-updaters
-@itemx -L
-List available updaters and exit (see @option{--type} above).
-
-For each updater, display the fraction of packages it covers; at the
-end, display the fraction of packages covered by all these updaters.
 
 @item --list-dependent
 @itemx -l
