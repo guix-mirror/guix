@@ -664,6 +664,32 @@ utilities for Julia.")
     (description "This package provides tools to re-export modules and symbols.")
     (license license:expat)))
 
+(define-public julia-requires
+  (package
+    (name "julia-requires")
+    (version "1.1.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaPackaging/Requires.jl/")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "03hyfy7c0ma45b0y756j76awi3az2ii4bz4s8cxm3xw9yy1z7b01"))))
+    (build-system julia-build-system)
+    (inputs                             ;required for test
+     `(("julia-example" ,julia-example)))
+    (propagated-inputs
+     `(("julia-colors" ,julia-colors)))
+    (home-page "https://github.com/JuliaPackaging/Requires.jl/")
+    (synopsis "Faster package loader")
+    (description "This package make loading packages faster, maybe.  It
+supports specifying glue code in packages which will load automatically when
+another package is loaded, so that explicit dependencies (and long load times)
+can be avoided.")
+    (license license:expat)))
+
 (define-public julia-staticarrays
   (package
     (name "julia-staticarrays")
