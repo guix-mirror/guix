@@ -230,6 +230,28 @@ constructors, and sets up traits and show methods to make them easier to work
 with.")
     (license license:expat)))
 
+(define-public julia-commonsubexpressions
+  (package
+    (name "julia-commonsubexpressions")
+    (version "0.3.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rdeits/CommonSubexpressions.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0mgy90kk8ksv3l720kkk04gnhn4aqhh2dj4sp3x8yy3limngfjay"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-macrotools" ,julia-macrotools)))
+    (home-page "https://github.com/rdeits/CommonSubexpressions.jl")
+    (synopsis "Macro @code{@cse}")
+    (description "This package provides the @code{@cse} macro, which performs
+common subexpression elimination.")
+    (license license:expat)))
+
 (define-public julia-compat
   (package
     (name "julia-compat")
