@@ -38,6 +38,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages docbook)
@@ -570,18 +571,25 @@ by GDBus included in Glib.")
 (define libsigc++
   (package
     (name "libsigc++")
-    (version "2.10.3")
+    (version "3.0.6")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://gnome/sources/libsigc++/"
-                                 (version-major+minor version) "/"
-                                 name "-" version ".tar.xz"))
-             (sha256
-              (base32
-               "11j7j1jv4z58d9s7jvl42fnqa1dzl4idgil9r45cjv1w673dys0b"))))
-    (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("m4" ,m4)))
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/libsigc++/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1kn57b039lg20182lnchl1ys27vf34brn43f895cal8nc7sdq3mp"))))
+    (build-system meson-build-system)
+    (native-inputs
+     `(("m4" ,m4)
+       ("mm-common" ,mm-common)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("xmllint" ,libxml2)
+       ("xsltproc" ,libxslt)))
+    (inputs
+     `(("boost" ,boost)))
     (home-page "https://libsigcplusplus.github.io/libsigcplusplus/")
     (synopsis "Type-safe callback system for standard C++")
     (description
@@ -592,7 +600,7 @@ static or virtual.
 
 It also contains adaptor classes for connection of dissimilar callbacks and
 has an ease of use unmatched by other C++ callback libraries.")
-    (license license:lgpl2.1+)))
+    (license license:lgpl3+)))
 
 (define glibmm
   (package
