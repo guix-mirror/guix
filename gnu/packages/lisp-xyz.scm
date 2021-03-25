@@ -15342,3 +15342,40 @@ numbers in Common Lisp.")
 
 (define-public cl-computable-reals
   (sbcl-package->cl-source-package sbcl-computable-reals))
+
+(define-public sbcl-html-template
+  (package
+    (name "sbcl-html-template")
+    (version "0.9.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/edicl/html-template")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0wz3czvjsn4x971dsiia9f9nvvcmbkablcl75zsvxndkimc93wxb"))))
+    (build-system asdf-build-system/sbcl)
+    (home-page "https://edicl.github.io/html-template/")
+    (synopsis "HTML templates from Common Lisp")
+    (description
+     "HTML-TEMPLATE is a Common Lisp library which can be used to fill
+templates with arbitrary (string) values at runtime.  The result does not have
+to be HTML.
+
+It is loosely modeled after the Perl module @code{HTML::Template} and
+partially compatible with a its syntax, though both libraries contain some
+extensions that the other does not support.
+
+HTML-TEMPLATE translates templates into efficient closures which can be
+re-used as often as needed.  It uses a cache mechanism so you can update
+templates while your program is running and have the changes take effect
+immediately.")
+    (license license:bsd-2)))
+
+(define-public ecl-html-template
+  (sbcl-package->ecl-package sbcl-html-template))
+
+(define-public cl-html-template
+  (sbcl-package->cl-source-package sbcl-html-template))
