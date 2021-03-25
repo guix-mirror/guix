@@ -3907,7 +3907,7 @@ compliance.")
 (define-public wireless-regdb
   (package
     (name "wireless-regdb")
-    (version "2020.04.29")
+    (version "2020.11.20")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3915,7 +3915,7 @@ compliance.")
                     "wireless-regdb-" version ".tar.xz"))
               (sha256
                (base32
-                "0yicda474ygahv8da18h1p4yf42s6x2f208mlwcw4xsrxld07zc9"))
+                "0liagyi6ppf5w474qk9j4jz5gbvvn8mc8al1dq4b1xrgv28485ml"))
 
               ;; We're building 'regulatory.bin' by ourselves.
               (snippet '(begin
@@ -3969,8 +3969,8 @@ compliance.")
      "https://wireless.wiki.kernel.org/en/developers/regulatory/wireless-regdb")
     (synopsis "Wireless regulatory database")
     (description
-     "This package contains the wireless regulatory database Central
-Regulatory Database Agent (CRDA) daemon.  The database contains information on
+     "This package contains the wireless regulatory database for the Central
+Regulatory Database Agent (CRDA).  The database contains information on
 country-specific regulations for the wireless spectrum.")
     (license license:isc)))
 
