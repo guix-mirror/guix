@@ -24,6 +24,31 @@
   #:use-module (guix build-system julia)
   #:use-module (gnu packages tls))
 
+(define-public julia-abstractffts
+  (package
+    (name "julia-abstractffts")
+    (version "1.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaMath/AbstractFFTS.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0083pwdyxjb04i330ir9pc8kmp4bwk59lx1jgc9qi05y8j7xzbp0"))))
+    (build-system julia-build-system)
+    (inputs                             ;required for tests
+     `(("julia-unitful" ,julia-unitful)))
+    (home-page "https://github.com/JuliaGPU/Adapt.jl")
+    (synopsis "General framework for fast Fourier transforms (FFTs)")
+    (description "This package allows multiple FFT packages to co-exist with
+the same underlying @code{fft(x)} and @code{plan_fft(x)} interface.  It is
+mainly not intended to be used directly.  Instead, developers of packages that
+implement FFTs (such as @code{FFTW.jl} or @code{FastTransforms.jl}) extend the
+types/functions defined in AbstractFFTs.")
+    (license license:expat)))
+
 (define-public julia-adapt
   (package
     (name "julia-adapt")
