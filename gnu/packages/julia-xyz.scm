@@ -1004,6 +1004,33 @@ high-order accuracy, assuming that @code{f(x0+h)} has a Taylor series or some
 other power series in @code{h}.")
     (license license:expat)))
 
+(define-public julia-specialfunctions
+  (package
+    (name "julia-specialfunctions")
+    (version "1.3.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaMath/SpecialFunctions.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1rfhrrkzi3ils7fklbn35ki1yp5x88fi71qknfwqyw4pk8cf8p80"))))
+    (build-system julia-build-system)
+    (inputs
+     `(("julia-chainrulestestutils" ,julia-chainrulestestutils)))
+    (propagated-inputs
+     `(("julia-chainrulescore" ,julia-chainrulescore)
+       ("julia-openspecfun-jll" ,julia-openspecfun-jll)))
+    (home-page "https://github.com/JuliaMath/SpecialFunctions.jl")
+    (synopsis "Special mathematical functions")
+    (description "This package provides special mathematical functions,
+including Bessel, Hankel, Airy, error, Dawson, exponential (or sine and
+cosine) integrals, eta, zeta, digamma, inverse digamma, trigamma, and
+polygamma functions.")
+    (license license:expat)))
+
 (define-public julia-staticarrays
   (package
     (name "julia-staticarrays")
