@@ -4922,7 +4922,7 @@ minimum.")
 (define-public libinstpatch
   (package
     (name "libinstpatch")
-    (version "1.1.5")
+    (version "1.1.6")
     (source
      (origin
        (method git-fetch)
@@ -4931,7 +4931,7 @@ minimum.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0psx4hc5yksfd3k2xqsc7c8lbz2d4yybikyddyd9hlkhq979cmjb"))))
+        (base32 "1w3nk0vvd1cxic70n45zjip0bdsrja969myvyvkhq3ngbarbykir"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f)) ;there are no tests
