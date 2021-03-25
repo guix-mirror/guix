@@ -15379,3 +15379,36 @@ immediately.")
 
 (define-public cl-html-template
   (sbcl-package->cl-source-package sbcl-html-template))
+
+(define-public sbcl-quickproject
+  (package
+    (name "sbcl-quickproject")
+    (version "1.4.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/xach/quickproject")
+             (commit (string-append "release-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1szs8p2wr1yr9mjmj3h3557l6wxzzga0iszimb68z0hb1jj3lva6"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("cl-fad" ,sbcl-cl-fad)
+       ("html-template" ,sbcl-html-template)))
+    (arguments
+     '(#:asd-files '("quickproject.asd")))
+    (home-page "https://xach.com/lisp/quickproject/")
+    (synopsis "Create Common Lisp project skeletons")
+    (description
+     "Quickproject provides a quick way to make a Common Lisp project.  After
+creating a project, it extends the ASDF registry so the project may be
+immediately loaded.")
+    (license license:expat)))
+
+(define-public ecl-quickproject
+  (sbcl-package->ecl-package sbcl-quickproject))
+
+(define-public cl-quickproject
+  (sbcl-package->cl-source-package sbcl-quickproject))
