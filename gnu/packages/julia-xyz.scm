@@ -147,6 +147,37 @@ can also be used to compute definite integrals by different numerical
 methods.")
     (license license:expat)))
 
+(define-public julia-chainrules
+  (package
+    (name "julia-chainrules")
+    (version "0.7.54")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaDiff/ChainRules.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1x4w71v8cw0vpba47h8f5xq4gyjfxbcvayzf7m41yg8gf49s9pkf"))))
+    (build-system julia-build-system)
+    (inputs                             ;required for test
+     `(("julia-chainrulestestutils" ,julia-chainrulestestutils)
+       ("julia-finitedifferences" ,julia-finitedifferences)
+       ("julia-nanmath" ,julia-nanmath)
+       ("julia-specialfunctions" ,julia-specialfunctions)))
+    (propagated-inputs
+     `(("julia-chainrulescore" ,julia-chainrulescore)
+       ("julia-compat" ,julia-compat)
+       ("julia-reexport" ,julia-reexport)
+       ("julia-requires" ,julia-requires)))
+    (home-page "https://github.com/JuliaDiff/ChainRules.jl")
+    (synopsis "Common utilities for automatic differentiation")
+    (description "The is package provides a variety of common utilities that
+can be used by downstream automatic differentiation (AD) tools to define and
+execute forward-, reverse-, and mixed-mode primitives.")
+    (license license:expat)))
+
 (define-public julia-chainrulescore
   (package
     (name "julia-chainrulescore")
