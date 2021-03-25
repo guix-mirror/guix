@@ -522,6 +522,25 @@ languages like Fortran.")
 utilities for Julia.")
     (license license:expat)))
 
+(define-public julia-reexport
+  (package
+    (name "julia-reexport")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/simonster/Reexport.jl")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1yhhja1zz6dy5f4fd19bdwd6jwgj7q4w3avzgyg1hjhmdl8jrh0s"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/simonster/Reexport.jl")
+    (synopsis "Re-export modules and symbols")
+    (description "This package provides tools to re-export modules and symbols.")
+    (license license:expat)))
+
 (define-public julia-uris
   (package
     (name "julia-uris")
