@@ -276,6 +276,32 @@ implementing both a client and a server.")
 allows to interface with @file{.ini} files.")
     (license license:expat)))
 
+(define-public julia-irtools
+  (package
+    (name "julia-irtools")
+    (version "0.4.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/FluxML/IRTools.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0wwzy77jcdnffnd5fr6xan7162g4wydz67igrq82wflwnrhlcx5y"))))
+    (arguments
+     '(#:tests? #f))                    ;require Documenter, not packaged yet
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-macrotools" ,julia-macrotools)))
+    (home-page "https://github.com/FluxML/IRTools.jl")
+    (synopsis "Simple and flexible IR format")
+    (description "This package provides a simple and flexible IR format,
+expressive enough to work with both lowered and typed Julia code, as well as
+external IRs.  It can be used with Julia metaprogramming tools such as
+Cassette.")
+    (license license:expat)))
+
 (define-public julia-jllwrappers
   (package
     (name "julia-jllwrappers")
