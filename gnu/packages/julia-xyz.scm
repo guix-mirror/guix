@@ -1221,3 +1221,38 @@ system.")
     (description "Minimal package which enables to add custom gradients to
 Zygote, without depending on Zygote itself.")
     (license license:expat)))
+
+(define-public julia-zygote
+  (package
+    (name "julia-zygote")
+    (version "0.6.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/FluxML/Zygote.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1h2ph0lsisbkh8y4xgwzgw9p5zi243q8zzp5gfh3zw9pzkx6a1rf"))))
+    (build-system julia-build-system)
+    (arguments
+     `(#:tests? #f))                    ;require CUDA, not packaged yet
+    (propagated-inputs
+     `(("julia-abstractffs" ,julia-abstractffts)
+       ("julia-chainrules" ,julia-chainrules)
+       ("julia-diffrules" ,julia-diffrules)
+       ("julia-fillarrays" ,julia-fillarrays)
+       ("julia-forwarddiff" ,julia-forwarddiff)
+       ("julia-irtools" ,julia-irtools)
+       ("julia-macrotools" ,julia-macrotools)
+       ("julia-nanmath" ,julia-nanmath)
+       ("julia-requires" ,julia-requires)
+       ("julia-specialfunctions" ,julia-specialfunctions)
+       ("julia-zygote-rules" ,julia-zygoterules)))
+    (home-page "https://fluxml.ai/Zygote.jl")
+    (synopsis "Automatic differentiation in Julia")
+    (description "Zygote provides source-to-source automatic
+differentiation (AD) in Julia, and is the next-generation AD system for the
+Flux differentiable programming framework.")
+    (license license:expat)))
