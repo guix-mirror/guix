@@ -644,8 +644,12 @@ by GDBus included in Glib.")
                (base32
                 "0xgkyhb2876mcyyib5rk3ya9aingyj68h02nl22yvkhx35rqbwy1"))))
     (build-system meson-build-system)
+    (outputs '("out" "doc"))
     (arguments
-     `(#:phases
+     `(#:configure-flags
+       (list
+        "-Dbuild-documentation=true")
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'disable-failing-tests
            (lambda _
@@ -656,9 +660,20 @@ by GDBus included in Glib.")
                ;; This test does a DNS lookup, and then expects to be able
                ;; to open a TLS session; just skip it.
                (("[ \t]*.*giomm_tls_client.*$") ""))
-             #t)))))
+             #t))
+         (add-after 'install 'move-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (assoc-ref outputs "doc")))
+               (mkdir-p (string-append doc "/share"))
+               (rename-file
+                (string-append out "/share/doc")
+                (string-append doc "/share/doc"))
+               #t))))))
     (native-inputs
-     `(("glib:bin" ,glib "bin")
+     `(("dot" ,graphviz)
+       ("doxygen" ,doxygen)
+       ("glib:bin" ,glib "bin")
        ("m4" ,m4)
        ("mm-common" ,mm-common)
        ("perl" ,perl)
