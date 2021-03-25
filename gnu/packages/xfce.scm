@@ -1916,7 +1916,7 @@ freedesktop.org specification.")
 (define-public xfce4-systemload-plugin
   (package
    (name "xfce4-systemload-plugin")
-   (version "1.2.4")
+   (version "1.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
@@ -1925,13 +1925,14 @@ freedesktop.org specification.")
                                   "/xfce4-systemload-plugin-" version ".tar.bz2"))
               (sha256
                (base32
-                "0dcqg13phlcri4i4g9752m4zfkcmidiqpjv4s3l3pfiwjbgvhc85"))))
+                "0lknh5l30qs5c69wwjcblbyhczvdbxs59fqkb8mpqbfm05w01lan"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("libxfce4ui" ,libxfce4ui)
+     `(("libgtop" ,libgtop)
+       ("libxfce4ui" ,libxfce4ui)
        ("xfce4-panel" ,xfce4-panel)))
     (home-page
      "https://goodies.xfce.org/projects/panel-plugins/xfce4-systemload-plugin")
