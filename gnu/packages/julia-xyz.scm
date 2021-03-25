@@ -435,6 +435,26 @@ TLS} and cryptography C libary for Julia.")
 wrappers.")
     (license license:expat)))
 
+(define-public julia-nanmath
+  (package
+    (name "julia-nanmath")
+    (version "0.3.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mlubin/NaNMath.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1hczhz00qj99w63vp627kwk02l2sr2qmzc2rkwwkdwvzy670p25q"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/mlubin/NaNMath.jl")
+    (synopsis "Implementations of basic math functions")
+    (description "Implementations of basic math functions which return
+@code{NaN} instead of throwing a @code{DomainError}.")
+    (license license:expat)))
+
 (define-public julia-orderedcollections
   (package
     (name "julia-orderedcollections")
