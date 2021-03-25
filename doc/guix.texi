@@ -11567,10 +11567,13 @@ is welcome here (@pxref{Contributing}).
 @section Invoking @command{guix refresh}
 
 @cindex @command {guix refresh}
-The primary audience of the @command{guix refresh} command is developers
-of the GNU software distribution.  By default, it reports any packages
-provided by the distribution that are outdated compared to the latest
-upstream version, like this:
+The primary audience of the @command{guix refresh} command is packagers.
+As a user, you may be interested in the @option{--with-latest} option,
+which can bring you package update superpowers built upon @command{guix
+refresh} (@pxref{Package Transformation Options,
+@option{--with-latest}}).  By default, @command{guix refresh} reports
+any packages provided by the distribution that are outdated compared to
+the latest upstream version, like this:
 
 @example
 $ guix refresh
