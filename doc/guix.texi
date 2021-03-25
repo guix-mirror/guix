@@ -11760,7 +11760,13 @@ $ ./pre-inst-env guix refresh -u emacs idutils gcc@@4.8
 @noindent
 The command above specifically updates the @code{emacs} and
 @code{idutils} packages.  The @option{--select} option would have no
-effect in this case.
+effect in this case.  You might also want to update definitions that
+correspond to the packages installed in your profile:
+
+@example
+$ ./pre-inst-env guix refresh -u \
+       $(guix package --list-installed | cut -f1)
+@end example
 
 When considering whether to upgrade a package, it is sometimes
 convenient to know which packages would be affected by the upgrade and
