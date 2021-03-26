@@ -1525,6 +1525,46 @@ reformat the current buffer using a command-line program, together with an
 optional minor mode which can apply this command automatically on save.")
     (license license:gpl3+)))
 
+(define-public emacs-relative-buffers
+  (let ((release "0.0.1")
+        (revision "0")
+        (commit "9762fe268e9ff150dcec2e2e45d862d82d5c4008"))
+    (package
+      (name "emacs-relative-buffers")
+      (version (git-version release revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/emacsattic/relative-buffers")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0fzhwbpyndwrmxip9zlcwkrr675l5pzwcygi45hv7w1hn39w0hxp"))
+         (snippet
+          '(begin
+             ;; Delete the Cask test runners.
+             (for-each delete-file '("Cask" "test/test-helper.el"))
+             #t))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:tests? #t
+         #:test-command '("ert-runner")))
+      (native-inputs
+       `(("ert-runner" ,emacs-ert-runner)))
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)
+         ("emacs-f" ,emacs-f)
+         ("emacs-s" ,emacs-s)))
+      (home-page "https://github.com/emacsattic/relative-buffers")
+      (synopsis "Minor mode to rename buffers by project structure")
+      (description
+       "This package provides a minor mode for renaming buffers according to
+project structure.  For Python buffers, that will be the whole module name.
+For temporary files and directories, that will be the relative path from the
+project root.")
+      (license license:gpl3+))))
+
 (define-public emacs-relint
   (package
     (name "emacs-relint")
