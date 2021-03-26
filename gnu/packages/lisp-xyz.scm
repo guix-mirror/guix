@@ -120,6 +120,45 @@ portable between implementations.")
 (define-public ecl-alexandria
   (sbcl-package->ecl-package sbcl-alexandria))
 
+(define-public sbcl-bodge-utilities
+  (let ((commit "6304bac4abe06d53579e2c0fc4437d14ff077d9f")
+        (revision "1"))
+    (package
+     (name "sbcl-bodge-utilities")
+     (version (git-version "1.0.0" revision commit))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/borodust/bodge-utilities")
+             (commit commit)))
+       (file-name (git-file-name "bodge-utilities" version))
+       (sha256
+        (base32 "1z1blj05q71vzh323qwyn9p3xs7v0mq2yhwfyzza5libp37wqm3c"))))
+     (build-system asdf-build-system/sbcl)
+     (inputs
+      `(("alexandria" ,sbcl-alexandria)
+        ("cffi" ,sbcl-cffi)
+        ("claw" ,sbcl-claw)
+        ("dissect" ,sbcl-dissect)
+        ("local-time" ,sbcl-local-time)
+        ("log4cl" ,sbcl-log4cl)
+        ("split-sequence" ,sbcl-split-sequence)
+        ("static-vectors" ,sbcl-static-vectors)
+        ("trivial-gray-streams" ,sbcl-trivial-gray-streams)))
+     (home-page "https://github.com/borodust/bodge-utilities")
+     (synopsis "Common Lisp utilities library for CL-BODGE")
+     (description
+      "This Common Lisp library provides utilities for the @emph{Bodge} library
+collection.")
+     (license license:expat))))
+
+(define-public ecl-bodge-utilities
+  (sbcl-package->ecl-package sbcl-bodge-utilities))
+
+(define-public cl-bodge-utilities
+  (sbcl-package->cl-source-package sbcl-bodge-utilities))
+
 (define-public sbcl-golden-utils
   (let ((commit "9424419d867d5c2f819196ee41667a818a5058e7")
         (revision "1"))
