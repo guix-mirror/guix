@@ -184,6 +184,18 @@
 
 (set-record-type-printer! <gexp> write-gexp)
 
+(define (gexp-with-hidden-inputs gexp inputs)
+  "Add INPUTS, a list of <gexp-input>, to the references of GEXP.  These are
+\"hidden inputs\" because they do not actually appear in the expansion of GEXP
+returned by 'gexp->sexp'."
+  (make-gexp (append inputs (gexp-references gexp))
+             (gexp-self-modules gexp)
+             (gexp-self-extensions gexp)
+             (let ((extra (length inputs)))
+               (lambda args
+                 (apply (gexp-proc gexp) (drop args extra))))
+             (gexp-location gexp)))
+
 
 ;;;
 ;;; Methods.
@@ -1614,131 +1626,177 @@ TARGET, a GNU triplet."
                                                  #:system system
                                                  #:guile guile
                                                  #:module-path
-                                                 module-path)))
+                                                 module-path))
+                      (extensions (mapm %store-monad
+                                        (lambda (extension)
+                                          (lower-object extension system
+                                                        #:target #f))
+                                        extensions)))
     (define build
-      (gexp
-       (begin
-         (primitive-load (ungexp %utils-module))  ;for 'mkdir-p'
+      (gexp-with-hidden-inputs
+       (gexp
+        (begin
+          (primitive-load (ungexp %utils-module)) ;for 'mkdir-p'
 
-         (use-modules (ice-9 ftw)
-                      (ice-9 format)
-                      (srfi srfi-1)
-                      (srfi srfi-26)
-                      (system base target)
-                      (system base compile))
+          (use-modules (ice-9 ftw)
+                       (ice-9 format)
+                       (srfi srfi-1)
+                       (srfi srfi-26)
+                       (system base target)
+                       (system base compile))
 
-         (define optimizations-for-level
-           (or (and=> (false-if-exception
-                       (resolve-interface '(system base optimize)))
-                      (lambda (iface)
-                        (module-ref iface 'optimizations-for-level))) ;Guile 3.0
-               (const '())))
+          (define modules
+            (getenv "modules"))
 
-         (define (regular? file)
-           (not (member file '("." ".."))))
+          (define total
+            (string->number (getenv "module count")))
 
-         (define (process-entry entry output processed)
-           (if (file-is-directory? entry)
-               (let ((output (string-append output "/" (basename entry))))
-                 (mkdir-p output)
-                 (process-directory entry output processed))
-               (let* ((base   (basename entry ".scm"))
-                      (output (string-append output "/" base ".go")))
-                 (format #t "[~2@a/~2@a] Compiling '~a'...~%"
-                         (+ 1 processed (ungexp total))
-                         (ungexp (* total 2))
-                         entry)
+          (define extensions
+            (string-split (getenv "extensions") #\space))
 
-                 (with-target (ungexp (or target (gexp %host-type)))
-                   (lambda ()
-                     (compile-file entry
-                                   #:output-file output
-                                   #:opts
-                                   `(,@%auto-compilation-options
-                                     ,@(optimizations-for-level
-                                        (ungexp optimization-level))))))
+          (define target
+            (getenv "target"))
 
-                 (+ 1 processed))))
+          (define optimization-level
+            (string->number (getenv "optimization level")))
 
-         (define (process-directory directory output processed)
-           (let ((entries (map (cut string-append directory "/" <>)
-                               (scandir directory regular?))))
-             (fold (cut process-entry <> output <>)
-                   processed
-                   entries)))
+          (define optimizations-for-level
+            (or (and=> (false-if-exception
+                        (resolve-interface '(system base optimize)))
+                       (lambda (iface)
+                         (module-ref iface 'optimizations-for-level))) ;Guile 3.0
+                (const '())))
 
-         (define* (load-from-directory directory
-                                       #:optional (loaded 0))
-           "Load all the source files found in DIRECTORY."
-           ;; XXX: This works around <https://bugs.gnu.org/15602>.
-           (let ((entries (map (cut string-append directory "/" <>)
-                               (scandir directory regular?))))
-             (fold (lambda (file loaded)
-                     (if (file-is-directory? file)
-                         (load-from-directory file loaded)
-                         (begin
-                           (format #t "[~2@a/~2@a] Loading '~a'...~%"
-                                   (+ 1 loaded) (ungexp (* 2 total))
-                                   file)
-                           (save-module-excursion
-                            (lambda ()
-                              (primitive-load file)))
-                           (+ 1 loaded))))
-                   loaded
-                   entries)))
+          (define (regular? file)
+            (not (member file '("." ".."))))
 
-         (setvbuf (current-output-port)
-                  (cond-expand (guile-2.2 'line) (else _IOLBF)))
+          (define (process-entry entry output processed)
+            (if (file-is-directory? entry)
+                (let ((output (string-append output "/" (basename entry))))
+                  (mkdir-p output)
+                  (process-directory entry output processed))
+                (let* ((base   (basename entry ".scm"))
+                       (output (string-append output "/" base ".go")))
+                  (format #t "[~2@a/~2@a] Compiling '~a'...~%"
+                          (+ 1 processed total)
+                          (* total 2)
+                          entry)
 
-         (define mkdir-p
-           ;; Capture 'mkdir-p'.
-           (@ (guix build utils) mkdir-p))
+                  (with-target (or target %host-type)
+                               (lambda ()
+                                 (compile-file entry
+                                               #:output-file output
+                                               #:opts
+                                               `(,@%auto-compilation-options
+                                                 ,@(optimizations-for-level
+                                                    optimization-level)))))
 
-         ;; Add EXTENSIONS to the search path.
-         (set! %load-path
-           (append (map (lambda (extension)
-                          (string-append extension
-                                         "/share/guile/site/"
-                                         (effective-version)))
-                        '((ungexp-native-splicing extensions)))
-                   %load-path))
-         (set! %load-compiled-path
-           (append (map (lambda (extension)
-                          (string-append extension "/lib/guile/"
-                                         (effective-version)
-                                         "/site-ccache"))
-                        '((ungexp-native-splicing extensions)))
-                   %load-compiled-path))
+                  (+ 1 processed))))
 
-         (set! %load-path (cons (ungexp modules) %load-path))
+          (define (process-directory directory output processed)
+            (let ((entries (map (cut string-append directory "/" <>)
+                                (scandir directory regular?))))
+              (fold (cut process-entry <> output <>)
+                    processed
+                    entries)))
 
-         ;; Above we loaded our own (guix build utils) but now we may need to
-         ;; load a compile a different one.  Thus, force a reload.
-         (let ((utils (string-append (ungexp modules)
-                                     "/guix/build/utils.scm")))
-           (when (file-exists? utils)
-             (load utils)))
+          (define* (load-from-directory directory
+                                        #:optional (loaded 0))
+            "Load all the source files found in DIRECTORY."
+            ;; XXX: This works around <https://bugs.gnu.org/15602>.
+            (let ((entries (map (cut string-append directory "/" <>)
+                                (scandir directory regular?))))
+              (fold (lambda (file loaded)
+                      (if (file-is-directory? file)
+                          (load-from-directory file loaded)
+                          (begin
+                            (format #t "[~2@a/~2@a] Loading '~a'...~%"
+                                    (+ 1 loaded) (* 2 total)
+                                    file)
+                            (save-module-excursion
+                             (lambda ()
+                               (primitive-load file)))
+                            (+ 1 loaded))))
+                    loaded
+                    entries)))
 
-         (mkdir (ungexp output))
-         (chdir (ungexp modules))
+          (setvbuf (current-output-port)
+                   (cond-expand (guile-2.2 'line) (else _IOLBF)))
 
-         (load-from-directory ".")
-         (process-directory "." (ungexp output) 0))))
+          (define mkdir-p
+            ;; Capture 'mkdir-p'.
+            (@ (guix build utils) mkdir-p))
 
-    ;; TODO: Pass MODULES as an environment variable.
+          ;; Remove environment variables for internal consumption.
+          (unsetenv "modules")
+          (unsetenv "module count")
+          (unsetenv "extensions")
+          (unsetenv "target")
+          (unsetenv "optimization level")
+
+          ;; Add EXTENSIONS to the search path.
+          (set! %load-path
+            (append (map (lambda (extension)
+                           (string-append extension
+                                          "/share/guile/site/"
+                                          (effective-version)))
+                         extensions)
+                    %load-path))
+          (set! %load-compiled-path
+            (append (map (lambda (extension)
+                           (string-append extension "/lib/guile/"
+                                          (effective-version)
+                                          "/site-ccache"))
+                         extensions)
+                    %load-compiled-path))
+
+          (set! %load-path (cons modules %load-path))
+
+          ;; Above we loaded our own (guix build utils) but now we may need to
+          ;; load a compile a different one.  Thus, force a reload.
+          (let ((utils (string-append modules
+                                      "/guix/build/utils.scm")))
+            (when (file-exists? utils)
+              (load utils)))
+
+          (mkdir (ungexp output))
+          (chdir modules)
+
+          (load-from-directory ".")
+          (process-directory "." (ungexp output) 0)))
+       (list (gexp-input modules))))
+
     (gexp->derivation name build
+                      #:script-name "compile-modules"
                       #:system system
                       #:target target
                       #:guile-for-build guile
                       #:local-build? #t
                       #:env-vars
-                      (case deprecation-warnings
-                        ((#f)
-                         '(("GUILE_WARN_DEPRECATED" . "no")))
-                        ((detailed)
-                         '(("GUILE_WARN_DEPRECATED" . "detailed")))
-                        (else
-                         '())))))
+                      `(("modules"
+                         . ,(if (derivation? modules)
+                                (derivation->output-path modules)
+                                modules))
+                        ("module count" . ,(number->string total))
+                        ("extensions"
+                         . ,(string-join
+                             (map (match-lambda
+                                    ((? derivation? drv)
+                                     (derivation->output-path drv))
+                                    ((? string? str) str))
+                                  extensions)))
+                        ("optimization level"
+                         . ,(number->string optimization-level))
+                        ,@(if target
+                              `(("target" . ,target))
+                              '())
+                        ,@(case deprecation-warnings
+                            ((#f)
+                             '(("GUILE_WARN_DEPRECATED" . "no")))
+                            ((detailed)
+                             '(("GUILE_WARN_DEPRECATED" . "detailed")))
+                            (else
+                             '()))))))
 
 
 ;;;
