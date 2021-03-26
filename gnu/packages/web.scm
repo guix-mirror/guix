@@ -4709,8 +4709,8 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
   (package-with-python2 python-feedparser))
 
 (define-public guix-data-service
-  (let ((commit "b7ba8d0c2ca3aca9ba5b5f9f27b9778ee949d20e")
-        (revision "25"))
+  (let ((commit "410f58cb43f083623885a430700c6818a187cadc")
+        (revision "26"))
     (package
       (name "guix-data-service")
       (version (string-append "0.0.1-" revision "." (string-take commit 7)))
@@ -4722,7 +4722,7 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0brv64bsqysl7dncz067blwvmqrlx99c2kwrgpz6k0nqv8nzsa28"))))
+                  "1jvxn3w6gwlvm52raf6zkjwg7bvfvbznsb9ch8ha0fcc6ccx7r60"))))
       (build-system gnu-build-system)
       (arguments
        '(#:modules ((guix build utils)
@@ -4781,15 +4781,15 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
                  #t)))
            (delete 'strip))))           ; As the .go files aren't compatible
       (inputs
-       `(("guix" ,guile3.0-guix)
-         ("guile-fibers" ,guile3.0-fibers)
-         ("guile-json" ,guile3.0-json)
-         ("guile-email" ,guile3.0-email)
+       `(("guix" ,guix)
+         ("guile-fibers" ,guile-fibers)
+         ("guile-json" ,guile-json-4)
+         ("guile-email" ,guile-email)
          ("guile-prometheus" ,guile-prometheus)
-         ("guile-squee" ,guile3.0-squee)
+         ("guile-squee" ,guile-squee)
          ("ephemeralpg" ,ephemeralpg)
          ("util-linux" ,util-linux)
-         ("postgresql" ,postgresql-11)
+         ("postgresql" ,postgresql-13)
          ("sqitch" ,sqitch)))
       (native-inputs
        `(("guile" ,@(assoc-ref (package-native-inputs guix) "guile"))
