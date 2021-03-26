@@ -916,29 +916,31 @@ Python.")
 (define-public wayland
   (package
     (name "wayland")
-    (version "1.18.0")
+    (version "1.19.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://wayland.freedesktop.org/releases/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0k995rn96xkplrapz5k648j651wc43kq817xk1x8280h16gsfxa6"))))
-    (build-system gnu-build-system)
+                "05bd2vphyx8qwa1mhsj1zdaiv4m4v94wrlssrn0lad8d601dkk5s"))))
+    (build-system meson-build-system)
     (arguments
      `(#:parallel-tests? #f))
     (native-inputs
-     `(("doxygen" ,doxygen)
-       ("graphviz" ,graphviz)
+     `(("docbook-xml-4.2" ,docbook-xml-4.2)
+       ("docbook-xml" ,docbook-xml)
+       ("docbook-xsl" ,docbook-xsl)
+       ("dot" ,graphviz)
+       ("doxygen" ,doxygen)
        ("pkg-config" ,pkg-config)
        ("xmlto" ,xmlto)
        ("xsltproc" ,libxslt)))
     (inputs
-     `(("docbook-xml" ,docbook-xml)
-       ("docbook-xsl" ,docbook-xsl)
-       ("expat" ,expat)
-       ("libffi" ,libffi)
-       ("libxml2" ,libxml2))) ; for XML_CATALOG_FILES
+     `(("expat" ,expat)
+       ("libxml2" ,libxml2)))           ; for XML_CATALOG_FILES
+    (propagated-inputs
+     `(("libffi" ,libffi)))
     (home-page "https://wayland.freedesktop.org/")
     (synopsis "Display server protocol")
     (description
