@@ -4703,7 +4703,7 @@ these procedures.
 Inferior packages can be used transparently like any other package or
 file-like object in G-expressions (@pxref{G-Expressions}).  They are also
 transparently handled by the @code{packages->manifest} procedure, which is
-commonly use in manifests (@pxref{Invoking guix package, the
+commonly used in manifests (@pxref{Invoking guix package, the
 @option{--manifest} option of @command{guix package}}).  Thus you can insert
 an inferior package pretty much anywhere you would insert a regular package:
 in manifests, in the @code{packages} field of your @code{operating-system}
