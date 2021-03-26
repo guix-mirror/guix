@@ -824,77 +824,94 @@ is part of the GNOME accessibility project.")
 
 (define-public gtk+-2
   (package
-   (name "gtk+")
-   (version "2.24.32")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append "mirror://gnome/sources/" name "/"
-                                (version-major+minor version)  "/"
-                                name "-" version ".tar.xz"))
-            (sha256
-             (base32
-              "0bjq7ja9gwcv6n5q4qkvdjjx40wsdiikksz1zqxvxsm5vlyskj5n"))
-            (patches (search-patches "gtk2-respect-GUIX_GTK2_PATH.patch"
-                                     "gtk2-respect-GUIX_GTK2_IM_MODULE_FILE.patch"
-                                     "gtk2-theme-paths.patch"))))
-   (build-system gnu-build-system)
-   (outputs '("out" "bin" "doc"))
-   (propagated-inputs
-    `(("atk" ,atk)
-      ;; SVG support is optional and requires librsvg, which pulls in rust.
-      ;; Rust is not supported well on every architecture yet.
-      ("gdk-pixbuf" ,(if (string-prefix? "x86_64" (or (%current-target-system)
-                                                      (%current-system)))
-                         gdk-pixbuf+svg
-                         gdk-pixbuf))
-      ("pango" ,pango)))
-   (inputs
-    `(("cups" ,cups)
-      ("libxcomposite" ,libxcomposite)
-      ("libxcursor" ,libxcursor)
-      ("libxdamage" ,libxdamage)
-      ("libxi" ,libxi)
-      ("libxinerama" ,libxinerama)
-      ("libxrandr" ,libxrandr)))
-   (native-inputs
-    `(("perl" ,perl)
-      ("gettext" ,gettext-minimal)
-      ("glib" ,glib "bin")
-      ("gobject-introspection" ,gobject-introspection)
-      ("pkg-config" ,pkg-config)
-      ("python-wrapper" ,python-wrapper)))
-   (arguments
-    `(#:configure-flags
-      (list "--with-xinput=yes"
-            (string-append "--with-html-dir="
-                           (assoc-ref %outputs "doc")
-                           "/share/gtk-doc/html"))
-      #:phases
-      (modify-phases %standard-phases
-        (add-before 'configure 'disable-tests
-          (lambda _
-            ;; FIXME: re-enable tests requiring an X server
-            (substitute* "gtk/Makefile.in"
-              (("SUBDIRS = theme-bits . tests") "SUBDIRS = theme-bits ."))
-            #t))
-        (add-after 'install 'remove-cache
-          (lambda* (#:key outputs #:allow-other-keys)
-	    (for-each
+    (name "gtk+")
+    (version "2.24.32")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version)  "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0bjq7ja9gwcv6n5q4qkvdjjx40wsdiikksz1zqxvxsm5vlyskj5n"))
+              (patches (search-patches "gtk2-respect-GUIX_GTK2_PATH.patch"
+                                       "gtk2-respect-GUIX_GTK2_IM_MODULE_FILE.patch"
+                                       "gtk2-theme-paths.patch"))))
+    (build-system gnu-build-system)
+    (outputs '("out" "bin" "doc"))
+    (propagated-inputs
+     `(("atk" ,atk)
+       ;; SVG support is optional and requires librsvg, which pulls in rust.
+       ;; Rust is not supported well on every architecture yet.
+       ("gdk-pixbuf" ,(if (string-prefix? "x86_64" (or (%current-target-system)
+                                                       (%current-system)))
+                          gdk-pixbuf+svg
+                          gdk-pixbuf))
+       ("pango" ,pango)))
+    (inputs
+     `(("cups" ,cups)
+       ("libxcomposite" ,libxcomposite)
+       ("libxcursor" ,libxcursor)
+       ("libxdamage" ,libxdamage)
+       ("libxi" ,libxi)
+       ("libxinerama" ,libxinerama)
+       ("libxrandr" ,libxrandr)))
+    (native-inputs
+     `(("perl" ,perl)
+       ("gettext" ,gettext-minimal)
+       ("glib" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)
+       ("python-wrapper" ,python-wrapper)
+       ("xorg-server" ,xorg-server-for-tests)))
+    (arguments
+     `(#:parallel-tests? #f
+       #:configure-flags
+       (list "--with-xinput=yes"
+             (string-append "--with-html-dir="
+                            (assoc-ref %outputs "doc")
+                            "/share/gtk-doc/html"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-failing-tests
+           (lambda _
+             (substitute* "gtk/Makefile.in"
+               (("aliasfilescheck\\.sh") ""))
+             (substitute* "gtk/tests/recentmanager.c"
+               (("g_test_add_func \\(\"/recent-manager.*;") ""))
+             (substitute* "gtk/tests/defaultvalue.c"
+               (("return g_test_run\\(\\);") ""))
+             #t))
+         (add-before 'check 'pre-check
+           (lambda _
+             ;; Tests require a running X server.
+             (system "Xvfb :1 +extension GLX &")
+             (setenv "DISPLAY" ":1")
+             ;; Tests write to $HOME.
+             (setenv "HOME" (getcwd))
+             ;; Tests look for $XDG_RUNTIME_DIR.
+             (setenv "XDG_RUNTIME_DIR" (getcwd))
+             ;; For missing '/etc/machine-id'.
+             (setenv "DBUS_FATAL_WARNINGS" "0")
+             #t))
+         (add-after 'install 'remove-cache
+           (lambda* (#:key outputs #:allow-other-keys)
+	     (for-each
 	      delete-file
 	      (find-files (assoc-ref outputs "out") "immodules.cache"))
-            #t)))))
-   (native-search-paths
-    (list (search-path-specification
-           (variable "GUIX_GTK2_PATH")
-           (files '("lib/gtk-2.0")))))
-   (synopsis "Cross-platform toolkit for creating graphical user interfaces")
-   (description
-    "GTK+, or the GIMP Toolkit, is a multi-platform toolkit for creating
+             #t)))))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "GUIX_GTK2_PATH")
+            (files '("lib/gtk-2.0")))))
+    (synopsis "Cross-platform toolkit for creating graphical user interfaces")
+    (description
+     "GTK+, or the GIMP Toolkit, is a multi-platform toolkit for creating
 graphical user interfaces.  Offering a complete set of widgets, GTK+ is
 suitable for projects ranging from small one-off tools to complete
 application suites.")
-   (license license:lgpl2.0+)
-   (home-page "https://www.gtk.org/")))
+    (license license:lgpl2.0+)
+    (home-page "https://www.gtk.org/")))
 
 (define-public gtk+
   (package (inherit gtk+-2)
