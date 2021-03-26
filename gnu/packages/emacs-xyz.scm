@@ -22833,9 +22833,9 @@ based on diff output.")
       (license license:gpl3+))))
 
 (define-public emacs-all-the-icons-dired
-  (let ((commit "980b7747d6c4a7992a1ec56afad908956db0a519")
+  (let ((commit "fc2dfa1e9eb8bf1c402a675e7089638d702a27a5")
         (version "1.0")
-        (revision "1"))
+        (revision "2"))
     (package
       (name "emacs-all-the-icons-dired")
       (version (git-version version revision commit))
@@ -22848,7 +22848,7 @@ based on diff output.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1pvbgyxfj4j205nj1r02045f1y4wgavdsk7f45hxkkhms1rj8jyy"))))
+           "0zhyhz4lhx0d8wwh1xxxf7ck4s621fk9757ql2ypxbr4iqh7sjlp"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-all-the-icons" ,emacs-all-the-icons)))
