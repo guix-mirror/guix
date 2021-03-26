@@ -15484,3 +15484,35 @@ immediately loaded.")
 
 (define-public cl-quickproject
   (sbcl-package->cl-source-package sbcl-quickproject))
+
+(define-public sbcl-bodge-math
+  (let ((commit "9159b7faf88d440024c07110dbef2abddb20b9af")
+        (revision "1"))
+    (package
+     (name "sbcl-bodge-math")
+     (version (git-version "1.0.0" revision commit))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/borodust/bodge-math")
+             (commit commit)))
+       (file-name (git-file-name "bodge-math" version))
+       (sha256
+        (base32 "0r3vnl9lywn4ksy34apcv6j825qp7l1naddawr14v4lwacndb80v"))))
+     (build-system asdf-build-system/sbcl)
+     (inputs
+      `(("bodge-utilities" ,sbcl-bodge-utilities)
+        ("rtg-math" ,sbcl-rtg-math)))
+     (home-page "https://github.com/borodust/bodge-math")
+     (synopsis "Common Lisp core math utilities of BODGE library collection")
+     (description
+      "This Common Lisp package contains the core math utilities of the
+@emph{Bodge} library collection.")
+     (license license:expat))))
+
+(define-public ecl-bodge-math
+  (sbcl-package->ecl-package sbcl-bodge-math))
+
+(define-public cl-bodge-math
+  (sbcl-package->cl-source-package sbcl-bodge-math))
