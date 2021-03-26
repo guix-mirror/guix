@@ -1486,6 +1486,24 @@ library.")
       ;; Tools
       license:gpl2+))))
 
+(define-public atkmm-2.28
+  (package
+    (inherit atkmm)
+    (name "atkmm")
+    (version "2.28.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://gnome/sources/" name "/"
+                       (version-major+minor version)  "/"
+                       name "-" version ".tar.xz"))
+       (sha256
+        (base32 "1b8vycqzr3lfvk2l73f4kk74hj48081zbh9r1r2ilr3h8xh7cs0i"))))
+    (propagated-inputs
+     `(("glibmm" ,glibmm-2.64)
+       ,@(package-propagated-inputs atkmm)))))
+
 (define-public gtkmm
   (package
     (name "gtkmm")
