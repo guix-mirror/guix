@@ -2100,7 +2100,8 @@ decompression is a little bit slower.")
                                  version "/upx-" version "-src.tar.xz"))
              (sha256
               (base32
-               "051pk5jk8fcfg5mpgzj43z5p4cn7jy5jbyshyn78dwjqr7slsxs7"))))
+               "051pk5jk8fcfg5mpgzj43z5p4cn7jy5jbyshyn78dwjqr7slsxs7"))
+             (patches (search-patches "upx-CVE-2021-20285.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)))
