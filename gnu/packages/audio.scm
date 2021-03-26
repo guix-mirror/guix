@@ -302,6 +302,50 @@ Linux kernel.")
     (home-page "https://github.com/tinyalsa/tinyalsa")
     (license (license:non-copyleft "file:///NOTICE"))))
 
+(define-public libgme
+  (package
+    (name "libgme")
+    (version "0.6.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://bitbucket.org/mpyne/game-music-emu/"
+                                  "downloads/game-music-emu-" version
+                                  ".tar.xz"))
+              (sha256
+               (base32
+                "07857vdkak306d9s5g6fhmjyxk7vijzjhkmqb15s7ihfxx9lx8xb"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:tests? #f))                    ; no check target
+    (home-page "https://bitbucket.org/mpyne/game-music-emu")
+    (synopsis "Video game music file playback library")
+    (description
+     "Game-music-emu is a collection of video game music file emulators that
+support the following formats and systems:
+@table @code
+@item AY
+ZX Spectrum/Asmtrad CPC
+@item GBS
+Nintendo Game Boy
+@item GYM
+Sega Genesis/Mega Drive
+@item HES
+NEC TurboGrafx-16/PC Engine
+@item KSS
+MSX Home Computer/other Z80 systems (doesn't support FM sound)
+@item NSF/NSFE
+Nintendo NES/Famicom (with VRC 6, Namco 106, and FME-7 sound)
+@item SAP
+Atari systems using POKEY sound chip
+@item SPC
+Super Nintendo/Super Famicom
+@item VGM/VGZ
+Sega Master System/Mark III, Sega Genesis/Mega Drive, BBC Micro
+@end table")
+    (license (list license:lgpl2.1+
+                   ;; demo and player directories are under the Expat license
+                   license:expat))))
+
 (define-public libopenmpt
   (package
     (name "libopenmpt")
