@@ -4562,13 +4562,45 @@ configuration storage systems.")
                (base32
                 "092g2dyy1hhl0ix9kp33wcab0pg1qicnsv0cj5ms9g9qs336cgd3"))))
     (build-system meson-build-system)
+    (outputs '("out" "doc"))
     (arguments
-     `(#:glib-or-gtk? #t))     ; To wrap binaries and/or compile schemas
+     `(#:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
+       #:configure-flags
+       (list
+        "-Ddocs=true"
+        "-Dman=true")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-docbook
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "doc"
+               (substitute* (find-files "." "\\.xml$")
+                 (("http://www.oasis-open.org/docbook/xml/4\\.3/")
+                  (string-append (assoc-ref inputs "docbook-xml")
+                                 "/xml/dtd/docbook/")))
+               (substitute* "meson.build"
+                 (("http://docbook.sourceforge.net/release/xsl/current/")
+                  (string-append (assoc-ref inputs "docbook-xsl")
+                                 "/xml/xsl/docbook-xsl-1.79.2/"))))
+             #t))
+         (add-after 'install 'move-docs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (assoc-ref outputs "doc")))
+               (mkdir-p (string-append doc "/share"))
+               (rename-file
+                (string-append out "/share/gtk-doc")
+                (string-append doc "/share/gtk-doc"))
+               #t))))))
     (native-inputs
-     `(("gettext" ,gettext-minimal)
+     `(("docbook-xml" ,docbook-xml-4.3)
+       ("docbook-xsl" ,docbook-xsl)
+       ("gettext" ,gettext-minimal)
        ("glib" ,glib "bin")      ;for glib-mkenums and glib-genmarshal
        ("gobject-introspection" ,gobject-introspection)
-       ("pkg-config" ,pkg-config)))
+       ("gtk-doc" ,gtk-doc)
+       ("pkg-config" ,pkg-config)
+       ("xsltproc" ,libxslt)))
     (propagated-inputs
      `(("glib" ,glib)))                 ;according to json-glib-1.0.pc
     (home-page "https://wiki.gnome.org/Projects/JsonGlib")
