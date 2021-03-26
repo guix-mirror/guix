@@ -23391,6 +23391,39 @@ Dash docsets.")
 through Dash docsets.")
       (license license:expat))))
 
+(define-public emacs-cascading-dir-locals
+  (let ((release "0.1")
+        (revision "0")
+        (commit "efdf5e6d62b955ee0ca3c170eae1d388799f9fa0"))
+    (package
+      (name "emacs-cascading-dir-locals")
+      (version (git-version release revision commit))
+      (home-page "https://github.com/fritzgrabo/cascading-dir-locals")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1jwd99kk5l588n7wwi1x3b4bgimm66x1icna3n20pwaj49kf0zy8"))))
+      (build-system emacs-build-system)
+      (synopsis "Apply all @file{.dir-locals.el} from root to current directory")
+      (description
+       "This package provides a global minor mode that changes how Emacs
+handles the lookup of applicable dir-locals files (@file{.dir-locals.el}):
+instead of starting at the directory of the visited file and moving up the
+directory tree only until a first dir-locals file is found, collect and apply
+all (!) dir-locals files found from the current directory up to the root one.
+
+Values specified in files nearer to the current directory take precedence over
+values in files farther away from it.
+
+You might want to use this to globally set dir-local variables that apply to
+all of your projects, then override or add variables on a per-project basis.")
+      (license license:gpl3+))))
+
 (define-public emacs-calibredb
   (package
     (name "emacs-calibredb")
