@@ -65,7 +65,7 @@
            "0sykgmh12llkk5qb63542wb7ywjiirscqmlvrsskfkqlgs7scsgg"))))
       (build-system gnu-build-system)
       (arguments
-       '(#:modules ((guix build utils)
+       `(#:modules ((guix build utils)
                     (guix build gnu-build-system)
                     (ice-9 rdelim)
                     (ice-9 popen))
@@ -73,6 +73,13 @@
          #:parallel-tests? #f
          #:phases
          (modify-phases %standard-phases
+           (add-before 'bootstrap 'fix-version-gen
+             (lambda _
+              (patch-shebang "build-aux/git-version-gen")
+
+              (call-with-output-file ".tarball-version"
+                (lambda (port)
+                  (display ,version port)))))
            (add-before 'check 'set-PATH-for-tests
              (lambda* (#:key inputs #:allow-other-keys)
                (let ((pg (assoc-ref inputs "ephemeralpg"))
