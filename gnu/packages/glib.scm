@@ -631,6 +631,42 @@ by GDBus included in Glib.")
      has an ease of use unmatched by other C++ callback libraries.")
     (license license:lgpl3+)))
 
+ (define-public libsigc++-2
+   (package
+    (inherit libsigc++)
+    (name "libsigc++")
+    (version "2.9.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://gnome/sources/libsigc++/"
+                       (version-major+minor version)
+                       "/libsigc++-" version ".tar.xz"))
+       (sha256
+        (base32 "0zq963d0sss82q62fdfjs7l9iwbdch51albck18cb631ml0v7y8b"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-docbook-xml
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "docs"
+               (substitute* (find-files "." "\\.xml$")
+                 (("http://www.oasis-open.org/docbook/xml/4\\.1\\.2/")
+                  (string-append (assoc-ref inputs "docbook-xml")
+                                 "/xml/dtd/docbook/"))))
+             #t))
+         (add-after 'install 'move-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (assoc-ref outputs "doc")))
+               (mkdir-p (string-append doc "/share"))
+               (rename-file
+                (string-append out "/share/doc")
+                (string-append doc "/share/doc"))
+               #t))))))))
+
 (define glibmm
   (package
     (name "glibmm")
