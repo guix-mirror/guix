@@ -6810,10 +6810,17 @@ of running programs and invoke methods on those interfaces.")
        (sha256
         (base32 "1bdpgkzawhqmw52l6zx8czzg1ndfgcf1p44m2bxjdpqkc4afcgqc"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list
+        "--enable-doc")))
     (native-inputs
-     `(("gettext-minimal" ,gettext-minimal)
+     `(("ducktype" ,mallard-ducktype)
+       ("gettext" ,gettext-minimal)
+       ("intltool" ,intltool)
        ("itstool" ,itstool)
-       ("xmllint" ,libxml2)))
+       ("xmllint" ,libxml2)
+       ("xsltproc" ,libxslt)))
     (synopsis "XSL stylesheets for Yelp")
     (description "Yelp-XSL is a collection of programs and data files to help
 you build, maintain, and distribute documentation.  It provides XSLT stylesheets
