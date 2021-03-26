@@ -240,13 +240,13 @@ Channels
 * Using a Custom Guix Channel::  Using a customized Guix.
 * Replicating Guix::            Running the @emph{exact same} Guix.
 * Channel Authentication::      How Guix verifies what it fetches.
+* Channels with Substitutes::   Using channels with available substitutes.
 * Creating a Channel::          How to write your custom channel.
 * Package Modules in a Sub-directory::  Specifying the channel's package modules location.
 * Declaring Channel Dependencies::  How to depend on other channels.
 * Specifying Channel Authorizations::  Defining channel authors authorizations.
 * Primary URL::                 Distinguishing mirror to original.
 * Writing Channel News::        Communicating information to channel's users.
-* Channels with Substitutes::   Using channels with available substitutes.
 
 Development
 
@@ -5018,13 +5018,13 @@ updates.
 * Using a Custom Guix Channel::  Using a customized Guix.
 * Replicating Guix::            Running the @emph{exact same} Guix.
 * Channel Authentication::      How Guix verifies what it fetches.
+* Channels with Substitutes::   Using channels with available substitutes.
 * Creating a Channel::          How to write your custom channel.
 * Package Modules in a Sub-directory::  Specifying the channel's package modules location.
 * Declaring Channel Dependencies::  How to depend on other channels.
 * Specifying Channel Authorizations::  Defining channel authors authorizations.
 * Primary URL::                 Distinguishing mirror to original.
 * Writing Channel News::        Communicating information to channel's users.
-* Channels with Substitutes::   Using channels with available substitutes.
 @end menu
 
 @node Specifying Additional Channels
@@ -5179,6 +5179,31 @@ the channel introduction provided by the channel authors in your
 introduction from a trusted source since that is the root of your trust.
 
 If you're curious about the authentication mechanics, read on!
+
+@node Channels with Substitutes
+@section Channels with Substitutes
+
+When running @command{guix pull}, Guix will first compile the
+definitions of every available package.  This is an expensive operation
+for which substitutes (@pxref{Substitutes}) may be available.  The
+following snippet in @file{channels.scm} will ensure that @command{guix
+pull} uses the latest commit with available substitutes for the package
+definitions: this is done by querying the continuous integration
+server at @url{https://ci.guix.gnu.org}.
+
+@lisp
+(use-modules (guix ci))
+
+(list (channel-with-substitutes-available
+       %default-guix-channel
+       "https://ci.guix.gnu.org"))
+@end lisp
+
+Note that this does not mean that all the packages that you will
+install after running @command{guix pull} will have available
+substitutes.  It only ensures that @command{guix pull} will not try to
+compile package definitions.  This is particularly useful when using
+machines with limited resources.
 
 @node Creating a Channel
 @section Creating a Channel
@@ -5495,31 +5520,6 @@ xgettext -o news.po -l scheme -ken etc/news.txt
 
 To sum up, yes, you could use your channel as a blog.  But beware, this
 is @emph{not quite} what your users might expect.
-
-@node Channels with Substitutes
-@section Channels with Substitutes
-
-When running @command{guix pull}, Guix will first compile the
-definitions of every available package.  This is an expensive operation
-for which substitutes (@pxref{Substitutes}) may be available.  The
-following snippet in @file{channels.scm} will ensure that @command{guix
-pull} uses the latest commit with available substitutes for the package
-definitions: this is done by querying the continuous integration
-server at @url{https://ci.guix.gnu.org}.
-
-@lisp
-(use-modules (guix ci))
-
-(list (channel-with-substitutes-available
-       %default-guix-channel
-       "https://ci.guix.gnu.org"))
-@end lisp
-
-Note that this does not mean that all the packages that you will
-install after running @command{guix pull} will have available
-substitutes.  It only ensures that @command{guix pull} will not try to
-compile package definitions.  This is particularly useful when using
-machines with limited resources.
 
 @c *********************************************************************
 @node Development
