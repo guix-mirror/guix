@@ -212,7 +212,7 @@ $(prefix)/etc/init.d\n")))
                         (substitute* "nix/local.mk"
                           (("^openrcservicedir = .*$")
                            (string-append "openrcservicedir = \
-$(prefix)/etc/init.d\n")))
+$(prefix)/etc/openrc\n")))
 
                         (invoke "sh" "bootstrap")))
                     (add-before 'build 'use-host-compressors
