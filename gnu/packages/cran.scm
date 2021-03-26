@@ -3792,7 +3792,7 @@ statistics/methods are implemented.")
        (uri (cran-uri "SuppDists" version))
        (sha256
         (base32
-         "01j6p94m1g363nph2158fq2rmd6z3h5dvcv6aidh2d6syw131xak"))))
+         "1i3iq12a5x5k49ac01mikzcrrq9gc148xq3m08h4xm07bha6f2v8"))))
     (properties `((upstream-name . "SuppDists")))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/SuppDists")
