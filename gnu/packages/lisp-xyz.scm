@@ -2929,6 +2929,39 @@ from GLSL as data.")
 (define-public cl-glsl-spec
   (sbcl-package->cl-source-package sbcl-glsl-spec))
 
+(define-public sbcl-rtg-math
+  (let ((commit "29fc5b3d0028a4a11a82355ecc8cca62662c69e0")
+        (revision "1"))
+    (package
+      (name "sbcl-rtg-math")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/cbaggers/rtg-math")
+               (commit commit)))
+         (file-name (git-file-name "rtg-math" version))
+         (sha256
+          (base32 "0bhxxnv7ldkkb18zdxyz2rj2a3iawzq2kcp7cn5i91iby7n0082x"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("documentation-utils" ,sbcl-documentation-utils)
+         ("glsl-symbols" ,sbcl-glsl-spec)))
+      (home-page "https://github.com/cbaggers/rtg-math")
+      (synopsis "Common Lisp library of game-related math functions")
+      (description
+       "RTG-MATH provides a selection of the math routines most commonly needed
+for making realtime graphics in Lisp.")
+      (license license:bsd-2))))
+
+(define-public ecl-rtg-math
+  (sbcl-package->ecl-package sbcl-rtg-math))
+
+(define-public cl-rtg-math
+  (sbcl-package->cl-source-package sbcl-rtg-math))
+
 (define-public sbcl-varjo
   (let ((commit "9e77f30220053155d2ef8870ceba157f75e538d4")
         (revision "1"))
