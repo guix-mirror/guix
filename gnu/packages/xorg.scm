@@ -30,6 +30,7 @@
 ;;; Copyright © 2021 Matthew James Kraai <kraai@ftbfs.org>
 ;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
+;;; Copyright © 2021 qblade <qblade@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6472,7 +6473,8 @@ X11 servers, Windows, or macOS.")
      `(("anthy" ,anthy)
        ("libedit" ,libedit)
        ("libxft" ,libxft)
-       ("m17n-lib" ,m17n-lib)))
+       ("m17n-lib" ,m17n-lib)
+       ("ncurses" ,ncurses)))
     (native-inputs
      `(("emacs" ,emacs-minimal)
        ("intltool" ,intltool)
