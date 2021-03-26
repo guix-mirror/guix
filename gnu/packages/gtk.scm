@@ -923,97 +923,117 @@ application suites.")
     (home-page "https://www.gtk.org/")))
 
 (define-public gtk+
-  (package (inherit gtk+-2)
-   (name "gtk+")
-   (version "3.24.24")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append "mirror://gnome/sources/" name "/"
-                                (version-major+minor version)  "/"
-                                name "-" version ".tar.xz"))
-            (sha256
-             (base32
-              "12ipk1d376bai9v820qzhxba93kkh5abi6mhyqr4hwjvqmkl77fc"))
-            (patches (search-patches "gtk3-respect-GUIX_GTK3_PATH.patch"
-                                     "gtk3-respect-GUIX_GTK3_IM_MODULE_FILE.patch"))))
-   (propagated-inputs
-    `(("at-spi2-atk" ,at-spi2-atk)
-      ("atk" ,atk)
-      ;; SVG support is optional and requires librsvg, which pulls in rust.
-      ;; Rust is not supported well on every architecture yet.
-      ("gdk-pixbuf" ,(if (string-prefix? "x86_64" (or (%current-target-system)
-                                                      (%current-system)))
-                         gdk-pixbuf+svg
-                         gdk-pixbuf))
-      ("libepoxy" ,libepoxy)
-      ("libxcursor" ,libxcursor)
-      ("libxi" ,libxi)
-      ("libxinerama" ,libxinerama)
-      ("libxkbcommon" ,libxkbcommon)
-      ("libxdamage" ,libxdamage)
-      ("libxrandr" ,libxrandr)
-      ("mesa" ,mesa)
-      ("pango" ,pango)
-      ("wayland" ,wayland)
-      ("wayland-protocols" ,wayland-protocols)))
-   (inputs
-    `(("libxml2" ,libxml2)
-      ;; XXX: colord depends on mozjs (through polkit), which fails on
-      ;;      on non-intel systems now.
-      ;;("colord" ,colord)
-      ("cups" ,cups)                            ;for printing support
-      ;; XXX: rest depends on p11-kit, which fails on mips64el now.
-      ;;("rest" ,rest)
-      ("json-glib" ,json-glib)))
-   (native-inputs
-    `(("perl" ,perl)
-      ("glib" ,glib "bin")
-      ("gettext" ,gettext-minimal)
-      ("pkg-config" ,pkg-config)
-      ("gobject-introspection" ,gobject-introspection)
-      ("python-wrapper" ,python-wrapper)
-      ;; By using a special xorg-server for GTK+'s tests, we reduce the impact
-      ;; of updating xorg-server directly on the master branch.
-      ("xorg-server" ,xorg-server-for-tests)))
-   (arguments
-    `(#:disallowed-references (,xorg-server-for-tests)
-      ;; 47 MiB goes to "out" (24 of which is locale data!), and 26 MiB goes
-      ;; to "doc".
-      #:configure-flags (list (string-append "--with-html-dir="
-                                             (assoc-ref %outputs "doc")
-                                             "/share/gtk-doc/html")
-                              ;; The header file <gdk/gdkwayland.h> is required
-                              ;; by gnome-control-center
-                              "--enable-wayland-backend"
-                              ;; This is necessary to build both backends.
-                              "--enable-x11-backend"
-                              ;; This enables the HTML5 websocket backend.
-                              "--enable-broadway-backend")
-      #:phases (modify-phases %standard-phases
-        (add-before 'configure 'pre-configure
-          (lambda _
-            ;; Disable most tests, failing in the chroot with the message:
-            ;; D-Bus library appears to be incorrectly set up; failed to read
-            ;; machine uuid: Failed to open "/etc/machine-id": No such file or
-            ;; directory.
-            ;; See the manual page for dbus-uuidgen to correct this issue.
-            (substitute* "testsuite/Makefile.in"
-              (("SUBDIRS = gdk gtk a11y css reftests")
-               "SUBDIRS = gdk"))
-            #t))
-        (add-after 'install 'move-desktop-files
-          ;; Move desktop files into 'bin' to avoid cycle references.
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let ((out (assoc-ref outputs "out"))
-                  (bin (assoc-ref outputs "bin")))
-              (mkdir-p (string-append bin "/share"))
-              (rename-file (string-append out "/share/applications")
-                           (string-append bin "/share/applications"))
-              #t))))))
-   (native-search-paths
-    (list (search-path-specification
-           (variable "GUIX_GTK3_PATH")
-           (files '("lib/gtk-3.0")))))))
+  (package
+    (inherit gtk+-2)
+    (name "gtk+")
+    (version "3.24.24")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/" name "/"
+                           (version-major+minor version)  "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "12ipk1d376bai9v820qzhxba93kkh5abi6mhyqr4hwjvqmkl77fc"))
+       (patches (search-patches "gtk3-respect-GUIX_GTK3_PATH.patch"
+                                "gtk3-respect-GUIX_GTK3_IM_MODULE_FILE.patch"))))
+    (propagated-inputs
+     `(("at-spi2-atk" ,at-spi2-atk)
+       ("atk" ,atk)
+       ;; SVG support is optional and requires librsvg, which pulls in rust.
+       ;; Rust is not supported well on every architecture yet.
+       ("gdk-pixbuf" ,(if (string-prefix? "x86_64" (or (%current-target-system)
+                                                       (%current-system)))
+                          gdk-pixbuf+svg
+                          gdk-pixbuf))
+       ("libepoxy" ,libepoxy)
+       ("libxcursor" ,libxcursor)
+       ("libxi" ,libxi)
+       ("libxinerama" ,libxinerama)
+       ("libxkbcommon" ,libxkbcommon)
+       ("libxdamage" ,libxdamage)
+       ("libxrandr" ,libxrandr)
+       ("mesa" ,mesa)
+       ("pango" ,pango)
+       ("wayland" ,wayland)
+       ("wayland-protocols" ,wayland-protocols)))
+    (inputs
+     `(("libxml2" ,libxml2)
+       ;; XXX: colord depends on mozjs (through polkit), which fails on
+       ;;      on non-intel systems now.
+       ;;("colord" ,colord)
+       ("cups" ,cups)                   ;for printing support
+       ;; XXX: rest depends on p11-kit, which fails on mips64el now.
+       ;;("rest" ,rest)
+       ("json-glib" ,json-glib)))
+    (native-inputs
+     `(("perl" ,perl)
+       ("glib" ,glib "bin")
+       ("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)
+       ("gobject-introspection" ,gobject-introspection)
+       ("python-wrapper" ,python-wrapper)
+       ;; By using a special xorg-server for GTK+'s tests, we reduce the impact
+       ;; of updating xorg-server directly on the master branch.
+       ("xorg-server" ,xorg-server-for-tests)))
+    (arguments
+     `(#:disallowed-references (,xorg-server-for-tests)
+       ;; 47 MiB goes to "out" (24 of which is locale data!), and 26 MiB goes
+       ;; to "doc".
+       #:configure-flags (list (string-append "--with-html-dir="
+                                              (assoc-ref %outputs "doc")
+                                              "/share/gtk-doc/html")
+                               ;; The header file <gdk/gdkwayland.h> is required
+                               ;; by gnome-control-center
+                               "--enable-wayland-backend"
+                               ;; This is necessary to build both backends.
+                               "--enable-x11-backend"
+                               ;; This enables the HTML5 websocket backend.
+                               "--enable-broadway-backend")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-failing-tests
+           (lambda _
+             (substitute* "testsuite/gtk/Makefile.in"
+               (("builderparser cellarea check-icon-names check-cursor-names")
+                "builderparser cellarea check-cursor-names")
+               (("notify no-gtk-init object objects-finalize papersize rbtree")
+                "no-gtk-init papersize rbtree")
+               (("stylecontext templates textbuffer textiter treemodel treepath")
+                "stylecontext textbuffer textiter treemodel treepath"))
+             (substitute* "testsuite/a11y/Makefile.in"
+               (("accessibility-dump tree-performance text children derive")
+                "tree-performance text children derive"))
+             (substitute* "testsuite/reftests/Makefile.in"
+               (("TEST_PROGS = gtk-reftest")
+                "TEST_PROGS = "))
+             #t))
+         (add-before 'check 'pre-check
+           (lambda _
+             ;; Tests require a running X server.
+             (system "Xvfb :1 +extension GLX &")
+             (setenv "DISPLAY" ":1")
+             ;; Tests write to $HOME.
+             (setenv "HOME" (getcwd))
+             ;; Tests look for $XDG_RUNTIME_DIR.
+             (setenv "XDG_RUNTIME_DIR" (getcwd))
+             ;; For missing '/etc/machine-id'.
+             (setenv "DBUS_FATAL_WARNINGS" "0")
+             #t))
+         (add-after 'install 'move-desktop-files
+           ;; Move desktop files into 'bin' to avoid cycle references.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (bin (assoc-ref outputs "bin")))
+               (mkdir-p (string-append bin "/share"))
+               (rename-file (string-append out "/share/applications")
+                            (string-append bin "/share/applications"))
+               #t))))))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "GUIX_GTK3_PATH")
+            (files '("lib/gtk-3.0")))))))
 
 ;;;
 ;;; Guile bindings.
