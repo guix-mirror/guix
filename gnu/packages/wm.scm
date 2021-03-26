@@ -2408,28 +2408,26 @@ read and write, and compatible with JSON.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://hikari.acmelabs.space/releases/hikari-"
-             version ".tar.gz"))
+       (uri (string-append "https://hikari.acmelabs.space/releases/"
+                           "hikari-" version ".tar.gz"))
        (sha256
-        (base32
-         "1qsd1qb4bn24jh5658gxmfg6hk9p7g235gsbvnjrbfdjqsv8r6yz"))))
+        (base32 "1qsd1qb4bn24jh5658gxmfg6hk9p7g235gsbvnjrbfdjqsv8r6yz"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bmake" ,bmake)
        ("pkg-config" ,pkg-config)
        ("wayland-protocols" ,wayland-protocols)))
     (inputs
-     `(("wayland" ,wayland)
-       ("wlroots" ,wlroots)
+     `(("cairo" ,cairo)
        ("libinput" ,libinput)
-       ("cairo" ,cairo)
-       ("pango" ,pango)
-       ("libxkbcommon" ,libxkbcommon)
        ("libucl" ,libucl)
-       ("pam" ,linux-pam)))
+       ("libxkbcommon" ,libxkbcommon)
+       ("pam" ,linux-pam)
+       ("pango" ,pango)
+       ("wayland" ,wayland)
+       ("wlroots" ,wlroots)))
     (arguments
-     `(#:tests? #f ; no tests
+     `(#:tests? #f                      ; no tests
        #:make-flags
        (list
         (string-append "PREFIX=" (assoc-ref %outputs "out"))
@@ -2448,7 +2446,8 @@ read and write, and compatible with JSON.")
            (lambda* (#:key inputs outputs make-flags #:allow-other-keys)
              (apply invoke "bmake" "install" make-flags))))))
     (home-page "https://hikari.acmelabs.space/")
-    (synopsis "Stacking Wayland compositor with additional tiling capabilities")
-    (description "Stacking Wayland compositor with additional tiling
-capabilities, it is heavily inspired by the Calm Window manager(cwm)")
+    (synopsis "Stacking Wayland compositor with tiling capabilities")
+    (description
+     "Hikari is a stacking Wayland compositor with additional tiling
+capabilities.  It is heavily inspired by the Calm Window manager(cwm).")
     (license license:bsd-2)))
