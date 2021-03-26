@@ -1591,49 +1591,67 @@ library.")
 (define-public gtkmm
   (package
     (name "gtkmm")
-    (version "3.24.2")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://gnome/sources/" name "/"
-                                 (version-major+minor version)  "/"
-                                 name "-" version ".tar.xz"))
-             (sha256
-              (base32
-               "1hxdnhavjyvbcpxhd5z17l9fj4182028s66lc0s16qqqrldhjwbd"))))
-    (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("glib" ,glib "bin")        ;for 'glib-compile-resources'
-                     ("xorg-server" ,xorg-server-for-tests)))
-    (propagated-inputs
-     `(("pangomm" ,pangomm)
-       ("cairomm" ,cairomm)
-       ("atkmm" ,atkmm)
-       ("gtk+" ,gtk+)
-       ("glibmm" ,glibmm)))
+    (version "3.24.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://gnome/sources/" name "/"
+                       (version-major+minor version)  "/"
+                       name "-" version ".tar.xz"))
+       (sha256
+        (base32 "0hv7pviln4cpjvpz7m7ga5krcsbibqzixdcn0dwzpz0cx71p3swv"))))
+    (build-system glib-or-gtk-build-system)
+    (outputs '("out" "doc"))
     (arguments
-     `(#:disallowed-references (,xorg-server-for-tests)
-       #:phases (modify-phases %standard-phases
-                  (add-before 'check 'run-xvfb
-                    (lambda* (#:key inputs #:allow-other-keys)
-                      (let ((xorg-server (assoc-ref inputs "xorg-server")))
-                        ;; Tests such as 'object_move/test' require a running
-                        ;; X server.
-                        (system (string-append xorg-server "/bin/Xvfb :1 &"))
-                        (setenv "DISPLAY" ":1")
-                        ;; Don't fail because of the missing /etc/machine-id.
-                        (setenv "DBUS_FATAL_WARNINGS" "0")
-                        #t))))))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'pre-check
+           (lambda _
+             ;; Tests require a running X server.
+             (system "Xvfb :1 +extension GLX &")
+             (setenv "DISPLAY" ":1")
+             ;; For missing '/etc/machine-id'.
+             (setenv "DBUS_FATAL_WARNINGS" "0")
+             #t))
+         (add-after 'install 'move-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (assoc-ref outputs "doc")))
+               (mkdir-p (string-append doc "/share"))
+               (rename-file
+                (string-append out "/share/doc")
+                (string-append doc "/share/doc"))
+               #t))))))
+    (native-inputs
+     `(("dot" ,graphviz)
+       ("doxygen" ,doxygen)
+       ("m4" ,m4)
+       ("mm-common" ,mm-common)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("xsltproc" ,libxslt)
+       ("xorg-server" ,xorg-server-for-tests)))
+    (propagated-inputs
+     `(("atkmm" ,atkmm)
+       ("cairomm" ,cairomm)
+       ("glibmm" ,glibmm)
+       ("gtk+" ,gtk+)
+       ("pangomm" ,pangomm)))
+    (synopsis "C++ Interfaces for GTK+ and GNOME")
+    (description "GTKmm is the official C++ interface for the popular GUI
+library GTK+.  Highlights include typesafe callbacks, and a comprehensive set of
+widgets that are easily extensible via inheritance.  You can create user
+interfaces either in code or with the Glade User Interface designer, using
+libglademm.  There's extensive documentation, including API reference and a
+tutorial.")
     (home-page "https://gtkmm.org/")
-    (synopsis
-     "C++ interface to the GTK+ graphical user interface library")
-    (description
-     "gtkmm is the official C++ interface for the popular GUI library GTK+.
-Highlights include typesafe callbacks, and a comprehensive set of widgets that
-are easily extensible via inheritance.  You can create user interfaces either
-in code or with the Glade User Interface designer, using libglademm.  There's
-extensive documentation, including API reference and a tutorial.")
-    (license license:lgpl2.1+)))
-
+    (license
+     (list
+      ;; Library
+      license:lgpl2.1+
+      ;; Tools
+      license:gpl2+))))
 
 (define-public gtkmm-2
   (package (inherit gtkmm)
