@@ -1325,9 +1325,22 @@ library.")
                        name "-" version ".tar.gz"))
        (sha256
         (base32 "1xlfl0fm5mgv53lr8xjv2kqsk3bz67qkk6qzvbrqmbvbvvbqp9wp"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'move-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (assoc-ref outputs "doc")))
+               (mkdir-p (string-append doc "/share"))
+               (rename-file
+                (string-append out "/share/doc")
+                (string-append doc "/share/doc"))
+               #t))))))
     (propagated-inputs
-     `(("cairo" ,cairo)
-       ("sigc++" ,libsigc++)))))
+     `(("libsigc++" ,libsigc++-2)
+       ,@(package-propagated-inputs cairomm)))))
 
 (define-public pangomm
   (package
