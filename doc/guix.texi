@@ -1054,10 +1054,10 @@ Bash syntax and the @code{shadow} commands):
 @c for why `-G' is needed.
 @example
 # groupadd --system guixbuild
-# for i in `seq -w 1 10`;
+# for i in $(seq -w 1 10);
   do
     useradd -g guixbuild -G guixbuild           \
-            -d /var/empty -s `which nologin`    \
+            -d /var/empty -s $(which nologin)   \
             -c "Guix build user $i" --system    \
             guixbuilder$i;
   done
@@ -4222,7 +4222,7 @@ Return the derivation(s) leading to the given store items
 For example, this command:
 
 @example
-guix gc --derivers `guix package -I ^emacs$ | cut -f4`
+guix gc --derivers $(guix package -I ^emacs$ | cut -f4)
 @end example
 
 @noindent
@@ -10131,7 +10131,7 @@ Similarly, the following command builds all the available packages:
 
 @example
 guix build --quiet --keep-going \
-  `guix package -A | cut -f1,2 --output-delimiter=@@`
+  $(guix package -A | cut -f1,2 --output-delimiter=@@)
 @end example
 
 @var{package-or-derivation} may be either the name of a package found in
@@ -10837,8 +10837,8 @@ This works regardless of how packages or derivations are specified.  For
 instance, the following invocations are equivalent:
 
 @example
-guix build --log-file `guix build -d guile`
-guix build --log-file `guix build guile`
+guix build --log-file $(guix build -d guile)
+guix build --log-file $(guix build guile)
 guix build --log-file guile
 guix build --log-file -e '(@@ (gnu packages guile) guile-2.0)'
 @end example
@@ -12346,7 +12346,7 @@ For this type of graph, it is also possible to pass a @file{.drv} file
 name instead of a package name, as in:
 
 @example
-guix graph -t derivation `guix system build -d my-config.scm`
+guix graph -t derivation $(guix system build -d my-config.scm)
 @end example
 
 @item module
@@ -12375,7 +12375,7 @@ example, the command below produces the reference graph of your profile
 (which can be big!):
 
 @example
-guix graph -t references `readlink -f ~/.guix-profile`
+guix graph -t references $(readlink -f ~/.guix-profile)
 @end example
 
 @item referrers
@@ -12947,7 +12947,7 @@ their dependencies over to @var{host}, logged in as @var{user}:
 
 @example
 guix copy --to=@var{user}@@@var{host} \
-          coreutils `readlink -f ~/.guix-profile`
+          coreutils $(readlink -f ~/.guix-profile)
 @end example
 
 If some of the items to be copied are already present on @var{host},
@@ -32915,8 +32915,8 @@ system configuration file.  You can then load the image and launch a
 Docker container using commands like the following:
 
 @example
-image_id="`docker load < guix-system-docker-image.tar.gz`"
-container_id="`docker create $image_id`"
+image_id="$(docker load < guix-system-docker-image.tar.gz)"
+container_id="$(docker create $image_id)"
 docker start $container_id
 @end example
 
@@ -33440,7 +33440,7 @@ The default @command{run-vm.sh} script that is returned by an invocation of
 @command{guix system vm} does not add a @command{-nic user} flag by default.
 To get network access from within the vm add the @code{(dhcp-client-service)}
 to your system definition and start the VM using
-@command{`guix system vm config.scm` -nic user}.  An important caveat of using
+@command{$(guix system vm config.scm) -nic user}.  An important caveat of using
 @command{-nic user} for networking is that @command{ping} will not work, because
 it uses the ICMP protocol.  You'll have to use a different command to check for
 network connectivity, for example @command{guix download}.
@@ -33455,7 +33455,7 @@ To enable SSH inside a VM you need to add an SSH server like
 22 by default, to the host.  You can do this with
 
 @example
-`guix system vm config.scm` -nic user,model=virtio-net-pci,hostfwd=tcp::10022-:22
+$(guix system vm config.scm) -nic user,model=virtio-net-pci,hostfwd=tcp::10022-:22
 @end example
 
 To connect to the VM you can run
@@ -34509,7 +34509,7 @@ To verify which Bash your whole profile refers to, you can run
 (@pxref{Invoking guix gc}):
 
 @example
-guix gc -R `readlink -f ~/.guix-profile` | grep bash
+guix gc -R $(readlink -f ~/.guix-profile) | grep bash
 @end example
 
 @noindent
@@ -34517,7 +34517,7 @@ guix gc -R `readlink -f ~/.guix-profile` | grep bash
 Likewise for a complete Guix system generation:
 
 @example
-guix gc -R `guix system build my-config.scm` | grep bash
+guix gc -R $(guix system build my-config.scm) | grep bash
 @end example
 
 Lastly, to check which Bash running processes are using, you can use the
