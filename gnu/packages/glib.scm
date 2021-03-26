@@ -729,7 +729,7 @@ useful for C++.")
    (package
     (inherit glibmm)
     (name "glibmm")
-    (version "2.64.2")
+    (version "2.64.5")
     (source
      (origin
        (method url-fetch)
@@ -738,10 +738,10 @@ useful for C++.")
                        (version-major+minor version)
                        "/glibmm-" version ".tar.xz"))
        (sha256
-        (base32 "1v6lp23fr2qh4zshcnm28sn29j3nzgsvcqj2nhmrnvamipjq4lm7"))))
+        (base32 "11m37sbx0i18cl17d0fkq0bik4bbzlb5n8kcl651jhci5ipci3sh"))))
      (propagated-inputs
-      `(("libsigc++" ,libsigc++)
-        ("glib" ,glib)))))
+      `(("libsigc++" ,libsigc++-2)
+        ,@(package-propagated-inputs glibmm)))))
 
 (define-public python2-pygobject-2
   (package
