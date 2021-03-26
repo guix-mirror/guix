@@ -783,42 +783,44 @@ is part of the GNOME accessibility project.")
 
 (define-public at-spi2-atk
   (package
-   (name "at-spi2-atk")
-   (version "2.34.1")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append "mirror://gnome/sources/" name "/"
-                                (version-major+minor version)  "/"
-                                name "-" version ".tar.xz"))
-            (sha256
-             (base32
-              "05ncp7s5nddjinffs26mcvpbd63vk1m3cv5y530p3plgfhqgjvbp"))))
-   (build-system meson-build-system)
-   (arguments
-    '(#:phases
-      (modify-phases %standard-phases
-        (replace 'check
-                 ;; Run test-suite under a dbus session.
-                 (lambda _
-                   (setenv "DBUS_FATAL_WARNINGS" "0")
-                   (invoke "dbus-launch" "meson" "test"))))))
-   (propagated-inputs
-    ;; TODO: Replace by at-spi2-core-minimal in the next staging window, or
-    ;; when Inkscape 0.92 is upgraded to 1.0 to avoid a cycle.
-    `(("at-spi2-core" ,at-spi2-core))) ; required by atk-bridge-2.0.pc
-   (inputs
-    `(("atk" ,atk)))
-   (native-inputs
-    `(("pkg-config" ,pkg-config)
-      ;; For tests.
-      ("dbus" ,dbus)
-      ("libxml2" ,libxml2)))
-   (synopsis "Assistive Technology Service Provider Interface, ATK bindings")
-   (description
-    "The Assistive Technology Service Provider Interface
+    (name "at-spi2-atk")
+    (version "2.38.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version)  "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0ks6r9sx27l80n3a7yjmkilxv48cqj183wc7cap3caw2myjhi86g"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           ;; Run test-suite under a dbus session.
+           (lambda _
+             (setenv "DBUS_FATAL_WARNINGS" "0")
+             (invoke "dbus-launch" "meson" "test"))))))
+    (propagated-inputs
+     ;; TODO: Replace by at-spi2-core-minimal in the next staging window, or
+     ;; when Inkscape 0.92 is upgraded to 1.0 to avoid a cycle.
+     `(("at-spi2-core" ,at-spi2-core))) ; required by atk-bridge-2.0.pc
+    (inputs
+     `(("atk" ,atk)
+       ("glib" ,glib)))
+    (native-inputs
+     `(("dbus" ,dbus)                ; For tests
+       ("gobject-introspection" ,gobject-introspection)
+       ("libxml2" ,libxml2)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Assistive Technology Service Provider Interface, ATK bindings")
+    (description
+     "The Assistive Technology Service Provider Interface
 is part of the GNOME accessibility project.")
-   (license license:lgpl2.0+)
-   (home-page "https://projects.gnome.org/accessibility/")))
+    (license license:lgpl2.0+)
+    (home-page "https://projects.gnome.org/accessibility/")))
 
 (define-public gtk+-2
   (package
