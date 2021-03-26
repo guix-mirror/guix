@@ -2676,7 +2676,7 @@ using the DOT syntax, and use Graphviz to convert these files to diagrams.")
 
 (define-public emacs-imenu-list
   (let ((commit "b50222378412fbe321622a84cb2b036e084c697a")
-        (revision "0")
+        (revision "1")
         (version "0.9"))
     (package
       (name "emacs-imenu-list")
