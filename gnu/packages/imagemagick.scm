@@ -155,7 +155,9 @@ text, lines, polygons, ellipses and Bézier curves.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1pkwij76yz7vd5grl6520pgpa912qb6kh34qamx4zfndwcx6cf6b"))))))
+                "1pkwij76yz7vd5grl6520pgpa912qb6kh34qamx4zfndwcx6cf6b"))
+              (patches
+               (search-patches "imagemagick-CVE-2020-27829.patch"))))))
 
 (define-public perl-image-magick
   (package
