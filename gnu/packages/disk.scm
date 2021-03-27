@@ -302,6 +302,58 @@ fdisk.  fdisk is used for the creation and manipulation of disk partition
 tables, and it understands a variety of different formats.")
     (license license:gpl3+)))
 
+(define-public gpart
+  ;; The latest (0.3) release is from 2015 and is missing a crash fix.
+  (let ((commit "ec03350a01ad69708b5a3e2d47b8e002b0eba6c9")
+        (revision "0"))
+    (package
+      (name "gpart")
+      (version (git-version "0.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/baruch/gpart")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1dassswliaiwhhmx7yz540yyxgk53fvg672dbvgc5q0v6cqrh5jx"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:configure-flags
+         (list (string-append "--docdir=" (assoc-ref %outputs "out") "/share/doc/"
+                              ,name "-" ,version))
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'skip-premature-configuration
+             (lambda _
+               (substitute* "autogen.sh"
+                 (("\\./configure") "")))))))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)))
+      (home-page "https://github.com/baruch/gpart")
+      (synopsis "Guess and recover PC-style partition tables")
+      (description
+       "Gpart tries to guess the partitions on a PC-style, MBR-partitioned disk
+after they have been inadvertently deleted or the primary partition table at
+sector 0 damaged.  In both cases, the contents of these partitions still exist
+on the disk but the operating system cannot access them.
+
+Gpart ignores the partition table and scans each sector of the device or image
+file for several known file system and partition types.  Only partitions which
+have been formatted in some way can be recognized.  Several file system guessing
+modules are built in; more can be written and loaded at run time.
+
+The guessed table can be restored manually, for example with @command{fdisk},
+written to a file, or---if you firmly believe it's entirely correct---directly
+to disk.
+
+It should be stressed that gpart does a very heuristic job.  It can easily be
+right in its guesswork but it can also be terribly wrong.  Never believe its
+output without any plausability checks.")
+      (license license:gpl2+))))
+
 (define-public gptfdisk
   (package
     (name "gptfdisk")
