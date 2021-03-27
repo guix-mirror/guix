@@ -48,6 +48,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages build-tools)
   #:use-module (gnu packages c)
   #:use-module (gnu packages check)
   #:use-module (gnu packages code)
@@ -1057,3 +1058,50 @@ of generic and independent components such as meta-programming tests, smart
 pointers, containers, compiler building blocks, etc.")
     (license (list license:expat        ;everything except...
                    license:boost1.0)))) ;...the files under cutl/details/boost
+
+(define-public libxsd-frontend
+  (package
+    (name "libxsd-frontend")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.codesynthesis.com/download/"
+                           "libxsd-frontend/" (version-major+minor version)
+                           "/libxsd-frontend-" version ".tar.bz2"))
+       (sha256
+        (base32 "1nmzchsvwvn66jpmcx18anzyl1a3l309x1ld4zllrg37ijc31fim"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:imported-modules ((guix build copy-build-system)
+                           ,@%gnu-build-system-modules)
+       #:modules (((guix build copy-build-system) #:prefix copy:)
+                  (guix build gnu-build-system)
+                  (guix build utils))
+       #:make-flags (list (string-append "--include-dir="
+                                         (assoc-ref %build-inputs "build")
+                                         "/include/"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda args
+             (apply (assoc-ref copy:%standard-phases 'install)
+                    #:install-plan
+                    '(("xsd-frontend" "include/xsd-frontend"
+                       #:include-regexp ("\\.?xx$"))
+                      ("xsd-frontend" "lib"
+                       #:include-regexp ("\\.so$")))
+                    args))))))
+    (native-inputs
+     `(("build" ,build)))
+    (inputs
+     `(("libcutl" ,libcutl)
+       ("libxerces-c" ,xerces-c)))
+    (synopsis "XSD Front-end")
+    (description "@code{libxsd-frontend} is a compiler frontend for the W3C
+XML Schema definition language.  It includes a parser, semantic graph types
+and a traversal mechanism.")
+    (home-page "https://www.codesynthesis.com/projects/libxsd-frontend/")
+    (license license:gpl2+)))
