@@ -1,0 +1,26 @@
+From 512668dfd92b20d0d08b91d62b422d8262573281 Mon Sep 17 00:00:00 2001
+From: Dirk Lemstra <dirk@lemstra.org>
+Date: Wed, 24 Mar 2021 20:37:15 +0100
+Subject: [PATCH] Throw exception when no exception was raised but status was
+ false (#3432).
+
+---
+ coders/dcm.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/coders/dcm.c b/coders/dcm.c
+index 7a68ed6e8..ed17c9567 100644
+--- a/coders/dcm.c
++++ b/coders/dcm.c
+@@ -3989,6 +3989,8 @@ static Image *ReadDCMImage(const ImageInfo *image_info,ExceptionInfo *exception)
+         if (redmap != (int *) NULL)
+           redmap=(int *) RelinquishMagickMemory(redmap);
+         image=DestroyImageList(image);
++        if ((status == MagickFalse) && (exception->severity < ErrorException))
++          ThrowReaderException(CorruptImageError,"CorruptImage");
+         return(GetFirstImageInList(images));
+       }
+     if (info.depth != (1UL*MAGICKCORE_QUANTUM_DEPTH))
+-- 
+2.31.0
+

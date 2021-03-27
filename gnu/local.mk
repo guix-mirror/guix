@@ -1221,6 +1221,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/idris-disable-test.patch			\
   %D%/packages/patches/ilmbase-fix-tests.patch			\
   %D%/packages/patches/imagemagick-CVE-2020-27829.patch		\
+  %D%/packages/patches/imagemagick-ReadDCMImage-fix.patch	\
+  %D%/packages/patches/imagemagick-ReadDCMPixels-fix.patch	\
+  %D%/packages/patches/imagemagick-WriteTHUMBNAILImage-fix.patch	\
   %D%/packages/patches/inetutils-hurd.patch			\
   %D%/packages/patches/inkscape-poppler-0.76.patch		\
   %D%/packages/patches/intel-xed-fix-nondeterminism.patch	\

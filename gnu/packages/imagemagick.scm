@@ -157,7 +157,10 @@ text, lines, polygons, ellipses and Bézier curves.")
                (base32
                 "1pkwij76yz7vd5grl6520pgpa912qb6kh34qamx4zfndwcx6cf6b"))
               (patches
-               (search-patches "imagemagick-CVE-2020-27829.patch"))))))
+               (search-patches "imagemagick-ReadDCMImage-fix.patch"
+                               "imagemagick-ReadDCMPixels-fix.patch"
+                               "imagemagick-WriteTHUMBNAILImage-fix.patch"
+                               "imagemagick-CVE-2020-27829.patch"))))))
 
 (define-public perl-image-magick
   (package
