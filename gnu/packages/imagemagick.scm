@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2016, 2021 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
@@ -140,7 +140,19 @@ text, lines, polygons, ellipses and Bézier curves.")
     (license (license:fsf-free "http://www.imagemagick.org/script/license.php"))))
 
 (define-public imagemagick
-  imagemagick/stable)
+  (package
+    (inherit imagemagick/stable)
+    ;; The 7 release series has an incompatible API, while the 6 series is still
+    ;; maintained. Don't update to 7 until we've made sure that the ImageMagick
+    ;; users are ready for the 7-series API.
+    (version "6.9.12-4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://imagemagick/ImageMagick-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "1pkwij76yz7vd5grl6520pgpa912qb6kh34qamx4zfndwcx6cf6b"))))))
 
 (define-public perl-image-magick
   (package
