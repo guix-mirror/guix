@@ -48,6 +48,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module ((guix build utils) #:select (alist-replace))
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
@@ -1828,6 +1829,17 @@ information.")
 typically used to document the public API of GTK+ and GNOME libraries, but it
 can also be used to document application code.")
     (license license:gpl2+)))
+
+;; This is a variant of the 'gtk-doc' package that is not updated often.  It
+;; is intended to be used as a native-input at build-time only.  This allows
+;; the main 'gtk-doc', 'dblatex' and 'imagemagick' packages to be freely
+;; updated on the 'master' branch without triggering an excessive number of
+;; rebuilds.
+(define-public gtk-doc/stable
+  (hidden-package
+   (package/inherit gtk-doc
+     (inputs (alist-replace "dblatex" `(,dblatex/stable)
+                            (package-inputs gtk-doc))))))
 
 (define-public gtk-engines
   (package
