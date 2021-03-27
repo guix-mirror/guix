@@ -305,14 +305,14 @@ tables, and it understands a variety of different formats.")
 (define-public gptfdisk
   (package
     (name "gptfdisk")
-    (version "1.0.6")
+    (version "1.0.7")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://sourceforge/gptfdisk/gptfdisk/"
                           version "/gptfdisk-" version ".tar.gz"))
       (sha256
-       (base32 "1a4c2ss6n2s6x8v11h79jykh96y46apd6i838ka0ngx58gb53ifx"))))
+       (base32 "1h1871gwlq05gdc2wym98ghfmq6pn5lh8g5cqy3r49svz2vh8h3m"))))
     (build-system gnu-build-system)
     (inputs
      `(("gettext" ,gettext-minimal)
