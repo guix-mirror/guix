@@ -174,7 +174,7 @@ engine that uses Wayland for graphics output.")
        ("docbook-xsl" ,docbook-xsl)
        ("glib:bin" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
-       ("gtk-doc" ,gtk-doc)
+       ("gtk-doc" ,gtk-doc/stable)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)
@@ -301,7 +301,7 @@ acceleration in mind, leveraging common 3D graphics APIs for best performance.")
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)
-       ("gtk-doc" ,gtk-doc) ; For documentation generation
+       ("gtk-doc" ,gtk-doc/stable) ; For documentation generation
        ("docbook-xml" ,docbook-xml) ; For documentation generation
        ("ruby" ,ruby)))
     (propagated-inputs

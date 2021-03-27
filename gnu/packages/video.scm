@@ -381,7 +381,7 @@ video decode, encode and filtering on Intel's Gen graphics hardware platforms.")
                #t))))))
     (native-inputs
      `(("dash" ,dash)
-       ("gtk-doc" ,gtk-doc)
+       ("gtk-doc" ,gtk-doc/stable)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("glew" ,glew)

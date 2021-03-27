@@ -965,7 +965,7 @@ Unicode Charts.  It was developed for use with DejaVu Fonts project.")
     (arguments
      `(#:configure-flags (list "--disable-static")))
     (native-inputs
-     `(("gtk-doc" ,gtk-doc)
+     `(("gtk-doc" ,gtk-doc/stable)
        ("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)))
     (inputs

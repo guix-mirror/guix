@@ -170,7 +170,7 @@
        ("gobject-introspection" ,gobject-introspection)
        ("gtk+-2:bin" ,gtk+-2 "bin")
        ("gtk+:bin" ,gtk+ "bin")
-       ("gtk-doc" ,gtk-doc)
+       ("gtk-doc" ,gtk-doc/stable)
        ("intltool" ,intltool)
        ("libtool" ,libtool)
        ("perl" ,perl)

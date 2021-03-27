@@ -1165,7 +1165,7 @@ other API remains the same.")
      `(("bison" ,bison)
        ("flex" ,flex)
        ("glib:bin" ,glib "bin") ;; For glib-mkenums
-       ("gtk-doc" ,gtk-doc)
+       ("gtk-doc" ,gtk-doc/stable)
        ("pkg-config" ,pkg-config)
        ("vala" ,vala)))
     (home-page "https://gitlab.gnome.org/GNOME/template-glib")

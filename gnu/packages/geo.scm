@@ -151,7 +151,7 @@
        ("automake" ,automake)
        ("docbook-xml" ,docbook-xml-4.3)
        ("gobject-introspection" ,gobject-introspection)
-       ("gtk-doc" ,gtk-doc)
+       ("gtk-doc" ,gtk-doc/stable)
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)
@@ -1138,7 +1138,7 @@ OpenStreetMap data files.")
     (build-system gnu-build-system)
     (native-inputs
      `(("gnome-common" ,gnome-common)
-       ("gtk-doc" ,gtk-doc)
+       ("gtk-doc" ,gtk-doc/stable)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("cairo" ,cairo)

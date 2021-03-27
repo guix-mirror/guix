@@ -2732,7 +2732,7 @@ provides a simple way to achieve this.")
     (native-inputs
      `(("vala" ,vala)
        ("gobject-introspection" ,gobject-introspection)
-       ("gtk-doc" ,gtk-doc)
+       ("gtk-doc" ,gtk-doc/stable)
        ("pkg-config" ,pkg-config)
 
        ;; For tests.

@@ -984,7 +984,7 @@ Debian or a derivative using @command{debootstrap}.")
     (native-inputs
      `(("glib" ,glib "bin")  ; glib-mkenums, etc.
        ("gobject-introspection" ,gobject-introspection)
-       ("gtk-doc" ,gtk-doc)
+       ("gtk-doc" ,gtk-doc/stable)
        ("vala" ,vala)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)

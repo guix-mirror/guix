@@ -99,7 +99,7 @@
      `(#:glib-or-gtk? #t))
     (native-inputs
      `(("gobject-introspection" ,gobject-introspection)
-       ("gtk-doc" ,gtk-doc)
+       ("gtk-doc" ,gtk-doc/stable)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("appstream-glib" ,appstream-glib)
