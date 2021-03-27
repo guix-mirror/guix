@@ -4104,14 +4104,14 @@ tcpdump and snoop.")
 (define-public pam-mount
   (package
     (name "pam-mount")
-    (version "2.17")
+    (version "2.18")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/pam-mount/pam_mount/"
                            "pam_mount-" version ".tar.xz"))
        (sha256
-        (base32 "1q2n6a2ah6nghdn8i6ad2wj247njwb5nx48cggxknaa6lqxylidy"))))
+        (base32 "0832nh2qf9pisgwnbgx6hkylx5d7i416l19y3ly4ifv7k1p7mxqa"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)
@@ -4123,7 +4123,7 @@ tcpdump and snoop.")
        ("linux-pam" ,linux-pam)
        ("lvm2" ,lvm2)
        ("openssl" ,openssl)
-       ("pcre" ,pcre)
+       ("pcre2" ,pcre2)
        ("libmount" ,util-linux "lib")
        ("util-linux" ,util-linux)))
     (arguments
