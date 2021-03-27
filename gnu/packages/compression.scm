@@ -1423,6 +1423,19 @@ or junctions, and always follows hard links.")
                (("error configured .*dir ")
                 "true "))
              #t))
+         (add-after 'unpack 'patch-command-file-names
+           ;; Don't require hard requirements to be in $PATH.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (our (lambda (name) (string-append out "/bin/" name))))
+               (substitute* "programs/zstdgrep"
+                 (("(:-)(grep)" _ prefix command)
+                  (string-append prefix (which command)))
+                 (("(:-)(zstdcat)" _ prefix command)
+                  (string-append prefix (our command))))
+               (substitute* "programs/zstdless"
+                 (("zstdcat" command)
+                  (our command))))))
          (delete 'configure)            ;no configure script
          (add-after 'install 'adjust-library-locations
            (lambda* (#:key outputs #:allow-other-keys)
