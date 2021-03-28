@@ -250,7 +250,7 @@ returning."
              (#f
               (close-port p)
               (connect #f                         ; try again
-                       (drop requests (+ 1 processed))
+                       (drop requests processed)
                        result)))))))))
 
 
