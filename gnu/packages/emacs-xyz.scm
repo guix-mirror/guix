@@ -85,7 +85,7 @@
 ;;; Copyright © 2020 Adam Kandur <rndd@tuta.io>
 ;;; Copyright © 2020 Tim Howes <timhowes@lavabit.com>
 ;;; Copyright © 2020 Noah Landis <noahlandis@posteo.net>
-;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
+;;; Copyright © 2020, 2021 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2020 André A. Gomes <andremegafone@gmail.com>
 ;;; Copyright © 2020 Jonathan Rostran <rostranjj@gmail.com>
 ;;; Copyright © 2020, 2021 Noah Evans <noah@nevans.me>
@@ -9209,6 +9209,30 @@ the regular flat list, where there is no hierarchy and tag names are
 duplicated a lot.  Org-mode makes the book keeping of tags and feeds
 much easier.")
       (license license:gpl3+))))
+
+(define-public emacs-elfeed-protocol
+  (package
+    (name "emacs-elfeed-protocol")
+    (version "0.8.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/fasheng/elfeed-protocol")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "07r1qlldgd0kfikd0y737y5n42ab3nkw2s5jx7frimj41yandbdp"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-elfeed" ,emacs-elfeed)))
+    (home-page "https://github.com/fasheng/elfeed-protocol")
+    (synopsis "Fever/NewsBlur/ownCloud/tt-RSS protocols for Elfeed")
+    (description
+     "Elfeed-protocol provides extra protocols to make self-hosting RSS
+readers like Fever, NewsBlur, ownCloud News and Tiny TIny RSS work
+with Elfeed.")
+    (license license:gpl3+)))
 
 (define-public emacs-elfeed-score
   (package
