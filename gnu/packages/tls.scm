@@ -251,7 +251,7 @@ living in the same process.")
     (description
      "GnuTLS is a secure communications library implementing the SSL, TLS
 and DTLS protocols.  It is provided in the form of a C library to support the
-protocols, as well as to parse and write X.5009, PKCS 12, OpenPGP and other
+protocols, as well as to parse and write X.509, PKCS #12, OpenPGP and other
 required structures.")
     (license license:lgpl2.1+)
     (properties '((ftp-server . "ftp.gnutls.org")
