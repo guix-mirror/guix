@@ -742,29 +742,39 @@ development.")
 (define-public spatialite-gui
   (package
     (name "spatialite-gui")
-    (version "1.7.1")
+    (version "2.1.0-beta1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://www.gaia-gis.it/gaia-sins/spatialite_gui-"
-                           version ".tar.gz"))
+       (uri (string-append
+             "https://www.gaia-gis.it/gaia-sins/spatialite-gui-sources/"
+             "spatialite_gui-" version ".tar.gz"))
        (sha256
-        (base32
-         "1r05dz9pyc8vsd2wbqxcsracpfbaamz470rcyp2myfpqwznv376b"))))
+        (base32 "0cyv4cycl073p9lnnnglcb72qn71g8h9g5zn4gzw7swcy5nxjj5s"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("freexl" ,freexl)
+     `(("curl" ,curl)
+       ("freexl" ,freexl)
        ("geos" ,geos)
-       ("libgaiagraphics" ,libgaiagraphics)
+       ("giflib" ,giflib)
        ("libjpeg-turbo" ,libjpeg-turbo)
+       ("librasterlite2" ,librasterlite2)
+       ("librttopo" ,librttopo)
        ("libspatialite" ,libspatialite)
+       ("libwebp" ,libwebp)
+       ("libxlsxwriter" ,libxlsxwriter)
        ("libxml2" ,libxml2)
-       ("proj.4" ,proj.4)
+       ("lz4" ,lz4)
+       ("minizip" ,minizip)
+       ("openjpeg" ,openjpeg)
+       ("postgresql" ,postgresql)
+       ("proj" ,proj)
        ("sqlite" ,sqlite)
-       ("wxwidgets" ,wxwidgets-2)
-       ("zlib" ,zlib)))
+       ("virtualpg" ,virtualpg)
+       ("wxwidgets" ,wxwidgets)
+       ("zstd" ,zstd "lib")))
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (add-after 'unpack 'fix-gui
