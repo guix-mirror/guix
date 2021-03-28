@@ -16,6 +16,7 @@
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2020 André Batista <nandre@riseup.net>
 ;;; Copyright © 2020 Helio Machado <0x2b3bfa0+guix@googlemail.com>
+;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -68,6 +69,7 @@
             imlib2
             ipa
             knuth
+            lal1.3
             lgpl2.0 lgpl2.0+ lgpl2.1 lgpl2.1+ lgpl3 lgpl3+ llgpl
             lppl lppl1.0+ lppl1.1+ lppl1.2 lppl1.2+
             lppl1.3 lppl1.3+
@@ -410,6 +412,11 @@ at URI, which may be a file:// URI pointing the package's tree."
   (license "Donald Knuth's license for TeX"
            "http://www.ctan.org/license/knuth"
            "Modification are only permitted under a different name."))
+
+(define lal1.3
+  (license "Free Art License 1.3"
+           "http://artlibre.org/licence/lal/en/"
+           "https://www.gnu.org/licenses/license-list#FreeArt"))
 
 (define lgpl2.0
   (license "LGPL 2.0"

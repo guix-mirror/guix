@@ -169,6 +169,7 @@ of the string VERSION is replaced by the symbol 'version."
     ("Imlib2"                      'license:imlib2)
     ("IPA"                         'license:ipa)
     ("IPL-1.0"                     'license:ibmpl1.0)
+    ("LAL-1.3"                     'license:lal1.3)
     ("LGPL-2.0"                    'license:lgpl2.0)
     ("LGPL-2.0+"                   'license:lgpl2.0+)
     ("LGPL-2.1"                    'license:lgpl2.1)
