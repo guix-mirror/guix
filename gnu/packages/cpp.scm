@@ -63,6 +63,7 @@
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages logging)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
@@ -1153,3 +1154,60 @@ options that your program supports, their types, default values, and
 documentation.")
     (home-page "https://codesynthesis.com/projects/cli/")
     (license license:expat)))
+
+(define-public xsd
+  (package
+    (name "xsd")
+    (version "4.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.codesynthesis.com/download/"
+                           "xsd/" (version-major+minor version)
+                           "/xsd-" version ".tar.bz2"))
+       (sha256
+        (base32 "1hi9ppxd34np8ydv1h0vgc2qpdmgcd1cdzgk30aidv670xjg91fx"))))
+    (build-system gnu-build-system)
+    (outputs '("out" "doc"))            ;3.8 MiB of doc and examples
+    (arguments
+     `(#:test-target "test"
+       #:make-flags (list (string-append "--include-dir="
+                                         (assoc-ref %build-inputs "build")
+                                         "/include/")
+                          (string-append "install_prefix="
+                                         (assoc-ref %outputs "out")))
+       #:phases (modify-phases %standard-phases
+                  (add-after 'install 'move-doc
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out"))
+                            (doc (assoc-ref outputs "doc")))
+                        (mkdir-p (string-append doc "/share/doc"))
+                        (rename-file (string-append out "/share/doc/xsd")
+                                     (string-append doc "/share/doc/xsd-"
+                                                    ,version)))))
+                  (delete 'configure))))
+    (native-inputs
+     `(("build" ,build)
+       ("cli" ,cli)))
+    (inputs
+     `(("libcutl" ,libcutl)
+       ("libnsl" ,libnsl)
+       ("libxsd-frontend" ,libxsd-frontend)))
+    (propagated-inputs
+     ;; The code XSD generates requires the following library at run time;
+     ;; propagate it for convenience.
+     `(("xerces-c" ,xerces-c)))
+    (synopsis "XML Data Binding for C++")
+    (description "CodeSynthesis XSD (also known as libxsd or xsdcxx) is an XML
+Schema to C++ data binding compiler.  Provided with an XML instance
+specification (XML Schema), it generates C++ classes that represent the given
+vocabulary as well as XML parsing and serialization code.  The data stored in
+XML can then be accessed using types and functions that semantically
+correspond to an application domain rather than dealing with the intricacies
+of reading and writing XML.")
+    (home-page "https://codesynthesis.com/projects/xsd/")
+    ;; Exceptions are made to allow using the generated source files as well
+    ;; as the libxsd library in free software projects whose license is
+    ;; incompatible with the GPL v2.  Refer to the file named FLOSSE for the
+    ;; details.
+    (license license:gpl2+)))
