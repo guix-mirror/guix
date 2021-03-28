@@ -51,8 +51,13 @@
              (sha256
               (base32
                "1yypywkh8vphcy4qqpf51kxpb0a3r7rjqk3fc61rpn70hiq092j7"))
-             (patches (search-patches "gd-fix-tests-on-i686.patch"
-                                      "gd-brect-bounds.patch"))))
+             (patches
+              (search-patches "gd-fix-tests-on-i686.patch"
+                              "gd-brect-bounds.patch"
+                              ;; Drop when
+                              ;; https://github.com/libgd/libgd/issues/691
+                              ;; is solved.
+                              "gd-Revert-fix-303-gdlib.pc-use-Requires-instead-of-Libs.patch"))))
     (build-system gnu-build-system)
     (arguments
       ;; As recommended by github.com/libgd/libgd/issues/278 to fix rounding
