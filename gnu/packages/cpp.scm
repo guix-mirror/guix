@@ -1105,3 +1105,51 @@ XML Schema definition language.  It includes a parser, semantic graph types
 and a traversal mechanism.")
     (home-page "https://www.codesynthesis.com/projects/libxsd-frontend/")
     (license license:gpl2+)))
+
+(define-public cli
+  (package
+    (name "cli")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.codesynthesis.com/download/"
+                           "cli/" (version-major+minor version)
+                           "/cli-" version ".tar.bz2"))
+       (sha256
+        (base32 "0bg0nsai2q4h3mldpnj0jz4iy4svs0bcfvmq0v0c9cdyknny606g"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:make-flags (list (string-append "--include-dir="
+                                         (assoc-ref %build-inputs "build")
+                                         "/include")
+                          (string-append "install_prefix="
+                                         (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           (lambda _
+             (substitute* (find-files "." "\\.make$")
+               (("build-0\\.3")
+                (string-append (assoc-ref %build-inputs "build")
+                               "/include/build-0.3")))
+             ;; Add the namespace prefix, to avoid errors such as "error:
+             ;; ‘iterate_and_dispatch’ was not declared in this scope".
+             (substitute* (find-files "." "\\.?xx$")
+               (("add \\(typeid \\(type\\), \\*this\\);" all)
+                (string-append "traverser_map<B>::" all))
+               (("iterate_and_dispatch \\(s\\.names_begin.*;" all)
+                (string-append "edge_dispatcher::" all)))))
+         (delete 'configure))))
+    (native-inputs
+     `(("build" ,build)))
+    (inputs
+     `(("libcutl" ,libcutl)))
+    (synopsis "C++ Command Line Interface (CLI) definition language")
+    (description "@code{cli} is a domain-specific language (DSL) for defining
+command line interfaces of C++ programs.  It allows you to describe the
+options that your program supports, their types, default values, and
+documentation.")
+    (home-page "https://codesynthesis.com/projects/cli/")
+    (license license:expat)))
