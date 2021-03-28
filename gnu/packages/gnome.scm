@@ -4715,12 +4715,16 @@ library.")
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("libproxy" ,libproxy)
        ("openssl" ,openssl)))
-    (home-page "https://www.gnome.org")
-    (synopsis "Network-related GIO modules")
+    (home-page "https://wiki.gnome.org/Projects/GLib")
+    (synopsis "Network extensions for GLib")
     (description
-     "This package contains various network related extensions for the GIO
-library.")
-    (license license:lgpl2.0+)))
+     "Glib-networking contains the implementations of certain GLib networking
+features that cannot be implemented directly in GLib itself because of their
+dependencies.  Currently it contains GnuTLS and OpenSSL-based implementations of
+GTlsBackend, a libproxy-based implementation of GProxyResolver,
+GLibproxyResolver, and a GNOME GProxyResolver that uses the proxy information
+from the GSettings schemas in gsettings-desktop-schemas.")
+    (license license:lgpl2.1+)))
 
 (define-public rest
   (package
