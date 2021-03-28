@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
@@ -842,7 +842,7 @@ through its msgpack-rpc API.")
 (define-public vim-asyncrun
   (package
     (name "vim-asyncrun")
-    (version "2.7.5")
+    (version "2.8.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -851,7 +851,7 @@ through its msgpack-rpc API.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "02fiqf4rcrxbcgvj02mpd78wkxsrnbi54aciwh9fv5mnz5ka249m"))))
+                "0mxsmjv497h6w8dxw0zvqginlx0yvrvrx4z3jhq2x3y2dfvpcm41"))))
     (build-system copy-build-system)
     (arguments
      '(#:install-plan
