@@ -91,6 +91,7 @@
   #:use-module (gnu packages networking)
   #:use-module (gnu packages noweb)
   #:use-module (gnu packages nss)
+  #:use-module (gnu packages package-management)
   #:use-module (gnu packages password-utils)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -1744,6 +1745,35 @@ The library is shipped with documentation in Info format and usage examples.")
 
 (define-public guile3.0-ics
   (deprecated-package "guile3.0-ics" guile-ics))
+
+(define-public guile-imanifest
+  (let ((commit "ccd5a2111b008d778106f5595a3a585954d95d0")
+        (revision "0"))
+    (package
+      (name "guile-imanifest")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://git.sr.ht/~brown121407/guile-imanifest")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0i5qllcrhdjhspyj7j9h4dc9y37d3cfbpackmybm3030qgfxqirf"))))
+      (build-system guile-build-system)
+      (native-inputs
+       `(("guile" ,guile-3.0)))
+      (propagated-inputs
+       `(("guile-readline" ,guile-readline)
+         ("guile-colorized" ,guile-colorized)
+         ("guix" ,guix)))
+      (home-page "https://sr.ht/~brown121407/guile-imanifest")
+      (synopsis "Interactive Guix manifests")
+      (description "This package provides functions to generate Guix manifests
+interactively.  It works by scanning an alist of package categories, to ask the
+user which package sets would they like to install from it.")
+      (license license:gpl3+))))
 
 (define-public guile-wisp
   (package
