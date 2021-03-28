@@ -29,6 +29,8 @@
 ;;; Copyright © 2021 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
+;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -77,6 +79,7 @@
   #:use-module (guix build-system meson)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
+  #:use-module (guix utils)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config))
 
@@ -214,6 +217,49 @@ hierarchical form with variable field lengths.")
      "Libxml2 is the XML C parser and toolkit developed for the Gnome
 project (but it is usable outside of the Gnome platform).")
     (license license:x11)))
+
+(define-public libxlsxwriter
+  (package
+    (name "libxlsxwriter")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+         (url "https://github.com/jmcnamara/libxlsxwriter")
+         (commit (string-append "RELEASE_" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+          "070pfqggia71z4ichr5yrwfndfz903z941ns72vy0lvb1mpp7g05"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Remove bundled minizip source
+        '(begin
+           (delete-file-recursively "third_party/minizip")
+           #t))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             "USE_STANDARD_TMPFILE=1"
+             "USE_SYSTEM_MINIZIP=1")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))         ; no configure script
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (inputs
+     `(("minizip" ,minizip)))
+    (home-page "https://github.com/jmcnamara/libxlsxwriter")
+    (synopsis "C library for creating Excel XLSX files")
+    (description
+     "Libxlsxwriter is a C library that can be used to write text, numbers,
+formulas and hyperlinks to multiple worksheets in an Excel 2007+ XLSX file.")
+    (license (list license:bsd-2
+                   license:public-domain)))) ; third_party/md5
 
 ;; This is the latest stable release.
 (define-public libxmlplusplus
