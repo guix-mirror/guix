@@ -4705,14 +4705,16 @@ library.")
                 "0vlzn8jf4sg90cm8xxr28yf66nhf8qy9dl2m4b8w1cr6mn2mw8qb"))))
     (build-system meson-build-system)
     (arguments
-     `(#:configure-flags '("-Dlibproxy_support=false")))
+     `(#:configure-flags '("-Dopenssl=auto")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
     (inputs
      `(("glib" ,glib)
        ("gnutls" ,gnutls)
-       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("libproxy" ,libproxy)
+       ("openssl" ,openssl)))
     (home-page "https://www.gnome.org")
     (synopsis "Network-related GIO modules")
     (description
