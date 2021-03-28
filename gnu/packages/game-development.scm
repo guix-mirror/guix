@@ -20,6 +20,7 @@
 ;;; Copyright © 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Timotej Lazar <timotej.lazar@araneo.si>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
+;;; Copyright © 2021 Alexandru-Sergiu Marton <brown121407@posteo.ro>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -55,6 +56,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages fltk)
@@ -1760,6 +1762,44 @@ features design tools such as a visual editor, can import 3D models and
 provide high-quality 3D rendering, it contains an animation editor, and can be
 scripted in a Python-like language.")
     (license license:expat)))
+
+(define-public entt
+  (package
+    (name "entt")
+    (version "3.7.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/skypjack/entt")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0nzvnhiw3r6nkmxp749zwxc8kzja09nijyxibdbri3g2i7pysf58"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags (list "-DENTT_BUILD_TESTING=ON"
+                               "-DENTT_FIND_GTEST_PACKAGE=ON"
+                               "-DENTT_BUILD_DOCS=ON")
+       ;; Only tests are compiled, and they need assertions to work correctly.
+       #:build-type "Debug"))
+    (native-inputs
+     `(;; for testing
+       ("googletest" ,googletest)
+       ;; for documentation
+       ("doxygen" ,doxygen)
+       ("graphviz" ,graphviz)))
+    (synopsis "Entity component system")
+    (description "EnTT is a header-only library, containing (among other things)
+@itemize
+@item an entity component system based on sparse sets,
+@item a configuration system using the monostate pattern,
+@item a static reflection system,
+@item and a cooperative scheduler.
+@end itemize")
+    (home-page "https://github.com/skypjack/entt")
+    (license (list license:expat        ; code
+                   license:cc-by4.0)))) ; documentation
 
 (define-public eureka
   (package
