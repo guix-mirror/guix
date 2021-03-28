@@ -117,6 +117,16 @@ formats.")
                (base32
                 "08v9d8jn26bva2a8x4hghq3mgl8zcid393iqkidwyhc05xrxjmg4"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--with-tests")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (with-directory-excursion "tests"
+                 (invoke "./test_basic.sh")))
+             #t)))))
     (inputs `(("libpng" ,libpng)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (synopsis "Encode data into a QR Code symbol")
