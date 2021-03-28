@@ -373,6 +373,63 @@ writing GeoTIFF information tags.")
                    (license:non-copyleft "file://LICENSE"
                                          "See LICENSE in the distribution.")))))
 
+(define-public librasterlite2
+  (package
+    (name "librasterlite2")
+    (version "1.1.0-beta1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://www.gaia-gis.it/gaia-sins/librasterlite2-sources/"
+             "librasterlite2-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1x24gqp4hsq97c31ncwxblab0x0863q8v1z42jil7lvsq3glqa7p"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("cairo" ,cairo)
+       ("curl" ,curl)
+       ("freetype" ,freetype)
+       ("freexl" ,freexl)
+       ("giflib" ,giflib)
+       ("libgeotiff" ,libgeotiff)
+       ("libjpeg-turbo" ,libjpeg-turbo)
+       ("libpng" ,libpng)
+       ("librttopo" ,librttopo)
+       ("libspatialite" ,libspatialite)
+       ("libtiff" ,libtiff)
+       ("libwebp" ,libwebp)
+       ("libxml2" ,libxml2)
+       ("lz4" ,lz4)
+       ("minizip" ,minizip)
+       ("openjpeg" ,openjpeg)
+       ("proj" ,proj)
+       ("sqlite" ,sqlite)
+       ("zstd" ,zstd "lib")))
+    (synopsis "Library to work with huge raster coverages using a SpatiaLite")
+    (description
+     "librasterlite2 is a library that stores and retrieves huge raster
+coverages using a SpatiaLite DBMS.")
+    (home-page "https://www.gaia-gis.it/fossil/librasterlite2/index")
+    ;; For the genuine librasterlite-sources holds:
+    ;; Any of the licenses MPL1.1, GPL2+ or LGPL2.1+  may be picked.
+    ;; Files under src/control_points are from GRASS
+    ;; and are licensed under GPL2+ only.
+    ;; src/md5.[ch]: Placed into the public domain by Alexander Peslyak.
+    ;; The tools supporting the library (both rl2tool and wmslite) are
+    ;; licensed under the GPL v3 (or any subsequent version) terms.
+    ;; The test/*.svg files are placed in the public domain, except for
+    ;; test/Car_Yellow.svg which is licensed under the Free Art License 1.3.
+    (license (list license:gpl2+
+                   license:gpl3+
+                   license:lal1.3
+                   license:lgpl2.1+
+                   license:mpl1.1
+                   license:public-domain))))
+
 (define-public librttopo
   (package
     (name "librttopo")
