@@ -190,7 +190,7 @@ output in multiple windows in a terminal.")
 (define-public spdlog
   (package
     (name "spdlog")
-    (version "1.8.3")
+    (version "1.8.5")
     (source
      (origin
        (method git-fetch)
@@ -199,7 +199,7 @@ output in multiple windows in a terminal.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1qcabdc3yrm30vapn7g7lf3bwjissl15y66mpmx2w0gjjc6aqdd1"))))
+        (base32 "179krvg5sad6dviqpcjwg6czzknnilqszrg1d0fgp12h6sy66vqg"))))
     (build-system cmake-build-system)
     ;; TODO run benchmark. Currently not possible, as adding
     ;; (gnu packages benchmark) forms a dependency cycle
