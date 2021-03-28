@@ -80,7 +80,7 @@
 (define-public autofs
   (package
     (name "autofs")
-    (version "5.1.6")
+    (version "5.1.7")
     (source
      (origin
        (method url-fetch)
@@ -88,7 +88,7 @@
                            "v" (version-major version) "/"
                            "autofs-" version ".tar.xz"))
        (sha256
-        (base32 "1vya21mb4izj3khcr3flibv7xc15vvx2v0rjfk5yd31qnzcy7pnx"))))
+        (base32 "1myfz6a3wj2c4j9h5g44zj796fdi82jhp1s92w2hg6xp2632csx3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -112,6 +112,12 @@
                (("^searchpath=\".*\"")
                 "searchpath=\"$PATH\""))
              #t))
+         (add-before 'configure 'fix-rpath
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "Makefile.rules"
+                 (("^AUTOFS_LIB_LINK.*=" match)
+                  (string-append match " -Wl,-rpath=" out "/lib"))))))
          (add-before 'install 'omit-obsolete-lookup_nis.so-link
            ;; Building lookup_yp.so depends on $(YPCLNT) but this doesn't,
            ;; leading to a make error.  Since it's broken, comment it out.
