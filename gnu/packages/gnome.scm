@@ -4694,7 +4694,7 @@ library.")
 (define-public glib-networking
   (package
     (name "glib-networking")
-    (version "2.62.2")
+    (version "2.68.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/glib-networking/"
@@ -4702,7 +4702,7 @@ library.")
                                   "glib-networking-" version ".tar.xz"))
               (sha256
                (base32
-                "0i2mw75297ql72h47vyvff3hqa0kcmqybblj52fqrarb0kfbhi06"))))
+                "0vlzn8jf4sg90cm8xxr28yf66nhf8qy9dl2m4b8w1cr6mn2mw8qb"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags '("-Dlibproxy_support=false")))
