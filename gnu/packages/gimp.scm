@@ -36,6 +36,7 @@
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages build-tools)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages glib)
@@ -166,7 +167,7 @@ of a larger interface.")
 (define-public babl
   (package
     (name "babl")
-    (version "0.1.78")
+    (version "0.1.86")
     (source (origin
               (method url-fetch)
               (uri (list (string-append "https://download.gimp.org/pub/babl/"
@@ -180,10 +181,11 @@ of a larger interface.")
                                         "/babl-" version ".tar.xz")))
               (sha256
                (base32
-                "0fjjfb0pbgimlqi7rk8cqz8pq595b7gw8nrpkxfmixdz6cv4km8p"))))
+                "1w68h81kqkqnziixrx21qs0gfv2z79651h19sxn226xdb58mjgqb"))))
     (build-system meson-build-system)
     (arguments
-     `(#:configure-flags
+     `(#:meson ,meson-0.55
+       #:configure-flags
        (list "-Denable-gir=false")))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
