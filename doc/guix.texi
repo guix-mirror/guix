@@ -15190,6 +15190,12 @@ in automatically without prompting for their login name or password.
 @item @code{hardware-acceleration?} (default: #f)
 Whether to use hardware acceleration.
 
+@item @code{font-engine} (default: @code{"pango"})
+Font engine used in Kmscon.
+
+@item @code{font-size} (default: @code{12})
+Font size used in Kmscon.
+
 @item @code{kmscon} (default: @var{kmscon})
 The Kmscon package to use.
 
