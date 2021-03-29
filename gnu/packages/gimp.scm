@@ -230,16 +230,6 @@ provided, as well as a framework to add new color models and data types.")
        (list "-Dintrospection=false")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'refer-to-dot
-           ;; Without ‘dot’ in $PATH, (at least) the GIMP would fail to start
-           ;; with an extremely obtuse ‘GEGL operation missing!’ error.
-           (lambda _
-             (substitute* "gegl/gegl-dot.c"
-               (("\"dot ")
-                (format #f "\"~a " (which "dot"))))
-             (substitute* "operations/common/introspect.c"
-               (("g_find_program_in_path \\(\"dot\"\\)")
-                (format #f "g_strdup (\"~a\")" (which "dot"))))))
          (add-after 'unpack 'extend-test-time-outs
            (lambda _
              ;; Multiply some poorly-chosen time-outs for busy build machines.
@@ -260,7 +250,6 @@ provided, as well as a framework to add new color models and data types.")
        ("json-glib" ,json-glib)))
     (inputs
      `(("cairo" ,cairo)
-       ("graphviz" ,graphviz)
        ("pango" ,pango)
        ("libpng" ,libpng)
        ("libjpeg" ,libjpeg-turbo)))
@@ -281,14 +270,25 @@ buffers.")
   (package
     (name "gimp")
     (version "2.10.22")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://download.gimp.org/pub/gimp/v"
-                                  (version-major+minor version)
-                                  "/gimp-" version ".tar.bz2"))
-              (sha256
-               (base32
-                "1fqqyshakvdarf1jipk2n33ibqr23ni22z3d8srq13bpydblpf1d"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://download.gimp.org/pub/gimp/v"
+                           (version-major+minor version)
+                           "/gimp-" version ".tar.bz2"))
+       (sha256
+        (base32 "1fqqyshakvdarf1jipk2n33ibqr23ni22z3d8srq13bpydblpf1d"))
+       (patches
+        (list (origin
+                ;; This upstream patch fixes a mandatory dependency on ‘dot’:
+                ;; <https://github.com/aferrero2707/gimp-appimage/issues/61>.
+                (method url-fetch)
+                (uri (string-append "https://github.com/GNOME/gimp/commit/"
+                                    "2cae9b9acf9da98c4c9990819ffbd5aabe23017e"
+                                    ".patch"))
+                (sha256
+                 (base32
+                  "1xd5lmy1j9p6p1ka7dyj1b9jmfcra1r62rma07vzw2v4vig0khc0")))))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                            ; 9 MiB of gtk-doc HTML
@@ -556,6 +556,29 @@ healing the border, increasing the resolution while adding detail, and
 transferring the style of an image.")
     (license license:gpl3+)))
 
+(define gegl-for-glimpse
+  ;; Remove this when GIMP commit 2cae9b9acf9da98c4c9990819ffbd5aabe23017e
+  ;; makes it into Glimpse.
+  (package
+    (inherit gegl)
+    (arguments
+     (substitute-keyword-arguments (package-arguments gegl)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'refer-to-dot
+             ;; XXX Without ‘dot’ in $PATH, Glimpse would fail to start with an
+             ;; extremely obtuse ‘GEGL operation missing!’ error.
+             (lambda _
+               (substitute* "gegl/gegl-dot.c"
+                 (("\"dot ")
+                  (format #f "\"~a " (which "dot"))))
+               (substitute* "operations/common/introspect.c"
+                 (("g_find_program_in_path \\(\"dot\"\\)")
+                  (format #f "g_strdup (\"~a\")" (which "dot"))))))))))
+    (inputs
+     `(,@(package-inputs gegl)
+       ("graphviz" ,graphviz)))))
+
 (define-public glimpse
   (package
     (name "glimpse")
@@ -635,7 +658,7 @@ transferring the style of an image.")
        ("poppler-data" ,poppler-data)
        ("python" ,python-2)             ; optional, Python support
        ("python2-pygtk" ,python2-pygtk) ; optional, Python support
-       ("gegl" ,gegl)))
+       ("gegl" ,gegl-for-glimpse)))     ; XXX see comment in gegl-for-glimpse
     (home-page "https://glimpse-editor.github.io/")
     (synopsis "Glimpse Image Editor")
     (description "The Glimpse Image Editor is an application for image
