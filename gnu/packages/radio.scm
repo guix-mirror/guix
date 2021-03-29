@@ -844,7 +844,7 @@ users.")
   (package
     (inherit hamlib)
     (name "wsjtx-hamlib")
-    (version "2.3.0")
+    (version "2.3.1")
     (source
      (origin
        (method git-fetch)
@@ -853,7 +853,7 @@ users.")
              (commit (string-append "wsjtx-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0ampwqs7p0g8pdnwpdrbvwyqag065n96amgb3v4z332nw0nxvm10"))))
+        (base32 "0m4yzjcqs7a1w4lghyyckpkiy96jxdjijddxarqr3a37cl2rz23j"))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -865,15 +865,7 @@ users.")
                            "--with-lua-binding"
                            "--with-python-binding"
                            "--with-tcl-binding"
-                           "--with-xml-support")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-tests
-           (lambda _
-             (substitute* "tests/testloc.c"
-               (("dmmm2dec\\(deg, mmm, nesw\\);")
-                "dmmm2dec(deg, mmm, 0, nesw);"))
-             #t)))))))
+                           "--with-xml-support")))))
 
 (define-public wsjtx
   (package
