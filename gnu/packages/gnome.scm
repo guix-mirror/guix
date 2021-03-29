@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2014, 2016, 2020 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2014, 2015 Federico Beffa <beffa@fbengineering.ch>
@@ -8472,9 +8472,10 @@ properties, screen resolution, and other GNOME parameters.")
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
-       #:disallowed-references ((,glib "bin")
-                                ,inkscape ,libxslt
-                                ,ruby-sass)
+       #:disallowed-references ,(list (gexp-input glib "bin")
+                                      (gexp-input inkscape)
+                                      (gexp-input libxslt)
+                                      (gexp-input ruby-sass))
        #:configure-flags
        (list "-Dsystemd=false"
              ;; Otherwise, the RUNPATH will lack the final path component.
