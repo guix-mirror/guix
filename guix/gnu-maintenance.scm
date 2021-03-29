@@ -242,7 +242,7 @@ network to check in GNU's database."
   ;; The "-src" pattern is for "TeXmacs-1.0.7.9-src.tar.gz".
   ;; The "-gnu[0-9]" pattern is for "icecat-38.4.0-gnu1.tar.bz2".
   ;; Accept underscores as in "PKG_1.2.tar.gz" for some non-GNU packages.
-  (make-regexp "^([^.]+)[-_]([0-9]|[^-])+(-(src|gnu[0-9]))?\\.(tar\\.|zip$)"))
+  (make-regexp "^([^.]+)[-_]([0-9]|[^-])+(-(src|[sS]ource|gnu[0-9]))?\\.(tar\\.|zip$)"))
 
 (define %alpha-tarball-rx
   (make-regexp "^.*-.*[0-9](-|~)?(alpha|beta|rc|RC|cvs|svn|git)-?[0-9\\.]*\\.tar\\."))
