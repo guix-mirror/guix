@@ -3270,7 +3270,15 @@ stretching and pitch scaling of audio.  This package contains the library.")
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
-       (list "--disable-static")))
+       (list "--disable-static"
+             "--enable-tests")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "./cli/wvtest" "--default" "--short"))
+             #t)))))
     (home-page "https://www.wavpack.com/")
     (synopsis "Hybrid lossless audio codec")
     (description
