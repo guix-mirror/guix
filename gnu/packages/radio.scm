@@ -870,7 +870,7 @@ users.")
 (define-public wsjtx
   (package
     (name "wsjtx")
-    (version "2.3.0")
+    (version "2.3.1")
     (source
      (origin
        (method git-fetch)
@@ -879,7 +879,7 @@ users.")
              (commit (string-append "wsjtx-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1qf8r88ssara3pddvd3jpv5phzxwnanvdj00dxgmzq0c2jqcy2a8"))))
+        (base32 "0mdr4l7zii08615yn7z91spnvnqm5i9390bra9lz3aqyxrsiim91"))))
     (build-system qt-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)
