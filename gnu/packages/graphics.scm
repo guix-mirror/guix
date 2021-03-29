@@ -25,6 +25,7 @@
 ;;; Copyright © 2020 Gabriel Arazas <foo.dogsquared@gmail.com>
 ;;; Copyright © 2021 Antoine Côté <antoine.cote@posteo.net>
 ;;; Copyright © 2021 Andy Tai <atai@atai.org>
+;;; Copyright © 2021 Ekaitz Zarraga <ekaitz@elenq.tech>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -462,6 +463,42 @@ with the @command{autotrace} utility or as a C library, @code{libautotrace}.")
 Embree is meant to increase performance of photo-realistic rendering
 applications.")
     (license license:asl2.0)))
+
+(define-public openvdb
+  (package
+    (name "openvdb")
+    (version "8.0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/AcademySoftwareFoundation/openvdb/")
+                    (commit (string-append "v" version))
+                    (recursive? #t)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0qzx6l5c183k6j9zki31gg9aixf5s1j46wdi7wr1h3bz7k53syg9"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "-DCMAKE_EXE_LINKER_FLAGS=-Wl,-rpath="
+                            (assoc-ref %outputs "out") "/lib"))))
+    (inputs
+     `(("boost" ,boost)
+       ("c-blosc" ,c-blosc)
+       ("ilmbase" ,ilmbase)
+       ("tbb" ,tbb)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://www.openvdb.org/")
+    (synopsis "Sparse volume data structure and tools")
+    (description "OpenVDB is a C++ library comprising a hierarchical data
+structure and a large suite of tools for the efficient storage and
+manipulation of sparse volumetric data discretized on three-dimensional grids.
+It was developed by DreamWorks Animation for use in volumetric applications
+typically encountered in feature film production.")
+    (license license:mpl2.0)))
 
 (define-public blender
   (package
