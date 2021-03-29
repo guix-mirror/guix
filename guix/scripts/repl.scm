@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2020 Simon Tournier <zimon.toutoune@gmail.com>
+;;; Copyright © 2020, 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2020 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -143,14 +143,13 @@ call THUNK."
   (synopsis "read-eval-print loop (REPL) for interactive programming")
 
   (define opts
-    (args-fold* args %options
-                (lambda (opt name arg result)
-                  (leave (G_ "~A: unrecognized option~%") name))
+    (parse-command-line args %options (list %default-options)
+                #:build-options? #f
+                #:argument-handler
                 (lambda (arg result)
                   (append `((script . ,arg)
                             (ignore-dot-guile? . #t))
-                          result))
-                %default-options))
+                          result))))
 
   (define user-config
     (and=> (getenv "HOME")
