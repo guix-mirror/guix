@@ -1688,14 +1688,14 @@ connection to each user.")
 (define-public python-tornado-6
   (package
     (name "python-tornado")
-    (version "6.0.4")
+    (version "6.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "tornado" version))
        (sha256
         (base32
-         "1p5n7sw4580pkybywg93p8ddqdj9lhhy72rzswfa801vlidx9qhg"))))
+         "14cpzdv6p6qvk6vn02krdh5rcfdi174ifdbr5s6lcnymgcfyiiik"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
