@@ -7810,3 +7810,29 @@ support packages.  Others are cmbright, hvmath and kerkis.")
     (license (list license:silofl1.1 ;for Arev Sans
                    license:lppl1.3a  ;for TeX support files
                    license:gpl2))))  ;for ams-mdbch.sty
+
+(define-public texlive-mathdesign
+  (package
+    (inherit (simple-texlive-package
+              "texlive-mathdesign"
+              (list "/doc/fonts/mathdesign/"
+                    "/dvips/mathdesign/"
+                    "/fonts/enc/dvips/mathdesign/"
+                    "/fonts/map/dvips/mathdesign/"
+                    "/fonts/tfm/public/mathdesign/"
+                    "/fonts/type1/public/mathdesign/"
+                    "/fonts/vf/public/mathdesign/"
+                    "/tex/latex/mathdesign/")
+              (base32
+               "0jcby2sd0l3ank2drxc0qcf5d1cwa8idzh4g91h4nxk8zrzxj8nr")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/mathdesign")
+    (synopsis "Mathematical fonts to fit with particular text fonts")
+    (description "The Math Design project offers free mathematical
+fonts that match with existing text fonts.  To date, three free font
+families are available: Adobe Utopia, URW Garamond and Bitstream
+Charter.  Mathdesign covers the whole LaTeX glyph set including AMS
+symbols.  Both roman and bold versions of these symbols can be used.
+Moreover, there is a choice between three greek fonts (two of them
+created by the Greek Font Society).")
+    (license license:gpl2+)))
