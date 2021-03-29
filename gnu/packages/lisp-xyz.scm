@@ -2094,7 +2094,7 @@ also be supported.")
 (define-public sbcl-ironclad
   (package
     (name "sbcl-ironclad")
-    (version "0.54")
+    (version "0.55")
     (source
      (origin
        (method git-fetch)
@@ -2102,7 +2102,7 @@ also be supported.")
              (url "https://github.com/sharplispers/ironclad/")
              (commit (string-append "v" version))))
        (sha256
-        (base32 "07g0wpvfqq2yk23prs890d4qvbnr3xd6w8ssd88g89xdg483wpvk"))
+        (base32 "1w4slnc4143w1gcff1wxsivzb8kcji0bpd7y9rld3sabay0qprwl"))
        (file-name (git-file-name name version))))
     (build-system asdf-build-system/sbcl)
     (native-inputs
