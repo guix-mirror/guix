@@ -8135,16 +8135,16 @@ designed for the more complex job, such as @code{Params::Validate}")
 (define-public perl-params-util
   (package
     (name "perl-params-util")
-    (version "1.07")
+    (version "1.102")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "mirror://cpan/authors/id/A/AD/ADAMK/Params-Util-"
+             "mirror://cpan/authors/id/R/RE/REHSACK/Params-Util-"
              version ".tar.gz"))
        (sha256
         (base32
-         "0v67sx93yhn7xa0nh9mnbf8mixf54czk6wzrjsp6dzzr5hzyrw9h"))))
+         "00kl154zisf2zsl8yl6xa6yw54nhd9cja5d5fyigs96vhasb36s9"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Params-Util")
     (synopsis "Simple, compact and correct param-checking functions")
