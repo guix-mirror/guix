@@ -7794,14 +7794,14 @@ the GObject Introspection bindings to libnotify for non-GTK applications.")
 (define-public python-beautifulsoup4
   (package
     (name "python-beautifulsoup4")
-    (version "4.9.1")
+    (version "4.9.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "beautifulsoup4" version))
        (sha256
         (base32
-         "1mvzlw3pzbhsvl3z8784s5h7iiflm2hggiy1fxyrrxwnbc8lvk3k"))))
+         "09gbd49mwz86k572r1231x2rdp82p42zlnw0bz9b9mfi58r9wwl4"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
