@@ -2,6 +2,7 @@
 ;;; Copyright © 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Ekaitz Zarraga <ekaitz@elenq.tech>
+;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -286,12 +287,9 @@ text.  The hyperlink links to a web view of COMMIT, when available."
 
 (define-command (guix-describe . args)
   (synopsis "describe the channel revisions currently used")
-  (let* ((opts    (args-fold* args %options
-                              (lambda (opt name arg result)
-                                (leave (G_ "~A: unrecognized option~%")
-                                       name))
-                              cons
-                              %default-options))
+  (let* ((opts    (parse-command-line args %options (list %default-options)
+                              #:build-options? #f
+                              #:argument-handler cons))
          (format  (assq-ref opts 'format))
          (profile (or (assq-ref opts 'profile) (current-profile))))
     (with-error-handling
