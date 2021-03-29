@@ -7380,14 +7380,14 @@ installing @code{kernelspec}s for use with Jupyter frontends.")
 (define-public python-backcall
   (package
     (name "python-backcall")
-    (version "0.1.0")
+    (version "0.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "backcall" version))
        (sha256
         (base32
-         "1r01dqch3f8fdj3n6fviw8hxqrs6w5v0qw4izmvqzry1w9dxiv1q"))))
+         "07jy4562lvnhkk6kfr3cphmizy88anlhmbwb8kdzlz2ypqkvzgaw"))))
     (build-system python-build-system)
     (home-page "https://github.com/takluyver/backcall/")
     (synopsis "Specifications for callback functions passed in to an API")
