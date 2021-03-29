@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@gnu.org>
-;;; Copyright © 2020 Simon Tournier <zimon.toutoune@gmail.com>
+;;; Copyright © 2020, 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -84,11 +84,9 @@ line."
 
   (define (parse-arguments)
     ;; Return the list of package names.
-    (args-fold* args %options
-                (lambda (opt name arg result)
-                  (leave (G_ "~A: unrecognized option~%") name))
-                cons
-                '()))
+    (parse-command-line args %options (list (list))
+                #:build-options? #f
+                #:argument-handler cons))
 
   (with-error-handling
     (let* ((specs     (reverse (parse-arguments)))
