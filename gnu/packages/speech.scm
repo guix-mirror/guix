@@ -2,7 +2,7 @@
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
@@ -55,15 +55,16 @@
 (define-public flite
   (package
     (name "flite")
-    (version "2.1")
+    (version "2.2")
     (source
      (origin
-       (method url-fetch)
-       (uri
-        (string-append "http://www.festvox.org/" name "/packed/" name
-                       "-" version "/" name "-" version "-release.tar.bz2"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/festvox/flite")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "119b7l7pjb1l5raqq24p8rmhdqni49vjh2mgdryrfr575rm3yg67"))))
+        (base32 "1n0p81jzndzc1rzgm66kw9ls189ricy5v1ps11y0p2fk1p56kbjf"))))
     (build-system gnu-build-system)
     (arguments
      ;; XXX:
