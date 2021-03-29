@@ -1096,14 +1096,14 @@ classes in its inheritance tree in one single call.")
 (define-public perl-test-output
   (package
     (name "perl-test-output")
-    (version "1.031")
+    (version "1.033")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/B/BD/BDFOY/"
                                   "Test-Output-" version ".tar.gz"))
               (sha256
                (base32
-                "193y1xjvgc1p9pdgdwps2127knvpz9wc1xh6gmr74y3ihmqz7f7q"))))
+                "0vjm62c7g3xxs3h4lba55dnpr4pg71yrhkdg5b9glxdh80klia7n"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-capture-tiny" ,perl-capture-tiny)
