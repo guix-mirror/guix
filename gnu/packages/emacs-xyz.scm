@@ -12126,8 +12126,18 @@ highlights quasi-quoted expressions.")
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
-           (lambda _
+           (lambda* (#:key inputs outputs #:allow-other-keys)
              (setenv "SHELL" (which "sh"))
+             ;; Ensure the tclespeak.so binary is found in the correct location
+             ;; by adding the path to the Tclx library to the Tcl $auto_path
+             ;; variable.
+             (with-fluids ((%default-port-encoding "ISO-8859-1"))
+               (substitute* "servers/espeak"
+                 (("package require Tclx")
+                  (string-append "set auto_path [linsert $auto_path 0 "
+                                 (assoc-ref inputs "tclx")
+                                 "/lib]\n"
+                                 "package require Tclx"))))
              ;; Configure Emacspeak according to etc/install.org.
              (invoke "make" "config")))
          (add-after 'build 'build-espeak
@@ -12155,18 +12165,7 @@ highlights quasi-quoted expressions.")
                ;; Install the convenient startup script.
                (mkdir-p bin)
                (copy-file "run" (string-append bin "/emacspeak")))
-             #t))
-         (add-after 'install 'wrap-program
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (emacspeak (string-append out "/bin/emacspeak"))
-                    (espeak (string-append (assoc-ref inputs "espeak")
-                                           "/bin/espeak")))
-               ;; The environment variable DTK_PROGRAM tells emacspeak what
-               ;; program to use for speech.
-               (wrap-program emacspeak
-                 `("DTK_PROGRAM" ":" prefix (,espeak)))
-               #t))))
+             #t)))
        #:tests? #f))                    ; no check target
     (inputs
      `(("emacs" ,emacs)
