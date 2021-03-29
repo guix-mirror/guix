@@ -38,6 +38,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages build-tools)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
@@ -229,6 +230,16 @@ provided, as well as a framework to add new color models and data types.")
        (list "-Dintrospection=false")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'refer-to-dot
+           ;; Without ‘dot’ in $PATH, (at least) the GIMP would fail to start
+           ;; with an extremely obtuse ‘GEGL operation missing!’ error.
+           (lambda _
+             (substitute* "gegl/gegl-dot.c"
+               (("\"dot ")
+                (format #f "\"~a " (which "dot"))))
+             (substitute* "operations/common/introspect.c"
+               (("g_find_program_in_path \\(\"dot\"\\)")
+                (format #f "g_strdup (\"~a\")" (which "dot"))))))
          (add-after 'unpack 'extend-test-time-outs
            (lambda _
              ;; Multiply some poorly-chosen time-outs for busy build machines.
@@ -249,6 +260,7 @@ provided, as well as a framework to add new color models and data types.")
        ("json-glib" ,json-glib)))
     (inputs
      `(("cairo" ,cairo)
+       ("graphviz" ,graphviz)
        ("pango" ,pango)
        ("libpng" ,libpng)
        ("libjpeg" ,libjpeg-turbo)))
