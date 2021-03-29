@@ -839,10 +839,14 @@ and video calls or instant messaging capabilities to an application.")
                ;; Remove unnecessary Qt configuration file.
                (delete-file (string-append out "/bin/qt.conf"))
                ;; Not using the FHS exposes an issue where the client
-               ;; refers to its own "share" directory, which lacks files
+               ;; refers to its own directories, which lacks files
                ;; installed by the dependencies.
+               (symlink (string-append liblinphone "/lib")
+                        (string-append out "/lib"))
                (symlink (string-append liblinphone "/share/sounds")
                         (string-append out "/share/sounds"))
+               (symlink (string-append liblinphone "/share/linphone/rootca.pem")
+                        (string-append out "/share/linphone/rootca.pem"))
                (mkdir-p (dirname grammar-dest))
                (symlink (string-append liblinphone "/share/belr/grammars")
                         grammar-dest)))))))
