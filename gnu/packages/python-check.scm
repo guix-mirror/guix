@@ -627,14 +627,14 @@ friendly library for concurrency and async I/O in Python.")
 (define-public python-pytest-flake8
   (package
     (name "python-pytest-flake8")
-    (version "1.0.6")
+    (version "1.0.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytest-flake8" version))
        (sha256
         (base32
-         "09vhn7r77s1yiqnlwfvh5585f904zpyd6620a90dpccfr1cbp0hv"))))
+         "0syx68xk5ss3hgp3nr2y122w0fgkzr5936ghsqrkymh3m5hrf9gh"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-flake8" ,python-flake8)))
