@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -66,11 +67,9 @@ This is an alias for 'guix package -s'.\n"))
           result))
 
   (define opts
-    (args-fold* args %options
-                (lambda (opt name arg . rest)
-                  (leave (G_ "~A: unrecognized option~%") name))
-                handle-argument
-                '()))
+    (parse-command-line args %options (list (list))
+                        #:build-options? #f
+                        #:argument-handler handle-argument))
 
   (unless (assoc-ref opts 'query)
     (leave (G_ "missing arguments: no regular expressions to search for~%")))
