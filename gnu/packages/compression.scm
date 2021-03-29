@@ -32,6 +32,7 @@
 ;;; Copyright © 2020 Léo Le Bouter <lle-bout@zaclys.net>
 ;;; Copyright © 2021 Antoine Côté <antoine.cote@posteo.net>
 ;;; Copyright © 2021 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1416,6 +1417,12 @@ or junctions, and always follows hard links.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-tests-32bit
+           ;; Remove when https://github.com/facebook/zstd/issues/2528 is fixed.
+           (lambda _
+             (substitute* "tests/playTests.sh"
+               (("roundTripTest -g8M \"19 -T0 --long\"")
+                "roundTripTest -g8M \"22 -T0 --long\""))))
          (add-after 'unpack 'remove-bogus-check
            (lambda _
              ;; lib/Makefile falsely claims that no .pc file can be created.
