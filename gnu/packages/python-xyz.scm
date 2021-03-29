@@ -8611,13 +8611,13 @@ complexity of Python source code.")
 (define-public python-flake8
   (package
     (name "python-flake8")
-    (version "3.8.4")
+    (version "3.9.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "flake8" version))
               (sha256
                (base32
-                "0fvcrsbyzjpcli8ldbpsdbpmf238nkvwc1dy4hy82lf63rvfinma"))))
+                "1w65iyjnrwipv4dbcqxh725ri7mdx01d6pjyggd97c0j5cvkx1vq"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
