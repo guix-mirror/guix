@@ -619,6 +619,32 @@ as provided by UCSC (hg38, Dec. 2013) and stored in Biostrings objects.")
      "This package exposes an annotation database generated from Ensembl.")
     (license license:artistic2.0)))
 
+(define-public r-txdb-dmelanogaster-ucsc-dm6-ensgene
+  (package
+    (name "r-txdb-dmelanogaster-ucsc-dm6-ensgene")
+    (version "3.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "TxDb.Dmelanogaster.UCSC.dm6.ensGene"
+                              version 'annotation))
+       (sha256
+        (base32
+         "0yij7zyqkmmr13389rs2gfa5anvvw648nnl1kjbsgvyxkggif8q4"))))
+    (properties
+     `((upstream-name . "TxDb.Dmelanogaster.UCSC.dm6.ensGene")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-genomicfeatures" ,r-genomicfeatures)))
+    (home-page
+     "https://bioconductor.org/packages/TxDb.Dmelanogaster.UCSC.dm6.ensGene")
+    (synopsis "Annotation package for TxDb object(s)")
+    (description
+     "This package exposes an annotation databases generated from UCSC by
+exposing these as TxDb objects.")
+    (license license:artistic2.0)))
+
 (define-public r-txdb-hsapiens-ucsc-hg19-knowngene
   (package
     (name "r-txdb-hsapiens-ucsc-hg19-knowngene")
