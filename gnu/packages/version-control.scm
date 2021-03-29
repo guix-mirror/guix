@@ -2330,7 +2330,7 @@ Mercurial, Bazaar, Darcs, CVS, Fossil, and Veracity.")
 (define-public grokmirror
   (package
     (name "grokmirror")
-    (version "2.0.5")
+    (version "2.0.8")
     (source
      (origin
        (method git-fetch)
@@ -2340,7 +2340,7 @@ Mercurial, Bazaar, Darcs, CVS, Fossil, and Veracity.")
              (commit (string-append "v" version))))
        (file-name (string-append name "-" version "-checkout"))
        (sha256
-        (base32 "006ar3kc6fw1sq300ar9np4a63qzzsdama6cv30wh65v5mqw1mnv"))))
+        (base32 "0zfiwjw02df3mzpawp9jx61iwp0nhcf6y03cs8022l0hkvc7blbr"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f                      ; no test suite
