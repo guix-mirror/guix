@@ -2249,7 +2249,7 @@ Wayland.")
 (define-public autocutsel
   (package
     (name "autocutsel")
-    (version "0.10.0")
+    (version "0.10.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/sigmike/autocutsel"
@@ -2257,7 +2257,7 @@ Wayland.")
                                   "autocutsel-" version ".tar.gz"))
               (sha256
                (base32
-                "0gsys2dzh4az51ndcsabhlbbrjn2nm75lnjr45kg6r8sm8q66dx2"))))
+                "05zb85imp42birvrc320q20r98qddc5vxx169dnl753l5za0czpi"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f)) ; no "check" target
