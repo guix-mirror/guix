@@ -134,6 +134,22 @@ resolution, asynchronous file system operations, and threading primitives.")
     ;; details.  Documentation is CC-BY 4.0 as of 1.12.0; see 'LICENSE-docs'.
     (license (list expat cc-by4.0))))
 
+(define-public libuv-for-node
+  ;; When upgrading Node, also upgrade this. Get the version from
+  ;; https://github.com/nodejs/node/blob/master/deps/uv/include/uv/version.h
+  (package
+    (inherit libuv)
+    (name "libuv")
+    (version "1.40.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://dist.libuv.org/dist/v" version
+                                  "/libuv-v" version ".tar.gz"))
+              (sha256
+               (base32
+                "1551k3ab27vbg9517l9b4iqbramwxdkwgpf53knas05cbfwhvab1"))))
+    (properties '((hidden? . #t)))))
+
 (define-public perl-anyevent
   (package
     (name "perl-anyevent")
