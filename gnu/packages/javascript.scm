@@ -597,14 +597,14 @@ roots, or wrestle with obscure build systems.")
 (define-public quickjs
   (package
     (name "quickjs")
-    (version "2020-11-08")
+    (version "2021-03-27")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://bellard.org/quickjs/quickjs-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0yqqcjxi3cqagw184mqrxpvqg486x7c233r3cp9mxachngd6779f"))))
+                "06pywwpmfwjz225h59wf90q96a2fd66qfcw5xa6m6y9k9k7glnx4"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
