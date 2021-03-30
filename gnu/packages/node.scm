@@ -333,6 +333,71 @@ utility modelled after Node.js core's debugging technique.  It works in
 Node.js and web browsers.")
     (license license:expat)))
 
+(define-public node-llparse-builder-bootstrap
+  (package
+    (name "node-llparse-builder")
+    (version "1.5.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/indutny/llparse-builder.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0r82iiwqsb73k2fxw7842rjjiixllxpyc6yl9cq4ma6ybkf6xmzm"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; FIXME: Unneeded runtime dependency.
+           ;; https://github.com/indutny/llparse-builder/pull/2
+           (substitute* "package.json"
+             (("\"@types/debug.*,") ""))
+           ;; Fix imports for esbuild.
+           ;; https://github.com/evanw/esbuild/issues/477
+           (substitute* '("src/node/invoke.ts"
+                          "src/node/base.ts"
+                          "src/node/consume.ts"
+                          "src/node/match.ts"
+                          "src/node/error.ts"
+                          "src/node/pause.ts"
+                          "src/edge.ts"
+                          "src/utils.ts"
+                          "src/loop-checker/index.ts"
+                          "src/loop-checker/lattice.ts"
+                          "src/code/field.ts"
+                          "src/span-allocator.ts")
+             (("\\* as assert") "assert")
+             (("\\* as debugAPI") "debugAPI"))
+           #t))))
+    (build-system node-build-system)
+    (arguments
+     `(#:node ,node-bootstrap
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((esbuild (string-append (assoc-ref inputs "esbuild")
+                                           "/bin/esbuild")))
+               (invoke esbuild
+                       "--platform=node"
+                       "--outfile=lib/builder.js"
+                       "--bundle"
+                       "src/builder.ts")))))))
+    (inputs
+     `(("node-binary-search" ,node-binary-search-bootstrap)
+       ("node-debug" ,node-debug-bootstrap)))
+    (native-inputs
+     `(("esbuild" ,esbuild)))
+    (home-page "https://github.com/indutny/llparse-builder#readme")
+    (properties '((hidden? . #t)))
+    (synopsis "Graph builder for consumption by llparse")
+    (description "This package builds graphs for consumption by llparse.")
+    (license license:expat)))
+
 (define-public libnode
   (package/inherit node
     (name "libnode")
