@@ -211,6 +211,11 @@ devices.")
     (properties '((max-silent-time . 7200)     ;2h, needed on ARM
                   (timeout . 21600)))))        ;6h
 
+;; This should be the latest version of node that still builds without
+;; depending on llhttp.
+(define-public node-bootstrap
+  (hidden-package node))
+
 (define-public libnode
   (package/inherit node
     (name "libnode")
