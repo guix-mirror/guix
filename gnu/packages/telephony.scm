@@ -17,7 +17,7 @@
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
-;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2021 LibreMiami <packaging-guix@libremiami.org>
 ;;;
@@ -723,7 +723,7 @@ your calls and messages.")
 (define-public pjproject
   (package
     (name "pjproject")
-    (version "2.10")
+    (version "2.11")
     (source
      (origin
        (method git-fetch)
@@ -733,12 +733,8 @@ your calls and messages.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1aklicpgwc88578k03i5d5cm5h8mfm7hmx8vfprchbmaa2p8f4z0"))
+         "1kn9g1x1vmh4130ghph8mldz5m89gsjs4vpdzlzm98m3808gk5an"))
        (modules '((guix build utils)))
-       ;; The patches upstream status can be tracked at:
-       ;; https://github.com/pjsip/pjproject/pull/2501.
-       (patches (search-patches "pjproject-correct-the-cflags-field.patch"
-                                "pjproject-fix-pkg-config-ldflags.patch"))
        (snippet
         '(begin
            ;; Remove bundled libraries.
@@ -746,8 +742,7 @@ your calls and messages.")
            (substitute* "aconfigure.ac"
              (("third_party/build/os-auto.mak") ""))
            (substitute* "Makefile"
-             (("third_party/build") ""))
-           #t))))
+             (("third_party/build") ""))))))
     (build-system gnu-build-system)
     (outputs '("out" "debug" "static"))
     (arguments
@@ -785,8 +780,7 @@ your calls and messages.")
            ;; Make all the files writable to prevent the following error:
            ;; "autom4te: cannot open aconfigure: Permission denied".
            (lambda _
-             (for-each make-file-writable (find-files "."))
-             #t))
+             (for-each make-file-writable (find-files "."))))
          (add-before 'build 'build-dep
            (lambda _ (invoke "make" "dep")))
          ;; The check phases is moved after the install phase so to
@@ -800,8 +794,7 @@ your calls and messages.")
                (with-directory-excursion out
                  (for-each (lambda (f)
                              (rename-file f (string-append s "/" (basename f))))
-                           (find-files "." "\\.a$")))
-               #t)))
+                           (find-files "." "\\.a$"))))))
          (add-after 'install 'check
            (assoc-ref %standard-phases 'check))
          (add-before 'patch-source-shebangs 'autoconf
@@ -844,8 +837,7 @@ your calls and messages.")
                ;; Disable the pjnath and pjsua tests, which require an actual
                ;; network and an actual sound card, respectively.
                (("pjnath-test pjmedia-test pjsip-test pjsua-test")
-                "pjmedia-test pjsip-test"))
-             #t)))))
+                "pjmedia-test pjsip-test")))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
