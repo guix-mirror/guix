@@ -1569,7 +1569,7 @@ modules for building a Wayland compositor.")
 (define-public waybar
   (package
     (name "waybar")
-    (version "0.9.4")
+    (version "0.9.5")
     (source
      (origin
        (method git-fetch)
@@ -1578,10 +1578,10 @@ modules for building a Wayland compositor.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "038vnma7y7z81caywp45yr364bc1aq8d01j5vycyiyfv33nm76fy"))))
+        (base32 "1kzrgqaclfk6gcwhknxn28xl74gm5swipgn8kk8avacb4nsw1l9q"))))
     (build-system meson-build-system)
     (inputs `(("date" ,date)
-              ("fmt" ,fmt-6)
+              ("fmt" ,fmt)
               ("gtk-layer-shell" ,gtk-layer-shell)
               ("gtkmm" ,gtkmm)
               ("jsoncpp" ,jsoncpp)
@@ -1590,7 +1590,7 @@ modules for building a Wayland compositor.")
               ("libmpdclent" ,libmpdclient)
               ("libnl" ,libnl)
               ("pulseaudio" ,pulseaudio)
-              ("spdlog" ,spdlog-1.7)
+              ("spdlog" ,spdlog)
               ("wayland" ,wayland)))
     (native-inputs
      `(("gcc" ,gcc-8)                   ; for #include <filesystem>
