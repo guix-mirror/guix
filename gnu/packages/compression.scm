@@ -7,7 +7,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2016–2021 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -1786,7 +1786,20 @@ timestamps in the file header with a fixed time (1 January 2008).
               (sha256
                (base32
                 "0i6bpa2b13z19alm6ig80364dnin1w28cvif18k6wkkb0w3dzp8y"))))
-    (arguments `())
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-compatibility-symlinks
+           (lambda* (#:key outputs #:allow-other-keys)
+             (with-directory-excursion
+               (string-append (assoc-ref outputs "out") "/lib")
+               (map (lambda (lib new-symlink)
+                      (symlink lib new-symlink))
+                    (list "libzzip.so.13" "libzzipfseeko.so.13"
+                          "libzzipmmapped.so.13" "libzzipwrap.so.13")
+                    (list "libzzip-0.so.13" "libzzipfseeko-0.so.13"
+                          "libzzipmmapped-0.so.13" "libzzipwrap-0.so.13")))
+             #t)))))
     (native-inputs
      `(("python" ,python)
        ,@(alist-delete "python"
