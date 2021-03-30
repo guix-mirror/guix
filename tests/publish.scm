@@ -452,8 +452,8 @@ References: ~%"
               (wait-for-file cached)
 
               ;; Both the narinfo and nar should be world-readable.
-              (= #o644 (stat:perms (lstat cached)))
-              (= #o644 (stat:perms (lstat nar)))
+              (= #o444 (logand #o444 (stat:perms (lstat cached))))
+              (= #o444 (logand #o444 (stat:perms (lstat nar))))
 
               (let* ((body         (http-get-port url))
                      (compressed   (http-get nar-url))
