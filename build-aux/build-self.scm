@@ -285,8 +285,7 @@ interface (FFI) of Guile.")
                                                     #:select? select?))
     (gexp->script "compute-guix-derivation"
                   #~(begin
-                      (use-modules (ice-9 match)
-                                   (ice-9 threads))
+                      (use-modules (ice-9 match))
 
                       (eval-when (expand load eval)
                         ;; (gnu packages …) modules are going to be looked up
@@ -320,21 +319,6 @@ interface (FFI) of Guile.")
                                    (guix derivations)
                                    (srfi srfi-1))
 
-                      (define (spin system)
-                        (define spin
-                          (circular-list "-" "\\" "|" "/" "-" "\\" "|" "/"))
-
-                        (format (current-error-port)
-                                "Computing Guix derivation for '~a'...  "
-                                system)
-                        (when (isatty? (current-error-port))
-                          (let loop ((spin spin))
-                            (display (string-append "\b" (car spin))
-                                     (current-error-port))
-                            (force-output (current-error-port))
-                            (sleep 1)
-                            (loop (cdr spin)))))
-
                       (match (command-line)
                         ((_ source system version protocol-version
                             build-output)
@@ -352,10 +336,6 @@ interface (FFI) of Guile.")
                                                              #:version proto)
                                            (open-connection)))
                                 (sock  (socket AF_UNIX SOCK_STREAM 0)))
-                           (call-with-new-thread
-                            (lambda ()
-                              (spin system)))
-
                            ;; Connect to BUILD-OUTPUT and send it the raw
                            ;; build output.
                            (connect sock AF_UNIX build-output)
@@ -378,18 +358,26 @@ interface (FFI) of Guile.")
                   #:module-path (list source))))
 
 (define (proxy input output)
-  "Dump the contents of INPUT to OUTPUT until EOF is reached on INPUT."
+  "Dump the contents of INPUT to OUTPUT until EOF is reached on INPUT.
+Display a spinner when nothing happens."
+  (define spin
+    (circular-list "-" "\\" "|" "/" "-" "\\" "|" "/"))
+
   (setvbuf input 'block 16384)
-  (let loop ()
-    (match (select (list input) '() '())
+  (let loop ((spin spin))
+    (match (select (list input) '() '() 1)
       ((() () ())
-       (loop))
+       (when (isatty? (current-error-port))
+         (display (string-append "\b" (car spin))
+                  (current-error-port))
+         (force-output (current-error-port)))
+       (loop (cdr spin)))
       (((_) () ())
        ;; Read from INPUT as much as can be read without blocking.
        (let ((bv (get-bytevector-some input)))
          (unless (eof-object? bv)
            (put-bytevector output bv)
-           (loop)))))))
+           (loop spin)))))))
 
 (define (call-with-clean-environment thunk)
   (let ((env (environ)))
@@ -472,6 +460,9 @@ files."
                                            (logior major minor))
                                           "none")
                                       node))))))
+        (format (current-error-port) "Computing Guix derivation for '~a'...  "
+                system)
+
         ;; Wait for a connection on SOCK and proxy build output so it can be
         ;; processed according to the settings currently in effect (build
         ;; traces, verbosity level, and so on).
