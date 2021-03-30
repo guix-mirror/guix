@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
+;;; Copyright © 2019 Timothy Sample <samplet@ngyro.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -17,7 +18,6 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix build-system node)
-  #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix derivations)
@@ -25,22 +25,15 @@
   #:use-module (guix build-system)
   #:use-module (guix build-system gnu)
   #:use-module (ice-9 match)
-  #:export (npm-meta-uri
-            %node-build-system-modules
+  #:export (%node-build-system-modules
             node-build
             node-build-system))
-
-(define (npm-meta-uri name)
-  "Return a URI string for the metadata of node module NAME found in the npm
-registry."
-  (string-append "https://registry.npmjs.org/" name))
 
 (define %node-build-system-modules
   ;; Build-side modules imported by default.
   `((guix build node-build-system)
     (guix build json)
-    (guix build union)
-    ,@%gnu-build-system-modules)) ;; TODO: Might be not needed
+    ,@%gnu-build-system-modules))
 
 (define (default-node)
   "Return the default Node package."
@@ -76,7 +69,7 @@ registry."
 
 (define* (node-build store name inputs
                      #:key
-                     (npm-flags ''())
+                     (test-target "test")
                      (tests? #t)
                      (phases '(@ (guix build node-build-system)
                                  %standard-phases))
@@ -86,8 +79,6 @@ registry."
                      (guile #f)
                      (imported-modules %node-build-system-modules)
                      (modules '((guix build node-build-system)
-				(guix build json)
-				(guix build union)
                                 (guix build utils))))
   "Build SOURCE using NODE and INPUTS."
   (define builder
@@ -97,12 +88,10 @@ registry."
                    #:source ,(match (assoc-ref inputs "source")
                                (((? derivation? source))
                                 (derivation->output-path source))
-                               ((source)
-                                source)
-                               (source
-                                source))
+                               ((source) source)
+                               (source source))
                    #:system ,system
-                   #:npm-flags ,npm-flags
+                   #:test-target ,test-target
                    #:tests? ,tests?
                    #:phases ,phases
                    #:outputs %outputs
@@ -129,5 +118,5 @@ registry."
 (define node-build-system
   (build-system
     (name 'node)
-    (description "The standard Node build system")
+    (description "The Node build system")
     (lower lower)))
