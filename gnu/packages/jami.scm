@@ -26,20 +26,16 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
-  #:use-module (gnu packages boost)
-  #:use-module (gnu packages check)
-  #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages linux)
-  #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages networking)
-  #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
@@ -50,6 +46,7 @@
   #:use-module (gnu packages telephony)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages upnp)
+  #:use-module (gnu packages version-control)
   #:use-module (gnu packages video)
   #:use-module (gnu packages webkit)
   #:use-module (gnu packages xiph)
@@ -60,8 +57,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix packages)
-  #:use-module (guix utils)
-  #:use-module (srfi srfi-1))
+  #:use-module (guix utils))
 
 (define %jami-version "20210326.1.cfba013")
 
@@ -428,71 +424,50 @@ of Jami."
     (build-system gnu-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)
-       ("boost" ,boost)
+       ("asio" ,asio)
        ("dbus-c++" ,dbus-c++)
        ("eudev" ,eudev)
        ("ffmpeg" ,ffmpeg-jami)
-       ("flac" ,flac)
-       ("gmp" ,gmp)
-       ("gsm" ,gsm)
        ("jack" ,jack-1)
        ("jsoncpp" ,jsoncpp)
        ("libarchive" ,libarchive)
+       ("libgit2" ,libgit2)
        ("libnatpmp" ,libnatpmp)
-       ("libogg" ,libogg)
-       ("libva" ,libva)
+       ("libsecp256k1" ,libsecp256k1)
+       ("libupnp" ,libupnp)
        ("opendht" ,opendht)
-       ("opus" ,opus)
-       ("pcre" ,pcre)
+       ("openssl" ,openssl)
+       ("pjproject" ,pjproject-jami)
        ("pulseaudio" ,pulseaudio)
-       ("libsamplerate" ,libsamplerate)
-       ("libsndfile" ,libsndfile)
        ("speex" ,speex)
        ("speexdsp" ,speexdsp)
-       ("libupnp" ,libupnp)
-       ("libvorbis" ,libvorbis)
-       ("libx264" ,libx264)
-       ("libvdpau" ,libvdpau)
-       ("yaml-cpp" ,yaml-cpp)
-       ("zlib" ,zlib)
-       ("openssl" ,openssl)
-       ("libsecp256k1" ,libsecp256k1)
-       ("python" ,python)
-       ("python-wrapper" ,python-wrapper)
-       ("restinio" ,restinio)
-       ("libx11" ,libx11)
-       ("asio" ,asio)
-       ;; TODO: Upstream seems to rely on a custom pjproject (a.k.a. pjsip) version.
-       ;; See https://git.jami.net/savoirfairelinux/ring-daemon/issues/24.
-       ("pjproject" ,pjproject-jami)))
+       ("webrtc-audio-processing" ,webrtc-audio-processing)
+       ("yaml-cpp" ,yaml-cpp)))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
+       ("gcc" ,gcc-8)                   ;charconv requires GCC 8.1+
        ("libtool" ,libtool)
+       ("perl" ,perl)                   ;to generate manpages with pod2man
        ("pkg-config" ,pkg-config)
-       ("which" ,which)
-       ("cppunit" ,cppunit)
-       ("perl" ,perl)))                 ; Needed for documentation.
+       ("which" ,which)))
     (arguments
      `(#:tests? #f         ; The tests fail to compile due to missing headers.
+       #:make-flags '("V=1")            ;build verbosely
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'change-directory
            (lambda _
-             (chdir "daemon")
-             #t))
+             (chdir "daemon")))
          (add-before 'build 'add-lib-dir
            (lambda _
-             (mkdir-p "src/lib")
-             #t)))))
-    (synopsis "Distributed multimedia communications platform")
-    (description "Jami (formerly GNU Ring) is a secure and distributed voice,
-video and chat communication platform that requires no centralized server and
-leaves the power of privacy in the hands of the user.  It supports the SIP and
-IAX protocols, as well as decentralized calling using P2P-DHT.
-
-This package provides a library and daemon implementing the Jami core
-functionality.")
+             (mkdir-p "src/lib"))))))
+    (synopsis "Jami core library and daemon")
+    (description "This package provides a library and daemon implementing the
+Jami core functionality.  Jami is a secure and distributed voice, video and
+chat communication platform that requires no centralized server and leaves the
+power of privacy in the hands of the user.  It supports the SIP and IAX
+protocols, as well as decentralized calling using P2P-DHT.")
     (home-page "https://jami.net/")
     (license license:gpl3+)))
 
