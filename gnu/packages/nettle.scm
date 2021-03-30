@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -71,7 +72,7 @@ cryptographic toolkits for object-oriented languages or in applications
 themselves.")
     (license gpl2+)))
 
-(define-public nettle
+(define-public nettle-3.5
   ;; This version is not API-compatible with version 2.  In particular, lsh
   ;; cannot use it yet.  So keep it separate.
   (package (inherit nettle-2)
@@ -89,3 +90,17 @@ themselves.")
         ;; Build "fat" binaries where the right implementation is chosen
         ;; at run time based on CPU features (starting from 3.1.)
         `(cons "--enable-fat" ,flags))))))
+
+(define-public nettle-3.7
+  (package (inherit nettle-3.5)
+    (version "3.7.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/nettle/nettle-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0qpi1qp3bcvqdsaxy2pzg530db95x8qjahkynxgwvr6dy5760ald"))))))
+
+;;; Upgrading Nettle on master would cause 10000+ packages to be rebuilt.
+(define-public nettle nettle-3.5)
