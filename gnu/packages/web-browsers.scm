@@ -17,6 +17,7 @@
 ;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@posteo.ro>
 ;;; Copyright © 2021 Cage <cage-dev@twistfold.it>
 ;;; Copyright © 2021 Benoit Joly <benoit@benoitj.ca>
+;;; Copyright © 2021 Alexander Krotov <krotov@iitp.ru>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -64,20 +65,24 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libidn)
+  #:use-module (gnu packages libunistring)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lisp)
   #:use-module (gnu packages lisp-xyz)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages man)
   #:use-module (gnu packages markup)
+  #:use-module (gnu packages mp3)
   #:use-module (gnu packages nano)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages sdl)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages webkit)
@@ -716,6 +721,39 @@ key-bindings and is fully configurable and extensible in Common Lisp.")
 
 (define-public sbcl-next
   (deprecated-package "sbcl-next" nyxt))
+
+(define-public lagrange
+  (package
+    (name "lagrange")
+    (version "1.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://git.skyjake.fi/skyjake/lagrange/releases/"
+                       "download/v" version "/lagrange-" version ".tar.gz"))
+       (sha256
+        (base32 "1i05irmsvgrskhia71nl7vc9rbwmh2ylpbrm4pis85lrs4p7m3r0"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #false))                ;no tests
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libunistring" ,libunistring)
+       ("mpg123" ,mpg123)
+       ("openssl" ,openssl)
+       ("pcre" ,pcre)
+       ("sdl2" ,sdl2)
+       ("zlib" ,zlib)))
+    (home-page "https://gmi.skyjake.fi/lagrange/")
+    (synopsis "Graphical Gemini client")
+    (description
+     "Lagrange is a desktop GUI client for browsing Geminispace.  It offers
+modern conveniences familiar from web browsers, such as smooth scrolling,
+inline image viewing, multiple tabs, visual themes, Unicode fonts, bookmarks,
+history, and page outlines.")
+    (license license:bsd-2)))
 
 (define-public gmni
   (let ((commit "d8f0870446c471a42612d6a8e853ad9b723a6d39")
