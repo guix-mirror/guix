@@ -254,14 +254,14 @@ directory comparison and more.")
     (properties '((upstream-name . "FileZilla")))))
 
 (define-public vsftpd
-  ;; Use a significantly patched CentOS variant supporting TLSv1.2, ‘email
-  ;; passwords’, and XXX davidl: anything else?
+  ;; Use a significantly patched CentOS variant with TLSv1.2 support and
+  ;; further bug and security fixes.
   (let ((upstream-version "3.0.3")
         (centos-version "8.3.2011")
         (revision "32.el8"))
     (package
       (name "vsftpd")
-      (version (string-append upstream-version "." revision))
+      (version (string-append upstream-version "-" revision))
       (source
        (origin
          (method url-fetch)
