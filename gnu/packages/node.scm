@@ -303,6 +303,36 @@ formats to milliseconds.")
     (description "This package is a binary search function for Node.js.")
     (license license:cc0)))
 
+(define-public node-debug-bootstrap
+  (package
+    (name "node-debug")
+    (version "4.3.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/visionmedia/debug.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "08g52r1d4yqcsfdfb7n5if33d4cghaq75gx5n9hj6m6fd8jfp2pi"))))
+    (build-system node-build-system)
+    (arguments
+     `(#:node ,node-bootstrap
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (inputs `(("node-ms" ,node-ms-bootstrap)))
+    (home-page "https://github.com/visionmedia/debug#readme")
+    (properties '((hidden? . #t)))
+    (synopsis "Small debugging utility")
+    (description "This package contains a tiny JavaScript debugging
+utility modelled after Node.js core's debugging technique.  It works in
+Node.js and web browsers.")
+    (license license:expat)))
+
 (define-public libnode
   (package/inherit node
     (name "libnode")
