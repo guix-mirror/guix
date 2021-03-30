@@ -2404,14 +2404,14 @@ read and write, and compatible with JSON.")
 (define-public hikari
   (package
     (name "hikari")
-    (version "2.2.2")
+    (version "2.2.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://hikari.acmelabs.space/releases/"
                            "hikari-" version ".tar.gz"))
        (sha256
-        (base32 "1qsd1qb4bn24jh5658gxmfg6hk9p7g235gsbvnjrbfdjqsv8r6yz"))))
+        (base32 "1d023cphzi15k434n60l1rp5awxmdijvsxfrm59fmsvd5rjxh9q7"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bmake" ,bmake)
