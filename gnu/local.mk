@@ -1824,6 +1824,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/yggdrasil-extra-config.patch	\
   %D%/packages/patches/ytnef-CVE-2021-3403.patch	\
   %D%/packages/patches/ytnef-CVE-2021-3404.patch	\
+  %D%/packages/patches/zstd-CVE-2021-24031_CVE-2021-24032.patch	\
   %D%/packages/patches/zziplib-CVE-2018-16548.patch
 
 MISC_DISTRO_FILES =				\

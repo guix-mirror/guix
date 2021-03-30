@@ -1409,7 +1409,7 @@ or junctions, and always follows hard links.")
                            "v" version "/zstd-" version ".tar.gz"))
        (sha256
         (base32 "05ckxap00qvc0j51d3ci38150cxsw82w7s9zgd5fgzspnzmp1vsr"))))
-    (replacement zstd-1.4.9)
+    (replacement zstd/fixed)
     (build-system gnu-build-system)
     (outputs '("out"                    ;1.2MiB executables and documentation
                "lib"                    ;1.2MiB shared library and headers
@@ -1469,21 +1469,16 @@ speed.")
                    license:public-domain ; zlibWrapper/examples/fitblk*
                    license:zlib))))      ; zlibWrapper/{gz*.c,gzguts.h}
 
-(define-public zstd-1.4.9
+(define zstd/fixed
   (package
     (inherit zstd)
-    (name "zstd")
-    (version "1.4.9")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/facebook/zstd/releases/download/"
-                           "v" version "/zstd-" version ".tar.gz"))
-       (sha256
-        (base32 "14yj7309gsvg39rki4xqnd6w5idmqi0655v1fc0mk1m2kvhp9b19"))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments zstd)
-       ((#:tests? _ #t) #f)))))
+       (inherit (package-source zstd))
+       (patches
+        (search-patches
+         ;; From Ubuntu focal-security
+         "zstd-CVE-2021-24031_CVE-2021-24032.patch"))))))
 
 (define-public pzstd
   (package/inherit zstd
