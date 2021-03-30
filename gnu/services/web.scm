@@ -841,7 +841,8 @@ of index files."
             (start #~(make-forkexec-constructor
                       '(#$(file-append package "/sbin/fcgiwrap")
                         "-s" #$socket)
-                      #:user #$user #:group #$group))
+                      #:user #$user #:group #$group
+                      #:log-file "/var/log/fcgiwrap.log"))
             (stop #~(make-kill-destructor)))))))
 
 (define fcgiwrap-activation
