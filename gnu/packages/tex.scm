@@ -7836,3 +7836,26 @@ symbols.  Both roman and bold versions of these symbols can be used.
 Moreover, there is a choice between three greek fonts (two of them
 created by the Greek Font Society).")
     (license license:gpl2+)))
+
+(define-public texlive-bera
+  (package
+    (inherit (simple-texlive-package
+              "texlive-bera"
+              (list "/doc/fonts/bera/"
+                    "/fonts/afm/public/bera/"
+                    "/fonts/map/dvips/bera/"
+                    "/fonts/tfm/public/bera/"
+                    "/fonts/type1/public/bera/"
+                    "/fonts/vf/public/bera/"
+                    "/tex/latex/bera/")
+              (base32
+               "1pkmhhr6ah44xhipjr7nianv03hr4w4bn45xcvp264yw6ymqzqwr")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/bera")
+    (synopsis "Bera fonts")
+    (description "The @code{bera} package contains the Bera Type 1
+fonts and files to use the fonts with LaTeX.  Bera is a set of three
+font families: Bera Serif (a slab-serif Roman), Bera Sans (a Frutiger
+descendant) and Bera Mono (monospaced/typewriter).  The Bera family is
+a repackaging, for use with TeX, of the Bitstream Vera family.")
+    (license license:silofl1.1)))
