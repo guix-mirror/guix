@@ -403,21 +403,22 @@ of Jami."
          `(modify-phases ,phases
             (add-after 'unpack 'make-git-checkout-writable
               (lambda _
-                (for-each make-file-writable (find-files "."))
-                #t))
+                (for-each make-file-writable (find-files "."))))
             (add-after 'unpack 'apply-patches
               (lambda* (#:key inputs #:allow-other-keys)
                 (let ((jami-apply-dependency-patches
                        ,jami-apply-dependency-patches))
                   ;; These patches come from:
                   ;; "ring-project/daemon/contrib/src/ffmpeg/rules.mak".
-                  (jami-apply-dependency-patches #:inputs inputs
-                                                 #:dep-name "ffmpeg"
-                                                 #:patches
-                                                 '("remove-mjpeg-log"
-                                                   "change-RTCP-ratio"
-                                                   "rtp_ext_abs_send_time"))
-                  #t))))))))))
+                  (jami-apply-dependency-patches
+                   #:inputs inputs
+                   #:dep-name "ffmpeg"
+                   #:patches
+                   '("remove-mjpeg-log"
+                     "change-RTCP-ratio"
+                     "rtp_ext_abs_send_time"
+                     "libopusdec-enable-FEC"
+                     "libopusenc-enable-FEC"))))))))))))
 
 (define-public libring
   (package
