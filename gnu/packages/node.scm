@@ -41,6 +41,7 @@
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages node-xyz)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -215,6 +216,35 @@ devices.")
 ;; depending on llhttp.
 (define-public node-bootstrap
   (hidden-package node))
+
+;; Duplicate of node-semver
+(define-public node-semver-bootstrap
+  (package
+    (name "node-semver")
+    (version "7.2.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/npm/node-semver")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "06biknqb05r9xsmcflm3ygh50pjvdk84x6r79w43kmck4fn3qn5p"))))
+    (build-system node-build-system)
+    (arguments
+     `(#:node ,node-bootstrap
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (home-page "https://github.com/npm/node-semver")
+    (properties '((hidden? . #t)))
+    (synopsis "Parses semantic versions strings")
+    (description
+     "@code{node-semver} is a JavaScript implementation of the
+@uref{https://semver.org/, SemVer.org} specification.")
+    (license license:isc)))
 
 (define-public libnode
   (package/inherit node
