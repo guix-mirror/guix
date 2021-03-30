@@ -3428,40 +3428,39 @@ and targeted primarily for asynchronous processing of HTTP-requests.")
 (define-public opendht
   (package
     (name "opendht")
-    (version "2.1.4")
+    (version "2.2.0rc4")                ;jami requires >= 2.2.0
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/savoirfairelinux/opendht")
                     (commit version)))
               (file-name (git-file-name name version))
-              (patches (search-patches "opendht-fix-jami.patch"))
               (sha256
                (base32
-                "1ax26ri1ifb6s8ppd28jmanka9yf8mw3np65q2h4djhhik0phhal"))))
+                "1wc0f6cnvnlmhxnx64nxqgsx93k4g7ljdaqjl40ml74jg3nqrzcl"))))
     ;; Since 2.0, the gnu-build-system does not seem to work anymore, upstream bug?
     (build-system cmake-build-system)
     (inputs
      `(("argon2" ,argon2)
-       ("nettle" ,nettle)
+       ("nettle" ,nettle-3.7)
        ("readline" ,readline)
        ("jsoncpp" ,jsoncpp)
        ("openssl" ,openssl)             ;required for the DHT proxy
        ("fmt" ,fmt)))
     (propagated-inputs
      `(("gnutls" ,gnutls)               ;included in opendht/crypto.h
-       ("msgpack" ,msgpack)))           ;included in several installed headers
+       ("msgpack" ,msgpack)             ;included in several installed headers
+       ("restinio" ,restinio)))         ;included in opendht/http.h
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("pkg-config" ,pkg-config)
-       ("restinio" ,restinio)           ;headers only library
        ("libtool" ,libtool)
        ("cppunit" ,cppunit)))
     (arguments
      `(#:tests? #f                      ; Tests require network connection.
        #:configure-flags
-       '(;; "-DOPENDHT_TESTS=on"
+       '(;;"-DOPENDHT_TESTS=on"
          "-DOPENDHT_TOOLS=off"
          "-DOPENDHT_PYTHON=off"
          "-DOPENDHT_PROXY_SERVER=on"
