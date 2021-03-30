@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
-;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,14 +27,14 @@
 (define-public sg3-utils
   (package
     (name "sg3-utils")
-    (version "1.45")
+    (version "1.46")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://sg.danny.cz/sg/p/sg3_utils-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1vmjb17y33a73sv7jg8fzs6bhr7yh2k9sba81sjiyf1pvi3vbnn7"))))
+                "185rlxppnsmi6q7garfhglmw31gji2ff24xg2yjk3klk1fqnihjr"))))
     (build-system gnu-build-system)
     (home-page "http://sg.danny.cz/sg/sg3_utils.html")
     (synopsis "SCSI device utilities")
