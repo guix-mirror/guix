@@ -1368,6 +1368,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/linux-pam-no-setfsuid.patch		\
   %D%/packages/patches/lirc-localstatedir.patch			\
   %D%/packages/patches/lirc-reproducible-build.patch		\
+  %D%/packages/patches/llhttp-bootstrap-CVE-2020-8287.patch	\
   %D%/packages/patches/llvm-3.5-fix-clang-build-with-gcc5.patch	\
   %D%/packages/patches/llvm-9-fix-bitcast-miscompilation.patch	\
   %D%/packages/patches/llvm-9-fix-lpad-miscompilation.patch	\
