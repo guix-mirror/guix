@@ -6,7 +6,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
-;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018, 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2018, 2019, 2020 Arun Isaac <arunisaac@systemreboot.net>
@@ -1248,7 +1248,7 @@ replacement for the OpenDWG libraries.")
 (define-public minicom
   (package
     (name "minicom")
-    (version "2.7.1")
+    (version "2.8")
     (source
      (origin
        (method git-fetch)
@@ -1256,13 +1256,16 @@ replacement for the OpenDWG libraries.")
              (url "https://salsa.debian.org/minicom-team/minicom.git")
              (commit (string-append "v" version))))
        (sha256
-        (base32 "0f36wv015zpz1x895qv0z6marlynzyh0d5mfkyd7lfyy2xd1i2w0"))
+        (base32 "0kfihxbh9qkjk9m1932ajyqx384c2aj3d9yaphh3i9i7y1shxlpx"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--enable-lock-dir=/var/lock")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'make-git-checkout-writable
+           (lambda _
+             (for-each make-file-writable (find-files "."))))
          (replace 'bootstrap
            ;; autogen.sh needlessly hard-codes aclocal-1.14.
            (lambda _
