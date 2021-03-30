@@ -276,6 +276,33 @@ devices.")
 formats to milliseconds.")
     (license license:expat)))
 
+(define-public node-binary-search-bootstrap
+  (package
+    (name "node-binary-search")
+    (version "1.3.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/darkskyapp/binary-search.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1xr2msdc143cd3xwgq7n3rhzy7j8wrnaidxl0r6l6b6g3mpbpjig"))))
+    (build-system node-build-system)
+    (arguments
+     `(#:node ,node-bootstrap
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (home-page "https://github.com/darkskyapp/binary-search#readme")
+    (properties '((hidden? . #t)))
+    (synopsis "Tiny binary search function with comparators")
+    (description "This package is a binary search function for Node.js.")
+    (license license:cc0)))
+
 (define-public libnode
   (package/inherit node
     (name "libnode")
