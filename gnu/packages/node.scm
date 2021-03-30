@@ -580,6 +580,141 @@ parser definition into a C output.")
 source files.")
     (license license:expat)))
 
+(define-public node-lts
+  (package
+    (inherit node)
+    (version "14.16.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://nodejs.org/dist/v" version
+                                  "/node-v" version ".tar.xz"))
+              (sha256
+               (base32
+                "19nz2mhmn6ikahxqyna1dn25pb5v3z9vsz9zb2flb6zp2yk4hxjf"))
+              (modules '((guix build utils)))
+              (snippet
+               `(begin
+                  ;; Remove bundled software, where possible
+                  (for-each delete-file-recursively
+                            '("deps/cares"
+                              "deps/icu-small"
+                              "deps/nghttp2"
+                              "deps/openssl"
+                              "deps/zlib"))
+                  (substitute* "Makefile"
+                    ;; Remove references to bundled software.
+                    (("deps/uv/uv.gyp") "")
+                    (("deps/zlib/zlib.gyp") ""))
+                  #t))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments node)
+       ((#:configure-flags configure-flags)
+        ''("--shared-cares"
+           "--shared-libuv"
+           "--shared-nghttp2"
+           "--shared-openssl"
+           "--shared-zlib"
+           "--shared-brotli"
+           "--with-intl=system-icu"))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'configure
+             ;; Node's configure script is actually a python script, so we can't
+             ;; run it with bash.
+             (lambda* (#:key outputs (configure-flags '()) inputs
+                       #:allow-other-keys)
+               (let* ((prefix (assoc-ref outputs "out"))
+                      (flags (cons (string-append "--prefix=" prefix)
+                                   configure-flags)))
+                 (format #t "build directory: ~s~%" (getcwd))
+                 (format #t "configure flags: ~s~%" flags)
+                 ;; Node's configure script expects the CC environment variable to
+                 ;; be set.
+                 (setenv "CC" ,(cc-for-target))
+                 (apply invoke
+                        (string-append (assoc-ref inputs "python")
+                                       "/bin/python3")
+                        "configure" flags))))
+           (replace 'patch-files
+             (lambda* (#:key inputs #:allow-other-keys)
+               ;; Fix hardcoded /bin/sh references.
+               (substitute* '("lib/child_process.js"
+                              "lib/internal/v8_prof_polyfill.js"
+                              "test/parallel/test-child-process-spawnsync-shell.js"
+                              "test/parallel/test-fs-write-sigxfsz.js"
+                              "test/parallel/test-stdio-closed.js"
+                              "test/sequential/test-child-process-emfile.js")
+                 (("'/bin/sh'")
+                  (string-append "'" (which "sh") "'")))
+
+               ;; Fix hardcoded /usr/bin/env references.
+               (substitute* '("test/parallel/test-child-process-default-options.js"
+                              "test/parallel/test-child-process-env.js"
+                              "test/parallel/test-child-process-exec-env.js")
+                 (("'/usr/bin/env'")
+                  (string-append "'" (which "env") "'")))
+
+               ;; FIXME: These tests fail in the build container, but they don't
+               ;; seem to be indicative of real problems in practice.
+               (for-each delete-file
+                         '("test/parallel/test-cluster-master-error.js"
+                           "test/parallel/test-cluster-master-kill.js"))
+
+               ;; These require a DNS resolver.
+               (for-each delete-file
+                         '("test/parallel/test-dns.js"
+                           "test/parallel/test-dns-lookupService-promises.js"))
+
+               ;; FIXME: This test fails randomly:
+               ;; https://github.com/nodejs/node/issues/31213
+               (delete-file "test/parallel/test-net-listen-after-destroying-stdin.js")
+
+               ;; FIXME: These tests fail on armhf-linux:
+               ;; https://github.com/nodejs/node/issues/31970
+               ,@(if (target-arm32?)
+                     '((for-each delete-file
+                                 '("test/parallel/test-zlib.js"
+                                   "test/parallel/test-zlib-brotli.js"
+                                   "test/parallel/test-zlib-brotli-flush.js"
+                                   "test/parallel/test-zlib-brotli-from-brotli.js"
+                                   "test/parallel/test-zlib-brotli-from-string.js"
+                                   "test/parallel/test-zlib-convenience-methods.js"
+                                   "test/parallel/test-zlib-random-byte-pipes.js"
+                                   "test/parallel/test-zlib-write-after-flush.js")))
+                     '())
+
+               ;; These tests have an expiry date: they depend on the validity of
+               ;; TLS certificates that are bundled with the source.  We want this
+               ;; package to be reproducible forever, so remove those.
+               ;; TODO: Regenerate certs instead.
+               (for-each delete-file
+                         '("test/parallel/test-tls-passphrase.js"
+                           "test/parallel/test-tls-server-verify.js"))
+
+               ;; Replace pre-generated llhttp sources
+               (let ((llhttp (assoc-ref inputs "llhttp")))
+                 (copy-file (string-append llhttp "/src/llhttp.c")
+                            "deps/llhttp/src/llhttp.c")
+                 (copy-file (string-append llhttp "/src/api.c")
+                            "deps/llhttp/src/api.c")
+                 (copy-file (string-append llhttp "/src/http.c")
+                            "deps/llhttp/src/http.c")
+                 (copy-file (string-append llhttp "/include/llhttp.h")
+                            "deps/llhttp/include/llhttp.h"))
+               #t))))))
+    (inputs
+     `(("c-ares" ,c-ares)
+       ("icu4c" ,icu4c-67)
+       ("libuv" ,libuv-for-node)
+       ("llhttp" ,llhttp-bootstrap)
+       ("google-brotli" ,google-brotli)
+       ("nghttp2" ,nghttp2 "lib")
+       ("openssl" ,openssl)
+       ("zlib" ,zlib)))
+    (native-inputs
+     (alist-replace "python" (list python-3)
+                    (package-native-inputs node)))))
+
 (define-public libnode
   (package/inherit node
     (name "libnode")
