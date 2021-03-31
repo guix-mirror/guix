@@ -333,7 +333,7 @@ use '--no-offload' instead~%")))
     (print-build-trace? . #t)
     (print-extended-build-trace? . #t)
     (multiplexed-build-output? . #t)
-    (verbosity . 2)
+    (verbosity . 3)
     (debug . 0)))
 
 (define (show-help)

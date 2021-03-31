@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -163,7 +163,7 @@ Copy ITEMS to or from the specified host over SSH.\n"))
     (print-extended-build-trace? . #t)
     (multiplexed-build-output? . #t)
     (debug . 0)
-    (verbosity . 2)))
+    (verbosity . 3)))
 
 
 ;;;
