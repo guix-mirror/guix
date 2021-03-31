@@ -6318,9 +6318,9 @@ subsequent visualization, annotation and storage of results.")
                       (install-file "plink" bin)
                       #t))))))
     (inputs
-     `(("zlib" ,zlib)
-       ("lapack" ,lapack)
-       ("openblas" ,openblas)))
+     `(("lapack" ,lapack)
+       ("openblas" ,openblas)
+       ("zlib" ,zlib)))
     (home-page "https://www.cog-genomics.org/plink/")
     (license license:gpl3+)))
 
