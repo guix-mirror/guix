@@ -7763,7 +7763,7 @@ The Julia package name is read from the file @file{Project.toml}.  This
 value can be overridden by passing the argument @code{#:julia-package-name}
 (which must be correctly capitalized).
 
-Julia packages usually manage they binary dependencies via
+Julia packages usually manage their binary dependencies via
 @code{JLLWrappers.jl}, a Julia package that creates a module (named
 after the wrapped library followed by @code{_jll.jl}.
 
