@@ -31,7 +31,7 @@ Copyright @copyright{} 2015 Taylan Ulrich Bayırlı/Kammer@*
 Copyright @copyright{} 2015, 2016, 2017, 2019, 2020, 2021 Leo Famulari@*
 Copyright @copyright{} 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus@*
 Copyright @copyright{} 2016 Ben Woodcroft@*
-Copyright @copyright{} 2016, 2017, 2018 Chris Marusich@*
+Copyright @copyright{} 2016, 2017, 2018, 2021 Chris Marusich@*
 Copyright @copyright{} 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner@*
 Copyright @copyright{} 2016 John Darrington@*
 Copyright @copyright{} 2016, 2017 Nikita Gillmann@*
@@ -523,6 +523,17 @@ supported; in particular, there is no ongoing work to ensure that this
 architecture still works.  Should someone decide they wish to revive this
 architecture then the code is still available.
 
+@item powerpc64le-linux
+little-endian 64-bit Power ISA processors, Linux-Libre kernel.  This
+includes POWER9 systems such as the
+@uref{https://www.fsf.org/news/talos-ii-mainboard-and-talos-ii-lite-mainboard-now-fsf-certified-to-respect-your-freedom,
+RYF Talos II mainboard}. This platform is available as a "technology
+preview": although it is supported, substitutes are not yet available
+from the build farm (@pxref{Substitutes}), and some packages may fail to
+build (@pxref{Tracking Bugs and Patches}).  That said, the Guix
+community is actively working on improving this support, and now is a
+great time to try it and get involved!
+
 @end table
 
 With Guix@tie{}System, you @emph{declare} all aspects of the operating system
@@ -534,7 +545,7 @@ Manual}), the well-known GNU utilities and tool chain, as well as the
 graphical environment or system services of your choice.
 
 Guix System is available on all the above platforms except
-@code{mips64el-linux}.
+@code{mips64el-linux} and @code{powerpc64le-linux}.
 
 @noindent
 For information on porting to other architectures or kernels,
