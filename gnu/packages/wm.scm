@@ -44,6 +44,7 @@
 ;;; Copyright © 2021 Zheng Junjie <873216071@qq.com>
 ;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;; Copyright © 2021 qblade <qblade@protonmail.com>
+;;; Copyright © 2021 lasnesne <lasnesne@lagunposprasihopre.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2451,3 +2452,39 @@ read and write, and compatible with JSON.")
      "Hikari is a stacking Wayland compositor with additional tiling
 capabilities.  It is heavily inspired by the Calm Window manager(cwm).")
     (license license:bsd-2)))
+
+(define-public wlogout
+  (package
+    (name "wlogout")
+    (version "1.1.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/ArtsyMacaw/wlogout")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1swhzkqkzli59c89pvrakfvicd00x7ga860c3x2pbb4y3xziqfvi"))))
+    (build-system meson-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("scdoc" ,scdoc)))
+    (inputs
+     `(("gtk-layer-shell" ,gtk-layer-shell)
+       ("gtk+" ,gtk+)))
+    (arguments
+     '(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack  'patch-source-paths
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "main.c"
+                 (("/usr/share") (string-append out "/share"))
+                 (("/etc") (string-append out "/etc"))))
+             #t)))))
+    (home-page "https://github.com/ArtsyMacaw/wlogout")
+    (synopsis "Logout menu for Wayland")
+    (description "wlogout is a logout menu for Wayland environments.")
+    (license license:expat)))
