@@ -33,6 +33,7 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages linux)
@@ -55,6 +56,7 @@
   #:use-module (gnu packages)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system qt)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix packages)
@@ -556,3 +558,68 @@ decentralized calling using P2P-DHT.")
 ;;; main 'jami' client.
 (define-public jami
   (deprecated-package "jami" jami-gnome))
+
+(define-public jami-qt
+  (package
+    (name "jami-qt")                    ;to be renamed 'jami' at some point
+    (version %jami-version)
+    ;; The Qt client code is not yet part of the release tarball; fetch it
+    ;; from git for now.
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://git.jami.net/savoirfairelinux/jami-client-qt.git")
+                    (commit "ae21c17da5e8f730ae3895ccbc4da8047e3be1eb")))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1rf3lpk8c4qc12pi6pn4rdp7i8b83xv64yqr0q47rzv9s518qyjp"))))
+    (build-system qt-build-system)
+    (arguments
+     `(#:tests? #f                      ;no test suite
+       #:phases
+       (modify-phases %standard-phases
+         ;; TODO: Uncomment after switching back to the tarball source.
+         ;;   (add-after 'unpack 'change-directory
+         ;;     (lambda _
+         ;;       (chdir "client-qt")))
+         (add-after 'install 'wrap
+           ;; The program fails to find the QtWebEngineProcess program, so we
+           ;; set QTWEBENGINEPROCESS_PATH to help it.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin"))
+                   (qtwebengineprocess (string-append
+                                        (assoc-ref inputs "qtwebengine")
+                                        "/lib/qt5/libexec/QtWebEngineProcess")))
+               (for-each (lambda (program)
+                           (wrap-program program
+                             `("QTWEBENGINEPROCESS_PATH" =
+                               (,qtwebengineprocess))))
+                         (find-files bin ".*"))))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)
+       ("doxygen" ,doxygen)
+       ("graphviz" ,graphviz)))
+    (inputs
+     `(("libringclient" ,libringclient)
+       ("network-manager" ,network-manager)
+       ("qrencode" ,qrencode)
+       ("qtsvg" ,qtsvg)
+       ("qtwebengine" ,qtwebengine)
+       ("qtwebchannel" ,qtwebchannel)
+       ("qtmultimedia" ,qtmultimedia)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtgraphicaleffects" ,qtgraphicaleffects)
+       ("qtquickcontrols" ,qtquickcontrols)
+       ("qtquickcontrols2" ,qtquickcontrols2)))
+    (propagated-inputs
+     `(("libring" ,libring)))           ;for dring
+    (home-page "https://jami.net")
+    (synopsis "Qt Jami client")
+    (description "This package provides the Jami Qt client.  Jami is a secure
+and distributed voice, video and chat communication platform that requires no
+centralized server and leaves the power of privacy in the hands of the user.
+It supports the SIP and IAX protocols, as well as decentralized calling using
+P2P-DHT.")
+    (license license:gpl3+)))
