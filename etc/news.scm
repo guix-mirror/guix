@@ -12,6 +12,7 @@
 ;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;; Copyright © 2021 Leo Famulari <leo@famulari.name>
 ;; Copyright © 2021 Zhu Zihao <all_but_last@163.com>
+;; Copyright © 2021 Chris Marusich <cmmarusich@gmail.com>
 ;;
 ;; Copying and distribution of this file, with or without modification, are
 ;; permitted in any medium without royalty provided the copyright notice and
@@ -19,6 +20,21 @@
 
 (channel-news
  (version 0)
+
+ (entry (commit "e52ec6c64a17a99ae4bb6ff02309067499915b06")
+        (title
+         (en "New supported platform: powerpc64le-linux"))
+        (body
+         (en "A new platform, powerpc64le-linux, has been added for
+little-endian 64-bit Power ISA processors using the Linux-Libre kernel.  This
+includes POWER9 systems such as the
+@uref{https://www.fsf.org/news/talos-ii-mainboard-and-talos-ii-lite-mainboard-now-fsf-certified-to-respect-your-freedom,
+RYF Talos II mainboard}. This platform is available as a \"technology
+preview\": although it is supported, substitutes are not yet available from
+the build farm, and some packages may fail to build.  In addition, Guix System
+is not yet available on this platform.  That said, the Guix community is
+actively working on improving this support, and now is a great time to try it
+and get involved!")))
 
  (entry (commit "9ade2b720af91acecf76278b4d9b99ace406781e")
         (title
