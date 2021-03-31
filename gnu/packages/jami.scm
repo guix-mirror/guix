@@ -473,37 +473,39 @@ protocols, as well as decentralized calling using P2P-DHT.")
 
 (define-public libringclient
   (package
-    (inherit libring)
     (name "libringclient")
+    (version %jami-version)
+    (source %jami-sources)
     (build-system cmake-build-system)
+    (inputs
+     `(("libring" ,libring)
+       ("network-manager" ,network-manager)))
     (propagated-inputs
-     `(("libring" ,libring)     ; For 'dring'.
-       ("qtbase" ,qtbase)       ; Qt is included in several installed headers.
-       ("qttools" ,qttools)))
+     `(("qtbase" ,qtbase)))     ; Qt is included in several installed headers.
     (arguments
      `(#:tests? #f                      ; There is no testsuite.
        #:configure-flags
-       (list (string-append "-DRING_BUILD_DIR="
-                            (assoc-ref %build-inputs "libring") "/include"))
+       (let ((libring (assoc-ref %build-inputs "libring")))
+         (list (string-append "-DRING_XML_INTERFACES_DIR="
+                              libring "/share/dbus-1/interfaces")
+               (string-append "-DRING_BUILD_DIR=" libring "/include")
+               ;; Use LIBWRAP, which removes the requirement on DBus.  Qt
+               ;; links with the dbus library in Guix, which expects to find
+               ;; its configuration under /etc rather than /usr/share/dbus-1,
+               ;; which is perhaps the reason the auto-launching of dring
+               ;; doesn't work on foreign distributions.
+               "-DENABLE_LIBWRAP=true"))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'change-directory
            (lambda _
-             (chdir "lrc")
-             #t))
-         (add-before 'configure 'fix-dbus-interfaces-path
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "CMakeLists.txt"
-               (("\\$\\{CMAKE_INSTALL_PREFIX\\}(/share/dbus-1/interfaces)" _ dbus-interfaces-path-suffix)
-                (string-append (assoc-ref inputs "libring")
-                               dbus-interfaces-path-suffix))))))))
-    (synopsis "Distributed multimedia communications platform")
-    (description "Jami (formerly GNU Ring) is a secure and distributed voice,
-video and chat communication platform that requires no centralized server and
-leaves the power of privacy in the hands of the user.  It supports the SIP and
-IAX protocols, as well as decentralized calling using P2P-DHT.
-
-This package provides a library common to all Jami clients.")
+             (chdir "lrc"))))))
+    (synopsis "Jami client library")
+    (description "This package provides a library common to all Jami clients.
+Jami is a secure and distributed voice, video and chat communication platform
+that requires no centralized server and leaves the power of privacy in the
+hands of the user.  It supports the SIP and IAX protocols, as well as
+decentralized calling using P2P-DHT.")
     (home-page "https://jami.net")
     (license license:gpl3+)))
 
