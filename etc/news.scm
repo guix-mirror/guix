@@ -23,7 +23,8 @@
 
  (entry (commit "e52ec6c64a17a99ae4bb6ff02309067499915b06")
         (title
-         (en "New supported platform: powerpc64le-linux"))
+         (en "New supported platform: powerpc64le-linux")
+         (fr "Nouvelle plate-forme prise en charge : powerpc64le-linux"))
         (body
          (en "A new platform, powerpc64le-linux, has been added for
 little-endian 64-bit Power ISA processors using the Linux-Libre kernel.  This
@@ -34,7 +35,18 @@ preview\": although it is supported, substitutes are not yet available from
 the build farm, and some packages may fail to build.  In addition, Guix System
 is not yet available on this platform.  That said, the Guix community is
 actively working on improving this support, and now is a great time to try it
-and get involved!")))
+and get involved!")
+         (fr "Une nouvelle plate-forme, powerpc64le-linux, a été ajoutée pour
+les processeurs POWER 64-bits utilisant le noyau Linux-libre.  Ça inclut les
+systèmes POWER9 tels que les
+@uref{https://www.fsf.org/news/talos-ii-mainboard-and-talos-ii-lite-mainboard-now-fsf-certified-to-respect-your-freedom,
+cartes Talos II RYF}.  Il s'agit pour le moment d'un « avant-goût » de la
+technologie : bien que la plate-forme soit prise en charge, la ferme de
+compilation ne fournit pas encore de substituts et certains paquets risquent
+de ne pas compiler.  En outre, Guix System n'est pas encore disponible sur
+cette plate-forme.  Ceci dit, la communauté Guix travaille activement pour
+améliorer cette prise en charge et c'est maintenant un bon moment pour
+l'essayer et pour s'impliquer !")))
 
  (entry (commit "9ade2b720af91acecf76278b4d9b99ace406781e")
         (title
