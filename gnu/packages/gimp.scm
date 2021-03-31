@@ -278,17 +278,7 @@ buffers.")
                            "/gimp-" version ".tar.bz2"))
        (sha256
         (base32 "1fqqyshakvdarf1jipk2n33ibqr23ni22z3d8srq13bpydblpf1d"))
-       (patches
-        (list (origin
-                ;; This upstream patch fixes a mandatory dependency on ‘dot’:
-                ;; <https://github.com/aferrero2707/gimp-appimage/issues/61>.
-                (method url-fetch)
-                (uri (string-append "https://github.com/GNOME/gimp/commit/"
-                                    "2cae9b9acf9da98c4c9990819ffbd5aabe23017e"
-                                    ".patch"))
-                (sha256
-                 (base32
-                  "1xd5lmy1j9p6p1ka7dyj1b9jmfcra1r62rma07vzw2v4vig0khc0")))))))
+       (patches (search-patches "gimp-make-gegl-introspect-optional.patch"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                            ; 9 MiB of gtk-doc HTML

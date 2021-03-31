@@ -1,0 +1,43 @@
+From 2cae9b9acf9da98c4c9990819ffbd5aabe23017e Mon Sep 17 00:00:00 2001
+From: Jehan <jehan@girinstud.io>
+Date: Mon, 14 Dec 2020 19:53:38 +0100
+Subject: [PATCH] app: make "gegl:introspect" an optional operation dependency.
+
+Check at runtime for the operation availability and set the "Show Image
+Graph" action active depending on this check.
+
+This goes with discussions to make this operation optional with a
+runtime check for the tool `dot`.
+See: https://gitlab.gnome.org/GNOME/gegl/-/merge_requests/84
+---
+ app/actions/debug-actions.c | 6 ++++++
+ app/sanity.c                | 1 -
+ 2 files changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/app/actions/debug-actions.c b/app/actions/debug-actions.c
+index 6be4422b228..22ca38b15ea 100644
+--- a/app/actions/debug-actions.c
++++ b/app/actions/debug-actions.c
+@@ -103,4 +103,10 @@ void
+ debug_actions_update (GimpActionGroup *group,
+                       gpointer         data)
+ {
++#define SET_SENSITIVE(action,condition) \
++        gimp_action_group_set_action_sensitive (group, action, (condition) != 0)
++
++  SET_SENSITIVE ("debug-show-image-graph", gegl_has_operation ("gegl:introspect"));
++
++#undef SET_SENSITIVE
+ }
+diff --git a/app/sanity.c b/app/sanity.c
+index 015801a396e..6374ac1ad20 100644
+--- a/app/sanity.c
++++ b/app/sanity.c
+@@ -650,7 +650,6 @@ sanity_check_gegl_ops (void)
+     "gegl:hue-chroma",
+     "gegl:illusion",
+     "gegl:image-gradient",
+-    "gegl:introspect",
+     "gegl:invert-gamma",
+     "gegl:invert-linear",
+     "gegl:lens-blur",
