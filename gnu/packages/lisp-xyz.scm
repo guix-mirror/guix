@@ -10021,7 +10021,7 @@ approach to templating.")
 (define-public sbcl-postmodern
   (package
     (name "sbcl-postmodern")
-    (version "1.32.8")
+    (version "1.32.9")
     (source
      (origin
        (method git-fetch)
@@ -10030,7 +10030,7 @@ approach to templating.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0vr5inbr8dldf6dsl0qj3h2yrnnsayzfwxfzwkn1pk7xbns2l78q"))))
+        (base32 "137jci4hn4vlxf48y39k0di27kc89kvxy3brmn3vl9xq56sy6mhz"))))
     (build-system asdf-build-system/sbcl)
     (native-inputs
      `(("fiveam" ,sbcl-fiveam)))
