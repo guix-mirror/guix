@@ -304,8 +304,8 @@ with.")
     (propagated-inputs
      `(("julia-macrotools" ,julia-macrotools)))
     (home-page "https://github.com/rdeits/CommonSubexpressions.jl")
-    (synopsis "Macro @code{@cse}")
-    (description "This package provides the @code{@cse} macro, which performs
+    (synopsis "@code{@@cse} macro for Julia")
+    (description "This package provides the @code{@@cse} macro, which performs
 common subexpression elimination.")
     (license license:expat)))
 
