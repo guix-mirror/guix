@@ -397,6 +397,7 @@ the same, being completely separated from the Internet.")
                                   "--with-http_v2_module"
                                   "--with-pcre-jit"
                                   "--with-debug"
+                                  "--with-stream"
                                   ;; Even when not cross-building, we pass the
                                   ;; --crossbuild option to avoid customizing for the
                                   ;; kernel version on the build machine.
