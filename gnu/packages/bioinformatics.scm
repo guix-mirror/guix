@@ -6290,7 +6290,7 @@ subsequent visualization, annotation and storage of results.")
 (define-public plink-ng
   (package (inherit plink)
     (name "plink-ng")
-    (version "1.90b4")
+    (version "2.00a2.3")
     (source
      (origin
        (method git-fetch)
@@ -6299,14 +6299,13 @@ subsequent visualization, annotation and storage of results.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "02npdwgkpfkdnhw819rhj5kw02a5k5m90b14zq9zzya4hyg929c0"))))
+        (base32 "1p88lz9agzjlspjhciz61qjc36cfniv4nkxszyy0njqyc5rzc0cd"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ;no "check" target
        #:make-flags (list "BLASFLAGS=-llapack -lopenblas"
                           "CFLAGS=-Wall -O2 -DDYNAMIC_ZLIB=1"
-                          "ZLIB=-lz"
-                          "-f" "Makefile.std")
+                          "ZLIB=-lz")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'chdir
