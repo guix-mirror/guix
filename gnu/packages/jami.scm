@@ -28,6 +28,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
@@ -509,44 +510,49 @@ decentralized calling using P2P-DHT.")
     (home-page "https://jami.net")
     (license license:gpl3+)))
 
-(define-public jami
+(define-public jami-gnome
   (package
-    (inherit libring)
-    (name "jami")
+    (name "jami-gnome")
+    (version %jami-version)
+    (source %jami-sources)
     (build-system cmake-build-system)
     (inputs
-     `(("libringclient" ,libringclient)
-       ("gtk+" ,gtk+)
-       ("qrencode" ,qrencode)
-       ("libnotify" ,libnotify)
-       ("clutter" ,clutter)
+     `(("clutter" ,clutter)
        ("clutter-gtk" ,clutter-gtk)
+       ("gtk+" ,gtk+)
        ("libcanberra" ,libcanberra)
-       ("webkitgtk" ,webkitgtk)
-       ("sqlite" ,sqlite)))
+       ("libappindicator" ,libappindicator)
+       ("libnotify" ,libnotify)
+       ("libringclient" ,libringclient)
+       ("network-manager" ,network-manager)
+       ("qrencode" ,qrencode)
+       ("sqlite" ,sqlite)
+       ("webkitgtk" ,webkitgtk)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("gettext" ,gettext-minimal)
-       ("glib:bin" ,glib "bin")
-       ("doxygen" ,doxygen)))
+       ("glib:bin" ,glib "bin")))       ;for glib-compile-resources
     (propagated-inputs
-     `(("libring" ,libring) ; Contains `dring', the daemon, which is automatically by d-bus.
-       ("adwaita-icon-theme" ,adwaita-icon-theme)
-       ("evolution-data-server" ,evolution-data-server)))
+     `(("libring" ,libring) ; Contains 'dring', the daemon, which is
+                            ; automatically started by DBus.
+       ("adwaita-icon-theme" ,adwaita-icon-theme)))
     (arguments
      `(#:tests? #f                      ; There is no testsuite.
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'change-directory
            (lambda _
-             (chdir "client-gnome")
-             #t)))))
-    (synopsis "Distributed, privacy-respecting communication program")
-    (description "Jami (formerly GNU Ring) is a secure and distributed voice,
-video and chat communication platform that requires no centralized server and
-leaves the power of privacy in the hands of the user.  It supports the SIP and
-IAX protocols, as well as decentralized calling using P2P-DHT.
-
-This package provides the Jami client for the GNOME desktop.")
+             (chdir "client-gnome"))))))
+    (synopsis "Jami client for GNOME")
+    (description "This package provides a Jami client for the GNOME desktop.
+Jami is a secure and distributed voice, video and chat communication platform
+that requires no centralized server and leaves the power of privacy in the
+hands of the user.  It supports the SIP and IAX protocols, as well as
+decentralized calling using P2P-DHT.")
     (home-page "https://jami.net")
     (license license:gpl3+)))
+
+;;; Keep this until the Qt client matures enough to become the
+;;; main 'jami' client.
+(define-public jami
+  (deprecated-package "jami" jami-gnome))
