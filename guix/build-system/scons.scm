@@ -97,7 +97,7 @@ provides a 'SConstruct' file as its build system."
       #~(begin
           (use-modules #$@(sexp->gexp modules))
 
-          (scons-build #:name ,name
+          (scons-build #:name #$name
                        #:source #+source
                        #:scons-flags #$(sexp->gexp scons-flags)
                        #:system #$system
