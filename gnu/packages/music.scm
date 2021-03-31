@@ -35,6 +35,7 @@
 ;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
 ;;; Copyright © 2021 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2021 Brendan Tildesley <mail@brendan.scot>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -449,7 +450,7 @@ playing your music.")
 (define-public strawberry
   (package
     (name "strawberry")
-    (version "0.8.5")
+    (version "0.9.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -458,7 +459,7 @@ playing your music.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0lfbbmhfzwlhnjhzfk5zn8h71cabx47pzfkcw2nylkbqkz83r57r"))
+                "0d9asg21j9ai23sb35cimws8bd8fsnpha777rgscraa7i09q0rx2"))
               (modules '((guix build utils)
                          (ice-9 regex)))
               (snippet
@@ -482,9 +483,6 @@ playing your music.")
     (build-system cmake-build-system)
     (arguments
      `(#:test-target "run_strawberry_tests"
-       #:configure-flags
-       (list "-DUSE_SYSTEM_TAGLIB=TRUE"
-             "-DBUILD_TESTS=TRUE")
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'wrap-program
