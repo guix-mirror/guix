@@ -27,7 +27,7 @@
 ;;; Copyright © 2018, 2019, 2020, 2021 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
-;;; Copyright © 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019, 2020 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Justus Winter <justus@sequoia-pgp.org>
@@ -3873,8 +3873,8 @@ It is a replacement for the @command{urlview} program.")
     (license license:gpl2+)))
 
 (define-public mumi
-  (let ((commit "8c82c8f104ff0013e2bfb3d6b4277280f32446a6")
-        (revision "3"))
+  (let ((commit "887471f7785c74dd8ee5d300d3b1fb58e011c2cb")
+        (revision "4"))
     (package
       (name "mumi")
       (version (git-version "0.0.1" revision commit))
@@ -3886,7 +3886,7 @@ It is a replacement for the @command{urlview} program.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1gkwagy7qplzq2x2zqsbrwhlilxviqb0dqhrvnnhxd7z8wvyzcsi"))))
+                  "1lmnnfa42j0bcscxbyx5y48v4l0hyvnh4kq4sjrqw92v0h93iksg"))))
       (build-system gnu-build-system)
       (arguments
        `(#:modules ((guix build gnu-build-system)
