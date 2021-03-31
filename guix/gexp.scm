@@ -1764,7 +1764,8 @@ TARGET, a GNU triplet."
 
           (load-from-directory ".")
           (process-directory "." (ungexp output) 0)))
-       (list (gexp-input modules))))
+       (append (map gexp-input extensions)
+               (list (gexp-input modules)))))
 
     (gexp->derivation name build
                       #:script-name "compile-modules"
