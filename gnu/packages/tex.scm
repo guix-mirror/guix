@@ -7859,3 +7859,28 @@ font families: Bera Serif (a slab-serif Roman), Bera Sans (a Frutiger
 descendant) and Bera Mono (monospaced/typewriter).  The Bera family is
 a repackaging, for use with TeX, of the Bitstream Vera family.")
     (license license:silofl1.1)))
+
+(define-public texlive-fourier
+  (package
+    (inherit (simple-texlive-package
+              "texlive-fourier"
+              (list "/doc/fonts/fourier/"
+                    "/fonts/afm/public/fourier/"
+                    "/fonts/map/dvips/fourier/"
+                    "/fonts/tfm/public/fourier/"
+                    "/fonts/type1/public/fourier/"
+                    "/fonts/vf/public/fourier/"
+                    "/tex/latex/fourier/")
+              (base32
+               "1vs2xdx6f6hd01zlslx3y93g3dsa7k3yhqpnhgkizgjmz0r9ipz1")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/fourier")
+    (synopsis "Utopia fonts for LaTeX documents")
+    (description "Fourier-GUTenberg is a LaTeX typesetting system
+which uses Adobe Utopia as its standard base font.  Fourier-GUTenberg
+provides all complementary typefaces needed to allow Utopia based TeX
+typesetting including an extensive mathematics set and several other
+symbols.  The system is absolutely stand-alone; apart from Utopia and
+Fourier no other typefaces are required.  Utopia is a registered
+trademark of Adobe Systems Incorporated.")
+    (license license:lppl)))
