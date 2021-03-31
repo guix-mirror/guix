@@ -6305,18 +6305,14 @@ subsequent visualization, annotation and storage of results.")
      '(#:tests? #f ;no "check" target
        #:make-flags (list "BLASFLAGS=-llapack -lopenblas"
                           "CFLAGS=-Wall -O2 -DDYNAMIC_ZLIB=1"
-                          "ZLIB=-lz")
+                          "ZLIB=-lz"
+                          (string-append "PREFIX=" (assoc-ref %outputs "out"))
+                          "DESTDIR=")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'chdir
            (lambda _ (chdir "1.9") #t))
-         (delete 'configure) ; no "configure" script
-         (replace 'install
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    (let ((bin (string-append (assoc-ref outputs "out")
-                                              "/bin/")))
-                      (install-file "plink" bin)
-                      #t))))))
+         (delete 'configure)))) ; no "configure" script
     (inputs
      `(("lapack" ,lapack)
        ("openblas" ,openblas)
