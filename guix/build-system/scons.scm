@@ -97,27 +97,24 @@ provides a 'SConstruct' file as its build system."
       #~(begin
           (use-modules #$@(sexp->gexp modules))
 
-          (scons-build #:name #$name
-                       #:source #+source
-                       #:scons-flags #$(sexp->gexp scons-flags)
-                       #:system #$system
-                       #:build-targets #$build-targets
-                       #:test-target #$test-target
-                       #:tests? #$tests?
-                       #:install-targets #$install-targets
-                       #:phases #$(if (pair? phases)
-                                      (sexp->gexp phases)
-                                      phases)
-                       #:outputs (list #$@(map (lambda (name)
-                                                 #~(cons #$name
-                                                         (ungexp output name)))
-                                               outputs))
-                       #:inputs (map (lambda (tuple)
-                                       (apply cons tuple))
-                                     '#$inputs)
-                       #:search-paths '#$(sexp->gexp
-                                          (map search-path-specification->sexp
-                                               search-paths))))))
+          #$(with-build-variables inputs outputs
+              #~(scons-build #:name #$name
+                             #:source #+source
+                             #:scons-flags #$(sexp->gexp scons-flags)
+                             #:system #$system
+                             #:build-targets #$build-targets
+                             #:test-target #$test-target
+                             #:tests? #$tests?
+                             #:install-targets #$install-targets
+                             #:phases #$(if (pair? phases)
+                                            (sexp->gexp phases)
+                                            phases)
+                             #:outputs %outputs
+                             #:inputs %build-inputs
+                             #:search-paths
+                             '#$(sexp->gexp
+                                 (map search-path-specification->sexp
+                                      search-paths)))))))
 
   (gexp->derivation name builder
                     #:system system
