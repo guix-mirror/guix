@@ -24331,3 +24331,44 @@ number of words, syllables, and sentences.")
      "This package provides a Python library that can parse OPML, FOAF, and
 iGoogle subscription lists.")
     (license license:expat)))
+
+(define-public python-smartypants
+  (package
+    (name "python-smartypants")
+    (version "2.0.1")
+    (source
+     (origin
+       ;; There's no source tarball for 2.0.1 on PyPI.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/leohemsted/smartypants.py")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "00p1gnb9pzb3svdq3c5b9b332gsp50wrqqa39gj00m133zadanjp"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           ;; Its `setup.py test` doesn't report failure with exit status, so
+           ;; we use `nose` instead.
+           (lambda _
+             (invoke "nosetests" "-v" "--exclude=^load_tests$"))))))
+    (native-inputs
+     ;; For tests.
+     `(("python-docutils" ,python-docutils)
+       ("python-nose" ,python-nose)
+       ("python-pygments" ,python-pygments)))
+    (home-page "https://github.com/leohemsted/smartypants.py")
+    (synopsis "Translate punctuation characters into smart quotes")
+    (description
+     "@command{smartpants} can perform the following transformations:
+@enumerate
+@item Straight quotes ( \" and ' ) into \"curly\" quote HTML entities
+@item Backticks-style quotes (``like this'') into \"curly\" quote HTML
+entities
+@item Dashes (-- and ---) into en- and em-dash entities
+@item Three consecutive dots (... or . . .) into an ellipsis entity
+@end enumerate")
+    (license license:bsd-3)))
