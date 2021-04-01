@@ -14321,14 +14321,14 @@ relays publish about themselves.")
 (define-public python-pyserial
   (package
     (name "python-pyserial")
-    (version "3.4")
+    (version "3.5")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "pyserial" version))
         (sha256
           (base32
-            "09y68bczw324a4jb9a1cfwrbjhq179vnfkkkrybbksp0vqgl0bbf"))))
+            "1nyd4m4mnrz8scbfqn4zpq8gnbl4x42w5zz62vcgpzqd2waf0xrw"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f)) ; FIXME: 3/49 tests are failing.
