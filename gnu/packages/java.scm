@@ -2107,11 +2107,8 @@ new Date();"))
     (build-system gnu-build-system)
     (outputs '("out" "jdk" "doc"))
     (arguments
-     `(#:imported-modules
-       ((guix build syscalls)
-        (ice-9 binary-ports)
-        (rnrs bytevectors)
-        ,@%gnu-build-system-modules)
+     `(#:imported-modules ((guix build syscalls)
+                           ,@%gnu-build-system-modules)
        #:tests? #f; requires jtreg
        ;; TODO package jtreg
        #:configure-flags
