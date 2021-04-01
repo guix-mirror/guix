@@ -18,7 +18,6 @@
 ;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2021 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2021 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1066,49 +1065,64 @@ manage system or application containers.")
 (define-public libvirt
   (package
     (name "libvirt")
-    (version "7.1.0")
+    (version "5.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://libvirt.org/sources/libvirt-"
                            version ".tar.xz"))
        (sha256
-        (base32 "0v50ckf56h6jd9bmqwp0lh2cmb7qqjmcb6y3mz2i2r15h06ih3w7"))
+        (base32 "0m8cqaqflvys5kaqpvb0qr4k365j09jc5xk6x70yvg8qkcl2hcz2"))
        (patches
-        (search-patches "libvirt-do-not-create-var-dirs.patch"))))
-    (build-system meson-build-system)
+        (search-patches "libvirt-create-machine-cgroup.patch"))))
+    (build-system gnu-build-system)
     (arguments
-     `(#:meson ,meson-0.55  ;; libvirt requires meson 0.54 or higher.
-       #:configure-flags
-       (list "-Ddriver_qemu=enabled"
-             "-Dqemu_user=nobody"
-             "-Dqemu_group=kvm"
-             "-Dpolkit=enabled")
+     `(#:configure-flags
+       (list "--with-qemu"
+             "--with-qemu-user=nobody"
+             "--with-qemu-group=kvm"
+             "--with-polkit"
+             (string-append "--docdir=" (assoc-ref %outputs "out") "/share/doc/"
+                            ,name "-" ,version)
+             "--sysconfdir=/etc"
+             "--localstatedir=/var")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'fix-sysconfdir-and-localstatedir
+         (add-before 'configure 'fix-BOURNE_SHELL-definition
+           ;; BOURNE_SHELL is hard-#defined to ‘/bin/sh’, causing test failures.
            (lambda _
-             (substitute* "meson.build"
-               ;; We set the prefix to be the package output, but we need
-               ;; localstatedir to be /var.  Sadly the build system doesn't
-               ;; seem to allow that easily.
-               (("localstatedir = prefix / get_option\\('localstatedir'\\)")
-                "localstatedir = get_option('localstatedir')")
-               ;; On the other hand, we keep sysconfdir using the prefix so
-               ;; that we install configuration files in the package output.
-               ;; However, we need to make sure the C code refers to /etc via
-               ;; SYSCONFDIR, and not the read-only configuration in the
-               ;; package output.
-               (("set_quoted\\('SYSCONFDIR', sysconfdir\\)")
-                "set_quoted('SYSCONFDIR', '/etc')"))
+             (substitute* "config.h.in"
+               (("/bin/sh") (which "sh")))
+             #t))
+         (add-before 'configure 'patch-libtirpc-file-names
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; libvirt uses an m4 macro instead of pkg-config to determine where
+             ;; the RPC headers are located.  Tell it to look in the right place.
+             (substitute* "configure"
+               (("/usr/include/tirpc")  ;defined in m4/virt-xdr.m4
+                (string-append (assoc-ref inputs "libtirpc")
+                               "/include/tirpc")))
              #t))
          (add-before 'configure 'disable-broken-tests
            (lambda _
-             (substitute* "tests/meson.build"
-               (("\\{ 'name': 'commandtest'.*") "")        ; hangs idly
-               (("\\{ 'name': 'qemuxml2argvtest'.*") "")   ; fails
-               (("\\{ 'name': 'virnetsockettest'.*") ""))  ; tries to network
-             #t)))))
+             (let ((tests (list "commandtest"      ; hangs idly
+                                "qemuxml2argvtest" ; fails
+                                "qemuhotplugtest"  ; fails
+                                "virnetsockettest" ; tries to network
+                                "virshtest")))     ; fails
+               (substitute* "tests/Makefile.in"
+                 (((format #f "(~a)\\$\\(EXEEXT\\)" (string-join tests "|")))
+                  ""))
+               #t)))
+         (replace 'install
+           ;; Since the sysconfdir and localstatedir should be /etc and /var
+           ;; at runtime, we must prevent writing to them at installation
+           ;; time.
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (apply invoke "make" "install"
+                    "sysconfdir=/tmp/etc"
+                    "localstatedir=/tmp/var"
+                    make-flags))))))
     (inputs
      `(("libxml2" ,libxml2)
        ("eudev" ,eudev)
@@ -1135,9 +1149,7 @@ manage system or application containers.")
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("polkit" ,polkit)
-       ("python" ,python-wrapper)
-       ("python-docutils" ,python-docutils) ;for rst2html
-       ("rpcsvc-proto" ,rpcsvc-proto)))     ;for 'rpcgen'
+       ("python" ,python-wrapper)))
     (home-page "https://libvirt.org")
     (synopsis "Simple API for virtualization")
     (description "Libvirt is a C toolkit to interact with the virtualization
