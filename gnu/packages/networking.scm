@@ -1895,7 +1895,7 @@ loop.")
 (define-public perl-data-validate-ip
   (package
     (name "perl-data-validate-ip")
-    (version "0.27")
+    (version "0.30")
     (source
      (origin
        (method url-fetch)
@@ -1903,7 +1903,7 @@ loop.")
              "mirror://cpan/authors/id/D/DR/DROLSKY/Data-Validate-IP-"
              version ".tar.gz"))
        (sha256
-        (base32 "1mmppyzsh1w2z2h86kvzqxy56wxgs62a3kf8nvcnz76bblir5ap1"))))
+        (base32 "074adrlvkiahj1fdc9nvb95dpfyjzm2jzhi90m8xaw4bw5ipcbzy"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-requires" ,perl-test-requires)))
