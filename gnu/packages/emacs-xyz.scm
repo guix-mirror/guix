@@ -25620,6 +25620,34 @@ can specify how popup-displaying functions occupy the screen.")
        "This library provide one function to show tooltip near the cursor.")
       (license license:gpl2+))))
 
+(define-public emacs-sdcv
+  ;; No tagged version upstream.
+  (let ((commit "943ae3e90cc9a0a88a37cc710acd7424fd4defc4" )
+        (revision "0"))
+    (package
+      (name "emacs-sdcv")
+      (version (git-version "1.5.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/stardiviner/sdcv.el")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0i1ylvw7p46pkf3yyyzcdmdhsspzymnnnvx8s0i7vynngr5x0vzh"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-popup" ,emacs-popup)
+         ("emacs-pos-tip" ,emacs-pos-tip)
+         ("emacs-showtip" ,emacs-showtip)))
+      (home-page "https://www.emacswiki.org/emacs/download/sdcv.el")
+      (synopsis "Emacs interface for @code{sdcv}")
+      (description
+       "This plugin translates words with @code{sdcv}, and displays
+translation using a tooltip or in a dedicated buffer.")
+      (license license:gpl3+))))
+
 (define-public emacs-helm-lacarte
   (let ((commit "40a6c449720be521435b6b1da7911af3a0b9dca0")
         (revision "1"))
