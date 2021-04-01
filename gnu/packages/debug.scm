@@ -184,7 +184,7 @@ tools that process C/C++ code.")
                    (_                "UNSUPPORTED"))))
     (package
       (name "american-fuzzy-lop")
-      (version "2.56b")             ;It seems all releases have the 'b' suffix
+      (version "2.57b")             ;It seems all releases have the 'b' suffix
       (source
        (origin
          (method git-fetch)
@@ -192,7 +192,7 @@ tools that process C/C++ code.")
                (url "https://github.com/google/AFL")
                (commit (string-append "v" version))))
          (sha256
-          (base32 "1q1g59gkm48aa4cg9h70jx4i2gapmypgp5rzs156b2avd95vwkn1"))
+          (base32 "0ks0s8iizp7mpc9mlpv126rsny0dkljfsw68689g9jiisjz2z530"))
          (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (inputs
