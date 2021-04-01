@@ -64,8 +64,9 @@
                              #:phases #$phases
                              #:make-flags
                              (cons* "-f"
-                                    #$(file-append (car (assoc-ref inputs
-                                                                   "android-build"))
+                                    #$(file-append (gexp-input-thing
+                                                    (car (assoc-ref inputs
+                                                                    "android-build")))
                                                    "/share/android/build/core/main.mk")
                                     #$make-flags)
                              #:outputs #$(outputs->gexp outputs)
