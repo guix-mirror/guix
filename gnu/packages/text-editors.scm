@@ -965,7 +965,7 @@ The basic features of Geany are:
 (define-public fe
   (package
     (name "fe")
-    ;; Stable release is 1.8.  However, this development version
+    ;; Stable release is 1.9.  However, this development version
     ;; introduces support for UTF-8.
     (version "2.0")
     (source (origin
@@ -974,7 +974,7 @@ The basic features of Geany are:
                                   "fe-" version ".tar.gz"))
               (sha256
                (base32
-                "1hwws7si1752z6hp61zxznvgsb6846lp8zl1hn5ddhsbafwalwb9"))))
+                "10mk5wc3dsdp46b3hkjyd740gcdv6m1gvlr3p8xjxf55b3vfs0la"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ;no test
