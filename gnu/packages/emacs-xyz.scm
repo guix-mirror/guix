@@ -19280,7 +19280,7 @@ try completing.  See @code{fish-completion-fallback-on-bash-p}.")
 (define-public emacs-gif-screencast
   (package
     (name "emacs-gif-screencast")
-    (version "1.1")
+    (version "1.2")
     (source
      (origin
        (method git-fetch)
@@ -19290,7 +19290,7 @@ try completing.  See @code{fish-completion-fallback-on-bash-p}.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1g1by8lvf8c9vzm4wwsi5kp285kaj0ahsl54048ympin4pi0njw9"))))
+         "1yf6yipvhhna29mzaan5vb3d5qvbrkp2awr5diyf381mvxgk8akh"))))
     (build-system emacs-build-system)
     (inputs
      `(("scrot" ,scrot)
