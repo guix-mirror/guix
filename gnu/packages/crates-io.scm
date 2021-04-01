@@ -33078,14 +33078,14 @@ MessagePack format.")
 (define-public rust-rocket-0.4
   (package
     (name "rust-rocket")
-    (version "0.4.6")
+    (version "0.4.7")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "rocket" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1sb6i0y65hq4wy4awa14diyv19wcd1sii2mfjdlcwam3mbbfbisg"))))
+        (base32 "04ybnhjw92zaan92lsmx6mkhqc9cpsg3885svb3wzyj39pyzvsvz"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
