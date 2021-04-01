@@ -121,6 +121,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gnunet)
   #:use-module (gnu packages gpodder)
   #:use-module (gnu packages graphics)
   #:use-module (gnu packages graphviz)
@@ -132,6 +133,7 @@
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages java)
   #:use-module (gnu packages libffi)
+  #:use-module (gnu packages libevent)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux) ; for alsa-utils
   #:use-module (gnu packages lirc)
@@ -6825,4 +6827,51 @@ the comment header of an Ogg Opus audio file, offering both read-only and
 editing modes.  Tags can be edited interactively with an editor of your
 choice.")
     (home-page "https://github.com/fmang/opustags")
+    (license license:bsd-3)))
+
+(define-public musikcube
+  (package
+    (name "musikcube")
+    (version "0.96.10")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/clangen/musikcube/")
+                     (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "06myr83x8jvzlzchg3jsw1163n2lcsbmb176zgnx7xxa26jpdbh1"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:tests? #f ; No test suite
+       #:configure-flags
+       '("-DCMAKE_BUILD_TYPE=Release"
+         "-DENABLE_BUNDLED_TAGLIB=false"
+         ;; Use the "wide" ncurses headers but don't look for them in an
+         ;; ncursesw directory. For more info:
+         ;; https://github.com/clangen/musikcube/wiki/building#compiler-cannot-find-ncurseswcursesh
+         "-DNO_NCURSESW=true"
+         ;; We will strip the binaries ourselves in the 'strip' phase.
+         "-DDISABLE_STRIP=true")))
+    (native-inputs
+     (list pkg-config))
+    (inputs
+     (list alsa-lib
+           boost
+           curl
+           ffmpeg
+           lame
+           libev
+           libmicrohttpd
+           libopenmpt
+           ncurses
+           openssl
+           pulseaudio
+           taglib
+           zlib))
+    (synopsis "Terminal-based music player, library, and streaming audio server")
+    (description "Musikcube is a terminal-based music player, library, and
+streaming audio server.")
+    (home-page "https://musikcube.com/")
     (license license:bsd-3)))
