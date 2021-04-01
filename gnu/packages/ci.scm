@@ -175,5 +175,5 @@
       (description
        "Cuirass is a continuous integration tool using GNU Guix.  It is
 intended as a replacement for Hydra.")
-      (home-page "https://www.gnu.org/software/guix/")
+      (home-page "https://guix.gnu.org/cuirass/")
       (license l:gpl3+))))
