@@ -22307,10 +22307,10 @@ explosion.")
 image together with its neighboring pixels.")
     (license license:expat)))
 
-(define-public rust-lopdf-0.25
+(define-public rust-lopdf-0.26
   (package
     (name "rust-lopdf")
-    (version "0.25.0")
+    (version "0.26.0")
     (source
       (origin
         (method url-fetch)
@@ -22318,8 +22318,7 @@ image together with its neighboring pixels.")
         (file-name
           (string-append name "-" version ".tar.gz"))
         (sha256
-         (base32
-          "1yb4yj1a8a88w78hz9msg65xbkyx5n4d9gm1xb2c67zaj1xvyw1i"))))
+         (base32 "1wqnmibs8qzi6pr3ig4h3sg6bfkkgyv4ngdng81x069725r056ml"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -22335,7 +22334,7 @@ image together with its neighboring pixels.")
         ("rust-nom" ,rust-nom-5)
         ("rust-pom" ,rust-pom-3)
         ("rust-rayon" ,rust-rayon-1)
-        ("rust-time" ,rust-time-0.1))))
+        ("rust-time" ,rust-time-0.2))))
     (home-page "https://github.com/J-F-Liu/lopdf")
     (synopsis "Rust library for PDF document manipulation")
     (description

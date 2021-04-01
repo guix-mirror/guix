@@ -3367,7 +3367,7 @@ library.")
 (define-public librsvg-next
   (package
     (name "librsvg")
-    (version "2.50.2")
+    (version "2.50.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/librsvg/"
@@ -3375,7 +3375,7 @@ library.")
                                   "librsvg-" version ".tar.xz"))
               (sha256
                (base32
-                "1lsnl08b5pjf01q3agixjd53islw5rqkc38r31rlmm2crrqz44b2"))
+                "0n79i4wj9hm0d3bbn4xvknq5ylhqs16pvhaqr1rxspx9wfc8lad4"))
               (modules '((guix build utils)))
               (snippet
                '(begin (delete-file-recursively "vendor")
@@ -3431,7 +3431,7 @@ library.")
         ("rust-chrono" ,rust-chrono-0.4)
         ("rust-criterion" ,rust-criterion-0.3)
         ("rust-float-cmp" ,rust-float-cmp-0.8)
-        ("rust-lopdf" ,rust-lopdf-0.25)
+        ("rust-lopdf" ,rust-lopdf-0.26)
         ("rust-png" ,rust-png-0.16)
         ("rust-predicates" ,rust-predicates-1)
         ("rust-tempfile" ,rust-tempfile-3))
