@@ -142,7 +142,9 @@ provides a 'CMakeLists.txt' file as its build system."
                     #:search-paths '#$(sexp->gexp
                                        (map search-path-specification->sexp
                                             search-paths))
-                    #:phases #$phases
+                    #:phases #$(if (pair? phases)
+                                   (sexp->gexp phases)
+                                   phases)
                     #:qt-wrap-excluded-outputs #$qt-wrap-excluded-outputs
                     #:configure-flags #$configure-flags
                     #:make-flags #$make-flags
