@@ -1230,7 +1230,7 @@ virtualization library.")
 (define-public virt-manager
   (package
     (name "virt-manager")
-    (version "3.2.0")
+    (version "2.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://virt-manager.org/download/sources"
@@ -1238,10 +1238,11 @@ virtualization library.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "11kvpzcmyir91qz0dsnk7748jbb4wr8mrc744w117qc91pcy6vrb"))))
+                "06ws0agxlip6p6n3n43knsnjyd91gqhh2dadgc33wl9lx1k8vn6g"))))
     (build-system python-build-system)
     (arguments
      `(#:use-setuptools? #f          ; uses custom distutils 'install' command
+       #:test-target "test_ui"
        #:tests? #f                      ; TODO The tests currently fail
                                         ; RuntimeError: Loop condition wasn't
                                         ; met
@@ -1258,6 +1259,12 @@ virtualization library.")
            (lambda* (#:key outputs #:allow-other-keys)
              (substitute* "virtinst/buildconfig.py"
                (("/usr") (assoc-ref outputs "out")))
+             #t))
+         (add-after 'unpack 'fix-qemu-img-reference
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "virtconv/formats.py"
+               (("/usr(/bin/qemu-img)" _ suffix)
+                (string-append (assoc-ref inputs "qemu") suffix)))
              #t))
          (add-after 'unpack 'fix-default-uri
            (lambda* (#:key inputs #:allow-other-keys)
@@ -1289,12 +1296,11 @@ virtualization library.")
            (lambda* (#:key tests? #:allow-other-keys)
              (when tests?
                (setenv "HOME" "/tmp")
-               (setenv "XDG_CACHE_HOME" "/tmp")
                (system "Xvfb :1 &")
                (setenv "DISPLAY" ":1")
                ;; Dogtail requires that Assistive Technology support be enabled
                (setenv "GTK_MODULES" "gail:atk-bridge")
-               (invoke "dbus-run-session" "--" "pytest" "--uitests"))
+               (invoke "dbus-run-session" "--" "python" "setup.py" "test_ui"))
              #t))
          (add-after 'install 'glib-or-gtk-compile-schemas
            (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-compile-schemas))
@@ -1324,9 +1330,7 @@ virtualization library.")
        ("gtk+" ,gtk+ "bin")             ; gtk-update-icon-cache
        ("perl" ,perl)                   ; pod2man
        ("intltool" ,intltool)
-       ("rst2man" ,python-docutils)
        ;; The following are required for running the tests
-       ;; ("python-pytest" ,python-pytest)
        ;; ("python-dogtail" ,python-dogtail)
        ;; ("xvfb" ,xorg-server-for-tests)
        ;; ("dbus" ,dbus)
