@@ -24372,3 +24372,34 @@ entities
 @item Three consecutive dots (... or . . .) into an ellipsis entity
 @end enumerate")
     (license license:bsd-3)))
+
+(define-public python-typogrify
+  (package
+    (name "python-typogrify")
+    (version "2.0.7")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "typogrify" version))
+              (sha256
+               (base32
+                "0f6b2gnnxjbx1fbmkcscc6qjr4hi78kwm1wx4b766ha3va66dr4b"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "nosetests" "-v"))))))
+    (propagated-inputs
+     `(("python-smartypants" ,python-smartypants)))
+    (native-inputs
+     ;; For tests.
+     `(("python-nose" ,python-nose)))
+    (home-page "https://github.com/mintchaos/typogrify")
+    (synopsis "Filters to transform text into typographically-improved HTML")
+    (description
+     "@code{typogrify} provides a set of custom filters that automatically
+apply various transformations to plain text in order to yield
+typographically-improved HTML.  While often used in conjunction with Jinja and
+Django template systems, the filters can be used in any environment.")
+    (license license:bsd-3)))
