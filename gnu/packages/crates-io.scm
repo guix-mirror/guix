@@ -33115,14 +33115,14 @@ and speed.")
 (define-public rust-rocket-codegen-0.4
   (package
     (name "rust-rocket-codegen")
-    (version "0.4.6")
+    (version "0.4.7")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "rocket_codegen" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0n4k00fwwabvkjvnl62gwdc5v7rsg6bnmmwwiwm5bzpmdnqm94ai"))))
+        (base32 "18s2dll8c4sd26s8cfr6cizj5z55xwnk6r6x7b2wvcf8n9ajrb6f"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
