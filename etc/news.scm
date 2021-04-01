@@ -24,6 +24,7 @@
  (entry (commit "e52ec6c64a17a99ae4bb6ff02309067499915b06")
         (title
          (en "New supported platform: powerpc64le-linux")
+         (de "Neue Plattform wird unterstützt: powerpc64le-linux")
          (fr "Nouvelle plate-forme prise en charge : powerpc64le-linux"))
         (body
          (en "A new platform, powerpc64le-linux, has been added for
@@ -36,6 +37,17 @@ the build farm, and some packages may fail to build.  In addition, Guix System
 is not yet available on this platform.  That said, the Guix community is
 actively working on improving this support, and now is a great time to try it
 and get involved!")
+         (de "Eine neue Plattform, powerpc64le-linux, wurde hinzugefügt. Mit
+ihr können Prozessoren mit 64-Bit-Power-Befehlssatz, little-endian, mit dem
+Linux-Libre-Kernel betrieben werden.  Dazu gehören POWER9-Systeme wie die
+@uref{https://www.fsf.org/news/talos-ii-mainboard-and-talos-ii-lite-mainboard-now-fsf-certified-to-respect-your-freedom,
+RYF-zertifizierte Talos-II-Hauptplatine}.  Bei der Plattform handelt es sich
+um eine „Technologievorschau“; obwohl sie unterstützt wird, gibt es noch keine
+Substitute von der Erstellungsfarm und bei manchen Paketen könnte die
+Erstellung fehlschlagen.  Des Weiteren ist Guix System auf dieser Plattform
+noch nicht verfügbar.  Dennoch arbeitet die Guix-Gemeinde aktiv daran, diese
+Unterstützung auszubauen, und jetzt ist eine gute Gelegenheit, sie
+auszuprobieren und mitzumachen!")
          (fr "Une nouvelle plate-forme, powerpc64le-linux, a été ajoutée pour
 les processeurs POWER 64-bits utilisant le noyau Linux-libre.  Ça inclut les
 systèmes POWER9 tels que les
