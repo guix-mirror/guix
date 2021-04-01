@@ -3653,7 +3653,7 @@ window.")
 (define-public emacs-git-link
   (package
     (name "emacs-git-link")
-    (version "0.7.5")
+    (version "0.8.3")
     (source
      (origin
        (method git-fetch)
@@ -3662,7 +3662,7 @@ window.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "04xa6lp8wkjb6zs096bf4sz124grcjj15xv1h009bmn2j95rggj6"))))
+        (base32 "0l7xmvmj5s93hc39wjjv75f22zbhahnmcxpmvx3dfvsbig9pmk75"))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #t
