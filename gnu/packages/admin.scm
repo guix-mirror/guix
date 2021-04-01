@@ -3761,10 +3761,7 @@ Python loading in HPC environments.")
       (native-inputs
        `(("gzip" ,gzip)))
       (arguments
-       `(#:modules
-         ((guix build utils)
-          (ice-9 match)
-          (srfi srfi-26))
+       `(#:modules ((guix build utils))
          #:builder
          (begin
            (use-modules (guix build utils)

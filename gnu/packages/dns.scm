@@ -1050,9 +1050,7 @@ LuaJIT, both a resolver library and a daemon.")
        ("perl-digest-sha1" ,perl-digest-sha1)
        ("perl-io-socket-ssl" ,perl-io-socket-ssl)))
     (arguments
-     `(#:modules ((guix build utils)
-                  (ice-9 match)
-                  (srfi srfi-26))
+     `(#:modules ((guix build utils))
        #:builder
        (begin
          (use-modules (guix build utils)

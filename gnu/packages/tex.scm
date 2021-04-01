@@ -6752,8 +6752,7 @@ produce either PostScript or PDF output.")
                 "1vz9zg7s5w52xr323zgglzprfrvba2zvyzf6b8vrdf4wdghlpv4z"))))
     (build-system trivial-build-system)
     (arguments
-     `(#:modules ((guix build utils)
-                  (ice-9 match))
+     `(#:modules ((guix build utils))
        #:builder
        (begin
          (use-modules (guix build utils)
