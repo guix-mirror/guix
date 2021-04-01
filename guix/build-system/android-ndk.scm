@@ -62,6 +62,7 @@
                              #:test-target #$test-target
                              #:tests? #$tests?
                              #:phases #$phases
+                             #:bootstrap-scripts '() ;no autotools machinery
                              #:make-flags
                              (cons* "-f"
                                     #$(file-append (gexp-input-thing
