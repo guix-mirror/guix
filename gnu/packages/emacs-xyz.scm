@@ -25598,6 +25598,28 @@ can specify how popup-displaying functions occupy the screen.")
       (home-page "https://github.com/wasamasa/shackle")
       (license license:gpl3+))))
 
+(define-public emacs-showtip
+  (let ((commit "930da302809a4257e8d69425455b29e1cc91949b")
+        (revision "0"))
+    (package
+      (name "emacs-showtip")
+      (version (git-version "0.01" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/emacsorphanage/showtip")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "01zak0zhha6dp7a2hm28d065gjnc462iwpsfyxhbxgfzcdlicqc7"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/emacsorphanage/showtip")
+      (synopsis "Show tip at cursor")
+      (description
+       "This library provide one function to show tooltip near the cursor.")
+      (license license:gpl2+))))
+
 (define-public emacs-helm-lacarte
   (let ((commit "40a6c449720be521435b6b1da7911af3a0b9dca0")
         (revision "1"))
