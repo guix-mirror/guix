@@ -7884,3 +7884,25 @@ symbols.  The system is absolutely stand-alone; apart from Utopia and
 Fourier no other typefaces are required.  Utopia is a registered
 trademark of Adobe Systems Incorporated.")
     (license license:lppl)))
+
+(define-public texlive-utopia
+  (package
+    (inherit (simple-texlive-package
+              "texlive-utopia"
+              (list "/doc/fonts/utopia/"
+                    "/fonts/afm/adobe/utopia/"
+                    "/fonts/tfm/adobe/utopia/"
+                    "/fonts/type1/adobe/utopia/"
+                    "/fonts/vf/adobe/utopia/")
+              (base32
+               "113wgkfz4z0ls2grxxfj17l42a1yv9r5ipcd0156xnfsrqvqzxfc")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/utopia")
+    (synopsis "Adobe Utopia fonts")
+    (description "The Adobe Standard Encoding set of the Utopia font
+family, as contributed to the X Consortium.  The set comprises upright
+and italic shapes in medium and bold weights.  Macro support and
+matching maths fonts are provided by the @code{fourier} and
+@code{mathdesign} font packages.")
+    (license (license:fsf-free
+              "http://mirrors.ctan.org/fonts/utopia/README"))))
