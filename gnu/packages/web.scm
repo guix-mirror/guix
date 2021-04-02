@@ -6851,18 +6851,19 @@ Web Server.")
 (define-public java-eclipse-jetty-util
   (package
     (name "java-eclipse-jetty-util")
-    (version "9.4.6")
+    (version "9.4.39")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/eclipse/jetty.project/"
-                                  "archive/jetty-" version ".v20170531.tar.gz"))
+                                  "archive/jetty-" version ".v20210325.tar.gz"))
               (sha256
                (base32
-                "0x7kbdvkmgr6kbsmbwiiyv3bb0d6wk25frgvld9cf8540136z9p1"))))
+                "0b4hy4zmdmfbqk9bzmxk7v75y2ysqiappkip4z3hb9lxjvjh0b19"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "eclipse-jetty-util.jar"
        #:source-dir "src/main/java"
+       #:tests? #f; require junit 5
        #:test-exclude
        (list "**/Abstract*.java"
              ;; requires network
@@ -6881,11 +6882,6 @@ Web Server.")
     (inputs
      `(("slf4j" ,java-slf4j-api)
        ("servlet" ,java-javaee-servletapi)))
-    (native-inputs
-     `(("junit" ,java-junit)
-       ("hamcrest" ,java-hamcrest-all)
-       ("perf-helper" ,java-eclipse-jetty-perf-helper)
-       ("test-helper" ,java-eclipse-jetty-test-helper)))
     (home-page "https://www.eclipse.org/jetty/")
     (synopsis "Utility classes for Jetty")
     (description "The Jetty Web Server provides an HTTP server and Servlet
@@ -6946,6 +6942,7 @@ or embedded instantiation.  This package provides utility classes.")
      `(#:jar-name "eclipse-jetty-io.jar"
        #:source-dir "src/main/java"
        #:jdk ,icedtea-8
+       #:tests? #f; require junit 5
        #:test-exclude (list "**/Abstract*.java"
                             ;; Abstract class
                             "**/EndPointTest.java")
@@ -6987,6 +6984,7 @@ or embedded instantiation.  This package provides IO-related utility classes."))
      `(#:jar-name "eclipse-jetty-http.jar"
        #:source-dir "src/main/java"
        #:jdk ,icedtea-8
+       #:tests? #f; require junit 5
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'chdir
@@ -7122,9 +7120,6 @@ or embedded instantiation.  This package provides the JMX management.")))
        ("io" ,java-eclipse-jetty-io)
        ("jmx" ,java-eclipse-jetty-jmx)
        ("util" ,java-eclipse-jetty-util)))
-    (native-inputs
-     `(("test-classes" ,java-eclipse-jetty-http-test-classes)
-       ,@(package-native-inputs java-eclipse-jetty-util)))
     (synopsis "Core jetty server artifact")
     (description "The Jetty Web Server provides an HTTP server and Servlet
 container capable of serving static and dynamic content either from a standalone
@@ -7154,6 +7149,7 @@ artifact.")))
      `(#:jar-name "eclipse-jetty-security.jar"
        #:source-dir "src/main/java"
        #:jdk ,icedtea-8
+       #:tests? #f; require junit 5
        #:test-exclude (list "**/ConstraintTest.*") ; This test fails
        #:phases
        (modify-phases %standard-phases
@@ -7167,9 +7163,6 @@ artifact.")))
        ("http" ,java-eclipse-jetty-http)
        ("server" ,java-eclipse-jetty-server)
        ("util" ,java-eclipse-jetty-util)))
-    (native-inputs
-     `(("io" ,java-eclipse-jetty-io)
-       ,@(package-native-inputs java-eclipse-jetty-util)))
     (synopsis "Jetty security infrastructure")
     (description "The Jetty Web Server provides an HTTP server and Servlet
 container capable of serving static and dynamic content either from a standalone
@@ -7190,6 +7183,18 @@ infrastructure")))
      `(("io" ,java-eclipse-jetty-io-9.2)
        ,@(package-native-inputs java-eclipse-jetty-util-9.2)))))
 
+(define-public java-eclipse-jetty-util-ajax
+  (package
+    (inherit java-eclipse-jetty-util)
+    (name "java-eclipse-jetty-util-ajax")
+    (arguments
+     `(#:jar-name "eclipse-jetty-util-ajax.jar"
+       #:source-dir "jetty-util-ajax/src/main/java"
+       #:tests? #f)); require junit 5
+    (inputs
+     `(("java-eclipse-jetty-util" ,java-eclipse-jetty-util)
+       ("java-javaee-servletapi" ,java-javaee-servletapi)))))
+
 (define-public java-eclipse-jetty-servlet
   (package
     (inherit java-eclipse-jetty-util)
@@ -7198,6 +7203,7 @@ infrastructure")))
      `(#:jar-name "eclipse-jetty-servlet.jar"
        #:source-dir "src/main/java"
        #:jdk ,icedtea-8
+       #:tests? #f; require junit 5
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'chdir
@@ -7207,8 +7213,8 @@ infrastructure")))
     (inputs
      `(("slf4j" ,java-slf4j-api)
        ("java-javaee-servletapi" ,java-javaee-servletapi)
+       ("java-eclipse-jetty-util-ajax" ,java-eclipse-jetty-util-ajax)
        ("http" ,java-eclipse-jetty-http)
-       ("http-test" ,java-eclipse-jetty-http-test-classes)
        ("io" ,java-eclipse-jetty-io)
        ("jmx" ,java-eclipse-jetty-jmx)
        ("security" ,java-eclipse-jetty-security)
@@ -7298,6 +7304,7 @@ container.")))
      `(#:jar-name "eclipse-jetty-webapp.jar"
        #:source-dir "src/main/java"
        #:jdk ,icedtea-8
+       #:tests? #f; require junit 5
        ;; One test fails
        #:test-exclude (list "**/WebAppContextTest.java")
        #:phases
@@ -7309,14 +7316,12 @@ container.")))
     (inputs
      `(("java-eclipse-jetty-util" ,java-eclipse-jetty-util)
        ("java-eclipse-jetty-http" ,java-eclipse-jetty-http)
+       ("java-eclipse-jetty-io" ,java-eclipse-jetty-io)
        ("java-eclipse-jetty-server" ,java-eclipse-jetty-server)
        ("java-eclipse-jetty-servlet" ,java-eclipse-jetty-servlet)
        ("java-eclipse-jetty-security" ,java-eclipse-jetty-security)
        ("java-eclipse-jetty-xml" ,java-eclipse-jetty-xml)
-       ("java-javaee-servletapi" ,java-javaee-servletapi)))
-    (native-inputs
-     `(("java-eclipse-jetty-io" ,java-eclipse-jetty-io)
-       ,@(package-native-inputs java-eclipse-jetty-util)))))
+       ("java-javaee-servletapi" ,java-javaee-servletapi)))))
 
 (define-public java-eclipse-jetty-webapp-9.2
   (package
