@@ -788,7 +788,7 @@ authentication.")
 (define-public pidgin
   (package
     (name "pidgin")
-    (version "2.14.1")
+    (version "2.14.2")
     (source
      (origin
        (method url-fetch)
@@ -796,11 +796,9 @@ authentication.")
         (string-append "mirror://sourceforge/pidgin/Pidgin/"
                        version "/pidgin-" version ".tar.gz"))
        (sha256
-        (base32 "1c4dzxg9c3d9zfqqa7jwijj9rv9fm6w95igmpljwy88lxq7v5w11"))
+        (base32 "19r297ynxizdj357ihmy0sgpgfikdzblkszlwlqnsr3lvbjhhsg1"))
        (patches
-        (search-patches
-         "pidgin-add-search-path.patch"
-         "pidgin-vv-gst.patch"))
+        (search-patches "pidgin-add-search-path.patch"))
        (modules '((guix build utils)))
        (snippet
         '(begin
