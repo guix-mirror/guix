@@ -62,6 +62,7 @@
               (base32
                "12w7gskrglg6qrmp822j37fmbr0icrcxv7rib1fy5xiw80n5z7cr"))
              (patches (search-patches "curl-use-ssl-cert-env.patch"))))
+   (replacement curl/fixed)
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                             ;1.2 MiB of man3 pages
@@ -150,6 +151,20 @@ tunneling, and so on.")
     curl
     (name "curl-minimal")
     (inputs (alist-delete "openldap" (package-inputs curl))))))
+
+(define-public curl/fixed
+  (package
+    (inherit curl)
+    (version "7.76.0")
+    (source
+     (origin
+       (inherit (package-source curl))
+       (uri (string-append "https://curl.haxx.se/download/curl-"
+                           version ".tar.xz"))
+       (patches (search-patches "curl-7.76-use-ssl-cert-env.patch"))
+       (sha256
+        (base32
+         "1j2g04m6als6hmqzvddv84c31m0x90bfgyz3bjrwdkarbkby40k3"))))))
 
 (define-public kurly
   (package
