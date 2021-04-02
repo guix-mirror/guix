@@ -185,10 +185,9 @@ make sure no empty directory is left behind."
     (lambda ()
       (mkdir-p directory)
 
-      (let ((auth-method (%make-auth-ssh-agent)))
-        (clone url directory
-               (make-clone-options
-                #:fetch-options (make-default-fetch-options)))))
+      (clone url directory
+             (make-clone-options
+              #:fetch-options (make-default-fetch-options))))
     (lambda _
       (false-if-exception (rmdir directory)))))
 
@@ -389,9 +388,8 @@ it unchanged."
      ;; Only fetch remote if it has not been cloned just before.
      (when (and cache-exists?
                 (not (reference-available? repository ref)))
-       (let ((auth-method (%make-auth-ssh-agent)))
-         (remote-fetch (remote-lookup repository "origin")
-                       #:fetch-options (make-default-fetch-options))))
+       (remote-fetch (remote-lookup repository "origin")
+                     #:fetch-options (make-default-fetch-options)))
      (when recursive?
        (update-submodules repository #:log-port log-port))
 
