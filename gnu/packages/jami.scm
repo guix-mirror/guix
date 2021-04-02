@@ -497,7 +497,11 @@ protocols, as well as decentralized calling using P2P-DHT.")
                ;; its configuration under /etc rather than /usr/share/dbus-1,
                ;; which is perhaps the reason the auto-launching of dring
                ;; doesn't work on foreign distributions.
-               "-DENABLE_LIBWRAP=true"))
+
+               ;; FIXME: Disabled for now, as it causes a segfault when
+               ;; attempting video calls (see:
+               ;; https://git.jami.net/savoirfairelinux/ring-lrc/-/issues/466).
+               "-DENABLE_LIBWRAP=false"))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'change-directory
