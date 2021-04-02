@@ -689,17 +689,6 @@ language and very flexible regarding to new or unknown keyboard layouts.")
         (sha256
          (base32 "10lm2p8w26c9n6lhvw3301myfss0dq7hl7rawzb3hsy1lqvmvdib"))))
     (build-system qt-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'configure 'patch-makefiles
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((qtdec (assoc-ref inputs "qtdeclarative")))
-               (substitute* '("src/CMakeFiles/ktouch_autogen.dir/build.make"
-                              "src/CMakeFiles/ktouch.dir/build.make")
-                 (("/gnu/store/.*qmlcachegen")
-                  (string-append qtdec "/bin/qmlcachegen"))))
-             #t)))))
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("kdoctools" ,kdoctools)
