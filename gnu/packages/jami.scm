@@ -425,6 +425,7 @@ of Jami."
     (version %jami-version)
     (source %jami-sources)
     (build-system gnu-build-system)
+    (outputs '("out" "debug"))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("asio" ,asio)
@@ -480,6 +481,7 @@ protocols, as well as decentralized calling using P2P-DHT.")
     (version %jami-version)
     (source %jami-sources)
     (build-system cmake-build-system)
+    (outputs '("out" "debug"))
     (inputs
      `(("libring" ,libring)
        ("network-manager" ,network-manager)))
@@ -522,6 +524,7 @@ decentralized calling using P2P-DHT.")
     (version %jami-version)
     (source %jami-sources)
     (build-system cmake-build-system)
+    (outputs '("out" "debug"))
     (inputs
      `(("clutter" ,clutter)
        ("clutter-gtk" ,clutter-gtk)
@@ -579,6 +582,7 @@ decentralized calling using P2P-DHT.")
                (base32
                 "1rf3lpk8c4qc12pi6pn4rdp7i8b83xv64yqr0q47rzv9s518qyjp"))))
     (build-system qt-build-system)
+    (outputs '("out" "debug"))
     (arguments
      `(#:tests? #f                      ;no test suite
        #:phases
