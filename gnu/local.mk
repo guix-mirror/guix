@@ -34,7 +34,7 @@
 # Copyright © 2020, 2021 Felix Gruber <felgru@posteo.net>
 # Copyright © 2020 Ryan Prior <rprior@protonmail.com>
 # Copyright © 2020 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
-# Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+# Copyright © 2020, 2021 Brice Waegeneire <brice@waegenei.re>
 # Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
 # Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 # Copyright © 2020 Malte Frank Gerdes <mate.f.gerdes@gmail.com>
@@ -1264,7 +1264,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/kdbusaddons-kinit-file-name.patch	\
   %D%/packages/patches/libffi-3.3-powerpc-fixes.patch		\
   %D%/packages/patches/libffi-float128-powerpc64le.patch	\
-  %D%/packages/patches/libvirt-create-machine-cgroup.patch	\
+  %D%/packages/patches/libvirt-add-install-prefix.patch	\
   %D%/packages/patches/libziparchive-add-includes.patch		\
   %D%/packages/patches/localed-xorg-keyboard.patch		\
   %D%/packages/patches/kdiagram-Fix-missing-link-libraries.patch \

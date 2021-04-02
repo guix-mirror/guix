@@ -12,7 +12,7 @@
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019 Guy Fleury Iteriteka <hoonandon@gmail.com>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
-;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2020, 2021 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
@@ -42,6 +42,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages build-tools)
   #:use-module (gnu packages check)
@@ -97,6 +98,7 @@
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages pulseaudio)
+  #:use-module (gnu packages readline)
   #:use-module (gnu packages selinux)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages sphinx)
@@ -1065,66 +1067,48 @@ manage system or application containers.")
 (define-public libvirt
   (package
     (name "libvirt")
-    (version "5.8.0")
+    (version "7.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://libvirt.org/sources/libvirt-"
                            version ".tar.xz"))
        (sha256
-        (base32 "0m8cqaqflvys5kaqpvb0qr4k365j09jc5xk6x70yvg8qkcl2hcz2"))
-       (patches
-        (search-patches "libvirt-create-machine-cgroup.patch"))))
-    (build-system gnu-build-system)
+        (base32 "1l6i1rz1v9rnp61sgzlrlbsfh03208dbm3b259i0jl5sqz85kx01"))
+       (patches (search-patches "libvirt-add-install-prefix.patch"))))
+    (build-system meson-build-system)
     (arguments
      `(#:configure-flags
-       (list "--with-qemu"
-             "--with-qemu-user=nobody"
-             "--with-qemu-group=kvm"
-             "--with-storage-disk"
-             "--with-storage-dir"
-             "--with-polkit"
-             (string-append "--docdir=" (assoc-ref %outputs "out") "/share/doc/"
+       (list "-Ddriver_qemu=enabled"
+             "-Dqemu_user=nobody"
+             "-Dqemu_group=kvm"
+             "-Dstorage_disk=enabled"
+             "-Dstorage_dir=enabled"
+             "-Dpolkit=enabled"
+             "-Dnls=enabled"            ;translations
+             (string-append "-Ddocdir=" (assoc-ref %outputs "out") "/share/doc/"
                             ,name "-" ,version)
+             "-Dbash_completion=enabled"
+             (string-append "-Dinstall_prefix=" (assoc-ref %outputs "out"))
              "--sysconfdir=/etc"
              "--localstatedir=/var")
+       #:meson ,meson-0.55
        #:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'fix-BOURNE_SHELL-definition
-           ;; BOURNE_SHELL is hard-#defined to ‘/bin/sh’, causing test failures.
-           (lambda _
-             (substitute* "config.h.in"
-               (("/bin/sh") (which "sh")))
-             #t))
-         (add-before 'configure 'patch-libtirpc-file-names
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; libvirt uses an m4 macro instead of pkg-config to determine where
-             ;; the RPC headers are located.  Tell it to look in the right place.
-             (substitute* "configure"
-               (("/usr/include/tirpc")  ;defined in m4/virt-xdr.m4
-                (string-append (assoc-ref inputs "libtirpc")
-                               "/include/tirpc")))
-             #t))
          (add-before 'configure 'disable-broken-tests
            (lambda _
-             (let ((tests (list "commandtest"      ; hangs idly
-                                "qemuxml2argvtest" ; fails
-                                "qemuhotplugtest"  ; fails
-                                "virnetsockettest" ; tries to network
-                                "virshtest")))     ; fails
-               (substitute* "tests/Makefile.in"
-                 (((format #f "(~a)\\$\\(EXEEXT\\)" (string-join tests "|")))
+             (let ((tests (list "commandtest"           ; hangs idly
+                                "qemuxml2argvtest"      ; fails
+                                "virnetsockettest")))   ; tries to network
+               (substitute* "tests/meson.build"
+                 (((format #f ".*'name': '(~a)'.*" (string-join tests "|")))
                   ""))
                #t)))
-         (replace 'install
-           ;; Since the sysconfdir and localstatedir should be /etc and /var
-           ;; at runtime, we must prevent writing to them at installation
-           ;; time.
-           (lambda* (#:key make-flags #:allow-other-keys)
-             (apply invoke "make" "install"
-                    "sysconfdir=/tmp/etc"
-                    "localstatedir=/tmp/var"
-                    make-flags))))))
+         (add-before 'install 'no-polkit-magic
+           ;; Meson ‘magically’ invokes pkexec, which fails (not setuid).
+           (lambda _
+             (setenv "PKEXEC_UID" "something")
+             #t)))))
     (inputs
      `(("libxml2" ,libxml2)
        ("eudev" ,eudev)
@@ -1133,11 +1117,13 @@ manage system or application containers.")
        ("dbus" ,dbus)
        ("libpcap" ,libpcap)
        ("libnl" ,libnl)
+       ("libssh2" ,libssh2)             ;optional
        ("libtirpc" ,libtirpc)           ;for <rpc/rpc.h>
        ("libuuid" ,util-linux "lib")
        ("lvm2" ,lvm2)                   ;for libdevmapper
        ("curl" ,curl)
        ("openssl" ,openssl)
+       ("readline" ,readline)
        ("cyrus-sasl" ,cyrus-sasl)
        ("libyajl" ,libyajl)
        ("audit" ,audit)
@@ -1148,11 +1134,15 @@ manage system or application containers.")
        ("iproute" ,iproute)
        ("iptables" ,iptables)))
     (native-inputs
-     `(("xsltproc" ,libxslt)
+     `(("bash-completion" ,bash-completion)
+       ("gettext" ,gettext-minimal)
+       ("xsltproc" ,libxslt)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("polkit" ,polkit)
-       ("python" ,python-wrapper)))
+       ("python" ,python-wrapper)
+       ("python-docutils" ,python-docutils) ;for rst2html
+       ("rpcsvc-proto" ,rpcsvc-proto)))     ;for rpcgen
     (home-page "https://libvirt.org")
     (synopsis "Simple API for virtualization")
     (description "Libvirt is a C toolkit to interact with the virtualization
