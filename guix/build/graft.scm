@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016, 2018 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2016, 2021 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -55,6 +55,52 @@
         (string->char-set "0123456789abcdfghijklmnpqrsvwxyz")
         <>))
 
+(define (nix-base32-char-or-nul? c)
+  "Return true if C is a nix-base32 character or NUL, otherwise return false."
+  (or (nix-base32-char? c)
+      (char=? c #\nul)))
+
+(define (possible-utf16-hash? buffer i w)
+  "Return true if (I - W) is large enough to hold a UTF-16 encoded
+nix-base32 hash and if BUFFER contains NULs in all positions where NULs
+are to be expected in a UTF-16 encoded hash+dash pattern whose dash is
+found at position I.  Otherwise, return false."
+  (and (<= (* 2 hash-length) (- i w))
+       (let loop ((j (+ 1 (- i (* 2 hash-length)))))
+         (or (>= j i)
+             (and (zero? (bytevector-u8-ref buffer j))
+                  (loop (+ j 2)))))))
+
+(define (possible-utf32-hash? buffer i w)
+  "Return true if (I - W) is large enough to hold a UTF-32 encoded
+nix-base32 hash and if BUFFER contains NULs in all positions where NULs
+are to be expected in a UTF-32 encoded hash+dash pattern whose dash is
+found at position I.  Otherwise, return false."
+  (and (<= (* 4 hash-length) (- i w))
+       (let loop ((j (+ 1 (- i (* 4 hash-length)))))
+         (or (>= j i)
+             (and (zero? (bytevector-u8-ref buffer j))
+                  (zero? (bytevector-u8-ref buffer (+ j 1)))
+                  (zero? (bytevector-u8-ref buffer (+ j 2)))
+                  (loop (+ j 4)))))))
+
+(define (insert-nuls char-size bv)
+  "Given a bytevector BV, return a bytevector containing the same bytes but
+with (CHAR-SIZE - 1) NULs inserted between every two adjacent bytes from BV.
+For example, (insert-nuls 4 #u8(1 2 3)) => #u8(1 0 0 0 2 0 0 0 3)."
+  (if (= char-size 1)
+      bv
+      (let* ((len (bytevector-length bv))
+             (bv* (make-bytevector (+ 1 (* char-size
+                                           (- len 1)))
+                                   0)))
+        (let loop ((i 0))
+          (when (< i len)
+            (bytevector-u8-set! bv* (* i char-size)
+                                (bytevector-u8-ref bv i))
+            (loop (+ i 1))))
+        bv*)))
+
 (define* (replace-store-references input output replacement-table
                                    #:optional (store (%store-directory)))
   "Read data from INPUT, replacing store references according to
@@ -76,9 +122,9 @@ bytevectors to the same value."
           (list->vector (map pred (iota 256)))
           <>))
 
-  (define nix-base32-byte?
+  (define nix-base32-byte-or-nul?
     (optimize-u8-predicate
-     (compose nix-base32-char?
+     (compose nix-base32-char-or-nul?
               integer->char)))
 
   (define (dash? byte) (= byte 45))
@@ -86,100 +132,153 @@ bytevectors to the same value."
   (define request-size (expt 2 20))  ; 1 MiB
 
   ;; We scan the file for the following 33-byte pattern: 32 bytes of
-  ;; nix-base32 characters followed by a dash.  To accommodate large files,
-  ;; we do not read the entire file, but instead work on buffers of up to
-  ;; 'request-size' bytes.  To ensure that every 33-byte sequence appears
-  ;; entirely within exactly one buffer, adjacent buffers must overlap,
-  ;; i.e. they must share 32 byte positions.  We accomplish this by
-  ;; "ungetting" the last 32 bytes of each buffer before reading the next
-  ;; buffer, unless we know that we've reached the end-of-file.
+  ;; nix-base32 characters followed by a dash.  When we find such a pattern
+  ;; whose hash is in REPLACEMENT-TABLE, we perform the required rewrite and
+  ;; continue scanning.
+  ;;
+  ;; To support UTF-16 and UTF-32 store references, the 33 bytes comprising
+  ;; this hash+dash pattern may optionally be interspersed by extra NUL bytes.
+  ;; This simple approach works because the characters we are looking for are
+  ;; restricted to ASCII.  UTF-16 hashes are interspersed with single NUL
+  ;; bytes ("\0"), and UTF-32 hashes are interspersed with triplets of NULs
+  ;; ("\0\0\0").  Note that we require NULs to be present only *between* the
+  ;; other bytes, and not at either end, in order to be insensitive to byte
+  ;; order.
+  ;;
+  ;; To accommodate large files, we do not read the entire file at once, but
+  ;; instead work on buffers of up to REQUEST-SIZE bytes.  To ensure that
+  ;; every hash+dash pattern appears in its entirety in at least one buffer,
+  ;; adjacent buffers must overlap by one byte less than the maximum size of a
+  ;; hash+dash pattern.  We accomplish this by "ungetting" a suffix of each
+  ;; buffer before reading the next buffer, unless we know that we've reached
+  ;; the end-of-file.
   (let ((buffer (make-bytevector request-size)))
-    (let loop ()
-      ;; Note: We avoid 'get-bytevector-n' to work around
-      ;; <http://bugs.gnu.org/17466>.
+    (define-syntax-rule (byte-at i)
+      (bytevector-u8-ref buffer i))
+    (let outer-loop ()
       (match (get-bytevector-n! input buffer 0 request-size)
         ((? eof-object?) 'done)
         (end
-         ;; We scan the buffer for dashes that might be preceded by a
-         ;; nix-base32 hash.  The key optimization here is that whenever we
-         ;; find a NON-nix-base32 character at position 'i', we know that it
-         ;; cannot be part of a hash, so the earliest position where the next
-         ;; hash could start is i+1 with the following dash at position i+33.
-         ;;
-         ;; Since nix-base32 characters comprise only 1/8 of the 256 possible
-         ;; byte values, and exclude some of the most common letters in
-         ;; English text (e t o u), in practice we can advance by 33 positions
-         ;; most of the time.
-         (let scan-from ((i hash-length) (written 0))
-           ;; 'i' is the first position where we look for a dash.  'written'
-           ;; is the number of bytes in the buffer that have already been
-           ;; written.
+         (define (scan-from i w)
+           ;; Scan the buffer for dashes that might be preceded by nix hashes,
+           ;; where I is the minimum position where such a dash might be
+           ;; found, and W is the number of bytes in the buffer that have been
+           ;; written so far.  We assume that I - W >= HASH-LENGTH.
+           ;;
+           ;; The key optimization here is that whenever we find a byte at
+           ;; position I that cannot occur within a nix hash (because it's
+           ;; neither a nix-base32 character nor NUL), we can infer that the
+           ;; earliest position where the next hash could start is at I + 1,
+           ;; and therefore the earliest position for the following dash is
+           ;; (+ I 1 HASH-LENGTH), which is I + 33.
+           ;;
+           ;; Since nix-base32-or-nul characters comprise only about 1/8 of
+           ;; the 256 possible byte values, and exclude some of the most
+           ;; common letters in English text (e t o u), we can advance 33
+           ;; positions much of the time.
            (if (< i end)
-               (let ((byte (bytevector-u8-ref buffer i)))
-                 (cond ((and (dash? byte)
-                             ;; We've found a dash.  Note that we do not know
-                             ;; whether the preceeding 32 bytes are nix-base32
-                             ;; characters, but we do not need to know.  If
-                             ;; they are not, the following lookup will fail.
-                             (lookup-replacement
-                              (string-tabulate (lambda (j)
-                                                 (integer->char
-                                                  (bytevector-u8-ref buffer
-                                                   (+ j (- i hash-length)))))
-                                               hash-length)))
-                        => (lambda (replacement)
-                             ;; We've found a hash that needs to be replaced.
-                             ;; First, write out all bytes preceding the hash
-                             ;; that have not yet been written.
-                             (put-bytevector output buffer written
-                                             (- i hash-length written))
-                             ;; Now write the replacement string.
-                             (put-bytevector output replacement)
-                             ;; Since the byte at position 'i' is a dash,
-                             ;; which is not a nix-base32 char, the earliest
-                             ;; position where the next hash might start is
-                             ;; i+1, and the earliest position where the
-                             ;; following dash might start is (+ i 1
-                             ;; hash-length).  Also, increase the write
-                             ;; position to account for REPLACEMENT.
-                             (let ((len (bytevector-length replacement)))
-                               (scan-from (+ i 1 len)
-                                          (+ i (- len hash-length))))))
-                       ;; If the byte at position 'i' is a nix-base32 char,
-                       ;; then the dash we're looking for might be as early as
-                       ;; the following byte, so we can only advance by 1.
-                       ((nix-base32-byte? byte)
-                        (scan-from (+ i 1) written))
-                       ;; If the byte at position 'i' is NOT a nix-base32
-                       ;; char, then the earliest position where the next hash
-                       ;; might start is i+1, with the following dash at
-                       ;; position (+ i 1 hash-length).
+               (let ((byte (byte-at i)))
+                 (cond ((dash? byte)
+                        (found-dash i w))
+                       ((nix-base32-byte-or-nul? byte)
+                        (scan-from (+ i 1) w))
                        (else
-                        (scan-from (+ i 1 hash-length) written))))
+                        (not-part-of-hash i w))))
+               (finish-buffer i w)))
 
-               ;; We have finished scanning the buffer.  Now we determine how
-               ;; many bytes have not yet been written, and how many bytes to
-               ;; "unget".  If 'end' is less than 'request-size' then we read
-               ;; less than we asked for, which indicates that we are at EOF,
-               ;; so we needn't unget anything.  Otherwise, we unget up to
-               ;; 'hash-length' bytes (32 bytes).  However, we must be careful
-               ;; not to unget bytes that have already been written, because
-               ;; that would cause them to be written again from the next
-               ;; buffer.  In practice, this case occurs when a replacement is
-               ;; made near or beyond the end of the buffer.  When REPLACEMENT
-               ;; went beyond END, we consume the extra bytes from INPUT.
-               (begin
-                 (if (> written end)
-                     (get-bytevector-n! input buffer 0 (- written end))
-                     (let* ((unwritten  (- end written))
-                            (unget-size (if (= end request-size)
-                                            (min hash-length unwritten)
-                                            0))
-                            (write-size (- unwritten unget-size)))
-                       (put-bytevector output buffer written write-size)
-                       (unget-bytevector input buffer (+ written write-size)
-                                         unget-size)))
-                 (loop)))))))))
+         (define (not-part-of-hash i w)
+           ;; Position I is known to not be within a nix hash that we must
+           ;; rewrite.  Therefore, the earliest position where the next hash
+           ;; might start is I + 1, and therefore the earliest position of
+           ;; the following dash is (+ I 1 HASH-LENGTH).
+           (scan-from (+ i 1 hash-length) w))
+
+         (define (found-dash i w)
+           ;; We know that there is a dash '-' at position I, and that
+           ;; I - W >= HASH-LENGTH.  The immediately preceding bytes *might*
+           ;; contain a nix-base32 hash, but that is not yet known.  Here,
+           ;; we rule out all but one possible encoding (ASCII, UTF-16,
+           ;; UTF-32) by counting how many NULs precede the dash.
+           (cond ((not (zero? (byte-at (- i 1))))
+                  ;; The dash is *not* preceded by a NUL, therefore it
+                  ;; cannot possibly be a UTF-16 or UTF-32 hash.  Proceed
+                  ;; to check for an ASCII hash.
+                  (found-possible-hash 1 i w))
+
+                 ((not (zero? (byte-at (- i 2))))
+                  ;; The dash is preceded by exactly one NUL, therefore it
+                  ;; cannot be an ASCII or UTF-32 hash.  Proceed to check
+                  ;; for a UTF-16 hash.
+                  (if (possible-utf16-hash? buffer i w)
+                      (found-possible-hash 2 i w)
+                      (not-part-of-hash i w)))
+
+                 (else
+                  ;; The dash is preceded by at least two NULs, therefore
+                  ;; it cannot be an ASCII or UTF-16 hash.  Proceed to
+                  ;; check for a UTF-32 hash.
+                  (if (possible-utf32-hash? buffer i w)
+                      (found-possible-hash 4 i w)
+                      (not-part-of-hash i w)))))
+
+         (define (found-possible-hash char-size i w)
+           ;; We know that there is a dash '-' at position I, that
+           ;; I - W >= CHAR-SIZE * HASH-LENGTH, and that the only
+           ;; possible encoding for the preceding hash is as indicated by
+           ;; CHAR-SIZE.  Here we check to see if the given hash is in
+           ;; REPLACEMENT-TABLE, and if so, we perform the required
+           ;; rewrite.
+           (let* ((hash (string-tabulate
+                         (lambda (j)
+                           (integer->char
+                            (byte-at (- i (* char-size
+                                             (- hash-length j))))))
+                         hash-length))
+                  (replacement* (lookup-replacement hash))
+                  (replacement (and replacement*
+                                    (insert-nuls char-size replacement*))))
+             (cond
+              ((not replacement)
+               (not-part-of-hash i w))
+              (else
+               ;; We've found a hash that needs to be replaced.
+               ;; First, write out all bytes preceding the hash
+               ;; that have not yet been written.
+               (put-bytevector output buffer w
+                               (- i (* char-size hash-length) w))
+               ;; Now write the replacement string.
+               (put-bytevector output replacement)
+               ;; Now compute the new values of W and I and continue.
+               (let ((w (+ (- i (* char-size hash-length))
+                           (bytevector-length replacement))))
+                 (scan-from (+ w hash-length) w))))))
+
+         (define (finish-buffer i w)
+           ;; We have finished scanning the buffer.  Now we determine how many
+           ;; bytes have not yet been written, and how many bytes to "unget".
+           ;; If END is less than REQUEST-SIZE then we read less than we asked
+           ;; for, which indicates that we are at EOF, so we needn't unget
+           ;; anything.  Otherwise, we unget up to (* 4 HASH-LENGTH) bytes.
+           ;; However, we must be careful not to unget bytes that have already
+           ;; been written, because that would cause them to be written again
+           ;; from the next buffer.  In practice, this case occurs when a
+           ;; replacement is made near or beyond the end of the buffer.  When
+           ;; REPLACEMENT went beyond END, we consume the extra bytes from
+           ;; INPUT.
+           (if (> w end)
+               (get-bytevector-n! input buffer 0 (- w end))
+               (let* ((unwritten  (- end w))
+                      (unget-size (if (= end request-size)
+                                      (min (* 4 hash-length)
+                                           unwritten)
+                                      0))
+                      (write-size (- unwritten unget-size)))
+                 (put-bytevector output buffer w write-size)
+                 (unget-bytevector input buffer (+ w write-size)
+                                   unget-size)))
+           (outer-loop))
+
+         (scan-from hash-length 0))))))
 
 (define (rename-matching-files directory mapping)
   "Apply MAPPING to the names of all the files in DIRECTORY, where MAPPING is
