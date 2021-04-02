@@ -1825,7 +1825,8 @@ command.")
                (base32
                 "1mrbvg4v7vm7mknf0n29mf88k3s4a4qj6r4d51wq8hmjj1m7s7c8"))
               (patches
-               (search-patches "wpa-supplicant-CVE-2021-27803.patch"))))
+               (search-patches "wpa-supplicant-CVE-2021-27803.patch"
+                               "wpa-supplicant-CVE-2021-30004.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
