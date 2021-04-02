@@ -1658,7 +1658,8 @@ features of sudo with a fraction of the codebase.")
                      (string-append "#" line)))
                   #t))
               (patches
-               (search-patches "wpa-supplicant-CVE-2021-27803.patch"))))
+               (search-patches "wpa-supplicant-CVE-2021-27803.patch"
+                               "wpa-supplicant-CVE-2021-30004.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
