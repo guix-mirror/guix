@@ -64,6 +64,7 @@
   #:use-module (gnu packages file)
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages imagemagick)
@@ -15564,3 +15565,55 @@ immediately loaded.")
 
 (define-public cl-conspack
   (sbcl-package->cl-source-package sbcl-cl-conspack))
+
+(define-public sbcl-cl-opengl
+  (let ((commit "e2d83e0977b7e7ac3f3d348d8ccc7ccd04e74d59")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-opengl")
+      (version (git-version "0.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/3b/cl-opengl")
+               (commit commit)))
+         (file-name (git-file-name "cl-opengl" version))
+         (sha256
+          (base32 "0mhqmll09f079pnd6mgswz9nvr6h5n27d4q7zpmm2igf1v460id7"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:asd-systems '("cl-opengl" "cl-glu" "cl-glut")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-lib-path
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "gl/library.lisp"
+                 (("libGL.so" all)
+                  (string-append (assoc-ref inputs "mesa") "/lib/" all)))
+               (substitute* "glu/library.lisp"
+                 (("libGLU.so" all)
+                  (string-append (assoc-ref inputs "glu") "/lib/" all)))
+               (substitute* "glut/library.lisp"
+                 (("libglut.so" all)
+                  (string-append (assoc-ref inputs "freeglut") "/lib/" all)))
+               #t)))))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cffi" ,sbcl-cffi)
+         ("float-features" ,sbcl-float-features)
+         ("freeglut" ,freeglut)
+         ("glu" ,glu)
+         ("mesa" ,mesa)))
+      (home-page "https://github.com/3b/cl-opengl")
+      (synopsis "Common Lisp bindings to OpenGL, GLU and GLUT APIs")
+      (description
+       "This package provides a set of bindings and utilities for accessing the
+OpenGL (Mesa), GLU and GLUT (FreeGLUT) APIs using CFFI.")
+      (license license:bsd-3))))
+
+(define-public ecl-cl-opengl
+  (sbcl-package->ecl-package sbcl-cl-opengl))
+
+(define-public cl-opengl
+  (sbcl-package->cl-source-package sbcl-cl-opengl))
