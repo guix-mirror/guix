@@ -47,14 +47,14 @@ diff -ur curl-7.66.0.orig/lib/url.c curl-7.66.0/lib/url.c
 +    extern char * Curl_ssl_cert_dir;
 +    extern char * Curl_ssl_cert_file;
 +    if(Curl_ssl_cert_dir) {
-+        if(result = Curl_setstropt(&set->str[STRING_SSL_CAPATH_ORIG], Curl_ssl_cert_dir))
++        if(result = Curl_setstropt(&set->str[STRING_SSL_CAPATH], Curl_ssl_cert_dir))
 +            return result;
 +        if(result = Curl_setstropt(&set->str[STRING_SSL_CAPATH_PROXY], Curl_ssl_cert_dir))
 +            return result;
 +    }
 +
 +    if(Curl_ssl_cert_file) {
-+        if(result = Curl_setstropt(&set->str[STRING_SSL_CAFILE_ORIG], Curl_ssl_cert_file))
++        if(result = Curl_setstropt(&set->str[STRING_SSL_CAFILE], Curl_ssl_cert_file))
 +            return result;
 +        if(result = Curl_setstropt(&set->str[STRING_SSL_CAFILE_PROXY], Curl_ssl_cert_file))
 +            return result;

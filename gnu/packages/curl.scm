@@ -53,14 +53,14 @@
 (define-public curl
   (package
    (name "curl")
-   (version "7.74.0")
+   (version "7.76.0")
    (source (origin
              (method url-fetch)
              (uri (string-append "https://curl.haxx.se/download/curl-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "12w7gskrglg6qrmp822j37fmbr0icrcxv7rib1fy5xiw80n5z7cr"))
+               "1j2g04m6als6hmqzvddv84c31m0x90bfgyz3bjrwdkarbkby40k3"))
              (patches (search-patches "curl-use-ssl-cert-env.patch"))))
    (build-system gnu-build-system)
    (outputs '("out"
