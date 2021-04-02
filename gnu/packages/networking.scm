@@ -3837,14 +3837,14 @@ thousands of connections is clearly realistic with today's hardware.")
 (define-public lldpd
   (package
     (name "lldpd")
-    (version "1.0.8")
+    (version "1.0.9")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://media.luffy.cx/files/lldpd/lldpd-"
                            version ".tar.gz"))
        (sha256
-        (base32 "1vrxr8lgkw7q6ixaaili6ac7i0j0326194s498n2dxihdvkh1llq"))
+        (base32 "1xa9953hl2c94zi4ngaxyi2yw3dax1ab16118wriwawm4lqynr3b"))
        (modules '((guix build utils)))
        (snippet
         '(begin
