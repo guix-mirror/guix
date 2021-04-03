@@ -31080,6 +31080,31 @@ that must be shared-mutable, but merely may use atomic instructions to do so.")
 radix.")
     (license license:asl2.0)))
 
+(define-public rust-radix-trie-0.2
+  (package
+    (name "rust-radix-trie")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "radix_trie" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1zaq3im5ss03w91ij11cj97vvzc5y1f3064d9pi2ysnwziww2sf0"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-endian-type" ,rust-endian-type-0.1)
+        ("rust-nibble-vec" ,rust-nibble-vec-0.1)
+        ("rust-serde" ,rust-serde-1))))
+    (home-page "https://github.com/michaelsproul/rust_radix_trie")
+    (synopsis "Generic radix trie data-structure")
+    (description
+     "This is a Radix Trie implementation in Rust, building on the lessons
+learnt from TrieMap and Sequence Trie.")
+    (license license:expat)))
+
 (define-public rust-rand-0.8
   (package
     (name "rust-rand")
