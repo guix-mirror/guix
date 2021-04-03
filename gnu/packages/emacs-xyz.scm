@@ -11009,13 +11009,13 @@ passive voice.")
     (name "emacs-org")
     ;; emacs-org-contrib inherits from this package.  Please update it as
     ;; well.
-    (version "9.4.4")
+    (version "9.4.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/org-" version ".tar"))
        (sha256
-        (base32 "05ma8n6hr10323d85ay8ai0xrpc9q2m93n8avqh7j9fmmb3bhr0b"))))
+        (base32 "0h5qhrd984vf17qc227wz68191xfgbpq32dyhw0lcz2d9i0pl3xk"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
@@ -11036,7 +11036,7 @@ passive voice.")
                     (doc-dir (string-append share "/doc/" ,name "-" ,version)))
                (install-file "org.info" info-dir)
                (install-file "orgguide.info" info-dir)
-               ;; XXX: "orgcard.pdf" is not built in Org 9.4.4.
+               ;; XXX: "orgcard.pdf" is not built in Org 9.4.5.
                ;; (install-file "orgcard.pdf" doc-dir)
                )
              #t)))))
@@ -11052,14 +11052,14 @@ programming and reproducible research.")
   (package
     (inherit emacs-org)
     (name "emacs-org-contrib")
-    (version "20201222")
+    (version "20210329")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://orgmode.org/elpa/"
                            "org-plus-contrib-" version ".tar"))
        (sha256
-        (base32 "1pa8h5dpi5yj3j7v0aaby8sjwxvmgnbip2ilyl5pac1rlbz0jn40"))
+        (base32 "1l0ycz77hwmjb4sffhabb0d0hg1c9ypxbpbyv8xj5ib4nbi87f2h"))
        ;; ob-sclang.el is packaged separately to avoid the dependency on
        ;; SuperCollider and qtwebengine.
        (modules '((guix build utils)))
