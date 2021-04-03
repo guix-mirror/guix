@@ -12977,6 +12977,26 @@ Standard.")
      "Streaming transcoding for encoding_rs.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-endian-type-0.1
+  (package
+    (name "rust-endian-type")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "endian-type" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0bbh88zaig1jfqrm7w3gx0pz81kw2jakk3055vbgapw3dmk08ky3"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/Lolirofle/endian-type")
+    (synopsis "Type safe wrappers for types with a defined byte order")
+    (description
+     "This crates provides type safe wrappers for types with a defined byte
+order.")
+    (license license:expat)))
+
 (define-public rust-enum-as-inner-0.3
   (package
     (name "rust-enum-as-inner")
