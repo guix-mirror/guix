@@ -42,6 +42,7 @@
 ;;; Copyright © 2020 Jesse Dowell <jessedowell@gmail.com>
 ;;; Copyright © 2020 Hamzeh Nasajpour <h.nasajpour@pantherx.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2021 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -472,6 +473,38 @@ sockets, and also some helper utilities around SCTP.")
       license:lgpl2.1+
       ;; Others.
       license:gpl2+))))
+
+(define-public python-pysctp
+  (package
+    (name "python-pysctp")
+    (version "0.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pysctp" version))
+       (sha256
+        (base32 "14h2qlmfi24bizhvvqkfqfa78pzm3911ibrzy9k94i97xy1978dy"))))
+    (build-system python-build-system)
+    (inputs
+     `(("lksctp-tools" ,lksctp-tools)))
+    (arguments
+     `(#:tests? #f  ;; tests require network
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-setup.py
+           (lambda _
+             (substitute* "setup.py"
+               (("include_dirs\\s*=.*")
+                (string-append "include_dirs = ['.'] + '"
+                               (getenv "C_INCLUDE_PATH") "'.split(':'),"))
+               (("library_dirs\\s*=.*")
+                (string-append "library_dirs = '"
+                               (getenv "LIBRARY_PATH") "'.split(':'),"))))))))
+    (home-page "https://github.com/p1sec/pysctp")
+    (synopsis "Python module for the SCTP protocol stack and library")
+    (description "@code{pysctp} implements the SCTP socket API.  You need a
+SCTP-aware kernel (most are).")
+    (license license:lgpl2.1+)))
 
 (define-public knockd
   (package
