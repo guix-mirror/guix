@@ -1102,7 +1102,7 @@ map, geocoding with Nominatim, or general analysis.")
 (define-public tippecanoe
   (package
     (name "tippecanoe")
-    (version "1.31.5")
+    (version "1.36.0")
     (source
      (origin
        (method git-fetch)
@@ -1111,14 +1111,14 @@ map, geocoding with Nominatim, or general analysis.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1m0x931a945sr7axyhcvpwh798m58hx1zxh6ikgf9gsgqhdhmszz"))))
+        (base32 "0lbmhly4ivnqc6qk1k3sdqvsg6x3nfd8gnjx846bhqj4wag3f88m"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases (delete 'configure))
        #:test-target "test"
        #:make-flags
-       (list "CC=gcc"
+       (list (string-append "CC=" ,(cc-for-target))
              (string-append "PREFIX=" (assoc-ref %outputs "out")))))
     (inputs
      `(("perl" ,perl)
