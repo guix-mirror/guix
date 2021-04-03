@@ -3771,15 +3771,14 @@ for CRC-CCITT, CRC-16 and CRC-32.")
 (define-public perl-digest-hmac
   (package
     (name "perl-digest-hmac")
-    (version "1.03")
+    (version "1.04")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/G/GA/GAAS/"
+       (uri (string-append "mirror://cpan/authors/id/A/AR/ARODLAND/"
                            "Digest-HMAC-" version ".tar.gz"))
        (sha256
-        (base32
-         "0naavabbm1c9zgn325ndy66da4insdw9l3mrxwxdfi7i7xnjrirv"))))
+        (base32 "1m4fn0w3hb4vn7k5kja508a5hjmcrm28zhdpjkbl8p17m9b83g6n"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Digest-HMAC")
     (synopsis "Keyed-Hashing for Message Authentication")
