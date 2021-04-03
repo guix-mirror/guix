@@ -448,6 +448,8 @@ performance across unpredictable networks, such as the Internet.")
          (url "https://github.com/sctp/lksctp-tools")
          (commit (string-append "v" version))))
        (file-name (git-file-name name version))
+       (patches
+        (search-patches "lksctp-tools-1.0.18-fix-header-file-name.patch"))
        (sha256
         (base32 "1x4fwzrlzvfa3vcpja97m8w5g9ir2zrh4zs7zksminrnmdrs0dsr"))))
     (build-system gnu-build-system)
