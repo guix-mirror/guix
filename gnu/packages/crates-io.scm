@@ -24947,8 +24947,36 @@ selectors.  You can use the jQuery-like syntax to query and manipulate an HTML
 document quickly.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-nix-0.20
+  (package
+    (name "rust-nix")
+    (version "0.20.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nix" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "12n1syfd967hblrcrrqk63a4s1h4hsybfqwblh71rihvv8cli6zs"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-cc" ,rust-cc-1)
+        ("rust-cfg-if" ,rust-cfg-if-1)
+        ("rust-libc" ,rust-libc-0.2))))
+    (home-page "https://github.com/nix-rust/nix")
+    (synopsis "Rust friendly bindings to *nix APIs")
+    (description
+     "Nix seeks to provide friendly bindings to various *nix platform APIs.
+The goal is to not provide a 100% unified interface, but to unify what can be
+while still providing platform specific APIs.")
+    (license license:expat)))
+
 (define-public rust-nix-0.19
   (package
+    (inherit rust-nix-0.20)
     (name "rust-nix")
     (version "0.19.1")
     (source
@@ -24958,7 +24986,6 @@ document quickly.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1wk1pmaf9pv84sc4jf19gm1as2yq3ydwcx0n5nc1bpsgzq6bmk5j"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:tests? #f                      ; test suite hangs
        #:cargo-inputs
@@ -24973,14 +25000,7 @@ document quickly.")
         ("rust-rand" ,rust-rand-0.6)
         ("rust-semver" ,rust-semver-0.9)
         ("rust-sysctl" ,rust-sysctl-0.1)
-        ("rust-tempfile" ,rust-tempfile-3))))
-    (home-page "https://github.com/nix-rust/nix")
-    (synopsis "Rust friendly bindings to *nix APIs")
-    (description
-     "Nix seeks to provide friendly bindings to various *nix platform APIs.
-The goal is to not provide a 100% unified interface, but to unify what can be
-while still providing platform specific APIs.")
-    (license license:expat)))
+        ("rust-tempfile" ,rust-tempfile-3))))))
 
 (define-public rust-nix-0.18
   (package
