@@ -2563,15 +2563,15 @@ into mode hooks and is intended to be used that way.")
 (define-public emacs-ggtags
   (package
     (name "emacs-ggtags")
-    (version "0.8.13")
+    (version "0.9.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/ggtags-"
-                           version ".el"))
+                           version ".tar"))
        (sha256
         (base32
-         "1qa7lcrcmf76sf6dy8sxbg4adq7rg59fm0n5848w3qxgsr0h45fg"))))
+         "0p79x9g94jynl83ndvqp9349vhgkzxzhnc517r8hn44iqxqf6ghg"))))
     (build-system emacs-build-system)
     (inputs
      `(("global" ,global)))
