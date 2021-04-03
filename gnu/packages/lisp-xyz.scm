@@ -15685,3 +15685,36 @@ buffer object types (UBO, SSBO currently).")
 
 (define-public cl-shadow
   (sbcl-package->cl-source-package sbcl-shadow))
+
+(define-public sbcl-umbra
+  (let ((commit "d6ef2f6cbfa26180929061129eaf325bf17f73d8")
+        (revision "1"))
+    (package
+      (name "sbcl-umbra")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://git.mfiano.net/mfiano/umbra")
+               (commit commit)))
+         (file-name (git-file-name "umbra" version))
+         (sha256
+          (base32 "04vyh2j00zdpb8ryxr8g81wjcmqlz9wrn55r3cypcj4qg970r5wi"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("golden-utils" ,sbcl-golden-utils)
+         ("shadow" ,sbcl-shadow)
+         ("varjo" ,sbcl-varjo)))
+      (home-page "https://git.mfiano.net/mfiano/umbra")
+      (synopsis "Common Lisp library of reusable GPU shader functions")
+      (description
+       "This is a Common Lisp library consisting of a collection of useful GPU
+shader functions, written with @code{Shadow}.")
+      (license license:expat))))
+
+(define-public ecl-umbra
+  (sbcl-package->ecl-package sbcl-umbra))
+
+(define-public cl-umbra
+  (sbcl-package->cl-source-package sbcl-umbra))
