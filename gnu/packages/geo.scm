@@ -2013,7 +2013,7 @@ visualization.")
 (define-public saga
   (package
     (name "saga")
-    (version "7.6.2")
+    (version "7.9.0")
     (source
      (origin
        (method url-fetch)
@@ -2021,7 +2021,7 @@ visualization.")
                            (version-major version) "/SAGA%20-%20" version
                            "/saga-" version ".tar.gz"))
        (sha256
-        (base32 "09j5magmayq2y620kqa490mfd1kpdp3lng2ifcgbrmssc079ybm0"))))
+        (base32 "1n051yxxkylly0k9rlkx2ih3j2lf9d4csg00sm7161r7nhjvggd1"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -2036,7 +2036,7 @@ visualization.")
        ("libtiff" ,libtiff)
        ("opencv" ,opencv)
        ("postgresql" ,postgresql)
-       ("proj.4" ,proj.4)
+       ("proj" ,proj)
        ("python" ,python)
        ("qhull" ,qhull)
        ("unixodbc" ,unixodbc)
