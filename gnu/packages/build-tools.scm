@@ -278,9 +278,8 @@ files and generates build instructions for the Ninja build system.")
                 "1x47vc7023w8w90r6jda5hk2jsh68i66x49gckdgixw32fwvvf1w"))))
     (build-system python-build-system)
     (arguments
-     `(;; FIXME: Tests require many additional inputs, a fix for the RUNPATH
-       ;; patch in meson-for-build, and patching many hard-coded file system
-       ;; locations in "run_unittests.py".
+     `(;; FIXME: Tests require many additional inputs and patching many
+       ;; hard-coded file system locations in "run_unittests.py".
        #:tests? #f
        #:phases (modify-phases %standard-phases
                   ;; Meson calls the various executables in out/bin through the
@@ -326,17 +325,6 @@ resembles Python.")
               (sha256
                (base32
                 "19n8alcpzv6npgp27iqljkmvdmr7s2c7zm8y997j1nlvpa1cgqbj"))))))
-
-(define-public meson-for-build
-  (package
-    (inherit meson)
-    (name "meson-for-build")
-    (source (origin
-              (inherit (package-source meson))
-              (patches (search-patches "meson-for-build-rpath.patch"))))
-
-    ;; People should probably install "meson", not "meson-for-build".
-    (properties `((hidden? . #t)))))
 
 (define-public premake4
   (package
