@@ -15646,7 +15646,7 @@ This allows neighboring Guix devices with discovery on (see
 @code{guix-configuration} above) to discover this @command{guix publish}
 instance and to automatically download substitutes from it.
 
-@item @code{compression} (default: @code{'(("gzip" 3))})
+@item @code{compression} (default: @code{'(("gzip" 3) ("zstd" 3))})
 This is a list of compression method/level tuple used when compressing
 substitutes.  For example, to compress all substitutes with @emph{both} lzip
 at level 7 and gzip at level 9, write:

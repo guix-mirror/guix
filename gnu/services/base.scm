@@ -1816,7 +1816,11 @@ proxy of 'guix-daemon'...~%")
 raise a deprecation warning if the 'compression-level' field was used."
   (match (%guix-publish-configuration-compression-level config)
     (#f
-     '(("gzip" 3)))
+     ;; Default to low compression levels when there's no cache so that users
+     ;; get good bandwidth by default.
+     (if (guix-publish-configuration-cache config)
+         '(("gzip" 5) ("zstd" 19))
+         '(("gzip" 3) ("zstd" 3))))               ;zstd compresses faster
     (level
      (warn-about-deprecation 'compression-level properties
                              #:replacement 'compression)
