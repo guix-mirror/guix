@@ -15335,6 +15335,35 @@ line tool @code{df} and get disk space information using @code{statvfs}.")
 (define-public cl-diskspace
   (sbcl-package->cl-source-package sbcl-cl-diskspace))
 
+(define-public sbcl-cl-cpus
+  (package
+    (name "sbcl-cl-cpus")
+    (version "0.0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/muyinliu/cl-cpus")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name "cl-cpus" version))
+       (sha256
+        (base32 "0sdaff9hpsx7bpkkkqavmxmrrlc2d61gmqjjgn8xchncng4a0rf8"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("cffi" ,sbcl-cffi)))
+    (home-page "https://github.com/muyinliu/cl-cpus")
+    (synopsis "Common Lisp feature to get number of CPUs")
+    (description
+     "This package provides a Common Lisp system which has only one function to
+return the CPU count of the current system.")
+    (license license:isc)))
+
+(define-public ecl-cl-cpus
+  (sbcl-package->ecl-package sbcl-cl-cpus))
+
+(define-public cl-cpus
+  (sbcl-package->cl-source-package sbcl-cl-cpus))
+
 (define-public sbcl-fof
   (package
     (name "sbcl-fof")
