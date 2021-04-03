@@ -42,9 +42,10 @@ The attack can happen when @command{guix system reconfigure} is running.
 Running @command{guix system reconfigure} can trigger the creation of new user
 accounts if the configuration specifies new accounts.  If a user whose account
 is being created manages to log in after the account has been created but
-before ``skeleton files'' have been copied to its home directory, they may, by
-creating an appropriately-named symbolic link in the home directory pointing
-to a sensitive file, such as @file{/etc/shadow}, get root privileges.
+before ``skeleton files'' copied to its home directory have the right
+ownership, they may, by creating an appropriately-named symbolic link in the
+home directory pointing to a sensitive file, such as @file{/etc/shadow}, get
+root privileges.
 
 See @uref{https://issues.guix.gnu.org/47584} for more information on this
 bug.")))
