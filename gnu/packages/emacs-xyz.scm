@@ -12577,14 +12577,14 @@ shuangpin, wubi and cangjie.")
 (define-public emacs-posframe
   (package
     (name "emacs-posframe")
-    (version "0.8.8")
+    (version "0.9.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "posframe-" version ".tar"))
        (sha256
-        (base32 "1ij6brzcxv9viz37qafcinlfx5l20w8x8s6786r1rsda5n1xsmvd"))))
+        (base32 "14x63713lbvmp24733j7pqkwvcnhpcgv7pprr8sykan3jnjnnzh3"))))
     (build-system emacs-build-system)
     ;; emacs-minimal does not include the function font-info.
     (arguments
