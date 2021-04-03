@@ -24841,6 +24841,27 @@ cryptographic library.")
 release (fork of debug_unreachable)")
     (license license:expat)))
 
+(define-public rust-nibble-vec-0.1
+  (package
+    (name "rust-nibble-vec")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nibble_vec" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0hsdp3s724s30hkqz74ky6sqnadhp2xwcj1n1hzy4vzkz4yxi9bp"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-smallvec" ,rust-smallvec-1))))
+    (home-page "https://github.com/michaelsproul/rust_nibble_vec")
+    (synopsis "Vector data-structure for half-byte values")
+    (description "NibbleVec is a data structure for storing a sequence of half-bytes.")
+    (license license:expat)))
+
 (define-public rust-nickel-0.11
   (package
     (name "rust-nickel")
