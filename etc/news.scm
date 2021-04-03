@@ -13,6 +13,7 @@
 ;; Copyright © 2021 Leo Famulari <leo@famulari.name>
 ;; Copyright © 2021 Zhu Zihao <all_but_last@163.com>
 ;; Copyright © 2021 Chris Marusich <cmmarusich@gmail.com>
+;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;
 ;; Copying and distribution of this file, with or without modification, are
 ;; permitted in any medium without royalty provided the copyright notice and
@@ -20,6 +21,26 @@
 
 (channel-news
  (version 0)
+
+ (entry (commit "2161820ebbbab62a5ce76c9101ebaec54dc61586")
+        (title
+         (en "Risk of local privilege escalation during user account creation"))
+        (body
+         (en "A security vulnerability that can lead to local privilege
+escalation has been found in the code that creates user accounts on Guix
+System---Guix on other distros is unaffected.  The system is only vulnerable
+during the activation of user accounts that do not already exist.
+
+The attack can happen when @command{guix system reconfigure} is running.
+Running @command{guix system reconfigure} can trigger the creation of new user
+accounts if the configuration specifies new accounts.  If a user whose account
+is being created manages to log in after the account has been created but
+before ``skeleton files'' have been copied to its home directory, they may, by
+creating an appropriately-named symbolic link in the home directory pointing
+to a sensitive file, such as @file{/etc/shadow}, get root privileges.
+
+See @uref{https://issues.guix.gnu.org/47584} for more information on this
+bug.")))
 
  (entry (commit "e52ec6c64a17a99ae4bb6ff02309067499915b06")
         (title
