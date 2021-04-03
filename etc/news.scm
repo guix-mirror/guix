@@ -31,6 +31,13 @@ escalation has been found in the code that creates user accounts on Guix
 System---Guix on other distros is unaffected.  The system is only vulnerable
 during the activation of user accounts that do not already exist.
 
+This bug is fixed and Guix System users are advised to upgrade their system,
+with a command along the lines of:
+
+@example
+guix system reconfigure /run/current-system/configuration.scm
+@end example
+
 The attack can happen when @command{guix system reconfigure} is running.
 Running @command{guix system reconfigure} can trigger the creation of new user
 accounts if the configuration specifies new accounts.  If a user whose account
