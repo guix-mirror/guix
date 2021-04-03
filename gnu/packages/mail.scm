@@ -17,7 +17,7 @@
 ;;; Copyright © 2016, 2017 Troy Sankey <sankeytms@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
@@ -129,6 +129,7 @@
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages ragel)
+  #:use-module (gnu packages regex)
   #:use-module (gnu packages rdf)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages ruby)
@@ -4375,3 +4376,82 @@ black lists.  Each message is analysed by Rspamd and given a spam
 score.")
     (home-page "https://www.rspamd.com/")
     (license license:asl2.0)))
+
+(define-public crm114
+  (package
+    (name "crm114")
+    (version "20100106")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://crm114.sourceforge.net/tarballs/crm114-"
+                           version "-BlameMichelson.src.tar.gz"))
+       (sha256
+        (base32
+         "0awcjc5j2mclkkpbjyijj9mv8xjz3haljvaj0fyc4fm4xir68qpv"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:modules ((guix build gnu-build-system)
+                  ((guix build emacs-build-system) #:prefix emacs:)
+                  (guix build utils)
+                  (ice-9 string-fun))
+       #:imported-modules (,@%gnu-build-system-modules
+                           (guix build emacs-build-system)
+                           (guix build emacs-utils))
+       #:make-flags (list (string-append "prefix=" %output)
+                          "LDFLAGS=")   ; disable static linking
+       ;; Test suite is not fully automated. It requires a human to read the
+       ;; results and determine if the tests have passed.
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'fix-build
+           (lambda _
+             ;; Inline functions can only be used from the same compilation
+             ;; unit. This causes the build to fail.
+             (substitute* "crm_svm_matrix.c"
+               (("^inline ") ""))))
+         (add-before 'install 'pre-install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               ;; Install maillib.crm library.
+               (install-file "maillib.crm" (string-append out "/share/crm"))
+               ;; Set absolute store paths.
+               (substitute* "mailreaver.crm"
+                 (("insert maillib.crm")
+                  (string-append "insert " out "/share/crm/maillib.crm"))
+                 (("\\\\/bin\\\\/ls")
+                  (string-replace-substring (which "ls") "/" "\\/"))
+                 ((":\\*:trainer_invoke_command:")
+                  (string-append out "/bin/mailtrainer.crm")))
+               ;; Install mail related crm scripts.
+               (for-each (lambda (file)
+                           (install-file file (string-append out "/bin")))
+                         (list "mailfilter.crm" "mailreaver.crm" "mailtrainer.crm"))
+               ;; Create emacs site-lisp directory so that the install phase
+               ;; can install crm-mode.
+               (mkdir-p (string-append out "/share/emacs/site-lisp")))))
+         ;; Run phases from the emacs build system.
+         (add-after 'install 'make-autoloads
+           (assoc-ref emacs:%standard-phases 'make-autoloads))
+         (add-after 'make-autoloads 'enable-autoloads-compilation
+           (assoc-ref emacs:%standard-phases 'enable-autoloads-compilation))
+         (add-after 'enable-autoloads-compilation 'emacs-build
+           (assoc-ref emacs:%standard-phases 'build))
+         (add-after 'emacs-build 'validate-compiled-autoloads
+           (assoc-ref emacs:%standard-phases 'validate-compiled-autoloads)))))
+    (inputs
+     `(("tre" ,tre)))
+    (native-inputs
+     `(("emacs" ,emacs-minimal)))
+    (home-page "http://crm114.sourceforge.net/")
+    (synopsis "Controllable regex mutilator")
+    (description "CRM114 is a system to examine incoming e-mail, system log
+streams, data files or other data streams, and to sort, filter, or alter the
+incoming files or data streams according to the user's wildest desires.
+Criteria for categorization of data can be via a host of methods, including
+regexes, approximate regexes, a Hidden Markov Model, Orthogonal Sparse
+Bigrams, WINNOW, Correllation, KNN/Hyperspace, or Bit Entropy (or by other
+means--it's all programmable).")
+    (license license:gpl3)))
