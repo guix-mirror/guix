@@ -20,17 +20,8 @@
 
 #pragma once
 
-#include <string>
-
 #include <stdlib.h>
 #include <signal.h>
-
-static inline void
-showManPage (const char *name)
-{
-  /* This idea is evil.  Abort.  */
-  abort ();
-}
 
 extern volatile ::sig_atomic_t blockInt;
 
