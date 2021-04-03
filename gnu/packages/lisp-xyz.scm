@@ -15646,3 +15646,42 @@ OpenGL (Mesa), GLU and GLUT (FreeGLUT) APIs using CFFI.")
 
 (define-public cl-opengl
   (sbcl-package->cl-source-package sbcl-cl-opengl))
+
+(define-public sbcl-shadow
+  (let ((commit "b2031adbfba3579b48c9d39ad997e19b79b6852f")
+        (revision "1"))
+    (package
+      (name "sbcl-shadow")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://git.mfiano.net/mfiano/shadow")
+               (commit commit)))
+         (file-name (git-file-name "shadow" version))
+         (sha256
+          (base32 "0w1i734gkdkziin74ql2nhx7jdjxx02ylssaa6qdrvnj4br1124a"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("cffi" ,sbcl-cffi)
+         ("cl-opengl" ,sbcl-cl-opengl)
+         ("glsl-packing" ,sbcl-glsl-packing)
+         ("golden-utils" ,sbcl-golden-utils)
+         ("static-vectors" ,sbcl-static-vectors)
+         ("varjo" ,sbcl-varjo)))
+      (home-page "https://git.mfiano.net/mfiano/shadow")
+      (synopsis "Management system for OpenGL shader programs")
+      (description
+       "This package provides a Common Lisp library for defining OpenGL shader
+programs.  There are also functions for referencing shader programs by name,
+querying for basic information about them, modifying uniform variables
+throughout the lifecycle of an OpenGL application, and managing certain OpenGL
+buffer object types (UBO, SSBO currently).")
+      (license license:expat))))
+
+(define-public ecl-shadow
+  (sbcl-package->ecl-package sbcl-shadow))
+
+(define-public cl-shadow
+  (sbcl-package->cl-source-package sbcl-shadow))
