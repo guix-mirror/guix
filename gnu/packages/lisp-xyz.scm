@@ -161,8 +161,8 @@ collection.")
   (sbcl-package->cl-source-package sbcl-bodge-utilities))
 
 (define-public sbcl-golden-utils
-  (let ((commit "9424419d867d5c2f819196ee41667a818a5058e7")
-        (revision "1"))
+  (let ((commit "62a5cb948a011eb26e7a89f56d5839a3334b4100")
+        (revision "2"))
     (package
       (name "sbcl-golden-utils")
       (version (git-version "0.0.0" revision commit))
@@ -172,9 +172,9 @@ collection.")
          (uri (git-reference
                (url "https://git.mfiano.net/mfiano/golden-utils")
                (commit commit)))
-         (file-name (git-file-name name version))
+         (file-name (git-file-name "golden-utils" version))
          (sha256
-          (base32 "15x0phm6820yj3h37ibi06gjyh6z45sd2nz2n8lcbfflwm086q0h"))))
+          (base32 "13mvxqwd1nmpq8h5hb1s60wyqdj7ji4haxrqr0sy3csyqa8aq2j8"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("alexandria" ,sbcl-alexandria)))
