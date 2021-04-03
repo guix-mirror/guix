@@ -35226,8 +35226,46 @@ sub-processes using a fork-like interface.")
         ("rust-tempfile" ,rust-tempfile-3)
         ("rust-wait-timeout" ,rust-wait-timeout-0.2))))))
 
+(define-public rust-rustyline-8
+  (package
+    (name "rust-rustyline")
+    (version "8.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rustyline" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "14z8hyx33ygyhm5ihcl9n2g646dawlw3ajavnbbb3vnizjbvbqdr"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-cfg-if" ,rust-cfg-if-1)
+        ("rust-dirs-next" ,rust-dirs-next-2)
+        ("rust-fs2" ,rust-fs2-0.4)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-memchr" ,rust-memchr-2)
+        ("rust-nix" ,rust-nix-0.20)
+        ("rust-radix-trie" ,rust-radix-trie-0.2)
+        ("rust-scopeguard" ,rust-scopeguard-1)
+        ("rust-smallvec" ,rust-smallvec-1)
+        ("rust-unicode-segmentation" ,rust-unicode-segmentation-1)
+        ("rust-unicode-width" ,rust-unicode-width-0.1)
+        ("rust-utf8parse" ,rust-utf8parse-0.2)
+        ("rust-winapi" ,rust-winapi-0.3)
+        ("skim" ,skim))))
+    (home-page "https://github.com/kkawakam/rustyline")
+    (synopsis "Readline implementation in Rust")
+    (description
+     "Rustyline is a readline implementation based on the linenoise package.")
+    (license license:expat)))
+
 (define-public rust-rustyline-7
   (package
+    (inherit rust-rustyline-8)
     (name "rust-rustyline")
     (version "7.1.0")
     (source
@@ -35237,7 +35275,6 @@ sub-processes using a fork-like interface.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1v1czmy3ir7d06xldp8bg94l97hrm15hcgdxxkq3cwbizhdk09w2"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -35254,12 +35291,7 @@ sub-processes using a fork-like interface.")
         ("rust-unicode-width" ,rust-unicode-width-0.1)
         ("rust-utf8parse" ,rust-utf8parse-0.2)
         ("rust-winapi" ,rust-winapi-0.3)
-        ("skim" ,skim-0.7))))
-    (home-page "https://github.com/kkawakam/rustyline")
-    (synopsis "Readline implementation in Rust")
-    (description
-     "Rustyline, a readline implementation based on the linenoise package.")
-    (license license:expat)))
+        ("skim" ,skim-0.7))))))
 
 (define-public rust-rustyline-6
   (package
