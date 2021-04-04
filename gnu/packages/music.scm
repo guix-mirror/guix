@@ -2672,7 +2672,7 @@ browser.")
        ("docbook-xsl" ,docbook-xsl)
        ("doxygen" ,doxygen)
        ("graphviz" ,graphviz))) ; for dot
-    (home-page "http://drumstick.sourceforge.net/")
+    (home-page "https://drumstick.sourceforge.io/")
     (synopsis "C++ MIDI library")
     (description
      "Drumstick is a set of MIDI libraries using C++/Qt5 idioms and style.  It
