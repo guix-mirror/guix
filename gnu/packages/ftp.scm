@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2018, 2021, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016–2021 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -118,6 +118,8 @@ reliability in mind.")
                     (("a freeware program")
                      "free software"))
                   #t))))
+    (properties
+     `((release-monitoring-url . "https://www.ncftp.com/download/")))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
