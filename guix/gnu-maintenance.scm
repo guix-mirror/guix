@@ -66,6 +66,7 @@
             %gnu-updater
             %gnu-ftp-updater
             %savannah-updater
+            %sourceforge-updater
             %xorg-updater
             %kernel.org-updater
             %generic-html-updater))
@@ -660,6 +661,50 @@ GNOME packages; EMMS is included though, because its releases are on gnu.org."
                                 #:directory directory)
            (cut adjusted-upstream-source <> rewrite))))
 
+(define (latest-sourceforge-release package)
+  "Return the latest release of PACKAGE."
+  (define (uri-append uri extension)
+    ;; Return URI with EXTENSION appended.
+    (build-uri (uri-scheme uri)
+               #:host (uri-host uri)
+               #:path (string-append (uri-path uri) extension)))
+
+  (define (valid-uri? uri)
+    ;; Return true if URI is reachable.
+    (false-if-exception
+     (case (response-code (http-head uri))
+       ((200 302) #t)
+       (else #f))))
+
+  (let* ((name     (package-upstream-name package))
+         (base     (string-append "https://sourceforge.net/projects/"
+                                  name "/files"))
+         (url      (string-append base "/latest/download"))
+         (response (false-if-exception (http-head url))))
+    (and response
+         (= 302 (response-code response))
+         (response-location response)
+         (match (string-tokenize (uri-path (response-location response))
+                                 (char-set-complement (char-set #\/)))
+           ((_ components ...)
+            (let* ((path (string-join components "/"))
+                   (url  (string-append "mirror://sourceforge/" path)))
+              (and (release-file? name (basename path))
+
+                   ;; Take the heavy-handed approach of probing 3 additional
+                   ;; URLs.  XXX: Would be nicer if this could be avoided.
+                   (let* ((loc (response-location response))
+                          (sig (any (lambda (extension)
+                                      (let ((uri (uri-append loc extension)))
+                                        (and (valid-uri? uri)
+                                             (string-append url extension))))
+                                    '(".asc" ".sig" ".sign"))))
+                     (upstream-source
+                      (package name)
+                      (version (tarball->version (basename path)))
+                      (urls (list url))
+                      (signature-urls (and sig (list sig))))))))))))
+
 (define (latest-xorg-release package)
   "Return the latest release of PACKAGE."
   (let ((uri (string->uri (origin-uri (package-source package)))))
@@ -773,6 +818,13 @@ the directory containing its source tarball."
    (description "Updater for packages hosted on savannah.gnu.org")
    (pred (url-prefix-predicate "mirror://savannah/"))
    (latest latest-savannah-release)))
+
+(define %sourceforge-updater
+  (upstream-updater
+   (name 'sourceforge)
+   (description "Updater for packages hosted on sourceforge.net")
+   (pred (url-prefix-predicate "mirror://sourceforge/"))
+   (latest latest-sourceforge-release)))
 
 (define %xorg-updater
   (upstream-updater
