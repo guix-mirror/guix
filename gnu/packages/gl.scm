@@ -682,7 +682,8 @@ OpenGL graphics API.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python" ,python)))
-    (inputs
+    (propagated-inputs
+     ;; epoxy.pc: 'Requires.private: gl egl'
      `(("mesa" ,mesa)))
     (home-page "https://github.com/anholt/libepoxy/")
     (synopsis "A library for handling OpenGL function pointer management")
