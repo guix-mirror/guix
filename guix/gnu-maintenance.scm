@@ -637,9 +637,6 @@ GNOME packages; EMMS is included though, because its releases are on gnu.org."
                           (lambda (urls)
                             (map rewrite-url urls))))))
 
-(define savannah-package?
-  (url-prefix-predicate "mirror://savannah/"))
-
 (define %savannah-base
   ;; One of the Savannah mirrors listed at
   ;; <http://download0.savannah.gnu.org/mirmon/savannah/> that serves valid
