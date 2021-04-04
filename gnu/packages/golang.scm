@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
 ;;; Copyright © 2016 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2016, 2019 Ludovic Courtès <ludo@gnu.org>
@@ -2099,7 +2099,7 @@ application's http.Handlers.")
 (define-public go-github-com-sirupsen-logrus
   (package
     (name "go-github-com-sirupsen-logrus")
-    (version "1.0.5")
+    (version "1.8.1")
     (source
      (origin
        (method git-fetch)
@@ -2109,17 +2109,16 @@ application's http.Handlers.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0g5z7al7kky11ai2dhac6gkp3b5pxsvx72yj3xg4wg3265gbn7yz"))))
+         "0rvqzic2zz7fpxyizmqxwmhv1m52ii9bgxnqa6km8wsa0l08wh42"))))
     (build-system go-build-system)
     (propagated-inputs
-     `(("go-golang-org-x-crypto"
-        ,go-golang-org-x-crypto)
-       ("go-github-com-stretchr-testify"
-        ,go-github-com-stretchr-testify)
+     `(("go-github-com-davecgh-go-spew" ,go-github-com-davecgh-go-spew)
+       ("go-github-com-pmezard-go-difflib" ,go-github-com-pmezard-go-difflib)
+       ("go-github-com-stretchr-testify" ,go-github-com-stretchr-testify)
+       ("go-golang-org-x-crypto" ,go-golang-org-x-crypto)
        ("go-golang-org-x-sys" ,go-golang-org-x-sys)))
     (arguments
-     '(#:tests? #f                    ;FIXME missing dependencies
-       #:import-path "github.com/sirupsen/logrus"))
+     '(#:import-path "github.com/sirupsen/logrus"))
     (home-page "https://github.com/sirupsen/logrus")
     (synopsis "Structured, pluggable logging for Go")
     (description "Logrus is a structured logger for Go, completely API
