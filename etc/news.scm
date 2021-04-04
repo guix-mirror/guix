@@ -24,7 +24,8 @@
 
  (entry (commit "2161820ebbbab62a5ce76c9101ebaec54dc61586")
         (title
-         (en "Risk of local privilege escalation during user account creation"))
+         (en "Risk of local privilege escalation during user account creation")
+         (de "Risiko lokaler Rechteausweitung während der Erstellung von Benutzerkonten"))
         (body
          (en "A security vulnerability that can lead to local privilege
 escalation has been found in the code that creates user accounts on Guix
@@ -48,7 +49,31 @@ home directory pointing to a sensitive file, such as @file{/etc/shadow}, get
 root privileges.
 
 See @uref{https://issues.guix.gnu.org/47584} for more information on this
-bug.")))
+bug.")
+         (de "Eine Sicherheitslücke, die eine lokale Rechteausweitung zur
+Folge haben kann, wurde in dem Code gefunden, mit dem Benutzerkonten auf Guix
+System angelegt werden — Guix auf anderen Distributionen ist nicht betroffen.
+Das System kann nur während der Aktivierung noch nicht existierender
+Benutzerkonten angegriffen werden.
+
+Der Fehler wurde behoben und wir empfehlen Nutzern von Guix System, ihre
+Systeme zu aktualisieren, mit einem Befehl wie:
+
+@example
+guix system reconfigure /run/current-system/configuration.scm
+@end example
+
+Der Angriff kann erfolgen, während @command{guix system reconfigure} läuft.
+Wenn @command{guix system reconfigure} ausgeführt wird, kann das die Erzeugung
+neuer Benutzerkonten auslösen, wenn in der Konfiguration neue Konten angegeben
+wurden.  Wenn ein Benutzer, dessen Konto gerade angelegt wird, es
+fertigbringt, sich anzumelden, bevor „Skeleton-Dateien“ in seinem Persönlichen
+Verzeichnis den richtigen Besitzer haben, kann er durch Anlegen einer gezielt
+benannten symbolischen Verknüpfung in seinem Persönlichen Verzeichnis auf eine
+sensible Datei wie @file{/etc/shadow} Administratorrechte erlangen.
+
+Siehe @uref{https://issues.guix.gnu.org/47584} für mehr Informationen zu
+diesem Fehler.")))
 
  (entry (commit "e52ec6c64a17a99ae4bb6ff02309067499915b06")
         (title
