@@ -706,14 +706,19 @@ GNOME packages; EMMS is included though, because its releases are on gnu.org."
                          "ftp.gnu.org" "download.savannah.gnu.org"
                          "pypi.org" "crates.io" "rubygems.org"
                          "bioconductor.org")))
-    (url-predicate (lambda (url)
-                     (match (string->uri url)
-                       (#f #f)
-                       (uri
-                        (let ((scheme (uri-scheme uri))
-                              (host   (uri-host uri)))
-                          (and (memq scheme '(http https))
-                               (not (member host hosting-sites))))))))))
+    (define http-url?
+      (url-predicate (lambda (url)
+                       (match (string->uri url)
+                         (#f #f)
+                         (uri
+                          (let ((scheme (uri-scheme uri))
+                                (host   (uri-host uri)))
+                            (and (memq scheme '(http https))
+                                 (not (member host hosting-sites)))))))))
+
+    (lambda (package)
+      (or (assoc-ref (package-properties package) 'release-monitoring-url)
+          (http-url? package)))))
 
 (define (latest-html-updatable-release package)
   "Return the latest release of PACKAGE.  Do that by crawling the HTML page of
