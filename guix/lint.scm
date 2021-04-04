@@ -1191,21 +1191,32 @@ vulnerability records for PACKAGE by calling PACKAGE-VULNERABILITIES."
 
 (define (check-for-updates package)
   "Check if there is an update available for PACKAGE."
-  (match (with-networking-fail-safe
-          (format #f (G_ "while retrieving upstream info for '~a'")
-                  (package-name package))
-          #f
-          (package-latest-release* package))
-    ((? upstream-source? source)
-     (if (version>? (upstream-source-version source)
-                    (package-version package))
-         (list
-          (make-warning package
-                        (G_ "can be upgraded to ~a")
-                        (list (upstream-source-version source))
-                        #:field 'version))
-         '()))
-    (#f '()))) ; cannot find newer upstream release
+  (match (lookup-updater package)
+    (#f
+     (list (make-warning package (G_ "no updater for ~a")
+                         (list (package-name package))
+                         #:field 'source)))
+    ((? upstream-updater? updater)
+     (match (with-networking-fail-safe
+             (format #f (G_ "while retrieving upstream info for '~a'")
+                     (package-name package))
+             #f
+             (package-latest-release package))
+       ((? upstream-source? source)
+        (if (version>? (upstream-source-version source)
+                       (package-version package))
+            (list
+             (make-warning package
+                           (G_ "can be upgraded to ~a")
+                           (list (upstream-source-version source))
+                           #:field 'version))
+            '()))
+       (#f                                       ;cannot find upstream release
+        (list (make-warning package
+                            (G_ "updater '~a' failed to find \
+upstream releases")
+                            (list (upstream-updater-name updater))
+                            #:field 'source)))))))
 
 
 (define (check-archival package)
