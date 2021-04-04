@@ -264,12 +264,15 @@ them matches."
                                  #:optional
                                  (updaters (force %updaters)))
   "Return an upstream source to update PACKAGE, a <package> object, or #f if
-none of UPDATERS matches PACKAGE.  It is the caller's responsibility to ensure
-that the returned source is newer than the current one."
-  (match (lookup-updater package updaters)
-    ((? upstream-updater? updater)
-     ((upstream-updater-latest updater) package))
-    (_ #f)))
+none of UPDATERS matches PACKAGE.  When several updaters match PACKAGE, try
+them until one of them returns an upstream source.  It is the caller's
+responsibility to ensure that the returned source is newer than the current
+one."
+  (any (match-lambda
+         (($ <upstream-updater> name description pred latest)
+          (and (pred package)
+               (latest package))))
+       updaters))
 
 (define* (package-latest-release* package
                                   #:optional
