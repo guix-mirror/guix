@@ -46,6 +46,8 @@
                       `(("self" ,this-package))
                       '()))
 
+   (properties
+    `((release-monitoring-url . "http://ftp.astron.com/pub/file/")))
    (synopsis "File type guesser")
    (description
     "The file command is a file type guesser, a command-line tool that tells
