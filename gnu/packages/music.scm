@@ -2650,7 +2650,6 @@ browser.")
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; no test target
-       #:configure-flags '("-DLIB_SUFFIX=")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'fix-docbook
