@@ -420,14 +420,14 @@ bibliographic data and simple document and bibtex retrieval.")
 (define-public ugrep
   (package
     (name "ugrep")
-    (version "3.1.4")
+    (version "3.1.11")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/Genivia/ugrep")
                     (commit (string-append "v" version))))
               (sha256
-               (base32 "1ydnpdhn1mp2pnbqzvwabrp573626k89kbv97fax6y1bz2pamrg4"))
+               (base32 "1g3sxnrcaz1jxwa8nwrxpr63g4y0ha5zcf10053ciy9wjh6wqs1w"))
               (file-name (string-append name "-" version "-checkout"))
               (modules '((guix build utils)))
               (snippet
@@ -446,13 +446,13 @@ bibliographic data and simple document and bibtex retrieval.")
        ("pcre2" ,pcre2)
        ("zlib" ,zlib)))
     (arguments
-     `(#:tests? #f ;; No script for re-building the binary test input-files
+     `(#:tests? #f                  ; no way to rebuild the binary input files
        #:test-target "test"
        #:phases
        (modify-phases %standard-phases
          (add-before 'check 'check-setup
            (lambda _
-             ;; unpatch shepengs in tests
+             ;; Unpatch shebangs in tests.
              (substitute* '("tests/Hello.bat"
                             "tests/Hello.sh")
                (("#!/gnu/store/.*/bin/sh") "#!/bin/sh")))))))
