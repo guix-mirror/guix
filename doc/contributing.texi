@@ -126,10 +126,10 @@ Store}, for information about this), usually @file{/var}.  Note that you
 will probably not run @command{make install} at the end (you don't have
 to) but it's still important to pass the right @code{localstatedir}.
 
-Finally, you have to invoke @code{make check} to run tests
-(@pxref{Running the Test Suite}).  If anything
-fails, take a look at installation instructions (@pxref{Installation})
-or send a message to the @email{guix-devel@@gnu.org, mailing list}.
+Finally, you have to invoke @code{make && make check} to build Guix and
+run the tests (@pxref{Running the Test Suite}).  If anything fails, take
+a look at installation instructions (@pxref{Installation}) or send a
+message to the @email{guix-devel@@gnu.org, mailing list}.
 
 From there on, you can authenticate all the commits included in your
 checkout by running:
