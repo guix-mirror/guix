@@ -4,6 +4,7 @@
 ;;; Copyright © 2021 François Joulaud <francois.joulaud@radiofrance.com>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -380,9 +381,11 @@ hence the need to derive this information."
   "Converts a module's path to the canonical Guix format for Go packages."
   (string-downcase (string-append "go-" (string-replace-substring
                                          (string-replace-substring
-                                          module-path
-                                          "." "-")
-                                         "/" "-"))))
+                                          (string-replace-substring
+                                           module-path
+                                           "." "-")
+                                          "/" "-")
+                                         "_" "-"))))
 
 (define-record-type <module-meta>
   (make-module-meta import-prefix vcs repo-root)
