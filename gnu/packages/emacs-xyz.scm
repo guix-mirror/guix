@@ -96,6 +96,7 @@
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
+;;; Copyright © 2021 Eugene Klimov <lipklim@mailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4678,6 +4679,32 @@ as moving between the spec files, and corresponding code files.
 
 Also included are keybindings for spec files and Dired buffers, as well as
 snippets for yasnippet.")
+      (license license:gpl3+))))
+
+(define-public emacs-mode-line-idle
+  ;; Package has no release.  Version is extracted from "Version:" keyword in
+  ;; main file.
+  (let ((commit "02b1da6278e43cc9cc0356110cc6bfbb37eb8241")
+	(revision "1"))
+    (package
+      (name "emacs-mode-line-idle")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (file-name (git-file-name name version))
+         (uri (git-reference
+               (url "https://gitlab.com/ideasman42/emacs-mode-line-idle")
+               (commit commit)))
+         (sha256
+          (base32 "0ky330b2sfbzkbxbfp9b21hdywsjw26bllspglz08hrbni7jmry8"))))
+      (build-system emacs-build-system)
+      (home-page "https://gitlab.com/ideasman42/emacs-mode-line-idle")
+      (synopsis "Simple delayed text evaluation for the mode-line")
+      (description
+       "Mode Line Idle provides a convenient way to defer text evaluation
+which integrates into existing mode-line without requiring a minor mode or
+configuration.")
       (license license:gpl3+))))
 
 (define-public emacs-smart-mode-line
@@ -27597,3 +27624,4 @@ complementary packages.")
 quasi-prefix map, with many useful bindings.  These bindings are
 shorter than usual, using mostly unprefixed keys.")
     (license license:gpl3+)))
+
