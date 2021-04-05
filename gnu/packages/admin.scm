@@ -329,6 +329,38 @@ interface and is based on GNU Guile.")
              #t)))
        ,@(package-arguments shepherd)))))
 
+(define-public cfm
+  (package
+    (name "cfm")
+    (version "0.6.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/WillEccles/cfm")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "14gapia902f29wa4dlrrj8jcwcff9bfvyhjccw9ddy2gxx2g8wmr"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no test suite
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         ;; Keeping xdg-open optional avoids a size increase of 293%.
+         (delete 'configure))))         ; no configure script
+    (home-page "https://eccles.dev/cfm/")
+    (synopsis
+     "Simple terminal file manager with @command{vi}-inspired key bindings")
+    (description
+     "The Cactus File Manager (@command{cfm}) helps you manage your files
+visually from a text terminal.  It aims to be simple and fast, with key bindings
+inspired by @command{vi}.")
+    (license license:mpl2.0)))
+
 (define-public cloud-utils
   (package
     (name "cloud-utils")
