@@ -2098,22 +2098,19 @@ It is intended primarily for use in testing.")
 (define-public perl-net-cidr-lite
  (package
   (name "perl-net-cidr-lite")
-  (version "0.21")
+  (version "0.22")
   (source
     (origin
       (method url-fetch)
       (uri (string-append
-             "mirror://cpan/authors/id/D/DO/DOUGW/Net-CIDR-Lite-"
+             "mirror://cpan/authors/id/S/ST/STIGTSP/Net-CIDR-Lite-"
              version
              ".tar.gz"))
       (sha256
-        (base32
-          "14shj73zbqmfjbp0qz1fs9j4p2dpvz5hfkm4qfdjbydflbl2b8fg"))))
+        (base32 "05w57db2lx4djb4vixzdr6qgrzyzkk047nl812g7nq8s6k5xh5s3"))))
   (build-system perl-build-system)
-  (home-page
-    "https://metacpan.org/release/Net-CIDR-Lite")
-  (synopsis
-    "Perl extension for merging IPv4 or IPv6 CIDR addresses")
+  (home-page "https://metacpan.org/release/Net-CIDR-Lite")
+  (synopsis "Perl extension for merging IPv4 or IPv6 CIDR addresses")
   (description "Net::CIDR::Lite merges IPv4 or IPv6 CIDR addresses.")
   (license license:gpl1+)))
 
