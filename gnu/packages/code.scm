@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2015, 2018, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2015, 2018, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
@@ -180,7 +180,7 @@ around in a large, deeply nested project.")
     (version "2.26")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.dwheeler.com/sloccount/sloccount-"
+              (uri (string-append "https://dwheeler.com/sloccount/sloccount-"
                                   version ".tar.gz"))
               (sha256
                (base32
@@ -221,7 +221,7 @@ around in a large, deeply nested project.")
         #:make-flags (list (string-append "PREFIX="
                                           (assoc-ref %outputs "out")))))
     (inputs `(("perl" ,perl)))
-    (home-page "http://www.dwheeler.com/sloccount/")
+    (home-page "https://dwheeler.com/sloccount/")
     (synopsis "Count physical source lines of code (SLOC)")
     (description
      "SLOCCount is a set of the programs for counting source lines of
