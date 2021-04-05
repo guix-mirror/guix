@@ -18,7 +18,7 @@
 ;;; Copyright © 2018 Thorsten Wilms <t_w_@freenet.de>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018 Brendan Tildesley <mail@brendan.scot>
-;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2019, 2021 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019, 2021 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2019 Arun Isaac <arunisaac@systemreboot.net>
@@ -567,11 +567,11 @@ streams from live audio.")
 (define-public ardour
   (package
     (name "ardour")
-    (version "5.12")
+    (version "6.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://git.ardour.org/ardour/ardour.git")
+                    (url "git://git.ardour.org/ardour/ardour.git")
                     (commit version)))
               (snippet
                ;; Ardour expects this file to exist at build time.  The revision
@@ -581,15 +581,16 @@ streams from live audio.")
                     "libs/ardour/revision.cc"
                   (lambda (port)
                     (format port ,(string-append "#include \"ardour/revision.h\"
-namespace ARDOUR { const char* revision = \"" version "\" ; }"))
+namespace ARDOUR { const char* revision = \"" version "\" ; const char* date = \"\"; }"))
                     #t)))
               (sha256
                (base32
-                "0mla5lm51ryikc2rrk53max2m7a5ds6i1ai921l2h95wrha45nkr"))
+                "0k5rxh8b3d8si3lj01gfqj0pmd448d8sj4asnb205mwhwbfgn0cp"))
               (file-name (string-append name "-" version))))
     (build-system waf-build-system)
     (arguments
      `(#:configure-flags '("--cxx11"          ; required by gtkmm
+                           "--optimize"
                            "--no-phone-home"  ; don't contact ardour.org
                            "--freedesktop"    ; build .desktop file
                            "--test")          ; build unit tests
@@ -619,8 +620,7 @@ namespace ARDOUR { const char* revision = \"" version "\" ; }"))
                                             ver ".appdata.xml")
                              (string-append share "/appdata/")))
              #t)))
-       #:test-target "test"
-       #:python ,python-2))
+       #:test-target "test"))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("atkmm" ,atkmm)
@@ -628,6 +628,7 @@ namespace ARDOUR { const char* revision = \"" version "\" ; }"))
        ("boost" ,boost)
        ("cairomm" ,cairomm)
        ("curl" ,curl)
+       ("dbus" ,dbus)
        ("eudev" ,eudev)
        ("fftw" ,fftw)
        ("fftwf" ,fftwf)
@@ -644,17 +645,21 @@ namespace ARDOUR { const char* revision = \"" version "\" ; }"))
        ("libsndfile" ,libsndfile)
        ("libusb" ,libusb)
        ("libvorbis" ,libvorbis)
+       ("libwebsockets" ,libwebsockets)
        ("libxml2" ,libxml2)
        ("lilv" ,lilv)
        ("lrdf" ,lrdf)
        ("lv2" ,lv2)
+       ("openssl" ,openssl)  ; Required by libwebsockets.
        ("pangomm" ,pangomm)
        ("python-rdflib" ,python-rdflib)
+       ("pulseaudio" ,pulseaudio)
        ("readline" ,readline)
        ("redland" ,redland)
        ("rubberband" ,rubberband)
        ("serd" ,serd)
        ("sord" ,sord)
+       ("soundtouch" ,soundtouch)
        ("sratom" ,sratom)
        ("suil" ,suil)
        ("taglib" ,taglib)
