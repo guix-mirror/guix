@@ -22,7 +22,7 @@
 ;;; Copyright © 2017, 2018, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
-;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2017, 2021 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017, 2019, 2020 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2018, 2019 Julien Lepiller <julien@lepiller.eu>
@@ -1331,18 +1331,17 @@ parser written in ANSI C and a small validating JSON generator.")
 (define-public libwebsockets
   (package
     (name "libwebsockets")
-    (version "1.3")
+    (version "4.1.6")
     (source (origin
               ;; The project does not publish tarballs, so we have to take
               ;; things from Git.
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/warmcat/libwebsockets")
-                    (commit (string-append "v" version
-                                           "-chrome37-firefox30"))))
+                    (commit (string-append "v" version))))
               (sha256
                (base32
-                "12fqh2d2098mgf0ls19p9lzibpsqhv7mc5rn1yvrbfnazmcr40g4"))
+                "0x56v4hsx92vm1zibfmnqb5g3v23kzciffn3fjlsc3sly2pknhsg"))
               (file-name (string-append name "-" version))))
 
     (build-system cmake-build-system)
