@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015, 2019 Ricardo Wurmus <ricardo.wurmus@mdc-berlin.de>
 ;;; Copyright © 2016, 2017, 2020 Efraim Flashner <efraim@flashner.co.il>
@@ -103,7 +103,8 @@ to call code written in another language.  The libffi library really only
 provides the lowest, machine dependent layer of a fully featured foreign
 function interface.  A layer must exist above libffi that handles type
 conversions for values passed between the two languages.")
-    (home-page "http://sources.redhat.com/libffi/")
+    (home-page "http://www.sourceware.org/libffi/")
+    (properties `((release-monitoring-url . ,home-page)))
 
     ;; See <https://github.com/atgreen/libffi/blob/master/LICENSE>.
     (license expat)))
