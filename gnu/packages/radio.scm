@@ -61,6 +61,7 @@
   #:use-module (gnu packages logging)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages mp3)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages networking)
@@ -1485,4 +1486,44 @@ Compatible hardware/software:
     (description
      "Dream is a software implementation of a Digital Radio Mondiale (DRM)
 receiver.")
+    (license license:gpl2+)))
+
+(define-public welle-io
+  (package
+    (name "welle-io")
+    (version "2.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/albrechtl/welle.io")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "04fpm6sc431dl9i5h53xpd6k85j22sv8aawl7b6wv2fzpfsd9fwa"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("faad2" ,faad2)
+       ("fftwf" ,fftwf)
+       ("lame" ,lame)
+       ("libusb" ,libusb)
+       ("mpg123" ,mpg123)
+       ("rtl-sdr" ,rtl-sdr)
+       ("qtbase" ,qtbase)
+       ("qtcharts" ,qtcharts)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtgraphicaleffects" ,qtgraphicaleffects)
+       ("qtmultimedia" ,qtmultimedia)
+       ("qtquickcontrols2" ,qtquickcontrols2)))
+    (arguments
+     `(#:configure-flags '("-DRTLSDR=ON")
+       #:tests? #f))
+    (home-page "https://www.welle.io/")
+    (synopsis "DAB and DAB+ software radio")
+    (description
+     "@code{welle.io} is a Digital Audio Broadcasting (DAB and DAB+) software
+defined radio with support for rtl-sdr.")
     (license license:gpl2+)))
