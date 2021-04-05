@@ -5504,7 +5504,7 @@ the parse trees produced by the html package.")
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/PuerkitoBio/goquery"))
-    (native-inputs
+    (propagated-inputs
      `(("go-github-com-andybalholm-cascadia" ,go-github-com-andybalholm-cascadia)
        ("go-golang-org-x-net" ,go-golang-org-x-net)))
     (home-page "https://github.com/PuerkitoBio/goquery")
