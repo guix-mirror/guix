@@ -29,6 +29,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix utils)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
@@ -36,6 +37,7 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages documentation)
@@ -49,6 +51,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages golang)
+  #:use-module (gnu packages gps)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
@@ -1414,3 +1417,72 @@ Compatible hardware/software:
 @item Icom IC-9700
 @end itemize\n")
     (license license:expat)))
+
+(define-public dream
+  (package
+    (name "dream")
+    (version "2.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/drm/dream/" version
+                           "/dream-" version "-svn808.tar.gz"))
+       (sha256
+        (base32 "01dv6gvljz64zrjbr08mybr9aicvpq2c6qskww46lngdjyhk8xs1"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("faad2" ,faad2)
+       ("fftw" ,fftw)
+       ("libsndfile" ,libsndfile)
+       ("libpcap" ,libpcap)
+       ("opus" ,opus)
+       ("pulseaudio" ,pulseaudio)
+       ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)
+       ("qtwebkit" ,qtwebkit)
+       ("qwt" ,qwt)
+       ("speexdsp" ,speexdsp)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* "dream.pro"
+               (("target\\.path = /usr/bin")
+                (string-append "target.path = "
+                               (assoc-ref outputs "out") "/bin"))
+               (("documentation\\.path = /usr/share/man/man1")
+                (string-append "documentation.path = "
+                               (assoc-ref outputs "out")
+                               "/share/man/man1"))
+               (("/usr/include/pulse/")
+                (string-append (assoc-ref inputs "pulseaudio")
+                               "/include/pulse/"))
+               (("/usr/include/sndfile\\.h")
+                (string-append (assoc-ref inputs "libsndfile")
+                               "/include/sndfile.h"))
+               (("/usr/include/opus/")
+                (string-append (assoc-ref inputs "opus")
+                               "/include/opus/"))
+               (("/usr/include/speex/")
+                (string-append (assoc-ref inputs "speexdsp")
+                               "/include/speex/"))
+               (("/usr/include/qwt/")
+                (string-append (assoc-ref inputs "qwt")
+                               "/include/qwt/"))
+               (("\\$\\$OUT_PWD/include/neaacdec\\.h")
+                (string-append (assoc-ref inputs "faad2")
+                               "/include/neaacdec.h")))))
+         (replace 'configure
+           (lambda _
+             (invoke "qmake"))))))
+    (home-page "https://sourceforge.net/projects/drm/")
+    (synopsis "Digital Radio Mondiale receiver")
+    (description
+     "Dream is a software implementation of a Digital Radio Mondiale (DRM)
+receiver.")
+    (license license:gpl2+)))
