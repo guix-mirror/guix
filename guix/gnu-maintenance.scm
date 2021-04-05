@@ -595,7 +595,7 @@ list available from %GNU-FILE-LIST-URI over HTTP(S)."
 (define %package-name-rx
   ;; Regexp for a package name, e.g., "foo-X.Y".  Since TeXmacs uses
   ;; "TeXmacs-X.Y-src", the `-src' suffix is allowed.
-  (make-regexp "^(.*)[-_](([0-9]|\\.)+)(-src)?"))
+  (make-regexp "^(.*)[-_](([0-9]|\\.)+)(-src|\\.src|\\.orig)?"))
 
 (define (gnu-package-name->name+version name+version)
   "Return the package name and version number extracted from NAME+VERSION."
