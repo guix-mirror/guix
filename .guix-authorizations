@@ -144,12 +144,6 @@
    (name "snape"))
   ("9ADE 9ECF 2B19 C180 9C99  5CEA A1F4 CFCC 5283 6BAC"
    (name "taylanub"))
-
-  ;; https://lists.gnu.org/archive/html/guix-devel/2017-03/msg00826.html
-  (;; primary: "1DD1 681F E285 E07F 11DC  0C59 2E15 A6BC D77D 54FD"
-   "3D2C DA58 819C 08C2 A649  D43D 5C3B 064C 724A 5726"
-   (name "thomasd"))
-
   ("6580 7361 3BFC C5C7 E2E4  5D45 DC51 8FC8 7F97 16AA"
    (name "vagrantc"))
   (;; primary: "C955 CC5D C048 7FB1 7966  40A9 199A F6A3 67E9 4ABB"
