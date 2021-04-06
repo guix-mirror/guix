@@ -2469,7 +2469,10 @@ can autogenerate peewee models using @code{pwiz}, a model generator.")
                     (lambda _
                       (substitute* "setup.py"
                         (("pypika>=0\\.44\\.0,<0\\.45\\.0") "pypika")
-                        (("aiosqlite>=0.16.0,<0.17.0") "aiosqlite"))
+                        (("aiosqlite>=0.16.0,<0.17.0") "aiosqlite")
+                        (("pytz>=2020\\.4,<2021\\.0") "pytz")
+                        ;; Not required, since ciso8601 is used.
+                        (("'iso8601>=0\\.1\\.13,<0\\.2\\.0',") ""))
                       #t)))))
     (native-inputs
      `(("python-asynctest" ,python-asynctest)
@@ -2478,6 +2481,7 @@ can autogenerate peewee models using @code{pwiz}, a model generator.")
      `(("python-aiosqlite" ,python-aiosqlite)
        ("python-pypika" ,python-pypika)
        ("python-ciso8601" ,python-ciso8601)
+       ("python-pytz" ,python-pytz)
        ("python-typing-extensions"
         ,python-typing-extensions)))
     (home-page
