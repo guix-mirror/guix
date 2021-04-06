@@ -43,6 +43,7 @@
 ;;; Copyright © 2020 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2021 Gerd Heber <gerd.heber@gmail.com>
+;;; Copyright © 2021 Franck Pérignon <franck.perignon@univ-grenoble-alpes.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3246,6 +3247,63 @@ YACC = bison -pscotchyy -y -b y
     (synopsis
      "Programs and libraries for graph algorithms (32-bit integers)")))
 
+(define-public scotch-shared
+  (package (inherit scotch)
+    (name "scotch-shared")
+    (native-inputs
+     `(("gcc" ,gcc)
+       ("flex" ,flex)
+       ("bison" ,bison)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments scotch)
+       ((#:phases scotch-shared-phases)
+        `(modify-phases ,scotch-shared-phases
+           (replace
+            'configure
+           (lambda _
+             ;; Otherwise, the RUNPATH will lack the final path component.
+             (setenv "RPATHFLAGS" (string-append "-Wl,-rpath="
+                                              (assoc-ref %outputs "out") "/lib"))
+            (call-with-output-file "Makefile.inc"
+              (lambda (port)
+                (format port "
+EXE =
+LIB = .so
+OBJ = .o
+MAKE = make
+AR = gcc
+ARFLAGS = -shared -o
+CAT = cat
+CCS = gcc
+CCP = mpicc
+CCD = gcc
+CPPFLAGS =~{ -D~a~}
+CFLAGS = -O2 -g -fPIC $(CPPFLAGS) $(RPATHFLAGS)
+CLIBFLAGS = -shared -fPIC
+LDFLAGS = -lz -lm -lrt -lpthread -Xlinker --no-as-needed
+CP = cp
+LEX = flex -Pscotchyy -olex.yy.c
+LN = ln
+MKDIR = mkdir
+MV = mv
+RANLIB = echo
+YACC = bison -pscotchyy -y -b y
+"
+                        '("COMMON_FILE_COMPRESS_GZ"
+                          "COMMON_PTHREAD"
+                          "COMMON_RANDOM_FIXED_SEED"
+                          "INTSIZE64"             ;use 'int64_t'
+                          ;; Prevents symbolc clashes with libesmumps
+                          "SCOTCH_RENAME"
+                          ;; XXX: Causes invalid frees in superlu-dist tests
+                          ;; "SCOTCH_PTHREAD"
+                          ;; "SCOTCH_PTHREAD_NUMBER=2"
+                          "restrict=__restrict"
+                          ))))#t))
+           (delete 'check)))))
+     (synopsis
+      "Programs and libraries for graph algorithms (shared libraries version)")))
+
 (define-public pt-scotch
   (package (inherit scotch)
     (name "pt-scotch")
@@ -3292,6 +3350,28 @@ YACC = bison -pscotchyy -y -b y
                (invoke "make" "ptcheck")))))))
     (synopsis
      "Programs and libraries for graph algorithms (with MPI and 32-bit integers)")))
+
+(define-public pt-scotch-shared
+  (package (inherit scotch-shared)
+    (name "pt-scotch-shared")
+    (propagated-inputs
+     `(("openmpi" ,openmpi)))           ;Headers include MPI headers
+    (arguments
+     (substitute-keyword-arguments (package-arguments scotch-shared)
+       ((#:phases scotch-shared-phases)
+        `(modify-phases ,scotch-shared-phases
+           (replace
+            'build
+            (lambda _
+              (invoke "make" (format #f "-j~a" (parallel-job-count))
+                      "ptscotch" "ptesmumps")
+
+              ;; Install the serial metis compatibility library
+              (invoke "make" "-C" "libscotchmetis" "install")))
+           (add-before 'check 'mpi-setup
+             ,%openmpi-setup)))))
+    (synopsis "Graph algorithms (shared libraries version, with MPI)")))
+
 
 (define-public metis
   (package
