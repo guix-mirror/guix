@@ -1409,7 +1409,7 @@ following three utilities are included with the library:
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/BitcoinUnlimited/BitcoinUnlimited")
+             (url "https://gitlab.com/bitcoinunlimited/BCHUnlimited.git/")
              (commit (string-append "BCHunlimited" version))))
        (file-name (git-file-name name version))
        (sha256
