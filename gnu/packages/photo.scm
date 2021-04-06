@@ -355,15 +355,16 @@ and a wide variety of other metadata.")
 (define-public libpano13
   (package
     (name "libpano13")
-    (version "2.9.19")
+    (version "2.9.20_rc3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/panotools/libpano13/"
-                                  "libpano13-" version "/"
-                                  "libpano13-" version ".tar.gz"))
+                                  "libpano13-" (first
+                                                (string-split version #\_))
+                                  "/libpano13-" version ".tar.gz"))
               (sha256
                (base32
-                "1a4m3plmfcrrplqs9zfzhc5apibn10m5sajpizm1sd3q74w5fwq3"))))
+                "12cv4886l1czfjwy7k6ipgf3zjksgwhdjzr2s9fdg33vqcv2hlrv"))))
     (build-system cmake-build-system)
     (inputs
      `(("libjpeg" ,libjpeg-turbo)
