@@ -90,7 +90,7 @@ index ebd85d59f9..1243839461 100644
 +      output: 'QEMU.info',
 +      install: true,
 +      install_dir: get_option('infodir'),
-+      command: [makeinfo, '@INPUT0@', '--output=@OUTPUT@'])
++      command: [makeinfo, '--no-split', '@INPUT0@', '--output=@OUTPUT@'])
 +    alias_target('texi', sphinxtexi)
 +    alias_target('info', sphinxinfo)
 +  endif
