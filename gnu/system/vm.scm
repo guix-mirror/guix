@@ -88,6 +88,13 @@
 ;;;
 ;;; Code:
 
+;; By default, the msize value is 8 KiB, which according to QEMU is
+;; insufficient and would degrade performance.  The msize value should roughly
+;; match the bandwidth of the system's IO (see:
+;; https://wiki.qemu.org/Documentation/9psetup#msize).  Use 100 MiB as a
+;; conservative default.
+(define %default-msize-value (* 100 (expt 2 20))) ;100 MiB
+
 (define %linux-vm-file-systems
   ;; File systems mounted for 'derivation-in-linux-vm'.  These are shared with
   ;; the host over 9p.
@@ -103,21 +110,23 @@
           (type "9p")
           (needed-for-boot? #t)
           (flags '(read-only))
-          (options "trans=virtio,cache=loose")
+          (options (format #f "trans=virtio,cache=loose,msize=~a"
+                           %default-msize-value))
           (check? #f))
         (file-system
           (mount-point "/xchg")
           (device "xchg")
           (type "9p")
           (needed-for-boot? #t)
-          (options "trans=virtio")
+          (options (format #f "trans=virtio,msize=~a" %default-msize-value))
           (check? #f))
         (file-system
           (mount-point "/tmp")
           (device "tmp")
           (type "9p")
           (needed-for-boot? #t)
-          (options "trans=virtio,cache=loose")
+          (options (format #f "trans=virtio,cache=loose,msize=~a"
+                           %default-msize-value))
           (check? #f))))
 
 (define not-config?
@@ -581,7 +590,8 @@ the operating system."
        (type "9p")
        (flags (if writable? '() '(read-only)))
        (options (string-append "trans=virtio"
-                               (if writable? "" ",cache=loose")))
+                               (if writable? "" ",cache=loose")
+                               ",msize=" (number->string %default-msize-value)))
        (check? #f)
        (create-mount-point? #t)))))
 
