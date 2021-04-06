@@ -15,7 +15,7 @@
 ;;; Copyright © 2016, 2018, 2019, 2020 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Feng Shu <tumashu@163.com>
-;;; Copyright © 201–72021 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Ethan R. Jones <doubleplusgood23@gmail.com>
@@ -1995,7 +1995,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
 (define-public mpv
   (package
     (name "mpv")
-    (version "0.33.0")
+    (version "0.33.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2004,7 +2004,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "06cmycd2gb826kf2zv470w6nhzyk9sdhjydsdiinbgb902lzcpfy"))))
+                "06rw1f55zcsj78ql8w70j9ljp2qb1pv594xj7q9cmq7i92a7hq45"))))
     (build-system waf-build-system)
     (native-inputs
      `(("perl" ,perl) ; for zsh completion file
