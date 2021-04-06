@@ -21,8 +21,6 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix gexp)
-  #:use-module (guix store)
-  #:use-module (guix monads)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix utils)
