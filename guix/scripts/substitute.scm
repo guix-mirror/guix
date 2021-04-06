@@ -63,7 +63,7 @@
   #:use-module (web uri)
   #:use-module (guix http-client)
   #:export (%allow-unauthenticated-substitutes?
-            %error-to-file-descriptor-4?
+            %reply-file-descriptor
 
             substitute-urls
             guix-substitute))
@@ -279,29 +279,29 @@ Internal tool to substitute a pre-built binary to a local build.\n"))
   "Evaluate EXP...  Return its CPU usage as a fraction between 0 and 1."
   (call-with-cpu-usage-monitoring (lambda () exp ...)))
 
-(define (display-narinfo-data narinfo)
-  "Write to the current output port the contents of NARINFO in the format
-expected by the daemon."
-  (format #t "~a\n~a\n~a\n"
+(define (display-narinfo-data port narinfo)
+  "Write to PORT the contents of NARINFO in the format expected by the
+daemon."
+  (format port "~a\n~a\n~a\n"
           (narinfo-path narinfo)
           (or (and=> (narinfo-deriver narinfo)
                      (cute string-append (%store-prefix) "/" <>))
               "")
           (length (narinfo-references narinfo)))
-  (for-each (cute format #t "~a/~a~%" (%store-prefix) <>)
+  (for-each (cute format port "~a/~a~%" (%store-prefix) <>)
             (narinfo-references narinfo))
 
   (let-values (((uri compression file-size)
                 (narinfo-best-uri narinfo
                                   #:fast-decompression?
                                   %prefer-fast-decompression?)))
-    (format #t "~a\n~a\n"
+    (format port "~a\n~a\n"
             (or file-size 0)
             (or (narinfo-size narinfo) 0))))
 
-(define* (process-query command
+(define* (process-query port command
                         #:key cache-urls acl)
-  "Reply to COMMAND, a query as written by the daemon to this process's
+  "Reply on PORT to COMMAND, a query as written by the daemon to this process's
 standard input.  Use ACL as the access-control list against which to check
 authorized substitutes."
   (define valid?
@@ -338,17 +338,17 @@ authorized substitutes."
                            #:open-connection open-connection-for-uri/cached
                            #:make-progress-reporter make-progress-reporter)))
        (for-each (lambda (narinfo)
-                   (format #t "~a~%" (narinfo-path narinfo)))
+                   (format port "~a~%" (narinfo-path narinfo)))
                  substitutable)
-       (newline)))
+       (newline port)))
     (("info" paths ..1)
      ;; Reply info about PATHS if it's in CACHE-URLS.
      (let ((substitutable (lookup-narinfos/diverse
                            cache-urls paths valid?
                            #:open-connection open-connection-for-uri/cached
                            #:make-progress-reporter make-progress-reporter)))
-       (for-each display-narinfo-data substitutable)
-       (newline)))
+       (for-each (cut display-narinfo-data port <>) substitutable)
+       (newline port)))
     (wtf
      (error "unknown `--query' command" wtf))))
 
@@ -428,14 +428,14 @@ server certificates."
   "Bind PORT with EXP... to a socket connected to URI."
   (call-with-cached-connection uri (lambda (port) exp ...)))
 
-(define* (process-substitution store-item destination
+(define* (process-substitution port store-item destination
                                #:key cache-urls acl
                                deduplicate? print-build-trace?)
   "Substitute STORE-ITEM (a store file name) from CACHE-URLS, and write it to
 DESTINATION as a nar file.  Verify the substitute against ACL, and verify its
 hash against what appears in the narinfo.  When DEDUPLICATE? is true, and if
-DESTINATION is in the store, deduplicate its files.  Print a status line on
-the current output port."
+DESTINATION is in the store, deduplicate its files.  Print a status line to
+PORT."
   (define narinfo
     (lookup-narinfo cache-urls store-item
                     (if (%allow-unauthenticated-substitutes?)
@@ -565,10 +565,10 @@ the current output port."
       (let ((actual (get-hash)))
         (if (bytevector=? actual expected)
             ;; Tell the daemon that we're done.
-            (format (current-output-port) "success ~a ~a~%"
+            (format port "success ~a ~a~%"
                     (narinfo-hash narinfo) (narinfo-size narinfo))
             ;; The actual data has a different hash than that in NARINFO.
-            (format (current-output-port) "hash-mismatch ~a ~a ~a~%"
+            (format port "hash-mismatch ~a ~a ~a~%"
                     (hash-algorithm-name algorithm)
                     (bytevector->nix-base32-string expected)
                     (bytevector->nix-base32-string actual)))))))
@@ -682,28 +682,10 @@ default value."
   (unless (string->uri uri)
     (leave (G_ "~a: invalid URI~%") uri)))
 
-(define %error-to-file-descriptor-4?
-  ;; Whether to direct 'current-error-port' to file descriptor 4 like
-  ;; 'guix-daemon' expects.
-  (make-parameter #t))
-
-;; The daemon's agent code opens file descriptor 4 for us and this is where
-;; stderr should go.
-(define-syntax-rule (with-redirected-error-port exp ...)
-  "Evaluate EXP... with the current error port redirected to file descriptor 4
-if needed, as expected by the daemon's agent."
-  (let ((thunk (lambda () exp ...)))
-    (if (%error-to-file-descriptor-4?)
-        (parameterize ((current-error-port (fdopen 4 "wl")))
-          ;; Redirect diagnostics to file descriptor 4 as well.
-          (guix-warning-port (current-error-port))
-
-          ;; 'with-continuation-barrier' captures the initial value of
-          ;; 'current-error-port' to report backtraces in case of uncaught
-          ;; exceptions.  Without it, backtraces would be printed to FD 2,
-          ;; thereby confusing the daemon.
-          (with-continuation-barrier thunk))
-        (thunk))))
+(define %reply-file-descriptor
+  ;; The file descriptor where replies to the daemon must be sent, or #f to
+  ;; use the current output port instead.
+  (make-parameter 4))
 
 (define-command (guix-substitute . args)
   (category internal)
@@ -719,68 +701,73 @@ if needed, as expected by the daemon's agent."
   (define deduplicate?
     (find-daemon-option "deduplicate"))
 
-  (with-redirected-error-port
-    (mkdir-p %narinfo-cache-directory)
-    (maybe-remove-expired-cache-entries %narinfo-cache-directory
-                                        cached-narinfo-files
-                                        #:entry-expiration
-                                        cached-narinfo-expiration-time
-                                        #:cleanup-period
-                                        %narinfo-expired-cache-entry-removal-delay)
-    (check-acl-initialized)
+  (define reply-port
+    ;; Port used to reply to the daemon.
+    (if (%reply-file-descriptor)
+        (fdopen (%reply-file-descriptor) "wl")
+        (current-output-port)))
 
-    ;; Sanity-check SUBSTITUTE-URLS so we can provide a meaningful error
-    ;; message.
-    (for-each validate-uri (substitute-urls))
+  (mkdir-p %narinfo-cache-directory)
+  (maybe-remove-expired-cache-entries %narinfo-cache-directory
+                                      cached-narinfo-files
+                                      #:entry-expiration
+                                      cached-narinfo-expiration-time
+                                      #:cleanup-period
+                                      %narinfo-expired-cache-entry-removal-delay)
+  (check-acl-initialized)
 
-    ;; Attempt to install the client's locale so that messages are suitably
-    ;; translated.  LC_CTYPE must be a UTF-8 locale; it's the case by default
-    ;; so don't change it.
-    (match (or (find-daemon-option "untrusted-locale")
-               (find-daemon-option "locale"))
-      (#f     #f)
-      (locale (false-if-exception (setlocale LC_MESSAGES locale))))
+  ;; Sanity-check SUBSTITUTE-URLS so we can provide a meaningful error
+  ;; message.
+  (for-each validate-uri (substitute-urls))
 
-    (catch 'system-error
-      (lambda ()
-        (set-thread-name "guix substitute"))
-      (const #t))                                 ;GNU/Hurd lacks 'prctl'
+  ;; Attempt to install the client's locale so that messages are suitably
+  ;; translated.  LC_CTYPE must be a UTF-8 locale; it's the case by default
+  ;; so don't change it.
+  (match (or (find-daemon-option "untrusted-locale")
+             (find-daemon-option "locale"))
+    (#f     #f)
+    (locale (false-if-exception (setlocale LC_MESSAGES locale))))
 
-    (with-networking
-     (with-error-handling                         ; for signature errors
-       (match args
-         (("--query")
-          (let ((acl (current-acl)))
-            (let loop ((command (read-line)))
-              (or (eof-object? command)
-                  (begin
-                    (process-query command
-                                   #:cache-urls (substitute-urls)
-                                   #:acl acl)
-                    (loop (read-line)))))))
-         (("--substitute")
-          ;; Download STORE-PATH and store it as a Nar in file DESTINATION.
-          ;; Specify the number of columns of the terminal so the progress
-          ;; report displays nicely.
-          (parameterize ((current-terminal-columns (client-terminal-columns)))
-            (let loop ()
-              (match (read-line)
-                ((? eof-object?)
-                 #t)
-                ((= string-tokenize ("substitute" store-path destination))
-                 (process-substitution store-path destination
-                                       #:cache-urls (substitute-urls)
-                                       #:acl (current-acl)
-                                       #:deduplicate? deduplicate?
-                                       #:print-build-trace?
-                                       print-build-trace?)
-                 (loop))))))
-         ((or ("-V") ("--version"))
-          (show-version-and-exit "guix substitute"))
-         (("--help")
-          (show-help))
-         (opts
-          (leave (G_ "~a: unrecognized options~%") opts)))))))
+  (catch 'system-error
+    (lambda ()
+      (set-thread-name "guix substitute"))
+    (const #t))                                   ;GNU/Hurd lacks 'prctl'
+
+  (with-networking
+   (with-error-handling                           ; for signature errors
+     (match args
+       (("--query")
+        (let ((acl (current-acl)))
+          (let loop ((command (read-line)))
+            (or (eof-object? command)
+                (begin
+                  (process-query reply-port command
+                                 #:cache-urls (substitute-urls)
+                                 #:acl acl)
+                  (loop (read-line)))))))
+       (("--substitute")
+        ;; Download STORE-PATH and store it as a Nar in file DESTINATION.
+        ;; Specify the number of columns of the terminal so the progress
+        ;; report displays nicely.
+        (parameterize ((current-terminal-columns (client-terminal-columns)))
+          (let loop ()
+            (match (read-line)
+              ((? eof-object?)
+               #t)
+              ((= string-tokenize ("substitute" store-path destination))
+               (process-substitution reply-port store-path destination
+                                     #:cache-urls (substitute-urls)
+                                     #:acl (current-acl)
+                                     #:deduplicate? deduplicate?
+                                     #:print-build-trace?
+                                     print-build-trace?)
+               (loop))))))
+       ((or ("-V") ("--version"))
+        (show-version-and-exit "guix substitute"))
+       (("--help")
+        (show-help))
+       (opts
+        (leave (G_ "~a: unrecognized options~%") opts))))))
 
 ;;; Local Variables:
 ;;; eval: (put 'with-timeout 'scheme-indent-function 1)

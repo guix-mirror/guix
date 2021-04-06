@@ -3158,13 +3158,13 @@ void SubstitutionGoal::finished()
 void SubstitutionGoal::handleChildOutput(int fd, const string & data)
 {
     if (verbosity >= settings.buildVerbosity
-	&& fd == substituter->builderOut.readSide) {
+	&& fd == substituter->fromAgent.readSide) {
 	writeToStderr(data);
 	/* Don't write substitution output to a log file for now.  We
 	   probably should, though. */
     }
 
-    if (fd == substituter->fromAgent.readSide) {
+    if (fd == substituter->builderOut.readSide) {
 	/* DATA may consist of several lines.  Process them one by one.  */
 	string input = data;
 	while (!input.empty()) {

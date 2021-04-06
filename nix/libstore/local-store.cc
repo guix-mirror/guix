@@ -780,8 +780,8 @@ Path LocalStore::queryPathFromHashPart(const string & hashPart)
     });
 }
 
-/* Read a line from the substituter's stdout, while also processing
-   its stderr. */
+/* Read a line from the substituter's reply file descriptor, while also
+   processing its stderr. */
 string LocalStore::getLineFromSubstituter(Agent & run)
 {
     string res, err;
@@ -802,9 +802,9 @@ string LocalStore::getLineFromSubstituter(Agent & run)
         }
 
         /* Completely drain stderr before dealing with stdout. */
-        if (FD_ISSET(run.builderOut.readSide, &fds)) {
+        if (FD_ISSET(run.fromAgent.readSide, &fds)) {
             char buf[4096];
-            ssize_t n = read(run.builderOut.readSide, (unsigned char *) buf, sizeof(buf));
+            ssize_t n = read(run.fromAgent.readSide, (unsigned char *) buf, sizeof(buf));
             if (n == -1) {
                 if (errno == EINTR) continue;
                 throw SysError("reading from substituter's stderr");
@@ -822,9 +822,9 @@ string LocalStore::getLineFromSubstituter(Agent & run)
         }
 
         /* Read from stdout until we get a newline or the buffer is empty. */
-        else if (FD_ISSET(run.fromAgent.readSide, &fds)) {
+        else if (FD_ISSET(run.builderOut.readSide, &fds)) {
 	    unsigned char c;
-	    readFull(run.fromAgent.readSide, (unsigned char *) &c, 1);
+	    readFull(run.builderOut.readSide, (unsigned char *) &c, 1);
 	    if (c == '\n') {
 		if (!err.empty()) printMsg(lvlError, "substitute: " + err);
 		return res;

@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2014, 2015, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2017, 2018, 2019, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -198,7 +198,7 @@ a file for NARINFO."
 
 ;; Never use file descriptor 4, unlike what happens when invoked by the
 ;; daemon.
-(%error-to-file-descriptor-4? #f)
+(%reply-file-descriptor #f)
 
 
 (test-equal "query narinfo without signature"
