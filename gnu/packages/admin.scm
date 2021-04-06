@@ -2957,13 +2957,13 @@ a new command using the matched rule, and runs it.")
 (define-public di
   (package
     (name "di")
-    (version "4.49")
+    (version "4.50")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/diskinfo-di/di-" version ".tar.gz"))
        (sha256
-        (base32 "1y38jhp2bpwbwzdzjlhgfqc7bxxz9cwapxd61799zjf54jkslkf0"))))
+        (base32 "0aj9ldkvmj8fmrk685vd2gagz0q8lwsn2nfbx6r6mza94mn8pw42"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; obscure test failures
