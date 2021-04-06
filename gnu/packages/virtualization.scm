@@ -1605,7 +1605,7 @@ Open Container Initiative specification.")
 (define-public umoci
   (package
     (name "umoci")
-    (version "0.4.6")
+    (version "0.4.7")
     (source
      (origin
        (method url-fetch)
@@ -1614,7 +1614,7 @@ Open Container Initiative specification.")
              version "/umoci.tar.xz"))
        (file-name (string-append "umoci-" version ".tar.xz"))
        (sha256
-        (base32 "06q7xfwnqysc013hapx31jhlzmyg8qb467qfkynj673qc7p9bd6h"))))
+        (base32 "0fvljj9k4f83wbqzd8nbijz0p1zaq633f8yxyvl5sy3wjf03ffk9"))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "github.com/opencontainers/umoci"
