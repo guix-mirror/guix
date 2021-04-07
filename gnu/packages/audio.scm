@@ -384,8 +384,8 @@ by MusicIP.")
      (origin
        (method url-fetch)
        (uri
-        (string-append "https://sourceforge.net/projects/faac/files/faac-src/"
-                       "faac-1.30/faac-1_30.tar.gz/download"))
+        (string-append "mirror://sourceforge/faac/faac-src"
+                       "/faac-" version "/faac-1_30.tar.gz"))
        (sha256
         (base32 "1lmj0dib3mjp84jhxc5ddvydkzzhb0gfrdh3ikcidjlcb378ghxd"))))
     (build-system gnu-build-system)
