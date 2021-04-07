@@ -76,8 +76,7 @@
     (build-system glib-or-gtk-build-system)
     (outputs '("out" "doc"))
     (arguments
-     `(#:tests? #f  ; tests fail because there's no connection to dbus
-       #:parallel-build? #f ; race condition discovered with emoji support
+     `(#:parallel-build? #f ; race condition discovered with emoji support
        #:configure-flags (list "--enable-python-library"
                                "--enable-gtk-doc"
                                "--enable-memconf"
@@ -95,6 +94,14 @@
                                "--enable-wayland")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'disable-failing-tests
+           (lambda _
+             ;; These tests require /etc/machine-id.
+             (with-directory-excursion "src/tests"
+               (substitute* '("ibus-share.c" "ibus-compose.c"
+                              "ibus-keypress.c")
+                 (("[ \t]*return g_test_run \\(\\);") "")))
+             #t))
          (add-after 'unpack 'patch-docbook-xml
            (lambda* (#:key inputs #:allow-other-keys)
              (with-directory-excursion "docs/reference/ibus"
@@ -102,7 +109,7 @@
                  (("http://www.oasis-open.org/docbook/xml/4.1.2/")
                   (string-append (assoc-ref inputs "docbook-xml")
                                  "/xml/dtd/docbook/"))))
-              #t))
+             #t))
          (add-after 'unpack 'patch-python-target-directories
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((root (string-append (assoc-ref outputs "out")
@@ -138,6 +145,20 @@
              (substitute* "ui/gtk3/xkblayout.vala"
                (("\"(setxkbmap|xmodmap)\"" _ prog)
                 (string-append "\"" (assoc-ref inputs prog) "/bin/" prog "\"")))
+             #t))
+         (add-before 'check 'pre-check
+           (lambda _
+             ;; Tests write to $HOME.
+             (setenv "HOME" (getcwd))
+             ;; Tests look for $XDG_RUNTIME_DIR.
+             (setenv "XDG_RUNTIME_DIR" (getcwd))
+             ;; For missing '/etc/machine-id'.
+             (setenv "DBUS_FATAL_WARNINGS" "0")
+             ;; Tests require a running X server.
+             (system "Xvfb :1 +extension GLX &")
+             (setenv "DISPLAY" ":1")
+             ;; Tests require running iBus daemon.
+             (system "./bus/ibus-daemon --daemonize")
              #t))
          (add-after 'install 'move-doc
            (lambda* (#:key outputs #:allow-other-keys)
@@ -186,12 +207,14 @@
        ("gettext" ,gettext-minimal)
        ("gnome-common" ,gnome-common)
        ("gobject-introspection" ,gobject-introspection) ; for g-ir-compiler
+       ("gtk+:bin" ,gtk+ "bin")
        ("gtk-doc" ,gtk-doc)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("python-wrapper" ,python-wrapper)
        ("vala" ,vala)
-       ("which" ,which)))
+       ("which" ,which)
+       ("xorg-server" ,xorg-server-for-tests)))
     (native-search-paths
      (list (search-path-specification
             (variable "IBUS_COMPONENT_PATH")
