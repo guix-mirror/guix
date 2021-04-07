@@ -147,18 +147,7 @@
          (delete 'configure)
          (replace 'build
            ;; Build Axoloti firmware with cross-compiler
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let* ((toolchain (assoc-ref inputs "cross-toolchain"))
-                    (headers   (string-append
-                                toolchain
-                                "/arm-none-eabi/include:"
-                                toolchain
-                                "/arm-none-eabi/include/arm-none-eabi/armv7e-m")))
-               (setenv "CROSS_CPATH" headers)
-               (setenv "CROSS_CPLUS_INCLUDE_PATH" headers)
-               (setenv "CROSS_LIBRARY_PATH"
-                       (string-append toolchain
-                                      "/arm-none-eabi/lib")))
+           (lambda _
              (with-directory-excursion "platform_linux"
                (invoke "sh" "compile_firmware.sh"))))
          (replace 'install
