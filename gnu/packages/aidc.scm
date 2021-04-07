@@ -30,9 +30,11 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages check)
   #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
@@ -169,16 +171,18 @@ C/C++ programs to use its capabilities without restrictions or overhead.")
 (define-public zbar
   (package
     (name "zbar")
-    (version "0.23")
+    (version "0.23.90")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://linuxtv.org/downloads/zbar/zbar-"
-                           version
-                           ".tar.bz2"))
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/mchehab/zbar")
+         (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0bmd93a15qpgbsq9c9j33qms18rdrgz6gbc48zi6z9w5pvrvi7z9"))))
+         "0rf3i7lx0fqzxsngird6l4d4dnl612nr32rm8sib699qqx67px8n"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags (list "--with-gtk=auto"
@@ -187,17 +191,27 @@ C/C++ programs to use its capabilities without restrictions or overhead.")
                                               (assoc-ref %outputs "out")
                                               "/etc"))))
     (native-inputs
-     `(("glib" ,glib "bin")
-       ("pkg-config" ,pkg-config)))
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gettext-minimal)
+       ("glib" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ("python-wrapper" ,python-wrapper)))
     (inputs
-     `(("gobject-introspection" ,gobject-introspection)
-       ("gtk+" ,gtk+)
+     `(("dbus" ,dbus)
        ("imagemagick" ,imagemagick)
        ("libjpeg" ,libjpeg-turbo)
+       ("perl" ,perl)
        ("python" ,python)
-       ("qtbase" ,qtbase)
        ("qtx11extras" ,qtx11extras)
        ("v4l-utils" ,v4l-utils)))
+    (propagated-inputs
+     ;; These are in 'requires' field of .pc files.
+     `(("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("qtbase" ,qtbase)))
     (synopsis "Bar code reader")
     (description
      "ZBar can read barcodes from various sources, such as video streams,
