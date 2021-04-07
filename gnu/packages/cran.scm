@@ -26484,27 +26484,15 @@ other R users.")
 (define-public r-seurat
   (package
     (name "r-seurat")
-    (version "4.0.0")
+    (version "4.0.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "Seurat" version))
               (sha256
                (base32
-                "1mp3py00bmzj4541d8ry5sfzkpfzvnl9dpa8n4qhakd13dl30xdn"))))
+                "17cmp9mimvykb8ny796dn1zwmvg0pwwjw1zcixyamc5q1lwnxi3p"))))
     (properties `((upstream-name . "Seurat")))
     (build-system r-build-system)
-    ;; This is needed because r-spatstat has been split up and there has
-    ;; been no new release of Seurat since then.
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-spatstat-import
-           (lambda _
-             (substitute* "NAMESPACE"
-               (("importFrom\\(spatstat,markvario\\)")
-                "importFrom(spatstat.core,markvario)")
-               (("importFrom\\(spatstat,ppp\\)")
-                "importFrom(spatstat.geom,ppp)")))))))
     (propagated-inputs
      `(("r-cluster" ,r-cluster)
        ("r-cowplot" ,r-cowplot)
@@ -26545,7 +26533,8 @@ other R users.")
        ("r-sctransform" ,r-sctransform)
        ("r-seuratobject" ,r-seuratobject)
        ("r-shiny" ,r-shiny)
-       ("r-spatstat" ,r-spatstat)
+       ("r-spatstat-core" ,r-spatstat-core)
+       ("r-spatstat-geom" ,r-spatstat-geom)
        ("r-tibble" ,r-tibble)
        ("r-uwot" ,r-uwot)))
     (home-page "http://www.satijalab.org/seurat")
