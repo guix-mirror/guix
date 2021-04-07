@@ -3439,7 +3439,7 @@ for dealing with different structured file formats.")
               (list "--disable-static"
                     "--enable-vala"
                (string-append "--with-html-dir="
-                              (assoc-ref %outputs "doc")
+                              (assoc-ref outputs "doc")
                               "/share/gtk-doc/html")))))
          (add-after 'configure 'dont-vendor-self
            (lambda* (#:key vendor-dir #:allow-other-keys)
