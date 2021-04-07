@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2016, 2017 Ben Woodcroft <donttrustben@gmail.com>
-;;; Copyright © 2016, 2017, 2018, 2020 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2016, 2017, 2018, 2020, 2021 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Raoul Bonnal <ilpuccio.febo@gmail.com>
 ;;; Copyright © 2018 Vijayalakshmi Vedantham <vijimay12@gmail.com>
@@ -1058,6 +1058,25 @@ the embedded @code{RapidXML} C++ library.")
      "Functions for modelling that help you seamlessly integrate modelling
 into a pipeline of data manipulation and visualisation.")
     (license license:gpl3)))
+
+(define-public r-hmm
+  (package
+    (name "r-hmm")
+    (version "1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "HMM" version))
+              (sha256
+               (base32
+                "0z0hcqfixx1l2a6d3lpy5hmh0n4gjgs0jnck441akpp3vh37glzw"))))
+    (properties `((upstream-name . "HMM")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/HMM/")
+    (synopsis "Hidden Markov Models")
+    (description "This package provides an easy to use library to setup, apply
+and make inference with discrete time and discrete space hidden Markov
+models.")
+    (license license:gpl2+)))
 
 (define-public r-httpuv
   (package
