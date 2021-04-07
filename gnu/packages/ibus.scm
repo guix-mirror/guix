@@ -80,6 +80,7 @@
        #:parallel-build? #f ; race condition discovered with emoji support
        #:configure-flags (list "--enable-python-library"
                                "--enable-gtk-doc"
+                               "--enable-memconf"
                                (string-append
                                 "--with-unicode-emoji-dir="
                                 (assoc-ref %build-inputs "unicode-emoji")
