@@ -44,6 +44,7 @@
 ;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2021 Gerd Heber <gerd.heber@gmail.com>
 ;;; Copyright © 2021 Franck Pérignon <franck.perignon@univ-grenoble-alpes.fr>
+;;; Copyright © 2021 Philip McGrath <philip@philipmcgrath.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3825,52 +3826,94 @@ parts of it.")
     (synopsis "Optimized BLAS library based on GotoBLAS (ILP64 version)")
     (license license:bsd-3)))
 
-(define* (make-blis implementation #:optional substitutable?)
-  "Return a BLIS package with the given IMPLEMENTATION (see config/ in the
-source tree for a list of implementations.)
-
-SUBSTITUTABLE? determines whether the package is made available as a
-substitute.
-
-Currently the specialization must be selected at configure-time, but work is
-underway to allow BLIS to select the right optimized kernels at run time:
-<https://github.com/flame/blis/issues/129>."
+(define-public blis
   (package
-    (name (if (string=? implementation "reference")
-              "blis"
-              (string-append "blis-" implementation)))
-    (version "0.2.2")
+    (name "blis")
+    (version "0.8.1")
     (home-page "https://github.com/flame/blis")
     (source (origin
               (method git-fetch)
               (uri (git-reference (url home-page) (commit version)))
               (sha256
                (base32
-                "1wr79a50nm4abhw8w3sn96nmwp5mrzifcigk7khw9qcgyyyqayfh"))
+                "05ifil6jj9424sr8kmircl8k4bmxnl3y12a79vwj1kxxva5gz50g"))
               (file-name (git-file-name "blis" version))))
+    (native-inputs
+     `(("python" ,python)
+       ("perl" ,perl)))
     (build-system gnu-build-system)
     (arguments
-     `(#:test-target "test"
-
-       #:substitutable? ,substitutable?
-
-       #:phases (modify-phases %standard-phases
-                  (replace 'configure
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      ;; This is a home-made 'configure' script.
-                      (let ((out (assoc-ref outputs "out")))
-                        (invoke "./configure" "-p" out
-                                "-d" "opt"
-                                "--disable-static"
-                                "--enable-shared"
-                                "--enable-threading=openmp"
-
-                                ,implementation))))
-                  (add-before 'check 'show-test-output
-                    (lambda _
-                      ;; By default "make check" is silent.  Make it verbose.
-                      (system "tail -F output.testsuite &")
-                      #t)))))
+     `(#:modules
+       ((guix build gnu-build-system)
+        (guix build utils)
+        (srfi srfi-1))
+        #:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs
+                           target
+                           system
+                           (configure-flags '())
+                           #:allow-other-keys)
+             ;; This is a home-made 'configure' script.
+             (let* ((out (assoc-ref outputs "out"))
+                     ;; Guix-specific support for choosing the configuration
+                     ;; via #:configure-flags: see below for details.
+                    (config-flag-prefix "--blis-config=")
+                    (maybe-config-flag (find
+                                        (lambda (s)
+                                          (string-prefix? config-flag-prefix s))
+                                        configure-flags))
+                    (configure-flags (if maybe-config-flag
+                                         (delete maybe-config-flag
+                                                 configure-flags)
+                                         configure-flags))
+                    ;; Select the "configuration" to build.
+                    ;; The "generic" configuration is non-optimized but
+                    ;; portable (no assembly).
+                    ;; The "x86_64" configuration family includes
+                    ;; sub-configurations for all supported
+                    ;; x86_64 microarchitectures.
+                    ;; BLIS currently lacks runtime hardware detection
+                    ;; for other architectures: see
+                    ;; <https://github.com/flame/blis/commit/c534da6>.
+                    ;; Conservatively, we stick to "generic" on armhf,
+                    ;; aarch64, and ppc64le for now. (But perhaps
+                    ;; "power9", "cortexa9", and "cortexa57" might be
+                    ;; general enough to use?)
+                    ;; Another approach would be to use the "auto"
+                    ;; configuration and make this package
+                    ;; non-substitutable.
+                    ;; The build is fairly intensive, though.
+                    (blis-config
+                     (cond
+                      (maybe-config-flag
+                       (substring maybe-config-flag
+                                  (string-length config-flag-prefix)))
+                      ((string-prefix? "x86_64" (or target system))
+                       "x86_64")
+                      (else
+                       "generic")))
+                    (configure-args
+                     `("-p" ,out
+                       "-d" "opt"
+                       "--disable-static"
+                       "--enable-shared"
+                       "--enable-threading=openmp"
+                       "--enable-verbose-make"
+                       ,@configure-flags
+                       ,blis-config)))
+               (format #t "configure args: ~s~%" configure-args)
+               (apply invoke
+                      "./configure"
+                      configure-args)
+               #t)))
+         (add-before 'check 'show-test-output
+           (lambda _
+             ;; By default "make check" is silent.  Make it verbose.
+             (system "tail -F output.testsuite &")
+             #t)))))
     (synopsis "High-performance basic linear algebra (BLAS) routines")
     (description
      "BLIS is a portable software framework for instantiating high-performance
@@ -3882,34 +3925,7 @@ it also includes a BLAS compatibility layer which gives application developers
 access to BLIS implementations via traditional BLAS routine calls.")
     (license license:bsd-3)))
 
-(define-public blis
-  ;; This is the "reference" implementation, which is the non-optimized but
-  ;; portable variant (no assembly).
-  (make-blis "reference" #t))
-
 (define ignorance blis)
-
-(define-syntax-rule (blis/x86_64 processor)
-  "Expand to a package specialized for PROCESSOR."
-  (package
-    (inherit (make-blis processor))
-    (supported-systems '("x86_64-linux"))))
-
-(define-public blis-sandybridge
-  ;; BLIS specialized for Sandy Bridge processors (launched 2011):
-  ;; <http://ark.intel.com/products/codename/29900/Sandy-Bridge>.
-  (blis/x86_64 "sandybridge"))
-
-(define-public blis-haswell
-  ;; BLIS specialized for Haswell processors (launched 2013):
-  ;; <http://ark.intel.com/products/codename/42174/Haswell>.
-  (blis/x86_64 "haswell"))
-
-(define-public blis-knl
-  ;; BLIS specialized for Knights Landing processor (launched 2016):
-  ;; <http://ark.intel.com/products/series/92650/Intel-Xeon-Phi-x200-Product-Family>.
-  (blis/x86_64 "knl"))
-
 
 (define-public openlibm
   (package
