@@ -112,8 +112,8 @@
      (origin
        (method url-fetch)
        (uri
-        (string-append "https://sourceforge.net/projects/iqa/files/"
-                       "1.1.2%20Release/iqa_1.1.2_src.tar.gz/download"))
+        (string-append "mirror://sourceforge/iqa/"
+                       version " Release" "/iqa_" version "_src.tar.gz"))
        (sha256
         (base32 "00mgwy031ammab6bwmd1whhvqv3fxy1cs1igabq0n3ag12zhjs77"))))
     (build-system gnu-build-system)
