@@ -2325,7 +2325,7 @@ and defeat them with your bubbles!")
     (name "solarus")
     ;; XXX: When updating this package, please also update hash in
     ;; `solarus-quest-editor' below.
-    (version "1.6.4")
+    (version "1.6.5")
     (source
      (origin
        (method git-fetch)
@@ -2334,7 +2334,7 @@ and defeat them with your bubbles!")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1n6l91yyqjx0pz4w1lp3yybpq0fs2yjswfcm8c1wjfkxwiznbdxi"))))
+        (base32 "0ny9dgqphjv2l39rff2621hnrzpf8qin8vmnv7jdz20azjk4m8id"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -2393,19 +2393,9 @@ in mind.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1qbc2j9kalk7xqk9j27s7wnm5zawiyjs47xqkqphw683idmzmjzn"))))
+        (base32 "1pvjgd4faxii5sskw1h55lw90hlbazhwni8nxyywzrmkjbq7irm0"))))
     (arguments
-     `(#:tests? #false                  ;no test
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-qt-build
-           ;; XXX: Fix build with Qt 5.15.  It has been applied upstream as
-           ;; 81d5c7f1 and can be removed at next upgrade.
-           (lambda _
-             (substitute* "src/entities/jumper.cpp"
-               (("#include <QPainter>" all)
-                (string-append all "\n" "#include <QPainterPath>\n")))
-             #t)))))
+     `(#:tests? #false))                ; no test suite
     (inputs
      `(("solarus" ,solarus)
        ,@(package-inputs solarus)))
