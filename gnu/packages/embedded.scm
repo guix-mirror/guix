@@ -147,7 +147,9 @@
               (files '("arm-none-eabi/include")))
              (search-path-specification
               (variable "CROSS_CPLUS_INCLUDE_PATH")
-              (files '("arm-none-eabi/include")))
+              (files '("arm-none-eabi/include"
+                       "arm-none-eabi/include/c++"
+                       "arm-none-eabi/include/c++/arm-none-eabi")))
              (search-path-specification
               (variable "CROSS_LIBRARY_PATH")
               (files '("arm-none-eabi/lib"))))))))
@@ -317,7 +319,9 @@ usable on embedded products.")
               (files '("arm-none-eabi/include")))
              (search-path-specification
               (variable "CROSS_CPLUS_INCLUDE_PATH")
-              (files '("arm-none-eabi/include")))
+              (files '("arm-none-eabi/include"
+                       "arm-none-eabi/include/c++"
+                       "arm-none-eabi/include/c++/arm-none-eabi")))
              (search-path-specification
               (variable "CROSS_LIBRARY_PATH")
               (files '("arm-none-eabi/lib"))))))))
@@ -380,7 +384,7 @@ usable on embedded products.")
              "--with-newlib"
              ,(string-append "--with-gxx-include-dir="
                              (assoc-ref %outputs "out")
-                             "/arm-none-eabi/include")))))
+                             "/arm-none-eabi/include/c++")))))
       (native-inputs
        `(("newlib" ,newlib)
          ("xgcc" ,xgcc)
