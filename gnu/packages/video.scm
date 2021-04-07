@@ -200,10 +200,14 @@
     (arguments
      `(#:configure-flags
        (list
-        "--enable-libv4l2"
+        ;; XXX: Broken API.
+        ;; Undeclared variables 'sys_nerr' and 'sys_errlist'.
+        ;; "--enable-libv4l2"
         "--enable-libmpeg2"
         "--enable-libmpeg2convert"
-        "--enable-v4l"
+        ;; XXX: Broken API.
+        ;; Undeclared variables 'sys_nerr' and 'sys_errlist'.
+        ;; "--enable-v4l"
         ;;; XXX: Not available.
         ;"--enable-bktr"
         ;"--enable-sunau"
@@ -265,7 +269,7 @@
        ("lzo" ,lzo)
        ("mjepgtools" ,mjpegtools)
        ("sdl" ,sdl)
-       ("v4l-utils" ,v4l-utils)
+       ;; ("v4l-utils" ,v4l-utils)
        ("x11" ,libx11)
        ("x264" ,libx264)
        ("xaw" ,libxaw)
