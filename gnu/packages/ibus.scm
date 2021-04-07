@@ -49,18 +49,21 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages iso-codes)
   #:use-module (gnu packages logging)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages unicode)
-  #:use-module (gnu packages xorg))
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages xdisorg))
 
 (define-public ibus
   (package
     (name "ibus")
-    (version "1.5.22")
+    (version "1.5.24")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/ibus/ibus/"
@@ -68,7 +71,7 @@
                                   version "/ibus-" version ".tar.gz"))
               (sha256
                (base32
-                "0jmy2w01phpmqnjnfnak7nvfna57mpgfnl87jwc4iai8ijjynw41"))))
+                "07s2ly75xv50bqg37mn37i9akqvcfd45k2mbplxrsqk3a2b3mwxb"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:tests? #f  ; tests fail because there's no connection to dbus
@@ -138,26 +141,34 @@
     (inputs
      `(("dbus" ,dbus)
        ("dconf" ,dconf)
+       ("glib" ,glib)
        ("gtk2" ,gtk+-2)
        ("gtk+" ,gtk+)
+       ("iso-codes" ,iso-codes)
        ("json-glib" ,json-glib)
        ("libnotify" ,libnotify)
        ("libx11" ,libx11)
+       ("libxkbcommon" ,libxkbcommon)
+       ("libxtst" ,libxtst)
+       ("pygobject" ,python-pygobject)
+       ("python" ,python)
+       ("python-dbus" ,python-dbus)
        ("setxkbmap" ,setxkbmap)
-       ("wayland" ,wayland)
-       ("xmodmap" ,xmodmap)
-       ("iso-codes" ,iso-codes)
-       ("pygobject2" ,python-pygobject)
-       ("python" ,python)))
-    (native-inputs
-     `(("glib" ,glib "bin") ; for glib-genmarshal
-       ("gettext" ,gettext-minimal)
-       ("gobject-introspection" ,gobject-introspection) ; for g-ir-compiler
        ("ucd" ,ucd)
-       ("unicode-emoji" ,unicode-emoji)
        ("unicode-cldr-common" ,unicode-cldr-common)
+       ("unicode-emoji" ,unicode-emoji)
+       ("wayland" ,wayland)
+       ("xmodmap" ,xmodmap)))
+    (native-inputs
+     `(("glib" ,glib "bin")             ; for glib-genmarshal
+       ("gettext" ,gettext-minimal)
+       ("gnome-common" ,gnome-common)
+       ("gobject-introspection" ,gobject-introspection) ; for g-ir-compiler
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python-wrapper" ,python-wrapper)
        ("vala" ,vala)
-       ("pkg-config" ,pkg-config)))
+       ("which" ,which)))
     (native-search-paths
      (list (search-path-specification
             (variable "IBUS_COMPONENT_PATH")
