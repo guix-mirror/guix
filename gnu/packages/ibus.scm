@@ -42,6 +42,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages datastructures)
   #:use-module (gnu packages dbm)
+  #:use-module (gnu packages docbook)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
@@ -73,10 +74,12 @@
                (base32
                 "07s2ly75xv50bqg37mn37i9akqvcfd45k2mbplxrsqk3a2b3mwxb"))))
     (build-system glib-or-gtk-build-system)
+    (outputs '("out" "doc"))
     (arguments
      `(#:tests? #f  ; tests fail because there's no connection to dbus
        #:parallel-build? #f ; race condition discovered with emoji support
        #:configure-flags (list "--enable-python-library"
+                               "--enable-gtk-doc"
                                (string-append
                                 "--with-unicode-emoji-dir="
                                 (assoc-ref %build-inputs "unicode-emoji")
@@ -91,6 +94,14 @@
                                "--enable-wayland")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-docbook-xml
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "docs/reference/ibus"
+               (substitute* "ibus-docs.sgml.in"
+                 (("http://www.oasis-open.org/docbook/xml/4.1.2/")
+                  (string-append (assoc-ref inputs "docbook-xml")
+                                 "/xml/dtd/docbook/"))))
+              #t))
          (add-after 'unpack 'patch-python-target-directories
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((root (string-append (assoc-ref outputs "out")
@@ -127,6 +138,15 @@
                (("\"(setxkbmap|xmodmap)\"" _ prog)
                 (string-append "\"" (assoc-ref inputs prog) "/bin/" prog "\"")))
              #t))
+         (add-after 'install 'move-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (assoc-ref outputs "doc")))
+               (mkdir-p (string-append doc "/share"))
+               (rename-file
+                (string-append out "/share/gtk-doc")
+                (string-append doc "/share/gtk-doc"))
+               #t)))
          (add-after 'wrap-program 'wrap-with-additional-paths
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Make sure 'ibus-setup' runs with the correct PYTHONPATH and
@@ -160,10 +180,12 @@
        ("wayland" ,wayland)
        ("xmodmap" ,xmodmap)))
     (native-inputs
-     `(("glib" ,glib "bin")             ; for glib-genmarshal
+     `(("docbook-xml" ,docbook-xml-4.1.2)
+       ("glib" ,glib "bin")             ; for glib-genmarshal
        ("gettext" ,gettext-minimal)
        ("gnome-common" ,gnome-common)
        ("gobject-introspection" ,gobject-introspection) ; for g-ir-compiler
+       ("gtk-doc" ,gtk-doc)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("python-wrapper" ,python-wrapper)
