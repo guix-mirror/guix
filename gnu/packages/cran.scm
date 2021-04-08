@@ -23515,17 +23515,19 @@ appropriate dog and cat images for many status codes.")
 (define-public r-latex2exp
   (package
     (name "r-latex2exp")
-    (version "0.4.0")
+    (version "0.5.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "latex2exp" version))
               (sha256
                (base32
-                "12nbcgfmv13k6sc6m326ras9bcvy380b7rxcxphn06r3cfkby0zw"))))
+                "0qknpw7zwwbzsbry94j8fn48mq7kq5rc5448g9hybbisain3wfvg"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-stringr" ,r-stringr)
        ("r-magrittr" ,r-magrittr)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/stefano-meschiari/latex2exp/")
     (synopsis "Use LaTeX expressions in plots")
     (description "@code{latex2exp} parses and converts LaTeX math formulas to
