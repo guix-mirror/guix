@@ -12710,14 +12710,14 @@ limitations\" using the GNU Multiple Precision library.")
 (define-public r-rmpfr
   (package
     (name "r-rmpfr")
-    (version "0.8-2")
+    (version "0.8-3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Rmpfr" version))
        (sha256
         (base32
-         "007pc7fpzl2mcg3qxa2vfjip6m2dr314qjsnybkj3kdj70bszxkl"))))
+         "1m9wwwch9wg886147brr2zfih65yfdfs3vmfvim1w6jykycasc9a"))))
     (properties `((upstream-name . "Rmpfr")))
     (build-system r-build-system)
     (inputs
