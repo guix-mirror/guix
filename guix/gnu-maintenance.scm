@@ -31,7 +31,7 @@
   #:use-module (srfi srfi-34)
   #:use-module (rnrs io ports)
   #:use-module (system foreign)
-  #:use-module (guix http-client)
+  #:use-module ((guix http-client) #:hide (open-socket-for-uri))
   #:use-module (guix ftp-client)
   #:use-module (guix utils)
   #:use-module (guix memoization)
@@ -669,10 +669,10 @@ GNOME packages; EMMS is included though, because its releases are on gnu.org."
                #:host (uri-host uri)
                #:path (string-append (uri-path uri) extension)))
 
-  (define (valid-uri? uri)
+  (define (valid-uri? uri port)
     ;; Return true if URI is reachable.
     (false-if-exception
-     (case (response-code (http-head uri))
+     (case (response-code (http-head uri #:port port #:keep-alive? #t))
        ((200 302) #t)
        (else #f))))
 
@@ -680,30 +680,39 @@ GNOME packages; EMMS is included though, because its releases are on gnu.org."
          (base     (string-append "https://sourceforge.net/projects/"
                                   name "/files"))
          (url      (string-append base "/latest/download"))
-         (response (false-if-exception (http-head url))))
-    (and response
-         (= 302 (response-code response))
-         (response-location response)
-         (match (string-tokenize (uri-path (response-location response))
-                                 (char-set-complement (char-set #\/)))
-           ((_ components ...)
-            (let* ((path (string-join components "/"))
-                   (url  (string-append "mirror://sourceforge/" path)))
-              (and (release-file? name (basename path))
+         (uri      (string->uri url))
+         (port     (false-if-exception (open-socket-for-uri uri)))
+         (response (and port
+                        (http-head uri #:port port #:keep-alive? #t))))
+    (dynamic-wind
+      (const #t)
+      (lambda ()
+        (and response
+             (= 302 (response-code response))
+             (response-location response)
+             (match (string-tokenize (uri-path (response-location response))
+                                     (char-set-complement (char-set #\/)))
+               ((_ components ...)
+                (let* ((path (string-join components "/"))
+                       (url  (string-append "mirror://sourceforge/" path)))
+                  (and (release-file? name (basename path))
 
-                   ;; Take the heavy-handed approach of probing 3 additional
-                   ;; URLs.  XXX: Would be nicer if this could be avoided.
-                   (let* ((loc (response-location response))
-                          (sig (any (lambda (extension)
-                                      (let ((uri (uri-append loc extension)))
-                                        (and (valid-uri? uri)
-                                             (string-append url extension))))
-                                    '(".asc" ".sig" ".sign"))))
-                     (upstream-source
-                      (package name)
-                      (version (tarball->version (basename path)))
-                      (urls (list url))
-                      (signature-urls (and sig (list sig))))))))))))
+                       ;; Take the heavy-handed approach of probing 3 additional
+                       ;; URLs.  XXX: Would be nicer if this could be avoided.
+                       (let* ((loc (response-location response))
+                              (sig (any (lambda (extension)
+                                          (let ((uri (uri-append loc extension)))
+                                            (and (valid-uri? uri port)
+                                                 (string-append url extension))))
+                                        '(".asc" ".sig" ".sign"))))
+                         (upstream-source
+                          (package name)
+                          (version (tarball->version (basename path)))
+                          (urls (list url))
+                          (signature-urls (and sig (list sig)))))))))))
+      (lambda ()
+        (when port
+          (close-port port))))))
 
 (define (latest-xorg-release package)
   "Return the latest release of PACKAGE."
