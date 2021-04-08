@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2020 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
@@ -36,6 +36,7 @@
   #:use-module (rnrs io ports)
   #:export (%standard-phases
             %license-file-regexp
+            %bootstrap-scripts
             dump-file-contents
             gnu-build))
 
@@ -176,7 +177,11 @@ working directory."
         ;; Attempt to change into child directory.
         (and=> (first-subdirectory ".") chdir))))
 
-(define* (bootstrap #:key bootstrap-scripts
+(define %bootstrap-scripts
+  ;; Typical names of Autotools "bootstrap" scripts.
+  '("bootstrap" "bootstrap.sh" "autogen.sh"))
+
+(define* (bootstrap #:key (bootstrap-scripts %bootstrap-scripts)
                     #:allow-other-keys)
   "If the code uses Autotools and \"configure\" is missing, run
 \"autoreconf\".  Otherwise do nothing."

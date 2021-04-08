@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -328,7 +328,7 @@ standard packages used as implicit inputs of the GNU build system."
 
 (define %bootstrap-scripts
   ;; Typical names of Autotools "bootstrap" scripts.
-  '("bootstrap" "bootstrap.sh" "autogen.sh"))
+  #~%bootstrap-scripts)
 
 (define %strip-flags
   #~'("--strip-unneeded" "--enable-deterministic-archives"))
@@ -341,7 +341,7 @@ standard packages used as implicit inputs of the GNU build system."
                     guile source
                     (outputs '("out"))
                     (search-paths '())
-                    (bootstrap-scripts (list 'quote %bootstrap-scripts))
+                    (bootstrap-scripts %bootstrap-scripts)
                     (configure-flags ''())
                     (make-flags ''())
                     (out-of-source? #f)
@@ -400,7 +400,7 @@ are allowed to refer to."
                                           (sexp->gexp phases)
                                           phases)
                            #:locale #$locale
-                           #:bootstrap-scripts #$(sexp->gexp bootstrap-scripts)
+                           #:bootstrap-scripts #$bootstrap-scripts
                            #:configure-flags #$(if (pair? configure-flags)
                                                    (sexp->gexp configure-flags)
                                                    configure-flags)
@@ -474,7 +474,7 @@ is one of `host' or `target'."
                           (search-paths '())
                           (native-search-paths '())
 
-                          (bootstrap-scripts (list 'quote %bootstrap-scripts))
+                          (bootstrap-scripts %bootstrap-scripts)
                           (configure-flags ''())
                           (make-flags ''())
                           (out-of-source? #f)
