@@ -22054,32 +22054,23 @@ Norwegian, Portuguese, Romanian, Russian, Spanish, Swedish and Turkish.")
 (define-public r-quanteda
   (package
     (name "r-quanteda")
-    (version "2.1.2")
+    (version "3.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "quanteda" version))
        (sha256
         (base32
-         "13rjwgmg5v1dbryrs9ifyy76s5ib6wrbrm2y5af44vhf1h6p9cvy"))))
+         "0b1jfkdhpsg5jhjz4p0nf4cmi9p8w40wv3i2f17jf2x1n1y2hjj8"))))
     (properties `((upstream-name . "quanteda")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-data-table" ,r-data-table)
-       ("r-digest" ,r-digest)
-       ("r-extrafont" ,r-extrafont)
-       ("r-fastmatch" ,r-fastmatch)
-       ("r-ggplot2" ,r-ggplot2)
-       ("r-ggrepel" ,r-ggrepel)
-       ("r-jsonlite" ,r-jsonlite)
+     `(("r-fastmatch" ,r-fastmatch)
        ("r-magrittr" ,r-magrittr)
        ("r-matrix" ,r-matrix)
-       ("r-network" ,r-network)
-       ("r-proxyc" ,r-proxyc)
        ("r-rcpp" ,r-rcpp)
        ("r-rcpparmadillo" ,r-rcpparmadillo)
        ("r-rcppparallel" ,r-rcppparallel)
-       ("r-sna" ,r-sna)
        ("r-snowballc" ,r-snowballc)
        ("r-stopwords" ,r-stopwords)
        ("r-stringi" ,r-stringi)
