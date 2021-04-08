@@ -25853,6 +25853,45 @@ for finding reasonable values of hyper-parameters in models, pre-processing
 methods, and post-processing steps.")
     (license license:expat)))
 
+(define-public r-workflowsets
+  (package
+    (name "r-workflowsets")
+    (version "0.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "workflowsets" version))
+       (sha256
+        (base32
+         "1q41isvj7hhbkx3y8k6kazpiygig92xannsz8dpklh0k3j9l3c2p"))))
+    (properties `((upstream-name . "workflowsets")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-cli" ,r-cli)
+       ("r-dplyr" ,r-dplyr)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-prettyunits" ,r-prettyunits)
+       ("r-purrr" ,r-purrr)
+       ("r-rlang" ,r-rlang)
+       ("r-rsample" ,r-rsample)
+       ("r-tibble" ,r-tibble)
+       ("r-tidyr" ,r-tidyr)
+       ("r-tune" ,r-tune)
+       ("r-vctrs" ,r-vctrs)
+       ("r-withr" ,r-withr)
+       ("r-workflows" ,r-workflows)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/tidymodels/workflowsets")
+    (synopsis "Create a collection of tidymodels workflows")
+    (description
+     "A workflow is a combination of a model and preprocessors (e.g, a
+formula, recipe, etc.).  In order to try different combinations of these, an
+object can be created that contains many workflows.  There are functions to
+create workflows en masse as well as training them and visualizing the
+results.")
+    (license license:expat)))
+
 (define-public r-tidyposterior
   (package
     (name "r-tidyposterior")
