@@ -26596,14 +26596,14 @@ discovery of differentially expressed genes and markers.")
 (define-public r-phangorn
   (package
     (name "r-phangorn")
-    (version "2.5.5")
+    (version "2.6.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "phangorn" version))
        (sha256
         (base32
-         "0ihkaykqjmf80d8wrk3saphxvnv58zma6pd13633bd3cwanc33f5"))))
+         "08yqz8qlw960x4b52wzrm22f242xnpc8695pjkhy7bi1nzm303ga"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ape" ,r-ape)
@@ -26613,6 +26613,8 @@ discovery of differentially expressed genes and markers.")
        ("r-matrix" ,r-matrix)
        ("r-quadprog" ,r-quadprog)
        ("r-rcpp" ,r-rcpp)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/KlausVigo/phangorn")
     (synopsis "Phylogenetic analysis in R")
     (description
