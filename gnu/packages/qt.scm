@@ -1884,12 +1884,6 @@ module provides support functions to the automatically generated code.")
                        "--incdir" include)))))))
     (license license:gpl3)))
 
-(define-public python2-sip
-  (package/inherit python-sip-4
-    (name "python2-sip")
-    (native-inputs
-     `(("python" ,python-2)))))
-
 (define-public python-pyqt
   (package
     (name "python-pyqt")
