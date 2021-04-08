@@ -19581,14 +19581,14 @@ discussed in Reisen et al. (2017) @url{doi:10.1016/j.jspi.2017.02.008}.")
 (define-public r-gamlss-data
   (package
     (name "r-gamlss-data")
-    (version "5.1-4")
+    (version "6.0-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "gamlss.data" version))
        (sha256
         (base32
-         "1dgfspbmps6ipzcmw681wjdp320nm50dwsxafgrcwxndqgc7fdqd"))))
+         "1cjb2n5i5mnhmb5qbqycdbfg65j7nxb9s74yihqs9kpa39byrzcq"))))
     (properties `((upstream-name . "gamlss.data")))
     (build-system r-build-system)
     (home-page "http://www.gamlss.org/")
