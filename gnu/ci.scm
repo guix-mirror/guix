@@ -483,11 +483,6 @@ valid."
                        (package->job store package system))))
             (append
              (filter-map job all)
-             (image-jobs store system)
-             (system-test-jobs store system
-                               #:source source
-                               #:commit commit)
-             (tarball-jobs store system)
              (cross-jobs store system))))
          ('core
           ;; Build core packages only.
@@ -507,6 +502,17 @@ valid."
           (let ((hello (specification->package "hello")))
             (list (package-job store (job-name hello)
                                hello system))))
+         ('images
+          ;; Build Guix System images only.
+          (image-jobs store system))
+         ('system-tests
+          ;; Build Guix System tests only.
+          (system-test-jobs store system
+                            #:source source
+                            #:commit commit))
+         ('tarball
+          ;; Build Guix tarball only.
+          (tarball-jobs store system))
          (('channels . channels)
           ;; Build only the packages from CHANNELS.
           (let ((all (all-packages)))
