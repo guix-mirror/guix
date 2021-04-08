@@ -306,6 +306,8 @@ modifying."
                       (usleep %delay)
                       (unless (eqv? 0 (status:exit-val (close-pipe port)))
                         (error "Cannot commit")))))
-                 (new+old+hunks changes))))))
+                 ;; XXX: we recompute the hunks here because previous
+                 ;; insertions lead to offsets.
+                 (new+old+hunks (diff-info)))))))
 
 (main)
