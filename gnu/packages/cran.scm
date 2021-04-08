@@ -156,14 +156,14 @@ automatically pruning objects to maintain the constraints.")
 (define-public r-diffobj
   (package
     (name "r-diffobj")
-    (version "0.3.3")
+    (version "0.3.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "diffobj" version))
        (sha256
         (base32
-         "1x3d5sk8mk0s2d7dq8wxi1zv6krlx33n22ls2jwnb58b8xrmakj1"))))
+         "1z4yhfasjpi9rxl1lh9bny7yvs947a6hhc768azc1wwad748mk9q"))))
     (properties `((upstream-name . "diffobj")))
     (build-system r-build-system)
     (propagated-inputs `(("r-crayon" ,r-crayon)))
