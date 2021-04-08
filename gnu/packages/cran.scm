@@ -16272,14 +16272,14 @@ packages with Rcpp.")
 (define-public r-tweenr
   (package
     (name "r-tweenr")
-    (version "1.0.1")
+    (version "1.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tweenr" version))
        (sha256
         (base32
-         "0sq90pbln6lkc2q3zflhkxxwpqdw5dd7igrxhdnlynkdrmi83mpg"))))
+         "17znizh4yabh2zs9mzyr0sl6p0pw49961i61br7cl1b7v9sza18q"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-farver" ,r-farver)
