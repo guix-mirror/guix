@@ -25900,28 +25900,29 @@ results.")
 (define-public r-tidyposterior
   (package
     (name "r-tidyposterior")
-    (version "0.0.3")
+    (version "0.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tidyposterior" version))
        (sha256
         (base32
-         "0wsv800w056ziqbnwal7ncmdy4li8cn5yrdx07w35b7j8kl4mwhg"))))
+         "1h1664sjrg6akph6nrk8ynn2kjiswv6gshy35gamam1h4axf6wah"))))
     (properties `((upstream-name . "tidyposterior")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dplyr" ,r-dplyr)
        ("r-generics" ,r-generics)
        ("r-ggplot2" ,r-ggplot2)
-       ("r-lifecycle" ,r-lifecycle)
        ("r-purrr" ,r-purrr)
        ("r-rlang" ,r-rlang)
        ("r-rsample" ,r-rsample)
        ("r-rstanarm" ,r-rstanarm)
        ("r-tibble" ,r-tibble)
        ("r-tidyr" ,r-tidyr)
-       ("r-vctrs" ,r-vctrs)))
+       ("r-tune" ,r-tune)
+       ("r-vctrs" ,r-vctrs)
+       ("r-workflowsets" ,r-workflowsets)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (home-page "https://tidyposterior.tidymodels.org")
