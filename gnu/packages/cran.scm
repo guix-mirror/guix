@@ -6707,14 +6707,14 @@ evaluated by the @dfn{Akaike Information Criterion} (AIC).")
 (define-public r-arules
   (package
     (name "r-arules")
-    (version "1.6-6")
+    (version "1.6-7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "arules" version))
        (sha256
         (base32
-         "1pk3jjizn2m5rwi7qkdkbq9f07acgpy0qdzzqmx0agg47cwahlkm"))))
+         "0m80kndfbannw8h53nqdd5wl8h33q2z259aa1cp1nwadaxf9fc1q"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-matrix" ,r-matrix)))
