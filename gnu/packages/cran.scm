@@ -4768,14 +4768,14 @@ structure.")
 (define-public r-vioplot
   (package
     (name "r-vioplot")
-    (version "0.3.5")
+    (version "0.3.6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "vioplot" version))
        (sha256
         (base32
-         "0aiy615kn9lpr2cs757g3pklg81n01yhqh0wrwv111fn3cy86r0v"))))
+         "15vmrm9gwdhfg8mnq8rsg7m59kzc9h53cv96am4ds1dkm56w4n6p"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-sm" ,r-sm)
