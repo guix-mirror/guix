@@ -236,6 +236,8 @@ modifying."
           (cons* new (old-sexp (first hunks)) hunks)))
        (group-hunks-by-sexp hunks)))
 
+(define %delay 1000)
+
 (define (main . args)
   (match (diff-info)
     (()
@@ -263,10 +265,10 @@ modifying."
                      (let ((port (open-pipe* OPEN_WRITE "git" "commit" "-F" "-")))
                        (add-commit-message (hunk-file-name hunk)
                                            variable-name port)
-                       (sleep 1)
+                       (usleep %delay)
                        (unless (eqv? 0 (status:exit-val (close-pipe port)))
                          (error "Cannot commit"))))
-                   (sleep 1))
+                   (usleep %delay))
                  definitions)
 
        ;; Changes.
@@ -280,7 +282,7 @@ modifying."
                                   (hunk->patch hunk port)
                                   (unless (eqv? 0 (status:exit-val (close-pipe port)))
                                     (error "Cannot apply")))
-                                (sleep 1))
+                                (usleep %delay))
                               hunks)
                     (change-commit-message (hunk-file-name (first hunks))
                                            old new
@@ -289,7 +291,7 @@ modifying."
                       (change-commit-message (hunk-file-name (first hunks))
                                              old new
                                              port)
-                      (sleep 1)
+                      (usleep %delay)
                       (unless (eqv? 0 (status:exit-val (close-pipe port)))
                         (error "Cannot commit")))))
                  (new+old+hunks changes))))))
