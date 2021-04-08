@@ -25650,14 +25650,14 @@ workflow.  The advantages are:
 (define-public r-yardstick
   (package
     (name "r-yardstick")
-    (version "0.0.7")
+    (version "0.0.8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "yardstick" version))
        (sha256
         (base32
-         "1yrvlhn4gxyn9f20z5yv3xam0j0a8z362jwa32r33r0g0jk5z2fq"))))
+         "13b0lyj2k0r568mwlyz9yvp9156rzlj4jqnjazaffh9vwqh4whir"))))
     (properties `((upstream-name . "yardstick")))
     (build-system r-build-system)
     (propagated-inputs
@@ -25665,7 +25665,8 @@ workflow.  The advantages are:
        ("r-generics" ,r-generics)
        ("r-proc" ,r-proc)
        ("r-rlang" ,r-rlang)
-       ("r-tidyselect" ,r-tidyselect)))
+       ("r-tidyselect" ,r-tidyselect)
+       ("r-vctrs" ,r-vctrs)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/tidymodels/yardstick")
