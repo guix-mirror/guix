@@ -2022,13 +2022,13 @@ high-throughput sequencing experiments.")
 (define-public r-genomeinfodb
   (package
     (name "r-genomeinfodb")
-    (version "1.26.4")
+    (version "1.26.6")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "GenomeInfoDb" version))
               (sha256
                (base32
-                "1sbhdpgabqbi749ixih8nlmq5id7sg8y6kkfj46r00642rc293ys"))))
+                "1wy4dwiv0pgim975var802z565py4a0nakx6zdvbhry4c0dfczd1"))))
     (properties
      `((upstream-name . "GenomeInfoDb")))
     (build-system r-build-system)
