@@ -87,7 +87,8 @@
            "/cursors" "/wallpapers" "/icons" "/mime")
          '("XDG_CONFIG_DIRS" "/etc/xdg")
          '("QT_PLUGIN_PATH" "/lib/qt5/plugins")
-         '("QML2_IMPORT_PATH" "/lib/qt5/qml"))))
+         '("QML2_IMPORT_PATH" "/lib/qt5/qml")
+         '("QTWEBENGINEPROCESS_PATH" "/lib/qt5/libexec/QtWebEngineProcess"))))
 
 (define* (wrap-all-programs #:key inputs outputs
                             (qt-wrap-excluded-outputs '())
