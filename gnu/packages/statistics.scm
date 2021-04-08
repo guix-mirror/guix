@@ -5378,14 +5378,14 @@ first and second order derivatives.")
 (define-public r-sn
   (package
     (name "r-sn")
-    (version "1.6-2")
+    (version "2.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sn" version))
        (sha256
         (base32
-         "179xb7yb8br99aa5awm2yxsy0v5w1kdhv6a7ifaliz2y64677m1g"))))
+         "0sl8qzy9isy5fq8qxh1fg5285jzgy895nbgz8gdq5d0r6zdwrmmb"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-mnormt" ,r-mnormt)
