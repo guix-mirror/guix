@@ -24423,14 +24423,14 @@ designed to be distributed and efficient with the following goals:
 (define-public r-shapforxgboost
   (package
     (name "r-shapforxgboost")
-    (version "0.1.0")
+    (version "0.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "SHAPforxgboost" version))
        (sha256
         (base32
-         "0jgyss9bawl7sf4dwa75sn7ld3mvrrr0z2074lbkq3f5qb9gwsly"))))
+         "106nsf02b1w3yshb55lwnyw1rl1a60162v2wk8znjz3b4ln3mqj5"))))
     (properties
      `((upstream-name . "SHAPforxgboost")))
     (build-system r-build-system)
@@ -24441,9 +24441,10 @@ designed to be distributed and efficient with the following goals:
        ("r-ggforce" ,r-ggforce)
        ("r-ggplot2" ,r-ggplot2)
        ("r-ggpubr" ,r-ggpubr)
-       ("r-lightgbm" ,r-lightgbm)
        ("r-rcolorbrewer" ,r-rcolorbrewer)
        ("r-xgboost" ,r-xgboost)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/liuyanguu/SHAPforxgboost")
     (synopsis "SHAP Plots for XGBoost")
     (description
