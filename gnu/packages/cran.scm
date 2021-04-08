@@ -17186,14 +17186,14 @@ batch correction, and data correction.")
 (define-public r-styler
   (package
     (name "r-styler")
-    (version "1.3.2")
+    (version "1.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "styler" version))
        (sha256
         (base32
-         "1waglhsy2c53qjgd2qhlzda3z0lbzbwx9fkrfhac41y6h91mgkrz"))))
+         "10fj4cnazicb2z9djbv5pszcmrf7wbzagbjvksffqpdc5vbbbw5x"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-backports" ,r-backports)
@@ -17207,6 +17207,8 @@ batch correction, and data correction.")
        ("r-tibble" ,r-tibble)
        ("r-withr" ,r-withr)
        ("r-xfun" ,r-xfun)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/r-lib/styler")
     (synopsis "Non-invasive pretty printing of R code")
     (description
