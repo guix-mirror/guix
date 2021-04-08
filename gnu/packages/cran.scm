@@ -4223,19 +4223,21 @@ problems as well as resampling based estimators of prediction error.")
 (define-public r-psych
   (package
     (name "r-psych")
-    (version "2.0.12")
+    (version "2.1.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "psych" version))
        (sha256
         (base32
-         "0k5dw5nb7kx7f21b0z01dry99qcpnk7iaicv7xq9d35wv2hx8wca"))))
+         "1ibh1ivr280wpmk3qjgm715dk79wx0ikjl9jjjcqs03q6vz4wmdx"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-lattice" ,r-lattice)
        ("r-mnormt" ,r-mnormt)
        ("r-nlme" ,r-nlme)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://cran.r-project.org/web/packages/psych/")
     (synopsis "Procedures for psychological, psychometric, and personality research")
     (description
