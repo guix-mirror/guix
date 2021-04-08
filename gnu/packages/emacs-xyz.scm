@@ -25435,21 +25435,21 @@ current buffer.")
 (define-public emacs-repl-toggle
   (package
     (name "emacs-repl-toggle")
-    (version "0.6.1")
+    (version "0.7.1")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/tomterl/repl-toggle")
+             (url "https://git.sr.ht/~tomterl/repl-toggle")
              (commit version)))
        (sha256
         (base32
-         "12h3xxja3isnhvrqx7m2g7a5d8h68cc85pbqyhiipfxyafyl1yxd"))
+         "0nycm8a4wwkkaif958z4m89slayp17k20lp2h7lvddjx8prn6yfp"))
        (file-name (git-file-name name version))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-fullframe" ,emacs-fullframe)))
-    (home-page "https://github.com/tomterl/repl-toggle")
+    (home-page "https://git.sr.ht/~tomterl/repl-toggle")
     (synopsis "Switch to and from current major mode's REPL")
     (description "This package provides a function to switch to and from a
 REPL appropriate to the current major mode.")
