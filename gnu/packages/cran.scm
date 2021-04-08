@@ -26960,13 +26960,13 @@ computational operations, add-on packages provide additional functionality.")
 (define-public r-mlr3learners
   (package
     (name "r-mlr3learners")
-    (version "0.4.3")
+    (version "0.4.5")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "mlr3learners" version))
               (sha256
                (base32
-                "1wxlpzz3hpkn77n4ag1v868dmp140j1pmrhynsv5xfgk9fg0w7ri"))))
+                "02v4y32yn1m0akkqzhfg65ib21rgy9iz8db4kdcrvi949clkxnfk"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-data-table" ,r-data-table)
