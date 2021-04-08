@@ -927,14 +927,14 @@ package is a port of the Python package @code{cssselect}.")
 (define-public r-reprex
   (package
     (name "r-reprex")
-    (version "1.0.0")
+    (version "2.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "reprex" version))
        (sha256
         (base32
-         "07nzx0fdl48jw95ipx17ql0l13q60yl3rjrkj1m375wrc7h1v5nx"))))
+         "1lcnxczy28n4g3rvph09va7svcznfyqa7zdggklqb924qvy7flwh"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-callr" ,r-callr)
@@ -945,6 +945,7 @@ package is a port of the Python package @code{cssselect}.")
        ("r-knitr" ,r-knitr)
        ("r-rlang" ,r-rlang)
        ("r-rmarkdown" ,r-rmarkdown)
+       ("r-rstudioapi" ,r-rstudioapi)
        ("r-withr" ,r-withr)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
