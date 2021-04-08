@@ -10110,14 +10110,14 @@ Hothorn, Westfall, 2010, CRC Press).")
 (define-public r-emmeans
   (package
     (name "r-emmeans")
-    (version "1.5.4")
+    (version "1.5.5-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "emmeans" version))
        (sha256
         (base32
-         "1rbh3ls23fazrwpsam5llk3kqdzz2zvsms3i4f1cgn34ky3w8361"))))
+         "0l5dd71ihhs7zy6ygniy07iisgy7a1ai1w41hqf84swb0j3cl6iz"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-estimability" ,r-estimability)
