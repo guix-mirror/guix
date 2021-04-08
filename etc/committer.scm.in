@@ -89,8 +89,7 @@ LINE-NO in PORT."
 (define (diff-info)
   "Read the diff and return a list of <hunk> values."
   (let ((port (open-pipe* OPEN_READ
-                          "git" "diff"
-                          "--no-color"
+                          "git" "diff-files"
                           "--no-prefix"
                           ;; Only include one context line to avoid lumping in
                           ;; new definitions with changes to existing
@@ -154,8 +153,9 @@ LINE-NO in PORT."
 corresponding to the top-level definition containing the staged changes."
   ;; TODO: We can't seek with a pipe port...
   (let* ((port (open-pipe* OPEN_READ
-                           "git" "show" (string-append "HEAD:"
-                                                       (hunk-file-name hunk))))
+                           "git" "cat-file" "-p" (string-append
+                                                  "HEAD:"
+                                                  (hunk-file-name hunk))))
          (contents (get-string-all port)))
     (close-pipe port)
     (call-with-input-string contents
