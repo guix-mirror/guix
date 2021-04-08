@@ -91,10 +91,10 @@ LINE-NO in PORT."
   (let ((port (open-pipe* OPEN_READ
                           "git" "diff"
                           "--no-prefix"
-                          ;; Do not include any context lines.  This makes it
-                          ;; easier to find the S-expression surrounding the
-                          ;; change.
-                          "--unified=0"
+                          ;; Only include one context line to avoid lumping in
+                          ;; new definitions with changes to existing
+                          ;; definitions.
+                          "--unified=1"
                           "gnu")))
     (define (extract-line-number line-tag)
       (abs (string->number
@@ -132,12 +132,21 @@ LINE-NO in PORT."
                  (loop (cons (make-hunk file-name
                                         (extract-line-number old-start)
                                         (extract-line-number new-start)
-                                        (cons* line "\n" diff-lines)
+                                        (cons (string-append line "\n")
+                                              diff-lines)
                                         definition?) acc)
                        file-name)))))
            (else (loop acc file-name))))))
     (close-pipe port)
     info))
+
+(define (lines-to-first-change hunk)
+  "Return the number of diff lines until the first change."
+  (1- (count (lambda (line)
+               ((negate char-set-contains?)
+                (char-set #\+ #\-)
+                (string-ref line 0)))
+             (hunk-diff-lines hunk))))
 
 (define (old-sexp hunk)
   "Using the diff information in HUNK return the unmodified S-expression
@@ -150,7 +159,9 @@ corresponding to the top-level definition containing the staged changes."
     (close-pipe port)
     (call-with-input-string contents
       (lambda (port)
-        (surrounding-sexp port (hunk-old-line-number hunk))))))
+        (surrounding-sexp port
+                          (+ (lines-to-first-change hunk)
+                             (hunk-old-line-number hunk)))))))
 
 (define (new-sexp hunk)
   "Using the diff information in HUNK return the modified S-expression
@@ -158,7 +169,8 @@ corresponding to the top-level definition containing the staged changes."
   (call-with-input-file (hunk-file-name hunk)
     (lambda (port)
       (surrounding-sexp port
-                        (hunk-new-line-number hunk)))))
+                        (+ (lines-to-first-change hunk)
+                           (hunk-new-line-number hunk))))))
 
 (define* (change-commit-message file-name old new #:optional (port (current-output-port)))
   "Print ChangeLog commit message for changes between OLD and NEW."
