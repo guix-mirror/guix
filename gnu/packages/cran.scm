@@ -11702,19 +11702,21 @@ redundant complex conjugate when the input is real data.")
 (define-public r-tiff
   (package
     (name "r-tiff")
-    (version "0.1-7")
+    (version "0.1-8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tiff" version))
        (sha256
         (base32
-         "101n6x70fr1dhcwx53g3s8q1j4wh93y0388v1s1316f8558rxqxh"))))
+         "18m17g5q3nz4v4wrqxnb129b1j02873g2vknddczkklf1pvq4x2b"))))
     (build-system r-build-system)
     (inputs
      `(("libtiff" ,libtiff)
        ("libjpeg" ,libjpeg-turbo)
        ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (home-page "https://www.rforge.net/tiff/")
     (synopsis "Read and write TIFF images")
     (description
