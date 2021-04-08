@@ -1236,13 +1236,13 @@ used visualizations.")
 (define-public r-delayedarray
   (package
     (name "r-delayedarray")
-    (version "0.16.2")
+    (version "0.16.3")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "DelayedArray" version))
               (sha256
                (base32
-                "09lpj951v1afxkrnjvnhzp4qgklq23ykdwlny7k1lyfcdy9q6wm0"))))
+                "0w1wppy6m2iv41852dscg3y19sq84ahdx3m7c2p2pxjcznmv6hys"))))
     (properties
      `((upstream-name . "DelayedArray")))
     (build-system r-build-system)
