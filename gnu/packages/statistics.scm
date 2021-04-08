@@ -3402,17 +3402,18 @@ Stochastic Neighbor Embedding using a Barnes-Hut implementation.")
 (define-public r-e1071
   (package
     (name "r-e1071")
-    (version "1.7-4")
+    (version "1.7-6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "e1071" version))
        (sha256
         (base32
-         "02935xcscjhb0jmnvh44hxlpjcgladrcr0gpz1jxq07m0qdqgaz6"))))
+         "0blfnv3m5k5xm9bfx1v5awvagqlhqaqpabrvzplf4244c3j259qa"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-class" ,r-class)))
+     `(("r-class" ,r-class)
+       ("r-proxy" ,r-proxy)))
     (home-page "https://cran.r-project.org/web/packages/e1071")
     (synopsis "Miscellaneous functions for probability theory")
     (description
