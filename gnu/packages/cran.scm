@@ -501,14 +501,14 @@ higher.")
 (define-public r-oenb
   (package
     (name "r-oenb")
-    (version "0.0.1")
+    (version "0.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "oenb" version))
        (sha256
         (base32
-         "1x1jlqp6r27c4gb7wafzpmh5rq6yq61a2d395r5lsmv2g5jb4biz"))))
+         "1jgxw7ycx2lcdzglg9nix8k08fs4r6i5jdsjzrd6w1dg6smsinl5"))))
     (properties `((upstream-name . "oenb")))
     (build-system r-build-system)
     (propagated-inputs
