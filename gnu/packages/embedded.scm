@@ -8,6 +8,7 @@
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2021 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2021 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -229,7 +230,41 @@ usable on embedded products.")
            "--enable-lite-exit"
            "--enable-newlib-global-atexit"
            "--enable-newlib-nano-formatted-io"
-           "--disable-nls"))))
+           "--disable-nls"))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           ;; XXX: Most arm toolchains offer both *.a and *_nano.a as newlib
+           ;; and newlib-nano respectively.  The headers are usually
+           ;; arm-none-eabi/include/newlib.h for newlib and
+           ;; arm-none-eabi/include/newlib-nano/newlib.h for newlib-nano.  We
+           ;; have two different toolchain packages for each which works but
+           ;; is a little strange.
+           (add-after 'install 'hardlink-newlib
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 ;; The nano.specs file says that newlib-nano files should end
+                 ;; in "_nano.a" instead of just ".a".  Note that this applies
+                 ;; to all the multilib folders too.
+                 (for-each
+                  (lambda (file)
+                    (link file
+                          (string-append
+                           ;; Strip ".a" off the end
+                           (substring file 0 (- (string-length file) 2))
+                           ;; Add "_nano.a" onto the end
+                           "_nano.a")))
+                  (find-files
+                   out
+                   "^(libc.a|libg.a|librdimon.a|libstdc\\+\\+.a|libsupc\\+\\+.a)$"))
+
+                 ;; newlib.h is usually in this location instead so both
+                 ;; newlib and newlib-nano can be in the toolchain at the same
+                 ;; time
+                 (mkdir (string-append out "/arm-none-eabi/include/newlib-nano"))
+                 (symlink
+                   "../newlib.h"
+                   (string-append out "/arm-none-eabi/include/newlib-nano/newlib.h"))
+                 #t)))))))
     (synopsis "Newlib variant for small systems with limited memory")))
 
 
