@@ -28,7 +28,7 @@
 ;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2020 Julien Lepiler <julien@lepiller.eu>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
-;;; Copyright © 2020 Masaya Tojo <masaya@tojo.tokyo>
+;;; Copyright © 2020, 2021 Masaya Tojo <masaya@tojo.tokyo>
 ;;; Copyright © 2020 Jesse Gibbons <jgibbons2357@gmail.com>
 ;;; Copyright © 2020 Mike Rosset <mike.rosset@gmail.com>
 ;;; Copyright © 2020 Leo Prikler <leo.prikler@student.tugraz.at>
@@ -3519,7 +3519,7 @@ feature-set, fully programmable in Guile Scheme.")
                                         texlive-fonts-iwona)))
        ("pkg-config" ,pkg-config)))
     (propagated-inputs
-     `(("guile-lib" ,guile-lib)))
+     `(("guile-lib" ,guile2.2-lib)))
     (home-page "https://www.gnu.org/software/guile-cv/")
     (synopsis "Computer vision library for Guile")
     (description "Guile-CV is a Computer Vision functional programming library
