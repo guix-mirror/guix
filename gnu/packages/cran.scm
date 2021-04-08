@@ -5728,14 +5728,14 @@ sapa R packages.")
 (define-public r-sapa
   (package
     (name "r-sapa")
-    (version "2.0-2")
+    (version "2.0-3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sapa" version))
        (sha256
         (base32
-         "056xlh14dnzq4x7sbp7ff2k61jxy7110a742b502vz549qfrr5ds"))))
+         "0kj681rd4c2lvqr926lb6f4qwp281x5274dg6vbk8pf5y7s0qlpc"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ifultools" ,r-ifultools)
