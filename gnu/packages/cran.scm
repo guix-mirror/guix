@@ -25705,18 +25705,19 @@ observations.")
 (define-public r-slider
   (package
     (name "r-slider")
-    (version "0.1.5")
+    (version "0.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "slider" version))
        (sha256
         (base32
-         "1x4jwfxam4czfkb1s5qds5krfw1h2p5a4rh6f5z4yvhsv0d81xck"))))
+         "1jijh8f3qcn8fa677sqvgl2fb4r5vca1cw4l2vbcqscxb2hr4bqw"))))
     (properties `((upstream-name . "slider")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-glue" ,r-glue)
+     `(("r-ellipsis" ,r-ellipsis)
+       ("r-glue" ,r-glue)
        ("r-rlang" ,r-rlang)
        ("r-vctrs" ,r-vctrs)
        ("r-warp" ,r-warp)))
