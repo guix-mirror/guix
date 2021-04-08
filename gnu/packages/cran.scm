@@ -10547,14 +10547,14 @@ repositories.")
 (define-public r-gh
   (package
     (name "r-gh")
-    (version "1.2.0")
+    (version "1.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "gh" version))
        (sha256
         (base32
-         "1zvy3ylxvni10lhvmbm9h14mg4wlsbdbzbzviwf28jxss8749219"))))
+         "16xa1qb1r28f8yc6ybjrxiq2zigxj886dp9k29jpsn5091xbzkq0"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cli" ,r-cli)
