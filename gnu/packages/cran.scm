@@ -16376,7 +16376,7 @@ sets of URLs.")
     (description
      "The aim of the ggplot2 package is to aid in visual data investigations.
 This focus has led to a lack of facilities for composing specialized plots.
-Thi package aims to be a collection of mainly new statistics and geometries
+This package aims to be a collection of mainly new statistics and geometries
 that fills this gap.")
     (license license:expat)))
 
