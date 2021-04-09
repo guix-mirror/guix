@@ -399,7 +399,7 @@ deconvolution).  Such post-processing is not performed by Stackistry.")
 (define-public stellarium
   (package
     (name "stellarium")
-    (version "0.20.4")
+    (version "0.21.0")
     (source
      (origin
        (method url-fetch)
@@ -407,7 +407,7 @@ deconvolution).  Such post-processing is not performed by Stackistry.")
                            "/releases/download/v" version
                            "/stellarium-" version ".tar.gz"))
        (sha256
-        (base32 "1253zlr0mi4kdbj119spxk7spg4rkahb4rlpd0hz1d81mnv3n0v3"))))
+        (base32 "04vg2asj9gygwnrs32scqc8192ln2lyqa9v7cjqk8zd4frkwszwp"))))
     (build-system cmake-build-system)
     (inputs
      `(("qtbase" ,qtbase)
