@@ -23805,7 +23805,7 @@ cleanly print different types of messages.")
       "NestedText is a file format for holding data that is to be entered, edited, or
 viewed by people.  It allows data to be organized into a nested collection of
 dictionaries, lists, and strings.  In this way it is similar to JSON and YAML, but
-without the complexity and risk of YAML and without the syntatic clutter of JSON.
+without the complexity and risk of YAML and without the syntactic clutter of JSON.
 NestedText is both simple and natural.  Only a small number of concepts and rules must
 be kept in mind when creating it.  It is easily created, modified, or viewed with
 a text editor and easily understood and used by both programmers and non-programmers.")
