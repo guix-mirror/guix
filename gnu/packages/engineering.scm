@@ -266,7 +266,7 @@ plans and designs.")
 suite grouped together under the gEDA name.  gEDA/gaf is a collection of tools
 which currently includes: gschem, a schematic capture program; gnetlist, a
 netlist generation program; gsymcheck, a syntax checker for schematic symbols;
-gattrib, a spreadsheet programm that manipulates the properties of symbols of
+gattrib, a spreadsheet programme that manipulates the properties of symbols of
 a schematic; libgeda, libraries for gschem gnetlist and gsymcheck; gsch2pcb, a
 tool to forward annotation from your schematic to layout using PCB; some minor
 utilities.")
