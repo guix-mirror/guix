@@ -6799,9 +6799,9 @@ of these reads to align data quickly through a hash-based indexing scheme.")
     (synopsis "Biological sequence analysis tool for NGS reads")
     (description
      "SortMeRNA is a biological sequence analysis tool for filtering, mapping
-and operational taxonomic unit (OTU) picking of next generation
-sequencing (NGS) reads.  The core algorithm is based on approximate seeds and
-allows for fast and sensitive analyses of nucleotide sequences.  The main
+and @acronym{OTU, operational taxonomic unit} picking of @acronym{NGS, next
+generation sequencing} reads.  The core algorithm is based on approximate seeds
+and allows for fast and sensitive analyses of nucleotide sequences.  The main
 application of SortMeRNA is filtering rRNA from metatranscriptomic data.")
     ;; The source includes x86 specific code
     (supported-systems '("x86_64-linux" "i686-linux"))
