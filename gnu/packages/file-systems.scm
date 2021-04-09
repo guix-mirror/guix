@@ -184,7 +184,7 @@ large and/or frequently changing (network) environment.")
     (home-page "https://bindfs.org")
     (synopsis "Bind mount a directory and alter permission bits")
     (description
-     "@command{bindfs} is a FUSE filesystem for mounting a directory to
+     "@command{bindfs} is a FUSE file system for mounting a directory to
 another location, similar to @command{mount --bind}.  It can be used for:
 @itemize
 @item Making a directory read-only.
