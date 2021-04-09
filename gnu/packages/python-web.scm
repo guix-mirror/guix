@@ -5,7 +5,7 @@
 ;;; Copyright © 2016, 2017 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2013, 2014, 2015, 2016, 2020 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016, 2017, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016, 2017, 2020 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
@@ -1749,26 +1749,26 @@ web framework, either via the basic or digest authentication schemes.")
 (define-public python-terminado
   (package
     (name "python-terminado")
-    (version "0.8.1")
+    (version "0.9.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "terminado" version))
        (sha256
         (base32
-         "0yh69k6579g848rmjyllb5h75pkvgcy27r1l3yzgkf33wnnzkasm"))))
+         "1glqyw97rddyzvisz8rihsn3x2nrm5xbyq82nzp3123pqbxvqzcs"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-tornado" ,python-tornado)
+     `(("python-tornado" ,python-tornado-6)
        ("python-ptyprocess" ,python-ptyprocess)))
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     `(("python-pytest" ,python-pytest)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _ (invoke "nosetests") #t)))))
-    (home-page "https://github.com/takluyver/terminado")
+           (lambda _ (invoke "pytest" "-vv"))))))
+    (home-page "https://github.com/jupyter/terminado")
     (synopsis "Terminals served to term.js using Tornado websockets")
     (description "This package provides a Tornado websocket backend for the
 term.js Javascript terminal emulator library.")
