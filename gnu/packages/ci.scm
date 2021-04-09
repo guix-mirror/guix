@@ -77,6 +77,11 @@
                     (ice-9 rdelim)
                     (ice-9 popen))
          #:configure-flags '("--localstatedir=/var") ;for /var/log/cuirass
+         ;; XXX: HTTP tests fail on aarch64 due to Fibers errors, disable them
+         ;; on that architecture for now.
+         #:tests? ,(let ((s (or (%current-target-system)
+                                (%current-system))))
+                     (not (string-prefix? "aarch64" s)))
          #:parallel-tests? #f
          #:phases
          (modify-phases %standard-phases
