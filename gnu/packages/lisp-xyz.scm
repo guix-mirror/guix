@@ -7296,10 +7296,10 @@ of C+GObject libraries without the need of writing dedicated bindings.")
       (inputs
        `(("ppcre" ,sbcl-cl-ppcre)))
       (home-page "https://github.com/EuAndreh/cl-slug")
-      (synopsis "Multi-language slug formater")
+      (synopsis "Multi-language slug formatter")
       (description
        "This is a small Common Lisp library to make slugs, mainly for URIs,
-from english and beyond.")
+from English and beyond.")
       (license license:llgpl))))
 
 (define-public ecl-cl-slug
