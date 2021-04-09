@@ -10528,8 +10528,8 @@ experiments, and visualize de influence of the involved factors.")
 by spectral counts, to discover differentially expressed proteins between two
 biological conditions.  Three tests are available: Poisson GLM regression,
 quasi-likelihood GLM regression, and the negative binomial of the edgeR
-package.The three models admit blocking factors to control for nuissance
-variables.To assure a good level of reproducibility a post-test filter is
+package.  The three models admit blocking factors to control for nuisance
+variables.  To assure a good level of reproducibility a post-test filter is
 available, where we may set the minimum effect size considered biologicaly
 relevant, and the minimum expression of the most abundant condition.")
     (license license:gpl2)))
