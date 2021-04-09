@@ -25,6 +25,7 @@
 ;;; Copyright © 2021 Matthew Kraai <kraai@ftbfs.org>
 ;;; Copyright © 2021 André A. Gomes <andremegafone@gmail.com>
 ;;; Copyright © 2021 Cage <cage-dev@twistfold.it>
+;;; Copyright © 2021 Cameron Chaparro <cameron@cameronchaparro.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -15789,3 +15790,38 @@ allows one to gradually make their programs safer.")
 
 (define-public cl-coalton
   (sbcl-package->cl-source-package sbcl-coalton))
+
+(define-public sbcl-clip
+  (let ((commit "7afa68702fbb99c47ed115ea0faccd97a29d9b2e")
+        (revision "1"))
+    (package
+      (name "sbcl-clip")
+      (version (git-version "0.7.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/shinmera/clip")
+               (commit commit)))
+         (file-name (git-file-name "clip" version))
+         (sha256
+          (base32 "13kkajkva2shm19fvn4yashsw18l6imv2rmy3hmpcky7g5ay7bv3"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("array-utils" ,sbcl-array-utils)
+         ("lquery" ,sbcl-lquery)))
+      (home-page "https://shinmera.github.io/clip/")
+      (synopsis "Common Lisp HTML templating engine")
+      (description
+       "Clip is an attempt at a templating library that allows you to write
+templates in a way that is both accessible to direct webdesign and
+flexible.  The main idea is to incorporate transformation commands into an HTML
+file through tags and attributes.  Clip is heavily dependant on Plump and
+lQuery.")
+      (license license:zlib))))
+
+(define-public ecl-clip
+  (sbcl-package->ecl-package sbcl-clip))
+
+(define-public cl-clip
+  (sbcl-package->cl-source-package sbcl-clip))
