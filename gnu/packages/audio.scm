@@ -78,6 +78,7 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnunet) ; libmicrohttpd
   #:use-module (gnu packages gperf)
+  #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages icu4c)
@@ -4465,7 +4466,7 @@ library.")
 (define-public faudio
   (package
     (name "faudio")
-    (version "19.11")
+    (version "21.04")
     (source
      (origin
        (method git-fetch)
@@ -4474,19 +4475,24 @@ library.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0ckpr6ffz8ssfh1y850dhip5s5jv0j6n90qz5yx1v9d6gpwf08rp"))))
+        (base32 "1g3zp7igh4ns31sqnxddxqhgibijngkbcqqsj23i9d1lah6k4747"))))
     (arguments
      '(#:tests? #f                      ; No tests.
-       #:configure-flags '("-DFFMPEG=ON")))
+       #:configure-flags '("-DGSTREAMER=ON")))
     (build-system cmake-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("ffmpeg" ,ffmpeg)
+    (inputs `(("gstreamer" ,gstreamer)
+              ("gst-plugins-base" ,gst-plugins-base)
               ("sdl2" ,sdl2)))
     (home-page "https://github.com/FNA-XNA/FAudio")
     (synopsis "XAudio reimplementation")
     (description "FAudio is an XAudio reimplementation that focuses solely on
 developing fully accurate DirectX Audio runtime libraries.")
-    (license license:zlib)))
+    (license
+     (list license:zlib
+           ;; stb & utils/{ui,wav}common are dual-licenced under either of:
+           license:expat
+           license:public-domain))))
 
 (define-public gnaural
   (package
