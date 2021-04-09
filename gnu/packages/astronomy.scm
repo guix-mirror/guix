@@ -118,7 +118,7 @@ for reading and writing.")
 (define-public erfa
   (package
     (name "erfa")
-    (version "1.7.2")
+    (version "1.7.3")
     (source
      (origin
        (method git-fetch)
@@ -127,7 +127,7 @@ for reading and writing.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1vsqwvzlk7r8q7nwyb7i710blcfdl5kwcm2va9km07a820nsp84a"))))
+        (base32 "0nh12dr7gk4ki55lz95pkm4fpf7kazirra3zax9pab6v4qql4hlw"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("automake" ,automake)
