@@ -743,7 +743,7 @@ battlestar (explore the world around, starting from dying spaceship),
 phantasia (role-play as an rogue), trek (hunt the Klingons, and save the
 Federation), and wump (hunt the big smelly Wumpus in a dark cave).
 
-Quizes: arithmetic, and quiz.")
+Quizzes: arithmetic and quiz.")
     ;; "Auxiliary and data files, distributed with the games in NetBSD, but
     ;; not bearing copyright notices, probably fall under the terms of the UCB
     ;; or NetBSD copyrights and licences.  The file "fortune/Notes" contains a
