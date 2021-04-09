@@ -7210,14 +7210,14 @@ without using the configuration machinery.")
 (define-public python-jupyter-core
   (package
     (name "python-jupyter-core")
-    (version "4.4.0")
+    (version "4.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append (pypi-uri "jupyter_core" version)))
        (sha256
         (base32
-         "1dy083rarba8prn9f9srxq3c7n7vyql02ycrqq306c40lr57aw5s"))))
+         "1d12j5hkff0xiax87pnhmzbsph3jqqzhz16h8xld7z2y4armq0kr"))))
     (build-system python-build-system)
     ;; FIXME: not sure how to run the tests
     (arguments `(#:tests? #f))
