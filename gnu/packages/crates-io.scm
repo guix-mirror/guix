@@ -35802,8 +35802,9 @@ with one of the implemented strategies.")
        (("rust-fs2" ,rust-fs2-0.4))))
     (home-page "https://github.com/dtolnay/scratch")
     (synopsis "Compile-time temporary directory")
-    (description "This crate exposes a compile-time temporary directory sharable
-by multiple crates in a build graph and erased by @code{cargo clean}.")
+    (description "This crate exposes a compile-time temporary directory
+shareable by multiple crates in a build graph and erased by @code{cargo
+clean}.")
     (license (list license:expat license:asl2.0))))
 
 (define-public rust-scrypt-0.3
