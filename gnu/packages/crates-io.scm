@@ -18080,8 +18080,8 @@ Hash-based Message Authentication Code}.")
     (home-page "https://github.com/pantsman0/rust-hmac-sha1")
     (synopsis "Minimal implementation of HMAC-SHA1 in Rust")
     (description
-     "This package is a pure Rust implementation of the Hash-based Message
-Authentication Code Algoritm (HMAC) for SHA1.")
+     "This package is a pure Rust implementation of the @acronym{HMAC,
+Hash-based Message Authentication Code algorithm} for SHA1.")
     (license license:bsd-3)))
 
 (define-public rust-hostname-0.3
