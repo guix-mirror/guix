@@ -159,7 +159,7 @@
       (properties
        `((max-silent-time . 14400))) ; 4 hours, expected even on x86_64
       (home-page "https://github.com/Ekdohibs/camlboot")
-      (synopsis "OCaml souce bootstrap")
+      (synopsis "OCaml source bootstrap")
       (description "OCaml is written in OCaml.  Its sources contain a pre-compiled
 bytecode version of @command{ocamlc} and @command{ocamllex} that are used to
 build the next version of the compiler.  Camlboot implements a bootstrap for
