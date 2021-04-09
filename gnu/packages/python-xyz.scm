@@ -1985,7 +1985,7 @@ human-friendly syntax.")
     (build-system python-build-system)
     (home-page "https://github.com/scour-project/scour")
     (synopsis "Scour is an SVG optimizer/cleaner written in Python")
-    (description "The goal of Scour is to output a file that renderes
+    (description "The goal of Scour is to output a file that renders
 identically at a fraction of the size by removing a lot of redundant
 information created by most SVG editors.  Optimization options are typically
 lossless but can be tweaked for more aggressive cleaning.")
