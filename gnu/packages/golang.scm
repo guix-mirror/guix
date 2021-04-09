@@ -5827,7 +5827,7 @@ which produce colorized output using github.com/fatih/color.")
     (synopsis "Write handsome command-line tools with glamour")
     (description "@code{glamour} lets you render markdown documents and
 templates on ANSI compatible terminals.  You can create your own stylesheet or
-use one of our glamourous default themes.")
+use one of our glamorous default themes.")
     (license license:expat)))
 
 (define-public go-github-com-coreos-go-semver
