@@ -13315,7 +13315,7 @@ and lean bindings to C libraries.")
       (home-page "https://github.com/borodust/claw-utils")
       (synopsis "Utilities for easier autowrapping")
       (description
-       "This Common Lisp library contains various handy utilties to help
+       "This Common Lisp library contains various handy utilities to help
 autowrapping with @code{claw}.")
       (license license:expat))))
 
