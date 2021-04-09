@@ -10491,8 +10491,10 @@ interactive computing.")
          "1ismyaxbv9d56yqqqb8xl58hg0iq0bbyy014a53y1g3hfbc8g7q7"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-ipykernel" ,python-ipykernel)
-       ("python-notebook" ,python-notebook)))
+     `(("python-argon2-cffi" ,python-argon2-cffi)
+       ("python-ipykernel" ,python-ipykernel)
+       ("python-notebook" ,python-notebook)
+       ("python-terminado" ,python-terminado)))
     (native-inputs
      `(("python-certifi" ,python-certifi)
        ("python-nose" ,python-nose)))
