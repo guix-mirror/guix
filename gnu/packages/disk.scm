@@ -351,7 +351,7 @@ to disk.
 
 It should be stressed that gpart does a very heuristic job.  It can easily be
 right in its guesswork but it can also be terribly wrong.  Never believe its
-output without any plausability checks.")
+output without any plausibility checks.")
       (license license:gpl2+))))
 
 (define-public gptfdisk
