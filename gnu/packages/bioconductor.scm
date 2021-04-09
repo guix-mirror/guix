@@ -11065,7 +11065,7 @@ the earlier snpMatrix package, allowing for uncertainty in genotypes.")
     (description
      "This package implements functions for combinatorial and differential
 analysis of ChIP-seq data.  It includes uni- and multivariate peak-calling,
-export to genome browser viewable files, and functi ons for enrichment
+export to genome browser viewable files, and functions for enrichment
 analyses.")
     (license license:artistic2.0)))
 
