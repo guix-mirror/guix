@@ -4449,7 +4449,7 @@ tools.")
     (synopsis "Guile implementation of the Encoding for Robust Immutable Storage (ERIS)")
     (description
      "Guile-ERIS is the reference implementation of the Encoding for Robust
-Immutable Storage (ERIS).  ERIS allows arbitary content to be encoded into
+Immutable Storage (ERIS).  ERIS allows arbitrary content to be encoded into
 uniformly sized, encrypted blocks that can be reassembled using a short
 read-capability.")
     (home-page "https://inqlab.net/git/eris.git")
