@@ -197,7 +197,7 @@
     (synopsis "Lightweight input method framework")
     (description "Nimf is a lightweight, fast and extensible input method
 framework.  This package provides a fork of the original nimf project, that
-focusses especially on Korean input (Hangul, Hanja, ...).")
+focuses especially on Korean input (Hangul, Hanja, ...).")
     (home-page "https://github.com/hamonikr/nimf/")
     (license license:lgpl3+)))
 
