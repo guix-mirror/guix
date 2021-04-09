@@ -844,7 +844,7 @@ that let you do deep transformations of code.")
     (home-page "https://github.com/JuliaLang/MbedTLS.jl")
     (synopsis "Apache's mbed TLS library wrapper")
     (description "@code{MbedTLS.jl} provides a wrapper around the @code{mbed
-TLS} and cryptography C libary for Julia.")
+TLS} and cryptography C library for Julia.")
     (license license:expat)))
 
 (define-public julia-mbedtls-jll
