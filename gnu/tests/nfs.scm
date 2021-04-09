@@ -410,5 +410,5 @@ directories can be mounted.")
   (system-test
    (name "nfs-root-fs")
    (description "Test that an NFS server can be started and the exported
-directory can be used as root filesystem.")
+directory can be used as root file system.")
    (value (run-nfs-root-fs-test))))
