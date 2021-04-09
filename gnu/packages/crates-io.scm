@@ -13969,7 +13969,7 @@ supported in purely NFA-based implementations.")
     (synopsis "Find the physical space used by a file")
     (description
      "@code{filesize} abstracts platform-specific methods of determining the
-real space used by files, taking into account filesystem compression and
+real space used by files, taking into account file system compression and
 sparse files.")
     (license license:expat)))
 
