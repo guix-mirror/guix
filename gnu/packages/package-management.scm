@@ -1050,7 +1050,7 @@ environments.")
 
 (define-public guix-build-coordinator
   (let ((commit "44d00065cfbd0f24d2fac631608a5aeaace648a7")
-        (revision "22"))
+        (revision "23"))
     (package
       (name "guix-build-coordinator")
       (version (git-version "0" revision commit))
@@ -1088,14 +1088,18 @@ environments.")
                  (for-each
                   (lambda (file)
                     (simple-format (current-error-port) "wrapping: ~A\n" file)
-                    (let ((guile-inputs `("guile-json"
-                                          "guile-gcrypt"
-                                          "guix"
-                                          "guile-prometheus"
-                                          "guile-lib"
-                                          "guile-lzlib"
-                                          "guile-zlib"
-                                          "gnutls")))
+                    (let ((guile-inputs (list
+                                         "guile-json"
+                                         "guile-gcrypt"
+                                         "guix"
+                                         "guile-prometheus"
+                                         "guile-lib"
+                                         "guile-lzlib"
+                                         "guile-zlib"
+                                         "gnutls"
+                                         ,@(if (hurd-target?)
+                                               '()
+                                               '("guile-fibers")))))
                       (wrap-program file
                         `("PATH" ":" prefix
                           (,bin
