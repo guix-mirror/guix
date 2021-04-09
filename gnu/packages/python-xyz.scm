@@ -10416,13 +10416,13 @@ convert an @code{.ipynb} notebook file into various static formats including:
 (define-public python-notebook
   (package
     (name "python-notebook")
-    (version "5.7.4")
+    (version "6.3.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "notebook" version))
               (sha256
                (base32
-                "0jm7324mbxljmn9hgapj66q7swyz5ai92blmr0jpcy0h80x6f26r"))))
+                "0zfwr87ndjzmdp9adpc9lby1hdqdkjp2q7c9vff3wiw1dj6kkjfb"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
