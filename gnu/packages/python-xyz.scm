@@ -23582,12 +23582,12 @@ dates in almost any string formats commonly found on web pages.")
              ;; This invokation is taken from tox.ini.
              (invoke "nosetests" "-d" "-v" "tests/"))))))
     (home-page "https://github.com/akesterson/dpath-python")
-    (synopsis "Filesystem-like pathing and searching for dictionaries")
+    (synopsis "File-system-like pathing and searching for dictionaries")
     (description
      "@code{python-dpath} is a library for accessing and searching
 dictionaries via /slashed/paths ala xpath.
 
-Basically it lets you glob over a dictionary as if it were a filesystem.  It
+Basically it lets you glob over a dictionary as if it were a file system.  It
 allows you to specify globs (ala the bash eglob syntax, through some advanced
 fnmatch.fnmatch magic) to access dictionary elements, and provides some
 facility for filtering those results.")
