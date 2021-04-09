@@ -215,7 +215,7 @@ some projects.")))
      `(#:make-flags
        (let ((out (assoc-ref %outputs "out"))
              (lua-version ,(version-major+minor (package-version lua))))
-         (list "CC=gcc"
+         (list ,(string-append "CC=" (cc-for-target))
                (string-append "LUA_LDIR=" out "/share/lua/" lua-version)
                (string-append "LUA_CDIR=" out "/lib/lua/" lua-version)))
        #:phases
@@ -356,7 +356,7 @@ directory structure and file attributes.")
      `(#:make-flags
        (let ((out (assoc-ref %outputs "out"))
              (lua-api-version ,(version-major+minor (package-version lua))))
-         (list "CC=gcc"
+         (list ,(string-append "CC=" (cc-for-target))
                "CFLAGS='-D HAVE_SYS_SYSCTL_H=0'" ; sys/sysctl.h is deprecated
                (string-append "prefix=" out)
                (string-append "LUA_APIS=" lua-api-version)))
@@ -417,7 +417,7 @@ binds OpenSSL's bignum, message digest, HMAC, cipher, and CSPRNG interfaces.")
        (let ((out (assoc-ref %outputs "out"))
              (lua-version ,(version-major+minor (package-version lua))))
          (list "linux"
-               "CC=gcc"
+               ,(string-append "CC=" (cc-for-target))
                "LD=gcc"
                (string-append "LUAPATH=" out "/share/lua/" lua-version)
                (string-append "LUACPATH=" out "/lib/lua/" lua-version)))
@@ -465,7 +465,7 @@ secure session between the peers.")
        #:make-flags
        (let ((out (assoc-ref %outputs "out"))
              (lua-api-version ,(version-major+minor (package-version lua))))
-         (list "CC=gcc"
+         (list ,(string-append "CC=" (cc-for-target))
                (string-append "LUA_APIS=" lua-api-version)))
        #:phases
        (modify-phases %standard-phases
@@ -657,7 +657,7 @@ describing the commented declarations and functions.")
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
-       (list "CC=gcc"
+       (list ,(string-append "CC=" (cc-for-target))
              (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
@@ -1014,7 +1014,7 @@ on numbers.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ;TODO: Run the test suite.
-       #:make-flags (list "CC=gcc"
+       #:make-flags (list ,(string-append "CC=" (cc-for-target))
                           (string-append "PREFIX=" %output))
        #:phases
        (modify-phases %standard-phases

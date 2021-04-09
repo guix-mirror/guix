@@ -214,7 +214,7 @@ communication, encryption, decryption, signatures, etc.")
     ;; like OpenBSD's pledge().
     (arguments
      `(#:make-flags
-       (list "CC=gcc"
+       (list ,(string-append "CC=" (cc-for-target))
              (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
@@ -376,7 +376,7 @@ the wrong hands.")
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (delete 'configure))          ; no configure script
-       #:make-flags (list "CC=gcc"
+       #:make-flags (list ,(string-append "CC=" (cc-for-target))
                           "RPATH=-Wl,-rpath,$(DESTDIR)$(LIBDIR)"
                           (string-append "DESTDIR="
                                          (assoc-ref %outputs "out"))
@@ -469,7 +469,7 @@ no man page, refer to the home page for usage details.")
     (arguments
      `(#:tests? #f ; No test suite
        #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
-                          "CC=gcc")
+                          ,(string-append "CC=" (cc-for-target)))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure) ; no configuration to be done
@@ -629,7 +629,7 @@ attacks than alternative functions such as @code{PBKDF2} or @code{bcrypt}.")
     (outputs (list "out" "static"))
     (arguments
      `(#:make-flags (list (string-append "PREFIX=" %output)
-                          "CC=gcc")
+                          ,(string-append "CC=" (cc-for-target)))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)            ; no configure script
@@ -1070,8 +1070,9 @@ cannot sign messages in OpenBSD format yet.")
                 (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f                      ; no check target         '
-       #:make-flags (list "CC=gcc" "PREFIX=$(out)")
+     `(#:tests? #f                      ; no check target         '
+       #:make-flags (list ,(string-append "CC=" (cc-for-target))
+                          "PREFIX=$(out)")
        #:phases (modify-phases %standard-phases
                   (delete 'configure)
                   (add-after 'install 'post-install

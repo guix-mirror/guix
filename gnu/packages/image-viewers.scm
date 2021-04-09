@@ -89,10 +89,11 @@
                 "1d13x8hmvpdc5f5rj4l29ha7iz7wvqxjlvh6il04wq8igzrj0x23"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (modify-phases %standard-phases (delete 'configure))
+     `(#:phases (modify-phases %standard-phases (delete 'configure))
        #:test-target "test"
        #:make-flags
-       (list "CC=gcc" (string-append "PREFIX=" (assoc-ref %outputs "out"))
+       (list ,(string-append "CC=" (cc-for-target))
+             (string-append "PREFIX=" (assoc-ref %outputs "out"))
              "exif=1"
              "inotify=1")))
     (native-inputs
@@ -579,7 +580,7 @@ displayed in a terminal.")
               (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     `(#:phases
        (modify-phases %standard-phases
          (delete 'configure)
          (add-after 'install 'record-absolute-file-names
@@ -593,7 +594,7 @@ displayed in a terminal.")
                   (string-append bin "/imv-")))
                #t))))
        #:make-flags
-       (list "CC=gcc"
+       (list ,(string-append "CC=" (cc-for-target))
              (string-append "PREFIX=" (assoc-ref %outputs "out"))
              (string-append "CONFIGPREFIX="
                             (assoc-ref %outputs "out") "/etc"))))

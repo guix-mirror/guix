@@ -878,8 +878,8 @@ of existing remote shell facilities such as SSH.")
          (base32 "0ziwr8j1frsp3dajr8h5glkm1dn5cci404kazz5w1jfrp0736x68"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
-                          "CC=gcc")
+     `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+                          ,(string-append "CC=" (cc-for-target)))
        #:tests? #f                      ; no test target
        #:phases
        (modify-phases %standard-phases

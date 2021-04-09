@@ -1339,7 +1339,7 @@ and min/max network usage.")
                 "0gh17kcxxi37k65zm4gqsvbk3aw7yphcs3c02pn1c4s2y6n40axd"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     `(#:phases
        (modify-phases %standard-phases
          (delete 'configure)
          (add-before 'build 'fix-ifconfig-path
@@ -1357,7 +1357,7 @@ and min/max network usage.")
 test_parse_format_ipv(4(|_listen_all|_mapped_ipv6)|6)\\);")
                 ""))
              #t)))
-       #:make-flags (list "CC=gcc"
+       #:make-flags (list ,(string-append "CC=" (cc-for-target))
                           (string-append "prefix=" (assoc-ref %outputs "out")))
        #:test-target "test"))
     (inputs `(("net-tools" ,net-tools)
@@ -1639,7 +1639,7 @@ transmission protocol (SCTP) in a Go application.")
        ("ncurses" ,ncurses)
        ("openssl" ,openssl)))
     (arguments
-     `(#:make-flags (list "CC=gcc"
+     `(#:make-flags (list ,(string-append "CC=" (cc-for-target))
                           (string-append "DESTDIR=" (assoc-ref %outputs "out"))
                           "PREFIX=")
        #:tests? #f)) ; no tests
@@ -1840,8 +1840,8 @@ allows for heavy scripting.")
                 "07nym6bqml0k9v29vnj003nrgnwrywgjvnljb7cdpsvnwilhbp64"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:make-flags
-       (list "CC=gcc"
+     `(#:make-flags
+       (list ,(string-append "CC=" (cc-for-target))
              (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
@@ -2299,7 +2299,7 @@ library remains flexible, portable, and easily embeddable.")
        ("pcre" ,pcre)
        ("tcp-wrappers" ,tcp-wrappers)))
     (arguments
-     '(#:phases
+     `(#:phases
        (modify-phases %standard-phases
          (delete 'configure)            ; no configure script
          (add-before 'check 'fix-tests
@@ -2321,7 +2321,7 @@ library remains flexible, portable, and easily embeddable.")
                 (append (find-files "." "\\.cfg")
                         (find-files "scripts"))))
              #t)))
-       #:make-flags (list "CC=gcc"
+       #:make-flags (list ,(string-append "CC=" (cc-for-target))
                           "USELIBCAP=1"
                           "USELIBWRAP=1"
                           (string-append "PREFIX=" (assoc-ref %outputs "out")))
@@ -2384,7 +2384,7 @@ the bandwidth, loss, and other parameters.")
      `(("libpcap" ,libpcap)
        ("ncurses" ,ncurses)))
     (arguments
-     `(#:make-flags `("CC=gcc"
+     `(#:make-flags `(,,(string-append "CC=" (cc-for-target))
                       ,(string-append "PREFIX=" %output)
                       ,(string-append "VERSION=" ,version))
        #:phases
@@ -2612,11 +2612,11 @@ returns the user name and other information about the connection.")
                 "04rpnc53whfky7pp2m9h35gwzwn6788pnl6c1qd576mpknbqjw4d"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:test-target "test"
+     `(#:test-target "test"
        #:make-flags (let* ((out (assoc-ref %outputs "out"))
                            (bindir (string-append out "/bin"))
                            (man1dir (string-append out "/share/man/man1")))
-                      (list "CC=gcc" ; It tries to invoke `c99`.
+                      (list ,(string-append "CC=" (cc-for-target)) ; It tries to invoke `c99`.
                             (string-append "BINDIR=" bindir)
                             (string-append "MAN1DIR=" man1dir)))
        #:phases
@@ -3035,7 +3035,7 @@ from user-space.  It requires a kernel built with SocketCAN support.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; No tests exist.
-       #:make-flags (list "CC=gcc"
+       #:make-flags (list ,(string-append "CC=" (cc-for-target))
                           (string-append "PREFIX="
                                          (assoc-ref %outputs "out")))
        #:phases
@@ -3288,7 +3288,7 @@ Ethernet and TAP interfaces is supported.  Packet capture is also supported.")
        ("zlib" ,zlib)))
     (arguments
      `(#:make-flags
-       (list "CC=gcc"
+       (list ,(string-append "CC=" (cc-for-target))
              (string-append "INSTALLDIR=" (assoc-ref %outputs "out") "/bin"))
        #:tests? #f                      ; no test suite
        #:phases
@@ -3646,7 +3646,7 @@ written (and providing API) in C.  Current implementation covers YANG 1.0 (RFC
       (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
             (string-append "PKG_CONFIG=" (assoc-ref %build-inputs "pkg-config")
                            "/bin/pkg-config")
-            "CC=gcc")))
+            ,(string-append "CC=" (cc-for-target)))))
    (home-page "https://www.open-mesh.org/projects/batman-adv/wiki/Wiki")
    (synopsis "Management tool for the mesh networking BATMAN protocol")
    (description "This package provides a control tool for the

@@ -31,6 +31,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (guix build-system cmake)
@@ -343,7 +344,7 @@ for the IRCv3 protocol.")
     (arguments
      `(#:tests? #f                      ; no tests
        #:make-flags (list (string-append "PREFIX=" %output)
-                          "CC=gcc")
+                          ,(string-append "CC=" (cc-for-target)))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))         ; no configure
@@ -367,7 +368,7 @@ for the IRCv3 protocol.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no tests
-       #:make-flags (list "CC=gcc"
+       #:make-flags (list ,(string-append "CC=" (cc-for-target))
                           (string-append "PREFIX=" %output))
        #:phases
        (modify-phases %standard-phases

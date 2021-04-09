@@ -3062,7 +3062,7 @@ produce uniform output across heterogeneous networks.")
      `(#:tests? #f                      ; no tests
        #:make-flags
        (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
-             "CC=gcc")
+             ,(string-append "CC=" (cc-for-target)))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))         ; no configure script

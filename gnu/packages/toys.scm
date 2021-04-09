@@ -219,7 +219,7 @@ and various scenery elements.")
           "1mg8nm5xzcq1xr8cvx24ym2vmafkw53rijllwcdm9miiz0p5ky9k"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:make-flags '("CC=gcc")
+     `(#:make-flags '(,(string-append "CC=" (cc-for-target)))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure) ; no configure script

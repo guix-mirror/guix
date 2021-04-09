@@ -25357,7 +25357,7 @@ other @code{helm-type-file} sources such as @code{helm-locate}.")
              (lambda _
                (substitute* "server/Makefile"
                  (("CC=cc")
-                  "CC=gcc")
+                  ,(string-append "CC=" (cc-for-target)))
                  (("INSTALL_PREFIX=\\$\\(HOME\\)/.telega")
                   (string-append "INSTALL_PREFIX=" (assoc-ref %outputs "out")
                                  "/bin"))

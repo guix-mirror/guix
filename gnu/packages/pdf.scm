@@ -1135,7 +1135,7 @@ information for every pixel as the input.")
                 "0f242mix20rgsqz1llibhsz4r2pbvx6k32rmky0zjvnbaqaw1dwm"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-FHS-file-names
            (lambda _
@@ -1144,7 +1144,7 @@ information for every pixel as the input.")
                (("/sbin/ldconfig -p") "echo lib")) #t))
          (delete 'configure))
         #:tests? #f
-        #:make-flags (list "CC=gcc"
+        #:make-flags (list ,(string-append "CC=" (cc-for-target))
                            (string-append "prefix=" (assoc-ref %outputs "out")))))
     (inputs `(("libjpeg" ,libjpeg-turbo)
               ("curl" ,curl)

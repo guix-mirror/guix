@@ -457,8 +457,8 @@ lossless JPEG manipulations such as rotation, scaling or cropping:
                                        "libjxr-fix-typos.patch"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:make-flags
-       (list "CC=gcc"
+     `(#:make-flags
+       (list ,(string-append "CC=" (cc-for-target))
              ;; A substitute* procedure call would be enough to add the -fPIC
              ;; flag if there was no file decoding error.
              ;; The makefile is a "Non-ISO extended-ASCII text, with CRLF line
@@ -890,7 +890,7 @@ JPEG 2000 Reference Software.")
     (outputs '("bin"                    ; utility programs
                "out"))                  ; library
     (arguments
-     '(#:make-flags (list "CC=gcc"
+     `(#:make-flags (list ,(string-append "CC=" (cc-for-target))
                           (string-append "PREFIX="
                                          (assoc-ref %outputs "out"))
                           (string-append "BINDIR="
@@ -1114,7 +1114,7 @@ supplies a generic doubly-linked list and some string functions.")
                         "0cwjxjz0f4gs6igvwqg0p99mnrsrwzkal1l2n08yvz2xq9s5khki"))))))))
    (build-system gnu-build-system)
    (arguments
-    '(#:phases
+    `(#:phases
       (modify-phases %standard-phases
         ;; According to Fedora these files depend on private headers, but their
         ;; presence is required for building, so we replace them with empty files.
@@ -1138,7 +1138,7 @@ supplies a generic doubly-linked list and some string functions.")
               (("-o root -g root") ""))
             #t)))
       #:make-flags
-      (list "CC=gcc"
+      (list ,(string-append "CC=" (cc-for-target))
             ;; We need '-fpermissive' for Source/FreeImage.h.
             ;; libjxr doesn't have a pkg-config file.
             (string-append "CFLAGS+=-O2 -fPIC -fvisibility=hidden -fpermissive "

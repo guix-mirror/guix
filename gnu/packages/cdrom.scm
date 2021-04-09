@@ -599,9 +599,9 @@ the data.")
                   #t))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f
+     `(#:tests? #f
        #:phases (modify-phases %standard-phases (delete 'configure))
-       #:make-flags (list "CC=gcc"
+       #:make-flags (list ,(string-append "CC=" (cc-for-target))
                           (string-append "PREFIX="
                                          (assoc-ref %outputs "out")))))
     (synopsis "Get CDDB discid information from an audio CD")

@@ -228,7 +228,7 @@ It has macro abilities and focuses on operating system portability.")
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-build? #f ; They use submakes wrong
-       #:make-flags (list "CC=gcc"
+       #:make-flags (list ,(string-append "CC=" (cc-for-target))
                           (string-append "PREFIX="
                                          (assoc-ref %outputs "out")))
        #:system "i686-linux" ; Standalone ld86 had problems otherwise

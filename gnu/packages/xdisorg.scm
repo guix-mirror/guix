@@ -269,8 +269,8 @@ used to further tweak the behaviour of the different profiles.")
         (base32 "1fjcs9d3533ay3nz79cx3c0lmy2chgragr2lhsy0xl2ckr0iins0"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f
-       #:make-flags (list "CC=gcc"
+     `(#:tests? #f
+       #:make-flags (list ,(string-append "CC=" (cc-for-target))
                           "CFLAGS=-O2 -fPIC"
                           (string-append "LDFLAGS=-Wl,-rpath="
                                          (assoc-ref %outputs "out") "/lib")
@@ -892,7 +892,7 @@ to find buttons, etc, on the screen to click on.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
-       #:make-flags (list "CC=gcc"
+       #:make-flags (list ,(string-append "CC=" (cc-for-target))
                           (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases (modify-phases %standard-phases
                   (delete 'configure)))) ; no configure script
@@ -1071,7 +1071,7 @@ Guile will work for XBindKeys.")
      `(#:phases (modify-phases %standard-phases (delete 'configure))
        #:tests? #f  ; no check target
        #:make-flags
-       (list "CC=gcc"
+       (list ,(string-append "CC=" (cc-for-target))
              (string-append "PREFIX=" %output)
              ;; Keep the documentation where the build system installs LICENSE.
              (string-append "DOCPREFIX=" %output
@@ -1184,7 +1184,7 @@ within a single process.")
        #:phases (modify-phases %standard-phases (delete 'configure))
        #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
                           "MANDIR=/share/man/man1"
-                          "CC=gcc")))
+                          ,(string-append "CC=" (cc-for-target)))))
     (inputs
      `(("libxtst" ,libxtst)
        ("libx11" ,libx11)))
@@ -1553,7 +1553,7 @@ demos.  It also acts as a nice screen locker.")
     (arguments `(#:make-flags `("bindir=/bin"
                                 "man1dir=/share/man/man1"
                                 ,(string-append "DESTDIR=" (assoc-ref %outputs "out"))
-                                "CC=gcc")
+                                ,,(string-append "CC=" (cc-for-target)))
                  #:phases (modify-phases %standard-phases
                             (delete 'configure)
                             (delete 'check))))
@@ -2102,7 +2102,7 @@ to automatically turn it on on login.")
                 "1br3x9vr6xm4ika06n8cfxx1b3wdchdqvyzjl4y1chmivrml8x9h"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags (list "CC=gcc")
+     `(#:make-flags (list ,(string-append "CC=" (cc-for-target)))
        #:tests? #f ; there are none
        #:phases
        (modify-phases %standard-phases
@@ -2407,7 +2407,7 @@ Xwrits hides itself until you should take another break.")
     (arguments
      `(#:scons ,scons-python2
        #:scons-flags
-       (list "CC=gcc")
+       (list ,(string-append "CC=" (cc-for-target)))
        #:phases
        (modify-phases %standard-phases
          (add-before 'build 'patch-sconstruct
@@ -2762,7 +2762,7 @@ and execute @file{.desktop} files of the Application type.")
      `(#:tests? #f
        #:make-flags
        (list
-        "CC=gcc"
+        ,(string-append "CC=" (cc-for-target))
         (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases

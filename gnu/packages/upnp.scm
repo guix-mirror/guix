@@ -61,11 +61,11 @@
      ;; The build system does not use a configure script but depends on
      ;; `make'.  Hence we should pass parameters to `make' instead and remove
      ;; the configure phase.
-     '(#:make-flags
+     `(#:make-flags
        (list
         (string-append "SH=" (assoc-ref %build-inputs "bash") "/bin/sh")
         (string-append "INSTALLPREFIX=" (assoc-ref %outputs "out"))
-        "CC=gcc"
+        ,(string-append "CC=" (cc-for-target))
 
         ;; Allow executables to find libminiupnpc.so.
         (string-append "LDFLAGS=-Wl,-rpath="
