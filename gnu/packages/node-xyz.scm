@@ -298,3 +298,35 @@ function with browser support.")
     (synopsis "Callback wrapping utility")
     (description "@code{wrappy} is a utility for Node.js to wrap callbacks.")
     (license license:isc)))
+
+(define-public node-once
+  (package
+    (name "node-once")
+    (version "1.4.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/isaacs/once")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1z8dcbf28dqdcp4wb0c53wrs90a07nkrax2c9kk26dsk1dhrnxav"))))
+    (build-system node-build-system)
+    (arguments
+     '(#:tests? #f                      ; FIXME: tests depend on node-tap
+       #:phases
+       (modify-phases %standard-phases
+         ;; The default configure phase fails due to tap being missing, as we do
+         ;; not have tap packaged yet.  It is used only for tests.  This package
+         ;; still works as a dependency of node-glob and node-inflight.
+         (delete 'configure))))
+    (inputs
+     `(("node-wrappy" ,node-wrappy)))
+    (home-page "https://github.com/isaacs/once")
+    (synopsis "Node.js module to call a function only once")
+    (description
+     "@code{once} is a Node.js module to call a function exactly one time.
+Subsequent calls will either return the cached previous value or throw an error
+if desired.")
+    (license license:isc)))
