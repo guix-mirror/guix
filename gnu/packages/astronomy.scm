@@ -137,8 +137,10 @@ for reading and writing.")
     (home-page "https://github.com/liberfa/erfa")
     (synopsis "Essential Routines for Fundamental Astronomy")
     (description
-     "ERFA is a C library containing key algorithms for astronomy, and is based
-on the SOFA library published by the International Astronomical Union (IAU).")
+     "The @acronym{ERFA, Essential Routines for Fundamental Astronomy} C library
+contains key algorithms for astronomy, and is based on the @acronym{SOFA,
+Standards of Fundamental Astronomy} library published by the @acronym{IAU,
+International Astronomical Union}.")
     (license license:bsd-3)))
 
 (define-public eye
