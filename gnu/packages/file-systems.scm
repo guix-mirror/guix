@@ -1195,10 +1195,10 @@ local file system using FUSE.")
      `(("go-github-com-mattn-go-sqlite3" ,go-github-com-mattn-go-sqlite3)
        ("go-github-com-hanwen-fuse" ,go-github-com-hanwen-fuse)))
     (home-page "https://github.com/oniony/TMSU")
-    (synopsis "Tag files and access them through a virtual filesystem")
+    (synopsis "Tag files and access them through a virtual file system")
     (description
      "TMSU is a tool for tagging your files.  It provides a simple
-command-line utility for applying tags and a virtual filesystem to give you a
+command-line utility for applying tags and a virtual file system to give you a
 tag-based view of your files from any other program.  TMSU does not alter your
 files in any way: they remain unchanged on disk, or on the network, wherever
 your put them.  TMSU maintains its own database and you simply gain an
