@@ -537,7 +537,7 @@ complexity of working with shared libraries across platforms.")
       (native-inputs
        `(("help2man" ,help2man)))
       (home-page "https://savannah.gnu.org/projects/config")
-      (synopsis "Ubiquitious config.guess and config.sub scripts")
+      (synopsis "Ubiquitous config.guess and config.sub scripts")
       (description "The `config.guess' script tries to guess a canonical system triple,
 and `config.sub' validates and canonicalizes.  These are used as part of
 configuration in nearly all GNU packages (and many others).")
