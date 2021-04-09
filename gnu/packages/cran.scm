@@ -9538,10 +9538,10 @@ singular or ill-conditioned Jacobian.")
      `((upstream-name . "PhysicalActivity")))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/PhysicalActivity/")
-    (synopsis "Procesing accelerometer data for physical activity measurement")
+    (synopsis "Processing accelerometer data for physical activity measurement")
     (description
      "This @code{r-physicalactivity} package provides a function @code{wearingMarking}
-for classification of monitor wear and nonwear time intervals in accelerometer
+for classification of monitored wear and nonwear time intervals in accelerometer
 data collected to assess physical activity.  The package also contains functions
 for making plots of accelerometer data and obtaining the summary of various
 information including daily monitor wear time and the mean monitor wear time
