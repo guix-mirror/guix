@@ -3965,7 +3965,7 @@ without requiring a real database connection.")
     (home-page "https://github.com/go-sql-driver/mysql")
     (synopsis "MySQL driver for golang")
     (description
-     "This is a pure Go implementaton of the MySQL API, compatible with
+     "This is a pure Go implementation of the MySQL API, compatible with
 golang's database/sql package.")
     (license license:mpl2.0)))
 
