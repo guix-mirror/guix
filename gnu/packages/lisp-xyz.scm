@@ -15718,3 +15718,36 @@ shader functions, written with @code{Shadow}.")
 
 (define-public cl-umbra
   (sbcl-package->cl-source-package sbcl-umbra))
+
+(define-public sbcl-abstract-classes
+  (let ((commit "7fa74f1e057f9ba7c1ffecff14f049f979e45267")
+        (revision "1"))
+    (package
+      (name "sbcl-abstract-classes")
+      (version (git-version "1.7.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://bitbucket.org/eeeickythump/cl-abstract-classes")
+               (commit commit)))
+         (file-name (git-file-name "cl-abstract-classes" version))
+         (sha256
+          (base32 "06lby4i6xbbgs7kgb0f3fqybvyskyg6djhrf967lnysv7hn3zpg9"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("closer-mop" ,sbcl-closer-mop)))
+      (arguments
+       `(#:asd-systems '("abstract-classes" "singleton-classes")))
+      (home-page "https://bitbucket.org/eeeickythump/cl-abstract-classes")
+      (synopsis "Abstract, final, and singleton metaclasses for CLOS")
+      (description
+       "This package provides Common Lisp extension to the MOP to allow
+abstract, final and singleton classes.")
+      (license license:public-domain))))
+
+(define-public ecl-abstract-classes
+  (sbcl-package->ecl-package sbcl-abstract-classes))
+
+(define-public cl-abstract-classes
+  (sbcl-package->cl-source-package sbcl-abstract-classes))
