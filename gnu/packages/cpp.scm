@@ -273,7 +273,7 @@ combination of these streams.")
 (define-public xsimd
   (package
     (name "xsimd")
-    (version "7.4.9")
+    (version "7.4.10")
     (source
      (origin
        (method git-fetch)
@@ -281,7 +281,7 @@ combination of these streams.")
              (url "https://github.com/QuantStack/xsimd")
              (commit version)))
        (sha256
-        (base32 "11by8gbshm4vv6flqp0ihff8c6nmbaqq7ms93b38rrq68bigcply"))
+        (base32 "097yvxrxdldi5s5m4nsxv8f4gwv9xj42mqig98a1z3hkjj1j2gn5"))
        (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (arguments
