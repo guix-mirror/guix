@@ -143,7 +143,7 @@
     (description
      "[incr Tcl] is a widely used object-oriented system for Tcl.  The name is
 a play on C++, and [incr Tcl] provides a similar object model, including
-multiple inheritence and public and private classes and variables.")
+multiple inheritance and public and private classes and variables.")
     (license license:public-domain)))
 
 (define-public expect
