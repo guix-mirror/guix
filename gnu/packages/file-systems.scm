@@ -251,9 +251,9 @@ another location, similar to @command{mount --bind}.  It can be used for:
     (description
      "The @acronym{WebDAV, Web Distributed Authoring and Versioning} extension
 to the HTTP protocol defines a standard way to author resources on a remote Web
-server.  Davfs2 exposes such resources as a typical filesystem which can be used
-by standard applications with no built-in support for WebDAV, such as the GNU
-coreutils (@command{cp}, @command{mv}, etc.) or a graphical word processor.
+server.  Davfs2 exposes such resources as a typical file system which can be
+used by standard applications with no built-in support for WebDAV, such as the
+GNU coreutils (@command{cp}, @command{mv}, etc.) or a graphical word processor.
 
 Davfs2 works with most WebDAV servers with no or little configuration.  It
 supports TLS (HTTPS), HTTP proxies, HTTP basic and digest authentication, and
