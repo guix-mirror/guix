@@ -15751,3 +15751,41 @@ abstract, final and singleton classes.")
 
 (define-public cl-abstract-classes
   (sbcl-package->cl-source-package sbcl-abstract-classes))
+
+(define-public sbcl-coalton
+  (let ((commit "4a42ffb4222fde3abfd1b50d96e455ff2eef9fe8")
+        (revision "1"))
+    (package
+      (name "sbcl-coalton")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/stylewarning/coalton")
+               (commit commit)))
+         (file-name (git-file-name "coalton" version))
+         (sha256
+          (base32 "0aidwwam7cnhb3p9212zbv5w2dl6kr5iklzanypzr1a9lqaxwdlk"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("fiasco" ,sbcl-fiasco)))
+      (inputs
+       `(("abstract-classes" ,sbcl-abstract-classes)
+         ("alexandria" ,sbcl-alexandria)
+         ("global-vars" ,sbcl-global-vars)
+         ("optima" ,sbcl-optima)
+         ("trivial-garbage" ,sbcl-trivial-garbage)))
+      (home-page "https://github.com/stylewarning/coalton")
+      (synopsis "Dialect of ML in Common Lisp")
+      (description
+       "Coalton is a dialect of ML embedded in Common Lisp.  It emphasizes
+practicality and interoperability with Lisp, and is intended to be a DSL that
+allows one to gradually make their programs safer.")
+      (license license:expat))))
+
+(define-public ecl-coalton
+  (sbcl-package->ecl-package sbcl-coalton))
+
+(define-public cl-coalton
+  (sbcl-package->cl-source-package sbcl-coalton))
