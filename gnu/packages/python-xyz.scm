@@ -15635,7 +15635,7 @@ specified to apply on the key before comparison (e.g. @code{string.lower})).")
      ;;https://bitbucket.org/fdik/pypeg/issues/36/test-failures-on-py35
      '(#:tests? #f))
     (home-page "https://fdik.org/pyPEG/")
-    (synopsis "Parsering Expression Grammars in Python")
+    (synopsis "Parsing Expression Grammars in Python")
     (description "PyPEG is an intrinsic parser interpreter framework for
 Python.  It is based on Parsing Expression Grammars, PEG.  With pyPEG you can
 parse many formal languages.")
