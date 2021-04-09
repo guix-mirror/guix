@@ -6911,7 +6911,7 @@ atomic access.")
     (propagated-inputs
      `(("go-go-uber-org-atomic" ,go-go-uber-org-atomic)))
     (home-page "https://go.uber.org/multierr")
-    (synopsis "Error combination fo Go")
+    (synopsis "Error combination for Go")
     (description
      "@code{multierr} allows combining one or more Go errors together.")
     (license license:expat)))
