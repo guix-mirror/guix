@@ -1428,7 +1428,7 @@ the Guix daemon.
 @code{guix_daemon_socket_t} isn’t actually used.  None of the socket
 operations involve contexts that have anything to do with
 @code{guix_daemon_socket_t}.  It doesn’t hurt to have this unused label,
-but it would be preferrable to define socket rules for only this label.
+but it would be preferable to define socket rules for only this label.
 
 @item
 @code{guix gc} cannot access arbitrary links to profiles.  By design,
@@ -7769,7 +7769,7 @@ after the wrapped library followed by @code{_jll.jl}.
 
 To add the binary path @code{_jll.jl} packages, you need to patch the
 files under @file{src/wrappers/}, replacing the call to the macro
-@code{JLLWrappers.@@generate_wrapper_header}, adding as a secound
+@code{JLLWrappers.@@generate_wrapper_header}, adding as a second
 argument containing the store path the binary.
 
 As an example, in the MbedTLS Julia package, we add a build phase
@@ -16425,7 +16425,7 @@ netfilter project that aims to replace the existing iptables, ip6tables,
 arptables and ebtables framework.  It provides a new packet filtering
 framework, a new user-space utility @command{nft}, and a compatibility layer
 for iptables.  This service comes with a default ruleset
-@code{%default-nftables-ruleset} that rejecting all incomming connections
+@code{%default-nftables-ruleset} that rejecting all incoming connections
 except those to the ssh port 22.  To use it, simply write:
 
 @lisp
@@ -16828,7 +16828,7 @@ Data type representing the configuration for @code{syncthing-service-type}.
 List of command-line arguments passing to @code{syncthing} binary.
 
 @item @code{logflags} (default: @var{0})
-Sum of loging flags, see
+Sum of logging flags, see
 @uref{https://docs.syncthing.net/users/syncthing.html#cmdoption-logflags, Syncthing documentation logflags}.
 
 @item @code{user} (default: @var{#f})
@@ -25913,7 +25913,7 @@ this amount of time.  After this period, resolvers will invalidate their cache
 and check again that it still exists.
 
 @item @code{nx} (default: @code{3600})
-Default TTL of inexistant records.  This delay is usually short because you want
+Default TTL of inexistent records.  This delay is usually short because you want
 your new domains to reach everyone quickly.
 
 @end table
@@ -31114,7 +31114,7 @@ coordinator.
 
 @deftp {Data Type} guix-build-coordinator-agent-dynamic-auth
 Data type representing an agent authenticating with a coordinator via a
-dyanmic auth token and agent name.
+dynamic auth token and agent name.
 
 @table @asis
 @item @code{agent-name}
@@ -31131,7 +31131,7 @@ database, and is used by the agent to authenticate.
 
 @deftp {Data Type} guix-build-coordinator-agent-dynamic-auth-with-file
 Data type representing an agent authenticating with a coordinator via a
-dyanmic auth token read from a file and agent name.
+dynamic auth token read from a file and agent name.
 
 @table @asis
 @item @code{agent-name}
@@ -34285,7 +34285,7 @@ This service represents PID@tie{}1.
 @cindex man pages
 @cindex manual pages
 In most cases packages installed with Guix come with documentation.
-There are two main documentation formats: ``Info'', a browseable
+There are two main documentation formats: ``Info'', a browsable
 hypertext format used for GNU software, and ``manual pages'' (or ``man
 pages''), the linear documentation format traditionally found on Unix.
 Info manuals are accessed with the @command{info} command or with Emacs,
@@ -34695,7 +34695,7 @@ traditional bootstrap of the rest of the Guix System.
 
 The only significant binary bootstrap seeds that remain@footnote{
 Ignoring the 68KB @code{mescc-tools}; that will be removed later,
-together with @code{mes}.} are a Scheme intepreter and a Scheme
+together with @code{mes}.} are a Scheme interpreter and a Scheme
 compiler: GNU Mes and GNU Guile@footnote{Not shown in this graph are the
 static binaries for @file{bash}, @code{tar}, and @code{xz} that are used
 to get Guile running.}.
