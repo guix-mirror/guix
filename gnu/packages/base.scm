@@ -671,13 +671,13 @@ the store.")
   ;; version 2.28, GNU/Hurd used a different glibc branch.
   (package
    (name "glibc")
-   (version "2.32")
+   (version "2.33")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/glibc/glibc-" version ".tar.xz"))
             (sha256
              (base32
-              "0di848ibffrnwq7g2dvgqrnn4xqhj3h96csn69q4da51ymafl9qn"))
+              "1zvp0qdfbdyqrzydz18d9zg3n5ygy8ps7cmny1bvsp8h1q05c99f"))
             (patches (search-patches "glibc-ldd-powerpc.patch"
                                      "glibc-ldd-x86_64.patch"
                                      "glibc-dl-cache.patch"
@@ -688,7 +688,6 @@ the store.")
                                      "glibc-supported-locales.patch"
                                      "glibc-hurd-clock_t_centiseconds.patch"
                                      "glibc-hurd-clock_gettime_monotonic.patch"
-                                     "glibc-hurd-signal-sa-siginfo.patch"
                                      "glibc-hurd-mach-print.patch"
                                      "glibc-hurd-gettyent.patch"))))
    (build-system gnu-build-system)

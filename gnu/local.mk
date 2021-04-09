@@ -1097,7 +1097,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/glibc-hurd-gettyent.patch		\
   %D%/packages/patches/glibc-hurd-mach-print.patch		\
   %D%/packages/patches/glibc-hurd-magic-pid.patch		\
-  %D%/packages/patches/glibc-hurd-signal-sa-siginfo.patch	\
   %D%/packages/patches/glibc-ldd-powerpc.patch			\
   %D%/packages/patches/glibc-ldd-x86_64.patch			\
   %D%/packages/patches/glibc-locales.patch			\
