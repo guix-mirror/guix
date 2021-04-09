@@ -7235,21 +7235,20 @@ without using the configuration machinery.")
 (define-public python-jupyter-client
   (package
     (name "python-jupyter-client")
-    (version "5.2.4")
+    (version "6.1.12")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "jupyter_client" version))
        (sha256
         (base32
-         "0l9mh7ccrpl3lppym3dnky8n1nk7xarzzdcxf4q2s7aw203cpydm"))))
+         "10p7fcgvv9hvz9zical9wk68ks5ssak2ykbzx65wm1k1hk8a3g64"))))
     (build-system python-build-system)
     ;; Tests fail because of missing native python kernel which I assume is
     ;; provided by the ipython package, which we cannot use because it would
     ;; cause a dependency cycle.
     (arguments
      `(#:tests? #f
-
        #:phases (modify-phases %standard-phases
                   (add-after 'unpack 'set-tool-file-names
                     (lambda* (#:key inputs #:allow-other-keys)
@@ -7261,9 +7260,13 @@ without using the configuration machinery.")
     (inputs
      `(("iproute" ,iproute)))
     (propagated-inputs
-     `(("python-pyzmq" ,python-pyzmq)
-       ("python-traitlets" ,python-traitlets)
-       ("python-jupyter-core" ,python-jupyter-core)))
+     `(("python-dateutil" ,python-dateutil)
+       ("python-jupyter-core" ,python-jupyter-core)
+       ("python-pyzmq" ,python-pyzmq)
+       ("python-tornado" ,python-tornado-6)
+       ("python-traitlets" ,python-traitlets)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
     (home-page "https://jupyter.org/")
     (synopsis "Jupyter protocol implementation and client libraries")
     (description
