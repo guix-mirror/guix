@@ -1087,7 +1087,7 @@ package @code{affy}.")
     (properties `((upstream-name . "gageData")))
     (build-system r-build-system)
     (home-page "https://bioconductor.org/packages/gageData")
-    (synopsis "Auxillary data for gage package")
+    (synopsis "Auxiliary data for the gage package")
     (description
      "This is a supportive data package for the software package @code{gage}.
 However, the data supplied here are also useful for gene set or pathway
