@@ -4260,7 +4260,7 @@ the following features:
       (home-page "https://github.com/werman/noise-suppression-for-voice")
       (synopsis "Speech denoise LV2 plugin based on Xiph's RNNoise library")
       (description "RNNoise is a library that uses deep learning to apply
-noise supression to audio sources with voice presence.  This package provides
+noise suppression to audio sources with voice presence.  This package provides
 an LV2 audio plugin.")
       (license license:lgpl3+))))
 
