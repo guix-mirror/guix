@@ -7948,3 +7948,33 @@ desired for one font family is not available for another font family,
 or if it differs from the weight desired for another font family.  The
 @code{mweights} package provides a solution to these difficulties.")
     (license license:lppl)))
+
+(define-public texlive-cabin
+  (package
+    (inherit (simple-texlive-package
+              "texlive-cabin"
+              (list "/doc/fonts/cabin/"
+                    "/fonts/enc/dvips/cabin/"
+                    "/fonts/map/dvips/cabin/"
+                    "/fonts/opentype/impallari/cabin/"
+                    "/fonts/tfm/impallari/cabin/"
+                    "/fonts/type1/impallari/cabin/"
+                    "/fonts/vf/impallari/cabin/"
+                    "/tex/latex/cabin/")
+              (base32
+               "0dfq9gqch80iyvp58spmpmqfc9h61sjvnddm81ba0af1p8ag8sfg")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/cabin")
+    (synopsis "Humanist Sans Serif font with LaTeX support")
+    (description "Cabin is a humanist sans with four weights, true
+italics and small capitals.  According to its designer, Pablo
+Impallari, Cabin was inspired by the typefaces of Edward Johnston and
+Eric Gill.  Cabin incorporates modern proportions, optical adjustments
+and some elements of the geometric sans.  @code{cabin.sty} supports
+use of the font under LaTeX, pdfLaTeX, XeLaTeX and LuaLaTeX.  It uses
+the @code{mweights} package to manage the user's view of all those
+font weights.  An @code{sfdefault} option is provided to enable Cabin
+as the default text font.  The @code{fontaxes} package is required for
+use with [pdf]LaTeX.")
+    (license (list license:silofl1.1 ;for Cabin
+                   license:lppl))))  ;for support files
