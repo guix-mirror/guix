@@ -201,7 +201,14 @@ this package.  E.g.: @code{(udev-rules-service 'rtl-sdr rtl-sdr)}")
                (("DESTINATION \"/etc/udev/")
                 (string-append "DESTINATION \""
                                (assoc-ref outputs "out")
-                               "/lib/udev/"))))))))
+                               "/lib/udev/")))))
+         (add-after 'fix-paths 'fix-udev-rules
+           (lambda _
+             (substitute* "tools/52-airspyhf.rules"
+               ;; The plugdev group does not exist; use dialout as in
+               ;; the hackrf package.
+               (("GROUP=\"plugdev\"")
+                "GROUP=\"dialout\"")))))))
     (home-page "https://github.com/airspy/airspyhf")
     (synopsis "Software defined radio driver for Airspy HF+")
     (description
