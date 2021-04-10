@@ -134,7 +134,7 @@
                (chdir "libqite")
                #t)))))
       (inputs
-       `(("qtbase" ,qtbase)
+       `(("qtbase" ,qtbase-5)
          ("qtmultimedia" ,qtmultimedia)))
       (home-page "https://github.com/Ri0n/qite/")
       (synopsis "Qt Interactive Text Elements")
@@ -187,7 +187,7 @@
     (native-inputs
      `(("qttools" ,qttools)))
     (inputs
-     `(("qtbase" ,qtbase)
+     `(("qtbase" ,qtbase-5)
        ("qtsvg" ,qtsvg)))
     (synopsis "Qt5 Configuration Tool")
     (description "Qt5CT is a program that allows users to configure Qt5
@@ -228,13 +228,13 @@ window managers, that don't provide Qt integration by themselves.")
           (string-append "-DCMAKE_CXX_FLAGS=-I"
                          (assoc-ref %build-inputs "qtbase")
                          "/include/qt5/QtXkbCommonSupport/"
-                         ,(package-version qtbase)))))
+                         ,(package-version qtbase-5)))))
       (native-inputs
        `(("cmake-shared" ,cmake-shared)
          ("extra-cmake-modules" ,extra-cmake-modules)
          ("pkg-config" ,pkg-config)))
       (inputs
-       `(("qtbase" ,qtbase)
+       `(("qtbase" ,qtbase-5)
          ("qtwayland" ,qtwayland)
          ("wayland" ,wayland)
          ("xkbcommon" ,libxkbcommon)))
@@ -261,7 +261,7 @@ applications on Wayland.")
      ;; Optional: lcov and cccc, both are for code coverage
      `(("doxygen" ,doxygen)))
     (inputs
-     `(("qtbase" ,qtbase)
+     `(("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)
        ("qtscript" ,qtscript)))
     (build-system cmake-build-system)
@@ -298,7 +298,7 @@ system, and the core design of Django is reused in Grantlee.")
         (string-append "https://distfiles.macports.org/qt5/"
                        component "-everywhere-src-" version ".tar.xz")))
 
-(define-public qtbase
+(define-public qtbase-5
   (package
     (name "qtbase")
     (version "5.15.2")
@@ -557,7 +557,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
 (define-deprecated qt qtbase)
 
 (define-public qtsvg
-  (package (inherit qtbase)
+  (package (inherit qtbase-5)
     (name "qtsvg")
     (version "5.15.2")
     (source (origin
@@ -570,7 +570,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
     (native-inputs `(("perl" ,perl)))
     (inputs
      `(("mesa" ,mesa)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("zlib" ,zlib)))
     (arguments
      `(#:phases
@@ -660,7 +660,7 @@ HostData=lib/qt5
        ("libtiff" ,libtiff)
        ("libwebp" ,libwebp)
        ("mesa" ,mesa)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("zlib" ,zlib)))
     (synopsis "Additional Image Format plugins for Qt")
     (description "The QtImageFormats module contains plugins for adding
@@ -682,7 +682,7 @@ support for MNG, TGA, TIFF and WBMP image formats.")))
     (native-inputs `(("perl" ,perl)))
     (inputs
      `(("mesa" ,mesa)
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (synopsis "Qt Extras for X11")
     (description "The QtX11Extras module includes the library to access X11
 from within Qt 5.")))
@@ -709,7 +709,7 @@ from within Qt 5.")))
                #t))))))
     (native-inputs `(("perl" ,perl)
                      ("qtdeclarative" ,qtdeclarative)))
-    (inputs `(("qtbase" ,qtbase)))
+    (inputs `(("qtbase" ,qtbase-5)))
     (synopsis "Qt XML patterns module")
     (description "The QtXmlPatterns module is a XQuery and XPath engine for
 XML and custom data models.  It contains programs such as xmlpatterns and
@@ -748,7 +748,7 @@ xmlpatternsvalidator.")))
        ("vulkan-headers" ,vulkan-headers)))
     (inputs
      `(("mesa" ,mesa)
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (synopsis "Qt QML module (Quick 2)")
     (description "The Qt QML module provides a framework for developing
 applications and libraries with the QML language.  It defines and implements the
@@ -772,7 +772,7 @@ with JavaScript and C++.")))
        ("qtdeclarative" ,qtdeclarative)))
     (inputs
      `(("bluez" ,bluez)
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (synopsis "Qt Connectivity module")
     (description "The Qt Connectivity modules provides modules for interacting
 with Bluetooth and NFC.")))
@@ -793,7 +793,7 @@ with Bluetooth and NFC.")))
     (native-inputs
      `(("perl" ,perl)
        ("qtdeclarative" ,qtdeclarative)))
-    (inputs `(("qtbase" ,qtbase)))
+    (inputs `(("qtbase" ,qtbase-5)))
     (synopsis "Qt Web Sockets module")
     (description "WebSocket is a web-based protocol designed to enable two-way
 communication between a client application and a remote host.  The Qt
@@ -825,7 +825,7 @@ consume data received from the server, or both.")))
     (native-inputs
      `(("perl" ,perl)
        ("qtdeclarative" ,qtdeclarative)))
-    (inputs `(("qtbase" ,qtbase)))
+    (inputs `(("qtbase" ,qtbase-5)))
     (synopsis "Qt Sensors module")
     (description "The Qt Sensors API provides access to sensor hardware via QML
 and C++ interfaces.  The Qt Sensors API also provides a motion gesture
@@ -870,7 +870,7 @@ recognition API for devices.")))
      `(("alsa-lib" ,alsa-lib)
        ("mesa" ,mesa)
        ("pulseaudio" ,pulseaudio)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ;; Gstreamer is needed for the mediaplayer plugin
        ("gstreamer" ,gstreamer)
        ("gst-plugins-base" ,gst-plugins-base)))
@@ -924,7 +924,7 @@ set of plugins for interacting with pulseaudio and GStreamer.")))
        ("libxrender" ,libxrender)
        ("mesa" ,mesa)
        ("mtdev" ,mtdev)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("vulkan-headers" ,vulkan-headers)
        ("wayland" ,wayland)))
     (synopsis "Qt Wayland module")
@@ -943,7 +943,7 @@ compositor libraries.")))
                "17gp5qzg4wdg8qlxk2p3mh8x1vk33rf33wic3fy0cws193bmkiar"))))
     (native-inputs `(("perl" ,perl)))
     (inputs
-     `(("qtbase" ,qtbase)
+     `(("qtbase" ,qtbase-5)
        ("eudev" ,eudev)))
     (arguments
      (substitute-keyword-arguments (package-arguments qtsvg)
@@ -987,7 +987,7 @@ interacting with serial ports from within Qt.")))
                  #t)))))))
     (inputs
      `(("libsocketcan" ,libsocketcan)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtserialport" ,qtserialport)))
     (synopsis "Qt Serial Bus module")
     (description "The Qt Serial Bus API provides classes and functions to
@@ -1008,7 +1008,7 @@ and others.")))
      `(("perl" ,perl)
        ("qtdeclarative" ,qtdeclarative)
        ("qtwebsockets" ,qtwebsockets)))
-    (inputs `(("qtbase" ,qtbase)))
+    (inputs `(("qtbase" ,qtbase-5)))
     (synopsis "Web communication library for Qt")
     (description "The Qt WebChannel module enables peer-to-peer communication
 between the host (QML/C++ application) and the client (HTML/JavaScript
@@ -1036,7 +1036,7 @@ popular web engines, Qt WebKit 2 and Qt WebEngine.")))
     (native-inputs '())
     (inputs
      `(("mesa" ,mesa)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)
        ("qtwebsockets" ,qtwebsockets)
        ("zlib" ,zlib)))
@@ -1061,7 +1061,7 @@ OpenGL ES 2.0 and can be used in HTML5 canvas elements")))
     (native-inputs
      `(("perl" ,perl)))
     (inputs
-     `(("qtbase" ,qtbase)
+     `(("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)))
     (synopsis "Display web content in a QML application")
     (description "Qt WebView provides a way to display web content in a QML
@@ -1092,7 +1092,7 @@ native APIs where it makes sense.")))
     (inputs
      `(("icu4c" ,icu4c)
        ("openssl" ,openssl)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("zlib" ,zlib)))
     (synopsis "Qt Location and Positioning modules")
     (description "The Qt Location module provides an interface for location,
@@ -1117,7 +1117,7 @@ positioning and geolocation plugins.")))
        ("vulkan-headers" ,vulkan-headers)))
     (inputs
      `(("mesa" ,mesa)
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (synopsis "Qt Tools and Designer modules")
     (description "The Qt Tools module provides a set of applications to browse
 the documentation, translate applications, generate help files and other stuff
@@ -1138,7 +1138,7 @@ that helps in Qt development.")))
      `(("perl" ,perl)
        ("qttools" ,qttools)))
     (inputs
-     `(("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase-5)))
     (synopsis "Qt Script module")
     (description "Qt provides support for application scripting with ECMAScript.
 The following guides and references cover aspects of programming with
@@ -1158,7 +1158,7 @@ ECMAScript and Qt.")))
      (substitute-keyword-arguments (package-arguments qtsvg)
        ((#:tests? _ #f) #f))) ; TODO: Enable the tests
     (inputs
-     `(("qtbase" ,qtbase)
+     `(("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)))
     (synopsis "Qt Quick Controls and other Quick modules")
     (description "The QtScript module provides classes for making Qt
@@ -1179,7 +1179,7 @@ can be used to build complete interfaces in Qt Quick.")))
      (substitute-keyword-arguments (package-arguments qtsvg)
        ((#:tests? _ #f) #f))) ; TODO: Enable the tests
     (inputs
-     `(("qtbase" ,qtbase)
+     `(("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)))
     (synopsis "Qt Quick Controls 2 and other Quick 2 modules")
     (description "The Qt Quick Controls 2 module contains the Qt Labs Platform
@@ -1201,7 +1201,7 @@ not available.")))
      (substitute-keyword-arguments (package-arguments qtsvg)
        ((#:tests? _ #f) #f))) ; TODO: Enable the tests
     (inputs
-     `(("qtbase" ,qtbase)
+     `(("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)))
     (synopsis "Qt Graphical Effects module")
     (description "The Qt Graphical Effects module provides a set of QML types
@@ -1229,7 +1229,7 @@ coloring, and many more.")))
        ("freetype" ,freetype)
        ("libxrender" ,libxrender)
        ("sdl2" ,sdl2)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)))
     (synopsis "Qt Gamepad module")
     (description "The Qt Gamepad module is an add-on library that enables Qt
@@ -1257,7 +1257,7 @@ and mobile applications targeting TV-like form factors.")))
                    (("scion") "#"))
                  #t))))
     (inputs
-     `(("qtbase" ,qtbase)
+     `(("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)))
     (synopsis "Qt SCXML module")
     (description "The Qt SCXML module provides functionality to create state
@@ -1277,7 +1277,7 @@ also contains functionality to support data models and executable content.")))
               (base32
                "09rjx53519dfk4qj2gbn3vlxyriasyb747wpg1p11y7jkwqhs4l7"))))
     (inputs
-     `(("qtbase" ,qtbase)
+     `(("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)))
     (synopsis "Qt Purchasing module")
     (description "The Qt Purchasing module provides and in-app API for
@@ -1297,7 +1297,7 @@ purchasing goods and services.")))
      (substitute-keyword-arguments (package-arguments qtsvg)
        ((#:tests? _ #f) #f))) ; TODO: Enable the tests
     (inputs
-     `(("qtbase" ,qtbase)
+     `(("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)))
     (synopsis "Qt Charts module")
     (description "The Qt Charts module provides a set of easy to use chart
@@ -1321,7 +1321,7 @@ selecting one of the charts themes.")
      (substitute-keyword-arguments (package-arguments qtsvg)
        ((#:tests? _ #f) #f))) ; TODO: Enable the tests
     (inputs
-     `(("qtbase" ,qtbase)
+     `(("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)))
     (synopsis "Qt Data Visualization module")
     (description "The Qt Data Visualization module provides a way to visualize
@@ -1352,7 +1352,7 @@ customized by using themes or by adding custom items and labels to them.")
                  (("oauth1 ") "# oauth1 "))
                #t))))))
     (inputs
-     `(("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase-5)))
     (synopsis "Qt Network Authorization module")
     (description "The Qt Network Authorization module provides an
 implementation of OAuth and OAuth2 authenticathon methods for Qt.")))
@@ -1383,7 +1383,7 @@ implementation of OAuth and OAuth2 authenticathon methods for Qt.")))
                    "integration_multiprocess"))
                #t))))))
     (inputs
-     `(("qtbase" ,qtbase)
+     `(("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)))
     (synopsis "Qt Remote Objects module")
     (description "The Qt Remote Objects module is an @dfn{inter-process
@@ -1406,7 +1406,7 @@ processes or computers.")))
      (substitute-keyword-arguments (package-arguments qtsvg)
        ((#:tests? _ #f) #f))) ; TODO: Enable the tests
     (inputs
-     `(("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase-5)))
     (native-inputs
      `(("perl" ,perl)
        ("qtdeclarative" ,qtdeclarative)
@@ -1442,7 +1442,7 @@ message.")))
        ("qttools" ,qttools)))
     (inputs
      `(("enchant" ,enchant)
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (home-page "https://github.com/manisandro/qtspell")
     (synopsis "Spell checking for Qt text widgets")
     (description
@@ -1455,7 +1455,7 @@ using the Enchant spell-checking library.")
   (package
     (inherit qtsvg)
     (name "qtwebengine")
-    (version (package-version qtbase))
+    (version (package-version qtbase-5))
     (source
      (origin
        (method url-fetch)
@@ -1737,7 +1737,7 @@ using the Enchant spell-checking library.")
        ("pciutils" ,pciutils)
        ("protobuf" ,protobuf)
        ("pulseaudio" ,pulseaudio)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)
        ("qtmultimedia" ,qtmultimedia)
        ("qtwebchannel" ,qtwebchannel)
@@ -1916,13 +1916,13 @@ module provides support functions to the automatically generated code.")
         (patches (search-patches "pyqt-configure.patch"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("qtbase" ,qtbase))) ; for qmake
+     `(("qtbase" ,qtbase-5))) ; for qmake
     (propagated-inputs
      `(("python-sip" ,python-sip)
        ("python-pyqt5-sip" ,python-pyqt5-sip)))
     (inputs
      `(("python" ,python-wrapper)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtconnectivity" ,qtconnectivity)
        ("qtdeclarative" ,qtdeclarative)
        ("qtlocation" ,qtlocation)
@@ -2028,12 +2028,12 @@ contain over 620 classes.")
      `(("python" ,python)
        ("python-sip" ,python-sip)
        ;; qtbase is required for qmake
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (inputs
      `(("python" ,python-wrapper)
        ("python-sip" ,python-sip)
        ("python-pyqt" ,python-pyqt)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtsvg" ,qtsvg)
        ("qtdeclarative" ,qtdeclarative)
        ("qtwebchannel" ,qtwebchannel)
@@ -2180,7 +2180,7 @@ top of the PyQt bindings for Qt.  PyQt-builder is used to build PyQt itself.")
                  (("\\$\\$\\[QT_HOST_DATA\\]")
                  (string-append out "/lib/qt$${QT_MAJOR_VERSION}")))
                (invoke "qmake")))))))
-    (native-inputs `(("qtbase" ,qtbase)))
+    (native-inputs `(("qtbase" ,qtbase-5)))
     (home-page "https://www.riverbankcomputing.co.uk/software/qscintilla/intro")
     (synopsis "Qt port of the Scintilla C++ editor control")
     (description "QScintilla is a port to Qt of Neil Hodgson's Scintilla C++
@@ -2278,7 +2278,7 @@ This package provides the Python bindings.")))
      `(("pkg-config" ,pkg-config)
        ("qttools" ,qttools)))
     (inputs
-     `(("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase-5)))
     (arguments
      `(#:tests? #f ; No tests included
        #:phases
@@ -2388,7 +2388,7 @@ securely.  It will not store any data unencrypted unless explicitly requested.")
                          '("qtlockedfile" "qtpropertybrowser" "qtservice"
                            "qtsingleapplication" "qtsoap")))))))
       (inputs
-       `(("qtbase" ,qtbase)))
+       `(("qtbase" ,qtbase-5)))
       (synopsis "Collection of Qt extensions")
       (description "QtSolutions is a set of components extending Qt.
 @itemize
@@ -2421,7 +2421,7 @@ that can be only started once per user.
          (base32 "0hf0mpca248xlqn7xnzkfj8drf19gdyg5syzklvq8pibxiixwxj0"))))
   (build-system gnu-build-system)
   (inputs
-   `(("qtbase" ,qtbase)
+   `(("qtbase" ,qtbase-5)
      ("qtsvg" ,qtsvg)
      ("qttools" ,qttools)))
   (arguments
@@ -2504,7 +2504,7 @@ different kinds of sliders, and much more.")
        ("sqlite" ,sqlite)
        ("fontconfig" ,fontconfig)
        ("libxrender" ,libxrender)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)
        ("qtlocation" ,qtlocation)
        ("qtmultimedia" ,qtmultimedia)
@@ -2569,7 +2569,7 @@ time Web content can be enhanced with native controls.")
     (native-inputs
      `(("qttools" ,qttools)))
     (inputs
-     `(("qtbase" ,qtbase)
+     `(("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)))
     (home-page "https://filcuc.github.io/DOtherSide/index.html")
     (synopsis "C language library for creating bindings for the Qt QML language")
@@ -2607,7 +2607,7 @@ a binding language:
       (native-inputs
        `(("qttools" ,qttools)))
       (inputs
-       `(("qtbase" ,qtbase)))
+       `(("qtbase" ,qtbase-5)))
       (home-page "https://gitlab.com/mattia.basaglia/Qt-Color-Widgets")
       (synopsis "Color management widgets")
       (description "QtColorWidgets provides a Qt color dialog that is more
@@ -2636,7 +2636,7 @@ color-related widgets.")
            (sha256
             (base32 "0vp8lpxvd1nlp4liqrlvslpqrgfn0wpiwizzdsjbj22zzb8vxikc"))))))
     (inputs
-     `(("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase-5)))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -2685,7 +2685,7 @@ color-related widgets.")
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)
        ("python-wrapper" ,python-wrapper)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtxmlpatterns" ,qtxmlpatterns)))
     (arguments
      `(#:tests? #f
@@ -2735,7 +2735,7 @@ color-related widgets.")
      `(("libxml2" ,libxml2)
        ("libxslt" ,libxslt)
        ("clang-toolchain" ,clang-toolchain)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtdatavis3d" ,qtdatavis3d)
        ("qtlocation" ,qtlocation)
        ("qtmultimedia" ,qtmultimedia)
@@ -2803,7 +2803,7 @@ generate Python bindings for your C or C++ code.")
     (inputs
      `(("python-pyside-2" ,python-pyside-2)
        ("python-shiboken-2" ,python-shiboken-2)
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (native-inputs
      `(("python" ,python-wrapper)))
     (arguments
@@ -2847,7 +2847,7 @@ generate Python bindings for your C or C++ code.")
            (lambda* (#:key make-flags #:allow-other-keys)
              (apply invoke (cons "qmake" make-flags)))))))
     (native-inputs
-     `(("qtbase" ,qtbase)
+     `(("qtbase" ,qtbase-5)
        ("qttools" ,qttools)))
     (inputs
      `(("glu" ,glu)))
@@ -2890,7 +2890,7 @@ being fully customizable and easy to extend.")
       `(("pkg-config" ,pkg-config)
         ("cmake" ,cmake)))
     (inputs
-      `(("qtbase" ,qtbase)
+      `(("qtbase" ,qtbase-5)
         ("coin3D" ,coin3D-4)))
     (home-page "https://github.com/coin3d/soqt")
     (synopsis "Qt GUI component toolkit library for Coin")

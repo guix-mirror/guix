@@ -119,7 +119,7 @@ utilities.")
        ("glib" ,glib)
        ("libxt" ,libxt)
        ("libtiff" ,libtiff)
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases

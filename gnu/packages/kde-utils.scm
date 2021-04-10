@@ -68,7 +68,7 @@
        ("kwindowsystem" ,kwindowsystem)
        ("kxmlgui" ,kxmlgui)
        ("oxygen-icons" ,oxygen-icons) ;; default icon set
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtscript" ,qtscript)))
     (arguments
      `(#:tests? #f ;; 2/7 tests fail
@@ -121,7 +121,7 @@ Kate's features include:
        ("kxmlgui" ,kxmlgui)
        ("oxygen-icons" ,oxygen-icons) ;; default icon set
        ;; TODO: QAccessibilityClient - libqaccessibilityclien
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (home-page "https://kde.org/applications/utilities/org.kde.kmag")
     (synopsis "Screen magnifier tool")
     (description "You can use KMagnifier to magnify a part of the screen just
@@ -160,7 +160,7 @@ artists to web-designers to people with low vision.")
        ("libxt" ,libxt)
        ("phonon" ,phonon)
        ("oxygen-icons" ,oxygen-icons) ;; default icon set
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (home-page "https://kde.org/applications/utilities/org.kde.kmousetool")
     (synopsis "Automatic mouse click and mouse manipulation tool for the
 disabled")
@@ -196,7 +196,7 @@ whom pressing buttons hurts.")
        ("kwidgetsaddons" ,kwidgetsaddons)
        ("kxmlgui" ,kxmlgui)
        ("oxygen-icons" ,oxygen-icons) ;; default icon set
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtspeech" ,qtspeech)))
     (home-page "https://kde.org/applications/utilities/org.kde.kmouth")
     (synopsis "Type-and-say frontend for speech synthesizers")
@@ -235,7 +235,7 @@ sentences to be re-spoken.")
        ("kwidgetsaddons" ,kwidgetsaddons)
        ("kxmlgui" ,kxmlgui)
        ("oxygen-icons" ,oxygen-icons) ;; default icon set
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (home-page "https://kde.org/applications/utilities/org.kde.kronometer")
     (synopsis "Simple stopwatch application")
     (description "Kronometer is a stopwatch application.  It features the
@@ -279,7 +279,7 @@ to save the times and resume them later.")
        ("kwindowsystem" ,kwindowsystem)
        ("kxmlgui" ,kxmlgui)
        ("oxygen-icons" ,oxygen-icons) ;; default icon set
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("solid" ,solid)
        ("zlib" ,zlib)))
     (home-page "https://www.krusader.org")
@@ -318,7 +318,7 @@ great on your desktop.")
     (inputs
      `(("ktexteditor" ,ktexteditor)
        ("imagemagick" ,imagemagick)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtx11extras" ,qtx11extras)))
     (home-page "https://kde.org/applications/en/graphics/org.kde.kxstitch")
     (synopsis "Create and print cross stitch patterns")
@@ -363,7 +363,7 @@ either be created or generated from a image.")
        ("kxmlgui" ,kxmlgui)
        ("oxygen-icons" ,oxygen-icons) ;; default icon set
        ("qca" ,qca)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtscript" ,qtscript)))
     (arguments
      `(#:phases
@@ -421,7 +421,7 @@ redone.")
        ("kwindowsystem" ,kwindowsystem)
        ("kxmlgui" ,kxmlgui)
        ("oxygen-icons" ,oxygen-icons) ;; default icon set
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (home-page "https://kde.org/applications/utilities/org.kde.rsibreak")
     (synopsis "Assists in the Recovery and Prevention of Repetitive Strain
 Injury")
@@ -468,7 +468,7 @@ remind you to take a break now and then.")
        ("libsmbclient" ,samba)
        ("oxygen-icons" ,oxygen-icons) ;; default icon set
        ("plasma-framework" ,plasma-framework)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)
        ("solid" ,solid)))
     (home-page "https://kde.org/applications/utilities/org.kde.smb4k")
@@ -530,7 +530,7 @@ Features:
        ("ktextwidgets" ,ktextwidgets)
        ("kxmlgui" ,kxmlgui)
        ("oxygen-icons" ,oxygen-icons) ;; default icon set
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (home-page "https://kde.org/applications/utilities/org.kde.sweeper")
     (synopsis "Temporary file and history cleaner")
     (description "

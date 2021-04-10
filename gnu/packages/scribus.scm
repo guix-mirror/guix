@@ -87,7 +87,7 @@
        ("podofo" ,podofo)
        ("poppler" ,poppler)
        ("python" ,python)               ; need Python library
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)
        ("zlib" ,zlib)))
     (native-inputs

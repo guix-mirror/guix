@@ -159,7 +159,7 @@ for unprivileged applications.")
     (inputs
      `(("polkit" ,polkit)))
     (propagated-inputs
-     `(("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase-5)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (arguments

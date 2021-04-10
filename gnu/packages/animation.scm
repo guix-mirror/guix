@@ -450,7 +450,7 @@ language.")
                            qt)))
                  #t))))))
       (inputs
-       `(("qt" ,qtbase)
+       `(("qt" ,qtbase-5)
          ("qtmultimedia" ,qtmultimedia)
          ("libsndfile" ,libsndfile)))
       (native-inputs
@@ -480,7 +480,7 @@ waveform until they line up with the proper sounds.")
                 "0b1nwiwyg01087q318vymg4si76dw41ykxbn2zwd6dqbxzbpr1dh"))))
     (build-system gnu-build-system)
     (inputs
-     `(("qtbase" ,qtbase)
+     `(("qtbase" ,qtbase-5)
        ("qtxmlpatterns" ,qtxmlpatterns)
        ("qtmultimedia" ,qtmultimedia)
        ("qtsvg" ,qtsvg)))

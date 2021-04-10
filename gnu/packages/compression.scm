@@ -2211,7 +2211,7 @@ download times, and other distribution and storage costs.")
     (native-inputs
      `(("doxygen" ,doxygen)))
     (inputs
-     `(("qtbase" ,qtbase)
+     `(("qtbase" ,qtbase-5)
        ("zlib" ,zlib)))
     (home-page "https://stachenov.github.io/quazip/index.html")
     (synopsis "Qt/C++ wrapper for Minizip")

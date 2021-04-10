@@ -144,7 +144,7 @@ locally for later listening.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("qt" ,qtbase)))
+     `(("qt" ,qtbase-5)))
     (arguments
      `(#:configure-flags '("-DMYGPO_BUILD_TESTS=ON")
        ;; TODO: Enable tests when https://github.com/gpodder/gpodder/issues/446

@@ -319,7 +319,7 @@ with X11 or Wayland, or in a text terminal with ncurses.")
    `(#:configure-flags '("-DCMAKE_BUILD_TYPE=Release")
      #:tests? #f)) ; Test suite is a rather manual process.
   (inputs
-   `(("qtbase" ,qtbase)
+   `(("qtbase" ,qtbase-5)
      ("qtscript" ,qtscript)
      ("qtsvg" ,qtsvg)
      ("qtx11extras" ,qtx11extras)))

@@ -289,7 +289,7 @@ Includes the actual FTDI connector.")
          ("eigen" ,eigen)
          ("icestorm" ,icestorm)
          ("python" ,python)
-         ("qtbase" ,qtbase)
+         ("qtbase" ,qtbase-5)
          ("yosys" ,yosys)))
       (build-system cmake-build-system)
       (arguments

@@ -475,7 +475,7 @@ protocols, as well as decentralized calling using P2P-DHT.")
      `(("libring" ,libring)
        ("network-manager" ,network-manager)))
     (propagated-inputs
-     `(("qtbase" ,qtbase)))     ; Qt is included in several installed headers.
+     `(("qtbase" ,qtbase-5)))     ; Qt is included in several installed headers.
     (arguments
      `(#:tests? #f                      ; There is no testsuite.
        #:configure-flags

@@ -569,7 +569,7 @@ formats, including all versions of RSS and Atom.")
        ("qttools" ,qttools)))
     (inputs
      `(("qtwebkit" ,qtwebkit)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtmultimedia" ,qtmultimedia)
        ("phonon" ,phonon)
        ("sqlite" ,sqlite)))

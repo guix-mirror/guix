@@ -57,7 +57,7 @@
        `(("sdl2" ,sdl2)))
       (propagated-inputs
        ;; 'Viewer.h' includes 'QGLWidget'.
-       `(("qtbase" ,qtbase)                ;the viewer module needs Qt5 + MESA
+       `(("qtbase" ,qtbase-5)                ;the viewer module needs Qt5 + MESA
          ("mesa" ,mesa)))
       (synopsis "Robot simulator")
       (description
@@ -107,7 +107,7 @@ hundred times faster than real-time.")
        `(("dashel" ,dashel)
          ("enki" ,enki)
          ("protobuf" ,protobuf-3.5)               ;for logging
-         ("qtbase" ,qtbase)
+         ("qtbase" ,qtbase-5)
          ("qtsvg" ,qtsvg)
          ("qttools" ,qttools)              ;for libQt5Help, needed by "studio"
          ("qtwebkit" ,qtwebkit)

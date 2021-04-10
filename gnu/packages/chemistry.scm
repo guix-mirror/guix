@@ -80,7 +80,7 @@
        ("molequeue" ,molequeue)
        ("python" ,python)
        ("spglib" ,spglib)
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (arguments
      '(#:configure-flags (list "-DENABLE_TESTING=ON"
                                (string-append "-DSPGLIB_INCLUDE_DIR="
@@ -116,7 +116,7 @@ bioinformatics, materials science, and related areas.")
      `(("avogadrolibs" ,avogadrolibs)
        ("hdf5" ,hdf5)
        ("molequeue" ,molequeue)
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     ;; TODO: Enable tests with "-DENABLE_TESTING" configure flag.
     (arguments
      '(#:tests? #f))
@@ -301,7 +301,7 @@ biological structures.")
          "1w1fgxzqrb5yxvpmnc3c9ymnvixy0z1nfafkd9whg9zw8nbgl998"))))
     (build-system cmake-build-system)
     (inputs
-     `(("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase-5)))
     (arguments
      '(#:configure-flags '("-DENABLE_TESTING=ON")
        #:phases

@@ -98,7 +98,7 @@
                 "10c5xs5shk0dcshpdxg564ay5y8hgmvfvmlhmhjf0dy79kcah3c3"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("qtbase" ,qtbase))) ; For tests (needs qmake)
+     `(("qtbase" ,qtbase-5))) ; For tests (needs qmake)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -165,7 +165,7 @@ common build settings used in software produced by the KDE community.")
        ("pkg-config" ,pkg-config)
        ("qttools" ,qttools)))
     (inputs
-     `(("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase-5)))
     (arguments
      `(#:configure-flags
        '("-DCMAKE_CXX_FLAGS=-fPIC"
@@ -204,9 +204,9 @@ common build settings used in software produced by the KDE community.")
        ("pkg-config" ,pkg-config)
        ("qttools" ,qttools)))
     (inputs
-     `(("qtbase" ,qtbase)
+     `(("qtbase" ,qtbase-5)
        ("phonon" ,phonon)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtx11extras" ,qtx11extras)
        ("gstreamer" ,gstreamer)
        ("gst-plugins-base" ,gst-plugins-base)
@@ -252,7 +252,7 @@ Phonon-GStreamer is a backend based on the GStreamer multimedia library.")
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
     (inputs
-     `(("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase-5)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Open Collaboration Service client library")
     (description "Attica is a Qt library that implements the Open
@@ -286,7 +286,7 @@ http://freedesktop.org/wiki/Specifications/open-collaboration-services/")
        ("extra-cmake-modules" ,extra-cmake-modules)))
     (inputs
      ;; TODO: qtdeclarative (yields one failing test)
-     `(("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase-5)))
     (arguments
      `(#:configure-flags
        (list (string-append
@@ -319,7 +319,7 @@ Bluetooth stack.  It is used by the KDE Bluetooth stack, BlueDevil.")
        ("fdupes" ,fdupes)
        ("libxml2" ,libxml2)))
     (inputs
-     `(("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase-5)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Default KDE Plasma 5 icon theme")
     (description "Breeze provides a freedesktop.org compatible icon theme.
@@ -356,7 +356,7 @@ It is the default icon theme for the KDE Plasma 5 desktop.")
        ("python-jinja2" ,python-jinja2)
        ("python-pyyaml" ,python-pyyaml)))
     (inputs
-     `(("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase-5)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "KDE Doxygen Tools")
     (description "This framework contains scripts and data for building API
@@ -389,7 +389,7 @@ documentation.")
      `(("extra-cmake-modules" ,extra-cmake-modules)))
     (inputs
      `(("bzip2" ,bzip2)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("xz" ,xz)
        ("zlib" ,zlib)))
     (home-page "https://community.kde.org/Frameworks")
@@ -425,7 +425,7 @@ GZip format, via a subclass of QIODevice.")
        ("tzdata" ,tzdata-for-tests)))
     (inputs
      `(("libical" ,libical)
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -485,7 +485,7 @@ and the older vCalendar.")
        ("gperf" ,gperf)
        ("qttools" ,qttools)))
     (inputs
-     `(("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase-5)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "String encoding and manipulating library")
     (description "KCodecs provide a collection of methods to manipulate
@@ -523,7 +523,7 @@ Internet).")
        ("qttools" ,qttools)
        ("xorg-server" ,xorg-server-for-tests)))
     (inputs
-     `(("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase-5)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -588,7 +588,7 @@ propagate their changes to their respective configuration files.")
        ;; TODO: FAM: File alteration notification http://oss.sgi.com/projects/fam
        ("xorg-server" ,xorg-server-for-tests))) ; for the tests
     (inputs
-     `(("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase-5)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -644,7 +644,7 @@ many more.")
        ("dbus" ,dbus)
        ("qttools" ,qttools)))
     (inputs
-     `(("qtbase" ,qtbase)
+     `(("qtbase" ,qtbase-5)
        ("qtx11extras" ,qtx11extras)
        ("kinit" ,kinit-bootstrap))) ;; kinit-bootstrap: kinit package which does not depend on kdbusaddons.
     (arguments
@@ -688,7 +688,7 @@ as well as an API to create KDED modules.")
        ("qttools" ,qttools)))
     (inputs
      `(("avahi" ,avahi) ; alternativly dnssd could be used
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Network service discovery using Zeroconf")
     (description "KDNSSD is a library for handling the DNS-based Service
@@ -711,7 +711,7 @@ infrastructure.")
                 "1h6pgg89gvxl8gw7wmkabyqqrzad5pxyv5lsmn1fl4ir8lcc5q2l"))))
     (build-system cmake-build-system)
     (inputs
-     `(("qtbase" ,qtbase)
+     `(("qtbase" ,qtbase-5)
        ("boost" ,boost)
        ("graphviz" ,graphviz)
        ("kiconthemes" ,kiconthemes)
@@ -749,7 +749,7 @@ replace the other outdated Graphviz tools.")
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("qtbase" ,qtbase)
+     `(("qtbase" ,qtbase-5)
        ("qtx11extras" ,qtx11extras)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Utilities for graphical user interfaces")
@@ -784,7 +784,7 @@ interfaces in the areas of colors, fonts, text, images, keyboard input.")
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("qttools" ,qttools)))
     (inputs
-     `(("qtbase" ,qtbase)
+     `(("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)))
     (home-page "https://invent.kde.org/frameworks/kholidays")
     (synopsis "Library for regional holiday information")
@@ -812,7 +812,7 @@ other special events for a geographical region.")
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
     (inputs
-     `(("qtbase" ,qtbase)
+     `(("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)
        ("qtscript" ,qtscript)))
     (arguments
@@ -854,7 +854,7 @@ translation scripting.")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("libxscrnsaver" ,libxscrnsaver) ; X-Screensaver based poller, fallback mode
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtx11extras" ,qtx11extras)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Reporting of idle time of user and system")
@@ -889,7 +889,7 @@ or user activity.")
        ;; TODO: Find a way to activate this optional include without
        ;; introducing a recursive dependency.
        ;;("plasma-frameworks" ,plasma-framework) ;; Tier 3!
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)
        ("qtquickcontrols2" ,qtquickcontrols2)
        ("qtsvg" ,qtsvg)
@@ -919,7 +919,7 @@ of applications that follow the Kirigami Human Interface Guidelines.")
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
     (inputs
-     `(("qtbase" ,qtbase)
+     `(("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Set of item models extending the Qt model-view framework")
@@ -971,7 +971,7 @@ model to observers
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("qttools" ,qttools)))
     (inputs
-     `(("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase-5)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Set of item views extending the Qt model-view framework")
     (description "KItemViews includes a set of views, which can be used with
@@ -997,7 +997,7 @@ to flat and hierarchical lists.")
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("qttools" ,qttools)))
     (inputs
-     `(("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase-5)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Data plotting library")
     (description "KPlotWidget is a QWidget-derived class that provides a virtual
@@ -1028,7 +1028,7 @@ pixel units.")
        ;; Optional, for compile-time validation of syntax definition files:
        ("qtxmlpatterns" ,qtxmlpatterns)))
     (inputs
-     `(("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase-5)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1074,7 +1074,7 @@ integration with a custom editor as well as a ready-to-use
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("qtbase" ,qtbase)
+     `(("qtbase" ,qtbase-5)
        ("qtwayland" ,qtwayland)
        ("wayland" ,wayland)
        ("wayland-protocols" ,wayland-protocols)))
@@ -1116,7 +1116,7 @@ represented by a QPoint or a QSize.")
        ("qttools" ,qttools)
        ("xorg-server" ,xorg-server-for-tests)))
     (inputs
-     `(("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase-5)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1157,7 +1157,7 @@ configuration pages, message boxes, and password requests.")
        ("xorg-server" ,xorg-server-for-tests))) ; for the tests
     (inputs
      `(("libxrender" ,libxrender)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtx11extras" ,qtx11extras)
        ("xcb-utils-keysyms" ,xcb-util-keysyms)
        ("xcb-util-wm" ,xcb-util-wm)))
@@ -1219,7 +1219,7 @@ lower level classes for interaction with the X Windowing System.")
      ;; Headers contain #include <ModemManager/ModemManager.h>
      `(("modem-manager" ,modem-manager)))
     (inputs
-     `(("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase-5)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1258,7 +1258,7 @@ messages.")
      ;;                 #include <libnm/NetworkManager.h>
      `(("network-manager" ,network-manager)))
     (inputs
-     `(("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase-5)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1292,7 +1292,7 @@ which are used in DBus communication.")
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("fdupes" ,fdupes)))
     (inputs
-     `(("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase-5)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Oxygen provides the standard icon theme for the KDE desktop")
     (description "Oxygen icon theme for the KDE desktop")
@@ -1317,7 +1317,7 @@ which are used in DBus communication.")
     (inputs
      `(("libdmtx" ,libdmtx)
        ("qrencode" ,qrencode)
-       ("qtbase" ,qtbase))) ;; TODO: rethink: nix propagates this
+       ("qtbase" ,qtbase-5))) ;; TODO: rethink: nix propagates this
     (home-page "https://api.kde.org/frameworks/prison/html/index.html")
     (synopsis "Barcode generation abstraction layer")
     (description "Prison is a Qt-based barcode abstraction layer/library and
@@ -1343,7 +1343,7 @@ provides uniform access to generation of barcodes with data.")
      `(("glib" ,glib)
        ("pulseaudio" ,pulseaudio)
        ("qtdeclarative" ,qtdeclarative)
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (home-page "https://invent.kde.org/libraries/pulseaudio-qt/")
     (synopsis "Qt bindings for PulseAudio")
     (description
@@ -1378,7 +1378,7 @@ libpulse.")
        ("kcoreaddons" ,kcoreaddons)
        ("kiconthemes" ,kiconthemes) ; optional
        ("kirigami" ,kirigami)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)
        ("qtquickcontrols2" ,qtquickcontrols2)))
     (home-page "https://community.kde.org/Frameworks")
@@ -1417,7 +1417,7 @@ feel.")
        ("flex" ,flex)
        ("qttools" ,qttools)))
     (inputs
-     `(("qtbase" ,qtbase)
+     `(("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)
        ("udev" ,eudev)))
     ;; TODO: Add runtime-only dependency MediaPlayerInfo
@@ -1449,7 +1449,7 @@ system.")
     (inputs
      `(("hunspell" ,hunspell)
        ;; TODO: hspell (for Hebrew), Voikko (for Finish)
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Multi-language spell checker")
     (description "Sonnet is a plugin-based spell checking library for Qt-based
@@ -1474,7 +1474,7 @@ ASpell and HUNSPELL.")
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
     (inputs
-     `(("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase-5)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Helper for multithreaded programming")
     (description "ThreadWeaver is a helper for multithreaded programming.  It
@@ -1519,7 +1519,7 @@ uses a job-based interface to queue tasks and execute them in an efficient way."
        ("kwidgetsaddons" ,kwidgetsaddons)
        ("kwindowsystem" ,kwindowsystem)
        ("kxmlgui" ,kxmlgui)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)
        ("solid" ,solid)))
     (home-page "https://community.kde.org/Frameworks")
@@ -1553,7 +1553,7 @@ with other frameworks.")
     (inputs
      `(("kcoreaddons" ,kcoreaddons)
        ("polkit-qt" ,polkit-qt)
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1599,7 +1599,7 @@ utilities.")
     (inputs
      `(("kconfig" ,kconfig)
        ("kwidgetsaddons" ,kwidgetsaddons)
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Powerful autocompletion framework and widgets")
     (description "This framework helps implement autocompletion in Qt-based
@@ -1625,7 +1625,7 @@ integrated it into your application's other widgets.")
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("xorg-server" ,xorg-server))) ; for the tests
     (inputs
-     `(("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase-5)))
     (propagated-inputs
      `(;; As required by KF5ContactsConfig.cmake.
        ("kcodecs" ,kcodecs)
@@ -1672,7 +1672,7 @@ localized country name to ISO 3166-1 alpha 2 code mapping and vice verca.
     (inputs
      `(("kcoreaddons" ,kcoreaddons)
        ("kwindowsystem" ,kwindowsystem)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtx11extras" ,qtx11extras)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Graceful handling of application crashes")
@@ -1705,7 +1705,7 @@ application crashes.")
        ("libxslt" ,libxslt)
        ("perl" ,perl)
        ("perl-uri" ,perl-uri)
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1775,7 +1775,7 @@ from DocBook files.")
        ("kcoreaddons" ,kcoreaddons)
        ("ki18n" ,ki18n)
        ("qtmultimedia" ,qtmultimedia)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ;; Required run-time packages
        ("catdoc" ,catdoc)
        ;; Optional run-time packages
@@ -1811,7 +1811,7 @@ by applications to write metadata.")
     (inputs
      `(("karchive" ,karchive) ; for Krita and OpenRaster images
        ("openexr" ,openexr) ; for OpenEXR high dynamic-range images
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1865,7 +1865,7 @@ formats.")
     (inputs
      `(("kcoreaddons" ,kcoreaddons)
        ("kwidgetsaddons" ,kwidgetsaddons)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtx11extras" ,qtx11extras)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Widgets for showing progress of asynchronous jobs")
@@ -1897,7 +1897,7 @@ asynchronous jobs.")
        ("kcoreaddons" ,kcoreaddons)
        ("kwindowsystem" ,kwindowsystem)
        ("phonon" ,phonon)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtspeech" ,qtspeech)
        ;; TODO: Think about adding dbusmenu-qt5 from
        ;; https://launchpad.net/libdbusmenu-qt
@@ -1945,7 +1945,7 @@ covers feedback and persistent events.")
        ("kcoreaddons" ,kcoreaddons)
        ("kdoctools" ,kdoctools)
        ("ki18n" ,ki18n)
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -2001,7 +2001,7 @@ were traditional plugins.")
      `(("kcoreaddons" ,kcoreaddons)
        ("ki18n" ,ki18n)
        ;; TODO: utempter, for managing UTMP entries
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (arguments
      `(#:tests? #f ; FIXME: 1/1 tests fail.
        #:phases
@@ -2046,7 +2046,7 @@ and communicating with them using a pty.")
      `(("extra-cmake-modules" ,extra-cmake-modules)))
     (inputs
      `(("ki18n" ,ki18n)
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Converting physical units")
     (description "KUnitConversion provides functions to convert values in
@@ -2073,7 +2073,7 @@ gallons).")
      `(("extra-cmake-modules" ,extra-cmake-modules)))
     (inputs
      `(("kcodecs" ,kcodecs)
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "RSS/Atom parser library")
     (description "@code{syndication} supports RSS (0.9/1.0, 0.91..2.0) and
@@ -2123,7 +2123,7 @@ between feed formats.")
        ("kwidgetsaddons" ,kwidgetsaddons)
        ("kxmlgui" ,kxmlgui)
        ("lmdb" ,lmdb)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)
        ("solid" ,solid)))
     (arguments
@@ -2182,7 +2182,7 @@ maintaining an index of the contents of your files.")
      `(("boost" ,boost)
        ("kactivities" ,kactivities)
        ("kconfig" ,kconfig)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Access usage statistics collected by the activity manager")
@@ -2219,7 +2219,7 @@ by which applications, and what documents have been linked to which activity.")
        ("kcoreaddons" ,kcoreaddons)
        ("kiconthemes" ,kiconthemes)
        ("kxmlgui" ,kxmlgui)
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -2281,7 +2281,7 @@ using the XBEL format.")
        ("kpackage" ,kpackage)
        ("kwidgetsaddons" ,kwidgetsaddons)
        ("kxmlgui" ,kxmlgui)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Utilities for KDE System Settings modules")
@@ -2316,7 +2316,7 @@ KCModules can be created with the KConfigWidgets framework.")
        ("kguiaddons" ,kguiaddons)
        ("ki18n" ,ki18n)
        ;; todo: PythonModuleGeneration
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qttools" ,qttools)))
     (arguments
      `(#:phases
@@ -2376,7 +2376,7 @@ their settings.")
        ("kwindowsystem" ,kwindowsystem)
        ("kxmlgui" ,kxmlgui)
        ("libepoxy" ,libepoxy)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)
        ("solid" ,solid)))
     (arguments
@@ -2423,7 +2423,7 @@ that offer bindings to some of the Frameworks.")
        ("kdoctools" ,kdoctools)
        ("kinit" ,kinit)
        ("kservice" ,kservice)
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Central daemon of KDE work spaces")
     (description "KDED stands for KDE Daemon.  KDED runs in the background and
@@ -2453,7 +2453,7 @@ started on demand.")
      `(("kconfig" ,kconfig)
        ("kcoreaddons" ,kcoreaddons)
        ("kdoctools" ,kdoctools)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ;; optional:
        ("kcompletion" ,kcompletion)
        ("kconfigwidgets" ,kconfigwidgets)
@@ -2498,7 +2498,7 @@ ini-style description files.")
        ("kcoreaddons" ,kcoreaddons)
        ("ki18n" ,ki18n)
        ("kservice" ,kservice)
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "User interface for running shell commands with root privileges")
     (description "KDESU provides functionality for building GUI front ends for
@@ -2531,7 +2531,7 @@ with su and ssh respectively.")
        ("kparts" ,kparts)
        ("kservice" ,kservice)
        ("kwallet" ,kwallet)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtwebkit" ,qtwebkit)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "KDE Integration for QtWebKit")
@@ -2561,7 +2561,7 @@ engine WebKit via QtWebKit.")
      `(("karchive" ,karchive)
        ("kconfig" ,kconfig)
        ("kcoreaddons" ,kcoreaddons)
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -2605,7 +2605,7 @@ emoticons coming from different providers.")
        ("kservice" ,kservice)
        ("kwindowsystem" ,kwindowsystem)
        ("libxcb" ,libxcb)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtx11extras" ,qtx11extras)
        ("xcb-util-keysyms" ,xcb-util-keysyms)))
     (home-page "https://community.kde.org/Frameworks")
@@ -2643,7 +2643,7 @@ window does not need focus for them to be activated.")
        ("ki18n" ,ki18n)
        ("kitemviews" ,kitemviews)
        ("kwidgetsaddons" ,kwidgetsaddons)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtsvg" ,qtsvg)))
     (arguments
      `(#:phases
@@ -2721,7 +2721,7 @@ in applications using the KDE Frameworks.")
        ("kxmlgui" ,kxmlgui)
        ("libcap" ,libcap) ; to install start_kdeinit with CAP_SYS_RESOURCE
        ("plasma-framework" ,plasma-framework)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("solid" ,solid)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Library to speed up start of applications on KDE workspaces")
@@ -2781,7 +2781,7 @@ consumption.")
        ("kwidgetsaddons" ,kwidgetsaddons)
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtscript" ,qtscript)
        ("qtx11extras" ,qtx11extras)
        ("sonnet" ,sonnet)))
@@ -2863,7 +2863,7 @@ KIO enabled infrastructure.")
        ("kjobwidgets" ,kjobwidgets)
        ("ktextwidgets" ,ktextwidgets)
        ("kwidgetsaddons" ,kwidgetsaddons)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)
        ("solid" ,solid)
        ("sonnet" ,sonnet)))
@@ -2916,7 +2916,7 @@ specification.")
        ("kwidgetsaddons" ,kwidgetsaddons)
        ("kxmlgui" ,kxmlgui)
        ("phonon" ,phonon)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("solid" ,solid)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Configuration dialog for desktop notifications")
@@ -2970,7 +2970,7 @@ notifications which can be embedded in your application.")
        ("kjobwidgets" ,kjobwidgets)
        ("kservice" ,kservice)
        ("kwidgetsaddons" ,kwidgetsaddons)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("solid" ,solid)
        ("sonnet" ,sonnet)))
     (home-page "https://community.kde.org/Frameworks")
@@ -3002,7 +3002,7 @@ widgets with a user-interface defined in terms of actions.")
        ("ki18n" ,ki18n)
        ("kservice" ,kservice)
        ("kwidgetsaddons" ,kwidgetsaddons)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)))
     (arguments
      `(#:tests? #f)) ; FIXME: 1/3 tests fail.
@@ -3053,7 +3053,7 @@ to easily extend the contacts collection.")
        ("kwidgetsaddons" ,kwidgetsaddons)
        ("kwindowsystem" ,kwindowsystem)
        ("kxmlgui" ,kxmlgui)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)
        ("solid" ,solid)
        ("threadweaver" ,threadweaver)))
@@ -3117,7 +3117,7 @@ typed.")
        ("kdbusaddons" ,kdbusaddons)
        ("kdoctools" ,kdoctools)
        ("ki18n" ,ki18n)
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (arguments
      `(#:tests? #f ; FIXME: 6/10 tests fail.
        #:phases
@@ -3192,7 +3192,7 @@ types or handled by application specific code.")
        ("kxmlgui" ,kxmlgui)
        ("libgit2" ,libgit2)
        ("perl" ,perl)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)
        ("qtscript" ,qtscript)
        ("qtxmlpatterns" ,qtxmlpatterns)
@@ -3262,7 +3262,7 @@ library.")
        ("kservice" ,kservice)
        ("kwidgetsaddons" ,kwidgetsaddons)
        ("kwindowsystem" ,kwindowsystem)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtspeech" ,qtspeech)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Text editing widgets")
@@ -3305,7 +3305,7 @@ It supports rich text as well as plain text.")
        ("libgcrypt" ,libgcrypt)
        ("phonon" ,phonon)
        ("qgpgme" ,qgpgme)
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Safe desktop-wide storage for passwords")
     (description "This framework contains an interface to KWallet, a safe
@@ -3345,7 +3345,7 @@ the passwords on KDE work spaces.")
        ("ktextwidgets" ,ktextwidgets)
        ("kwidgetsaddons" ,kwidgetsaddons)
        ("kwindowsystem" ,kwindowsystem)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("sonnet" ,sonnet)))
     (arguments
      `(#:tests? #f ; FIXME: 1/5 tests fail.
@@ -3398,7 +3398,7 @@ descriptions for integrating actions from plugins.")
        ("kservice" ,kservice)
        ("kwidgetsaddons" ,kwidgetsaddons)
        ("kxmlgui" ,kxmlgui)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("solid" ,solid)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "XML-RPC client")
@@ -3457,7 +3457,7 @@ setUrl, setUserAgent and call.")
        ("kwindowsystem" ,kwindowsystem)
        ("kxmlgui" ,kxmlgui)
        ("phonon" ,phonon)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)
        ("qtquickcontrols2" ,qtquickcontrols2)
        ("qtsvg" ,qtsvg)
@@ -3504,7 +3504,7 @@ script engines.")
        ("ki18n" ,ki18n)
        ("kio" ,kio)
        ("kirigami" ,kirigami)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)))
     (arguments
      `(#:tests? #f  ;; seem to require network; don't find QTQuick components
@@ -3582,7 +3582,7 @@ need.")
        ("knotificantions" ,knotifications)
        ("kpackage" ,kpackage)
        ("kwidgetsaddons" ,kwidgetsaddons)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtx11extras" ,qtx11extras)))
     (arguments
      `(#:phases
@@ -3656,7 +3656,7 @@ workspace.")
        ("ktextwidgets" ,ktextwidgets)
        ("kunitconversion" ,kunitconversion)
        ("kwindowsystem" ,kwindowsystem)
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (inputs
      `(("kcompletion" ,kcompletion)
        ("kconfig" ,kconfig)
@@ -3764,7 +3764,7 @@ http://community.kde.org/Frameworks/Porting_Notes should help with this.")
        ("libpng" ,libpng)
        ("openssl" ,openssl)
        ("phonon" ,phonon)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtx11extras" ,qtx11extras)
        ("sonnet" ,sonnet)))
     (home-page "https://community.kde.org/Frameworks")
@@ -3798,7 +3798,7 @@ technology and using KJS for JavaScript support.")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("pcre" ,pcre)
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "KDE Frameworks 5 support for Javascript scripting in Qt
 applications")
@@ -3831,7 +3831,7 @@ support.")
     (inputs
      `(("ki18n" ,ki18n)
        ("kjs" ,kjs)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtsvg" ,qtsvg)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "KDE Frameworks 5 embedded Javascript engine for Qt")
@@ -3866,7 +3866,7 @@ QObjects, so you can script your applications.")
        ("kparts" ,kparts)
        ("kwidgetsaddons" ,kwidgetsaddons)
        ("kxmlgui" ,kxmlgui)
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "KDE Frameworks 5 plugin interface for media player features")
     (description "KMediaPlayer builds on the KParts framework to provide a
@@ -3903,7 +3903,7 @@ KParts instead.")
        ("kparts" ,kparts)
        ("kwidgetsaddons" ,kwidgetsaddons)
        ("kxmlgui" ,kxmlgui)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtscript" ,qtscript)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "KDE Frameworks 5 solution for application scripting")

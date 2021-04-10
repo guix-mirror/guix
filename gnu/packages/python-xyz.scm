@@ -13320,7 +13320,7 @@ ISO 8859, etc.).")
        ("python-pytest-cov" ,python-pytest-cov)
        ("python-pytest-xdist" ,python-pytest-xdist)))
     (inputs
-     `(("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase-5)))
     (propagated-inputs
      `(("python-h5py" ,python-h5py)
        ("python-numpy" ,python-numpy)
@@ -25648,7 +25648,7 @@ implementations.")
         ("swig" ,swig)))
     (inputs
       `(("python-wrapper" ,python-wrapper)
-        ("qtbase" ,qtbase)
+        ("qtbase" ,qtbase-5)
         ("libxi" ,libxi)
         ("libice" ,libice)
         ("soqt" ,soqt)

@@ -131,7 +131,7 @@
      `(("inxi" ,inxi-minimal)
        ("libdbusmenu-qt" ,libdbusmenu-qt)
        ("qca" ,qca)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtmultimedia" ,qtmultimedia)
        ("qtscript" ,qtscript)
        ("qtsvg" ,qtsvg)

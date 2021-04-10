@@ -147,7 +147,7 @@ with Microsoft Compiled HTML (CHM) files")
     (build-system python-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("qtbase" ,qtbase) ; for qmake
+       ("qtbase" ,qtbase-5) ; for qmake
        ("python-flake8" ,python-flake8)
        ("python-pyqt-builder" ,python-pyqt-builder)
        ("xdg-utils" ,xdg-utils)))

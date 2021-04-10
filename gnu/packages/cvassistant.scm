@@ -69,7 +69,7 @@
          (replace 'configure
            (lambda _ (invoke "qmake"))))))
     (inputs
-     `(("qtbase" ,qtbase)
+     `(("qtbase" ,qtbase-5)
        ("quazip" ,quazip)
        ("zlib" ,zlib)))
     (home-page "https://cvassistant.sourceforge.io/")

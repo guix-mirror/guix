@@ -650,7 +650,7 @@ scripts/input/X11/C/Shell/HTML/Dired): 49KB.
        ("qttools" ,qttools)))           ; for lrelease
     (inputs
      `(("hunspell" ,hunspell)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)
        ("qtmultimedia" ,qtmultimedia)
        ("qtquickcontrols" ,qtquickcontrols)
@@ -856,7 +856,7 @@ editors.")
        ("guile" ,guile-1.8)
        ("perl" ,perl)
        ("python" ,python-wrapper)
-       ("qt" ,qtbase)
+       ("qt" ,qtbase-5)
        ("qtsvg" ,qtsvg)))
     (arguments
      `(#:tests? #f                      ; no check target

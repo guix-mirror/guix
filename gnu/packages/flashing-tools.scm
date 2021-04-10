@@ -333,7 +333,7 @@ RK3036, RK3066, RK312X, RK3168, RK3188, RK3288, RK3368.")
                #t))))))
     (inputs
      `(("libusb" ,libusb)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("zlib" ,zlib)))
     (home-page "https://glassechidna.com.au/heimdall/")
     (synopsis "Flash firmware onto Samsung mobile devices")
@@ -476,7 +476,7 @@ ME as far as possible (it only edits ME firmware image files).")
                                                      "/bin"))
              #t)))))
     (inputs
-     `(("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase-5)))
     (home-page "https://github.com/LongSoft/UEFITool/")
     (synopsis "UEFI image editor")
     (description "@code{uefitool} is a graphical image file editor for

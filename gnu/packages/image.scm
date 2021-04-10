@@ -1824,7 +1824,7 @@ parsing, viewing, modifying, and saving this metadata.")
     (native-inputs
      `(("qttools" ,qttools)))
     (inputs
-     `(("qtbase" ,qtbase)
+     `(("qtbase" ,qtbase-5)
        ("qtsvg" ,qtsvg)))
     (arguments
      `(#:tests? #f))                    ;no tests

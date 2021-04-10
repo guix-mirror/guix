@@ -237,7 +237,7 @@
              #t)))))
     (inputs
      `(("http-parser" ,http-parser)
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (home-page "https://github.com/azadkuh/qhttp/")
     (synopsis "Qt-based HTTP Library")
     (description
@@ -1125,7 +1125,7 @@ project)
          (add-before 'check 'render-offscreen
            (lambda _ (setenv "QT_QPA_PLATFORM" "offscreen") #t)))))
     (inputs
-     `(("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase-5)))
     (home-page "http://qjson.sourceforge.net")
     (synopsis "Library that maps JSON data to QVariant objects")
     (description "QJson is a Qt-based library that maps JSON data to
@@ -1150,7 +1150,7 @@ instances, while JSON's objects will be mapped to @code{QVariantMap}.")
     (build-system gnu-build-system)
     (inputs
      `(("qca" ,qca)
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (arguments
      '(#:tests? #f                      ;FIXME: some tests are failing
        #:phases
@@ -8157,7 +8157,7 @@ It contains the code shared by all Kiwix ports.")
        ("libmicrohttpd" ,libmicrohttpd)
        ("libzim" ,libzim)
        ("pugixml" ,pugixml)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)
        ("qtwebchannel" ,qtwebchannel)
        ("qtwebengine" ,qtwebengine)
@@ -8166,7 +8166,7 @@ It contains the code shared by all Kiwix ports.")
        ("zstd" ,zstd "lib")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("qmake" ,qtbase)))
+       ("qmake" ,qtbase-5)))
     (home-page "https://wiki.kiwix.org/wiki/Software")
     (synopsis "Viewer and manager of ZIM files")
     (description "Kiwix Desktop allows you to enjoy a lot of different content

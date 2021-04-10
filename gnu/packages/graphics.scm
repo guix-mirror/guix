@@ -1500,7 +1500,7 @@ exec -a \"$0\" ~a/.brdf-real~%"
       (native-inputs
        `(("qttools" ,qttools))) ;for 'qmake'
       (inputs
-       `(("qtbase" ,qtbase)
+       `(("qtbase" ,qtbase-5)
          ("mesa" ,mesa)
          ("glew" ,glew)
          ("freeglut" ,freeglut)
@@ -1936,7 +1936,7 @@ Automated palette selection is supported.")
          ("libvpx" ,libvpx)
          ("libxi" ,libxi)
          ;; ("miniupnpc" ,miniupnpc) ;segfaults for some reason
-         ("qtbase" ,qtbase)
+         ("qtbase" ,qtbase-5)
          ("qtkeychain" ,qtkeychain)
          ("qtmultimedia" ,qtmultimedia)
          ("qtsvg" ,qtsvg)

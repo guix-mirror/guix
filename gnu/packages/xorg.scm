@@ -6518,7 +6518,7 @@ and embedded platforms.")
   (package/inherit uim
     (name "uim-qt")
     (inputs
-     `(("qt" ,qtbase)
+     `(("qt" ,qtbase-5)
        ("qtx11extras" ,qtx11extras)
        ,@(package-inputs uim)))
     (arguments

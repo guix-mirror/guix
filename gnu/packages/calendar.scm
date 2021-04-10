@@ -347,7 +347,7 @@ and ruby.  It includes two illustrative command-line programs, @code{hcal} and
     (native-inputs
      `(("perl" ,perl))) ; pod2man
     (inputs
-     `(("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase-5)))
     (home-page "https://www.toastfreeware.priv.at/confclerk")
     (synopsis "Offline conference schedule application")
     (description

@@ -149,7 +149,7 @@ sharing) to clients via USB, ethernet, WiFi, cellular and Bluetooth.")
        (sha256
         (base32 "0jn12wxwjznady6aniwmvahg1dj25p902sdwj0070biv6vx5c7dq"))))
     (inputs
-     `(("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase-5)))
     (native-inputs
      `(("qttools" ,qttools)))
     (build-system gnu-build-system)

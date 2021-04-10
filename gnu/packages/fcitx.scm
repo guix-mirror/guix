@@ -88,7 +88,7 @@
        ("libintl" ,intltool)
        ("libxkbcommon" ,libxkbcommon)))
     (propagated-inputs
-     `(("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase-5)))
     (synopsis "Fcitx Qt5 Input Context")
     (description "This package provides a Qt5 frontend for fcitx.")
     (home-page "https://github.com/fcitx/fcitx-qt5/")
