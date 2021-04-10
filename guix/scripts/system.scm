@@ -1145,7 +1145,7 @@ Some ACTIONS support additional ARGS.\n"))
   "Return the verbosity level based on OPTS, the alist of parsed options."
   (or (assoc-ref opts 'verbosity)
       (if (eq? (assoc-ref opts 'action) 'build)
-          2 1)))
+          3 1)))
 
 
 ;;;
