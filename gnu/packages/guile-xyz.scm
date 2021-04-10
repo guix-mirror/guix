@@ -36,6 +36,7 @@
 ;;; Copyright © 2021 Bonface Munyoki Kilyungi <me@bonfacemunyoki.com>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;; Copyright © 2021 Leo Le Bouter <lle-bout@zaclys.net>
+;;; Copyright © 2021 Zelphir Kaltstahl <zelphirkaltstahl@posteo.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4665,3 +4666,27 @@ properties inspired by ghc-quickcheck.  You can use it to express properties,
 which functions should satisfy, as Scheme code and then check whether they hold
 in a large number of randomly generated test cases.")
     (license license:gpl3+)))
+
+(define-public guile-fslib
+  (package
+    (name "guile-fslib")
+    (version "0.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://notabug.org/ZelphirKaltstahl/guile-fslib/")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "118d84p443w7hrslv8hjyhgws631ia08mggiyklkmk0b9plfdsvz"))))
+    (build-system guile-build-system)
+    (inputs
+     `(("guile" ,guile-3.0)))
+    (home-page "https://notabug.org/ZelphirKaltstahl/guile-fslib")
+    (synopsis "Helper functions for working with locations in file systems")
+    (description
+     "This package contains helper functions for working with file system
+locations.")
+    (license license:agpl3+)))
