@@ -19,7 +19,7 @@
 ;;; Copyright © 2020 TomZ <tomz@freedommail.ch>
 ;;; Copyright © 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
-;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
@@ -553,8 +553,154 @@ system, and the core design of Django is reused in Grantlee.")
 developers using C++ or QML, a CSS & JavaScript like language.")
     (license (list license:lgpl2.1 license:lgpl3))))
 
-;; qt used to refer to the monolithic Qt 5.x package
-(define-deprecated qt qtbase)
+(define-public qtbase
+  (package/inherit qtbase-5
+    (name "qtbase")
+    (version "6.1.1")
+    (source (origin
+              (inherit (package-source qtbase-5))
+              (uri (qt5-urls name version))
+              (sha256
+               (base32
+                "1wizrfiw6h8bk99brbdpdli40vsk6yqchs66f1r083hp0ygsma11"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; corelib uses bundled harfbuzz, md4, md5, sha3
+               '(with-directory-excursion "src/3rdparty"
+                  (for-each delete-file-recursively
+                            ;; The bundled pcre2 copy is kept, as its headers
+                            ;; are required by some internal bootstrap target
+                            ;; used for the tools.
+                            (list "double-conversion" "freetype" "harfbuzz-ng"
+                                  "libpng" "libjpeg" "sqlite" "xcb" "zlib"))))))
+    (build-system cmake-build-system)
+    (arguments
+     (substitute-keyword-arguments (package-arguments qtbase-5)
+       ;; XXX: There are many test failures, because the test suite
+       ;; requires a real X server (a virtual one such as Xvfb is not
+       ;; enough) or a functional network.  It's also quite expensive to
+       ;; build and run.
+       ((#:tests? _ #f) #f)
+       ;; ((#:cmake _)
+       ;;  cmake)                          ;requires a CMake >= 3.18.4
+       ((#:configure-flags _ ''())
+        `(let ((out (assoc-ref %outputs "out")))
+           (list "-GNinja"              ;the build fails otherwise
+                 (string-append "-DINSTALL_ARCHDATADIR=" out "/lib/qt6")
+                 (string-append "-DINSTALL_DATADIR=" out "/share/qt6")
+                 (string-append "-DINSTALL_DOCDIR=" out "/share/doc/qt6")
+                 (string-append "-DINSTALL_MKSPECSDIR=" out "/lib/qt6/mkspecs")
+                 (string-append "-DINSTALL_EXAMPLESDIR=" out
+                                "/share/doc/qt6/examples")
+                 (string-append "-DINSTALL_INCLUDEDIR=" out "/include/qt6")
+                 ;; Link with DBus and OpenSSL so they don't get dlopen'ed.
+                 "-DINPUT_dbus=linked"
+                 "-DINPUT_openssl=linked"
+                 ;; These features require higher versions of Linux than the
+                 ;; minimum version of the glibc.  See
+                 ;; src/corelib/global/minimum-linux_p.h.  By disabling these
+                 ;; features Qt applications can be used on the oldest kernels
+                 ;; that the glibc supports, including the RHEL6 (2.6.32) and
+                 ;; RHEL7 (3.10) kernels.
+                 "-DFEATURE_getentropy=OFF" ; requires Linux 3.17
+                 "-DFEATURE_renameat2=OFF"  ; requires Linux 3.16
+                 ;; Most system libraries are used by default, except in some
+                 ;; cases such as for those below.
+                 "-DFEATURE_system_pcre2=ON"
+                 "-DFEATURE_system_sqlite=ON"
+                 ;; Don't use the precompiled headers.
+                 "-DBUILD_WITH_PCH=OFF"
+                 ;; Drop special machine instructions that do not have runtime
+                 ;; detection.
+                 ,@(if (string-prefix? "x86_64"
+                                       (or (%current-target-system)
+                                           (%current-system)))
+                       '()              ;implicitly enabled
+                       '("-DFEATURE_sse2=OFF"
+                         "-DFEATURE_sse3=OFF"
+                         "-DFEATURE_ssse3=OFF"
+                         "-DFEATURE_sse4_1=OFF"
+                         "-DFEATURE_sse4_2=OFF"))
+                 "-DFEATURE_mips_dsp=OFF"
+                 "-DFEATURE_mips_dspr2=OFF")))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (delete 'patch-bin-sh)
+           (delete 'patch-xdg-open)
+           (add-after 'patch-paths 'patch-more-paths
+             (lambda _
+               (substitute* "src/gui/platform/unix/qgenericunixservices.cpp"
+                 (("\"xdg-open\"")
+                  (format #f "~s" (which "xdg-open"))))
+               (substitute* '("mkspecs/features/qt_functions.prf"
+                              "qmake/library/qmakebuiltins.cpp")
+                 (("/bin/sh")
+                  (which "sh")))))
+           (replace 'configure
+             (assoc-ref %standard-phases 'configure))
+           (replace 'build
+             (lambda* (#:key parallel-build? #:allow-other-keys)
+               (apply invoke "cmake" "--build" "."
+                      (if parallel-build?
+                          `("--parallel" ,(number->string (parallel-job-count)))
+                          '()))))
+           (replace 'install
+             (lambda _
+               (invoke "cmake" "--install" ".")))
+           (replace 'patch-mkspecs
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (archdata (string-append out "/lib/qt6"))
+                      (mkspecs (string-append archdata "/mkspecs"))
+                      (qt_config.prf (string-append
+                                      mkspecs "/features/qt_config.prf")))
+                 ;; For each Qt module, let `qmake' uses search paths in the
+                 ;; module directory instead of all in QT_INSTALL_PREFIX.
+                 (substitute* qt_config.prf
+                   (("\\$\\$\\[QT_INSTALL_HEADERS\\]")
+                    "$$clean_path($$replace(dir, mkspecs/modules, ../../include/qt6))")
+                   (("\\$\\$\\[QT_INSTALL_LIBS\\]")
+                    "$$clean_path($$replace(dir, mkspecs/modules, ../../lib))")
+                   (("\\$\\$\\[QT_HOST_LIBS\\]")
+                    "$$clean_path($$replace(dir, mkspecs/modules, ../../lib))")
+                   (("\\$\\$\\[QT_INSTALL_BINS\\]")
+                    "$$clean_path($$replace(dir, mkspecs/modules, ../../bin))"))
+
+                 ;; Searches Qt tools in the current PATH instead of QT_HOST_BINS.
+                 (substitute* (string-append mkspecs "/features/qt_functions.prf")
+                   (("cmd = \\$\\$\\[QT_HOST_BINS\\]/\\$\\$2")
+                    "cmd = $$system(which $${2}.pl 2>/dev/null || which $${2})"))
+
+                 ;; Resolve qmake spec files within qtbase by absolute paths.
+                 (substitute*
+                     (map (lambda (file)
+                            (string-append mkspecs "/features/" file))
+                          '("device_config.prf" "moc.prf" "qt_build_config.prf"
+                            "qt_config.prf"))
+                   (("\\$\\$\\[QT_HOST_DATA/get\\]") archdata)
+                   (("\\$\\$\\[QT_HOST_DATA/src\\]") archdata)))))))))
+    (native-inputs
+     `(("gtk+" ,gtk+)                   ;for GTK theme support
+       ("ninja" ,ninja)
+       ("wayland-protocols" ,wayland-protocols)
+       ("xorg-server" ,xorg-server-for-tests)
+       ,@(package-native-inputs qtbase-5)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "QMAKEPATH")
+            (files '("lib/qt6")))
+           (search-path-specification
+            (variable "QML2_IMPORT_PATH")
+            (files '("lib/qt6/qml")))
+           (search-path-specification
+            (variable "QT_PLUGIN_PATH")
+            (files '("lib/qt6/plugins")))
+           (search-path-specification
+            (variable "XDG_DATA_DIRS")
+            (files '("share")))
+           (search-path-specification
+            (variable "XDG_CONFIG_DIRS")
+            (files '("etc/xdg")))))))
 
 (define-public qtsvg
   (package (inherit qtbase-5)
