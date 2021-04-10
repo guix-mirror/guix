@@ -4705,7 +4705,28 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
                    license:freebsd-doc)))) ; documentation
 
 (define-public python2-feedparser
-  (package-with-python2 python-feedparser))
+  (package
+    (name "python2-feedparser")
+    (version "5.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "feedparser" version ".tar.bz2"))
+       (sha256
+        (base32
+         "00hb4qg2am06g81mygfi1jsbx8830024jm45g6qp9g8fr6am91yf"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f
+       #:python ,python-2))
+    (home-page
+     "https://github.com/kurtmckee/feedparser")
+    (synopsis "Parse feeds in Python")
+    (description
+     "Universal feed parser which handles RSS 0.9x, RSS 1.0, RSS 2.0,
+CDF, Atom 0.3, and Atom 1.0 feeds.")
+    (license (list license:bsd-2 ; source code
+                   license:freebsd-doc)))) ; documentation
 
 (define-public guix-data-service
   (let ((commit "df2a0a73f1f35ea53ba6c07a6ad4c5347ba12b8f")
