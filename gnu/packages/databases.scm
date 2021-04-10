@@ -3836,14 +3836,14 @@ PostreSQL, SQLite, ODBC and MySQL.")
 (define-public freetds
   (package
     (name "freetds")
-    (version "1.2.18")
+    (version "1.2.19")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.freetds.org/files/stable/"
                            "freetds-" version ".tar.gz"))
        (sha256
-        (base32 "1hspvwxwdd1apadsy2b40dpjik8kfwcvdamvhpg3lnm15n02fb50"))))
+        (base32 "11xf2w8gh2p9cq4i38jfvdiwgig8wqbg098xjc08kx4iii8lxy3m"))))
     (build-system gnu-build-system)
     (arguments
      ;; NOTE: (Sharlatan-20210110213908+0000) some tests require DB connection,
