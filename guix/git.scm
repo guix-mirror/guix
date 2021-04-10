@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2021 Kyle Meyer <kyle@kyleam.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -209,6 +210,9 @@ corresponding Git object."
        (let ((oid (reference-target
                    (branch-lookup repository branch BRANCH-REMOTE))))
          (object-lookup repository oid)))
+      (('symref . symref)
+       (let ((oid (reference-name->oid repository symref)))
+         (object-lookup repository oid)))
       (('commit . commit)
        (let ((len (string-length commit)))
          ;; 'object-lookup-prefix' appeared in Guile-Git in Mar. 2018, so we
@@ -340,7 +344,7 @@ definitely available in REPOSITORY, false otherwise."
 
 (define* (update-cached-checkout url
                                  #:key
-                                 (ref '(branch . "master"))
+                                 (ref '())
                                  recursive?
                                  (check-out? #t)
                                  starting-commit
@@ -356,6 +360,7 @@ provided) as returned by 'commit-relation'.
 
 REF is pair whose key is [branch | commit | tag | tag-or-commit ] and value
 the associated data: [<branch name> | <sha1> | <tag name> | <string>].
+If REF is the empty list, the remote HEAD is used.
 
 When RECURSIVE? is true, check out submodules as well, if any.
 
@@ -374,6 +379,7 @@ it unchanged."
     ;; made little sense since the cache should be transparent to them.  So
     ;; here we append "origin/" if it's missing and otherwise keep it.
     (match ref
+      (() '(symref . "refs/remotes/origin/HEAD"))
       (('branch . branch)
        `(branch . ,(if (string-prefix? "origin/" branch)
                        branch
@@ -433,12 +439,13 @@ it unchanged."
                                    (log-port (%make-void-port "w"))
                                    (cache-directory
                                     (%repository-cache-directory))
-                                   (ref '(branch . "master")))
+                                   (ref '()))
   "Return two values: the content of the git repository at URL copied into a
 store directory and the sha1 of the top level commit in this directory.  The
 reference to be checkout, once the repository is fetched, is specified by REF.
 REF is pair whose key is [branch | commit | tag] and value the associated
-data, respectively [<branch name> | <sha1> | <tag name>].
+data, respectively [<branch name> | <sha1> | <tag name>].  If REF is the empty
+list, the remote HEAD is used.
 
 When RECURSIVE? is true, check out submodules as well, if any.
 
@@ -548,7 +555,7 @@ objects: 'ancestor (meaning that OLD is an ancestor of NEW), 'descendant, or
   git-checkout make-git-checkout
   git-checkout?
   (url     git-checkout-url)
-  (branch  git-checkout-branch (default "master"))
+  (branch  git-checkout-branch (default #f))
   (commit  git-checkout-commit (default #f))      ;#f | tag | commit
   (recursive? git-checkout-recursive? (default #f)))
 
@@ -587,9 +594,11 @@ objects: 'ancestor (meaning that OLD is an ancestor of NEW), 'descendant, or
   (match checkout
     (($ <git-checkout> url branch commit recursive?)
      (latest-repository-commit* url
-                                #:ref (if commit
-                                          `(tag-or-commit . ,commit)
-                                          `(branch . ,branch))
+                                #:ref (cond (commit
+                                             `(tag-or-commit . ,commit))
+                                            (branch
+                                             `(branch . ,branch))
+                                            (else '()))
                                 #:recursive? recursive?
                                 #:log-port (current-error-port)))))
 
