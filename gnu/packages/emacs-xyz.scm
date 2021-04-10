@@ -27541,6 +27541,39 @@ and preferred services can easily be configured.")
      "This package adds a \"C-'\" binding to Ivy minibuffer that uses Avy.")
     (license license:gpl3+)))
 
+(define-public emacs-vertico
+  (package
+    (name "emacs-vertico")
+    (version "0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/minad/vertico")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1r2p09y3ag14dqd46nyy1pa2j2cvn4gn9pji47mzmwydsm2f8hv1"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'build-doc
+           (lambda _
+             (invoke "makeinfo" "vertico.texi"))))))
+    (native-inputs
+     `(("texinfo" ,texinfo)))
+    (home-page "https://github.com/minad/vertico")
+    (synopsis "Vertical interactive completion")
+    (description
+     "Vertico provides a minimalistic vertical completion UI, which is based
+on Emacs' default completion system.  By reusing the default system, it
+achieves full compatibility with built-in Emacs commands and completion
+tables.  Vertico is pretty bare-bone and only provides a minimal set of
+commands.  Additional optional enhancements can be provided externally by
+complementary packages.")
+    (license license:gpl3+)))
+
 (define-public emacs-ivy-hydra
   (package
     (name "emacs-ivy-hydra")
