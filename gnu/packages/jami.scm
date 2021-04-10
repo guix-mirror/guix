@@ -585,25 +585,13 @@ decentralized calling using P2P-DHT.")
     (outputs '("out" "debug"))
     (arguments
      `(#:tests? #f                      ;no test suite
-       #:phases
-       (modify-phases %standard-phases
-         ;; TODO: Uncomment after switching back to the tarball source.
-         ;;   (add-after 'unpack 'change-directory
-         ;;     (lambda _
-         ;;       (chdir "client-qt")))
-         (add-after 'install 'wrap
-           ;; The program fails to find the QtWebEngineProcess program, so we
-           ;; set QTWEBENGINEPROCESS_PATH to help it.
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((bin (string-append (assoc-ref outputs "out") "/bin"))
-                   (qtwebengineprocess (string-append
-                                        (assoc-ref inputs "qtwebengine")
-                                        "/lib/qt5/libexec/QtWebEngineProcess")))
-               (for-each (lambda (program)
-                           (wrap-program program
-                             `("QTWEBENGINEPROCESS_PATH" =
-                               (,qtwebengineprocess))))
-                         (find-files bin ".*"))))))))
+       ;; TODO: Uncomment after switching back to the tarball source.
+       ;; #:phases
+       ;; (modify-phases %standard-phases
+       ;;     (add-after 'unpack 'change-directory
+       ;;       (lambda _
+       ;;         (chdir "client-qt"))))
+       ))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("qttools" ,qttools)
