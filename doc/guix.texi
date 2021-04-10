@@ -652,7 +652,7 @@ If that command fails because you do not have the required public key,
 then run this command to import it:
 
 @example
-$ wget @value{OPENPGP-SIGNING-KEY-URL} \
+$ wget '@value{OPENPGP-SIGNING-KEY-URL}' \
       -qO - | gpg --import -
 @end example
 
