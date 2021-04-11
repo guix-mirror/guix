@@ -36,7 +36,7 @@
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020, 2021 Alexey Abramov <levenson@mmer.org>
 ;;; Copyright © 2020 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
-;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@posteo.ro>
+;;; Copyright © 2020, 2021 Alexandru-Sergiu Marton <brown121407@posteo.ro>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
 ;;; Copyright © 2020 divoplade <d@divoplade.fr>
@@ -166,6 +166,51 @@
   #:use-module (guix build-system trivial)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match))
+
+(define-public abook
+  (package
+    (name "abook")
+    (version "0.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://abook.sourceforge.io/devel/abook-" version ".tar.gz"))
+       (sha256
+        (base32 "1yf0ifyjhq2r003pnpn92mn0924bn9yxjifxxj2ldcsgd7w0vagh"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Fix "undefined reference to `field_id'" errors.
+         (add-after 'unpack 'fix-build-with-recent-gcc
+           (lambda _
+             (substitute* '("database.c" "database.h")
+               (("^inline int" all) (string-append "extern " all)))))
+         ;; Fix following error during bootstrap: "gettext infrastructure
+         ;; mismatch: using a Makefile.in.in from gettext version 0.18 but the
+         ;; autoconf macros are from gettext version 0.20".
+         (add-before 'bootstrap 'fix-gettext-macro-version
+           (lambda _
+             (substitute* "po/Makefile.in.in"
+               (("0.18") "0.20"))))
+         (replace 'bootstrap
+           (lambda _
+             (invoke "aclocal")
+             (invoke "automake" "--add-missing")
+             (invoke "autoconf"))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gettext-minimal)))
+    (inputs
+     `(("ncurses" ,ncurses)
+       ("readline" ,readline)))
+    (home-page "https://abook.sourceforge.io/")
+    (synopsis "Text-based addressbook")
+    (description
+     "Abook is a text-based addressbook program designed to use with Mutt mail
+client.")
+    (license license:gpl2)))
 
 (define-public anubis
   (package
