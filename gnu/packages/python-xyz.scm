@@ -11614,6 +11614,30 @@ Pytest but stripped of Pytest specific details.")
     (propagated-inputs
      `(("python-importlib-metadata" ,python2-importlib-metadata-bootstrap))))))
 
+(define-public python-plumbum
+  (package
+    (name "python-plumbum")
+    (version "1.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "plumbum" version))
+       (sha256
+        (base32 "1kidj821k79dw064rlxh84xamb9h79ychg3pgj81jlvm5hs48xri"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))                    ;no tests
+    (native-inputs
+     ;; XXX: Not actually used since there are no tests but required for
+     ;; build.
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://plumbum.readthedocs.io")
+    (synopsis "Python shell combinators library")
+    (description
+     "Plumbum is a library of tools for replacing shell scripts with Python
+code.")
+    (license license:expat)))
+
 (define-public python-tox
   (package
     (name "python-tox")
