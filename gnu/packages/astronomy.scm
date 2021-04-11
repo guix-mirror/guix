@@ -1011,13 +1011,13 @@ astronomical images, especially when there is no WCS information available.")
 (define-public python-skyfield
   (package
     (name "python-skyfield")
-    (version "1.36")
+    (version "1.38")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "skyfield" version))
        (sha256
-        (base32 "1dm1327a4qv3klj9blrvddbhl72v1fqz52ym9km8qjj9vdkpywh6"))))
+        (base32 "1qi1l8qn6irdv6w41qq30s2yjwak7h6ayywr1pry9gwcm2c25bv5"))))
     (build-system python-build-system)
     (arguments
      ;; NOTE: (Sharlatan-20210207T163305+0000): tests depend on custom test
