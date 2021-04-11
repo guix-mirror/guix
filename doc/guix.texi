@@ -7298,55 +7298,7 @@ standards, GNU Coding Standards}).
 In a nutshell, packages using it are configured, built, and installed with
 the usual @code{./configure && make && make check && make install}
 command sequence.  In practice, a few additional steps are often needed.
-All these steps are split up in separate @dfn{phases},
-notably@footnote{Please see the @code{(guix build gnu-build-system)}
-modules for more details about the build phases.}:
-
-@table @code
-@item unpack
-Unpack the source tarball, and change the current directory to the
-extracted source tree.  If the source is actually a directory, copy it
-to the build tree, and enter that directory.
-
-@item patch-source-shebangs
-Patch shebangs encountered in source files so they refer to the right
-store file names.  For instance, this changes @code{#!/bin/sh} to
-@code{#!/gnu/store/@dots{}-bash-4.3/bin/sh}.
-
-@item configure
-Run the @file{configure} script with a number of default options, such
-as @option{--prefix=/gnu/store/@dots{}}, as well as the options specified
-by the @code{#:configure-flags} argument.
-
-@item build
-Run @code{make} with the list of flags specified with
-@code{#:make-flags}.  If the @code{#:parallel-build?} argument is true
-(the default), build with @code{make -j}.
-
-@item check
-Run @code{make check}, or some other target specified with
-@code{#:test-target}, unless @code{#:tests? #f} is passed.  If the
-@code{#:parallel-tests?} argument is true (the default), run @code{make
-check -j}.
-
-@item install
-Run @code{make install} with the flags listed in @code{#:make-flags}.
-
-@item patch-shebangs
-Patch shebangs on the installed executable files.
-
-@item strip
-Strip debugging symbols from ELF files (unless @code{#:strip-binaries?}
-is false), copying them to the @code{debug} output when available
-(@pxref{Installing Debugging Files}).
-@end table
-
-@vindex %standard-phases
-The build-side module @code{(guix build gnu-build-system)} defines
-@code{%standard-phases} as the default list of build phases.
-@code{%standard-phases} is a list of symbol/procedure pairs, where the
-procedure implements the actual phase.
-
+All these steps are split up in separate @dfn{phases}.
 @xref{Build Phases}, for more info on build phases and ways to customize
 them.
 
@@ -8250,16 +8202,53 @@ exception is the ``bare-bones'' @code{trivial-build-system}
 (@pxref{Build Systems}).
 
 As discussed in the previous section, those build systems provide a
-standard list of phases.  For @code{gnu-build-system}, the standard
-phases include an @code{unpack} phase to unpack the source code tarball,
-a @command{configure} phase to run @code{./configure}, a @code{build}
-phase to run @command{make}, and (among others) an @code{install} phase
-to run @command{make install}; @pxref{Build Systems}, for a more
-detailed view of these phases.  Likewise, @code{cmake-build-system}
-inherits these phases, but its @code{configure} phase runs
-@command{cmake} instead of @command{./configure}.  Other build systems,
-such as @code{python-build-system}, have a wholly different list of
-standard phases.  All this code runs on the @dfn{build side}: it is
+standard list of phases.  For @code{gnu-build-system}, the main build
+phases are the following:
+
+@table @code
+@item unpack
+Unpack the source tarball, and change the current directory to the
+extracted source tree.  If the source is actually a directory, copy it
+to the build tree, and enter that directory.
+
+@item patch-source-shebangs
+Patch shebangs encountered in source files so they refer to the right
+store file names.  For instance, this changes @code{#!/bin/sh} to
+@code{#!/gnu/store/@dots{}-bash-4.3/bin/sh}.
+
+@item configure
+Run the @file{configure} script with a number of default options, such
+as @option{--prefix=/gnu/store/@dots{}}, as well as the options specified
+by the @code{#:configure-flags} argument.
+
+@item build
+Run @code{make} with the list of flags specified with
+@code{#:make-flags}.  If the @code{#:parallel-build?} argument is true
+(the default), build with @code{make -j}.
+
+@item check
+Run @code{make check}, or some other target specified with
+@code{#:test-target}, unless @code{#:tests? #f} is passed.  If the
+@code{#:parallel-tests?} argument is true (the default), run @code{make
+check -j}.
+
+@item install
+Run @code{make install} with the flags listed in @code{#:make-flags}.
+
+@item patch-shebangs
+Patch shebangs on the installed executable files.
+
+@item strip
+Strip debugging symbols from ELF files (unless @code{#:strip-binaries?}
+is false), copying them to the @code{debug} output when available
+(@pxref{Installing Debugging Files}).
+@end table
+
+Other build systems have similar phases, with some variations.  For
+example, @code{cmake-build-system} has same-named phases but its
+@code{configure} phases runs @code{cmake} instead of @code{./configure}.
+Others, such as @code{python-build-system}, have a wholly different list
+of standard phases.  All this code runs on the @dfn{build side}: it is
 evaluated when you actually build the package, in a dedicated build
 process spawned by the build daemon (@pxref{Invoking guix-daemon}).
 
@@ -8270,6 +8259,7 @@ is a procedure that accepts an arbitrary number of arguments.  By
 convention, those procedures receive information about the build in the
 form of @dfn{keyword parameters}, which they can use or ignore.
 
+@vindex %standard-phases
 For example, here is how @code{(guix build gnu-build-system)} defines
 @code{%standard-phases}, the variable holding its alist of build
 phases@footnote{We present a simplified view of those build phases, but
