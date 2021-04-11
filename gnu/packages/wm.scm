@@ -14,7 +14,7 @@
 ;;; Copyright © 2016 Ivan Vilata i Balaguer <ivan@selidor.net>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
 ;;; Copyright © 2017, 2019, 2020 Marius Bakke <marius@gnu.org>
-;;; Copyright © 2017, 2020 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2017, 2020, 2021 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
 ;;; Copyright © 2018, 2019 Meiyo Peng <meiyo@riseup.net>
@@ -2312,16 +2312,16 @@ start-up.")
 (define-public xnotify
   (package
     (name "xnotify")
-    (version "0.7.3")
+    (version "0.8.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/phillbush/xnotify")
-                    (commit version)))
+                    (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "09s29m8z4x3mc3wja2587ik3f6zg16b40adr3nllnpyy1mqnprq5"))))
+                "1jxms4md2mwfjgm2pgg3vakpp33800jbn9hnl0j4jyfc9f1ckbsv"))))
     (build-system gnu-build-system)
     (inputs
      `(("libx11" ,libx11)
