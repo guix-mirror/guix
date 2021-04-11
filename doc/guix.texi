@@ -7308,6 +7308,84 @@ Coreutils, Bash, Make, Diffutils, grep, and sed (see the @code{(guix
 build-system gnu)} module for a complete list).  We call these the
 @dfn{implicit inputs} of a package, because package definitions do not
 have to mention them.
+
+This build system supports a number of keyword arguments, which can be
+passed @i{via} the @code{arguments} field of a package.  Here are some
+of the main parameters:
+
+@table @code
+@item #:phases
+This argument specifies build-side code that evaluates to an alist of
+build phases.  @xref{Build Phases}, for more information.
+
+@item #:configure-flags
+This is a list of flags (strings) passed to the @command{configure}
+script.  @xref{Defining Packages}, for an example.
+
+@item #:make-flags
+This list of strings contains flags passed as arguments to
+@command{make} invocations in the @code{build}, @code{check}, and
+@code{install} phases.
+
+@item #:out-of-source?
+This Boolean, @code{#f} by default, indicates whether to run builds in a
+build directory separate from the source tree.
+
+When it is true, the @code{configure} phase creates a separate build
+directory, changes to that directory, and runs the @code{configure}
+script from there.  This is useful for packages that require it, such as
+@code{glibc}.
+
+@item #:tests?
+This Boolean, @code{#t} by default, indicates whether the @code{check}
+phase should run the package's test suite.
+
+@item #:test-target
+This string, @code{"check"} by default, gives the name of the makefile
+target used by the @code{check} phase.
+
+@item #:parallel-build?
+@itemx #:parallel-tests?
+These Boolean values specify whether to build, respectively run the test
+suite, in parallel, with the @code{-j} flag of @command{make}.  When
+they are true, @code{make} is passed @code{-j@var{n}}, where @var{n} is
+the number specified as the @option{--cores} option of
+@command{guix-daemon} or that of the @command{guix} client command
+(@pxref{Common Build Options, @option{--cores}}).
+
+@cindex RUNPATH, validation
+@item #:validate-runpath?
+This Boolean, @code{#t} by default, determines whether to ``validate''
+the @code{RUNPATH} of ELF binaries (@code{.so} shared libraries as well
+as executables) previously installed by the @code{install} phase.
+
+This validation step consists in making sure that all the shared
+libraries needed by an ELF binaries, which are listed as
+@code{DT_NEEDED} entries in its @code{PT_DYNAMIC} segment, appear in the
+@code{DT_RUNPATH} entry of that binary.  In other words, it ensures that
+running or using those binaries will not result in a ``file not found''
+error at run time.  @xref{Options, @option{-rpath},, ld, The GNU
+Linker}, for more information on @code{RUNPATH}.
+
+@item #:substitutable?
+This Boolean, @code{#t} by default, tells whether the package outputs
+should be substitutable---i.e., whether users should be able to obtain
+substitutes for them instead of building locally (@pxref{Substitutes}).
+
+@item #:allowed-references
+@itemx #:disallowed-references
+When true, these arguments must be a list of dependencies that must not
+appear among the references of the build results.  If, upon build
+completion, some of these references are retained, the build process
+fails.
+
+This is useful to ensure that a package does not erroneously keep a
+reference to some of it build-time inputs, in cases where doing so
+would, for example, unnecessarily increase its size (@pxref{Invoking
+guix size}).
+@end table
+
+Most other build systems support these keyword arguments.
 @end defvr
 
 Other @code{<build-system>} objects are defined to support other
