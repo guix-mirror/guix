@@ -2192,7 +2192,7 @@ support, for easier unicode usage.")))))
 (define-public xclickroot
   (package
     (name "xclickroot")
-    (version "1.2")
+    (version "1.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2201,7 +2201,7 @@ support, for easier unicode usage.")))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1nd5qz0qz5j7gx2jsbcp234giwaa0xmg42vrcjrcf587q9ivakfl"))))
+                "0wnsfxvh4v02r2jjyh2n6jfkbj2dna2hlm6anl4b36lwji749k2k"))))
     (build-system gnu-build-system)
     (inputs
      `(("libx11" ,libx11)))
