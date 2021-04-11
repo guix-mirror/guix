@@ -28,7 +28,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
-;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2019, 2021 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
@@ -1131,6 +1131,37 @@ supports coverage of subprocesses.")
 
 (define-public python2-pytest-cov
   (package-with-python2 python-pytest-cov))
+
+(define-public python-pytest-httpserver
+  (package
+    (name "python-pytest-httpserver")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pytest_httpserver" version))
+              (sha256
+               (base32
+                "0vbls0j570l5my83j4jnk5blmnir44i0w511azlh41nl6k8rac5f"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-werkzeug" ,python-werkzeug)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'fix-library-loading
+           (lambda _
+             (setenv "PYTHONPATH" (string-append (getenv "PYTHONPATH") ":."))))
+         (replace 'check
+           (lambda _
+             (invoke "pytest" "tests" "-vv")
+             (invoke "pytest" "tests" "-vv" "--ssl"))))))
+    (home-page "https://github.com/csernazs/pytest-httpserver")
+    (synopsis "HTTP server for pytest")
+    (description "Pytest plugin library to test http clients without
+contacting the real http server.")
+    (license license:expat)))
 
 (define-public python-pytest-runner
   (package
