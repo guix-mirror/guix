@@ -3024,7 +3024,7 @@ If several repos are related, it helps to see their status together.")
 (define-public ghq
   (package
     (name "ghq")
-    (version "1.1.5")
+    (version "1.1.7")
     (home-page "https://github.com/x-motemen/ghq")
     (source (origin
               (method git-fetch)
@@ -3034,7 +3034,7 @@ If several repos are related, it helps to see their status together.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "098fik155viylq07az7crzbgswcvhpx0hr68xpvyx0rpri792jbq"))))
+                "155sfmhmh4ia3iinm1s8fk7fxyn5dxdryad9xkbg7mr3i3ikqjwh"))))
     (build-system go-build-system)
     (arguments
      '(#:install-source? #f
