@@ -725,7 +725,7 @@ key-bindings and is fully configurable and extensible in Common Lisp.")
 (define-public lagrange
   (package
     (name "lagrange")
-    (version "1.3.1")
+    (version "1.3.2")
     (source
      (origin
        (method url-fetch)
@@ -733,7 +733,7 @@ key-bindings and is fully configurable and extensible in Common Lisp.")
         (string-append "https://git.skyjake.fi/skyjake/lagrange/releases/"
                        "download/v" version "/lagrange-" version ".tar.gz"))
        (sha256
-        (base32 "1i05irmsvgrskhia71nl7vc9rbwmh2ylpbrm4pis85lrs4p7m3r0"))))
+        (base32 "14yj3l3h6i6ygdhyiwdg2cg6y5imlkql09r7dm5v7xm1ja0sr9lp"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #false))                ;no tests
