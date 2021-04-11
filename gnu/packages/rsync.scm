@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
@@ -71,7 +71,7 @@ files in the destination.")
 (define-public librsync
   (package
     (name "librsync")
-    (version "2.3.1")
+    (version "2.3.2")
        (source (origin
             (method git-fetch)
             (uri (git-reference
@@ -80,7 +80,7 @@ files in the destination.")
             (file-name (git-file-name name version))
             (sha256
              (base32
-              "131cd4asmpm4nskidzgiy8xibbnpibvvbq857a0pcky77min5g4z"))))
+              "0bn29npmbw26akc6y54661irpdh6qcivcs6q48cgp3llklhhxp0q"))))
    (build-system cmake-build-system)
    (inputs
     `(("popt" ,popt)))
