@@ -19947,6 +19947,9 @@ Socket file to use for local (non-network) connections.
 @item @code{extra-content} (default: @code{""})
 Additional settings for the @file{my.cnf} configuration file.
 
+@item @code{extra-environment} (default: @code{#~'()})
+List of environment variables passed to the @command{mysqld} process.
+
 @item @code{auto-upgrade?} (default: @code{#t})
 Whether to automatically run @command{mysql_upgrade} after starting the
 service.  This is necessary to upgrade the @dfn{system schema} after
