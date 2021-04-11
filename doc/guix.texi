@@ -33529,7 +33529,7 @@ $(guix system vm config.scm) -nic user,model=virtio-net-pci,hostfwd=tcp::10022-:
 To connect to the VM you can run
 
 @example
-ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p 10022
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p 10022 localhost
 @end example
 
 The @command{-p} tells @command{ssh} the port you want to connect to.
