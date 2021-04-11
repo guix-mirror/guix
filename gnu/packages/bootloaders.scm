@@ -478,15 +478,15 @@ tree binary files.  These are board description files used by Linux and BSD.")
 (define u-boot
   (package
     (name "u-boot")
-    (version "2021.01")
+    (version "2021.04")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "ftp://ftp.denx.de/pub/u-boot/"
+                    "https://ftp.denx.de/pub/u-boot/"
                     "u-boot-" version ".tar.bz2"))
               (sha256
                (base32
-                "0m04glv9kn3bhs62sn675w60wkrl4m3a4hnbnnw67s3l198y21xl"))))
+                "06p1vymf0dl6jc2xy5w7p42mpgppa46lmpm2ishmgsycnldqnhqd"))))
     (native-inputs
      `(("bc" ,bc)
        ("bison" ,bison)
