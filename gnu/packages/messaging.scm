@@ -2430,6 +2430,11 @@ QMatrixClient project.")
              (substitute* "setup.py"
                (("==") ">=")
                ((",<.*'") "'"))
+             #t))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest" "hangups"))
              #t)))))
     (propagated-inputs
      `(("python-aiohttp" ,python-aiohttp)
