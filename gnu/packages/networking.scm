@@ -3474,6 +3474,7 @@ and targeted primarily for asynchronous processing of HTTP-requests.")
                (base32
                 "0wkynjzwzl5q46hy1yb9npi5hvknnj17rjkax5v3acqjmd0y48h9"))))
     ;; Since 2.0, the gnu-build-system does not seem to work anymore, upstream bug?
+    (outputs '("out" "tools" "debug"))
     (build-system cmake-build-system)
     (inputs
      `(("argon2" ,argon2)
@@ -3490,23 +3491,79 @@ and targeted primarily for asynchronous processing of HTTP-requests.")
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("pkg-config" ,pkg-config)
+       ("python" ,python)
+       ("python-cython" ,python-cython)
        ("libtool" ,libtool)
        ("cppunit" ,cppunit)))
     (arguments
-     `(#:tests? #f                      ; Tests require network connection.
+     `(#:imported-modules ((guix build python-build-system) ;for site-packages
+                           ,@%cmake-build-system-modules)
+       #:modules (((guix build python-build-system) #:prefix python:)
+                  (guix build cmake-build-system)
+                  (guix build utils))
+       #:tests? #f                      ; Tests require network connection.
        #:configure-flags
-       '(;;"-DOPENDHT_TESTS=on"
-         "-DOPENDHT_TOOLS=off"
-         "-DOPENDHT_PYTHON=off"
+       '( ;;"-DOPENDHT_TESTS=on"
+         "-DOPENDHT_STATIC=off"
+         "-DOPENDHT_TOOLS=on"
+         "-DOPENDHT_PYTHON=on"
          "-DOPENDHT_PROXY_SERVER=on"
          "-DOPENDHT_PUSH_NOTIFICATIONS=on"
          "-DOPENDHT_PROXY_SERVER_IDENTITY=on"
-         "-DOPENDHT_PROXY_CLIENT=on")))
+         "-DOPENDHT_PROXY_CLIENT=on")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-python-installation-prefix
+           ;; Specify the installation prefix for the compiled Python module
+           ;; that would otherwise attempt to installs itself to Python's own
+           ;; site-packages directory.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* "python/CMakeLists.txt"
+               (("--root=\\\\\\$ENV\\{DESTDIR\\}")
+                (string-append "--root=/ --single-version-externally-managed "
+                               "--prefix=${CMAKE_INSTALL_PREFIX}")))))
+         (add-after 'unpack 'specify-runpath-for-python-module
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "python/setup.py.in"
+                 (("extra_link_args=\\[(.*)\\]" _ args)
+                  (string-append "extra_link_args=[" args
+                                 ", '-Wl,-rpath=" out "/lib']"))))))
+         (add-after 'install 'move-and-wrap-tools
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (tools (assoc-ref outputs "tools"))
+                   (site-packages (python:site-packages inputs outputs)))
+               (mkdir tools)
+               (rename-file (string-append out "/bin")
+                            (string-append tools "/bin"))
+               (wrap-program (string-append tools "/bin/dhtcluster")
+                 `("PYTHONPATH" prefix (,site-packages)))))))))
     (home-page "https://github.com/savoirfairelinux/opendht/")
-    (synopsis "Distributed Hash Table (DHT) library")
-    (description "OpenDHT is a Distributed Hash Table (DHT) library.  It may
-be used to manage peer-to-peer network connections as needed for real time
-communication.")
+    (synopsis "Lightweight Distributed Hash Table (DHT) library")
+    (description "OpenDHT provides an easy to use distributed in-memory data
+store.  Every node in the network can read and write values to the store.
+Values are distributed over the network, with redundancy.  It includes the
+following features:
+@itemize
+@item Lightweight and scalable, designed for large networks and small devices;
+@item High resilience to network disruption;
+@item Public key cryptography layer providing optional data signature and
+encryption (using GnuTLS);
+@item IPv4 and IPv6 support;
+@item Clean and powerful C++14 map API;
+@item Bindings for C, Rust & Python 3;
+@item REST API with an optional HTTP client and server with push notification
+support.
+@end itemize
+The following tools are also included:
+@table @command
+@item dhtnode
+A command line tool to run a DHT node and perform operations supported by the
+library (get, put, etc.) with text values.
+@item dhtchat
+A very simple IM client working over the DHT.
+@end table")
     (license license:gpl3+)))
 
 (define-public frrouting
