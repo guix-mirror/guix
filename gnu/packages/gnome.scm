@@ -1803,7 +1803,6 @@ either on a local, or remote machine via a number of methods.")
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("desktop-file-utils" ,desktop-file-utils)
-       ("gcc" ,gcc-8) ;required for -Wcast-function-type
        ("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)

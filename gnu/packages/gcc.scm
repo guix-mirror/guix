@@ -585,7 +585,7 @@ It also includes runtime support libraries for these languages.")))
 ;; Note: When changing the default gcc version, update
 ;;       the gcc-toolchain-* definitions and the gfortran definition
 ;;       accordingly.
-(define-public gcc gcc-7)
+(define-public gcc gcc-8)
 
 (define-public (make-libstdc++ gcc)
   "Return a libstdc++ package based on GCC.  The primary use case is when

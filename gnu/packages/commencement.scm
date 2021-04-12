@@ -3816,10 +3816,10 @@ is the GNU Compiler Collection.")
   (make-gcc-toolchain gcc-6))
 
 (define-public gcc-toolchain-7
-  gcc-toolchain)
+  (make-gcc-toolchain gcc-7))
 
 (define-public gcc-toolchain-8
-  (make-gcc-toolchain gcc-8))
+  gcc-toolchain)
 
 (define-public gcc-toolchain-9
   (make-gcc-toolchain gcc-9))

@@ -1226,8 +1226,7 @@ developed mainly for Ren'py.")
      `(("python2-future" ,python2-future)
        ("python2-pygame" ,python2-pygame-sdl2)))
     (native-inputs
-     `(("gcc" ,gcc-8) ; for const variables as initializer elements
-       ("python2-cython" ,python2-cython)
+     `(("python2-cython" ,python2-cython)
        ("xdg-utils" ,xdg-utils)))
     (home-page "https://www.renpy.org/")
     (synopsis "Ren'py python module")

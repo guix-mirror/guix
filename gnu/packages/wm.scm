@@ -1594,8 +1594,7 @@ modules for building a Wayland compositor.")
               ("spdlog" ,spdlog-1.7)
               ("wayland" ,wayland)))
     (native-inputs
-     `(("gcc" ,gcc-8)                   ; for #include <filesystem>
-       ("glib:bin" ,glib "bin")
+     `(("glib:bin" ,glib "bin")
        ("pkg-config" ,pkg-config)
        ("scdoc" ,scdoc)
        ("wayland-protocols" ,wayland-protocols)))
