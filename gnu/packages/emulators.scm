@@ -1998,6 +1998,8 @@ from various forks of Gens, and improved platform portability.")
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list "-C" "bsnes"
+                          ;; Remove march=native
+                          "local=false"
                           (string-append "prefix=" (assoc-ref %outputs "out")))
        #:tests? #f                      ; No tests.
        #:phases (modify-phases %standard-phases
