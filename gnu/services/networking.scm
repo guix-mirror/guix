@@ -10,7 +10,7 @@
 ;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019 Florian Pelz <pelzflorian@pelzflorian.de>
-;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2019, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
@@ -110,6 +110,18 @@
             inetd-configuration
             inetd-entry
             inetd-service-type
+
+            opendht-configuration
+            opendht-configuration-peer-discovery?
+            opendht-configuration-verbose?
+            opendht-configuration-bootstrap-host
+            opendht-configuration-port
+            opendht-configuration-proxy-server-port
+            opendht-configuration-proxy-server-port-tls
+            opendht-configuration->command-line-arguments
+
+            opendht-shepherd-service
+            opendht-service-type
 
             tor-configuration
             tor-configuration?
@@ -739,6 +751,121 @@ daemon will keep the system clock synchronized with that of the given servers.")
     "Start @command{inetd}, the @dfn{Internet superserver}.  It is responsible
 for listening on Internet sockets and spawning the corresponding services on
 demand.")))
+
+
+;;;
+;;; OpenDHT, the distributed hash table network used by Jami
+;;;
+
+(define-maybe/no-serialization number)
+(define-maybe/no-serialization string)
+
+;;; To generate the documentation of the following configuration record, you
+;;; can evaluate: (configuration->documentation 'opendht-configuration)
+(define-configuration/no-serialization opendht-configuration
+  (opendht
+   (package opendht)
+   "The @code{opendht} package to use.")
+  (peer-discovery?
+   (boolean #false)
+   "Whether to enable the multicast local peer discovery mechanism.")
+  (enable-logging?
+   (boolean #false)
+   "Whether to enable logging messages to syslog.  It is disabled by default
+as it is rather verbose.")
+  (debug?
+   (boolean #false)
+   "Whether to enable debug-level logging messages.  This has no effect if
+logging is disabled.")
+  (bootstrap-host
+   (maybe-string "bootstrap.jami.net:4222")
+   "The node host name that is used to make the first connection to the
+network.  A specific port value can be provided by appending the @code{:PORT}
+suffix.  By default, it uses the Jami bootstrap nodes, but any host can be
+specified here.  It's also possible to disable bootstrapping by setting this
+to the @code{'disabled} symbol.")
+  (port
+   (maybe-number 4222)
+   "The UDP port to bind to.  When set to @code{'disabled}, an available port
+is automatically selected.")
+  (proxy-server-port
+   (maybe-number 'disabled)
+   "Spawn a proxy server listening on the specified port.")
+  (proxy-server-port-tls
+   (maybe-number 'disabled)
+   "Spawn a proxy server listening to TLS connections on the specified
+port."))
+
+(define %opendht-accounts
+  ;; User account and groups for Tor.
+  (list (user-group (name "opendht") (system? #t))
+        (user-account
+         (name "opendht")
+         (group "opendht")
+         (system? #t)
+         (comment "OpenDHT daemon user")
+         (home-directory "/var/empty")
+         (shell (file-append shadow "/sbin/nologin")))))
+
+(define (opendht-configuration->command-line-arguments config)
+  "Derive the command line arguments used to launch the OpenDHT daemon from
+CONFIG, an <opendht-configuration> object."
+  (match-record config <opendht-configuration>
+    (opendht bootstrap-host enable-logging? port debug? peer-discovery?
+             proxy-server-port proxy-server-port-tls)
+    (let ((dhtnode #~(string-append #$opendht:tools "/bin/dhtnode")))
+      `(,dhtnode
+        "--service"                     ;non-forking mode
+        ,@(if (string? bootstrap-host)
+              (list "--bootstrap" bootstrap-host))
+        ,@(if enable-logging?
+              (list "--syslog")
+              '())
+        ,@(if (number? port)
+              (list "--port" (number->string port))
+              '())
+        ,@(if debug?
+              (list "--verbose")
+              '())
+        ,@(if peer-discovery?
+              (list "--peer-discovery")
+              '())
+        ,@(if (number? proxy-server-port)
+              (list "--proxyserver" (number->string proxy-server-port))
+              '())
+        ,@(if (number? proxy-server-port-tls)
+              (list "--proxyserverssl" (number->string proxy-server-port-tls))
+              '())))))
+
+(define (opendht-shepherd-service config)
+  "Return a <shepherd-service> running OpenDHT."
+  (shepherd-service
+   (documentation "Run an OpenDHT node.")
+   (provision '(opendht dhtnode dhtproxy))
+   (requirement '(user-processes syslogd))
+   (start #~(make-forkexec-constructor/container
+             (list #$@(opendht-configuration->command-line-arguments config))
+             #:mappings (list (file-system-mapping
+                               (source "/dev/log") ;for syslog
+                               (target source)))
+             #:user "opendht"))
+   (stop #~(make-kill-destructor))))
+
+(define opendht-service-type
+  (service-type
+   (name 'opendht)
+   (default-value (opendht-configuration))
+   (extensions
+    (list (service-extension shepherd-root-service-type
+                             (compose list opendht-shepherd-service))
+          (service-extension account-service-type
+                             (const %opendht-accounts))))
+   (description "Run the OpenDHT @command{dhtnode} command that allows
+participating in the distributed hash table based OpenDHT network.  The
+service can be configured to act as a proxy to the distributed network, which
+can be useful for portable devices where minimizing energy consumption is
+paramount.  OpenDHT was originally based on Kademlia and adapted for
+applications in communication.  It is used by Jami, for example.")))
 
 
 ;;;
