@@ -40,6 +40,7 @@
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
+;;; Copyright © 2021 Ekaitz Zarraga <ekaitz@elenq.tech>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -795,29 +796,26 @@ object graph to and from JSON.")
 (define-public python-mechanicalsoup
   (package
     (name "python-mechanicalsoup")
-    (version "0.11.0")
+    (version "1.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "MechanicalSoup" version))
        (sha256
-        (base32 "0k59wwk75q7nz6i6gynvzhagy02ql0bv7py3qqcwgjw7607yq4i7"))))
+        (base32 "01sddjxy3rznh63hnl5lbv1hhk6xyiviwmkiw4x7v4ap35fb3lrp"))))
     (build-system python-build-system)
-    (arguments
-     ;; TODO: Enable tests when python-flake8@3.5 hits master.
-     `(#:tests? #f))
     (propagated-inputs
      `(("python-beautifulsoup4" ,python-beautifulsoup4)
        ("python-lxml" ,python-lxml)
        ("python-requests" ,python-requests)
        ("python-six" ,python-six)))
-    ;; (native-inputs
-    ;;  ;; For tests.
-    ;;  `(("python-pytest-flake8" ,python-pytest-flake8)
-    ;;    ("python-pytest-httpbin" ,python-pytest-httpbin)
-    ;;    ("python-pytest-mock" ,python-pytest-mock)
-    ;;    ("python-pytest-runner" ,python-pytest-runner)
-    ;;    ("python-requests-mock" ,python-requests-mock)))
+    (native-inputs
+     `(("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-flake8" ,python-pytest-flake8)
+       ("python-pytest-httpbin" ,python-pytest-httpbin)
+       ("python-pytest-mock" ,python-pytest-mock)
+       ("python-pytest-runner" ,python-pytest-runner)
+       ("python-requests-mock" ,python-requests-mock)))
     (home-page "https://mechanicalsoup.readthedocs.io/")
     (synopsis "Python library for automating website interaction")
     (description
