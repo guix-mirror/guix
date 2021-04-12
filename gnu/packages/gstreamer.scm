@@ -536,7 +536,7 @@ This package provides the core library and elements.")
 (define-public gst-plugins-base
   (package
     (name "gst-plugins-base")
-    (version "1.18.2")
+    (version "1.18.4")
     (source
      (origin
       (method url-fetch)
@@ -545,7 +545,7 @@ This package provides the core library and elements.")
       (patches (search-patches "gst-plugins-base-fix-id3v2-invalid-read.patch"))
       (sha256
        (base32
-        "1b05kg46azrxxvq42c71071lfsnc34pw4vynnkczdqi6g0gzn16x"))))
+        "08w3ivbc6n4vdds2ap6q7l8zdk9if8417nznyqidf0adm0lk5r99"))))
     (build-system meson-build-system)
     (propagated-inputs
      `(("glib" ,glib)              ;required by gstreamer-sdp-1.0.pc
