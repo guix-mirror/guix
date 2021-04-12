@@ -3925,6 +3925,10 @@ it also includes a BLAS compatibility layer which gives application developers
 access to BLIS implementations via traditional BLAS routine calls.")
     (license license:bsd-3)))
 
+(define-public blis-sandybridge (deprecated-package "blis-sandybridge" blis))
+(define-public blis-haswell (deprecated-package "blis-haswell" blis))
+(define-public blis-knl (deprecated-package "blis-knl" blis))
+
 (define ignorance blis)
 
 (define-public openlibm
