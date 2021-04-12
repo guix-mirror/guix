@@ -1000,7 +1000,7 @@ decoders, muxers, and demuxers provided by FFmpeg.")
 (define-public gst-editing-services
   (package
     (name "gst-editing-services")
-    (version "1.18.2")
+    (version "1.18.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1008,15 +1008,21 @@ decoders, muxers, and demuxers provided by FFmpeg.")
                     "gst-editing-services-" version ".tar.xz"))
               (sha256
                (base32
-                "0pv2k8zlpn3vv2sdlspi3m63ixcwzi90pjly2ypbkg59ab97rb15"))))
+                "010xg960qsh5dwmf0y9l1q13h0cymmrgapzla2zsw66ylxqbi1s6"))))
     (build-system meson-build-system)
     (arguments
      ;; FIXME: 16/22 failing tests.
      `(#:tests? #f
+       #:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
        #:phases (modify-phases %standard-phases
                   ,@%common-gstreamer-phases)))
+    (propagated-inputs
+     `(("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)))
     (inputs
-     `(("gst-plugins-base" ,gst-plugins-base)
+     `(("glib" ,glib)
+       ("glib-networking" ,glib-networking)
+       ("gtk+" ,gtk+)
        ("libxml2" ,libxml2)))
     (native-inputs
      `(("flex" ,flex)
@@ -1026,7 +1032,7 @@ decoders, muxers, and demuxers provided by FFmpeg.")
        ("gst-plugins-good" ,gst-plugins-good)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
-       ("python" ,python)))
+       ("python" ,python-wrapper)))
     (home-page "https://gstreamer.freedesktop.org/")
     (synopsis "GStreamer library for non-linear editors")
     (description
