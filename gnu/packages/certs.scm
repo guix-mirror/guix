@@ -147,7 +147,7 @@ taken from the NSS package and thus ultimately from the Mozilla project.")
 (define-public le-certs
   (package
     (name "le-certs")
-    (version "0")
+    (version "1")
     (source #f)
     (build-system trivial-build-system)
     (arguments
@@ -155,9 +155,12 @@ taken from the NSS package and thus ultimately from the Mozilla project.")
        #:builder
        (begin
          (use-modules (guix build utils))
-         (let ((root (assoc-ref %build-inputs "isrgrootx1.pem"))
-               (intermediate (assoc-ref %build-inputs "letsencryptauthorityx3.pem"))
-               (backup (assoc-ref %build-inputs "letsencryptauthorityx4.pem"))
+         (let ((root-rsa (assoc-ref %build-inputs "isrgrootx1.pem"))
+               (root-ecdsa (assoc-ref %build-inputs "isrgrootx2.pem"))
+               (intermediate-rsa (assoc-ref %build-inputs "letsencryptauthorityr3.pem"))
+               (intermediate-ecdsa (assoc-ref %build-inputs "letsencryptauthoritye1.pem"))
+               (backup-rsa (assoc-ref %build-inputs "letsencryptauthorityr4.pem"))
+               (backup-ecdsa (assoc-ref %build-inputs "letsencryptauthoritye2.pem"))
                (out (string-append (assoc-ref %outputs "out") "/etc/ssl/certs"))
                (openssl (assoc-ref %build-inputs "openssl"))
                (perl (assoc-ref %build-inputs "perl")))
@@ -166,7 +169,9 @@ taken from the NSS package and thus ultimately from the Mozilla project.")
              (lambda (cert)
                (copy-file cert (string-append out "/"
                                               (strip-store-file-name cert))))
-             (list root intermediate backup))
+             (list root-rsa root-ecdsa
+                   intermediate-rsa intermediate-ecdsa
+                   backup-rsa backup-ecdsa))
 
            ;; Create hash symlinks suitable for OpenSSL ('SSL_CERT_DIR' and
            ;; similar.)
@@ -186,26 +191,55 @@ taken from the NSS package and thus ultimately from the Mozilla project.")
            (sha256
             (base32
              "1la36n2f31j9s03v847ig6ny9lr875q3g7smnq33dcsmf2i5gd92"))))
-       ;; "Let’s Encrypt Authority X3", the active Let's Encrypt intermediate
-       ;; certificate.
-       ("letsencryptauthorityx3.pem"
+      ; Upcoming ECDSA Let's Encrypt root certificate, "ISRG Root X2"
+      ; Let's Encrypt describes it as "Active, limited availability"
+      ("isrgrootx2.pem"
         ,(origin
            (method url-fetch)
-           (uri "https://letsencrypt.org/certs/letsencryptauthorityx3.pem")
+           (uri "https://letsencrypt.org/certs/isrg-root-x2.pem")
            (sha256
             (base32
-             "100lxxvqv4fj563bm03zzk5r36hq5jx9nnrajzs38g825c5k0cg2"))))
-       ;; "Let’s Encrypt Authority X4", the backup Let's Encrypt intermediate
-       ;; certificate.  This will be used for disaster recovery and will only be
-       ;; used should Let's Encrypt lose the ability to issue with "Let’s
-       ;; Encrypt Authority X3".
-       ("letsencryptauthorityx4.pem"
-        ,(origin
-           (method url-fetch)
-           (uri "https://letsencrypt.org/certs/letsencryptauthorityx4.pem")
-           (sha256
-            (base32
-             "0d5256gwf73drq6q6jala28rfzhrgbk5pjfq27vc40ly91pdyh8m"))))))
+             "04xh8912nwkghqydbqvvmslpqbcafgxgjh9qnn0z2vgy24g8hgd1"))))
+      ;; "Let’s Encrypt Authority R3", the active Let's Encrypt intermediate
+      ;; RSA certificate.
+      ("letsencryptauthorityr3.pem"
+       ,(origin
+          (method url-fetch)
+          (uri "https://letsencrypt.org/certs/lets-encrypt-r3.pem")
+          (sha256
+           (base32
+            "0clxry49rx6qd3pgbzknpgzywbg3j96zy0227wwjnwivqj7inzhp"))))
+      ;; "Let’s Encrypt Authority E1", the active Let's Encrypt intermediate
+      ;; ECDSA certificate.
+      ("letsencryptauthoritye1.pem"
+       ,(origin
+          (method url-fetch)
+          (uri "https://letsencrypt.org/certs/lets-encrypt-e1.pem")
+          (sha256
+           (base32
+            "1zwrc6dlk1qig0z23x6x7fib14rrw41ccbf2ds0rw75zccc59xx0"))))
+      ;; "Let’s Encrypt Authority R4", the backup Let's Encrypt intermediate
+      ;; RSA certificate.  This will be used for disaster recovery and will only be
+      ;; used should Let's Encrypt lose the ability to issue with "Let’s
+      ;; Encrypt Authority R3".
+      ("letsencryptauthorityr4.pem"
+       ,(origin
+          (method url-fetch)
+          (uri "https://letsencrypt.org/certs/lets-encrypt-r4.pem")
+          (sha256
+           (base32
+            "09bzxzbwb9x2xxan3p1fyj1pi2p5yks0879gwz5f28y9mzq8vmd8"))))
+      ;; "Let’s Encrypt Authority E2", the backup Let's Encrypt intermediate
+      ;; ECDSA certificate.  This will be used for disaster recovery and will
+      ;; only be used should Let's Encrypt lose the ability to issue with "Let’s
+      ;; Encrypt Authority E1".
+      ("letsencryptauthoritye2.pem"
+       ,(origin
+          (method url-fetch)
+          (uri "https://letsencrypt.org/certs/lets-encrypt-e2.pem")
+          (sha256
+           (base32
+            "1wfmsa29lyi9dkh6xdcamb2rhkp5yl2ppnsgrzcrjl5c7gbqh9ml"))))))
     (home-page "https://letsencrypt.org/certificates/")
     (synopsis "Let's Encrypt root and intermediate certificates")
     (description "This package provides a certificate store containing only the
