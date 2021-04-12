@@ -597,9 +597,24 @@ to '%package-module-path'."
               (string-append #$output "/share/guile/site/"
                              (effective-version)))
 
+            (define optimizations-for-level
+              ;; Guile 3.0 provides this procedure but Guile 2.2 didn't.
+              ;; Since this code may be executed by either version, we can't
+              ;; rely on its availability.
+              (or (and=> (false-if-exception
+                          (resolve-interface '(system base optimize)))
+                         (lambda (iface)
+                           (module-ref iface 'optimizations-for-level)))
+                  (const '())))
+
+            (define -O1
+              ;; Optimize for package module compilation speed.
+              (optimizations-for-level 1))
+
             (let* ((subdir #$directory)
                    (source (string-append #$source subdir)))
-              (compile-files source go (find-files source "\\.scm$"))
+              (compile-files source go (find-files source "\\.scm$")
+                             #:optimization-options (const -O1))
               (mkdir-p (dirname scm))
               (symlink (string-append #$source subdir) scm))
 
