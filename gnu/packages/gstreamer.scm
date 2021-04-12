@@ -559,6 +559,7 @@ This package provides the core library and elements.")
              '()
              `(("orc" ,orc)))))         ;required by gstreamer-audio-1.0.pc
     (inputs
+     ;; TODO: Add libvorbisidec
      `(("cdparanoia" ,cdparanoia)
        ("pango" ,pango)
        ("libogg" ,libogg)
@@ -569,21 +570,43 @@ This package provides the core library and elements.")
        ("libXext" ,libxext)
        ("libxv" ,libxv)
        ("alsa-lib" ,alsa-lib)
-       ("opus" ,opus)))
+       ("opus" ,opus)
+       ("graphene" ,graphene)
+       ("iso-codes" ,iso-codes)
+       ("libgudev" ,libgudev)
+       ("libjpeg" ,libjpeg-turbo)
+       ("libpng" ,libpng)
+       ("libvisual" ,libvisual)
+       ("mesa" ,mesa)
+       ("wayland-protocols" ,wayland-protocols)
+       ("wayland" ,wayland)))
     (native-inputs
-      `(("pkg-config" ,pkg-config)
-        ("glib:bin" ,glib "bin")
-        ("gobject-introspection" ,gobject-introspection)
-        ("python-wrapper" ,python-wrapper)))
+     `(("pkg-config" ,pkg-config)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("python-wrapper" ,python-wrapper)
+       ("gettext" ,gettext-minimal)
+       ("xorg-server" ,xorg-server-for-tests)))
     (arguments
-     `(#:configure-flags '("-Dgl=disabled")
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          ,@%common-gstreamer-phases
          (add-before 'configure 'patch
            (lambda _
              (substitute* "tests/check/libs/pbutils.c"
                (("/bin/sh") (which "sh")))
+             #t))
+         (add-before 'check 'pre-check
+           (lambda _
+             ;; Tests require a running X server.
+             (system "Xvfb :1 +extension GLX &")
+             (setenv "DISPLAY" ":1")
+             ;; Tests write to $HOME.
+             (setenv "HOME" (getcwd))
+             ;; Tests look for $XDG_RUNTIME_DIR.
+             (setenv "XDG_RUNTIME_DIR" (getcwd))
+             ;; For missing '/etc/machine-id'.
+             (setenv "DBUS_FATAL_WARNINGS" "0")
              #t)))))
     (home-page "https://gstreamer.freedesktop.org/")
     (synopsis
