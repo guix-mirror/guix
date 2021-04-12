@@ -115,7 +115,7 @@ host	all	all	::1/128 	md5"))
   (ident-file        postgresql-config-file-ident-file
                      (default %default-postgres-ident))
   (socket-directory  postgresql-config-file-socket-directory
-                     (default "/var/run/postgresql"))
+                     (default #false))
   (extra-config      postgresql-config-file-extra-config
                      (default '())))
 
