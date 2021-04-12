@@ -7978,3 +7978,31 @@ as the default text font.  The @code{fontaxes} package is required for
 use with [pdf]LaTeX.")
     (license (list license:silofl1.1 ;for Cabin
                    license:lppl))))  ;for support files
+
+(define-public texlive-newtx
+  (package
+    (inherit (simple-texlive-package
+              "texlive-newtx"
+              (list "/doc/fonts/newtx/"
+                    "/fonts/afm/public/newtx/"
+                    "/fonts/enc/dvips/newtx/"
+                    "/fonts/map/dvips/newtx/"
+                    "/fonts/opentype/public/newtx/"
+                    "/fonts/tfm/public/newtx/"
+                    "/fonts/type1/public/newtx/"
+                    "/fonts/vf/public/newtx/"
+                    "/tex/latex/newtx/")
+              (base32
+               "0rqjj33m6xkhrjzjhf24kxdg61az5sqsbcl0m7xqkf4akqybn22d")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/newtx")
+    (synopsis "Repackaging of the TX fonts with improved metrics")
+    (description "The @code{newtx} bundle splits
+@code{txfonts.sty} (from the TX fonts distribution) into two
+independent packages, @code{newtxtext.sty} and @code{newtxmath.sty},
+each with fixes and enhancements.  @code{newtxmath}'s metrics have
+been re-evaluated to provide a less tight appearance and to provide a
+@code{libertine} option that substitutes Libertine italic and Greek
+letters for the existing math italic and Greek glyphs, making a
+mathematics package that matches Libertine text quite well.")
+    (license license:lppl1.3)))
