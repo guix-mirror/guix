@@ -3,6 +3,7 @@
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -44,6 +45,7 @@
             define-configuration
             validate-configuration
             generate-documentation
+            configuration->documentation
             serialize-package))
 
 ;;; Commentary:
@@ -214,3 +216,15 @@ does not have a default value" field kind)))
                       (or (assq-ref sub-documentation field-name) '())))))
             fields)))))
   (stexi->texi `(*fragment* . ,(generate documentation-name))))
+
+(define (configuration->documentation configuration-symbol)
+  "Take CONFIGURATION-SYMBOL, the symbol corresponding to the name used when
+defining a configuration record with DEFINE-CONFIGURATION, and output the
+Texinfo documentation of its fields."
+  ;; This is helper for a simple, straight-forward application of
+  ;; GENERATE-DOCUMENTATION.
+  (let ((fields-getter (module-ref (current-module)
+                                   (symbol-append configuration-symbol
+                                                  '-fields))))
+    (format #t (generate-documentation `((,configuration-symbol ,fields-getter))
+                                       configuration-symbol))))
