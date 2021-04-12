@@ -317,25 +317,25 @@ SYSTEM."
                            #:key source commit)
   "Return a list of jobs for the system tests."
   (define (->job test)
-    (parameterize ((current-guix-package
-                    (channel-source->package source #:commit commit)))
-      (let ((name (string-append "test." (system-test-name test)
-                                 "." system))
-            (drv (run-with-store store
-                   (mbegin %store-monad
-                     (set-current-system system)
-                     (set-grafting #f)
-                     (set-guile-for-build (default-guile))
-                     (system-test-value test)))))
+    (let ((name (string-append "test." (system-test-name test)
+                               "." system))
+          (drv (run-with-store store
+                 (mbegin %store-monad
+                   (set-current-system system)
+                   (set-grafting #f)
+                   (set-guile-for-build (default-guile))
+                   (system-test-value test)))))
 
-        (derivation->job name drv))))
+      (derivation->job name drv)))
 
   (if (member system %guix-system-supported-systems)
       ;; Override the value of 'current-guix' used by system tests.  Using a
       ;; channel instance makes tests that rely on 'current-guix' less
       ;; expensive.  It also makes sure we get a valid Guix package when this
       ;; code is not running from a checkout.
-      (map ->job (all-system-tests))
+      (parameterize ((current-guix-package
+                      (channel-source->package source #:commit commit)))
+        (map ->job (all-system-tests)))
       '()))
 
 (define (tarball-jobs store system)
