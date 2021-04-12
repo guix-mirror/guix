@@ -618,7 +618,7 @@ for the GStreamer multimedia library.")
 (define-public gst-plugins-good
   (package
     (name "gst-plugins-good")
-    (version "1.18.2")
+    (version "1.18.4")
     (source
      (origin
        (method url-fetch)
@@ -630,7 +630,7 @@ for the GStreamer multimedia library.")
                                 "gst-plugins-good-CVE-2021-3497.patch"
                                 "gst-plugins-good-CVE-2021-3498.patch"))
        (sha256
-        (base32 "1929nhjsvbl4bw37nfagnfsnxz737cm2x3ayz9ayrn9lwkfm45zp"))))
+        (base32 "1c1rpq709cy8maaykyn1n0kckj9c6fl3mhvixkk6xmdwkcx0xrdn"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
