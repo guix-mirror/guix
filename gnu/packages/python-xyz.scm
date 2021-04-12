@@ -60,7 +60,7 @@
 ;;; Copyright © 2019, 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2019 Sam <smbaines8@gmail.com>
 ;;; Copyright © 2019 Jack Hill <jackhill@jackhill.us>
-;;; Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2019, 2020, 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019, 2020 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019, 2020 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Jacob MacDonald <jaccarmac@gmail.com>
@@ -24484,3 +24484,31 @@ apply various transformations to plain text in order to yield
 typographically-improved HTML.  While often used in conjunction with Jinja and
 Django template systems, the filters can be used in any environment.")
     (license license:bsd-3)))
+
+(define-public python-pathvalidate
+  (package
+    (name "python-pathvalidate")
+    (version "2.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pathvalidate" version))
+       (sha256
+        (base32 "0s14ycjgb44lxr2wg8lrq3b7kybmmrbf7yqz47xrqgn2gr6dk6rw"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f))
+    ;; Tests disabled because of circular dependencies.
+    ;; pathvalidate tests depend on pytest-md-report, which
+    ;; depends on pathvalidate.
+    (native-inputs
+     `(("python-allpairspy" ,python-allpairspy)
+       ("python-click" ,python-click)
+       ("python-faker" ,python-faker)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/thombashi/pathvalidate")
+    (synopsis "Sanitize strings representing paths")
+    (description
+     "@code{pathvalidate} is a Python library to sanitize/validate strings
+representing paths or filenames.")
+    (license license:expat)))
