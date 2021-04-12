@@ -254,7 +254,7 @@ modifying."
 (define (main . args)
   (match (diff-info)
     (()
-     (display "Nothing to be done." (current-error-port)))
+     (display "Nothing to be done.\n" (current-error-port)))
     (hunks
      (let-values
          (((definitions changes)
