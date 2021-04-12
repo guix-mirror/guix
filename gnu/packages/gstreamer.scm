@@ -826,7 +826,7 @@ par compared to the rest.")
 (define-public gst-plugins-ugly
   (package
     (name "gst-plugins-ugly")
-    (version "1.18.2")
+    (version "1.18.4")
     (source
      (origin
        (method url-fetch)
@@ -835,7 +835,7 @@ par compared to the rest.")
                        name "/" name "-" version ".tar.xz"))
        (patches (search-patches "gst-plugins-ugly-fix-out-of-bound-reads.patch"))
        (sha256
-        (base32 "1nwbcv5yaib3d8icvyja3zf6lyjf5zf1hndbijrhj8j7xlia0dx3"))))
+        (base32 "0g6i4db1883q3j0l2gdv46fcqwiiaw63n6mhvsfcms1i1p7g1391"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
