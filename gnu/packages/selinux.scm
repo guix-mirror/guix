@@ -2,6 +2,7 @@
 ;;; Copyright © 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,17 +48,16 @@
 (define-public libsepol
   (package
     (name "libsepol")
-    (version "3.0")
-    (source (let ((release "20191204"))
-              (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/SELinuxProject/selinux")
-                      (commit release)))
-                (file-name (string-append "selinux-" release "-checkout"))
-                (sha256
-                 (base32
-                  "05rpzm72cgprd0ccr6lvx9hm8j8b5nkqi4avshlsyg7s3sdlcxjs")))))
+    (version "3.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/SELinuxProject/selinux")
+                     (commit version)))
+              (file-name (git-file-name "selinux" version))
+              (sha256
+               (base32
+                "03p3lmvrvkcvsmiczsjzhyfgxlxdkdyq0p8igv3s3hdak5n92jjn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; tests require checkpolicy, which requires libsepol
@@ -80,14 +80,13 @@
        (modify-phases %standard-phases
          (delete 'configure)
          (add-after 'unpack 'enter-dir
-           (lambda _ (chdir ,name) #t))
+           (lambda _ (chdir ,name)))
          (add-after 'enter-dir 'portability
            (lambda _
              (substitute* "src/ibpkeys.c"
                (("#include \"ibpkey_internal.h\"" line)
                 (string-append line "\n#include <inttypes.h>\n"))
-               (("%#lx") "%#\" PRIx64 \""))
-             #t)))))
+               (("%#lx") "%#\" PRIx64 \"")))))))
     (native-inputs
      `(("flex" ,flex)))
     (home-page "https://selinuxproject.org/")
@@ -122,7 +121,7 @@ boolean settings).")
          (delete 'configure)
          (delete 'portability)
          (add-after 'unpack 'enter-dir
-           (lambda _ (chdir ,name) #t)))))
+           (lambda _ (chdir ,name))))))
     (inputs
      `(("libsepol" ,libsepol)))
     (native-inputs
@@ -159,7 +158,7 @@ module into a binary representation.")
         `(modify-phases ,phases
            (delete 'portability)
            (replace 'enter-dir
-             (lambda _ (chdir ,name) #t))
+             (lambda _ (chdir ,name)))
            (add-after 'build 'pywrap
              (lambda* (#:key make-flags #:allow-other-keys)
                (apply invoke "make" "pywrap" make-flags)))
@@ -209,13 +208,12 @@ the core SELinux management utilities.")
         `(modify-phases ,phases
            (delete 'portability)
            (replace 'enter-dir
-             (lambda _ (chdir ,name) #t))
+             (lambda _ (chdir ,name)))
            (add-before 'install 'adjust-semanage-conf-location
              (lambda _
                (substitute* "src/Makefile"
                  (("DEFAULT_SEMANAGE_CONF_LOCATION=/etc")
-                  "DEFAULT_SEMANAGE_CONF_LOCATION=$(PREFIX)/etc"))
-               #t))
+                  "DEFAULT_SEMANAGE_CONF_LOCATION=$(PREFIX)/etc"))))
            (add-after 'build 'pywrap
              (lambda* (#:key make-flags #:allow-other-keys)
                (apply invoke "make" "pywrap" make-flags)))
@@ -256,7 +254,7 @@ binary policies.")
         `(modify-phases ,phases
            (delete 'portability)
            (replace 'enter-dir
-             (lambda _ (chdir ,name) #t))))))
+             (lambda _ (chdir ,name)))))))
     (inputs
      `(("libsepol" ,libsepol)))
     (native-inputs
@@ -279,7 +277,7 @@ binary policies.")
             `(modify-phases ,phases
                (delete 'portability)
                (replace 'enter-dir
-                 (lambda _ (chdir "python/sepolgen") #t))
+                 (lambda _ (chdir "python/sepolgen")))
                ;; By default all Python files would be installed to
                ;; $out/gnu/store/...-python-.../, so we override the
                ;; PACKAGEDIR to fix this.
@@ -301,8 +299,7 @@ binary policies.")
                                         (assoc-ref inputs "python"))
                                        "/site-packages/sepolgen")))
                      (substitute* "src/share/Makefile"
-                       (("\\$\\(DESTDIR\\)") (assoc-ref outputs "out"))))
-                   #t)))))))
+                       (("\\$\\(DESTDIR\\)") (assoc-ref outputs "out")))))))))))
     (inputs
      `(("python" ,python-wrapper)))
     (native-inputs '())
@@ -401,9 +398,8 @@ tools, and libraries designed to facilitate SELinux policy analysis.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
-         (delete 'portability)
          (add-after 'unpack 'enter-dir
-           (lambda _ (chdir ,name) #t))
+           (lambda _ (chdir ,name)))
          (add-after 'enter-dir 'ignore-/usr-tests
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Rewrite lookup paths for header files.
@@ -413,8 +409,7 @@ tools, and libraries designed to facilitate SELinux policy analysis.")
                (("/usr(/include/security/pam_appl.h)" _ file)
                 (string-append (assoc-ref inputs "pam") file))
                (("/usr(/include/libaudit.h)" _ file)
-                (string-append (assoc-ref inputs "audit") file)))
-             #t)))))
+                (string-append (assoc-ref inputs "audit") file))))))))
     (inputs
      `(("audit" ,audit)
        ("pam" ,linux-pam)
