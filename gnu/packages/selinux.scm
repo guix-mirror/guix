@@ -63,19 +63,14 @@
      `(#:tests? #f ; tests require checkpolicy, which requires libsepol
        #:test-target "test"
        #:make-flags
-       (let ((out (assoc-ref %outputs "out"))
-             (target ,(%current-target-system)))
+       (let ((out (assoc-ref %outputs "out")))
          (list (string-append "PREFIX=" out)
                (string-append "SHLIBDIR=" out "/lib")
                (string-append "MAN3DIR=" out "/share/man/man3")
                (string-append "MAN5DIR=" out "/share/man/man5")
                (string-append "MAN8DIR=" out "/share/man/man8")
                (string-append "LDFLAGS=-Wl,-rpath=" out "/lib")
-               (string-append "CC="
-                              (if target
-                                  (string-append (assoc-ref %build-inputs "cross-gcc")
-                                                 "/bin/" target "-gcc")
-                                  "gcc"))))
+               (string-append "CC=" ,(cc-for-target))))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
@@ -105,17 +100,12 @@ boolean settings).")
     (arguments
      `(#:tests? #f ; there is no check target
        #:make-flags
-       (let ((out (assoc-ref %outputs "out"))
-             (target ,(%current-target-system)))
+       (let ((out (assoc-ref %outputs "out")))
          (list (string-append "PREFIX=" out)
                (string-append "LIBSEPOLA="
                               (assoc-ref %build-inputs "libsepol")
                               "/lib/libsepol.a")
-               (string-append "CC="
-                              (if target
-                                  (string-append (assoc-ref %build-inputs "cross-gcc")
-                                                 "/bin/" target "-gcc")
-                                  "gcc"))))
+               (string-append "CC=" ,(cc-for-target))))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
@@ -376,7 +366,7 @@ tools, and libraries designed to facilitate SELinux policy analysis.")
      `(#:test-target "test"
        #:make-flags
        (let ((out (assoc-ref %outputs "out")))
-         (list "CC=gcc"
+         (list (string-append "CC=" ,(cc-for-target))
                (string-append "PREFIX=" out)
                (string-append "LOCALEDIR=" out "/share/locale")
                (string-append "BASHCOMPLETIONDIR=" out
