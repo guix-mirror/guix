@@ -40,6 +40,7 @@
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages cdrom)
   #:use-module (gnu packages curl)
@@ -62,7 +63,9 @@
   #:use-module (gnu packages libunwind)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages maths)
   #:use-module (gnu packages mp3)
+  #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages ocr)
@@ -461,16 +464,16 @@ the GStreamer multimedia framework.")
 (define-public gstreamer
   (package
     (name "gstreamer")
-    (version "1.18.2")
+    (version "1.18.4")
     (source
      (origin
-      (method url-fetch)
-      (uri (string-append
-            "https://gstreamer.freedesktop.org/src/gstreamer/gstreamer-"
-            version ".tar.xz"))
-      (sha256
-       (base32
-        "0ijlmvr660m8zn09xlmnq1ajrziqsivp2hig5a9mabhcjx7ypkb6"))))
+       (method url-fetch)
+       (uri (string-append
+             "https://gstreamer.freedesktop.org/src/gstreamer/gstreamer-"
+             version ".tar.xz"))
+       (sha256
+        (base32
+         "1igv9l4hm21kp1jmlwlagzs7ly1vaxv1sbda29q8247372dwkvls"))))
     (build-system meson-build-system)
     (arguments
      `(#:phases
@@ -487,29 +490,36 @@ the GStreamer multimedia framework.")
                        (("tcase_add_test \\(tc_chain, test_stress_cleanup_unschedule.*")
                         "")
                        (("tcase_add_test \\(tc_chain, test_stress_reschedule.*")
-                      ""))
-                     #t)))
-               '())
-         ;; XXX: This test fails undeterministically.
-         (add-after 'unpack 'disable-test
-           (lambda _
-             (substitute* "tests/check/meson.build"
-               ((".*libs/gstnetclientclock\\.c.*") "")))))))
-    (propagated-inputs `(("glib" ,glib))) ; required by gstreamer-1.0.pc.
+                        "")))))
+               '()))))
+    (propagated-inputs
+     ;; In gstreamer-1.0.pc:
+     ;;   Requires: glib-2.0, gobject-2.0
+     ;;   Requires.private: gmodule-no-export-2.0 libunwind libdw
+     `(("elfutils" ,elfutils)           ; libdw
+       ("glib" ,glib)
+       ("libunwind" ,libunwind)))
     (native-inputs
-     `(("bison" ,bison)
+     `(("bash-completion" ,bash-completion)
+       ("bison" ,bison)
        ("flex" ,flex)
+       ("gettext" ,gettext-minimal)
        ("glib" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("python-wrapper" ,python-wrapper)))
+    (inputs
+     `(("gmp" ,gmp)
+       ("libcap" ,libcap)
+       ;; For tests.
+       ("gsl" ,gsl)))
     (native-search-paths
      (list (search-path-specification
             (variable "GST_PLUGIN_SYSTEM_PATH")
             (files '("lib/gstreamer-1.0")))))
     (home-page "https://gstreamer.freedesktop.org/")
-    (synopsis "Multimedia library")
+    (synopsis "Multimedia framework")
     (description
      "GStreamer is a library for constructing graphs of media-handling
 components.  The applications it supports range from simple Ogg/Vorbis
