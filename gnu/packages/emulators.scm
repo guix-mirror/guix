@@ -13,6 +13,7 @@
 ;;; Copyright © 2019 David Wilson <david@daviwil.com>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Christopher Howard <christopher@librehacker.com>
+;;; Copyright © 2021 Felipe Balbi <balbi@kernel.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -44,6 +45,7 @@
   #:use-module (gnu packages autogen)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages cdrom)
@@ -53,6 +55,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages digest)
   #:use-module (gnu packages elf)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
@@ -96,6 +99,45 @@
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python))
+
+(define-public vice
+  (package
+    (name "vice")
+    (version "3.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/vice-emu/releases/"
+                           "vice-" version ".tar.gz"))
+       (sha256
+        (base32
+         "03nwcldg2h7dxj6aa77ggqc0442hqc1lsq5x69h8kcmqmvx7ifan"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--disable-pdf-docs")))
+    (native-inputs
+     `(("bison" ,bison)
+       ("dos2unix" ,dos2unix)
+       ("flex" ,flex)
+       ("glib" ,glib "bin")             ; for glib-genmarshal, etc.
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("glew" ,glew)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("pulseaudio" ,pulseaudio)
+       ("sdl" ,sdl)
+       ("sdl-image" ,sdl-image)
+       ("xa" ,xa)))
+    (home-page "https://vice-emu.sourceforge.io/")
+    (synopsis "The versatile Commodore emulator")
+    (description
+     "VICE is a program that emulates the C64, the C64DTV, the C128, the
+VIC20, practically all PET models, the PLUS4 and the CBM-II (aka
+C610/C510).  An extra emulator is provided for C64 expanded with the CMD
+SuperCPU.")
+    (license license:gpl2+)))
 
 (define-public desmume
   (package
