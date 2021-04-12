@@ -161,6 +161,36 @@ collection.")
 (define-public cl-bodge-utilities
   (sbcl-package->cl-source-package sbcl-bodge-utilities))
 
+(define-public sbcl-bodge-queue
+  (let ((commit "948c9a501dcd412689952d09eb7453ec2722336a")
+        (revision "0"))
+    (package
+      (name "sbcl-bodge-queue")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/borodust/bodge-queue")
+               (commit commit)))
+         (file-name (git-file-name "bodge-queue" version))
+         (sha256
+          (base32 "148hjikqk8v2m30mj15xh89zni6szf9z3prav580qk9dqr8djjdr"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (home-page "https://github.com/borodust/bodge-queue")
+      (synopsis "Simple queue for Common Lisp")
+      (description "This Common Lisp library provides a simple FIFO
+implementation with no external dependencies.")
+      (license license:expat))))
+
+(define-public cl-bodge-queue
+  (sbcl-package->cl-source-package sbcl-bodge-queue))
+
+(define-public ecl-bodge-queue
+  (sbcl-package->ecl-package sbcl-bodge-queue))
+
 (define-public sbcl-golden-utils
   (let ((commit "62a5cb948a011eb26e7a89f56d5839a3334b4100")
         (revision "2"))
