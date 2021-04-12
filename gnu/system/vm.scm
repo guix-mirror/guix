@@ -468,6 +468,7 @@ system that is passed to 'populate-root-file-system'."
 (define* (system-docker-image os
                               #:key
                               (name "guix-docker-image")
+                              (memory-size 256)
                               (register-closures? (has-guix-service-type? os))
                               shared-network?)
   "Build a docker image.  OS is the desired <operating-system>.  NAME is the
@@ -561,6 +562,7 @@ the operating system."
 
     (expression->derivation-in-linux-vm
      name build
+     #:memory-size memory-size
      #:make-disk-image? #f
      #:single-file-output? #t
      #:references-graphs `((,graph ,os)))))
