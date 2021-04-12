@@ -2649,8 +2649,8 @@ format is also supported.")
   (deprecated-package "guile3.0-mcron" mcron))
 
 (define-public guile-picture-language
-  (let ((commit "291a746a1d3b4784d38b05239bdd7b8e796ce761")
-        (revision "4"))
+  (let ((commit "a1322bf11945465241ca5b742a70893f24156d12")
+        (revision "5"))
     (package
       (name "guile-picture-language")
       (version (git-version "0.0.1" revision commit))
@@ -2662,7 +2662,7 @@ format is also supported.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0rnhf13ds92sbdicshy4sy4kl2kc431fy9vzm1divw974p7v57sd"))))
+                  "03i528z92ainccgm28shg4haxiav5x4cyhyi5dggq1rm027vbm99"))))
       (build-system gnu-build-system)
       (inputs
        `(("guile" ,guile-3.0)))
