@@ -2015,7 +2015,7 @@ See yggdrasil -genconf for config options.")
    (default-value (ipfs-configuration))
    (description
     "Run @command{ipfs daemon}, the reference implementation
-of the IPFS p2p storage network.")))
+of the IPFS peer-to-peer storage network.")))
 
 
 ;;;
