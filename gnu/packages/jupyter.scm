@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -183,4 +184,26 @@ kernel.
 Several Jupyter kernels are built upon @code{xeus}, such as @code{xeus-cling},
 a kernel for the C++ programming language, and @code{xeus-python}, an
 alternative Python kernel for Jupyter.")
+    (license license:bsd-3)))
+
+(define-public python-jupyterlab-pygments
+  (package
+    (name "python-jupyterlab-pygments")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "jupyterlab_pygments" version))
+       (sha256
+        (base32
+         "0ij14mmnc39nmf84i0av6j9glazjic7wzv1qyhr0j5966s3s1kfg"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #false)) ; there are no tests
+    (propagated-inputs
+     `(("python-pygments" ,python-pygments)))
+    (home-page "https://jupyter.org")
+    (synopsis "Pygments theme using JupyterLab CSS variables")
+    (description
+     "This package contains a syntax coloring theme for pygments making use of
+the JupyterLab CSS variables.")
     (license license:bsd-3)))
