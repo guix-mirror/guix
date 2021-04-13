@@ -233,7 +233,7 @@
                 (let* ((port (open-pipe*
                               OPEN_READ
                               #$(file-append postgresql "/bin/psql")
-                              "-tAh" "/var/run/postgresql"
+                              "-tAh" "/tmp"
                               "-c" "SELECT 1 FROM pg_database WHERE
  datname='root'"))
                        (output (get-string-all port)))
