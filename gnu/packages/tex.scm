@@ -8006,3 +8006,30 @@ been re-evaluated to provide a less tight appearance and to provide a
 letters for the existing math italic and Greek glyphs, making a
 mathematics package that matches Libertine text quite well.")
     (license license:lppl1.3)))
+
+(define-public texlive-xcharter
+  (package
+    (inherit (simple-texlive-package
+              "texlive-xcharter"
+              (list "/doc/fonts/xcharter/"
+                    "/fonts/afm/public/xcharter/"
+                    "/fonts/enc/dvips/xcharter/"
+                    "/fonts/map/dvips/xcharter/"
+                    "/fonts/opentype/public/xcharter/"
+                    "/fonts/tfm/public/xcharter/"
+                    "/fonts/type1/public/xcharter/"
+                    "/fonts/vf/public/xcharter/"
+                    "/tex/latex/xcharter/")
+              (base32
+               "0krm4h53lw7h9jbmv5nc89fm4x7i8l574aig1l4mw8w3ziknwmi7")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/xcharter")
+    (synopsis "Extension of the Bitstream Charter fonts")
+    (description "@code{xcharter} repackages Bitstream Charter with an
+extended set of features.  The extension provides small caps, oldstyle
+figures and superior figures in all four styles, accompanied by LaTeX
+font support files.  The fonts themselves are provided in both Adobe
+Type 1 and OTF formats, with supporting files as necessary.")
+    (license (list (license:fsf-free
+                    "http://mirrors.ctan.org/fonts/xcharter/README")
+                   license:lppl1.3))))
