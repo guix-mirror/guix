@@ -11656,6 +11656,32 @@ Pytest but stripped of Pytest specific details.")
 code.")
     (license license:expat)))
 
+(define-public python-deprecation
+  (package
+    (name "python-deprecation")
+    (version "2.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "deprecation" version))
+       (sha256
+        (base32
+         "1zqqjlgmhgkpzg9ss5ki8wamxl83xn51fs6gn2a8cxsx9vkbvcvj"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-packaging" ,python-packaging)))
+    (native-inputs
+     `(("python-unittest2" ,python-unittest2)))
+    (home-page "https://deprecation.readthedocs.io/")
+    (synopsis "Python library to handle automated deprecations")
+    (description
+     "This is a library that enables automated deprecations.  It offers the
+@code{deprecated()} decorator to wrap functions, providing proper warnings
+both in documentation and via Python’s warnings system, as well as the
+@code{deprecation.fail_if_not_removed()} decorator for test methods to ensure
+that deprecated code is eventually removed.")
+    (license license:asl2.0)))
+
 (define-public python-tox
   (package
     (name "python-tox")
