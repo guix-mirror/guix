@@ -2523,6 +2523,53 @@ than Python’s urllib2 library.")
 (define-public python2-requests
   (package-with-python2 python-requests))
 
+(define-public python-requests-unixsocket
+  (package
+    (name "python-requests-unixsocket")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "requests-unixsocket" version))
+       (sha256
+        (base32
+         "1sn12y4fw1qki5gxy9wg45gmdrxhrndwfndfjxhpiky3mwh1lp4y"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'relax-requirements
+           (lambda _
+             (substitute* "test-requirements.txt"
+               (("(.*)==(.*)" _ name) (string-append name "\n")))))
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv"))))))
+    (propagated-inputs
+     `(("python-pbr" ,python-pbr)
+       ("python-requests" ,python-requests)
+       ("python-urllib3" ,python-urllib3)))
+    (native-inputs
+     `(("python-apipkg" ,python-apipkg)
+       ("python-appdirs" ,python-appdirs)
+       ("python-execnet" ,python-execnet)
+       ("python-packaging" ,python-packaging)
+       ("python-pep8" ,python-pep8)
+       ("python-py" ,python-py)
+       ("python-pyparsing" ,python-pyparsing)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cache" ,python-pytest-cache)
+       ("python-pytest-pep8" ,python-pytest-pep8)
+       ("python-six" ,python-six)
+       ("python-waitress" ,python-waitress)))
+    (home-page "https://github.com/msabramo/requests-unixsocket")
+    (synopsis "Talk HTTP via a UNIX domain socket")
+    (description
+     "This Python package lets you use the @code{requests} library to talk
+HTTP via a UNIX domain socket.")
+    (license license:asl2.0)))
+
 (define-public python-requests_ntlm
   (package
     (name "python-requests_ntlm")
