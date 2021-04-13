@@ -24,7 +24,7 @@
 ;;; Copyright © 2017, 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017, 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
-;;; Copyright © 2015, 2017, 2018, 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017, 2018, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
@@ -1769,7 +1769,7 @@ C/C++, R, and more, and uploads it to the @code{codecov.io} service.")
 (define-public python-testpath
   (package
     (name "python-testpath")
-    (version "0.2")
+    (version "0.4.4")
     (source
      (origin
        (method git-fetch)
@@ -1779,7 +1779,7 @@ C/C++, R, and more, and uploads it to the @code{codecov.io} service.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0r4iiizjql6ny1ln7ciw7rrbjadz1s9zrf2hl0xkgnh3ypd8936f"))))
+         "1fwv4d3p54xx1x942s104irr35lszvv6jnr4nn1scsfvc0m1qmbk"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ; this package does not even have a setup.py
@@ -1788,19 +1788,25 @@ C/C++, R, and more, and uploads it to the @code{codecov.io} service.")
                   (srfi srfi-1))
        #:phases
        (modify-phases %standard-phases
-         (delete 'install)
          (replace 'build
+           (lambda _
+             ;; A ZIP archive should be generated, but it fails with "ZIP does
+             ;; not support timestamps before 1980".  Luckily,
+             ;; SOURCE_DATE_EPOCH is respected, which we set to some time in
+             ;; 1980.
+             (setenv "SOURCE_DATE_EPOCH" "315532800")
+             (invoke "flit" "build")))
+         (replace 'install
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((version (last
-                              (string-split (assoc-ref inputs "python") #\-)))
-                    (x.y (string-join (take (string-split version #\.) 2)
-                                        "."))
-                    (dir (string-append
-                          (assoc-ref outputs "out")
-                          "/lib/python" x.y "/site-packages/testpath")))
-               (mkdir-p dir)
-               (copy-recursively "testpath" dir))
-             #t)))))
+             (add-installed-pythonpath inputs outputs)
+             (let ((out (assoc-ref outputs "out")))
+               (for-each (lambda (wheel)
+                           (format #true wheel)
+                           (invoke "python" "-m" "pip" "install"
+                                   wheel (string-append "--prefix=" out)))
+                         (find-files "dist" "\\.whl$"))))))))
+    (native-inputs
+     `(("python-flit" ,python-flit)))
     (home-page "https://github.com/takluyver/testpath")
     (synopsis "Test utilities for code working with files and commands")
     (description
