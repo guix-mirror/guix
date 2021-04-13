@@ -7215,9 +7215,6 @@ without using the configuration machinery.")
      "Jupyter core is the base package on which Jupyter projects rely.")
     (license license:bsd-3)))
 
-(define-public python2-jupyter-core
-  (package-with-python2 python-jupyter-core))
-
 (define-public python-jupyter-client
   (package
     (name "python-jupyter-client")
