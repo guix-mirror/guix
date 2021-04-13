@@ -23,6 +23,7 @@
 ;;; Copyright © 2020 Anders Thuné <asse.97@gmail.com>
 ;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;; Copyright © 2021 Brendan Tildesley <mail@brendan.scot>
+;;; Copyright © 2021 pineapples <guixuser6392@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -827,6 +828,36 @@ and keyboard mapping from user programs.  It is used among other things by the
 GNOME Shell.  The @command{localectl} command-line tool allows you to interact
 with localed.  This package is extracted from the broader systemd package.")
     (license license:lgpl2.1+)))
+
+(define-public seatd
+  (package
+    (name "seatd")
+    (version "0.5.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://git.sr.ht/~kennylevinsen/seatd")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1kglq8v4rnr3415mfaghyv2s2f8mxsy5s881gmm2908ig4n4j297"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:configure-flags '("-Dlogind=enabled")))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("scdoc" ,scdoc)))
+    (inputs
+     `(("elogind" ,elogind)))
+    (home-page "https://sr.ht/~kennylevinsen/seatd")
+    (synopsis "Seat management daemon and library")
+    (description
+     "This package provides a minimal seat management daemon whose task is to
+mediate access to shared devices, such as graphics and input, for applications
+that require it.  It also provides a universal seat management library that
+allows applications to use whatever seat management is available.")
+    (license license:expat)))
 
 (define-public packagekit
   (package
