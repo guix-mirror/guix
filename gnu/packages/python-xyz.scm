@@ -5432,14 +5432,6 @@ toolkits.")
     (description (package-description python-matplotlib))
     (license (package-license python-matplotlib))))
 
-(define-public python2-matplotlib-documentation
-  (let ((parent (package-with-python2 python-matplotlib-documentation)))
-    (package
-      (inherit parent)
-      (native-inputs
-       (alist-delete "python-sphinx-copybutton"
-                     (package-native-inputs parent))))))
-
 (define-public python-matplotlib-venn
   (package
     (name "python-matplotlib-venn")
