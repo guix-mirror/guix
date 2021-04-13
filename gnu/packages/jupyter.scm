@@ -211,6 +211,37 @@ alternative Python kernel for Jupyter.")
 the JupyterLab CSS variables.")
     (license license:bsd-3)))
 
+(define-public python-jupyter-packaging
+  (package
+    (name "python-jupyter-packaging")
+    (version "0.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "jupyter_packaging" version))
+       (sha256
+        (base32
+         "0r015c0m713d19asmpimsw6bk2sqv2lpd2nccgjzjdj5h1crg0bg"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-deprecation" ,python-deprecation)
+       ("python-packaging" ,python-packaging)
+       ("python-setuptools" ,python-setuptools)
+       ("python-tomlkit" ,python-tomlkit)
+       ("python-wheel" ,python-wheel)))
+    (native-inputs
+     `(("python-pypa-build" ,python-pypa-build)
+       ("python-coverage" ,python-coverage)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-mock" ,python-pytest-mock)))
+    (home-page "https://jupyter.org")
+    (synopsis "Jupyter packaging utilities")
+    (description "This package provides tools to help build and install
+Jupyter Python packages that require a pre-build step that may include
+JavaScript build steps.")
+    (license license:bsd-3)))
+
 (define-public python-nbclient
   (package
     (name "python-nbclient")
