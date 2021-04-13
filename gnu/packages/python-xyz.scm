@@ -23851,6 +23851,28 @@ be kept in mind when creating it.  It is easily created, modified, or viewed wit
 a text editor and easily understood and used by both programmers and non-programmers.")
     (license license:expat))) ; MIT license
 
+(define-public python-nest-asyncio
+  (package
+    (name "python-nest-asyncio")
+    (version "1.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "nest_asyncio" version))
+       (sha256
+        (base32
+         "1anha29fcijminn5bh2icnx8x7nk39lna9wkc72262i12p2s3idg"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/erdewit/nest_asyncio")
+    (synopsis "Patch asyncio to allow nested event loops")
+    (description
+     "By design @code{asyncio} does not allow its event loop to be nested.
+This presents a practical problem: when in an environment where the event loop
+is already running it's impossible to run tasks and wait for the result.  This
+module patches @code{asyncio} to allow nested use of @code{asyncio.run} and
+@code{loop.run_until_complete}.")
+    (license license:bsd-3)))
+
 (define-public python-parallel
   (package
     (name "python-parallel")
