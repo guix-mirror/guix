@@ -7105,13 +7105,6 @@ CLI scripts:
 @end enumerate")
     (license license:bsd-3)))
 
-(define-public python2-ipyparallel
-  (let ((ipyparallel (package-with-python2 python-ipyparallel)))
-    (package/inherit ipyparallel
-      (propagated-inputs
-       `(("python2-futures" ,python2-futures)
-         ,@(package-propagated-inputs ipyparallel))))))
-
 (define-public python-ipython-cluster-helper
   (package
     (name "python-ipython-cluster-helper")
