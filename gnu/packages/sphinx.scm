@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
-;;; Copyright © 2015, 2017, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016, 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
@@ -214,6 +214,28 @@ to code blocks.")
     (description
      "@code{sphinxcontrib-devhelp} is a Sphinx extension which outputs
 @url{Devhelp,https://wiki.gnome.org/Apps/Devhelp} documents.")
+    (license license:bsd-2)))
+
+(define-public python-sphinxcontrib-github-alt
+  (package
+    (name "python-sphinxcontrib-github-alt")
+    (version "1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "sphinxcontrib_github_alt" version))
+       (sha256
+        (base32
+         "1x9af78vamjjcdrrhiah3wg613jv7gm8yh9vvqfrmf4vam6mimyg"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-docutils" ,python-docutils)
+       ("python-sphinx" ,python-sphinx)))
+    (home-page "https://github.com/jupyter/sphinxcontrib_github_alt")
+    (synopsis "Link to GitHub pages from Sphinx docs")
+    (description
+     "This package lets you link to GitHub issues, pull requests, commits and
+users from Sphinx docs.")
     (license license:bsd-2)))
 
 (define-public python-sphinxcontrib-htmlhelp
