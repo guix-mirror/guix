@@ -7,7 +7,6 @@
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019 Robert Vollmert <rob@vllmrt.net>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
-;;; Copyright © 2021 David Larsson <david.larsson@selfhosted.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -528,7 +527,6 @@ created after the PostgreSQL database is started.")))
   (port mysql-configuration-port (default 3306))
   (socket mysql-configuration-socket (default "/run/mysqld/mysqld.sock"))
   (extra-content mysql-configuration-extra-content (default ""))
-  (extra-environment mysql-configuration-extra-environment (default #~'()))
   (auto-upgrade? mysql-configuration-auto-upgrade? (default #t)))
 
 (define %mysql-accounts
@@ -613,14 +611,11 @@ FLUSH PRIVILEGES;
          (provision '(mysql))
          (documentation "Run the MySQL server.")
          (start (let ((mysql  (mysql-configuration-mysql config))
-                      (extra-env (mysql-configuration-extra-environment config))
                       (my.cnf (mysql-configuration-file config)))
                   #~(make-forkexec-constructor
                      (list (string-append #$mysql "/bin/mysqld")
                            (string-append "--defaults-file=" #$my.cnf))
-                           #:user "mysql" #:group "mysql"
-                           #:log-file "/var/log/mysqld.log"
-                           #:environment-variables #$extra-env)))
+                     #:user "mysql" #:group "mysql")))
          (stop #~(make-kill-destructor)))))
 
 (define (mysql-upgrade-wrapper mysql socket-file)
