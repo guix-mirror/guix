@@ -779,18 +779,22 @@ type system, elevating types to first-class status.")
     (version "0.5.0")
     (home-page "https://gitlab.com/guile-git/guile-git.git")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://gitlab.com/guile-git/guile-git/uploads/"
-                                  "30be542d90619ca844dd3a3ed2e13808/guile-git-"
-                                  version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1j39c1cq9cbwir90mpnbdijpbwh7wkxampgl2r177bv8bfw6y203"))))
+                "1hqw3jy81cnsgybsbnfvwvhv1bajwq662hikkrr6dcgky6yspsxx"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags '("GUILE_AUTO_COMPILE=0")))     ; to prevent guild warnings
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("texinfo" ,texinfo)
        ("guile" ,guile-3.0)
        ("guile-bytestructures" ,guile-bytestructures)))
     (inputs
