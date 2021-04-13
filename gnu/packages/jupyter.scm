@@ -30,9 +30,12 @@
   #:use-module (gnu packages networking)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-build)
+  #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages time)
-  #:use-module (gnu packages tls))
+  #:use-module (gnu packages tls)
+  #:use-module (gnu packages xml))
 
 (define-public python-jupyter-protocol
   (package
@@ -206,4 +209,52 @@ alternative Python kernel for Jupyter.")
     (description
      "This package contains a syntax coloring theme for pygments making use of
 the JupyterLab CSS variables.")
+    (license license:bsd-3)))
+
+(define-public python-nbclient
+  (package
+    (name "python-nbclient")
+    (version "0.5.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "nbclient" version))
+       (sha256
+        (base32
+         "172q4r6mq0lg394di0pc6ipvniy14jg38wkdsj48r366609jf5yv"))))
+    (build-system python-build-system)
+    ;; Tests require a kernel via python-ipykernel, and also tools from
+    ;; nbconvert.
+    (arguments '(#:tests? #false))
+    (propagated-inputs
+     `(("python-async-generator" ,python-async-generator)
+       ("python-jupyter-client" ,python-jupyter-client)
+       ("python-nbformat" ,python-nbformat)
+       ("python-nest-asyncio" ,python-nest-asyncio)
+       ("python-traitlets" ,python-traitlets)))
+    (native-inputs
+     `(("python-black" ,python-black)
+       ("python-bumpversion" ,python-bumpversion)
+       ("python-check-manifest" ,python-check-manifest)
+       ("python-codecov" ,python-codecov)
+       ("python-coverage" ,python-coverage)
+       ("python-flake8" ,python-flake8)
+       ;; ("python-ipykernel" ,python-ipykernel)
+       ;; ("python-ipython" ,python-ipython)
+       ;; ("python-ipywidgets" ,python-ipywidgets)
+       ("python-mypy" ,python-mypy)
+       ("python-pip" ,python-pip)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-setuptools" ,python-setuptools)
+       ("python-testpath" ,python-testpath)
+       ("python-tox" ,python-tox)
+       ("python-twine" ,python-twine)
+       ("python-wheel" ,python-wheel)
+       ("python-xmltodict" ,python-xmltodict)))
+    (home-page "https://jupyter.org")
+    (synopsis "Client library for executing notebooks")
+    (description
+     "This package provides a client library for executing notebooks. Formerly
+nbconvert's @code{ExecutePreprocessor.}")
     (license license:bsd-3)))
