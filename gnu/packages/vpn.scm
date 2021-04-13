@@ -293,24 +293,19 @@ and probably others.")
 (define-public openconnect-sso
   (package
     (name "openconnect-sso")
-    (version "0.6.2")
+    (version "0.7.2")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "openconnect-sso" version))
         (sha256
          (base32
-          "1yybmscka3m5yxfkp1m5pqz2m8jlwdq9b0hx2w5l1jj6bzpl9fsf"))))
+          "0nb40zfpp38mz6389y0qvrr4mmak53swpg7578cldnhnk0g15qni"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f  ; Tests not included, building from git requires poetry.
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'adjust-package-version-requirements
-           (lambda _
-             (substitute* "setup.py"
-               (("(pyxdg>=0.26),<0.27" _ pyxdg) pyxdg))
-             #t))
          (add-after 'unpack 'patch-openconnect
            (lambda _
              (substitute* "openconnect_sso/app.py"
