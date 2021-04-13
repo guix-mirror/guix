@@ -10428,28 +10428,40 @@ convert an @code{.ipynb} notebook file into various static formats including:
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
              ;; These tests require a browser
              (delete-file-recursively "notebook/tests/selenium")
-             ;; Some tests need HOME
-             (setenv "HOME" "/tmp")
-             ;; This file contains "warningfilters", which are not supported
-             ;; by this version of nose.
-             (delete-file "setup.cfg")
-             (with-directory-excursion "/tmp"
-               (invoke "nosetests" "-v"))
-             #t)))))
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               ;; Some tests need HOME
+               (setenv "HOME" "/tmp")
+               (with-directory-excursion "/tmp"
+                 (invoke "pytest" "-vv"
+                         ;; TODO: This tests fails because nbconvert does not
+                         ;; list "python" as a format.
+                         "-k" "not test_list_formats"))))))))
     (propagated-inputs
-     `(("python-jupyter-core" ,python-jupyter-core)
-       ("python-nbformat" ,python-nbformat)
+     `(("python-argon2-cffi" ,python-argon2-cffi)
+       ("python-ipykernel" ,python-ipykernel)
+       ("python-ipython-genutils" ,python-ipython-genutils)
+       ("python-jinja2" ,python-jinja2)
+       ("python-jupyter-client" ,python-jupyter-client)
+       ("python-jupyter-core" ,python-jupyter-core)
        ("python-nbconvert" ,python-nbconvert)
+       ("python-nbformat" ,python-nbformat)
        ("python-prometheus-client" ,python-prometheus-client)
+       ("python-pyzmq" ,python-pyzmq)
        ("python-send2trash" ,python-send2trash)
-       ("python-terminado" ,python-terminado)))
+       ("python-terminado" ,python-terminado)
+       ("python-tornado" ,python-tornado-6)
+       ("python-traitlets" ,python-traitlets)))
     (native-inputs
-     `(("python-nose" ,python-nose)
-       ("python-sphinx" ,python-sphinx)
-       ("python-requests" ,python-requests)))
+     `(("python-coverage" ,python-coverage)
+       ("python-nbval" ,python-nbval)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-requests" ,python-requests)
+       ("python-requests-unixsocket" ,python-requests-unixsocket)))
     (home-page "https://jupyter.org/")
     (synopsis "Web-based notebook environment for interactive computing")
     (description
