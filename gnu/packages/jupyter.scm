@@ -242,6 +242,27 @@ Jupyter Python packages that require a pre-build step that may include
 JavaScript build steps.")
     (license license:bsd-3)))
 
+(define-public python-jupyterlab-widgets
+  (package
+    (name "python-jupyterlab-widgets")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "jupyterlab_widgets" version))
+       (sha256
+        (base32
+         "0y7vhhas3qndiypcpcfnhrj9n92v2w4hdc86nn620s9h9nl2j6jw"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-jupyter-packaging" ,python-jupyter-packaging)
+       ("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/jupyter-widgets/ipywidgets")
+    (synopsis "Interactive widgets for Jupyter Notebooks")
+    (description "ipywidgets, also known as jupyter-widgets or simply widgets,
+are interactive HTML widgets for Jupyter notebooks and the IPython kernel.")
+    (license license:bsd-3)))
+
 (define-public python-nbclient
   (package
     (name "python-nbclient")
