@@ -21733,17 +21733,85 @@ the syntactic logic to configure and launch jobs in an execution environment.")
 (define-public python-flit
   (package
     (name "python-flit")
-    (version "3.0.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "flit" version))
-       (sha256
-        (base32
-         "14q8qa48bli2mniznc8b54qkwvhbik4kw99y01fi5gzzl620zzml"))))
+    (version "3.2.0")
+    ;; We fetch the sources via git because on pypi the package is split into
+    ;; two parts: flit and flit_core; flit_core cannot be built without flit.
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/takluyver/flit")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0fpqxpz5bv2xpv1akmc0c8yfss6sj09wdzxrlf3qw1lp1jhbzpyc"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f)) ; XXX: Check requires network access.
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'bootstrap
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((home (string-append (getcwd) "/home")))
+               (mkdir-p home)
+               (setenv "HOME" home))
+             (for-each make-file-writable (find-files "."))
+             (copy-recursively (assoc-ref inputs "python-testpath")
+                               (string-append (getcwd) "/testpath"))
+             (substitute* "pyproject.toml"
+               (("\"testpath\",") ""))
+             (invoke "python" "bootstrap_dev.py")))
+         (replace 'build
+           (lambda _
+             ;; A ZIP archive should be generated, but it fails with "ZIP does
+             ;; not support timestamps before 1980".  Luckily,
+             ;; SOURCE_DATE_EPOCH is respected, which we set to some time in
+             ;; 1980.
+             (setenv "SOURCE_DATE_EPOCH" "315532800")
+             (for-each (lambda (toml)
+                         (invoke "python3" "-m" "flit"
+                                 "--debug" "--ini-file" toml
+                                 "build"))
+                       '("testpath/pyproject.toml"
+                         "pyproject.toml"))
+             (with-directory-excursion "flit_core"
+               (invoke "python" "build_dists.py"))))
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (let ((out (assoc-ref outputs "out")))
+               (delete-file-recursively "./home")
+               (for-each (lambda (wheel)
+                           (format #true wheel)
+                           (invoke "python" "-m" "pip" "install"
+                                   wheel (string-append "--prefix=" out)))
+                         (append
+                          (find-files "flit_core/dist" "\\.whl$")
+                          (find-files "dist" "\\.whl$")))))))
+       #:tests? #f)) ; XXX: Check requires network access.
+    (propagated-inputs
+     `(("python-pytoml" ,python-pytoml)
+       ("python-toml" ,python-toml)))
+    (native-inputs
+     `(("python-docutils" ,python-docutils)
+       ("python-responses" ,python-responses)
+       ("python-pygments-github-lexers" ,python-pygments-github-lexers)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-sphinx" ,python-sphinx)
+       ("python-sphinxcontrib-github-alt" ,python-sphinxcontrib-github-alt)
+       ;; This package needs testpath, but testpath also needs flit...
+       ("python-testpath"
+        ,(let ((name "python-testpath")
+               (version "0.4.4"))
+           (origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/jupyter/testpath")
+                   (commit version)))
+             (file-name (git-file-name name version))
+             (sha256
+              (base32
+               "1fwv4d3p54xx1x942s104irr35lszvv6jnr4nn1scsfvc0m1qmbk")))))))
     (home-page "https://flit.readthedocs.io/")
     (synopsis
      "Simple packaging tool for simple packages")
