@@ -36,6 +36,7 @@
 ;;; Copyright © 2021 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2021 Brendan Tildesley <mail@brendan.scot>
+;;; Copyright © 2021 Bonface Munyoki Kilyungi <me@bonfacemunyoki.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -136,6 +137,7 @@
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages pulseaudio) ;libsndfile
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
@@ -143,6 +145,7 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages rsync)
   #:use-module (gnu packages sdl)
+  #:use-module (gnu packages sphinx)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages stb)
   #:use-module (gnu packages tcl)
@@ -1498,6 +1501,57 @@ Guile.")
     ;; On armhf and mips64el, building the documentation sometimes leads to
     ;; more than an hour of silence, so double the max silent time.
     (properties `((max-silent-time . 7200)))))
+
+(define-public python-abjad
+  (package
+    (name "python-abjad")
+    (version "3.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+         (url "https://github.com/Abjad/abjad")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1dzf5v7pawbzkb4qxp4s5z4r3gibkk705pag83yvgzkx6fd6jf2g"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda _
+             (substitute* "setup.py"
+               (("uqbar>=0.5.1, <0.5.0") "uqbar>=0.5.0"))
+             #t))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               ;; See: https://stackoverflow.com/a/34140498
+               (invoke "python" "-m" "pytest" "tests")
+               #t))))))
+    (native-inputs
+     `(("lilypond" ,lilypond)
+       ("python-black" ,python-black)
+       ("python-flake8" ,python-flake8)
+       ("python-iniconfig" ,python-iniconfig)
+       ("python-isort" ,python-isort)
+       ("python-mypy" ,python-mypy)
+       ("python-ply" ,python-ply)
+       ("python-pytest" ,python-pytest-6)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-sphinx-autodoc-typehints" ,python-sphinx-autodoc-typehints)))
+    (propagated-inputs
+     `(("python-quicktions" ,python-quicktions)
+       ("python-roman" ,python-roman)
+       ("python-six" ,python-six)
+       ("python-uqbar" ,python-uqbar)))
+    (home-page "https://abjad.github.io")
+    (synopsis "Python API for building LilyPond files")
+    (description
+     "This package provides a Python API for building LilyPond files.")
+    (license license:expat)))
 
 (define-public non-sequencer
   ;; The latest tagged release is three years old and uses a custom build
