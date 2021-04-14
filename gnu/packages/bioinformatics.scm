@@ -2644,7 +2644,7 @@ and record oriented data modeling and the Semantic Web.")
 (define-public cwltool
   (package
     (name "cwltool")
-    (version "3.0.20201121085451")
+    (version "3.0.20210319143721")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2653,7 +2653,7 @@ and record oriented data modeling and the Semantic Web.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1awf99n7aglxc5zszrlrv6jxp355jp45ws7wpsgjlgcdv7advn0w"))))
+                "1sgs9ckyxb9f9169mc3wm9lnjg4080ai42xqsrwpw9l8apy4c9m5"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -2661,8 +2661,9 @@ and record oriented data modeling and the Semantic Web.")
          (add-after 'unpack 'loosen-version-restrictions
            (lambda _
              (substitute* "setup.py"
-               (("== 1.5.1") ">=1.5.1") ; prov
-               ((", < 3.5") ""))        ; shellescape
+               (("== 1.5.1") ">=1.5.1")   ; prov
+               ((", < 3.5") "")           ; shellescape
+               ((" >= 6.0.2, < 6.2") "")) ; pytest
              #t))
          (add-after 'unpack 'dont-use-git
            (lambda _
@@ -2674,6 +2675,7 @@ and record oriented data modeling and the Semantic Web.")
          (add-after 'unpack 'modify-tests
            (lambda _
              ;; Tries to connect to the internet.
+             (delete-file "tests/test_content_type.py")
              (delete-file "tests/test_udocker.py")
              (delete-file "tests/test_http_input.py")
              (substitute* "tests/test_load_tool.py"
