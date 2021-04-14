@@ -15,6 +15,7 @@
 ;;; Copyright © 2021 Oleh Malyi <astroclubzp@gmail.com>
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;; Copyright © 2021 Andy Tai <atai@atai.org>
+;;; Copyright © 2021 Ekaitz Zarraga <ekaitz@elenq.tech>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -348,6 +349,22 @@ triangulation.  VTK has an extensive information visualization framework, has
 a suite of 3D interaction widgets, supports parallel processing, and
 integrates with various databases on GUI toolkits such as Qt and Tk.")
     (license license:bsd-3)))
+
+;; freecad needs an old version of VTK, because VTK's API changed from 8 to 9
+(define-public vtk-8
+  (package (inherit vtk)
+    (version "8.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://vtk.org/files/release/"
+                                  (version-major+minor version)
+                                  "/VTK-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1fspgp8k0myr6p2a6wkc21ldcswb4bvmb484m12mxgk1a9vxrhrl"))))
+    (inputs
+     `(("jsoncpp" ,jsoncpp-for-tensorflow)
+       ,@(alist-delete "jsoncpp" (package-inputs vtk))))))
 
 ;; itksnap needs an older variant of VTK.
 (define-public vtk-6
