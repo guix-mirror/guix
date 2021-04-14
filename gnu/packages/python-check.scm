@@ -12,6 +12,7 @@
 ;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;; Copyright © 2021 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2021 Bonface Munyoki Kilyungi <me@bonfacemunyoki.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -373,6 +374,39 @@ advanced doctest support and enables the testing of reStructuredText files.")
 provides a shortcut to testing all code and documentation for a given
 sub-package.")
     (license license:bsd-3)))
+
+(define-public python-pytest-helpers-namespace
+  (package
+    (name "python-pytest-helpers-namespace")
+    (version "2021.3.24")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-helpers-namespace" version))
+       (sha256
+        (base32
+         "0pyj2d45zagmzlajzqdnkw5yz8k49pkihbydsqkzm413qnkzb38q"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Make the installed plugin discoverable by Pytest.
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest-6)
+       ("python-setuptools" ,python-setuptools) ; needs setuptools >= 50.3.2
+       ("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-setuptools-declarative-requirements"
+        ,python-setuptools-declarative-requirements)))
+    (home-page "https://github.com/saltstack/pytest-helpers-namespace")
+    (synopsis "Pytest Helpers Namespace Plugin")
+    (description "Pytest Helpers Namespace Plugin provides a helpers pytest
+namespace which can be used to register helper functions without requiring
+someone to import them in their actual tests to use them.")
+    (license license:asl2.0)))
 
 (define-public python-pytest-openfiles
   (package
