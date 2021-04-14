@@ -24618,6 +24618,27 @@ typographically-improved HTML.  While often used in conjunction with Jinja and
 Django template systems, the filters can be used in any environment.")
     (license license:bsd-3)))
 
+(define-public python-ld
+  (package
+    (name "python-ld")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ld" version))
+       (sha256
+        (base32
+         "1k4ydp5rgkv4985v459kcl06i1igjm1ywvh2vkbi9ck1zyyri1z5"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-six" ,python-six)))
+    (home-page "https://github.com/nir0s/ld")
+    (synopsis "OS platform information API")
+    (description
+     "The ld package provides information about the GNU/Linux distribution it
+runs on, such as a reliable machine-readable ID, or version information.")
+    (license license:asl2.0)))
+
 (define-public python-pathvalidate
   (package
     (name "python-pathvalidate")
