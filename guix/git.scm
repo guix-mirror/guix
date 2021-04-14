@@ -283,13 +283,15 @@ dynamic extent of EXP."
       (report-git-error err))))
 
 (define* (update-submodules repository
-                            #:key (log-port (current-error-port)))
+                            #:key (log-port (current-error-port))
+                            (fetch-options #f))
   "Update the submodules of REPOSITORY, a Git repository object."
   (for-each (lambda (name)
               (let ((submodule (submodule-lookup repository name)))
                 (format log-port (G_ "updating submodule '~a'...~%")
                         name)
-                (submodule-update submodule)
+                (submodule-update submodule
+                                  #:fetch-options fetch-options)
 
                 ;; Recurse in SUBMODULE.
                 (let ((directory (string-append
@@ -297,6 +299,7 @@ dynamic extent of EXP."
                                   "/" (submodule-path submodule))))
                   (with-repository directory repository
                     (update-submodules repository
+                                       #:fetch-options fetch-options
                                        #:log-port log-port)))))
             (repository-submodules repository)))
 
@@ -397,7 +400,8 @@ it unchanged."
        (remote-fetch (remote-lookup repository "origin")
                      #:fetch-options (make-default-fetch-options)))
      (when recursive?
-       (update-submodules repository #:log-port log-port))
+       (update-submodules repository #:log-port log-port
+                          #:fetch-options (make-default-fetch-options)))
 
      ;; Note: call 'commit-relation' from here because it's more efficient
      ;; than letting users re-open the checkout later on.
