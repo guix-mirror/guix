@@ -1275,6 +1275,34 @@ Python 3 support.")
                    license:asl2.0       ; packaging is dual ASL2/BSD-2
                    license:bsd-2))))
 
+(define-public python-setuptools-declarative-requirements
+  (package
+    (name "python-setuptools-declarative-requirements")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri
+             "setuptools-declarative-requirements"
+             version))
+       (sha256
+        (base32
+         "1l8zmcnp9h8sp8hsw7b81djaa1a9yig0y7i4phh5pihqz1gdn7yi"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
+    (propagated-inputs
+     `(("python-toml" ,python-toml)
+       ("python-wheel" ,python-wheel)))
+    (home-page
+     "https://github.com/s0undt3ch/setuptools-declarative-requirements")
+    (synopsis "File support for setuptools declarative setup.cfg")
+    (description
+     "This package provides file support for setuptools declarative
+@code{setup.cfg}.")
+    (license license:asl2.0)))
+
 ;; The setuptools provided by Python 3.7.4 is too new for Tensorflow.
 (define-public python-setuptools-for-tensorflow
   (hidden-package
