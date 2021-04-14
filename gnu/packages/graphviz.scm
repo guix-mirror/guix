@@ -9,6 +9,7 @@
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Pjotr Prins <pjotr.guix@thebird.nl>
+;;; Copyright © 2021 Bonface Munyoki Kilyungi <me@bonfacemunyoki.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -48,7 +49,9 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages sphinx)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages tex)
@@ -241,6 +244,55 @@ structure and layout algorithms.")
 
 (define-public python2-pygraphviz
   (package-with-python2 python-pygraphviz))
+
+(define-public python-uqbar
+  (package
+    (name "python-uqbar")
+    (version "0.5.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/josiah-wolf-oberholtzer/uqbar")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0413nyhd8z8v3lvsgaghhafnyxg90fi1q80j1kbl21gpmpnc9a7n"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           (lambda _
+             (substitute* "setup.py"
+               ;; Latest versions of sphink-rtd-theme require npm to build.
+               (("sphinx-rtd-theme >= 0.4.0") "sphinx-rtd-theme >= 0.2.4")
+               (("black == 19.10b0") "black >= 19.10b0"))
+             #t))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "python" "-m" "pytest" "tests"))
+             #t)))))
+    (native-inputs
+     `(("graphviz" ,graphviz)
+       ("python-flake8" ,python-flake8)
+       ("python-isort" ,python-isort)
+       ("python-mypy" ,python-mypy)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)))
+    (propagated-inputs
+     `(("python-black" ,python-black)
+       ("python-sphinx" ,python-sphinx)
+       ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)
+       ("python-unidecode" ,python-unidecode)))
+    (home-page "https://github.com/josiah-wolf-oberholtzer/uqbar")
+    (synopsis "Tools for building documentation with Sphinx, Graphviz and LaTeX")
+    (description
+     "This package contains tools for building documentation with Sphinx,
+Graphviz and LaTeX.")
+    (license license:expat)))
 
 (define-public gts
   (package
