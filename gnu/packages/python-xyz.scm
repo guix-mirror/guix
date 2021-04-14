@@ -3029,6 +3029,25 @@ cutting and pasting that code over and over.")
 (define-public python2-kitchen
   (package-with-python2 python-kitchen))
 
+(define-public python-roman
+  (package
+    (name "python-roman")
+    (version "3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "roman" version))
+       (sha256
+        (base32
+         "0gyp2bmw47jgpm8j64gydzqq838bgxz5gh6cm57lxlr7p26sqiic"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/zopefoundation/roman")
+    (synopsis "Integer to Roman numerals converter")
+    (description
+     "This package provides a small helper library to convert Arabic Numbers
+to Roman Numerals.")
+    (license license:psfl)))
+
 (define-public python-unidecode
   (package
     (name "python-unidecode")
