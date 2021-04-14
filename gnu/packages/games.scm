@@ -52,7 +52,7 @@
 ;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020, 2021 Michael Rohleder <mike@rohleder.de>
-;;; Copyright © 2020 Trevor Hass <thass@okstate.edu>
+;;; Copyright © 2020, 2021 Trevor Hass <thass@okstate.edu>
 ;;; Copyright © 2020, 2021 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2020 Lu hux <luhux@outlook.com>
 ;;; Copyright © 2020 Tomás Ortín Fernández <tomasortin@mailbox.org>
@@ -3486,8 +3486,13 @@ match, cannon keep, and grave-itation pit.")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-sources
-           (lambda _
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "src/filesys.cpp"
+               ;; Use store-path for "rm" instead of non-existing FHS path.
+               (("\"/bin/rm\"")
+                (string-append "\"" (assoc-ref inputs "coreutils") "/bin/rm\"")))
              (substitute* "src/CMakeLists.txt"
+               ;; Let minetest binary remain in build directory.
                (("set\\(EXECUTABLE_OUTPUT_PATH .*\\)") ""))
              (substitute* "src/unittest/test_servermodmanager.cpp"
                ;; do no override MINETEST_SUBGAME_PATH
@@ -3511,7 +3516,8 @@ match, cannon keep, and grave-itation pit.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("curl" ,curl)
+     `(("coreutils" ,coreutils)
+       ("curl" ,curl)
        ("freetype" ,freetype)
        ("gettext" ,gettext-minimal)
        ("gmp" ,gmp)
