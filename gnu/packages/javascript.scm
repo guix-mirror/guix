@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2017, 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2021 Pierre Neidhardt <mail@ambrevar.xyz>
@@ -557,7 +557,7 @@ external server.")
 (define-public mujs
   (package
     (name "mujs")
-    (version "1.1.0")
+    (version "1.1.1")
     (source
      (origin
        (method git-fetch)
@@ -566,7 +566,7 @@ external server.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "00j748hzf4azgjgykc8x9xalh70hj1dm8qvqzvldbf08zq0s3n5j"))))
+        (base32 "0ivqz06fq8v36p2gkjh64vgv0gm7nghds0n42vrv7vm46phdffvb"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
