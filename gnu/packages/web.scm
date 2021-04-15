@@ -48,6 +48,7 @@
 ;;; Copyright © 2020, 2021 Ryan Prior <rprior@protonmail.com>
 ;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@posteo.ro>
 ;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
+;;; Copyright © 2021 la snesne <lasnesne@lagunposprasihopre.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6535,7 +6536,7 @@ snippets on @url{https://commandlinefu.com}.")
 (define-public rss-bridge
   (package
     (name "rss-bridge")
-    (version "2019-09-12")
+    (version "2020-11-10")
     (source
      (origin
        (method git-fetch)
@@ -6544,19 +6545,23 @@ snippets on @url{https://commandlinefu.com}.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1mx7f3l45nqhcrng531l4cq8kpzm164hhbwn26g5akb2pamdlnra"))))
-    (build-system trivial-build-system)
+        (base32 "1mir6mcm37sbdrhl5kgs6schpp3l4r5mfamhiic0yfbz4hqwmg44"))))
+    (build-system copy-build-system)
     (arguments
-     '(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils)
-                      (ice-9 match))
-         (let* ((out (assoc-ref %outputs "out"))
-                (share-rss-bridge (string-append out "/share/rss-bridge")))
-           (mkdir-p share-rss-bridge)
-           (copy-recursively (assoc-ref %build-inputs "source") share-rss-bridge)
-           #t))))
+     '(#:install-plan
+       '(("." "share/rss-bridge"))
+       #:phases
+       (modify-phases %standard-phases
+         ;;Change paths to not use source directory.
+         (add-before 'install 'patch-paths
+           (lambda _
+             (substitute* "lib/rssbridge.php"
+               (("PATH_ROOT . 'cache/'")
+                "'/var/cache/rss-bridge/'")
+               (("PATH_ROOT . 'whitelist.txt'")
+                "'/etc/rss-bridge/whitelist.txt'")
+               (("PATH_ROOT . 'config.ini.php'")
+                "'/etc/rss-bridge/config.ini.php'")))))))
     (home-page "https://github.com/RSS-Bridge/rss-bridge")
     (synopsis "Generate Atom feeds for social networking websites")
     (description "rss-bridge generates Atom feeds for social networking
