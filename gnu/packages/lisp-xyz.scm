@@ -15578,6 +15578,40 @@ immediately loaded.")
 (define-public cl-bodge-math
   (sbcl-package->cl-source-package sbcl-bodge-math))
 
+(define-public sbcl-bodge-blobs-support
+  (let ((commit "c5034ca5f4fc3a44dbadeba215a09afd59a404b0")
+        (revision "1"))
+    (package
+     (name "sbcl-bodge-blobs-support")
+     (version (git-version "1.0.0" revision commit))
+     (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/borodust/bodge-blobs-support")
+              (commit commit)))
+        (file-name (git-file-name "bodge-blobs-support" version))
+        (sha256
+         (base32 "02nd1x6y1akp1ymv1y4z9ympwbnpd1drwi4f86xbjszxqff6jyj8"))))
+     (build-system asdf-build-system/sbcl)
+     (native-inputs
+      `(("trivial-features" ,sbcl-trivial-features)))
+     (inputs
+      `(("cffi" ,sbcl-cffi)
+        ("sbcl-alexandria" ,sbcl-alexandria)))
+     (home-page "https://github.com/borodust/bodge-blobs-support")
+     (synopsis "Common Lisp utilities for blob packages")
+     (description
+      "This is a Common Lisp library for simplifying packaging and loading of
+compiled foreign library collection.")
+     (license license:unlicense))))
+
+(define-public cl-bodge-blobs-support
+  (sbcl-package->cl-source-package sbcl-bodge-blobs-support))
+
+(define-public ecl-bodge-blobs-support
+  (sbcl-package->ecl-package sbcl-bodge-blobs-support))
+
 (define-public sbcl-cl-conspack
   (let ((commit "fc8473bc6f929696b03b43820596b7c976c4678e")
         (revision "1"))
