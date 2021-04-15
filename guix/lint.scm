@@ -11,6 +11,7 @@
 ;;; Copyright © 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2020 Timothy Sample <samplet@ngyro.com>
+;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -81,6 +82,7 @@
             check-synopsis-style
             check-derivation
             check-home-page
+            check-name
             check-source
             check-source-file-name
             check-source-unstable-tarball
@@ -173,14 +175,20 @@
 (define (check-name package)
   "Check whether PACKAGE's name matches our guidelines."
   (let ((name (package-name package)))
-    ;; Currently checks only whether the name is too short.
-    (if (and (<= (string-length name) 1)
-             (not (string=? name "r"))) ; common-sense exception
-        (list
-         (make-warning package
-                       (G_ "name should be longer than a single character")
-                       #:field 'name))
-        '())))
+    (cond
+     ;; Currently checks only whether the name is too short.
+     ((and (<= (string-length name) 1)
+           (not (string=? name "r"))) ; common-sense exception
+      (list
+       (make-warning package
+                     (G_ "name should be longer than a single character")
+                     #:field 'name)))
+     ((string-index name #\_)
+      (list
+       (make-warning package
+                     (G_ "name should use hyphens instead of underscores")
+                     #:field 'name)))
+     (else '()))))
 
 (define (properly-starts-sentence? s)
   (string-match "^[(\"'`[:upper:][:digit:]]" s))
