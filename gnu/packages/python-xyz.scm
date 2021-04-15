@@ -88,7 +88,7 @@
 ;;; Copyright © 2020 Malte Frank Gerdes <malte.f.gerdes@gmail.com>
 ;;; Copyright © 2020 Joseph LaFreniere <joseph@lafreniere.xyz>
 ;;; Copyright © 2020 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
-;;; Copyright © 2020 Bonface Munyoki Kilyungi <bonfacemunyoki@gmail.com>
+;;; Copyright © 2020, 2021 Bonface Munyoki Kilyungi <me@bonfacemunyoki.com>
 ;;; Copyright © 2020 Ekaitz Zarraga <ekaitz@elenq.tech>
 ;;; Copyright © 2020 Diego N. Barbato <dnbarbato@posteo.de>
 ;;; Copyright © 2020 Leo Prikler <leo.prikler@student.tugraz.at>
@@ -11639,6 +11639,25 @@ with a new public API, and RPython support.")
 its Lisp code into the Python Abstract Syntax Tree, you have the whole world of
 Python at your fingertips, in Lisp form.")
     (license license:expat)))
+
+(define-public python-hissp
+  (package
+    (name "python-hissp")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "hissp" version))
+       (sha256
+        (base32
+         "0yns7f0q699zn2ziagyas2nkndl7mp1hhssv9x9mpl7jxj2p5myw"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/gilch/hissp")
+    (synopsis "It's Python with a Lissp")
+    (description "Hissp is a modular Lisp implementation that compiles to a
+functional subset of Python—Syntactic macro metaprogramming with full access
+to the Python ecosystem.")
+    (license license:asl2.0)))
 
 (define-public python2-functools32
   (package
