@@ -100,16 +100,14 @@
              (with-directory-excursion "src/tests"
                (substitute* '("ibus-share.c" "ibus-compose.c"
                               "ibus-keypress.c")
-                 (("[ \t]*return g_test_run \\(\\);") "")))
-             #t))
+                 (("[ \t]*return g_test_run \\(\\);") "")))))
          (add-after 'unpack 'patch-docbook-xml
            (lambda* (#:key inputs #:allow-other-keys)
              (with-directory-excursion "docs/reference/ibus"
                (substitute* "ibus-docs.sgml.in"
                  (("http://www.oasis-open.org/docbook/xml/4.1.2/")
                   (string-append (assoc-ref inputs "docbook-xml")
-                                 "/xml/dtd/docbook/"))))
-             #t))
+                                 "/xml/dtd/docbook/"))))))
          (add-after 'unpack 'patch-python-target-directories
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((root (string-append (assoc-ref outputs "out")
@@ -120,13 +118,11 @@
                  (("(py2?overridesdir)=.*" _ var)
                   (string-append var "=" root "/gi/overrides/"))
                  (("(pkgpython2dir=).*" _ var)
-                  (string-append var root "/ibus"))))
-             #t))
+                  (string-append var root "/ibus"))))))
          (add-before 'configure 'disable-dconf-update
            (lambda _
              (substitute* "data/dconf/Makefile.in"
-               (("dconf update") "echo dconf update"))
-             #t))
+               (("dconf update") "echo dconf update"))))
          (add-after 'unpack 'delete-generated-files
            (lambda _
              (for-each (lambda (file)
@@ -134,8 +130,7 @@
                            (when (file-exists? c)
                              (format #t "deleting ~a\n" c)
                              (delete-file c))))
-                       (find-files "." "\\.vala"))
-             #t))
+                       (find-files "." "\\.vala"))))
          (add-after 'unpack 'fix-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "src/ibusenginesimple.c"
@@ -144,8 +139,7 @@
                                "/share/X11/locale")))
              (substitute* "ui/gtk3/xkblayout.vala"
                (("\"(setxkbmap|xmodmap)\"" _ prog)
-                (string-append "\"" (assoc-ref inputs prog) "/bin/" prog "\"")))
-             #t))
+                (string-append "\"" (assoc-ref inputs prog) "/bin/" prog "\"")))))
          (add-before 'check 'pre-check
            (lambda _
              ;; Tests write to $HOME.
@@ -158,8 +152,7 @@
              (system "Xvfb :1 +extension GLX &")
              (setenv "DISPLAY" ":1")
              ;; Tests require running iBus daemon.
-             (system "./bus/ibus-daemon --daemonize")
-             #t))
+             (system "./bus/ibus-daemon --daemonize")))
          (add-after 'install 'move-doc
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -167,8 +160,7 @@
                (mkdir-p (string-append doc "/share"))
                (rename-file
                 (string-append out "/share/gtk-doc")
-                (string-append doc "/share/gtk-doc"))
-               #t)))
+                (string-append doc "/share/gtk-doc")))))
          (add-after 'wrap-program 'wrap-with-additional-paths
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Make sure 'ibus-setup' runs with the correct PYTHONPATH and
@@ -178,8 +170,7 @@
                  `("GUIX_PYTHONPATH" ":" prefix (,(getenv "GUIX_PYTHONPATH")))
                  `("GI_TYPELIB_PATH" ":" prefix
                    (,(getenv "GI_TYPELIB_PATH")
-                    ,(string-append out "/lib/girepository-1.0")))))
-             #t)))))
+                    ,(string-append out "/lib/girepository-1.0"))))))))))
     (inputs
      `(("dbus" ,dbus)
        ("dconf" ,dconf)
