@@ -493,7 +493,7 @@ clone.")
 (define-public tsukundere
   (package
     (name "tsukundere")
-    (version "0.2.3")
+    (version "0.3.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -502,10 +502,12 @@ clone.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "05ckds2df810441wfavllx9lsw5jsc9h3nb7m31df01nsj56azdw"))))
+                "06jiaylbnx8khicsaq2gwnd8wspjhjymbb5z6x5445krklk0jx18"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:modules (((guix build guile-build-system)
+     `(#:modules ((ice-9 match)
+                  (srfi srfi-1)
+                  ((guix build guile-build-system)
                    #:select (target-guile-effective-version))
                   ,@%gnu-build-system-modules)
        #:imported-modules ((guix build guile-build-system)
@@ -513,22 +515,33 @@ clone.")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-command
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (version (target-guile-effective-version))
-                    (scm (string-append out "/share/guile/site/"
-                                        version))
-                    (go (string-append out "/lib/guile/"
-                                       version "/site-ccache")))
-
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((scm (lambda (in)
+                           (string-append in "/share/guile/site/"
+                                          (target-guile-effective-version))))
+                    (ccache (lambda (in)
+                              (string-append in "/lib/guile/"
+                                             (target-guile-effective-version)
+                                             "/site-ccache")))
+                    (pkgs
+                     (cons
+                      (assoc-ref outputs "out")
+                      (filter-map
+                       (match-lambda
+                         (("guile" . pkg) pkg)
+                         ((label . pkg)
+                          (and (string-prefix? "guile-" label) pkg)))
+                       inputs))))
                (substitute* "bin/tsukundere"
-                 (("exec guile .*" all)
+                 (("exec guile (.*)" _ args)
                   (string-append
-                   (format #f "export GUILE_LOAD_PATH=~@?~%"
-                           "\"~a:~a\"" scm (getenv "GUILE_LOAD_PATH"))
-                   (format #f "export GUILE_LOAD_COMPILED_PATH=~@?~%"
-                           "\"~a:~a\"" go (getenv "GUILE_LOAD_COMPILED_PATH"))
-                   all)))
+                   (format #f "export GUILE_LOAD_PATH=\"~@?\"~%"
+                           "~{~a~^:~}" (map scm pkgs))
+                   (format #f "export GUILE_LOAD_COMPILED_PATH=\"~@?\"~%"
+                           "~{~a~^:~}" (map ccache pkgs))
+                   "exec "
+                   (assoc-ref inputs "guile")
+                   "/bin/guile " args)))
                #t))))))
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -536,8 +549,9 @@ clone.")
        ("guile" ,guile-3.0)
        ("pkg-config" ,pkg-config)
        ("texinfo" ,texinfo)))
-    (propagated-inputs
-     `(("guile-sdl2" ,guile3.0-sdl2)))
+    (inputs
+     `(("guile-sdl2" ,guile3.0-sdl2)
+       ("guile" ,guile-3.0)))
     (home-page "https://gitlab.com/leoprikler/tsukundere")
     (synopsis "Visual novel engine")
     (description "Tsukundere is a game engine geared heavily towards the
