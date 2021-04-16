@@ -84,7 +84,7 @@ contains the archive keys used for that.")
 (define-public ubuntu-keyring
   (package
     (name "ubuntu-keyring")
-    (version "2018.09.18.1")
+    (version "2021.03.26")
     (source
       (origin
         (method url-fetch)
@@ -92,7 +92,7 @@ contains the archive keys used for that.")
                             "+files/" name "_" version ".tar.gz"))
         (sha256
          (base32
-          "0csx2n62rj9rxjv4y8qhby7l9rbybfwrb0406pc2cjr7f2yk91af"))))
+          "1ccvwh4s51viyhcg8gh189jmvbrhc5wv1bbp4minz3200rffsbj9"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
