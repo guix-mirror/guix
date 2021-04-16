@@ -25355,6 +25355,25 @@ addition, objects which include the k-d tree search structure can be returned
 to speed up repeated queries of the same set of target points.")
     (license license:bsd-3)))
 
+(define-public r-naturalsort
+  (package
+   (name "r-naturalsort")
+   (version "0.1.3")
+   (source (origin
+            (method url-fetch)
+            (uri (cran-uri "naturalsort" version))
+            (sha256
+             (base32
+              "0mz801y9mzld9ypp3xmsjw2d8l9q97sdnv09wrci9xi3yg2sjf6d"))))
+   (build-system r-build-system)
+   (home-page "https://cran.r-project.org/web/packages/naturalsort/")
+   (synopsis "Natural ordering")
+   (description "This package provides functions related to human natural
+ordering.  It handles adjacent digits in a character sequence as a number
+so that natural sort function arranges a character vector by their numbers,
+not digit characters.")
+   (license license:bsd-3)))
+
 (define-public r-muhaz
   (package
     (name "r-muhaz")
