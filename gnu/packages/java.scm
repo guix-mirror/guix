@@ -15,6 +15,7 @@
 ;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2021 Mike Gerwitz <mtg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -11761,6 +11762,37 @@ Objects into their JSON representation.  It can also be used to convert a JSON
 string to an equivalent Java object.  Gson can work with arbitrary Java objects
 including pre-existing objects that you do not have source-code of.")
     (license license:asl2.0)))
+
+;; This requires a different Java version than 2.8.2 above
+(define-public java-gson-2.8.6
+  (package
+    (inherit java-gson)
+    (name "java-gson")
+    (version "2.8.6")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/google/gson")
+                    (commit (string-append "gson-parent-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0kk5p3vichdb0ph1lzknrcpbklgnmq455mngmjpxvvj29p3rgpk3"))))
+    (arguments
+     `(#:jar-name "gson.jar"
+       #:jdk ,openjdk11
+       #:source-dir "gson/src/main/java"
+       #:test-dir "gson/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         ;; avoid Maven dependency
+         (add-before 'build 'fill-template
+           (lambda _
+             (with-directory-excursion "gson/src/main"
+               (copy-file "java-templates/com/google/gson/internal/GsonBuildConfig.java"
+                          "java/com/google/gson/internal/GsonBuildConfig.java")
+               (substitute* "java/com/google/gson/internal/GsonBuildConfig.java"
+                 (("\\$\\{project.version\\}") ,version))))))))))
 
 (define-public java-hawtjni
   (package
