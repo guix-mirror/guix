@@ -47,23 +47,32 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages xorg))
 
-(define-public racket
+(define-public racket-minimal
   (package
-    (name "racket")
-    (version "8.0")            ; note: remember to also update racket-minimal!
-    (source (origin
-              (method url-fetch)
-              (uri (list (string-append "https://mirror.racket-lang.org/installers/"
-                                        version "/racket-src.tgz")
-                         ;; this mirror seems to have broken HTTPS:
-                         (string-append
-                          "http://mirror.informatik.uni-tuebingen.de/mirror/racket/"
-                          version "/racket-src.tgz")))
-              (sha256
-               (base32
-                "047wpjblfzmf1msz7snrp2c2h0zxyzlmbsqr9bwsyvz3frcg0888"))
-              (patches (search-patches
-                        "racket-sh-via-rktio.patch"))))
+    (name "racket-minimal")
+    (version "8.0")            ; note: remember to also update racket!
+    (source
+     (origin
+       (method url-fetch)
+       (uri (list (string-append "https://mirror.racket-lang.org/installers/"
+                                 version "/racket-minimal-src.tgz")
+                  ;; this mirror seems to have broken HTTPS:
+                  (string-append
+                   "http://mirror.informatik.uni-tuebingen.de/mirror/racket/"
+                   version "/racket-minimal-src.tgz")))
+       (sha256 "0mwyffw4gcci8wmzxa3j28h03h0gsz55aard8qrk3lri8r2xyg21")
+       (patches (search-patches
+                 "racket-sh-via-rktio.patch"))))
+    (home-page "https://racket-lang.org")
+    (synopsis "Racket without bundled packages such as DrRacket")
+    (inputs
+     `(("openssl" ,openssl)
+       ("sqlite" ,sqlite)
+       ("sh" ,bash-minimal)
+       ("zlib" ,zlib)
+       ("zlib:static" ,zlib "static")
+       ("lz4" ,lz4)
+       ("lz4:static" ,lz4 "static")))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -164,15 +173,41 @@
                                   "unixodbc"
                                   "libedit")))
              #t)))
-       ;; XXX: how to run them?
+       ;; Tests are in packages like racket-test-core and
+       ;; main-distribution-test that aren't part of the main distribution.
        #:tests? #f))
+    (description
+     "Racket is a general-purpose programming language in the Scheme family,
+with a large set of libraries and a compiler based on Chez Scheme.  Racket is
+also a platform for language-oriented programming, from small domain-specific
+languages to complete language implementations.
+
+The ``minimal Racket'' distribution includes just enough of Racket for you to
+use @command{raco pkg} to install more.  Bundled packages, such as the
+DrRacket IDE, are not included.")
+    ;; https://download.racket-lang.org/license.html
+    (license (list lgpl3+ asl2.0 expat))))
+
+
+(define-public racket
+  (package/inherit
+      racket-minimal
+    (name "racket")
+    (version (package-version racket-minimal)) ; needed for origin uri to work
+    (source
+     (origin
+       (inherit (package-source racket-minimal))
+       (uri (list (string-append "https://mirror.racket-lang.org/installers/"
+                                 version "/racket-src.tgz")
+                  ;; this mirror seems to have broken HTTPS:
+                  (string-append
+                   "http://mirror.informatik.uni-tuebingen.de/mirror/racket/"
+                   version "/racket-src.tgz")))
+       (sha256
+        (base32
+         "047wpjblfzmf1msz7snrp2c2h0zxyzlmbsqr9bwsyvz3frcg0888"))))
     (inputs
      `(;; sqlite and libraries for `racket/draw' are needed to build the doc.
-       ("sh" ,bash-minimal)
-       ("zlib" ,zlib)
-       ("zlib:static" ,zlib "static")
-       ("lz4" ,lz4)
-       ("lz4:static" ,lz4 "static")
        ("cairo" ,cairo)
        ("fontconfig" ,fontconfig)
        ("glib" ,glib)
@@ -184,12 +219,10 @@
        ("libx11" ,libx11)
        ("mesa" ,mesa)
        ("mpfr" ,mpfr)
-       ("openssl" ,openssl)
        ("pango" ,pango)
-       ("sqlite" ,sqlite)
        ("unixodbc" ,unixodbc)
-       ("libedit" ,libedit)))
-    (home-page "https://racket-lang.org")
+       ("libedit" ,libedit)
+       ,@(package-inputs racket-minimal)))
     (synopsis "A programmable programming language in the Scheme family")
     (description
      "Racket is a general-purpose programming language in the Scheme family,
@@ -199,40 +232,4 @@ languages to complete language implementations.
 
 The main Racket distribution comes with many bundled packages, including the
 DrRacket IDE, libraries for GUI and web programming, and implementations of
-languages such as Typed Racket, R5RS and R6RS Scheme, Algol 60, and Datalog.")
-    ;; https://download.racket-lang.org/license.html
-    (license (list lgpl3+ asl2.0 expat))))
-
-(define-public racket-minimal
-  (package
-    (inherit racket)
-    (name "racket-minimal")
-    (version (package-version racket))
-    (source
-     (origin
-       (inherit (package-source racket))
-       (uri (list (string-append "https://mirror.racket-lang.org/installers/"
-                                 version "/racket-minimal-src.tgz")
-                  ;; this mirror seems to have broken HTTPS:
-                  (string-append
-                   "http://mirror.informatik.uni-tuebingen.de/mirror/racket/"
-                   version "/racket-minimal-src.tgz")))
-       (sha256 "0mwyffw4gcci8wmzxa3j28h03h0gsz55aard8qrk3lri8r2xyg21")))
-    (synopsis "Racket without bundled packages such as DrRacket")
-    (inputs
-     `(("openssl" ,openssl)
-       ("sqlite" ,sqlite)
-       ("sh" ,bash-minimal)
-       ("zlib" ,zlib)
-       ("zlib:static" ,zlib "static")
-       ("lz4" ,lz4)
-       ("lz4:static" ,lz4 "static")))
-    (description
-     "Racket is a general-purpose programming language in the Scheme family,
-with a large set of libraries and a compiler based on Chez Scheme.  Racket is
-also a platform for language-oriented programming, from small domain-specific
-languages to complete language implementations.
-
-The ``minimal Racket'' distribution includes just enough of Racket for you to
-use @command{raco pkg} to install more.  Bundled packages, such as the
-DrRacket IDE, are not included.")))
+languages such as Typed Racket, R5RS and R6RS Scheme, Algol 60, and Datalog.")))
