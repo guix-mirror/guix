@@ -7585,6 +7585,36 @@ means for generating files and compiling new Java classes based on annotations
 found in your source code.")
     (license license:epl2.0)))
 
+(define-public java-eclipse-xtext-xbase-lib
+  (package
+    (name "java-eclipse-xtext-xbase-lib")
+    (version "2.25.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/eclipse/xtext-lib")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "13b9lf6lnsprkik665m1qcyyc8cs16k33xm7as4rjcfcpn4pln71"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "eclipse-xtext-xbase-lib.jar"
+       #:jdk ,openjdk11
+       #:tests? #f; TODO (maybe needs newer guava version?)
+       #:source-dir "org.eclipse.xtext.xbase.lib/src"
+       #:test-dir "org.eclipse.xtext.xbase.lib.tests/src"))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (inputs
+     `(("java-guava" ,java-guava)))
+    (home-page "https://www.eclipse.org/Xtext/")
+    (synopsis "Eclipse Xbase Runtime Library")
+    (description "This package contains runtime libraries for Xbase languages
+such as Xtend.")
+    (license license:epl2.0)))
+
 (define-public java-javax-mail
   (package
     (name "java-javax-mail")
