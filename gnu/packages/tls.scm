@@ -165,7 +165,6 @@ living in the same process.")
   (package
     (name "gnutls")
     (version "3.6.15")
-    (replacement gnutls/fixed)
     (source (origin
               (method url-fetch)
               ;; Note: Releases are no longer on ftp.gnu.org since the
@@ -174,7 +173,9 @@ living in the same process.")
                                   (version-major+minor version)
                                   "/gnutls-" version ".tar.xz"))
               (patches (search-patches "gnutls-skip-trust-store-test.patch"
-                                       "gnutls-cross.patch"))
+                                       "gnutls-cross.patch"
+                                       "gnutls-CVE-2021-20231.patch"
+                                       "gnutls-CVE-2021-20232.patch"))
               (sha256
                (base32
                 "0n0m93ymzd0q9hbknxc2ycanz49sqlkyyf73g9fk7n787llc7a0f"))))
@@ -256,15 +257,6 @@ required structures.")
     (license license:lgpl2.1+)
     (properties '((ftp-server . "ftp.gnutls.org")
                   (ftp-directory . "/gcrypt/gnutls")))))
-
-(define gnutls/fixed
-  (package
-    (inherit gnutls)
-    (source (origin
-              (inherit (package-source gnutls))
-              (patches (append (search-patches "gnutls-CVE-2021-20231.patch"
-                                               "gnutls-CVE-2021-20232.patch")
-                               (origin-patches (package-source gnutls))))))))
 
 (define-public gnutls/guile-2.0
   ;; GnuTLS for Guile 2.0.
