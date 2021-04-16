@@ -455,7 +455,7 @@ computational cluster.")
 (define-public bedtools
   (package
     (name "bedtools")
-    (version "2.29.2")
+    (version "2.30.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/arq5x/bedtools2/releases/"
@@ -463,7 +463,7 @@ computational cluster.")
                                   "bedtools-" version ".tar.gz"))
               (sha256
                (base32
-                "0m3hk6548846w83a9s5drsczvy67n2azx41kj71n03klb2gbzwg3"))))
+                "1f2hh79l7dn147c2xyfgf5wfjvlqfw32kjfnnh2n1qy6rpzx2fik"))))
     (build-system gnu-build-system)
     (arguments
      '(#:test-target "test"
@@ -475,7 +475,7 @@ computational cluster.")
     (native-inputs
      `(("python" ,python-wrapper)))
     (inputs
-     `(("samtools" ,samtools-1.9)
+     `(("samtools" ,samtools)
        ("zlib" ,zlib)))
     (home-page "https://github.com/arq5x/bedtools2")
     (synopsis "Tools for genome analysis and arithmetic")
