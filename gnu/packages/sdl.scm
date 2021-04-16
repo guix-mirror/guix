@@ -620,14 +620,14 @@ sound and device input (keyboards, joysticks, mice, etc.).")
 (define-public guile-sdl2
   (package
     (name "guile-sdl2")
-    (version "0.5.0")
+    (version "0.6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://files.dthompson.us/guile-sdl2/"
                                   "guile-sdl2-" version ".tar.gz"))
               (sha256
                (base32
-                "118x0cg7fzbsyrfhy5f9ab7dqp9czgia0ycgzp6sn3nlsdrcnr4m"))))
+                "06vrknn4iz0ag932rb4almyhi9cvdkn081shvsi0h4skd6ry8bdl"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags '("GUILE_AUTO_COMPILE=0")))
