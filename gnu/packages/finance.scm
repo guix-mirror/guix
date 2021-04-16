@@ -23,6 +23,7 @@
 ;;; Copyright © 2020 Carlo Holl <carloholl@gmail.com>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2021 ZmnSCPxj jxPCSnmZ <ZmnSCPxj@protonmail.com>
+;;; Copyright © 2021 François J <francois-oss@avalenn.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1588,14 +1589,14 @@ that allows you to run services and through them access the Bitcoin Cash network
 (define-public beancount
   (package
     (name "beancount")
-    (version "2.2.3")
+    (version "2.3.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "beancount" version))
        (sha256
         (base32
-         "0pcfl2rx2ng06i4f9izdpnlnb1k0rdzsckbzzn4cn4ixfzyssm0m"))
+         "1h465zc7gb0bc5pagm9fsp083sqxrn2mjfbk9l7h162xm7k8rw1b"))
        (patches (search-patches "beancount-disable-googleapis-fonts.patch"))))
     (build-system python-build-system)
     (arguments
