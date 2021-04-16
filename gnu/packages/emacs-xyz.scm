@@ -22520,6 +22520,29 @@ displays as you type thanks to Helm, though @command{notmuch-search} does the
 real search.")
     (license license:gpl3+)))
 
+(define-public emacs-notmuch-maildir
+  (package
+    (name "emacs-notmuch-maildir")
+    (version "0.2.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://git.sr.ht/~tarsius/notmuch-maildir")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0pmikf1djkr07067nkgmdcxyn7l7ibswx6qlnai8v1v51f9h1g9q"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("notmuch" ,notmuch)))
+    (home-page "https://git.sr.ht/~tarsius/notmuch-maildir")
+    (synopsis "Visualize maildirs as a tree")
+    (description
+     "This package can visualize maildirs hierarchically in Notmuch's ``hello
+buffer''.")
+    (license license:gpl3+)))
+
 (define-public emacs-elmacro
   (package
     (name "emacs-elmacro")
