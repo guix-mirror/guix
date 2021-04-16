@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2021 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Andreas Enge <andreas@enge.fr>
 # Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 # Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Mark H Weaver <mhw@netris.org>
@@ -1734,6 +1734,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/tipp10-remove-license-code.patch		\
   %D%/packages/patches/tipp10-qt5.patch			\
   %D%/packages/patches/tk-find-library.patch			\
+  %D%/packages/patches/tla2tools-build-xml.patch		\
   %D%/packages/patches/transcode-ffmpeg.patch	\
   %D%/packages/patches/transmission-honor-localedir.patch	\
   %D%/packages/patches/ttf2eot-cstddef.patch			\

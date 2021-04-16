@@ -1,0 +1,109 @@
+tla2tools comes packaged with three separate javax.mail JARs, which it
+expects to be available to include in the JAR produced by the `dist' target.
+However, the `java-javax-mail' packaged with Guix contains all of these
+dependencies in a single JAR, so the other two are unneeded.  This patch
+removes references to them.
+
+The JAR also was expected to contain classes that are built as part of the
+test suite.  That does not seem useful, nor is it available during the
+`compile' phase, so that portion is removed.
+
+There are a number of Git attributes that are set in the final manifest.
+The branch name is kept, but the others are removed.  The build user is set
+statically to "guix".
+
+Finally, since we already have a patch, two targets `jar' and `check' are
+added to satisfy `ant-build-system' and keep the package definition more
+lean.
+
+diff --git a/tlatools/org.lamport.tlatools/customBuild.xml b/tlatools/org.lamport.tlatools/customBuild.xml
+index f0ba77cb7..748e60d95 100644
+--- a/tlatools/org.lamport.tlatools/customBuild.xml
++++ b/tlatools/org.lamport.tlatools/customBuild.xml
+@@ -36,6 +36,17 @@
+ 		<istrue value="${maven.test.halt}"/>
+ 	</condition>
+ 
++  <!-- `jar' and `check' added for Guix -->
++  <target name="jar">
++		<antcall target="compile" inheritall="true" inheritrefs="true" />
++		<antcall target="compile-aj" inheritall="true" inheritrefs="true" />
++		<antcall target="dist" inheritall="true" inheritrefs="true" />
++  </target>
++  <target name="check">
++		<antcall target="compile-test" inheritall="true" inheritrefs="true" />
++		<antcall target="test" inheritall="true" inheritrefs="true" />
++  </target>
++
+ 	<!-- https://github.com/alx3apps/jgit-buildnumber -->
+ 	<target name="git-revision">
+ 	    <taskdef name="jgit-buildnumber" classname="ru.concerteza.util.buildnumber.JGitBuildNumberAntTask">
+@@ -217,17 +228,7 @@
+ 				<exclude name="javax/mail/search/**"/>
+ 			</patternset>
+ 		</unzip>
+-		<unzip src="lib/javax.mail/smtp-1.6.3.jar" dest="${class.dir}">
+-			<patternset>
+-		        <include name="**/*.class"/>
+-			</patternset>
+-		</unzip>
+-		<unzip src="lib/javax.mail/javax.activation_1.1.0.v201211130549.jar" dest="${class.dir}">
+-			<patternset>
+-		        <include name="**/*.class"/>
+-				<exclude name="org/**"/>
+-			</patternset>
+-		</unzip>
++		<mkdir dir="${class.dir}/META-INF" />
+ 		<touch file="${class.dir}/META-INF/javamail.default.address.map"/>
+ 		<unzip src="lib/jline/jline-terminal-3.14.1.jar" dest="${class.dir}">
+ 			<patternset>
+@@ -259,17 +260,7 @@
+ 				<exclude name="javax/mail/search/**"/>
+ 			</patternset>
+ 		</unzip>
+-		<unzip src="lib/javax.mail/smtp-1.6.3.jar" dest="target/classes">
+-			<patternset>
+-		        <include name="**/*.class"/>
+-			</patternset>
+-		</unzip>
+-		<unzip src="lib/javax.mail/javax.activation_1.1.0.v201211130549.jar" dest="target/classes">
+-			<patternset>
+-		        <include name="**/*.class"/>
+-				<exclude name="org/**"/>
+-			</patternset>
+-		</unzip>
++		<mkdir dir="target/classes/META-INF" />
+ 		<touch file="target/classes/META-INF/javamail.default.address.map"/>
+ 
+ 		<unzip src="lib/jline/jline-terminal-3.14.1.jar" dest="target/classes">
+@@ -373,14 +364,8 @@
+ 					src/tla2sany/parser/Token.09-09-07,
+ 					src/tla2sany/parser/TokenMgrError.09-09-07"/>
+ 			<fileset dir="${doc.dir}" includes="License.txt"/>
+-			<fileset dir="${test.class.dir}">
+-				<include name="**/tlc2/tool/CommonTestCase*.class" />
+-				<include name="**/tlc2/tool/liveness/ModelCheckerTestCase*.class" />
+-				<include name="**/tlc2/TestMPRecorder*.class" />
+-				<include name="**/util/IsolatedTestCaseRunner*.class" />
+-			</fileset>
+ 			<manifest>
+-				<attribute name="Built-By" value="${user.name}" />
++				<attribute name="Built-By" value="guix" />
+ 				<attribute name="Build-Tag" value="${env.BUILD_TAG}" />
+ 				<attribute name="Build-Rev" value="${Build-Rev}" />
+ 				<attribute name="Implementation-Title" value="TLA+ Tools" />
+@@ -389,14 +374,8 @@
+ 				<!-- The jar files contains many main classes (SANY, TEX, pcal, ...) --> 
+                 <!-- but lets consider TLC the one users primarily use. --> 
+ 				<attribute name="Main-class" value="tlc2.TLC" />
+-				<attribute name="Class-Path" value="CommunityModules-deps.jar CommunityModules.jar" />
+ 				<!-- Git revision -->
+-				<attribute name="X-Git-Branch" value="${git.branch}" />
+ 				<attribute name="X-Git-Tag" value="${git.tag}" />
+-				<attribute name="X-Git-Revision" value="${git.revision}" />
+-				<attribute name="X-Git-ShortRevision" value="${git.shortRevision}" />
+-				<attribute name="X-Git-BuildNumber" value="${git.branch}_${git.tag}_${git.shortRevision}" />
+-				<attribute name="X-Git-Commits-Count" value="${git.commitsCount}" />
+ 				<!-- App-Name and Permissions is required by Java Webstart used by distributed TLC -->
+ 				<!-- Depending on security level, the user will see a warning otherwise. -->
+ 				<!-- http://docs.oracle.com/javase/7/docs/technotes/guides/jweb/security/manifest.html -->

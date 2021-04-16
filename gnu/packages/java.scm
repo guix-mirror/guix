@@ -14066,3 +14066,135 @@ can be interpreted by IDEs and static analysis tools to improve code analysis.")
                ;; either lgpl or asl
                license:lgpl3+
                license:asl2.0))))
+
+(define-public tla2tools
+  (let* ((version "1.8.0")
+         (tag (string-append "v" version)))
+    (package
+      (name "tla2tools")
+      (version version)
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/tlaplus/tlaplus")
+                      (commit tag)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1hhx8gmn81k8qrkx4p7ppinmygxga9fqffd626wkvhjgg2ky8lhs"))
+                (patches
+                 (search-patches "tla2tools-build-xml.patch"))
+                (modules '((guix build utils)))
+                (snippet
+                 '(begin
+                    ;; Remove packaged libraries (see 'replace-libs below)
+                    (for-each delete-file (find-files "." ".*.jar$"))))))
+      (build-system ant-build-system)
+      (arguments
+       (let* ((tlatools "tlatools/org.lamport.tlatools/")
+              (build-xml (string-append tlatools "customBuild.xml")))
+         `(#:jdk ,openjdk11
+           #:modules ((guix build ant-build-system)
+                      (guix build utils)
+                      (ice-9 match)
+                      (srfi srfi-26))
+           #:make-flags '("-f" ,build-xml)
+           #:phases
+           (modify-phases %standard-phases
+            ;; Replace packed libs with references to jars in store
+             (add-after 'unpack 'replace-libs
+               (lambda* (#:key inputs #:allow-other-keys)
+                 (define (input-jar input)
+                   (car (find-files (assoc-ref inputs input) "\\.jar$")))
+                 (for-each
+                  (match-lambda
+                    ((file . input)
+                     (symlink (input-jar input)
+                              (string-append ,tlatools "/lib/" file))))
+                  '(("gson/gson-2.8.6.jar" . "java-gson")
+                    ("javax.mail/mailapi-1.6.3.jar" . "java-javax-mail")
+                    ("jline/jline-terminal-3.14.1.jar" . "java-jline-terminal")
+                    ("jline/jline-reader-3.14.1.jar" . "java-jline-reader")
+                    ("lsp/org.eclipse.lsp4j.debug-0.10.0.jar" .
+                     "java-eclipse-lsp4j-debug")
+                    ("lsp/org.eclipse.lsp4j.jsonrpc-0.10.0.jar" .
+                     "java-eclipse-lsp4j-jsonrpc")
+                    ("lsp/org.eclipse.lsp4j.jsonrpc.debug-0.10.0.jar" .
+                     "java-eclipse-lsp4j-jsonrpc-debug")
+                    ("junit-4.12.jar" . "java-junit")
+                    ("easymock-3.3.1.jar" . "java-easymock")))
+                 ;; Retain a tiny subset of the original X-Git-*
+                 ;; manifest values just to aid in debugging
+                 (substitute* ,build-xml
+                   (("\\$\\{git.tag\\}") ,tag))))
+             (add-before 'check 'prepare-tests
+               (lambda _
+                 ;; pcal tests write to cfg files
+                 (for-each (cut chmod <> #o644)
+                           (find-files (string-append ,tlatools
+                                                      "/test-model/pcal")
+                                       "\\.cfg$"))))
+             (replace 'install
+               (lambda* (#:key inputs #:allow-other-keys)
+                 (let* ((share (string-append %output "/share/java"))
+                        (jar-name "tla2tools.jar"); set in project.properties
+                        (jar (string-append ,tlatools
+                                            "/dist/" jar-name))
+                        (java-cp (string-append share "/" jar-name))
+                        (bin (string-append %output "/bin"))
+                        (java (string-append (assoc-ref inputs "jdk")
+                                             "/bin/java")))
+                   (install-file jar share)
+                   (mkdir-p bin)
+                   ;; Generate wrapper scripts for bin/, which invoke common
+                   ;; commands within tla2tools.jar.  Users can still invoke
+                   ;; tla2tools.jar for the rest.
+                   (for-each
+                    (match-lambda
+                      ((wrapper . class)
+                       (let ((file (string-append bin "/" wrapper)))
+                         (begin
+                           (with-output-to-file file
+                             (lambda _
+                               (display
+                                (string-append
+                                 "#!/bin/sh\n"
+                                 java " -cp " java-cp " " class " \"$@\""))))
+                           (chmod file #o755)))))
+                    ;; bin/wrapper . java-class
+                    '(("pcal" . "pcal.trans")
+                      ("tlatex" . "tla2tex.TLA")
+                      ("tla2sany" . "tla2sany.SANY")
+                      ("tlc2" . "tlc2.TLC")
+                      ("tlc2-repl" . "tlc2.REPL"))))))))))
+      (native-inputs
+       `(("java-junit" ,java-junit)
+         ("java-easymock" ,java-easymock)))
+      (inputs
+       `(("java-javax-mail" ,java-javax-mail)
+         ("java-gson" ,java-gson-2.8.6)
+         ("java-jline-terminal" ,java-jline-terminal)
+         ("java-jline-reader" ,java-jline-reader)
+         ("java-eclipse-lsp4j-jsonrpc" ,java-eclipse-lsp4j-jsonrpc)
+         ("java-eclipse-lsp4j-jsonrpc-debug" ,java-eclipse-lsp4j-jsonrpc-debug)
+         ("java-eclipse-lsp4j-debug" ,java-eclipse-lsp4j-debug)))
+      (home-page "https://lamport.azurewebsites.net/tla/tools.html")
+      (synopsis "TLA+ tools (analyzer, TLC, TLATeX, PlusCal translator)")
+      (description "TLA+ is a high-level language for modeling programs and
+systems---especially concurrent and distributed ones.  It's based on the idea
+that the best way to describe things precisely is with simple
+mathematics.  TLA+ and its tools are useful for eliminating fundamental design
+errors, which are hard to find and expensive to correct in code.
+
+The following TLA+ tools are available in this distribution:
+
+@itemize
+@item The Syntactic Analyzer: A parser and syntax checker for
+  TLA+ specifications;
+@item TLC: A model checker and simulator for a subclass of \"executable\" TLA+
+  specifications;
+@item TLATeX: A program for typesetting TLA+ specifications;
+@item Beta test versions of 1-3 for the TLA+2 language; and
+@item The PlusCal translator.
+@end itemize")
+      (license license:expat))))
