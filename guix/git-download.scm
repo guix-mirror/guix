@@ -27,6 +27,7 @@
   #:use-module (guix packages)
   #:use-module (guix modules)
   #:autoload   (guix build-system gnu) (standard-packages)
+  #:autoload   (git bindings)   (libgit2-init!)
   #:autoload   (git repository) (repository-open
                                  repository-close!
                                  repository-discover
@@ -225,6 +226,7 @@ upon Git errors, return #f instead of a predicate.
 
 The returned predicate takes two arguments FILE and STAT where FILE is an
 absolute file name and STAT is the result of 'lstat'."
+  (libgit2-init!)
   (catch 'git-error
     (lambda ()
       (let* ((files  (git-file-list directory))
