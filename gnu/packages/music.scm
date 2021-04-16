@@ -1659,6 +1659,48 @@ typographic detail of symbols on the page.")
 and manipulating rhythms such as accelerandi, taleas, and more.")
     (license license:expat)))
 
+(define-public abjad-ext-nauert
+  (package
+    (name "abjad-ext-nauert")
+    (version "3.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+         (url "https://github.com/Abjad/abjad-ext-nauert")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "07vgfjh32vmf652lcl2vrbzr0h6nld00qbgwbf9i1kk3xwhvklc9"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "python" "-m" "pytest" "tests")
+               #t))))))
+    (native-inputs
+     `(("lilypond" ,lilypond)
+       ("python-black" ,python-black)
+       ("python-flake8" ,python-flake8)
+       ("python-iniconfig" ,python-iniconfig)
+       ("python-isort" ,python-isort)
+       ("python-mypy" ,python-mypy)
+       ("python-pytest" ,python-pytest-6)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-helpers-namespace" ,python-pytest-helpers-namespace)))
+    (propagated-inputs
+     `(("abjad" ,abjad)))
+    (home-page "https://abjad.github.io")
+    (synopsis "Abjad quantization extension, based on Paul Nauert's Q-Grids")
+    (description
+     "@code{abjad-ext-nauert} provides classes for dealing with composer and
+music theorist Paul Nauert's quantization grids or Q-Grids, for short.")
+    (license license:expat)))
+
 (define-public non-sequencer
   ;; The latest tagged release is three years old and uses a custom build
   ;; system, so we take the last commit.
