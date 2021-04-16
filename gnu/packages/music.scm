@@ -1562,9 +1562,9 @@ Guile.")
     ;; more than an hour of silence, so double the max silent time.
     (properties `((max-silent-time . 7200)))))
 
-(define-public python-abjad
+(define-public abjad
   (package
-    (name "python-abjad")
+    (name "abjad")
     (version "3.3")
     (source
      (origin
@@ -1612,6 +1612,9 @@ Guile.")
     (description
      "This package provides a Python API for building LilyPond files.")
     (license license:expat)))
+
+(define-public python-abjad
+  (deprecated-package "python-abjad" abjad))
 
 (define-public non-sequencer
   ;; The latest tagged release is three years old and uses a custom build
