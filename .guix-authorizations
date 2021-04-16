@@ -8,8 +8,6 @@
    (name "andreas"))
   ("2A39 3FFF 68F4 EF7A 3D29  12AF 6F51 20A0 22FB B2D5"
    (name "ajgrf"))
-  ("306F CB8F 2C01 C25D 29D3  0556 61EF 502E F602 52F2"
-   (name "alexvong1995"))
   ("4FB9 9F49 2B12 A365 7997  E664 8246 0C08 2A0E E98F"
    (name "alezost"))
   ("50F3 3E2E 5B0C 3D90 0424  ABE8 9BDC F497 A4BB CC7F"
@@ -27,8 +25,6 @@
   (;; primary: "34FF 38BC D151 25A6 E340  A0B5 3453 2F9F AFCA 8B8E"
    "A0C5 E352 2EF8 EF5C 64CD  B7F0 FD73 CAC7 19D3 2566"
    (name "bavier"))
-  ("BCF8 F737 2CED 080A 67EB  592D 2A6A D9F4 AAC2 0DF6"
-   (name "benwoodcroft"))
   ("45CC 63B8 5258 C9D5 5F34  B239 D37D 0EA7 CECC 3912"
    (name "biscuolo"))
   ("7988 3B9F 7D6A 4DBF 3719  0367 2506 A96C CF63 0B21"
@@ -92,8 +88,6 @@
    (name "lfam"))
   ("148B CB8B D80B FB16 B1DE  0E91 45A8 B1E8 6BCD 10A6"
    (name "lle_bout"))
-  ("2AE3 1395 932B E642 FC0E  D99C 9BED 6EDA 32E5 B0BC"
-   (name "lsl88"))
   ("8887 84C4 1459 ACCB 83E7  E84C 634C 6E89 79FA BEC2"
    (name "m1gu3l"))
   ("CBF5 9755 CBE7 E7EF EF18  3FB1 DD40 9A15 D822 469D"
@@ -121,12 +115,12 @@
    (name "pgarlick"))
   ("3A86 380E 58A8 B942 8D39  60E1 327C 1EF3 8DF5 4C32"
    (name "phant0mas"))
+  ("CD2D 5EAA A98C CB37 DA91  D6B0 5F58 1664 7F8B E551"
+   (name "raghavgururajan"))
   ("74D6 A930 F44B 9B84 9EA5  5606 C166 AA49 5F7F 189C"
    (name "reepca"))
   ("BCA6 89B6 3655 3801 C3C6  2150 197A 5888 235F ACAC"
    (name "rekado"))
-  ("0154 E1B9 1CC9 D9EF 7764  8DE7 F3A7 27DB 44FC CA36"
-   (name "rhelling"))
   (;; From commit cc51c03ff867d4633505354819c6d88af88bf919 (March 2020).
    ;; See <https://lists.gnu.org/archive/html/guix-devel/2020-03/msg00070.html>.
    "F556 FD94 FB8F 8B87 79E3  6832 CBD0 CD51 38C1 9AFC"
@@ -138,22 +132,10 @@
   (;; primary: "D6B0 C593 DA8C 5EDC A44C  7A58 C336 91F7 1188 B004"
    "A02C 2D82 0EF4 B25B A6B5  1D90 2AC6 A5EC 1C35 7C59"
    (name "samplet"))
-  ("77DD AD2D 97F5 31BB C0F3  C7FD DFB5 EB09 AA62 5423"
-   (name "sleep_walker"))
   ("F494 72F4 7A59 00D5 C235  F212 89F9 6D48 08F3 59C7"
    (name "snape"))
-  ("9ADE 9ECF 2B19 C180 9C99  5CEA A1F4 CFCC 5283 6BAC"
-   (name "taylanub"))
-
-  ;; https://lists.gnu.org/archive/html/guix-devel/2017-03/msg00826.html
-  (;; primary: "1DD1 681F E285 E07F 11DC  0C59 2E15 A6BC D77D 54FD"
-   "3D2C DA58 819C 08C2 A649  D43D 5C3B 064C 724A 5726"
-   (name "thomasd"))
-
   ("6580 7361 3BFC C5C7 E2E4  5D45 DC51 8FC8 7F97 16AA"
    (name "vagrantc"))
   (;; primary: "C955 CC5D C048 7FB1 7966  40A9 199A F6A3 67E9 4ABB"
    "7238 7123 8EAC EB63 4548  5857 167F 8EA5 001A FA9C"
-   (name "wigust"))
-  ("FF47 8FB2 64DE 32EC 2967  25A3 DDC0 F535 8812 F8F2"
-   (name "wingo"))))
+   (name "wigust"))))

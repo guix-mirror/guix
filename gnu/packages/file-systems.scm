@@ -80,7 +80,7 @@
 (define-public autofs
   (package
     (name "autofs")
-    (version "5.1.6")
+    (version "5.1.7")
     (source
      (origin
        (method url-fetch)
@@ -88,7 +88,7 @@
                            "v" (version-major version) "/"
                            "autofs-" version ".tar.xz"))
        (sha256
-        (base32 "1vya21mb4izj3khcr3flibv7xc15vvx2v0rjfk5yd31qnzcy7pnx"))))
+        (base32 "1myfz6a3wj2c4j9h5g44zj796fdi82jhp1s92w2hg6xp2632csx3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -112,6 +112,12 @@
                (("^searchpath=\".*\"")
                 "searchpath=\"$PATH\""))
              #t))
+         (add-before 'configure 'fix-rpath
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "Makefile.rules"
+                 (("^AUTOFS_LIB_LINK.*=" match)
+                  (string-append match " -Wl,-rpath=" out "/lib"))))))
          (add-before 'install 'omit-obsolete-lookup_nis.so-link
            ;; Building lookup_yp.so depends on $(YPCLNT) but this doesn't,
            ;; leading to a make error.  Since it's broken, comment it out.
@@ -178,7 +184,7 @@ large and/or frequently changing (network) environment.")
     (home-page "https://bindfs.org")
     (synopsis "Bind mount a directory and alter permission bits")
     (description
-     "@command{bindfs} is a FUSE filesystem for mounting a directory to
+     "@command{bindfs} is a FUSE file system for mounting a directory to
 another location, similar to @command{mount --bind}.  It can be used for:
 @itemize
 @item Making a directory read-only.
@@ -245,9 +251,9 @@ another location, similar to @command{mount --bind}.  It can be used for:
     (description
      "The @acronym{WebDAV, Web Distributed Authoring and Versioning} extension
 to the HTTP protocol defines a standard way to author resources on a remote Web
-server.  Davfs2 exposes such resources as a typical filesystem which can be used
-by standard applications with no built-in support for WebDAV, such as the GNU
-coreutils (@command{cp}, @command{mv}, etc.) or a graphical word processor.
+server.  Davfs2 exposes such resources as a typical file system which can be
+used by standard applications with no built-in support for WebDAV, such as the
+GNU coreutils (@command{cp}, @command{mv}, etc.) or a graphical word processor.
 
 Davfs2 works with most WebDAV servers with no or little configuration.  It
 supports TLS (HTTPS), HTTP proxies, HTTP basic and digest authentication, and
@@ -334,8 +340,8 @@ from a mounted file system.")
     (license license:gpl2+)))
 
 (define-public bcachefs-tools
-  (let ((commit "612f6b9ab73c7f46e0254355b707d494a8ad9270")
-        (revision "3"))
+  (let ((commit "bb6eccc2ecd4728871bfc70462d3a4a20daa9d68")
+        (revision "4"))
     (package
       (name "bcachefs-tools")
       (version (git-version "0.1" revision commit))
@@ -347,7 +353,7 @@ from a mounted file system.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "1a62wkv1i6pg5k1cjw7fzn933cbz8cp8y40cdpfd8rxjx0wg2szb"))))
+          (base32 "0ziqmcxbrak6bjck6s46hqrqx44zc97yaj0kbk3amsxf18rsfs0n"))))
       (build-system gnu-build-system)
       (arguments
        `(#:make-flags
@@ -1077,14 +1083,14 @@ compatible directories.")
 (define-public python-dropbox
   (package
     (name "python-dropbox")
-    (version "11.2.0")
+    (version "11.5.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "dropbox" version))
         (sha256
          (base32
-          "0ml6z37k6nkhkiy483kvifs8im8z7vabd2g9jl6fkf1fzy3n6bym"))))
+          "16bxx9xqx2s4d9khrw57a0bj4q7nc6kq355wl4pfddn9cqvh9rg2"))))
     (build-system python-build-system)
     (arguments '(#:tests? #f))  ; Tests require a network connection.
     (native-inputs
@@ -1189,10 +1195,10 @@ local file system using FUSE.")
      `(("go-github-com-mattn-go-sqlite3" ,go-github-com-mattn-go-sqlite3)
        ("go-github-com-hanwen-fuse" ,go-github-com-hanwen-fuse)))
     (home-page "https://github.com/oniony/TMSU")
-    (synopsis "Tag files and access them through a virtual filesystem")
+    (synopsis "Tag files and access them through a virtual file system")
     (description
      "TMSU is a tool for tagging your files.  It provides a simple
-command-line utility for applying tags and a virtual filesystem to give you a
+command-line utility for applying tags and a virtual file system to give you a
 tag-based view of your files from any other program.  TMSU does not alter your
 files in any way: they remain unchanged on disk, or on the network, wherever
 your put them.  TMSU maintains its own database and you simply gain an

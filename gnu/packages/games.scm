@@ -52,7 +52,7 @@
 ;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020, 2021 Michael Rohleder <mike@rohleder.de>
-;;; Copyright © 2020 Trevor Hass <thass@okstate.edu>
+;;; Copyright © 2020, 2021 Trevor Hass <thass@okstate.edu>
 ;;; Copyright © 2020, 2021 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2020 Lu hux <luhux@outlook.com>
 ;;; Copyright © 2020 Tomás Ortín Fernández <tomasortin@mailbox.org>
@@ -743,7 +743,7 @@ battlestar (explore the world around, starting from dying spaceship),
 phantasia (role-play as an rogue), trek (hunt the Klingons, and save the
 Federation), and wump (hunt the big smelly Wumpus in a dark cave).
 
-Quizes: arithmetic, and quiz.")
+Quizzes: arithmetic and quiz.")
     ;; "Auxiliary and data files, distributed with the games in NetBSD, but
     ;; not bearing copyright notices, probably fall under the terms of the UCB
     ;; or NetBSD copyrights and licences.  The file "fortune/Notes" contains a
@@ -2325,7 +2325,7 @@ and defeat them with your bubbles!")
     (name "solarus")
     ;; XXX: When updating this package, please also update hash in
     ;; `solarus-quest-editor' below.
-    (version "1.6.4")
+    (version "1.6.5")
     (source
      (origin
        (method git-fetch)
@@ -2334,7 +2334,7 @@ and defeat them with your bubbles!")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1n6l91yyqjx0pz4w1lp3yybpq0fs2yjswfcm8c1wjfkxwiznbdxi"))))
+        (base32 "0ny9dgqphjv2l39rff2621hnrzpf8qin8vmnv7jdz20azjk4m8id"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -2393,19 +2393,9 @@ in mind.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1qbc2j9kalk7xqk9j27s7wnm5zawiyjs47xqkqphw683idmzmjzn"))))
+        (base32 "1pvjgd4faxii5sskw1h55lw90hlbazhwni8nxyywzrmkjbq7irm0"))))
     (arguments
-     `(#:tests? #false                  ;no test
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-qt-build
-           ;; XXX: Fix build with Qt 5.15.  It has been applied upstream as
-           ;; 81d5c7f1 and can be removed at next upgrade.
-           (lambda _
-             (substitute* "src/entities/jumper.cpp"
-               (("#include <QPainter>" all)
-                (string-append all "\n" "#include <QPainterPath>\n")))
-             #t)))))
+     `(#:tests? #false))                ; no test suite
     (inputs
      `(("solarus" ,solarus)
        ,@(package-inputs solarus)))
@@ -3464,7 +3454,7 @@ match, cannon keep, and grave-itation pit.")
 (define-public minetest
   (package
     (name "minetest")
-    (version "5.4.0")
+    (version "5.4.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3473,7 +3463,7 @@ match, cannon keep, and grave-itation pit.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1a17g6cmxrscnqwpwrd4w2ck3dgvplyfq4kzyimilfpqar1q69j9"))
+                "062ilb7s377q3hwfhl8q06vvcw2raydz5ljzlzwy2dmyzmdcndb8"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -3496,8 +3486,13 @@ match, cannon keep, and grave-itation pit.")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-sources
-           (lambda _
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "src/filesys.cpp"
+               ;; Use store-path for "rm" instead of non-existing FHS path.
+               (("\"/bin/rm\"")
+                (string-append "\"" (assoc-ref inputs "coreutils") "/bin/rm\"")))
              (substitute* "src/CMakeLists.txt"
+               ;; Let minetest binary remain in build directory.
                (("set\\(EXECUTABLE_OUTPUT_PATH .*\\)") ""))
              (substitute* "src/unittest/test_servermodmanager.cpp"
                ;; do no override MINETEST_SUBGAME_PATH
@@ -3521,7 +3516,8 @@ match, cannon keep, and grave-itation pit.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("curl" ,curl)
+     `(("coreutils" ,coreutils)
+       ("curl" ,curl)
        ("freetype" ,freetype)
        ("gettext" ,gettext-minimal)
        ("gmp" ,gmp)
@@ -3561,7 +3557,7 @@ in different ways.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "11dz36z0pj2r7i8xm8v5lskzws81ckj6sc0avlmvdl8qdc9x83w5"))))
+                "0i45lbnikvgj9kxdp0yphpjjwjcgp4ibn49xkj78j5ic1s9n8jd4"))))
     (build-system trivial-build-system)
     (native-inputs
      `(("source" ,source)))
@@ -5847,7 +5843,7 @@ for Un*x systems with X11.")
 (define-public freeciv
   (package
    (name "freeciv")
-   (version "2.6.3")
+   (version "2.6.4")
    (source
     (origin
      (method url-fetch)
@@ -5859,7 +5855,7 @@ for Un*x systems with X11.")
                   (version-major+minor version) "/" version
                   "/freeciv-" version ".tar.bz2")))
      (sha256
-      (base32 "1lgq7wcbhwpy2yqdw4biwfmp5q8fh7lhlwxcgm0fpaapfl12whvp"))))
+      (base32 "1kn122f57wn5a8ryxaz73dlbd5m93mqx3bqmmz2lkgdccrvrbns0"))))
    (build-system gnu-build-system)
    (inputs
     `(("curl" ,curl)
@@ -8738,7 +8734,7 @@ where the player draws runes in real time to effect the desired spell.")
 (define-public edgar
   (package
     (name "edgar")
-    (version "1.33")
+    (version "1.34")
     (source
      (origin
        (method url-fetch)
@@ -8746,7 +8742,7 @@ where the player draws runes in real time to effect the desired spell.")
         (string-append "https://github.com/riksweeney/edgar/releases/download/"
                        version "/edgar-" version "-1.tar.gz"))
        (sha256
-        (base32 "1mbx7dvizdca4g1blcv3bdh6yxd13k47rkya4rdzg0nvvz24m175"))))
+        (base32 "1121rq5wk3g8rs413av84s2kcy6qj6maspgy2vsxs36c2jd3yygl"))))
     (build-system gnu-build-system)
     (arguments '(#:tests? #f            ; there are no tests
                  #:make-flags

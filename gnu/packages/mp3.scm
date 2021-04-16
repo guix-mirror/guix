@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2014, 2015, 2017, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2017, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
@@ -208,7 +208,7 @@ a highly stable and efficient implementation.")
 (define-public taglib
   (package
     (name "taglib")
-    (version "1.12-beta-1")
+    (version "1.12")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -217,7 +217,7 @@ a highly stable and efficient implementation.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1mp6w2ikniw8w6d5wr0h20j0ijg8jw7s9dli5a8k9znpznvxpym4"))))
+                "0q7dkn5rh9v6b0scmcp2qmjv3iransafmpn6jvgid0yq75m2nqd2"))))
     (build-system cmake-build-system)
     (arguments
       '(#:tests? #f ; Tests are not ran with BUILD_SHARED_LIBS on.
@@ -405,7 +405,8 @@ command-line tool as well as a C library, libmpg123.")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/mpg321/mpg321/"
-                                 version "/mpg321-" version ".tar.gz"))
+                                 version "/mpg321_" version ".orig.tar.gz"))
+             (file-name (string-append "mpg321-" version ".tar.gz"))
              (sha256
               (base32
                "0ki8mh76bbmdh77qsiw682dvi8y468yhbdabqwg05igmwc1wqvq5"))

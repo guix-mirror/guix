@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
+;;; Copyright © 2016, 2020 Jelle Licht <jlicht@fsfe.org>
+;;; Copyright © 2019, 2021 Timothy Sample <samplet@ngyro.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,144 +20,130 @@
 
 (define-module (guix build node-build-system)
   #:use-module ((guix build gnu-build-system) #:prefix gnu:)
-  #:use-module (guix build json)
-  #:use-module (guix build union)
   #:use-module (guix build utils)
+  #:use-module (guix build json)
+  #:use-module (ice-9 ftw)
   #:use-module (ice-9 match)
-  #:use-module (ice-9 popen)
-  #:use-module (ice-9 regex)
   #:use-module (srfi srfi-1)
-  #:use-module (srfi srfi-26)
   #:export (%standard-phases
             node-build))
 
 ;; Commentary:
 ;;
-;; Builder-side code of the standard Node/npm package build procedure.
+;; Builder-side code of the standard Node/NPM package install procedure.
 ;;
 ;; Code:
 
-(define* (read-package-data #:key (filename "package.json"))
-  (call-with-input-file filename
-    (lambda (port)
-      (read-json port))))
+(define (set-home . _)
+  (with-directory-excursion ".."
+    (let loop ((i 0))
+      (let ((dir (string-append "npm-home-" (number->string i))))
+        (if (directory-exists? dir)
+            (loop (1+ i))
+            (begin
+              (mkdir dir)
+              (setenv "HOME" (string-append (getcwd) "/" dir))
+              (format #t "set HOME to ~s~%" (getenv "HOME")))))))
+  #t)
+
+(define (module-name module)
+  (let* ((package.json (string-append module "/package.json"))
+         (package-meta (call-with-input-file package.json read-json)))
+    (assoc-ref package-meta "name")))
+
+(define (index-modules input-paths)
+  (define (list-modules directory)
+    (append-map (lambda (x)
+                  (if (string-prefix? "@" x)
+                      (list-modules (string-append directory "/" x))
+                      (list (string-append directory "/" x))))
+                (filter (lambda (x)
+                          (not (member x '("." ".."))))
+                        (or (scandir directory) '()))))
+  (let ((index (make-hash-table (* 2 (length input-paths)))))
+    (for-each (lambda (dir)
+                (let ((nm (string-append dir "/lib/node_modules")))
+                  (for-each (lambda (module)
+                              (hash-set! index (module-name module) module))
+                            (list-modules nm))))
+              input-paths)
+    index))
+
+(define* (patch-dependencies #:key inputs #:allow-other-keys)
+
+  (define index (index-modules (map cdr inputs)))
+
+  (define (resolve-dependencies package-meta meta-key)
+    (fold (lambda (key+value acc)
+            (match key+value
+              ('@ acc)
+              ((key . value) (acons key (hash-ref index key value) acc))))
+          '()
+          (or (assoc-ref package-meta meta-key) '())))
+
+  (with-atomic-file-replacement "package.json"
+    (lambda (in out)
+      (let ((package-meta (read-json in)))
+        (assoc-set! package-meta "dependencies"
+                    (append
+                     '(@)
+                     (resolve-dependencies package-meta "dependencies")
+                     (resolve-dependencies package-meta "peerDependencies")))
+        (assoc-set! package-meta "devDependencies"
+                    (append
+                     '(@)
+                     (resolve-dependencies package-meta "devDependencies")))
+        (write-json package-meta out))))
+  #t)
+
+(define* (configure #:key outputs inputs #:allow-other-keys)
+  (let ((npm (string-append (assoc-ref inputs "node") "/bin/npm")))
+    (invoke npm "--offline" "--ignore-scripts" "install")
+    #t))
 
 (define* (build #:key inputs #:allow-other-keys)
-  (define (build-from-package-json? package-file)
-    (let* ((package-data (read-package-data #:filename package-file))
-           (scripts (assoc-ref package-data "scripts")))
-      (assoc-ref scripts "build")))
-  "Build a new node module using the appropriate build system."
-  ;; XXX: Develop a more robust heuristic, allow override
-  (cond ((file-exists? "gulpfile.js")
-         (invoke "gulp"))
-        ((file-exists? "gruntfile.js")
-         (invoke "grunt"))
-        ((file-exists? "Makefile")
-         (invoke "make"))
-        ((and (file-exists? "package.json")
-              (build-from-package-json? "package.json"))
-         (invoke "npm" "run" "build")))
-  #t)
-
-(define* (link-npm-dependencies #:key inputs #:allow-other-keys)
-  (define (inputs->node-inputs inputs)
-    "Filter the directory part from INPUTS."
-    (filter (lambda (input)
-              (match input
-                ((name . _) (node-package? name))))
-            inputs))
-  (define (inputs->directories inputs)
-    "Extract the directory part from INPUTS."
-    (match inputs
-      (((names . directories) ...)
-       directories)))
-  (define (make-node-path root)
-    (string-append root "/lib/node_modules/"))
-
-  (let ((input-node-directories (inputs->directories
-                                 (inputs->node-inputs inputs))))
-    (union-build "node_modules"
-                 (map make-node-path input-node-directories))
+  (let ((package-meta (call-with-input-file "package.json" read-json)))
+    (if (and=> (assoc-ref package-meta "scripts")
+               (lambda (scripts)
+                 (assoc-ref scripts "build")))
+        (let ((npm (string-append (assoc-ref inputs "node") "/bin/npm")))
+          (invoke npm "run" "build"))
+        (format #t "there is no build script to run~%"))
     #t))
 
-(define configure link-npm-dependencies)
-
-(define* (check #:key tests? #:allow-other-keys)
+(define* (check #:key tests? inputs #:allow-other-keys)
   "Run 'npm test' if TESTS?"
   (if tests?
-      ;; Should only be enabled once we know that there are tests
-      (invoke "npm" "test"))
+      (let ((npm (string-append (assoc-ref inputs "node") "/bin/npm")))
+        (invoke npm "test"))
+      (format #t "test suite not run~%"))
   #t)
 
-(define (node-package? name)
-  "Check if NAME correspond to the name of an Node package."
-  (string-prefix? "node-" name))
+(define* (repack #:key inputs #:allow-other-keys)
+  (invoke "tar" "-czf" "../package.tgz" ".")
+  #t)
 
 (define* (install #:key outputs inputs #:allow-other-keys)
-  "Install the node module to the output store item. The module itself is
-installed in a subdirectory of @file{node_modules} and its runtime dependencies
-as defined by @file{package.json} are symlinked into a @file{node_modules}
-subdirectory of the module's directory. Additionally, binaries are installed in
-the @file{bin} directory."
-  (let* ((out                  (assoc-ref outputs "out"))
-         (target               (string-append out "/lib"))
-         (binaries             (string-append out "/bin"))
-         (data                 (read-package-data))
-         (modulename           (assoc-ref data "name"))
-         (binary-configuration (match (assoc-ref data "bin")
-				 (('@ configuration ...) configuration)
-				 ((? string? configuration) configuration)
-				 (#f #f)))
-         (dependencies (match (assoc-ref data "dependencies")
-                         (('@ deps ...) deps)
-                         (#f #f))))
-    (mkdir-p target)
-    (copy-recursively "." (string-append target "/node_modules/" modulename))
-    ;; Remove references to dependencies
-    (delete-file-recursively
-      (string-append target "/node_modules/" modulename "/node_modules"))
-    (cond
-      ((string? binary-configuration)
-       (begin
-         (mkdir-p binaries)
-         (symlink (string-append target "/node_modules/" modulename "/"
-				 binary-configuration)
-                  (string-append binaries "/" modulename))))
-      ((list? binary-configuration)
-       (for-each
-         (lambda (conf)
-           (match conf
-             ((key . value)
-              (begin
-                (mkdir-p (dirname (string-append binaries "/" key)))
-                (symlink (string-append target "/node_modules/" modulename "/"
-					value)
-                         (string-append binaries "/" key))))))
-         binary-configuration)))
-    (when dependencies
-      (mkdir-p
-        (string-append target "/node_modules/" modulename "/node_modules"))
-      (for-each
-        (lambda (dependency)
-          (let ((dependency (car dependency)))
-            (symlink
-              (string-append (assoc-ref inputs (string-append "node-" dependency))
-                             "/lib/node_modules/" dependency)
-              (string-append target "/node_modules/" modulename
-                             "/node_modules/" dependency))))
-        dependencies))
+  "Install the node module to the output store item."
+  (let ((out (assoc-ref outputs "out"))
+        (npm (string-append (assoc-ref inputs "node") "/bin/npm")))
+    (invoke npm "--prefix" out
+            "--global"
+            "--offline"
+            "--loglevel" "info"
+            "--production"
+            "install" "../package.tgz")
     #t))
-
 
 (define %standard-phases
   (modify-phases gnu:%standard-phases
+    (add-after 'unpack 'set-home set-home)
+    (add-before 'configure 'patch-dependencies patch-dependencies)
     (replace 'configure configure)
     (replace 'build build)
-    (replace 'install install)
-    (delete 'check)
-    (add-after 'install 'check check)
-    (delete 'strip)))
+    (replace 'check check)
+    (add-before 'install 'repack repack)
+    (replace 'install install)))
 
 (define* (node-build #:key inputs (phases %standard-phases)
                      #:allow-other-keys #:rest args)

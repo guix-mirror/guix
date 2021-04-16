@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;;
@@ -41,7 +41,7 @@
 (define-public debian-archive-keyring
   (package
     (name "debian-archive-keyring")
-    (version "2019.1")
+    (version "2021.1.1")
     (source
       (origin
         (method git-fetch)
@@ -51,7 +51,7 @@
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "0bphwji3ywk1zi5bq8bhqk7l51fwjy1idwsw7zfqnxca8m5wvw1g"))))
+          "0dcmv7y1k6j3a646kr0rkd2a0c4j2wrz868bh8j9zjx1npzns73q"))))
     (build-system gnu-build-system)
     (arguments
      '(#:test-target "verify-results"
@@ -84,7 +84,7 @@ contains the archive keys used for that.")
 (define-public ubuntu-keyring
   (package
     (name "ubuntu-keyring")
-    (version "2018.09.18.1")
+    (version "2021.03.26")
     (source
       (origin
         (method url-fetch)
@@ -92,7 +92,7 @@ contains the archive keys used for that.")
                             "+files/" name "_" version ".tar.gz"))
         (sha256
          (base32
-          "0csx2n62rj9rxjv4y8qhby7l9rbybfwrb0406pc2cjr7f2yk91af"))))
+          "1ccvwh4s51viyhcg8gh189jmvbrhc5wv1bbp4minz3200rffsbj9"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -284,7 +284,7 @@ other apt sources typically provided by open source developers.")
 (define-public dpkg
   (package
     (name "dpkg")
-    (version "1.20.7.1")
+    (version "1.20.9")
     (source
       (origin
         (method git-fetch)
@@ -294,7 +294,7 @@ other apt sources typically provided by open source developers.")
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "0d1cppigwhpv0z1ac94gjalkzs3n0gjyi383pkhz1h9d4fvmadk9"))))
+          "16wlb8hwbdvxar187bjd4pzdzj95g3l2ryi2khqqmwbyca4sjm1n"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

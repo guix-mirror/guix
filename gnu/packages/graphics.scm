@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2016, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2018, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2017, 2018 Ben Woodcroft <donttrustben@gmail.com>
@@ -25,6 +25,7 @@
 ;;; Copyright © 2020 Gabriel Arazas <foo.dogsquared@gmail.com>
 ;;; Copyright © 2021 Antoine Côté <antoine.cote@posteo.net>
 ;;; Copyright © 2021 Andy Tai <atai@atai.org>
+;;; Copyright © 2021 Ekaitz Zarraga <ekaitz@elenq.tech>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -463,6 +464,42 @@ Embree is meant to increase performance of photo-realistic rendering
 applications.")
     (license license:asl2.0)))
 
+(define-public openvdb
+  (package
+    (name "openvdb")
+    (version "8.0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/AcademySoftwareFoundation/openvdb/")
+                    (commit (string-append "v" version))
+                    (recursive? #t)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0qzx6l5c183k6j9zki31gg9aixf5s1j46wdi7wr1h3bz7k53syg9"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "-DCMAKE_EXE_LINKER_FLAGS=-Wl,-rpath="
+                            (assoc-ref %outputs "out") "/lib"))))
+    (inputs
+     `(("boost" ,boost)
+       ("c-blosc" ,c-blosc)
+       ("ilmbase" ,ilmbase)
+       ("tbb" ,tbb)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://www.openvdb.org/")
+    (synopsis "Sparse volume data structure and tools")
+    (description "OpenVDB is a C++ library comprising a hierarchical data
+structure and a large suite of tools for the efficient storage and
+manipulation of sparse volumetric data discretized on three-dimensional grids.
+It was developed by DreamWorks Animation for use in volumetric applications
+typically encountered in feature film production.")
+    (license license:mpl2.0)))
+
 (define-public blender
   (package
     (name "blender")
@@ -753,7 +790,7 @@ many more.")
 (define-public ilmbase
   (package
     (name "ilmbase")
-    (version "2.5.2")
+    (version "2.5.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -762,7 +799,7 @@ many more.")
               (file-name (git-file-name "ilmbase" version))
               (sha256
                (base32
-                "1vf8bqld2bpcdi99jbr043y6vp01cp3fvbiasrn66xn91mf6imbn"))
+                "0mjzb3fd8b9pcqmrgy5cdsmvqd70hmlvjnfypi66v59h3fhrmgd8"))
               (patches (search-patches "ilmbase-fix-tests.patch"))))
     (build-system cmake-build-system)
     (arguments

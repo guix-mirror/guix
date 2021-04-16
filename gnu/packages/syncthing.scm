@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Petter <petter@mykolab.ch>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
@@ -44,7 +44,9 @@
 (define-public syncthing
   (package
     (name "syncthing")
-    (version "1.5.0")
+    (version "1.15.1")
+    ; XXX After the go-build-system can use "Go modules", stop using bundled
+    ; dependenices for Syncthing.
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/syncthing/syncthing"
@@ -52,68 +54,12 @@
                                   "/syncthing-source-v" version ".tar.gz"))
               (sha256
                (base32
-                "1394b8y4nllihnjngc0kjpdy7pvyh6v1h09hkn8rdmwxpsdkqkjb"))
-              (modules '((guix build utils)))
-              ;; Delete bundled ("vendored") free software source code.
-              (snippet '(begin
-                          (delete-file-recursively "vendor")
-                          #t))))
+                "04b90zwinl7frxrpjliq41mkbhpnkszmhdc5j2vbqwyhd82warxq"))))
     (build-system go-build-system)
     ;; The primary Syncthing executable goes to "out", while the auxiliary
     ;; server programs and utility tools go to "utils".  This reduces the size
     ;; of "out" by ~80 MiB.
     (outputs '("out" "utils"))
-    ;; When updating Syncthing, check 'go.mod' in the source distribution to
-    ;; ensure we are using the correct versions of these dependencies.
-    (inputs
-     `(("go-github-com-jackpal-go-nat-pmp"
-        ,go-github-com-jackpal-go-nat-pmp)
-       ("go-github-com-bkaradzic-go-lz4" ,go-github-com-bkaradzic-go-lz4)
-       ("go-github-com-calmh-xdr" ,go-github-com-calmh-xdr)
-       ("go-github-com-chmduquesne-rollinghash"
-        ,go-github-com-chmduquesne-rollinghash)
-       ("go-github-com-gobwas-glob" ,go-github-com-gobwas-glob)
-       ("go-github-com-golang-groupcache-lru"
-        ,go-github-com-golang-groupcache-lru)
-       ("go-github-com-jackpal-gateway" ,go-github-com-jackpal-gateway)
-       ("go-github-com-kballard-go-shellquote"
-        ,go-github-com-kballard-go-shellquote)
-       ("go-github-com-lib-pq" ,go-github-com-lib-pq)
-       ("go-github-com-minio-sha256-simd" ,go-github-com-minio-sha256-simd)
-       ("go-github-com-oschwald-geoip2-golang"
-        ,go-github-com-oschwald-geoip2-golang)
-       ("go-github-com-pkg-errors" ,go-github-com-pkg-errors)
-       ("go-github-com-rcrowley-go-metrics" ,go-github-com-rcrowley-go-metrics)
-       ("go-github-com-sasha-s-go-deadlock" ,go-github-com-sasha-s-go-deadlock)
-       ("go-github-com-syncthing-notify" ,go-github-com-syncthing-notify)
-       ("go-github-com-syndtr-goleveldb" ,go-github-com-syndtr-goleveldb)
-       ("go-github-com-thejerf-suture" ,go-github-com-thejerf-suture)
-       ("go-golang-org-x-time" ,go-golang-org-x-time)
-       ("go-github-com-go-ldap-ldap" ,go-github-com-go-ldap-ldap)
-       ("go-github-com-gogo-protobuf" ,go-github-com-gogo-protobuf)
-       ("go-github-com-shirou-gopsutil" ,go-github-com-shirou-gopsutil)
-       ("go-github-com-prometheus-client-golang"
-        ,go-github-com-prometheus-client-golang)
-       ("go-golang-org-x-net" ,go-golang-org-x-net)
-       ("go-golang-org-x-text" ,go-golang-org-x-text)
-       ("go-github-com-audriusbutkevicius-recli"
-        ,go-github-com-audriusbutkevicius-recli)
-       ("go-github-com-urfave-cli" ,go-github-com-urfave-cli)
-       ("go-github-com-vitrun-qart" ,go-github-com-vitrun-qart)
-       ("go-github-com-mattn-go-isatty" ,go-github-com-mattn-go-isatty)
-       ("go-golang-org-x-crypto" ,go-golang-org-x-crypto)
-       ("go-github-com-flynn-archive-go-shlex"
-        ,go-github-com-flynn-archive-go-shlex)
-       ("go-github-com-getsentry-raven-go" ,go-github-com-getsentry-raven-go)
-       ("go-github-com-maruel-panicparse" ,go-github-com-maruel-panicparse)
-       ("go-github-com-ccding-go-stun" ,go-github-com-ccding-go-stun)
-       ("go-github-com-audriusbutkevicius-pfilter" ,go-github-com-audriusbutkevicius-pfilter)
-       ("go-github-com-lucas-clemente-quic-go" ,go-github-com-lucas-clemente-quic-go)
-       ("go-github-com-willf-bloom" ,go-github-com-willf-bloom)
-
-       ;; For tests.
-       ("go-github-com-d4l3k-messagediff" ,go-github-com-d4l3k-messagediff)))
-
     (arguments
      `(#:modules ((srfi srfi-26) ; for cut
                   (guix build utils)
@@ -136,8 +82,8 @@
                ;; updater and to build the utilities is to "build all" and then
                ;; "build syncthing" again with -no-upgrade.
                ;; https://github.com/syncthing/syncthing/issues/6118
-               (invoke "go" "run" "build.go" "build" "all")
-               (delete-file "syncthing")
+               (invoke "go" "run" "build.go")
+               (delete-file "bin/syncthing")
                (invoke "go" "run" "build.go" "-no-upgrade" "build" "syncthing"))))
 
          (replace 'check
@@ -149,10 +95,10 @@
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
                    (utils (assoc-ref outputs "utils")))
-               (with-directory-excursion "src/github.com/syncthing/syncthing"
-                 (install-file "syncthing" (string-append out "/bin"))
+               (with-directory-excursion "src/github.com/syncthing/syncthing/bin"
+                 (install-file "../syncthing" (string-append out "/bin"))
                  (for-each (cut install-file <> (string-append utils "/bin/"))
-                           '("stcli" "stcompdirs" "stcrashreceiver"
+                           '("stcompdirs" "stcrashreceiver"
                              "stdisco" "stdiscosrv" "stevents" "stfileinfo"
                              "stfinddevice" "stfindignored" "stgenfiles"
                              "stindex" "strelaypoolsrv" "strelaysrv" "stsigtool"

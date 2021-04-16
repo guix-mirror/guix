@@ -711,14 +711,14 @@ analysis.")
 (define-public r-survival
   (package
     (name "r-survival")
-    (version "3.2-9")
+    (version "3.2-10")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "survival" version))
        (sha256
         (base32
-         "1dkpdci2lvx141193wd69445y65w8k2pa89lc3l83i5jaj56svdn"))))
+         "19fg7mrrr6chbixq10kwwl5clry2y57v6zl24jlmxx2ylis0vjzd"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-matrix" ,r-matrix)))
@@ -1734,14 +1734,14 @@ database.")
 (define-public r-dbplyr
   (package
     (name "r-dbplyr")
-    (version "2.1.0")
+    (version "2.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "dbplyr" version))
        (sha256
         (base32
-         "1sm0fixfr3bkq18p804mfbfz9z5z801dhzkrpq0spr25jkhpf26l"))))
+         "025wqpmxdhzblb0pf58m3qh5h6bf5x8qvkf47vyl1cjsp13wz95b"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
@@ -2682,13 +2682,13 @@ vectors.")
 (define-public r-catools
   (package
     (name "r-catools")
-    (version "1.18.1")
+    (version "1.18.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "caTools" version))
               (sha256
                (base32
-                "1yf98x2gaf84y9m32xrg84g384zlfwsdw7wvywdljpgdpvzs9szz"))))
+                "14q2ry8gaszjl0m97qg62dxv5bpj6k02qwyi7q2lnxgcmwai3mkm"))))
     (properties `((upstream-name . "caTools")))
     (build-system r-build-system)
     (propagated-inputs
@@ -2843,13 +2843,13 @@ a column in data frame.")
 (define-public r-rsqlite
   (package
     (name "r-rsqlite")
-    (version "2.2.4")
+    (version "2.2.5")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "RSQLite" version))
               (sha256
                (base32
-                "050s7gv42v43d15yqj2sdrh82iikfpm32idfnw4nbjjjnlcg7wxf"))))
+                "14cxqh8j5v2rqs6yiargy1miycvx7xj47lppvpnnchi5plimlvyy"))))
     (properties `((upstream-name . "RSQLite")))
     (build-system r-build-system)
     (propagated-inputs
@@ -2917,13 +2917,13 @@ ldap, and also supports cookies, redirects, authentication, etc.")
 (define-public r-xml
   (package
     (name "r-xml")
-    (version "3.99-0.5")
+    (version "3.99-0.6")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "XML" version))
               (sha256
                (base32
-                "19jkpnbjx2ij0h7rxi13sqnjnwsap6wywmd4gnhfnqpic1rrnlk0"))))
+                "0qibvacbfm7gl41ylway3vdyi1qbpa211d48rg3k5i30d48rbf58"))))
     (properties
      `((upstream-name . "XML")))
     (build-system r-build-system)
@@ -3403,17 +3403,18 @@ Stochastic Neighbor Embedding using a Barnes-Hut implementation.")
 (define-public r-e1071
   (package
     (name "r-e1071")
-    (version "1.7-4")
+    (version "1.7-6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "e1071" version))
        (sha256
         (base32
-         "02935xcscjhb0jmnvh44hxlpjcgladrcr0gpz1jxq07m0qdqgaz6"))))
+         "0blfnv3m5k5xm9bfx1v5awvagqlhqaqpabrvzplf4244c3j259qa"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-class" ,r-class)))
+     `(("r-class" ,r-class)
+       ("r-proxy" ,r-proxy)))
     (home-page "https://cran.r-project.org/web/packages/e1071")
     (synopsis "Miscellaneous functions for probability theory")
     (description
@@ -4143,14 +4144,14 @@ existing packages provide.")
 (define-public r-sfsmisc
   (package
     (name "r-sfsmisc")
-    (version "1.1-8")
+    (version "1.1-10")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sfsmisc" version))
        (sha256
         (base32
-         "198zpkz1gvw954ym8669svrk81yb49j6fyk5i6a7dw07z3snlmdn"))))
+         "1skxahq5jgqdsllpsavzrcpz8l0yj3mfzcf70as8d33jxbiaa4s4"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/sfsmisc")
     (synopsis "Utilities from \"Seminar fuer Statistik\" ETH Zurich")
@@ -5378,14 +5379,14 @@ first and second order derivatives.")
 (define-public r-sn
   (package
     (name "r-sn")
-    (version "1.6-2")
+    (version "2.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sn" version))
        (sha256
         (base32
-         "179xb7yb8br99aa5awm2yxsy0v5w1kdhv6a7ifaliz2y64677m1g"))))
+         "0sl8qzy9isy5fq8qxh1fg5285jzgy895nbgz8gdq5d0r6zdwrmmb"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-mnormt" ,r-mnormt)

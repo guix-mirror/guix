@@ -50,6 +50,8 @@ Import and convert the CRAN package for PACKAGE-NAME.\n"))
   (display (G_ "
   -r, --recursive        import packages recursively"))
   (display (G_ "
+  -s, --style=STYLE      choose output style, either specification or variable"))
+  (display (G_ "
   -V, --version          display version information and exit"))
   (newline)
   (show-bug-report-information))

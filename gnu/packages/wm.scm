@@ -14,7 +14,7 @@
 ;;; Copyright © 2016 Ivan Vilata i Balaguer <ivan@selidor.net>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
 ;;; Copyright © 2017, 2019, 2020 Marius Bakke <marius@gnu.org>
-;;; Copyright © 2017, 2020 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2017, 2020, 2021 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
 ;;; Copyright © 2018, 2019 Meiyo Peng <meiyo@riseup.net>
@@ -44,6 +44,7 @@
 ;;; Copyright © 2021 Zheng Junjie <873216071@qq.com>
 ;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;; Copyright © 2021 qblade <qblade@protonmail.com>
+;;; Copyright © 2021 lasnesne <lasnesne@lagunposprasihopre.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1570,7 +1571,7 @@ modules for building a Wayland compositor.")
 (define-public waybar
   (package
     (name "waybar")
-    (version "0.9.4")
+    (version "0.9.5")
     (source
      (origin
        (method git-fetch)
@@ -1579,10 +1580,10 @@ modules for building a Wayland compositor.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "038vnma7y7z81caywp45yr364bc1aq8d01j5vycyiyfv33nm76fy"))))
+        (base32 "1kzrgqaclfk6gcwhknxn28xl74gm5swipgn8kk8avacb4nsw1l9q"))))
     (build-system meson-build-system)
     (inputs `(("date" ,date)
-              ("fmt" ,fmt-6)
+              ("fmt" ,fmt)
               ("gtk-layer-shell" ,gtk-layer-shell)
               ("gtkmm" ,gtkmm)
               ("jsoncpp" ,jsoncpp)
@@ -1591,7 +1592,7 @@ modules for building a Wayland compositor.")
               ("libmpdclent" ,libmpdclient)
               ("libnl" ,libnl)
               ("pulseaudio" ,pulseaudio)
-              ("spdlog" ,spdlog-1.7)
+              ("spdlog" ,spdlog)
               ("wayland" ,wayland)))
     (native-inputs
      `(("glib:bin" ,glib "bin")
@@ -2191,7 +2192,7 @@ support, for easier unicode usage.")))))
 (define-public xclickroot
   (package
     (name "xclickroot")
-    (version "1.2")
+    (version "1.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2200,7 +2201,7 @@ support, for easier unicode usage.")))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1nd5qz0qz5j7gx2jsbcp234giwaa0xmg42vrcjrcf587q9ivakfl"))))
+                "0wnsfxvh4v02r2jjyh2n6jfkbj2dna2hlm6anl4b36lwji749k2k"))))
     (build-system gnu-build-system)
     (inputs
      `(("libx11" ,libx11)))
@@ -2311,16 +2312,16 @@ start-up.")
 (define-public xnotify
   (package
     (name "xnotify")
-    (version "0.7.3")
+    (version "0.8.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/phillbush/xnotify")
-                    (commit version)))
+                    (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "09s29m8z4x3mc3wja2587ik3f6zg16b40adr3nllnpyy1mqnprq5"))))
+                "1jxms4md2mwfjgm2pgg3vakpp33800jbn9hnl0j4jyfc9f1ckbsv"))))
     (build-system gnu-build-system)
     (inputs
      `(("libx11" ,libx11)
@@ -2400,3 +2401,90 @@ for wayland conceptually based on the X11 window manager
      (description "libucl implements a configuration language that is easy to
 read and write, and compatible with JSON.")
     (license license:bsd-2)))
+
+(define-public hikari
+  (package
+    (name "hikari")
+    (version "2.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hikari.acmelabs.space/releases/"
+                           "hikari-" version ".tar.gz"))
+       (sha256
+        (base32 "1d023cphzi15k434n60l1rp5awxmdijvsxfrm59fmsvd5rjxh9q7"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("bmake" ,bmake)
+       ("pkg-config" ,pkg-config)
+       ("wayland-protocols" ,wayland-protocols)))
+    (inputs
+     `(("cairo" ,cairo)
+       ("libinput" ,libinput)
+       ("libucl" ,libucl)
+       ("libxkbcommon" ,libxkbcommon)
+       ("pam" ,linux-pam)
+       ("pango" ,pango)
+       ("wayland" ,wayland)
+       ("wlroots" ,wlroots)))
+    (arguments
+     `(#:tests? #f                      ; no tests
+       #:make-flags
+       (list
+        (string-append "PREFIX=" (assoc-ref %outputs "out"))
+        (string-append "CC=" ,(cc-for-target))
+        "WITH_XWAYLAND=YES"
+        "WITH_SCREENCOPY=YES"
+        "WITH_LAYERSHELL=YES"
+        "WITH_VIRTUAL_INPUT=YES")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda* (#:key inputs outputs make-flags #:allow-other-keys)
+             (apply invoke "bmake" make-flags)))
+         (replace 'install
+           (lambda* (#:key inputs outputs make-flags #:allow-other-keys)
+             (apply invoke "bmake" "install" make-flags))))))
+    (home-page "https://hikari.acmelabs.space/")
+    (synopsis "Stacking Wayland compositor with tiling capabilities")
+    (description
+     "Hikari is a stacking Wayland compositor with additional tiling
+capabilities.  It is heavily inspired by the Calm Window manager(cwm).")
+    (license license:bsd-2)))
+
+(define-public wlogout
+  (package
+    (name "wlogout")
+    (version "1.1.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/ArtsyMacaw/wlogout")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1swhzkqkzli59c89pvrakfvicd00x7ga860c3x2pbb4y3xziqfvi"))))
+    (build-system meson-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("scdoc" ,scdoc)))
+    (inputs
+     `(("gtk-layer-shell" ,gtk-layer-shell)
+       ("gtk+" ,gtk+)))
+    (arguments
+     '(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack  'patch-source-paths
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "main.c"
+                 (("/usr/share") (string-append out "/share"))
+                 (("/etc") (string-append out "/etc"))))
+             #t)))))
+    (home-page "https://github.com/ArtsyMacaw/wlogout")
+    (synopsis "Logout menu for Wayland")
+    (description "wlogout is a logout menu for Wayland environments.")
+    (license license:expat)))

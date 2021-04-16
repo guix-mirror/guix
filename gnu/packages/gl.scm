@@ -271,7 +271,7 @@ also known as DXTn or DXTC) for Mesa.")
         ("libxrandr" ,libxrandr)
         ("libxvmc" ,libxvmc)
         ,@(match (%current-system)
-            ((or "x86_64-linux" "i686-linux")
+            ((or "x86_64-linux" "i686-linux" "powerpc64le-linux")
              ;; Note: update the 'clang' input of mesa-opencl when bumping this.
              `(("llvm" ,llvm-11)))
             (_
@@ -283,7 +283,7 @@ also known as DXTn or DXTC) for Mesa.")
         ("flex" ,flex)
         ("gettext" ,gettext-minimal)
         ,@(match (%current-system)
-            ((or "x86_64-linux" "i686-linux")
+            ((or "x86_64-linux" "i686-linux" "powerpc64le-linux")
              `(("glslang" ,glslang)))
             (_
              `()))
@@ -296,8 +296,10 @@ also known as DXTn or DXTC) for Mesa.")
      `(#:configure-flags
        '(,@(match (%current-system)
              ((or "armhf-linux" "aarch64-linux")
-              ;; TODO: Fix svga driver for aarch64 and armhf.
+              ;; TODO: Fix svga driver for non-Intel architectures.
               '("-Dgallium-drivers=etnaviv,freedreno,kmsro,lima,nouveau,panfrost,r300,r600,swrast,tegra,v3d,vc4,virgl"))
+             ("powerpc64le-linux"
+              '("-Dgallium-drivers=nouveau,r300,r600,radeonsi,swrast,virgl"))
              (_
               '("-Dgallium-drivers=iris,nouveau,r300,r600,radeonsi,svga,swrast,virgl")))
          ;; Enable various optional features.  TODO: opencl requires libclc,
@@ -314,16 +316,18 @@ also known as DXTn or DXTC) for Mesa.")
          "-Dgbm=enabled"
          "-Dshared-glapi=enabled"
 
-         ;; Enable Vulkan on i686-linux and x86-64-linux.
+         ;; Explicitly enable Vulkan on some architectures.
          ,@(match (%current-system)
              ((or "i686-linux" "x86_64-linux")
               '("-Dvulkan-drivers=intel,amd"))
+             ("powerpc64le-linux"
+              '("-Dvulkan-drivers=amd"))
              (_
               '("-Dvulkan-drivers=auto")))
 
-         ;; Enable the Vulkan overlay layer on i686-linux and x86-64-linux.
+         ;; Enable the Vulkan overlay layer on architectures using llvm.
          ,@(match (%current-system)
-             ((or "x86_64-linux" "i686-linux")
+             ((or "x86_64-linux" "i686-linux" "powerpc64le-linux")
               '("-Dvulkan-overlay-layer=true"))
              (_
               '()))
@@ -337,6 +341,9 @@ also known as DXTn or DXTC) for Mesa.")
              ((or "x86_64-linux" "i686-linux")
               '("-Ddri-drivers=i915,i965,nouveau,r200,r100"
                 "-Dllvm=enabled"))      ; default is x86/x86_64 only
+             ("powerpc64le-linux"
+              '("-Ddri-drivers=nouveau,r200,r100"
+                "-Dllvm=enabled"))
              (_
               '("-Ddri-drivers=nouveau,r200,r100"))))
 
@@ -350,6 +357,15 @@ also known as DXTn or DXTC) for Mesa.")
                   (guix build meson-build-system))
        #:phases
        (modify-phases %standard-phases
+         ,@(if (string-prefix? "powerpc64le" (or (%current-target-system)
+                                                 (%current-system)))
+               ;; Disable some of the llvmpipe tests.
+               `((add-after 'unpack 'disable-failing-test
+                   (lambda _
+                     (substitute* "src/gallium/drivers/llvmpipe/lp_test_arit.c"
+                       (("0\\.5, ") ""))
+                     #t)))
+               '())
          ,@(if (string-prefix? "i686" (or (%current-target-system)
                                           (%current-system)))
                ;; Disable new test from Mesa 19 that fails on i686.  Upstream
@@ -390,7 +406,7 @@ also known as DXTn or DXTC) for Mesa.")
              (let ((out (assoc-ref outputs "out"))
                    (bin (assoc-ref outputs "bin")))
                ,@(match (%current-system)
-                   ((or "i686-linux" "x86_64-linux")
+                   ((or "i686-linux" "x86_64-linux" "powerpc64le-linux")
                     ;; Install the Vulkan overlay control script to a separate
                     ;; output to prevent a reference on Python, saving ~70 MiB
                     ;; on the closure size.
@@ -728,7 +744,7 @@ OpenGL graphics API.")
     (description
      "libglvnd is a vendor-neutral dispatch layer for arbitrating OpenGL
 API calls between multiple vendors.  It allows multiple drivers from
-different vendors to coexist on the same filesystem, and determines which
+different vendors to coexist on the same file system, and determines which
 vendor to dispatch each API call to at runtime.
 
 Both GLX and EGL are supported, in any combination with OpenGL and OpenGL ES.")
@@ -783,7 +799,7 @@ OpenGL.")
 (define-public glfw
   (package
     (name "glfw")
-    (version "3.3.3")
+    (version "3.3.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/glfw/glfw"
@@ -791,7 +807,7 @@ OpenGL.")
                                   "/glfw-" version ".zip"))
               (sha256
                (base32
-                "0xrrahhbs4sn7sgvdk9sgz5zla4sw3ajq6kxpqrx635l8nnqfc3j"))))
+                "1kcrpl4d6b6h23ib5j9q670d9w3knd07whgbanbmwwhbcqnc9lmv"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no test target

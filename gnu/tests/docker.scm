@@ -303,5 +303,6 @@ docker-image} inside Docker.")
                                         (inherit (simple-operating-system))
                                         ;; Use locales for a single libc to
                                         ;; reduce space requirements.
-                                        (locale-libcs (list glibc))))
+                                        (locale-libcs (list glibc)))
+                                      #:memory-size 1024)
                  run-docker-system-test)))))

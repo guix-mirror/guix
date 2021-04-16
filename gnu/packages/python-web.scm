@@ -5,7 +5,7 @@
 ;;; Copyright © 2016, 2017 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2013, 2014, 2015, 2016, 2020 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016, 2017, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016, 2017, 2020 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
@@ -40,6 +40,7 @@
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
+;;; Copyright © 2021 Ekaitz Zarraga <ekaitz@elenq.tech>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -778,29 +779,26 @@ object graph to and from JSON.")
 (define-public python-mechanicalsoup
   (package
     (name "python-mechanicalsoup")
-    (version "0.11.0")
+    (version "1.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "MechanicalSoup" version))
        (sha256
-        (base32 "0k59wwk75q7nz6i6gynvzhagy02ql0bv7py3qqcwgjw7607yq4i7"))))
+        (base32 "01sddjxy3rznh63hnl5lbv1hhk6xyiviwmkiw4x7v4ap35fb3lrp"))))
     (build-system python-build-system)
-    (arguments
-     ;; TODO: Enable tests when python-flake8@3.5 hits master.
-     `(#:tests? #f))
     (propagated-inputs
      `(("python-beautifulsoup4" ,python-beautifulsoup4)
        ("python-lxml" ,python-lxml)
        ("python-requests" ,python-requests)
        ("python-six" ,python-six)))
-    ;; (native-inputs
-    ;;  ;; For tests.
-    ;;  `(("python-pytest-flake8" ,python-pytest-flake8)
-    ;;    ("python-pytest-httpbin" ,python-pytest-httpbin)
-    ;;    ("python-pytest-mock" ,python-pytest-mock)
-    ;;    ("python-pytest-runner" ,python-pytest-runner)
-    ;;    ("python-requests-mock" ,python-requests-mock)))
+    (native-inputs
+     `(("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-flake8" ,python-pytest-flake8)
+       ("python-pytest-httpbin" ,python-pytest-httpbin)
+       ("python-pytest-mock" ,python-pytest-mock)
+       ("python-pytest-runner" ,python-pytest-runner)
+       ("python-requests-mock" ,python-requests-mock)))
     (home-page "https://mechanicalsoup.readthedocs.io/")
     (synopsis "Python library for automating website interaction")
     (description
@@ -1085,7 +1083,9 @@ storage.")
     (build-system python-build-system)
     (propagated-inputs
      `(("python-six" ,python-six)
-       ("python-webencodings" ,python-webencodings)))
+       ("python-webencodings" ,python-webencodings)
+       ;; Required by Calibre 5.
+       ("python-chardet" ,python-chardet)))
     (arguments
      `(#:test-target "check"))
     (home-page
@@ -1668,14 +1668,14 @@ connection to each user.")
 (define-public python-tornado-6
   (package
     (name "python-tornado")
-    (version "6.0.4")
+    (version "6.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "tornado" version))
        (sha256
         (base32
-         "1p5n7sw4580pkybywg93p8ddqdj9lhhy72rzswfa801vlidx9qhg"))))
+         "14cpzdv6p6qvk6vn02krdh5rcfdi174ifdbr5s6lcnymgcfyiiik"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -1729,26 +1729,26 @@ web framework, either via the basic or digest authentication schemes.")
 (define-public python-terminado
   (package
     (name "python-terminado")
-    (version "0.8.1")
+    (version "0.9.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "terminado" version))
        (sha256
         (base32
-         "0yh69k6579g848rmjyllb5h75pkvgcy27r1l3yzgkf33wnnzkasm"))))
+         "1glqyw97rddyzvisz8rihsn3x2nrm5xbyq82nzp3123pqbxvqzcs"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-tornado" ,python-tornado)
+     `(("python-tornado" ,python-tornado-6)
        ("python-ptyprocess" ,python-ptyprocess)))
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     `(("python-pytest" ,python-pytest)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _ (invoke "nosetests") #t)))))
-    (home-page "https://github.com/takluyver/terminado")
+           (lambda _ (invoke "pytest" "-vv"))))))
+    (home-page "https://github.com/jupyter/terminado")
     (synopsis "Terminals served to term.js using Tornado websockets")
     (description "This package provides a Tornado websocket backend for the
 term.js Javascript terminal emulator library.")
@@ -2502,6 +2502,53 @@ than Python’s urllib2 library.")
 
 (define-public python2-requests
   (package-with-python2 python-requests))
+
+(define-public python-requests-unixsocket
+  (package
+    (name "python-requests-unixsocket")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "requests-unixsocket" version))
+       (sha256
+        (base32
+         "1sn12y4fw1qki5gxy9wg45gmdrxhrndwfndfjxhpiky3mwh1lp4y"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'relax-requirements
+           (lambda _
+             (substitute* "test-requirements.txt"
+               (("(.*)==(.*)" _ name) (string-append name "\n")))))
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv"))))))
+    (propagated-inputs
+     `(("python-pbr" ,python-pbr)
+       ("python-requests" ,python-requests)
+       ("python-urllib3" ,python-urllib3)))
+    (native-inputs
+     `(("python-apipkg" ,python-apipkg)
+       ("python-appdirs" ,python-appdirs)
+       ("python-execnet" ,python-execnet)
+       ("python-packaging" ,python-packaging)
+       ("python-pep8" ,python-pep8)
+       ("python-py" ,python-py)
+       ("python-pyparsing" ,python-pyparsing)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cache" ,python-pytest-cache)
+       ("python-pytest-pep8" ,python-pytest-pep8)
+       ("python-six" ,python-six)
+       ("python-waitress" ,python-waitress)))
+    (home-page "https://github.com/msabramo/requests-unixsocket")
+    (synopsis "Talk HTTP via a UNIX domain socket")
+    (description
+     "This Python package lets you use the @code{requests} library to talk
+HTTP via a UNIX domain socket.")
+    (license license:asl2.0)))
 
 (define-public python-requests_ntlm
   (package
@@ -4489,18 +4536,47 @@ library to create slugs from unicode strings while keeping it DRY.")
     (version "1.1.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri "tinycss2" version))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Kozea/tinycss2")
+             (commit (string-append "v" version))
+             (recursive? #true)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "12p16k8x8ig51gpfcwz3k3kxpxrwwkn41a1avdgvh3nn8hqarp7v"))))
+        (base32 "0zyc48vbmczpqj7f3f0d7zb3bz29fyj50dg0m6bbwbr5i88kq3sq"))))
     (build-system python-build-system)
     (arguments
-     ;; Test data is missing from the PyPI archive, and the build system is
-     ;; based on Flit, which wants an unmaintained and unpackaged
-     ;; python-pytoml dependency.
-     `(#:tests? #f))
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'build
+           (lambda _
+             ;; A ZIP archive should be generated, but it fails with "ZIP does
+             ;; not support timestamps before 1980".  Luckily,
+             ;; SOURCE_DATE_EPOCH is respected, which we set to some time in
+             ;; 1980.
+             (setenv "SOURCE_DATE_EPOCH" "315532800")
+             (invoke "flit" "build")))
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (let ((out (assoc-ref outputs "out")))
+               (for-each (lambda (wheel)
+                           (format #true wheel)
+                           (invoke "python" "-m" "pip" "install"
+                                   wheel (string-append "--prefix=" out)))
+                         (find-files "dist" "\\.whl$")))))
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv"))))))
     (propagated-inputs
      `(("python-webencodings" ,python-webencodings)))
+    (native-inputs
+     `(("python-flit" ,python-flit)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-flake8" ,python-pytest-flake8)
+       ("python-pytest-isort" ,python-pytest-isort)))
     (home-page "https://tinycss2.readthedocs.io/")
     (synopsis "Low-level CSS parser for Python")
     (description "@code{tinycss2} can parse strings, return Python objects

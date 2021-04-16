@@ -13,6 +13,7 @@
 ;;; Copyright © 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2021 qblade <qblade@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1815,7 +1816,11 @@ proxy of 'guix-daemon'...~%")
 raise a deprecation warning if the 'compression-level' field was used."
   (match (%guix-publish-configuration-compression-level config)
     (#f
-     '(("gzip" 3)))
+     ;; Default to low compression levels when there's no cache so that users
+     ;; get good bandwidth by default.
+     (if (guix-publish-configuration-cache config)
+         '(("gzip" 5) ("zstd" 19))
+         '(("gzip" 3) ("zstd" 3))))               ;zstd compresses faster
     (level
      (warn-about-deprecation 'compression-level properties
                              #:replacement 'compression)
@@ -2304,7 +2309,11 @@ This service is not part of @var{%base-services}."
   (auto-login              kmscon-configuration-auto-login
                            (default #f))
   (hardware-acceleration?  kmscon-configuration-hardware-acceleration?
-                           (default #f))) ; #t causes failure
+                           (default #f))  ; #t causes failure
+  (font-engine             kmscon-configuration-font-engine
+                           (default "pango"))
+  (font-size               kmscon-configuration-font-size
+                           (default 12)))
 
 (define kmscon-service-type
   (shepherd-service-type
@@ -2315,13 +2324,17 @@ This service is not part of @var{%base-services}."
            (login-program (kmscon-configuration-login-program config))
            (login-arguments (kmscon-configuration-login-arguments config))
            (auto-login (kmscon-configuration-auto-login config))
-           (hardware-acceleration? (kmscon-configuration-hardware-acceleration? config)))
+           (hardware-acceleration? (kmscon-configuration-hardware-acceleration? config))
+           (font-engine (kmscon-configuration-font-engine config))
+           (font-size (kmscon-configuration-font-size config)))
 
        (define kmscon-command
          #~(list
             #$(file-append kmscon "/bin/kmscon") "--login"
             "--vt" #$virtual-terminal
             "--no-switchvt" ;Prevent a switch to the virtual terminal.
+            "--font-engine" #$font-engine
+            "--font-size" #$(number->string font-size)
             #$@(if hardware-acceleration? '("--hwaccel") '())
             "--login" "--"
             #$login-program #$@login-arguments

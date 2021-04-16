@@ -19,7 +19,7 @@
 ;;; Summary
 ;; Tests for guix/import/go.scm
 
-(define-module (test-import-go)
+(define-module (tests-import-go)
   #:use-module (guix base32)
   #:use-module (guix build-system go)
   #:use-module (guix import go)
@@ -147,7 +147,8 @@ require github.com/kr/pretty v0.2.1
       ("https://pkg.go.dev/github.com/go-check/check"
        . ,pkg.go.dev)
       ("https://pkg.go.dev/github.com/go-check/check?tab=licenses"
-       . ,pkg.go.dev-licence))))
+       . ,pkg.go.dev-licence)
+      ("https://proxy.golang.org/github.com/go-check/check/@v/list" . ""))))
 
 (test-begin "go")
 
@@ -169,6 +170,12 @@ require github.com/kr/pretty v0.2.1
   "daa7c04131f5"
   (go-version->git-ref "v1.2.4-0.20191109021931-daa7c04131f5"))
 
+(test-assert "go-pseudo-version? multi-digit version number"
+  (go-pseudo-version? "v1.23.1-0.20200526195155-81db48ad09cc"))
+
+(test-assert "go-pseudo-version? semantic version with rc"
+  (go-pseudo-version? "v1.4.0-rc.4.0.20200313231945-b860323f09d0"))
+
 ;;; Unit tests for (guix import go)
 
 (test-equal "go-path-escape"
@@ -180,46 +187,43 @@ require github.com/kr/pretty v0.2.1
 (define (testing-parse-mod name expected input)
   (define (inf? p1 p2)
     (string<? (car p1) (car p2)))
-  (let ((input-port (open-input-string input)))
-    (test-equal name
-      (sort expected inf?)
-      (sort
-       ( (@@ (guix import go) parse-go.mod)
-         input-port)
-       inf?))))
+  (test-equal name
+    (sort expected inf?)
+    (sort ((@@ (guix import go) parse-go.mod) input) inf?)))
 
 (testing-parse-mod "parse-go.mod-simple"
-                   '(("good/thing" . "v1.4.5")
-                     ("new/thing/v2" . "v2.3.4")
-                     ("other/thing" . "v1.0.2"))
+                   '(("good/thing" "v1.4.5")
+                     ("new/thing/v2" "v2.3.4")
+                     ("other/thing" "v1.0.2"))
                    fixture-go-mod-simple)
 
 (testing-parse-mod "parse-go.mod-with-block"
-                   '(("A" . "v1")
-                     ("B" . "v1.0.0")
-                     ("C" . "v1.0.0")
-                     ("D" . "v1.2.3")
-                     ("E" . "dev"))
+                   '(("A" "v1")
+                     ("B" "v1.0.0")
+                     ("C" "v1.0.0")
+                     ("D" "v1.2.3")
+                     ("E" "dev"))
                    fixture-go-mod-with-block)
 
-(testing-parse-mod "parse-go.mod-complete"
-                   '(("github.com/corp/arbitrary-repo" . "v0.0.2")
-                     ("quoted.example.com/abitrary/repo" . "v0.0.2")
-                     ("one.example.com/abitrary/repo" . "v1.1.111")
-                     ("hub.jazz.net/git/user/project/sub/directory" . "v1.1.19")
-                     ("hub.jazz.net/git/user/project" . "v1.1.18")
-                     ("launchpad.net/~user/project/branch/sub/directory" . "v1.1.17")
-                     ("launchpad.net/~user/project/branch" . "v1.1.16")
-                     ("launchpad.net/project/series/sub/directory" . "v1.1.15")
-                     ("launchpad.net/project/series" . "v1.1.14")
-                     ("launchpad.net/project" . "v1.1.13")
-                     ("bitbucket.org/user/project/sub/directory" . "v1.11.21")
-                     ("bitbucket.org/user/project" . "v1.11.20")
-                     ("k8s.io/kubernetes/subproject" . "v1.1.101")
-                     ("github.com/user/project/sub/directory" . "v1.1.12")
-                     ("github.com/user/project" . "v1.1.11")
-                     ("github.com/go-check/check" . "v0.0.0-20140225173054-eb6ee6f84d0a"))
-                   fixture-go-mod-complete)
+(testing-parse-mod
+ "parse-go.mod-complete"
+ '(("github.com/corp/arbitrary-repo" "v0.0.2")
+   ("quoted.example.com/abitrary/repo" "v0.0.2")
+   ("one.example.com/abitrary/repo" "v1.1.111")
+   ("hub.jazz.net/git/user/project/sub/directory" "v1.1.19")
+   ("hub.jazz.net/git/user/project" "v1.1.18")
+   ("launchpad.net/~user/project/branch/sub/directory" "v1.1.17")
+   ("launchpad.net/~user/project/branch" "v1.1.16")
+   ("launchpad.net/project/series/sub/directory" "v1.1.15")
+   ("launchpad.net/project/series" "v1.1.14")
+   ("launchpad.net/project" "v1.1.13")
+   ("bitbucket.org/user/project/sub/directory" "v1.11.21")
+   ("bitbucket.org/user/project" "v1.11.20")
+   ("k8s.io/kubernetes/subproject" "v1.1.101")
+   ("github.com/user/project/sub/directory" "v1.1.12")
+   ("github.com/user/project" "v1.1.11")
+   ("github.com/go-check/check" "v0.0.0-20140225173054-eb6ee6f84d0a"))
+ fixture-go-mod-complete)
 
 ;;; End-to-end tests for (guix import go)
 (define (mock-http-fetch testcase)
@@ -249,44 +253,43 @@ require github.com/kr/pretty v0.2.1
 
 (test-equal "go-module->guix-package"
   '(package
-    (name "go-github-com-go-check-check")
-    (version "0.0.0-20201130134442-10cb98267c6c")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/go-check/check.git")
-             (commit (go-version->git-ref version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "0sjjj9z1dhilhpc8pq4154czrb79z9cm044jvn75kxcjv6v5l2m5"))))
-    (build-system go-build-system)
-    (arguments
-     (quote (#:import-path "github.com/go-check/check")))
-    (inputs
-     (quasiquote (("go-github-com-kr-pretty"
-                   (unquote go-github-com-kr-pretty)))))
-    (home-page "https://github.com/go-check/check")
-    (synopsis "Instructions")
-    (description #f)
-    (license license:bsd-2))
+     (name "go-github-com-go-check-check")
+     (version "0.0.0-20201130134442-10cb98267c6c")
+     (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/go-check/check")
+              (commit (go-version->git-ref version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "0sjjj9z1dhilhpc8pq4154czrb79z9cm044jvn75kxcjv6v5l2m5"))))
+     (build-system go-build-system)
+     (arguments
+      '(#:import-path "github.com/go-check/check"))
+     (propagated-inputs
+      `(("go-github-com-kr-pretty" ,go-github-com-kr-pretty)))
+     (home-page "https://github.com/go-check/check")
+     (synopsis "Instructions")
+     (description "Package check is a rich testing extension for Go's testing \
+package.")
+     (license license:bsd-2))
 
   ;; Replace network resources with sample data.
   (call-with-temporary-directory
    (lambda (checkout)
      (mock ((web client) http-get
             (mock-http-get fixtures-go-check-test))
-           (mock ((guix http-client) http-fetch
-                  (mock-http-fetch fixtures-go-check-test))
-                 (mock ((guix git) update-cached-checkout
-                        (lambda* (url #:key ref)
-                          ;; Return an empty directory and its hash.
-                          (values checkout
-                                  (nix-base32-string->bytevector
-                                   "0sjjj9z1dhilhpc8pq4154czrb79z9cm044jvn75kxcjv6v5l2m5")
-                                  #f)))
-                       (go-module->guix-package "github.com/go-check/check")))))))
+         (mock ((guix http-client) http-fetch
+                (mock-http-fetch fixtures-go-check-test))
+             (mock ((guix git) update-cached-checkout
+                    (lambda* (url #:key ref)
+                      ;; Return an empty directory and its hash.
+                      (values checkout
+                              (nix-base32-string->bytevector
+                               "0sjjj9z1dhilhpc8pq4154czrb79z9cm044jvn75kxcjv6v5l2m5")
+                              #f)))
+                 (go-module->guix-package "github.com/go-check/check")))))))
 
 (test-end "go")
-

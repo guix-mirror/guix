@@ -6,6 +6,7 @@
 ;;; Copyright © 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2021 Brendan Tildesley <mail@brendan.scot>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,13 +31,140 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
+  #:use-module (gnu packages libffi)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages check)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-build)
+  #:use-module (gnu packages python-check)
+  #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages sphinx))
+
+(define-public python-multivolumefile
+  (package
+    (name "python-multivolumefile")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "multivolumefile" version))
+       (sha256
+        (base32
+         "0j46wab4b09s3favjzp3zs1cn2sn8pr7qyngs5wn31hpqqxbbz76"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pep517" ,python-pep517)
+       ("python-setuptools" ,python-setuptools)
+       ("python-setuptools-scm" ,python-setuptools-scm/next)
+       ("python-coverage" ,python-coverage)
+       ("python-coveralls" ,python-coveralls)
+       ("python-pyannotate" ,python-pyannotate)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)))
+    (home-page "https://github.com/miurahr/multivolume")
+    (synopsis "Treat multiple files as one")
+    (description "MultiVolumefile is a Python library that provides a
+file-object abstraction, making it possible to use multiple files as if they
+were a single file.")
+    (license license:lgpl2.1+)))
+
+(define-public python-bcj-cffi
+  (package
+    (name "python-bcj-cffi")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "bcj-cffi" version))
+       (sha256
+        (base32
+         "1jcczrb8zgg6w7v76w1wpz3nw75fghk3xwxkn09ll7kck7sdf68d"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-cffi" ,python-cffi)
+       ("python-toml" ,python-toml)
+       ("python-setuptools-scm" ,python-setuptools-scm/next)))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-coverage" ,python-coverage)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)))
+    (home-page "https://github.com/miurahr/bcj-cffi")
+    (synopsis "Branch / Call /Jump CFFI library in Python")
+    (description "This package provides an implementation of the Branch / Call /
+Jump conversion filter by CFFI for Python.")
+    (license license:lgpl2.1+)))
+
+(define-public python-ppmd-cffi
+  (package
+    (name "python-ppmd-cffi")
+    (version "0.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ppmd-cffi" version))
+       (sha256
+        (base32
+         "01wcd9l6pp6hivdmd275qh9dhcwficjqfl67hxix5n07vvq7jzz0"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-cffi" ,python-cffi)))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-setuptools-scm" ,python-setuptools-scm/next)
+       ("python-pep517" ,python-pep517)
+       ("python-coverage" ,python-coverage)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)))
+    (home-page "https://github.com/miurahr/ppmd")
+    (synopsis "Prediction by Partial Matching compression library")
+    (description "PPMd is a compression algorithm library using the Prediction
+by Partial Matching statistical technique.  It is used in RAR and 7-Zip as one of
+several possible methods.")
+    (license license:lgpl2.1+)))
+
+(define-public python-py7zr
+  (package
+    (name "python-py7zr")
+    (version "0.14.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "py7zr" version))
+       (sha256
+        (base32
+         "1zmgp7yax328fj8yj8pj4l7yh78hp727j6wk12vfi6nmi82wl32i"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-bcj-cffi" ,python-bcj-cffi)
+       ("python-multivolumefile" ,python-multivolumefile)
+       ("python-ppmd-cffi" ,python-ppmd-cffi)
+       ("python-pycryptodome" ,python-pycryptodome)
+       ("python-pyzstd" ,python-pyzstd)
+       ("python-texttable" ,python-texttable)
+       ("python-zstandard" ,python-zstandard)))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-setuptools-scm" ,python-setuptools-scm/next)
+       ("python-coverage" ,python-coverage)
+       ("python-coveralls" ,python-coveralls)
+       ("python-libarchive-c" ,python-libarchive-c)
+       ("python-py-cpuinfo" ,python-py-cpuinfo)
+       ("python-pyannotate" ,python-pyannotate)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-benchmark" ,python-pytest-benchmark)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-remotedata" ,python-pytest-remotedata)
+       ("python-pytest-timeout" ,python-pytest-timeout)))
+    (home-page "https://github.com/miurahr/py7zr")
+    (synopsis "7-zip in Python")
+    (description "This package provides py7zr, which implements 7-zip
+archive compression, decompression, encryption and decryption in
+Python.")
+    (license license:lgpl2.1+)))
 
 (define-public python-lzo
   (package
@@ -288,13 +416,13 @@ wrapper.  It provides a backport of the @code{Path} object.")
 (define-public python-zstandard
   (package
     (name "python-zstandard")
-    (version "0.13.0")
+    (version "0.15.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "zstandard" version))
        (sha256
-        (base32 "0q9msi00s93iqm8vzd839r7yc51gz54z90h5bckqyjdxa6vxijz5"))))
+        (base32 "0by9z7nxnkzhmza075q6q91rs8lnpf91129k8ppv7kymbwshipjj"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-hypothesis" ,python-hypothesis)))
@@ -303,4 +431,22 @@ wrapper.  It provides a backport of the @code{Path} object.")
     (description "This project provides Python bindings for interfacing with
 the Zstandard compression library.  A C extension and CFFI interface are
 provided.")
+    (license license:bsd-3)))
+
+(define-public python-pyzstd
+  (package
+    (name "python-pyzstd")
+    (version "0.14.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyzstd" version))
+       (sha256
+        (base32
+         "1d3mngs45w2p490vrq5ymd2wz4lp15phmks1ilcx4k7amgibml3d"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/animalize/pyzstd")
+    (synopsis "Zstandard bindings for Python")
+    (description "This package provides Python bindings to the Zstandard (zstd)
+compression library.  The API is similar to Python's bz2/lzma/zlib module.")
     (license license:bsd-3)))

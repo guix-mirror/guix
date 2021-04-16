@@ -403,48 +403,57 @@ libssh library.")
   (deprecated-package "guile3.0-ssh" guile-ssh))
 
 (define-public corkscrew
-  (package
-    (name "corkscrew")
-    (version "2.0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/patpadgett/corkscrew")
-             (commit (string-append "v" version))))
-       (sha256
-        (base32 "0g4pkczrc1zqpnxyyjwcjmyzdj5qqcpzwf1bm3965zdwp94bpppf"))
-       (file-name (git-file-name name version))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'configure
-           ;; Replace configure phase as the ./configure script does not like
-           ;; CONFIG_SHELL and SHELL passed as parameters.
-           (lambda* (#:key outputs build target #:allow-other-keys)
-             (let* ((out   (assoc-ref outputs "out"))
-                    (bash  (which "bash"))
-                    ;; Set --build and --host flags as the provided config.guess
-                    ;; is not able to detect them.
-                    (flags `(,(string-append "--prefix=" out)
-                             ,(string-append "--build=" build)
-                             ,(string-append "--host=" (or target build)))))
-               (setenv "CONFIG_SHELL" bash)
-               (apply invoke bash "./configure" flags))))
-         (add-after 'install 'install-documentation
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (doc (string-append out "/share/doc/" ,name "-" ,version)))
-               (install-file "README.markdown" doc)
-               #t))))))
-    (home-page "https://github.com/patpadgett/corkscrew")
-    (synopsis "SSH tunneling through HTTP(S) proxies")
-    (description
-     "Corkscrew tunnels SSH connections through most HTTP and HTTPS proxies.
-Proxy authentication is only supported through the plain-text HTTP basic
-authentication scheme.")
-    (license license:gpl2+)))
+  ;; The last 2.0 release hails from 2009.  Use a fork (submitted upstream as
+  ;; <https://github.com/patpadgett/corkscrew/pull/5>) that adds now-essential
+  ;; IPv6 and TLS support.
+  (let ((revision "0")
+        (commit "268b71e88ee51fddceab96d665b327394f1feb12"))
+    (package
+      (name "corkscrew")
+      (version (git-version "2.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/rtgill82/corkscrew")
+               (commit commit)))
+         (sha256
+          (base32 "1rylbimlfig3ii4bqr4r058lkc43pqkxnxqpqdpm31blh3xs0dcw"))
+         (file-name (git-file-name name version))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:configure-flags
+         (list "--enable-ssl")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'update-metadata
+             (lambda _
+               (substitute* "configure.ac"
+                 ;; Our version differs significantly.
+                 (("2.0") (string-append ,version " (Guix)")))
+               (substitute* "corkscrew.c"
+                 ;; This domain's since been squat.
+                 (("\\(agroman@agroman\\.net\\)")
+                  (format #f "<~a>" ,(package-home-page this-package))))))
+           (add-after 'install 'install-documentation
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (doc (string-append out "/share/doc/" ,name "-" ,version)))
+                 (install-file "README.md" doc)
+                 #t))))))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("pkg-config" ,pkg-config)))
+      (inputs
+       `(("openssl" ,openssl)))
+      (home-page "https://github.com/patpadgett/corkscrew")
+      (synopsis "SSH tunneling through HTTP(S) proxies")
+      (description
+       "Corkscrew tunnels SSH connections through most HTTP and HTTPS proxies.
+It supports proxy authentication through the HTTP basic authentication scheme
+with optional @acronym{TLS, Transport-Level Security} to protect credentials.")
+      (license license:gpl2+))))
 
 (define-public mosh
   (package

@@ -611,8 +611,8 @@ Telegram instant messenger.")
                          #:include-regexp ("\\.h$")))
                       args))))))
       (synopsis "Parse tl scheme to tlo")
-      (description "TL-Parser is a tl scheme to tlo file parser.  It was formely
-a part of telegram-cli, but now being maintained separately.")
+      (description "TL-Parser is a tl scheme to tlo file parser.  It was
+formerly a part of telegram-cli, but now being maintained separately.")
       (home-page "https://github.com/vysheng/tl-parser")
       (license license:gpl2+))))
 

@@ -3,6 +3,7 @@
 ;;; Copyright © 2017, 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,12 +30,15 @@
   #:use-module (guix gexp)
   #:use-module (guix store)
   #:use-module (guix monads)
+  #:use-module (guix modules)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages networking)
+  #:use-module (gnu packages guile)
   #:use-module (gnu services shepherd)
   #:use-module (ice-9 match)
-  #:export (%test-inetd %test-openvswitch %test-dhcpd %test-tor %test-iptables))
+  #:export (%test-inetd %test-openvswitch %test-dhcpd %test-tor %test-iptables
+                        %test-ipfs))
 
 (define %inetd-os
   ;; Operating system with 2 inetd services.
@@ -563,3 +567,89 @@ COMMIT
    (name "iptables")
    (description "Test a running iptables daemon.")
    (value (run-iptables-test))))
+
+
+;;;
+;;; IPFS service
+;;;
+
+(define %ipfs-os
+  (simple-operating-system
+   (service ipfs-service-type)))
+
+(define (run-ipfs-test)
+  (define os
+    (marionette-operating-system %ipfs-os
+                                 #:imported-modules (source-module-closure
+                                                     '((gnu services herd)
+                                                       (guix ipfs)))
+                                 #:extensions (list guile-json-4)
+                                 #:requirements '(ipfs)))
+
+  (define test
+    (with-imported-modules '((gnu build marionette))
+      #~(begin
+          (use-modules (gnu build marionette)
+                       (rnrs bytevectors)
+                       (srfi srfi-64)
+                       (ice-9 binary-ports))
+
+          (define marionette
+            (make-marionette (list #$(virtual-machine os))))
+
+          (define (ipfs-is-alive?)
+            (marionette-eval
+             '(begin
+                (use-modules (gnu services herd)
+                             (srfi srfi-1))
+                (live-service-running
+                 (find (lambda (live)
+                         (memq 'ipfs
+                               (live-service-provision live)))
+                       (current-services))))
+             marionette))
+
+          ;; The default API endpoint port 5001 is used,
+          ;; so there is no need to parameterize %ipfs-base-url.
+          (define (add-data data)
+            (marionette-eval `(content-name (add-data ,data)) marionette))
+          (define (read-contents object)
+            (marionette-eval
+             `(let* ((input (read-contents ,object))
+                     (all-input (get-bytevector-all input)))
+                (close-port input)
+                all-input)
+             marionette))
+
+          (marionette-eval '(use-modules (guix ipfs)) marionette)
+          (mkdir #$output)
+          (chdir #$output)
+
+          (test-begin "ipfs")
+
+          ;; Test the IPFS service.
+
+          (test-assert "ipfs is alive" (ipfs-is-alive?))
+
+          (test-assert "ipfs is listening on the gateway"
+            (let ((default-port 8082))
+              (wait-for-tcp-port default-port marionette)))
+
+          (test-assert "ipfs is listening on the API endpoint"
+            (let ((default-port 5001))
+              (wait-for-tcp-port default-port marionette)))
+
+          (define test-bv (string->utf8 "hello ipfs!"))
+          (test-equal "can upload and download a file to/from ipfs"
+            test-bv
+            (read-contents (add-data test-bv)))
+
+          (test-end)
+          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+  (gexp->derivation "ipfs-test" test))
+
+(define %test-ipfs
+  (system-test
+   (name "ipfs")
+   (description "Test a running IPFS daemon configuration.")
+   (value (run-ipfs-test))))

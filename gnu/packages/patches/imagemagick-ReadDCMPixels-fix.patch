@@ -1,0 +1,35 @@
+From c8f25953ad1dd38a8b2d92738f0f742ad7e0bce7 Mon Sep 17 00:00:00 2001
+From: Cristy <mikayla-grace@urban-warrior.org>
+Date: Sun, 21 Mar 2021 21:21:15 -0400
+Subject: [PATCH] https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=32322
+
+---
+ coders/dcm.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/coders/dcm.c b/coders/dcm.c
+index 29eed9618..7a68ed6e8 100644
+--- a/coders/dcm.c
++++ b/coders/dcm.c
+@@ -2984,12 +2984,12 @@ static MagickBooleanType ReadDCMPixels(Image *image,DCMInfo *info,
+         }
+       else
+         {
+-          SetPixelRed(q,(Quantum) (((ssize_t) pixel.red) |
+-            (((ssize_t) GetPixelRed(q)) << 8)));
+-          SetPixelGreen(q,(Quantum) (((ssize_t) pixel.green) |
+-            (((ssize_t) GetPixelGreen(q)) << 8)));
+-          SetPixelBlue(q,(Quantum) (((ssize_t) pixel.blue) |
+-            (((ssize_t) GetPixelBlue(q)) << 8)));
++          SetPixelRed(q,(Quantum) (((size_t) pixel.red) |
++            (((size_t) GetPixelRed(q)) << 8)));
++          SetPixelGreen(q,(Quantum) (((size_t) pixel.green) |
++            (((size_t) GetPixelGreen(q)) << 8)));
++          SetPixelBlue(q,(Quantum) (((size_t) pixel.blue) |
++            (((size_t) GetPixelBlue(q)) << 8)));
+         }
+       q++;
+     }
+-- 
+2.31.0
+

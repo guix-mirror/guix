@@ -384,7 +384,7 @@ http://www.tux.org/~ricdude/overview.html")
                 "if (error) return 77;"))
              #t)))))
     (native-inputs
-     `(("gtk-doc" ,gtk-doc)))
+     `(("gtk-doc" ,gtk-doc/stable)))
     (home-page "https://gstreamer.freedesktop.org/modules/orc.html")
     (synopsis "Oil runtime compiler")
     (description

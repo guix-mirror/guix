@@ -60,7 +60,7 @@
 ;;;; Code:
 
 (define %cuirass-default-database
-  "dbname=cuirass host=/var/run/postgresql")
+  "dbname=cuirass host=/tmp")
 
 (define-record-type* <cuirass-remote-server-configuration>
   cuirass-remote-server-configuration make-cuirass-remote-server-configuration

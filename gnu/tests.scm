@@ -2,6 +2,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -74,13 +75,24 @@
                     (default "/dev/virtio-ports/org.gnu.guix.port.0"))
   (imported-modules marionette-configuration-imported-modules
                     (default '()))
+  (extensions       marionette-configuration-extensions
+                    (default '())) ; list of packages
   (requirements     marionette-configuration-requirements ;list of symbols
                     (default '())))
+
+;; Hack: avoid indenting code beyond column 80 in marionette-shepherd-service.
+(define-syntax-rule (with-imported-modules-and-extensions imported-modules
+                                                          extensions
+                                                          gexp)
+  (with-imported-modules imported-modules
+    (with-extensions extensions
+      gexp)))
 
 (define (marionette-shepherd-service config)
   "Return the Shepherd service for the marionette REPL"
   (match config
-    (($ <marionette-configuration> device imported-modules requirement)
+    (($ <marionette-configuration> device imported-modules extensions
+                                   requirement)
      (list (shepherd-service
             (provision '(marionette))
 
@@ -90,7 +102,7 @@
             (modules '((ice-9 match)
                        (srfi srfi-9 gnu)))
             (start
-             (with-imported-modules imported-modules
+             (with-imported-modules-and-extensions imported-modules extensions
                #~(lambda ()
                    (define (self-quoting? x)
                      (letrec-syntax ((one-of (syntax-rules ()
@@ -154,11 +166,13 @@
 (define* (marionette-operating-system os
                                       #:key
                                       (imported-modules '())
+                                      (extensions '())
                                       (requirements '()))
   "Return a marionetteed variant of OS such that OS can be used as a
 marionette in a virtual machine--i.e., controlled from the host system.  The
 marionette service in the guest is started after the Shepherd services listed
-in REQUIREMENTS."
+in REQUIREMENTS.  The packages in the list EXTENSIONS are made available from
+the backdoor REPL."
   (operating-system
     (inherit os)
     ;; Make sure the guest dies on error.
@@ -172,6 +186,7 @@ in REQUIREMENTS."
     (services (cons (service marionette-service-type
                              (marionette-configuration
                               (requirements requirements)
+                              (extensions extensions)
                               (imported-modules imported-modules)))
                     (operating-system-user-services os)))))
 
@@ -280,5 +295,10 @@ result."
 (define (all-system-tests)
   "Return the list of system tests."
   (reverse (fold-system-tests cons '())))
+
+
+;; Local Variables:
+;; eval: (put 'with-imported-modules-and-extensions 'scheme-indent-function 2)
+;; End:
 
 ;;; tests.scm ends here

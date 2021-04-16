@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016, 2017, 2019, 2020 Eric Bavier <bavier@posteo.net>
-;;; Copyright © 2016, 2017, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2019 Pkill -9 <pkill9@runbox.com>
@@ -179,12 +179,13 @@ tools that process C/C++ code.")
                    ("aarch64-linux"  "aarch64")
                    ("armhf-linux"    "arm")
                    ("mips64el-linux" "mips64el")
+                   ("powerpc-linux"  "ppc")
                    ;; Prevent errors when querying this package on unsupported
                    ;; platforms, e.g. when running "guix package --search="
                    (_                "UNSUPPORTED"))))
     (package
       (name "american-fuzzy-lop")
-      (version "2.56b")             ;It seems all releases have the 'b' suffix
+      (version "2.57b")             ;It seems all releases have the 'b' suffix
       (source
        (origin
          (method git-fetch)
@@ -192,7 +193,7 @@ tools that process C/C++ code.")
                (url "https://github.com/google/AFL")
                (commit (string-append "v" version))))
          (sha256
-          (base32 "1q1g59gkm48aa4cg9h70jx4i2gapmypgp5rzs156b2avd95vwkn1"))
+          (base32 "0ks0s8iizp7mpc9mlpv126rsny0dkljfsw68689g9jiisjz2z530"))
          (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (inputs
@@ -254,6 +255,7 @@ down the road.")
                    ("aarch64-linux"  "aarch64")
                    ("armhf-linux"    "arm")
                    ("mips64el-linux" "mips64el")
+                   ("powerpc-linux"  "ppc")
                    ;; Prevent errors when querying this package on unsupported
                    ;; platforms, e.g. when running "guix package --search="
                    (_                "UNSUPPORTED"))))
@@ -269,7 +271,8 @@ down the road.")
               (base32
                "17w21spvaxaidi2am5lpsln8yjpyp2zi3s3gc6nsxj5arlgamzgw"))
              (patches
-              (search-patches "qemu-glibc-2.27.patch"))))
+              (search-patches "qemu-glibc-2.27.patch"
+                              "qemu-glibc-2.30.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Running tests in parallel can occasionally lead to failures, like:

@@ -277,7 +277,7 @@ living in the same process.")
     (description
      "GnuTLS is a secure communications library implementing the SSL, TLS
 and DTLS protocols.  It is provided in the form of a C library to support the
-protocols, as well as to parse and write X.5009, PKCS 12, OpenPGP and other
+protocols, as well as to parse and write X.509, PKCS #12, OpenPGP and other
 required structures.")
     (license license:lgpl2.1+)
     (properties '((ftp-server . "ftp.gnutls.org")
@@ -460,7 +460,7 @@ required structures.")
 (define-public openssl/fixed
   (package
    (inherit openssl)
-   (version "1.1.1j")
+   (version "1.1.1k")
    (source (origin
              (method url-fetch)
              (uri (list (string-append "https://www.openssl.org/source/openssl-"
@@ -473,7 +473,7 @@ required structures.")
              (patches (search-patches "openssl-1.1-c-rehash-in.patch"))
              (sha256
               (base32
-               "1gw17520vh13izy1xf5q0a2fqgcayymjjj5bk0dlkxndfnszrwma"))))))
+               "1rdfzcrxy9y38wqdw5942vmdax9hjhgrprzxm42csal7p5shhal9"))))))
 
 (define-public openssl-1.0
   (package

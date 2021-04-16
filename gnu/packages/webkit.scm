@@ -174,7 +174,7 @@ engine that uses Wayland for graphics output.")
        ("docbook-xsl" ,docbook-xsl)
        ("glib:bin" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
-       ("gtk-doc" ,gtk-doc)
+       ("gtk-doc" ,gtk-doc/stable)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)
@@ -226,14 +226,14 @@ acceleration in mind, leveraging common 3D graphics APIs for best performance.")
 (define-public webkitgtk
   (package
     (name "webkitgtk")
-    (version "2.30.6")
+    (version "2.32.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.webkitgtk.org/releases/"
                                   "webkitgtk-" version ".tar.xz"))
               (sha256
                (base32
-                "07kwkn7gnlfw4idl5vyyzhzbj2bjzvjrclbikn9vaw0pm73nwwsh"))
+                "1w3b0w8izp0i070grhv19j631sdcd0mcqnjnax13k8mdx7dg8zcx"))
               (patches (search-patches "webkitgtk-share-store.patch"
                                        "webkitgtk-bind-all-fonts.patch"))))
     (build-system cmake-build-system)
@@ -244,6 +244,9 @@ acceleration in mind, leveraging common 3D graphics APIs for best performance.")
        #:configure-flags (list
                           "-DPORT=GTK"
                           "-DENABLE_GTKDOC=ON" ; No doc by default
+                          ;; Requires libmanette, new dependency added in 2.32.0.
+                          ;; TODO Decide if we should enable this
+                          "-DENABLE_GAMEPAD=OFF"
                           "-DUSE_SYSTEMD=OFF"
                           (string-append ; uses lib64 by default
                            "-DLIB_INSTALL_DIR="
@@ -301,7 +304,7 @@ acceleration in mind, leveraging common 3D graphics APIs for best performance.")
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)
-       ("gtk-doc" ,gtk-doc) ; For documentation generation
+       ("gtk-doc" ,gtk-doc/stable) ; For documentation generation
        ("docbook-xml" ,docbook-xml) ; For documentation generation
        ("ruby" ,ruby)))
     (propagated-inputs

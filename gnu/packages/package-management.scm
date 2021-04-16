@@ -132,8 +132,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "1.2.0")
-        (commit "ec7fb669945bfb47c5e1fdf7de3a5d07f7002ccf")
-        (revision 17))
+        (commit "4dff6ecde85eec473ab231cf75f51e98e8aca1e9")
+        (revision 21))
     (package
       (name "guix")
 
@@ -149,7 +149,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "1v9pwsqx8n4l6f7aj9vxv6m7vb4lyw8j5qg6mxf5zksia0qlcv2z"))
+                  "1n16j7rb4n4pjmp8ck5g206rphmzxii2mbyz1nk4qk70zc3mwszq"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -212,7 +212,7 @@ $(prefix)/etc/init.d\n")))
                         (substitute* "nix/local.mk"
                           (("^openrcservicedir = .*$")
                            (string-append "openrcservicedir = \
-$(prefix)/etc/init.d\n")))
+$(prefix)/etc/openrc\n")))
 
                         (invoke "sh" "bootstrap")))
                     (add-before 'build 'use-host-compressors
@@ -1049,8 +1049,8 @@ environments.")
     (license (list license:gpl3+ license:agpl3+ license:silofl1.1))))
 
 (define-public guix-build-coordinator
-  (let ((commit "1f79fc38a17ceda30f378efd4e7f80f252c99b4d")
-        (revision "20"))
+  (let ((commit "6fb5eafc33efa109b220efe71594cfcdb2efe133")
+        (revision "24"))
     (package
       (name "guix-build-coordinator")
       (version (git-version "0" revision commit))
@@ -1061,7 +1061,7 @@ environments.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "0d5zr5mv07pi195vva2fhclfgyzrgbk9vlnwrmy7z1jcw2p1d2zp"))
+                  "1lf7jry18kwglvyakfkmi8bif8ppsdinl0xjgmkgkp4mvmymh2gj"))
                 (file-name (string-append name "-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -1088,14 +1088,18 @@ environments.")
                  (for-each
                   (lambda (file)
                     (simple-format (current-error-port) "wrapping: ~A\n" file)
-                    (let ((guile-inputs `("guile-json"
-                                          "guile-gcrypt"
-                                          "guix"
-                                          "guile-prometheus"
-                                          "guile-lib"
-                                          "guile-lzlib"
-                                          "guile-zlib"
-                                          "gnutls")))
+                    (let ((guile-inputs (list
+                                         "guile-json"
+                                         "guile-gcrypt"
+                                         "guix"
+                                         "guile-prometheus"
+                                         "guile-lib"
+                                         "guile-lzlib"
+                                         "guile-zlib"
+                                         "gnutls"
+                                         ,@(if (hurd-target?)
+                                               '()
+                                               '("guile-fibers")))))
                       (wrap-program file
                         `("PATH" ":" prefix
                           (,bin

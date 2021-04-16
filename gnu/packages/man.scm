@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2014, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2014, 2015, 2017, 2018, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 David Thompson <dthompson2@worcester.edu>
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
@@ -32,6 +32,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system ruby)
   #:use-module (guix utils)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gawk)
@@ -221,6 +222,50 @@ a flexible and convenient way.")
 accessed using the man command.  It uses a Berkeley DB database in place of
 the traditional flat-text whatis databases.")
     (license license:gpl2+)))
+
+(define-public mandoc
+  (package
+    (name "mandoc")
+    (version "1.14.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://mandoc.bsd.lv/snapshots/mandoc-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1xyqllxpjj1kimlipx11pzyywf5c25i4wmv0lqm7ph3gnlnb86c2"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "regress"
+       #:phases (modify-phases %standard-phases
+                  (add-before 'configure 'set-prefix
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (substitute* "configure"
+                        (("^CC=.*")
+                         (string-append "CC=" ,(cc-for-target) "\n"))
+                        (("^DEFCFLAGS=\\\\\"")
+                         "DEFCFLAGS=\"-O2 ")
+                        (("^UTF8_LOCALE=.*")      ;used for tests
+                         "UTF8_LOCALE=en_US.UTF-8\n")
+                        (("^MANPATH_(BASE|DEFAULT)=.*" _ which)
+                         (string-append "MANPATH_" which "="
+                                        "/run/current-system/profile/share/man\n"))
+                        (("^PREFIX=.*")
+                         (string-append "PREFIX=" (assoc-ref outputs "out")
+                                        "\n"))))))))
+    (native-inputs `(("perl" ,perl)))             ;used to run tests
+    (inputs `(("zlib" ,zlib)))
+    (synopsis "Tools for BSD mdoc and man pages")
+    (description
+     "mandoc is a suite of tools compiling mdoc, the roff macro language of
+choice for BSD manual pages, and man, the predominant historical language for
+UNIX manuals.  It is small and quite fast.  The main component of the toolset
+is the @command{mandoc} utility program, based on the libmandoc validating
+compiler, to format output for UTF-8 and ASCII UNIX terminals, HTML 5,
+PostScript, and PDF.  Additional tools include the @command{man} viewer, and
+@command{apropos} and @command{whatis}.")
+    (home-page "https://mandoc.bsd.lv/")
+    (license license:isc)))
 
 (define-public man-pages
   (package

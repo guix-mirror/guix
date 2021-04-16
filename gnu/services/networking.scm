@@ -16,6 +16,7 @@
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2021 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2021 Christopher Lemmer Webber <cwebber@dustycloud.org>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -55,6 +56,8 @@
   #:use-module (gnu packages ntp)
   #:use-module (gnu packages wicd)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages ipfs)
+  #:use-module (gnu build linux-container)
   #:use-module (guix gexp)
   #:use-module (guix records)
   #:use-module (guix modules)
@@ -196,6 +199,13 @@
             yggdrasil-configuration-log-to
             yggdrasil-configuration-json-config
             yggdrasil-configuration-package
+
+            ipfs-service-type
+            ipfs-configuration
+            ipfs-configuration?
+            ipfs-configuration-package
+            ipfs-configuration-gateway
+            ipfs-configuration-api
 
             keepalived-configuration
             keepalived-configuration?
@@ -1875,6 +1885,137 @@ See yggdrasil -genconf for config options.")
                              (const %yggdrasil-accounts))
           (service-extension profile-service-type
                              (compose list yggdrasil-configuration-package))))))
+
+
+;;;
+;;; IPFS
+;;;
+
+(define-record-type* <ipfs-configuration>
+  ipfs-configuration
+  make-ipfs-configuration
+  ipfs-configuration?
+  (package ipfs-configuration-package
+           (default go-ipfs))
+  (gateway ipfs-configuration-gateway
+           (default "/ip4/127.0.0.1/tcp/8082"))
+  (api     ipfs-configuration-api
+           (default "/ip4/127.0.0.1/tcp/5001")))
+
+(define %ipfs-home "/var/lib/ipfs")
+
+(define %ipfs-accounts
+  (list (user-account
+         (name "ipfs")
+         (group "ipfs")
+         (system? #t)
+         (comment "IPFS daemon user")
+         (home-directory "/var/lib/ipfs")
+         (shell (file-append shadow "/sbin/nologin")))
+        (user-group
+         (name "ipfs")
+         (system? #t))))
+
+(define (ipfs-binary config)
+  (file-append (ipfs-configuration-package config) "/bin/ipfs"))
+
+(define %ipfs-home-mapping
+  #~(file-system-mapping
+     (source #$%ipfs-home)
+     (target #$%ipfs-home)
+     (writable? #t)))
+
+(define %ipfs-environment
+  #~(list #$(string-append "HOME=" %ipfs-home)))
+
+(define (ipfs-shepherd-service config)
+  "Return a <shepherd-service> for IPFS with CONFIG."
+  (define ipfs-daemon-command
+    #~(list #$(ipfs-binary config) "daemon"))
+  (list
+   (with-imported-modules (source-module-closure
+                           '((gnu build shepherd)
+                             (gnu system file-systems)))
+     (shepherd-service
+      (provision '(ipfs))
+      ;; While IPFS is most useful when the machine is connected
+      ;; to the network, only loopback is required for starting
+      ;; the service.
+      (requirement '(loopback))
+      (documentation "Connect to the IPFS network")
+      (modules '((gnu build shepherd)
+                 (gnu system file-systems)))
+      (start #~(make-forkexec-constructor/container
+                #$ipfs-daemon-command
+                #:namespaces '#$(fold delq %namespaces '(user net))
+                #:mappings (list #$%ipfs-home-mapping)
+                #:log-file "/var/log/ipfs.log"
+                #:user "ipfs"
+                #:group "ipfs"
+                #:environment-variables #$%ipfs-environment))
+      (stop #~(make-kill-destructor))))))
+
+(define (%ipfs-activation config)
+  "Return an activation gexp for IPFS with CONFIG"
+  (define (ipfs-config-command setting value)
+    #~(#$(ipfs-binary config) "config" #$setting #$value))
+  (define (set-config!-gexp setting value)
+    #~(system* #$@(ipfs-config-command setting value)))
+  (define settings
+    `(("Addresses.API" ,(ipfs-configuration-api config))
+      ("Addresses.Gateway" ,(ipfs-configuration-gateway config))))
+  (define inner-gexp
+    #~(begin
+        (umask #o077)
+        ;; Create $HOME/.ipfs structure
+        (system* #$(ipfs-binary config) "init")
+        ;; Apply settings
+        #$@(map (cute apply set-config!-gexp <>) settings)))
+  (define inner-script
+    (program-file "ipfs-activation-inner" inner-gexp))
+  ;; Run ipfs init and ipfs config from a container,
+  ;; in case the IPFS daemon was compromised at some point
+  ;; and ~/.ipfs is now a symlink to somewhere outside
+  ;; %ipfs-home.
+  (define container-gexp
+    (with-extensions (list shepherd)
+      (with-imported-modules (source-module-closure
+                              '((gnu build shepherd)
+                                (gnu system file-systems)))
+        #~(begin
+            (use-modules (gnu build shepherd)
+                         (gnu system file-systems))
+            (let* ((constructor
+                    (make-forkexec-constructor/container
+                     (list #$inner-script)
+                     #:namespaces '#$(fold delq %namespaces '(user))
+                     #:mappings (list #$%ipfs-home-mapping)
+                     #:user "ipfs"
+                     #:group "ipfs"
+                     #:environment-variables #$%ipfs-environment))
+                   (pid (constructor)))
+              (waitpid pid))))))
+  ;; The activation may happen from the initrd, which uses
+  ;; a statically-linked guile, while the guix container
+  ;; procedures require a working dynamic-link.
+  (define container-script
+    (program-file "ipfs-activation-container" container-gexp))
+  #~(system* #$container-script))
+
+(define ipfs-service-type
+  (service-type
+   (name 'ipfs)
+   (extensions
+    (list (service-extension account-service-type
+                             (const %ipfs-accounts))
+          (service-extension activation-service-type
+                             %ipfs-activation)
+          (service-extension shepherd-root-service-type
+                             ipfs-shepherd-service)))
+   (default-value (ipfs-configuration))
+   (description
+    "Run @command{ipfs daemon}, the reference implementation
+of the IPFS peer-to-peer storage network.")))
 
 
 ;;;

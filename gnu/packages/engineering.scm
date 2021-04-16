@@ -6,7 +6,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
-;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018, 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2018, 2019, 2020 Arun Isaac <arunisaac@systemreboot.net>
@@ -17,7 +17,7 @@
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020,2021 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2020 Ekaitz Zarraga <ekaitz@elenq.tech>
+;;; Copyright © 2020, 2021 Ekaitz Zarraga <ekaitz@elenq.tech>
 ;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
 ;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020, 2021 Morgan Smith <Morgan.J.Smith@outlook.com>
@@ -112,6 +112,8 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages serialization)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages tbb)
   #:use-module (gnu packages tcl)
@@ -122,6 +124,7 @@
   #:use-module (gnu packages web)
   #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages xiph)
   #:use-module (gnu packages openkinect)
   #:use-module (gnu packages xorg))
 
@@ -266,7 +269,7 @@ plans and designs.")
 suite grouped together under the gEDA name.  gEDA/gaf is a collection of tools
 which currently includes: gschem, a schematic capture program; gnetlist, a
 netlist generation program; gsymcheck, a syntax checker for schematic symbols;
-gattrib, a spreadsheet programm that manipulates the properties of symbols of
+gattrib, a spreadsheet programme that manipulates the properties of symbols of
 a schematic; libgeda, libraries for gschem gnetlist and gsymcheck; gsch2pcb, a
 tool to forward annotation from your schematic to layout using PCB; some minor
 utilities.")
@@ -1248,7 +1251,7 @@ replacement for the OpenDWG libraries.")
 (define-public minicom
   (package
     (name "minicom")
-    (version "2.7.1")
+    (version "2.8")
     (source
      (origin
        (method git-fetch)
@@ -1256,13 +1259,16 @@ replacement for the OpenDWG libraries.")
              (url "https://salsa.debian.org/minicom-team/minicom.git")
              (commit (string-append "v" version))))
        (sha256
-        (base32 "0f36wv015zpz1x895qv0z6marlynzyh0d5mfkyd7lfyy2xd1i2w0"))
+        (base32 "0kfihxbh9qkjk9m1932ajyqx384c2aj3d9yaphh3i9i7y1shxlpx"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--enable-lock-dir=/var/lock")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'make-git-checkout-writable
+           (lambda _
+             (for-each make-file-writable (find-files "."))))
          (replace 'bootstrap
            ;; autogen.sh needlessly hard-codes aclocal-1.14.
            (lambda _
@@ -2016,256 +2022,6 @@ parallel computing platforms.  It also supports serial execution.")
     (license (list license:gpl2+
                    license:lgpl2.0+)))) ; freehdl's libraries
 
-(define-public qucs
-  ;; Qucs 0.0.19 segfaults when using glibc-2.26. Temporarily build from git.
-  ;; TODO: When qucs-0.0.20 is released, revert the commit that introduced this
-  ;; comment and update the package.
-  (let ((commit "b4f27d9222568066cd59e4c387c51a35056c99d8")
-        (revision "0"))
-    (package
-      (name "qucs")
-      (version (git-version "0.0.19" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/Qucs/qucs")
-                      (commit commit)))
-                (sha256
-                 (base32 "10bclay9xhkffmsh4j4l28kj1qpxx0pnxja5vx6305cllnq4r3gb"))
-                (file-name (string-append name "-" version "-checkout"))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-before 'bootstrap 'patch-bootstrap
-             (lambda _
-               (for-each patch-shebang
-                         '("bootstrap"
-                           "qucs/bootstrap"
-                           "qucs-doc/bootstrap"
-                           "qucs-core/bootstrap"))
-               #t))
-           (add-before 'configure 'patch-configure
-             (lambda* (#:key inputs #:allow-other-keys)
-               (substitute* "qucs/configure"
-                 (("\\$QTDIR") (assoc-ref inputs "qt4")))
-               #t))
-           (add-after 'patch-configure 'patch-scripts
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (substitute* '("qucs/qucs/qucsdigi"
-                              "qucs/qucs/qucsdigilib"
-                              "qucs/qucs/qucsveri")
-                 (("\\$BINDIR")
-                  (string-append (assoc-ref outputs "out") "/bin"))
-                 (("freehdl-config")
-                  (string-append (assoc-ref inputs "freehdl") "/bin/freehdl-config"))
-                 (("freehdl-v2cc")
-                  (string-append (assoc-ref inputs "freehdl") "/bin/freehdl-v2cc"))
-                 (("cp ")
-                  (string-append (assoc-ref inputs "coreutils") "/bin/cp "))
-                 (("glibtool")
-                  (string-append (assoc-ref inputs "libtool") "/bin/libtool"))
-                 (("sed")
-                  (string-append (assoc-ref inputs "sed") "/bin/sed"))
-                 (("iverilog")
-                  (string-append (assoc-ref inputs "iverilog") "/bin/iverilog"))
-                 (("vvp")
-                  (string-append (assoc-ref inputs "iverilog") "/bin/vvp")))
-               #t))
-           (add-before 'check 'pre-check
-             (lambda _
-               ;; The test suite requires a running X server.
-               (system "Xvfb :1 &")
-               (setenv "DISPLAY" ":1")
-               #t))
-           (add-after 'install 'make-wrapper
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let ((out (assoc-ref outputs "out")))
-                 ;; 'qucs' directly invokes gcc, hence this wrapping.
-                 (wrap-program (string-append out "/bin/qucs")
-                   `("CPLUS_INCLUDE_PATH" ":" prefix
-                     (,(string-append (assoc-ref inputs "gcc-toolchain")
-                                      "/include")))
-                   `("PATH" ":" prefix
-                     (,(string-append (assoc-ref inputs "gcc-toolchain")
-                                      "/bin")))
-                   `("LIBRARY_PATH" ":" prefix
-                     (,(string-append (assoc-ref inputs "gcc-toolchain")
-                                      "/lib")))
-                   `("ADMSXMLBINDIR" ":" prefix
-                     (,(string-append (assoc-ref inputs "adms") "/bin")))
-                   `("ASCOBINDIR" ":" prefix
-                     (,(string-append (assoc-ref inputs "asco") "/bin")))
-                   `("QUCS_OCTAVE" ":" prefix
-                     (,(string-append (assoc-ref inputs "octave") "/bin/octave")))))
-               #t)))
-         #:parallel-build? #f ; race condition
-         #:configure-flags '("--disable-doc"))) ; we need octave-epstk
-      (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("bison" ,bison)
-         ("flex" ,flex)
-         ("gperf" ,gperf)
-         ("libtool-native" ,libtool)
-         ("pkg-config" ,pkg-config)
-         ("python" ,python-2) ; for tests
-         ("matplotlib" ,python2-matplotlib) ; for tests
-         ("numpy" ,python2-numpy) ; for tests
-         ("xorg-server" ,xorg-server-for-tests))) ; for tests
-      (inputs
-       `(("adms" ,adms)
-         ("asco" ,asco)
-         ("coreutils" ,coreutils)
-         ("freehdl" ,freehdl)
-         ("gcc-toolchain" ,gcc-toolchain)
-         ("iverilog" ,iverilog)
-         ("libtool" ,libtool)
-         ("octave" ,octave-cli)
-         ("qt4" ,qt-4)
-         ("sed" ,sed)))
-      (home-page "http://qucs.sourceforge.net/")
-      (synopsis "Circuit simulator with graphical user interface")
-      (description
-       "Qucs is a circuit simulator with graphical user interface.  The software
-aims to support all kinds of circuit simulation types---e.g. DC, AC,
-S-parameter, transient, noise and harmonic balance analysis.  Pure digital
-simulations are also supported.")
-      (license license:gpl2+))))
-
-(define-public qucs-s
-  (package
-    (name "qucs-s")
-    (version "0.0.21")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/ra3xdh/qucs_s/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "12m1jwhb9qwvb141qzyskbxnw3wn1x22d02z4b4862p7xvccl5h7"))))
-    (build-system cmake-build-system)
-    (arguments
-     `(#:tests? #f ; no tests
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'patch-scripts
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* '("qucs/qucsdigi"
-                            "qucs/qucsdigilib"
-                            "qucs/qucsveri")
-               (("\\$BINDIR")
-                (string-append (assoc-ref inputs "qucs") "/bin"))
-               (("freehdl-config")
-                (string-append (assoc-ref inputs "freehdl") "/bin/freehdl-config"))
-               (("freehdl-v2cc")
-                (string-append (assoc-ref inputs "freehdl") "/bin/freehdl-v2cc"))
-               (("cp ")
-                (string-append (assoc-ref inputs "coreutils") "/bin/cp "))
-               (("glibtool")
-                (string-append (assoc-ref inputs "libtool") "/bin/libtool"))
-               (("sed")
-                (string-append (assoc-ref inputs "sed") "/bin/sed"))
-               (("iverilog")
-                (string-append (assoc-ref inputs "iverilog") "/bin/iverilog"))
-               (("vvp")
-                (string-append (assoc-ref inputs "iverilog") "/bin/vvp")))
-             #t))
-         (add-after 'patch-scripts 'patch-paths
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "qucs/main.cpp"
-               (((string-append "QucsSettings\\.Qucsator = QucsSettings\\.BinDir "
-                                "\\+ \"qucsator\" \\+ executableSuffix"))
-                (string-append "}{ QucsSettings.Qucsator = \""
-                               (assoc-ref inputs "qucs") "/bin/qucsator\""))
-               (((string-append "QucsSettings\\.XyceExecutable = "
-                                "\"/usr/local/Xyce-Release-6.8.0-OPENSOURCE/bin/Xyce"))
-                (string-append "}{ QucsSettings.XyceExecutable = \""
-                               (assoc-ref inputs "xyce-serial") "/bin/Xyce"))
-               (((string-append "else QucsSettings\\.XyceParExecutable = "
-                                "\"mpirun -np %p /usr/local"
-                                "/Xyce-Release-6.8.0-OPENMPI-OPENSOURCE/bin/Xyce"))
-                (string-append "QucsSettings.XyceParExecutable = \""
-                               (assoc-ref inputs "mpi") "/bin/mpirun -np %p "
-                               (assoc-ref inputs "xyce-parallel") "/bin/Xyce"))
-               (("else QucsSettings\\.NgspiceExecutable = \"ngspice\"")
-                (string-append "QucsSettings.NgspiceExecutable = " "\""
-                               (assoc-ref inputs "ngspice") "/bin/ngspice\"")))
-             (substitute* "qucs/extsimkernels/ngspice.cpp"
-               (("share/qucs/xspice_cmlib") "share/qucs-s/xspice_cmlib"))
-             (substitute* "qucs/qucs_actions.cpp"
-               (("qucstrans")
-                (string-append (assoc-ref inputs "qucs") "/bin/qucstrans"))
-               (("qucsattenuator")
-                (string-append (assoc-ref inputs "qucs") "/bin/qucsattenuator"))
-               (("qucsrescodes")
-                (string-append (assoc-ref inputs "qucs") "/bin/qucsrescodes")))
-             #t))
-         (add-after 'install 'install-scripts
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (for-each
-              (lambda (script)
-                (let ((file (string-append "../qucs_s-" ,version
-                                           "/qucs/" script))
-                      (out (assoc-ref outputs "out")))
-                  (install-file file (string-append out "/bin"))
-                  (chmod (string-append out "/bin/" script) #o555)))
-              '("qucsdigi" "qucsdigilib" "qucsveri"))
-             #t))
-         (add-after 'install-scripts 'make-wrapper
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (file (string-append out "/bin/qucs-s"))
-                    (qucs (assoc-ref inputs "qucs"))
-                    (qucsator (string-append qucs "/bin/qucsator")))
-               (wrap-program file
-                 `("CPLUS_INCLUDE_PATH" ":" prefix
-                   (,(string-append (assoc-ref inputs "gcc-toolchain")
-                                    "/include")))
-                 `("PATH" ":" prefix
-                   (,(string-append (assoc-ref inputs "gcc-toolchain")
-                                    "/bin")))
-                 `("LIBRARY_PATH" ":" prefix
-                   (,(string-append (assoc-ref inputs "gcc-toolchain")
-                                    "/lib")))
-                 `("QUCSATOR" ":" prefix (,qucsator))
-                 `("QUCSCONV" ":" prefix (,(string-append qucsator "/bin/qucsconv")))
-                 `("ADMSXMLBINDIR" ":" prefix (,(string-append (assoc-ref inputs "adms")
-                                                               "/bin")))
-                 `("ASCOBINDIR" ":" prefix (,(string-append (assoc-ref inputs "asco")
-                                                            "/bin")))
-                 `("QUCS_OCTAVE" ":" prefix (,(string-append (assoc-ref inputs "octave")
-                                                             "/bin/octave"))))
-               (symlink qucsator (string-append out "/bin/qucsator"))
-               #t))))))
-    (native-inputs
-     `(("libtool-native" ,libtool)))
-    (inputs
-     `(("adms" ,adms)
-       ("asco" ,asco)
-       ("coreutils" ,coreutils)
-       ("freehdl" ,freehdl)
-       ("gcc-toolchain" ,gcc-toolchain)
-       ("iverilog" ,iverilog)
-       ("libtool" ,libtool)
-       ("mpi" ,openmpi)
-       ("ngspice" ,ngspice)
-       ("octave" ,octave-cli)
-       ("qt4" ,qt-4)
-       ("qucs" ,qucs)
-       ("sed" ,sed)
-       ("xyce-serial" ,xyce-serial)
-       ("xyce-parallel" ,xyce-parallel)))
-    (home-page "https://ra3xdh.github.io/")
-    (synopsis "Circuit simulator with graphical user interface")
-    (description
-     "Qucs-S is a spin-off of the Qucs cross-platform circuit simulator.
-The S letter indicates SPICE.  The purpose of the Qucs-S subproject is to use
-free SPICE circuit simulation kernels with the Qucs GUI.  It provides the
-simulator backends @code{Qucsator}, @code{ngspice} and @code{Xyce}.")
-    (license license:gpl2+)))
-
 (define-public librepcb
   (package
     (name "librepcb")
@@ -2601,104 +2357,120 @@ OpenSCAD code.  It supports syntax highlighting, indenting and refilling of
 comments.")))
 
 (define-public freecad
-  (let ((commit-ref "7616153b3c31ace006169cdc2fdafab484498858")
-        (revision "1"))
-    (package
-      (name "freecad")
-      (version (git-version "0.18.5" revision commit-ref))
-      (source
-        (origin
-          (method git-fetch)
-          (uri (git-reference
-                 (url "https://github.com/FreeCAD/FreeCAD")
-                 (commit commit-ref)))
-          (file-name (git-file-name name version))
-          (sha256
-            (base32
-              "16965yxnp2pq7nm8z3p0pjkzjdyq62vfrj8j3nk26bwc898czyn2"))))
-      (build-system qt-build-system)
-      (native-inputs
-       `(("doxygen" ,doxygen)
-         ("graphviz" ,graphviz)
-         ("qttools" ,qttools)
-         ("pkg-config" ,pkg-config)
-         ("python-pyside-2-tools" ,python-pyside-2-tools)
-         ("swig" ,swig)))
-      (inputs
-       `(("boost" ,boost)
-         ("coin3D" ,coin3D)
-         ("eigen" ,eigen)
-         ("freetype" ,freetype)
-         ("glew" ,glew)
-         ("hdf5" ,hdf5-1.10)
-         ("libarea" ,libarea)
-         ("libmedfile" ,libmedfile)
-         ("libspnav" ,libspnav)
-         ("libxi" ,libxi)
-         ("libxmu" ,libxmu)
-         ("openmpi" ,openmpi)
-         ("opencascade-occt" ,opencascade-occt)
-         ("python-matplotlib" ,python-matplotlib)
-         ("python-pyside-2" ,python-pyside-2)
-         ("python-shiboken-2" ,python-shiboken-2)
-         ("python-pivy" ,python-pivy)
-         ("python-wrapper" ,python-wrapper)
-         ("qtbase" ,qtbase)
-         ("qtsvg" ,qtsvg)
-         ("qtx11extras" ,qtx11extras)
-         ("qtxmlpatterns" ,qtxmlpatterns)
-         ("qtwebkit" ,qtwebkit)
-         ("tbb" ,tbb)
-         ("vtk" ,vtk)
-         ("xerces-c" ,xerces-c)
-         ("zlib" ,zlib)))
-      (arguments
-       `(#:tests? #f
-         #:configure-flags
-         (list
-          "-DBUILD_QT5=ON"
-          (string-append "-DCMAKE_INSTALL_LIBDIR=" (assoc-ref %outputs "out") "/lib")
-          (string-append "-DPYSIDE2UICBINARY="
-                         (assoc-ref %build-inputs "python-pyside-2-tools")
-                         "/bin/uic")
-          (string-append "-DPYSIDE2RCCBINARY="
-                         (assoc-ref %build-inputs "python-pyside-2-tools")
-                         "/bin/rcc")
-          "-DPYSIDE_LIBRARY=PySide2::pyside2"
-          (string-append
-           "-DPYSIDE_INCLUDE_DIR="
-           (assoc-ref %build-inputs "python-pyside-2") "/include;"
-           (assoc-ref %build-inputs "python-pyside-2") "/include/PySide2;"
-           (assoc-ref %build-inputs "python-pyside-2") "/include/PySide2/QtCore;"
-           (assoc-ref %build-inputs "python-pyside-2") "/include/PySide2/QtWidgets;"
-           (assoc-ref %build-inputs "python-pyside-2") "/include/PySide2/QtGui;")
-          "-DSHIBOKEN_LIBRARY=Shiboken2::libshiboken"
-          (string-append "-DSHIBOKEN_INCLUDE_DIR="
-                         (assoc-ref %build-inputs "python-shiboken-2")
-                         "/include/shiboken2"))
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'install 'wrap-pythonpath
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let ((out (assoc-ref outputs "out")))
-                 (wrap-program (string-append out "/bin/FreeCAD")
-                   (list "GUIX_PYTHONPATH"
-                         'prefix (list (getenv "GUIX_PYTHONPATH"))))))))))
-      (home-page "https://www.freecadweb.org/")
-      (synopsis "Your Own 3D Parametric Modeler")
-      (description
-       "FreeCAD is a general purpose feature-based, parametric 3D modeler for
+  (package
+    (name "freecad")
+    (version "0.19.1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/FreeCAD/FreeCAD")
+               (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+          (base32
+            "0c53q2iawy4yfp11czyc7lbr9ivp3r7v24x4c20myh11wyplffc0"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("doxygen" ,doxygen)
+       ("graphviz" ,graphviz)
+       ("qttools" ,qttools)
+       ("pkg-config" ,pkg-config)
+       ("python-pyside-2-tools" ,python-pyside-2-tools)
+       ("swig" ,swig)))
+    (inputs
+     `(("boost" ,boost)
+       ("coin3D" ,coin3D)
+       ("double-conversion" ,double-conversion)
+       ("eigen" ,eigen)
+       ("freetype" ,freetype)
+       ("gl2ps" ,gl2ps)
+       ("glew" ,glew)
+       ("hdf5" ,hdf5-1.10)
+       ("jsoncpp" ,jsoncpp)
+       ("libarea" ,libarea)
+       ("libjpeg-turbo" ,libjpeg-turbo)
+       ("libmedfile" ,libmedfile)
+       ("libspnav" ,libspnav)
+       ("libtheora" ,libtheora)
+       ("libtiff" ,libtiff)
+       ("libxi" ,libxi)
+       ("libxmlplusplus" ,libxmlplusplus)
+       ("libxmu" ,libxmu)
+       ("lz4" ,lz4)
+       ("netcdf" ,netcdf)
+       ("opencascade-occt" ,opencascade-occt)
+       ("openmpi" ,openmpi)
+       ("proj" ,proj)
+       ("python-gitpython" ,python-gitpython)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-pivy" ,python-pivy)
+       ("python-pyside-2" ,python-pyside-2)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-shiboken-2" ,python-shiboken-2)
+       ("python-wrapper" ,python-wrapper)
+       ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)
+       ("qtwebkit" ,qtwebkit)
+       ("qtx11extras" ,qtx11extras)
+       ("qtxmlpatterns" ,qtxmlpatterns)
+       ("sqlite" ,sqlite)
+       ("tbb" ,tbb)
+       ("vtk" ,vtk-8)
+       ("xerces-c" ,xerces-c)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:tests? #f          ; Project has no tests
+       #:configure-flags
+       (list
+        "-DBUILD_QT5=ON"
+        "-DBUILD_FLAT_MESH:BOOL=ON"
+        (string-append "-DCMAKE_INSTALL_LIBDIR=" (assoc-ref %outputs "out") "/lib")
+        (string-append "-DPYSIDE2UICBINARY="
+                       (assoc-ref %build-inputs "python-pyside-2-tools")
+                       "/bin/uic")
+        (string-append "-DPYSIDE2RCCBINARY="
+                       (assoc-ref %build-inputs "python-pyside-2-tools")
+                       "/bin/rcc")
+        "-DPYSIDE_LIBRARY=PySide2::pyside2"
+        (string-append
+         "-DPYSIDE_INCLUDE_DIR="
+         (assoc-ref %build-inputs "python-pyside-2") "/include;"
+         (assoc-ref %build-inputs "python-pyside-2") "/include/PySide2;"
+         (assoc-ref %build-inputs "python-pyside-2") "/include/PySide2/QtCore;"
+         (assoc-ref %build-inputs "python-pyside-2") "/include/PySide2/QtWidgets;"
+         (assoc-ref %build-inputs "python-pyside-2") "/include/PySide2/QtGui;")
+        "-DSHIBOKEN_LIBRARY=Shiboken2::libshiboken"
+        (string-append "-DSHIBOKEN_INCLUDE_DIR="
+                       (assoc-ref %build-inputs "python-shiboken-2")
+                       "/include/shiboken2"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'restore-pythonpath
+           (lambda _
+             (substitute* "src/Main/MainGui.cpp"
+               (("_?putenv\\(\"PYTHONPATH=\"\\);") ""))))
+         (add-after 'install 'wrap-pythonpath
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/FreeCAD")
+                 (list "PYTHONPATH"
+                       'prefix (list (getenv "PYTHONPATH"))))))))))
+    (home-page "https://www.freecadweb.org/")
+    (synopsis "Your Own 3D Parametric Modeler")
+    (description
+     "FreeCAD is a general purpose feature-based, parametric 3D modeler for
 CAD, MCAD, CAx, CAE and PLM, aimed directly at mechanical engineering and
 product design but also fits a wider range of uses in engineering, such as
 architecture or other engineering specialties.  It is 100% Open Source (LGPL2+
 license) and extremely modular, allowing for very advanced extension and
 customization.")
-      (license
-       (list
-        license:lgpl2.1+
-        license:lgpl2.0+
-        license:gpl3+
-        license:bsd-3)))))
+    (license
+     (list
+      license:lgpl2.1+
+      license:lgpl2.0+
+      license:gpl3+
+      license:bsd-3))))
 
 (define-public libmedfile
   (package

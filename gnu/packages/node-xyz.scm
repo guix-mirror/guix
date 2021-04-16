@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
+;;; Copyright © 2021 Noisytoot <noisytoot@disroot.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -261,10 +262,39 @@ function with browser support.")
                 "06biknqb05r9xsmcflm3ygh50pjvdk84x6r79w43kmck4fn3qn5p"))))
     (build-system node-build-system)
     (arguments
-     `(#:tests? #f)) ;; FIXME: Tests depend on node-tap
+     '(#:tests? #f ; FIXME: Tests depend on node-tap
+       #:phases
+       (modify-phases %standard-phases
+         ;; The only dependency to check for is tap, which we don't have.
+         (delete 'configure))))
     (home-page "https://github.com/npm/node-semver")
     (synopsis "Parses semantic versions strings")
     (description
      "@code{node-semver} is a JavaScript implementation of the
 @uref{https://semver.org/, SemVer.org} specification.")
+    (license license:isc)))
+
+(define-public node-wrappy
+  (package
+    (name "node-wrappy")
+    (version "1.0.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/npm/wrappy")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1ymlc61cja6v5438vwb04gq8wg2b784lj39zf0g4i36fvgcw9783"))))
+    (build-system node-build-system)
+    (arguments
+     '(#:tests? #f ; FIXME: Tests depend on node-tap
+       #:phases
+       (modify-phases %standard-phases
+         ;; The only dependency to check for is tap, which we don't have.
+         (delete 'configure))))
+    (home-page "https://github.com/npm/wrappy")
+    (synopsis "Callback wrapping utility")
+    (description "@code{wrappy} is a utility for Node.js to wrap callbacks.")
     (license license:isc)))

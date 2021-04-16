@@ -2,6 +2,7 @@
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2021 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -92,8 +93,18 @@
             0
             (marionette-eval
              `(begin
+                (chdir "/tmp")
                 (system* ,(string-append #$libvirt "/bin/virsh")
                          "-c" "qemu:///system" "version"))
+             marionette))
+
+          (test-eq "connect"
+            0
+            (marionette-eval
+             `(begin
+                (chdir "/tmp")
+                (system* ,(string-append #$libvirt "/bin/virsh")
+                         "-c" "qemu:///system" "connect"))
              marionette))
 
           (test-end)

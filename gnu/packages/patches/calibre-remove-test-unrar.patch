@@ -1,28 +1,26 @@
-Unrar contains security vulnerabilities and has thus been removed from Guix.
-From a16f97b02bd8afd0ec05c471e156f631f2cc6eec Mon Sep 17 00:00:00 2001
+From 9edf67191cc3655480b6fd418247709ade930b1a Mon Sep 17 00:00:00 2001
 From: Brendan Tildesley <mail@brendan.scot>
-Date: Tue, 26 Mar 2019 22:17:03 +1100
-Subject: [PATCH] Remove test_unrar.
+Date: Thu, 25 Feb 2021 00:33:10 +1100
+Subject: [PATCH] Remove test_unrar
 
 ---
  src/calibre/test_build.py | 4 ----
  1 file changed, 4 deletions(-)
 
 diff --git a/src/calibre/test_build.py b/src/calibre/test_build.py
-index d67afd20a6..709132ef17 100644
+index b37fb1bcfb..0ab7aa0646 100644
 --- a/src/calibre/test_build.py
 +++ b/src/calibre/test_build.py
-@@ -220,10 +220,6 @@ class BuildTest(unittest.TestCase):
+@@ -369,10 +369,6 @@ def test_file_dialog_helper(self):
          from calibre.gui2.win_file_dialogs import test
          test()
- 
+
 -    def test_unrar(self):
 -        from calibre.utils.unrar import test_basic
 -        test_basic()
 -
-     @unittest.skipUnless(iswindows, 'WPD is windows only')
-     def test_wpd(self):
-         wpd = plugins['wpd'][0]
--- 
-2.21.0
-
+     def test_7z(self):
+         from calibre.utils.seven_zip import test_basic
+         test_basic()
+--
+2.30.1

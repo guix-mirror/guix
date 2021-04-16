@@ -2266,7 +2266,7 @@ server no longer receives pings, it shuts down.")
        ("ghc-websockets" ,ghc-websockets)))
     (home-page "https://github.com/larskuhtz/wai-cors")
     (synopsis "Cross-Origin Resource Sharing (CORS) for WAI")
-    (description "This package provides an implemenation of Cross-Origin
+    (description "This package provides an implementation of Cross-Origin
 Resource Sharing (CORS) for the Web Application Framework (WAI) that
 aims to be compliant with @url{https://www.w3.org/TR/cors}.")
     (license license:expat)))

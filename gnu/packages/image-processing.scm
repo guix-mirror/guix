@@ -1,10 +1,10 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2018 Lprndn <guix@lprndn.info>
 ;;; Copyright © 2019, 2021 Efraim Flashner <efraim@flashner.co.il>
@@ -14,6 +14,8 @@
 ;;; Copyright © 2020 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2021 Oleh Malyi <astroclubzp@gmail.com>
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
+;;; Copyright © 2021 Andy Tai <atai@atai.org>
+;;; Copyright © 2021 Ekaitz Zarraga <ekaitz@elenq.tech>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -246,7 +248,7 @@ many popular formats.")
 (define-public vtk
   (package
     (name "vtk")
-    (version "8.2.0")
+    (version "9.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://vtk.org/files/release/"
@@ -254,7 +256,7 @@ many popular formats.")
                                   "/VTK-" version ".tar.gz"))
               (sha256
                (base32
-                "1fspgp8k0myr6p2a6wkc21ldcswb4bvmb484m12mxgk1a9vxrhrl"))
+                "1ir2lq9i45ls374lcmjzw0nrm5l5hnm1w47lg8g8d0n2j7hsaf8v"))
               (patches
                (search-patches "vtk-fix-freetypetools-build-failure.patch"))
               (modules '((guix build utils)))
@@ -264,35 +266,47 @@ many popular formats.")
                     (lambda (dir)
                       (delete-file-recursively
                         (string-append "ThirdParty/" dir "/vtk" dir)))
-                    ;; ogg, pugixml depended upon unconditionally
+                    ;; pugixml depended upon unconditionally
                     '("doubleconversion" "eigen" "expat" "freetype" "gl2ps"
                       "glew" "hdf5" "jpeg" "jsoncpp" "libproj" "libxml2" "lz4"
-                      "netcdf" "png" "sqlite" "theora" "tiff" "zlib"))
+                      "netcdf" "ogg" "png" "sqlite" "theora" "tiff" "zlib"))
                   #t))))
+    (properties `((release-monitoring-url . "https://vtk.org/download/")))
     (build-system cmake-build-system)
     (arguments
      '(#:build-type "Release"           ;Build without '-g' to save space.
        #:configure-flags '(;"-DBUILD_TESTING:BOOL=TRUE"
-                           ;"-DVTK_MODULE_USE_EXTERNAL_vtkogg:BOOL=TRUE"    ; not honored
-                           "-DVTK_USE_SYSTEM_DOUBLECONVERSION:BOOL=TRUE"
-                           "-DVTK_USE_SYSTEM_EIGEN:BOOL=TRUE"
-                           "-DVTK_USE_SYSTEM_EXPAT:BOOL=TRUE"
-                           "-DVTK_USE_SYSTEM_FREETYPE:BOOL=TRUE"
-                           "-DVTK_USE_SYSTEM_GL2PS:BOOL=TRUE"
-                           "-DVTK_USE_SYSTEM_GLEW:BOOL=TRUE"
-                           "-DVTK_USE_SYSTEM_HDF5:BOOL=TRUE"
-                           "-DVTK_USE_SYSTEM_JPEG:BOOL=TRUE"
-                           "-DVTK_USE_SYSTEM_JSONCPP:BOOL=TRUE"
-                           "-DVTK_USE_SYSTEM_LIBPROJ:BOOL=TRUE"
-                           "-DVTK_USE_SYSTEM_LIBXML2:BOOL=TRUE"
-                           "-DVTK_USE_SYSTEM_LZ4:BOOL=TRUE"
-                           "-DVTK_USE_SYSTEM_NETCDF:BOOL=TRUE"
-                           "-DVTK_USE_SYSTEM_PNG:BOOL=TRUE"
-                           ;"-DVTK_USE_SYSTEM_PUGIXML:BOOL=TRUE"    ; breaks IO/CityGML
-                           "-DVTK_USE_SYSTEM_SQLITE:BOOL=TRUE"
-                           "-DVTK_USE_SYSTEM_THEORA:BOOL=TRUE"
-                           "-DVTK_USE_SYSTEM_TIFF:BOOL=TRUE"
-                           "-DVTK_USE_SYSTEM_ZLIB:BOOL=TRUE")
+                           ;    ; not honored
+                           "-DVTK_USE_EXTERNAL=OFF" ;; default
+                           "-DVTK_MODULE_USE_EXTERNAL_VTK_doubleconversion=ON"
+                           "-DVTK_MODULE_USE_EXTERNAL_VTK_eigen=ON"
+                           "-DVTK_MODULE_USE_EXTERNAL_VTK_expat=ON"
+                           "-DVTK_MODULE_USE_EXTERNAL_VTK_freetype=ON"
+                           "-DVTK_MODULE_USE_EXTERNAL_VTK_gl2ps=ON"
+                           "-DVTK_MODULE_USE_EXTERNAL_VTK_glew=ON"
+                           "-DVTK_MODULE_USE_EXTERNAL_VTK_hdf5=ON"
+                           "-DVTK_MODULE_USE_EXTERNAL_VTK_jpeg=ON"
+                           "-DVTK_MODULE_USE_EXTERNAL_VTK_jsoncpp=ON"
+                           "-DVTK_MODULE_USE_EXTERNAL_VTK_libproj=ON"
+                           "-DVTK_MODULE_USE_EXTERNAL_VTK_libxml2=ON"
+                           "-DVTK_MODULE_USE_EXTERNAL_VTK_lz4=ON"
+                           "-DVTK_MODULE_USE_EXTERNAL_VTK_netcdf=ON"
+                           "-DVTK_MODULE_USE_EXTERNAL_VTK_ogg=ON"
+                           "-DVTK_MODULE_USE_EXTERNAL_VTK_png=ON"
+                           ;"-DVTK_MODULE_USE_EXTERNAL_VTK_pugixml=ON"    ; breaks IO/CityGML
+                           "-DVTK_MODULE_USE_EXTERNAL_VTK_sqlite=ON"
+                           "-DVTK_MODULE_USE_EXTERNAL_VTK_theora=ON"
+                           "-DVTK_MODULE_USE_EXTERNAL_VTK_tiff=ON"
+                           "-DVTK_MODULE_USE_EXTERNAL_VTK_zlib=ON"
+                           )
+       #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-sources
+             (lambda _
+               (substitute* "Common/Core/vtkFloatingPointExceptions.cxx"
+                 (("<fenv.h>") "<cfenv>"))
+               (substitute* "Common/Core/CMakeLists.txt"
+                 (("fenv.h") "cfenv")))))
        #:tests? #f))        ;XXX: test data not included
     (inputs
      `(("double-conversion" ,double-conversion)
@@ -305,7 +319,6 @@ many popular formats.")
        ("hdf5" ,hdf5)
        ("jpeg" ,libjpeg-turbo)
        ("jsoncpp" ,jsoncpp)
-       ;("libogg" ,libogg)
        ("libtheora" ,libtheora)
        ("libX11" ,libx11)
        ("libxml2" ,libxml2)
@@ -320,6 +333,10 @@ many popular formats.")
        ("tiff" ,libtiff)
        ("xorgproto" ,xorgproto)
        ("zlib" ,zlib)))
+    (propagated-inputs
+     ;; VTK's 'VTK-vtk-module-find-packages.cmake' calls
+     ;; 'find_package(THEORA)', which in turns looks for libogg.
+     `(("libogg" ,libogg)))
     (home-page "https://vtk.org/")
     (synopsis "Libraries for 3D computer graphics")
     (description
@@ -332,6 +349,22 @@ triangulation.  VTK has an extensive information visualization framework, has
 a suite of 3D interaction widgets, supports parallel processing, and
 integrates with various databases on GUI toolkits such as Qt and Tk.")
     (license license:bsd-3)))
+
+;; freecad needs an old version of VTK, because VTK's API changed from 8 to 9
+(define-public vtk-8
+  (package (inherit vtk)
+    (version "8.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://vtk.org/files/release/"
+                                  (version-major+minor version)
+                                  "/VTK-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1fspgp8k0myr6p2a6wkc21ldcswb4bvmb484m12mxgk1a9vxrhrl"))))
+    (inputs
+     `(("jsoncpp" ,jsoncpp-for-tensorflow)
+       ,@(alist-delete "jsoncpp" (package-inputs vtk))))))
 
 ;; itksnap needs an older variant of VTK.
 (define-public vtk-6
@@ -556,7 +589,7 @@ vision algorithms.  It can be used to do things like:
 (define-public vips
   (package
     (name "vips")
-    (version "8.10.5")
+    (version "8.10.6")
     (source
      (origin
        (method url-fetch)
@@ -564,7 +597,7 @@ vision algorithms.  It can be used to do things like:
              "https://github.com/libvips/libvips/releases/download/v"
              version "/vips-" version ".tar.gz"))
        (sha256
-        (base32 "1n6gw7cw66rfn1wdb92ydpkv7gfmjiinsg6d6gqxpdja6gsz5vm4"))))
+        (base32 "0vjsh3i0861f6h9as3bch956cidz824zz499pvhjs3lfjn6hhs14"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gobject-introspection" ,gobject-introspection)
@@ -606,14 +639,14 @@ due to its architecture which automatically parallelises the image workflows.")
 (define-public gmic
   (package
     (name "gmic")
-    (version "2.9.6")
+    (version "2.9.7")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://gmic.eu/files/source/gmic_"
                            version ".tar.gz"))
        (sha256
-        (base32 "06n1dcskky7aqg3a0cp7biwz8agc4xqvr8091l2wsvgib98yhbyj"))))
+        (base32 "05kzaplsl5qvxs7v6g73q0lq8dii8g6v77ap609188m7gr43f9cl"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ;there are no tests

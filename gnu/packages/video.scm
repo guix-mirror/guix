@@ -15,7 +15,7 @@
 ;;; Copyright © 2016, 2018, 2019, 2020 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Feng Shu <tumashu@163.com>
-;;; Copyright © 201–72021 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Ethan R. Jones <doubleplusgood23@gmail.com>
@@ -286,7 +286,7 @@ video and audio streams from a DVD.")
 (define-public svt-hevc
   (package
     (name "svt-hevc")
-    (version "1.4.3")
+    (version "1.5.0")
     (source
      (origin
        (method git-fetch)
@@ -296,7 +296,7 @@ video and audio streams from a DVD.")
          (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1sqh3dciqm2p1b66kngcpxqy5fx3ramxlxy8gfcbdwn2i3rsqhs7"))))
+        (base32 "038r3x3axil895vh2dq6223623ybrc45vn58vfmfb7cikz68sy23"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f)) ; Test script is stand-alone
@@ -381,7 +381,7 @@ video decode, encode and filtering on Intel's Gen graphics hardware platforms.")
                #t))))))
     (native-inputs
      `(("dash" ,dash)
-       ("gtk-doc" ,gtk-doc)
+       ("gtk-doc" ,gtk-doc/stable)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("glew" ,glew)
@@ -772,7 +772,7 @@ television and DVD.  It is also known as AC-3.")
 (define-public libaom
   (package
     (name "libaom")
-    (version "2.0.2")
+    (version "3.0.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -781,7 +781,7 @@ television and DVD.  It is also known as AC-3.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0f3i983s9yvh9zc6mpy1ck5sjcg9l09lpw9v4md3mv8gbih9f0z0"))))
+                "178rq1d7i9q4lg40bipkyhdrk18j9wi5k5avpa5bls0zm7g5ifsx"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("perl" ,perl)
@@ -1995,7 +1995,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
 (define-public mpv
   (package
     (name "mpv")
-    (version "0.33.0")
+    (version "0.33.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2004,7 +2004,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "06cmycd2gb826kf2zv470w6nhzyk9sdhjydsdiinbgb902lzcpfy"))))
+                "06rw1f55zcsj78ql8w70j9ljp2qb1pv594xj7q9cmq7i92a7hq45"))))
     (build-system waf-build-system)
     (native-inputs
      `(("perl" ,perl) ; for zsh completion file
@@ -2179,14 +2179,14 @@ To load this plugin, specify the following option when starting mpv:
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2021.03.14")
+    (version "2021.04.07")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://youtube-dl.org/downloads/latest/"
                                   "youtube-dl-" version ".tar.gz"))
               (sha256
                (base32
-                "1bh74f9q6dv17ah5x8zcxw03dq6jbh959xd39kw374cf9ifrgnd3"))
+                "02d51l6gdjr3zhhi7ydf5kzv8dv4jzq0ygja7zb2h9k7hnl0l27m"))
               (snippet
                '(begin
                   ;; Delete the pre-generated files, except for the man page
@@ -2686,7 +2686,7 @@ for use with HTML5 video.")
 (define-public avidemux
   (package
     (name "avidemux")
-    (version "2.7.6")
+    (version "2.7.8")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -2694,7 +2694,7 @@ for use with HTML5 video.")
                    "avidemux_" version ".tar.gz"))
              (sha256
               (base32
-               "1kwkn976ppahrcr74bnv6sqx75pzl9y21m1mvr5ksi1m6lgp924s"))
+               "00blv5455ry3bb86zyzk1xmq3rbqmbif62khc0kq3whza97l12k2"))
              (patches (search-patches "avidemux-install-to-lib.patch"))))
     (build-system cmake-build-system)
     (native-inputs
@@ -2727,7 +2727,7 @@ for use with HTML5 video.")
        #:phases
        ;; Make sure files inside the included ffmpeg tarball are
        ;; patch-shebanged.
-       (let ((ffmpeg "ffmpeg-4.2.3"))
+       (let ((ffmpeg "ffmpeg-4.2.4"))
          (modify-phases %standard-phases
            (add-before 'patch-source-shebangs 'unpack-ffmpeg
              (lambda _
@@ -4757,7 +4757,7 @@ transcode or reformat the videos in any way, producing perfect backups.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/AOMediaCodec/SVT-AV1")
+             (url "https://gitlab.com/AOMediaCodec/SVT-AV1.git")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -4783,7 +4783,7 @@ transcode or reformat the videos in any way, producing perfect backups.")
     (description "SVT-AV1 is an AV1 codec implementation.  The encoder is a
 work-in-progress, aiming to support video-on-demand and live streaming
 applications.  It only supports Intel-compatible CPUs (x86).")
-    (home-page "https://github.com/AOMediaCodec/SVT-AV1")
+    (home-page "https://gitlab.com/AOMediaCodec/SVT-AV1")
     (license license:bsd-2)))
 
 (define-public svt-vp9

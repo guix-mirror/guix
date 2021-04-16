@@ -1,0 +1,25 @@
+From 6a5d3575487487f2703383338bd17c8c25068f19 Mon Sep 17 00:00:00 2001
+From: Cristy <mikayla-grace@urban-warrior.org>
+Date: Thu, 25 Mar 2021 08:58:18 -0400
+Subject: [PATCH] eliminate compiler warning
+
+---
+ coders/thumbnail.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/coders/thumbnail.c b/coders/thumbnail.c
+index 3833341b0..1e2bfe8c2 100644
+--- a/coders/thumbnail.c
++++ b/coders/thumbnail.c
+@@ -199,7 +199,7 @@ static MagickBooleanType WriteTHUMBNAILImage(const ImageInfo *image_info,
+     q++;
+   }
+   if ((q > (GetStringInfoDatum(profile)+GetStringInfoLength(profile))) ||
+-      (length > (GetStringInfoDatum(profile)+GetStringInfoLength(profile)-q)))
++      ((ssize_t) length > (GetStringInfoDatum(profile)+GetStringInfoLength(profile)-q)))
+     ThrowWriterException(CoderError,"ImageDoesNotHaveAThumbnail");
+   thumbnail_image=BlobToImage(image_info,q,length,&image->exception);
+   if (thumbnail_image == (Image *) NULL)
+-- 
+2.31.0
+

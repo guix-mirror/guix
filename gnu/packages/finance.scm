@@ -601,6 +601,7 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
        ("python-hidapi" ,python-hidapi)
        ("python-jsonrpclib-pelix" ,python-jsonrpclib-pelix)
        ("python-keepkey" ,python-keepkey)
+       ("python-pathvalidate" ,python-pathvalidate)
        ("python-protobuf" ,python-protobuf)
        ("python-pyaes" ,python-pyaes)
        ("python-pyqt" ,python-pyqt)
@@ -651,7 +652,7 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
   ;; the system's dynamically linked library.
   (package
     (name "monero")
-    (version "0.17.1.9")
+    (version "0.17.2.0")
     (source
      (origin
        (method git-fetch)
@@ -671,7 +672,7 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
               "external/unbound"))
            #t))
        (sha256
-        (base32 "0jqss4csvkcrhrmaa3vrnyv6yiwqpbfw7037clx9xcfm4qrrfiwy"))))
+        (base32 "0jwlmrpzisvw1c06cvd5b3s3hd4w0pa1qmrypfwah67qj3x6hnb6"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
@@ -761,7 +762,7 @@ the Monero command line client and daemon.")
 (define-public monero-gui
   (package
     (name "monero-gui")
-    (version "0.17.1.9")
+    (version "0.17.2.0")
     (source
      (origin
        (method git-fetch)
@@ -778,7 +779,7 @@ the Monero command line client and daemon.")
            (delete-file-recursively "monero")
            #t))
        (sha256
-        (base32 "0vpvpvsbbj547yir15g84qy9l9lwbip795zlliz79i7d66l23b1w"))))
+        (base32 "17il26gh0g69x7lqkyb461x1712959wajg3iadx0p08djr3m13mf"))))
     (build-system qt-build-system)
     (native-inputs
      `(,@(package-native-inputs monero)
@@ -1404,16 +1405,16 @@ following three utilities are included with the library:
 (define-public bitcoin-unlimited
   (package
     (name "bitcoin-unlimited")
-    (version "1.9.0.1")
+    (version "1.9.1.1")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/BitcoinUnlimited/BitcoinUnlimited")
+             (url "https://gitlab.com/bitcoinunlimited/BCHUnlimited.git/")
              (commit (string-append "BCHunlimited" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1pan24g3d5csa004d7zvlizj4mv58ly5i579341isp944phl3g5v"))))
+        (base32 "0vyvfawss40v9jaic9zq0z3cjvxiq04d4wgq4rnkha7ilm9zqyd7"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)

@@ -6,7 +6,7 @@
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Alex Kost <alezost@gmail.com>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Chris Marusich <cmmarusich@gmail.com>
@@ -169,6 +169,18 @@
   (check       lint-checker-check)
   (requires-store? lint-checker-requires-store?
                    (default #f)))
+
+(define (check-name package)
+  "Check whether PACKAGE's name matches our guidelines."
+  (let ((name (package-name package)))
+    ;; Currently checks only whether the name is too short.
+    (if (and (<= (string-length name) 1)
+             (not (string=? name "r"))) ; common-sense exception
+        (list
+         (make-warning package
+                       (G_ "name should be longer than a single character")
+                       #:field 'name))
+        '())))
 
 (define (properly-starts-sentence? s)
   (string-match "^[(\"'`[:upper:][:digit:]]" s))
@@ -1179,21 +1191,32 @@ vulnerability records for PACKAGE by calling PACKAGE-VULNERABILITIES."
 
 (define (check-for-updates package)
   "Check if there is an update available for PACKAGE."
-  (match (with-networking-fail-safe
-          (format #f (G_ "while retrieving upstream info for '~a'")
-                  (package-name package))
-          #f
-          (package-latest-release* package))
-    ((? upstream-source? source)
-     (if (version>? (upstream-source-version source)
-                    (package-version package))
-         (list
-          (make-warning package
-                        (G_ "can be upgraded to ~a")
-                        (list (upstream-source-version source))
-                        #:field 'version))
-         '()))
-    (#f '()))) ; cannot find newer upstream release
+  (match (lookup-updater package)
+    (#f
+     (list (make-warning package (G_ "no updater for ~a")
+                         (list (package-name package))
+                         #:field 'source)))
+    ((? upstream-updater? updater)
+     (match (with-networking-fail-safe
+             (format #f (G_ "while retrieving upstream info for '~a'")
+                     (package-name package))
+             #f
+             (package-latest-release package))
+       ((? upstream-source? source)
+        (if (version>? (upstream-source-version source)
+                       (package-version package))
+            (list
+             (make-warning package
+                           (G_ "can be upgraded to ~a")
+                           (list (upstream-source-version source))
+                           #:field 'version))
+            '()))
+       (#f                                       ;cannot find upstream release
+        (list (make-warning package
+                            (G_ "updater '~a' failed to find \
+upstream releases")
+                            (list (upstream-updater-name updater))
+                            #:field 'source)))))))
 
 
 (define (check-archival package)
@@ -1264,7 +1287,8 @@ try again later")
           ((? origin? origin)
            ;; Since "save" origins are not supported for non-VCS source, all
            ;; we can do is tell whether a given tarball is available or not.
-           (if (origin-hash origin)               ;XXX: for ungoogled-chromium
+           (if (and=> (origin-hash origin)          ;XXX: for ungoogled-chromium
+                      content-hash-value)           ;& icecat
                (let ((hash (origin-hash origin)))
                  (match (lookup-content (content-hash-value hash)
                                         (symbol->string
@@ -1445,6 +1469,10 @@ them for PACKAGE."
 
 (define %local-checkers
   (list
+   (lint-checker
+     (name        'name)
+     (description "Validate package names")
+     (check       check-name))
    (lint-checker
      (name        'description)
      (description "Validate package descriptions")

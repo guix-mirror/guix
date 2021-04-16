@@ -840,8 +840,9 @@ of index files."
             (requirement '(networking))
             (start #~(make-forkexec-constructor
                       '(#$(file-append package "/sbin/fcgiwrap")
-			  "-s" #$socket)
-		      #:user #$user #:group #$group))
+                        "-s" #$socket)
+                      #:user #$user #:group #$group
+                      #:log-file "/var/log/fcgiwrap.log"))
             (stop #~(make-kill-destructor)))))))
 
 (define fcgiwrap-activation
@@ -863,7 +864,7 @@ of index files."
                 (extensions
                  (list (service-extension shepherd-root-service-type
                                           fcgiwrap-shepherd-service)
-		       (service-extension account-service-type
+                       (service-extension account-service-type
                                           fcgiwrap-accounts)
                        (service-extension activation-service-type
                                           fcgiwrap-activation)))
@@ -1946,24 +1947,24 @@ root=/srv/gemini
             (documentation "Run the agate Gemini server.")
             (start (let ((agate (file-append package "/bin/agate")))
                      #~(make-forkexec-constructor
-			(list #$agate
-			      "--content" #$content
-			      "--cert" #$cert
-			      "--key" #$key
-			      "--addr" #$@addr
+                        (list #$agate
+                              "--content" #$content
+                              "--cert" #$cert
+                              "--key" #$key
+                              "--addr" #$@addr
                               #$@(if lang
                                      (list "--lang" lang)
                                      '())
-			      #$@(if hostname
-				     (list "--hostname" hostname)
-				     '())
-			      #$@(if silent? '("--silent") '())
-			      #$@(if serve-secret? '("--serve-secret") '())
-			      #$@(if log-ip? '("--log-ip") '()))
-			#:user #$user #:group #$group
-			#:log-file #$log-file)))
+                              #$@(if hostname
+                                     (list "--hostname" hostname)
+                                     '())
+                              #$@(if silent? '("--silent") '())
+                              #$@(if serve-secret? '("--serve-secret") '())
+                              #$@(if log-ip? '("--log-ip") '()))
+                        #:user #$user #:group #$group
+                        #:log-file #$log-file)))
             (stop #~(make-kill-destructor)))))))
-             
+
 (define agate-accounts
   (match-lambda
     (($ <agate-configuration> _ _ _ _ _

@@ -189,19 +189,6 @@ to @code{IOStreams}.")
     ;; The library is bsd-2, but documentation and tests include other licenses.
     (license (list bsd-2 bsd-3 psfl))))
 
-(define-public fmt-6
-  (package
-    (inherit fmt)
-    (name "fmt")
-    (version "6.2.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/fmtlib/fmt/releases/download/"
-                           version "/fmt-" version ".zip"))
-       (sha256
-        (base32 "06l8g59frbsbwj15kg6x2bbn6p8yidh6wzsigdhbdjncvm1agzll"))))))
-
 (define-public source-highlight
   (package
     (name "source-highlight")

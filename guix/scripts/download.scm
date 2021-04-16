@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2015, 2016, 2017, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -162,15 +163,13 @@ and 'base16' ('hex' and 'hexadecimal' can be used as well).\n"))
 
   (define (parse-options)
     ;; Return the alist of option values.
-    (args-fold* args %options
-                (lambda (opt name arg result)
-                  (leave (G_ "~A: unrecognized option~%") name))
-                (lambda (arg result)
-                  (when (assq 'argument result)
-                    (leave (G_ "~A: extraneous argument~%") arg))
-
-                  (alist-cons 'argument arg result))
-                %default-options))
+    (parse-command-line args %options (list %default-options)
+                        #:build-options? #f
+                        #:argument-handler
+                        (lambda (arg result)
+                          (when (assq 'argument result)
+                            (leave (G_ "~A: extraneous argument~%") arg))
+                          (alist-cons 'argument arg result))))
 
   (with-error-handling
     (let* ((opts  (parse-options))

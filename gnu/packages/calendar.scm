@@ -156,7 +156,7 @@ the <tz.h> library for handling time zones and leap seconds.")
     (native-inputs
      `(("docbook-xml" ,docbook-xml-4.3)
        ("gobject-introspection" ,gobject-introspection)
-       ("gtk-doc" ,gtk-doc)
+       ("gtk-doc" ,gtk-doc/stable)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("vala" ,vala)))

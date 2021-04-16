@@ -8,7 +8,7 @@
 ;;; Copyright © 2016, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2018 Raoul Bonnal <ilpuccio.febo@gmail.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2017, 2021 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018, 2019, 2020, 2021 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
@@ -2546,15 +2546,27 @@ accessing bigWig files.")
 (define-public python-schema-salad
   (package
     (name "python-schema-salad")
-    (version "7.0.20200811075006")
+    (version "7.1.20210316164414")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "schema-salad" version))
         (sha256
          (base32
-          "0wanbwmqb189x1m0vacnhpivfsr8rwbqknngivzxxs8j46yj80bg"))))
+          "04jaykdpgfnkrghvli5swxzqp7yba842am4bz42hcfljsmkrxvrk"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'skip-failing-tests
+           (lambda _
+             ;; Skip tests that require network access.
+             (substitute* "schema_salad/tests/test_cwl11.py"
+               (("^def test_(secondaryFiles|outputBinding)" all)
+                (string-append "@pytest.mark.skip(reason="
+                               "\"test requires network access\")\n"
+                               all)))
+             #t)))))
     (propagated-inputs
      `(("python-cachecontrol" ,python-cachecontrol-0.11)
        ("python-lockfile" ,python-lockfile)
@@ -2582,7 +2594,7 @@ and record oriented data modeling and the Semantic Web.")
 (define-public cwltool
   (package
     (name "cwltool")
-    (version "3.0.20201121085451")
+    (version "3.0.20210319143721")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2591,7 +2603,7 @@ and record oriented data modeling and the Semantic Web.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1awf99n7aglxc5zszrlrv6jxp355jp45ws7wpsgjlgcdv7advn0w"))))
+                "1sgs9ckyxb9f9169mc3wm9lnjg4080ai42xqsrwpw9l8apy4c9m5"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -2599,8 +2611,9 @@ and record oriented data modeling and the Semantic Web.")
          (add-after 'unpack 'loosen-version-restrictions
            (lambda _
              (substitute* "setup.py"
-               (("== 1.5.1") ">=1.5.1") ; prov
-               ((", < 3.5") ""))        ; shellescape
+               (("== 1.5.1") ">=1.5.1")   ; prov
+               ((", < 3.5") "")           ; shellescape
+               ((" >= 6.0.2, < 6.2") "")) ; pytest
              #t))
          (add-after 'unpack 'dont-use-git
            (lambda _
@@ -2612,6 +2625,7 @@ and record oriented data modeling and the Semantic Web.")
          (add-after 'unpack 'modify-tests
            (lambda _
              ;; Tries to connect to the internet.
+             (delete-file "tests/test_content_type.py")
              (delete-file "tests/test_udocker.py")
              (delete-file "tests/test_http_input.py")
              (substitute* "tests/test_load_tool.py"
@@ -6235,7 +6249,7 @@ subsequent visualization, annotation and storage of results.")
 (define-public plink-ng
   (package (inherit plink)
     (name "plink-ng")
-    (version "1.90b4")
+    (version "2.00a2.3")
     (source
      (origin
        (method git-fetch)
@@ -6244,29 +6258,26 @@ subsequent visualization, annotation and storage of results.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "02npdwgkpfkdnhw819rhj5kw02a5k5m90b14zq9zzya4hyg929c0"))))
+        (base32 "1p88lz9agzjlspjhciz61qjc36cfniv4nkxszyy0njqyc5rzc0cd"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ;no "check" target
+     `(#:tests? #f ;no "check" target
        #:make-flags (list "BLASFLAGS=-llapack -lopenblas"
                           "CFLAGS=-Wall -O2 -DDYNAMIC_ZLIB=1"
                           "ZLIB=-lz"
-                          "-f" "Makefile.std")
+                          "BIN=plink prettify"
+                          (string-append "CC=" ,(cc-for-target))
+                          (string-append "PREFIX=" (assoc-ref %outputs "out"))
+                          "DESTDIR=")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'chdir
            (lambda _ (chdir "1.9") #t))
-         (delete 'configure) ; no "configure" script
-         (replace 'install
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    (let ((bin (string-append (assoc-ref outputs "out")
-                                              "/bin/")))
-                      (install-file "plink" bin)
-                      #t))))))
+         (delete 'configure)))) ; no "configure" script
     (inputs
-     `(("zlib" ,zlib)
-       ("lapack" ,lapack)
-       ("openblas" ,openblas)))
+     `(("lapack" ,lapack)
+       ("openblas" ,openblas)
+       ("zlib" ,zlib)))
     (home-page "https://www.cog-genomics.org/plink/")
     (license license:gpl3+)))
 
@@ -6728,9 +6739,9 @@ of these reads to align data quickly through a hash-based indexing scheme.")
     (synopsis "Biological sequence analysis tool for NGS reads")
     (description
      "SortMeRNA is a biological sequence analysis tool for filtering, mapping
-and operational taxonomic unit (OTU) picking of next generation
-sequencing (NGS) reads.  The core algorithm is based on approximate seeds and
-allows for fast and sensitive analyses of nucleotide sequences.  The main
+and @acronym{OTU, operational taxonomic unit} picking of @acronym{NGS, next
+generation sequencing} reads.  The core algorithm is based on approximate seeds
+and allows for fast and sensitive analyses of nucleotide sequences.  The main
 application of SortMeRNA is filtering rRNA from metatranscriptomic data.")
     ;; The source includes x86 specific code
     (supported-systems '("x86_64-linux" "i686-linux"))
@@ -7622,311 +7633,6 @@ including VCF header and contents in RDF and JSON.")
     (home-page "https://github.com/vcflib/bio-vcf")
     (license license:expat)))
 
-(define-public r-limma
-  (package
-    (name "r-limma")
-    (version "3.46.0")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "limma" version))
-              (sha256
-               (base32
-                "1xxv493q1kip9bjfv7v7k5dnq7hz7gvl80i983v4mvwavhgnbxfz"))))
-    (build-system r-build-system)
-    (home-page "http://bioinf.wehi.edu.au/limma")
-    (synopsis "Package for linear models for microarray and RNA-seq data")
-    (description "This package can be used for the analysis of gene expression
-studies, especially the use of linear models for analysing designed experiments
-and the assessment of differential expression.  The analysis methods apply to
-different technologies, including microarrays, RNA-seq, and quantitative PCR.")
-    (license license:gpl2+)))
-
-(define-public r-xvector
-  (package
-    (name "r-xvector")
-    (version "0.30.0")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "XVector" version))
-              (sha256
-               (base32
-                "1pqljikg4f6jb7wgm5537zwgq5b013nyz1agjrwfq2cljb0ym6lq"))))
-    (properties
-     `((upstream-name . "XVector")))
-    (build-system r-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'use-system-zlib
-           (lambda _
-             (substitute* "DESCRIPTION"
-               (("zlibbioc, ") ""))
-             (substitute* "NAMESPACE"
-               (("import\\(zlibbioc\\)") ""))
-             #t)))))
-    (inputs
-     `(("zlib" ,zlib)))
-    (propagated-inputs
-     `(("r-biocgenerics" ,r-biocgenerics)
-       ("r-iranges" ,r-iranges)
-       ("r-s4vectors" ,r-s4vectors)))
-    (home-page "https://bioconductor.org/packages/XVector")
-    (synopsis "Representation and manpulation of external sequences")
-    (description
-     "This package provides memory efficient S4 classes for storing sequences
-\"externally\" (behind an R external pointer, or on disk).")
-    (license license:artistic2.0)))
-
-(define-public r-genomicranges
-  (package
-    (name "r-genomicranges")
-    (version "1.42.0")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "GenomicRanges" version))
-              (sha256
-               (base32
-                "0j4py5g6pdj35xhlaqhxxhg55j9l4mcdk3yck4dgyavv5f2dh24i"))))
-    (properties
-     `((upstream-name . "GenomicRanges")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-biocgenerics" ,r-biocgenerics)
-       ("r-genomeinfodb" ,r-genomeinfodb)
-       ("r-iranges" ,r-iranges)
-       ("r-s4vectors" ,r-s4vectors)
-       ("r-xvector" ,r-xvector)))
-    (native-inputs
-     `(("r-knitr" ,r-knitr)))
-    (home-page "https://bioconductor.org/packages/GenomicRanges")
-    (synopsis "Representation and manipulation of genomic intervals")
-    (description
-     "This package provides tools to efficiently represent and manipulate
-genomic annotations and alignments is playing a central role when it comes to
-analyzing high-throughput sequencing data (a.k.a. NGS data).  The
-GenomicRanges package defines general purpose containers for storing and
-manipulating genomic intervals and variables defined along a genome.")
-    (license license:artistic2.0)))
-
-(define-public r-biobase
-  (package
-    (name "r-biobase")
-    (version "2.50.0")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "Biobase" version))
-              (sha256
-               (base32
-                "11kgc4flywlm3i18603558l8ksv91c24vkc5fnnbcd375i2dhhd4"))))
-    (properties
-     `((upstream-name . "Biobase")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-biocgenerics" ,r-biocgenerics)))
-    (home-page "https://bioconductor.org/packages/Biobase")
-    (synopsis "Base functions for Bioconductor")
-    (description
-     "This package provides functions that are needed by many other packages
-on Bioconductor or which replace R functions.")
-    (license license:artistic2.0)))
-
-(define-public r-annotationdbi
-  (package
-    (name "r-annotationdbi")
-    (version "1.52.0")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "AnnotationDbi" version))
-              (sha256
-               (base32
-                "0zqxgh3nx6y8ry12s2vss2f4axz5vpqxha1y4ifhhcx4zhpzsglr"))))
-    (properties
-     `((upstream-name . "AnnotationDbi")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-biobase" ,r-biobase)
-       ("r-biocgenerics" ,r-biocgenerics)
-       ("r-dbi" ,r-dbi)
-       ("r-iranges" ,r-iranges)
-       ("r-rsqlite" ,r-rsqlite)
-       ("r-s4vectors" ,r-s4vectors)))
-    (native-inputs
-     `(("r-knitr" ,r-knitr)))
-    (home-page "https://bioconductor.org/packages/AnnotationDbi")
-    (synopsis "Annotation database interface")
-    (description
-     "This package provides user interface and database connection code for
-annotation data packages using SQLite data storage.")
-    (license license:artistic2.0)))
-
-(define-public r-biomart
-  (package
-    (name "r-biomart")
-    (version "2.46.3")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "biomaRt" version))
-              (sha256
-               (base32
-                "0gwmd0ykpv0gyh34c56g5m12lil20fvig49f3ih1jxrxf3q4wmq7"))))
-    (properties
-     `((upstream-name . "biomaRt")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-annotationdbi" ,r-annotationdbi)
-       ("r-biocfilecache" ,r-biocfilecache)
-       ("r-httr" ,r-httr)
-       ("r-openssl" ,r-openssl)
-       ("r-progress" ,r-progress)
-       ("r-rappdirs" ,r-rappdirs)
-       ("r-stringr" ,r-stringr)
-       ("r-xml" ,r-xml)
-       ("r-xml2" ,r-xml2)))
-    (native-inputs
-     `(("r-knitr" ,r-knitr)))
-    (home-page "https://bioconductor.org/packages/biomaRt")
-    (synopsis "Interface to BioMart databases")
-    (description
-     "biomaRt provides an interface to a growing collection of databases
-implementing the @url{BioMart software suite, http://www.biomart.org}.  The
-package enables retrieval of large amounts of data in a uniform way without
-the need to know the underlying database schemas or write complex SQL queries.
-Examples of BioMart databases are Ensembl, COSMIC, Uniprot, HGNC, Gramene,
-Wormbase and dbSNP mapped to Ensembl.  These major databases give biomaRt
-users direct access to a diverse set of data and enable a wide range of
-powerful online queries from gene annotation to database mining.")
-    (license license:artistic2.0)))
-
-(define-public r-biocparallel
-  (package
-    (name "r-biocparallel")
-    (version "1.24.1")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "BiocParallel" version))
-              (sha256
-               (base32
-                "1iryicvmcagcrj29kp49mqhiq2kn72j4idj380hi9illmdrg9ism"))))
-    (properties
-     `((upstream-name . "BiocParallel")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-futile-logger" ,r-futile-logger)
-       ("r-snow" ,r-snow)
-       ("r-bh" ,r-bh)))
-    (native-inputs
-     `(("r-knitr" ,r-knitr)))
-    (home-page "https://bioconductor.org/packages/BiocParallel")
-    (synopsis "Bioconductor facilities for parallel evaluation")
-    (description
-     "This package provides modified versions and novel implementation of
-functions for parallel evaluation, tailored to use with Bioconductor
-objects.")
-    (license (list license:gpl2+ license:gpl3+))))
-
-(define-public r-biostrings
-  (package
-    (name "r-biostrings")
-    (version "2.58.0")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "Biostrings" version))
-              (sha256
-               (base32
-                "1rbqhs73mhfr1gi0rx28jiyan7i3hb45ai3jpl1656fnrhgjfxq5"))))
-    (properties
-     `((upstream-name . "Biostrings")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-biocgenerics" ,r-biocgenerics)
-       ("r-crayon" ,r-crayon)
-       ("r-iranges" ,r-iranges)
-       ("r-s4vectors" ,r-s4vectors)
-       ("r-xvector" ,r-xvector)))
-    (home-page "https://bioconductor.org/packages/Biostrings")
-    (synopsis "String objects and algorithms for biological sequences")
-    (description
-     "This package provides memory efficient string containers, string
-matching algorithms, and other utilities, for fast manipulation of large
-biological sequences or sets of sequences.")
-    (license license:artistic2.0)))
-
-(define-public r-rsamtools
-  (package
-    (name "r-rsamtools")
-    (version "2.6.0")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "Rsamtools" version))
-              (sha256
-               (base32
-                "040pggkwglc6wy90qnc7xcdnaj0v3iqlykvvsl74241409qly554"))))
-    (properties
-     `((upstream-name . "Rsamtools")))
-    (build-system r-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'use-system-zlib
-           (lambda _
-             (substitute* "DESCRIPTION"
-               (("zlibbioc, ") ""))
-             (substitute* "NAMESPACE"
-               (("import\\(zlibbioc\\)") ""))
-             #t)))))
-    (propagated-inputs
-     `(("r-biocgenerics" ,r-biocgenerics)
-       ("r-biocparallel" ,r-biocparallel)
-       ("r-biostrings" ,r-biostrings)
-       ("r-bitops" ,r-bitops)
-       ("r-genomeinfodb" ,r-genomeinfodb)
-       ("r-genomicranges" ,r-genomicranges)
-       ("r-iranges" ,r-iranges)
-       ("r-rhtslib" ,r-rhtslib)
-       ("r-s4vectors" ,r-s4vectors)
-       ("r-xvector" ,r-xvector)))
-    (home-page "https://bioconductor.org/packages/release/bioc/html/Rsamtools.html")
-    (synopsis "Interface to samtools, bcftools, and tabix")
-    (description
-     "This package provides an interface to the @code{samtools},
-@code{bcftools}, and @code{tabix} utilities for manipulating SAM (Sequence
-Alignment / Map), FASTA, binary variant call (BCF) and compressed indexed
-tab-delimited (tabix) files.")
-    (license license:expat)))
-
-(define-public r-delayedarray
-  (package
-    (name "r-delayedarray")
-    (version "0.16.2")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "DelayedArray" version))
-              (sha256
-               (base32
-                "09lpj951v1afxkrnjvnhzp4qgklq23ykdwlny7k1lyfcdy9q6wm0"))))
-    (properties
-     `((upstream-name . "DelayedArray")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-biocgenerics" ,r-biocgenerics)
-       ("r-s4vectors" ,r-s4vectors)
-       ("r-iranges" ,r-iranges)
-       ("r-matrix" ,r-matrix)
-       ("r-matrixgenerics" ,r-matrixgenerics)))
-    (native-inputs
-     `(("r-knitr" ,r-knitr)))
-    (home-page "https://bioconductor.org/packages/DelayedArray")
-    (synopsis "Delayed operations on array-like objects")
-    (description
-     "Wrapping an array-like object (typically an on-disk object) in a
-@code{DelayedArray} object allows one to perform common array operations on it
-without loading the object in memory.  In order to reduce memory usage and
-optimize performance, operations on the object are either delayed or executed
-using a block processing mechanism.  Note that this also works on in-memory
-array-like objects like @code{DataFrame} objects (typically with Rle columns),
-@code{Matrix} objects, and ordinary arrays and data frames.")
-    (license license:artistic2.0)))
-
 (define-public r-summarizedexperiment
   (package
     (name "r-summarizedexperiment")
@@ -8045,13 +7751,13 @@ as well as query and modify the browser state, such as the current viewport.")
 (define-public r-genomicfeatures
   (package
     (name "r-genomicfeatures")
-    (version "1.42.2")
+    (version "1.42.3")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "GenomicFeatures" version))
               (sha256
                (base32
-                "17ns5hvx5q8mrmkgb6linspwml62mi34i6al5bxlib5xi9d9f04s"))))
+                "168cf261vmcqffbzassavkjyz9a2af0l6zbv9cagkx6b1qrk3siz"))))
     (properties
      `((upstream-name . "GenomicFeatures")))
     (build-system r-build-system)

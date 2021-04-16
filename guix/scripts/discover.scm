@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2020 Mathieu Othacehe <othacehe@gnu.org>
+;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -127,12 +128,11 @@ to synchronize with the writer."
   (synopsis "discover Guix related services using Avahi")
 
   (with-error-handling
-    (let* ((opts (args-fold* args %options
-                             (lambda (opt name arg result)
-                               (leave (G_ "~A: unrecognized option~%") name))
-                             (lambda (arg result)
-                               (leave (G_ "~A: extraneous argument~%") arg))
-                             %default-options))
+    (let* ((opts (parse-command-line args %options (list %default-options)
+                                     #:build-options? #f
+                                     #:argument-handler
+                                     (lambda (arg result)
+                                       (leave (G_ "~A: extraneous argument~%") arg))))
            (cache (assoc-ref opts 'cache))
            (publish-file (publish-file cache)))
       (parameterize ((%publish-file publish-file))

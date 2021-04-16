@@ -151,7 +151,7 @@
        ("automake" ,automake)
        ("docbook-xml" ,docbook-xml-4.3)
        ("gobject-introspection" ,gobject-introspection)
-       ("gtk-doc" ,gtk-doc)
+       ("gtk-doc" ,gtk-doc/stable)
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)
@@ -294,36 +294,6 @@ and driving.")
     (home-page "https://wiki.gnome.org/Apps/Maps")
     (license license:gpl2+)))
 
-(define-public libgaiagraphics
-  (package
-    (name "libgaiagraphics")
-    (version "0.5")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://www.gaia-gis.it/gaia-sins/libgaiagraphics-"
-                           version ".tar.gz"))
-       (sha256
-        (base32
-         "076afqv417ag3hfvnif0qc7qscmnq1dsf6y431yygwgf34rjkayc"))))
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (inputs
-     `(("cairo" ,cairo)
-       ("libpng" ,libpng)
-       ("libjpeg-turbo" ,libjpeg-turbo)
-       ("libtiff" ,libtiff)
-       ("libgeotiff" ,libgeotiff)
-       ("proj.4" ,proj.4)
-       ("libxml2" ,libxml2)
-       ("zlib" ,zlib)))
-     (synopsis "Gaia common graphics support")
-     (description "libgaiagraphics is a library supporting
- common-utility raster handling methods.")
-    (home-page "https://www.gaia-gis.it/fossil/libgaiagraphics/index")
-    (license license:lgpl3+)))
-
 (define-public libgeotiff
   (package
     (name "libgeotiff")
@@ -372,6 +342,63 @@ writing GeoTIFF information tags.")
                    license:bsd-3
                    (license:non-copyleft "file://LICENSE"
                                          "See LICENSE in the distribution.")))))
+
+(define-public librasterlite2
+  (package
+    (name "librasterlite2")
+    (version "1.1.0-beta1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://www.gaia-gis.it/gaia-sins/librasterlite2-sources/"
+             "librasterlite2-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1x24gqp4hsq97c31ncwxblab0x0863q8v1z42jil7lvsq3glqa7p"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("cairo" ,cairo)
+       ("curl" ,curl)
+       ("freetype" ,freetype)
+       ("freexl" ,freexl)
+       ("giflib" ,giflib)
+       ("libgeotiff" ,libgeotiff)
+       ("libjpeg-turbo" ,libjpeg-turbo)
+       ("libpng" ,libpng)
+       ("librttopo" ,librttopo)
+       ("libspatialite" ,libspatialite)
+       ("libtiff" ,libtiff)
+       ("libwebp" ,libwebp)
+       ("libxml2" ,libxml2)
+       ("lz4" ,lz4)
+       ("minizip" ,minizip)
+       ("openjpeg" ,openjpeg)
+       ("proj" ,proj)
+       ("sqlite" ,sqlite)
+       ("zstd" ,zstd "lib")))
+    (synopsis "Library to work with huge raster coverages using a SpatiaLite")
+    (description
+     "librasterlite2 is a library that stores and retrieves huge raster
+coverages using a SpatiaLite DBMS.")
+    (home-page "https://www.gaia-gis.it/fossil/librasterlite2/index")
+    ;; For the genuine librasterlite-sources holds:
+    ;; Any of the licenses MPL1.1, GPL2+ or LGPL2.1+  may be picked.
+    ;; Files under src/control_points are from GRASS
+    ;; and are licensed under GPL2+ only.
+    ;; src/md5.[ch]: Placed into the public domain by Alexander Peslyak.
+    ;; The tools supporting the library (both rl2tool and wmslite) are
+    ;; licensed under the GPL v3 (or any subsequent version) terms.
+    ;; The test/*.svg files are placed in the public domain, except for
+    ;; test/Car_Yellow.svg which is licensed under the Free Art License 1.3.
+    (license (list license:gpl2+
+                   license:gpl3+
+                   license:lal1.3
+                   license:lgpl2.1+
+                   license:mpl1.1
+                   license:public-domain))))
 
 (define-public librttopo
   (package
@@ -442,9 +469,8 @@ writing GeoTIFF information tags.")
        ("librttopo" ,librttopo)
        ("libxml2" ,libxml2)
        ("minizip" ,minizip)
-       ("proj.4" ,proj.4)
-       ("sqlite" ,sqlite)
-       ("zlib" ,zlib)))
+       ("proj" ,proj)
+       ("sqlite" ,sqlite)))
     (arguments
      `(#:configure-flags
        '("--enable-rttopo=yes")
@@ -454,7 +480,7 @@ writing GeoTIFF information tags.")
          (add-after 'unpack 'ignore-broken-tests
            (lambda _
              (substitute* '("test/Makefile.in")
-               (("\tcheck_sql_stm.*" all) "\tcheck_multithread$(EXEEXT) \\\n")
+               (("\tcheck_sql_stmt.* (check_sql_.*)" all tiny) (string-append "\t" tiny))
                (("(\tch.*) check_v.*ble2.*$" all vt1) (string-append vt1 " \\\n"))
                (("\tch.* (check_v.*ble4.*)$" all vt4) (string-append "\t" vt4)))
              #t)))))
@@ -686,29 +712,39 @@ development.")
 (define-public spatialite-gui
   (package
     (name "spatialite-gui")
-    (version "1.7.1")
+    (version "2.1.0-beta1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://www.gaia-gis.it/gaia-sins/spatialite_gui-"
-                           version ".tar.gz"))
+       (uri (string-append
+             "https://www.gaia-gis.it/gaia-sins/spatialite-gui-sources/"
+             "spatialite_gui-" version ".tar.gz"))
        (sha256
-        (base32
-         "1r05dz9pyc8vsd2wbqxcsracpfbaamz470rcyp2myfpqwznv376b"))))
+        (base32 "0cyv4cycl073p9lnnnglcb72qn71g8h9g5zn4gzw7swcy5nxjj5s"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("freexl" ,freexl)
+     `(("curl" ,curl)
+       ("freexl" ,freexl)
        ("geos" ,geos)
-       ("libgaiagraphics" ,libgaiagraphics)
+       ("giflib" ,giflib)
        ("libjpeg-turbo" ,libjpeg-turbo)
+       ("librasterlite2" ,librasterlite2)
+       ("librttopo" ,librttopo)
        ("libspatialite" ,libspatialite)
+       ("libwebp" ,libwebp)
+       ("libxlsxwriter" ,libxlsxwriter)
        ("libxml2" ,libxml2)
-       ("proj.4" ,proj.4)
+       ("lz4" ,lz4)
+       ("minizip" ,minizip)
+       ("openjpeg" ,openjpeg)
+       ("postgresql" ,postgresql)
+       ("proj" ,proj)
        ("sqlite" ,sqlite)
-       ("wxwidgets" ,wxwidgets-2)
-       ("zlib" ,zlib)))
+       ("virtualpg" ,virtualpg)
+       ("wxwidgets" ,wxwidgets)
+       ("zstd" ,zstd "lib")))
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (add-after 'unpack 'fix-gui
@@ -1066,7 +1102,7 @@ map, geocoding with Nominatim, or general analysis.")
 (define-public tippecanoe
   (package
     (name "tippecanoe")
-    (version "1.31.5")
+    (version "1.36.0")
     (source
      (origin
        (method git-fetch)
@@ -1075,14 +1111,14 @@ map, geocoding with Nominatim, or general analysis.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1m0x931a945sr7axyhcvpwh798m58hx1zxh6ikgf9gsgqhdhmszz"))))
+        (base32 "0lbmhly4ivnqc6qk1k3sdqvsg6x3nfd8gnjx846bhqj4wag3f88m"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases (delete 'configure))
        #:test-target "test"
        #:make-flags
-       (list "CC=gcc"
+       (list (string-append "CC=" ,(cc-for-target))
              (string-append "PREFIX=" (assoc-ref %outputs "out")))))
     (inputs
      `(("perl" ,perl)
@@ -1138,7 +1174,7 @@ OpenStreetMap data files.")
     (build-system gnu-build-system)
     (native-inputs
      `(("gnome-common" ,gnome-common)
-       ("gtk-doc" ,gtk-doc)
+       ("gtk-doc" ,gtk-doc/stable)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("cairo" ,cairo)
@@ -1748,10 +1784,9 @@ associated attribute file (@file{.dbf}).")
        ("libspatialite" ,libspatialite)
        ("libxml2" ,libxml2)
        ("minizip" ,minizip)
-       ("proj.4" ,proj.4)
+       ("proj" ,proj)
        ("readosm" ,readosm)
-       ("sqlite" ,sqlite)
-       ("zlib" ,zlib)))
+       ("sqlite" ,sqlite)))
     (synopsis "Collection of command line tools for SpatiaLite")
     (description
      "@code{spatialite-tools} is a collection of Command Line Interface (CLI)
@@ -1978,7 +2013,7 @@ visualization.")
 (define-public saga
   (package
     (name "saga")
-    (version "7.6.2")
+    (version "7.9.0")
     (source
      (origin
        (method url-fetch)
@@ -1986,7 +2021,7 @@ visualization.")
                            (version-major version) "/SAGA%20-%20" version
                            "/saga-" version ".tar.gz"))
        (sha256
-        (base32 "09j5magmayq2y620kqa490mfd1kpdp3lng2ifcgbrmssc079ybm0"))))
+        (base32 "1n051yxxkylly0k9rlkx2ih3j2lf9d4csg00sm7161r7nhjvggd1"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -2001,7 +2036,7 @@ visualization.")
        ("libtiff" ,libtiff)
        ("opencv" ,opencv)
        ("postgresql" ,postgresql)
-       ("proj.4" ,proj.4)
+       ("proj" ,proj)
        ("python" ,python)
        ("qhull" ,qhull)
        ("unixodbc" ,unixodbc)
@@ -2047,7 +2082,21 @@ growing set of geoscientific methods.")
                (("sip_dir = cfg.default_sip_dir")
                 (string-append "sip_dir = \""
                                (assoc-ref inputs "python-pyqt+qscintilla")
-                               "/share/sip\"")))
+                               "/share/sip\""))
+               ;; Fix building with python-sip@5.
+               ;;
+               ;; The reason for this is that python-sip@5 introduces some
+               ;; changes such as a new build system 'sip-build' as well as the
+               ;; use of the path "/lib/pythonX.X/site-packages/*/bindings/"
+               ;; instead of "/share/sip/" for .sip files. However, we do not
+               ;; actually use that those yet. QGIS detects SIP5 and assumes we
+               ;; are, messing up the build. The long term solution is to fully
+               ;; upgrade SIP, use sip-build and fix all failing packages, but
+               ;; for now I just want to get the build working.
+               ((".pyqt_sip_dir...os.path.join.*,")
+                (string-append "'pyqt_sip_dir': \""
+                               (assoc-ref inputs "python-pyqt+qscintilla")
+                               "/share/sip"  "\",")))
              (substitute* (list "scripts/prepare_commit.sh"
                                 "scripts/qstringfixup.sh"
                                 "scripts/release.pl"

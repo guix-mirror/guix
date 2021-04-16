@@ -1046,12 +1046,3 @@ void run(const std::vector<int>& sockets)
 {
     daemonLoop(sockets);
 }
-
-
-void printHelp()
-{
-    showManPage("nix-daemon");
-}
-
-
-string programId = "nix-daemon";

@@ -3,6 +3,7 @@
 ;;; Copyright © 2020 by Amar M. Singh <nly@disroot.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1117,12 +1118,11 @@ methods, return the applicable compression."
   (synopsis "publish build results over HTTP")
 
   (with-error-handling
-    (let* ((opts    (args-fold* args %options
-                                (lambda (opt name arg result)
-                                  (leave (G_ "~A: unrecognized option~%") name))
-                                (lambda (arg result)
-                                  (leave (G_ "~A: extraneous argument~%") arg))
-                                %default-options))
+    (let* ((opts    (parse-command-line args %options (list %default-options)
+                                        #:build-options? #f
+                                        #:argument-handler
+                                        (lambda (arg result)
+                                          (leave (G_ "~A: extraneous argument~%") arg))))
            (advertise?  (assoc-ref opts 'advertise?))
            (user        (assoc-ref opts 'user))
            (port        (assoc-ref opts 'port))

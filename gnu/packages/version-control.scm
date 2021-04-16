@@ -172,14 +172,14 @@ as well as the classic centralized workflow.")
 (define-public git
   (package
    (name "git")
-   (version "2.31.0")
+   (version "2.31.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0h4sg3xqa9pd2agrd7m18sqg319ls978d39qswyf30rjvg5n5wg8"))))
+              "10367n5sv4nsgaxy486pbp7nscx34vjk8vrb06jm9ffm8ix42qcz"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -196,7 +196,7 @@ as well as the classic centralized workflow.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "1v40wwj130k76xf2w6vwhvfpkk765q1gcy5bqcrqssxf66ydqp8q"))))
+            "00n7vbfmd3ywgjksgwrszwj0l2niba64qkaq07ra4p8mawy483ax"))))
       ;; For subtree documentation.
       ("asciidoc" ,asciidoc-py3)
       ("docbook-xsl" ,docbook-xsl)
@@ -2330,7 +2330,7 @@ Mercurial, Bazaar, Darcs, CVS, Fossil, and Veracity.")
 (define-public grokmirror
   (package
     (name "grokmirror")
-    (version "2.0.5")
+    (version "2.0.8")
     (source
      (origin
        (method git-fetch)
@@ -2340,7 +2340,7 @@ Mercurial, Bazaar, Darcs, CVS, Fossil, and Veracity.")
              (commit (string-append "v" version))))
        (file-name (string-append name "-" version "-checkout"))
        (sha256
-        (base32 "006ar3kc6fw1sq300ar9np4a63qzzsdama6cv30wh65v5mqw1mnv"))))
+        (base32 "0zfiwjw02df3mzpawp9jx61iwp0nhcf6y03cs8022l0hkvc7blbr"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f                      ; no test suite
@@ -2722,7 +2722,7 @@ interrupted, published, and collaborated on while in progress.")
 (define-public git-lfs
   (package
     (name "git-lfs")
-    (version "2.13.2")
+    (version "2.13.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2731,7 +2731,7 @@ interrupted, published, and collaborated on while in progress.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0gfpzdya48phwln61746ii78sq55mhzj938lz8x062xkkcsdvbf4"))))
+                "0r7dmqhkhz91d3n7qfpny483x8f1n88yya22j2fvx75rgg33z2sg"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/git-lfs/git-lfs"
@@ -3024,7 +3024,7 @@ If several repos are related, it helps to see their status together.")
 (define-public ghq
   (package
     (name "ghq")
-    (version "1.1.5")
+    (version "1.1.7")
     (home-page "https://github.com/x-motemen/ghq")
     (source (origin
               (method git-fetch)
@@ -3034,7 +3034,7 @@ If several repos are related, it helps to see their status together.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "098fik155viylq07az7crzbgswcvhpx0hr68xpvyx0rpri792jbq"))))
+                "155sfmhmh4ia3iinm1s8fk7fxyn5dxdryad9xkbg7mr3i3ikqjwh"))))
     (build-system go-build-system)
     (arguments
      '(#:install-source? #f

@@ -5,7 +5,7 @@
 ;;; Copyright © 2014, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2020 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -563,14 +563,14 @@ these types and other mathematical functions.")
 (define-public ntl
   (package
    (name "ntl")
-   (version "11.4.3")
+   (version "11.4.4")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://shoup.net/ntl/ntl-"
                                 version ".tar.gz"))
             (sha256
              (base32
-              "1lisp3064rch3jaa2wrhy1s9kll7i3ka3d0y6lj6l3l4ckfcrhdp"))
+              "1nr1h27j2gdz6badzz9lk2pknxhdijqdxqhd3haryh0sw616wzwx"))
             (modules '((guix build utils)))
             (snippet
              '(begin

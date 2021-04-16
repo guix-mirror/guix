@@ -316,7 +316,7 @@ resembles Python.")
 (define-public meson-next
   (package
     (inherit meson)
-    (version "0.57.1")
+    (version "0.57.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/mesonbuild/meson/"
@@ -324,7 +324,7 @@ resembles Python.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "19n8alcpzv6npgp27iqljkmvdmr7s2c7zm8y997j1nlvpa1cgqbj"))))))
+                "1iac7p99zfgkznq4qlnkk7b8xwwlilcrnkf33sczm56yqnqyg0rs"))))))
 
 (define-public premake4
   (package
@@ -535,3 +535,43 @@ besides executing the make build command, updates the JSON compilation
 database file corresponding to that build, resulting in a command-line
 interface similar to Bear.")
     (license license:gpl3)))
+
+(define-public build
+  (package
+    (name "build")
+    (version "0.3.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.codesynthesis.com/download/"
+                           "build/" (version-major+minor version)
+                           "/build-" version ".tar.bz2"))
+       (sha256
+        (base32 "1lx5rpnmsbip43zpp0a57sl5rm7pjb0y6i2si6rfglfp4p9d3z76"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list (string-append "install_prefix=" %output))
+       #:tests? #f
+       #:phases (modify-phases %standard-phases
+                  (delete 'build)
+                  (delete 'configure))))
+    (home-page "https://www.codesynthesis.com/projects/build/")
+    (synopsis "Massively-parallel build system implemented on top of GNU make")
+    (description "Build is a massively-parallel software build system
+implemented on top of GNU Make, designed with the following tasks in mind:
+@itemize
+@item configuration
+@item building
+@item testing
+@item installation
+@end itemize
+Build has features such as:
+@itemize
+@item Position-independent makefiles.
+@item Non-recursive multi-makefile include-based structure.
+@item Leaf makefiles are full-fledged GNU makefiles, not just variable definitions.
+@item Complete dependency graph.
+@item Inter-project dependency tracking.
+@item Extensible language/compiler framework.
+@end itemize")
+    (license license:gpl2+)))

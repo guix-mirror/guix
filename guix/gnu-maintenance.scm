@@ -31,7 +31,7 @@
   #:use-module (srfi srfi-34)
   #:use-module (rnrs io ports)
   #:use-module (system foreign)
-  #:use-module (guix http-client)
+  #:use-module ((guix http-client) #:hide (open-socket-for-uri))
   #:use-module (guix ftp-client)
   #:use-module (guix utils)
   #:use-module (guix memoization)
@@ -66,6 +66,7 @@
             %gnu-updater
             %gnu-ftp-updater
             %savannah-updater
+            %sourceforge-updater
             %xorg-updater
             %kernel.org-updater
             %generic-html-updater))
@@ -242,7 +243,7 @@ network to check in GNU's database."
   ;; The "-src" pattern is for "TeXmacs-1.0.7.9-src.tar.gz".
   ;; The "-gnu[0-9]" pattern is for "icecat-38.4.0-gnu1.tar.bz2".
   ;; Accept underscores as in "PKG_1.2.tar.gz" for some non-GNU packages.
-  (make-regexp "^([^.]+)[-_]([0-9]|[^-])+(-(src|gnu[0-9]))?\\.(tar\\.|zip$)"))
+  (make-regexp "^([^.]+)[-_]([0-9]|[^-])+(-(src|[sS]ource|gnu[0-9]))?\\.(tar\\.|zip$)"))
 
 (define %alpha-tarball-rx
   (make-regexp "^.*-.*[0-9](-|~)?(alpha|beta|rc|RC|cvs|svn|git)-?[0-9\\.]*\\.tar\\."))
@@ -595,7 +596,7 @@ list available from %GNU-FILE-LIST-URI over HTTP(S)."
 (define %package-name-rx
   ;; Regexp for a package name, e.g., "foo-X.Y".  Since TeXmacs uses
   ;; "TeXmacs-X.Y-src", the `-src' suffix is allowed.
-  (make-regexp "^(.*)[-_](([0-9]|\\.)+)(-src)?"))
+  (make-regexp "^(.*)[-_](([0-9]|\\.)+)(-src|\\.src|\\.orig)?"))
 
 (define (gnu-package-name->name+version name+version)
   "Return the package name and version number extracted from NAME+VERSION."
@@ -637,9 +638,6 @@ GNOME packages; EMMS is included though, because its releases are on gnu.org."
                           (lambda (urls)
                             (map rewrite-url urls))))))
 
-(define savannah-package?
-  (url-prefix-predicate "mirror://savannah/"))
-
 (define %savannah-base
   ;; One of the Savannah mirrors listed at
   ;; <http://download0.savannah.gnu.org/mirmon/savannah/> that serves valid
@@ -662,6 +660,59 @@ GNOME packages; EMMS is included though, because its releases are on gnu.org."
                                 #:base-url %savannah-base
                                 #:directory directory)
            (cut adjusted-upstream-source <> rewrite))))
+
+(define (latest-sourceforge-release package)
+  "Return the latest release of PACKAGE."
+  (define (uri-append uri extension)
+    ;; Return URI with EXTENSION appended.
+    (build-uri (uri-scheme uri)
+               #:host (uri-host uri)
+               #:path (string-append (uri-path uri) extension)))
+
+  (define (valid-uri? uri port)
+    ;; Return true if URI is reachable.
+    (false-if-exception
+     (case (response-code (http-head uri #:port port #:keep-alive? #t))
+       ((200 302) #t)
+       (else #f))))
+
+  (let* ((name     (package-upstream-name package))
+         (base     (string-append "https://sourceforge.net/projects/"
+                                  name "/files"))
+         (url      (string-append base "/latest/download"))
+         (uri      (string->uri url))
+         (port     (false-if-exception (open-socket-for-uri uri)))
+         (response (and port
+                        (http-head uri #:port port #:keep-alive? #t))))
+    (dynamic-wind
+      (const #t)
+      (lambda ()
+        (and response
+             (= 302 (response-code response))
+             (response-location response)
+             (match (string-tokenize (uri-path (response-location response))
+                                     (char-set-complement (char-set #\/)))
+               ((_ components ...)
+                (let* ((path (string-join components "/"))
+                       (url  (string-append "mirror://sourceforge/" path)))
+                  (and (release-file? name (basename path))
+
+                       ;; Take the heavy-handed approach of probing 3 additional
+                       ;; URLs.  XXX: Would be nicer if this could be avoided.
+                       (let* ((loc (response-location response))
+                              (sig (any (lambda (extension)
+                                          (let ((uri (uri-append loc extension)))
+                                            (and (valid-uri? uri port)
+                                                 (string-append url extension))))
+                                        '(".asc" ".sig" ".sign"))))
+                         (upstream-source
+                          (package name)
+                          (version (tarball->version (basename path)))
+                          (urls (list url))
+                          (signature-urls (and sig (list sig)))))))))))
+      (lambda ()
+        (when port
+          (close-port port))))))
 
 (define (latest-xorg-release package)
   "Return the latest release of PACKAGE."
@@ -706,14 +757,19 @@ GNOME packages; EMMS is included though, because its releases are on gnu.org."
                          "ftp.gnu.org" "download.savannah.gnu.org"
                          "pypi.org" "crates.io" "rubygems.org"
                          "bioconductor.org")))
-    (url-predicate (lambda (url)
-                     (match (string->uri url)
-                       (#f #f)
-                       (uri
-                        (let ((scheme (uri-scheme uri))
-                              (host   (uri-host uri)))
-                          (and (memq scheme '(http https))
-                               (not (member host hosting-sites))))))))))
+    (define http-url?
+      (url-predicate (lambda (url)
+                       (match (string->uri url)
+                         (#f #f)
+                         (uri
+                          (let ((scheme (uri-scheme uri))
+                                (host   (uri-host uri)))
+                            (and (memq scheme '(http https))
+                                 (not (member host hosting-sites)))))))))
+
+    (lambda (package)
+      (or (assoc-ref (package-properties package) 'release-monitoring-url)
+          (http-url? package)))))
 
 (define (latest-html-updatable-release package)
   "Return the latest release of PACKAGE.  Do that by crawling the HTML page of
@@ -771,6 +827,13 @@ the directory containing its source tarball."
    (description "Updater for packages hosted on savannah.gnu.org")
    (pred (url-prefix-predicate "mirror://savannah/"))
    (latest latest-savannah-release)))
+
+(define %sourceforge-updater
+  (upstream-updater
+   (name 'sourceforge)
+   (description "Updater for packages hosted on sourceforge.net")
+   (pred (url-prefix-predicate "mirror://sourceforge/"))
+   (latest latest-sourceforge-release)))
 
 (define %xorg-updater
   (upstream-updater

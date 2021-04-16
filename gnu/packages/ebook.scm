@@ -2,7 +2,7 @@
 ;;; Copyright © 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
-;;; Copyright © 2017, 2019, 2020 Brendan Tildesley <mail@brendan.scot>
+;;; Copyright © 2017, 2019, 2020, 2021 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
@@ -58,10 +58,14 @@
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-build)
+  #:use-module (gnu packages python-compression)
+  #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages serialization)
+  #:use-module (gnu packages speech)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
@@ -88,10 +92,30 @@
     (description "CHMLIB is a library for dealing with ITSS/CHM format files.")
     (license license:lgpl2.1+)))
 
+(define-public python-pychm
+  (package
+    (name "python-pychm")
+    (version "0.8.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pychm" version))
+       (sha256
+        (base32
+         "0wpn9ijlsmrpyiwg3drmgz4dms1i1i347adgqw37bkrh3vn6yq16"))))
+    (build-system python-build-system)
+    (inputs
+     `(("chmlib" ,chmlib)))
+    (home-page "https://github.com/dottedmag/pychm")
+    (synopsis "Handle CHM files")
+    (description "This package provides a Python module for interacting
+with Microsoft Compiled HTML (CHM) files")
+    (license license:gpl2+)))
+
 (define-public calibre
   (package
     (name "calibre")
-    (version "4.18.0")
+    (version "5.14.0")
     (source
       (origin
         (method url-fetch)
@@ -100,7 +124,7 @@
                             version ".tar.xz"))
         (sha256
          (base32
-          "0w9pcfvskjh4v00vjw3i6hzrafy863pgsmmqdx4lffip3p856brw"))
+          "0w8j9r9qa56r8gm9b10dwh8zrzqlv79s2br82jqg02lrnrbwwv0q"))
         (modules '((guix build utils)))
         (snippet
           '(begin
@@ -112,8 +136,6 @@
                 ""))
 
              ;; Remove unneeded resources.
-             (delete-file "resources/viewer.js")
-             (delete-file "resources/viewer.html")
              (delete-file "resources/mozilla-ca-certs.pem")
              (delete-file "resources/calibre-portable.bat")
              (delete-file "resources/calibre-portable.sh")
@@ -125,57 +147,60 @@
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("qtbase" ,qtbase) ; for qmake
-       ("python2-flake8" ,python2-flake8)
+       ("python-flake8" ,python-flake8)
+       ("python-pyqt-builder" ,python-pyqt-builder)
        ("xdg-utils" ,xdg-utils)))
     (inputs
-     `(("chmlib" ,chmlib)
-       ("fontconfig" ,fontconfig)
+     `(("fontconfig" ,fontconfig)
        ("font-liberation" ,font-liberation)
        ("glib" ,glib)
        ("hunspell" ,hunspell)
        ("hyphen" ,hyphen)
        ("icu4c" ,icu4c)
-       ("js-mathjax" ,js-mathjax)
        ("libmtp" ,libmtp)
        ("libpng" ,libpng)
+       ("libjpeg" ,libjpeg-turbo)
+       ("libjxr" ,libjxr)
        ("libusb" ,libusb)
        ("openssl" ,openssl)
        ("optipng" ,optipng)
        ("podofo" ,podofo)
        ("poppler" ,poppler)
-       ("python" ,python-2)
-       ("python2-apsw" ,python2-apsw)
-       ("python2-beautifulsoup4" ,python2-beautifulsoup4)
-       ("python2-chardet" ,python2-chardet)
-       ("python2-cssselect" ,python2-cssselect)
-       ("python2-css-parser" ,python2-css-parser)
-       ("python2-dateutil" ,python2-dateutil)
-       ("python2-dbus" ,python2-dbus)
-       ("python2-dnspython" ,python2-dnspython-1.16)
-       ("python2-dukpy" ,python2-dukpy)
-       ("python2-feedparser" ,python2-feedparser)
-       ("python2-html2text" ,python2-html2text)
-       ("python2-html5-parser" ,python2-html5-parser)
-       ("python2-html5lib" ,python2-html5lib)
-       ("python2-lxml" ,python2-lxml)
-       ("python2-markdown" ,python2-markdown)
-       ("python2-mechanize" ,python2-mechanize)
-       ;; python2-msgpack is needed for the network content server to work.
-       ("python2-msgpack" ,python2-msgpack)
-       ("python2-netifaces" ,python2-netifaces)
-       ("python2-odfpy" ,python2-odfpy)
-       ("python2-pillow" ,python2-pillow)
-       ("python2-psutil" ,python2-psutil)
-       ("python2-pygments" ,python2-pygments)
-       ("python2-pyqtwebengine" ,python2-pyqtwebengine)
-       ("python2-pyqt" ,python2-pyqt)
-       ("python2-sip" ,python2-sip)
-       ("python2-regex" ,python2-regex)
+       ("python-apsw" ,python-apsw)
+       ("python-beautifulsoup4" ,python-beautifulsoup4)
+       ("python-cchardet" ,python-cchardet)
+       ("python-css-parser" ,python-css-parser)
+       ("python-cssselect" ,python-cssselect)
+       ("python-dateutil" ,python-dateutil)
+       ("python-dbus" ,python-dbus)
+       ("python-dnspython" ,python-dnspython-1.16)
+       ("python-dukpy" ,python-dukpy)
+       ("python-feedparser" ,python-feedparser)
+       ("python-html2text" ,python-html2text)
+       ("python-html5-parser" ,python-html5-parser)
+       ("python-html5lib" ,python-html5lib)
+       ("python-lxml" ,python-lxml)
+       ("python-markdown" ,python-markdown)
+       ("python-mechanize" ,python-mechanize)
+       ;; python-msgpack is needed for the network content server to work.
+       ("python-msgpack" ,python-msgpack)
+       ("python-netifaces" ,python-netifaces)
+       ("python-odfpy" ,python-odfpy)
+       ("python-pillow" ,python-pillow)
+       ("python-psutil" ,python-psutil)
+       ("python-py7zr" ,python-py7zr)
+       ("python-pychm" ,python-pychm)
+       ("python-pycryptodome" ,python-pycryptodome)
+       ("python-pygments" ,python-pygments)
+       ("python-pyqt" ,python-pyqt)
+       ("python-pyqtwebengine" ,python-pyqtwebengine)
+       ("python-regex" ,python-regex)
+       ("python-speechd" ,speech-dispatcher)
+       ("python-zeroconf" ,python-zeroconf)
        ("qtwebengine" ,qtwebengine)
        ("sqlite" ,sqlite)))
     (arguments
-     `(#:python ,python-2
-       ;; Calibre is using setuptools by itself, but the setup.py is not
+     `(;; Calibre is using setuptools by itself, but the setup.py is not
        ;; compatible with the shim wrapper (taken from pip) we are using.
        #:use-setuptools? #f
        #:phases
@@ -207,18 +232,27 @@
          (add-before 'build 'configure
           (lambda* (#:key inputs outputs #:allow-other-keys)
             (let ((podofo (assoc-ref inputs "podofo"))
-                  (pyqt (assoc-ref inputs "python2-pyqt"))
-                  (python-sip (assoc-ref inputs "python2-sip"))
+                  (pyqt (assoc-ref inputs "python-pyqt"))
+                  (python-sip (assoc-ref inputs "python-sip"))
                   (out (assoc-ref outputs "out")))
-              (substitute* "setup/build_environment.py"
-                (("= get_sip_dir\\(\\)")
-                 (string-append "= '" pyqt "/share/sip'")))
-
+              (substitute* "setup/build.py"
+                (("\\[tool.sip.bindings.pictureflow\\]")
+                 "[tool.sip.bindings.pictureflow]
+tags = [\"WS_X11\"]")
+                (("\\[tool.sip.project\\]")
+                 (string-append "[tool.sip.project]
+sip-include-dirs = [\"" pyqt "/share/sip" "\"]")))
               (substitute* "src/calibre/ebooks/pdf/pdftohtml.py"
                 (("PDFTOHTML = 'pdftohtml'")
                  (string-append "PDFTOHTML = \"" (assoc-ref inputs "poppler")
                                 "/bin/pdftohtml\"")))
-
+              ;; get_exe_path looks in poppler's output for these binaries. Make
+              ;; it not do that.
+              (substitute* "src/calibre/utils/img.py"
+                (("get_exe_path..jpegtran..") (string-append "'" (which "jpegtran") "'"))
+                (("get_exe_path..cjpeg..") (string-append "'" (which "cjpeg") "'"))
+                (("get_exe_path..optipng..") (string-append "'" (which "optipng") "'"))
+                (("get_exe_path..JxrDecApp..") (string-append "'" (which "JxrDecApp") "'")))
               ;; Calibre thinks we are installing desktop files into a home
               ;; directory, but here we butcher the script in to installing
               ;; to calibres /share directory.
@@ -237,7 +271,6 @@
                                       "/share/fonts")
                        "/tmp/.fonts")
 
-              (setenv "SIP_BIN" (string-append python-sip "/bin/sip"))
               (setenv "PODOFO_INC_DIR" (string-append podofo "/include/podofo"))
               (setenv "PODOFO_LIB_DIR" (string-append podofo "/lib"))
               ;; This informs the tests we are a continuous integration
@@ -248,13 +281,11 @@
               ;; fix it, so I'm not sure how to fix it.  TODO: Fix test and remove this.
               (setenv "SKIP_QT_BUILD_TEST" "true")
               #t)))
-         (add-after 'build 'build-extra
+         (add-after 'install 'install-rapydscript
            (lambda* (#:key inputs #:allow-other-keys)
-             (invoke "python2" "setup.py" "mathjax""--system-mathjax"
-                     "--path-to-mathjax" (string-append
-                                          (assoc-ref inputs "js-mathjax")
-                                          "/share/javascript/mathjax"))
-             (invoke "python2" "setup.py" "rapydscript")
+              ;; Unset so QtWebengine doesn't dump temporary files here.
+             (unsetenv "XDG_DATA_HOME")
+             (invoke "python" "setup.py" "rapydscript")
              #t))
          (add-after 'install 'install-man-pages
            (lambda* (#:key outputs #:allow-other-keys)

@@ -313,7 +313,7 @@ upstream occasionally.")
 (define-public exo
   (package
     (name "exo")
-    (version "4.16.0")
+    (version "4.16.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
@@ -321,7 +321,7 @@ upstream occasionally.")
                                   "exo-" version ".tar.bz2"))
               (sha256
                (base32
-                "1k5sfm9cmg8k5zzzv0wb2cciqwwklnpfzcpak7wa32lsxl7b0x8r"))))
+                "0fxm2aczzbi0z4y6x24934964y9jg4cl4frvlnjc5zqmccjsr3aj"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -463,7 +463,7 @@ applications menu, workspace switcher and more.")
 (define-public xfce4-battery-plugin
   (package
     (name "xfce4-battery-plugin")
-    (version "1.1.3")
+    (version "1.1.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
@@ -471,7 +471,7 @@ applications menu, workspace switcher and more.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "18s0s004nidii8cc3ldp5n3jajc18vwn9vhkhmhy3lbbs520mghj"))))
+                "08n2cig9r2lccwvmk6v9vjiz0xqcp6x30m5b3q702v0m6ylg4z8h"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("intltool" ,intltool)))
@@ -765,7 +765,7 @@ like appearance, display, keyboard and mouse settings.")
 (define-public thunar
   (package
     (name "thunar")
-    (version "4.16.3")
+    (version "4.16.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
@@ -773,7 +773,7 @@ like appearance, display, keyboard and mouse settings.")
                                   "thunar-" version ".tar.bz2"))
               (sha256
                (base32
-                "0wpzs7r79aayg4zbxy514fbkabac1hhvw522cjjr453gva4xq92m"))))
+                "1dq238m2bh938gpb058cr2xmhy6f3qkyyya9l0ya95kiwqzislyb"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1206,7 +1206,7 @@ of data to either CD/DVD/BD.")
 (define-public mousepad
   (package
     (name "mousepad")
-    (version "0.5.3")
+    (version "0.5.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/apps/mousepad/"
@@ -1214,7 +1214,7 @@ of data to either CD/DVD/BD.")
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "1a6a3x4h6aisjm59i0afx1w50035s76zjr4a6p9ja5bax6wqn877"))))
+                "189aljqgkrspqk9498izgvssw08pgkyvf7hc7ddmzfhcblp4j3yr"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '(;; Use the GSettings keyfile backend rather than
@@ -1761,7 +1761,7 @@ mounted or when unmounting fails.")
 (define-public xfce4-netload-plugin
   (package
    (name "xfce4-netload-plugin")
-   (version "1.3.2")
+   (version "1.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
@@ -1770,7 +1770,7 @@ mounted or when unmounting fails.")
                                   "/xfce4-netload-plugin-" version ".tar.bz2"))
               (sha256
                (base32
-                "0p91875n6s8n88l7wb4w9prqly3wvkyilnr7zq0ppq71rwjh9r12"))))
+                "036pvhfv1iynvj75va0xl8hpvnfckabyqm9jv56pb40p2072cxkc"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -1916,7 +1916,7 @@ freedesktop.org specification.")
 (define-public xfce4-systemload-plugin
   (package
    (name "xfce4-systemload-plugin")
-   (version "1.2.4")
+   (version "1.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
@@ -1925,13 +1925,14 @@ freedesktop.org specification.")
                                   "/xfce4-systemload-plugin-" version ".tar.bz2"))
               (sha256
                (base32
-                "0dcqg13phlcri4i4g9752m4zfkcmidiqpjv4s3l3pfiwjbgvhc85"))))
+                "0lknh5l30qs5c69wwjcblbyhczvdbxs59fqkb8mpqbfm05w01lan"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("libxfce4ui" ,libxfce4ui)
+     `(("libgtop" ,libgtop)
+       ("libxfce4ui" ,libxfce4ui)
        ("xfce4-panel" ,xfce4-panel)))
     (home-page
      "https://goodies.xfce.org/projects/panel-plugins/xfce4-systemload-plugin")

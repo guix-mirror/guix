@@ -285,8 +285,7 @@ interface (FFI) of Guile.")
                                                     #:select? select?))
     (gexp->script "compute-guix-derivation"
                   #~(begin
-                      (use-modules (ice-9 match)
-                                   (ice-9 threads))
+                      (use-modules (ice-9 match))
 
                       (eval-when (expand load eval)
                         ;; (gnu packages …) modules are going to be looked up
@@ -320,23 +319,9 @@ interface (FFI) of Guile.")
                                    (guix derivations)
                                    (srfi srfi-1))
 
-                      (define (spin system)
-                        (define spin
-                          (circular-list "-" "\\" "|" "/" "-" "\\" "|" "/"))
-
-                        (format (current-error-port)
-                                "Computing Guix derivation for '~a'...  "
-                                system)
-                        (when (isatty? (current-error-port))
-                          (let loop ((spin spin))
-                            (display (string-append "\b" (car spin))
-                                     (current-error-port))
-                            (force-output (current-error-port))
-                            (sleep 1)
-                            (loop (cdr spin)))))
-
                       (match (command-line)
-                        ((_ source system version protocol-version)
+                        ((_ source system version protocol-version
+                            build-output)
                          ;; The current input port normally wraps a file
                          ;; descriptor connected to the daemon, or it is
                          ;; connected to /dev/null.  In the former case, reuse
@@ -349,16 +334,18 @@ interface (FFI) of Guile.")
                                                               (current-input-port)
                                                               "w+0")
                                                              #:version proto)
-                                           (open-connection))))
-                           (call-with-new-thread
-                            (lambda ()
-                              (spin system)))
+                                           (open-connection)))
+                                (sock  (socket AF_UNIX SOCK_STREAM 0)))
+                           ;; Connect to BUILD-OUTPUT and send it the raw
+                           ;; build output.
+                           (connect sock AF_UNIX build-output)
 
                            (display
                             (and=>
                              ;; Silence autoload warnings and the likes.
                              (parameterize ((current-warning-port
-                                             (%make-void-port "w")))
+                                             (%make-void-port "w"))
+                                            (current-build-output-port sock))
                                (run-with-store store
                                  (guix-derivation source version
                                                   #$guile-version
@@ -369,6 +356,28 @@ interface (FFI) of Guile.")
                                  #:system system))
                              derivation-file-name))))))
                   #:module-path (list source))))
+
+(define (proxy input output)
+  "Dump the contents of INPUT to OUTPUT until EOF is reached on INPUT.
+Display a spinner when nothing happens."
+  (define spin
+    (circular-list "-" "\\" "|" "/" "-" "\\" "|" "/"))
+
+  (setvbuf input 'block 16384)
+  (let loop ((spin spin))
+    (match (select (list input) '() '() 1)
+      ((() () ())
+       (when (isatty? (current-error-port))
+         (display (string-append "\b" (car spin))
+                  (current-error-port))
+         (force-output (current-error-port)))
+       (loop (cdr spin)))
+      (((_) () ())
+       ;; Read from INPUT as much as can be read without blocking.
+       (let ((bv (get-bytevector-some input)))
+         (unless (eof-object? bv)
+           (put-bytevector output bv)
+           (loop spin)))))))
 
 (define (call-with-clean-environment thunk)
   (let ((env (environ)))
@@ -426,7 +435,14 @@ files."
       ;; way, we know 'open-pipe*' will not close it on 'exec'.  If PORT is
       ;; not a file port (e.g., it's an SSH channel), then the subprocess's
       ;; stdin will actually be /dev/null.
-      (let* ((pipe   (with-input-from-port port
+      (let* ((sock   (socket AF_UNIX SOCK_STREAM 0))
+             (node   (let ((file (string-append (or (getenv "TMPDIR") "/tmp")
+                                                "/guix-build-output-"
+                                                (number->string (getpid)))))
+                       (bind sock AF_UNIX file)
+                       (listen sock 1)
+                       file))
+             (pipe   (with-input-from-port port
                        (lambda ()
                          ;; Make sure BUILD is not influenced by
                          ;; $GUILE_LOAD_PATH & co.
@@ -442,30 +458,45 @@ files."
                                       (if (file-port? port)
                                           (number->string
                                            (logior major minor))
-                                          "none"))))))
-             (str    (get-string-all pipe))
-             (status (close-pipe pipe)))
-        (match str
-          ((? eof-object?)
-           (error "build program failed" (list build status)))
-          ((? derivation-path? drv)
-           (mbegin %store-monad
-             (return (newline (current-error-port)))
-             ((store-lift add-temp-root) drv)
-             (return (read-derivation-from-file drv))))
-          ("#f"
-           ;; Unsupported PULL-VERSION.
-           (return #f))
-          ((? string? str)
-           (raise (condition
-                   (&message
-                    (message (format #f "You found a bug: the program '~a'
+                                          "none")
+                                      node))))))
+        (format (current-error-port) "Computing Guix derivation for '~a'...  "
+                system)
+
+        ;; Wait for a connection on SOCK and proxy build output so it can be
+        ;; processed according to the settings currently in effect (build
+        ;; traces, verbosity level, and so on).
+        (match (accept sock)
+          ((port . _)
+           (close-port sock)
+           (delete-file node)
+           (proxy port (current-build-output-port))))
+
+        ;; Now that the build output connection was closed, read the result, a
+        ;; derivation file name, from PIPE.
+        (let ((str    (get-string-all pipe))
+              (status (close-pipe pipe)))
+          (match str
+            ((? eof-object?)
+             (error "build program failed" (list build status)))
+            ((? derivation-path? drv)
+             (mbegin %store-monad
+               (return (newline (current-error-port)))
+               ((store-lift add-temp-root) drv)
+               (return (read-derivation-from-file drv))))
+            ("#f"
+             ;; Unsupported PULL-VERSION.
+             (return #f))
+            ((? string? str)
+             (raise (condition
+                     (&message
+                      (message (format #f "You found a bug: the program '~a'
 failed to compute the derivation for Guix (version: ~s; system: ~s;
 host version: ~s; pull-version: ~s).
 Please report it by email to <~a>.~%"
-                                     (derivation->output-path build)
-                                     version system %guix-version pull-version
-                                     %guix-bug-report-address)))))))))))
+                                       (derivation->output-path build)
+                                       version system %guix-version pull-version
+                                       %guix-bug-report-address))))))))))))
 
 ;; This file is loaded by 'guix pull'; return it the build procedure.
 build

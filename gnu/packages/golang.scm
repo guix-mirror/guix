@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
 ;;; Copyright © 2016 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2016, 2019 Ludovic Courtès <ludo@gnu.org>
@@ -2099,7 +2099,7 @@ application's http.Handlers.")
 (define-public go-github-com-sirupsen-logrus
   (package
     (name "go-github-com-sirupsen-logrus")
-    (version "1.0.5")
+    (version "1.8.1")
     (source
      (origin
        (method git-fetch)
@@ -2109,17 +2109,16 @@ application's http.Handlers.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0g5z7al7kky11ai2dhac6gkp3b5pxsvx72yj3xg4wg3265gbn7yz"))))
+         "0rvqzic2zz7fpxyizmqxwmhv1m52ii9bgxnqa6km8wsa0l08wh42"))))
     (build-system go-build-system)
     (propagated-inputs
-     `(("go-golang-org-x-crypto"
-        ,go-golang-org-x-crypto)
-       ("go-github-com-stretchr-testify"
-        ,go-github-com-stretchr-testify)
+     `(("go-github-com-davecgh-go-spew" ,go-github-com-davecgh-go-spew)
+       ("go-github-com-pmezard-go-difflib" ,go-github-com-pmezard-go-difflib)
+       ("go-github-com-stretchr-testify" ,go-github-com-stretchr-testify)
+       ("go-golang-org-x-crypto" ,go-golang-org-x-crypto)
        ("go-golang-org-x-sys" ,go-golang-org-x-sys)))
     (arguments
-     '(#:tests? #f                    ;FIXME missing dependencies
-       #:import-path "github.com/sirupsen/logrus"))
+     '(#:import-path "github.com/sirupsen/logrus"))
     (home-page "https://github.com/sirupsen/logrus")
     (synopsis "Structured, pluggable logging for Go")
     (description "Logrus is a structured logger for Go, completely API
@@ -3966,7 +3965,7 @@ without requiring a real database connection.")
     (home-page "https://github.com/go-sql-driver/mysql")
     (synopsis "MySQL driver for golang")
     (description
-     "This is a pure Go implementaton of the MySQL API, compatible with
+     "This is a pure Go implementation of the MySQL API, compatible with
 golang's database/sql package.")
     (license license:mpl2.0)))
 
@@ -5505,7 +5504,7 @@ the parse trees produced by the html package.")
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/PuerkitoBio/goquery"))
-    (native-inputs
+    (propagated-inputs
      `(("go-github-com-andybalholm-cascadia" ,go-github-com-andybalholm-cascadia)
        ("go-golang-org-x-net" ,go-golang-org-x-net)))
     (home-page "https://github.com/PuerkitoBio/goquery")
@@ -5828,7 +5827,7 @@ which produce colorized output using github.com/fatih/color.")
     (synopsis "Write handsome command-line tools with glamour")
     (description "@code{glamour} lets you render markdown documents and
 templates on ANSI compatible terminals.  You can create your own stylesheet or
-use one of our glamourous default themes.")
+use one of our glamorous default themes.")
     (license license:expat)))
 
 (define-public go-github-com-coreos-go-semver
@@ -6912,7 +6911,7 @@ atomic access.")
     (propagated-inputs
      `(("go-go-uber-org-atomic" ,go-go-uber-org-atomic)))
     (home-page "https://go.uber.org/multierr")
-    (synopsis "Error combination fo Go")
+    (synopsis "Error combination for Go")
     (description
      "@code{multierr} allows combining one or more Go errors together.")
     (license license:expat)))

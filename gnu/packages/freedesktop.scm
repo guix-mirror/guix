@@ -22,6 +22,7 @@
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2020 Anders Thuné <asse.97@gmail.com>
 ;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
+;;; Copyright © 2021 Brendan Tildesley <mail@brendan.scot>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -173,7 +174,7 @@
        ("glib:bin" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
        ("gperf" ,gperf)
-       ("gtk-doc" ,gtk-doc)
+       ("gtk-doc" ,gtk-doc/stable)
        ("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)
        ("xsltproc" ,libxslt)))
@@ -261,7 +262,7 @@ application-centers for distributions.")
        ("docbook-xml" ,docbook-xml-4.1.2)
        ("docbook-xsl" ,docbook-xsl)
        ("gobject-introspection" ,gobject-introspection)
-       ("gtk-doc" ,gtk-doc)
+       ("gtk-doc" ,gtk-doc/stable)
        ("libtool" ,libtool)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
@@ -313,7 +314,7 @@ for videoconferencing.")
      `(("glib:bin" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)
-       ("gtk-doc" ,gtk-doc)))
+       ("gtk-doc" ,gtk-doc/stable)))
     (inputs
      `(("dbus" ,dbus)
        ("glib" ,glib)))
@@ -1230,7 +1231,7 @@ Analysis and Reporting Technology) functionality.")
        ("glib:bin" ,glib "bin")         ; for glib-mkenums
        ("gnome-common" ,gnome-common)   ; TODO: Why is this needed?
        ("gobject-introspection" ,gobject-introspection)
-       ("gtk-doc" ,gtk-doc)
+       ("gtk-doc" ,gtk-doc/stable)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
        ("xsltproc" ,libxslt)))
@@ -1626,7 +1627,7 @@ wish to perform colour calibration.")
      `(("eudev" ,eudev)
        ("glib:bin" ,glib "bin")         ; for {glib-,}mkenums
        ("gobject-introspection" ,gobject-introspection)
-       ("gtk-doc" ,gtk-doc)             ; for 88 KiB of API documentation
+       ("gtk-doc" ,gtk-doc/stable)             ; for 88 KiB of API documentation
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("glib" ,glib)
@@ -1948,6 +1949,26 @@ encoding names are iconv-compatible.")
     ;; combination is GPL 2.0+.
     (license license:gpl2+)))
 
+(define-public python-cchardet
+  (package
+  (name "python-cchardet")
+  (version "2.1.7")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (pypi-uri "cchardet" version))
+      (sha256
+        (base32
+          "1bqfz85cd51sw0bvhvdq9ikccxi2ld7g5jpni4jkq1a5clrvca64"))))
+  (build-system python-build-system)
+  (inputs
+   `(("uchardet" ,uchardet)))
+  (home-page "https://github.com/PyYoshi/cChardet")
+  (synopsis "High-performance character encoding detection for Python")
+  (description "cChardet is a character encoding detector, written in
+Python, that binds to the C library @code{uchardet} to increase performance.")
+  (license license:gpl2+)))
+
 (define-public udiskie
   (package
     (name "udiskie")
@@ -2225,7 +2246,7 @@ fallback to generic Systray support if none of those are available.")
                  #t))))))
       (native-inputs
        `(("pkg-config" ,pkg-config)
-         ("gtk-doc" ,gtk-doc)
+         ("gtk-doc" ,gtk-doc/stable)
          ("docbook-xsl" ,docbook-xsl)
          ("docbook-xml" ,docbook-xml)
          ("libxml2" ,libxml2)

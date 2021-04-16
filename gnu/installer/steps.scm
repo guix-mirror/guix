@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018, 2019 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,6 +20,7 @@
 (define-module (gnu installer steps)
   #:use-module (guix records)
   #:use-module (guix build utils)
+  #:use-module (guix i18n)
   #:use-module (gnu installer utils)
   #:use-module (ice-9 match)
   #:use-module (ice-9 pretty-print)
@@ -245,8 +246,13 @@ found in RESULTS."
   (mkdir-p (dirname filename))
   (call-with-output-file filename
     (lambda (port)
-      (format port ";; This is an operating system configuration generated~%")
-      (format port ";; by the graphical installer.~%")
+      ;; TRANSLATORS: This is a comment within a Scheme file.  Each line must
+      ;; start with ";; " (two semicolons and a space).  Please keep line
+      ;; length below 60 characters.
+      (display (G_ "\
+;; This is an operating system configuration generated
+;; by the graphical installer.\n")
+               port)
       (newline port)
       (for-each (lambda (part)
                   (if (null? part)

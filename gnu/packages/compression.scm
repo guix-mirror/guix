@@ -7,7 +7,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2016–2021 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -2072,7 +2072,8 @@ decompression is a little bit slower.")
                                  version "/upx-" version "-src.tar.xz"))
              (sha256
               (base32
-               "051pk5jk8fcfg5mpgzj43z5p4cn7jy5jbyshyn78dwjqr7slsxs7"))))
+               "051pk5jk8fcfg5mpgzj43z5p4cn7jy5jbyshyn78dwjqr7slsxs7"))
+             (patches (search-patches "upx-CVE-2021-20285.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)))

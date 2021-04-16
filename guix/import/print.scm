@@ -79,7 +79,16 @@ when evaluated."
           (file-name (origin-file-name source))
           (patches   (origin-patches source)))
       `(origin
-         (method ,(procedure-name method))
+         ;; Since 'procedure-name' returns the procedure name within the
+         ;; module where it's defined, not its public name.  Thus, try hard to
+         ;; find its public name and use 'procedure-name' as a last resort.
+         (method ,(or (any (lambda (module)
+                             (variable-name method module))
+                           '((guix download)
+                             (guix git-download)
+                             (guix hg-download)
+                             (guix svn-download)))
+                      (procedure-name method)))
          (uri (string-append ,@(match (factorize-uri uri version)
                                  ((? string? uri) (list uri))
                                  (factorized factorized))))

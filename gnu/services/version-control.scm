@@ -163,7 +163,7 @@ protocol.")
 
 (define* (git-daemon-service #:key (config (git-daemon-configuration)))
   "Return a service that runs @command{git daemon}, a simple TCP server to
-expose repositories over the Git protocol for annoymous access.
+expose repositories over the Git protocol for anonymous access.
 
 The optional @var{config} argument should be a
 @code{<git-daemon-configuration>} object, by default it allows read-only

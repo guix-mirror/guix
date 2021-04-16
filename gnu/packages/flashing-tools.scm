@@ -7,6 +7,7 @@
 ;;; Copyright © 2017 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,18 +33,23 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages admin)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages flex)
   #:use-module (gnu packages elf)
+  #:use-module (gnu packages flex)
+  #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages groff)
   #:use-module (gnu packages pciutils)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages libftdi)
   #:use-module (gnu packages pciutils)
-  #:use-module (gnu packages qt)
-  #:use-module (gnu packages autotools)
-  #:use-module (gnu packages admin))
+  #:use-module (gnu packages qt))
 
 (define-public flashrom
   (package
@@ -476,3 +482,38 @@ ME as far as possible (it only edits ME firmware image files).")
     (description "@code{uefitool} is a graphical image file editor for
 Unifinished Extensible Firmware Interface (UEFI) images.")
     (license license:bsd-2)))
+
+(define-public srecord
+  (package
+    (name "srecord")
+    (version "1.64")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/srecord/srecord/"
+                           version "/srecord-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1qk75q0k5vzmm3932q9hqz2gp8n9rrdfjacsswxc02656f3l3929"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "SH="
+                            (assoc-ref %build-inputs "bash")
+                            "/bin/bash"))))
+    (inputs
+     `(("boost" ,boost)
+       ("libgcrypt" ,libgcrypt)))
+    (native-inputs
+     `(("bison" ,bison)
+       ("diffutils" ,diffutils)
+       ("ghostscript" ,ghostscript)
+       ("groff" ,groff)
+       ("libtool" ,libtool)
+       ("which" ,which)))
+    (home-page "http://srecord.sourceforge.net/")
+    (synopsis "Tools for EPROM files")
+    (description "The SRecord package is a collection of powerful tools for
+manipulating EPROM load files.  It reads and writes numerous EPROM file
+formats, and can perform many different manipulations.")
+    (license license:gpl3+)))

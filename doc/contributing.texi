@@ -126,10 +126,10 @@ Store}, for information about this), usually @file{/var}.  Note that you
 will probably not run @command{make install} at the end (you don't have
 to) but it's still important to pass the right @code{localstatedir}.
 
-Finally, you have to invoke @code{make check} to run tests
-(@pxref{Running the Test Suite}).  If anything
-fails, take a look at installation instructions (@pxref{Installation})
-or send a message to the @email{guix-devel@@gnu.org, mailing list}.
+Finally, you have to invoke @code{make && make check} to build Guix and
+run the tests (@pxref{Running the Test Suite}).  If anything fails, take
+a look at installation instructions (@pxref{Installation}) or send a
+message to the @email{guix-devel@@gnu.org, mailing list}.
 
 From there on, you can authenticate all the commits included in your
 checkout by running:
@@ -444,6 +444,14 @@ Both are usually the same and correspond to the lowercase conversion of
 the project name chosen upstream, with underscores replaced with
 hyphens.  For instance, GNUnet is available as @code{gnunet}, and
 SDL_net as @code{sdl-net}.
+
+A noteworthy exception to this rule is when the project name is only a
+single character, or if an older maintained project with the same name
+already exists---regardless of whether it has already been packaged for
+Guix.  Use common sense to make such names unambiguous and meaningful.
+For example, Guix's package for the shell called ``s'' upstream is
+@code{s-shell} and @emph{not} @code{s}.  Feel free to ask your fellow
+hackers for inspiration.
 
 We do not add @code{lib} prefixes for library packages, unless these are
 already part of the official project name.  But @pxref{Python

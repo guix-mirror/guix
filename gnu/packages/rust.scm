@@ -852,3 +852,7 @@ safety and thread safety guarantees.")
 (define-public rust-1.50
   (rust-bootstrapped-package rust "1.50.0"
     "0pjs7j62maiyvkmhp9zrxl528g2n0fphp4rq6ap7aqdv0a6qz5wm"))
+
+(define-public rust-1.51
+  (rust-bootstrapped-package rust-1.50 "1.51.0"
+    "0ixqkqglv3isxbvl4ldr4byrkx692wghsz3fasy1pn5kr2prnsvs"))

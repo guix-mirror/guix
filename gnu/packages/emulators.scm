@@ -540,7 +540,7 @@ The following systems are supported:
 (define-public mgba
   (package
     (name "mgba")
-    (version "0.8.4")
+    (version "0.9.0")
     (source
      (origin
        (method git-fetch)
@@ -549,7 +549,7 @@ The following systems are supported:
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0nqj4bnn5c2z1bq4bnbw1wznc0wpmq4sy3w8pipd6n6620b9m4qq"))
+        (base32 "16v08m9irping65d94vb5skp4m6nc63zj6bfajbzhmf944dswmi5"))
        (modules '((guix build utils)))
        (snippet
         ;; Make sure we don't use the bundled software.
@@ -1589,7 +1589,7 @@ This is a part of the TiLP project.")
 (define-public mame
   (package
     (name "mame")
-    (version "0.229")
+    (version "0.230")
     (source
      (origin
        (method git-fetch)
@@ -1598,7 +1598,7 @@ This is a part of the TiLP project.")
              (commit (apply string-append "mame" (string-split version #\.)))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0s5q6fjk739p1bfh72fmh35xi13fwbrgjqrn45i5xzx3v3gadmbg"))
+        (base32 "0dk8q2691pycv9mq77h6sdfwjnwdrfwrblf8nwyykrmdawzi56ks"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled libraries.
@@ -1743,7 +1743,7 @@ This is a part of the TiLP project.")
        ("texinfo" ,texinfo)))
     (inputs
      `(("alsa-lib" ,alsa-lib)
-       ("asio" ,asio)
+       ("asio" ,asio-1.12)              ;the bundled copy is at 1.11
        ("expat" ,expat)
        ("flac" ,flac)
        ("fontconfig" ,fontconfig)

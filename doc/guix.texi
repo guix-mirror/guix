@@ -31,14 +31,14 @@ Copyright @copyright{} 2015 Taylan Ulrich Bayırlı/Kammer@*
 Copyright @copyright{} 2015, 2016, 2017, 2019, 2020, 2021 Leo Famulari@*
 Copyright @copyright{} 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus@*
 Copyright @copyright{} 2016 Ben Woodcroft@*
-Copyright @copyright{} 2016, 2017, 2018 Chris Marusich@*
+Copyright @copyright{} 2016, 2017, 2018, 2021 Chris Marusich@*
 Copyright @copyright{} 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner@*
 Copyright @copyright{} 2016 John Darrington@*
 Copyright @copyright{} 2016, 2017 Nikita Gillmann@*
 Copyright @copyright{} 2016, 2017, 2018, 2019, 2020 Jan Nieuwenhuizen@*
 Copyright @copyright{} 2016, 2017, 2018, 2019, 2020 Julien Lepiller@*
 Copyright @copyright{} 2016 Alex ter Weele@*
-Copyright @copyright{} 2016, 2017, 2018, 2019 Christopher Baines@*
+Copyright @copyright{} 2016, 2017, 2018, 2019, 2020, 2021 Christopher Baines@*
 Copyright @copyright{} 2017, 2018, 2019 Clément Lassieur@*
 Copyright @copyright{} 2017, 2018, 2020, 2021 Mathieu Othacehe@*
 Copyright @copyright{} 2017 Federico Beffa@*
@@ -49,7 +49,7 @@ Copyright @copyright{} 2017, 2021 Christopher Lemmer Webber@*
 Copyright @copyright{} 2017, 2018, 2019, 2020 Marius Bakke@*
 Copyright @copyright{} 2017, 2019, 2020 Hartmut Goebel@*
 Copyright @copyright{} 2017, 2019, 2020, 2021 Maxim Cournoyer@*
-Copyright @copyright{} 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice@*
+Copyright @copyright{} 2017, 2018, 2019, 2020, 2021 Tobias Geerinckx-Rice@*
 Copyright @copyright{} 2017 George Clemmer@*
 Copyright @copyright{} 2017 Andy Wingo@*
 Copyright @copyright{} 2017, 2018, 2019, 2020 Arun Isaac@*
@@ -87,6 +87,7 @@ Copyright @copyright{} 2020 Daniel Brooks@*
 Copyright @copyright{} 2020 John Soo@*
 Copyright @copyright{} 2020 Jonathan Brielmaier@*
 Copyright @copyright{} 2020 Edgar Vincent@*
+Copyright @copyright{} 2021 Maxime Devos@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -240,13 +241,13 @@ Channels
 * Using a Custom Guix Channel::  Using a customized Guix.
 * Replicating Guix::            Running the @emph{exact same} Guix.
 * Channel Authentication::      How Guix verifies what it fetches.
+* Channels with Substitutes::   Using channels with available substitutes.
 * Creating a Channel::          How to write your custom channel.
 * Package Modules in a Sub-directory::  Specifying the channel's package modules location.
 * Declaring Channel Dependencies::  How to depend on other channels.
 * Specifying Channel Authorizations::  Defining channel authors authorizations.
 * Primary URL::                 Distinguishing mirror to original.
 * Writing Channel News::        Communicating information to channel's users.
-* Channels with Substitutes::   Using channels with available substitutes.
 
 Development
 
@@ -342,7 +343,7 @@ Services
 * DNS Services::                DNS daemons.
 * VPN Services::                VPN daemons.
 * Network File System::         NFS related services.
-* Continuous Integration::      The Cuirass service.
+* Continuous Integration::      Cuirass and Laminar services.
 * Power Management Services::   Extending battery life.
 * Audio Services::              The MPD.
 * Virtualization Services::     Virtualization services.
@@ -523,6 +524,17 @@ supported; in particular, there is no ongoing work to ensure that this
 architecture still works.  Should someone decide they wish to revive this
 architecture then the code is still available.
 
+@item powerpc64le-linux
+little-endian 64-bit Power ISA processors, Linux-Libre kernel.  This
+includes POWER9 systems such as the
+@uref{https://www.fsf.org/news/talos-ii-mainboard-and-talos-ii-lite-mainboard-now-fsf-certified-to-respect-your-freedom,
+RYF Talos II mainboard}. This platform is available as a "technology
+preview": although it is supported, substitutes are not yet available
+from the build farm (@pxref{Substitutes}), and some packages may fail to
+build (@pxref{Tracking Bugs and Patches}).  That said, the Guix
+community is actively working on improving this support, and now is a
+great time to try it and get involved!
+
 @end table
 
 With Guix@tie{}System, you @emph{declare} all aspects of the operating system
@@ -534,7 +546,7 @@ Manual}), the well-known GNU utilities and tool chain, as well as the
 graphical environment or system services of your choice.
 
 Guix System is available on all the above platforms except
-@code{mips64el-linux}.
+@code{mips64el-linux} and @code{powerpc64le-linux}.
 
 @noindent
 For information on porting to other architectures or kernels,
@@ -641,7 +653,7 @@ If that command fails because you do not have the required public key,
 then run this command to import it:
 
 @example
-$ wget @value{OPENPGP-SIGNING-KEY-URL} \
+$ wget '@value{OPENPGP-SIGNING-KEY-URL}' \
       -qO - | gpg --import -
 @end example
 
@@ -836,7 +848,8 @@ version 0.1.0 or later;
 @item @uref{https://notabug.org/guile-lzlib/guile-lzlib, Guile-lzlib};
 @item @uref{https://www.nongnu.org/guile-avahi/, Guile-Avahi};
 @item
-@c FIXME: Specify a version number once a release has been made.
+@c FIXME: We need the #:fetch-options parameter of 'submodule-update',
+@c which appeared in 0.5.0.  Change below after string freeze.
 @uref{https://gitlab.com/guile-git/guile-git, Guile-Git}, version 0.3.0
 or later;
 @item @uref{https://savannah.nongnu.org/projects/guile-json/, Guile-JSON}
@@ -1043,10 +1056,10 @@ Bash syntax and the @code{shadow} commands):
 @c for why `-G' is needed.
 @example
 # groupadd --system guixbuild
-# for i in `seq -w 1 10`;
+# for i in $(seq -w 1 10);
   do
     useradd -g guixbuild -G guixbuild           \
-            -d /var/empty -s `which nologin`    \
+            -d /var/empty -s $(which nologin)   \
             -c "Guix build user $i" --system    \
             guixbuilder$i;
   done
@@ -1417,7 +1430,7 @@ the Guix daemon.
 @code{guix_daemon_socket_t} isn’t actually used.  None of the socket
 operations involve contexts that have anything to do with
 @code{guix_daemon_socket_t}.  It doesn’t hurt to have this unused label,
-but it would be preferrable to define socket rules for only this label.
+but it would be preferable to define socket rules for only this label.
 
 @item
 @code{guix gc} cannot access arbitrary links to profiles.  By design,
@@ -4213,7 +4226,7 @@ Return the derivation(s) leading to the given store items
 For example, this command:
 
 @example
-guix gc --derivers `guix package -I ^emacs$ | cut -f4`
+guix gc --derivers $(guix package -I ^emacs$ | cut -f4)
 @end example
 
 @noindent
@@ -4694,7 +4707,7 @@ these procedures.
 Inferior packages can be used transparently like any other package or
 file-like object in G-expressions (@pxref{G-Expressions}).  They are also
 transparently handled by the @code{packages->manifest} procedure, which is
-commonly use in manifests (@pxref{Invoking guix package, the
+commonly used in manifests (@pxref{Invoking guix package, the
 @option{--manifest} option of @command{guix package}}).  Thus you can insert
 an inferior package pretty much anywhere you would insert a regular package:
 in manifests, in the @code{packages} field of your @code{operating-system}
@@ -5009,13 +5022,13 @@ updates.
 * Using a Custom Guix Channel::  Using a customized Guix.
 * Replicating Guix::            Running the @emph{exact same} Guix.
 * Channel Authentication::      How Guix verifies what it fetches.
+* Channels with Substitutes::   Using channels with available substitutes.
 * Creating a Channel::          How to write your custom channel.
 * Package Modules in a Sub-directory::  Specifying the channel's package modules location.
 * Declaring Channel Dependencies::  How to depend on other channels.
 * Specifying Channel Authorizations::  Defining channel authors authorizations.
 * Primary URL::                 Distinguishing mirror to original.
 * Writing Channel News::        Communicating information to channel's users.
-* Channels with Substitutes::   Using channels with available substitutes.
 @end menu
 
 @node Specifying Additional Channels
@@ -5170,6 +5183,31 @@ the channel introduction provided by the channel authors in your
 introduction from a trusted source since that is the root of your trust.
 
 If you're curious about the authentication mechanics, read on!
+
+@node Channels with Substitutes
+@section Channels with Substitutes
+
+When running @command{guix pull}, Guix will first compile the
+definitions of every available package.  This is an expensive operation
+for which substitutes (@pxref{Substitutes}) may be available.  The
+following snippet in @file{channels.scm} will ensure that @command{guix
+pull} uses the latest commit with available substitutes for the package
+definitions: this is done by querying the continuous integration
+server at @url{https://ci.guix.gnu.org}.
+
+@lisp
+(use-modules (guix ci))
+
+(list (channel-with-substitutes-available
+       %default-guix-channel
+       "https://ci.guix.gnu.org"))
+@end lisp
+
+Note that this does not mean that all the packages that you will
+install after running @command{guix pull} will have available
+substitutes.  It only ensures that @command{guix pull} will not try to
+compile package definitions.  This is particularly useful when using
+machines with limited resources.
 
 @node Creating a Channel
 @section Creating a Channel
@@ -5486,31 +5524,6 @@ xgettext -o news.po -l scheme -ken etc/news.txt
 
 To sum up, yes, you could use your channel as a blog.  But beware, this
 is @emph{not quite} what your users might expect.
-
-@node Channels with Substitutes
-@section Channels with Substitutes
-
-When running @command{guix pull}, Guix will first compile the
-definitions of every available package.  This is an expensive operation
-for which substitutes (@pxref{Substitutes}) may be available.  The
-following snippet in @file{channels.scm} will ensure that @command{guix
-pull} uses the latest commit with available substitutes for the package
-definitions: this is done by querying the continuous integration
-server at @url{https://ci.guix.gnu.org}.
-
-@lisp
-(use-modules (guix ci))
-
-(list (channel-with-substitutes-available
-       %default-guix-channel
-       "https://ci.guix.gnu.org"))
-@end lisp
-
-Note that this does not mean that all the packages that you will
-install after running @command{guix pull} will have available
-substitutes.  It only ensures that @command{guix pull} will not try to
-compile package definitions.  This is particularly useful when using
-machines with limited resources.
 
 @c *********************************************************************
 @node Development
@@ -7288,55 +7301,7 @@ standards, GNU Coding Standards}).
 In a nutshell, packages using it are configured, built, and installed with
 the usual @code{./configure && make && make check && make install}
 command sequence.  In practice, a few additional steps are often needed.
-All these steps are split up in separate @dfn{phases},
-notably@footnote{Please see the @code{(guix build gnu-build-system)}
-modules for more details about the build phases.}:
-
-@table @code
-@item unpack
-Unpack the source tarball, and change the current directory to the
-extracted source tree.  If the source is actually a directory, copy it
-to the build tree, and enter that directory.
-
-@item patch-source-shebangs
-Patch shebangs encountered in source files so they refer to the right
-store file names.  For instance, this changes @code{#!/bin/sh} to
-@code{#!/gnu/store/@dots{}-bash-4.3/bin/sh}.
-
-@item configure
-Run the @file{configure} script with a number of default options, such
-as @option{--prefix=/gnu/store/@dots{}}, as well as the options specified
-by the @code{#:configure-flags} argument.
-
-@item build
-Run @code{make} with the list of flags specified with
-@code{#:make-flags}.  If the @code{#:parallel-build?} argument is true
-(the default), build with @code{make -j}.
-
-@item check
-Run @code{make check}, or some other target specified with
-@code{#:test-target}, unless @code{#:tests? #f} is passed.  If the
-@code{#:parallel-tests?} argument is true (the default), run @code{make
-check -j}.
-
-@item install
-Run @code{make install} with the flags listed in @code{#:make-flags}.
-
-@item patch-shebangs
-Patch shebangs on the installed executable files.
-
-@item strip
-Strip debugging symbols from ELF files (unless @code{#:strip-binaries?}
-is false), copying them to the @code{debug} output when available
-(@pxref{Installing Debugging Files}).
-@end table
-
-@vindex %standard-phases
-The build-side module @code{(guix build gnu-build-system)} defines
-@code{%standard-phases} as the default list of build phases.
-@code{%standard-phases} is a list of symbol/procedure pairs, where the
-procedure implements the actual phase.
-
+All these steps are split up in separate @dfn{phases}.
 @xref{Build Phases}, for more info on build phases and ways to customize
 them.
 
@@ -7346,6 +7311,84 @@ Coreutils, Bash, Make, Diffutils, grep, and sed (see the @code{(guix
 build-system gnu)} module for a complete list).  We call these the
 @dfn{implicit inputs} of a package, because package definitions do not
 have to mention them.
+
+This build system supports a number of keyword arguments, which can be
+passed @i{via} the @code{arguments} field of a package.  Here are some
+of the main parameters:
+
+@table @code
+@item #:phases
+This argument specifies build-side code that evaluates to an alist of
+build phases.  @xref{Build Phases}, for more information.
+
+@item #:configure-flags
+This is a list of flags (strings) passed to the @command{configure}
+script.  @xref{Defining Packages}, for an example.
+
+@item #:make-flags
+This list of strings contains flags passed as arguments to
+@command{make} invocations in the @code{build}, @code{check}, and
+@code{install} phases.
+
+@item #:out-of-source?
+This Boolean, @code{#f} by default, indicates whether to run builds in a
+build directory separate from the source tree.
+
+When it is true, the @code{configure} phase creates a separate build
+directory, changes to that directory, and runs the @code{configure}
+script from there.  This is useful for packages that require it, such as
+@code{glibc}.
+
+@item #:tests?
+This Boolean, @code{#t} by default, indicates whether the @code{check}
+phase should run the package's test suite.
+
+@item #:test-target
+This string, @code{"check"} by default, gives the name of the makefile
+target used by the @code{check} phase.
+
+@item #:parallel-build?
+@itemx #:parallel-tests?
+These Boolean values specify whether to build, respectively run the test
+suite, in parallel, with the @code{-j} flag of @command{make}.  When
+they are true, @code{make} is passed @code{-j@var{n}}, where @var{n} is
+the number specified as the @option{--cores} option of
+@command{guix-daemon} or that of the @command{guix} client command
+(@pxref{Common Build Options, @option{--cores}}).
+
+@cindex RUNPATH, validation
+@item #:validate-runpath?
+This Boolean, @code{#t} by default, determines whether to ``validate''
+the @code{RUNPATH} of ELF binaries (@code{.so} shared libraries as well
+as executables) previously installed by the @code{install} phase.
+
+This validation step consists in making sure that all the shared
+libraries needed by an ELF binaries, which are listed as
+@code{DT_NEEDED} entries in its @code{PT_DYNAMIC} segment, appear in the
+@code{DT_RUNPATH} entry of that binary.  In other words, it ensures that
+running or using those binaries will not result in a ``file not found''
+error at run time.  @xref{Options, @option{-rpath},, ld, The GNU
+Linker}, for more information on @code{RUNPATH}.
+
+@item #:substitutable?
+This Boolean, @code{#t} by default, tells whether the package outputs
+should be substitutable---i.e., whether users should be able to obtain
+substitutes for them instead of building locally (@pxref{Substitutes}).
+
+@item #:allowed-references
+@itemx #:disallowed-references
+When true, these arguments must be a list of dependencies that must not
+appear among the references of the build results.  If, upon build
+completion, some of these references are retained, the build process
+fails.
+
+This is useful to ensure that a package does not erroneously keep a
+reference to some of it build-time inputs, in cases where doing so
+would, for example, unnecessarily increase its size (@pxref{Invoking
+guix size}).
+@end table
+
+Most other build systems support these keyword arguments.
 @end defvr
 
 Other @code{<build-system>} objects are defined to support other
@@ -7754,13 +7797,13 @@ The Julia package name is read from the file @file{Project.toml}.  This
 value can be overridden by passing the argument @code{#:julia-package-name}
 (which must be correctly capitalized).
 
-Julia packages usually manage they binary dependencies via
+Julia packages usually manage their binary dependencies via
 @code{JLLWrappers.jl}, a Julia package that creates a module (named
 after the wrapped library followed by @code{_jll.jl}.
 
 To add the binary path @code{_jll.jl} packages, you need to patch the
 files under @file{src/wrappers/}, replacing the call to the macro
-@code{JLLWrappers.@@generate_wrapper_header}, adding as a secound
+@code{JLLWrappers.@@generate_wrapper_header}, adding as a second
 argument containing the store path the binary.
 
 As an example, in the MbedTLS Julia package, we add a build phase
@@ -8246,16 +8289,53 @@ exception is the ``bare-bones'' @code{trivial-build-system}
 (@pxref{Build Systems}).
 
 As discussed in the previous section, those build systems provide a
-standard list of phases.  For @code{gnu-build-system}, the standard
-phases include an @code{unpack} phase to unpack the source code tarball,
-a @command{configure} phase to run @code{./configure}, a @code{build}
-phase to run @command{make}, and (among others) an @code{install} phase
-to run @command{make install}; @pxref{Build Systems}, for a more
-detailed view of these phases.  Likewise, @code{cmake-build-system}
-inherits these phases, but its @code{configure} phase runs
-@command{cmake} instead of @command{./configure}.  Other build systems,
-such as @code{python-build-system}, have a wholly different list of
-standard phases.  All this code runs on the @dfn{build side}: it is
+standard list of phases.  For @code{gnu-build-system}, the main build
+phases are the following:
+
+@table @code
+@item unpack
+Unpack the source tarball, and change the current directory to the
+extracted source tree.  If the source is actually a directory, copy it
+to the build tree, and enter that directory.
+
+@item patch-source-shebangs
+Patch shebangs encountered in source files so they refer to the right
+store file names.  For instance, this changes @code{#!/bin/sh} to
+@code{#!/gnu/store/@dots{}-bash-4.3/bin/sh}.
+
+@item configure
+Run the @file{configure} script with a number of default options, such
+as @option{--prefix=/gnu/store/@dots{}}, as well as the options specified
+by the @code{#:configure-flags} argument.
+
+@item build
+Run @code{make} with the list of flags specified with
+@code{#:make-flags}.  If the @code{#:parallel-build?} argument is true
+(the default), build with @code{make -j}.
+
+@item check
+Run @code{make check}, or some other target specified with
+@code{#:test-target}, unless @code{#:tests? #f} is passed.  If the
+@code{#:parallel-tests?} argument is true (the default), run @code{make
+check -j}.
+
+@item install
+Run @code{make install} with the flags listed in @code{#:make-flags}.
+
+@item patch-shebangs
+Patch shebangs on the installed executable files.
+
+@item strip
+Strip debugging symbols from ELF files (unless @code{#:strip-binaries?}
+is false), copying them to the @code{debug} output when available
+(@pxref{Installing Debugging Files}).
+@end table
+
+Other build systems have similar phases, with some variations.  For
+example, @code{cmake-build-system} has same-named phases but its
+@code{configure} phases runs @code{cmake} instead of @code{./configure}.
+Others, such as @code{python-build-system}, have a wholly different list
+of standard phases.  All this code runs on the @dfn{build side}: it is
 evaluated when you actually build the package, in a dedicated build
 process spawned by the build daemon (@pxref{Invoking guix-daemon}).
 
@@ -8266,6 +8346,7 @@ is a procedure that accepts an arbitrary number of arguments.  By
 convention, those procedures receive information about the build in the
 form of @dfn{keyword parameters}, which they can use or ignore.
 
+@vindex %standard-phases
 For example, here is how @code{(guix build gnu-build-system)} defines
 @code{%standard-phases}, the variable holding its alist of build
 phases@footnote{We present a simplified view of those build phases, but
@@ -10130,7 +10211,7 @@ Similarly, the following command builds all the available packages:
 
 @example
 guix build --quiet --keep-going \
-  `guix package -A | cut -f1,2 --output-delimiter=@@`
+  $(guix package -A | cut -f1,2 --output-delimiter=@@)
 @end example
 
 @var{package-or-derivation} may be either the name of a package found in
@@ -10263,9 +10344,10 @@ guix-daemon, @option{--timeout}}).
 @cindex build logs, verbosity
 @item -v @var{level}
 @itemx --verbosity=@var{level}
-Use the given verbosity @var{level}, an integer.  Choosing 0 means that no
-output is produced, 1 is for quiet output, and 2 shows all the build log
-output on standard error.
+Use the given verbosity @var{level}, an integer.  Choosing 0 means that
+no output is produced, 1 is for quiet output; 2 is similar to 1 but it
+additionally displays download URLs; 3 shows all the build log output on
+standard error.
 
 @item --cores=@var{n}
 @itemx -c @var{n}
@@ -10835,8 +10917,8 @@ This works regardless of how packages or derivations are specified.  For
 instance, the following invocations are equivalent:
 
 @example
-guix build --log-file `guix build -d guile`
-guix build --log-file `guix build guile`
+guix build --log-file $(guix build -d guile)
+guix build --log-file $(guix build guile)
 guix build --log-file guile
 guix build --log-file -e '(@@ (gnu packages guile) guile-2.0)'
 @end example
@@ -11551,12 +11633,12 @@ Select the given repository (a repository name).  Possible values include:
 Import metadata for a Go module using
 @uref{https://proxy.golang.org, proxy.golang.org}.
 
-This importer is highly experimental. See the source code for more info
-about the current state.
-
 @example
 guix import go gopkg.in/yaml.v2
 @end example
+
+It is possible to use a package specification with a @code{@@VERSION}
+suffix to import a specific version.
 
 Additional options include:
 
@@ -11566,6 +11648,14 @@ Additional options include:
 Traverse the dependency graph of the given upstream package recursively
 and generate package expressions for all those packages that are not yet
 in Guix.
+@item --pin-versions
+When using this option, the importer preserves the exact versions of the
+Go modules dependencies instead of using their latest available
+versions.  This can be useful when attempting to import packages that
+recursively depend on former versions of themselves to build.  When
+using this mode, the symbol of the package is made by appending the
+version to its name, so that multiple versions of the same package can
+coexist.
 @end table
 @end table
 
@@ -11577,10 +11667,13 @@ is welcome here (@pxref{Contributing}).
 @section Invoking @command{guix refresh}
 
 @cindex @command {guix refresh}
-The primary audience of the @command{guix refresh} command is developers
-of the GNU software distribution.  By default, it reports any packages
-provided by the distribution that are outdated compared to the latest
-upstream version, like this:
+The primary audience of the @command{guix refresh} command is packagers.
+As a user, you may be interested in the @option{--with-latest} option,
+which can bring you package update superpowers built upon @command{guix
+refresh} (@pxref{Package Transformation Options,
+@option{--with-latest}}).  By default, @command{guix refresh} reports
+any packages provided by the distribution that are outdated compared to
+the latest upstream version, like this:
 
 @example
 $ guix refresh
@@ -11708,6 +11801,8 @@ list of updaters).  Currently, @var{updater} may be one of:
 the updater for GNU packages;
 @item savannah
 the updater for packages hosted at @uref{https://savannah.gnu.org, Savannah};
+@item sourceforge
+the updater for packages hosted at @uref{https://sourceforge.net, SourceForge};
 @item gnome
 the updater for GNOME packages;
 @item kde
@@ -11752,6 +11847,12 @@ gnu/packages/statistics.scm:819:13: r-testthat would be upgraded from 0.10.0 to 
 gnu/packages/emacs.scm:856:13: emacs-auctex would be upgraded from 11.88.6 to 11.88.9
 @end example
 
+@item --list-updaters
+@itemx -L
+List available updaters and exit (see @option{--type} above).
+
+For each updater, display the fraction of packages it covers; at the
+end, display the fraction of packages covered by all these updaters.
 @end table
 
 In addition, @command{guix refresh} can be passed one or more package
@@ -11764,7 +11865,13 @@ $ ./pre-inst-env guix refresh -u emacs idutils gcc@@4.8
 @noindent
 The command above specifically updates the @code{emacs} and
 @code{idutils} packages.  The @option{--select} option would have no
-effect in this case.
+effect in this case.  You might also want to update definitions that
+correspond to the packages installed in your profile:
+
+@example
+$ ./pre-inst-env guix refresh -u \
+       $(guix package --list-installed | cut -f1)
+@end example
 
 When considering whether to upgrade a package, it is sometimes
 convenient to know which packages would be affected by the upgrade and
@@ -11772,13 +11879,6 @@ should be checked for compatibility.  For this the following option may
 be used when passing @command{guix refresh} one or more package names:
 
 @table @code
-
-@item --list-updaters
-@itemx -L
-List available updaters and exit (see @option{--type} above).
-
-For each updater, display the fraction of packages it covers; at the
-end, display the fraction of packages covered by all these updaters.
 
 @item --list-dependent
 @itemx -l
@@ -12336,7 +12436,7 @@ For this type of graph, it is also possible to pass a @file{.drv} file
 name instead of a package name, as in:
 
 @example
-guix graph -t derivation `guix system build -d my-config.scm`
+guix graph -t derivation $(guix system build -d my-config.scm)
 @end example
 
 @item module
@@ -12365,7 +12465,7 @@ example, the command below produces the reference graph of your profile
 (which can be big!):
 
 @example
-guix graph -t references `readlink -f ~/.guix-profile`
+guix graph -t references $(readlink -f ~/.guix-profile)
 @end example
 
 @item referrers
@@ -12937,7 +13037,7 @@ their dependencies over to @var{host}, logged in as @var{user}:
 
 @example
 guix copy --to=@var{user}@@@var{host} \
-          coreutils `readlink -f ~/.guix-profile`
+          coreutils $(readlink -f ~/.guix-profile)
 @end example
 
 If some of the items to be copied are already present on @var{host},
@@ -13497,6 +13597,14 @@ following expression returns a list that contains all the services in
           (eq? (service-kind service) avahi-service-type))
         %desktop-services)
 @end lisp
+
+Alternatively, the @code{modify-services} macro can be used:
+
+@lisp
+(modify-services %desktop-services
+  (delete avahi-service-type))
+@end lisp
+
 
 @unnumberedsubsec Instantiating the System
 
@@ -14808,7 +14916,7 @@ declaration.
 * DNS Services::                DNS daemons.
 * VPN Services::                VPN daemons.
 * Network File System::         NFS related services.
-* Continuous Integration::      The Cuirass service.
+* Continuous Integration::      Cuirass and Laminar services.
 * Power Management Services::   Extending battery life.
 * Audio Services::              The MPD.
 * Virtualization Services::     Virtualization services.
@@ -15179,6 +15287,12 @@ in automatically without prompting for their login name or password.
 
 @item @code{hardware-acceleration?} (default: #f)
 Whether to use hardware acceleration.
+
+@item @code{font-engine} (default: @code{"pango"})
+Font engine used in Kmscon.
+
+@item @code{font-size} (default: @code{12})
+Font size used in Kmscon.
 
 @item @code{kmscon} (default: @var{kmscon})
 The Kmscon package to use.
@@ -15630,7 +15744,7 @@ This allows neighboring Guix devices with discovery on (see
 @code{guix-configuration} above) to discover this @command{guix publish}
 instance and to automatically download substitutes from it.
 
-@item @code{compression} (default: @code{'(("gzip" 3))})
+@item @code{compression} (default: @code{'(("gzip" 3) ("zstd" 3))})
 This is a list of compression method/level tuple used when compressing
 substitutes.  For example, to compress all substitutes with @emph{both} lzip
 at level 7 and gzip at level 9, write:
@@ -16399,7 +16513,7 @@ netfilter project that aims to replace the existing iptables, ip6tables,
 arptables and ebtables framework.  It provides a new packet filtering
 framework, a new user-space utility @command{nft}, and a compatibility layer
 for iptables.  This service comes with a default ruleset
-@code{%default-nftables-ruleset} that rejecting all incomming connections
+@code{%default-nftables-ruleset} that rejecting all incoming connections
 except those to the ssh port 22.  To use it, simply write:
 
 @lisp
@@ -16802,7 +16916,7 @@ Data type representing the configuration for @code{syncthing-service-type}.
 List of command-line arguments passing to @code{syncthing} binary.
 
 @item @code{logflags} (default: @var{0})
-Sum of loging flags, see
+Sum of logging flags, see
 @uref{https://docs.syncthing.net/users/syncthing.html#cmdoption-logflags, Syncthing documentation logflags}.
 
 @item @code{user} (default: @var{#f})
@@ -17472,6 +17586,37 @@ address, delete everything except these options:
 @end table
 @end deftp
 
+@cindex IPFS
+@defvr {Scheme Variable} ipfs-service-type
+The service type for connecting to the @uref{https://ipfs.io,IPFS network},
+a global, versioned, peer-to-peer file system. Pass it a
+@code{ipfs-configuration} to change the ports used for the gateway and API.
+
+Here's an example configuration, using some non-standard ports:
+
+@lisp
+(service ipfs-service-type
+         (ipfs-configuration
+          (gateway "/ip4/127.0.0.1/tcp/8880")
+          (api "/ip4/127.0.0.1/tcp/8881")))
+@end lisp
+@end defvr
+
+@deftp {Data Type} ipfs-configuration
+Data type representing the configuration of IPFS.
+
+@table @asis
+@item @code{package} (default: @code{go-ipfs})
+Package object of IPFS.
+
+@item @code{gateway} (default: @code{"/ip4/127.0.0.1/tcp/8082"})
+Address of the gateway, in ‘multiaddress’ format.
+
+@item @code{api} (default: @code{"/ip4/127.0.0.1/tcp/5001"})
+Address of the API endpoint, in ‘multiaddress’ format.
+@end table
+@end deftp
+
 @cindex keepalived
 @deffn {Scheme Variable} keepalived-service-type
 This is the type for the @uref{https://www.keepalived.org/, Keepalived}
@@ -17761,9 +17906,8 @@ and tty8.
                    (service slim-service-type (slim-configuration
                                                (display ":1")
                                                (vt "vt8")))
-                   (remove (lambda (service)
-                             (eq? (service-kind service) gdm-service-type))
-                           %desktop-services))))
+                   (modify-services %desktop-services
+                     (delete gdm-service-type)))))
 @end lisp
 
 @end defvr
@@ -19697,11 +19841,14 @@ configuration.
 @item @code{ident-file} (default: @code{%default-postgres-ident})
 Filename or G-expression for the user name mapping configuration.
 
-@item @code{socket-directory} (default: @code{"/var/run/postgresql"})
+@item @code{socket-directory} (default: @code{#false})
 Specifies the directory of the Unix-domain socket(s) on which PostgreSQL
-is to listen for connections from client applications.  If set to
-@code{#false} PostgreSQL does not listen on any Unix-domain sockets, in
+is to listen for connections from client applications. If set to
+@code{""} PostgreSQL does not listen on any Unix-domain sockets, in
 which case only TCP/IP sockets can be used to connect to the server.
+
+By default, the @code{#false} value means the PostgreSQL default value
+will be used, which is currently @samp{/tmp}.
 
 @item @code{extra-config} (default: @code{'()})
 List of additional keys and values to include in the PostgreSQL config
@@ -25887,7 +26034,7 @@ this amount of time.  After this period, resolvers will invalidate their cache
 and check again that it still exists.
 
 @item @code{nx} (default: @code{3600})
-Default TTL of inexistant records.  This delay is usually short because you want
+Default TTL of inexistent records.  This delay is usually short because you want
 your new domains to reach everyone quickly.
 
 @end table
@@ -27311,6 +27458,64 @@ the store items being published.
 @end table
 @end deftp
 
+@subsubheading Laminar
+
+@uref{https://laminar.ohwg.net/, Laminar} is a lightweight and modular
+Continuous Integration service.  It doesn't have a configuration web UI
+instead uses version-controllable configuration files and scripts.
+
+Laminar encourages the use of existing tools such as bash and cron
+instead of reinventing them.
+
+@defvr {Scheme Procedure} laminar-service-type
+The type of the Laminar service.  Its value must be a
+@code{laminar-configuration} object, as described below.
+
+All configuration values have defaults, a minimal configuration to get
+Laminar running is shown below. By default, the web interface is
+available on port 8080.
+
+@lisp
+(service laminar-service-type)
+@end lisp
+@end defvr
+
+@deftp {Data Type} laminar-configuration
+Data type representing the configuration of Laminar.
+
+@table @asis
+@item @code{laminar} (default: @code{laminar})
+The Laminar package to use.
+
+@item @code{home-directory} (default: @code{"/var/lib/laminar"})
+The directory for job configurations and run directories.
+
+@item @code{bind-http} (default: @code{"*:8080"})
+The interface/port or unix socket on which laminard should listen for
+incoming connections to the web frontend.
+
+@item @code{bind-rpc} (default: @code{"unix-abstract:laminar"})
+The interface/port or unix socket on which laminard should listen for
+incoming commands such as build triggers.
+
+@item @code{title} (default: @code{"Laminar"})
+The page title to show in the web frontend.
+
+@item @code{keep-rundirs} (default: @code{0})
+Set to an integer defining how many rundirs to keep per job.  The
+lowest-numbered ones will be deleted.  The default is 0, meaning all run
+dirs will be immediately deleted.
+
+@item @code{archive-url} (default: @code{#f})
+The web frontend served by laminard will use this URL to form links to
+artefacts archived jobs.
+
+@item @code{base-url} (default: @code{#f})
+Base URL to use for links to laminar itself.
+
+@end table
+@end deftp
+
 @node Power Management Services
 @subsection Power Management Services
 
@@ -28719,7 +28924,7 @@ service:
 @lisp
 (service qemu-binfmt-service-type
          (qemu-binfmt-configuration
-           (platforms (lookup-qemu-platforms "arm"))
+           (platforms (lookup-qemu-platforms "arm"))))
 @end lisp
 
 You can run:
@@ -31030,7 +31235,7 @@ coordinator.
 
 @deftp {Data Type} guix-build-coordinator-agent-dynamic-auth
 Data type representing an agent authenticating with a coordinator via a
-dyanmic auth token and agent name.
+dynamic auth token and agent name.
 
 @table @asis
 @item @code{agent-name}
@@ -31047,7 +31252,7 @@ database, and is used by the agent to authenticate.
 
 @deftp {Data Type} guix-build-coordinator-agent-dynamic-auth-with-file
 Data type representing an agent authenticating with a coordinator via a
-dyanmic auth token read from a file and agent name.
+dynamic auth token read from a file and agent name.
 
 @table @asis
 @item @code{agent-name}
@@ -32899,8 +33104,8 @@ system configuration file.  You can then load the image and launch a
 Docker container using commands like the following:
 
 @example
-image_id="`docker load < guix-system-docker-image.tar.gz`"
-container_id="`docker create $image_id`"
+image_id="$(docker load < guix-system-docker-image.tar.gz)"
+container_id="$(docker create $image_id)"
 docker start $container_id
 @end example
 
@@ -33424,7 +33629,7 @@ The default @command{run-vm.sh} script that is returned by an invocation of
 @command{guix system vm} does not add a @command{-nic user} flag by default.
 To get network access from within the vm add the @code{(dhcp-client-service)}
 to your system definition and start the VM using
-@command{`guix system vm config.scm` -nic user}.  An important caveat of using
+@command{$(guix system vm config.scm) -nic user}.  An important caveat of using
 @command{-nic user} for networking is that @command{ping} will not work, because
 it uses the ICMP protocol.  You'll have to use a different command to check for
 network connectivity, for example @command{guix download}.
@@ -33439,13 +33644,13 @@ To enable SSH inside a VM you need to add an SSH server like
 22 by default, to the host.  You can do this with
 
 @example
-`guix system vm config.scm` -nic user,model=virtio-net-pci,hostfwd=tcp::10022-:22
+$(guix system vm config.scm) -nic user,model=virtio-net-pci,hostfwd=tcp::10022-:22
 @end example
 
 To connect to the VM you can run
 
 @example
-ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p 10022
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p 10022 localhost
 @end example
 
 The @command{-p} tells @command{ssh} the port you want to connect to.
@@ -34201,7 +34406,7 @@ This service represents PID@tie{}1.
 @cindex man pages
 @cindex manual pages
 In most cases packages installed with Guix come with documentation.
-There are two main documentation formats: ``Info'', a browseable
+There are two main documentation formats: ``Info'', a browsable
 hypertext format used for GNU software, and ``manual pages'' (or ``man
 pages''), the linear documentation format traditionally found on Unix.
 Info manuals are accessed with the @command{info} command or with Emacs,
@@ -34507,7 +34712,7 @@ To verify which Bash your whole profile refers to, you can run
 (@pxref{Invoking guix gc}):
 
 @example
-guix gc -R `readlink -f ~/.guix-profile` | grep bash
+guix gc -R $(readlink -f ~/.guix-profile) | grep bash
 @end example
 
 @noindent
@@ -34515,7 +34720,7 @@ guix gc -R `readlink -f ~/.guix-profile` | grep bash
 Likewise for a complete Guix system generation:
 
 @example
-guix gc -R `guix system build my-config.scm` | grep bash
+guix gc -R $(guix system build my-config.scm) | grep bash
 @end example
 
 Lastly, to check which Bash running processes are using, you can use the
@@ -34625,7 +34830,7 @@ traditional bootstrap of the rest of the Guix System.
 
 The only significant binary bootstrap seeds that remain@footnote{
 Ignoring the 68KB @code{mescc-tools}; that will be removed later,
-together with @code{mes}.} are a Scheme intepreter and a Scheme
+together with @code{mes}.} are a Scheme interpreter and a Scheme
 compiler: GNU Mes and GNU Guile@footnote{Not shown in this graph are the
 static binaries for @file{bash}, @code{tar}, and @code{xz} that are used
 to get Guile running.}.

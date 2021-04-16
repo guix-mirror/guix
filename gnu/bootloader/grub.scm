@@ -666,7 +666,7 @@ relatively form MOUNT-POINT/TARGET/SUBDIR/grub.cfg to
 MOUNT-POINT/boot/grub/grub.cfg, and the second symlink points relatively from
 MOUNT-POINT/TARGET/%store-prefix to MOUNT-POINT/%store-prefix.
 
-It is important to note that these symlinks need to be relativ, as the absolute
+It is important to note that these symlinks need to be relative, as the absolute
 paths on the TFTP server side are unknown.
 
 It is also important to note that both symlinks will point outside the TFTP root

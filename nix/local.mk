@@ -181,7 +181,7 @@ etc/init.d/guix-daemon: etc/init.d/guix-daemon.in	\
 	mv "$@.tmp" "$@"
 
 # The service script for openrc.
-openrcservicedir = $(sysconfdir)/init.d
+openrcservicedir = $(sysconfdir)/openrc
 nodist_openrcservice_DATA = etc/openrc/guix-daemon
 
 etc/openrc/guix-daemon: etc/openrc/guix-daemon.in	\

@@ -38,14 +38,14 @@
 (define-public gnu-efi
   (package
     (name "gnu-efi")
-    (version "3.0.12")
+    (version "3.0.13")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/gnu-efi/"
                            "gnu-efi-" version ".tar.bz2"))
        (sha256
-        (base32 "0sbn6am3k5lqafycggh1g964fcwjwnh0i9hhwrk4ncrwzphz55h1"))))
+        (base32 "0z9v5pl5pmlw8pjpd66iyh9pml2hh6pqd4c5qilywilw4wazgk1g"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; none exist

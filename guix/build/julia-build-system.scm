@@ -101,7 +101,7 @@ Project.toml)."
                              (or (getenv "JULIA_LOAD_PATH")
                                  "")))
       (setenv "HOME" "/tmp")
-      (invoke "julia"
+      (invoke "julia" "--depwarn=yes"
               (string-append builddir "packages/"
                              package "/test/runtests.jl"))))
   #t)

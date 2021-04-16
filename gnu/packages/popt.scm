@@ -91,7 +91,7 @@ similar to getopt(3), it contains a number of enhancements, including:
 
   - popt allows users to alias command line arguments;
 
-  - popt provides convience functions for parsing strings into argv[] style
+  - popt provides convenience functions for parsing strings into argv[] style
     arrays.")
     (license x11)))
 

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -63,7 +63,7 @@
     (print-build-trace? . #t)
     (print-extended-build-trace? . #t)
     (multiplexed-build-output? . #t)
-    (verbosity . 2)
+    (verbosity . 3)
     (debug . 0)))
 
 (define (show-help)

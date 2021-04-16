@@ -14,7 +14,7 @@
 ;;; Copyright © 2020 Antoine Côté <antoine.cote@posteo.net>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 aecepoglu <aecepoglu@fastmail.fm>
-;;; Copyright @ 2021 Zheng Junjie <873216071@qq.com>
+;;; Copyright © 2021 Zheng Junjie <873216071@qq.com>
 ;;; Copyright © 2021 Alexandru-Sergiu Marton <brown121407@posteo.ro>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -12978,6 +12978,26 @@ Standard.")
      "Streaming transcoding for encoding_rs.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-endian-type-0.1
+  (package
+    (name "rust-endian-type")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "endian-type" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0bbh88zaig1jfqrm7w3gx0pz81kw2jakk3055vbgapw3dmk08ky3"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/Lolirofle/endian-type")
+    (synopsis "Type safe wrappers for types with a defined byte order")
+    (description
+     "This crates provides type safe wrappers for types with a defined byte
+order.")
+    (license license:expat)))
+
 (define-public rust-enum-as-inner-0.3
   (package
     (name "rust-enum-as-inner")
@@ -13950,7 +13970,7 @@ supported in purely NFA-based implementations.")
     (synopsis "Find the physical space used by a file")
     (description
      "@code{filesize} abstracts platform-specific methods of determining the
-real space used by files, taking into account filesystem compression and
+real space used by files, taking into account file system compression and
 sparse files.")
     (license license:expat)))
 
@@ -17252,6 +17272,29 @@ highlighting for a large number of languages, git integration, and automatic
 paging.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-hamcrest2-0.3
+  (package
+    (name "rust-hamcrest2")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "hamcrest2" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0x8hx7jyzz2bl0wf6nir62imd26yhp6qcr7zf76cjpg05p33gy29"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-num" ,rust-num-0.2)
+        ("rust-regex" ,rust-regex-1))))
+    (home-page "https://github.com/Valloric/hamcrest2-rust")
+    (synopsis "Rust port of the Hamcrest testing library")
+    (description
+     "This package provides a port of the Hamcrest testing library.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-handlebars-2
   (package
     (name "rust-handlebars")
@@ -18038,8 +18081,8 @@ Hash-based Message Authentication Code}.")
     (home-page "https://github.com/pantsman0/rust-hmac-sha1")
     (synopsis "Minimal implementation of HMAC-SHA1 in Rust")
     (description
-     "This package is a pure Rust implementation of the Hash-based Message
-Authentication Code Algoritm (HMAC) for SHA1.")
+     "This package is a pure Rust implementation of the @acronym{HMAC,
+Hash-based Message Authentication Code algorithm} for SHA1.")
     (license license:bsd-3)))
 
 (define-public rust-hostname-0.3
@@ -22313,14 +22356,13 @@ image together with its neighboring pixels.")
     (name "rust-lopdf")
     (version "0.26.0")
     (source
-     (origin
-       (method url-fetch)
-       (uri (crate-uri "lopdf" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "1wqnmibs8qzi6pr3ig4h3sg6bfkkgyv4ngdng81x069725r056ml"))))
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "lopdf" version))
+        (file-name
+          (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32 "1wqnmibs8qzi6pr3ig4h3sg6bfkkgyv4ngdng81x069725r056ml"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -22328,7 +22370,7 @@ image together with its neighboring pixels.")
         ("rust-dtoa" ,rust-dtoa-0.4)
         ("rust-encoding" ,rust-encoding-0.2)
         ("rust-flate2" ,rust-flate2-1)
-        ("rust-image" ,rust-image-0.23)
+        ("rust-image" ,rust-image-0.20)
         ("rust-itoa" ,rust-itoa-0.4)
         ("rust-linked-hash-map" ,rust-linked-hash-map-0.5)
         ("rust-log" ,rust-log-0.4)
@@ -22336,17 +22378,7 @@ image together with its neighboring pixels.")
         ("rust-nom" ,rust-nom-6)
         ("rust-pom" ,rust-pom-3)
         ("rust-rayon" ,rust-rayon-1)
-        ("rust-time" ,rust-time-0.2))
-       #:phases (modify-phases %standard-phases
-                  (add-before 'check 'disable-problematic-tests
-                    (lambda _
-                      ;; This tests depends on the test_1_create.pdf file
-                      ;; having created by create_document, but the file does
-                      ;; not always exist at the time the test run (see:
-                      ;; https://github.com/J-F-Liu/lopdf/issues/137).
-                      (substitute* "src/parser_aux.rs"
-                        (("fn load_and_save" all)
-                         (string-append "#[ignore] " all))))))))
+        ("rust-time" ,rust-time-0.2))))
     (home-page "https://github.com/J-F-Liu/lopdf")
     (synopsis "Rust library for PDF document manipulation")
     (description
@@ -24853,6 +24885,27 @@ cryptographic library.")
 release (fork of debug_unreachable)")
     (license license:expat)))
 
+(define-public rust-nibble-vec-0.1
+  (package
+    (name "rust-nibble-vec")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nibble_vec" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0hsdp3s724s30hkqz74ky6sqnadhp2xwcj1n1hzy4vzkz4yxi9bp"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-smallvec" ,rust-smallvec-1))))
+    (home-page "https://github.com/michaelsproul/rust_nibble_vec")
+    (synopsis "Vector data-structure for half-byte values")
+    (description "NibbleVec is a data structure for storing a sequence of half-bytes.")
+    (license license:expat)))
+
 (define-public rust-nickel-0.11
   (package
     (name "rust-nickel")
@@ -24918,8 +24971,36 @@ selectors.  You can use the jQuery-like syntax to query and manipulate an HTML
 document quickly.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-nix-0.20
+  (package
+    (name "rust-nix")
+    (version "0.20.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nix" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "12n1syfd967hblrcrrqk63a4s1h4hsybfqwblh71rihvv8cli6zs"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-cc" ,rust-cc-1)
+        ("rust-cfg-if" ,rust-cfg-if-1)
+        ("rust-libc" ,rust-libc-0.2))))
+    (home-page "https://github.com/nix-rust/nix")
+    (synopsis "Rust friendly bindings to *nix APIs")
+    (description
+     "Nix seeks to provide friendly bindings to various *nix platform APIs.
+The goal is to not provide a 100% unified interface, but to unify what can be
+while still providing platform specific APIs.")
+    (license license:expat)))
+
 (define-public rust-nix-0.19
   (package
+    (inherit rust-nix-0.20)
     (name "rust-nix")
     (version "0.19.1")
     (source
@@ -24929,7 +25010,6 @@ document quickly.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1wk1pmaf9pv84sc4jf19gm1as2yq3ydwcx0n5nc1bpsgzq6bmk5j"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:tests? #f                      ; test suite hangs
        #:cargo-inputs
@@ -24944,14 +25024,7 @@ document quickly.")
         ("rust-rand" ,rust-rand-0.6)
         ("rust-semver" ,rust-semver-0.9)
         ("rust-sysctl" ,rust-sysctl-0.1)
-        ("rust-tempfile" ,rust-tempfile-3))))
-    (home-page "https://github.com/nix-rust/nix")
-    (synopsis "Rust friendly bindings to *nix APIs")
-    (description
-     "Nix seeks to provide friendly bindings to various *nix platform APIs.
-The goal is to not provide a 100% unified interface, but to unify what can be
-while still providing platform specific APIs.")
-    (license license:expat)))
+        ("rust-tempfile" ,rust-tempfile-3))))))
 
 (define-public rust-nix-0.18
   (package
@@ -31051,6 +31124,31 @@ that must be shared-mutable, but merely may use atomic instructions to do so.")
 radix.")
     (license license:asl2.0)))
 
+(define-public rust-radix-trie-0.2
+  (package
+    (name "rust-radix-trie")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "radix_trie" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1zaq3im5ss03w91ij11cj97vvzc5y1f3064d9pi2ysnwziww2sf0"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-endian-type" ,rust-endian-type-0.1)
+        ("rust-nibble-vec" ,rust-nibble-vec-0.1)
+        ("rust-serde" ,rust-serde-1))))
+    (home-page "https://github.com/michaelsproul/rust_radix_trie")
+    (synopsis "Generic radix trie data-structure")
+    (description
+     "This is a Radix Trie implementation in Rust, building on the lessons
+learnt from TrieMap and Sequence Trie.")
+    (license license:expat)))
+
 (define-public rust-rand-0.8
   (package
     (name "rust-rand")
@@ -31271,14 +31369,14 @@ useful types and distributions, and some randomness-related algorithms.")
 (define-public rust-rand-core-0.6
   (package
     (name "rust-rand-core")
-    (version "0.6.1")
+    (version "0.6.2")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "rand_core" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1rfjrcyaj7blz2nawv2pypm5kqc59p80n6f5pg691399iggxf9n0"))))
+        (base32 "1rvas1afjvd2827b8mf2ilg78h3ksl9npkrdds3wbw9x33mndkrl"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -33090,14 +33188,14 @@ MessagePack format.")
 (define-public rust-rocket-0.4
   (package
     (name "rust-rocket")
-    (version "0.4.6")
+    (version "0.4.7")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "rocket" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1sb6i0y65hq4wy4awa14diyv19wcd1sii2mfjdlcwam3mbbfbisg"))))
+        (base32 "04ybnhjw92zaan92lsmx6mkhqc9cpsg3885svb3wzyj39pyzvsvz"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -33127,14 +33225,14 @@ and speed.")
 (define-public rust-rocket-codegen-0.4
   (package
     (name "rust-rocket-codegen")
-    (version "0.4.6")
+    (version "0.4.7")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "rocket_codegen" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0n4k00fwwabvkjvnl62gwdc5v7rsg6bnmmwwiwm5bzpmdnqm94ai"))))
+        (base32 "18s2dll8c4sd26s8cfr6cizj5z55xwnk6r6x7b2wvcf8n9ajrb6f"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -33155,14 +33253,14 @@ and speed.")
 (define-public rust-rocket-http-0.4
   (package
     (name "rust-rocket-http")
-    (version "0.4.6")
+    (version "0.4.7")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "rocket_http" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0msjjclqcgh8kpa54b4kv6zbybambc9kmkfm1q5adiq3fbg8gl59"))))
+        (base32 "0ga98nbcga8amg4xhrfkn1wljnqx9h0vv7mnay9g66vsxl042dnf"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -35152,8 +35250,46 @@ sub-processes using a fork-like interface.")
         ("rust-tempfile" ,rust-tempfile-3)
         ("rust-wait-timeout" ,rust-wait-timeout-0.2))))))
 
+(define-public rust-rustyline-8
+  (package
+    (name "rust-rustyline")
+    (version "8.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rustyline" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "14z8hyx33ygyhm5ihcl9n2g646dawlw3ajavnbbb3vnizjbvbqdr"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-cfg-if" ,rust-cfg-if-1)
+        ("rust-dirs-next" ,rust-dirs-next-2)
+        ("rust-fs2" ,rust-fs2-0.4)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-memchr" ,rust-memchr-2)
+        ("rust-nix" ,rust-nix-0.20)
+        ("rust-radix-trie" ,rust-radix-trie-0.2)
+        ("rust-scopeguard" ,rust-scopeguard-1)
+        ("rust-smallvec" ,rust-smallvec-1)
+        ("rust-unicode-segmentation" ,rust-unicode-segmentation-1)
+        ("rust-unicode-width" ,rust-unicode-width-0.1)
+        ("rust-utf8parse" ,rust-utf8parse-0.2)
+        ("rust-winapi" ,rust-winapi-0.3)
+        ("skim" ,skim))))
+    (home-page "https://github.com/kkawakam/rustyline")
+    (synopsis "Readline implementation in Rust")
+    (description
+     "Rustyline is a readline implementation based on the linenoise package.")
+    (license license:expat)))
+
 (define-public rust-rustyline-7
   (package
+    (inherit rust-rustyline-8)
     (name "rust-rustyline")
     (version "7.1.0")
     (source
@@ -35163,7 +35299,6 @@ sub-processes using a fork-like interface.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1v1czmy3ir7d06xldp8bg94l97hrm15hcgdxxkq3cwbizhdk09w2"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -35180,12 +35315,7 @@ sub-processes using a fork-like interface.")
         ("rust-unicode-width" ,rust-unicode-width-0.1)
         ("rust-utf8parse" ,rust-utf8parse-0.2)
         ("rust-winapi" ,rust-winapi-0.3)
-        ("skim" ,skim-0.7))))
-    (home-page "https://github.com/kkawakam/rustyline")
-    (synopsis "Readline implementation in Rust")
-    (description
-     "Rustyline, a readline implementation based on the linenoise package.")
-    (license license:expat)))
+        ("skim" ,skim-0.7))))))
 
 (define-public rust-rustyline-6
   (package
@@ -35673,8 +35803,9 @@ with one of the implemented strategies.")
        (("rust-fs2" ,rust-fs2-0.4))))
     (home-page "https://github.com/dtolnay/scratch")
     (synopsis "Compile-time temporary directory")
-    (description "This crate exposes a compile-time temporary directory sharable
-by multiple crates in a build graph and erased by @code{cargo clean}.")
+    (description "This crate exposes a compile-time temporary directory
+shareable by multiple crates in a build graph and erased by @code{cargo
+clean}.")
     (license (list license:expat license:asl2.0))))
 
 (define-public rust-scrypt-0.3
@@ -38890,7 +39021,7 @@ I/O programming.")
 (define-public rust-smallvec-1
   (package
     (name "rust-smallvec")
-    (version "1.4.1")
+    (version "1.6.1")
     (source
      (origin
        (method url-fetch)
@@ -38899,7 +39030,7 @@ I/O programming.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0gqgmbfj8228lc55xxg331flizzwq6hfyy6gw4j2y6hni6fwnmrp"))))
+         "0kk08axr0ybfbjzk65a41k84mb6sfhyajmfndaka9igkx34kf3zy"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs

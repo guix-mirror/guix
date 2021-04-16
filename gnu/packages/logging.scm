@@ -3,7 +3,7 @@
 ;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2019 Meiyo Peng <meiyo@riseup.net>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
@@ -190,7 +190,7 @@ output in multiple windows in a terminal.")
 (define-public spdlog
   (package
     (name "spdlog")
-    (version "1.8.2")
+    (version "1.8.5")
     (source
      (origin
        (method git-fetch)
@@ -199,8 +199,7 @@ output in multiple windows in a terminal.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "03vmwbi9v7r3v8kzd0lj10fchp54kxbxwzfx7dp6qzkxjrvmx2dx"))))
+        (base32 "179krvg5sad6dviqpcjwg6czzknnilqszrg1d0fgp12h6sy66vqg"))))
     (build-system cmake-build-system)
     ;; TODO run benchmark. Currently not possible, as adding
     ;; (gnu packages benchmark) forms a dependency cycle
@@ -215,19 +214,3 @@ library.")
     ;; spdlog is under Expat license, but the bundled fmt library in
     ;; "include/spdlog/fmt/bundled" is under BSD 2 clause license.
     (license (list license:expat license:bsd-2))))
-
-(define-public spdlog-1.7
-  (package
-    (inherit spdlog)
-    (name "spdlog")
-    (version "1.7.0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/gabime/spdlog")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "1ryaa22ppj60461hcdb8nk7jwj84arp4iw4lyw594py92g4vnx3j"))))))

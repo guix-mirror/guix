@@ -20,6 +20,7 @@
 ;;; Copyright © 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Timotej Lazar <timotej.lazar@araneo.si>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
+;;; Copyright © 2021 Alexandru-Sergiu Marton <brown121407@posteo.ro>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -55,6 +56,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages fltk)
@@ -446,7 +448,7 @@ support.")
 (define-public tiled
   (package
     (name "tiled")
-    (version "1.4.3")
+    (version "1.5.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -455,7 +457,7 @@ support.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "14bx4gywfzr2f07ldqk3la82g5ag1agj21f7ccrxip12ydmpx0xb"))))
+                "1prajkx1xpp3csa0xpkrn3c2cnzvmwzxgrqb9d3gqszp3sllr2dg"))))
     (build-system gnu-build-system)
     (inputs
      `(("qtbase" ,qtbase)
@@ -1090,7 +1092,7 @@ to create fully featured games and multimedia programs in the python language.")
 
 (define-public python2-pygame-sdl2
   (let ((real-version "2.1.0")
-        (renpy-version "7.4.2"))
+        (renpy-version "7.4.4"))
     (package
       (inherit python2-pygame)
       (name "python2-pygame-sdl2")
@@ -1100,7 +1102,7 @@ to create fully featured games and multimedia programs in the python language.")
          (method url-fetch)
          (uri (string-append "https://www.renpy.org/dl/" renpy-version
                              "/pygame_sdl2-" version ".tar.gz"))
-         (sha256 (base32 "1lpk69nh379x5pdlr838x5b49spzksn9hyqiq2g0q28k0xk4lm67"))
+         (sha256 (base32 "1lj5c3kfnl8s824j3hs47dg3g5rlabscmwrbb0lgpyy4633pv9ka"))
          (modules '((guix build utils)))
          (snippet
           '(begin
@@ -1143,13 +1145,13 @@ developed mainly for Ren'py.")
 (define-public python2-renpy
   (package
     (name "python2-renpy")
-    (version "7.4.2")
+    (version "7.4.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.renpy.org/dl/" version
                            "/renpy-" version "-source.tar.bz2"))
-       (sha256 (base32 "1mlrq9q3r36izyskq674qhp8s32iirvvfb4r8z6hi26189aaydsw"))
+       (sha256 (base32 "1cbbvsk1snjrsh59blb8q2h86555gi23pylmwlnk9dx0jxckdi21"))
        (modules '((guix build utils)))
        (patches
         (search-patches
@@ -1759,6 +1761,44 @@ features design tools such as a visual editor, can import 3D models and
 provide high-quality 3D rendering, it contains an animation editor, and can be
 scripted in a Python-like language.")
     (license license:expat)))
+
+(define-public entt
+  (package
+    (name "entt")
+    (version "3.7.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/skypjack/entt")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0nzvnhiw3r6nkmxp749zwxc8kzja09nijyxibdbri3g2i7pysf58"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags (list "-DENTT_BUILD_TESTING=ON"
+                               "-DENTT_FIND_GTEST_PACKAGE=ON"
+                               "-DENTT_BUILD_DOCS=ON")
+       ;; Only tests are compiled, and they need assertions to work correctly.
+       #:build-type "Debug"))
+    (native-inputs
+     `(;; for testing
+       ("googletest" ,googletest)
+       ;; for documentation
+       ("doxygen" ,doxygen)
+       ("graphviz" ,graphviz)))
+    (synopsis "Entity component system")
+    (description "EnTT is a header-only library, containing (among other things)
+@itemize
+@item an entity component system based on sparse sets,
+@item a configuration system using the monostate pattern,
+@item a static reflection system,
+@item and a cooperative scheduler.
+@end itemize")
+    (home-page "https://github.com/skypjack/entt")
+    (license (list license:expat        ; code
+                   license:cc-by4.0)))) ; documentation
 
 (define-public eureka
   (package

@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darringon <jmd@gnu.org>
-;;; Copyright © 2016, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
@@ -108,16 +108,25 @@ formats.")
 (define-public qrencode
   (package
     (name "qrencode")
-    (version "4.0.2")
+    (version "4.1.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://fukuchi.org/works/qrencode/qrencode-" version
-                    ".tar.bz2"))
+              (uri (string-append "https://fukuchi.org/works/qrencode/"
+                                  "qrencode-" version ".tar.bz2"))
               (sha256
                (base32
-                "1d2q5d3v8g3hsi3h5jq4n177bjhf3kawms09immw7p187f6jgjy9"))))
+                "08v9d8jn26bva2a8x4hghq3mgl8zcid393iqkidwyhc05xrxjmg4"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--with-tests")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (with-directory-excursion "tests"
+                 (invoke "./test_basic.sh")))
+             #t)))))
     (inputs `(("libpng" ,libpng)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (synopsis "Encode data into a QR Code symbol")

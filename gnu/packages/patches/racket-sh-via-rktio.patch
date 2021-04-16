@@ -1,0 +1,87 @@
+From 3574b567c486d264d680a37586436c3b5a8cb978 Mon Sep 17 00:00:00 2001
+From: Philip McGrath <philip@philipmcgrath.com>
+Date: Thu, 4 Mar 2021 04:11:50 -0500
+Subject: [PATCH] patch rktio_process for "/bin/sh" on Guix
+
+Racket provides the functions `system` and `process`,
+which execute shell commands using `sh` (or `cmd` on Windows).
+Racket assumes that `sh` can be found at "/bin/sh",
+which is not necessarily true on Guix.
+
+This patch adds a special case for "/bin/sh" to `rktio_process`,
+the C function that implements the core of `system`, `process`,
+and related Racket functions.
+
+Guix should enable the special case by defining the C preprocessor
+macro `GUIX_RKTIO_PATCH_BIN_SH` with the path to `sh` in the store.
+If:
+
+    1. The `GUIX_RKTIO_PATCH_BIN_SH` macro is defined; and
+
+    2. `rktio_process` is called with the exact path "/bin/sh"; and
+
+    3. The path specified by `GUIX_RKTIO_PATCH_BIN_SH` does exists;
+
+then `rktio_process` will execute the file specified
+by `GUIX_RKTIO_PATCH_BIN_SH` instead of "/bin/sh".
+
+Compared to previous attempts to patch the Racket sources,
+making this change at the C level is both:
+
+    - More comprehensive: it catches all attempts to execute "/bin/sh",
+      without having to track down the source of every occurance; and
+
+    - Less intrusive: by guarding the special case with a C preprocessor
+      conditional and a runtime check that the file in the store exists,
+      we make it much less likely that it will "leak" out of Guix.
+---
+ src/rktio/rktio_process.c | 21 ++++++++++++++++++++-
+ 1 file changed, 20 insertions(+), 1 deletion(-)
+
+diff --git a/src/rktio/rktio_process.c b/src/rktio/rktio_process.c
+index 89202436c0..465ebdd5c5 100644
+--- a/src/rktio/rktio_process.c
++++ b/src/rktio/rktio_process.c
+@@ -1224,12 +1224,14 @@ int rktio_process_allowed_flags(rktio_t *rktio)
+ /*========================================================================*/
+ 
+ rktio_process_result_t *rktio_process(rktio_t *rktio,
+-                                      const char *command, int argc, rktio_const_string_t *argv,
++                                      /* PATCHED for Guix (next line) */
++                                      const char *_guix_orig_command, int argc, rktio_const_string_t *argv,
+                                       rktio_fd_t *stdout_fd, rktio_fd_t *stdin_fd, rktio_fd_t *stderr_fd,
+                                       rktio_process_t *group_proc,
+                                       const char *current_directory, rktio_envvars_t *envvars,
+                                       int flags)
+ {
++  const char *command; /* PATCHED for Guix */
+   rktio_process_result_t *result;
+   intptr_t to_subprocess[2], from_subprocess[2], err_subprocess[2];
+   int pid;
+@@ -1255,6 +1257,23 @@ rktio_process_result_t *rktio_process(rktio_t *rktio,
+   int i;
+ #endif
+ 
++/* BEGIN PATCH for Guix */
++#if defined(GUIX_RKTIO_PATCH_BIN_SH)
++# define GUIX_AS_a_STR_HELPER(x) #x
++# define GUIX_AS_a_STR(x) GUIX_AS_a_STR_HELPER(x)
++  /* A level of indirection makes `#` work as needed: */
++  command =
++      ((0 == strcmp(_guix_orig_command, "/bin/sh"))
++       && rktio_file_exists(rktio, GUIX_AS_a_STR(GUIX_RKTIO_PATCH_BIN_SH)))
++      ? GUIX_AS_a_STR(GUIX_RKTIO_PATCH_BIN_SH)
++      : _guix_orig_command;
++# undef GUIX_AS_a_STR
++# undef GUIX_AS_a_STR_HELPER
++#else
++  command = _guix_orig_command;
++#endif
++/* END PATCH for Guix */
++
+   /* avoid compiler warnings: */
+   to_subprocess[0] = -1;
+   to_subprocess[1] = -1;
+-- 
+2.21.1 (Apple Git-122.3)
+

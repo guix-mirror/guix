@@ -79,12 +79,9 @@
 
 (define* (derivation->job name drv
                           #:key
-                          period
                           (max-silent-time 3600)
                           (timeout 3600))
-  "Return a Cuirass job called NAME and describing DRV.  PERIOD is the minimal
-duration that must separate two evaluations of the same job. If PERIOD is
-false, then the job will be evaluated as soon as possible.
+  "Return a Cuirass job called NAME and describing DRV.
 
 MAX-SILENT-TIME and TIMEOUT are build options passed to the daemon when
 building the derivation."
@@ -98,7 +95,6 @@ building the derivation."
                    (derivation->output-paths drv)))
     (#:nix-name . ,(derivation-name drv))
     (#:system . ,(derivation-system drv))
-    (#:period . ,period)
     (#:max-silent-time . ,max-silent-time)
     (#:timeout . ,timeout)))
 
@@ -237,14 +233,11 @@ SYSTEM."
   (* 3600 hours))
 
 (define (image-jobs store system)
-  "Return a list of jobs that build images for SYSTEM.  Those jobs are
-expensive in storage and I/O operations, hence their periodicity is limited by
-passing the PERIOD argument."
+  "Return a list of jobs that build images for SYSTEM."
   (define (->job name drv)
     (let ((name (string-append name "." system)))
       (parameterize ((%graft? #f))
-        (derivation->job name drv
-                         #:period (hours 48)))))
+        (derivation->job name drv))))
 
   (define (build-image image)
     (run-with-store store
@@ -324,29 +317,25 @@ passing the PERIOD argument."
                            #:key source commit)
   "Return a list of jobs for the system tests."
   (define (->job test)
-    (parameterize ((current-guix-package
-                    (channel-source->package source #:commit commit)))
-      (let ((name (string-append "test." (system-test-name test)
-                                 "." system))
-            (drv (run-with-store store
-                   (mbegin %store-monad
-                     (set-current-system system)
-                     (set-grafting #f)
-                     (set-guile-for-build (default-guile))
-                     (system-test-value test)))))
+    (let ((name (string-append "test." (system-test-name test)
+                               "." system))
+          (drv (run-with-store store
+                 (mbegin %store-monad
+                   (set-current-system system)
+                   (set-grafting #f)
+                   (set-guile-for-build (default-guile))
+                   (system-test-value test)))))
 
-        ;; Those tests are extremely expensive in I/O operations and storage
-        ;; size, use the "period" attribute to run them with a period of at
-        ;; least 48 hours.
-        (derivation->job name drv
-                         #:period (hours 24)))))
+      (derivation->job name drv)))
 
   (if (member system %guix-system-supported-systems)
       ;; Override the value of 'current-guix' used by system tests.  Using a
       ;; channel instance makes tests that rely on 'current-guix' less
       ;; expensive.  It also makes sure we get a valid Guix package when this
       ;; code is not running from a checkout.
-      (map ->job (all-system-tests))
+      (parameterize ((current-guix-package
+                      (channel-source->package source #:commit commit)))
+        (map ->job (all-system-tests)))
       '()))
 
 (define (tarball-jobs store system)
@@ -354,8 +343,7 @@ passing the PERIOD argument."
   (define (->job name drv)
     (let ((name (string-append name "." system)))
       (parameterize ((%graft? #f))
-        (derivation->job name drv
-                         #:period (hours 24)))))
+        (derivation->job name drv))))
 
   ;; XXX: Add a job for the stable Guix?
   (list
@@ -495,11 +483,6 @@ valid."
                        (package->job store package system))))
             (append
              (filter-map job all)
-             (image-jobs store system)
-             (system-test-jobs store system
-                               #:source source
-                               #:commit commit)
-             (tarball-jobs store system)
              (cross-jobs store system))))
          ('core
           ;; Build core packages only.
@@ -519,6 +502,17 @@ valid."
           (let ((hello (specification->package "hello")))
             (list (package-job store (job-name hello)
                                hello system))))
+         ('images
+          ;; Build Guix System images only.
+          (image-jobs store system))
+         ('system-tests
+          ;; Build Guix System tests only.
+          (system-test-jobs store system
+                            #:source source
+                            #:commit commit))
+         ('tarball
+          ;; Build Guix tarball only.
+          (tarball-jobs store system))
          (('channels . channels)
           ;; Build only the packages from CHANNELS.
           (let ((all (all-packages)))

@@ -36,7 +36,9 @@
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages build-tools)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
@@ -166,7 +168,7 @@ of a larger interface.")
 (define-public babl
   (package
     (name "babl")
-    (version "0.1.78")
+    (version "0.1.86")
     (source (origin
               (method url-fetch)
               (uri (list (string-append "https://download.gimp.org/pub/babl/"
@@ -180,10 +182,11 @@ of a larger interface.")
                                         "/babl-" version ".tar.xz")))
               (sha256
                (base32
-                "0fjjfb0pbgimlqi7rk8cqz8pq595b7gw8nrpkxfmixdz6cv4km8p"))))
+                "1w68h81kqkqnziixrx21qs0gfv2z79651h19sxn226xdb58mjgqb"))))
     (build-system meson-build-system)
     (arguments
-     `(#:configure-flags
+     `(#:meson ,meson-0.55
+       #:configure-flags
        (list "-Denable-gir=false")))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -205,7 +208,7 @@ provided, as well as a framework to add new color models and data types.")
 (define-public gegl
   (package
     (name "gegl")
-    (version "0.4.26")
+    (version "0.4.28")
     (source (origin
               (method url-fetch)
               (uri (list (string-append "https://download.gimp.org/pub/gegl/"
@@ -219,10 +222,11 @@ provided, as well as a framework to add new color models and data types.")
                                         "/gegl-" version ".tar.xz")))
               (sha256
                (base32
-                "097427icgpgvcx40019b3dm8m84cchz79pixzpz648drs8p1wdqg"))))
+                "003ri7yv7lm2fi86ama3vlkwnz656yyib4r36hxwlk6mfy2hs48x"))))
     (build-system meson-build-system)
     (arguments
-     `(#:configure-flags
+     `(#:meson ,meson-0.55
+       #:configure-flags
        (list "-Dintrospection=false")
        #:phases
        (modify-phases %standard-phases
@@ -266,14 +270,15 @@ buffers.")
   (package
     (name "gimp")
     (version "2.10.22")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://download.gimp.org/pub/gimp/v"
-                                  (version-major+minor version)
-                                  "/gimp-" version ".tar.bz2"))
-              (sha256
-               (base32
-                "1fqqyshakvdarf1jipk2n33ibqr23ni22z3d8srq13bpydblpf1d"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://download.gimp.org/pub/gimp/v"
+                           (version-major+minor version)
+                           "/gimp-" version ".tar.bz2"))
+       (sha256
+        (base32 "1fqqyshakvdarf1jipk2n33ibqr23ni22z3d8srq13bpydblpf1d"))
+       (patches (search-patches "gimp-make-gegl-introspect-optional.patch"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                            ; 9 MiB of gtk-doc HTML
@@ -541,6 +546,29 @@ healing the border, increasing the resolution while adding detail, and
 transferring the style of an image.")
     (license license:gpl3+)))
 
+(define gegl-for-glimpse
+  ;; Remove this when GIMP commit 2cae9b9acf9da98c4c9990819ffbd5aabe23017e
+  ;; makes it into Glimpse.
+  (package
+    (inherit gegl)
+    (arguments
+     (substitute-keyword-arguments (package-arguments gegl)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'refer-to-dot
+             ;; XXX Without ‘dot’ in $PATH, Glimpse would fail to start with an
+             ;; extremely obtuse ‘GEGL operation missing!’ error.
+             (lambda _
+               (substitute* "gegl/gegl-dot.c"
+                 (("\"dot ")
+                  (format #f "\"~a " (which "dot"))))
+               (substitute* "operations/common/introspect.c"
+                 (("g_find_program_in_path \\(\"dot\"\\)")
+                  (format #f "g_strdup (\"~a\")" (which "dot"))))))))))
+    (inputs
+     `(,@(package-inputs gegl)
+       ("graphviz" ,graphviz)))))
+
 (define-public glimpse
   (package
     (name "glimpse")
@@ -620,7 +648,7 @@ transferring the style of an image.")
        ("poppler-data" ,poppler-data)
        ("python" ,python-2)             ; optional, Python support
        ("python2-pygtk" ,python2-pygtk) ; optional, Python support
-       ("gegl" ,gegl)))
+       ("gegl" ,gegl-for-glimpse)))     ; XXX see comment in gegl-for-glimpse
     (home-page "https://glimpse-editor.github.io/")
     (synopsis "Glimpse Image Editor")
     (description "The Glimpse Image Editor is an application for image

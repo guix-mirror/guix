@@ -1,20 +1,20 @@
-From a92e26359bd07743ab105819ed0b619e27e14017 Mon Sep 17 00:00:00 2001
+From d8225e83c3b73f0e0da73874910f50ca652f48cf Mon Sep 17 00:00:00 2001
 From: Brendan Tildesley <mail@brendan.scot>
-Date: Sat, 27 Apr 2019 03:30:53 +1000
-Subject: [PATCH] Disable test_sqlite.
+Date: Thu, 25 Feb 2021 00:48:00 +1100
+Subject: [PATCH] Remove test_sqlite
 
 ---
  src/calibre/test_build.py | 6 ------
  1 file changed, 6 deletions(-)
 
 diff --git a/src/calibre/test_build.py b/src/calibre/test_build.py
-index 07bdffd3e5..740588c95b 100644
+index 0ab7aa0646..87fdfabd9a 100644
 --- a/src/calibre/test_build.py
 +++ b/src/calibre/test_build.py
-@@ -162,12 +162,6 @@ class BuildTest(unittest.TestCase):
-             au(x, 'strftime')
-             self.assertEqual(unicode_type(time.strftime(fmt.replace('%e', '%#d'), t)), x)
- 
+@@ -273,12 +273,6 @@ def read_changes():
+         m.close()
+         self.assertEqual(winutil.parse_cmdline('"c:\\test exe.exe" "some arg" 2'), ('c:\\test exe.exe', 'some arg', '2'))
+
 -    def test_sqlite(self):
 -        import sqlite3
 -        conn = sqlite3.connect(':memory:')
@@ -24,6 +24,5 @@ index 07bdffd3e5..740588c95b 100644
      def test_apsw(self):
          import apsw
          conn = apsw.Connection(':memory:')
--- 
-2.21.0
-
+--
+2.30.1

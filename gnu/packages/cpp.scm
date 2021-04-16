@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Ethan R. Jones <doubleplusgood23@gmail.com>
-;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2019, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -17,6 +17,8 @@
 ;;; Copyright © 2020, 2021 Greg Hogan <code@greghogan.com>
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Milkey Mouse <milkeymouse@meme.institute>
+;;; Copyright © 2021 Raghav Gururajan <rg@raghavgururajan.name>
+
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,6 +39,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
@@ -45,6 +48,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages build-tools)
   #:use-module (gnu packages c)
   #:use-module (gnu packages check)
   #:use-module (gnu packages code)
@@ -59,12 +63,14 @@
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages logging)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages pretty-print)
   #:use-module (gnu packages tls)
-  #:use-module (gnu packages web))
+  #:use-module (gnu packages web)
+  #:use-module (gnu packages xml))
 
 (define-public range-v3
   (package
@@ -267,7 +273,7 @@ combination of these streams.")
 (define-public xsimd
   (package
     (name "xsimd")
-    (version "7.4.9")
+    (version "7.4.10")
     (source
      (origin
        (method git-fetch)
@@ -275,7 +281,7 @@ combination of these streams.")
              (url "https://github.com/QuantStack/xsimd")
              (commit version)))
        (sha256
-        (base32 "11by8gbshm4vv6flqp0ihff8c6nmbaqq7ms93b38rrq68bigcply"))
+        (base32 "097yvxrxdldi5s5m4nsxv8f4gwv9xj42mqig98a1z3hkjj1j2gn5"))
        (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (arguments
@@ -482,7 +488,7 @@ tools (containers, algorithms) used by other QuantStack packages.")
 (define-public ccls
   (package
     (name "ccls")
-    (version "0.20201025")
+    (version "0.20201219")
     (source
      (origin
        (method git-fetch)
@@ -490,8 +496,7 @@ tools (containers, algorithms) used by other QuantStack packages.")
              (url "https://github.com/MaskRay/ccls")
              (commit version)))
        (sha256
-        (base32
-         "13v00q1bz8g0ckw1sv0zyicbc44irc00vhwxdv3vvwlvylm7s21p"))
+        (base32 "0nkg92rgb1x6scpiwdamfrd1ag87j7ajxyn5qi861r916m5mh9m8"))
        (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (arguments
@@ -1015,3 +1020,194 @@ Linear Congruential Generator (LCG) with a permutation function to increase
 output randomness while retaining speed, simplicity, and conciseness.")
       (home-page "https://www.pcg-random.org")
       (license (list license:expat license:asl2.0))))) ; dual licensed
+
+(define-public libcutl
+  (package
+    (name "libcutl")
+    (version "1.10.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://www.codesynthesis.com/download/libcutl/"
+                    (version-major+minor version)
+                    "/libcutl-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "070j2x02m4gm1fn7gnymrkbdxflgzxwl7m96aryv8wp3f3366l8j"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Remove bundled sources.
+                  (with-directory-excursion "cutl/details"
+                    (for-each delete-file-recursively
+                              ;; FIXME: Boost_RegEx isn't being detected.
+                              (list
+                               ;;"boost"
+                               "expat")))))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags (list "--disable-static"
+                               ;;"--with-external-boost"
+                               "--with-external-expat")))
+    (inputs
+     `(;;("boost ,boost)
+       ("expat" ,expat)))
+    (home-page "https://www.codesynthesis.com/projects/libcutl/")
+    (synopsis "C++ utility library with generic and independent components")
+    (description "libcutl is a C++ utility library.  It contains a collection
+of generic and independent components such as meta-programming tests, smart
+pointers, containers, compiler building blocks, etc.")
+    (license (list license:expat        ;everything except...
+                   license:boost1.0)))) ;...the files under cutl/details/boost
+
+(define-public libxsd-frontend
+  (package
+    (name "libxsd-frontend")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.codesynthesis.com/download/"
+                           "libxsd-frontend/" (version-major+minor version)
+                           "/libxsd-frontend-" version ".tar.bz2"))
+       (sha256
+        (base32 "1nmzchsvwvn66jpmcx18anzyl1a3l309x1ld4zllrg37ijc31fim"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:imported-modules ((guix build copy-build-system)
+                           ,@%gnu-build-system-modules)
+       #:modules (((guix build copy-build-system) #:prefix copy:)
+                  (guix build gnu-build-system)
+                  (guix build utils))
+       #:make-flags (list (string-append "--include-dir="
+                                         (assoc-ref %build-inputs "build")
+                                         "/include/"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda args
+             (apply (assoc-ref copy:%standard-phases 'install)
+                    #:install-plan
+                    '(("xsd-frontend" "include/xsd-frontend"
+                       #:include-regexp ("\\.?xx$"))
+                      ("xsd-frontend" "lib"
+                       #:include-regexp ("\\.so$")))
+                    args))))))
+    (native-inputs
+     `(("build" ,build)))
+    (inputs
+     `(("libcutl" ,libcutl)
+       ("libxerces-c" ,xerces-c)))
+    (synopsis "XSD Front-end")
+    (description "@code{libxsd-frontend} is a compiler frontend for the W3C
+XML Schema definition language.  It includes a parser, semantic graph types
+and a traversal mechanism.")
+    (home-page "https://www.codesynthesis.com/projects/libxsd-frontend/")
+    (license license:gpl2+)))
+
+(define-public cli
+  (package
+    (name "cli")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.codesynthesis.com/download/"
+                           "cli/" (version-major+minor version)
+                           "/cli-" version ".tar.bz2"))
+       (sha256
+        (base32 "0bg0nsai2q4h3mldpnj0jz4iy4svs0bcfvmq0v0c9cdyknny606g"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:make-flags (list (string-append "--include-dir="
+                                         (assoc-ref %build-inputs "build")
+                                         "/include")
+                          (string-append "install_prefix="
+                                         (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           (lambda _
+             (substitute* (find-files "." "\\.make$")
+               (("build-0\\.3")
+                (string-append (assoc-ref %build-inputs "build")
+                               "/include/build-0.3")))
+             ;; Add the namespace prefix, to avoid errors such as "error:
+             ;; ‘iterate_and_dispatch’ was not declared in this scope".
+             (substitute* (find-files "." "\\.?xx$")
+               (("add \\(typeid \\(type\\), \\*this\\);" all)
+                (string-append "traverser_map<B>::" all))
+               (("iterate_and_dispatch \\(s\\.names_begin.*;" all)
+                (string-append "edge_dispatcher::" all)))))
+         (delete 'configure))))
+    (native-inputs
+     `(("build" ,build)))
+    (inputs
+     `(("libcutl" ,libcutl)))
+    (synopsis "C++ Command Line Interface (CLI) definition language")
+    (description "@code{cli} is a domain-specific language (DSL) for defining
+command line interfaces of C++ programs.  It allows you to describe the
+options that your program supports, their types, default values, and
+documentation.")
+    (home-page "https://codesynthesis.com/projects/cli/")
+    (license license:expat)))
+
+(define-public xsd
+  (package
+    (name "xsd")
+    (version "4.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.codesynthesis.com/download/"
+                           "xsd/" (version-major+minor version)
+                           "/xsd-" version ".tar.bz2"))
+       (sha256
+        (base32 "1hi9ppxd34np8ydv1h0vgc2qpdmgcd1cdzgk30aidv670xjg91fx"))))
+    (build-system gnu-build-system)
+    (outputs '("out" "doc"))            ;3.8 MiB of doc and examples
+    (arguments
+     `(#:test-target "test"
+       #:make-flags (list (string-append "--include-dir="
+                                         (assoc-ref %build-inputs "build")
+                                         "/include/")
+                          (string-append "install_prefix="
+                                         (assoc-ref %outputs "out")))
+       #:phases (modify-phases %standard-phases
+                  (add-after 'install 'move-doc
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out"))
+                            (doc (assoc-ref outputs "doc")))
+                        (mkdir-p (string-append doc "/share/doc"))
+                        (rename-file (string-append out "/share/doc/xsd")
+                                     (string-append doc "/share/doc/xsd-"
+                                                    ,version)))))
+                  (delete 'configure))))
+    (native-inputs
+     `(("build" ,build)
+       ("cli" ,cli)))
+    (inputs
+     `(("libcutl" ,libcutl)
+       ("libnsl" ,libnsl)
+       ("libxsd-frontend" ,libxsd-frontend)))
+    (propagated-inputs
+     ;; The code XSD generates requires the following library at run time;
+     ;; propagate it for convenience.
+     `(("xerces-c" ,xerces-c)))
+    (synopsis "XML Data Binding for C++")
+    (description "CodeSynthesis XSD (also known as libxsd or xsdcxx) is an XML
+Schema to C++ data binding compiler.  Provided with an XML instance
+specification (XML Schema), it generates C++ classes that represent the given
+vocabulary as well as XML parsing and serialization code.  The data stored in
+XML can then be accessed using types and functions that semantically
+correspond to an application domain rather than dealing with the intricacies
+of reading and writing XML.")
+    (home-page "https://codesynthesis.com/projects/xsd/")
+    ;; Exceptions are made to allow using the generated source files as well
+    ;; as the libxsd library in free software projects whose license is
+    ;; incompatible with the GPL v2.  Refer to the file named FLOSSE for the
+    ;; details.
+    (license license:gpl2+)))

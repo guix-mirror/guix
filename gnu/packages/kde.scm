@@ -13,6 +13,7 @@
 ;;; Copyright © 2020 Prafulla Giri <pratheblackdiamond@gmail.com>
 ;;; Copyright © 2020 Zheng Junjie <873216071@qq.com>
 ;;; Copyright © 2021 Alexandros Theodotou <alex@zrythm.org>
+;;; Copyright © 2021 la snesne <lasnesne@lagunposprasihopre.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -458,7 +459,7 @@ illustrate project schedules.")
 (define-public krita
   (package
     (name "krita")
-    (version "4.4.2")
+    (version "4.4.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -466,7 +467,7 @@ illustrate project schedules.")
                     "/krita-" version ".tar.gz"))
               (sha256
                (base32
-                "14lprcv7xw6r19bmylcz4c1p1jfazmza2b4m48f3x7vmdv2sx5ln"))))
+                "0rwghzci2wn2jmisvnzs23yxc2z3d4dcx2qbbhcvjyi3q8ij61nl"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f

@@ -68,6 +68,8 @@
 
             %default-xorg-modules
             %default-xorg-fonts
+            %default-xorg-server-arguments
+
             xorg-wrapper
             xorg-start-command
             xinitrc

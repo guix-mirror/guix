@@ -3,7 +3,7 @@
 !#
 
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,7 +28,10 @@
 
 (import (sxml xpath)
         (srfi srfi-1)
+        (srfi srfi-2)
         (srfi srfi-9)
+        (srfi srfi-11)
+        (srfi srfi-26)
         (ice-9 format)
         (ice-9 popen)
         (ice-9 match)
@@ -63,7 +66,8 @@ LINE-NO in PORT."
   (make-hunk file-name
              old-line-number
              new-line-number
-             diff)
+             diff-lines
+             definition?)
   hunk?
   (file-name       hunk-file-name)
   ;; Line number before the change
@@ -71,38 +75,45 @@ LINE-NO in PORT."
   ;; Line number after the change
   (new-line-number hunk-new-line-number)
   ;; The full diff to be used with "git apply --cached"
-  (diff hunk-diff))
+  (diff-lines hunk-diff-lines)
+  ;; Does this hunk add a definition?
+  (definition? hunk-definition?))
 
 (define* (hunk->patch hunk #:optional (port (current-output-port)))
   (let ((file-name (hunk-file-name hunk)))
     (format port
             "diff --git a/~a b/~a~%--- a/~a~%+++ b/~a~%~a"
             file-name file-name file-name file-name
-            (hunk-diff hunk))))
+            (string-join (hunk-diff-lines hunk) ""))))
 
 (define (diff-info)
   "Read the diff and return a list of <hunk> values."
   (let ((port (open-pipe* OPEN_READ
-                          "git" "diff"
+                          "git" "diff-files"
                           "--no-prefix"
-                          ;; Do not include any context lines.  This makes it
-                          ;; easier to find the S-expression surrounding the
-                          ;; change.
-                          "--unified=0")))
+                          ;; Only include one context line to avoid lumping in
+                          ;; new definitions with changes to existing
+                          ;; definitions.
+                          "--unified=1"
+                          "gnu")))
     (define (extract-line-number line-tag)
       (abs (string->number
             (car (string-split line-tag #\,)))))
     (define (read-hunk)
-      (reverse
-       (let loop ((lines '()))
-         (let ((line (read-line port 'concat)))
-           (cond
-            ((eof-object? line) lines)
-            ((or (string-prefix? "@@ " line)
-                 (string-prefix? "diff --git" line))
-             (unget-string port line)
-             lines)
-            (else (loop (cons line lines))))))))
+      (let loop ((lines '())
+                 (definition? #false))
+        (let ((line (read-line port 'concat)))
+          (cond
+           ((eof-object? line)
+            (values (reverse lines) definition?))
+           ((or (string-prefix? "@@ " line)
+                (string-prefix? "diff --git" line))
+            (unget-string port line)
+            (values (reverse lines) definition?))
+           (else
+            (loop (cons line lines)
+                  (or definition?
+                      (string-prefix? "+(define" line))))))))
     (define info
       (let loop ((acc '())
                  (file-name #f))
@@ -116,29 +127,42 @@ LINE-NO in PORT."
            ((string-prefix? "@@ " line)
             (match (string-split line #\space)
               ((_ old-start new-start . _)
-               (loop (cons (make-hunk file-name
-                                      (extract-line-number old-start)
-                                      (extract-line-number new-start)
-                                      (string-join (cons* line "\n"
-                                                          (read-hunk)) ""))
-                           acc)
-                     file-name))))
+               (let-values
+                   (((diff-lines definition?) (read-hunk)))
+                 (loop (cons (make-hunk file-name
+                                        (extract-line-number old-start)
+                                        (extract-line-number new-start)
+                                        (cons (string-append line "\n")
+                                              diff-lines)
+                                        definition?) acc)
+                       file-name)))))
            (else (loop acc file-name))))))
     (close-pipe port)
     info))
+
+(define (lines-to-first-change hunk)
+  "Return the number of diff lines until the first change."
+  (1- (count (lambda (line)
+               ((negate char-set-contains?)
+                (char-set #\+ #\-)
+                (string-ref line 0)))
+             (hunk-diff-lines hunk))))
 
 (define (old-sexp hunk)
   "Using the diff information in HUNK return the unmodified S-expression
 corresponding to the top-level definition containing the staged changes."
   ;; TODO: We can't seek with a pipe port...
   (let* ((port (open-pipe* OPEN_READ
-                           "git" "show" (string-append "HEAD:"
-                                                       (hunk-file-name hunk))))
+                           "git" "cat-file" "-p" (string-append
+                                                  "HEAD:"
+                                                  (hunk-file-name hunk))))
          (contents (get-string-all port)))
     (close-pipe port)
     (call-with-input-string contents
       (lambda (port)
-        (surrounding-sexp port (hunk-old-line-number hunk))))))
+        (surrounding-sexp port
+                          (+ (lines-to-first-change hunk)
+                             (hunk-old-line-number hunk)))))))
 
 (define (new-sexp hunk)
   "Using the diff information in HUNK return the modified S-expression
@@ -146,9 +170,10 @@ corresponding to the top-level definition containing the staged changes."
   (call-with-input-file (hunk-file-name hunk)
     (lambda (port)
       (surrounding-sexp port
-                        (hunk-new-line-number hunk)))))
+                        (+ (lines-to-first-change hunk)
+                           (hunk-new-line-number hunk))))))
 
-(define* (commit-message file-name old new #:optional (port (current-output-port)))
+(define* (change-commit-message file-name old new #:optional (port (current-output-port)))
   "Print ChangeLog commit message for changes between OLD and NEW."
   (define (get-values expr field)
     (match ((sxpath `(// ,field quasiquote *)) expr)
@@ -193,6 +218,12 @@ corresponding to the top-level definition containing the staged changes."
                                          (listify added)))))))))
             '(inputs propagated-inputs native-inputs)))
 
+(define* (add-commit-message file-name variable-name #:optional (port (current-output-port)))
+  "Print ChangeLog commit message for a change to FILE-NAME adding a definition."
+  (format port
+          "gnu: Add ~a.~%~%* ~a (~a): New variable.~%"
+          variable-name file-name variable-name))
+
 (define (group-hunks-by-sexp hunks)
   "Return a list of pairs associating all hunks with the S-expression they are
 modifying."
@@ -218,14 +249,45 @@ modifying."
           (cons* new (old-sexp (first hunks)) hunks)))
        (group-hunks-by-sexp hunks)))
 
+(define %delay 1000)
+
 (define (main . args)
   (match (diff-info)
     (()
-     (display "Nothing to be done." (current-error-port)))
+     (display "Nothing to be done.\n" (current-error-port)))
     (hunks
-     (for-each (match-lambda
-                 ((new old . hunks)
-                  (for-each (lambda (hunk)
+     (let-values
+         (((definitions changes)
+           (partition hunk-definition? hunks)))
+
+       ;; Additions.
+       (for-each (lambda (hunk)
+                   (and-let*
+                       ((define-line (find (cut string-prefix? "+(define" <>)
+                                           (hunk-diff-lines hunk)))
+                        (variable-name (and=> (string-tokenize define-line) second)))
+                     (add-commit-message (hunk-file-name hunk) variable-name)
+                     (let ((port (open-pipe* OPEN_WRITE                   
+                                             "git" "apply"                
+                                             "--cached"                   
+                                             "--unidiff-zero")))          
+                       (hunk->patch hunk port)                            
+                       (unless (eqv? 0 (status:exit-val (close-pipe port))) 
+                         (error "Cannot apply")))
+
+                     (let ((port (open-pipe* OPEN_WRITE "git" "commit" "-F" "-")))
+                       (add-commit-message (hunk-file-name hunk)
+                                           variable-name port)
+                       (usleep %delay)
+                       (unless (eqv? 0 (status:exit-val (close-pipe port)))
+                         (error "Cannot commit"))))
+                   (usleep %delay))
+                 definitions)
+
+       ;; Changes.
+       (for-each (match-lambda
+                   ((new old . hunks)
+                    (for-each (lambda (hunk)
                                 (let ((port (open-pipe* OPEN_WRITE
                                                         "git" "apply"
                                                         "--cached"
@@ -233,18 +295,20 @@ modifying."
                                   (hunk->patch hunk port)
                                   (unless (eqv? 0 (status:exit-val (close-pipe port)))
                                     (error "Cannot apply")))
-                                (sleep 1))
+                                (usleep %delay))
                               hunks)
-                    (commit-message (hunk-file-name (first hunks))
-                                    old new
-                                    (current-output-port))
+                    (change-commit-message (hunk-file-name (first hunks))
+                                           old new
+                                           (current-output-port))
                     (let ((port (open-pipe* OPEN_WRITE "git" "commit" "-F" "-")))
-                      (commit-message (hunk-file-name (first hunks))
-                                      old new
-                                      port)
-                      (sleep 1)
+                      (change-commit-message (hunk-file-name (first hunks))
+                                             old new
+                                             port)
+                      (usleep %delay)
                       (unless (eqv? 0 (status:exit-val (close-pipe port)))
                         (error "Cannot commit")))))
-               (new+old+hunks hunks)))))
+                 ;; XXX: we recompute the hunks here because previous
+                 ;; insertions lead to offsets.
+                 (new+old+hunks (diff-info)))))))
 
 (main)

@@ -61,7 +61,7 @@
     (version "2.0.15")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://download.librdf.org/source/" name
+             (uri (string-append "https://download.librdf.org/source/" name
                                  "-" version ".tar.gz"))
              (patches
               (search-patches "raptor2-heap-overflow.patch"))
@@ -76,7 +76,7 @@
        ("zlib" ,zlib)))
     (arguments
      `(#:parallel-tests? #f))
-    (home-page "http://librdf.org/raptor/")
+    (home-page "https://librdf.org/raptor/")
     (synopsis "RDF syntax library")
     (description "Raptor is a C library providing a set of parsers and
 serialisers that generate Resource Description Framework (RDF) triples

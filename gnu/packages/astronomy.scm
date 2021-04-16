@@ -118,7 +118,7 @@ for reading and writing.")
 (define-public erfa
   (package
     (name "erfa")
-    (version "1.7.2")
+    (version "1.7.3")
     (source
      (origin
        (method git-fetch)
@@ -127,7 +127,7 @@ for reading and writing.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1vsqwvzlk7r8q7nwyb7i710blcfdl5kwcm2va9km07a820nsp84a"))))
+        (base32 "0nh12dr7gk4ki55lz95pkm4fpf7kazirra3zax9pab6v4qql4hlw"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("automake" ,automake)
@@ -137,8 +137,10 @@ for reading and writing.")
     (home-page "https://github.com/liberfa/erfa")
     (synopsis "Essential Routines for Fundamental Astronomy")
     (description
-     "ERFA is a C library containing key algorithms for astronomy, and is based
-on the SOFA library published by the International Astronomical Union (IAU).")
+     "The @acronym{ERFA, Essential Routines for Fundamental Astronomy} C library
+contains key algorithms for astronomy, and is based on the @acronym{SOFA,
+Standards of Fundamental Astronomy} library published by the @acronym{IAU,
+International Astronomical Union}.")
     (license license:bsd-3)))
 
 (define-public eye
@@ -399,7 +401,7 @@ deconvolution).  Such post-processing is not performed by Stackistry.")
 (define-public stellarium
   (package
     (name "stellarium")
-    (version "0.20.4")
+    (version "0.21.0")
     (source
      (origin
        (method url-fetch)
@@ -407,7 +409,7 @@ deconvolution).  Such post-processing is not performed by Stackistry.")
                            "/releases/download/v" version
                            "/stellarium-" version ".tar.gz"))
        (sha256
-        (base32 "1253zlr0mi4kdbj119spxk7spg4rkahb4rlpd0hz1d81mnv3n0v3"))))
+        (base32 "04vg2asj9gygwnrs32scqc8192ln2lyqa9v7cjqk8zd4frkwszwp"))))
     (build-system cmake-build-system)
     (inputs
      `(("qtbase" ,qtbase)
@@ -1009,13 +1011,13 @@ astronomical images, especially when there is no WCS information available.")
 (define-public python-skyfield
   (package
     (name "python-skyfield")
-    (version "1.36")
+    (version "1.38")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "skyfield" version))
        (sha256
-        (base32 "1dm1327a4qv3klj9blrvddbhl72v1fqz52ym9km8qjj9vdkpywh6"))))
+        (base32 "1qi1l8qn6irdv6w41qq30s2yjwak7h6ayywr1pry9gwcm2c25bv5"))))
     (build-system python-build-system)
     (arguments
      ;; NOTE: (Sharlatan-20210207T163305+0000): tests depend on custom test

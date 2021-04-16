@@ -34,6 +34,9 @@
 ;;; Copyright © 2019 Riku Viitanen <riku.viitanen0@gmail.com>
 ;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
 ;;; Copyright © 2021 Leo Prikler <leo.prikler@student.tugraz.at>
+;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2021 Brendan Tildesley <mail@brendan.scot>
+;;; Copyright © 2021 Bonface Munyoki Kilyungi <me@bonfacemunyoki.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -134,6 +137,7 @@
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages pulseaudio) ;libsndfile
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
@@ -141,6 +145,7 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages rsync)
   #:use-module (gnu packages sdl)
+  #:use-module (gnu packages sphinx)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages stb)
   #:use-module (gnu packages tcl)
@@ -152,6 +157,7 @@
   #:use-module (gnu packages video)
   #:use-module (gnu packages vim)       ;for 'xxd'
   #:use-module (gnu packages web)
+  #:use-module (gnu packages webkit)
   #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
@@ -447,7 +453,7 @@ playing your music.")
 (define-public strawberry
   (package
     (name "strawberry")
-    (version "0.8.5")
+    (version "0.9.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -456,7 +462,7 @@ playing your music.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0lfbbmhfzwlhnjhzfk5zn8h71cabx47pzfkcw2nylkbqkz83r57r"))
+                "0d9asg21j9ai23sb35cimws8bd8fsnpha777rgscraa7i09q0rx2"))
               (modules '((guix build utils)
                          (ice-9 regex)))
               (snippet
@@ -480,9 +486,6 @@ playing your music.")
     (build-system cmake-build-system)
     (arguments
      `(#:test-target "run_strawberry_tests"
-       #:configure-flags
-       (list "-DUSE_SYSTEM_TAGLIB=TRUE"
-             "-DBUILD_TESTS=TRUE")
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'wrap-program
@@ -716,7 +719,7 @@ settings (aliasing, linear interpolation and cubic interpolation).")
 (define-public hydrogen
   (package
     (name "hydrogen")
-    (version "1.0.1")
+    (version "1.0.2")
     (source
      (origin
        (method git-fetch)
@@ -725,7 +728,7 @@ settings (aliasing, linear interpolation and cubic interpolation).")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0snljpvbcgikhz610c325dgvayi0k512p3bglck9vvi90wsqx7l1"))))
+        (base32 "0nhn2njs8yyxcijxv5zgymf3211y6anzm0v9kn4vnd8kai7zwxxp"))))
     (build-system cmake-build-system)
     (arguments
      `(#:test-target "tests"
@@ -1489,6 +1492,57 @@ Guile.")
     ;; On armhf and mips64el, building the documentation sometimes leads to
     ;; more than an hour of silence, so double the max silent time.
     (properties `((max-silent-time . 7200)))))
+
+(define-public python-abjad
+  (package
+    (name "python-abjad")
+    (version "3.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+         (url "https://github.com/Abjad/abjad")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1dzf5v7pawbzkb4qxp4s5z4r3gibkk705pag83yvgzkx6fd6jf2g"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda _
+             (substitute* "setup.py"
+               (("uqbar>=0.5.1, <0.5.0") "uqbar>=0.5.0"))
+             #t))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               ;; See: https://stackoverflow.com/a/34140498
+               (invoke "python" "-m" "pytest" "tests")
+               #t))))))
+    (native-inputs
+     `(("lilypond" ,lilypond)
+       ("python-black" ,python-black)
+       ("python-flake8" ,python-flake8)
+       ("python-iniconfig" ,python-iniconfig)
+       ("python-isort" ,python-isort)
+       ("python-mypy" ,python-mypy)
+       ("python-ply" ,python-ply)
+       ("python-pytest" ,python-pytest-6)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-sphinx-autodoc-typehints" ,python-sphinx-autodoc-typehints)))
+    (propagated-inputs
+     `(("python-quicktions" ,python-quicktions)
+       ("python-roman" ,python-roman)
+       ("python-six" ,python-six)
+       ("python-uqbar" ,python-uqbar)))
+    (home-page "https://abjad.github.io")
+    (synopsis "Python API for building LilyPond files")
+    (description
+     "This package provides a Python API for building LilyPond files.")
+    (license license:expat)))
 
 (define-public non-sequencer
   ;; The latest tagged release is three years old and uses a custom build
@@ -2630,18 +2684,17 @@ browser.")
 (define-public drumstick
   (package
     (name "drumstick")
-    (version "2.0.0")
+    (version "2.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/drumstick/"
                                   version "/drumstick-" version ".tar.bz2"))
               (sha256
                (base32
-                "088j0w3kr9i4lh78y0js0q8adlfzkr89xq2dxc8y3bafsgihax1x"))))
+                "06lz4kzpgg5lalcjb14pi35jxca5f4j6ckqf6mdxs1k42dfhjpjp"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; no test target
-       #:configure-flags '("-DLIB_SUFFIX=")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'fix-docbook
@@ -2664,7 +2717,7 @@ browser.")
        ("docbook-xsl" ,docbook-xsl)
        ("doxygen" ,doxygen)
        ("graphviz" ,graphviz))) ; for dot
-    (home-page "http://drumstick.sourceforge.net/")
+    (home-page "https://drumstick.sourceforge.io/")
     (synopsis "C++ MIDI library")
     (description
      "Drumstick is a set of MIDI libraries using C++/Qt5 idioms and style.  It
@@ -2678,14 +2731,14 @@ backends, including ALSA, OSS, Network and FluidSynth.")
 (define-public vmpk
   (package
     (name "vmpk")
-    (version "0.8.0")
+    (version "0.8.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/vmpk/vmpk/"
                                   version "/vmpk-" version ".tar.bz2"))
               (sha256
                (base32
-                "0wn45c4sbvan7schq93zmsgg5fcf144mbbawxn5kq699vrbc3473"))))
+                "1kv256j13adk4ib7r464gsl4vjhih820bq37ddhqfyfd07wh53a2"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f  ; no test target
@@ -4774,6 +4827,67 @@ plugin formats; the MIDI sequencer provides a piano roll, a drum editor, a
 list view, and a score editor.  MusE aims to be a complete multitrack virtual
 studio.")
     (license license:gpl2+)))
+
+(define-public gsequencer
+  (package
+    (name "gsequencer")
+    (version "3.7.48")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.savannah.gnu.org/git/gsequencer.git/")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0pqaj09x3lzcj0zbbkqpyaky9i1w462bhhvg1akh73nzwvyy46zd"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'prepare-x-for-test
+           (lambda _
+             (system "Xvfb &")
+             (setenv "DISPLAY" ":0")
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("cunit" ,cunit)
+       ("gettext" ,gettext-minimal)
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk-doc" ,gtk-doc)
+       ("libtool" ,libtool)
+       ("libxslt" ,libxslt)
+       ("pkg-config" ,pkg-config)
+       ("xorg-server" ,xorg-server-for-tests)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("dssi" ,dssi)
+       ("fftw" ,fftw)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("gstreamer" ,gstreamer)
+       ("gtk+" ,gtk+)
+       ("jack" ,jack-1)
+       ("ladspa" ,ladspa)
+       ("libinstpatch" ,libinstpatch)
+       ("libsamplerate" ,libsamplerate)
+       ("libsndfile" ,libsndfile)
+       ("libsoup" ,libsoup)
+       ("libuuid" ,util-linux "lib")
+       ("libxml2" ,libxml2)
+       ("lv2" ,lv2)
+       ("pulseaudio" ,pulseaudio)
+       ("webkitgtk" ,webkitgtk)))
+    (home-page "https://nongnu.org/gsequencer/")
+    (synopsis "Advanced Gtk+ Sequencer")
+    (description
+     "GSequencer allows you to play, capture and create music.  There is a piano
+roll, automation and wave form editor.  It has machines for playing drum samples,
+Soundfont2 sound containers and synthesizers.  They usually can be connected to a
+MIDI input source (instrument).  It has support for various audio backends like
+ALSA, Pulseaudio, JACK, OSSv4 and CoreAudio.")
+    (license license:gpl3+)))
 
 (define-public dssi
   (package

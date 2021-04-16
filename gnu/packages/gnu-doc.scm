@@ -56,7 +56,7 @@ list.")
 (define-public gnu-standards
   (package
     (name "gnu-standards")
-    (version "2018-02-18")
+    (version "2020-11-25")
     (source
      (origin
        (method cvs-fetch)
@@ -64,11 +64,11 @@ list.")
              (root-directory
               ":pserver:anonymous@cvs.savannah.gnu.org:/sources/gnustandards")
              (module "gnustandards")
-             (revision "2018-02-18")))
+             (revision version)))
        (sha256
         (base32
-         "03yh25fpvfn5pnd0d4x7a2wkh01ffk6vbs1vjnzqicqkgc2g33sd"))
-       (file-name "gnu-standards-src")))
+         "1xlwmgcnvp81ipgfir4ckpgl922mbckvxy1x758r0lksq5vrpglj"))
+       (file-name (string-append name "-" version "-checkout"))))
     (build-system trivial-build-system)
     (native-inputs `(("gzip" ,gzip)
                      ("source" ,source)

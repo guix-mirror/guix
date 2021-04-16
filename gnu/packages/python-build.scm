@@ -4,6 +4,8 @@
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2018, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -71,14 +73,13 @@ installed with a newer @code{pip} or with wheel's own command line utility.")
 (define-public python-toml
   (package
     (name "python-toml")
-    (version "0.10.1")
+    (version "0.10.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "toml" version))
        (sha256
-        (base32
-         "03wbqm5cn685cwx2664hjdpz370njl7lf0yal8s0dkp5w4mn2swj"))))
+        (base32 "13z6rff86bzdpl094x0vmfvls779931xj90dlbs9kpfm138s3gdk"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))                     ;no tests suite in release
@@ -87,6 +88,23 @@ installed with a newer @code{pip} or with wheel's own command line utility.")
     (description
      "@code{toml} is a library for parsing and creating Tom's Obvious, Minimal
 Language (TOML) configuration files.")
+    (license license:expat)))
+
+(define-public python-pytoml
+  (package
+    (name "python-pytoml")
+    (version "0.1.21")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytoml" version))
+       (sha256
+        (base32
+         "1rv1byiw82k7mj6aprcrqi2vdabs801y97xhfnrz7kxds34ggv4f"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/avakar/pytoml")
+    (synopsis "Parser for TOML")
+    (description "This package provides a Python parser for TOML-0.4.0.")
     (license license:expat)))
 
 (define-public python-pep517-bootstrap

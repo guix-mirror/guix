@@ -144,7 +144,7 @@ irssi, but graphical.")
 (define-public irssi
   (package
     (name "irssi")
-    (version "1.2.2")
+    (version "1.2.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/irssi/irssi/"
@@ -152,7 +152,7 @@ irssi, but graphical.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0y3mhnyr7x8ir8dlj83vbnchpfld28vdfni9yhpvls45j460c9v7"))))
+                "17vninwcdfxw39xl2q55qircckckjk2xlvkvlwgj5lhlxppvyix6"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -282,14 +282,14 @@ for the IRCv3 protocol.")
 (define-public ircii
   (package
     (name "ircii")
-    (version "20151120")
+    (version "20210314")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ircii.warped.com/"
                                  name "-" version ".tar.gz"))
              (sha256
               (base32
-               "178dc279f5j894qvp96dzz7c0jpryqlcqw5g0dc9yaxg9kgw1lqm"))))
+               "04jczayv1vdn21fcf5zkfaa98sy7d6ydrv2sns2i67gvya2z28j3"))))
     (build-system gnu-build-system)
     ;; TODO: We should package a small socks4/5 library/server to configure
     ;; ircii with socks client. `ghc-socks' pulls in lots of haskell, which

@@ -950,9 +950,9 @@ feature-set for programming Vala effectively.")
          #:exclude ("README.md" "LICENSE" "Art/" "package.json"
                     "package-lock.json" "Gulpfile.js")))))
    (home-page "https://github.com/EliverLara/Nordic")
-   (synopsis "Dark Gtk3.20+ theme using the Nord color pallete")
+   (synopsis "Dark Gtk3.20+ theme using the Nord color palette")
    (description "Nordic is a Gtk3.20+ theme created using the Nord color
-pallete.")
+palette.")
    (license license:gpl3))))
 
 (define-public tiramisu

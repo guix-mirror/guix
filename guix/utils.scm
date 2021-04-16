@@ -712,6 +712,7 @@ VERSIONS.  For example:
 (define (tarball-sans-extension tarball)
   "Return TARBALL without its .tar.* or .zip extension."
   (let ((end (or (string-contains tarball ".tar")
+                 (string-contains tarball ".tgz")
                  (string-contains tarball ".zip"))))
     (substring tarball 0 end)))
 

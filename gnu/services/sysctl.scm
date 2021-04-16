@@ -25,6 +25,8 @@
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match)
   #:export (sysctl-configuration
+            sysctl-configuration-sysctl
+            sysctl-configuration-settings
             sysctl-service-type
             %default-sysctl-settings))
 

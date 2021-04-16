@@ -19,6 +19,7 @@
 ;;; Copyright © 2020 divoplade <d@divoplade.fr>
 ;;; Copyright © 2020 pukkamustard <pukkamustard@posteo.net>
 ;;; Copyright © 2021 aecepoglu <aecepoglu@fastmail.fm>
+;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -158,7 +159,7 @@
       (properties
        `((max-silent-time . 14400))) ; 4 hours, expected even on x86_64
       (home-page "https://github.com/Ekdohibs/camlboot")
-      (synopsis "OCaml souce bootstrap")
+      (synopsis "OCaml source bootstrap")
       (description "OCaml is written in OCaml.  Its sources contain a pre-compiled
 bytecode version of @command{ocamlc} and @command{ocamllex} that are used to
 build the next version of the compiler.  Camlboot implements a bootstrap for
@@ -465,6 +466,71 @@ depend: $(STDLIB_MLIS) $(STDLIB_DEPS)"))
     (description "OCamlbuild is a generic build tool, that has built-in rules
 for building OCaml library and programs.")
     (license license:lgpl2.1+)))
+
+(define-public camlidl
+  (package
+    (name "camlidl")
+    (version "1.09")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/xavierleroy/camlidl")
+             (commit "camlidl109")))
+       (sha256
+        (base32 "0zrkaq7fk23b2b9vg6jwdjx7l0hdqp4synbbrw1zcg8gjf6n3c80"))
+       (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ;; No test suite
+       #:make-flags
+       (list
+        (string-append
+         "BINDIR=" (assoc-ref %outputs "out") "/bin")
+        (string-append
+         "OCAMLLIB=" (assoc-ref %outputs "out") "/lib/ocaml/site-lib/camlidl"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda _
+             (copy-file "config/Makefile.unix" "config/Makefile")
+             ;; Note: do not pass '-jN' as this appears to not be
+             ;; parallel-safe (race condition related to libcamlidl.a).
+             (invoke "make" "all")
+             #t))
+         (add-before 'install 'create-target-directories
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (string-append (assoc-ref outputs "out"))))
+               (mkdir-p
+                (string-append out "/bin"))
+               (mkdir-p
+                (string-append out "/lib/ocaml/site-lib/camlidl/stublibs"))
+               (mkdir-p
+                (string-append out "/lib/ocaml/site-lib/camlidl/caml")))
+             #t))
+         (add-after 'install 'install-meta
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (with-output-to-file
+                   (string-append out "/lib/ocaml/site-lib/camlidl/META")
+                 (lambda _
+                   (display
+                    (string-append
+                     "description = \"Stub code generator for OCaml/C interface\"
+version = \"" ,version "\"
+directory = \"^\"
+archive(byte) = \"com.cma\"
+archive(native) = \"com.cmxa\"")))))
+             #t)))))
+    (native-inputs
+     `(("ocaml" ,ocaml)))
+    (home-page "https://github.com/xavierleroy/camlidl")
+    (synopsis "Stub code generator for OCaml/C interface")
+    (description
+     "Camlidl is a stub code generator for Objective Caml.  It generates stub
+code for interfacing Caml with C from an IDL description of the C functions.")
+    (license license:lgpl2.1)))
 
 (define-public ocaml-extlib
   (package

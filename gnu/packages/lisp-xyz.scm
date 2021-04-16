@@ -25,6 +25,7 @@
 ;;; Copyright © 2021 Matthew Kraai <kraai@ftbfs.org>
 ;;; Copyright © 2021 André A. Gomes <andremegafone@gmail.com>
 ;;; Copyright © 2021 Cage <cage-dev@twistfold.it>
+;;; Copyright © 2021 Cameron Chaparro <cameron@cameronchaparro.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -64,6 +65,7 @@
   #:use-module (gnu packages file)
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages imagemagick)
@@ -120,9 +122,78 @@ portable between implementations.")
 (define-public ecl-alexandria
   (sbcl-package->ecl-package sbcl-alexandria))
 
-(define-public sbcl-golden-utils
-  (let ((commit "9424419d867d5c2f819196ee41667a818a5058e7")
+(define-public sbcl-bodge-utilities
+  (let ((commit "6304bac4abe06d53579e2c0fc4437d14ff077d9f")
         (revision "1"))
+    (package
+     (name "sbcl-bodge-utilities")
+     (version (git-version "1.0.0" revision commit))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/borodust/bodge-utilities")
+             (commit commit)))
+       (file-name (git-file-name "bodge-utilities" version))
+       (sha256
+        (base32 "1z1blj05q71vzh323qwyn9p3xs7v0mq2yhwfyzza5libp37wqm3c"))))
+     (build-system asdf-build-system/sbcl)
+     (inputs
+      `(("alexandria" ,sbcl-alexandria)
+        ("cffi" ,sbcl-cffi)
+        ("claw" ,sbcl-claw)
+        ("dissect" ,sbcl-dissect)
+        ("local-time" ,sbcl-local-time)
+        ("log4cl" ,sbcl-log4cl)
+        ("split-sequence" ,sbcl-split-sequence)
+        ("static-vectors" ,sbcl-static-vectors)
+        ("trivial-gray-streams" ,sbcl-trivial-gray-streams)))
+     (home-page "https://github.com/borodust/bodge-utilities")
+     (synopsis "Common Lisp utilities library for CL-BODGE")
+     (description
+      "This Common Lisp library provides utilities for the @emph{Bodge} library
+collection.")
+     (license license:expat))))
+
+(define-public ecl-bodge-utilities
+  (sbcl-package->ecl-package sbcl-bodge-utilities))
+
+(define-public cl-bodge-utilities
+  (sbcl-package->cl-source-package sbcl-bodge-utilities))
+
+(define-public sbcl-bodge-queue
+  (let ((commit "948c9a501dcd412689952d09eb7453ec2722336a")
+        (revision "0"))
+    (package
+      (name "sbcl-bodge-queue")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/borodust/bodge-queue")
+               (commit commit)))
+         (file-name (git-file-name "bodge-queue" version))
+         (sha256
+          (base32 "148hjikqk8v2m30mj15xh89zni6szf9z3prav580qk9dqr8djjdr"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (home-page "https://github.com/borodust/bodge-queue")
+      (synopsis "Simple queue for Common Lisp")
+      (description "This Common Lisp library provides a simple FIFO
+implementation with no external dependencies.")
+      (license license:expat))))
+
+(define-public cl-bodge-queue
+  (sbcl-package->cl-source-package sbcl-bodge-queue))
+
+(define-public ecl-bodge-queue
+  (sbcl-package->ecl-package sbcl-bodge-queue))
+
+(define-public sbcl-golden-utils
+  (let ((commit "62a5cb948a011eb26e7a89f56d5839a3334b4100")
+        (revision "2"))
     (package
       (name "sbcl-golden-utils")
       (version (git-version "0.0.0" revision commit))
@@ -132,9 +203,9 @@ portable between implementations.")
          (uri (git-reference
                (url "https://git.mfiano.net/mfiano/golden-utils")
                (commit commit)))
-         (file-name (git-file-name name version))
+         (file-name (git-file-name "golden-utils" version))
          (sha256
-          (base32 "15x0phm6820yj3h37ibi06gjyh6z45sd2nz2n8lcbfflwm086q0h"))))
+          (base32 "13mvxqwd1nmpq8h5hb1s60wyqdj7ji4haxrqr0sy3csyqa8aq2j8"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("alexandria" ,sbcl-alexandria)))
@@ -2055,7 +2126,7 @@ also be supported.")
 (define-public sbcl-ironclad
   (package
     (name "sbcl-ironclad")
-    (version "0.54")
+    (version "0.55")
     (source
      (origin
        (method git-fetch)
@@ -2063,7 +2134,7 @@ also be supported.")
              (url "https://github.com/sharplispers/ironclad/")
              (commit (string-append "v" version))))
        (sha256
-        (base32 "07g0wpvfqq2yk23prs890d4qvbnr3xd6w8ssd88g89xdg483wpvk"))
+        (base32 "1w4slnc4143w1gcff1wxsivzb8kcji0bpd7y9rld3sabay0qprwl"))
        (file-name (git-file-name name version))))
     (build-system asdf-build-system/sbcl)
     (native-inputs
@@ -2890,6 +2961,39 @@ from GLSL as data.")
 (define-public cl-glsl-spec
   (sbcl-package->cl-source-package sbcl-glsl-spec))
 
+(define-public sbcl-rtg-math
+  (let ((commit "29fc5b3d0028a4a11a82355ecc8cca62662c69e0")
+        (revision "1"))
+    (package
+      (name "sbcl-rtg-math")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/cbaggers/rtg-math")
+               (commit commit)))
+         (file-name (git-file-name "rtg-math" version))
+         (sha256
+          (base32 "0bhxxnv7ldkkb18zdxyz2rj2a3iawzq2kcp7cn5i91iby7n0082x"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("documentation-utils" ,sbcl-documentation-utils)
+         ("glsl-symbols" ,sbcl-glsl-spec)))
+      (home-page "https://github.com/cbaggers/rtg-math")
+      (synopsis "Common Lisp library of game-related math functions")
+      (description
+       "RTG-MATH provides a selection of the math routines most commonly needed
+for making realtime graphics in Lisp.")
+      (license license:bsd-2))))
+
+(define-public ecl-rtg-math
+  (sbcl-package->ecl-package sbcl-rtg-math))
+
+(define-public cl-rtg-math
+  (sbcl-package->cl-source-package sbcl-rtg-math))
+
 (define-public sbcl-varjo
   (let ((commit "9e77f30220053155d2ef8870ceba157f75e538d4")
         (revision "1"))
@@ -3345,10 +3449,10 @@ is a library for creating graphical user interfaces.")
   (sbcl-package->ecl-package sbcl-cl-cffi-gtk))
 
 (define-public sbcl-cl-webkit
-  (let ((commit "0bc05cc73257670ab241853b9cc9ccb68940fe44"))
+  (let ((commit "db855639d4a13f6ba296959cf11635b6b67421bf"))
     (package
       (name "sbcl-cl-webkit")
-      (version (git-version "2.4" "10" commit))
+      (version (git-version "2.4" "13" commit))
       (source
        (origin
          (method git-fetch)
@@ -3358,7 +3462,7 @@ is a library for creating graphical user interfaces.")
          (file-name (git-file-name "cl-webkit" version))
          (sha256
           (base32
-           "1kg6illspvb5647pm0x819ag2n7njnqvrm18jzgd28vk6nlkrcmq"))))
+           "01alj5bfsh2983pwpdy0zpa2rvl4kl0mqzs08ff46is3cb8fqs0g"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("cffi" ,sbcl-cffi)
@@ -7223,10 +7327,10 @@ of C+GObject libraries without the need of writing dedicated bindings.")
       (inputs
        `(("ppcre" ,sbcl-cl-ppcre)))
       (home-page "https://github.com/EuAndreh/cl-slug")
-      (synopsis "Multi-language slug formater")
+      (synopsis "Multi-language slug formatter")
       (description
        "This is a small Common Lisp library to make slugs, mainly for URIs,
-from english and beyond.")
+from English and beyond.")
       (license license:llgpl))))
 
 (define-public ecl-cl-slug
@@ -9949,7 +10053,7 @@ approach to templating.")
 (define-public sbcl-postmodern
   (package
     (name "sbcl-postmodern")
-    (version "1.32.8")
+    (version "1.32.9")
     (source
      (origin
        (method git-fetch)
@@ -9958,7 +10062,7 @@ approach to templating.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0vr5inbr8dldf6dsl0qj3h2yrnnsayzfwxfzwkn1pk7xbns2l78q"))))
+        (base32 "137jci4hn4vlxf48y39k0di27kc89kvxy3brmn3vl9xq56sy6mhz"))))
     (build-system asdf-build-system/sbcl)
     (native-inputs
      `(("fiveam" ,sbcl-fiveam)))
@@ -13242,7 +13346,7 @@ and lean bindings to C libraries.")
       (home-page "https://github.com/borodust/claw-utils")
       (synopsis "Utilities for easier autowrapping")
       (description
-       "This Common Lisp library contains various handy utilties to help
+       "This Common Lisp library contains various handy utilities to help
 autowrapping with @code{claw}.")
       (license license:expat))))
 
@@ -15262,6 +15366,35 @@ line tool @code{df} and get disk space information using @code{statvfs}.")
 (define-public cl-diskspace
   (sbcl-package->cl-source-package sbcl-cl-diskspace))
 
+(define-public sbcl-cl-cpus
+  (package
+    (name "sbcl-cl-cpus")
+    (version "0.0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/muyinliu/cl-cpus")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name "cl-cpus" version))
+       (sha256
+        (base32 "0sdaff9hpsx7bpkkkqavmxmrrlc2d61gmqjjgn8xchncng4a0rf8"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("cffi" ,sbcl-cffi)))
+    (home-page "https://github.com/muyinliu/cl-cpus")
+    (synopsis "Common Lisp feature to get number of CPUs")
+    (description
+     "This package provides a Common Lisp system which has only one function to
+return the CPU count of the current system.")
+    (license license:isc)))
+
+(define-public ecl-cl-cpus
+  (sbcl-package->ecl-package sbcl-cl-cpus))
+
+(define-public cl-cpus
+  (sbcl-package->cl-source-package sbcl-cl-cpus))
+
 (define-public sbcl-fof
   (package
     (name "sbcl-fof")
@@ -15342,3 +15475,383 @@ numbers in Common Lisp.")
 
 (define-public cl-computable-reals
   (sbcl-package->cl-source-package sbcl-computable-reals))
+
+(define-public sbcl-html-template
+  (package
+    (name "sbcl-html-template")
+    (version "0.9.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/edicl/html-template")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0wz3czvjsn4x971dsiia9f9nvvcmbkablcl75zsvxndkimc93wxb"))))
+    (build-system asdf-build-system/sbcl)
+    (home-page "https://edicl.github.io/html-template/")
+    (synopsis "HTML templates from Common Lisp")
+    (description
+     "HTML-TEMPLATE is a Common Lisp library which can be used to fill
+templates with arbitrary (string) values at runtime.  The result does not have
+to be HTML.
+
+It is loosely modeled after the Perl module @code{HTML::Template} and
+partially compatible with a its syntax, though both libraries contain some
+extensions that the other does not support.
+
+HTML-TEMPLATE translates templates into efficient closures which can be
+re-used as often as needed.  It uses a cache mechanism so you can update
+templates while your program is running and have the changes take effect
+immediately.")
+    (license license:bsd-2)))
+
+(define-public ecl-html-template
+  (sbcl-package->ecl-package sbcl-html-template))
+
+(define-public cl-html-template
+  (sbcl-package->cl-source-package sbcl-html-template))
+
+(define-public sbcl-quickproject
+  (package
+    (name "sbcl-quickproject")
+    (version "1.4.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/xach/quickproject")
+             (commit (string-append "release-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1szs8p2wr1yr9mjmj3h3557l6wxzzga0iszimb68z0hb1jj3lva6"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("cl-fad" ,sbcl-cl-fad)
+       ("html-template" ,sbcl-html-template)))
+    (arguments
+     '(#:asd-files '("quickproject.asd")))
+    (home-page "https://xach.com/lisp/quickproject/")
+    (synopsis "Create Common Lisp project skeletons")
+    (description
+     "Quickproject provides a quick way to make a Common Lisp project.  After
+creating a project, it extends the ASDF registry so the project may be
+immediately loaded.")
+    (license license:expat)))
+
+(define-public ecl-quickproject
+  (sbcl-package->ecl-package sbcl-quickproject))
+
+(define-public cl-quickproject
+  (sbcl-package->cl-source-package sbcl-quickproject))
+
+(define-public sbcl-bodge-math
+  (let ((commit "9159b7faf88d440024c07110dbef2abddb20b9af")
+        (revision "1"))
+    (package
+     (name "sbcl-bodge-math")
+     (version (git-version "1.0.0" revision commit))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/borodust/bodge-math")
+             (commit commit)))
+       (file-name (git-file-name "bodge-math" version))
+       (sha256
+        (base32 "0r3vnl9lywn4ksy34apcv6j825qp7l1naddawr14v4lwacndb80v"))))
+     (build-system asdf-build-system/sbcl)
+     (inputs
+      `(("bodge-utilities" ,sbcl-bodge-utilities)
+        ("rtg-math" ,sbcl-rtg-math)))
+     (home-page "https://github.com/borodust/bodge-math")
+     (synopsis "Common Lisp core math utilities of BODGE library collection")
+     (description
+      "This Common Lisp package contains the core math utilities of the
+@emph{Bodge} library collection.")
+     (license license:expat))))
+
+(define-public ecl-bodge-math
+  (sbcl-package->ecl-package sbcl-bodge-math))
+
+(define-public cl-bodge-math
+  (sbcl-package->cl-source-package sbcl-bodge-math))
+
+(define-public sbcl-cl-conspack
+  (let ((commit "fc8473bc6f929696b03b43820596b7c976c4678e")
+        (revision "1"))
+    (package
+     (name "sbcl-cl-conspack")
+     (version (git-version "0.0.0" revision commit))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/conspack/cl-conspack")
+             (commit commit)))
+       (file-name (git-file-name "cl-conspack" version))
+       (sha256
+        (base32 "0b7qzvsrpvnw12hqhjmz0b02sigj0kdjy55j4k7xzmj8684cs8bx"))))
+     (build-system asdf-build-system/sbcl)
+     ;; FIXME: (Sharlatan-20210331T220652+0100): Test are disabled because of:
+     ;;
+     ;; Error while trying to load definition for system cl-conspack-test
+     ;; from pathname .../cl-conspack/cl-conspack-test.asd:
+     ;; Error opening .../checkl/formalize-tmpGHU3ALSV.fasl": Permission denied
+     ;;
+     ;; It looks like the issues is in CheckL itself as other packages keep
+     ;; failing test where it's in use.
+     (arguments
+      '(#:tests? #f
+        #:asd-files '("cl-conspack.asd")))
+     (native-inputs
+      `(("checkl" ,sbcl-checkl)))
+     (inputs
+      `(("alexandria" ,sbcl-alexandria)
+        ("closer-mop" ,sbcl-closer-mop)
+        ("fast-io" ,sbcl-fast-io)
+        ("ieee-floats" ,sbcl-ieee-floats)
+        ("trivial-garbage" ,sbcl-trivial-garbage)
+        ("trivial-utf-8" ,sbcl-trivial-utf-8)))
+     (home-page "https://github.com/conspack/cl-conspack")
+     (synopsis "CONSPACK implementation for Common Lisp")
+     (description
+      "This package provides a CONSPACK implementation for Common Lisp.")
+     (license license:bsd-3))))
+
+(define-public ecl-cl-conspack
+  (sbcl-package->ecl-package sbcl-cl-conspack))
+
+(define-public cl-conspack
+  (sbcl-package->cl-source-package sbcl-cl-conspack))
+
+(define-public sbcl-cl-opengl
+  (let ((commit "e2d83e0977b7e7ac3f3d348d8ccc7ccd04e74d59")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-opengl")
+      (version (git-version "0.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/3b/cl-opengl")
+               (commit commit)))
+         (file-name (git-file-name "cl-opengl" version))
+         (sha256
+          (base32 "0mhqmll09f079pnd6mgswz9nvr6h5n27d4q7zpmm2igf1v460id7"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:asd-systems '("cl-opengl" "cl-glu" "cl-glut")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-lib-path
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "gl/library.lisp"
+                 (("libGL.so" all)
+                  (string-append (assoc-ref inputs "mesa") "/lib/" all)))
+               (substitute* "glu/library.lisp"
+                 (("libGLU.so" all)
+                  (string-append (assoc-ref inputs "glu") "/lib/" all)))
+               (substitute* "glut/library.lisp"
+                 (("libglut.so" all)
+                  (string-append (assoc-ref inputs "freeglut") "/lib/" all)))
+               #t)))))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cffi" ,sbcl-cffi)
+         ("float-features" ,sbcl-float-features)
+         ("freeglut" ,freeglut)
+         ("glu" ,glu)
+         ("mesa" ,mesa)))
+      (home-page "https://github.com/3b/cl-opengl")
+      (synopsis "Common Lisp bindings to OpenGL, GLU and GLUT APIs")
+      (description
+       "This package provides a set of bindings and utilities for accessing the
+OpenGL (Mesa), GLU and GLUT (FreeGLUT) APIs using CFFI.")
+      (license license:bsd-3))))
+
+(define-public ecl-cl-opengl
+  (sbcl-package->ecl-package sbcl-cl-opengl))
+
+(define-public cl-opengl
+  (sbcl-package->cl-source-package sbcl-cl-opengl))
+
+(define-public sbcl-shadow
+  (let ((commit "b2031adbfba3579b48c9d39ad997e19b79b6852f")
+        (revision "1"))
+    (package
+      (name "sbcl-shadow")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://git.mfiano.net/mfiano/shadow")
+               (commit commit)))
+         (file-name (git-file-name "shadow" version))
+         (sha256
+          (base32 "0w1i734gkdkziin74ql2nhx7jdjxx02ylssaa6qdrvnj4br1124a"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("cffi" ,sbcl-cffi)
+         ("cl-opengl" ,sbcl-cl-opengl)
+         ("glsl-packing" ,sbcl-glsl-packing)
+         ("golden-utils" ,sbcl-golden-utils)
+         ("static-vectors" ,sbcl-static-vectors)
+         ("varjo" ,sbcl-varjo)))
+      (home-page "https://git.mfiano.net/mfiano/shadow")
+      (synopsis "Management system for OpenGL shader programs")
+      (description
+       "This package provides a Common Lisp library for defining OpenGL shader
+programs.  There are also functions for referencing shader programs by name,
+querying for basic information about them, modifying uniform variables
+throughout the lifecycle of an OpenGL application, and managing certain OpenGL
+buffer object types (UBO, SSBO currently).")
+      (license license:expat))))
+
+(define-public ecl-shadow
+  (sbcl-package->ecl-package sbcl-shadow))
+
+(define-public cl-shadow
+  (sbcl-package->cl-source-package sbcl-shadow))
+
+(define-public sbcl-umbra
+  (let ((commit "d6ef2f6cbfa26180929061129eaf325bf17f73d8")
+        (revision "1"))
+    (package
+      (name "sbcl-umbra")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://git.mfiano.net/mfiano/umbra")
+               (commit commit)))
+         (file-name (git-file-name "umbra" version))
+         (sha256
+          (base32 "04vyh2j00zdpb8ryxr8g81wjcmqlz9wrn55r3cypcj4qg970r5wi"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("golden-utils" ,sbcl-golden-utils)
+         ("shadow" ,sbcl-shadow)
+         ("varjo" ,sbcl-varjo)))
+      (home-page "https://git.mfiano.net/mfiano/umbra")
+      (synopsis "Common Lisp library of reusable GPU shader functions")
+      (description
+       "This is a Common Lisp library consisting of a collection of useful GPU
+shader functions, written with @code{Shadow}.")
+      (license license:expat))))
+
+(define-public ecl-umbra
+  (sbcl-package->ecl-package sbcl-umbra))
+
+(define-public cl-umbra
+  (sbcl-package->cl-source-package sbcl-umbra))
+
+(define-public sbcl-abstract-classes
+  (let ((commit "7fa74f1e057f9ba7c1ffecff14f049f979e45267")
+        (revision "1"))
+    (package
+      (name "sbcl-abstract-classes")
+      (version (git-version "1.7.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://bitbucket.org/eeeickythump/cl-abstract-classes")
+               (commit commit)))
+         (file-name (git-file-name "cl-abstract-classes" version))
+         (sha256
+          (base32 "06lby4i6xbbgs7kgb0f3fqybvyskyg6djhrf967lnysv7hn3zpg9"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("closer-mop" ,sbcl-closer-mop)))
+      (arguments
+       `(#:asd-systems '("abstract-classes" "singleton-classes")))
+      (home-page "https://bitbucket.org/eeeickythump/cl-abstract-classes")
+      (synopsis "Abstract, final, and singleton metaclasses for CLOS")
+      (description
+       "This package provides Common Lisp extension to the MOP to allow
+abstract, final and singleton classes.")
+      (license license:public-domain))))
+
+(define-public ecl-abstract-classes
+  (sbcl-package->ecl-package sbcl-abstract-classes))
+
+(define-public cl-abstract-classes
+  (sbcl-package->cl-source-package sbcl-abstract-classes))
+
+(define-public sbcl-coalton
+  (let ((commit "4a42ffb4222fde3abfd1b50d96e455ff2eef9fe8")
+        (revision "1"))
+    (package
+      (name "sbcl-coalton")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/stylewarning/coalton")
+               (commit commit)))
+         (file-name (git-file-name "coalton" version))
+         (sha256
+          (base32 "0aidwwam7cnhb3p9212zbv5w2dl6kr5iklzanypzr1a9lqaxwdlk"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("fiasco" ,sbcl-fiasco)))
+      (inputs
+       `(("abstract-classes" ,sbcl-abstract-classes)
+         ("alexandria" ,sbcl-alexandria)
+         ("global-vars" ,sbcl-global-vars)
+         ("optima" ,sbcl-optima)
+         ("trivial-garbage" ,sbcl-trivial-garbage)))
+      (home-page "https://github.com/stylewarning/coalton")
+      (synopsis "Dialect of ML in Common Lisp")
+      (description
+       "Coalton is a dialect of ML embedded in Common Lisp.  It emphasizes
+practicality and interoperability with Lisp, and is intended to be a DSL that
+allows one to gradually make their programs safer.")
+      (license license:expat))))
+
+(define-public ecl-coalton
+  (sbcl-package->ecl-package sbcl-coalton))
+
+(define-public cl-coalton
+  (sbcl-package->cl-source-package sbcl-coalton))
+
+(define-public sbcl-clip
+  (let ((commit "7afa68702fbb99c47ed115ea0faccd97a29d9b2e")
+        (revision "1"))
+    (package
+      (name "sbcl-clip")
+      (version (git-version "0.7.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/shinmera/clip")
+               (commit commit)))
+         (file-name (git-file-name "clip" version))
+         (sha256
+          (base32 "13kkajkva2shm19fvn4yashsw18l6imv2rmy3hmpcky7g5ay7bv3"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("array-utils" ,sbcl-array-utils)
+         ("lquery" ,sbcl-lquery)))
+      (home-page "https://shinmera.github.io/clip/")
+      (synopsis "Common Lisp HTML templating engine")
+      (description
+       "Clip is an attempt at a templating library that allows you to write
+templates in a way that is both accessible to direct webdesign and
+flexible.  The main idea is to incorporate transformation commands into an HTML
+file through tags and attributes.  Clip is heavily dependant on Plump and
+lQuery.")
+      (license license:zlib))))
+
+(define-public ecl-clip
+  (sbcl-package->ecl-package sbcl-clip))
+
+(define-public cl-clip
+  (sbcl-package->cl-source-package sbcl-clip))

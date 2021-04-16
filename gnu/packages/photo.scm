@@ -240,14 +240,14 @@ data as produced by digital cameras.")
 (define-public libgphoto2
   (package
     (name "libgphoto2")
-    (version "2.5.26")
+    (version "2.5.27")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/gphoto/libgphoto/"
                                   version "/libgphoto2-" version ".tar.bz2"))
               (sha256
                (base32
-                "1m5wxap3x9z6x8s2gj3sw9lqwlmbgz00dv6z3h3qk15prfizwh3p"))))
+                "1ms06b3dj1p33aypcb16gg5pn7fylbylsk9cnnqa0j29qiw59f7q"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
@@ -271,14 +271,14 @@ from digital cameras.")
 (define-public gphoto2
   (package
     (name "gphoto2")
-    (version "2.5.26")
+    (version "2.5.27")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/gphoto/gphoto/" version
                                   "/gphoto2-" version ".tar.bz2"))
               (sha256
                (base32
-                "0bxbcn31xalsvjp8fra324hf2105y3ps7zlyfz11v71j0lxj2lvn"))))
+                "0f4d3q381jnnkcqkb2dj1k709skp65qihl5xm80zandvl69lw19h"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -355,15 +355,16 @@ and a wide variety of other metadata.")
 (define-public libpano13
   (package
     (name "libpano13")
-    (version "2.9.19")
+    (version "2.9.20_rc3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/panotools/libpano13/"
-                                  "libpano13-" version "/"
-                                  "libpano13-" version ".tar.gz"))
+                                  "libpano13-" (first
+                                                (string-split version #\_))
+                                  "/libpano13-" version ".tar.gz"))
               (sha256
                (base32
-                "1a4m3plmfcrrplqs9zfzhc5apibn10m5sajpizm1sd3q74w5fwq3"))))
+                "12cv4886l1czfjwy7k6ipgf3zjksgwhdjzr2s9fdg33vqcv2hlrv"))))
     (build-system cmake-build-system)
     (inputs
      `(("libjpeg" ,libjpeg-turbo)

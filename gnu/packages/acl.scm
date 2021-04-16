@@ -6,6 +6,7 @@
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2021 Lars-Dominik Braun <ldb@leibniz-psychology.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,13 +27,15 @@
   #:use-module (guix licenses)
   #:use-module (gnu packages attr)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages hurd)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages perl)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (gnu packages)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python))
 
 (define-public acl
   (package
@@ -93,3 +96,41 @@
     (description
      "Library and tools for manipulating access control lists.")
     (license (list gpl2+ lgpl2.1+))))
+
+(define-public python-pylibacl
+  (package
+    (name "python-pylibacl")
+    (version "0.6.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "pylibacl" version))
+        (sha256
+          (base32
+            "1zyrk2m20p5b6bdwxhrwib273i6i71zyr5hzssbxfqis5qra9848"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-tests
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             ;; These tests operate on real files, but our tempfs does not support
+             ;; ACLs
+             (substitute* "tests/test_acls.py"
+               (("( *)def test_applyto(_extended(_mixed)?)?" match indent)
+                (string-append indent "@pytest.mark.skip(reason=\"guix\")\n" match)))
+             #t))
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "tests"))
+               #t)))))
+    (inputs `(("acl" ,acl)))
+    (native-inputs `(("python-pytest" ,python-pytest)))
+    (home-page "https://pylibacl.k1024.org/")
+    (synopsis "POSIX.1e ACLs for python")
+    (description "Python 3.4+ extension module that allows you to manipulate
+the POSIX.1e Access Control Lists present in some OS/file-systems
+combinations.")
+    (license lgpl2.1+)))

@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2016, 2021 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
@@ -42,130 +42,125 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages xml)
-  #:use-module (gnu packages xorg))
+  #:use-module (gnu packages xorg)
+  #:use-module (srfi srfi-1))
 
-(define-public imagemagick
-  (package
-    (name "imagemagick")
-    ;; The 7 release series has an incompatible API, while the 6 series is still
-    ;; maintained. Don't update to 7 until we've made sure that the ImageMagick
-    ;; users are ready for the 7-series API.
-    (version "6.9.11-48")
-    (replacement imagemagick/fixed)
-    (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://imagemagick/ImageMagick-"
-                                 version ".tar.xz"))
-             (sha256
-              (base32
-               "0m8nkmywkqwyrr01q7aiakj6mi4rb2psjgzv8n0x82x3s1rpfyql"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:configure-flags '("--with-frozenpaths" "--without-gcc-arch"
+;; This is a variant of the 'imagemagick' package that is not updated often.
+;; It is intended to be used as a native-input at build-time only, e.g. by
+;; 'gtk-doc' (via 'dblatex') for generating package documentation.  This
+;; allows the main 'imagemagick' package to be freely updated on the 'master'
+;; branch without triggering an excessive number of rebuilds.
+;;
+;; Normally the grafts mechanism would be used, but there are often
+;; difficulties grafting imagemagick, e.g. because upstream changes the ABI
+;; between micro version updates.  Also, the overwhelming majority of
+;; dependencies on imagemagick are via 'gtk-doc' in 'native-inputs', where
+;; grafting is ineffective.  See:
+;; <https://lists.gnu.org/archive/html/guix-devel/2021-03/msg00381.html>.
+(define-public imagemagick/stable
+  (hidden-package
+   (package
+     (name "imagemagick")
+     ;; The 7 release series has an incompatible API, while the 6 series is still
+     ;; maintained. Don't update to 7 until we've made sure that the ImageMagick
+     ;; users are ready for the 7-series API.
+     (version "6.9.11-48")
+     (source (origin
+               (method url-fetch)
+               (uri (string-append "mirror://imagemagick/ImageMagick-"
+                                   version ".tar.xz"))
+               (sha256
+                (base32
+                 "0m8nkmywkqwyrr01q7aiakj6mi4rb2psjgzv8n0x82x3s1rpfyql"))))
+     (build-system gnu-build-system)
+     (arguments
+      `(#:configure-flags '("--with-frozenpaths" "--without-gcc-arch"
 
-                           ;; Do not embed the build date in binaries.
-                           "--enable-reproducible-build")
+                            ;; Do not embed the build date in binaries.
+                            "--enable-reproducible-build")
 
-       ;; FIXME: The test suite succeeded before version 6.9.6-2.
-       ;; Try enabling it again with newer releases.
-       #:tests? #f
-       #:phases (modify-phases %standard-phases
-                  (add-before
-                   'build 'pre-build
-                   (lambda* (#:key outputs #:allow-other-keys)
-                     (substitute* "Makefile"
-                       ;; Clear the `LIBRARY_PATH' setting, which otherwise
-                       ;; interferes with our own use.
-                       (("^LIBRARY_PATH[[:blank:]]*=.*$")
-                        "")
+        ;; FIXME: The test suite succeeded before version 6.9.6-2.
+        ;; Try enabling it again with newer releases.
+        #:tests? #f
+        #:phases (modify-phases %standard-phases
+                   (add-before
+                       'build 'pre-build
+                     (lambda* (#:key outputs #:allow-other-keys)
+                       (substitute* "Makefile"
+                         ;; Clear the `LIBRARY_PATH' setting, which otherwise
+                         ;; interferes with our own use.
+                         (("^LIBRARY_PATH[[:blank:]]*=.*$")
+                          "")
 
-                       ;; Since the Makefile overrides $docdir, modify it to
-                       ;; refer to what we want.
-                       (("^DOCUMENTATION_PATH[[:blank:]]*=.*$")
-                        (let ((doc (assoc-ref outputs "doc")))
-                          (string-append "DOCUMENTATION_PATH = "
-                                         doc "/share/doc/"
-                                         ,name "-"
-                                         ,(package-version this-package) "\n"))))
-                     #t))
-                  (add-before
-                   'configure 'strip-configure-xml
-                   (lambda _
-                     (substitute* "config/configure.xml.in"
-                       ;; Do not record 'configure' arguments in the
-                       ;; configure.xml file that gets installed: That would
-                       ;; include --docdir, and thus retain a reference to the
-                       ;; 'doc' output.
-                       (("@CONFIGURE_ARGS@")
-                        "not recorded"))
-                     #t)))))
-    ;; TODO: Add Jasper etc.
-    (inputs `(("fftw" ,fftw)
-              ("graphviz" ,graphviz)
-              ("ghostscript" ,ghostscript)
-              ("lcms" ,lcms)
-              ("libx11" ,libx11)
-              ("zlib" ,zlib)
-              ("libxml2" ,libxml2)
-              ("libtiff" ,libtiff)
-              ("libpng" ,libpng)
-              ("libjpeg" ,libjpeg-turbo)
-              ("pango" ,pango)
-              ("freetype" ,freetype)
-              ("bzip2" ,bzip2)
-              ("xz" ,xz)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
-    (outputs '("out"
-               "doc"))                          ; 26 MiB of HTML documentation
-    (home-page "https://www.imagemagick.org/")
-    (synopsis "Create, edit, compose, or convert bitmap images")
-    (description
-     "ImageMagick is a software suite to create, edit, compose, or convert
+                         ;; Since the Makefile overrides $docdir, modify it to
+                         ;; refer to what we want.
+                         (("^DOCUMENTATION_PATH[[:blank:]]*=.*$")
+                          (let ((doc (assoc-ref outputs "doc")))
+                            (string-append "DOCUMENTATION_PATH = "
+                                           doc "/share/doc/"
+                                           ,name "-"
+                                           ,(package-version this-package) "\n"))))
+                       #t))
+                   (add-before
+                       'configure 'strip-configure-xml
+                     (lambda _
+                       (substitute* "config/configure.xml.in"
+                         ;; Do not record 'configure' arguments in the
+                         ;; configure.xml file that gets installed: That would
+                         ;; include --docdir, and thus retain a reference to the
+                         ;; 'doc' output.
+                         (("@CONFIGURE_ARGS@")
+                          "not recorded"))
+                       #t)))))
+     ;; TODO: Add Jasper etc.
+     (inputs `(("fftw" ,fftw)
+               ("graphviz" ,graphviz)
+               ("ghostscript" ,ghostscript)
+               ("lcms" ,lcms)
+               ("libx11" ,libx11)
+               ("zlib" ,zlib)
+               ("libxml2" ,libxml2)
+               ("libtiff" ,libtiff)
+               ("libpng" ,libpng)
+               ("libjpeg" ,libjpeg-turbo)
+               ("pango" ,pango)
+               ("freetype" ,freetype)
+               ("bzip2" ,bzip2)
+               ("xz" ,xz)))
+     (native-inputs `(("pkg-config" ,pkg-config)))
+     (outputs '("out"
+                "doc"))                 ; 26 MiB of HTML documentation
+     (home-page "https://www.imagemagick.org/")
+     (synopsis "Create, edit, compose, or convert bitmap images")
+     (description
+      "ImageMagick is a software suite to create, edit, compose, or convert
 bitmap images.  It can read and write images in a variety of formats (over 100)
 including DPX, EXR, GIF, JPEG, JPEG-2000, PDF, PhotoCD, PNG, Postscript, SVG,
 and TIFF.  Use ImageMagick to resize, flip, mirror, rotate, distort, shear and
 transform images, adjust image colors, apply various special effects, or draw
 text, lines, polygons, ellipses and Bézier curves.")
-    (license (license:fsf-free "http://www.imagemagick.org/script/license.php"))))
+     (license (license:fsf-free "http://www.imagemagick.org/script/license.php")))))
 
-(define-public imagemagick/fixed
+(define-public imagemagick
   (package
-    (inherit imagemagick)
-    (name "imagemagick")
-    ;; 'g' for 'guix', appended character to retain version length so grafting
-    ;; works properly.
-    (version "6.9.12-2g")
+    (inherit imagemagick/stable)
+    (properties (alist-delete 'hidden? (package-properties imagemagick/stable)))
+    ;; The 7 release series has an incompatible API, while the 6 series is still
+    ;; maintained. Don't update to 7 until we've made sure that the ImageMagick
+    ;; users are ready for the 7-series API.
+    (version "6.9.12-4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://imagemagick/ImageMagick-"
-                                  ;; Hardcode the version here since we had to
-                                  ;; change it above.
-                                  "6.9.12-2.tar.xz"))
+                                  version ".tar.xz"))
               (sha256
                (base32
-                "17da5zihz58qm41y61sbvw626m5xfwr2nzszlikrvxyq1j1q7asa"))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments imagemagick)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (add-after 'install 'fix-compat-cheat-rename-so
-             (lambda* (#:key outputs #:allow-other-keys)
-               (with-directory-excursion
-                   (string-append (assoc-ref outputs "out")
-                                  "/lib")
-                 (symlink "libMagick++-6.Q16.so.9.0.0"
-                          "libMagick++-6.Q16.so.8.0.0")
-                 (symlink "libMagick++-6.Q16.so.9"
-                          "libMagick++-6.Q16.so.8")
-                 (symlink "libMagickCore-6.Q16.so.7.0.0"
-                          "libMagickCore-6.Q16.so.6.0.0")
-                 (symlink "libMagickCore-6.Q16.so.7"
-                          "libMagickCore-6.Q16.so.6")
-                 (symlink "libMagickWand-6.Q16.so.7.0.0"
-                          "libMagickWand-6.Q16.so.6.0.0")
-                 (symlink "libMagickWand-6.Q16.so.7"
-                          "libMagickWand-6.Q16.so.6"))
-               #t))))))))
+                "1pkwij76yz7vd5grl6520pgpa912qb6kh34qamx4zfndwcx6cf6b"))
+              (patches
+               (search-patches "imagemagick-ReadDCMImage-fix.patch"
+                               "imagemagick-ReadDCMPixels-fix.patch"
+                               "imagemagick-WriteTHUMBNAILImage-fix.patch"
+                               "imagemagick-CVE-2020-27829.patch"))))))
 
 (define-public perl-image-magick
   (package

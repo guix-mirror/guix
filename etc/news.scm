@@ -12,6 +12,8 @@
 ;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;; Copyright © 2021 Leo Famulari <leo@famulari.name>
 ;; Copyright © 2021 Zhu Zihao <all_but_last@163.com>
+;; Copyright © 2021 Chris Marusich <cmmarusich@gmail.com>
+;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;
 ;; Copying and distribution of this file, with or without modification, are
 ;; permitted in any medium without royalty provided the copyright notice and
@@ -19,6 +21,98 @@
 
 (channel-news
  (version 0)
+
+ (entry (commit "2161820ebbbab62a5ce76c9101ebaec54dc61586")
+        (title
+         (en "Risk of local privilege escalation during user account creation")
+         (de "Risiko lokaler Rechteausweitung während der Erstellung von Benutzerkonten"))
+        (body
+         (en "A security vulnerability that can lead to local privilege
+escalation has been found in the code that creates user accounts on Guix
+System---Guix on other distros is unaffected.  The system is only vulnerable
+during the activation of user accounts that do not already exist.
+
+This bug is fixed and Guix System users are advised to upgrade their system,
+with a command along the lines of:
+
+@example
+guix system reconfigure /run/current-system/configuration.scm
+@end example
+
+The attack can happen when @command{guix system reconfigure} is running.
+Running @command{guix system reconfigure} can trigger the creation of new user
+accounts if the configuration specifies new accounts.  If a user whose account
+is being created manages to log in after the account has been created but
+before ``skeleton files'' copied to its home directory have the right
+ownership, they may, by creating an appropriately-named symbolic link in the
+home directory pointing to a sensitive file, such as @file{/etc/shadow}, get
+root privileges.
+
+See @uref{https://issues.guix.gnu.org/47584} for more information on this
+bug.")
+         (de "Eine Sicherheitslücke, die eine lokale Rechteausweitung zur
+Folge haben kann, wurde in dem Code gefunden, mit dem Benutzerkonten auf Guix
+System angelegt werden — Guix auf anderen Distributionen ist nicht betroffen.
+Das System kann nur während der Aktivierung noch nicht existierender
+Benutzerkonten angegriffen werden.
+
+Der Fehler wurde behoben und wir empfehlen Nutzern von Guix System, ihre
+Systeme zu aktualisieren, mit einem Befehl wie:
+
+@example
+guix system reconfigure /run/current-system/configuration.scm
+@end example
+
+Der Angriff kann erfolgen, während @command{guix system reconfigure} läuft.
+Wenn @command{guix system reconfigure} ausgeführt wird, kann das die Erzeugung
+neuer Benutzerkonten auslösen, wenn in der Konfiguration neue Konten angegeben
+wurden.  Wenn ein Benutzer, dessen Konto gerade angelegt wird, es
+fertigbringt, sich anzumelden, bevor „Skeleton-Dateien“ in seinem Persönlichen
+Verzeichnis den richtigen Besitzer haben, kann er durch Anlegen einer gezielt
+benannten symbolischen Verknüpfung in seinem Persönlichen Verzeichnis auf eine
+sensible Datei wie @file{/etc/shadow} Administratorrechte erlangen.
+
+Siehe @uref{https://issues.guix.gnu.org/47584} für mehr Informationen zu
+diesem Fehler.")))
+
+ (entry (commit "e52ec6c64a17a99ae4bb6ff02309067499915b06")
+        (title
+         (en "New supported platform: powerpc64le-linux")
+         (de "Neue Plattform wird unterstützt: powerpc64le-linux")
+         (fr "Nouvelle plate-forme prise en charge : powerpc64le-linux"))
+        (body
+         (en "A new platform, powerpc64le-linux, has been added for
+little-endian 64-bit Power ISA processors using the Linux-Libre kernel.  This
+includes POWER9 systems such as the
+@uref{https://www.fsf.org/news/talos-ii-mainboard-and-talos-ii-lite-mainboard-now-fsf-certified-to-respect-your-freedom,
+RYF Talos II mainboard}. This platform is available as a \"technology
+preview\": although it is supported, substitutes are not yet available from
+the build farm, and some packages may fail to build.  In addition, Guix System
+is not yet available on this platform.  That said, the Guix community is
+actively working on improving this support, and now is a great time to try it
+and get involved!")
+         (de "Eine neue Plattform, powerpc64le-linux, wurde hinzugefügt. Mit
+ihr können Prozessoren mit 64-Bit-Power-Befehlssatz, little-endian, mit dem
+Linux-Libre-Kernel betrieben werden.  Dazu gehören POWER9-Systeme wie die
+@uref{https://www.fsf.org/news/talos-ii-mainboard-and-talos-ii-lite-mainboard-now-fsf-certified-to-respect-your-freedom,
+RYF-zertifizierte Talos-II-Hauptplatine}.  Bei der Plattform handelt es sich
+um eine „Technologievorschau“; obwohl sie unterstützt wird, gibt es noch keine
+Substitute von der Erstellungsfarm und bei manchen Paketen könnte die
+Erstellung fehlschlagen.  Des Weiteren ist Guix System auf dieser Plattform
+noch nicht verfügbar.  Dennoch arbeitet die Guix-Gemeinde aktiv daran, diese
+Unterstützung auszubauen, und jetzt ist eine gute Gelegenheit, sie
+auszuprobieren und mitzumachen!")
+         (fr "Une nouvelle plate-forme, powerpc64le-linux, a été ajoutée pour
+les processeurs POWER 64-bits utilisant le noyau Linux-libre.  Ça inclut les
+systèmes POWER9 tels que les
+@uref{https://www.fsf.org/news/talos-ii-mainboard-and-talos-ii-lite-mainboard-now-fsf-certified-to-respect-your-freedom,
+cartes Talos II RYF}.  Il s'agit pour le moment d'un « avant-goût » de la
+technologie : bien que la plate-forme soit prise en charge, la ferme de
+compilation ne fournit pas encore de substituts et certains paquets risquent
+de ne pas compiler.  En outre, Guix System n'est pas encore disponible sur
+cette plate-forme.  Ceci dit, la communauté Guix travaille activement pour
+améliorer cette prise en charge et c'est maintenant un bon moment pour
+l'essayer et pour s'impliquer !")))
 
  (entry (commit "9ade2b720af91acecf76278b4d9b99ace406781e")
         (title

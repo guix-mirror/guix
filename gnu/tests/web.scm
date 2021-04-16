@@ -569,12 +569,7 @@ HTTP-PORT."
                (listen '("8080"))))))
    (service postgresql-service-type
             (postgresql-configuration
-             (postgresql postgresql-10)
-             ;; XXX: Remove when postgresql default socket directory is
-             ;; changed to /var/run/postgresql.
-             (config-file
-              (postgresql-config-file
-               (socket-directory #f)))))
+             (postgresql postgresql-10)))
    (service patchwork-service-type
             (patchwork-configuration
              (patchwork patchwork)

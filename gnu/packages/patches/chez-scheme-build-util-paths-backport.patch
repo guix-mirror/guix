@@ -1,0 +1,780 @@
+From 2447e047b750c3371778beb487f881641a582e66 Mon Sep 17 00:00:00 2001
+From: Philip McGrath <philip@philipmcgrath.com>
+Date: Thu, 11 Mar 2021 18:17:47 -0500
+Subject: [PATCH] avoid hard-coded paths for utilities in build scripts
+
+Backported from
+https://github.com/cisco/ChezScheme/commit/8f4633ce24ac6425b2ab13cc78026b1c9bb5361e
+
+Specific changes:
+  - `cc` -> `$(CC)`
+  - `/bin/rm` -> `rm`
+  - `/bin/ln` -> `ln`
+  - `/bin/cp` -> `cp`
+  - `/bin/echo` -> `echo`
+  - in `makefiles/installsh`, add a case to find `true`
+    at an unusual path or as a shell builtin
+
+Co-authored-by: Andy Keep <akeep@robotman.org>
+---
+ LOG                                 | 12 ++++++++++++
+ csug/gifs/Makefile                  |  8 ++++----
+ csug/math/Makefile                  |  4 ++--
+ examples/Makefile                   |  2 +-
+ makefiles/Makefile-csug.in          |  6 +++---
+ makefiles/Makefile-release_notes.in |  2 +-
+ makefiles/Mf-install.in             |  4 ++--
+ makefiles/installsh                 |  3 ++-
+ mats/6.ms                           |  2 +-
+ mats/Mf-a6fb                        |  4 ++--
+ mats/Mf-a6le                        |  4 ++--
+ mats/Mf-a6nb                        |  4 ++--
+ mats/Mf-a6ob                        |  4 ++--
+ mats/Mf-a6osx                       |  4 ++--
+ mats/Mf-arm32le                     |  4 ++--
+ mats/Mf-i3fb                        |  4 ++--
+ mats/Mf-i3le                        |  4 ++--
+ mats/Mf-i3nb                        |  4 ++--
+ mats/Mf-i3ob                        |  4 ++--
+ mats/Mf-i3osx                       |  4 ++--
+ mats/Mf-i3qnx                       |  4 ++--
+ mats/Mf-ppc32le                     |  4 ++--
+ mats/Mf-ta6fb                       |  4 ++--
+ mats/Mf-ta6le                       |  4 ++--
+ mats/Mf-ta6nb                       |  4 ++--
+ mats/Mf-ta6ob                       |  4 ++--
+ mats/Mf-ta6osx                      |  4 ++--
+ mats/Mf-ti3fb                       |  4 ++--
+ mats/Mf-ti3le                       |  4 ++--
+ mats/Mf-ti3nb                       |  4 ++--
+ mats/Mf-ti3ob                       |  4 ++--
+ mats/Mf-ti3osx                      |  4 ++--
+ mats/Mf-tppc32le                    |  4 ++--
+ mats/unix.ms                        |  4 ++--
+ newrelease                          | 22 +++++++++++-----------
+ pkg/Makefile                        |  2 +-
+ release_notes/gifs/Makefile         |  6 +++---
+ release_notes/math/Makefile         |  4 ++--
+ s/Mf-base                           |  2 +-
+ workarea                            | 10 +++++-----
+ 40 files changed, 101 insertions(+), 88 deletions(-)
+
+diff --git a/LOG b/LOG
+index e1631df..399104d 100644
+--- a/LOG
++++ b/LOG
+@@ -2119,3 +2119,15 @@
+     bintar/Makefile rpm/Makefile pkg/Makefile wininstall/Makefile
+     wininstall/a6nt.wxs wininstall/i3nt.wxs wininstall/ta6nt.wxs
+     wininstall/ti3nt.wxs
++9.5.5 changes:
++- avoid hard-coded paths for utilities in build scripts
++    checkin csug/gifs/Makefile csug/math/Makefile examples/Makefile
++    makefiles/Makefile-csug.in makefiles/Makefile-release_notes.in
++    makefiles/Mf-install.in makefiles/installsh mats/6.ms mats/Mf-a6fb
++    mats/Mf-a6le mats/Mf-a6nb mats/Mf-a6ob mats/Mf-a6osx mats/Mf-arm32le
++    mats/Mf-i3fb mats/Mf-i3le mats/Mf-i3nb mats/Mf-i3ob mats/Mf-i3osx
++    mats/Mf-i3qnx mats/Mf-ppc32le mats/Mf-ta6fb mats/Mf-ta6le mats/Mf-ta6nb
++    mats/Mf-ta6ob mats/Mf-ta6osx mats/Mf-ti3fb mats/Mf-ti3le mats/Mf-ti3nb
++    mats/Mf-ti3ob mats/Mf-ti3osx mats/Mf-tppc32le mats/unix.ms newrelease
++    pkg/Makefile release_notes/gifs/Makefile release_notes/math/Makefile
++    s/Mf-base workarea
+diff --git a/csug/gifs/Makefile b/csug/gifs/Makefile
+index 8676e4c..4253ffd 100644
+--- a/csug/gifs/Makefile
++++ b/csug/gifs/Makefile
+@@ -18,7 +18,7 @@ density=-r90x90
+           ${density} - |\
+           pnmcrop |\
+           ppmtogif -transparent white > $*.gif
+-	/bin/rm -f $*.dvi $*.log *.aux
++	rm -f $*.dvi $*.log *.aux
+ 	test -f $*.gif && chmod 644 $*.gif
+
+ # translate ps file to gif w/o transparent white background
+@@ -28,7 +28,7 @@ density=-r90x90
+           ${density} - |\
+           pnmcrop |\
+           ppmtogif > $*.gif
+-	/bin/rm -f $*.dvi $*.log *.aux
++	rm -f $*.dvi $*.log *.aux
+ 	test -f $*.gif && chmod 644 $*.gif
+
+ all: ${gifs}
+@@ -57,7 +57,7 @@ ghostRightarrow.gif: Rightarrow.tex
+           giftrans -g '#000000=#ffffff' |\
+           giftopnm |\
+           ppmtogif -transparent white > $*.gif
+-	/bin/rm -f Rightarrow.dvi Rightarrow.log Rightarrow.aux
++	rm -f Rightarrow.dvi Rightarrow.log Rightarrow.aux
+ 	test -f $*.gif && chmod 644 $*.gif
+
+-clean: ; /bin/rm -f *.gif Make.out
++clean: ; rm -f *.gif Make.out
+diff --git a/csug/math/Makefile b/csug/math/Makefile
+index 3385fdb..3392ea8 100644
+--- a/csug/math/Makefile
++++ b/csug/math/Makefile
+@@ -15,11 +15,11 @@ density=-r90x90
+           ${density} - |\
+           pnmcrop |\
+           ppmtogif -transparent white > $*.gif
+-	/bin/rm -f $*.dvi $*.log $*.aux
++	rm -f $*.dvi $*.log $*.aux
+ 	test -f $*.gif && chmod 644 $*.gif
+
+ all: ${gifs}
+
+ ${gifs}: mathmacros
+
+-clean: ; /bin/rm -f *.gif Make.out
++clean: ; rm -f *.gif Make.out
+diff --git a/examples/Makefile b/examples/Makefile
+index b1b4e1d..3edfdd0 100644
+--- a/examples/Makefile
++++ b/examples/Makefile
+@@ -25,4 +25,4 @@ needed:	${obj}
+
+ all: ; echo "(time (for-each compile-file (map symbol->string '(${src}))))" | ${Scheme}
+
+-clean: ; /bin/rm -f $(obj) expr.md
++clean: ; rm -f $(obj) expr.md
+diff --git a/makefiles/Makefile-csug.in b/makefiles/Makefile-csug.in
+index df24092..6f8a8d9 100644
+--- a/makefiles/Makefile-csug.in
++++ b/makefiles/Makefile-csug.in
+@@ -29,7 +29,7 @@ install: target
+ # thrice is not enough when starting from scratch
+ logcheck1: $(x).thirdrun
+ 	@if [ -n "`grep 'Warning: Label(s) may have changed' $(x).log`" ] ; then\
+-            /bin/rm -f $(x).thirdrun ;\
++            rm -f $(x).thirdrun ;\
+             $(MAKE) $(x).thirdrun;\
+          fi
+
+@@ -55,7 +55,7 @@ stexsrc = csug.stex title.stex copyright.stex contents.stex\
+ texsrc = ${stexsrc:%.stex=%.tex}
+
+ title.tex contents.tex bibliography.tex:
+-	/bin/rm -f $*.tex
++	rm -f $*.tex
+ 	echo "%%% DO NOT EDIT THIS FILE" > $*.tex
+ 	echo "%%% Edit the .stex version instead" >> $*.tex
+ 	echo "" >> $*.tex
+@@ -147,7 +147,7 @@ code: $(stexsrc)
+ 	echo '(load "code" pretty-print)' | $(Scheme) -q
+
+ $(x).clean:
+-	-/bin/rm -f $(x).rfm $(x).sfm $(x).prefirstrun $(x).presecondrun\
++	-rm -f $(x).rfm $(x).sfm $(x).prefirstrun $(x).presecondrun\
+                     $(x).prethirdrun $(x).ans\
+                     $(x).hprefirstrun $(x).hpresecondrun $(x).hprethirdrun\
+                     tspl.aux tspl.haux tspl.rfm tspl.idx in.hidx\
+diff --git a/makefiles/Makefile-release_notes.in b/makefiles/Makefile-release_notes.in
+index 4435b6f..64348a4 100644
+--- a/makefiles/Makefile-release_notes.in
++++ b/makefiles/Makefile-release_notes.in
+@@ -38,7 +38,7 @@ install: $x.pdf $x.html
+ 	$(INSTALL) -m 2755 -d $(installdir)/gifs
+ 	$(INSTALL) -m 0644 --ifdiff gifs/*.gif $(installdir)/gifs
+ 	$(INSTALL) -m 2755 -d $(installdir)/math
+-	-/bin/rm -rf $(installdir)/$(mathdir)
++	-rm -rf $(installdir)/$(mathdir)
+ 	$(INSTALL) -m 2755 -d $(installdir)/$(mathdir)
+ 	if [ -e $(mathdir)/0.gif ] ; then $(INSTALL) -m 0644 $(mathdir)/*.gif $(installdir)/$(mathdir) ; fi
+
+diff --git a/makefiles/Mf-install.in b/makefiles/Mf-install.in
+index a702c34..c09043d 100644
+--- a/makefiles/Mf-install.in
++++ b/makefiles/Mf-install.in
+@@ -114,12 +114,12 @@ bininstall: ${Bin}
+ libbininstall: ${LibBin}
+ 	$I -m 444 ${PetiteBoot} ${LibBin}/petite.boot
+ 	if [ "${InstallPetiteName}" != "petite" ]; then\
+-          /bin/rm -f ${LibBin}/${InstallPetiteName}.boot;\
++          rm -f ${LibBin}/${InstallPetiteName}.boot;\
+           ln -f ${LibBin}/petite.boot ${LibBin}/${InstallPetiteName}.boot;\
+         fi
+ 	$I -m 444 ${SchemeBoot} ${LibBin}/scheme.boot;\
+ 	if [ "${InstallSchemeName}" != "scheme" ]; then\
+-          /bin/rm -f ${LibBin}/${InstallSchemeName}.boot;\
++          rm -f ${LibBin}/${InstallSchemeName}.boot;\
+           ln -f ${LibBin}/scheme.boot ${LibBin}/${InstallSchemeName}.boot;\
+         fi
+ 	ln -f ${LibBin}/scheme.boot ${LibBin}/${InstallScriptName}.boot;
+diff --git a/makefiles/installsh b/makefiles/installsh
+index 48f1e46..95d85fb 100755
+--- a/makefiles/installsh
++++ b/makefiles/installsh
+@@ -1,7 +1,8 @@
+ #! /bin/sh
+ if [ -x /bin/true ]; then TRUE=/bin/true;
+ elif [ -x /usr/bin/true ]; then TRUE=/usr/bin/true;
+-else echo "Can't find /bin/true or /usr/bin/true" ; exit 1;
++elif command -v true &> /dev/null; then TRUE=true;
++else echo "Can't find /bin/true or /usr/bin/true and no true command" ; exit 1;
+ fi
+
+ while ${TRUE} ; do
+diff --git a/mats/6.ms b/mats/6.ms
+index 102f84b..e504230 100644
+--- a/mats/6.ms
++++ b/mats/6.ms
+@@ -2685,7 +2685,7 @@
+       (begin
+         (system "ln -s ../examples .")
+         (load "examples/fatfib.ss" compile)
+-        (system "/bin/rm examples")
++        (system "rm -f examples")
+         #t))
+   (or (windows?) (embedded?)
+       (equal?
+diff --git a/mats/Mf-a6fb b/mats/Mf-a6fb
+index b16d1b6..ff9e687 100644
+--- a/mats/Mf-a6fb
++++ b/mats/Mf-a6fb
+@@ -21,7 +21,7 @@ fobj = foreign1.so
+ include Mf-base
+
+ foreign1.so: ${fsrc} ../boot/$m/scheme.h
+-	cc -fPIC -shared -I${Include} -o foreign1.so ${fsrc}
++	$(CC) -fPIC -shared -I${Include} -o foreign1.so ${fsrc}
+
+ cat_flush: cat_flush.c
+-	cc -o cat_flush cat_flush.c
++	$(CC) -o cat_flush cat_flush.c
+diff --git a/mats/Mf-a6le b/mats/Mf-a6le
+index d6fee09..a3bda76 100644
+--- a/mats/Mf-a6le
++++ b/mats/Mf-a6le
+@@ -21,7 +21,7 @@ fobj = foreign1.so
+ include Mf-base
+
+ foreign1.so: ${fsrc} ../boot/$m/scheme.h
+-	cc -m64 -fPIC -shared -I${Include} -o foreign1.so ${fsrc}
++	$(CC) -m64 -fPIC -shared -I${Include} -o foreign1.so ${fsrc}
+
+ cat_flush: cat_flush.c
+-	cc -o cat_flush cat_flush.c
++	$(CC) -o cat_flush cat_flush.c
+diff --git a/mats/Mf-a6nb b/mats/Mf-a6nb
+index 48187ef..0f7ac17 100644
+--- a/mats/Mf-a6nb
++++ b/mats/Mf-a6nb
+@@ -21,7 +21,7 @@ fobj = foreign1.so
+ include Mf-base
+
+ foreign1.so: ${fsrc} ../boot/$m/scheme.h
+-	cc -fPIC -shared -I${Include} -o foreign1.so ${fsrc}
++	$(CC) -fPIC -shared -I${Include} -o foreign1.so ${fsrc}
+
+ cat_flush: cat_flush.c
+-	cc -o cat_flush cat_flush.c
++	$(CC) -o cat_flush cat_flush.c
+diff --git a/mats/Mf-a6ob b/mats/Mf-a6ob
+index 12758f3..0ffcccc 100644
+--- a/mats/Mf-a6ob
++++ b/mats/Mf-a6ob
+@@ -21,7 +21,7 @@ fobj = foreign1.so
+ include Mf-base
+
+ foreign1.so: ${fsrc} ../boot/$m/scheme.h
+-	cc -fPIC -shared -I${Include} -o foreign1.so ${fsrc}
++	$(CC) -fPIC -shared -I${Include} -o foreign1.so ${fsrc}
+
+ cat_flush: cat_flush.c
+-	cc -o cat_flush cat_flush.c
++	$(CC) -o cat_flush cat_flush.c
+diff --git a/mats/Mf-a6osx b/mats/Mf-a6osx
+index f1dbf85..57bac22 100644
+--- a/mats/Mf-a6osx
++++ b/mats/Mf-a6osx
+@@ -21,7 +21,7 @@ fobj = foreign1.so
+ include Mf-base
+
+ foreign1.so: ${fsrc} ../boot/$m/scheme.h
+-	cc -m64 -dynamiclib -undefined dynamic_lookup -I${Include} -o foreign1.so ${fsrc}
++	$(CC) -m64 -dynamiclib -undefined dynamic_lookup -I${Include} -o foreign1.so ${fsrc}
+
+ cat_flush: cat_flush.c
+-	cc -o cat_flush cat_flush.c
++	$(CC) -o cat_flush cat_flush.c
+diff --git a/mats/Mf-arm32le b/mats/Mf-arm32le
+index f33a665..83896eb 100644
+--- a/mats/Mf-arm32le
++++ b/mats/Mf-arm32le
+@@ -21,7 +21,7 @@ fobj = foreign1.so
+ include Mf-base
+
+ foreign1.so: ${fsrc} ../boot/$m/scheme.h
+-	cc -fPIC -fomit-frame-pointer -shared -I${Include} -o foreign1.so ${fsrc}
++	$(CC) -fPIC -fomit-frame-pointer -shared -I${Include} -o foreign1.so ${fsrc}
+
+ cat_flush: cat_flush.c
+-	cc -o cat_flush cat_flush.c
++	$(CC) -o cat_flush cat_flush.c
+diff --git a/mats/Mf-i3fb b/mats/Mf-i3fb
+index 150cedb..1e4e8fc 100644
+--- a/mats/Mf-i3fb
++++ b/mats/Mf-i3fb
+@@ -21,7 +21,7 @@ fobj = foreign1.so
+ include Mf-base
+
+ foreign1.so: ${fsrc} ../boot/$m/scheme.h
+-	cc -fPIC -shared -I${Include} -o foreign1.so ${fsrc}
++	$(CC) -fPIC -shared -I${Include} -o foreign1.so ${fsrc}
+
+ cat_flush: cat_flush.c
+-	cc -o cat_flush cat_flush.c
++	$(CC) -o cat_flush cat_flush.c
+diff --git a/mats/Mf-i3le b/mats/Mf-i3le
+index 8f521c8..b248620 100644
+--- a/mats/Mf-i3le
++++ b/mats/Mf-i3le
+@@ -21,7 +21,7 @@ fobj = foreign1.so
+ include Mf-base
+
+ foreign1.so: ${fsrc} ../boot/$m/scheme.h
+-	cc -m32 -fPIC -shared -I${Include} -o foreign1.so ${fsrc}
++	$(CC) -m32 -fPIC -shared -I${Include} -o foreign1.so ${fsrc}
+
+ cat_flush: cat_flush.c
+-	cc -o cat_flush cat_flush.c
++	$(CC) -o cat_flush cat_flush.c
+diff --git a/mats/Mf-i3nb b/mats/Mf-i3nb
+index e81f6ff..8afeb5c 100644
+--- a/mats/Mf-i3nb
++++ b/mats/Mf-i3nb
+@@ -21,7 +21,7 @@ fobj = foreign1.so
+ include Mf-base
+
+ foreign1.so: ${fsrc} ../boot/$m/scheme.h
+-	cc -fPIC -shared -I${Include} -o foreign1.so ${fsrc}
++	$(CC) -fPIC -shared -I${Include} -o foreign1.so ${fsrc}
+
+ cat_flush: cat_flush.c
+-	cc -o cat_flush cat_flush.c
++	$(CC) -o cat_flush cat_flush.c
+diff --git a/mats/Mf-i3ob b/mats/Mf-i3ob
+index 4e3ee1b..fcd4dee 100644
+--- a/mats/Mf-i3ob
++++ b/mats/Mf-i3ob
+@@ -21,7 +21,7 @@ fobj = foreign1.so
+ include Mf-base
+
+ foreign1.so: ${fsrc} ../boot/$m/scheme.h
+-	cc -fPIC -shared -I${Include} -o foreign1.so ${fsrc}
++	$(CC) -fPIC -shared -I${Include} -o foreign1.so ${fsrc}
+
+ cat_flush: cat_flush.c
+-	cc -o cat_flush cat_flush.c
++	$(CC) -o cat_flush cat_flush.c
+diff --git a/mats/Mf-i3osx b/mats/Mf-i3osx
+index 53c7d4a..a55f6ee 100644
+--- a/mats/Mf-i3osx
++++ b/mats/Mf-i3osx
+@@ -21,7 +21,7 @@ fobj = foreign1.so
+ include Mf-base
+
+ foreign1.so: ${fsrc} ../boot/$m/scheme.h
+-	cc -m32 -dynamiclib -undefined dynamic_lookup -I${Include} -o foreign1.so ${fsrc}
++	$(CC) -m32 -dynamiclib -undefined dynamic_lookup -I${Include} -o foreign1.so ${fsrc}
+
+ cat_flush: cat_flush.c
+-	cc -o cat_flush cat_flush.c
++	$(CC) -o cat_flush cat_flush.c
+diff --git a/mats/Mf-i3qnx b/mats/Mf-i3qnx
+index 724f2db..3e1437a 100644
+--- a/mats/Mf-i3qnx
++++ b/mats/Mf-i3qnx
+@@ -21,7 +21,7 @@ fobj = foreign1.so
+ include Mf-base
+
+ foreign1.so: ${fsrc} ../boot/$m/scheme.h
+-	cc -m32 -fPIC -shared -I${Include} -o foreign1.so ${fsrc}
++	$(CC) -m32 -fPIC -shared -I${Include} -o foreign1.so ${fsrc}
+
+ cat_flush: cat_flush.c
+-	cc -o cat_flush cat_flush.c
++	$(CC) -o cat_flush cat_flush.c
+diff --git a/mats/Mf-ppc32le b/mats/Mf-ppc32le
+index 28151a8..547ca00 100644
+--- a/mats/Mf-ppc32le
++++ b/mats/Mf-ppc32le
+@@ -21,7 +21,7 @@ fobj = foreign1.so
+ include Mf-base
+
+ foreign1.so: ${fsrc} ../boot/$m/scheme.h
+-	cc -m32 -fPIC -shared -I${Include} -o foreign1.so ${fsrc}
++	$(CC) -m32 -fPIC -shared -I${Include} -o foreign1.so ${fsrc}
+
+ cat_flush: cat_flush.c
+-	cc -o cat_flush cat_flush.c
++	$(CC) -o cat_flush cat_flush.c
+diff --git a/mats/Mf-ta6fb b/mats/Mf-ta6fb
+index 921d609..5ed233e 100644
+--- a/mats/Mf-ta6fb
++++ b/mats/Mf-ta6fb
+@@ -21,7 +21,7 @@ fobj = foreign1.so
+ include Mf-base
+
+ foreign1.so: ${fsrc} ../boot/$m/scheme.h
+-	cc -pthread -fPIC -shared -I${Include} -o foreign1.so ${fsrc}
++	$(CC) -pthread -fPIC -shared -I${Include} -o foreign1.so ${fsrc}
+
+ cat_flush: cat_flush.c
+-	cc -o cat_flush cat_flush.c
++	$(CC) -o cat_flush cat_flush.c
+diff --git a/mats/Mf-ta6le b/mats/Mf-ta6le
+index cd014ec..21c686a 100644
+--- a/mats/Mf-ta6le
++++ b/mats/Mf-ta6le
+@@ -21,7 +21,7 @@ fobj = foreign1.so
+ include Mf-base
+
+ foreign1.so: ${fsrc} ../boot/$m/scheme.h
+-	cc -m64 -pthread -fPIC -shared -I${Include} -o foreign1.so ${fsrc}
++	$(CC) -m64 -pthread -fPIC -shared -I${Include} -o foreign1.so ${fsrc}
+
+ cat_flush: cat_flush.c
+-	cc -o cat_flush cat_flush.c
++	$(CC) -o cat_flush cat_flush.c
+diff --git a/mats/Mf-ta6nb b/mats/Mf-ta6nb
+index 6b1929d..9b9b898 100644
+--- a/mats/Mf-ta6nb
++++ b/mats/Mf-ta6nb
+@@ -21,7 +21,7 @@ fobj = foreign1.so
+ include Mf-base
+
+ foreign1.so: ${fsrc} ../boot/$m/scheme.h
+-	cc -pthread -fPIC -shared -I${Include} -o foreign1.so ${fsrc}
++	$(CC) -pthread -fPIC -shared -I${Include} -o foreign1.so ${fsrc}
+
+ cat_flush: cat_flush.c
+-	cc -o cat_flush cat_flush.c
++	$(CC) -o cat_flush cat_flush.c
+diff --git a/mats/Mf-ta6ob b/mats/Mf-ta6ob
+index a7aee91..8f25aed 100644
+--- a/mats/Mf-ta6ob
++++ b/mats/Mf-ta6ob
+@@ -21,7 +21,7 @@ fobj = foreign1.so
+ include Mf-base
+
+ foreign1.so: ${fsrc} ../boot/$m/scheme.h
+-	cc -pthread -fPIC -shared -I${Include} -o foreign1.so ${fsrc}
++	$(CC) -pthread -fPIC -shared -I${Include} -o foreign1.so ${fsrc}
+
+ cat_flush: cat_flush.c
+-	cc -o cat_flush cat_flush.c
++	$(CC) -o cat_flush cat_flush.c
+diff --git a/mats/Mf-ta6osx b/mats/Mf-ta6osx
+index 42da5d7..0dd386f 100644
+--- a/mats/Mf-ta6osx
++++ b/mats/Mf-ta6osx
+@@ -21,7 +21,7 @@ fobj = foreign1.so
+ include Mf-base
+
+ foreign1.so: ${fsrc} ../boot/$m/scheme.h
+-	cc -m64 -pthread -dynamiclib -undefined dynamic_lookup -I${Include} -o foreign1.so ${fsrc}
++	$(CC) -m64 -pthread -dynamiclib -undefined dynamic_lookup -I${Include} -o foreign1.so ${fsrc}
+
+ cat_flush: cat_flush.c
+-	cc -o cat_flush cat_flush.c
++	$(CC) -o cat_flush cat_flush.c
+diff --git a/mats/Mf-ti3fb b/mats/Mf-ti3fb
+index c891145..56bf7d3 100644
+--- a/mats/Mf-ti3fb
++++ b/mats/Mf-ti3fb
+@@ -21,7 +21,7 @@ fobj = foreign1.so
+ include Mf-base
+
+ foreign1.so: ${fsrc} ../boot/$m/scheme.h
+-	cc -pthread -fPIC -shared -I${Include} -o foreign1.so ${fsrc}
++	$(CC) -pthread -fPIC -shared -I${Include} -o foreign1.so ${fsrc}
+
+ cat_flush: cat_flush.c
+-	cc -o cat_flush cat_flush.c
++	$(CC) -o cat_flush cat_flush.c
+diff --git a/mats/Mf-ti3le b/mats/Mf-ti3le
+index 12e77b8..22b4148 100644
+--- a/mats/Mf-ti3le
++++ b/mats/Mf-ti3le
+@@ -21,7 +21,7 @@ fobj = foreign1.so
+ include Mf-base
+
+ foreign1.so: ${fsrc} ../boot/$m/scheme.h
+-	cc -m32 -pthread -fPIC -shared -I${Include} -o foreign1.so ${fsrc}
++	$(CC) -m32 -pthread -fPIC -shared -I${Include} -o foreign1.so ${fsrc}
+
+ cat_flush: cat_flush.c
+-	cc -o cat_flush cat_flush.c
++	$(CC) -o cat_flush cat_flush.c
+diff --git a/mats/Mf-ti3nb b/mats/Mf-ti3nb
+index 028c652..573946e 100644
+--- a/mats/Mf-ti3nb
++++ b/mats/Mf-ti3nb
+@@ -21,7 +21,7 @@ fobj = foreign1.so
+ include Mf-base
+
+ foreign1.so: ${fsrc} ../boot/$m/scheme.h
+-	cc -pthread -fPIC -shared -I${Include} -o foreign1.so ${fsrc}
++	$(CC) -pthread -fPIC -shared -I${Include} -o foreign1.so ${fsrc}
+
+ cat_flush: cat_flush.c
+-	cc -o cat_flush cat_flush.c
++	$(CC) -o cat_flush cat_flush.c
+diff --git a/mats/Mf-ti3ob b/mats/Mf-ti3ob
+index 8a4741c..4472b60 100644
+--- a/mats/Mf-ti3ob
++++ b/mats/Mf-ti3ob
+@@ -21,7 +21,7 @@ fobj = foreign1.so
+ include Mf-base
+
+ foreign1.so: ${fsrc} ../boot/$m/scheme.h
+-	cc -pthread -fPIC -shared -I${Include} -o foreign1.so ${fsrc}
++	$(CC) -pthread -fPIC -shared -I${Include} -o foreign1.so ${fsrc}
+
+ cat_flush: cat_flush.c
+-	cc -o cat_flush cat_flush.c
++	$(CC) -o cat_flush cat_flush.c
+diff --git a/mats/Mf-ti3osx b/mats/Mf-ti3osx
+index 6913c34..9273b44 100644
+--- a/mats/Mf-ti3osx
++++ b/mats/Mf-ti3osx
+@@ -21,7 +21,7 @@ fobj = foreign1.so
+ include Mf-base
+
+ foreign1.so: ${fsrc} ../boot/$m/scheme.h
+-	cc -m32 -pthread -dynamiclib -undefined dynamic_lookup -I${Include} -o foreign1.so ${fsrc}
++	$(CC) -m32 -pthread -dynamiclib -undefined dynamic_lookup -I${Include} -o foreign1.so ${fsrc}
+
+ cat_flush: cat_flush.c
+-	cc -o cat_flush cat_flush.c
++	$(CC) -o cat_flush cat_flush.c
+diff --git a/mats/Mf-tppc32le b/mats/Mf-tppc32le
+index a12b515..8b9d9f0 100644
+--- a/mats/Mf-tppc32le
++++ b/mats/Mf-tppc32le
+@@ -21,7 +21,7 @@ fobj = foreign1.so
+ include Mf-base
+
+ foreign1.so: ${fsrc} ../boot/$m/scheme.h
+-	cc -m32 -pthread -fPIC -shared -I${Include} -o foreign1.so ${fsrc}
++	$(CC) -m32 -pthread -fPIC -shared -I${Include} -o foreign1.so ${fsrc}
+
+ cat_flush: cat_flush.c
+-	cc -o cat_flush cat_flush.c
++	$(CC) -o cat_flush cat_flush.c
+diff --git a/mats/unix.ms b/mats/unix.ms
+index cfba3e7..db7f6f9 100644
+--- a/mats/unix.ms
++++ b/mats/unix.ms
+@@ -72,8 +72,8 @@
+   (mat system
+     (eqv? (with-output-to-file "testfile.ss" void '(replace)) (void))
+     (begin
+-      (system (format "~:[~;/pkg~]/bin/rm testfile.ss" (embedded?)))
+-      (system (format "~:[~;/pkg~]/bin/echo hello > testfile.ss" (embedded?)))
++      (system "rm -f testfile.ss")
++      (system "echo hello > testfile.ss")
+       (let ([p (open-input-file "testfile.ss")])
+         (and (eq? (read p) 'hello)
+              (begin (close-input-port p) #t))))
+diff --git a/newrelease b/newrelease
+index e903956..2d06740 100755
+--- a/newrelease
++++ b/newrelease
+@@ -75,13 +75,13 @@ if ($status != 0) exit 1
+
+ cd $W
+
+-/bin/rm -f BUILDING
++rm -f BUILDING
+ sed -e "s/Chez Scheme Version [^ ]*/Chez Scheme Version $R/" \
+     -e "s/Copyright 1984-.... /Copyright 1984-`date +%Y` /" \
+     ../BUILDING > BUILDING
+ set updatedfiles = ($updatedfiles BUILDING)
+
+-/bin/rm -f NOTICE
++rm -f NOTICE
+ sed -e "s/Chez Scheme Version [^ ]*/Chez Scheme Version $R/" \
+     -e "s/Copyright 1984-.... /Copyright 1984-`date +%Y` /" \
+     ../NOTICE > NOTICE
+@@ -92,19 +92,19 @@ sed -e "s/csv[0-9]\.[0-9]\(\.[0-9]\)*/csv$R/" ../makefiles/Mf-install.in > makef
+ sed -e "s/csug[0-9]\.[0-9]/csug$MR.$mR/" -e "s/csug[0-9]_[0-9]/csug$MR""_$mR/" ../makefiles/Makefile-csug.in > makefiles/Makefile-csug.in
+ set updatedfiles = ($updatedfiles makefiles/Mf-install.in makefiles/Makefile-csug.in)
+
+-/bin/rm scheme.1.in
++rm -f scheme.1.in
+ sed -e "s/Chez Scheme Version [0-9]\.[0-9]\(\.[0-9]\)* .* [0-9][0-9]*/Chez Scheme Version $R `date +'%B %Y'`/" \
+     -e "s/Copyright .* Cisco Systems, Inc./Copyright `date +%Y` Cisco Systems, Inc./" \
+   ../scheme.1.in > scheme.1.in
+ set updatedfiles = ($updatedfiles scheme.1.in)
+
+-/bin/rm -f c/Makefile.{,t}{i3,a6}nt
++rm -f c/Makefile.{,t}{i3,a6}nt
+ foreach fn (c/Makefile.{,t}{a6,i3}nt)
+   set updatedfiles = ($updatedfiles $fn)
+   sed -e "s/csv[0-9][0-9][0-9]*/csv$ZR/g" ../$fn > $fn
+ end
+
+-/bin/rm -f mats/Mf-{,t}{i3,a6}nt
++rm -f mats/Mf-{,t}{i3,a6}nt
+ foreach fn (mats/Mf-{,t}{a6,i3}nt)
+   set updatedfiles = ($updatedfiles $fn)
+   sed -e "s/csv[0-9][0-9][0-9]*/csv$ZR/g" ../$fn > $fn
+@@ -123,11 +123,11 @@ sed -e "s/FILEVERSION .*/FILEVERSION $RCVERSION/"\
+     -e "s/Copyright 1984-..../Copyright 1984-`date +%Y`/g" ../c/scheme.rc > c/scheme.rc
+ set updatedfiles = ($updatedfiles c/scheme.rc)
+
+-/bin/rm -f s/7.ss
++rm -f s/7.ss
+ sed -e "s/nCopyright 1984-..../nCopyright 1984-`date +%Y`/g" ../s/7.ss > s/7.ss
+ set updatedfiles = ($updatedfiles s/7.ss)
+
+-/bin/rm -f s/cmacros.ss
++rm -f s/cmacros.ss
+ set VNUM = `printf "%04x%02x%02x" $MR $mR $bR`
+ sed -e "s/scheme-version #x......../scheme-version #x$VNUM/" ../s/cmacros.ss > s/cmacros.ss
+ set updatedfiles = ($updatedfiles s/cmacros.ss)
+@@ -146,17 +146,17 @@ sed -e "s/Revised\(.*\)for Chez Scheme Version [^ ]*<br>/Revised\1for Chez Schem
+   ../csug/csug.stex > csug/csug.stex
+ set updatedfiles = ($updatedfiles csug/copyright.stex csug/csug.stex)
+
+-/bin/rm bintar/Makefile
++rm -f bintar/Makefile
+ sed -e "s/^version = .*/version = $R/" \
+     -e "s/csv[0-9][0-9][0-9]*/csv$ZR/g" \
+   ../bintar/Makefile > bintar/Makefile
+ set updatedfiles = ($updatedfiles bintar/Makefile)
+
+-/bin/rm rpm/Makefile
++rm -f rpm/Makefile
+ sed -e "s/^version = .*/version = $R/" ../rpm/Makefile > rpm/Makefile
+ set updatedfiles = ($updatedfiles rpm/Makefile)
+
+-/bin/rm pkg/Makefile
++rm -f pkg/Makefile
+ sed -e "s/^version = .*/version = $R/" \
+     -e "s/&copy; .* Cisco Systems/\&copy; `date +%Y` Cisco Systems/" \
+      ../pkg/Makefile > pkg/Makefile
+@@ -170,7 +170,7 @@ foreach fn (wininstall/{,t}{a6,i3}nt.wxs)
+   sed -e "s/csv[0-9][0-9][0-9]*/csv$ZR/" ../$fn > $fn
+ end
+
+-/bin/rm LOG
++rm -f LOG
+ cat ../LOG > LOG
+ echo "" >> LOG
+ echo "$R changes:" >> LOG
+diff --git a/pkg/Makefile b/pkg/Makefile
+index e0eef67..a3fe83f 100644
+--- a/pkg/Makefile
++++ b/pkg/Makefile
+@@ -39,7 +39,7 @@ $(PKG): $(BUILDROOT)/$(PKG)
+           --package-path $(BUILDROOT)\
+           $(PKG)
+ 	sudo chown $(DOTUSER):$(DOTGROUP) $(PKG)
+-	sudo /bin/rm -rf $(RELEASE) $(BUILDROOT)
++	sudo rm -rf $(RELEASE) $(BUILDROOT)
+
+ $(BUILDROOT)/$(PKG): $(PKGCONTENT)
+ 	sudo /usr/bin/pkgbuild\
+diff --git a/release_notes/gifs/Makefile b/release_notes/gifs/Makefile
+index 9572965..701d53a 100644
+--- a/release_notes/gifs/Makefile
++++ b/release_notes/gifs/Makefile
+@@ -15,7 +15,7 @@ density=-r90x90
+           ${density} - |\
+           pnmcrop |\
+           ppmtogif -transparent white > $*.gif
+-	/bin/rm -f $*.dvi $*.log *.aux
++	rm -f $*.dvi $*.log *.aux
+ 	test -f $*.gif && chmod 644 $*.gif
+
+ all: ${gifs}
+@@ -44,7 +44,7 @@ ghostRightarrow.gif: Rightarrow.tex
+           giftrans -g '#000000=#ffffff' |\
+           giftopnm |\
+           ppmtogif -transparent white > $*.gif
+-	/bin/rm -f Rightarrow.dvi Rightarrow.log Rightarrow.aux
++	rm -f Rightarrow.dvi Rightarrow.log Rightarrow.aux
+ 	test -f $*.gif && chmod 644 $*.gif
+
+-clean: ; /bin/rm -f *.gif Make.out
++clean: ; rm -f *.gif Make.out
+diff --git a/release_notes/math/Makefile b/release_notes/math/Makefile
+index b3ffae3..9eca430 100644
+--- a/release_notes/math/Makefile
++++ b/release_notes/math/Makefile
+@@ -16,11 +16,11 @@ density=-r90x90
+           ${density} - |\
+           pnmcrop |\
+           ppmtogif -transparent white > $*.gif
+-	/bin/rm -f $*.dvi $*.log $*.aux
++	rm -f $*.dvi $*.log $*.aux
+ 	test -f $*.gif && chmod 644 $*.gif
+
+ all: ${gifs}
+
+ ${gifs}: mathmacros
+
+-clean: ; /bin/rm -f *.gif Make.out
++clean: ; rm -f *.gif Make.out
+diff --git a/s/Mf-base b/s/Mf-base
+index c709608..40d816c 100644
+--- a/s/Mf-base
++++ b/s/Mf-base
+@@ -206,7 +206,7 @@ profiled:
+ 	$(MAKE) all loadspd=t bp=t PetiteBoot=../boot/$m/xpetite.boot SchemeBoot=../boot/$m/xscheme.boot
+ 	$(MAKE) prettyclean
+ 	$(MAKE) io.$m loadspd=t dumpbpd=t Scheme="../bin/$m/scheme -b ../boot/$m/xpetite.boot -b ../boot/$m/xscheme.boot"
+-	/bin/rm -f ../boot/$m/xpetite.boot ../boot/$m/xscheme.boot
++	rm -f ../boot/$m/xpetite.boot ../boot/$m/xscheme.boot
+ 	$(MAKE) prettyclean
+ 	$(MAKE) all loadspd=t loadbpd=t
+
+diff --git a/workarea b/workarea
+index bacc712..0461919 100755
+--- a/workarea
++++ b/workarea
+@@ -70,9 +70,9 @@ esac
+
+ if [ "$OS" = "Windows_NT" ]
+ then
+-    ln="/bin/cp -R"
++    ln="cp -R"
+ else
+-    ln="/bin/ln -s"
++    ln="ln -s"
+ fi
+
+ # This shell script creates a workarea for local modifications to the
+@@ -102,7 +102,7 @@ workln()
+ forceworkln()
+ {
+     if [ ! -e $2 ] ; then
+-        /bin/ln -s $1 $2 2> /dev/null
++        ln -s $1 $2 2> /dev/null
+     fi
+ }
+
+@@ -168,13 +168,13 @@ done
+ # deep copy submodules where builds occur so changes don't propagate through symlinks
+ for dir in `echo zlib` ; do
+   if [ ! -e $W/$dir ] ; then
+-    /bin/cp -R $dir $W/$dir
++    cp -R $dir $W/$dir
+   fi
+ done
+
+ for dir in `echo lz4` ; do
+   if [ ! -e $W/$dir ] ; then
+-    /bin/cp -R $dir $W/$dir
++    cp -R $dir $W/$dir
+   fi
+ done
+
+--
+2.21.1 (Apple Git-122.3)
+

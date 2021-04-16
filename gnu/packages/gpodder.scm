@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2019, 2020 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2019, 2020, 2021 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -25,6 +25,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages check)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages glib)
@@ -38,7 +39,7 @@
 (define-public gpodder
   (package
     (name "gpodder")
-    (version "3.10.17")
+    (version "3.10.18")
     (source
      (origin
        (method git-fetch)
@@ -46,18 +47,23 @@
              (url "https://github.com/gpodder/gpodder")
              (commit version)))
        (sha256
-        (base32 "0wrk8d4q6ricbcjzlhk10vrk1qg9hi323kgyyd0c8nmh7a82h8pd"))
+        (base32 "1d73q46sqandzbn74nfw9bzzah99z91wsxq2hcivwdgnsv2g2d8y"))
        (file-name (git-file-name name version))
        (patches (search-patches "gpodder-disable-updater.patch"))))
     (build-system python-build-system)
     (native-inputs
      `(("intltool" ,intltool)
        ("python-coverage" ,python-coverage)
-       ("python-minimock" ,python-minimock)))
+       ("python-minimock" ,python-minimock)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-httpserver" ,python-pytest-httpserver)
+       ("which" ,which)))
     (inputs
      `(("gtk+" ,gtk+)
        ("python-pygobject" ,python-pygobject)
        ("python-pycairo" ,python-pycairo)
+       ("python-requests" ,python-requests)
        ("python-dbus" ,python-dbus)
        ("python-html5lib" ,python-html5lib)
        ("python-mygpoclient" ,python-mygpoclient)

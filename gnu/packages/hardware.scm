@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2021 Evgeny Pisemsky <evgeny@pisemsky.com>
@@ -61,14 +61,14 @@
 (define-public ddcutil
   (package
     (name "ddcutil")
-    (version "0.9.9")
+    (version "1.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.ddcutil.com/tarballs/"
                            "ddcutil-" version ".tar.gz"))
        (sha256
-        (base32 "0anyxy53k2613hq9glaad16llqlv6iim5p8gz0rs5pnpp8p00dg1"))))
+        (base32 "19kkwb9ijzn6ya3mvjanggh1c96fcc0lkbk7xnyi2qp6wsr4nhxp"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

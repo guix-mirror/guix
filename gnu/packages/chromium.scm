@@ -21,8 +21,6 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix gexp)
-  #:use-module (guix store)
-  #:use-module (guix monads)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix utils)
@@ -305,7 +303,7 @@
                   (string-append "ungoogled-chromium-" category "-" name))))
     (sha256 (base32 hash))))
 
-(define %ungoogled-revision "89.0.4389.90-1")
+(define %ungoogled-revision "89.0.4389.114-1")
 (define %debian-revision "debian/84.0.4147.105-1")
 
 (define %debian-patches
@@ -325,7 +323,7 @@
                                   %ungoogled-revision)))
     (sha256
      (base32
-      "0pr756d1b4wc67d61b21yszi7mx1hsjy14i44j0kvcwm05pgnf79"))))
+      "0cr2i51gxhgl55c8f9w0ra3m5q2dk03sf7p2qn4bqq1l1l72hw6s"))))
 
 (define %guix-patches
   (list (local-file
@@ -466,7 +464,7 @@
                                   ".tar.xz"))
               (sha256
                (base32
-                "16i7bgk2jbcqs2p28nk5mlf0k6wah594pcsfm8b154nxbyf0iihi"))
+                "007df9p78bbmk3iyfi8qn57mmn68qqrdhx6z8n2hl8ksd7lspw7j"))
               (modules '((guix build utils)))
               (snippet (force ungoogled-chromium-snippet))))
     (build-system gnu-build-system)

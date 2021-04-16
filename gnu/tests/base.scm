@@ -555,10 +555,6 @@ functionality tests.")
                               (start-service 'term-tty1))
                            marionette)
           (marionette-type "root\n" marionette)
-          (wait-for-screen-text marionette
-                                (lambda (text)
-                                  (string-contains text "root@komputilo"))
-                                #:ocrad ocrad)
 
           ;; Start tmux and wait for it to be ready.
           (marionette-type "tmux new-session 'echo 1 > /ready; bash'\n"

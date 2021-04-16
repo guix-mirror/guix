@@ -107,7 +107,8 @@ Warning: this is currently suspect to a TOCTTOU race!"
                                  (directory %skeleton-directory)
                                  uid gid)
   "Copy the account skeletons from DIRECTORY to HOME.  When UID is an integer,
-make it the owner of all the files created; likewise for GID."
+make it the owner of all the files created except the home directory; likewise
+for GID."
   (define (set-owner file)
     (when (or uid gid)
       (chown file (or uid -1) (or gid -1))))
@@ -115,7 +116,6 @@ make it the owner of all the files created; likewise for GID."
   (let ((files (scandir directory (negate dot-or-dot-dot?)
                         string<?)))
     (mkdir-p home)
-    (set-owner home)
     (for-each (lambda (file)
                 (let ((target (string-append home "/" file)))
                   (copy-recursively (string-append directory "/" file)
@@ -215,10 +215,15 @@ they already exist."
                  (uid (passwd:uid pw))
                  (gid (passwd:gid pw)))
             (mkdir-p home)
-            (chown home uid gid)
             (chmod home #o700)
             (copy-account-skeletons home
-                                    #:uid uid #:gid gid))))))
+                                    #:uid uid #:gid gid)
+
+            ;; It is important 'chown' be called after
+            ;; 'copy-account-skeletons'.  Otherwise, a malicious user with
+            ;; good timing could create a symlink in HOME that would be
+            ;; dereferenced by 'copy-account-skeletons'.
+            (chown home uid gid))))))
 
   (for-each ensure-user-home users))
 

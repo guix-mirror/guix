@@ -1,9 +1,10 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2018, 2021, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
+;;; Copyright © 2021 David Larsson <david.larsson@selfhosted.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,12 +29,14 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages cpio)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libidn)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages pkg-config)
@@ -115,6 +118,8 @@ reliability in mind.")
                     (("a freeware program")
                      "free software"))
                   #t))))
+    (properties
+     `((release-monitoring-url . "https://www.ncftp.com/download/")))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -251,40 +256,82 @@ directory comparison and more.")
     (properties '((upstream-name . "FileZilla")))))
 
 (define-public vsftpd
-  (package
-    (name "vsftpd")
-    (version "3.0.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://security.appspot.com/downloads/"
-                                  name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1xsyjn68k3fgm2incpb3lz2nikffl9by2safp994i272wvv2nkcx"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:make-flags '("LDFLAGS=-lcrypt")
-       #:tests? #f                      ; No tests exist.
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-installation-directory
-           (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* "Makefile"
-               (("/usr") (assoc-ref outputs "out")))
-             #t))
-         (add-before 'install 'mkdir
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (mkdir-p out)
-               (mkdir (string-append out "/sbin"))
-               (mkdir (string-append out "/man"))
-               (mkdir (string-append out "/man/man5"))
-               (mkdir (string-append out "/man/man8"))
-               #t)))
-         (delete 'configure))))
-    (synopsis "vsftpd FTP daemon")
-    (description "@command{vsftpd} is a daemon that listens on a TCP socket
+  ;; Use a significantly patched CentOS variant with TLSv1.2 support and
+  ;; further bug and security fixes.
+  (let ((upstream-version "3.0.3")
+        (centos-version "8.3.2011")
+        (revision "32.el8"))
+    (package
+      (name "vsftpd")
+      (version (string-append upstream-version "-" revision))
+      (source
+       (origin
+         (method url-fetch)
+         (uri (string-append
+               "https://vault.centos.org/centos/" centos-version
+               "/AppStream/Source/SPackages/vsftpd-" upstream-version "-"
+               revision ".src.rpm"))
+         (sha256
+          (base32 "1xl0kqcismf82hl99klqbvvpylpyk1yr1qjy5hd8f80cj4lyl0f4"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:make-flags '("LDFLAGS=-lcrypt -lssl -pie")
+         #:tests? #f                    ; no tests exist
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'unpack
+             (lambda* (#:key source #:allow-other-keys)
+               (invoke "7z" "e" source "-ocpio")
+               (invoke "cpio" "-idmv"
+                       (string-append "--file=cpio/vsftpd-"
+                                      ,upstream-version "-" ,revision
+                                      ".src.cpio"))
+               (invoke "tar" "xvf"
+                       (string-append "vsftpd-" ,upstream-version ".tar.gz"))
+               (chdir (string-append "vsftpd-" ,upstream-version))))
+           (add-after 'unpack 'apply-CentOS-patches
+             ;; Apply all patches as enumerated in vsftpd.spec, in order:
+             ;; simply using FIND-FILES would silently corrupt the result.
+             (lambda _
+               (call-with-input-file "../vsftpd.spec"
+                 (lambda (port)
+                   (use-modules (ice-9 rdelim))
+                   (let loop ()
+                     (let ((line (read-line port)))
+                       (unless (eof-object? line)
+                         (when (string-prefix? "Patch" line)
+                           (let* ((space (string-rindex line #\space))
+                                  (patch (string-drop line (+ 1 space))))
+                             (format #t "Applying '~a'.\n" patch)
+                             (invoke "patch" "-Np1"
+                                     "-i" (string-append "../" patch))))
+                         (loop))))))))
+           (add-after 'unpack 'patch-installation-directory
+             (lambda* (#:key outputs #:allow-other-keys)
+               (substitute* "Makefile"
+                 (("/usr") (assoc-ref outputs "out")))
+               #t))
+           (add-before 'install 'mkdir
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (mkdir-p out)
+                 (mkdir (string-append out "/sbin"))
+                 (mkdir (string-append out "/man"))
+                 (mkdir (string-append out "/man/man5"))
+                 (mkdir (string-append out "/man/man8"))
+                 #t)))
+           (delete 'configure))))
+      (native-inputs
+       ;; Used to unpack the source RPM.
+       `(("p7zip" ,p7zip)
+         ("cpio" ,cpio)))
+      (inputs
+       `(("libcap" ,libcap)
+         ("linux-pam" ,linux-pam)
+         ("openssl" ,openssl)))
+      (home-page "https://security.appspot.com/vsftpd.html")
+      (synopsis "Share files securely over FTP or FTPS")
+      (description "@command{vsftpd} is a daemon that listens on a TCP socket
 for clients and gives them access to local files via File Transfer
 Protocol.")
-    (home-page "https://security.appspot.com/vsftpd.html")
-    (license gpl2)))
+      (license gpl2))))

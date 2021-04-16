@@ -16,6 +16,7 @@
 ;;; Copyright © 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
+;;; Copyright © 2021 Franck Pérignon <franck.perignon@univ-grenoble-alpes.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,6 +48,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
   #:use-module (gnu packages shells)
+  #:use-module (gnu packages mpi)
   #:use-module (srfi srfi-1))
 
 (define (version-with-underscores version)
@@ -332,6 +334,30 @@ Boost.Thread.")
     (description "The Boost.Signals2 library is an implementation of a managed
 signals and slots system.")
     (license (license:x11-style "https://www.boost.org/LICENSE_1_0.txt"))))
+
+
+(define-public boost-mpi
+  (package
+    (inherit boost)
+    (name "boost-mpi")
+    (native-inputs
+     `(("perl" ,perl)
+       ,@(if (%current-target-system)
+             '()
+             `(("python" ,python-wrapper)))
+       ("openmpi" , openmpi)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments boost)
+      ((#:phases phases)
+       `(modify-phases ,phases
+          (add-after 'configure 'update-jam
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              (let ((output-port (open-file "project-config.jam" "a")))
+                (display "using mpi ;" output-port)
+                (newline output-port)
+                (close output-port))))))))
+    (home-page "https://www.boost.org")
+    (synopsis "Message Passing Interface (MPI) library for C++")))
 
 (define-public mdds
   (package

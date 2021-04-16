@@ -4,7 +4,7 @@
 ;;; Copyright © 2016, 2017, 2019 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -307,8 +307,15 @@ to docs.openstack.org and developer.openstack.org.")
     (arguments
      ;; The tests are disabled to avoid a circular dependency with
      ;; python-stestr.
-     `(#:tests? #f))
-    (native-inputs
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'use-pbr-3
+           (lambda _
+             (substitute* '("setup.py"
+                            "requirements.txt")
+               (("pbr!=2.1.0,>=2.0.0") "pbr>=3.0.0")))))))
+    (propagated-inputs
      `(("python-pbr" ,python-pbr)))
     (home-page "https://github.com/dreamhost/stevedore")
     (synopsis "Manage dynamic plugins for Python applications")

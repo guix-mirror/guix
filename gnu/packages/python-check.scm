@@ -10,6 +10,9 @@
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
+;;; Copyright © 2021 Brendan Tildesley <mail@brendan.scot>
+;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2021 Bonface Munyoki Kilyungi <me@bonfacemunyoki.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -372,6 +375,39 @@ provides a shortcut to testing all code and documentation for a given
 sub-package.")
     (license license:bsd-3)))
 
+(define-public python-pytest-helpers-namespace
+  (package
+    (name "python-pytest-helpers-namespace")
+    (version "2021.3.24")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-helpers-namespace" version))
+       (sha256
+        (base32
+         "0pyj2d45zagmzlajzqdnkw5yz8k49pkihbydsqkzm413qnkzb38q"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Make the installed plugin discoverable by Pytest.
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest-6)
+       ("python-setuptools" ,python-setuptools) ; needs setuptools >= 50.3.2
+       ("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-setuptools-declarative-requirements"
+        ,python-setuptools-declarative-requirements)))
+    (home-page "https://github.com/saltstack/pytest-helpers-namespace")
+    (synopsis "Pytest Helpers Namespace Plugin")
+    (description "Pytest Helpers Namespace Plugin provides a helpers pytest
+namespace which can be used to register helper functions without requiring
+someone to import them in their actual tests to use them.")
+    (license license:asl2.0)))
+
 (define-public python-pytest-openfiles
   (package
     (name "python-pytest-openfiles")
@@ -627,14 +663,14 @@ friendly library for concurrency and async I/O in Python.")
 (define-public python-pytest-flake8
   (package
     (name "python-pytest-flake8")
-    (version "1.0.6")
+    (version "1.0.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytest-flake8" version))
        (sha256
         (base32
-         "09vhn7r77s1yiqnlwfvh5585f904zpyd6620a90dpccfr1cbp0hv"))))
+         "0syx68xk5ss3hgp3nr2y122w0fgkzr5936ghsqrkymh3m5hrf9gh"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-flake8" ,python-flake8)))
@@ -1235,6 +1271,28 @@ convenient wrapper above tools such as Pyflakes, pydocstyle, pycodestyle and
 McCabe, among others.")
     (license license:lgpl3+)))
 
+(define-public python-pyannotate
+  (package
+    (name "python-pyannotate")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyannotate" version))
+       (sha256
+        (base32
+         "16bm0mf7wxvy0lgmcs1p8n1ji8pnvj1jvj8zk3am70dkp825iv84"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-mypy-extensions" ,python-mypy-extensions)
+       ("python-six" ,python-six)))
+    (home-page
+     "https://github.com/dropbox/pyannotate")
+    (synopsis "Auto-generate PEP-484 annotations")
+    (description "This package, PyAnnotate, is used to auto-generate PEP-484
+annotations.")
+    (license license:asl2.0)))
+
 (define-public python-eradicate
   (package
     (name "python-eradicate")
@@ -1338,4 +1396,27 @@ help in debugging failures and optimizing the scheduler to improve speed.")
     (synopsis "Pytest plugin for Sanic")
     (description "A pytest plugin for Sanic.  It helps you to test your
 code asynchronously.")
+    (license license:expat)))
+
+(define-public python-allpairspy
+  (package
+    (name "python-allpairspy")
+    (version "2.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "allpairspy" version))
+       (sha256
+        (base32 "1c987h13dly9919d15w3h747rgn50ilnv7dginhlprxbj564hn4k"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (home-page "https://github.com/thombashi/allpairspy")
+    (synopsis "Pairwise test combinations generator")
+    (description
+     "This is a Python library for test combinations generator.  The generator
+allows one to create a set of tests using @emph{pairwise combinations} method,
+reducing a number of combinations of variables into a lesser set that covers
+most situations.")
     (license license:expat)))

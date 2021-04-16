@@ -97,14 +97,14 @@ expressions.")
 (define-public python-pytzdata
   (package
     (name "python-pytzdata")
-    (version "2019.3")
+    (version "2020.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytzdata" version))
        (sha256
         (base32
-         "0ppfc6kz4p41mxyqxq1g1zp6gvns99g6b344qj6ih0x9vxy6zh7s"))))
+         "0h0md0ldhb8ghlwjslkzh3wcj4fxg3n43bj5sghqs2m06nri7yiy"))))
     (build-system python-build-system)
     ;; XXX: The PyPI distribution contains no tests, and the upstream
     ;; repository lacks a setup.py!  How to build from git?
@@ -123,14 +123,15 @@ expressions.")
 (define-public python-pytz
   (package
     (name "python-pytz")
-    (version "2020.4")
+    ;; This package should be kept in sync with tzdata in (gnu packages base).
+    (version "2021.1")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "pytz" version))
       (sha256
        (base32
-        "0s72lz9q7rm2xgl2in0nvhn5cp0cyrxa257fpj2919g0s797ssry"))))
+        "1nn459q7zg20n75akxl3ljkykgw1ydc8nb05rx1y4f5zjh4ak943"))))
     (build-system python-build-system)
     (home-page "http://pythonhosted.org/pytz")
     (synopsis "Python timezone library")

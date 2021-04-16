@@ -12,12 +12,13 @@
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019 Guy Fleury Iteriteka <hoonandon@gmail.com>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
-;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2020, 2021 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2021 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2021 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,6 +43,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages build-tools)
   #:use-module (gnu packages check)
@@ -97,6 +99,7 @@
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages pulseaudio)
+  #:use-module (gnu packages readline)
   #:use-module (gnu packages selinux)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages sphinx)
@@ -948,7 +951,7 @@ Debian or a derivative using @command{debootstrap}.")
     (native-inputs
      `(("glib" ,glib "bin")  ; glib-mkenums, etc.
        ("gobject-introspection" ,gobject-introspection)
-       ("gtk-doc" ,gtk-doc)
+       ("gtk-doc" ,gtk-doc/stable)
        ("vala" ,vala)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
@@ -1029,64 +1032,48 @@ manage system or application containers.")
 (define-public libvirt
   (package
     (name "libvirt")
-    (version "5.8.0")
+    (version "7.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://libvirt.org/sources/libvirt-"
                            version ".tar.xz"))
        (sha256
-        (base32 "0m8cqaqflvys5kaqpvb0qr4k365j09jc5xk6x70yvg8qkcl2hcz2"))
-       (patches
-        (search-patches "libvirt-create-machine-cgroup.patch"))))
-    (build-system gnu-build-system)
+        (base32 "1l6i1rz1v9rnp61sgzlrlbsfh03208dbm3b259i0jl5sqz85kx01"))
+       (patches (search-patches "libvirt-add-install-prefix.patch"))))
+    (build-system meson-build-system)
     (arguments
      `(#:configure-flags
-       (list "--with-qemu"
-             "--with-qemu-user=nobody"
-             "--with-qemu-group=kvm"
-             "--with-polkit"
-             (string-append "--docdir=" (assoc-ref %outputs "out") "/share/doc/"
+       (list "-Ddriver_qemu=enabled"
+             "-Dqemu_user=nobody"
+             "-Dqemu_group=kvm"
+             "-Dstorage_disk=enabled"
+             "-Dstorage_dir=enabled"
+             "-Dpolkit=enabled"
+             "-Dnls=enabled"            ;translations
+             (string-append "-Ddocdir=" (assoc-ref %outputs "out") "/share/doc/"
                             ,name "-" ,version)
+             "-Dbash_completion=enabled"
+             (string-append "-Dinstall_prefix=" (assoc-ref %outputs "out"))
              "--sysconfdir=/etc"
              "--localstatedir=/var")
+       #:meson ,meson-0.55
        #:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'fix-BOURNE_SHELL-definition
-           ;; BOURNE_SHELL is hard-#defined to ‘/bin/sh’, causing test failures.
-           (lambda _
-             (substitute* "config.h.in"
-               (("/bin/sh") (which "sh")))
-             #t))
-         (add-before 'configure 'patch-libtirpc-file-names
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; libvirt uses an m4 macro instead of pkg-config to determine where
-             ;; the RPC headers are located.  Tell it to look in the right place.
-             (substitute* "configure"
-               (("/usr/include/tirpc")  ;defined in m4/virt-xdr.m4
-                (string-append (assoc-ref inputs "libtirpc")
-                               "/include/tirpc")))
-             #t))
          (add-before 'configure 'disable-broken-tests
            (lambda _
-             (let ((tests (list "commandtest"      ; hangs idly
-                                "qemuxml2argvtest" ; fails
-                                "qemuhotplugtest"  ; fails
-                                "virnetsockettest" ; tries to network
-                                "virshtest")))     ; fails
-               (substitute* "tests/Makefile.in"
-                 (((format #f "(~a)\\$\\(EXEEXT\\)" (string-join tests "|")))
+             (let ((tests (list "commandtest"           ; hangs idly
+                                "qemuxml2argvtest"      ; fails
+                                "virnetsockettest")))   ; tries to network
+               (substitute* "tests/meson.build"
+                 (((format #f ".*'name': '(~a)'.*" (string-join tests "|")))
                   ""))
                #t)))
-         (replace 'install
-           ;; Since the sysconfdir and localstatedir should be /etc and /var
-           ;; at runtime, we must prevent writing to them at installation
-           ;; time.
-           (lambda* (#:key make-flags #:allow-other-keys)
-             (apply invoke "make" "install"
-                    "sysconfdir=/tmp/etc"
-                    "localstatedir=/tmp/var"
-                    make-flags))))))
+         (add-before 'install 'no-polkit-magic
+           ;; Meson ‘magically’ invokes pkexec, which fails (not setuid).
+           (lambda _
+             (setenv "PKEXEC_UID" "something")
+             #t)))))
     (inputs
      `(("libxml2" ,libxml2)
        ("eudev" ,eudev)
@@ -1095,25 +1082,32 @@ manage system or application containers.")
        ("dbus" ,dbus)
        ("libpcap" ,libpcap)
        ("libnl" ,libnl)
+       ("libssh2" ,libssh2)             ;optional
        ("libtirpc" ,libtirpc)           ;for <rpc/rpc.h>
        ("libuuid" ,util-linux "lib")
        ("lvm2" ,lvm2)                   ;for libdevmapper
        ("curl" ,curl)
        ("openssl" ,openssl)
+       ("readline" ,readline)
        ("cyrus-sasl" ,cyrus-sasl)
        ("libyajl" ,libyajl)
        ("audit" ,audit)
        ("dmidecode" ,dmidecode)
        ("dnsmasq" ,dnsmasq)
        ("ebtables" ,ebtables)
+       ("parted" ,parted)
        ("iproute" ,iproute)
        ("iptables" ,iptables)))
     (native-inputs
-     `(("xsltproc" ,libxslt)
+     `(("bash-completion" ,bash-completion)
+       ("gettext" ,gettext-minimal)
+       ("xsltproc" ,libxslt)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("polkit" ,polkit)
-       ("python" ,python-wrapper)))
+       ("python" ,python-wrapper)
+       ("python-docutils" ,python-docutils) ;for rst2html
+       ("rpcsvc-proto" ,rpcsvc-proto)))     ;for rpcgen
     (home-page "https://libvirt.org")
     (synopsis "Simple API for virtualization")
     (description "Libvirt is a C toolkit to interact with the virtualization
@@ -1125,15 +1119,15 @@ to integrate other virtualization mechanisms if needed.")
 (define-public libvirt-glib
   (package
     (name "libvirt-glib")
-    (version "3.0.0")
+    (version "4.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://libvirt.org/libvirt/glib/"
-                                  "libvirt-glib-" version ".tar.gz"))
+                                  "libvirt-glib-" version ".tar.xz"))
               (sha256
                (base32
-                "1zpbv4ninc57c9rw4zmmkvvqn7154iv1qfr20kyxn8xplalqrzvz"))))
-    (build-system gnu-build-system)
+                "1gdcvqz88qkp402zra9csc6391f2xki1270x683n6ixakl3gf8w4"))))
+    (build-system meson-build-system)
     (inputs
      `(("openssl" ,openssl)
        ("cyrus-sasl" ,cyrus-sasl)
@@ -1167,14 +1161,14 @@ three libraries:
 (define-public python-libvirt
   (package
     (name "python-libvirt")
-    (version "5.8.0")
+    (version "7.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://libvirt.org/sources/python/libvirt-python-"
                            version ".tar.gz"))
        (sha256
-        (base32 "0kyz3lx49d8p75mvbzinxc1zgs8g7adn77y9bm15b8b4ad9zl5s6"))))
+        (base32 "1ryfimhf47s9k4n0gys233bh15l68fccs2bvj8bjwqjm9k2vmhy0"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -1206,7 +1200,7 @@ virtualization library.")
 (define-public virt-manager
   (package
     (name "virt-manager")
-    (version "2.2.1")
+    (version "3.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://virt-manager.org/download/sources"
@@ -1214,11 +1208,10 @@ virtualization library.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "06ws0agxlip6p6n3n43knsnjyd91gqhh2dadgc33wl9lx1k8vn6g"))))
+                "11kvpzcmyir91qz0dsnk7748jbb4wr8mrc744w117qc91pcy6vrb"))))
     (build-system python-build-system)
     (arguments
      `(#:use-setuptools? #f          ; uses custom distutils 'install' command
-       #:test-target "test_ui"
        #:tests? #f                      ; TODO The tests currently fail
                                         ; RuntimeError: Loop condition wasn't
                                         ; met
@@ -1235,12 +1228,6 @@ virtualization library.")
            (lambda* (#:key outputs #:allow-other-keys)
              (substitute* "virtinst/buildconfig.py"
                (("/usr") (assoc-ref outputs "out")))
-             #t))
-         (add-after 'unpack 'fix-qemu-img-reference
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "virtconv/formats.py"
-               (("/usr(/bin/qemu-img)" _ suffix)
-                (string-append (assoc-ref inputs "qemu") suffix)))
              #t))
          (add-after 'unpack 'fix-default-uri
            (lambda* (#:key inputs #:allow-other-keys)
@@ -1272,11 +1259,12 @@ virtualization library.")
            (lambda* (#:key tests? #:allow-other-keys)
              (when tests?
                (setenv "HOME" "/tmp")
+               (setenv "XDG_CACHE_HOME" "/tmp")
                (system "Xvfb :1 &")
                (setenv "DISPLAY" ":1")
                ;; Dogtail requires that Assistive Technology support be enabled
                (setenv "GTK_MODULES" "gail:atk-bridge")
-               (invoke "dbus-run-session" "--" "python" "setup.py" "test_ui"))
+               (invoke "dbus-run-session" "--" "pytest" "--uitests"))
              #t))
          (add-after 'install 'glib-or-gtk-compile-schemas
            (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-compile-schemas))
@@ -1306,7 +1294,9 @@ virtualization library.")
        ("gtk+" ,gtk+ "bin")             ; gtk-update-icon-cache
        ("perl" ,perl)                   ; pod2man
        ("intltool" ,intltool)
+       ("rst2man" ,python-docutils)
        ;; The following are required for running the tests
+       ;; ("python-pytest" ,python-pytest)
        ;; ("python-dogtail" ,python-dogtail)
        ;; ("xvfb" ,xorg-server-for-tests)
        ;; ("dbus" ,dbus)
@@ -1528,17 +1518,16 @@ monitor/GPU.")
 (define-public runc
   (package
     (name "runc")
-    (version "1.0.0-rc6")
+    (version "1.0.0-rc93")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://github.com/opencontainers/runc/releases/"
                     "download/v" version "/runc.tar.xz"))
               (file-name (string-append name "-" version ".tar.xz"))
-              (patches (search-patches "runc-CVE-2019-5736.patch"))
               (sha256
                (base32
-                "1c7832dq70slkjh8qp2civ1wxhhdd2hrx84pq7db1mmqc9fdr3cc"))))
+                "0b90r1bkvlqli53ca1yc1l488dba0isd3i6l7nlhszxi8p7hzvkh"))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "github.com/opencontainers/runc"
@@ -1548,35 +1537,27 @@ monitor/GPU.")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
-         (replace 'unpack
-           (lambda* (#:key source import-path #:allow-other-keys)
-             ;; Unpack the tarball into 'runc' instead of 'runc-1.0.0-rc5'.
-             (let ((dest (string-append "src/" import-path)))
-               (mkdir-p dest)
-               (invoke "tar" "-C" (string-append "src/" import-path)
-                       "--strip-components=1"
-                       "-xvf" source))))
          (replace 'build
            (lambda* (#:key import-path #:allow-other-keys)
              (with-directory-excursion (string-append "src/" import-path)
-               ;; XXX: requires 'go-md2man'.
-               ;; (invoke "make" "man")
-               (invoke "make"))))
-         ;; (replace 'check
-         ;;   (lambda _
-         ;;     (invoke "make" "localunittest")))
+               (invoke "make" "all" "man"))))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "make" "localunittest"))))
          (replace 'install
            (lambda* (#:key import-path outputs #:allow-other-keys)
              (with-directory-excursion (string-append "src/" import-path)
                (let ((out (assoc-ref outputs "out")))
-                 (invoke "make" "install" "install-bash"
+                 (invoke "make" "install" "install-bash" "install-man"
                          (string-append "PREFIX=" out)))))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("go-md2man" ,go-github-com-go-md2man)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("libseccomp" ,libseccomp)))
     (synopsis "Open container initiative runtime")
-    (home-page "https://www.opencontainers.org/")
+    (home-page "https://opencontainers.org/")
     (description
      "@command{runc} is a command line client for running applications
 packaged according to the
@@ -1588,7 +1569,7 @@ Open Container Initiative specification.")
 (define-public umoci
   (package
     (name "umoci")
-    (version "0.4.6")
+    (version "0.4.7")
     (source
      (origin
        (method url-fetch)
@@ -1597,7 +1578,7 @@ Open Container Initiative specification.")
              version "/umoci.tar.xz"))
        (file-name (string-append "umoci-" version ".tar.xz"))
        (sha256
-        (base32 "06q7xfwnqysc013hapx31jhlzmyg8qb467qfkynj673qc7p9bd6h"))))
+        (base32 "0fvljj9k4f83wbqzd8nbijz0p1zaq633f8yxyvl5sy3wjf03ffk9"))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "github.com/opencontainers/umoci"
@@ -1634,7 +1615,7 @@ Open Container Initiative (OCI) image layout and its tagged images.")
 (define-public skopeo
   (package
     (name "skopeo")
-    (version "1.2.1")
+    (version "1.2.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1643,7 +1624,7 @@ Open Container Initiative (OCI) image layout and its tagged images.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1y9pmijazbgxzriymrm7zrifmkd1x1wad9b3zjcj7zwr6c999dhg"))))
+                "03sznybn3rqjyplc6w4b7mfa6gas8db15p5vnmfm1xqw72ldylgc"))))
     (build-system go-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)

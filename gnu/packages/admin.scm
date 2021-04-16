@@ -40,6 +40,7 @@
 ;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2021 qblade <qblade@protonmail.com>
 ;;; Copyright © 2021 Hyunseok Kim <lasnesne@lagunposprasihopre.org>
+;;; Copyright © 2021 David Larsson <david.larsson@selfhosted.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -330,6 +331,38 @@ interface and is based on GNU Guile.")
              #t)))
        ,@(package-arguments shepherd)))))
 
+(define-public cfm
+  (package
+    (name "cfm")
+    (version "0.6.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/WillEccles/cfm")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "14gapia902f29wa4dlrrj8jcwcff9bfvyhjccw9ddy2gxx2g8wmr"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no test suite
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         ;; Keeping xdg-open optional avoids a size increase of 293%.
+         (delete 'configure))))         ; no configure script
+    (home-page "https://eccles.dev/cfm/")
+    (synopsis
+     "Simple terminal file manager with @command{vi}-inspired key bindings")
+    (description
+     "The Cactus File Manager (@command{cfm}) helps you manage your files
+visually from a text terminal.  It aims to be simple and fast, with key bindings
+inspired by @command{vi}.")
+    (license license:mpl2.0)))
+
 (define-public cloud-utils
   (package
     (name "cloud-utils")
@@ -463,7 +496,7 @@ graphs and can export its output to different formats.")
 (define-public facter
   (package
     (name "facter")
-    (version "4.0.51")
+    (version "4.0.52")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -472,7 +505,7 @@ graphs and can export its output to different formats.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1s98rq2wjmh8bqdfdibvfp9j2ynd97k0c4hairryrzl9nna3j542"))))
+                "05j4q87sak1f1isj7ngzr59h3j3xskfwjjwfv0xd7lhwcaxg3a3c"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
@@ -1026,6 +1059,36 @@ recursive runs on the generated subnets.  (also IPv6)
 @end itemize
 @end itemize\n")
     (license license:bsd-3)))
+
+(define-public prips
+  (package
+    (name "prips")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://devel.ringlet.net/files/sys/"
+                           name "/" name "-" version ".tar.xz"))
+       (sha256
+        (base32 "1a33vbl4w603mk6mm5r3vhk87fy3dfk5wdpch0yd3ncbkg3fmvqn"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list (string-append "CC=" ,(cc-for-target)))
+       #:test-target "test"
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (replace 'install
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (install-file "prips"
+                                      (string-append out "/bin"))))))))
+    (native-inputs `(("perl-test-harness" ,perl-test-harness)))
+    (synopsis "Tool that prints the IP addresses in a given range")
+    (description "Prips can be used to print all of the IP addresses in
+ a given range.  This allows the enhancement of tools only work
+ on one host at a time (e.g. whois).")
+    (home-page "https://devel.ringlet.net/sysutils/prips/")
+    (license license:gpl2+)))
 
 (define-public alive
   (package
@@ -1663,7 +1726,8 @@ features of sudo with a fraction of the codebase.")
                      (string-append "#" line)))
                   #t))
               (patches
-               (search-patches "wpa-supplicant-CVE-2021-27803.patch"))))
+               (search-patches "wpa-supplicant-CVE-2021-27803.patch"
+                               "wpa-supplicant-CVE-2021-30004.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -1829,7 +1893,8 @@ command.")
                (base32
                 "1mrbvg4v7vm7mknf0n29mf88k3s4a4qj6r4d51wq8hmjj1m7s7c8"))
               (patches
-               (search-patches "wpa-supplicant-CVE-2021-27803.patch"))))
+               (search-patches "wpa-supplicant-CVE-2021-27803.patch"
+                               "wpa-supplicant-CVE-2021-30004.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -1966,7 +2031,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
 (define-public acpica
   (package
     (name "acpica")
-    (version "20210105")
+    (version "20210331")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1974,7 +2039,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1gi7qzfywg118g5nlqn5lawxk25pg2sz01gmbz40vvmikks4ri9r"))))
+                "1h98pvc9iy1c49cid0ppjwk5zsy2m1xbvfqb72pkwkrd4rn35arx"))))
     (build-system gnu-build-system)
     (native-inputs `(("flex" ,flex)
                      ("bison" ,bison)))
@@ -2928,13 +2993,13 @@ a new command using the matched rule, and runs it.")
 (define-public di
   (package
     (name "di")
-    (version "4.49")
+    (version "4.50")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/diskinfo-di/di-" version ".tar.gz"))
        (sha256
-        (base32 "1y38jhp2bpwbwzdzjlhgfqc7bxxz9cwapxd61799zjf54jkslkf0"))))
+        (base32 "0aj9ldkvmj8fmrk685vd2gagz0q8lwsn2nfbx6r6mza94mn8pw42"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; obscure test failures
@@ -3506,14 +3571,14 @@ information tool.")
 (define-public nnn
   (package
     (name "nnn")
-    (version "3.5")
+    (version "3.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/jarun/nnn/releases/download/v"
                            version "/nnn-v" version ".tar.gz"))
        (sha256
-        (base32 "1ww18vvfjkvi36rcamw8kpix4bhk71w5bw9kmnh158crah1x8dp6"))))
+        (base32 "1dbq16cdipij5ws59ab3alfmxli7n4wx28ip7gsyq8ncxg598l47"))))
     (build-system gnu-build-system)
     (inputs
      `(("ncurses" ,ncurses)
@@ -4105,14 +4170,14 @@ tcpdump and snoop.")
 (define-public pam-mount
   (package
     (name "pam-mount")
-    (version "2.17")
+    (version "2.18")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/pam-mount/pam_mount/"
                            "pam_mount-" version ".tar.xz"))
        (sha256
-        (base32 "1q2n6a2ah6nghdn8i6ad2wj247njwb5nx48cggxknaa6lqxylidy"))))
+        (base32 "0832nh2qf9pisgwnbgx6hkylx5d7i416l19y3ly4ifv7k1p7mxqa"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)
@@ -4124,7 +4189,7 @@ tcpdump and snoop.")
        ("linux-pam" ,linux-pam)
        ("lvm2" ,lvm2)
        ("openssl" ,openssl)
-       ("pcre" ,pcre)
+       ("pcre2" ,pcre2)
        ("libmount" ,util-linux "lib")
        ("util-linux" ,util-linux)))
     (arguments
@@ -4288,7 +4353,7 @@ entries, providing commands to add, remove, comment, and search.")
 (define-public nmrpflash
   (package
     (name "nmrpflash")
-    (version "0.9.14")
+    (version "0.9.15")
     (source
      (origin
        (method git-fetch)
@@ -4297,7 +4362,7 @@ entries, providing commands to add, remove, comment, and search.")
          (url "https://github.com/jclehner/nmrpflash")
          (commit (string-append "v" version))))
        (sha256
-        (base32 "1fdjrxhjs96rdclbkld57xarf592slhkp79h46z833npxpn12ck1"))
+        (base32 "0ssfls1sfh8w748qsnkfgndlpw395100x2yynzbk5jd56scxvp20"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (native-inputs
@@ -4503,7 +4568,7 @@ the XMODEM/YMODEM/ZMODEM file transfer protocols.")
 (define-public nq
   (package
     (name "nq")
-    (version "0.3.1")
+    (version "0.4")
     (source
      (origin
        (method git-fetch)
@@ -4512,7 +4577,7 @@ the XMODEM/YMODEM/ZMODEM file transfer protocols.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1db96ykz35r273jyhf7cdknqk4p2jj9l8gbz7pjy1hq4pb6ffk99"))))
+        (base32 "0sdamjzvmf6cxhjmd1rjvn7zm6k10fp5n6vabyxd3yl30cgrxw2i"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)))

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,9 +30,12 @@
   #:use-module (gnu packages networking)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-build)
+  #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages time)
-  #:use-module (gnu packages tls))
+  #:use-module (gnu packages tls)
+  #:use-module (gnu packages xml))
 
 (define-public python-jupyter-protocol
   (package
@@ -183,4 +187,126 @@ kernel.
 Several Jupyter kernels are built upon @code{xeus}, such as @code{xeus-cling},
 a kernel for the C++ programming language, and @code{xeus-python}, an
 alternative Python kernel for Jupyter.")
+    (license license:bsd-3)))
+
+(define-public python-jupyterlab-pygments
+  (package
+    (name "python-jupyterlab-pygments")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "jupyterlab_pygments" version))
+       (sha256
+        (base32
+         "0ij14mmnc39nmf84i0av6j9glazjic7wzv1qyhr0j5966s3s1kfg"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #false)) ; there are no tests
+    (propagated-inputs
+     `(("python-pygments" ,python-pygments)))
+    (home-page "https://jupyter.org")
+    (synopsis "Pygments theme using JupyterLab CSS variables")
+    (description
+     "This package contains a syntax coloring theme for pygments making use of
+the JupyterLab CSS variables.")
+    (license license:bsd-3)))
+
+(define-public python-jupyter-packaging
+  (package
+    (name "python-jupyter-packaging")
+    (version "0.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "jupyter_packaging" version))
+       (sha256
+        (base32
+         "0r015c0m713d19asmpimsw6bk2sqv2lpd2nccgjzjdj5h1crg0bg"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-deprecation" ,python-deprecation)
+       ("python-packaging" ,python-packaging)
+       ("python-setuptools" ,python-setuptools)
+       ("python-tomlkit" ,python-tomlkit)
+       ("python-wheel" ,python-wheel)))
+    (native-inputs
+     `(("python-pypa-build" ,python-pypa-build)
+       ("python-coverage" ,python-coverage)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-mock" ,python-pytest-mock)))
+    (home-page "https://jupyter.org")
+    (synopsis "Jupyter packaging utilities")
+    (description "This package provides tools to help build and install
+Jupyter Python packages that require a pre-build step that may include
+JavaScript build steps.")
+    (license license:bsd-3)))
+
+(define-public python-jupyterlab-widgets
+  (package
+    (name "python-jupyterlab-widgets")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "jupyterlab_widgets" version))
+       (sha256
+        (base32
+         "0y7vhhas3qndiypcpcfnhrj9n92v2w4hdc86nn620s9h9nl2j6jw"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-jupyter-packaging" ,python-jupyter-packaging)
+       ("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/jupyter-widgets/ipywidgets")
+    (synopsis "Interactive widgets for Jupyter Notebooks")
+    (description "ipywidgets, also known as jupyter-widgets or simply widgets,
+are interactive HTML widgets for Jupyter notebooks and the IPython kernel.")
+    (license license:bsd-3)))
+
+(define-public python-nbclient
+  (package
+    (name "python-nbclient")
+    (version "0.5.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "nbclient" version))
+       (sha256
+        (base32
+         "172q4r6mq0lg394di0pc6ipvniy14jg38wkdsj48r366609jf5yv"))))
+    (build-system python-build-system)
+    ;; Tests require a kernel via python-ipykernel, and also tools from
+    ;; nbconvert.
+    (arguments '(#:tests? #false))
+    (propagated-inputs
+     `(("python-async-generator" ,python-async-generator)
+       ("python-jupyter-client" ,python-jupyter-client)
+       ("python-nbformat" ,python-nbformat)
+       ("python-nest-asyncio" ,python-nest-asyncio)
+       ("python-traitlets" ,python-traitlets)))
+    (native-inputs
+     `(("python-black" ,python-black)
+       ("python-bumpversion" ,python-bumpversion)
+       ("python-check-manifest" ,python-check-manifest)
+       ("python-codecov" ,python-codecov)
+       ("python-coverage" ,python-coverage)
+       ("python-flake8" ,python-flake8)
+       ;; ("python-ipykernel" ,python-ipykernel)
+       ;; ("python-ipython" ,python-ipython)
+       ;; ("python-ipywidgets" ,python-ipywidgets)
+       ("python-mypy" ,python-mypy)
+       ("python-pip" ,python-pip)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-setuptools" ,python-setuptools)
+       ("python-testpath" ,python-testpath)
+       ("python-tox" ,python-tox)
+       ("python-twine" ,python-twine)
+       ("python-wheel" ,python-wheel)
+       ("python-xmltodict" ,python-xmltodict)))
+    (home-page "https://jupyter.org")
+    (synopsis "Client library for executing notebooks")
+    (description
+     "This package provides a client library for executing notebooks. Formerly
+nbconvert's @code{ExecutePreprocessor.}")
     (license license:bsd-3)))

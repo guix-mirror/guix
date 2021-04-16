@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2020, 2021 Nicolò Balzarotti <nicolo@nixo.xyz>
+;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,7 +22,34 @@
   #:use-module (guix packages)
   #:use-module (guix git-download)
   #:use-module (guix build-system julia)
+  #:use-module (gnu packages gcc)
+  #:use-module (gnu packages maths)
   #:use-module (gnu packages tls))
+
+(define-public julia-abstractffts
+  (package
+    (name "julia-abstractffts")
+    (version "1.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaMath/AbstractFFTS.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0083pwdyxjb04i330ir9pc8kmp4bwk59lx1jgc9qi05y8j7xzbp0"))))
+    (build-system julia-build-system)
+    (inputs                             ;required for tests
+     `(("julia-unitful" ,julia-unitful)))
+    (home-page "https://github.com/JuliaGPU/Adapt.jl")
+    (synopsis "General framework for fast Fourier transforms (FFTs)")
+    (description "This package allows multiple FFT packages to co-exist with
+the same underlying @code{fft(x)} and @code{plan_fft(x)} interface.  It is
+mainly not intended to be used directly.  Instead, developers of packages that
+implement FFTs (such as @code{FFTW.jl} or @code{FastTransforms.jl}) extend the
+types/functions defined in AbstractFFTs.")
+    (license license:expat)))
 
 (define-public julia-adapt
   (package
@@ -95,6 +123,192 @@ operations.  It can wrap any @code{IO} type automatically making incremental
 reading and writing faster.")
     (license license:expat)))
 
+(define-public julia-calculus
+  (package
+    (name "julia-calculus")
+    (version "0.5.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaMath/Calculus.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0xh0ak2ycsjw2h86ja24ch3kn2d18zx3frrds78aimwdnqb1gdc2"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/JuliaMath/Calculus.jl")
+    (synopsis "Common utilities for automatic differentiation")
+    (description "This package provides tools for working with the basic
+calculus operations of differentiation and integration.  The @code{Calculus}
+package produces approximate derivatives by several forms of finite
+differencing or produces exact derivative using symbolic differentiation.  It
+can also be used to compute definite integrals by different numerical
+methods.")
+    (license license:expat)))
+
+(define-public julia-chainrules
+  (package
+    (name "julia-chainrules")
+    (version "0.7.54")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaDiff/ChainRules.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1x4w71v8cw0vpba47h8f5xq4gyjfxbcvayzf7m41yg8gf49s9pkf"))))
+    (build-system julia-build-system)
+    (inputs                             ;required for test
+     `(("julia-chainrulestestutils" ,julia-chainrulestestutils)
+       ("julia-finitedifferences" ,julia-finitedifferences)
+       ("julia-nanmath" ,julia-nanmath)
+       ("julia-specialfunctions" ,julia-specialfunctions)))
+    (propagated-inputs
+     `(("julia-chainrulescore" ,julia-chainrulescore)
+       ("julia-compat" ,julia-compat)
+       ("julia-reexport" ,julia-reexport)
+       ("julia-requires" ,julia-requires)))
+    (home-page "https://github.com/JuliaDiff/ChainRules.jl")
+    (synopsis "Common utilities for automatic differentiation")
+    (description "The is package provides a variety of common utilities that
+can be used by downstream automatic differentiation (AD) tools to define and
+execute forward-, reverse-, and mixed-mode primitives.")
+    (license license:expat)))
+
+(define-public julia-chainrulescore
+  (package
+    (name "julia-chainrulescore")
+    (version "0.9.29")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaDiff/ChainRulesCore.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1k0iayw39n1ikkkhvyi4498vsnzc94skqs41gnd15632gxjfvki4"))))
+    (build-system julia-build-system)
+    (inputs                             ;required for tests
+     `(("julia-benchmarktools" ,julia-benchmarktools)
+       ("julia-staticarrays" ,julia-staticarrays)))
+    (propagated-inputs
+     `(("julia-compat" ,julia-compat)))
+    (home-page "https://github.com/JuliaDiff/ChainRulesCore.jl")
+    (synopsis "Common utilities used by downstream automatic differentiation tools")
+    (description "The package provides a light-weight dependency for defining
+sensitivities for functions without the need to depend on ChainRules itself.")
+    (license license:expat)))
+
+(define-public julia-chainrulestestutils
+  (package
+    (name "julia-chainrulestestutils")
+    (version "0.6.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaDiff/ChainRulesTestUtils.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1pzs947adnb3cx1qd0cxp2fidk9szz0zsqbas90z1lhydykkvkil"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-chainrulescore" ,julia-chainrulescore)
+       ("julia-compat" ,julia-compat)
+       ("julia-finitedifference" ,julia-finitedifferences)))
+    (home-page "https://github.com/JuliaDiff/ChainRulesTestUtils.jl")
+    (synopsis "Common utilities used by downstream automatic differentiation tools")
+    (description "This package is designed to help in testing
+@code{ChainRulesCore.frule} and @code{ChainRulesCore.rrule} methods.  The main
+entry points are @code{ChainRulesTestUtils.frule_test},
+@code{ChainRulesTestUtils.rrule_test}, and
+@code{ChainRulesTestUtils.test_scalar}. Currently this is done via testing the
+rules against numerical differentiation (using @code{FiniteDifferences.jl}).
+
+@code{ChainRulesTestUtils.jl} is separated from @code{ChainRulesCore.jl} so that it
+can be a test-only dependency, allowing it to have potentially heavy
+dependencies, while keeping @code{ChainRulesCore.jl} as light-weight as possible.")
+    (license license:expat)))
+
+(define-public julia-colors
+  (package
+    (name "julia-colors")
+    (version "0.12.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaGraphics/Colors.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "156zsszgwh6bmznsan0zyha6yvcxw3c5mvc5vr2qfsgxbyh36ln6"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-colortypes" ,julia-colortypes)
+       ("julia-fixedpointnumbers" ,julia-fixedpointnumbers)
+       ("julia-reexport" ,julia-reexport)))
+    (home-page "https://github.com/JuliaGraphics/Colors.jl")
+    (synopsis "Tools for dealing with color")
+    (description "This package provides a wide array of functions for dealing
+with color.  This includes conversion between colorspaces, measuring distance
+between colors, simulating color blindness, parsing colors, and generating
+color scales for graphics.")
+    (license license:expat)))
+
+(define-public julia-colortypes
+  (package
+    (name "julia-colortypes")
+    (version "0.10.12")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaGraphics/ColorTypes.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "176hr3qbz7lncmykks2qaj3cqisnzim7wi5jwsca9ld26wwyvyqq"))))
+    (arguments
+     '(#:tests? #f))                    ;require Documenter, not packaged yet
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-fixedpointnumbers" ,julia-fixedpointnumbers)))
+    (home-page "https://github.com/JuliaGraphics/ColorTypes.jl")
+    (synopsis "Basic color types and constructor")
+    (description "This minimalistic package serves as the foundation for
+working with colors in Julia.  It defines basic color types and their
+constructors, and sets up traits and show methods to make them easier to work
+with.")
+    (license license:expat)))
+
+(define-public julia-commonsubexpressions
+  (package
+    (name "julia-commonsubexpressions")
+    (version "0.3.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rdeits/CommonSubexpressions.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0mgy90kk8ksv3l720kkk04gnhn4aqhh2dj4sp3x8yy3limngfjay"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-macrotools" ,julia-macrotools)))
+    (home-page "https://github.com/rdeits/CommonSubexpressions.jl")
+    (synopsis "@code{@@cse} macro for Julia")
+    (description "This package provides the @code{@@cse} macro, which performs
+common subexpression elimination.")
+    (license license:expat)))
+
 (define-public julia-compat
   (package
     (name "julia-compat")
@@ -116,6 +330,71 @@ between older and newer versions of the Julia language.  The Compat package
 provides a macro that lets you use the latest syntax in a backwards-compatible
 way.")
     (license license:expat)))
+
+;;; TODO: Remove this autogenerated source package
+;;; and build it from realse source using <https://github.com/JuliaPackaging/Yggdrasil/>
+(define-public julia-compilersupportlibraries-jll
+  (package
+    (name "julia-compilersupportlibraries-jll")
+    (version "0.4.0+1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaBinaryWrappers/CompilerSupportLibraries_jll.jl")
+             (commit (string-append "CompilerSupportLibraries-v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "03j6xdvps259mhdzpjqf41l65w2l9sahvxg4wrp34hcf69wkrzpy"))))
+    (build-system julia-build-system)
+    (arguments
+     `(#:tests? #f                      ; no runtests.jl
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'override-binary-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (map
+              (lambda (wrapper)
+                (substitute* wrapper
+                  (("generate_wrapper_header.*")
+                   (string-append
+                    "generate_wrapper_header(\"CompilerSupportLibraries\", \""
+                    (assoc-ref inputs "gfortran:lib") "\")\n"))))
+              ;; There's a Julia file for each platform, override them all
+              (find-files "src/wrappers/" "\\.jl$"))
+             #t)))))
+    (inputs                             ;required by artifacts
+     `(("gfortran:lib" ,gfortran "lib")))
+    (propagated-inputs
+     `(("julia-jllwrappers" ,julia-jllwrappers)))
+    (home-page "https://github.com/JuliaBinaryWrappers/CompilerSupportLibraries_jll.jl")
+    (synopsis "Internal wrappers")
+    (description "This package provides compiler support for libraries.  It is
+an autogenerated source package constructed using @code{BinaryBuilder.jl}. The
+originating @code{build_tarballs.jl} script can be found on the community
+build tree Yggdrasil.")
+    (license license:expat)))
+
+(define-public julia-constructionbase
+  (let ((commit "de77e2865b554f9b078fd8c35b593cce0554ae02"))
+    (package
+      (name "julia-constructionbase")
+      (version "1.1.0")                 ;tag not created upstream
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/JuliaObjects/ConstructionBase.jl")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1y79sfj0rds1skl9j16p9161hwa9khm0xc2m4hgjcbh5zzvyr57v"))))
+      (build-system julia-build-system)
+      (home-page "https://juliaobjects.github.io/ConstructionBase.jl/dev/")
+      (synopsis "Primitive functions for construction of objects")
+      (description "This very lightweight package provides primitive functions
+for construction of objects.")
+      (license license:expat))))
 
 (define-public julia-datastructures
   (package
@@ -139,6 +418,143 @@ way.")
     (description "This package implements a variety of data structures,
 including, @code{CircularBuffer}, @code{Queue}, @code{Stack},
 @code{Accumulators}, @code{LinkedLists}, @code{SortedDicts} and many others.")
+    (license license:expat)))
+
+(define-public julia-diffresults
+  (package
+    (name "julia-diffresults")
+    (version "1.0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaDiff/DiffResults.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1w6p3yxajvclax5b9g7cr2jmbc7lvr5nk4gq0aljxdycdq1d2y3v"))))
+    (propagated-inputs
+     `(("julia-staticarrays" ,julia-staticarrays)))
+    (build-system julia-build-system)
+    (home-page "https://github.com/JuliaDiff/DiffResults.jl")
+    (synopsis "In-place differentiation methods of primal values at multi-order")
+    (description "This package provides the @code{DiffResult} type, which can
+be passed to in-place differentiation methods instead of an output buffer.")
+    (license license:expat)))
+
+(define-public julia-diffrules
+  (package
+    (name "julia-diffrules")
+    (version "1.0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaDiff/DiffRules.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0cwjvj4gma7924fm3yas0nf0jlnwwx4v7fi79ii3s290lkdldzfl"))))
+    (propagated-inputs
+     `(("julia-nanmath" ,julia-nanmath)
+       ("julia-specialfunctions" ,julia-specialfunctions)))
+    (build-system julia-build-system)
+    (home-page "https://github.com/JuliaDiff/DiffRules.jl")
+    (synopsis "Primitive differentiation rules")
+    (description "This package provides primitive differentiation rules that
+can be composed via various formulations of the chain rule.  Using
+@code{DiffRules}, new differentiation rules can defined, query whether or not
+a given rule exists, and symbolically apply rules to simple Julia expressions.")
+    (license license:expat)))
+
+(define-public julia-difftests
+  (package
+    (name "julia-difftests")
+    (version "0.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaDiff/DiffTests.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1rxpnd5zi3pxgdd38l5jm2sxc3q6p7g57fqgll2dsiin07y3my57"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/JuliaDiff/DiffTests.jl")
+    (synopsis "Common test functions for differentiation tools")
+    (description "This package contains a common suite of test functions for
+stressing the robustness of differentiation tools.")
+    (license license:expat)))
+
+(define-public julia-example
+  (let ((commit "f968c69dea24f851d0c7e686db23fa55826b5388"))
+    (package
+      (name "julia-example")
+      (version "0.5.4")                   ;tag not created upstream
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/JuliaLang/Example.jl")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1v3z0d6gh6wfbypffy9m9rhh36px6fm5wjzq0y6rbmc95r0qpqlx"))))
+      (build-system julia-build-system)
+      (home-page "https://github.com/JuliaLang/Example.jl")
+      (synopsis "Module providing examples")
+      (description "This package provides various examples.")
+      (license license:expat))))
+
+(define-public julia-fillarrays
+  (package
+    (name "julia-fillarrays")
+    (version "0.11.7")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaArrays/FillArrays.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1q1qn9pb5dmppddnmf8gggdqyvivqh3ffvbblhn37smcf9r5sy7d"))))
+    (build-system julia-build-system)
+    (inputs                             ;required by tests
+     `(("julia-staticarrays" ,julia-staticarrays)))
+    (home-page "https://github.com/JuliaArrays/FillArrays.jl")
+    (synopsis "Lazy matrix representation")
+    (description "This package allows to lazily represent matrices filled with
+a single entry, as well as identity matrices.  This package exports the
+following types: @code{Eye}, @code{Fill}, @code{Ones}, @code{Zeros},
+@code{Trues} and @code{Falses}.")
+    (license license:expat)))
+
+(define-public julia-finitedifferences
+  (package
+    (name "julia-finitedifferences")
+    (version "0.12.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaDiff/FiniteDifferences.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0dcx34026xdpfmbjls3mrknl8ww62kxxfr77kfihbazsfg2gp5b4"))))
+    (build-system julia-build-system)
+    (inputs
+     `(("julia-benchmarktools" ,julia-benchmarktools)))
+    (propagated-inputs
+     `(("julia-chainrulescore" ,julia-chainrulescore)
+       ("julia-richardson" ,julia-richardson)
+       ("julia-staticarrays" ,julia-staticarrays)))
+    (home-page "https://github.com/JuliaDiff/FiniteDifferences.jl")
+    (synopsis "Estimates derivatives with finite differences")
+    (description "This package calculates approximate derivatives numerically
+using finite difference.")
     (license license:expat)))
 
 (define-public julia-fixedpointnumbers
@@ -174,6 +590,38 @@ numbers, with fixed-point numbers the decimal point doesn't \"float\":
 fixed-point numbers are effectively integers that are interpreted as being
 scaled by a constant factor.  Consequently, they have a fixed number of
 digits (bits) after the decimal (radix) point.")
+    (license license:expat)))
+
+(define-public julia-forwarddiff
+  (package
+    (name "julia-forwarddiff")
+    (version "0.10.17")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaDiff/ForwardDiff.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "17xaz4v0zr46p7w873w1fwf31phdnhr0vbdym9yr4flmpzi528jw"))))
+    (build-system julia-build-system)
+    (inputs                             ;required for tests
+     `(("julia-calculus" ,julia-calculus)
+       ("julia-difftests" ,julia-difftests)))
+    (propagated-inputs
+     `(("julia-commonsubexpressions" ,julia-commonsubexpressions)
+       ("julia-diffresults" ,julia-diffresults)
+       ("julia-diffrules" ,julia-diffrules)
+       ("julia-nanmath" ,julia-nanmath)
+       ("julia-specialfunctions" ,julia-specialfunctions)
+       ("julia-staticarrays" ,julia-staticarrays)))
+    (home-page "https://github.com/JuliaDiff/ForwardDiff.jl")
+    (synopsis "Methods to take multidimensional derivatives")
+    (description "This package implements methods to take derivatives,
+gradients, Jacobians, Hessians, and higher-order derivatives of native Julia
+functions (or any callable object, really) using forward mode automatic
+differentiation (AD).")
     (license license:expat)))
 
 (define-public julia-http
@@ -254,6 +702,32 @@ implementing both a client and a server.")
 allows to interface with @file{.ini} files.")
     (license license:expat)))
 
+(define-public julia-irtools
+  (package
+    (name "julia-irtools")
+    (version "0.4.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/FluxML/IRTools.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0wwzy77jcdnffnd5fr6xan7162g4wydz67igrq82wflwnrhlcx5y"))))
+    (arguments
+     '(#:tests? #f))                    ;require Documenter, not packaged yet
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-macrotools" ,julia-macrotools)))
+    (home-page "https://github.com/FluxML/IRTools.jl")
+    (synopsis "Simple and flexible IR format")
+    (description "This package provides a simple and flexible IR format,
+expressive enough to work with both lowered and typed Julia code, as well as
+external IRs.  It can be used with Julia metaprogramming tools such as
+Cassette.")
+    (license license:expat)))
+
 (define-public julia-jllwrappers
   (package
     (name "julia-jllwrappers")
@@ -322,6 +796,27 @@ used in autogenerated packages via @code{BinaryBuilder.jl}.")
 and printing JSON documents.")
     (license license:expat)))
 
+(define-public julia-macrotools
+  (package
+    (name "julia-macrotools")
+    (version "0.5.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/FluxML/MacroTools.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0k4z2hyasd9cwxf4l61zk3w4ajs44k69wx6z1ghdn8f5p8xy217f"))))
+    (build-system julia-build-system)
+    (home-page "https://fluxml.ai/MacroTools.jl")
+    (synopsis "Tools for working with Julia code and expressions")
+    (description "This library provides tools for working with Julia code and
+expressions.  This includes a template-matching system and code-walking tools
+that let you do deep transformations of code.")
+    (license license:expat)))
+
 (define-public julia-mbedtls
   (package
     (name "julia-mbedtls")
@@ -349,7 +844,7 @@ and printing JSON documents.")
     (home-page "https://github.com/JuliaLang/MbedTLS.jl")
     (synopsis "Apache's mbed TLS library wrapper")
     (description "@code{MbedTLS.jl} provides a wrapper around the @code{mbed
-TLS} and cryptography C libary for Julia.")
+TLS} and cryptography C library for Julia.")
     (license license:expat)))
 
 (define-public julia-mbedtls-jll
@@ -390,6 +885,26 @@ TLS} and cryptography C libary for Julia.")
     (synopsis "Apache's mbed TLS binary wrappers")
     (description "This Julia module provides @code{mbed TLS} libraries and
 wrappers.")
+    (license license:expat)))
+
+(define-public julia-nanmath
+  (package
+    (name "julia-nanmath")
+    (version "0.3.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mlubin/NaNMath.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1hczhz00qj99w63vp627kwk02l2sr2qmzc2rkwwkdwvzy670p25q"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/mlubin/NaNMath.jl")
+    (synopsis "Implementations of basic math functions")
+    (description "Implementations of basic math functions which return
+@code{NaN} instead of throwing a @code{DomainError}.")
     (license license:expat)))
 
 (define-public julia-orderedcollections
@@ -439,6 +954,52 @@ have arbitrary indices, similar to those found in some other programming
 languages like Fortran.")
     (license license:expat)))
 
+;;; TODO: Remove this autogenerated source package
+;;; and build it from realse source using <https://github.com/JuliaPackaging/Yggdrasil/>
+(define-public julia-openspecfun-jll
+(let ((commit "6c505cce3bdcd9cd2b15b4f9362ec3a42c4da71c"))
+  (package
+    (name "julia-openspecfun-jll")
+    (version "0.5.3+4")                 ;tag not created upstream
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaBinaryWrappers/OpenSpecFun_jll.jl")
+             (commit commit)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0bl2gcgndsbiwhwy8fl070cjm1fyf9kxj6gkikgirmzgjl29iakn"))))
+    (build-system julia-build-system)
+    (arguments
+     `(#:tests? #f                      ; no runtests.jl
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'override-binary-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (map
+              (lambda (wrapper)
+                (substitute* wrapper
+                  (("generate_wrapper_header.*")
+                   (string-append
+                    "generate_wrapper_header(\"OpenSpecFun\", \""
+                    (assoc-ref inputs "openspecfun") "\")\n"))))
+              ;; There's a Julia file for each platform, override them all
+              (find-files "src/wrappers/" "\\.jl$"))
+             #t)))))
+    (inputs
+     `(("openspecfun" ,openspecfun)))
+    (propagated-inputs
+     `(("julia-jllwrappers" ,julia-jllwrappers)
+       ("julia-compilersupportlibraries-jll" ,julia-compilersupportlibraries-jll)))
+    (home-page "https://github.com/JuliaBinaryWrappers/OpenSpecFun_jll.jl")
+    (synopsis "Internal wrappers")
+    (description "This package provides a wrapper for OpenSpecFun.  It is an
+autogenerated source package constructed using @code{BinaryBuilder.jl}. The
+originating @code{build_tarballs.jl} script can be found on the community
+build tree Yggdrasil.")
+    (license license:expat))))
+
 (define-public julia-parsers
   (package
     (name "julia-parsers")
@@ -457,6 +1018,130 @@ languages like Fortran.")
     (synopsis "Fast parsing machinery for basic types in Julia")
     (description "@code{Parsers.jl} is a collection of type parsers and
 utilities for Julia.")
+    (license license:expat)))
+
+(define-public julia-reexport
+  (package
+    (name "julia-reexport")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/simonster/Reexport.jl")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1yhhja1zz6dy5f4fd19bdwd6jwgj7q4w3avzgyg1hjhmdl8jrh0s"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/simonster/Reexport.jl")
+    (synopsis "Re-export modules and symbols")
+    (description "This package provides tools to re-export modules and symbols.")
+    (license license:expat)))
+
+(define-public julia-requires
+  (package
+    (name "julia-requires")
+    (version "1.1.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaPackaging/Requires.jl/")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "03hyfy7c0ma45b0y756j76awi3az2ii4bz4s8cxm3xw9yy1z7b01"))))
+    (build-system julia-build-system)
+    (inputs                             ;required for test
+     `(("julia-example" ,julia-example)))
+    (propagated-inputs
+     `(("julia-colors" ,julia-colors)))
+    (home-page "https://github.com/JuliaPackaging/Requires.jl/")
+    (synopsis "Faster package loader")
+    (description "This package make loading packages faster, maybe.  It
+supports specifying glue code in packages which will load automatically when
+another package is loaded, so that explicit dependencies (and long load times)
+can be avoided.")
+    (license license:expat)))
+
+(define-public julia-richardson
+  (package
+    (name "julia-richardson")
+    (version "1.4.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaMath/Richardson.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "06v9ii3d7hh41fsrfklaa8ap55z5s017f888mrd1c18y4fx9i4nx"))))
+    (build-system julia-build-system)
+    (home-page "https://juliapackages.com/p/richardson")
+    (synopsis "Extrapolate function using Richardson method")
+    (description "This package provides a function extrapolate that
+extrapolates a given function @code{f(x)} to @code{f(x0)}, evaluating @code{f}
+only at a geometric sequence of points @code{> x0} (or optionally @code{<
+x0}).  The key algorithm is Richardson extrapolation using a Neville–Aitken
+tableau, which adaptively increases the degree of an extrapolation polynomial
+until convergence is achieved to a desired tolerance (or convergence stalls
+due to e.g. floating-point errors).  This allows one to obtain @code{f(x0)} to
+high-order accuracy, assuming that @code{f(x0+h)} has a Taylor series or some
+other power series in @code{h}.")
+    (license license:expat)))
+
+(define-public julia-specialfunctions
+  (package
+    (name "julia-specialfunctions")
+    (version "1.3.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaMath/SpecialFunctions.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1rfhrrkzi3ils7fklbn35ki1yp5x88fi71qknfwqyw4pk8cf8p80"))))
+    (build-system julia-build-system)
+    (inputs
+     `(("julia-chainrulestestutils" ,julia-chainrulestestutils)))
+    (propagated-inputs
+     `(("julia-chainrulescore" ,julia-chainrulescore)
+       ("julia-openspecfun-jll" ,julia-openspecfun-jll)))
+    (home-page "https://github.com/JuliaMath/SpecialFunctions.jl")
+    (synopsis "Special mathematical functions")
+    (description "This package provides special mathematical functions,
+including Bessel, Hankel, Airy, error, Dawson, exponential (or sine and
+cosine) integrals, eta, zeta, digamma, inverse digamma, trigamma, and
+polygamma functions.")
+    (license license:expat)))
+
+(define-public julia-staticarrays
+  (package
+    (name "julia-staticarrays")
+    (version "1.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaArrays/StaticArrays.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "01z8bcqwpfkp8p1h1r36pr5cc3798y76zkas7g3206pcsdhvlkz1"))))
+    (build-system julia-build-system)
+    (inputs
+     `(("julia-benchmarktools" ,julia-benchmarktools)))
+    (home-page "https://github.com/JuliaArrays/StaticArrays.jl")
+    (synopsis "Statically sized arrays")
+    (description "This package provides a framework for implementing
+statically sized arrays in Julia, using the abstract type
+@code{StaticArray{Size,T,N} <: AbstractArray{T,N}}.  Subtypes of
+@code{StaticArray} will provide fast implementations of common array and
+linear algebra operations.")
     (license license:expat)))
 
 (define-public julia-uris
@@ -491,4 +1176,83 @@ utilities for Julia.")
     (description "@code{URIs.jl} is a Julia package that allows parsing and
 working with @acronym{URIs,Uniform Resource Identifiers}, as defined in RFC
 3986.")
+    (license license:expat)))
+
+(define-public julia-unitful
+  (package
+    (name "julia-unitful")
+    (version "1.6.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/PainterQubits/Unitful.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0g5bhlvay9yk11c5dqwbzmb3q7lzj0cq5zchyk39d59fkvvmxvq3"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-constructionbase" ,julia-constructionbase)))
+    (home-page "https://painterqubits.github.io/Unitful.jl/stable/")
+    (synopsis "Physical units in Julia")
+    (description "This package supports SI units and also many other unit
+system.")
+    (license license:expat)))
+
+(define-public julia-zygoterules
+  (package
+    (name "julia-zygoterules")
+    (version "0.2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/FluxML/ZygoteRules.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "07i2mf6rr5b8i6l82qgwl5arsb5pwyyzyfasgnszhdqllk9501bs"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-macrotools" ,julia-macrotools)))
+    (home-page "https://github.com/FluxML/ZygoteRules.jl")
+    (synopsis "Add minimal custom gradients to Zygote")
+    (description "Minimal package which enables to add custom gradients to
+Zygote, without depending on Zygote itself.")
+    (license license:expat)))
+
+(define-public julia-zygote
+  (package
+    (name "julia-zygote")
+    (version "0.6.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/FluxML/Zygote.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1h2ph0lsisbkh8y4xgwzgw9p5zi243q8zzp5gfh3zw9pzkx6a1rf"))))
+    (build-system julia-build-system)
+    (arguments
+     `(#:tests? #f))                    ;require CUDA, not packaged yet
+    (propagated-inputs
+     `(("julia-abstractffs" ,julia-abstractffts)
+       ("julia-chainrules" ,julia-chainrules)
+       ("julia-diffrules" ,julia-diffrules)
+       ("julia-fillarrays" ,julia-fillarrays)
+       ("julia-forwarddiff" ,julia-forwarddiff)
+       ("julia-irtools" ,julia-irtools)
+       ("julia-macrotools" ,julia-macrotools)
+       ("julia-nanmath" ,julia-nanmath)
+       ("julia-requires" ,julia-requires)
+       ("julia-specialfunctions" ,julia-specialfunctions)
+       ("julia-zygote-rules" ,julia-zygoterules)))
+    (home-page "https://fluxml.ai/Zygote.jl")
+    (synopsis "Automatic differentiation in Julia")
+    (description "Zygote provides source-to-source automatic
+differentiation (AD) in Julia, and is the next-generation AD system for the
+Flux differentiable programming framework.")
     (license license:expat)))

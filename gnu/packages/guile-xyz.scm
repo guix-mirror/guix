@@ -28,7 +28,7 @@
 ;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2020 Julien Lepiler <julien@lepiller.eu>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
-;;; Copyright © 2020 Masaya Tojo <masaya@tojo.tokyo>
+;;; Copyright © 2020, 2021 Masaya Tojo <masaya@tojo.tokyo>
 ;;; Copyright © 2020 Jesse Gibbons <jgibbons2357@gmail.com>
 ;;; Copyright © 2020 Mike Rosset <mike.rosset@gmail.com>
 ;;; Copyright © 2020 Leo Prikler <leo.prikler@student.tugraz.at>
@@ -91,6 +91,7 @@
   #:use-module (gnu packages networking)
   #:use-module (gnu packages noweb)
   #:use-module (gnu packages nss)
+  #:use-module (gnu packages package-management)
   #:use-module (gnu packages password-utils)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -1313,44 +1314,37 @@ Scheme by using Guile’s foreign function interface.")
   (deprecated-package "guile3.0-newt" guile-newt))
 
 (define-public guile-mastodon
-  (package
-    (name "guile-mastodon")
-    (version "0.0.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://framagit.org/prouby/guile-mastodon.git")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1vblf3d1bbwna3l09p2ap5y8ycvl549bz6whgk78imyfmn28ygry"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; Allow builds with Guile 3.0.
-                  (substitute* "configure.ac"
-                    (("^PKG_CHECK.*") "")
-                    (("^GUILE_PKG.*")
-                     "GUILE_PKG([3.0 2.2])\n"))
-                  #t))))
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("emacs" ,emacs-minimal)
-       ("pkg-config" ,pkg-config)
-       ("texinfo" ,texinfo)))
-    (inputs
-     `(("guile" ,guile-3.0)
-       ("gnutls" ,gnutls)
-       ("guile-json" ,guile-json-4)))
-    (home-page "https://framagit.org/prouby/guile-mastodon")
-    (synopsis "Guile Mastodon REST API module")
-    (description "This package provides Guile modules to access the
+  (let ((commit "74b75bcf547df92acee1e0466ecd7ec07f775392")
+        (revision "1"))
+    (package
+      (name "guile-mastodon")
+      (version (git-version "0.0.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://framagit.org/prouby/guile-mastodon.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "1wx5h6wa9c0na8mrnr2nv1nzjvq68zyrly8yyp11dsskhaw4y33h"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("emacs" ,emacs-minimal)
+         ("pkg-config" ,pkg-config)
+         ("texinfo" ,texinfo)))
+      (inputs
+       `(("guile" ,guile-3.0)
+         ("gnutls" ,gnutls)
+         ("guile-json" ,guile-json-4)))
+      (home-page "https://framagit.org/prouby/guile-mastodon")
+      (synopsis "Guile Mastodon REST API module")
+      (description "This package provides Guile modules to access the
 @uref{https://docs.joinmastodon.org/api/, REST API of Mastodon}, a federated
 microblogging service.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public guile-parted
   (package
@@ -1751,6 +1745,35 @@ The library is shipped with documentation in Info format and usage examples.")
 
 (define-public guile3.0-ics
   (deprecated-package "guile3.0-ics" guile-ics))
+
+(define-public guile-imanifest
+  (let ((commit "ccd5a2111b008d778106f5595a3a585954d95d0")
+        (revision "0"))
+    (package
+      (name "guile-imanifest")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://git.sr.ht/~brown121407/guile-imanifest")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0i5qllcrhdjhspyj7j9h4dc9y37d3cfbpackmybm3030qgfxqirf"))))
+      (build-system guile-build-system)
+      (native-inputs
+       `(("guile" ,guile-3.0)))
+      (propagated-inputs
+       `(("guile-readline" ,guile-readline)
+         ("guile-colorized" ,guile-colorized)
+         ("guix" ,guix)))
+      (home-page "https://sr.ht/~brown121407/guile-imanifest")
+      (synopsis "Interactive Guix manifests")
+      (description "This package provides functions to generate Guix manifests
+interactively.  It works by scanning an alist of package categories, to ask the
+user which package sets would they like to install from it.")
+      (license license:gpl3+))))
 
 (define-public guile-wisp
   (package
@@ -2362,22 +2385,14 @@ inspired by the SCSH regular expression system.")
 (define-public haunt
   (package
     (name "haunt")
-    (version "0.2.4")
+    (version "0.2.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://files.dthompson.us/haunt/haunt-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "056z4znikk83nr5mr0x2ac3iinqbywa2bvb37mhr566a1q50isfc"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; Allow builds with Guile 3.0.
-                  (substitute* "configure"
-                    (("2\\.2 2\\.0")
-                     "3.0 2.2 2.0"))
-                  #t))))
+                "1gy45l6m91b3wpdbpd9bpisp00zl8610zs0a2nwmbjlpd2cbf90k"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((ice-9 match) (ice-9 ftw)
@@ -2626,8 +2641,8 @@ format is also supported.")
   (deprecated-package "guile3.0-mcron" mcron))
 
 (define-public guile-picture-language
-  (let ((commit "291a746a1d3b4784d38b05239bdd7b8e796ce761")
-        (revision "4"))
+  (let ((commit "a1322bf11945465241ca5b742a70893f24156d12")
+        (revision "5"))
     (package
       (name "guile-picture-language")
       (version (git-version "0.0.1" revision commit))
@@ -2639,7 +2654,7 @@ format is also supported.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0rnhf13ds92sbdicshy4sy4kl2kc431fy9vzm1divw974p7v57sd"))))
+                  "03i528z92ainccgm28shg4haxiav5x4cyhyi5dggq1rm027vbm99"))))
       (build-system gnu-build-system)
       (inputs
        `(("guile" ,guile-3.0)))
@@ -3496,7 +3511,7 @@ feature-set, fully programmable in Guile Scheme.")
                                         texlive-fonts-iwona)))
        ("pkg-config" ,pkg-config)))
     (propagated-inputs
-     `(("guile-lib" ,guile-lib)))
+     `(("guile-lib" ,guile2.2-lib)))
     (home-page "https://www.gnu.org/software/guile-cv/")
     (synopsis "Computer vision library for Guile")
     (description "Guile-CV is a Computer Vision functional programming library
@@ -4426,7 +4441,7 @@ tools.")
     (synopsis "Guile implementation of the Encoding for Robust Immutable Storage (ERIS)")
     (description
      "Guile-ERIS is the reference implementation of the Encoding for Robust
-Immutable Storage (ERIS).  ERIS allows arbirtary content to be encoded into
+Immutable Storage (ERIS).  ERIS allows arbitrary content to be encoded into
 uniformly sized, encrypted blocks that can be reassembled using a short
 read-capability.")
     (home-page "https://inqlab.net/git/eris.git")

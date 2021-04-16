@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2021 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -467,5 +468,87 @@
          (open-input-string content) output
          replacement
          "/gnu/store")))))
+
+(define (insert-nuls char-size str)
+  (string-join (map string (string->list str))
+               (make-string (- char-size 1) #\nul)))
+
+(define (nuls-to-underscores s)
+  (string-replace-substring s "\0" "_"))
+
+(define (annotate-buffer-boundary s)
+  (string-append (string-take s buffer-size)
+                 "|"
+                 (string-drop s buffer-size)))
+
+(define (abbreviate-leading-fill s)
+  (let ((s* (string-trim s #\=)))
+    (format #f "[~a =s]~a"
+            (- (string-length s)
+               (string-length s*))
+            s*)))
+
+(define (prettify-for-display s)
+  (abbreviate-leading-fill
+   (annotate-buffer-boundary
+    (nuls-to-underscores s))))
+
+(define (two-sample-refs-with-gap char-size1 char-size2 gap offset
+                                  char1 name1 char2 name2)
+  (string-append
+   (make-string (- buffer-size offset) #\=)
+   (insert-nuls char-size1
+                (string-append "/gnu/store/" (make-string 32 char1) name1))
+   gap
+   (insert-nuls char-size2
+                (string-append "/gnu/store/" (make-string 32 char2) name2))
+   (list->string (map integer->char (iota 77 33)))))
+
+(define (sample-map-entry old-char new-char new-name)
+  (cons (make-string 32 old-char)
+        (string->utf8 (string-append (make-string 32 new-char)
+                                     new-name))))
+
+(define (test-two-refs-with-gap char-size1 char-size2 gap offset)
+  (test-equal
+      (format #f "test-two-refs-with-gap, char-sizes ~a ~a, gap ~s, offset ~a"
+              char-size1 char-size2 gap offset)
+    (prettify-for-display
+     (two-sample-refs-with-gap char-size1 char-size2 gap offset
+                               #\6 "-BlahBlaH"
+                               #\8"-SoMeTHiNG"))
+    (prettify-for-display
+     (let* ((content (two-sample-refs-with-gap char-size1 char-size2 gap offset
+                                               #\5 "-blahblah"
+                                               #\7 "-something"))
+            (replacement (alist->vhash
+                          (list (sample-map-entry #\5 #\6 "-BlahBlaH")
+                                (sample-map-entry #\7 #\8 "-SoMeTHiNG")))))
+       (call-with-output-string
+         (lambda (output)
+           ((@@ (guix build graft) replace-store-references)
+            (open-input-string content) output
+            replacement
+            "/gnu/store")))))))
+
+(for-each (lambda (char-size1)
+            (for-each (lambda (char-size2)
+                        (for-each (lambda (gap)
+                                    (for-each (lambda (offset)
+                                                (test-two-refs-with-gap char-size1
+                                                                        char-size2
+                                                                        gap
+                                                                        offset))
+                                              ;; offsets to test
+                                              (map (lambda (i)
+                                                     (+ i (* 40 char-size1)))
+                                                   (iota 30))))
+                                  ;; gaps
+                                  '("" "-" " " "a")))
+                      ;; char-size2 values to test
+                      '(1 2)))
+          ;; char-size1 values to test
+          '(1 2 4))
+
 
 (test-end)

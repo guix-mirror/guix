@@ -48,6 +48,7 @@
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
+;;; Copyright © 2021 David Larsson <david.larsson@selfhosted.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -734,6 +735,7 @@ Language.")
                             (append (find-files "extra/wolfssl")
                                     (find-files "zlib")))
                   #t))))
+    (replacement mariadb/fixed)
     (build-system cmake-build-system)
     (outputs '("out" "lib" "dev"))
     (arguments
@@ -969,6 +971,13 @@ Language.")
 as a drop-in replacement of MySQL.")
     (license license:gpl2)))
 
+(define mariadb/fixed
+  (package
+    (inherit mariadb)
+    (source (origin
+              (inherit (package-source mariadb))
+              (patches (search-patches "mariadb-CVE-2021-27928.patch"))))))
+
 (define-public mariadb-connector-c
   (package
     (name "mariadb-connector-c")
@@ -993,6 +1002,31 @@ as a drop-in replacement of MySQL.")
     (description "The MariaDB Connector/C is used to connect applications
 developed in C/C++ to MariaDB and MySQL databases.")
     (license license:lgpl2.1+)))
+
+(define-public galera
+  (package
+    (name "galera")
+    (version "26.4.7")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (commit "bac8171266cb982fe013ce496d78085438c6f23e")
+                    (url "https://github.com/codership/galera")
+                    (recursive? #t)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32 "0h7s670pcasq8wzprhyxqfca2cghi62b8xz2kikb2a86wd453qil"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("check" ,check)
+       ("boost" ,boost)
+       ("openssl" ,openssl)))
+    (home-page "https://github.com/codership/galera/")
+    (synopsis "Extension to the MariaDB database server")
+    (description
+     "Galera is a wsrep-provider that is used with MariaDB for load-balancing
+and high-availability (HA).")
+    (license license:gpl2)))                  ;'COPYING' says "version 2" only
 
 ;; Don't forget to update the other postgresql packages when upgrading this one.
 (define-public postgresql-13
@@ -2467,7 +2501,10 @@ can autogenerate peewee models using @code{pwiz}, a model generator.")
                     (lambda _
                       (substitute* "setup.py"
                         (("pypika>=0\\.44\\.0,<0\\.45\\.0") "pypika")
-                        (("aiosqlite>=0.16.0,<0.17.0") "aiosqlite"))
+                        (("aiosqlite>=0.16.0,<0.17.0") "aiosqlite")
+                        (("pytz>=2020\\.4,<2021\\.0") "pytz")
+                        ;; Not required, since ciso8601 is used.
+                        (("'iso8601>=0\\.1\\.13,<0\\.2\\.0',") ""))
                       #t)))))
     (native-inputs
      `(("python-asynctest" ,python-asynctest)
@@ -2476,6 +2513,7 @@ can autogenerate peewee models using @code{pwiz}, a model generator.")
      `(("python-aiosqlite" ,python-aiosqlite)
        ("python-pypika" ,python-pypika)
        ("python-ciso8601" ,python-ciso8601)
+       ("python-pytz" ,python-pytz)
        ("python-typing-extensions"
         ,python-typing-extensions)))
     (home-page
@@ -3776,7 +3814,8 @@ The drivers officially supported by @code{libdbi} are:
                (base32
                 "14x2gjblkgpflv75wl144cyjp1sis5rbxnr9r2gj3yw16v2av0bp"))))
     (build-system cmake-build-system)
-    (inputs
+    (propagated-inputs
+     ;; Headers of soci has include-references to headers of these inputs.
      `(("firebird" ,firebird)
        ("postgresql" ,postgresql)
        ("sqlite" ,sqlite)
@@ -3799,14 +3838,14 @@ PostreSQL, SQLite, ODBC and MySQL.")
 (define-public freetds
   (package
     (name "freetds")
-    (version "1.2.18")
+    (version "1.2.19")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.freetds.org/files/stable/"
                            "freetds-" version ".tar.gz"))
        (sha256
-        (base32 "1hspvwxwdd1apadsy2b40dpjik8kfwcvdamvhpg3lnm15n02fb50"))))
+        (base32 "11xf2w8gh2p9cq4i38jfvdiwgig8wqbg098xjc08kx4iii8lxy3m"))))
     (build-system gnu-build-system)
     (arguments
      ;; NOTE: (Sharlatan-20210110213908+0000) some tests require DB connection,
