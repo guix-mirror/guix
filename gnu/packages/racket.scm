@@ -47,6 +47,22 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages xorg))
 
+
+(define %installer-mirrors
+  ;; Source:
+  ;; https://github.com/racket/racket-lang-org/blob/master/download/data.rkt#L58
+  ;; Matthew Flatt says: "note that many are commented out"
+  ;; INVARIANT: End with a trailing "/"!
+  '("https://mirror.racket-lang.org/installers/"
+    "https://www.cs.utah.edu/plt/installers/"
+    "https://plt.cs.northwestern.edu/racket-mirror/"
+    "https://mirror.csclub.uwaterloo.ca/racket/racket-installers/"
+    ;; Universität Tübingen is using a self-signed HTTPS certificate:
+    "http://mirror.informatik.uni-tuebingen.de/mirror/racket/"
+    "https://racket.infogroep.be/"
+    ))
+
+
 (define-public racket-minimal
   (package
     (name "racket-minimal")
@@ -54,12 +70,9 @@
     (source
      (origin
        (method url-fetch)
-       (uri (list (string-append "https://mirror.racket-lang.org/installers/"
-                                 version "/racket-minimal-src.tgz")
-                  ;; this mirror seems to have broken HTTPS:
-                  (string-append
-                   "http://mirror.informatik.uni-tuebingen.de/mirror/racket/"
-                   version "/racket-minimal-src.tgz")))
+       (uri (map (lambda (base)
+                   (string-append base version "/racket-minimal-src.tgz"))
+                 %installer-mirrors))
        (sha256 "0mwyffw4gcci8wmzxa3j28h03h0gsz55aard8qrk3lri8r2xyg21")
        (patches (search-patches
                  "racket-sh-via-rktio.patch"))))
@@ -197,12 +210,9 @@ DrRacket IDE, are not included.")
     (source
      (origin
        (inherit (package-source racket-minimal))
-       (uri (list (string-append "https://mirror.racket-lang.org/installers/"
-                                 version "/racket-src.tgz")
-                  ;; this mirror seems to have broken HTTPS:
-                  (string-append
-                   "http://mirror.informatik.uni-tuebingen.de/mirror/racket/"
-                   version "/racket-src.tgz")))
+       (uri (map (lambda (base)
+                   (string-append base version "/racket-src.tgz"))
+                 %installer-mirrors))
        (sha256
         (base32
          "047wpjblfzmf1msz7snrp2c2h0zxyzlmbsqr9bwsyvz3frcg0888"))))
