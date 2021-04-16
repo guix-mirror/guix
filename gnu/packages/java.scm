@@ -7585,6 +7585,109 @@ means for generating files and compiling new Java classes based on annotations
 found in your source code.")
     (license license:epl2.0)))
 
+(define-public java-eclipse-lsp4j-common
+  (package
+    (name "java-eclipse-lsp4j-common")
+    (version "0.10.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/eclipse/lsp4j")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "17srrac0pkpybwwc21rzdvn762zzl9m80rlqihc9b4l55hkqpk98"))))
+    (build-system ant-build-system)
+    (home-page "https://eclipse.org/lsp4j/")
+    (synopsis "LSP4J common package")
+    (description "Eclipse LSP4J provides Java bindings for the Language
+Server Protocol and the Debug Adapter Protocol.  This package is a common
+definition intended to be inherited by other packages.")
+    (license license:epl2.0)))
+
+(define-public java-eclipse-lsp4j-debug
+  (package
+    (inherit java-eclipse-lsp4j-common)
+    (name "java-eclipse-lsp4j-debug")
+    (arguments
+     `(#:jar-name "eclipse-lsp4j-debug.jar"
+       #:jdk ,openjdk11
+       #:tests? #f; tests fail with reflection errors
+       #:source-dir "org.eclipse.lsp4j.debug/src/main/java"
+       #:test-dir "org.eclipse.lsp4j.debug/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-xtend
+           (lambda _
+             (copy-recursively "org.eclipse.lsp4j.debug/src/main/xtend-gen"
+                               "org.eclipse.lsp4j.debug/src/main/java"))))))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (inputs
+     `(("java-gson" ,java-gson-2.8.6)
+       ("java-eclipse-lsp4j-generaor" ,java-eclipse-lsp4j-generator)
+       ("java-eclipse-lsp4j-jsonrpc" ,java-eclipse-lsp4j-jsonrpc)
+       ("java-eclipse-lsp4j-jsonrpc-debug" ,java-eclipse-lsp4j-jsonrpc-debug)
+       ("java-eclipse-xtext-xbase-lib" ,java-eclipse-xtext-xbase-lib)))
+    (synopsis "Eclipse LSP4J Java bindings for the Debug Server Protocol")
+    (description "Eclipse LSP4J provides Java bindings for the Language
+Server Protocol and the Debug Adapter Protocol.  This package contains its
+LSP4J Java bindings for the Debug Server Protocol.")))
+
+(define-public java-eclipse-lsp4j-generator
+  (package
+    (inherit java-eclipse-lsp4j-common)
+    (name "java-eclipse-lsp4j-generator")
+    (arguments
+     `(#:jar-name "eclipse-lsp4j-generator.jar"
+       #:jdk ,openjdk11
+       #:tests? #f; no tests
+       #:source-dir "org.eclipse.lsp4j.generator/src/main/java"))
+    (inputs
+     `(("java-eclipse-lsp4j-jsonrpc" ,java-eclipse-lsp4j-jsonrpc)))
+    (synopsis "Eclipse LSP4J Generator")
+    (description "Eclipse LSP4J provides Java bindings for the Language
+Server Protocol and the Debug Adapter Protocol.  This package contains its
+LSP4J code generator for Language Server Protocol classes.")))
+
+(define-public java-eclipse-lsp4j-jsonrpc
+  (package
+    (inherit java-eclipse-lsp4j-common)
+    (name "java-eclipse-lsp4j-jsonrpc")
+    (arguments
+     `(#:jar-name "eclipse-lsp4j-jsonrpc.jar"
+       #:jdk ,openjdk11
+       #:source-dir "org.eclipse.lsp4j.jsonrpc/src/main/java"
+       #:test-dir "org.eclipse.lsp4j.jsonrpc/src/test"))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (inputs
+     `(("java-gson" ,java-gson-2.8.6)))
+    (synopsis "Java JSON-RPC implementation")
+    (description "Eclipse LSP4J provides Java bindings for the Language
+Server Protocol and the Debug Adapter Protocol.  This package contains its
+JSON-RPC implementation.")))
+
+(define-public java-eclipse-lsp4j-jsonrpc-debug
+  (package
+    (inherit java-eclipse-lsp4j-common)
+    (name "java-eclipse-lsp4j-jsonrpc-debug")
+    (arguments
+     `(#:jar-name "eclipse-lsp4j-jsonrpc-debug.jar"
+       #:jdk ,openjdk11
+       #:source-dir "org.eclipse.lsp4j.jsonrpc.debug/src/main/java"
+       #:test-dir "org.eclipse.lsp4j.jsonrpc.debug/src/test"))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (inputs
+     `(("java-eclipse-lsp4j-jsonrpc" ,java-eclipse-lsp4j-jsonrpc)
+       ("java-gson" ,java-gson-2.8.6)))
+    (synopsis "Java JSON-RPC implementation (debug protocol)")
+    (description "Eclipse LSP4J provides Java bindings for the Language
+Server Protocol and the Debug Adapter Protocol.  This package contains its
+JSON-RPC implementation's debug protocol.")))
+
 (define-public java-eclipse-xtext-xbase-lib
   (package
     (name "java-eclipse-xtext-xbase-lib")
