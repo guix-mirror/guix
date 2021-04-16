@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;;
@@ -41,7 +41,7 @@
 (define-public debian-archive-keyring
   (package
     (name "debian-archive-keyring")
-    (version "2019.1")
+    (version "2021.1.1")
     (source
       (origin
         (method git-fetch)
@@ -51,7 +51,7 @@
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "0bphwji3ywk1zi5bq8bhqk7l51fwjy1idwsw7zfqnxca8m5wvw1g"))))
+          "0dcmv7y1k6j3a646kr0rkd2a0c4j2wrz868bh8j9zjx1npzns73q"))))
     (build-system gnu-build-system)
     (arguments
      '(#:test-target "verify-results"
