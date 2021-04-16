@@ -63,11 +63,7 @@
                (base32
                 "047wpjblfzmf1msz7snrp2c2h0zxyzlmbsqr9bwsyvz3frcg0888"))
               (patches (search-patches
-                        "racket-sh-via-rktio.patch"
-                        ;; TODO: If we're no longer patching Racket source
-                        ;; files with store paths, we may also fix the
-                        ;; issue that necessitated the following patch:
-                        "racket-store-checksum-override.patch"))))
+                        "racket-sh-via-rktio.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
