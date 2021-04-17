@@ -10478,7 +10478,12 @@ inside the source file.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1hxniaxifdw3m4y4yssgy22xcmmf558wx7rpz66wy5hwybjslf7b"))))
+           "1hxniaxifdw3m4y4yssgy22xcmmf558wx7rpz66wy5hwybjslf7b"))
+         (modules '((guix build utils)))
+         (snippet
+          '(begin
+             (map delete-file (find-files "." ".*-autoloads\\.elc?$"))
+             #t))))
       (build-system emacs-build-system)
       (inputs
        `(("cl-agnostic-lizard" ,cl-agnostic-lizard)))
@@ -10488,9 +10493,6 @@ inside the source file.")
        `(#:include (cons* "\\.lisp$" "\\.asd$" %default-include)
          #:phases
          (modify-phases %standard-phases
-           ;; The package provides autoloads.
-           (delete 'make-autoloads)
-           (delete 'enable-autoloads-compilation)
            (add-after 'expand-load-path 'expand-sly-contrib
              (lambda* (#:key inputs #:allow-other-keys)
                (let* ((sly (assoc-ref inputs "emacs-sly"))
