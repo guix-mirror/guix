@@ -15641,7 +15641,6 @@ object has been freed.")
                   (srfi srfi-26))
        #:phases
        (modify-phases %standard-phases
-         (delete 'build) ;‘build-emacsql-sqlite’ compiles ‘*.el’ files.
          (add-before 'install 'patch-elisp-shell-shebangs
            (lambda _
              (substitute* (find-files "." "\\.el")
@@ -15652,7 +15651,7 @@ object has been freed.")
              (setenv "SHELL" "sh")))
          (add-after 'setenv-shell 'build-emacsql-sqlite
            (lambda _
-             (invoke "make" "binary" "CC=gcc")))
+             (invoke "make" "binary" (string-append "CC=" ,(cc-for-target)))))
          (add-after 'build-emacsql-sqlite 'install-emacsql-sqlite
            ;; This build phase installs emacs-emacsql binary.
            (lambda* (#:key outputs #:allow-other-keys)
@@ -15673,16 +15672,7 @@ object has been freed.")
                  ;; in the right place.
                  ("(defvar emacsql-sqlite-executable"
                   (string-append (assoc-ref outputs "out")
-                                 "/bin/emacsql-sqlite"))))))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out")))
-               (install-file "sqlite/emacsql-sqlite"
-                             (string-append out "/bin"))
-               (for-each (cut install-file <>
-                              (string-append out "/share/emacs/site-lisp"))
-                         (find-files "." "\\.elc*$")))
-             #t)))))
+                                 "/bin/emacsql-sqlite")))))))))
     (inputs
      `(("emacs-minimal" ,emacs-minimal)
        ("mariadb" ,mariadb "lib")
