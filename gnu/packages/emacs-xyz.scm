@@ -25328,7 +25328,9 @@ other @code{helm-type-file} sources such as @code{helm-locate}.")
                  (("python3 run_tests.py")
                   ""))
                #t))
-           (add-after 'check 'telega-paths-patch
+           (add-after 'unpack 'expand-load-path
+             (assoc-ref emacs:%standard-phases 'expand-load-path))
+           (add-after 'unpack 'patch-sources
              (lambda* (#:key inputs #:allow-other-keys)
                ;; Hard-code paths to `ffplay` and `ffmpeg`.
                (let ((ffplay-bin (string-append (assoc-ref inputs "ffmpeg")
@@ -25344,24 +25346,15 @@ other @code{helm-type-file} sources such as @code{helm-locate}.")
                     (string-append
                      "(and (file-executable-p \"" ffmpeg-bin "\")"
                      "\"" ffmpeg-bin "\")"))))
-               ;; Modify telega-util to reflect unique dir name in
-               ;; `telega-install-data' phase.
-               (substitute* "telega-util.el"
-                 (("\\(concat \"etc/\" filename\\) telega--lib-directory")
-                  "(concat \"telega-data/\" filename)
-                    (locate-dominating-file telega--lib-directory
-                                            \"telega-data\")"))
-               ;; Modify telega.el to reflect unique dir name in
-               ;; `telega-install-contrib' phase.
+               ;; This would push the "contrib" sources to the load path,
+               ;; but as contrib is not installed alongside telega, it does
+               ;; nothing.
                (substitute* "telega.el"
-                 (("\\(push \\(expand-file-name \"contrib\" telega--lib-directory\\) load-path\\)")
-                  "(push (expand-file-name \"telega-contrib\"
-                     (locate-dominating-file telega--lib-directory
-                                             \"telega-contrib\")) load-path)"))
+                 (("\\(push .* load-path\\)") ""))
                #t))
            ;; The server test suite has a hardcoded path.
            ;; Reset this behavior to use the proper path.
-           (add-after 'unpack 'server-suite-patch
+           (add-after 'unpack 'patch-test-suite
              (lambda _
                (substitute* "server/run_tests.py"
                  (("~/.telega/telega-server")
@@ -25373,39 +25366,14 @@ other @code{helm-type-file} sources such as @code{helm-locate}.")
                (invoke "python3" "server/run_tests.py")
                #t))
            (delete 'configure)
-           ;; Build emacs-side using `emacs-build-system'
-           (add-after 'compress-documentation 'emacs-add-source-to-load-path
-             (assoc-ref emacs:%standard-phases 'add-source-to-load-path))
-	   ;; Manually invoke bytecompilation for the contrib
-	   ;; subdirectory.
-           (add-after 'emacs-add-source-to-load-path 'emacs-bytecomp-contrib
-             (lambda _
-	       (substitute* "Makefile"
-                 (("byte-recompile-directory \".\"")
-                  "byte-recompile-directory \"contrib\""))
-               (invoke "make" "compile")
-	       #t))
-           (add-after 'emacs-bytecomp-contrib 'emacs-install
-             (assoc-ref emacs:%standard-phases 'install))
-           ;; This step installs subdir /etc, which contains images, sounds and
-           ;; various other data, next to the site-lisp dir.
-           (add-after 'emacs-install 'telega-install-data
-             (lambda* (#:key outputs #:allow-other-keys)
-               (copy-recursively
-                "etc"
-                (string-append (assoc-ref outputs "out")
-                               "/share/emacs/telega-data/"))
-               #t))
-           (add-after 'emacs-install 'telega-install-contrib
-             (lambda* (#:key outputs #:allow-other-keys)
-               (copy-recursively
-                "contrib"
-                (string-append (assoc-ref outputs "out")
-                               "/share/emacs/telega-contrib"))
-               #t))
-           (add-after 'telega-install-contrib 'emacs-build
+           (add-after 'expand-load-path 'emacs-install
+             (lambda args
+               (apply (assoc-ref emacs:%standard-phases 'install)
+                      #:include `("etc" ,@emacs:%default-include)
+                      args)))
+           (add-after 'emacs-install 'emacs-build
              (assoc-ref emacs:%standard-phases 'build))
-           (add-after 'telega-install-contrib 'emacs-make-autoloads
+           (add-after 'emacs-install 'emacs-make-autoloads
              (assoc-ref emacs:%standard-phases 'make-autoloads)))))
       (inputs
        `(("ffmpeg" ,ffmpeg))) ; mp4/gif support.
