@@ -5317,9 +5317,15 @@ completion of relevant keywords.")
          (file-name (string-append name "-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
-       `(#:configure-flags
-         (list (string-append "--with-lispdir=" (assoc-ref %outputs "out")
-                              "/share/emacs/site-lisp/"))
+       `(#:modules ((guix build gnu-build-system)
+                    ((guix build emacs-build-system) #:prefix emacs:)
+                    (guix build utils))
+         #:imported-modules (,@%gnu-build-system-modules
+                             (guix build emacs-build-system)
+                             (guix build emacs-utils))
+         #:configure-flags
+         (list (string-append "--with-lispdir="
+                              (emacs:elpa-directory (assoc-ref %outputs "out"))))
          #:tests? #f                    ;no test suite
          #:phases
          (modify-phases %standard-phases
