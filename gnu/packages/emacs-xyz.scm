@@ -10485,24 +10485,26 @@ inside the source file.")
       (propagated-inputs
        `(("emacs-sly" ,emacs-sly)))
       (arguments
-       '(#:include (cons* "\\.lisp$" "\\.asd$" %default-include)
+       `(#:include (cons* "\\.lisp$" "\\.asd$" %default-include)
          #:phases
          (modify-phases %standard-phases
            ;; The package provides autoloads.
            (delete 'make-autoloads)
            (delete 'enable-autoloads-compilation)
-           (add-after 'add-source-to-load-path 'add-contrib-to-emacs-load-path
+           (add-after 'expand-load-path 'expand-sly-contrib
              (lambda* (#:key inputs #:allow-other-keys)
-               (let ((sly (assoc-ref inputs "emacs-sly")))
+               (let* ((sly (assoc-ref inputs "emacs-sly"))
+                      (contrib (find-files sly "^contrib$" #:directories? #t)))
                  (setenv "EMACSLOADPATH"
-                         (string-append sly "/share/emacs/site-lisp/contrib:"
-                                        (getenv "EMACSLOADPATH"))))
-               #t))
+                         (string-append (string-join contrib ":")
+                                        ":"
+                                        (getenv "EMACSLOADPATH")))
+                 #t)))
            (add-after 'install 'find-agnostic-lizard
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
-                      (file (string-append out "/share/emacs/site-lisp/"
-                                           "slynk-stepper.lisp"))
+                      (file (string-append (elpa-directory out)
+                                           "/slynk-stepper.lisp"))
                       (asd (string-append
                             (assoc-ref inputs "cl-agnostic-lizard")
                             "/share/common-lisp/systems/agnostic-lizard.asd")))
