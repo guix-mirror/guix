@@ -7833,7 +7833,7 @@ after buffer changes.")
                                "(require-relative-list \
 '(\"../../common/run\") \"realgud:\")\n")))
              #t))
-         (add-after 'unpack 'fix-autogen-script
+         (add-after 'expand-load-path 'fix-autogen-script
            (lambda _
              (substitute* "autogen.sh"
                (("./configure") "sh configure"))
