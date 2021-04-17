@@ -1362,8 +1362,7 @@ invoking @command{notifymuch} from the post-new hook.")
                       (setenv "CONFIG_SHELL" (which "sh"))
 
                       (let* ((out (assoc-ref outputs "out"))
-                             (elisp
-                              (string-append out "/share/emacs/site-lisp/")))
+                             (elisp (emacs:elpa-directory out)))
                         (invoke "./configure"
                                 (string-append "--prefix=" out)
                                 (string-append "--emacslispdir=" elisp)
