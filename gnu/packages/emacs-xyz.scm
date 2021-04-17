@@ -8968,14 +8968,7 @@ mode with the package emacs-julia-mode.")
                 "065ix3jycsx3wvkq7a6060i93caxisdvgxgqb1l6rq15n4qln78y"))))
     (build-system emacs-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'JuliaSnail-jl
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (install-file "JuliaSnail.jl"
-                             (string-append out "/share/emacs/site-lisp/")))
-             #t)))))
+     `(#:include (cons "^JuliaSnail\\.jl" %default-include)))
     (inputs
      `(("emacs-dash" ,emacs-dash)
        ("emacs-s" ,emacs-s)
