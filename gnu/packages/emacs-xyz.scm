@@ -349,16 +349,7 @@ using geiser.")
         (base32 "0rxncnzx7qgcpvc8nz0sd8r0hwrplazzraahdwhbpq0q6z8ywqgg"))))
     (build-system emacs-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'install-scheme
-           (lambda* (#:key outputs #:allow-other-keys)
-             (install-file
-              "geiser-gauche.scm"
-              (string-append
-               (assoc-ref outputs "out")
-               "/share/emacs/site-lisp"))
-             #t)))))
+     `(#:include (cons "^geiser-gauche\\.scm$" %default-include)))
     (native-inputs
      `(("geiser" ,emacs-geiser)))
     (home-page "https://gitlab.com/emacs-geiser/gauche")
