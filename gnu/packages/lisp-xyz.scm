@@ -9267,6 +9267,35 @@ Portable Network Graphics file format.")
 (define-public cl-png
   (sbcl-package->cl-source-package sbcl-png))
 
+(define-public sbcl-cl-svg
+  (let ((commit "1e988ebd2d6e2ee7be4744208828ef1b59e5dcdc")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-svg")
+      (version (git-version "0.0.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/wmannis/cl-svg")
+               (commit commit)))
+         (file-name (git-file-name "cl-svg" version))
+         (sha256
+          (base32 "11rmzimy6j7ln7q5y1h2kw1225rsfb6fpn89qjcq7h5lc8fay0wz"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/wmannis/cl-svg")
+      (synopsis "Write SVG file format")
+      (description
+       "This package provides the @code{CL-SVG} Common Lisp system to produce
+Scalable Vector Graphics files.")
+      (license license:expat))))
+
+(define-public ecl-cl-svg
+  (sbcl-package->ecl-package sbcl-cl-svg))
+
+(define-public cl-svg
+  (sbcl-package->cl-source-package sbcl-cl-svg))
+
 (define-public sbcl-nodgui
   (let ((commit "4a9c2e7714b278fbe97d198c56f54ea87290001d")
         (revision "1"))
