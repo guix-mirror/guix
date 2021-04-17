@@ -2995,8 +2995,8 @@ during idle time, while Emacs is doing nothing else.")
                ;; upgrading" that pdf-tools tries to perform.
                (emacs-substitute-variables "pdf-tools.el"
                  ("pdf-tools-handle-upgrades" '()))))
-           (add-after 'emacs-patch-variables 'emacs-add-source-to-load-path
-             (assoc-ref emacs:%standard-phases 'add-source-to-load-path))
+           (add-after 'emacs-patch-variables 'emacs-expand-load-path
+             (assoc-ref emacs:%standard-phases 'expand-load-path))
            (add-after 'emacs-add-source-to-load-path 'emacs-install
              (assoc-ref emacs:%standard-phases 'install))
            (add-after 'emacs-install 'emacs-build
