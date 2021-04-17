@@ -396,7 +396,7 @@ sub-package.")
              (add-installed-pythonpath inputs outputs)
              (invoke "pytest" "-vv"))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest-6)
+     `(("python-pytest" ,python-pytest)
        ("python-setuptools" ,python-setuptools) ; needs setuptools >= 50.3.2
        ("python-setuptools-scm" ,python-setuptools-scm)
        ("python-setuptools-declarative-requirements"

@@ -114,8 +114,8 @@
        ;; for docs
        ("stex" ,stex)
        ("xorg-rgb" ,xorg-rgb)
-       ("texlive" ,(texlive-union (list texlive-latex-oberdiek
-                                        texlive-generic-epsf)))
+       ("texlive" ,(texlive-updmap.cfg (list texlive-latex-oberdiek
+                                             texlive-generic-epsf)))
        ("ghostscript" ,ghostscript)
        ("netpbm" ,netpbm)))
     (native-search-paths

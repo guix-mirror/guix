@@ -1530,7 +1530,7 @@ Guile.")
        ("python-isort" ,python-isort)
        ("python-mypy" ,python-mypy)
        ("python-ply" ,python-ply)
-       ("python-pytest" ,python-pytest-6)
+       ("python-pytest" ,python-pytest)
        ("python-pytest-cov" ,python-pytest-cov)
        ("python-sphinx-autodoc-typehints" ,python-sphinx-autodoc-typehints)))
     (propagated-inputs
