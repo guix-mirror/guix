@@ -5683,6 +5683,42 @@ basic everyday functions and macros.")
 (define-public ecl-fare-utils
   (sbcl-package->ecl-package sbcl-fare-utils))
 
+(define-public sbcl-fare-mop
+  (let ((commit "538aa94590a0354f382eddd9238934763434af30")
+        (revision "1"))
+    (package
+      (name "sbcl-fare-mop")
+      (version (git-version "1.0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/fare/fare-mop")
+               (commit commit)))
+         (file-name (git-file-name "fare-mop" version))
+         (sha256
+          (base32
+           "0maxs8392953fhnaa6zwnm2mdbhxjxipp4g4rvypm06ixr6pyv1c"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("close-mop" ,sbcl-closer-mop)
+         ("fare-utils" ,sbcl-fare-utils)))
+      (home-page "https://github.com/fare/fare-mop")
+      (synopsis "General purpose Common Lisp utilities using the MOP")
+      (description
+       "FARE-MOP is a small collection of utilities using the MetaObject
+Protocol.  It notably contains a SIMPLE-PRINT-OBJECT method, and
+a SIMPLE-PRINT-OBJECT-MIXIN mixin that allow you to trivially define
+PRINT-OBJECT methods that print the interesting slots in your objects, which is
+great for REPL interaction and debugging.")
+      (license license:unlicense))))
+
+(define-public ecl-fare-mop
+  (sbcl-package->ecl-package sbcl-fare-mop))
+
+(define-public cl-fare-mop
+  (sbcl-package->cl-source-package sbcl-fare-mop))
+
 (define-public sbcl-trivial-utf-8
   (let ((commit "4d427cfbb1c452436a0efb71c3205c9da67f718f")
         (revision "1"))
