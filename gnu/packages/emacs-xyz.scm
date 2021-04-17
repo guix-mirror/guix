@@ -219,43 +219,51 @@
 (define-public emacs-geiser
   (package
     (name "emacs-geiser")
-    (version "0.12")
+    (version "0.13")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://gitlab.com/jaor/geiser/")
+             (url "https://gitlab.com/emacs-geiser/geiser.git")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0n718xpys7v94zaf9lpmsx97qgn6qxif1acr718wyvpmfr4hiv08"))))
-    (build-system gnu-build-system)
+        (base32 "0bwjcfmcyv6z0i5ivqirgcibxdkrlf5vyxcbj7k8dk7flwg1fpd9"))
+       (patches
+        (search-patches "emacs-geiser-autoload-activate-implementation.patch"))))
+    (build-system emacs-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-after 'install 'post-install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (symlink "geiser-install.el"
-                      (string-append (assoc-ref outputs "out")
-                                     "/share/emacs/site-lisp/"
-                                     "geiser-autoloads.el"))
-             #t)))))
-    (inputs
-     `(("guile" ,guile-2.2)))
+         ;; Move the source files to the top level, which is included in
+         ;; the EMACSLOADPATH.
+         (add-after 'unpack 'move-source-files
+           (lambda _
+             (let ((el-files (find-files "./elisp" ".*\\.el$")))
+               (for-each (lambda (f)
+                           (rename-file f (basename f)))
+                         el-files))
+             #t))
+         (add-before 'install 'make-info
+           (lambda _
+             (with-directory-excursion "doc"
+               (invoke "makeinfo" "--no-split"
+                       "-o" "geiser.info" "geiser.texi")))))))
     (native-inputs
-     `(("emacs" ,emacs-minimal)
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("texinfo" ,texinfo)))
+     `(("texinfo" ,texinfo)))
     (home-page "https://nongnu.org/geiser/")
-    (synopsis "Collection of Emacs modes for Guile and Racket hacking")
+    (synopsis "Collection of Emacs modes for Scheme hacking")
     (description
      "Geiser is a collection of Emacs major and minor modes that conspire with
 one or more Scheme implementations to keep the Lisp Machine Spirit alive.  The
 continuously running Scheme interpreter takes the center of the stage in
 Geiser.  A bundle of Elisp shims orchestrates the dialog between the Scheme
 implementation, Emacs and, ultimately, the schemer, giving them access to live
-metadata.")
+metadata.
+
+This package provides just the core of Geiser.  To effectively use it with your
+favourite Scheme implementation, you also need the corresponding geiser package,
+e.g. emacs-geiser-guile for Guile.")
     (license license:bsd-3)))
 
 (define-public emacs-ac-geiser
