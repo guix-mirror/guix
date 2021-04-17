@@ -1752,14 +1752,16 @@ or unexpected behavior inside an elisp configuration file (typically
               ("imagemagick" ,imagemagick)))
     (arguments
      `(#:modules ((guix build gnu-build-system)
+                  ((guix build emacs-build-system) #:prefix emacs:)
                   (guix build utils)
                   (guix build emacs-utils))
        #:imported-modules (,@%gnu-build-system-modules
+                           (guix build emacs-build-system)
                            (guix build emacs-utils))
        #:configure-flags
        (let ((out (assoc-ref %outputs "out")))
          (list (string-append "--with-lispdir="
-                              out "/share/emacs/site-lisp")
+                              (emacs:elpa-directory out))
                (string-append "--with-icondir="
                               out "/share/images/emacs-w3m")
                ;; Leave .el files uncompressed, otherwise GC can't
@@ -1804,8 +1806,7 @@ or unexpected behavior inside an elisp configuration file (typically
            (lambda* (#:key outputs #:allow-other-keys)
              (invoke "make" "install" "install-icons")
              (with-directory-excursion
-                 (string-append (assoc-ref outputs "out")
-                                "/share/emacs/site-lisp")
+                 (emacs:elpa-directory (assoc-ref outputs "out"))
                (for-each delete-file '("ChangeLog" "ChangeLog.1"))
                (symlink "w3m-load.el" "w3m-autoloads.el")
                #t))))))
