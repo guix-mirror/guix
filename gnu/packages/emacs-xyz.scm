@@ -1272,7 +1272,11 @@ replacement.")
                                          "/bin/emacs"))
        #:modules ((ice-9 match)
                   (srfi srfi-26)
+                  ((guix build emacs-build-system) #:prefix emacs:)
                   ,@%gnu-build-system-modules)
+       #:imported-modules (,@%gnu-build-system-modules
+                           (guix build emacs-build-system)
+                           (guix build emacs-utils))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
@@ -1313,7 +1317,7 @@ replacement.")
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (el-dir (string-append out "/share/emacs/site-lisp"))
+                    (el-dir (emacs:elpa-directory out))
                     (doc (string-append
                           out "/share/doc/haskell-mode-" ,version))
                     (info (string-append out "/share/info")))
