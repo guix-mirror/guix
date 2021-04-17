@@ -1,0 +1,34 @@
+From 93ef7101fdfcc7eac6f465b4b9788c384a323c14 Mon Sep 17 00:00:00 2001
+From: jao <jao@gnu.org>
+Date: Mon, 5 Apr 2021 20:17:50 +0100
+Subject: [PATCH] fix: auto-activate guile implementation
+
+---
+ geiser-guile.el | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/geiser-guile.el b/geiser-guile.el
+index 340442b..deeb76f 100644
+--- a/geiser-guile.el
++++ b/geiser-guile.el
+@@ -25,6 +25,7 @@
+ (require 'geiser-syntax)
+ (require 'geiser-custom)
+ (require 'geiser-repl)
++(require 'geiser-impl)
+ (require 'geiser-base)
+ (require 'geiser-eval)
+ (require 'geiser-edit)
+@@ -474,6 +475,9 @@ it spawn a server thread."
+ 
+ (geiser-impl--add-to-alist 'regexp "\\.scm$" 'guile t)
+ 
++;;;###autoload
++(geiser-activate-implementation 'guile)
++
+ ;;;###autoload
+ (autoload 'run-guile "geiser-guile" "Start a Geiser Guile REPL." t)
+ 
+-- 
+GitLab
+

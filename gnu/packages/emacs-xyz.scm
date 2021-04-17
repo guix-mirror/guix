@@ -266,6 +266,48 @@ favourite Scheme implementation, you also need the corresponding geiser package,
 e.g. emacs-geiser-guile for Guile.")
     (license license:bsd-3)))
 
+(define-public emacs-geiser-guile
+  (package
+    (name "emacs-geiser-guile")
+    (version "0.13")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/emacs-geiser/guile.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0w264pjwlxna31260ll6gd0n77jlynhzf3h2dws5wr7jflns5mbc"))
+       (patches (search-patches
+                 "emacs-geiser-guile-auto-activate.patch"))))
+    (build-system emacs-build-system)
+    (arguments
+     '(#:include (cons "^src/" %default-include)
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'make-autoloads 'patch-autoloads
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* (string-append
+                           (elpa-directory (assoc-ref outputs "out"))
+                           "/geiser-guile-autoloads.el")
+               ;; Activating implementations fails when Geiser is not yet
+               ;; loaded, so let's defer that until it is.
+               (("\\(geiser-activate-implementation .*\\)" all)
+                (string-append
+                 "(eval-after-load 'geiser-impl '" all ")")))
+             #t)))))
+    (inputs
+     `(("guile" ,guile-2.2)))
+    (propagated-inputs
+     `(("geiser" ,emacs-geiser)))
+    (home-page "https://nongnu.org/geiser/")
+    (synopsis "Guile Scheme support for Geiser")
+    (description
+     "This package adds support for the Guile Scheme implementation to Geiser,
+a generic Scheme interaction mode for the GNU Emacs editor.")
+    (license license:bsd-3)))
+
 (define-public emacs-ac-geiser
   (let ((commit "93818c936ee7e2f1ba1b315578bde363a7d43d05")
         (revision "0"))
