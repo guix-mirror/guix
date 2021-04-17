@@ -1105,6 +1105,19 @@ for editing Racket's Scribble documentation syntax in Emacs.")
        (sha256
         (base32 "0q2pb3w8s833fjhkzicciw2php4lsnismad1dnwgp2lcway757ra"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:modules ((guix build gnu-build-system)
+                  ((guix build emacs-build-system) #:prefix emacs:)
+                  (guix build utils))
+       #:imported-modules (,@%gnu-build-system-modules
+                           (guix build emacs-build-system)
+                           (guix build emacs-utils))
+       #:configure-flags (list (string-append "--with-lispdir="
+                                              (emacs:elpa-directory %output)))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'expand-load-path
+           (assoc-ref emacs:%standard-phases 'expand-load-path)))))
     (native-inputs
     `(("autoconf" ,autoconf)
       ("automake" ,automake)
