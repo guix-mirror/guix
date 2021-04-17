@@ -6189,21 +6189,20 @@ regions of interest, geometric shapes, paths, text, etc for image overlays.")
 (define-public python-tifffile
   (package
     (name "python-tifffile")
-    (version "2020.6.3")
+    (version "2021.4.8")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "tifffile" version))
        (sha256
         (base32
-         "0xv3ynkbrsibqvx7250075idb7wm3canjd6lx2nzf3cbp6l07577"))))
+         "16r0hw7shka1bqf28bv198lj2jhf2r9gy3s5zv4nf5cfsfm8pajm"))))
     (build-system python-build-system)
     ;; Tests require lfdfiles, which depends on tifffile
     (arguments `(#:tests? #f))
     (propagated-inputs
      `(("python-numpy" ,python-numpy)
-       ;;("python-lfdfiles" ,python-lfdfiles)
-       ("python-roifile" ,python-roifile)))
+       ("python-imagecodecs" ,python-imagecodecs)))
     (home-page "https://www.lfd.uci.edu/~gohlke/")
     (synopsis "Read and write TIFF(r) files")
     (description "This package lets you read image and metadata from many
