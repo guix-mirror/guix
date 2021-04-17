@@ -2404,8 +2404,7 @@ a set of simplified face specifications and a user-supplied color palette")
      `(("emacs" ,emacs-minimal)))
     (arguments
      `(#:configure-flags
-       (list (string-append "--with-howmdir=" %output
-                            "/share/emacs/site-lisp/"))
+       (list (string-append "--with-howmdir=" (emacs:elpa-directory %output)))
        #:modules ((guix build gnu-build-system)
                   ((guix build emacs-build-system) #:prefix emacs:)
                   (guix build utils))
