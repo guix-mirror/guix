@@ -534,7 +534,7 @@ on stdout instead of using a socket as the Emacsclient does.")
                  (make-file-writable "libgit.el")
                  (emacs-substitute-variables "libgit.el"
                    ("libgit--module-file"
-                    (string-append out "/share/emacs/site-lisp/libegit2.so")))
+                    (string-append (emacs:elpa-directory out) "/libegit2.so")))
                  #t)))
            (add-before 'install 'prepare-for-install
              (lambda _
