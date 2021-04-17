@@ -1115,6 +1115,46 @@ MANIFEST.  Single-file bundles are required by programs such as Git and Lynx."
                     `((type . profile-hook)
                       (hook . ca-certificate-bundle))))
 
+(define (emacs-subdirs manifest)
+  (define build
+    (with-imported-modules (source-module-closure
+                            '((guix build profiles)
+                              (guix build utils)))
+      #~(begin
+          (use-modules (guix build utils)
+                       (guix build profiles)
+                       (ice-9 ftw) ; scandir
+                       (srfi srfi-1) ; append-map
+                       (srfi srfi-26))
+
+          (let ((destdir (string-append #$output "/share/emacs/site-lisp"))
+                (subdirs
+                 (append-map
+                  (lambda (dir)
+                    (filter
+                     file-is-directory?
+                     (map (cute string-append dir "/" <>)
+                          (scandir dir (negate (cute member <> '("." "..")))))))
+                  (filter file-exists?
+                          (map (cute string-append <> "/share/emacs/site-lisp")
+                               '#$(manifest-inputs manifest))))))
+            (mkdir-p destdir)
+            (with-directory-excursion destdir
+              (call-with-output-file "subdirs.el"
+                (lambda (port)
+                  (write
+                   `(normal-top-level-add-to-load-path
+                     (list ,@subdirs))
+                   port)
+                  (newline port)
+                  #t)))))))
+  (gexp->derivation "emacs-subdirs" build
+                    #:local-build? #t
+                    #:substitutable? #f
+                    #:properties
+                    `((type . profile-hook)
+                      (hook . emacs-subdirs))))
+
 (define (glib-schemas manifest)
   "Return a derivation that unions all schemas from manifest entries and
 creates the Glib 'gschemas.compiled' file."
@@ -1672,6 +1712,7 @@ MANIFEST."
         fonts-dir-file
         ghc-package-cache-file
         ca-certificate-bundle
+        emacs-subdirs
         glib-schemas
         gtk-icon-themes
         gtk-im-modules

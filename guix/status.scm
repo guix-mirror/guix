@@ -379,6 +379,8 @@ the current build phase."
      (G_ "building GHC package cache..."))
     ('ca-certificate-bundle
      (G_ "building CA certificate bundle..."))
+    ('emacs-subdirs
+     (G_ "listing Emacs subdirs..."))
     ('glib-schemas
      (G_ "generating GLib schema cache..."))
     ('gtk-icon-themes
