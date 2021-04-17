@@ -21759,7 +21759,7 @@ stored playlists.")
                              (guix build cmake-build-system))
          #:phases
          (modify-phases %standard-phases
-           (add-before 'add-source-to-load-path 'substitute-vterm-module-path
+           (add-after 'unpack 'substitute-vterm-module-path
              (lambda* (#:key outputs #:allow-other-keys)
                (chmod "vterm.el" #o644)
                (emacs-substitute-sexps "vterm.el"
