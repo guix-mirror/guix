@@ -11268,8 +11268,7 @@ programming and reproducible research.")
                     (duplicates (lset-intersection string=?
                                                    contrib-files
                                                    org+contrib-files)))
-               (with-directory-excursion
-                   (string-append out "/share/emacs/site-lisp")
+               (with-directory-excursion (elpa-directory out)
                  (for-each delete-file duplicates))
                #t))))))
     (propagated-inputs
