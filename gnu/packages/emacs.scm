@@ -201,8 +201,8 @@
                 (car (find-files "bin" "^emacs-([0-9]+\\.)+[0-9]+$"))
                 "bin/emacs")
                #t)))
-         (add-after 'strip-double-wrap 'wrap-load-path
-           (lambda* (#:key outputs #:allow-other-keys)
+         (add-after 'strip-double-wrap 'wrap-emacs-paths
+           (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (lisp-dirs (find-files (string-append out "/share/emacs")
                                            "^lisp$"
@@ -210,6 +210,13 @@
                (for-each
                 (lambda (prog)
                   (wrap-program prog
+                    ;; emacs-next and variants rely on uname being in PATH for
+                    ;; Tramp.  Tramp paths can't be hardcoded, because they
+                    ;; need to be portable.
+                    `("PATH" suffix
+                      ,(map (lambda (in) (string-append in "/bin"))
+                            (list (assoc-ref inputs "gzip")
+                                  (assoc-ref inputs "coreutils"))))
                     `("EMACSLOADPATH" suffix ,lisp-dirs)))
                 (find-files (string-append out "/bin")
                             ;; Matches versioned and unversioned emacs binaries.
@@ -230,6 +237,10 @@
     (inputs
      `(("gnutls" ,gnutls)
        ("ncurses" ,ncurses)
+
+       ;; Required for "core" functionality, such as dired and compression.
+       ("coreutils" ,coreutils)
+       ("gzip" ,gzip)
 
        ;; Avoid Emacs's limited movemail substitute that retrieves POP3 email
        ;; only via insecure channels.  This is not needed for (modern) IMAP.
@@ -361,7 +372,9 @@ also enabled and works without glitches even on X server."))))
            (delete 'strip-double-wrap)))))
     (inputs
      `(("guix-emacs.el" ,(search-auxiliary-file "emacs/guix-emacs.el"))
-       ("ncurses" ,ncurses)))
+       ("ncurses" ,ncurses)
+       ("coreutils" ,coreutils)
+       ("gzip" ,gzip)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))))
 
