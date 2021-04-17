@@ -1600,6 +1600,12 @@ providing the system administrator with some help in common tasks.")
                                (string-append "--with-bashcompletiondir="
                                               (assoc-ref %outputs "out")
                                               "/etc/bash_completion.d"))
+
+       ;; FIXME: For now we cannot reliably run tests on GNU/Hurd:
+       ;; <https://bugs.gnu.org/47791>.
+       #:tests? ,(and (not (%current-target-system))
+                      (not (string-suffix? "-gnu" (%current-system))))
+
        #:phases (modify-phases %standard-phases
                   (add-before 'configure 'patch-build-scripts
                     (lambda* (#:key outputs #:allow-other-keys)
