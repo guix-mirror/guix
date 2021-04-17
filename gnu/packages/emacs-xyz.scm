@@ -3133,8 +3133,8 @@ type, for example: packages, buffers, files, etc.")
     (license license:gpl3+)))
 
 (define-public emacs-guix
-  (let* ((commit "a694fdbcedb6edd2239a31d326e475c763ee32f8")
-         (revision "3"))
+  (let ((commit "8ce6d219e87c5097abff9ce6f1f5a4293cdfcb31")
+        (revision "4"))
     (package
       (name "emacs-guix")
       (version (git-version "0.5.2" revision commit))
@@ -3142,12 +3142,12 @@ type, for example: packages, buffers, files, etc.")
                 (method git-fetch)
                 (uri (git-reference
                       ;; TODO: Use the official version when it has a new home
-                      (url "https://github.com/jsoo1/guix.el")
+                      (url "https://github.com/alezost/guix.el")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1pqw7zbgxzwpig4xr0izc3z8h80c72i6bl5yi12br0d7aq6dbkvj"))))
+                  "0awbd8x154c4dk4av7inpgd63n07xzng84vvc8qckmgljknc0j7k"))))
       (build-system gnu-build-system)
       (arguments
        `(#:modules ((guix build gnu-build-system)
@@ -3178,6 +3178,7 @@ type, for example: packages, buffers, files, etc.")
          ("guix" ,guix)))
       (propagated-inputs
        `(("geiser" ,emacs-geiser)
+         ("geiser-guile" ,emacs-geiser-guile)
          ("guile-gcrypt" ,guile-gcrypt)
          ("dash" ,emacs-dash)
          ("bui" ,emacs-bui)
