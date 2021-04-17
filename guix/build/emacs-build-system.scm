@@ -26,13 +26,16 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
+  #:use-module (ice-9 format)
+  #:use-module (ice-9 ftw)
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 match)
   #:export (%standard-phases
             %default-include
             %default-exclude
-            emacs-build))
+            emacs-build
+            elpa-directory))
 
 ;; Commentary:
 ;;
@@ -73,33 +76,43 @@ archive, a directory, or an Emacs Lisp file."
         #t)
       (gnu:unpack #:source source)))
 
-(define* (add-source-to-load-path #:key dummy #:allow-other-keys)
-  "Augment the EMACSLOADPATH environment variable with the source directory."
+(define* (expand-load-path #:key (prepend-source? #t) #:allow-other-keys)
+  "Expand EMACSLOADPATH, so that inputs, whose code resides in subdirectories,
+are properly found.
+If @var{prepend-source?} is @code{#t} (the default), also add the current
+directory to EMACSLOADPATH in front of any other directories."
   (let* ((source-directory (getcwd))
          (emacs-load-path (string-split (getenv "EMACSLOADPATH") #\:))
-         ;; XXX: Make sure the Emacs core libraries appear at the end of
-         ;; EMACSLOADPATH, to avoid shadowing any other libraries depended
-         ;; upon.
-         (emacs-load-path-non-core (filter (cut string-contains <>
-                                                "/share/emacs/site-lisp")
-                                           emacs-load-path))
+         (emacs-load-path*
+          (map
+           (lambda (dir)
+             (match (scandir dir (negate (cute member <> '("." ".."))))
+               ((sub) (string-append dir "/" sub))
+               (_ dir)))
+           emacs-load-path))
          (emacs-load-path-value (string-append
-                                 (string-join (cons source-directory
-                                                    emacs-load-path-non-core)
-                                              ":")
+                                 (string-join
+                                  (if prepend-source?
+                                      (cons source-directory emacs-load-path*)
+                                      emacs-load-path*)
+                                  ":")
                                  ":")))
     (setenv "EMACSLOADPATH" emacs-load-path-value)
-    (format #t "source directory ~s prepended to the `EMACSLOADPATH' \
-environment variable\n" source-directory)))
+    (when prepend-source?
+      (format #t "source directory ~s prepended to the `EMACSLOADPATH' \
+environment variable\n" source-directory))
+    (let ((diff (lset-difference string=? emacs-load-path* emacs-load-path)))
+      (unless (null? diff)
+        (format #t "expanded load paths for ~{~a~^, ~}\n"
+                (map basename diff))))))
 
 (define* (build #:key outputs inputs #:allow-other-keys)
   "Compile .el files."
   (let* ((emacs (string-append (assoc-ref inputs "emacs") "/bin/emacs"))
-         (out (assoc-ref outputs "out"))
-         (site-lisp (string-append out %install-dir)))
+         (out (assoc-ref outputs "out")))
     (setenv "SHELL" "sh")
     (parameterize ((%emacs emacs))
-      (emacs-byte-compile-directory site-lisp))))
+      (emacs-byte-compile-directory (elpa-directory out)))))
 
 (define* (patch-el-files #:key outputs #:allow-other-keys)
   "Substitute the absolute \"/bin/\" directory with the right location in the
@@ -116,7 +129,8 @@ store in '.el' files."
       #:binary #t))
 
   (let* ((out (assoc-ref outputs "out"))
-         (site-lisp (string-append out %install-dir))
+         (elpa-name-ver (store-directory->elpa-name-version out))
+         (el-dir (string-append out %install-dir "/" elpa-name-ver))
          ;; (ice-9 regex) uses libc's regexp routines, which cannot deal with
          ;; strings containing NULs.  Filter out such files.  TODO: Remove
          ;; this workaround when <https://bugs.gnu.org/30116> is fixed.
@@ -130,7 +144,7 @@ store in '.el' files."
              (error "patch-el-files: unable to locate " cmd-name))
            (string-append "\"" cmd "\"")))))
 
-    (with-directory-excursion site-lisp
+    (with-directory-excursion el-dir
       ;; Some old '.el' files (e.g., tex-buf.el in AUCTeX) are still
       ;; ISO-8859-1-encoded.
       (unless (false-if-exception (substitute-program-names))
@@ -181,14 +195,14 @@ parallel. PARALLEL-TESTS? is ignored when using a non-make TEST-COMMAND."
            (not (any (cut match-stripped-file "excluded" <>) exclude)))))
 
   (let* ((out (assoc-ref outputs "out"))
-         (site-lisp (string-append out %install-dir))
+         (el-dir (elpa-directory out))
          (files-to-install (find-files source install-file?)))
     (cond
      ((not (null? files-to-install))
       (for-each
        (lambda (file)
          (let* ((stripped-file (string-drop file (string-length source)))
-                (target-file (string-append site-lisp stripped-file)))
+                (target-file (string-append el-dir stripped-file)))
            (format #t "`~a' -> `~a'~%" file target-file)
            (install-file file (dirname target-file))))
        files-to-install)
@@ -219,11 +233,11 @@ parallel. PARALLEL-TESTS? is ignored when using a non-make TEST-COMMAND."
   "Generate the autoloads file."
   (let* ((emacs (string-append (assoc-ref inputs "emacs") "/bin/emacs"))
          (out (assoc-ref outputs "out"))
-         (site-lisp (string-append out %install-dir))
          (elpa-name-ver (store-directory->elpa-name-version out))
-         (elpa-name (package-name->name+version elpa-name-ver)))
+         (elpa-name (package-name->name+version elpa-name-ver))
+         (el-dir (elpa-directory out)))
     (parameterize ((%emacs emacs))
-      (emacs-generate-autoloads elpa-name site-lisp))))
+      (emacs-generate-autoloads elpa-name el-dir))))
 
 (define* (enable-autoloads-compilation #:key outputs #:allow-other-keys)
   "Remove the NO-BYTE-COMPILATION local variable embedded in the generated
@@ -258,10 +272,16 @@ second hyphen.  This corresponds to 'name-version' as used in ELPA packages."
             strip-store-file-name)
    store-dir))
 
+(define (elpa-directory store-dir)
+  "Given the store directory STORE-DIR return the absolute install directory
+for libraries following the ELPA convention."
+  (string-append store-dir %install-dir "/"
+                 (store-directory->elpa-name-version store-dir)))
+
 (define %standard-phases
   (modify-phases gnu:%standard-phases
     (replace 'unpack unpack)
-    (add-after 'unpack 'add-source-to-load-path add-source-to-load-path)
+    (add-after 'unpack 'expand-load-path expand-load-path)
     (delete 'bootstrap)
     (delete 'configure)
     (delete 'build)
