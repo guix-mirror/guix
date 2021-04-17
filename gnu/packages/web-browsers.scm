@@ -837,7 +837,7 @@ http, and https via third-party applications.")
 (define-public tinmop
   (package
     (name "tinmop")
-    (version "0.5.9")
+    (version "0.6.2")
     (source
      (origin
        (method git-fetch)
@@ -846,7 +846,7 @@ http, and https via third-party applications.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1zdra4q4mkrldv7dpag9p1bsma2k9pvp9pp9k7qsbm0alj7xwqpr"))))
+        (base32 "1fz52agvxnavz375apb1pjalf3myjllr4pc096b6qvc6vzhadg4c"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("curl" ,curl)
