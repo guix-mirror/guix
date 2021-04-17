@@ -2,7 +2,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2017, 2019 Carlo Zancanaro <carlo@zancanaro.id.au>
+;;; Copyright © 2017, 2019, 2021 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2017-2020 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2016, 2017, 2018 Alex Vong <alexvong1995@gmail.com>
@@ -1792,8 +1792,13 @@ new Date();"))
                  (add-after 'unpack 'patch-jni-libs
                    ;; Hardcode dynamically loaded libraries.
                    (lambda _
-                     (let* ((library-path (search-path-as-string->list
-                                           (getenv "LIBRARY_PATH")))
+                     (use-modules (srfi srfi-1))
+                     (define (icedtea-or-openjdk? path)
+                       (or (string-contains path "openjdk")
+                           (string-contains path "icedtea")))
+                     (let* ((library-path (remove icedtea-or-openjdk?
+                                                  (search-path-as-string->list
+                                                   (getenv "LIBRARY_PATH"))))
                             (find-library (lambda (name)
                                             (search-path
                                              library-path
@@ -1931,12 +1936,18 @@ new Date();"))
          (add-after 'unpack 'patch-jni-libs
            ;; Hardcode dynamically loaded libraries.
            (lambda _
-             (let* ((library-path (search-path-as-string->list
-                                   (getenv "LIBRARY_PATH")))
+             (use-modules (srfi srfi-1))
+             (define (icedtea-or-openjdk? path)
+               (or (string-contains path "openjdk")
+                   (string-contains path "icedtea")))
+             (let* ((library-path (remove icedtea-or-openjdk?
+                                          (search-path-as-string->list
+                                           (getenv "LIBRARY_PATH"))))
                     (find-library (lambda (name)
-                                    (search-path
-                                     library-path
-                                     (string-append "lib" name ".so")))))
+                                    (or (search-path
+                                         library-path
+                                         (string-append "lib" name ".so"))
+                                        (string-append "lib" name ".so")))))
                (for-each
                 (lambda (file)
                   (catch 'decoding-error
@@ -2139,8 +2150,13 @@ new Date();"))
          (add-after 'unpack 'patch-jni-libs
            ;; Hardcode dynamically loaded libraries.
            (lambda _
-             (let* ((library-path (search-path-as-string->list
-                                   (getenv "LIBRARY_PATH")))
+             (use-modules (srfi srfi-1))
+             (define (icedtea-or-openjdk? path)
+               (or (string-contains path "openjdk")
+                   (string-contains path "icedtea")))
+             (let* ((library-path (remove icedtea-or-openjdk?
+                                          (search-path-as-string->list
+                                           (getenv "LIBRARY_PATH"))))
                     (find-library (lambda (name)
                                     (search-path
                                      library-path
