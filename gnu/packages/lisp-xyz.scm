@@ -68,6 +68,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libffi)
@@ -9223,6 +9224,48 @@ for reading and writing JPEG image files.")
 
 (define-public ecl-cl-jpeg
   (sbcl-package->ecl-package sbcl-cl-jpeg))
+
+(define-public sbcl-png
+  (let ((commit "11b965fe378fd0561abe3616b18ff03af5179648")
+        (revision "1"))
+    (package
+      (name "sbcl-png")
+      (version (git-version "0.6" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ljosa/cl-png")
+               (commit commit)))
+         (file-name (git-file-name "cl-png" version))
+         (sha256
+          (base32 "173hqwpd0rwqf95mfx1h9l9c3i8bb0gvnpspzmmz3g5x3440czy4"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-lib-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "libpng.lisp"
+                 (("\"libpng\"")
+                  (string-append "\""
+                                 (assoc-ref inputs "libpng")
+                                 "/lib/libpng\""))))))))
+      (inputs
+       `(("cffi" ,sbcl-cffi)
+         ("libpng" ,libpng)))
+      (home-page "https://github.com/ljosa/cl-png")
+      (synopsis "Read and write PNG file format")
+      (description
+       "This package provides a @code{PNG} Common Lisp system to operate with
+Portable Network Graphics file format.")
+      (license license:lgpl2.1))))
+
+(define-public ecl-png
+  (sbcl-package->ecl-package sbcl-png))
+
+(define-public cl-png
+  (sbcl-package->cl-source-package sbcl-png))
 
 (define-public sbcl-nodgui
   (let ((commit "4a9c2e7714b278fbe97d198c56f54ea87290001d")
