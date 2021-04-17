@@ -1826,35 +1826,18 @@ or unexpected behavior inside an elisp configuration file (typically
                                   version ".orig.tar.gz"))
               (sha256
                (base32 "10byvyv9dk0ib55gfqm7bcpxmx2qbih1jd03gmihrppr2mn52nff"))))
-    (build-system gnu-build-system)
+    (build-system emacs-build-system)
     (inputs `(("wget" ,wget)))
     (native-inputs `(("emacs" ,emacs-minimal)))
     (arguments
-     `(#:modules ((guix build gnu-build-system)
-                  (guix build utils)
-                  (guix build emacs-utils))
-       #:imported-modules (,@%gnu-build-system-modules
-                           (guix build emacs-utils))
-       #:tests? #f  ; no check target
+     `(#:tests? #f  ; no check target
        #:phases
        (modify-phases %standard-phases
-         (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* "Makefile"
-               (("/usr/local") (assoc-ref outputs "out"))
-               (("/site-lisp/emacs-wget") "/site-lisp"))
-             #t))
-         (add-before 'build 'patch-exec-paths
+         (add-after 'unpack 'patch-exec-paths
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((wget (assoc-ref inputs "wget")))
                (emacs-substitute-variables "wget.el"
                  ("wget-command" (string-append wget "/bin/wget"))))
-             #t))
-         (add-after 'install 'post-install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (emacs-generate-autoloads
-              "wget" (string-append (assoc-ref outputs "out")
-                                    "/share/emacs/site-lisp/"))
              #t)))))
     (home-page "https://www.emacswiki.org/emacs/EmacsWget")
     (synopsis "Simple file downloader for Emacs based on wget")
