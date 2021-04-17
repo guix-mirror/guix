@@ -25399,6 +25399,21 @@ Telegram messaging platform.")
       (home-page "https://zevlg.github.io/telega.el/")
       (license license:gpl3+))))
 
+(define-public emacs-telega-contrib
+  (package/inherit emacs-telega
+    (name "emacs-telega-contrib")
+    (build-system emacs-build-system)
+    (arguments
+     `(#:exclude '("telega-live-location.el")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _ (chdir "contrib") #t)))))
+    (propagated-inputs
+     `(("emacs-telega" ,emacs-telega)
+       ("emacs-alert" ,emacs-alert)
+       ("emacs-all-the-icons" ,emacs-all-the-icons)))))
+
 (define-public emacs-doom-modeline
   (package
     (name "emacs-doom-modeline")
