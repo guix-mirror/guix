@@ -3087,6 +3087,23 @@ type, for example: packages, buffers, files, etc.")
                  (base32
                   "1pqw7zbgxzwpig4xr0izc3z8h80c72i6bl5yi12br0d7aq6dbkvj"))))
       (build-system gnu-build-system)
+      (arguments
+       `(#:modules ((guix build gnu-build-system)
+                    ((guix build emacs-build-system) #:prefix emacs:)
+                    (guix build utils))
+         #:imported-modules (,@%gnu-build-system-modules
+                             (guix build emacs-build-system)
+                             (guix build emacs-utils))
+         #:configure-flags
+         (list (string-append "--with-lispdir="
+                              (emacs:elpa-directory (assoc-ref %outputs "out"))))
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'expand-load-path
+             (lambda _
+               ((assoc-ref emacs:%standard-phases 'expand-load-path)
+                #:prepend-source? #f)
+               #t)))))
       (native-inputs
        `(("autoconf" ,autoconf)
          ("automake" ,automake)
