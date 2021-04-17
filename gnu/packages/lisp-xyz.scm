@@ -5719,6 +5719,43 @@ great for REPL interaction and debugging.")
 (define-public cl-fare-mop
   (sbcl-package->cl-source-package sbcl-fare-mop))
 
+(define-public sbcl-inferior-shell
+  (let ((commit "15c2d04a7398db965ea1c3ba2d49efa7c851f2c2")
+        (revision "1"))
+    (package
+      (name "sbcl-inferior-shell")
+      (version (git-version "2.0.5" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/fare/inferior-shell")
+               (commit commit)))
+         (file-name (git-file-name "inferior-shell" version))
+         (sha256
+          (base32 "02qx37zzk5j4xmwh77k2qa2wvnzvaj6qml5dh2q7b6b1ljvgcj4m"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("hu.dwim.stefil" ,sbcl-hu.dwim.stefil)))
+      (inputs
+       `(("alexandira" ,sbcl-alexandria)
+         ("fare-mop" ,sbcl-fare-mop)
+         ("fare-quasiquote" ,sbcl-fare-quasiquote)
+         ("fare-utils" ,sbcl-fare-utils)
+         ("trivia" ,sbcl-trivia)))
+      (home-page "https://github.com/fare/inferior-shell")
+      (synopsis "Spawn local or remote processes and shell pipes")
+      (description
+       "This package provides a Common Lisp system helping in scripting, it
+uses @code{uiop:run-program} as a backend.")
+      (license license:expat))))
+
+(define-public ecl-inferior-shell
+  (sbcl-package->ecl-package sbcl-inferior-shell))
+
+(define-public cl-inferior-shell
+  (sbcl-package->cl-source-package sbcl-inferior-shell))
+
 (define-public sbcl-trivial-utf-8
   (let ((commit "4d427cfbb1c452436a0efb71c3205c9da67f718f")
         (revision "1"))
