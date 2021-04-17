@@ -21593,17 +21593,21 @@ asynchronous communications, the RPC response is fairly good.")
        `(#:include '("\\.el$" "\\.pl$")
          #:phases
          (modify-phases %standard-phases
-           (add-after 'install 'patch-path
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let ((perl (assoc-ref inputs "perl"))
-                     (dir (string-append  (assoc-ref outputs "out")
-                                          "/share/emacs/site-lisp")))
-                 (substitute* (string-append dir  "/edbi.el")
+           (add-after 'unpack 'patch-path
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((perl (assoc-ref inputs "perl")))
+                 (substitute* "edbi.el"
                    (("\"perl\"") (string-append "\"" perl "/bin/perl\"")))
-                 (chmod (string-append dir "/edbi-bridge.pl") #o555)
-                 (wrap-program (string-append dir "/edbi-bridge.pl")
-                   `("PERL5LIB" ":" prefix (,(getenv "PERL5LIB"))))
-                 #t))))))
+                 #t)))
+           (add-after 'wrap 'wrap-edbi-bridge
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bridge (string-append (elpa-directory out)
+                                             "/edbi-bridge.pl")))
+                 (chmod bridge #o555)
+                 (wrap-program bridge
+                   `("PERL5LIB" ":" prefix (,(getenv "PERL5LIB")))))
+               #t)))))
       (synopsis "Database Interface for Emacs Lisp")
       (description "This program connects the database server through Perl's
 DBI, and provides DB-accessing API and the simple management UI.")
