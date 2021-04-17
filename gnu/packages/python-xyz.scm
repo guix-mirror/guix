@@ -6082,6 +6082,88 @@ a general image processing tool.")
     (description "This package is a fork of Pillow which adds support for SIMD
 parallelism.")))
 
+(define-public python-imagecodecs
+  (package
+    (name "python-imagecodecs")
+    (version "2021.3.31")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "imagecodecs" version))
+        (sha256
+          (base32
+            "0q7pslb6wd56vbcq2mdxwsiha32mxjr7mgqqfbq5w42q601p9pi0"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin
+            ;; Unbundle 3rd party modules.
+            (delete-file-recursively "3rdparty")
+            ;; Delete pre-generated Cython files.
+            (for-each delete-file (find-files "imagecodecs" "_.*\\.c$"))
+            #t))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ; Tests are disabled, because dependencies are missing.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'create-configuration
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; By default everything is enabled. We can selectively disable
+             ;; extensions (and thus dependencies) by deleting them from the
+             ;; EXTENSIONS dictionary.  This is upstream’s preferred way.
+             (call-with-output-file "imagecodecs_distributor_setup.py"
+               (lambda (port)
+                 (format port "\
+def customize_build(EXTENSIONS, OPTIONS):
+    del EXTENSIONS['aec']
+    del EXTENSIONS['avif']
+    del EXTENSIONS['bitshuffle']
+    del EXTENSIONS['deflate']
+    del EXTENSIONS['jpeg2k']
+    del EXTENSIONS['jpeg12']
+    del EXTENSIONS['jpegls']
+    del EXTENSIONS['jpegxl']
+    del EXTENSIONS['jpegxr']
+    del EXTENSIONS['lerc']
+    del EXTENSIONS['ljpeg']
+    del EXTENSIONS['lzf']
+    del EXTENSIONS['zfp']
+    del EXTENSIONS['zopfli']
+    OPTIONS['cythonize']
+")))
+             #t)))))
+    (inputs
+      `(("c-blosc" ,c-blosc)
+        ("giflib" ,giflib)
+        ("google-brotli" ,google-brotli)
+        ("libjpeg-turbo" ,libjpeg-turbo)
+        ("libpng" ,libpng)
+        ("libtiff" ,libtiff)
+        ("libwebp" ,libwebp)
+        ("lz4" ,lz4)
+        ("snappy" ,snappy)
+        ("xz" ,xz)
+        ("zlib" ,zlib)
+        ("zstd" ,zstd "lib")))
+    (propagated-inputs
+      `(("python-numpy" ,python-numpy)))
+    (native-inputs
+      ;; For building.
+      `(("python-cython" ,python-cython)
+        ;; For testing. Incomplete.
+        ;("python-numcodecs" ,python-numcodecs)
+        ;("python-zarr" ,python-zarr)
+        ;("python-pytest" ,python-pytest)
+        ))
+    (home-page "https://www.lfd.uci.edu/~gohlke/")
+    (synopsis
+      "Image transformation, compression, and decompression codecs")
+    (description
+      "Imagecodecs is a Python library that provides block-oriented, in-memory
+buffer transformation, compression, and decompression functions for use in the
+tifffile, czifile, and other scientific image input/output modules.")
+    (license license:bsd-3)))
+
 (define-public python-roifile
   (package
     (name "python-roifile")
