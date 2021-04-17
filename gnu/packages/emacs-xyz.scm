@@ -13332,8 +13332,7 @@ variable instead, to remind you of that variable's meaning.")
 				      (getenv "TMPDIR") "/source")))
 	       (substitute* "bin/ert-runner"
 		 (("ERT_RUNNER=\"\\$\\(dirname \\$\\(dirname \\$0\\)\\)")
-		  (string-append "ERT_RUNNER=\"" out
-				 "/share/emacs/site-lisp")))
+		  (string-append "ERT_RUNNER=\"" (elpa-directory out))))
 	       (install-file "bin/ert-runner" (string-append out "/bin"))
 	       (wrap-program (string-append out "/bin/ert-runner")
 		 (list "EMACSLOADPATH" ":" 'prefix
