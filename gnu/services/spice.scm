@@ -38,7 +38,7 @@
   "Return the activation gexp for CONFIG."
   #~(begin
       (use-modules (guix build utils))
-      (mkdir-p "/var/run/spice-vdagentd")))
+      (mkdir-p "/run/spice-vdagentd")))
 
 (define (spice-vdagent-shepherd-service config)
   "Return a <shepherd-service> for spice-vdagentd with CONFIG."
@@ -61,14 +61,16 @@
   (compose list spice-vdagent-configuration-spice-vdagent))
 
 (define spice-vdagent-service-type
-  (service-type (name 'spice-vdagent)
-    (extensions
-      (list (service-extension shepherd-root-service-type
-                               spice-vdagent-shepherd-service)
-            (service-extension activation-service-type
-                               spice-vdagent-activation)
-            (service-extension profile-service-type
-                               spice-vdagent-profile)))))
+  (service-type
+   (name 'spice-vdagent)
+   (default-value (spice-vdagent-configuration))
+   (extensions
+    (list (service-extension shepherd-root-service-type
+                             spice-vdagent-shepherd-service)
+          (service-extension activation-service-type
+                             spice-vdagent-activation)
+          (service-extension profile-service-type
+                             spice-vdagent-profile)))))
 
 (define* (spice-vdagent-service
           #:optional (config (spice-vdagent-configuration)))
