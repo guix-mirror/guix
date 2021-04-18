@@ -26,7 +26,8 @@ DOC_PO_FILES=					\
   %D%/guix-manual.pt_BR.po			\
   %D%/guix-manual.ru.po				\
   %D%/guix-manual.sk.po				\
-  %D%/guix-manual.zh_CN.po
+  %D%/guix-manual.zh_CN.po			\
+  %D%/guix-manual.zh_Hans.po
 
 DOC_COOKBOOK_PO_FILES=					\
   %D%/guix-cookbook.de.po				\
