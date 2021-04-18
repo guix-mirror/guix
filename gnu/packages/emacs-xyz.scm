@@ -27620,7 +27620,7 @@ and preferred services can easily be configured.")
 (define-public emacs-vertico
   (package
     (name "emacs-vertico")
-    (version "0.4")
+    (version "0.5")
     (source
      (origin
        (method git-fetch)
@@ -27629,14 +27629,8 @@ and preferred services can easily be configured.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0ijahr9dzs7v56w2n74xp0akzbzbxlw5852bywc4h24xdspakj52"))))
+        (base32 "01x2nxj2gnmzg91nxjmgy9i41c04gzplsi19qldm4w03schgs8f6"))))
     (build-system emacs-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'install 'build-doc
-           (lambda _
-             (invoke "makeinfo" "vertico.texi"))))))
     (native-inputs
      `(("texinfo" ,texinfo)))
     (home-page "https://github.com/minad/vertico")
