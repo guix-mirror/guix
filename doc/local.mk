@@ -28,7 +28,8 @@ info_TEXINFOS = %D%/guix.texi			\
   %D%/guix.ru.texi				\
   %D%/guix.zh_CN.texi				\
   %D%/guix-cookbook.texi			\
-  %D%/guix-cookbook.de.texi
+  %D%/guix-cookbook.de.texi			\
+  %D%/guix-cookbook.fr.texi
 
 %C%_guix_TEXINFOS = \
   %D%/contributing.texi \
