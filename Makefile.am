@@ -966,75 +966,31 @@ cuirass-jobs: $(GOBJECTS)
 
 # Downloading up-to-date PO files.
 
-# make-download-po-rule DOMAIN DIRECTORY [FILE-NAME-PREFIX]
-define make-download-po-rule
+WEBLATE_REPO = https://framagit.org/tyreunom/guix-translations
 
-download-po.$(1):
-	if [ -f "$(top_srcdir)/$(2)/LINGUAS" ]; then				\
-	  LINGUAS="`grep -v '^[[:blank:]]*#' < $(top_srcdir)/$(2)/LINGUAS`" ;	\
-	else									\
-	  LINGUAS="`(cd $(top_srcdir)/$(2);					\
-	    for i in *.po; do echo $$$$i; done) | cut -d . -f 2`" ;		\
-	fi ;									\
-	for lang in $$$$LINGUAS; do						\
-	  if wget -nv -O "$(top_srcdir)/$(2)/$(3)$$$$lang.po.tmp"		\
-	     "https://translate.fedoraproject.org/api/translations/guix/$(1)/$$$$lang/file/" ; \
-	  then									\
-	    msgfilter --no-wrap -i "$(top_srcdir)/$(2)/$(3)$$$$lang.po.tmp"	\
-	      cat > "$(top_srcdir)/$(2)/$(3)$$$$lang.po.tmp2" ;			\
-	    rm "$(top_srcdir)/$(2)/$(3)$$$$lang.po.tmp" ;			\
-	    mv "$(top_srcdir)/$(2)/$(3)$$$$lang.po"{.tmp2,} ;			\
-	  else									\
-	    rm "$(top_srcdir)/$(2)/$(3)$$$$lang.po.tmp" ;			\
-	  fi ;									\
-	done
-
-.PHONY: download-po.$(1)
-
-endef
-
-# Checking po files for issues.  This is useful to run after downloading new
-# po files.
-
-# make-check-po-rule DOMAIN DIRECTORY [FILE-NAME-PREFIX]
-define make-check-po-rule
-
-check-po.$(1):
-	if [ -f "$(top_srcdir)/$(2)/LINGUAS" ]; then				\
-	  LINGUAS="`grep -v '^[[:blank:]]*#' < $(top_srcdir)/$(2)/LINGUAS`" ;	\
-	else									\
-	  LINGUAS="`(cd $(top_srcdir)/$(2);					\
-	    for i in *.po; do echo $$$$i; done) | cut -d . -f 2`" ;		\
-	fi ;									\
-	for lang in $$$$LINGUAS; do						\
-	  if [ -f "$(top_srcdir)/$(2)/$(3)$$$$lang.po" ];			\
-	  then									\
-	    if ! msgfmt -c "$(top_srcdir)/$(2)/$(3)$$$$lang.po" ;		\
-		then								\
-		  exit 1 ;							\
-	    fi ;								\
-	  fi ;									\
-	done
-
-.PHONY: check-po.$(1)
-
-endef
-
-$(eval $(call make-download-po-rule,documentation-cookbook,po/doc,guix-cookbook.))
-$(eval $(call make-download-po-rule,documentation-manual,po/doc,guix-manual.))
-$(eval $(call make-download-po-rule,guix,po/guix))
-$(eval $(call make-download-po-rule,packages,po/packages))
-
-$(eval $(call make-check-po-rule,documentation-cookbook,po/doc,guix-cookbook.))
-$(eval $(call make-check-po-rule,documentation-manual,po/doc,guix-manual.))
-$(eval $(call make-check-po-rule,guix,po/guix))
-$(eval $(call make-check-po-rule,packages,po/packages))
-
-download-po: $(foreach domain,guix packages documentation-manual documentation-cookbook,download-po.$(domain))
+# Shallow clone the Git repository behind Weblate and copy files from it if
+# they contain at least one translation, and they are well-formed (Scheme
+# format only), warn otherwise.  Copied files are converted to a canonical
+# form.
+download-po:
+	dir=$$(mktemp -d); \
+	git clone --depth 1 "$(WEBLATE_REPO)" "$$dir/translations"; \
+	for domain in po/doc po/guix po/packages; do \
+	    for po in "$$dir/translations/$$domain"/*.po; do \
+	        translated=$$(LANG=en_US.UTF-8 msgfmt --statistics "$$po" 2>&1 | cut -f1 -d' '); \
+	        target=$$(basename "$$po"); \
+	        target="$$domain/$$target"; \
+	        if msgfmt -c "$$po" && [ "$$translated" != "0" ]; then \
+	            msgfilter --no-wrap -i "$$po" cat > "$$po".tmp; \
+	            mv "$$po".tmp "$$target"; \
+	            echo "copied $$target."; \
+	        else \
+	            echo "WARN: $$target ($$translated translated messages) was not added/updated."; \
+	        fi; \
+	    done; \
+	done; \
+	rm -rf "$$dir"
 .PHONY: download-po
-
-check-po: $(foreach domain,guix packages documentation-manual documentation-cookbook,check-po.$(domain))
-.PHONY: check-po
 
 ## -------------- ##
 ## Silent rules.  ##
