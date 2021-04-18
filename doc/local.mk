@@ -26,6 +26,7 @@ info_TEXINFOS = %D%/guix.texi			\
   %D%/guix.es.texi				\
   %D%/guix.fa.texi				\
   %D%/guix.fr.texi				\
+  %D%/guix.it.texi				\
   %D%/guix.pt_BR.texi				\
   %D%/guix.ru.texi				\
   %D%/guix.sk.texi				\
