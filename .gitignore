@@ -93,6 +93,7 @@
 /nix/config.h
 /nix/config.h.in
 /po/doc/*.mo
+/po/doc/*.pot
 /po/guix/*.gmo
 /po/guix/*.insert-header
 /po/guix/*.mo
