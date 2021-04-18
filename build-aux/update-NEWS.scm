@@ -95,7 +95,7 @@ paragraph."
     (with-atomic-file-replacement news-file
       (lambda (input output)
         (rewrite-org-section input output
-                             (make-regexp "^(\\*+) (.*) new packages")
+                             (make-regexp "^(\\*+).*new packages")
                              (lambda (match port)
                                (let ((stars (match:substring match 1)))
                                  (format port
@@ -141,7 +141,7 @@ paragraph."
     (with-atomic-file-replacement news-file
       (lambda (input output)
         (rewrite-org-section input output
-                             (make-regexp "^(\\*+) (.*) package updates")
+                             (make-regexp "^(\\*+).*package updates")
                              (lambda (match port)
                                (let ((stars (match:substring match 1))
                                      (lst   (map (match-lambda
