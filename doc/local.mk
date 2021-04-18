@@ -25,6 +25,7 @@ info_TEXINFOS = %D%/guix.texi			\
   %D%/guix.de.texi				\
   %D%/guix.es.texi				\
   %D%/guix.fr.texi				\
+  %D%/guix.pt_BR.texi				\
   %D%/guix.ru.texi				\
   %D%/guix.zh_CN.texi				\
   %D%/guix-cookbook.texi			\
