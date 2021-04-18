@@ -354,6 +354,7 @@ SYSTEM."
               (>>= (profile-derivation (packages->manifest (list guix)))
                    (lambda (profile)
                      (self-contained-tarball "guix-binary" profile
+                                             #:profile-name "current-guix"
                                              #:localstatedir? #t
                                              #:compressor
                                              (lookup-compressor "xz")))))
