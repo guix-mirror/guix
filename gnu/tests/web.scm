@@ -608,7 +608,8 @@ HTTP-PORT."
   (define vm
     (virtual-machine
      (operating-system os)
-     (port-forwardings `((8080 . ,forwarded-port)))))
+     (port-forwardings `((8080 . ,forwarded-port)))
+     (memory-size 1024)))
 
   (define test
     (with-imported-modules '((gnu build marionette))
