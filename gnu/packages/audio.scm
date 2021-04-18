@@ -302,7 +302,7 @@ Linux kernel.")
 (define-public libopenmpt
   (package
     (name "libopenmpt")
-    (version "0.5.4")
+    (version "0.5.8")
     (source
      (origin
        (method url-fetch)
@@ -310,7 +310,7 @@ Linux kernel.")
         (string-append "https://download.openmpt.org/archive/libopenmpt/src/"
                        "libopenmpt-" version "+release.autotools.tar.gz"))
        (sha256
-        (base32 "0h7gpjx1221jwsq3k91p8zhf1h77qaxyasakc88s3g57vawhckgk"))))
+        (base32 "1kca5nc870mfv7i4ww2g1q9jn61gsq46irsypbr6fgxpfh8w5qi9"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
