@@ -63,9 +63,9 @@
       "guix"))
 
 (define %languages
-  ;; The cookbook is currently only translated into German.
+  ;; The cookbook is not translated in the same languages as the manual
   (if (string=? %manual "guix-cookbook")
-      '("de" "en")
+      '("de" "en" "fr")
       '("de" "en" "es" "fr" "ru" "zh_CN")))
 
 (define (texinfo-manual-images source)
