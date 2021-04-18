@@ -17332,6 +17332,28 @@ within Emacs.")
 grouping buffers by their projectile root directory.")
     (license license:gpl3+)))
 
+(define-public emacs-ibuffer-vc
+  (package
+    (name "emacs-ibuffer-vc")
+    (version "0.11")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/purcell/ibuffer-vc")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1mgn7b786j4hwq1ks012hxxgvrfn5rz90adi2j190gmjz60rc5g5"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/purcell/ibuffer-vc")
+    (synopsis "Group Ibuffer's list by revision control system indications")
+    (description
+     "Ibuffer-VC adds functionality to Ibuffer for grouping buffers by their
+parent revision control system root directory, and for displaying, or sorting,
+by the status of listed files.")
+    (license license:gpl3+)))
+
 (define-public emacs-elm-mode
   (package
     (name "emacs-elm-mode")
@@ -27711,4 +27733,3 @@ complementary packages.")
 quasi-prefix map, with many useful bindings.  These bindings are
 shorter than usual, using mostly unprefixed keys.")
     (license license:gpl3+)))
-
