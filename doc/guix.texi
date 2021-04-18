@@ -11417,36 +11417,6 @@ and outputs a package expression:
 guix import json hello.json
 @end example
 
-@item nix
-Import metadata from a local copy of the source of the
-@uref{https://nixos.org/nixpkgs/, Nixpkgs distribution}@footnote{This
-relies on the @command{nix-instantiate} command of
-@uref{https://nixos.org/nix/, Nix}.}.  Package definitions in Nixpkgs are
-typically written in a mixture of Nix-language and Bash code.  This
-command only imports the high-level package structure that is written in
-the Nix language.  It normally includes all the basic fields of a
-package definition.
-
-When importing a GNU package, the synopsis and descriptions are replaced
-by their canonical upstream variant.
-
-Usually, you will first need to do:
-
-@example
-export NIX_REMOTE=daemon
-@end example
-
-@noindent
-so that @command{nix-instantiate} does not try to open the Nix database.
-
-As an example, the command below imports the package definition of
-LibreOffice (more precisely, it imports the definition of the package
-bound to the @code{libreoffice} top-level attribute):
-
-@example
-guix import nix ~/path/to/nixpkgs libreoffice
-@end example
-
 @item hackage
 @cindex hackage
 Import metadata from the Haskell community's central package archive

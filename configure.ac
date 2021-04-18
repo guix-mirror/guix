@@ -202,23 +202,6 @@ AC_SUBST([GZIP])
 AC_SUBST([BZIP2])
 AC_SUBST([XZ])
 
-AC_ARG_WITH([nixpkgs],
-  [AS_HELP_STRING([--with-nixpkgs=DIR],
-    [search for Nixpkgs in DIR (for testing purposes only)])],
-  [case "$withval" in
-    yes|no) AC_MSG_ERROR([Please use `--with-nixpkgs=DIR'.]);;
-    *)      NIXPKGS="$withval";;
-   esac],
-  [])
-
-AC_MSG_CHECKING([for Nixpkgs source tree])
-if test -f "$NIXPKGS/default.nix"; then
-   AC_MSG_RESULT([$NIXPKGS])
-   AC_SUBST([NIXPKGS])
-else
-   AC_MSG_RESULT([not found])
-fi
-
 LIBGCRYPT_LIBDIR="no"
 LIBGCRYPT_PREFIX="no"
 

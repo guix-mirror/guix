@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
 ;;; Copyright © 2018 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
@@ -76,7 +76,7 @@ rather than \\n."
 ;;; Entry point.
 ;;;
 
-(define importers '("gnu" "nix" "pypi" "cpan" "hackage" "stackage" "elpa" "gem"
+(define importers '("gnu" "pypi" "cpan" "hackage" "stackage" "elpa" "gem"
                     "go" "cran" "crate" "texlive" "json" "opam"))
 
 (define (resolve-importer name)
