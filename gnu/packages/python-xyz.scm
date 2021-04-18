@@ -6167,14 +6167,14 @@ tifffile, czifile, and other scientific image input/output modules.")
 (define-public python-roifile
   (package
     (name "python-roifile")
-    (version "2020.5.28")
+    (version "2020.11.28")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "roifile" version))
         (sha256
           (base32
-            "1vwbwfsw745gyqymff6dllc5zqjsgqmxaw245sw4an6yw9rcbzc0"))))
+            "04argnc7qccybkrj9ww18bf81ghsghhh93hnqy3p111rcdlyn66p"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f)) ; there are none
     (propagated-inputs
