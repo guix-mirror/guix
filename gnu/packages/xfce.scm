@@ -758,6 +758,10 @@ allows you to shut down the computer from Xfce.")
        ("upower" ,upower) ;; TODO needs upower-glib
        ("python" ,python) ;; for xfce4-compose-mail
        ("xf86-input-libinput" ,xf86-input-libinput)))
+    (propagated-inputs
+     ;; Some operations, such as changing icon themes, require these schemas
+     ;; to be in the search path.
+     `(("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
     (home-page "https://www.xfce.org/")
     (synopsis "Xfce settings manager")
     (description
