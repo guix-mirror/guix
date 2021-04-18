@@ -6221,12 +6221,21 @@ numpy arrays to TIFF, BigTIFF, and ImageJ hyperstack compatible files.")
        (uri (pypi-uri "lfdfiles" version))
        (sha256
         (base32
-         "12fxm4v805dgjrih7x6jnl1wd7y7jw1rkhjs3d4am8s6qk1cbar2"))))
+         "12fxm4v805dgjrih7x6jnl1wd7y7jw1rkhjs3d4am8s6qk1cbar2"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin
+            ;; Delete pre-generated Cython files.
+            (for-each delete-file (find-files "lfdfiles" "_.*\\.c$"))
+            #t))))
     (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)) ; No tests exist, despite a test dependency on pytest.
     (propagated-inputs
      `(("python-click" ,python-click)
        ("python-numpy" ,python-numpy)
        ("python-tifffile" ,python-tifffile)))
+    (native-inputs `(("python-cython" ,python-cython)))
     (home-page "https://www.lfd.uci.edu/~gohlke/")
     (synopsis "Work with LFD data files")
     (description
