@@ -6214,14 +6214,14 @@ numpy arrays to TIFF, BigTIFF, and ImageJ hyperstack compatible files.")
 (define-public python-lfdfiles
   (package
     (name "python-lfdfiles")
-    (version "2020.1.1")
+    (version "2021.2.22")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "lfdfiles" version))
        (sha256
         (base32
-         "1n9bkfn4vxl0lbhzd0m35lq86ayx5fwcj3ghpfl2vbjbsnfp3h47"))))
+         "12fxm4v805dgjrih7x6jnl1wd7y7jw1rkhjs3d4am8s6qk1cbar2"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-click" ,python-click)
