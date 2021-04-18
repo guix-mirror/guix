@@ -271,7 +271,7 @@ also known as DXTn or DXTC) for Mesa.")
         ("libxrandr" ,libxrandr)
         ("libxvmc" ,libxvmc)
         ,@(match (%current-system)
-            ((or "x86_64-linux" "i686-linux" "powerpc64le-linux")
+            ((or "x86_64-linux" "i686-linux" "powerpc64le-linux" "aarch64-linux")
              ;; Note: update the 'clang' input of mesa-opencl when bumping this.
              `(("llvm" ,llvm-11)))
             (_
@@ -283,7 +283,7 @@ also known as DXTn or DXTC) for Mesa.")
         ("flex" ,flex)
         ("gettext" ,gettext-minimal)
         ,@(match (%current-system)
-            ((or "x86_64-linux" "i686-linux" "powerpc64le-linux")
+            ((or "x86_64-linux" "i686-linux" "powerpc64le-linux" "aarch64-linux")
              `(("glslang" ,glslang)))
             (_
              `()))
@@ -322,12 +322,14 @@ also known as DXTn or DXTC) for Mesa.")
               '("-Dvulkan-drivers=intel,amd"))
              ("powerpc64le-linux"
               '("-Dvulkan-drivers=amd"))
+             ("aarch64-linux"
+              '("-Dvulkan-drivers=freedreno,amd"))
              (_
               '("-Dvulkan-drivers=auto")))
 
          ;; Enable the Vulkan overlay layer on architectures using llvm.
          ,@(match (%current-system)
-             ((or "x86_64-linux" "i686-linux" "powerpc64le-linux")
+             ((or "x86_64-linux" "i686-linux" "powerpc64le-linux" "aarch64-linux")
               '("-Dvulkan-overlay-layer=true"))
              (_
               '()))
@@ -341,7 +343,7 @@ also known as DXTn or DXTC) for Mesa.")
              ((or "x86_64-linux" "i686-linux")
               '("-Ddri-drivers=i915,i965,nouveau,r200,r100"
                 "-Dllvm=enabled"))      ; default is x86/x86_64 only
-             ("powerpc64le-linux"
+             ((or "powerpc64le-linux" "aarch64-linux")
               '("-Ddri-drivers=nouveau,r200,r100"
                 "-Dllvm=enabled"))
              (_
@@ -406,7 +408,7 @@ also known as DXTn or DXTC) for Mesa.")
              (let ((out (assoc-ref outputs "out"))
                    (bin (assoc-ref outputs "bin")))
                ,@(match (%current-system)
-                   ((or "i686-linux" "x86_64-linux" "powerpc64le-linux")
+                   ((or "i686-linux" "x86_64-linux" "powerpc64le-linux" "aarch64-linux")
                     ;; Install the Vulkan overlay control script to a separate
                     ;; output to prevent a reference on Python, saving ~70 MiB
                     ;; on the closure size.
