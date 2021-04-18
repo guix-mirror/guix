@@ -2511,6 +2511,28 @@ Its features are:
     ;; Software is dual-licensed.
     (license (list license:unlicense license:wtfpl2))))
 
+(define-public emacs-corfu
+  (package
+    (name "emacs-corfu")
+    (version "0.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/minad/corfu")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0xb2si8il6j2mkkiac6pcx2yj83n82j4rsxxcn7gprpzzm1f9j61"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/minad/corfu")
+    (synopsis "Completion overlay region function")
+    (description "Corfu enhances the default completion in region function
+with a completion overlay.  The current candidates are shown in a popup
+overlay below or above the point.  Corfu can be considered the minimalistic
+@code{completion-in-region} counterpart of the Vertico minibuffer UI.")
+    (license license:gpl3+)))
+
 (define-public emacs-direnv
   (package
     (name "emacs-direnv")
