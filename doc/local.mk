@@ -100,7 +100,7 @@ cat "$@.tmp" | egrep '@p?x?ref' -A1 | sed 'N;s|--\n||g;P;D' | sed 's|^| |g' | \
       line=$$(grep -n "^msgid \"$$e\"" "$<" | cut -f1 --delimiter=":") ;\
       ((line++)) ;\
       if [ "$$line" != "1" ]; then \
-	translation=$$(head -n "$$line" "$<" | tail -1 | grep msgstr | sed 's|msgstr "\(.*\)"|\1|') ;\
+	translation=$$(head -n "$$line" "$<" | tail -1 | grep msgstr | sed 's|msgstr "\([^"]*\)"|\1|') ;\
 	if [ "$$translation" != "" ]; then \
 	      sed "N;s@\(p\?x\?ref\){$$(echo $$e | sed 's| |[\\n ]|g')\(,\|}\)@\1{$$translation\2@g;P;D" -i "$@.tmp" ;\
 	fi ;\
