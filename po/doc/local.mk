@@ -22,6 +22,7 @@ DOC_PO_FILES=					\
   %D%/guix-manual.fa.po				\
   %D%/guix-manual.fr.po				\
   %D%/guix-manual.it.po				\
+  %D%/guix-manual.ko.po				\
   %D%/guix-manual.pt_BR.po			\
   %D%/guix-manual.ru.po				\
   %D%/guix-manual.sk.po				\
@@ -30,7 +31,8 @@ DOC_PO_FILES=					\
 DOC_COOKBOOK_PO_FILES=					\
   %D%/guix-cookbook.de.po				\
   %D%/guix-cookbook.fa.po				\
-  %D%/guix-cookbook.fr.po
+  %D%/guix-cookbook.fr.po				\
+  %D%/guix-cookbook.ko.po
 
 EXTRA_DIST = \
   %D%/guix-manual.pot \
