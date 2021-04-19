@@ -1623,6 +1623,50 @@ destroying an ancient book using a special wand.")
     ;; license.  The whole package is released under GPLv3+.
     (license license:gpl3+)))
 
+(define-public gnome-2048
+  (package
+    (name "gnome-2048")
+    (version "3.38.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/gnome-2048/"
+                                  (version-major+minor version)  "/"
+                                  "gnome-2048-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0s5fg4z5in1h39fcr69j1qc5ynmg7a8mfprk3mc3c0csq3snfwz2"))))
+    (build-system meson-build-system)
+    (arguments
+     '(#:glib-or-gtk? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "meson_post_install.py"
+               (("gtk-update-icon-cache") "true"))
+             #t)))))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("clutter" ,clutter)
+       ("clutter-gtk" ,clutter-gtk)
+       ("libgee" ,libgee)
+       ("libgnome-games-support" ,libgnome-games-support)))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin") ; for desktop-file-validate and appstream-util
+       ("itstool" ,itstool)
+       ("libxml2" ,libxml2)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
+    (home-page "https://wiki.gnome.org/Apps/2048")
+    (synopsis "Move the tiles until you obtain the 2048 tile")
+    (description "GNOME 2048 provides a 2D grid for playing 2048, a
+single-player sliding tile puzzle game.  The objective of the game is to merge
+together adjacent tiles of the same number until the sum of 2048 is achieved
+in one tile.")
+    (license license:gpl3+)))
+
 (define-public gnome-chess
   (package
     (name "gnome-chess")
