@@ -4,7 +4,7 @@
 ;;; Copyright © 2016 Nikita <nikita@n0.is>
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017, 2018 Nikolai Merinov <nikolai.merinov@member.fsf.org>
-;;; Copyright © 2017, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2019 Ivan Petkov <ivanppetkov@gmail.com>
@@ -157,6 +157,7 @@
      `(("libcurl" ,curl)
        ("libssh2" ,libssh2)
        ;; Use llvm-7, which enables rust to be built reproducibly.
+       ;; Versions newer than 7 fail to compile.
        ("llvm" ,llvm-7)
        ("openssl" ,openssl)
        ("zlib" ,zlib)))
@@ -546,8 +547,6 @@ safety and thread safety guarantees.")
                     "0bbizy6b7002v1rdhrxrf5gijclbyizdhkglhp81ib3bf5x66kas")))
     (package
       (inherit base-rust)
-      (inputs
-       (alist-replace "llvm" (list llvm-8) (package-inputs base-rust)))
       (arguments
        (substitute-keyword-arguments (package-arguments base-rust)
          ((#:phases phases)
@@ -575,13 +574,8 @@ safety and thread safety guarantees.")
                    (setenv "CARGO_HOME" cargo-home)))))))))))
 
 (define rust-1.38
-  (let ((base-rust (rust-bootstrapped-package
-                    rust-1.37 "1.38.0"
-                    "101dlpsfkq67p0hbwx4acqq6n90dj4bbprndizpgh1kigk566hk4")))
-    (package
-      (inherit base-rust)
-      (inputs
-       (alist-replace "llvm" (list llvm-9) (package-inputs base-rust))))))
+  (rust-bootstrapped-package
+    rust-1.37 "1.38.0" "101dlpsfkq67p0hbwx4acqq6n90dj4bbprndizpgh1kigk566hk4"))
 
 (define rust-1.39
   (let ((base-rust (rust-bootstrapped-package
@@ -649,9 +643,15 @@ safety and thread safety guarantees.")
   (rust-bootstrapped-package
    rust-1.42 "1.43.0" "18akhk0wz1my6y9vhardriy2ysc482z0fnjdcgs9gy59kmnarxkm"))
 
+;; This version needs llvm >= 8.0 and NOT 11
 (define rust-1.44
-  (rust-bootstrapped-package
-   rust-1.43 "1.44.1" "0ww4z2v3gxgn3zddqzwqya1gln04p91ykbrflnpdbmcd575n8bky"))
+  (let ((base-rust  (rust-bootstrapped-package
+                      rust-1.43 "1.44.1"
+                      "0ww4z2v3gxgn3zddqzwqya1gln04p91ykbrflnpdbmcd575n8bky")))
+    (package
+      (inherit base-rust)
+      (inputs
+       (alist-replace "llvm" (list llvm-10) (package-inputs base-rust))))))
 
 (define rust-1.45
   (let ((base-rust (rust-bootstrapped-package
@@ -659,8 +659,6 @@ safety and thread safety guarantees.")
                     "0273a1g3f59plyi1n0azf21qjzwml1yqdnj5z472crz37qggr8xp")))
     (package
       (inherit base-rust)
-      (inputs
-       (alist-replace "llvm" (list llvm-10) (package-inputs base-rust)))
       (arguments
        (substitute-keyword-arguments (package-arguments base-rust)
          ((#:phases phases)
@@ -718,14 +716,9 @@ safety and thread safety guarantees.")
                     (format #f "prefix = ~s" (assoc-ref outputs "rustfmt"))))
                  (invoke "./x.py" "install" "rustfmt"))))))))))
 
-(define-public rust-1.47
-  (let ((base-rust (rust-bootstrapped-package
-                    rust-1.46 "1.47.0"
-                    "07fqd2vp7cf1ka3hr207dnnz93ymxml4935vp74g4is79h3dz19i")))
-    (package
-      (inherit base-rust)
-      (inputs
-       (alist-replace "llvm" (list llvm-11) (package-inputs base-rust))))))
+(define rust-1.47
+  (rust-bootstrapped-package
+    rust-1.46 "1.47.0" "07fqd2vp7cf1ka3hr207dnnz93ymxml4935vp74g4is79h3dz19i"))
 
 (define rust-1.48
   (rust-bootstrapped-package
