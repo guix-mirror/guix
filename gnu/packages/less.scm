@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
@@ -33,7 +33,7 @@
 (define-public less
   (package
     (name "less")
-    (version "563")
+    (version "581")
     (source
      (origin
        (method url-fetch)
@@ -43,7 +43,7 @@
                                  version ".tar.gz")))
        (patches (search-patches "less-hurd-path-max.patch"))
        (sha256
-        (base32 "16lsvk88vwjwp5ax1wnll44wxwnzs8lb2fn90xx2si64kwmnsnyf"))))
+        (base32 "0r9cdawhk3n3i5hkcqci5k122srj48qsp3i7zpnf0rvqzs1py1qx"))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)))
     (home-page "https://www.gnu.org/software/less/")
