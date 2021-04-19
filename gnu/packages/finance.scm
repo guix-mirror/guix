@@ -6,7 +6,7 @@
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
-;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2018, 2019, 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
@@ -763,7 +763,7 @@ the Monero command line client and daemon.")
 (define-public monero-gui
   (package
     (name "monero-gui")
-    (version "0.17.2.0")
+    (version "0.17.2.1")
     (source
      (origin
        (method git-fetch)
@@ -780,7 +780,7 @@ the Monero command line client and daemon.")
            (delete-file-recursively "monero")
            #t))
        (sha256
-        (base32 "17il26gh0g69x7lqkyb461x1712959wajg3iadx0p08djr3m13mf"))))
+        (base32 "17z4l7xj3zzbkb3fivsam38y5psknc2qbsg6yc72vb6n675khnsa"))))
     (build-system qt-build-system)
     (native-inputs
      `(,@(package-native-inputs monero)
