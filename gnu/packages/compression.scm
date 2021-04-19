@@ -1422,7 +1422,7 @@ or junctions, and always follows hard links.")
            (lambda _
              (substitute* "tests/playTests.sh"
                (("roundTripTest -g8M \"19 -T0 --long\"")
-                "roundTripTest -g8M \"22 -T0 --long\""))))
+                "roundTripTest -g8M \"16 -T0 --long\""))))
          (add-after 'unpack 'remove-bogus-check
            (lambda _
              ;; lib/Makefile falsely claims that no .pc file can be created.
