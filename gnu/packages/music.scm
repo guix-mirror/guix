@@ -5997,7 +5997,7 @@ It can also play and mix samples.")
       #:make-flags
       (list (string-append "PREFIX="
                            (assoc-ref %outputs "out"))
-            "CC=gcc")
+            (string-append "CC=" ,(cc-for-target)))
       #:phases
       (modify-phases %standard-phases
         (delete 'configure))))
