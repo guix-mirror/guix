@@ -6002,7 +6002,7 @@ queries upon that data.")
 (define-public libgnome-games-support
   (package
     (name "libgnome-games-support")
-    (version "1.4.4")
+    (version "1.7.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/libgnome-games-support/"
@@ -6010,16 +6010,17 @@ queries upon that data.")
                                   "libgnome-games-support-" version ".tar.xz"))
               (sha256
                (base32
-                "1zkbmnrn161p74qg6jhsn9f66yjjzxfm13pl1klv9av8k1bax9pq"))))
-    (build-system gnu-build-system)
+                "11g1r3ppb9v8m3anks9gxf7fv1x38vmjiya3lr7zjjv328pb69d6"))))
+    (build-system meson-build-system)
     (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'pre-check
-           (lambda _
-             ;; Tests require a writable HOME.
-             (setenv "HOME" (getcwd))
-             #t)))))
+      '(#:glib-or-gtk? #t
+        #:phases
+          (modify-phases %standard-phases
+            (add-before 'check 'pre-check
+              (lambda _
+                ;; Tests require a writable HOME.
+                (setenv "HOME" (getcwd))
+                #t)))))
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
