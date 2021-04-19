@@ -3750,16 +3750,15 @@ each stack frame.")
 (define-public perl-digest-crc
   (package
     (name "perl-digest-crc")
-    (version "0.22")
+    (version "0.23")
     (source
      (origin
       (method url-fetch)
       (uri (string-append
             "mirror://cpan/authors/id/O/OL/OLIMAUL/Digest-CRC-"
-            version ".2.tar.gz"))
+            version ".tar.gz"))
       (sha256
-       (base32
-        "1jvqcyrbi11cj3vlfc9sq2g6rv9caizyjkjqsksvmxn6zgvm0aqi"))))
+       (base32 "1n64qnjxhw1jjikxgfa1x5a4f7qi298839r3xhzvmj5736754j51"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Digest-CRC")
     (synopsis "Generic CRC functions")
