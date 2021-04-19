@@ -12,7 +12,7 @@
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
@@ -221,7 +221,7 @@ project (but it is usable outside of the Gnome platform).")
 (define-public libxlsxwriter
   (package
     (name "libxlsxwriter")
-    (version "1.0.1")
+    (version "1.0.2")
     (source
      (origin
        (method git-fetch)
@@ -230,7 +230,7 @@ project (but it is usable outside of the Gnome platform).")
          (commit (string-append "RELEASE_" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0dsqv4qdd582fhwj6m80iz50gkyw4m8n9h4mkd2871csa03sbilf"))
+        (base32 "1snjka62mdqkj9r34kw8wxw2144imb58qx3iahaibg0vxmjjjhsg"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled minizip source
