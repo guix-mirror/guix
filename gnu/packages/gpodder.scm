@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019, 2020, 2021 Pierre Langlois <pierre.langlois@gmx.com>
-;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,7 +39,7 @@
 (define-public gpodder
   (package
     (name "gpodder")
-    (version "3.10.18")
+    (version "3.10.19")
     (source
      (origin
        (method git-fetch)
@@ -47,7 +47,7 @@
              (url "https://github.com/gpodder/gpodder")
              (commit version)))
        (sha256
-        (base32 "1d73q46sqandzbn74nfw9bzzah99z91wsxq2hcivwdgnsv2g2d8y"))
+        (base32 "1nx1cdwij9zy01s97aciqbkd63h4alzyvjdzdvr6wrl6hh42amrx"))
        (file-name (git-file-name name version))
        (patches (search-patches "gpodder-disable-updater.patch"))))
     (build-system python-build-system)
