@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2013, 2019, 2020 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2019, 2020, 2021 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016, 2017, 2019, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017, 2019, 2020 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
@@ -3828,6 +3828,30 @@ of the input.  MD4 is described in RFC 1320.")
 algorithm from within Perl programs.  The algorithm takes as
 input a message of arbitrary length and produces as output a
 128-bit \"fingerprint\" or \"message digest\" of the input.")
+    (license (package-license perl))))
+
+(define-public perl-digest-sha
+  (package
+    (name "perl-digest-sha")
+    (version "6.02")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://cpan/authors/id/M/MS/MSHELOR/Digest-SHA-"
+               version
+               ".tar.gz"))
+        (sha256
+          (base32
+            "01lv0dc3mgnl3ap8npdnqiwmdqz2yc5bziss648c5jgalfzacric"))))
+    (build-system perl-build-system)
+    (home-page
+      "https://metacpan.org/release/Digest-SHA")
+    (synopsis
+      "Perl extension for SHA-1/224/256/384/512")
+    (description
+     "The @code{Digest::SHA} Perl module implements the hash functions
+of the SHA family. It also provides the @code{shasum} binary.")
     (license (package-license perl))))
 
 (define-public perl-digest-sha1
