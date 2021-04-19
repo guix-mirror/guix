@@ -8,7 +8,7 @@
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
@@ -953,15 +953,15 @@ CD data, and more.  It's mostly compatible with @code{cdrtools}.")
 (define-public libmirage
   (package
     (name "libmirage")
-    (version "3.2.4")
+    (version "3.2.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "mirror://sourceforge/cdemu/libmirage/libmirage-"
-                    version ".tar.bz2"))
+                    version ".tar.xz"))
               (sha256
                (base32
-                "0md3f71x2dbgyw5s254vx1s80slh3f25r9pvjihkrmj0rn53nnzw"))))
+                "0f8i2ha44rykkk3ac2q8zsw3y1zckw6qnf6zvkyrj3qqbzhrf3fm"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
