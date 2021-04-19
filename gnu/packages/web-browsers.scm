@@ -4,7 +4,7 @@
 ;;; Copyright © 2015, 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Timo Eisenmann <eisenmann@fn.de>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
@@ -725,7 +725,7 @@ key-bindings and is fully configurable and extensible in Common Lisp.")
 (define-public lagrange
   (package
     (name "lagrange")
-    (version "1.3.2")
+    (version "1.3.3")
     (source
      (origin
        (method url-fetch)
@@ -733,7 +733,7 @@ key-bindings and is fully configurable and extensible in Common Lisp.")
         (string-append "https://git.skyjake.fi/skyjake/lagrange/releases/"
                        "download/v" version "/lagrange-" version ".tar.gz"))
        (sha256
-        (base32 "14yj3l3h6i6ygdhyiwdg2cg6y5imlkql09r7dm5v7xm1ja0sr9lp"))))
+        (base32 "19gafa8mz6zb5n37gfgan51clyxq8vw2grrvsb2l58ksynxwhwf4"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #false))                ;no tests
