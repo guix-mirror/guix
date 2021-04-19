@@ -1766,7 +1766,7 @@ scripted in a Python-like language.")
 (define-public entt
   (package
     (name "entt")
-    (version "3.7.0")
+    (version "3.7.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1775,7 +1775,7 @@ scripted in a Python-like language.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0nzvnhiw3r6nkmxp749zwxc8kzja09nijyxibdbri3g2i7pysf58"))))
+                "151jg3m262xwaywl2rqnc90yr6p48rhmgi5mxyv6bwqvmfli2m5p"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags (list "-DENTT_BUILD_TESTING=ON"
