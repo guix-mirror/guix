@@ -982,15 +982,15 @@ the data stored in various image formats.")
 (define-public cdemu-daemon
   (package
     (name "cdemu-daemon")
-    (version "3.2.4")
+    (version "3.2.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "mirror://sourceforge/cdemu/cdemu-daemon/"
-                    "cdemu-daemon-" version ".tar.bz2"))
+                    "cdemu-daemon-" version ".tar.xz"))
               (sha256
                (base32
-                "02yyj8sr7d5briamhzrqh8zdsiiggxmx5y05kx25y7k3g15jvcx6"))))
+                "16g6fv1lxkdmbsy6zh5sj54dvgwvm900fd18aq609yg8jnqm644d"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
