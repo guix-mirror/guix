@@ -14,6 +14,7 @@
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2020, 2021 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2021 Brendan Tildesley <mail@brendan.scot>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -48,6 +49,7 @@
   #:use-module (gnu packages inkscape)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages mate)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages photo)
@@ -947,6 +949,23 @@ pseudo-transparent terminal background, and a compact mode (where both the
 menubar and the window decorations are hidden) that helps you to save space
 on your desktop.")
     (license gpl2+)))
+
+(define-public mate-polkit-for-xfce
+  (package/inherit mate-polkit
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'patch-desktop
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((common (string-append
+                             (assoc-ref outputs "out") "/etc/xdg/autostart/"
+                             "polkit-mate-authentication-agent-"))
+                    (old (string-append common "1.desktop"))
+                    (new (string-append common "for-xfce-1.desktop")))
+               (substitute* old (("MATE;") "XFCE;"))
+               ;; To avoid a conflict if both MATE and XFCE are installed.
+               (rename-file old new)))))))
+    (properties `((hidden? . #t)))))
 
 (define-public xfce
   (package
