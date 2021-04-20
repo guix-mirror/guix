@@ -7384,10 +7384,32 @@ without using the configuration machinery.")
         (base32
          "1d12j5hkff0xiax87pnhmzbsph3jqqzhz16h8xld7z2y4armq0kr"))))
     (build-system python-build-system)
-    ;; FIXME: not sure how to run the tests
-    (arguments `(#:tests? #f))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               ; Some tests write to $HOME.
+               (setenv "HOME" "/tmp")
+               ; Some tests load the installed package.
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "-vv"))))
+         (add-after 'unpack 'patch-testsuite
+           (lambda _
+             ;; test_not_on_path() and test_path_priority() try to run a test
+             ;; that loads jupyter_core, so we need PYTHONPATH
+             (substitute* "jupyter_core/tests/test_command.py"
+               (("env = \\{'PATH': ''\\}")
+                "env = {'PATH': '', 'PYTHONPATH': os.environ['PYTHONPATH']}")
+               (("env = \\{'PATH':  str\\(b\\)\\}")
+                "env = {'PATH': str(b), 'PYTHONPATH': os.environ['PYTHONPATH']}"))
+             #t)))))
     (propagated-inputs
      `(("python-traitlets" ,python-traitlets)))
+    (native-inputs
+     `(("python-six" ,python-six)
+       ("python-pytest" ,python-pytest)))
     ;; This package provides the `jupyter` binary and thus also exports the
     ;; search paths.
     (native-search-paths
