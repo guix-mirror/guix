@@ -1800,9 +1800,10 @@ new Date();"))
                                                   (search-path-as-string->list
                                                    (getenv "LIBRARY_PATH"))))
                             (find-library (lambda (name)
-                                            (search-path
-                                             library-path
-                                             (string-append "lib" name ".so")))))
+                                            (or (search-path
+                                                 library-path
+                                                 (string-append "lib" name ".so"))
+                                                (string-append "lib" name ".so")))))
                        (for-each
                         (lambda (file)
                           (catch 'decoding-error
@@ -1810,9 +1811,9 @@ new Date();"))
                               (substitute* file
                                 (("VERSIONED_JNI_LIB_NAME\\(\"(.*)\", \"(.*)\"\\)"
                                   _ name version)
-                                 (format #f "\"~a\""  (find-library name)))
+                                 (string-append "\"" (find-library name) "\""))
                                 (("JNI_LIB_NAME\\(\"(.*)\"\\)" _ name)
-                                 (format #f "\"~a\"" (find-library name)))))
+                                 (string-append "\"" (find-library name) "\""))))
                             (lambda _
                               ;; Those are safe to skip.
                               (format (current-error-port)
@@ -1955,9 +1956,9 @@ new Date();"))
                       (substitute* file
                         (("VERSIONED_JNI_LIB_NAME\\(\"(.*)\", \"(.*)\"\\)"
                           _ name version)
-                         (format #f "\"~a\""  (find-library name)))
+                         (string-append "\"" (find-library name) "\""))
                         (("JNI_LIB_NAME\\(\"(.*)\"\\)" _ name)
-                         (format #f "\"~a\"" (find-library name)))))
+                         (string-append "\"" (find-library name) "\""))))
                     (lambda _
                       ;; Those are safe to skip.
                       (format (current-error-port)
@@ -2158,9 +2159,10 @@ new Date();"))
                                           (search-path-as-string->list
                                            (getenv "LIBRARY_PATH"))))
                     (find-library (lambda (name)
-                                    (search-path
-                                     library-path
-                                     (string-append "lib" name ".so")))))
+                                    (or (search-path
+                                         library-path
+                                         (string-append "lib" name ".so"))
+                                        (string-append "lib" name ".so")))))
                (for-each
                 (lambda (file)
                   (catch 'decoding-error
@@ -2168,9 +2170,9 @@ new Date();"))
                       (substitute* file
                         (("VERSIONED_JNI_LIB_NAME\\(\"(.*)\", \"(.*)\"\\)"
                           _ name version)
-                         (format #f "\"~a\""  (find-library name)))
+                         (string-append "\"" (find-library name) "\""))
                         (("JNI_LIB_NAME\\(\"(.*)\"\\)" _ name)
-                         (format #f "\"~a\"" (find-library name)))))
+                         (string-append "\"" (find-library name) "\""))))
                     (lambda _
                       ;; Those are safe to skip.
                       (format (current-error-port)
