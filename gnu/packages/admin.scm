@@ -40,6 +40,7 @@
 ;;; Copyright © 2021 qblade <qblade@protonmail.com>
 ;;; Copyright © 2021 Hyunseok Kim <lasnesne@lagunposprasihopre.org>
 ;;; Copyright © 2021 David Larsson <david.larsson@selfhosted.xyz>
+;;; Copyright © 2021 WinterHound <winterhound@yandex.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -468,6 +469,34 @@ environments:
 services.")
     (license license:public-domain)
     (home-page "https://cr.yp.to/daemontools.html")))
+
+(define-public daemonize
+  (package
+    (name "daemonize")
+    (version "1.7.8")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/bmc/daemonize")
+             (commit (string-append "release-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0w4g0iyssyw7dd0061881z8s5czcl01mz6v00znax57zfxjqpvnm"))))
+    (build-system gnu-build-system)
+    (arguments '(#:tests? #f))          ; No tests available.
+    (home-page "http://software.clapper.org/daemonize/")
+    (synopsis "Command line utility to run a program as a daemon")
+    (description
+     "daemonize runs a command as a Unix daemon.  It will close all open file
+descriptors, change working directory of the process to the root filesystem,
+reset its umask, run in the background, ignore I/O signals, handle
+@code{SIGCLD}, etc.  Most programs that are designed to be run as daemons do
+that work for themselves.  However, you’ll occasionally run across one that
+does not.  When you must run a daemon program that does not properly make
+itself into a true Unix daemon, you can use daemonize to force it to run as a
+true daemon.")
+    (license license:bsd-3)))
 
 (define-public dfc
   (package
