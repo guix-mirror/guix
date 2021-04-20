@@ -948,7 +948,7 @@ from SOURCE."
                   (div
                    (ul
                     (li (a (@ (href "html_node"))
-                           "HTML, with one page per node"))
+                           "HTML, with a separate page per node"))
                     (li (a (@ (href
                                ,(string-append
                                  #$manual
