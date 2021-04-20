@@ -1131,6 +1131,39 @@ concepts.")
 (define-public python2-h5py
   (package-with-python2 python-h5py))
 
+(define-public python-pyls-black
+  (package
+    (name "python-pyls-black")
+    (version "0.4.6")
+    (source
+     (origin
+       ;; There are no tests in the PyPI tarball.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rupert/pyls-black/")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0cjf0mjn156qp0x6md6mncs31hdpzfim769c2lixaczhyzwywqnj"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:test-target "pytest"))
+    (propagated-inputs
+     `(("python-black" ,python-black)
+       ("python-language-server"
+        ,python-language-server)
+       ("python-toml" ,python-toml)))
+    (native-inputs
+     `(("python-flake8" ,python-flake8)
+       ("python-isort" ,python-isort)
+       ("python-mypy" ,python-mypy)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (home-page "https://github.com/rupert/pyls-black")
+    (synopsis "Black plugin for the Python Language Server")
+    (description "Black plugin for the Python Language Server.")
+    (license license:expat)))
+
 (define-public python-sh
   (package
     (name "python-sh")
