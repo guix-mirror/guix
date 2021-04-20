@@ -15,7 +15,7 @@
 ;;; Copyright © 2016 Patrick Hetu <patrick.hetu@auf.org>
 ;;; Copyright © 2016 Nikita <nikita@n0.is>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018, 2020 Arun Isaac <arunisaac@systemreboot.net>
@@ -2351,19 +2351,19 @@ foreground and background colors, text justification and more.")
 (define-public gtkdatabox
   (package
     (name "gtkdatabox")
-    (version "0.9.3.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/gtkdatabox/gtkdatabox/"
-                                  version "/gtkdatabox-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1rdxnjgh6v3yjqgsfmamyzpfxckzchps4kqvvz88nifmd7ckhjfh"))))
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/gtkdatabox/gtkdatabox3/"
+                           "gtkdatabox-" version ".tar.gz"))
+       (sha256
+        (base32 "1qykm551bx8j8pfgxs60l2vhpi8lv4r8va69zvn2594lchh71vlb"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("gtk+-2" ,gtk+-2)))
+     `(("gtk+" ,gtk+)))
     (synopsis "Display widget for dynamic data")
     (description "GtkDatabox is a widget for live display of large amounts of
 fluctuating numerical data.  It enables data presentation (for example, on
