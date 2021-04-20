@@ -2915,3 +2915,26 @@ system.  The code under test requires no modification to work with pyfakefs.")
     (description "Aiounittest is a library that helps write tests using
 asynchronous code in Python (asyncio).")
     (license license:expat)))
+
+(define-public python-pytest-dependency
+  (package
+    (name "python-pytest-dependency")
+    (version "0.5.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "pytest-dependency" version))
+        (sha256
+          (base32
+            "0swl3mxca7nnjbb5grfzrm3fa2750h9vjsha0f2kyrljc6895a62"))))
+    (build-system python-build-system)
+    (propagated-inputs
+      `(("python-pytest" ,python-pytest)))
+    (home-page
+      "https://github.com/RKrahl/pytest-dependency")
+    (synopsis "Manage dependencies of tests")
+    (description "This pytest plugin manages dependencies of tests.  It allows
+to mark some tests as dependent from other tests.  These tests will then be
+skipped if any of the dependencies did fail or has been skipped.")
+    (license license:asl2.0)))
+
