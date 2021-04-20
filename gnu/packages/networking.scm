@@ -42,6 +42,7 @@
 ;;; Copyright © 2020 Hamzeh Nasajpour <h.nasajpour@pantherx.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2021 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2021 Justin Veilleux <terramorpha@cock.li>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4069,3 +4070,33 @@ IPv6 Internet connectivity - it also works over IPv4.")
      ;; version. This exception does not (and cannot) modify any license terms
      ;; which apply to the Application, with which you must still comply
      license:lgpl3)))
+
+(define-public netdiscover
+  (package
+   (name "netdiscover")
+   (version "0.7")
+   (source
+    (origin
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://github.com/netdiscover-scanner/netdiscover")
+            (commit version)))
+      (sha256
+       (base32 "0g8w8rlg16dsibxi4dnyn7v7r8wwi5ypd51c4w59j0ps2id0w8yj"))
+      (file-name (string-append "netdiscover-" version))))
+   (arguments
+    `(#:tests? #f)) ;; no tests
+   (build-system gnu-build-system)
+   (inputs
+    `(("libnet" ,libnet)
+      ("libpcap" ,libpcap)))
+   (native-inputs
+    `(("autoconf" ,autoconf)
+      ("automake" ,automake)))
+   (synopsis "Network address discovery tool")
+   (description "Netdiscover is a network address discovery tool developed
+mainly for wireless networks without a @acronym{DHCP} server.  It also works
+on hub/switched networks.  It is based on @acronym{ARP} packets, it will send
+@acronym{ARP} requests and sniff for replies.")
+   (home-page "https://github.com/netdiscover-scanner/netdiscover")
+   (license license:gpl3+)))
