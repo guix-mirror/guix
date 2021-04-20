@@ -15222,6 +15222,35 @@ modules based on @code{argparse}.  It translates function signature and
 documentation to argparse configuration.")
     (license license:bsd-3)))
 
+(define-public python-pyvirtualdisplay
+  (package
+    (name "python-pyvirtualdisplay")
+    (version "2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "PyVirtualDisplay" version))
+       (sha256
+        (base32 "1z2fzgiw3xv3m1d9ppn53g07zhnpj05addiz56sm6ircxibnjk4x"))))
+    (build-system python-build-system)
+    (arguments
+     ;; Tests fail with:
+     ;; FileNotFoundError: [Errno 2] No such file or directory: 'Xvnc'.
+     `(#:tests? #f))
+    (native-inputs
+     `(("python-entrypoint2" ,python-entrypoint2)
+       ("python-psutil" ,python-psutil)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (propagated-inputs
+     `(("python-easyprocess" ,python-easyprocess)
+       ("python-pillow" ,python-pillow)))
+    (home-page "https://github.com/ponty/pyvirtualdisplay")
+    (synopsis "Python wrapper for Xvfb, Xephyr and Xvnc")
+    (description
+     "@code{pyvirtualdisplay} is a Python wrapper for Xvfb, Xephyr and Xvnc.")
+    (license license:bsd-3)))
+
 (define-public python-stem
   (package
     (name "python-stem")
