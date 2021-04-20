@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
@@ -21,6 +21,7 @@
 
 (define-module (gnu packages spice)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cyrus-sasl)
@@ -53,19 +54,22 @@
   (package
     (name "usbredir")
     (home-page "https://spice-space.org")
-    (version "0.8.0")
+    (version "0.9.0")
     (source (origin
               (method url-fetch)
               (uri (string-append home-page "/download/" name "/" name "-"
-                                  version ".tar.bz2"))
+                                  version ".tar.xz"))
               (sha256
                (base32
-                "002yik1x7kn0427xahvnhjby2np14a6xqw7c3dx530n9h5d9rg47"))))
+                "19jnpzlanq0a1m5lmlcsp50wxf7icxvpvclx7hnf0zxw8azngqd3"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libusb" ,libusb)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
     (synopsis "Tools for sending USB device traffic over a network")
     (description
      "Usbredir is a network protocol for sending USB device traffic over a
