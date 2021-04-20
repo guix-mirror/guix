@@ -28,7 +28,7 @@
 ;;; Copyright © 2017, 2018 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017, 2018 Pierre Langlois <pierre.langlois@gmx.com>
-;;; Copyright © 2015, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017, 2018, 2019, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Kristofer Buffington <kristoferbuffington@gmail.com>
 ;;; Copyright © 2018 Amirouche Boubekki <amirouche@hypermove.net>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
@@ -2072,6 +2072,35 @@ Driver.")
    (license license:lgpl2.1+)
    ;; COPYING contains copy of lgpl2.1 - but copyright notices just say "LGPL"
    (home-page "http://www.unixodbc.org")))
+
+(define-public nanodbc
+  (package
+    (name "nanodbc")
+    (version "2.13.0")
+    (source (origin
+              (method git-fetch)
+              (uri
+               (git-reference
+                (url "https://github.com/nanodbc/nanodbc")
+                (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1q80p7yv9mcl4hyvnvcjdr70y8nc940ypf368lp97vpqn5yckkgm"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       ;; The tests require ODBC backends to be installed.
+       (list "-DNANODBC_DISABLE_TESTS=ON")
+       #:tests? #false))
+    (inputs
+     `(("unixodbc" ,unixodbc)))
+    (home-page "https://nanodbc.io/")
+    (synopsis "C++ wrapper for the native C ODBC API")
+    (description "The goal for nanodbc is to make developers happy by providing
+a simpler and less verbose API for working with ODBC.  Common tasks should be
+easy, requiring concise and simple code.")
+    (license license:expat)))
 
 (define-public unqlite
   (package
