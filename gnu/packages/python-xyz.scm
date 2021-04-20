@@ -8476,6 +8476,40 @@ solve linear problems.")
 algorithm.")
     (license license:asl2.0)))
 
+(define-public python-three-merge
+  (package
+    (name "python-three-merge")
+    (version "0.1.1")
+    (source
+     (origin
+       ;; There are no tests in the PyPI tarball.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/spyder-ide/three-merge")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1fw28swh6jq4myr09j7gv68l241b8vwg470ak5xv0x4xwh2a1m86"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:test-target "pytest"))
+    (propagated-inputs
+     `(("python-diff-match-patch" ,python-diff-match-patch)))
+    (native-inputs
+     `(("python-flaky" ,python-flaky)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-runner" ,python-pytest-runner)
+       ("python-pytest-timeout" ,python-pytest-timeout)))
+    (home-page "https://github.com/spyder-ide/three-merge")
+    (synopsis "Library for merging two strings with respect to a base one")
+    (description
+     "This package provides a Python library to perform a 3-way merge between
+strings, based on @code{diff-match-patch}.  This library performs merges at a
+character level, as opposed to most VCS systems, which opt for a line-based
+approach.")
+    (license license:expat)))
+
 (define-public snakemake
   (package
     (name "snakemake")
