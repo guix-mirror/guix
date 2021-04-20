@@ -736,7 +736,9 @@ to not fully trusted targets.  Borg is a fork of Attic.")
        ("ntfs-3g" ,ntfs-3g)
        ("openssl" ,openssl)))
     (arguments
-     `(#:configure-flags (list "--enable-test-support")))
+     `(#:configure-flags
+       (list "--disable-static"
+             "--enable-test-support")))
     (home-page "https://wimlib.net/")
     (synopsis "WIM file manipulation library and utilities")
     (description "wimlib is a C library and set of command-line utilities for
