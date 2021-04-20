@@ -68,7 +68,7 @@ Copyright @copyright{} 2019 Ivan Petkov@*
 Copyright @copyright{} 2019 Jakob L. Kreuze@*
 Copyright @copyright{} 2019 Kyle Andrews@*
 Copyright @copyright{} 2019 Alex Griffin@*
-Copyright @copyright{} 2019, 2020 Guillaume Le Vaillant@*
+Copyright @copyright{} 2019, 2020, 2021 Guillaume Le Vaillant@*
 Copyright @copyright{} 2020 Leo Prikler@*
 Copyright @copyright{} 2019, 2020 Simon Tournier@*
 Copyright @copyright{} 2020 Wiktor Żelazny@*
@@ -26998,6 +26998,12 @@ The peer public-key represented as a base64 string.
 @item @code{allowed-ips}
 A list of IP addresses from which incoming traffic for this peer is
 allowed and to which incoming traffic for this peer is directed.
+
+@item @code{keep-alive} (default: @code{#f})
+An optional time interval in seconds.  A packet will be sent to the
+server endpoint once per time interval.  This helps receiving
+incoming connections from this peer when you are behind a NAT or
+a firewall.
 
 @end table
 @end deftp
