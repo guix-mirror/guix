@@ -37,7 +37,7 @@
 ;;; Copyright © 2020 Holger Peters <holger.peters@posteo.de>
 ;;; Copyright © 2020 Noisytoot <noisytoot@gmail.com>
 ;;; Copyright © 2020 Edouard Klein <edk@beaver-labs.com>
-;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2021 Ekaitz Zarraga <ekaitz@elenq.tech>
@@ -4555,6 +4555,49 @@ library to create slugs from unicode strings while keeping it DRY.")
     (synopsis "Generate complex HTML+JS pages with Python")
     (description "Generate complex HTML+JS pages with Python")
     (license license:expat)))
+
+(define-public python-tinycss
+  (package
+    (name "python-tinycss")
+    (version "0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "tinycss" version))
+       (sha256
+        (base32 "0vkifr595h28ymkjhrswwf0bm23lhznh5f44xyp7x7jy1ssnyc0j"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-flake8-isort
+           ;; Flake8 and isort tests fail.
+           (lambda _
+             (substitute* "setup.cfg" ((" --flake8 --isort") ""))
+             #t))
+         (replace 'check
+           (lambda _
+             ;; Disable failing test.
+             (invoke "python" "-m" "pytest" "-k"
+                     "not test_speedups"))))))
+    (native-inputs
+     `(("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-flake8" ,python-pytest-flake8)
+       ("python-pytest-isort" ,python-pytest-isort)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (home-page "https://tinycss.readthedocs.io/")
+    (synopsis "Complete yet simple CSS parser for Python")
+    (description
+     "@code{tinycss} is a complete yet simple CSS parser for Python.  It
+supports the full syntax and error handling for CSS 2.1 as well as some CSS 3
+modules:
+
+@itemize
+@item CSS Color 3
+@item CSS Fonts 3
+@item CSS Paged Media 3
+@end itemize")
+    (license license:bsd-3)))
 
 (define-public python-tinycss2
   (package
