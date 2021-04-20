@@ -776,7 +776,7 @@ type system, elevating types to first-class status.")
 (define-public guile-git
   (package
     (name "guile-git")
-    (version "0.5.0")
+    (version "0.5.1")
     (home-page "https://gitlab.com/guile-git/guile-git.git")
     (source (origin
               (method git-fetch)
@@ -786,7 +786,7 @@ type system, elevating types to first-class status.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1hqw3jy81cnsgybsbnfvwvhv1bajwq662hikkrr6dcgky6yspsxx"))))
+                "1x3wa6la4j1wcfxyhhjlmd7yp85wwpny0y6lrzpz803i9z5fwagc"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags '("GUILE_AUTO_COMPILE=0")))     ; to prevent guild warnings
