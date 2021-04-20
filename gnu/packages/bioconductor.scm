@@ -10550,7 +10550,7 @@ experiments, and visualize de influence of the involved factors.")
      "https://bioconductor.org/packages/msmsTests")
     (synopsis "Differential LC-MS/MS expression tests")
     (description
-     "This packages provides statistical tests for label-free LC-MS/MS data
+     "This package provides statistical tests for label-free LC-MS/MS data
 by spectral counts, to discover differentially expressed proteins between two
 biological conditions.  Three tests are available: Poisson GLM regression,
 quasi-likelihood GLM regression, and the negative binomial of the edgeR
