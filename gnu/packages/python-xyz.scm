@@ -10347,6 +10347,31 @@ Debian-related files, such as:
     ;; Modules are either GPLv2+ or GPLv3+.
     (license license:gpl3+)))
 
+(define-public python-json-spec
+  (package
+    (name "python-json-spec")
+    (version "0.10.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "json-spec" version))
+        (sha256
+          (base32
+            "06dpbsq61ja9r89wpa2pzdii47qh3xri9ajdrgn1awfl102znchb"))))
+    (build-system python-build-system)
+    (propagated-inputs
+      `(("python-pathlib" ,python-pathlib)
+        ("python-six" ,python-six)))
+    (native-inputs
+      `(("python-pytest" ,python-pytest)))
+    (home-page "http://py.errorist.io/json-spec")
+    (synopsis
+      "JSON Schema, JSON Pointer and JSON Reference for Python")
+    (description
+      "This Python library implements several JSON specs, like JSON Schema,
+JSON Reference and JSON Pointer.")
+    (license license:bsd-3)))
+
 (define-public python-nbformat
   (package
     (name "python-nbformat")
