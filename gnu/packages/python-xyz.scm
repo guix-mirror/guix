@@ -7529,6 +7529,19 @@ installing @code{kernelspec}s for use with Jupyter frontends.")
      "This package provides the IPython kernel for Jupyter.")
     (license license:bsd-3)))
 
+;; Bootstrap variant of ipykernel, which uses the bootstrap jupyter-client to
+;; break the cycle between ipykernel and jupyter-client.
+(define-public python-ipykernel-bootstrap
+  (let ((parent python-ipykernel))
+    (hidden-package
+      (package
+        (inherit parent)
+        (name "python-ipykernel-bootstrap")
+        (propagated-inputs
+          `(("python-jupyter-client" ,python-jupyter-client-bootstrap)
+            ,@(fold alist-delete (package-propagated-inputs parent)
+                    '("python-jupyter-client"))))))))
+
 (define-public python-pari-jupyter
   (package
     (name "python-pari-jupyter")
