@@ -4513,6 +4513,12 @@ Server (PLS).")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'relax-deps
+           (lambda _
+             (substitute* "setup.py" (("pycodestyle>=2.6.0,<2.7.0")
+                                      "pycodestyle"))
+             (substitute* "setup.py" (("pyflakes>=2.2.0,<2.3.0") "pyflakes"))
+             #t))
          (add-before 'check 'set-HOME
            (lambda _ (setenv "HOME" "/tmp") #t))
          (replace 'check
