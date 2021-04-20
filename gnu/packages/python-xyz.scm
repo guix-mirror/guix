@@ -7469,6 +7469,20 @@ for working with kernels, and the @code{jupyter kernelspec} entrypoint for
 installing @code{kernelspec}s for use with Jupyter frontends.")
     (license license:bsd-3)))
 
+;; Bootstrap variant of jupyter-client, which breaks the loop between ipykernel
+;; and jupyter-client by removing the former from its native-inputs and
+;; disabling tests.
+(define-public python-jupyter-client-bootstrap
+  (let ((base python-jupyter-client))
+    (hidden-package
+      (package
+        (inherit base)
+        (name "python-jupyter-client-bootstrap")
+        (arguments
+          `(#:tests? #f
+            ,@(package-arguments base)))
+        (native-inputs `())))))
+
 (define-public python2-jupyter-client
   (package-with-python2 python-jupyter-client))
 
