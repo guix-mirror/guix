@@ -10415,21 +10415,35 @@ drafts 04, 06 and 07.")
   (package
     (name "python-nbformat")
     (version "5.1.3")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "nbformat" version))
-       (sha256
-        (base32
-         "1j6idwsw59cslsssvlkg2bkfpvd6ri7kghbp14jwcw87sy57h5mm"))))
+    ;; The PyPi release tarball lacks some test cases and test data.
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/jupyter/nbformat.git")
+                    (commit version)))
+              (sha256
+               (base32
+                "033v16cfmxzh3jn5phnil4p3silr49iwh9wiigzhv0crc6sanvwz"))
+              (file-name (git-file-name name version))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest" "-vv")))))))
     (propagated-inputs
      `(("python-ipython-genutils" ,python-ipython-genutils)
        ("python-jsonschema" ,python-jsonschema)
        ("python-jupyter-core" ,python-jupyter-core)
        ("python-traitlets" ,python-traitlets)))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     `(("python-pytest" ,python-pytest)
+       ("python-fastjsonschema" ,python-fastjsonschema) ; This is only active
+       ; when setting NBFORMAT_VALIDATOR="fastjsonschema", so include it for
+       ; testing only.
+       ("python-testpath" ,python-testpath)))
     (home-page "https://jupyter.org")
     (synopsis "Jupyter Notebook format")
     (description "This package provides the reference implementation of the
