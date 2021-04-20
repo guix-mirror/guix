@@ -61,7 +61,7 @@
    (inexact->exact (ceiling (/ size 1024)))))
 
 (define (estimate-partition-size root)
-  "Given the ROOT directory, evalute and return its size.  As this doesn't
+  "Given the ROOT directory, evaluate and return its size.  As this doesn't
 take the partition metadata size into account, take a 25% margin."
   (* 1.25 (file-size root)))
 
