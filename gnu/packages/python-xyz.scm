@@ -11657,6 +11657,44 @@ for atomic file system operations.")
 (define-public python2-atomicwrites
   (package-with-python2 python-atomicwrites))
 
+(define-public python-qstylizer
+  (package
+    (name "python-qstylizer")
+    (version "0.1.10")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/blambright/qstylizer")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0zvkn6g1dn51kkw33v8qrlnwlmf5h6sw1ay3bh14ifjr8b9xsjjz"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:test-target "pytest"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'set-pbr-version
+           (lambda _
+             (setenv "PBR_VERSION" "3.0.1"))))))
+    (native-inputs
+     `(("python-pbr" ,python-pbr)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-catchlog" ,python-pytest-catchlog)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-mock" ,python-pytest-mock)
+       ("python-pytest-runner" ,python-pytest-runner)
+       ("python-pytest-xdist" ,python-pytest-xdist)))
+    (propagated-inputs
+     `(("python-inflection" ,python-inflection)
+       ("python-tinycss" ,python-tinycss)))
+    (home-page "https://github.com/blambright/qstylizer")
+    (synopsis "Qt stylesheet generation utility for PyQt/PySide")
+    (description "@code{qstylizer} is a Python package designed to help with
+the construction of PyQt/PySide stylesheets.")
+    (license license:expat)))
+
 (define-public python-click-threading
   (package
     (name "python-click-threading")
