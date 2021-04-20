@@ -362,7 +362,7 @@ bindings and many of the powerful features of GNU Emacs.")
        ("libgit2" ,libgit2)))
     (synopsis "Lightweight C++ IDE")
     (description
-     "juCi++ is a small @dfn{IDE} (Integrated Development Environment)
+     "juCi++ is a small @acronym{IDE, Integrated Development Environment}
 designed especially towards libclang with speed, stability, and ease of use
 in mind.
 
