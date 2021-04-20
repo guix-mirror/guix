@@ -7527,6 +7527,8 @@ installing @code{kernelspec}s for use with Jupyter frontends.")
                #t))))))
     (propagated-inputs
      `(("python-ipython" ,python-ipython)
+       ("python-tornado" ,python-tornado-6)
+       ("python-traitlets" ,python-traitlets)
        ;; imported at runtime during connect
        ("python-jupyter-client" ,python-jupyter-client)))
     (native-inputs
