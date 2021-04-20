@@ -25066,6 +25066,47 @@ query Watchman to discover file changes.")
 environment.")
     (license license:expat)))
 
+(define-public python-qtsass
+  (package
+    (name "python-qtsass")
+    (version "0.3.0")
+    (source
+     (origin
+       ;; There are no tests in the PyPI tarball.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/spyder-ide/qtsass/")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "09s04aa14d8jqbh71clrb5y7vcmkxlp94mwmvzrkxahry3bk03cb"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:test-target "pytest"
+       #:phases
+       (modify-phases %standard-phases
+         ;; Tests need to read and write files.
+         (add-before 'check 'make-git-checkout-writable
+           (lambda _
+             (for-each make-file-writable (find-files "."))
+             #t)))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (propagated-inputs
+     `(("python-libsass" ,python-libsass)))
+    (home-page "https://github.com/spyder-ide/qtsass")
+    (synopsis "Compile SCSS files to valid Qt stylesheets")
+    (description
+     "Besides being used in web development, CSS is also the way to stylize
+Qt-based desktop applications.  However, Qt's CSS has a few variations that
+prevent the direct use of SASS compiler.
+
+The purpose of this tool is to fill the gap between SASS and Qt-CSS by
+handling those variations.")
+    (license license:expat)))
+
 (define-public python-qdarkstyle
   (package
     (name "python-qdarkstyle")
