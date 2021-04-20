@@ -40,6 +40,7 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages xorg)
   #:use-module (guix utils)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -885,6 +886,42 @@ for the @code{pytest} framework.")
      "This package provides a pytest fixture that will group the tests into
 rounds that are calibrated to the chosen timer.")
     (license license:bsd-2)))
+
+(define-public python-pytest-xvfb
+  (package
+    (name "python-pytest-xvfb")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-xvfb" version))
+       (sha256
+        (base32 "1kyq5rg27dsnj7dc6x9y7r8vwf8rc88y2ppnnw6r96alw0nn9fn4"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:test-target "pytest"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'prepare-tests
+           (lambda _
+             (system "Xvfb &")
+             (setenv "DISPLAY" ":0")
+
+             ;; This test is meant to run on Windows.
+             (delete-file "tests/test_xvfb_windows.py")
+             #t)))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)
+       ("xorg-server" ,xorg-server-for-tests)))
+    (propagated-inputs
+     `(("python-pyvirtualdisplay"
+        ,python-pyvirtualdisplay)))
+    (home-page "https://github.com/The-Compiler/pytest-xvfb")
+    (synopsis "Pytest plugin to run Xvfb for tests")
+    (description
+     "This package provides a Pytest plugin to run Xvfb for tests.")
+    (license license:expat)))
 
 (define-public python-pytest-services
   (package
