@@ -52,6 +52,41 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages perl))
 
+(define-public avro-cpp-1.9
+  (package
+    (name "avro-cpp")
+    (version "1.9.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://archive.apache.org/dist/avro/avro-" version
+                    "/avro-src-" version ".tar.gz"))
+              (sha256
+               (base32 "0i3fpm7r72yw397qc8yw9ybzk2mxjkv0yk5hnn00ylc1wbd0np73"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _ (chdir "lang/c++"))))))
+    (inputs
+     `(("boost" ,boost)
+       ("snappy" ,snappy)))
+    (home-page "https://avro.apache.org/")
+    (synopsis "Data serialization system")
+    (description "Apache Avro is a data serialization system.  Avro provides:
+@enumerate
+@item Rich data structures;
+@item a compact, fast, binary data format;
+@item a container file, to store persistent data;
+@item remote procedure call (RPC); and
+@item simple integration with dynamic languages.
+@end enumerate
+
+Code generation is not required to read or write data files nor to use or
+implement RPC protocols.")
+    (license license:asl2.0)))
+
 (define-public cereal
   (package
     (name "cereal")
