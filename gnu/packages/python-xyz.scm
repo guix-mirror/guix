@@ -7388,6 +7388,15 @@ without using the configuration machinery.")
     (arguments `(#:tests? #f))
     (propagated-inputs
      `(("python-traitlets" ,python-traitlets)))
+    ;; This package provides the `jupyter` binary and thus also exports the
+    ;; search paths.
+    (native-search-paths
+     (list (search-path-specification
+            (variable "JUPYTER_CONFIG_DIR")
+            (files '("etc/jupyter")))
+           (search-path-specification
+            (variable "JUPYTER_PATH")
+            (files '("share/jupyter")))))
     (home-page "https://jupyter.org/")
     (synopsis "Jupyter base package")
     (description
@@ -10879,10 +10888,6 @@ popular online obfuscators.")
        ("python-nbconvert" ,python-nbconvert)
        ("python-notebook" ,python-notebook)
        ("python-qtconsole" ,python-qtconsole)))
-    (native-search-paths
-     (list (search-path-specification
-            (variable "JUPYTER_PATH")
-            (files '("share/jupyter")))))
     (home-page "https://jupyter.org")
     (synopsis "Web application for interactive documents")
     (description
