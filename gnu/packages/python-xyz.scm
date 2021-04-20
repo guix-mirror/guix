@@ -15177,6 +15177,26 @@ etc.")
     (package/inherit base
       (name "ptpython2"))))
 
+(define-public python-easyprocess
+  (package
+    (name "python-easyprocess")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "EasyProcess" version))
+       (sha256
+        (base32 "115rzzr0hx4af4m6krf7dxn8851n4l8jfxahjzjc2r0zq2m8v57v"))))
+    (build-system python-build-system)
+    (arguments
+     ;; Tests require pyvirtualdisplay, which requires this package.
+     `(#:tests? #f))
+    (home-page "https://github.com/ponty/easyprocess")
+    (synopsis "Python subprocess interface")
+    (description
+     "@code{easyprocess} is an easy to use Python subprocess interface.")
+    (license license:bsd-3)))
+
 (define-public python-stem
   (package
     (name "python-stem")
