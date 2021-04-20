@@ -15831,7 +15831,7 @@ derived from an internal hasher used in FireFox and Rustc.")
     (home-page "https://github.com/Stebalien/gag-rs")
     (synopsis "Gag, redirect, or hold stdout/stderr output")
     (description
-     "This packages gags, redirects, or holds stdout/stderr output.")
+     "This package gags, redirects, or holds stdout/stderr output.")
     (license license:expat)))
 
 (define-public rust-galil-seiferas-0.1
