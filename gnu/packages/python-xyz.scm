@@ -15197,6 +15197,31 @@ etc.")
      "@code{easyprocess} is an easy to use Python subprocess interface.")
     (license license:bsd-3)))
 
+(define-public python-entrypoint2
+  (package
+    (name "python-entrypoint2")
+    (version "0.2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "entrypoint2" version))
+       (sha256
+        (base32 "1qyxq54r2fbh09ab5sffbxajy8arbk6czxz5lq3ccr9qrypw6w27"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:test-target "pytest"))
+    (native-inputs
+     `(("python-easyprocess" ,python-easyprocess)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (home-page "https://github.com/ponty/entrypoint2")
+    (synopsis "Command-line interface for Python modules")
+    (description
+     "@code{entrypoint2} is an easy to use command-line interface for Python
+modules based on @code{argparse}.  It translates function signature and
+documentation to argparse configuration.")
+    (license license:bsd-3)))
+
 (define-public python-stem
   (package
     (name "python-stem")
