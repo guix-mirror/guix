@@ -10807,6 +10807,9 @@ convert an @code{.ipynb} notebook file into various static formats including:
              (delete-file-recursively "notebook/tests/selenium")
              (when tests?
                (add-installed-pythonpath inputs outputs)
+               ;; Some tests do not expect all files to be installed in the
+               ;; same directory, but JUPYTER_PATH contains multiple entries.
+               (unsetenv "JUPYTER_PATH")
                ;; Some tests need HOME
                (setenv "HOME" "/tmp")
                (with-directory-excursion "/tmp"
