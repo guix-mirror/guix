@@ -10372,6 +10372,45 @@ Debian-related files, such as:
 JSON Reference and JSON Pointer.")
     (license license:bsd-3)))
 
+(define-public python-fastjsonschema
+  (package
+    (name "python-fastjsonschema")
+    (version "2.15.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "fastjsonschema" version))
+        (sha256
+          (base32
+            "0xknp399gpdjf08lrq2yvv66s7nsc51fgbm6vph7vyyg1ckbmv71"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ; Fail with a strange backtrace ending in importlib.
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+            (when tests?
+              (invoke "pytest" "-vv" "-m" "not benchmark")))))))
+    (native-inputs
+      `(("python-colorama" ,python-colorama)
+        ("python-json-spec" ,python-json-spec)
+        ("python-jsonschema" ,python-jsonschema)
+        ("python-pylint" ,python-pylint)
+        ("python-pytest" ,python-pytest-6)
+        ("python-pytest-benchmark"
+         ,python-pytest-benchmark)
+        ("python-pytest-cache" ,python-pytest-cache)
+        ("python-validictory" ,python-validictory)))
+    (home-page
+      "https://github.com/horejsek/python-fastjsonschema")
+    (synopsis
+      "Fast Python implementation of JSON schema")
+    (description
+      "This library implements validation of JSON documents by JSON schema for
+drafts 04, 06 and 07.")
+    (license license:bsd-3)))
+
 (define-public python-nbformat
   (package
     (name "python-nbformat")
