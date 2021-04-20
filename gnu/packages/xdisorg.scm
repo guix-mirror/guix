@@ -511,6 +511,39 @@ manager supports it, you can use xdotool to switch desktops, move windows
 between desktops, and change the number of desktops.")
     (license license:bsd-3)))
 
+(define-public xdo
+  (package
+    (name "xdo")
+    (version "0.5.7")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/baskerville/xdo")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1h3jrygcjjbavdbkpx2hscsf0yf97gk487lzjdlvymd7dxdv9hy9"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no tests
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (inputs
+     `(("libxcb" ,libxcb)
+       ("xcb-util-wm" ,xcb-util-wm)
+       ("xcb-util" ,xcb-util)))
+    (home-page "https://github.com/baskerville/xdo")
+    (synopsis "Small X utility to perform elementary actions on windows")
+    (description
+     "Apply the given action to the given windows.  If no window IDs and no
+options are given, the action applies to the focused window.")
+    (license license:bsd-2)))
+
 (define-public xeyes
   (package
     (name "xeyes")
