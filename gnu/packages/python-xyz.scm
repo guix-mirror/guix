@@ -10665,32 +10665,64 @@ time.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-paths-and-tests
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((pandoc (string-append (assoc-ref inputs "pandoc") "/bin/pandoc"))
+                   (texlive-root (string-append (assoc-ref inputs "texlive")))
+                   (xelatex (string-append texlive-root "/bin/xelatex"))
+                   (bibtex (string-append texlive-root "/bin/bibtex")))
+               ;; Use pandoc binary from input.
+               (substitute* "nbconvert/utils/pandoc.py"
+                 (("'pandoc'") (string-append "'" pandoc "'")))
+               ;; Same for LaTeX.
+               (substitute* "nbconvert/exporters/pdf.py"
+                 (("\"xelatex\"") (string-append "\"" xelatex "\""))
+                 (("\"bibtex\"") (string-append "\"" bibtex "\"")))
+               ;; Make sure tests are not skipped.
+               (substitute* (find-files "." "test_.+\\.py$")
+                 (("@onlyif_cmds_exist\\(('(pandoc|xelatex)'(, )?)+\\)") ""))
+              ;; Pandoc is never missing, disable test.
+              (substitute* "nbconvert/utils/tests/test_pandoc.py"
+                (("import os" all) (string-append all "\nimport pytest"))
+                (("(.+)(def test_pandoc_available)" all indent def)
+                (string-append indent "@pytest.mark.skip('disabled by guix')\n"
+                               indent def)))
+              ; Not installing pyppeteer, delete test.
+              (delete-file "nbconvert/exporters/tests/test_webpdf.py")
+              (substitute* "nbconvert/tests/test_nbconvertapp.py"
+                (("(.+)(def test_webpdf_with_chromium)" all indent def)
+                (string-append indent "@pytest.mark.skip('disabled by guix')\n"
+                               indent def)))
+             #t)))
          (replace 'check
            (lambda* (#:key tests? inputs outputs #:allow-other-keys)
              (when tests?
+               ;; Some tests invoke the installed nbconvert binary.
                (add-installed-pythonpath inputs outputs)
-
-               ;; This seems to require Chromium.
-               (delete-file "nbconvert/exporters/tests/test_webpdf.py")
-
-               ;; This depends on the python3 kernel, which is provided by a
-               ;; package that depends on nbconvert.
-               (delete-file "nbconvert/preprocessors/tests/test_execute.py")
-
-               ;; Most of these tests fail because nbconvert fails to execute
-               ;; itself.
-               (delete-file "nbconvert/tests/test_nbconvertapp.py")
-
-               ;; One test here fails with an unclear error.  It looks like
-               ;; "%%pylabprint" is supposed to be expanded to some other
-               ;; code, but isn't.
-               (delete-file "nbconvert/filters/tests/test_strings.py")
-               
+               ;; Tries to write to this path.
+               (unsetenv "JUPYTER_CONFIG_DIR")
+               ;; Tests depend on templates installed to output.
+               (setenv "JUPYTER_PATH"
+                      (string-append
+                        (assoc-ref outputs "out")
+                        "/share/jupyter:"
+                        (getenv "JUPYTER_PATH")))
                ;; Some tests need HOME
                (setenv "HOME" "/tmp")
-               (invoke "pytest")))))))
+               (invoke "pytest" "-vv")))))))
+    (inputs
+      `(("pandoc" ,pandoc)
+        ; XXX: Disabled, needs substitute*.
+        ;("inkscape" ,inkscape)
+        ("texlive" ,texlive)))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+      `(("python-ipykernel" ,python-ipykernel)
+        ; XXX: Disabled, not in guix.
+        ;("python-pyppeteer" ,python-pyppeteer)
+        ("python-pytest" ,python-pytest)
+        ("python-pytest-cov" ,python-pytest-cov)
+        ("python-pytest-dependency"
+         ,python-pytest-dependency)))
     (propagated-inputs
      `(("python-bleach" ,python-bleach)
        ("python-defusedxml" ,python-defusedxml)
@@ -10704,7 +10736,9 @@ time.")
        ("python-pygments" ,python-pygments)
        ("python-jupyterlab-pygments" ,python-jupyterlab-pygments)
        ("python-testpath" ,python-testpath)
-       ("python-traitlets" ,python-traitlets)))
+       ("python-traitlets" ,python-traitlets)
+       ;; Required, even if [serve] is not used.
+       ("python-tornado" ,python-tornado-6)))
     (home-page "https://jupyter.org")
     (synopsis "Converting Jupyter Notebooks")
     (description "The @code{nbconvert} tool, @{jupyter nbconvert}, converts
