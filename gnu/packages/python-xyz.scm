@@ -8048,6 +8048,43 @@ features useful for text console applications.")
 supports @code{readline} shortcuts.")
     (license license:expat)))
 
+(define-public python-textdistance
+  (package
+    (name "python-textdistance")
+    (version "4.2.1")
+    (source
+     (origin
+       ;; There are no tests in the PyPI tarball.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/life4/textdistance")
+             (commit (string-append "v." version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1g17i356fnny4k6hjr2ayy9k77jbvd6zzmngws2kbrnvhss1wgwf"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:test-target "pytest"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'delete-external-test
+           (lambda _
+             ;; All tests in this file require external libraries.
+             (delete-file "tests/test_external.py")
+             #t)))))
+    (native-inputs
+     `(("python-hypothesis" ,python-hypothesis)
+       ("python-isort" ,python-isort)
+       ("python-numpy" ,python-numpy)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)
+       ("python-tabulate" ,python-tabulate)))
+    (home-page "https://github.com/life4/textdistance")
+    (synopsis "Compute distance between the two texts")
+    (description "@code{textdistance} is a pure Python library for comparing
+distance between two or more sequences by many algorithms.")
+    (license license:expat)))
+
 (define-public python-urwidtrees
   (package
     (name "python-urwidtrees")
