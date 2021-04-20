@@ -53,6 +53,7 @@
 ;;; Copyright © 2020 Zhu Zihao <all_but_last@163.com>
 ;;; Copyright © 2020 David Dashyan <mail@davie.li>
 ;;; Copyright © 2020 pukkamustard <pukkamustard@posteo.net>
+;;; Copyright © 2021 B. Wilson <elaexuotee@wilsonb.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -130,6 +131,7 @@
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages slang)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages valgrind)
@@ -8037,3 +8039,46 @@ kernel side implementation.")
 read-only file system optimized for resource-scarce devices.  This package
 provides user-space tools for creating EROFS file systems.")
     (license license:gpl2+)))
+
+(define-public rasdaemon
+  (package
+    (name "rasdaemon")
+    (version "0.6.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mchehab/rasdaemon")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "13g39x19lfjf9izdcb0nlyfjrgpliivhv4nw3ndgyzi59l3yqc0v"))))
+    (native-inputs `(("autoconf" ,autoconf)
+                     ("automake" ,automake)
+                     ("libtool" ,libtool)))
+    (inputs `(("sqlite" ,sqlite)))
+    (arguments
+     `(#:configure-flags '("--enable-all"
+                           "--localstatedir=/var")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'munge-autotools
+           (lambda _
+             ;; For some reason upstream forces sysconfdir=/etc.  This results
+             ;; in EPERM during the install phase.  Removing the offending
+             ;; line lets sysconfdir correctly pick up DESTDIR.
+             (substitute* "configure.ac"
+               (("^test .* sysconfdir=/etc\n$") ""))
+             ;; Upstream tries to create /var/lib/rasdaemon at install time.
+             ;; This results in EPERM on guix.  Instead, the service should
+             ;; create this at activation time.
+             (substitute* "Makefile.am"
+               (("^\\s*\\$\\(install_sh\\) -d .*@RASSTATEDIR@.*$") "")))))))
+    (build-system gnu-build-system)
+    (home-page "https://github.com/mchehab/rasdaemon")
+    (synopsis "Platform Reliability, Availability and Serviceability tools")
+    (description "The @code{rasdaemon} program is a daemon which monitors the
+platform Reliablity, Availability and Serviceability (RAS) reports from the
+Linux kernel trace events.  These trace events are logged in
+/sys/kernel/debug/tracing, reporting them via syslog/journald.")
+    (license license:gpl2)))
