@@ -7437,19 +7437,22 @@ without using the configuration machinery.")
         (base32
          "10p7fcgvv9hvz9zical9wk68ks5ssak2ykbzx65wm1k1hk8a3g64"))))
     (build-system python-build-system)
-    ;; Tests fail because of missing native python kernel which I assume is
-    ;; provided by the ipython package, which we cannot use because it would
-    ;; cause a dependency cycle.
     (arguments
-     `(#:tests? #f
-       #:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'set-tool-file-names
-                    (lambda* (#:key inputs #:allow-other-keys)
-                      (let ((iproute (assoc-ref inputs "iproute")))
-                        (substitute* "jupyter_client/localinterfaces.py"
-                          (("'ip'")
-                           (string-append "'" iproute "/sbin/ip'")))
-                        #t))))))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-tool-file-names
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((iproute (assoc-ref inputs "iproute")))
+               (substitute* "jupyter_client/localinterfaces.py"
+                 (("'ip'")
+                  (string-append "'" iproute "/sbin/ip'")))
+               #t)))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               ;; Some tests try to write to $HOME.
+               (setenv "HOME" "/tmp")
+               (invoke "pytest" "-vv")))))))
     (inputs
      `(("iproute" ,iproute)))
     (propagated-inputs
@@ -7459,7 +7462,14 @@ without using the configuration machinery.")
        ("python-tornado" ,python-tornado-6)
        ("python-traitlets" ,python-traitlets)))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-asyncio" ,python-pytest-asyncio)
+       ("python-pytest-timeout" ,python-pytest-timeout)
+       ("python-async-generator" ,python-async-generator)
+       ("python-mock" ,python-mock)
+       ("python-msgpack" ,python-msgpack)
+       ("python-ipython" ,python-ipython)
+       ("python-ipykernel" ,python-ipykernel-bootstrap)))
     (home-page "https://jupyter.org/")
     (synopsis "Jupyter protocol implementation and client libraries")
     (description
