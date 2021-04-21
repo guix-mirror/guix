@@ -42640,7 +42640,7 @@ closures after a delay or at a given timestamp.")
        (("rust-lazy-static" ,rust-lazy-static-0.2))))
     (home-page "https://github.com/savage13/tint")
     (synopsis "Color creation and manipulation")
-    (description "This packages provides tools for color creation and
+    (description "This package provides tools for color creation and
 manipulation in Rust.")
     (license license:expat)))
 
