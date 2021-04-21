@@ -699,7 +699,7 @@ implementing both a client and a server.")
     (home-page "https://github.com/JuliaIO/IniFile.jl")
     (synopsis "Reading Windows-style INI files")
     (description "This is a Julia package that defines an IniFile type that
-allows to interface with @file{.ini} files.")
+interfaces with @file{.ini} files.")
     (license license:expat)))
 
 (define-public julia-irtools
