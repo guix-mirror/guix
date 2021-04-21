@@ -32078,7 +32078,7 @@ Rust.")
     (home-page "https://github.com/jonathandturner/rawkey")
     (synopsis "Raw terminal key input")
     (description
-     "This packages provides support for raw key input in terminals.")
+     "This package provides support for raw key input in terminals.")
     (license license:expat)))
 
 (define-public rust-rayon-core-1
