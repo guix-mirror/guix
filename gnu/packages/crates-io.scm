@@ -27399,7 +27399,7 @@ deserialization, and interpreter in Rust.")
        (("rust-easy-parallel" ,rust-easy-parallel-3))))
     (home-page "https://github.com/stjepang/parking")
     (synopsis "Thread parking and unparking")
-    (description "This packages provides methods for thread parking and
+    (description "This package provides methods for thread parking and
 unparking.")
     (license (list license:asl2.0 license:expat))))
 
