@@ -847,7 +847,7 @@ enough to play the original mainframe Zork all the way through.")
 (define-public txr
   (package
     (name "txr")
-    (version "255")
+    (version "256")
     (source
      (origin
        (method git-fetch)
@@ -856,7 +856,7 @@ enough to play the original mainframe Zork all the way through.")
              (commit (string-append "txr-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0fjca44761x29xg5hh60yf4i3k7462z7ysnadbk2wzisp42yxk6j"))))
+        (base32 "1g0kglp2dsfnqbiq1kg49vhsj981dm1b2s091rwgvws9vdl77gr6"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
