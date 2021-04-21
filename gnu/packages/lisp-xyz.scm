@@ -16025,7 +16025,7 @@ allows one to gradually make their programs safer.")
        "Clip is an attempt at a templating library that allows you to write
 templates in a way that is both accessible to direct webdesign and
 flexible.  The main idea is to incorporate transformation commands into an HTML
-file through tags and attributes.  Clip is heavily dependant on Plump and
+file through tags and attributes.  Clip is heavily dependent on Plump and
 lQuery.")
       (license license:zlib))))
 
