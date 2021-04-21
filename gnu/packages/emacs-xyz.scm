@@ -7444,7 +7444,7 @@ style, or as multiple word prefixes.")
     (home-page "https://github.com/minad/consult")
     (synopsis "Consulting completing-read")
     (description "This package provides various handy commands based on the
-Emacs completion function completing-read, which allows to quickly select from a
+Emacs completion function completing-read, which allows quickly selecting from a
 list of candidates.")
     (license license:gpl3+)))
 
