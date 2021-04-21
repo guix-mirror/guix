@@ -880,7 +880,7 @@ release: dist-with-updated-version
 	      -v1 --no-grafts --fallback
 	for system in $(GUIX_SYSTEM_SUPPORTED_SYSTEMS) ; do				\
 	  image=`$(top_builddir)/pre-inst-env						\
-	    guix system disk-image -t iso9660                                           \
+	    guix system image -t iso9660                                           	\
 	    --label="GUIX_$${system}_$(VERSION)"					\
             --system=$$system --fallback						\
 	    gnu/system/install.scm` ;							\
@@ -894,7 +894,7 @@ release: dist-with-updated-version
 	done
 	for system in $(GUIX_SYSTEM_VM_SYSTEMS) ; do					\
 	  image=`$(top_builddir)/pre-inst-env						\
-	    guix system vm-image $(GUIX_SYSTEM_VM_IMAGE_FLAGS)				\
+	    guix system image -t qcow2 $(GUIX_SYSTEM_VM_IMAGE_FLAGS)			\
 	    --save-provenance								\
 	    --system=$$system --fallback						\
 	    gnu/system/examples/vm-image.tmpl` ;					\
