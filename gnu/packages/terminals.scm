@@ -23,6 +23,7 @@
 ;;; Copyright © 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2021 Ekaitz Zarraga <ekaitz@elenq.tech>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1029,7 +1030,7 @@ tmux.")
 (define-public kitty
   (package
     (name "kitty")
-    (version "0.19.3")
+    (version "0.20.1")
     (home-page "https://sw.kovidgoyal.net/kitty/")
     (source
      (origin
@@ -1039,7 +1040,7 @@ tmux.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0r49bybqy6c0n1lz6yc85py80wb40w757m60f5rszjf200wnyl6s"))
+        (base32 "0ncal16x3mz24f4l2lk50khzv3xacynk2pf3cklbvm2n7j69qca1"))
        (modules '((guix build utils)))
        (snippet
         '(begin
