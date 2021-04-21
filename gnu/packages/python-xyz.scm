@@ -24159,13 +24159,13 @@ applications with variable CPU loads).")
 (define-public python-djvulibre
   (package
     (name "python-djvulibre")
-    (version "0.8.5")
+    (version "0.8.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-djvulibre" version))
        (sha256
-        (base32 "1c0lvpg7j2525cv52s3q5sg7hfnakkb8rmghg0jc02gshsxmrj4f"))))
+        (base32 "089smpq29ll0z37lnq26r2f72d31i33xm9fw9pc6hlcsm6nbjbiv"))))
     (build-system python-build-system)
     (native-inputs
      `(("ghostscript" ,ghostscript)
