@@ -334,7 +334,7 @@ integrate Windows applications into your desktop.")
 (define-public wine-staging-patchset-data
   (package
     (name "wine-staging-patchset-data")
-    (version "5.22")
+    (version "6.6")
     (source
      (origin
        (method git-fetch)
@@ -343,7 +343,7 @@ integrate Windows applications into your desktop.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0sjljp5aa558ff5wn47q86z0dm4vcjs0gh9n35916bbwj02lhay2"))))
+        (base32 "0d5m9pvafr0iw99ny7rgzfmw7zw45q5wfcw68zj88mvzs47xkgms"))))
     (build-system trivial-build-system)
     (native-inputs
      `(("bash" ,bash)
@@ -394,7 +394,7 @@ integrate Windows applications into your desktop.")
                              "wine-" wine-version ".tar.xz"))
          (file-name (string-append name "-" wine-version ".tar.xz"))
          (sha256
-          (base32 "08adrsxhwgj5slwgi7f0dyspw8fpfp4cw1s5sdm4x5wcgk40dg89")))))
+          (base32 "1bc4zmqpdqs1ncz3qisp8a313pqzi5a31gq1s99ivb60vk325rcr")))))
     (inputs `(("autoconf" ,autoconf)    ; for autoreconf
               ("ffmpeg" ,ffmpeg)
               ("gtk+" ,gtk+)
