@@ -29,7 +29,7 @@
 ;;; Copyright © 2019 Kyle Andrews <kyle.c.andrews@gmail.com>
 ;;; Copyright © 2019, 2020 Josh Holland <josh@inv.alid.pw>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
-;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2020, 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 David Wilson <david@daviwil.com>
 ;;; Copyright © 2020 Ivan Vilata i Balaguer <ivan@selidor.net>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
@@ -2274,7 +2274,7 @@ The cutbuffer and clipboard selection are always synchronized.")
 (define-public jgmenu
   (package
     (name "jgmenu")
-    (version "4.1.0")
+    (version "4.3.0")
     (source
      (origin
        (method git-fetch)
@@ -2283,8 +2283,7 @@ The cutbuffer and clipboard selection are always synchronized.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1wsh37rapb1bszlq36hvwxqvfds39hbvbl152m8as4zlh93wfvvk"))))
+        (base32 "13y4ra2hjfqbn2vxyyn4ar5iqklbabyfwksbryc2gzxspw1vz4zq"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("cppcheck" ,cppcheck)
@@ -2299,17 +2298,12 @@ The cutbuffer and clipboard selection are always synchronized.")
        ("libxrandr" ,libxrandr)
        ("pango" ,pango)))
     (arguments
-     `(#:phases
+     `(#:test-target "test"
+       #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'fix-tests
-           (lambda _
-             (substitute* "scripts/cppcheck-wrapper.sh"
-               (("--library=/usr/share/cppcheck/cfg/gnu\\.cfg")
-                ""))
-             #t))
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
-             (setenv "CC" "gcc")
+             (setenv "CC" ,(cc-for-target))
              (invoke "./configure"
                      (string-append "--prefix=" (assoc-ref outputs "out")))
              #t)))))
