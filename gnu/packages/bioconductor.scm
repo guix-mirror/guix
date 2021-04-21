@@ -7767,7 +7767,7 @@ accessibility data.")
     (description
      "@code{r-circrnaprofiler} is a computational framework for a comprehensive
 in silico analysis of @dfn{circular RNA} (circRNAs).  This computational
-framework allows to combine and analyze circRNAs previously detected by
+framework allows combining and analyzing circRNAs previously detected by
 multiple publicly available annotation-based circRNA detection tools.  It
 covers different aspects of circRNAs analysis from differential expression
 analysis, evolutionary conservation, biogenesis to functional analysis.")
