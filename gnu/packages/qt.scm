@@ -137,7 +137,7 @@
          ("qtmultimedia" ,qtmultimedia)))
       (home-page "https://github.com/Ri0n/qite/")
       (synopsis "Qt Interactive Text Elements")
-      (description "Qite allows to manage interactive elements on QTextEdit.")
+      (description "Qite manages interactive elements on QTextEdit.")
       (license license:asl2.0))))
 
 (define-public qt5ct
