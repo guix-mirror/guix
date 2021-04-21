@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Dennis Mungai <dmngaie@gmail.com>
-;;; Copyright © 2016, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -955,6 +955,65 @@ use with Clang, targeting C++11, C++14 and above.")
     (native-inputs
      `(("clang" ,clang-6)
        ("llvm" ,llvm-6)))))
+
+(define-public libcxxabi-6
+  (package
+    (name "libcxxabi")
+    (version "6.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/llvm/llvm-project")
+             (commit (string-append "llvmorg-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0ki6796b5z08kh3a3rbysr5wwb2dkl6wal5dzd03i4li5xfkvx1g"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "-DLIBCXXABI_LIBCXX_INCLUDES="
+                            (assoc-ref %build-inputs "libcxx")
+                            "/include")
+             "-DCMAKE_C_COMPILER=clang"
+             "-DCMAKE_CXX_COMPILER=clang++")
+       #:phases
+       (modify-phases (@ (guix build cmake-build-system) %standard-phases)
+         (add-after 'unpack 'chdir
+           (lambda _ (chdir "libcxxabi")))
+         (add-after 'set-paths 'adjust-CPLUS_INCLUDE_PATH
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((gcc (assoc-ref inputs  "gcc")))
+               ;; Hide GCC's C++ headers so that they do not interfere with
+               ;; the ones we are attempting to build.
+               (setenv "CPLUS_INCLUDE_PATH"
+                       (string-join
+                        (cons (string-append
+                               (assoc-ref inputs "libcxx") "/include/c++/v1")
+                              (delete (string-append gcc "/include/c++")
+                                      (string-split (getenv "CPLUS_INCLUDE_PATH")
+                                                    #\:)))
+                        ":"))
+               (format #true
+                       "environment variable `CPLUS_INCLUDE_PATH' changed to ~a~%"
+                       (getenv "CPLUS_INCLUDE_PATH")))))
+         (add-after 'install 'install-headers
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((include-dir (string-append
+                                 (assoc-ref outputs "out") "/include")))
+               (install-file "../libcxxabi/include/__cxxabi_config.h" include-dir)
+               (install-file "../libcxxabi/include/cxxabi.h" include-dir)))))))
+    (native-inputs
+     `(("clang" ,clang-6)
+       ("llvm" ,llvm-6)
+       ("libcxx" ,libcxx-6)))
+    (home-page "https://libcxxabi.llvm.org")
+    (synopsis "C++ standard library support")
+    (description
+     "This package provides an implementation of low level support for a
+standard C++ library.")
+    (license license:expat)))
 
 (define-public libclc
   (package
