@@ -20378,8 +20378,8 @@ byte slices for sets of ASCII characters or bytes.")
     (home-page "https://github.com/jni-rs/jni-rs")
     (synopsis "Rust bindings to the JNI")
     (description
-     "This package provides Rust bindings to the JNI.  It permits to
-implement native Java methods for JVM and Android in Rust, call Java
+     "This package provides Rust bindings to the JNI.  It
+implements native Java methods for JVM and Android in Rust, call Java
 code from Rust, embed JVM in Rust applications and use any Java
 libraries.")
     (license (list license:expat license:asl2.0))))
