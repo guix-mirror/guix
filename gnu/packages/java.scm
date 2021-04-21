@@ -1749,6 +1749,9 @@ IcedTea build harness.")
          ((guix build ant-build-system)
           (guix build syscalls)
           ,@%gnu-build-system-modules)
+
+         #:disallowed-references ((,icedtea-7 "jdk"))
+
          ,@(substitute-keyword-arguments (package-arguments icedtea-7)
              ((#:modules modules)
               `((guix build utils)
@@ -1902,6 +1905,9 @@ new Date();"))
        #:imported-modules
        ((guix build syscalls)
         ,@%gnu-build-system-modules)
+
+       #:disallowed-references (,icedtea-8 (,icedtea-8 "jdk"))
+
        #:phases
        (modify-phases %standard-phases
          (add-after 'patch-source-shebangs 'fix-java-shebangs
@@ -2097,7 +2103,9 @@ new Date();"))
                        "--with-libjpeg=system"
                        "--with-native-debug-symbols=zipped"
                        (string-append "--prefix=" (assoc-ref outputs "out")))
-               #t))))))
+               #t))))
+       ((#:disallowed-references _ '())
+        `(,openjdk9 (,openjdk9 "jdk")))))
     (native-inputs
      `(("openjdk9" ,openjdk9)
        ("openjdk9:jdk" ,openjdk9 "jdk")
@@ -2127,6 +2135,9 @@ new Date();"))
     (arguments
      `(#:imported-modules ((guix build syscalls)
                            ,@%gnu-build-system-modules)
+
+       #:disallowed-references (,openjdk10 (,openjdk10 "jdk"))
+
        #:tests? #f; requires jtreg
        ;; TODO package jtreg
        #:configure-flags
