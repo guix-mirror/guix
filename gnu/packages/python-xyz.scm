@@ -8915,7 +8915,7 @@ These should be used in preference to using a backslash for line continuation.
 correct string literal concatenation.
 
 It looks for style problems like implicitly concatenated string literals on
-the same line (which can be introduced by the code formating tool Black), or
+the same line (which can be introduced by the code formatting tool Black), or
 unnecessary plus operators for explicit string literal concatenation.")
     (license license:expat)))
 
