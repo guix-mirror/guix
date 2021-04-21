@@ -7764,7 +7764,7 @@ after buffer changes.")
     (description
      "RealGUD is a modular, extensible GNU Emacs front-end for interacting
 with external debuggers.  It integrates various debuggers such as gdb, pdb,
-ipdb, jdb, lldb, bashdb, zshdb, etc. and allows to visually step code in the
+ipdb, jdb, lldb, bashdb, zshdb, etc. and allows visually steping through code in the
 sources.  Unlike GUD, it also supports running multiple debug sessions in
 parallel.")
     (license license:gpl3+)))
