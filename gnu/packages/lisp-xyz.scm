@@ -16034,3 +16034,35 @@ lQuery.")
 
 (define-public cl-clip
   (sbcl-package->cl-source-package sbcl-clip))
+
+(define-public sbcl-pathname-utils
+  (let ((commit "70f517e44e13a38e0c8f296613236376d679fa8f")
+        (revision "1"))
+    (package
+      (name "sbcl-pathname-utils")
+      (version (git-version "1.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shinmera/pathname-utils")
+               (commit commit)))
+         (file-name (git-file-name "pathname-utils" version))
+         (sha256
+          (base32 "1zm4bf6gajpgmhr7zwf7600zlaf8fs1fcyzabqsh2ma2crkgqdxq"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("parachute" ,sbcl-parachute)))
+      (home-page "https://shinmera.github.io/pathname-utils/")
+      (synopsis "Collection of utilities to help with pathname operations")
+      (description
+       "This package provides a Common Lisp system a with collection of common
+tests and operations to help handling pathnames.  It does not actually deal in
+handling the accessing of files on the underlying system however.")
+      (license license:zlib))))
+
+(define-public ecl-pathname-utils
+  (sbcl-package->ecl-package sbcl-pathname-utils))
+
+(define-public cl-pathname-utils
+  (sbcl-package->cl-source-package sbcl-pathname-utils))
