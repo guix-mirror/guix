@@ -1792,10 +1792,13 @@ new Date();"))
                  (add-after 'unpack 'patch-jni-libs
                    ;; Hardcode dynamically loaded libraries.
                    (lambda _
-                     (use-modules (srfi srfi-1))
+                     (define remove
+                       (@ (srfi srfi-1) remove))
+
                      (define (icedtea-or-openjdk? path)
                        (or (string-contains path "openjdk")
                            (string-contains path "icedtea")))
+
                      (let* ((library-path (remove icedtea-or-openjdk?
                                                   (search-path-as-string->list
                                                    (getenv "LIBRARY_PATH"))))
@@ -1937,10 +1940,13 @@ new Date();"))
          (add-after 'unpack 'patch-jni-libs
            ;; Hardcode dynamically loaded libraries.
            (lambda _
-             (use-modules (srfi srfi-1))
+             (define remove
+               (@ (srfi srfi-1) remove))
+
              (define (icedtea-or-openjdk? path)
                (or (string-contains path "openjdk")
                    (string-contains path "icedtea")))
+
              (let* ((library-path (remove icedtea-or-openjdk?
                                           (search-path-as-string->list
                                            (getenv "LIBRARY_PATH"))))
@@ -2151,10 +2157,13 @@ new Date();"))
          (add-after 'unpack 'patch-jni-libs
            ;; Hardcode dynamically loaded libraries.
            (lambda _
-             (use-modules (srfi srfi-1))
+             (define remove
+               (@ (srfi srfi-1) remove))
+
              (define (icedtea-or-openjdk? path)
                (or (string-contains path "openjdk")
                    (string-contains path "icedtea")))
+
              (let* ((library-path (remove icedtea-or-openjdk?
                                           (search-path-as-string->list
                                            (getenv "LIBRARY_PATH"))))
