@@ -2532,7 +2532,7 @@ properly display animated cursors.")
     (synopsis "Bindings to libwayland-egl")
     (description
      "This crate provides bindings for OpenGL/Vulkan support for
-Wayland client apps.  It allows to create an EGLSurface from any
+Wayland client apps.  It creates an EGLSurface from any
 WlSurface, which can then play the role of the base surface for
 initializing an OpenGL or Vulkan context.")
     (license license:expat)))
