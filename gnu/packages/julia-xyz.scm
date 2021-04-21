@@ -525,7 +525,7 @@ stressing the robustness of differentiation tools.")
      `(("julia-staticarrays" ,julia-staticarrays)))
     (home-page "https://github.com/JuliaArrays/FillArrays.jl")
     (synopsis "Lazy matrix representation")
-    (description "This package allows to lazily represent matrices filled with
+    (description "This package lazily represents matrices filled with
 a single entry, as well as identity matrices.  This package exports the
 following types: @code{Eye}, @code{Fill}, @code{Ones}, @code{Zeros},
 @code{Trues} and @code{Falses}.")
