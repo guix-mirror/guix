@@ -17074,7 +17074,7 @@ or expressions with SVG rounded box labels that are fully customizable.")
       (build-system emacs-build-system)
       (home-page "https://github.com/rougier/emacs-svg-icon")
       (synopsis "Emacs library to create SVG icons on the fly")
-      (description "This library allows to create SVG icons by parsing remote
+      (description "This library allows creating SVG icons by parsing remote
 collections whose license are compatibles with Emacs.  The default size of an
 icon is exactly 2x1 characters such that it can be inserted inside a text
 without disturbing alignment.")
