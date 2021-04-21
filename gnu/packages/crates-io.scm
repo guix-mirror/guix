@@ -27707,7 +27707,7 @@ synchronization primitives.")
     (home-page "")
     (synopsis "Parse zoneinfo files from the IANA database")
     (description
-     "This packages parses zoneinfo files from the IANA database.")
+     "This package parses zoneinfo files from the IANA database.")
     (license license:expat)))
 
 (define-public rust-partial-io-0.3
