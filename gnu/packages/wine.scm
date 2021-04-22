@@ -532,6 +532,13 @@ integrated into the main branch.")
                (copy-file (string-append wine32 "/bin/.wine-preloader-real")
                           (string-append out "/bin/wine-preloader"))
                #t)))
+         (add-after 'install 'copy-wine32-libraries
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((wine32 (assoc-ref %build-inputs "wine-staging"))
+                    (out (assoc-ref %outputs "out")))
+               (copy-recursively (string-append wine32 "/lib/wine32")
+                                 (string-append out "/lib/wine32"))
+               #t)))
          (add-after 'compress-documentation 'copy-wine32-manpage
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((wine32 (assoc-ref %build-inputs "wine-staging"))
