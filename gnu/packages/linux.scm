@@ -2271,7 +2271,7 @@ configuration files that can be used for specific audio hardware.")
     (inputs
      `(("alsa-ucm-conf" ,alsa-ucm-conf)
        ("alsa-topology-conf" ,alsa-topology-conf)))
-    (home-page "https://www.alsa-project.org/")
+    (home-page "https://www.alsa-project.org/wiki/Main_Page")
     (synopsis "The Advanced Linux Sound Architecture libraries")
     (description
      "The Advanced Linux Sound Architecture (ALSA) provides audio and
