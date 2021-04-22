@@ -2235,13 +2235,13 @@ configuration files that can be used for specific audio hardware.")
     (name "alsa-lib")
     (version "1.2.4")
     (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "ftp://ftp.alsa-project.org/pub/lib/alsa-lib-"
-                   version ".tar.bz2"))
-             (sha256
-              (base32
-               "1xq8d48wfy59qw4x7383j32n8j5njndw5hcgnmlg9pvclphlnmgp"))))
+              (method url-fetch)
+              (uri (string-append
+                    "ftp://ftp.alsa-project.org/pub/lib/alsa-lib-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "1xq8d48wfy59qw4x7383j32n8j5njndw5hcgnmlg9pvclphlnmgp"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath="
