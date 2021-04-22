@@ -1273,7 +1273,7 @@ as RetroArch.")
 (define-public retroarch
   (package
     (name "retroarch")
-    (version "1.9.0")
+    (version "1.9.1")
     (source
      (origin
        (method git-fetch)
@@ -1282,7 +1282,7 @@ as RetroArch.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1n0dcv85vqrdr79psnf009hi4r2mvsgsjbghrrc9pm5g7ywwwcvp"))
+        (base32 "0cacb2m3p4fsxxbwh4h5q75mczyp0x56i2gc99pdkz1a4434zfnh"))
        (patches
         (search-patches "retroarch-LIBRETRO_DIRECTORY.patch"))))
     (build-system gnu-build-system)
@@ -1319,6 +1319,7 @@ as RetroArch.")
                        '("--enable-neon" "--enable-floathard")
                        '())
                  (string-append "--prefix=" out)
+                 "--disable-git_version" ; we use release version
                  ;; Non-free software are available through the core updater,
                  ;; disable it.  See <https://issues.guix.gnu.org/38360>.
                  "--disable-update_cores"
