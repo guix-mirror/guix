@@ -144,6 +144,7 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages vim)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages wget)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (srfi srfi-1)
@@ -15060,6 +15061,87 @@ biological processes.  SBML is useful for models of metabolism, cell
 signaling, and more.  It continues to be evolved and expanded by an
 international community.")
     (license license:lgpl2.1+)))
+
+(define-public kraken2
+  (package
+    (name "kraken2")
+    (version "2.1.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/DerrickWood/kraken2")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0h7a7vygd7y5isbrnc6srwq6xj1rmyd33pm8mmcgfkmlxlg5vkg3"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #false                  ; there are none
+       #:make-flags (list "-C" "src"
+                          (string-append "KRAKEN2_DIR="
+                                         (assoc-ref %outputs "out") "/bin"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'install 'install-scripts
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((bin (string-append (assoc-ref outputs "out") "/bin"))
+                    (scripts (find-files "scripts" ".*"))
+                    (replacements `(("KRAKEN2_DIR" . ,bin)
+                                    ("VERSION" . ,,version))))
+               (mkdir-p bin)
+               (substitute* scripts
+                 (("#####=([^=]+)=#####" _ key)
+                  (or (assoc-ref replacements key)
+                      (error (format #false "unknown key: ~a~%" key)))))
+               (substitute* "scripts/kraken2"
+                 (("compression_program = \"bzip2\"")
+                  (string-append "compression_program = \""
+                                 (which "bzip2")
+                                 "\""))
+                 (("compression_program = \"gzip\"")
+                  (string-append "compression_program = \""
+                                 (which "gzip")
+                                 "\"")))
+               (substitute* '("scripts/download_genomic_library.sh"
+                              "scripts/download_taxonomy.sh"
+                              "scripts/16S_gg_installation.sh"
+                              "scripts/16S_silva_installation.sh"
+                              "scripts/16S_rdp_installation.sh")
+                 (("wget") (which "wget")))
+               (substitute* "scripts/mask_low_complexity.sh"
+                 (("which") (which "which")))
+               (substitute* '("scripts/mask_low_complexity.sh"
+                              "scripts/download_genomic_library.sh"
+                              "scripts/16S_silva_installation.sh")
+                 (("sed -e ")
+                  (string-append (which "sed") " -e ")))
+               (substitute* '("scripts/rsync_from_ncbi.pl"
+                              "scripts/16S_rdp_installation.sh"
+                              "scripts/16S_silva_installation.sh"
+                              "scripts/16S_gg_installation.sh"
+                              "scripts/download_taxonomy.sh"
+                              "scripts/download_genomic_library.sh")
+                 (("gunzip") (which "gunzip")))
+               (for-each (lambda (script)
+                           (chmod script #o555)
+                           (install-file script bin))
+                         scripts)))))))
+    (inputs
+     `(("gzip" ,gzip)
+       ("perl" ,perl)
+       ("sed" ,sed)
+       ("wget" ,wget)
+       ("which" ,which)))
+  (home-page "https://github.com/DerrickWood/kraken2")
+  (synopsis "Taxonomic sequence classification system")
+  (description "Kraken is a taxonomic sequence classifier that assigns
+taxonomic labels to DNA sequences.  Kraken examines the k-mers within a query
+sequence and uses the information within those k-mers to query a
+database. That database maps k-mers to the lowest common ancestor (LCA) of all
+genomes known to contain a given k-mer.")
+  (license license:expat)))
 
 (define-public r-signac
   (let ((commit "e0512d348adeda4a3f23a2e8f56d1fe09840e03c")
