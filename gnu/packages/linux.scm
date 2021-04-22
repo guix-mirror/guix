@@ -2246,7 +2246,31 @@ configuration files that can be used for specific audio hardware.")
     (arguments
      '(#:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath="
                                               (assoc-ref %outputs "out")
-                                              "/lib"))))
+                                              "/lib"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'pre-install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((ucm
+                     (string-append (assoc-ref inputs "alsa-ucm-conf")))
+                    (topology
+                     (string-append (assoc-ref inputs "alsa-topology-conf")))
+                    (alsa
+                     (string-append (assoc-ref outputs "out") "/share/alsa"))
+                    (ucm-share
+                     (string-append ucm "/share/alsa/ucm"))
+                    (ucm2-share
+                     (string-append ucm "/share/alsa/ucm2"))
+                    (topology-share
+                     (string-append topology "/share/alsa/topology")))
+               (mkdir-p alsa)
+               (symlink ucm-share (string-append alsa "/ucm"))
+               (symlink ucm2-share (string-append alsa "/ucm2"))
+               (symlink topology-share (string-append alsa "/topology")))
+             #t)))))
+    (inputs
+     `(("alsa-ucm-conf" ,alsa-ucm-conf)
+       ("alsa-topology-conf" ,alsa-topology-conf)))
     (home-page "https://www.alsa-project.org/")
     (synopsis "The Advanced Linux Sound Architecture libraries")
     (description
