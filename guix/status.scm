@@ -552,12 +552,16 @@ substitutes being downloaded."
                                        (download-start download)
                                        #:transferred transferred))))))
     (('substituter-succeeded item _ ...)
-     ;; If there are no jobs running, we already reported download completion
-     ;; so there's nothing left to do.
-     (unless (and (zero? (simultaneous-jobs status))
-                  (extended-build-trace-supported?))
-       (format port (success (G_ "substitution of ~a complete")) item)
-       (newline port)))
+     (when (extended-build-trace-supported?)
+       ;; If there are no jobs running, we already reported download completion
+       ;; so there's nothing left to do.
+       (unless (zero? (simultaneous-jobs status))
+         (format port (success (G_ "substitution of ~a complete")) item))
+
+       (when (and print-urls? (zero? (simultaneous-jobs status)))
+         ;; Leave a blank line after the "downloading ..." line and the
+         ;; progress bar (that's three lines in total).
+         (newline port))))
     (('substituter-failed item _ ...)
      (format port (failure (G_ "substitution of ~a failed")) item)
      (newline port))
