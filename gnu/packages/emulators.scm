@@ -1233,42 +1233,40 @@ emulation community.  It provides highly accurate emulation.")
     (license license:gpl2+)))
 
 (define-public libretro-lowresnx
-  (let ((commit "743ab43a6c4a13e0d5363b0d25ac12c7511c6581")
-        (revision "1"))
-    (package
-      (name "libretro-lowresnx")
-      (version (git-version "1.1" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/timoinutilis/lowres-nx")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0r15kb5p5s2jwky6zy4v1j9i95i4rz36p9wxg0g6xdjksf04b5cf"))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:tests? #f                    ; no tests
-         #:make-flags (list "-C" "platform/LibRetro"
-                            (string-append "CC=" ,(cc-for-target)))
-         #:phases
-         (modify-phases %standard-phases
-           (delete 'configure)          ; no configure script
-           (replace 'install
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (libretrodir (string-append out "/lib/libretro")))
-                 (install-file "platform/LibRetro/lowresnx_libretro.so"
-                               libretrodir)
-                 #t))))))
-      (home-page "https://lowresnx.inutilis.com/")
-      (synopsis "Libretro core for LowRES NX")
-      (description "LowRES NX is a simulated retro game console, which can be
+  (package
+    (name "libretro-lowresnx")
+    (version "1.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/timoinutilis/lowres-nx")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0b0vg3iz342dpkffvf7frsnqh8inj8yzi8550bsx8vnbpq5r2ay5"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                    ; no tests
+       #:make-flags (list "-C" "platform/LibRetro"
+                          (string-append "CC=" ,(cc-for-target)))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)          ; no configure script
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (libretrodir (string-append out "/lib/libretro")))
+               (install-file "platform/LibRetro/lowresnx_libretro.so"
+                             libretrodir)
+               #t))))))
+    (home-page "https://lowresnx.inutilis.com/")
+    (synopsis "Libretro core for LowRES NX")
+    (description "LowRES NX is a simulated retro game console, which can be
 programmed in the classic BASIC language.  This package provides a libretro
 core allowing the lowRES NX programs to be used with libretro frontends such
 as RetroArch.")
-      (license license:zlib))))
+    (license license:zlib)))
 
 (define-public retroarch
   (package
