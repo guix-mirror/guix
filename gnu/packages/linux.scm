@@ -2207,6 +2207,29 @@ configuration of audio input/output names and routing for specific audio
 hardware.")
     (license license:bsd-3)))
 
+(define-public alsa-topology-conf
+  (package
+    (name "alsa-topology-conf")
+    (version "1.2.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "ftp://ftp.alsa-project.org/pub/lib/" name "-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "01zdg6q4s6d01k39z96wi4vbhrfw1i2g4yi5dijwfk6a5vjfdq2m"))))
+    (build-system copy-build-system)
+    (arguments
+     '(#:install-plan
+       '(("topology" "share/alsa/topology"))))
+    (home-page "https://www.alsa-project.org/wiki/Main_Page")
+    (synopsis "The Advanced Linux Sound Architecture libraries")
+    (description
+     "This package contains Advanced Linux Sound Architecture topology
+configuration files that can be used for specific audio hardware.")
+    (license license:bsd-3)))
+
 (define-public alsa-lib
   (package
     (name "alsa-lib")
