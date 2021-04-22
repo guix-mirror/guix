@@ -16066,3 +16066,39 @@ handling the accessing of files on the underlying system however.")
 
 (define-public cl-pathname-utils
   (sbcl-package->cl-source-package sbcl-pathname-utils))
+
+(define-public sbcl-terrable
+  (let ((commit "e4fe23ffa08e8d53a8168105b413861da59cc786")
+        (revision "1"))
+    (package
+     (name "sbcl-terrable")
+     (version (git-version "1.0.0" revision commit))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Shirakumo/terrable")
+             (commit commit)))
+       (file-name (git-file-name "terrable" version))
+       (sha256
+        (base32 "0pnqflgz410zydc1ivwnd8hcl24bgr7x12yjzr7g4lq3ibc8y97b"))))
+     (build-system asdf-build-system/sbcl)
+     (inputs
+      `(("documentation-utils" ,sbcl-documentation-utils)
+        ("fast-io" ,sbcl-fast-io)
+        ("ieee-floats" ,sbcl-ieee-floats)
+        ("static-vectors" ,sbcl-static-vectors)
+        ("trivial-garbage" ,sbcl-trivial-garbage)))
+     (home-page "https://shirakumo.github.io/terrable/")
+     (synopsis "Parser library for Terragen TER terrain files")
+     (description
+      "This package provides Common Lisp support for reading the Terragen
+@code{.TER} format.  The format specification can be found at
+@url{https://planetside.co.uk/wiki/index.php?title=Terragen_.TER_Format}")
+     (license license:zlib))))
+
+(define-public ecl-terrable
+  (sbcl-package->ecl-package sbcl-terrable))
+
+(define-public cl-terrable
+  (sbcl-package->cl-source-package sbcl-terrable))
