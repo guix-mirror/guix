@@ -33,7 +33,7 @@
   #:use-module (guix http-client)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix memoization)
-  #:use-module (htmlprag)               ;from Guile-Lib
+  #:autoload   (htmlprag) (html->sxml)            ;from Guile-Lib
   #:autoload   (guix git) (update-cached-checkout)
   #:autoload   (gcrypt hash) (open-hash-port hash-algorithm sha256)
   #:autoload   (guix serialization) (write-file)
