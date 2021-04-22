@@ -22,7 +22,7 @@
 ;;; Copyright © 2017, 2018, 2020 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.com>
 ;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
-;;; Copyright © 2017, 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017, 2019, 2021 Mathieu Othacehe <othacehe@gnu.org>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 nee <nee-git@hidamari.blue>
@@ -146,6 +146,7 @@
   #:use-module (gnu packages selinux)
   #:use-module (gnu packages swig)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system copy)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
   #:use-module (guix build-system meson)
@@ -2180,6 +2181,31 @@ trace of all the system calls made by a another process/program.")
 an executed process and the signals received by that process.  It can also
 intercept and print the system calls executed by the program.")
     (license license:gpl2+)))
+
+(define-public alsa-ucm-conf
+  (package
+    (name "alsa-ucm-conf")
+    (version "1.2.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "ftp://ftp.alsa-project.org/pub/lib/" name "-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "0h6kzi1cfdqyxp4pwpqh5wb89c8s9wrgix315bvamffwfxf56frc"))))
+    (build-system copy-build-system)
+    (arguments
+     '(#:install-plan
+       '(("ucm" "share/alsa/ucm")
+         ("ucm2" "share/alsa/ucm2"))))
+    (home-page "https://www.alsa-project.org/wiki/Main_Page")
+    (synopsis "The Advanced Linux Sound Architecture Use Case Manager")
+    (description
+     "This package contains Advanced Linux Sound Architecture Use Case Manager
+configuration of audio input/output names and routing for specific audio
+hardware.")
+    (license license:bsd-3)))
 
 (define-public alsa-lib
   (package
