@@ -160,4 +160,22 @@
                 (close-pipe pipe)
                 str)))))))
 
+(unless c-compiler
+  (test-skip 1))
+(test-equal "elf-dynamic-info-soname"
+  "libfoo.so.2"
+  (call-with-temporary-directory
+   (lambda (directory)
+     (with-directory-excursion directory
+       (call-with-output-file "t.c"
+         (lambda (port)
+           (display "// empty file" port)))
+       (invoke c-compiler "t.c"
+               "-shared" "-Wl,-soname,libfoo.so.2")
+       (let* ((dyninfo (elf-dynamic-info
+                       (parse-elf (call-with-input-file "a.out"
+                                    get-bytevector-all))))
+              (soname  (elf-dynamic-info-soname dyninfo)))
+	 soname)))))
+
 (test-end "gremlin")
