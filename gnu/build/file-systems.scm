@@ -644,16 +644,13 @@ if DEVICE does not contain a NTFS file system."
                      (loop parts))))))))))
 
 (define (ENOENT-safe proc)
-  "Wrap the one-argument PROC such that ENOENT errors are caught and lead to a
-warning and #f as the result."
+  "Wrap the one-argument PROC such that ENOENT, EIO, and ENOMEDIUM errors are
+caught and lead to a warning and #f as the result."
   (lambda (device)
     (catch 'system-error
       (lambda ()
         (proc device))
       (lambda args
-        ;; When running on the hand-made /dev,
-        ;; 'disk-partitions' could return partitions for which
-        ;; we have no /dev node.  Handle that gracefully.
         (let ((errno (system-error-errno args)))
           (cond ((= ENOENT errno)
                  (format (current-error-port)
@@ -671,11 +668,10 @@ warning and #f as the result."
 (define (partition-field-reader read field)
   "Return a procedure that takes a device and returns the value of a FIELD in
 the partition superblock or #f."
-  (let ((read (ENOENT-safe read)))
-    (lambda (device)
-      (let ((sblock (read device)))
-        (and sblock
-             (field sblock))))))
+  (lambda (device)
+    (let ((sblock (read device)))
+      (and sblock
+           (field sblock)))))
 
 (define (read-partition-field device partition-field-readers)
   "Returns the value of a FIELD in the partition superblock of DEVICE or #f. It
@@ -742,11 +738,14 @@ partition field reader that returned a value."
 (define (partition-predicate reader =)
   "Return a predicate that returns true if the FIELD of partition header that
 was READ is = to the given value."
-  (lambda (expected)
-    (lambda (device)
-      (let ((actual (reader device)))
-        (and actual
-             (= actual expected))))))
+  ;; When running on the hand-made /dev, 'disk-partitions' could return
+  ;; partitions for which we have no /dev node.  Handle that gracefully.
+  (let ((reader (ENOENT-safe reader)))
+    (lambda (expected)
+      (lambda (device)
+        (let ((actual (reader device)))
+          (and actual
+               (= actual expected)))))))
 
 (define partition-label-predicate
   (partition-predicate read-partition-label string=?))
