@@ -1570,7 +1570,7 @@ modules for building a Wayland compositor.")
 (define-public waybar
   (package
     (name "waybar")
-    (version "0.9.5")
+    (version "0.9.7")
     (source
      (origin
        (method git-fetch)
@@ -1579,7 +1579,7 @@ modules for building a Wayland compositor.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1kzrgqaclfk6gcwhknxn28xl74gm5swipgn8kk8avacb4nsw1l9q"))))
+        (base32 "17cn4d3dx92v40jd9vl41smp8hh3gf5chd1j2f7l1lrpfpnllg5x"))))
     (build-system meson-build-system)
     (inputs `(("date" ,date)
               ("fmt" ,fmt)
