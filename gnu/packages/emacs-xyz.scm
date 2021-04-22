@@ -318,6 +318,29 @@ using geiser.")
 a generic Scheme interaction mode for the GNU Emacs editor.")
     (license license:expat)))
 
+(define-public emacs-vc-hgcmd
+  (package
+    (name "emacs-vc-hgcmd")
+    (version "1.13")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/muffinmad/emacs-vc-hgcmd")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "14c2brvw6vnf1h3lbpap4jh5d7mjnzxrbny4jk77832v09mj2ria"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/muffinmad/emacs-vc-hgcmd")
+    (synopsis "Version control (VC) backend for the Mercurial command server")
+    (description
+     "This package provides an Emacs VC backend to work with Mercurial
+repositories through the
+@uref{https://www.mercurial-scm.org/wiki/CommandServer,Mercurial command
+server}.  The main advantage compared to @code{vc-hg} is speed.")
+    (license license:gpl3+)))
+
 (define-public emacs-hyperbole
   (package
     (name "emacs-hyperbole")
