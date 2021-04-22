@@ -880,6 +880,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/bpftrace-disable-bfd-disasm.patch	\
   %D%/packages/patches/busybox-CVE-2021-28831.patch		\
   %D%/packages/patches/byobu-writable-status.patch		\
+  %D%/packages/patches/cairo-CVE-2018-19876.patch		\
+  %D%/packages/patches/cairo-CVE-2020-35492.patch		\
   %D%/packages/patches/calibre-no-updates-dialog.patch		\
   %D%/packages/patches/calibre-remove-test-sqlite.patch		\
   %D%/packages/patches/calibre-remove-test-unrar.patch		\

@@ -142,7 +142,10 @@ tools have full access to view and control running applications.")
         (string-append "https://cairographics.org/releases/cairo-"
                        version ".tar.xz"))
        (sha256
-        (base32 "0c930mk5xr2bshbdljv005j3j8zr47gqmkry3q6qgvqky6rjjysy"))))
+        (base32 "0c930mk5xr2bshbdljv005j3j8zr47gqmkry3q6qgvqky6rjjysy"))
+       (patches (search-patches
+		 "cairo-CVE-2018-19876.patch"
+		 "cairo-CVE-2020-35492.patch"))))
     (build-system glib-or-gtk-build-system)
     (outputs '("out" "doc"))
     (arguments
