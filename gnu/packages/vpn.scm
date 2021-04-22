@@ -293,14 +293,13 @@ and probably others.")
 (define-public openconnect-sso
   (package
     (name "openconnect-sso")
-    (version "0.7.2")
+    (version "0.7.3")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "openconnect-sso" version))
         (sha256
-         (base32
-          "0nb40zfpp38mz6389y0qvrr4mmak53swpg7578cldnhnk0g15qni"))))
+         (base32 "065s5c8q80jh0psdw7694nlabwpra7aw6yc4jlgsc9vxx8rx2na1"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f  ; Tests not included, building from git requires poetry.
