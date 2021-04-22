@@ -1,0 +1,36 @@
+This patch fixes a bug exposed when running the libiberty test suite on
+big-endian machines.
+
+Original bug report:
+https://sourceware.org/bugzilla/show_bug.cgi?id=27751
+Follow-ups:
+https://gcc.gnu.org/bugzilla/show_bug.cgi?id=100177
+https://gcc.gnu.org/pipermail/gcc-patches/2021-April/568314.html
+
+---
+ libiberty/rust-demangle.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/libiberty/rust-demangle.c b/libiberty/rust-demangle.c
+index 6fd8f6a4db0..848563fa3c3 100644
+--- a/libiberty/rust-demangle.c
++++ b/libiberty/rust-demangle.c
+@@ -1253,9 +1253,12 @@ demangle_const_char (struct rust_demangler *rdm)
+   else if (value == '\n')
+     PRINT ("\\n");
+   else if (value > ' ' && value < '~')
+-    /* Rust also considers many non-ASCII codepoints to be printable, but
+-       that logic is not easily ported to C. */
+-    print_str (rdm, (char *) &value, 1);
++    {
++      /* Rust also considers many non-ASCII codepoints to be printable, but
++      that logic is not easily ported to C. */
++      char c = value;
++      print_str (rdm, &c, 1);
++    }
+   else
+     {
+       PRINT ("\\u{");
+-- 
+2.31.1
+

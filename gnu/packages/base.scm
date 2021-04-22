@@ -507,7 +507,8 @@ change.  GNU make offers many powerful extensions over the standard utility.")
             (sha256
              (base32
               "18ypqr5y48vxqg9mkz1c47798jp1xb1d4vfpmfq8vkihkvkx4jsv"))
-            (patches (search-patches "binutils-loongson-workaround.patch"))))
+            (patches (search-patches "binutils-libiberty-endianness-bug.patch"
+                                     "binutils-loongson-workaround.patch"))))
    (build-system gnu-build-system)
 
    ;; TODO: Add dependency on zlib + those for Gold.
