@@ -2091,7 +2091,8 @@ Driver.")
     (arguments
      `(#:configure-flags
        ;; The tests require ODBC backends to be installed.
-       (list "-DNANODBC_DISABLE_TESTS=ON")
+       (list "-DNANODBC_DISABLE_TESTS=ON"
+             "-DBUILD_SHARED_LIBS=ON")
        #:tests? #false))
     (inputs
      `(("unixodbc" ,unixodbc)))
