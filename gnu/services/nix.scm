@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2019, 2020 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2019, 2020, 2021 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Peng Mei Yu <i@pengmeiyu.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -19,6 +19,7 @@
 
 (define-module (gnu services nix)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages package-management)
   #:use-module (gnu services base)
   #:use-module (gnu services configuration)
@@ -121,7 +122,8 @@ GID."
                     (format #t "sandbox = ~a~%" (if #$sandbox "true" "false"))
                     ;; config.nix captures store file names.
                     (format #t "build-sandbox-paths = ~{~a ~}~%"
-                            (append internal-sandbox-paths
+                            (append (list (string-append "/bin/sh=" #$bash-minimal "/bin/sh"))
+                                    internal-sandbox-paths
                                     '#$build-sandbox-items))
                     (for-each (cut display <>) '#$extra-config)))))))))))
 
