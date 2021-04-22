@@ -221,7 +221,7 @@ project (but it is usable outside of the Gnome platform).")
 (define-public libxlsxwriter
   (package
     (name "libxlsxwriter")
-    (version "1.0.2")
+    (version "1.0.3")
     (source
      (origin
        (method git-fetch)
@@ -230,7 +230,7 @@ project (but it is usable outside of the Gnome platform).")
          (commit (string-append "RELEASE_" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1snjka62mdqkj9r34kw8wxw2144imb58qx3iahaibg0vxmjjjhsg"))
+        (base32 "14c5rgx87nhzasr0j7mcfr1w7ifz0gmdiqy2xq59di5xvcdrpxpv"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled minizip source
