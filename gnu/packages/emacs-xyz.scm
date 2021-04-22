@@ -27041,6 +27041,26 @@ Features:
 @end itemize\n")
     (license license:gpl3+)))
 
+(define-public emacs-shell-command+
+  (package
+    (name "emacs-shell-command+")
+    (version "2.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://elpa.gnu.org/packages/"
+                                  "shell-command+-" version ".tar"))
+              (sha256
+               (base32 "1jyrnv89989bi03m5h8dj0cllsw3rvyxkiyfrh9v6gpxjwfy8lmq"))))
+    (build-system emacs-build-system)
+    (home-page "http://elpa.gnu.org/packages/shell-command+.html")
+    (synopsis "Extended Emacs @code{shell-command}")
+    (description
+     "Shell-command+ is a @code{shell-command} substitute that extends the
+regular Emacs command with several features.  You can for example count all
+the lines in a buffer with @code{> wc -l}, or delete all lower case letters in
+the selected region with @code{| tr -d a-z}.")
+    (license license:gpl3+)))
+
 (define-public emacs-shell-pop
   (let ((commit "4b4394037940a890a313d715d203d9ead2d156a6")
         (revision "0"))
