@@ -1173,7 +1173,7 @@ enabled.")
 (define-public fennel
   (package
     (name "fennel")
-    (version "0.8.1")
+    (version "0.9.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1182,7 +1182,7 @@ enabled.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0n0xkgzlrwpppm5vbvn84mq418xhmyakk9hakdmjv1lk2dfdq2g7"))
+                "07qgycf5cxm9zcc4fgpgvplg95ndavh3ynpdjpvzkikzbnyj7xia"))
               (modules '((guix build utils)))
               (snippet
                '(begin
