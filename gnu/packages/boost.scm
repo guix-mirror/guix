@@ -7,7 +7,7 @@
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018, 2019, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -44,6 +44,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages hurd)
   #:use-module (gnu packages icu4c)
+  #:use-module (gnu packages llvm)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
   #:use-module (gnu packages shells)
@@ -201,6 +202,91 @@
 across a broad spectrum of applications.")
     (license (license:x11-style "https://www.boost.org/LICENSE_1_0.txt"
                                 "Some components have other similar licences."))))
+
+;; Sadly, this is needed for irods.  It won't link with 1.69 or later.
+(define-public boost-for-irods
+  (package
+    (inherit boost)
+    (name "boost-for-irods")
+    (version "1.68.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/boost/boost/" version "/boost_"
+                    (string-map (lambda (x) (if (eq? x #\.) #\_ x)) version)
+                    ".tar.bz2"))
+              (sha256
+               (base32
+                "1dyqsr9yb01y0nnjdq9b8q5s2kvhxbayk34832k5cpzn7jy30qbz"))))
+    (build-system gnu-build-system)
+    (properties `((hidden? . #true)))
+    (inputs
+     `(("icu4c" ,icu4c)
+       ("libcxx" ,libcxx+libcxxabi-6)
+       ("libcxxabi" ,libcxxabi-6)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("clang" ,clang-6)
+       ("perl" ,perl)
+       ("tcsh" ,tcsh)))
+    (arguments
+     `(#:tests? #f
+       #:make-flags
+       (list "threading=multi" "link=shared"
+             "cxxflags=-stdlib=libc++"
+             "--without-python"
+
+             ;; Set the RUNPATH to $libdir so that the libs find each other.
+             (string-append "linkflags=-stdlib=libc++ -Wl,-rpath="
+                            (assoc-ref %outputs "out") "/lib"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'bootstrap)
+         (add-after 'set-paths 'adjust-CPLUS_INCLUDE_PATH
+           (lambda* (#:key native-inputs inputs #:allow-other-keys)
+             (let ((gcc (assoc-ref (or native-inputs inputs) "gcc")))
+               (setenv "CPLUS_INCLUDE_PATH"
+                       (string-join
+                        (cons (string-append (assoc-ref inputs "libcxx")
+                                             "/include/c++/v1")
+                              ;; Hide GCC's C++ headers so that they do not interfere with
+                              ;; the Clang headers.
+                              (delete (string-append gcc "/include/c++")
+                                      (string-split (getenv "CPLUS_INCLUDE_PATH")
+                                                    #\:)))
+                        ":"))
+               (format #true
+                       "environment variable `CPLUS_INCLUDE_PATH' changed to ~a~%"
+                       (getenv "CPLUS_INCLUDE_PATH")))))
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((icu (assoc-ref inputs "icu4c"))
+                   (out (assoc-ref outputs "out"))
+                   (sh  (string-append (assoc-ref inputs "bash") "/bin/sh")))
+               (substitute* '("libs/config/configure"
+                              "libs/spirit/classic/phoenix/test/runtest.sh"
+                              "tools/build/src/engine/execunix.c"
+                              "tools/build/src/engine/Jambase"
+                              "tools/build/src/engine/jambase.c")
+                 (("/bin/sh") sh))
+
+               (setenv "SHELL" (which "sh"))
+               (setenv "CONFIG_SHELL" (which "sh"))
+
+               (invoke "./bootstrap.sh"
+                       (string-append "--prefix=" out)
+                       ;; Auto-detection looks for ICU only in traditional
+                       ;; install locations.
+                       (string-append "--with-icu=" icu)
+                       "--with-toolset=clang"))))
+         (replace 'build
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (apply invoke "./b2"
+                    (format #f "-j~a" (parallel-job-count))
+                    make-flags)))
+         (replace 'install
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (apply invoke "./b2" "install" make-flags))))))))
 
 (define-public boost-with-python2
   (package/inherit boost
