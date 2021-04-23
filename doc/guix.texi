@@ -31267,7 +31267,7 @@ The Guix Build Coordinator package to use.
 @item @code{user} (default: @code{"guix-build-coordinator-queue-builds"})
 The system user to run the service as.
 
-@item @code{coordinator} (default: @code{"http://localhost:8745"})
+@item @code{coordinator} (default: @code{"http://localhost:8746"})
 The URI to use when connecting to the coordinator.
 
 @item @code{systems} (default: @code{#f})

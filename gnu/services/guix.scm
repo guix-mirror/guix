@@ -205,7 +205,7 @@
   (user                 guix-build-coordinator-queue-builds-configuration-user
                         (default "guix-build-coordinator-queue-builds"))
   (coordinator          guix-build-coordinator-queue-builds-coordinator
-                        (default "http://localhost:8745"))
+                        (default "http://localhost:8746"))
   (systems              guix-build-coordinator-queue-builds-configuration-systems
                         (default #f))
   (systems-and-targets
