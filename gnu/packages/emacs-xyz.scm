@@ -4920,6 +4920,27 @@ file).")
        "This package provides a macro that writes your namespaces for you.")
       (license license:gpl3+))))
 
+(define-public emacs-nameless
+  (package
+    (name "emacs-nameless")
+    (version "1.0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Malabarba/Nameless")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "107q1rximjnag9r9vgwh0iv687i3rsscbdnjc46f8l16j6vi4n7d"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/Malabarba/nameless")
+    (synopsis "Hide package namespace in your Emacs-lisp code")
+    (description
+     "This package provides a @code{nameless-mode} minor mode in which the
+package namespace prefix is ​​hidden by a colon.")
+    (license license:gpl2+)))
+
 (define-public emacs-evil-leader
   (package
     (name "emacs-evil-leader")
