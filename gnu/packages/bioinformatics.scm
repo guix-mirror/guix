@@ -7250,6 +7250,43 @@ clustering analysis, differential analysis, motif inference and exploration of
 single cell ATAC-seq sequencing data.")
     (license license:gpl3)))
 
+(define-public r-shinycell
+  (let ((commit
+         "aecbd56e66802f28e397f5ae1f19403aadd12163")
+        (revision "1"))
+    (package
+      (name "r-shinycell")
+      (version (git-version "2.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/SGDDNB/ShinyCell")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "13jn2ikmvljnzayk485g1mmq5abcp9m1b8n1djdb1agmn83zaki5"))))
+      (properties `((upstream-name . "ShinyCell")))
+      (build-system r-build-system)
+      (propagated-inputs
+       `(("r-data-table" ,r-data-table)
+         ("r-ggplot2" ,r-ggplot2)
+         ("r-glue" ,r-glue)
+         ("r-gridextra" ,r-gridextra)
+         ("r-hdf5r" ,r-hdf5r)
+         ("r-matrix" ,r-matrix)
+         ("r-r-utils" ,r-r-utils)
+         ("r-rcolorbrewer" ,r-rcolorbrewer)
+         ("r-readr" ,r-readr)
+         ("r-reticulate" ,r-reticulate)))
+      (home-page "https://github.com/SGDDNB/ShinyCell")
+      (synopsis "Shiny interactive web apps for single-cell data")
+      (description
+       "This package provides Shiny apps for interactive exploration of
+single-cell data.")
+      (license license:gpl3))))
+
 (define-public r-archr
   (let ((commit "46b519ffb6f73edf132497ac31650d19ef055dc1")
         (revision "1"))
