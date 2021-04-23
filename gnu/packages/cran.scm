@@ -28283,6 +28283,30 @@ convert JSON content to R objects.  This is an alternative to the @code{rjson}
 package.")
     (license license:bsd-3)))
 
+(define-public r-revgeo
+  (package
+    (name "r-revgeo")
+    (version "0.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "revgeo" version))
+       (sha256
+        (base32
+         "1ns7d1817475lriss6wwgvdm6lj760p40yxqaifla13c2xb73a55"))))
+    (properties `((upstream-name . "revgeo")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcurl" ,r-rcurl)
+       ("r-rjsonio" ,r-rjsonio)))
+    (home-page "https://cran.r-project.org/package=revgeo")
+    (synopsis "Reverse geocoding")
+    (description
+     "The @code{revgeo} procedure allows you to use the Photon geocoder for
+OpenStreetMap, Google Maps, and Bing to reverse geocode coordinate pairs with
+minimal hassle.")
+    (license license:gpl3+)))
+
 (define-public r-textplot
   (package
     (name "r-textplot")
