@@ -3618,10 +3618,7 @@ information tool.")
            (lambda _
              (substitute* "Makefile"
                (("pkg-config")
-                (or (which "pkg-config")
-                    (string-append ,(%current-target-system)
-                                   "-pkg-config"))))
-             #t)))
+                ,(pkg-config-for-target))))))
        #:make-flags
        (list
         (string-append "PREFIX="
