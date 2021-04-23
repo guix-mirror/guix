@@ -329,7 +329,9 @@
   #~(begin
       (use-modules (guix build utils))
 
-      (define %user (getpw "guix-build-coordinator"))
+      (define %user
+        (getpw #$(guix-build-coordinator-configuration-user
+                  config)))
 
       (chmod "/var/lib/guix-build-coordinator" #o755)
 
@@ -438,7 +440,9 @@
   #~(begin
       (use-modules (guix build utils))
 
-      (define %user (getpw "guix-build-coordinator-agent"))
+      (define %user
+        (getpw #$(guix-build-coordinator-agent-configuration-user
+                  config)))
 
       (mkdir-p "/var/log/guix-build-coordinator")
 
@@ -513,6 +517,10 @@
 (define (guix-build-coordinator-queue-builds-activation config)
   #~(begin
       (use-modules (guix build utils))
+
+      (define %user
+        (getpw #$(guix-build-coordinator-queue-builds-configuration-user
+                  config)))
 
       (mkdir-p "/var/log/guix-build-coordinator")
 
