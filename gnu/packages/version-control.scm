@@ -188,6 +188,9 @@ as well as the classic centralized workflow.")
       ("bash" ,bash-minimal)
       ("bash-for-tests" ,bash)
       ("gettext" ,gettext-minimal)
+      ;; To build the man pages from the git sources, we would need a dependency
+      ;; on a full XML tool chain, and building it actually takes ages.  So we
+      ;; use this lazy approach and use released tarball.
       ("git-manpages"
        ,(origin
           (method url-fetch)
