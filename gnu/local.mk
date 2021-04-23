@@ -297,6 +297,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/installers.scm			\
   %D%/packages/ipfs.scm			\
   %D%/packages/irc.scm  			\
+  %D%/packages/irods.scm  			\
   %D%/packages/iso-codes.scm			\
   %D%/packages/jami.scm				\
   %D%/packages/java.scm				\
