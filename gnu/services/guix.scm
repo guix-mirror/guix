@@ -506,7 +506,6 @@
                                       processed-commits-file))
                   #~()))
           #:user #$user
-          #:pid-file "/var/run/guix-build-coordinator-queue-builds/pid"
           #:environment-variables
           `(,(string-append
               "GUIX_LOCPATH=" #$glibc-utf8-locales "/lib/locale")
