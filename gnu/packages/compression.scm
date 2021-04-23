@@ -4,7 +4,7 @@
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
@@ -77,6 +77,7 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages llvm)
   #:use-module (gnu packages man)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages perl)
@@ -1178,6 +1179,54 @@ compared to the fastest mode of zlib, Snappy is an order of magnitude faster
 for most inputs, but the resulting compressed files are anywhere from 20% to
 100% bigger.")
     (license license:asl2.0)))
+
+;; We need this for irods.
+(define-public snappy-with-clang6
+  (package
+    (inherit snappy)
+    (name "snappy-with-clang")
+    ;; XXX 1.1.9 fails to build with clang with
+    ;; error: invalid output constraint '=@ccz' in asm
+    (version "1.1.8")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/google/snappy")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1j0kslq2dvxgkcxl1gakhvsa731yrcvcaipcp5k8k7ayicvkv9jv"))))
+    (arguments
+     `(#:configure-flags
+       '("-DBUILD_SHARED_LIBS=ON"
+         "-DCMAKE_CXX_COMPILER=clang++"
+         "-DCMAKE_CXX_FLAGS=-stdlib=libc++"
+         "-DCMAKE_EXE_LINKER_FLAGS=-lc++abi")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'set-paths 'adjust-CPLUS_INCLUDE_PATH
+           (lambda* (#:key native-inputs inputs #:allow-other-keys)
+             (let ((gcc (assoc-ref (or native-inputs inputs) "gcc")))
+               (setenv "CPLUS_INCLUDE_PATH"
+                       (string-join
+                        (cons* (string-append (assoc-ref inputs "libcxx+libcxxabi")
+                                              "/include/c++/v1")
+                               ;; Hide GCC's C++ headers so that they do not interfere with
+                               ;; the Clang headers.
+                               (delete (string-append gcc "/include/c++")
+                                       (string-split (getenv "CPLUS_INCLUDE_PATH")
+                                                     #\:)))
+                        ":"))
+               (format #true
+                       "environment variable `CPLUS_INCLUDE_PATH' changed to ~a~%"
+                       (getenv "CPLUS_INCLUDE_PATH"))))))))
+    (properties `((hidden? . #true)))
+    (native-inputs
+     `(("clang" ,clang-toolchain-6)))
+    (inputs
+     `(("libcxx+libcxxabi" ,libcxx+libcxxabi-6)
+       ("libcxxabi" ,libcxxabi-6)))))
 
 (define-public p7zip
   (package
