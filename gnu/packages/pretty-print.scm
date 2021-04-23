@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -41,6 +41,7 @@
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages gv)
+  #:use-module (gnu packages llvm)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -188,6 +189,52 @@ It can be used as a safe alternative to @code{printf} or as a fast alternative
 to @code{IOStreams}.")
     ;; The library is bsd-2, but documentation and tests include other licenses.
     (license (list bsd-2 bsd-3 psfl))))
+
+(define-public fmt-for-irods
+  (package
+    (inherit fmt)
+    (name "fmt-for-irods")
+    (version "6.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/fmtlib/fmt/releases/download/"
+                           version "/fmt-" version ".zip"))
+       (sha256
+        (base32 "1s1hxaby5byb07rgmrk4a0q11fxhz7b42khch7sp2qx974y0yrb3"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:tests? #f ; TODO: posix-mock-test segfaults
+       #:configure-flags
+       '("-DBUILD_SHARED_LIBS=ON"
+         "-DCMAKE_CXX_COMPILER=clang++"
+         "-DCMAKE_CXX_FLAGS=-stdlib=libc++"
+         "-DCMAKE_EXE_LINKER_FLAGS=-lc++abi")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'set-paths 'adjust-CPLUS_INCLUDE_PATH
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((gcc (assoc-ref inputs "gcc")))
+               (setenv "CPLUS_INCLUDE_PATH"
+                       (string-join
+                        (cons (string-append (assoc-ref inputs "libcxx")
+                                             "/include/c++/v1")
+                              ;; Hide GCC's C++ headers so that they do not interfere with
+                              ;; the Clang headers.
+                              (delete (string-append gcc "/include/c++")
+                                      (string-split (getenv "CPLUS_INCLUDE_PATH")
+                                                    #\:)))
+                        ":"))
+               (format #true
+                       "environment variable `CPLUS_INCLUDE_PATH' changed to ~a~%"
+                       (getenv "CPLUS_INCLUDE_PATH"))))))))
+    (properties `((hidden? . #true)))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (inputs
+     `(("libcxx" ,libcxx+libcxxabi-6)
+       ("libcxxabi" ,libcxxabi-6)
+       ("clang" ,clang-6)))))
 
 (define-public source-highlight
   (package
