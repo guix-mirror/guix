@@ -1096,6 +1096,7 @@ environments.")
                                          "guile-lib"
                                          "guile-lzlib"
                                          "guile-zlib"
+                                         "guile-sqlite3"
                                          "gnutls"
                                          ,@(if (hurd-target?)
                                                '()
