@@ -38,6 +38,7 @@
 ;;; Copyright © 2021 Léo Le Bouter <lle-bout@zaclys.net>
 ;;; Copyright © 2021 LibreMiami <packaging-guix@libremiami.org>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
+;;; Copyright © 2021 François J. <francois-oss@avalenn.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3083,3 +3084,36 @@ If several repos are related, it helps to see their status together.")
 makes a directory under a specific root directory (by default @file{~/ghq})
 using the remote repository URL's host and path.")
     (license license:expat)))
+
+(define-public git-filter-repo
+  (package
+    (name "git-filter-repo")
+    (version "2.29.0")
+    (source
+     (origin
+       ;; Use a release tarball instead of 'git-fetch' because it contains
+       ;; pre-compiled man-pages which are too hard to build in this context
+       ;; as it depends on Git's Makefile.
+       (method url-fetch)
+       (uri (string-append "https://github.com/newren/git-filter-repo/releases/"
+                           "download/v" version
+                           "/git-filter-repo-" version ".tar.xz"))
+       (sha256
+        (base32
+         "00nn7k9jqrybb762486fmigsnbcn9lbvimgpfvvarz4ikdp9y9pb"))))
+    (build-system copy-build-system)
+    (arguments
+     `(#:install-plan
+       '(("git-filter-repo" "libexec/git-core/")
+         ("Documentation/man1/" "share/man/man1")
+         ("/" "" #:include ()))))
+    (inputs `(("python" ,python)))                ;for the shebang
+    (home-page "https://github.com/newren/git-filter-repo")
+    (synopsis "Quickly rewrite Git repository history")
+    (description
+     "@command{git filter-repo} is a versatile tool for rewriting history,
+which roughly falls into the same space of tool like git filter-branch but
+with more capabilities.  @command{git filter-repo} is now recommended by the
+Git project instead of @command{git filter-branch}.")
+    (license (list license:expat ;; Main license.
+                   license:gpl2)))) ;; For test harness.
