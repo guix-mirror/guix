@@ -221,7 +221,11 @@ ROOT-PASSWORD, and USERS."
                           (choose-network-management-tool?
                            (lambda (service)
                              (string-contains service "DHCP")))
+                          (choose-misc-service?
+                           (lambda (service)
+                             (string-contains service "NTP")))
                           (choose-other-service? (const #f)))
+
   "Converse over PORT to choose services."
   (define desktop-environments '())
 
@@ -242,6 +246,11 @@ ROOT-PASSWORD, and USERS."
                      (items ,services))
      (null? desktop-environments)
      (find choose-network-management-tool? services))
+
+    ((checkbox-list (title "Console services") (text _)
+                    (items ,services))
+     (null? desktop-environments)
+     (filter choose-misc-service? services))
 
     ((checkbox-list (title "Printing and document services") (text _)
                     (items ,services))

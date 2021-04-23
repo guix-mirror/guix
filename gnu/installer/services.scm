@@ -3,6 +3,7 @@
 ;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2021 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2021 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -103,6 +104,13 @@
       (type 'networking)
       (packages '((specification->package "nss-certs")))
       (recommended? #t))
+
+     ;; Miscellaneous system administration services.
+     (system-service
+       (name (G_ "Network time service (NTP), to set the clock automatically"))
+       (type 'administration)
+       (recommended? #t)
+       (snippet '((service ntp-service-type))))
 
      ;; Network connectivity management.
      (system-service

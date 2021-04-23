@@ -3,6 +3,7 @@
 ;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2021 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2021 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -88,6 +89,27 @@ system.")
         (condition
          (&installer-step-abort)))))))
 
+(define (run-console-services-cbt-page)
+  "Run a page to select various system adminstration services for non-graphical
+systems."
+  (let ((items (filter (lambda (service)
+                         (eq? 'administration
+                              (system-service-type service)))
+                       %system-services)))
+    (run-checkbox-tree-page
+      #:title (G_ "Console services")
+      #:info-text (G_ "Select miscellaneous services to run on your \
+non-graphical system.")
+      #:items items
+      #:selection (map system-service-recommended? items)
+      #:item->text (compose G_ system-service-name)
+      #:checkbox-tree-height 5
+      #:exit-button-callback-procedure
+      (lambda ()
+        (raise
+          (condition
+            (&installer-step-abort)))))))
+
 (define (run-network-management-page)
   "Run a page to select among several network management methods."
   (let ((title (G_ "Network management")))
@@ -119,6 +141,7 @@ client may be enough for a server.")
     (append desktop
             (run-networking-cbt-page)
             (if (null? desktop)
-                (list (run-network-management-page))
+                (cons (run-network-management-page)
+                      (run-console-services-cbt-page))
                 '())
             (run-printing-services-cbt-page))))
