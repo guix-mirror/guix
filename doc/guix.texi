@@ -31155,6 +31155,15 @@ will use the current system it's running on as the default.
 @item @code{max-parallel-builds} (default: @code{1})
 The number of builds to perform in parallel.
 
+@item @code{max-1min-load-average} (default: @code{#f})
+Load average value to look at when considering starting new builds, if
+the 1 minute load average exceeds this value, the agent will wait before
+starting new builds.
+
+This will be unspecified if the value is @code{#f}, and the agent will
+use the number of cores reported by the system as the max 1 minute load
+average.
+
 @item @code{derivation-substitute-urls} (default: @code{#f})
 URLs from which to attempt to fetch substitutes for derivations, if the
 derivations aren't already available.
