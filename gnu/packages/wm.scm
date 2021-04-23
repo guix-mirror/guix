@@ -2222,7 +2222,7 @@ button is pressed on the root window.")
 (define-public xmenu
   (package
     (name "xmenu")
-    (version "4.4.1")
+    (version "4.5.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2231,7 +2231,7 @@ button is pressed on the root window.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1s70zvsaqnsjqs298vw3py0vcvia68xlks1wcz37pb88bwligz1x"))))
+                "0qgxkrv9jnnnf3px7zh0paf8xsr4bcpf0f2nq9zy012m214223hs"))))
     (build-system gnu-build-system)
     (inputs
      `(("libx11" ,libx11)
