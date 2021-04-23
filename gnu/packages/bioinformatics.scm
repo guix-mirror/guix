@@ -7601,6 +7601,64 @@ Perl and can be helpful if you want to filter, reformat, or trim your sequence
 data.  It also generates basic statistics for your sequences.")
     (license license:gpl3+)))
 
+(define-public shorah
+  (package
+    (name "shorah")
+    (version "1.99.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/cbg-ethz/shorah"
+                           "/releases/download/v" version
+                           "/shorah-" version ".tar.xz"))
+       (sha256
+        (base32
+         "158dir9qcqspknlnyfr9zwk41x48nrh5wcg10k2grh9cidp9daiq"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-test-wrapper
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+               (substitute* "examples/run_end2end_test"
+                 (("\\$\\{interpreter\\} ../\\$\\{testscript\\}")
+                  (string-append bin "/${testscript}"))))))
+         (delete 'check)
+         (add-after 'install 'wrap-programs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (site (string-append
+                           out "/lib/python"
+                           ,(version-major+minor
+                             (package-version python))
+                           "/site-packages"))
+                    (pythonpath (getenv "PYTHONPATH"))
+                    (script (string-append out "/bin/shorah")))
+               (chmod script #o555)
+               (wrap-program script `("PYTHONPATH" ":" prefix (,site ,pythonpath))))))
+         (add-after 'wrap-programs 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "make" "check")))))))
+    (inputs
+     `(("boost" ,boost)
+       ("htslib" ,htslib)
+       ("python" ,python)
+       ("python-biopython" ,python-biopython)
+       ("python-numpy" ,python-numpy)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "")
+    (synopsis "Short reads assembly into haplotypes")
+    (description
+     "ShoRAH is a project for the analysis of next generation sequencing data.
+It is designed to analyse genetically heterogeneous samples.  Its tools
+provide error correction, haplotype reconstruction and estimation of the
+frequency of the different genetic variants present in a mixed sample.")
+    (license license:gpl3+)))
+
 (define-public ruby-bio-kseq
   (package
     (name "ruby-bio-kseq")
