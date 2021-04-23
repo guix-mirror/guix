@@ -20,10 +20,12 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages backup)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
@@ -34,6 +36,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages logging)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages pretty-print)
   #:use-module (gnu packages python)
@@ -158,6 +161,107 @@
        ("clang" ,clang-toolchain-6)
        ("clang-runtime" ,clang-runtime-6)
        ("libcxx+libcxxabi" ,libcxx+libcxxabi-6)))
+    (home-page "https://irods.org")
+    (synopsis "Data management software")
+    (description "The Integrated Rule-Oriented Data System (iRODS) is data
+management software.  iRODS virtualizes data storage resources, so users can
+take control of their data, regardless of where and on what device the data is
+stored.")
+    (license license:bsd-3)))
+
+(define-public irods-client-icommands
+  (package
+    (name "irods-client-icommands")
+    (version "4.2.8")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/irods/irods_client_icommands")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "069n647p5ypf44gim8z26mwayg5lzgk7r9qyyqd8f9n7h0p4jxpn"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #false ; not clear how to run tests
+       #:configure-flags
+       (list
+        "-DCMAKE_BUILD_TYPE=Release"
+
+        ;; Configuration attempts to guess the distribution with Python.
+        "-DIRODS_LINUX_DISTRIBUTION_NAME=guix"
+        "-DIRODS_LINUX_DISTRIBUTION_VERSION_MAJOR=1"
+
+        (string-append "-DIRODS_DIR="
+                       (assoc-ref %build-inputs "irods")
+                       "/lib/irods/cmake")
+        (string-append "-DIRODS_EXTERNALS_FULLPATH_CLANG="
+                       (assoc-ref %build-inputs "clang"))
+        (string-append "-DIRODS_EXTERNALS_FULLPATH_CLANG_RUNTIME="
+                       (assoc-ref %build-inputs "clang-runtime"))
+        (string-append "-DIRODS_EXTERNALS_FULLPATH_CPPZMQ="
+                       (assoc-ref %build-inputs "cppzmq"))
+        (string-append "-DIRODS_EXTERNALS_FULLPATH_ARCHIVE="
+                       (assoc-ref %build-inputs "libarchive"))
+        (string-append "-DIRODS_EXTERNALS_FULLPATH_AVRO="
+                       (assoc-ref %build-inputs "avro-cpp"))
+        (string-append "-DIRODS_EXTERNALS_FULLPATH_BOOST="
+                       (assoc-ref %build-inputs "boost"))
+        (string-append "-DIRODS_EXTERNALS_FULLPATH_ZMQ="
+                       (assoc-ref %build-inputs "zeromq"))
+        (string-append "-DIRODS_EXTERNALS_FULLPATH_JSON="
+                       (assoc-ref %build-inputs "json"))
+        (string-append "-DIRODS_EXTERNALS_FULLPATH_FMT="
+                       (assoc-ref %build-inputs "fmt")))
+
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'unset-Werror ;
+           (lambda _                           ;
+             ;; -Werror kills the build due to a deprecation warning
+             (substitute* "CMakeLists.txt" ;
+               (("-Werror") ""))))
+         (add-after 'unpack 'remove-/usr-prefix
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("usr/") ""))))
+         (add-after 'set-paths 'adjust-CPLUS_INCLUDE_PATH
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((gcc (assoc-ref inputs  "gcc")))
+               (setenv "CPLUS_INCLUDE_PATH"
+                       (string-join
+                        (cons* (string-append (assoc-ref inputs "libcxx+libcxxabi")
+                                              "/include/c++/v1")
+                               (string-append (assoc-ref inputs "json")
+                                              "/include/nlohmann")
+                               ;; Hide GCC's C++ headers so that they do not interfere with
+                               ;; the Clang headers.
+                               (delete (string-append gcc "/include/c++")
+                                       (string-split (getenv "CPLUS_INCLUDE_PATH")
+                                                     #\:)))
+                        ":"))
+               (format #true
+                       "environment variable `CPLUS_INCLUDE_PATH' changed to ~a~%"
+                       (getenv "CPLUS_INCLUDE_PATH"))))))))
+    (inputs
+     `(("avro-cpp" ,avro-cpp-1.9-for-irods)
+       ("boost" ,boost-for-irods)
+       ("cppzmq" ,cppzmq)
+       ("fmt" ,fmt-for-irods)
+       ("irods" ,irods)
+       ("json" ,json-modern-cxx)
+       ("libarchive" ,libarchive)
+       ("libcxxabi" ,libcxxabi-6)     ; we need this for linking with -lc++abi
+       ("mit-krb5" ,mit-krb5)
+       ("openssl" ,openssl)
+       ("zeromq" ,zeromq)))
+    (native-inputs
+     `(("clang" ,clang-toolchain-6)
+       ("clang-runtime" ,clang-runtime-6)
+       ("libcxx+libcxxabi" ,libcxx+libcxxabi-6)
+       ("help2man" ,help2man)
+       ("which" ,which)))
     (home-page "https://irods.org")
     (synopsis "Data management software")
     (description "The Integrated Rule-Oriented Data System (iRODS) is data
