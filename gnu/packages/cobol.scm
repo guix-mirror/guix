@@ -67,7 +67,7 @@
                      (base32
                       "1yb1plmv4firfnbb119r2vh1hay221w1ya34nyz0qwsxppfr56hy"))))))
     (build-system gnu-build-system)
-    (home-page "https://savannah.gnu.org/projects/gnucobol/")
+    (home-page "https://www.gnu.org/software/gnucobol/")
     (synopsis "A modern COBOL compiler")
     (description "GnuCOBOL is a free, modern COBOL compiler.  GnuCOBOL
 implements a substantial part of the COBOL 85, COBOL 2002 and COBOL 2014
