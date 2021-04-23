@@ -150,6 +150,13 @@ if test "x$guix_cv_have_recent_guile_git" != "xyes"; then
   AC_MSG_ERROR([A recent Guile-Git could not be found; please install it.])
 fi
 
+dnl Check for the optional Guile-Lib.
+GUILE_MODULE_EXPORTS([have_guile_lib], [(htmlprag)], [%strict-tokenizer?])
+AM_CONDITIONAL([HAVE_GUILE_LIB], [test "x$have_guile_lib" = "xyes"])
+AM_COND_IF(HAVE_GUILE_LIB,,
+  [AC_MSG_WARN([The Guile-Lib requirement was not satisfied (>= 0.2.7);
+Some features such as the Go importer will not be usable.])])
+
 dnl Check for Guile-zlib.
 GUIX_CHECK_GUILE_ZLIB
 if test "x$guix_cv_have_recent_guile_zlib" != "xyes"; then
