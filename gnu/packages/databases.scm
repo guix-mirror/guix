@@ -101,6 +101,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lisp)
   #:use-module (gnu packages lisp-xyz)
+  #:use-module (gnu packages llvm)
   #:use-module (gnu packages logging)
   #:use-module (gnu packages man)
   #:use-module (gnu packages maths)
@@ -2106,6 +2107,43 @@ Driver.")
 a simpler and less verbose API for working with ODBC.  Common tasks should be
 easy, requiring concise and simple code.")
     (license license:expat)))
+
+(define-public nanodbc-for-irods
+  (package
+    (inherit nanodbc)
+    (arguments
+     `(#:tests? #false
+       #:configure-flags
+       '("-DBUILD_SHARED_LIBS=ON"
+         ;; The tests require ODBC backends to be installed.
+         "-DNANODBC_DISABLE_TESTS=ON"
+         "-DCMAKE_CXX_COMPILER=clang++"
+         "-DCMAKE_CXX_FLAGS=-stdlib=libc++"
+         "-DCMAKE_EXE_LINKER_FLAGS=-lc++abi")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'set-paths 'adjust-CPLUS_INCLUDE_PATH
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((gcc (assoc-ref inputs "gcc")))
+               (setenv "CPLUS_INCLUDE_PATH"
+                       (string-join
+                        (cons (string-append (assoc-ref inputs "libcxx")
+                                             "/include/c++/v1")
+                              ;; Hide GCC's C++ headers so that they do not interfere with
+                              ;; the Clang headers.
+                              (delete (string-append gcc "/include/c++")
+                                      (string-split (getenv "CPLUS_INCLUDE_PATH")
+                                                    #\:)))
+                        ":"))
+               (format #true
+                       "environment variable `CPLUS_INCLUDE_PATH' changed to ~a~%"
+                       (getenv "CPLUS_INCLUDE_PATH"))))))))
+    (properties `((hidden? . #true)))
+    (inputs
+     `(("unixodbc" ,unixodbc)
+       ("libcxx" ,libcxx+libcxxabi-6)
+       ("libcxxabi" ,libcxxabi-6)
+       ("clang" ,clang-6)))))
 
 (define-public unqlite
   (package
