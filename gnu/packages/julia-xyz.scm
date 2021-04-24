@@ -648,6 +648,29 @@ functions (or any callable object, really) using forward mode automatic
 differentiation (AD).")
     (license license:expat)))
 
+(define-public julia-gumbo
+  (package
+    (name "julia-gumbo")
+    (version "0.8.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaWeb/Gumbo.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1g22dv3v7caakspv3pdahnqn937fzzsg9y87rj72hid9g8lxl1gm"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-abstracttrees" ,julia-abstracttrees)
+       ("julia-gumbo-jll" ,julia-gumbo-jll)))
+    (home-page "https://github.com/JuliaWeb/Gumbo.jl")
+    (synopsis "Julia wrapper around Google's gumbo C library for parsing HTML")
+    (description "@code{Gumbo.jl} is a Julia wrapper around Google's gumbo
+library for parsing HTML.")
+    (license license:expat)))
+
 (define-public julia-gumbo-jll
   (package
     (name "julia-gumbo-jll")
