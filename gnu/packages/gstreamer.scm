@@ -793,6 +793,7 @@ par compared to the rest.")
        (uri
         (string-append "https://gstreamer.freedesktop.org/src/"
                        name "/" name "-" version ".tar.xz"))
+       (patches (search-patches "gst-plugins-ugly-fix-out-of-bound-reads.patch"))
        (sha256
         (base32 "1nwbcv5yaib3d8icvyja3zf6lyjf5zf1hndbijrhj8j7xlia0dx3"))))
     (build-system meson-build-system)
