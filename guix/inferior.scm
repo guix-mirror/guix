@@ -90,6 +90,7 @@
             inferior-package-native-search-paths
             inferior-package-transitive-native-search-paths
             inferior-package-search-paths
+            inferior-package-replacement
             inferior-package-provenance
             inferior-package-derivation
 
@@ -461,6 +462,27 @@ package."
 
 (define inferior-package-transitive-native-search-paths
   (cut %inferior-package-search-paths <> 'package-transitive-native-search-paths))
+
+(define (inferior-package-replacement package)
+  "Return the replacement for PACKAGE.  This will either be an inferior
+package, or #f."
+  (match (inferior-package-field
+          package
+          '(compose (match-lambda
+                      ((? package? package)
+                       (let ((id (object-address package)))
+                         (hashv-set! %package-table id package)
+                         (list id
+                               (package-name package)
+                               (package-version package))))
+                      (#f #f))
+                    package-replacement))
+    (#f #f)
+    ((id name version)
+     (inferior-package (inferior-package-inferior package)
+                       name
+                       version
+                       id))))
 
 (define (inferior-package-provenance package)
   "Return a \"provenance sexp\" for PACKAGE, an inferior package.  The result
