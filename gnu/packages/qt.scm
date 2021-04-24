@@ -7,7 +7,7 @@
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Quiliro <quiliro@fsfla.org>
-;;; Copyright © 2017, 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
@@ -143,14 +143,14 @@
 (define-public qt5ct
   (package
     (name "qt5ct")
-    (version "1.1")
+    (version "1.2")
     (source
      (origin
        (method url-fetch)
        (uri
         (string-append "mirror://sourceforge/qt5ct/qt5ct-" version ".tar.bz2"))
        (sha256
-        (base32 "1lnx4wqk87lbr6lqc64w5g5ppjjv75kq2r0q0bz9gfpryzdw8xxg"))))
+        (base32 "0bl7dc03b7vm435khkr932ybslsbq1nfajd936zlc1sxdmpg1qqx"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; No target
