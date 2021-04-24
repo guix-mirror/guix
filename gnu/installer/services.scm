@@ -111,6 +111,10 @@
        (type 'administration)
        (recommended? #t)
        (snippet '((service ntp-service-type))))
+     (system-service
+       (name (G_ "GPM mouse daemon, to use the mouse on the console"))
+       (type 'administration)
+       (snippet '((service gpm-service-type))))
 
      ;; Network connectivity management.
      (system-service
