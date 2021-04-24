@@ -27774,6 +27774,27 @@ commands.  Additional optional enhancements can be provided externally by
 complementary packages.")
     (license license:gpl3+)))
 
+(define-public emacs-wisp-mode
+  (package
+    (name "emacs-wisp-mode")
+    (version "0.2.9")
+    (source
+     (origin
+       (method hg-fetch)
+       (uri (hg-reference
+             (url "https://hg.sr.ht/~arnebab/wisp")
+             (changeset (string-append "wisp-mode-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1xdzyj3yqzvdg0vrllp9wi8cswpa89i0gmiz22a25brw4qy185ar"))))
+    (build-system emacs-build-system)
+    (home-page "https://www.draketo.de/software/wisp")
+    (synopsis "Syntax highlighting and indentation support for Wisp files")
+    (description
+     "This package provides @code{wisp-mode}, an Emacs major mode for Wisp
+files, providing syntax highlighting and indentation rules.")
+    (license license:gpl3+)))
+
 (define-public emacs-ivy-hydra
   (package
     (name "emacs-ivy-hydra")
