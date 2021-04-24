@@ -1170,6 +1170,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/grub-verifiers-Blocklist-fallout-cleanup.patch \
   %D%/packages/patches/gspell-dash-test.patch			\
   %D%/packages/patches/gst-plugins-good-fix-test.patch		\
+  %D%/packages/patches/gst-plugins-good-CVE-2021-3497.patch	\
+  %D%/packages/patches/gst-plugins-good-CVE-2021-3498.patch	\
   %D%/packages/patches/guile-1.8-cpp-4.5.patch			\
   %D%/packages/patches/guile-2.2-skip-oom-test.patch            \
   %D%/packages/patches/guile-2.2-skip-so-test.patch             \
