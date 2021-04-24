@@ -476,21 +476,21 @@ output), and Binutils.")
               ("libc-debug" ,glibc "debug")
               ("libc-static" ,glibc "static")))))
 
-(define-public llvm-11
+(define-public llvm-12
   (package
     (name "llvm")
-    (version "11.0.0")
+    (version "12.0.0")
     (source
      (origin
       (method url-fetch)
       (uri (llvm-uri "llvm" version))
       (sha256
        (base32
-        "0s94lwil98w7zb7cjrbnxli0z7gklb312pkw74xs1d6zk346hgwi"))))
+        "0l4b79gwfvxild974aigcq1yigypjsk2j5p59syhl6ksd744gp29"))))
     (build-system cmake-build-system)
     (outputs '("out" "opt-viewer"))
     (native-inputs
-     `(("python" ,python-2) ;bytes->str conversion in clang>=3.7 needs python-2
+     `(("python" ,python)
        ("perl"   ,perl)))
     (inputs
      `(("libffi" ,libffi)))
@@ -537,6 +537,45 @@ front-ends derived from GCC 4.0.1.  A new front-end for the C family of
 languages is in development.  The compiler infrastructure includes mirror sets
 of programming tools as well as libraries with equivalent functionality.")
     (license license:asl2.0)))  ;with LLVM exceptions, see LICENSE.txt
+
+(define-public clang-runtime-12
+  (clang-runtime-from-llvm
+   llvm-12
+   "0d444qihq9jhqnfv003cr704v363va72zl6qaw2algj1c85cva45"))
+
+(define-public clang-12
+  (clang-from-llvm llvm-12 clang-runtime-12
+                   "1vd9rhhrd8ghdg111lac7w8by71y9l14yh5zxfijsm6lj4p4avp2"
+                   #:patches '("clang-11.0-libc-search-path.patch")
+                   #:tools-extra
+                   (origin
+                     (method url-fetch)
+                     (uri (llvm-uri "clang-tools-extra"
+                                    (package-version llvm-12)))
+                     (patches
+                      (search-patches "clang-12-tools-extra-directory.patch"))
+                     (sha256
+                      (base32
+                       "0p3dzr0qa7mar83y66xa5m5apynf6ia0lsdsq6axwnm64ysy0hdd")))))
+
+(define-public clang-toolchain-12
+  (make-clang-toolchain clang-12))
+
+(define-public llvm-11
+  (package
+    (inherit llvm-12)
+    (version "11.0.0")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (llvm-uri "llvm" version))
+      (sha256
+       (base32
+        "0s94lwil98w7zb7cjrbnxli0z7gklb312pkw74xs1d6zk346hgwi"))))
+    (native-inputs
+     `(;; TODO: Switch to Python 3 in the next rebuild cycle.
+       ("python" ,python-2)
+       ("perl"   ,perl)))))
 
 (define-public clang-runtime-11
   (clang-runtime-from-llvm
