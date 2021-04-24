@@ -1509,7 +1509,7 @@ modules for building a Wayland compositor.")
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("scdoc" ,scdoc)
                      ("wayland-protocols" ,wayland-protocols)))
-    (home-page "https://github.com/swaywm/sway")
+    (home-page "https://github.com/swaywm/swayidle")
     (synopsis "Idle management daemon for Wayland compositors")
     (description "Swayidle is a idle management daemon for Wayland compositors.")
     (license license:expat))) ; MIT license
