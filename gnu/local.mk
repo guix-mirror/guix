@@ -1171,6 +1171,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gspell-dash-test.patch			\
   %D%/packages/patches/gst-libav-64channels-stack-corruption.patch	\
   %D%/packages/patches/gst-plugins-bad-fix-overflow.patch	\
+  %D%/packages/patches/gst-plugins-base-fix-id3v2-invalid-read.patch	\
   %D%/packages/patches/gst-plugins-good-fix-test.patch		\
   %D%/packages/patches/gst-plugins-good-CVE-2021-3497.patch	\
   %D%/packages/patches/gst-plugins-good-CVE-2021-3498.patch	\

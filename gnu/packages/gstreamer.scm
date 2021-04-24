@@ -527,6 +527,7 @@ This package provides the core library and elements.")
       (method url-fetch)
       (uri (string-append "https://gstreamer.freedesktop.org/src/" name "/"
                           name "-" version ".tar.xz"))
+      (patches (search-patches "gst-plugins-base-fix-id3v2-invalid-read.patch"))
       (sha256
        (base32
         "1b05kg46azrxxvq42c71071lfsnc34pw4vynnkczdqi6g0gzn16x"))))
