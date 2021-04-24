@@ -51,6 +51,29 @@ implement FFTs (such as @code{FFTW.jl} or @code{FastTransforms.jl}) extend the
 types/functions defined in AbstractFFTs.")
     (license license:expat)))
 
+(define-public julia-abstracttrees
+  (package
+    (name "julia-abstracttrees")
+    (version "0.3.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaCollections/AbstractTrees.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "16is5n2qa69cci34vfazxsa7ik6q0hbnnqrbrhkq8frh142f1xs8"))))
+    (build-system julia-build-system)
+    (home-page "https://juliacollections.github.io/AbstractTrees.jl/stable/")
+    (synopsis "Abstract Julia interfaces for working with trees")
+    (description "This Julia package provides several utilities for working
+with tree-like data structures.  Most importantly, it defines the
+@code{children} method that any package that contains such a data structure
+may import and extend in order to take advantage of any generic tree algorithm
+in this package.")
+    (license license:expat)))
+
 (define-public julia-adapt
   (package
     (name "julia-adapt")
