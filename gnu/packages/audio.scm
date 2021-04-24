@@ -21,7 +21,7 @@
 ;;; Copyright © 2019, 2021 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019, 2021 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
-;;; Copyright © 2019 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2019, 2021 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019, 2020 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2019 Christopher Lemmer Webber <cwebber@dustycloud.org>
@@ -78,6 +78,7 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnunet) ; libmicrohttpd
   #:use-module (gnu packages gperf)
+  #:use-module (gnu packages groff)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
@@ -107,6 +108,7 @@
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages telephony)
   #:use-module (gnu packages linphone)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages valgrind)
   #:use-module (gnu packages video)
@@ -5226,3 +5228,50 @@ while still staying in time.")
     (description "Butt is a tool to stream audio to a ShoutCast or
 Icecast server.")
     (license license:gpl2+)))
+
+(define-public siggen
+  (package
+    (name "siggen")
+    (version "2.3.10")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/bleskodev/siggen")
+             (commit "a407611b59d59c7770bbe62ba9b8e9a948cf3210")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0szhgfd9kddr6qsz0imp0x66jjn6ry236f35vjl82ivc1v2bllcb"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list (string-append "INSDIR=" %output "/bin")
+                          (string-append "MANDIR=" %output "/share/man"))
+       #:tests? #f                      ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         ;; Patch misc.c to prevent a segfault.
+         (add-after 'unpack 'patch-segfault
+           (lambda _
+             (substitute* "misc.c"
+               (("#include <stdio.h>\n" all)
+                (string-append all "#include <string.h>\n")))))
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key make-flags outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (for-each (lambda (dir)
+                           (mkdir-p (string-append out dir)))
+                         (list "/bin" "/share/man/man1" "/share/man/man5"))
+               (apply invoke "make" "sysinstall" make-flags)))))))
+    (inputs
+     `(("ncurses" ,ncurses)))
+    (native-inputs
+     `(("groff" ,groff-minimal)         ; for nroff
+       ("util-linux" ,util-linux)))     ; for col
+    (home-page "https://github.com/bleskodev/siggen")
+    (synopsis "Signal generation tools")
+    (description "siggen is a set of tools for imitating a laboratory signal
+generator, generating audio signals out of Linux's /dev/dsp audio
+device.  There is support for mono and/or stereo and 8 or 16 bit samples.")
+    (license license:gpl2)))
