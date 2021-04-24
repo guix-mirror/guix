@@ -6850,7 +6850,7 @@ the MTP device as a file system.")
 (define-public procenv
   (package
    (name "procenv")
-   (version "0.51")
+   (version "0.55")
    (source
     (origin
      (method git-fetch)
@@ -6859,9 +6859,8 @@ the MTP device as a file system.")
             (commit version)))
      (file-name (git-file-name name version))
      (sha256
-      (base32 "1ilrsw1rc85w29mkbkmm5n5w427gapv43yrjzvkb4kc9xhscgdjn"))))
+      (base32 "13fnr4gfj2xlxghw93m5gsxzlwzv3s6jv9hja0w0pb23hlncbmhy"))))
    (build-system gnu-build-system)
-   (arguments `(#:configure-flags '("--disable-silent-rules")))
    (native-inputs
     `(("pkg-config" ,pkg-config)
 
