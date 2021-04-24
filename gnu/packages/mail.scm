@@ -3660,7 +3660,7 @@ operators and scripters.")
 (define-public alpine
   (package
     (name "alpine")
-    (version "2.24")
+    (version "2.24.1")
     (source
      (origin
        (method git-fetch)
@@ -3673,7 +3673,7 @@ operators and scripters.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0d5ybnsv29gs8krl66db56avmssq28jlg0qj5i1wka05ncc3740d"))
+        (base32 "0dvp6m9xdxycc2lh4cbp6wvq0bkqmmkzs4c4aqsa321p7y03vs9q"))
        (modules '((guix build utils)))
        (snippet
         '(begin
