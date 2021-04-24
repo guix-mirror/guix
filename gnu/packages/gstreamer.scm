@@ -851,6 +851,7 @@ think twice about shipping them.")
         (string-append
          "https://gstreamer.freedesktop.org/src/" name "/"
          name "-" version ".tar.xz"))
+       (patches (search-patches "gst-libav-64channels-stack-corruption.patch"))
        (sha256
         (base32 "0jbzams9ggk3sq9ywv4gsl9rghyn203l2582m6l5c1sz9ka9m5in"))))
     (build-system meson-build-system)
