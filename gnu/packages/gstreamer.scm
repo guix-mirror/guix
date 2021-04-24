@@ -681,6 +681,7 @@ model to base your own plug-in on, here it is.")
               (method url-fetch)
               (uri (string-append "https://gstreamer.freedesktop.org/src/"
                                   name "/" name "-" version ".tar.xz"))
+              (patches (search-patches "gst-plugins-bad-fix-overflow.patch"))
               (sha256
                (base32
                 "06ildd4rl6cynirv3p00d2ddf5is9svj4i7mkahldzhq24pq5mca"))))
