@@ -24,7 +24,8 @@
   #:use-module (guix build-system julia)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages maths)
-  #:use-module (gnu packages tls))
+  #:use-module (gnu packages tls)
+  #:use-module (gnu packages web))
 
 (define-public julia-abstractffts
   (package
@@ -645,6 +646,45 @@ digits (bits) after the decimal (radix) point.")
 gradients, Jacobians, Hessians, and higher-order derivatives of native Julia
 functions (or any callable object, really) using forward mode automatic
 differentiation (AD).")
+    (license license:expat)))
+
+(define-public julia-gumbo-jll
+  (package
+    (name "julia-gumbo-jll")
+    (version "0.10.1+1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaBinaryWrappers/Gumbo_jll.jl")
+             (commit (string-append "Gumbo-v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "00a182x5hfpjzyvrxdn8wh4h67q899p5dzqp19a5s22si4g41k76"))))
+    (build-system julia-build-system)
+    (arguments
+     '(#:tests? #f ; no runtests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'override-binary-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((gumbo (string-append (assoc-ref inputs "gumbo-parser"))))
+               (for-each
+                (lambda (wrapper)
+                  (substitute* wrapper
+                    (("(const libgumbo = )\"(.*)\"" all const libname)
+                     (string-append const "\"" gumbo "/lib/" libname "\"\n"))
+                    (("(global artifact_dir =).*" all m)
+                     (string-append m " \"" gumbo "\""))))
+                ;; There's a Julia file for each platform, override them all
+                (find-files "src/wrappers/" "\\.jl$"))))))))
+    (inputs
+     `(("gumbo-parser" ,gumbo-parser)))
+    (propagated-inputs
+     `(("julia-jllwrappers" ,julia-jllwrappers)))
+    (home-page "https://github.com/JuliaBinaryWrappers/Gumbo_jll.jl")
+    (synopsis "Gumbo HTML parsing library wrappers")
+    (description "This package provides a wrapper for Gumbo HTML parsing library.")
     (license license:expat)))
 
 (define-public julia-http
