@@ -554,10 +554,18 @@ main()
     umask 0022
     tmp_path="$(mktemp -t -d guix.XXX)"
 
-    guix_get_bin_list "${GNU_URL}"
-    guix_get_bin "${GNU_URL}" "${BIN_VER}" "$tmp_path"
+    if [ -z "${GUIX_BINARY_FILE_NAME}" ]; then
+        guix_get_bin_list "${GNU_URL}"
+        guix_get_bin "${GNU_URL}" "${BIN_VER}" "$tmp_path"
+        GUIX_BINARY_FILE_NAME=${BIN_VER}.tar.xz
+    else
+        if ! [[ $GUIX_BINARY_FILE_NAME =~ $ARCH_OS ]]; then
+            _err "$ARCH_OS not in ${GUIX_BINARY_FILE_NAME}; aborting"
+        fi
+        _msg "Using manually provided binary ${GUIX_BINARY_FILE_NAME}"
+    fi
 
-    sys_create_store "${BIN_VER}.tar.xz" "${tmp_path}"
+    sys_create_store "${GUIX_BINARY_FILE_NAME}" "${tmp_path}"
     sys_create_build_user
     sys_enable_guix_daemon
     sys_authorize_build_farms
