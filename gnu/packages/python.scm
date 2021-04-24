@@ -107,7 +107,6 @@
 (define-public python-2.7
   (package
     (name "python2")
-    (replacement python-2.7/fixed)
     (version "2.7.17")
     (source
      (origin
@@ -122,7 +121,8 @@
                                "python-2.7-site-prefixes.patch"
                                "python-2.7-source-date-epoch.patch"
                                "python-2.7-adjust-tests.patch"
-                               "python-cross-compile.patch"))
+                               "python-cross-compile.patch"
+                               "python-2.7-CVE-2021-3177.patch"))
       (modules '((guix build utils)))
       (snippet
        '(begin
@@ -351,14 +351,6 @@ data types.")
     (properties '((cpe-name . "python")))
     (license license:psfl)))
 
-(define python-2.7/fixed
-  (package
-    (inherit python-2.7)
-    (source (origin
-              (inherit (package-source python-2.7))
-              (patches (append (search-patches "python-2.7-CVE-2021-3177.patch")
-                               (origin-patches (package-source python-2.7))))))))
-
 ;; Current 2.x version.
 (define-public python-2 python-2.7)
 
@@ -373,7 +365,6 @@ data types.")
 (define-public python-3.8
   (package (inherit python-2)
     (name "python")
-    (replacement python-3.8/fixed)
     (version "3.8.2")
     (source (origin
               (method url-fetch)
@@ -381,6 +372,7 @@ data types.")
                                   version "/Python-" version ".tar.xz"))
               (patches (search-patches
                         "python-CVE-2020-26116.patch"
+                        "python-3.8-CVE-2021-3177.patch"
                         "python-3-fix-tests.patch"
                         "python-3.8-fix-tests.patch"
                         "python-3-deterministic-build-info.patch"
@@ -530,14 +522,6 @@ data types.")
             (files (list (string-append "lib/python"
                                         (version-major+minor version)
                                         "/site-packages"))))))))
-
-(define python-3.8/fixed
-  (package
-    (inherit python-3.8)
-    (source (origin
-              (inherit (package-source python-3.8))
-              (patches (append (search-patches "python-3.8-CVE-2021-3177.patch")
-                               (origin-patches (package-source python-3.8))))))))
 
 (define-public python-3.9
   (package (inherit python-3.8)

@@ -125,11 +125,12 @@ tools have full access to view and control running applications.")
   (package
    (name "cairo")
    (version "1.16.0")
-   (replacement cairo/fixed)
    (source (origin
             (method url-fetch)
             (uri (string-append "https://cairographics.org/releases/cairo-"
                                 version ".tar.xz"))
+            (patches (search-patches "cairo-CVE-2018-19876.patch"
+                                     "cairo-CVE-2020-35492.patch"))
             (sha256
              (base32
               "0c930mk5xr2bshbdljv005j3j8zr47gqmkry3q6qgvqky6rjjysy"))))
@@ -175,15 +176,6 @@ antialiased text rendering.  All drawing operations can be transformed by any
 affine transformation (scale, rotation, shear, etc.).")
    (license license:lgpl2.1) ; or Mozilla Public License 1.1
    (home-page "https://cairographics.org/")))
-
-(define cairo/fixed
-  (package
-    (inherit cairo)
-    (source (origin
-              (inherit (package-source cairo))
-              (patches (append (search-patches "cairo-CVE-2018-19876.patch"
-                                               "cairo-CVE-2020-35492.patch")
-                               (origin-patches (package-source cairo))))))))
 
 (define-public cairo-sans-poppler
   ;; Variant used to break the dependency cycle between Poppler and Cairo.
@@ -567,12 +559,12 @@ highlighting and other features typical of a source code editor.")
   (package
    (name "gdk-pixbuf")
    (version "2.40.0")
-   (replacement gdk-pixbuf/fixed)
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
                                 (version-major+minor version)  "/"
                                 name "-" version ".tar.xz"))
+            (patches (search-patches "gdk-pixbuf-CVE-2020-29385.patch"))
             (sha256
              (base32
               "1rnlx9yfw970maxi2x6niaxmih5la11q1ilr7gzshz2kk585k0hm"))))
@@ -623,15 +615,6 @@ highlighting and other features typical of a source code editor.")
 in the GNOME project.")
    (license license:lgpl2.0+)
    (home-page "https://developer.gnome.org/gdk-pixbuf/")))
-
-(define gdk-pixbuf/fixed
-  (package
-    (inherit gdk-pixbuf)
-    (source (origin
-              (inherit (package-source gdk-pixbuf))
-              (patches
-               (append (search-patches "gdk-pixbuf-CVE-2020-29385.patch")
-                       (origin-patches (package-source gdk-pixbuf))))))))
 
 ;; To build gdk-pixbuf with SVG support, we need librsvg, and librsvg depends
 ;; on gdk-pixbuf, so this new varibale.  Also, librsvg adds 90MiB to the

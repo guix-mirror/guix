@@ -3221,10 +3221,10 @@ the GNOME desktop environment.")
               (uri (string-append "mirror://gnome/sources/" name "/"
                                   (version-major+minor version)  "/"
                                   name "-" version ".tar.xz"))
+              (patches (search-patches "libcroco-CVE-2020-12825.patch"))
               (sha256
                (base32
                 "1m110rbj5d2raxcdp4iz0qp172284945awrsbdlq99ksmqsc4zkn"))))
-    (replacement libcroco/fixed)
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -3242,21 +3242,6 @@ XML/CSS rendering engine.")
 
     ;; LGPLv2.1-only.
     (license license:lgpl2.1)))
-
-(define libcroco/fixed
-  (package
-    (inherit libcroco)
-    (name "libcroco")
-    (version "0.6.13")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
-                                  (version-major+minor version)  "/"
-                                  name "-" version ".tar.xz"))
-              (sha256
-               (base32
-                "1m110rbj5d2raxcdp4iz0qp172284945awrsbdlq99ksmqsc4zkn"))
-              (patches (search-patches "libcroco-CVE-2020-12825.patch"))))))
 
 (define-public libgsf
   (package
