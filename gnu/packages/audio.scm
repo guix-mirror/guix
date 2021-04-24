@@ -407,7 +407,7 @@ by MusicIP.")
 (define-public libtimidity
   (package
     (name "libtimidity")
-    (version "0.2.6")
+    (version "0.2.7")
     (source
      (origin
        (method url-fetch)
@@ -415,7 +415,7 @@ by MusicIP.")
         (string-append "https://sourceforge.net/projects/" name "/files/"
                        name "/" version "/" name "-" version ".tar.gz"))
        (sha256
-        (base32 "0p2px0m907gi1zpdr0l9adq25jl89j85c11ag9s2g4yc6n1nhgfm"))))
+        (base32 "0sif6lxa058b1mg19zwjm8rl2sg8cg0443k4dgi65clz0jy7qi16"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))       ; XXX: LibTiMidity could not be initialised
