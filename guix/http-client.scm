@@ -214,15 +214,14 @@ returning."
         ;; Inherit the HTTP proxying property from P.
         (set-http-proxy-port?! buffer (http-proxy-port? p))
 
-        (unless (false-if-networking-error
-                 (begin
-                   (for-each (cut write-request <> buffer) batch)
-                   (put-bytevector p (get))
-                   (force-output p)
-                   #t))
-          ;; If PORT becomes unusable, open a fresh connection and retry.
-          (close-port p)                          ; close the broken port
-          (connect #f requests result)))
+        ;; Swallow networking errors that could occur due to connection reuse
+        ;; and the like; they will be handled down the road when trying to
+        ;; read responses.
+        (false-if-networking-error
+         (begin
+           (for-each (cut write-request <> buffer) batch)
+           (put-bytevector p (get))
+           (force-output p))))
 
       ;; Now start processing responses.
       (let loop ((sent      batch)
