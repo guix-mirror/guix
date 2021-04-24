@@ -45,7 +45,7 @@
                 #:select (uri-abbreviation nar-uri-abbreviation
                           (open-connection-for-uri
                            . guix:open-connection-for-uri)))
-  #:autoload   (gnutls) (error/invalid-session)
+  #:autoload   (gnutls) (error/invalid-session error/again error/interrupted)
   #:use-module (guix progress)
   #:use-module ((guix build syscalls)
                 #:select (set-thread-name))
@@ -417,7 +417,14 @@ server certificates."
         (if (or (and (eq? key 'system-error)
                      (= EPIPE (system-error-errno `(,key ,@args))))
                 (and (eq? key 'gnutls-error)
-                     (eq? (first args) error/invalid-session))
+                     (memq (first args)
+                           (list error/invalid-session
+
+                                 ;; XXX: These two are not properly handled in
+                                 ;; GnuTLS < 3.7.2, in
+                                 ;; 'write_to_session_record_port'; see
+                                 ;; <https://bugs.gnu.org/47867>.
+                                 error/again error/interrupted)))
                 (memq key '(bad-response bad-header bad-header-component)))
             (proc (open-connection-for-uri/cached uri
                                                   #:verify-certificate? #f
