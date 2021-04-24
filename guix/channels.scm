@@ -657,10 +657,11 @@ that unconditionally resumes the continuation."
               store))))
 
 (define* (build-from-source instance
-                            #:key core verbose? (dependencies '()))
+                            #:key core verbose? (dependencies '()) system)
   "Return a derivation to build Guix from INSTANCE, using the self-build
 script contained therein.  When CORE is true, build package modules under
-SOURCE using CORE, an instance of Guix."
+SOURCE using CORE, an instance of Guix.  By default, build for the current
+system, or SYSTEM if specified."
   (define name
     (symbol->string
      (channel-name (channel-instance-channel instance))))
@@ -700,20 +701,22 @@ SOURCE using CORE, an instance of Guix."
           (with-trivial-build-handler
            (build source
                   #:verbose? verbose? #:version commit
+                  #:system system
                   #:channel-metadata (channel-instance->sexp instance)
                   #:pull-version %pull-version))))
 
       ;; Build a set of modules that extend Guix using the standard method.
       (standard-module-derivation name source core dependencies)))
 
-(define* (build-channel-instance instance
+(define* (build-channel-instance instance system
                                  #:optional core (dependencies '()))
   "Return, as a monadic value, the derivation for INSTANCE, a channel
-instance.  DEPENDENCIES is a list of extensions providing Guile modules that
-INSTANCE depends on."
+instance, for SYSTEM.  DEPENDENCIES is a list of extensions providing Guile
+modules that INSTANCE depends on."
   (build-from-source instance
                      #:core core
-                     #:dependencies dependencies))
+                     #:dependencies dependencies
+                     #:system system))
 
 (define (resolve-dependencies instances)
   "Return a procedure that, given one of the elements of INSTANCES, returns
@@ -743,9 +746,9 @@ list of instances it depends on."
   (lambda (instance)
     (vhash-foldq* cons '() instance edges)))
 
-(define (channel-instance-derivations instances)
+(define* (channel-instance-derivations instances #:key system)
   "Return the list of derivations to build INSTANCES, in the same order as
-INSTANCES."
+INSTANCES.  Build for the current system by default, or SYSTEM if specified."
   (define core-instance
     ;; The 'guix' channel is treated specially: it's an implicit dependency of
     ;; all the other channels.
@@ -757,13 +760,13 @@ INSTANCES."
     (resolve-dependencies instances))
 
   (define (instance->derivation instance)
-    (mlet %store-monad ((system (current-system)))
+    (mlet %store-monad ((system (if system (return system) (current-system))))
       (mcached (if (eq? instance core-instance)
-                   (build-channel-instance instance)
+                   (build-channel-instance instance system)
                    (mlet %store-monad ((core (instance->derivation core-instance))
                                        (deps (mapm %store-monad instance->derivation
                                                    (edges instance))))
-                     (build-channel-instance instance core deps)))
+                     (build-channel-instance instance system core deps)))
                instance
                system)))
 
@@ -865,9 +868,10 @@ derivation."
                     intro))))))
             '()))))
 
-(define (channel-instances->manifest instances)
+(define* (channel-instances->manifest instances #:key system)
   "Return a profile manifest with entries for all of INSTANCES, a list of
-channel instances."
+channel instances.  By default, build for the current system, or SYSTEM if
+specified."
   (define (instance->entry instance drv)
     (let ((commit  (channel-instance-commit instance))
           (channel (channel-instance-channel instance)))
@@ -883,7 +887,8 @@ channel instances."
         (properties
          `((source ,(channel-instance->sexp instance)))))))
 
-  (mlet* %store-monad ((derivations (channel-instance-derivations instances))
+  (mlet* %store-monad ((derivations (channel-instance-derivations instances
+                                                                  #:system system))
                        (entries ->  (map instance->entry instances derivations)))
     (return (manifest entries))))
 
