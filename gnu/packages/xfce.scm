@@ -36,6 +36,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages calendar)
   #:use-module (gnu packages cdrom)
+  #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
@@ -991,6 +992,9 @@ on your desktop.")
        ("xfce4-clipman-plugin"    ,xfce4-clipman-plugin)
        ("xfce4-pulseaudio-plugin" ,xfce4-pulseaudio-plugin)
        ("xfce4-xkb-plugin"        ,xfce4-xkb-plugin)))
+    (propagated-inputs
+     ;; Default font that applications such as IceCat require.
+     `(("font-dejavu"             ,font-dejavu)))
     (native-search-paths
      ;; For finding panel plugins.
      (package-native-search-paths xfce4-panel))
