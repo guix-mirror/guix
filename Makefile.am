@@ -826,13 +826,13 @@ system_flags = $(foreach system,$(1),-s $(system))
 
 # The release process works in several phases:
 #
-#   0. We assume the developer created a 'vX.Y' tag.
+#   0. We assume the developer created a 'vX.Y.Z' tag.
 #   1. Build the source tarball.
-#   2. Update the 'guix' package so that it corresponds to the 'vX.Y' tag.
+#   2. Update the 'guix' package so that it corresponds to the 'vX.Y.Z' tag.
 #   3. Build the binary tarballs for that 'guix' package.
 #   4. Update the 'guix' package again.
-#   5. Build the installation images.  The images will run 'guix'
-#      corresponding to 'vX.Y' + 1 commit, and they will install 'vX.Y'.
+#   5. Build the installation and VM images.  The images will run 'guix'
+#      corresponding to 'vX.Y.Z' + 1 commit, and they will install 'vX.Y.Z'.
 #
 # This 'release' target takes care of everything and copies the resulting
 # files to $(releasedir).
@@ -848,6 +848,7 @@ release: dist-with-updated-version
 	$(MKDIR_P) "$(releasedir)"
 	rm -f "$(releasedir)"/*
 	mv $(SOURCE_TARBALLS) "$(releasedir)"
+# Bump the Guix package version and build it.
 	GUIX_ALLOW_ME_TO_USE_PRIVATE_COMMIT=yes \
 	$(top_builddir)/pre-inst-env "$(GUILE)"	\
 		$(top_srcdir)/build-aux/update-guix-package.scm	\
@@ -857,12 +858,14 @@ release: dist-with-updated-version
 	$(top_builddir)/pre-inst-env guix build guix	\
 	      $(call system_flags,$(SUPPORTED_SYSTEMS))	\
 	      -v1 --no-grafts --fallback
+# Generate the binary release tarballs.
 	rm -f $(BINARY_TARBALLS)
 	$(MAKE) $(BINARY_TARBALLS)
 	for system in $(SUPPORTED_SYSTEMS) ; do					\
 	  mv "guix-binary.$$system.tar.xz"					\
 	      "$(releasedir)/guix-binary-$(PACKAGE_VERSION).$$system.tar.xz" ;	\
 	done
+# Bump the Guix package version and build it (again).
 	GUIX_ALLOW_ME_TO_USE_PRIVATE_COMMIT=yes \
 	$(top_builddir)/pre-inst-env "$(GUILE)"	\
 		$(top_srcdir)/build-aux/update-guix-package.scm	\
@@ -872,6 +875,7 @@ release: dist-with-updated-version
 	$(top_builddir)/pre-inst-env guix build guix			\
 	      $(call system_flags,$(GUIX_SYSTEM_SUPPORTED_SYSTEMS))	\
 	      -v1 --no-grafts --fallback
+# Generate the ISO installation images.
 	for system in $(GUIX_SYSTEM_SUPPORTED_SYSTEMS) ; do				\
 	  image=`$(top_builddir)/pre-inst-env						\
 	    guix system image -t iso9660                                           	\
@@ -886,6 +890,7 @@ release: dist-with-updated-version
 	  mv "$(releasedir)/$(GUIX_SYSTEM_IMAGE_BASE).$$system.iso.xz.tmp"		\
 	     "$(releasedir)/$(GUIX_SYSTEM_IMAGE_BASE).$$system.iso.xz" ;		\
 	done
+# Generate the VM images.
 	for system in $(GUIX_SYSTEM_VM_SYSTEMS) ; do					\
 	  image=`$(top_builddir)/pre-inst-env						\
 	    guix system image -t qcow2 $(GUIX_SYSTEM_VM_IMAGE_FLAGS)			\
