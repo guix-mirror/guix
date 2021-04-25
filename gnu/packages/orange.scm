@@ -99,3 +99,24 @@ data-mining application.")
      "Orange Widget Base provides a base widget component for a interactive
 GUI based workflow.  It is primarily used in the Orange framework.")
     (license license:gpl3+)))
+
+(define-public python-serverfiles
+  (package
+    (name "python-serverfiles")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "serverfiles" version))
+       (sha256
+        (base32 "1qgbzgnaxj4wsp2rdas53qxsh0j7xpibq25w6lviwyaqwwrgq42y"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-requests" ,python-requests)))
+    (home-page "https://github.com/biolab/serverfiles")
+    (synopsis "Utility to access files on a HTTP server and store them locally")
+    (description
+     "This package provides an utility that accesses files on a HTTP server
+and stores them locally for reuse.  It is primarily used by the Orange
+framework.")
+    (license license:gpl3+)))
