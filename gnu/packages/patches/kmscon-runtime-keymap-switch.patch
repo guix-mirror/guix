@@ -1,5 +1,9 @@
-By Mathieu Othacehe <m.othacehe@gmail.com>.
-Modified by Florian Pelz <pelzflorian@pelzflorian.de>.
+Make kmscon listen to a FIFO in /tmp that clients can write to
+to request a keymap change.
+
+Patch by Mathieu Othacehe <m.othacehe@gmail.com>.
+Modified by Florian Pelz <pelzflorian@pelzflorian.de>
+and Ludovic Courtès <ludo@gnu.org>.
 
 diff --git a/src/pty.c b/src/pty.c
 index 1443f4a..f64cb5b 100644
@@ -115,7 +119,7 @@ index 04e6cc9..ec44459 100644
  		     uint16_t key_state,
  		     uint16_t code);
 diff --git a/src/uterm_input_uxkb.c b/src/uterm_input_uxkb.c
-index 925c755..5d5c22e 100644
+index 925c755..8fe08f8 100644
 --- a/src/uterm_input_uxkb.c
 +++ b/src/uterm_input_uxkb.c
 @@ -31,6 +31,9 @@
@@ -128,7 +132,7 @@ index 925c755..5d5c22e 100644
  #include <xkbcommon/xkbcommon.h>
  #include "shl_hook.h"
  #include "shl_llog.h"
-@@ -178,6 +181,87 @@ static void timer_event(struct ev_timer *timer, uint64_t num, void *data)
+@@ -178,6 +181,95 @@ static void timer_event(struct ev_timer *timer, uint64_t num, void *data)
  	shl_hook_call(dev->input->hook, dev->input, &dev->repeat_event);
  }
  
@@ -169,6 +173,13 @@ index 925c755..5d5c22e 100644
 +		  model, layout, variant);
 +	uxkb_desc_init(dev->input, model, layout, variant, options, NULL);
 +
++	/* The client will now close the FIFO.  Close it too, and re-create a
++	 * FIFO so other clients can eventually connect.  */
++	ev_eloop_rm_fd(fd);
++	close(dev->rupdate_fd);
++	dev->rupdate_fd = -1;
++	uxkb_dev_keymap_update(dev);
++
 +	dev->state = xkb_state_new(dev->input->keymap);
 +	if (!dev->state) {
 +		llog_error(dev->input, "cannot create XKB state");
@@ -186,6 +197,7 @@ index 925c755..5d5c22e 100644
 +	if (ret < 0)
 +		return ret;
 +
++	(void) unlink(file);
 +	ret = mkfifo(file, S_IRWXU);
 +	if (ret < 0) {
 +		llog_warn(dev->input, "could not open fifo");
