@@ -8,6 +8,7 @@
 ;;; Copyright © 2019 Collin J. Doering <collin@rekahsoft.ca>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 aecepoglu <aecepoglu@fastmail.fm>
+;;; Copyright © 2020 Dion Mendel <guix@dm9.info>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -254,6 +255,15 @@ are already there.")
              ;; so delete the extra source code here.
              (delete-file-recursively "src/github.com/direnv/direnv/vendor")
              #t))
+         (add-after 'install 'install-manpages
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (man (string-append out "/share/man/man1")))
+               (mkdir-p man)
+               (with-directory-excursion "src/github.com/direnv/direnv"
+                 (install-file "man/direnv.1" man)
+                 (install-file "man/direnv-stdlib.1" man)
+                 (install-file "man/direnv.toml.1" man)))))
          (replace 'check
            (lambda* (#:key tests? #:allow-other-keys)
              (when tests?
