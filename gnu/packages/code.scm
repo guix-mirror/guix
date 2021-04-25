@@ -15,6 +15,7 @@
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2021 lu hui <luhuins@163.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -149,6 +150,12 @@ highlighting your own code that seemed comprehensible when you wrote it.")
 
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-globash
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((echo (string-append
+                           (assoc-ref inputs "coreutils") "/bin/echo")))
+               (substitute* "globash/globash.in"
+                 (("/bin/echo") echo)))))
         (add-after 'install 'post-install
           (lambda* (#:key outputs #:allow-other-keys)
             ;; Install the plugin files in the right place.
