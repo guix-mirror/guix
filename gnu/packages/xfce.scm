@@ -894,7 +894,8 @@ on the screen.")
                                   (copy-file "/tmp/final.jpg" image))
                                 '(;; "backgrounds/xfce-blue.jpg"
                                   "backgrounds/xfce-stripes.png"
-                                  "backgrounds/xfce-teal.jpg"))
+                                  "backgrounds/xfce-teal.jpg"
+                                  "backgrounds/xfce-verticals.png"))
                       #t)))
 
        #:disallowed-references (,inkscape ,imagemagick)))
