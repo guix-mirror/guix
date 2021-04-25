@@ -22,6 +22,11 @@
   #:use-module (guix download)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
+  #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages graph)
+  #:use-module (gnu packages machine-learning)
+  #:use-module (gnu packages python-crypto)
+  #:use-module (gnu packages python-science)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt))
@@ -98,6 +103,88 @@ data-mining application.")
     (description
      "Orange Widget Base provides a base widget component for a interactive
 GUI based workflow.  It is primarily used in the Orange framework.")
+    (license license:gpl3+)))
+
+(define-public orange
+  (package
+    (name "orange")
+    (version "3.28.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Orange3" version))
+       (sha256
+        (base32 "1ac4xjjkx06z10hl7k0zh1z3qhkl5vng15l9jkpkmck9spinbzil"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'preparations
+           (lambda _
+             ;; Delete test that opens an outgoing connection.
+             (delete-file "Orange/tests/test_url_reader.py")
+             ;; This is a binary data file and it breaks runpath validation.
+             (delete-file "Orange/tests/datasets/binary-blob.tab")
+             ;; Skip the test which uses that binary file.
+             (substitute* "Orange/tests/test_txt_reader.py"
+               (("test_read_nonutf8_encoding") "_test_read_nonutf8_encoding"))
+             ;; We use a correct version of PyQtWebEngine, but the build scripts
+             ;; consider it incorrect anyways. Remove the constraint entirely to
+             ;; work around this bug.
+             (substitute* "requirements-gui.txt" (("PyQtWebEngine>=5.12") ""))
+             #t))
+         (add-before 'check 'set-HOME
+           ;; Tests need a writable home.
+           (lambda _ (setenv "HOME" "/tmp") #t))
+         (add-after 'install 'wrap-executable
+           ;; Ensure that icons are found at runtime.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/orange-canvas")
+                 `("QT_PLUGIN_PATH" prefix
+                   ,(list (string-append (assoc-ref inputs "qtsvg")
+                                         "/lib/qt5/plugins/")))))
+             #t)))))
+    (native-inputs
+     `(("python-cython" ,python-cython)))
+    (inputs
+     `(("python-anyqt" ,python-anyqt)
+       ("python-baycomp" ,python-baycomp)
+       ("python-bottleneck" ,python-bottleneck)
+       ("python-chardet" ,python-chardet)
+       ("python-httpx" ,python-httpx)
+       ("python-joblib" ,python-joblib)
+       ("python-keyring" ,python-keyring)
+       ("python-keyrings.alt" ,python-keyrings.alt)
+       ("python-louvain" ,python-louvain)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-networkx" ,python-networkx)
+       ("python-numpy" ,python-numpy)
+       ("python-openpyxl" ,python-openpyxl)
+       ("python-opentsne" ,python-opentsne)
+       ("python-orange-canvas-core"
+        ,python-orange-canvas-core)
+       ("python-orange-widget-base"
+        ,python-orange-widget-base)
+       ("python-pandas" ,python-pandas)
+       ("python-pyqt" ,python-pyqt)
+       ("python-pyqtgraph" ,python-pyqtgraph)
+       ("python-pyqtwebengine" ,python-pyqtwebengine)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-requests" ,python-requests)
+       ("python-scikit-learn" ,python-scikit-learn)
+       ("python-scipy" ,python-scipy)
+       ("python-serverfiles" ,python-serverfiles)
+       ("python-xlrd" ,python-xlrd)
+       ("python-xlsxwriter" ,python-xlsxwriter)
+       ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)
+       ("xdg-utils" ,xdg-utils)))
+    (home-page "https://orangedatamining.com/")
+    (synopsis "Component-based data mining framework")
+    (description
+     "Orange is a component-based, graphical framework for machine learning,
+data analysis, data mining and data visualization.")
     (license license:gpl3+)))
 
 (define-public python-serverfiles
