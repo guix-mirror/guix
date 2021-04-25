@@ -12581,6 +12581,58 @@ ISO 8859, etc.).")
     (description "AnyQt is a PyQt4/PyQt5 compatibility layer.")
     (license license:gpl3)))
 
+(define-public python-pyqtgraph
+  (package
+    (name "python-pyqtgraph")
+    (version "0.12.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyqtgraph" version))
+       (sha256
+        (base32 "0kc7ncv0lr3spni29i9g8nszyr4xinswqi2zzs6v8kqqi593pvyj"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-home-and-qpa
+           (lambda _
+             (setenv "HOME" "/tmp")
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             #t))
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv" "-k"
+                     ;; These tests try to download online data.
+                     (string-append "not test_PolyLineROI"
+                                    " and not test_getArrayRegion_axisorder"
+                                    " and not test_getArrayRegion"
+                                    " and not test_PlotCurveItem"
+                                    " and not test_NonUniformImage_colormap"
+                                    " and not test_NonUniformImage_lut"
+                                    " and not test_ImageItem_axisorder"
+                                    " and not test_ImageItem")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-xdist" ,python-pytest-xdist)))
+    (inputs
+     `(("qtbase" ,qtbase)))
+    (propagated-inputs
+     `(("python-h5py" ,python-h5py)
+       ("python-numpy" ,python-numpy)
+       ("python-pyopengl" ,python-pyopengl)
+       ("python-scipy" ,python-scipy)
+       ("python-pyqt" ,python-pyqt)))
+    (home-page "http://www.pyqtgraph.org")
+    (synopsis "Scientific graphics and GUI library for Python")
+    (description
+     "PyQtGraph is a Pure-python graphics library for PyQt5, PyQt6, PySide2
+and PySide6.  It is intended for use in mathematics, scientific or engineering
+applications.")
+    (license license:expat)))
+
 (define-public python-editor
   (package
   (name "python-editor")
