@@ -6,6 +6,7 @@
 ;;; Copyright © 2019 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2020 Alexander Krotov <krotov@iitp.ru>
 ;;; Copyright © 2020 Pierre Langlois <pierre.langlos@gmx.com>
+;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -229,6 +230,27 @@ subplots, multiple-axes, polar charts, and bubble charts. ")
   (package-with-python2 python-plotly-2.4.1))
 
 (define-public python-louvain
+  (package
+    (name "python-louvain")
+    (version "0.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "python-louvain" version))
+       (sha256
+        (base32 "1sqp97fwh4asx0jr72x8hil8z8fcg2xq92jklmh2m599pvgnx19a"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-networkx" ,python-networkx)
+       ("python-numpy" ,python-numpy)))
+    (home-page "https://github.com/taynaud/python-louvain")
+    (synopsis "Louvain algorithm for community detection")
+    (description
+     "This package provides a pure Python implementation of the Louvain
+algorithm for community detection in large networks.")
+    (license license:bsd-3)))
+
+(define-public python-louvain-0.6
   (package
     (name "python-louvain")
     (version "0.6.1")
