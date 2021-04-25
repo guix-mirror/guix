@@ -86,6 +86,7 @@
   #:use-module (guix build-system meson)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system qt)
   #:use-module (guix build-system waf)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
@@ -4605,6 +4606,82 @@ API.  It includes bindings for Python, Ruby, and other languages.")
     (description "OpenShot takes your videos, photos, and music files and
 helps you create the film you have always dreamed of.  Easily add sub-titles,
 transitions, and effects and then export your film to many common formats.")
+    (license license:gpl3+)))
+
+(define-public shotcut
+  (package
+    (name "shotcut")
+    (version "21.03.21")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mltframework/shotcut")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0jb488vynn0vmq22z51bg4hb4617732nva9rg52lzl89v5n8gmsi"))))
+    (build-system qt-build-system)
+    (arguments
+     `(#:tests? #f ;there are no tests
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out")))
+               (invoke "qmake"
+                       (string-append "PREFIX=" out)
+                       "QMAKE_LRELEASE=lrelease"
+                       "QMAKE_LUPDATE=lupdate"
+                       "shotcut.pro"))))
+         (add-after 'install 'wrap-executable
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (frei0r (assoc-ref inputs "frei0r-plugins"))
+                    (ffmpeg (assoc-ref inputs "ffmpeg"))
+                    (jack (assoc-ref inputs "jack"))
+                    (sdl2 (assoc-ref inputs "sdl2")))
+               (wrap-program (string-append out "/bin/shotcut")
+                 `("PATH" ":" prefix
+                   ,(list (string-append ffmpeg "/bin")))
+                 `("LD_LIBRARY_PATH" ":" prefix
+                   ,(list (string-append jack "/lib" ":" sdl2 "/lib")))
+                 `("FREI0R_PATH" ":" =
+                   (,(string-append frei0r "/lib/frei0r-1/")))
+                 `("MLT_PREFIX" ":" =
+                   (,(assoc-ref inputs "mlt")))))
+             #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("ffmpeg" ,ffmpeg)
+       ("frei0r-plugins" ,frei0r-plugins)
+       ("jack" ,jack-1)
+       ("ladspa" ,ladspa)
+       ("lame" ,lame)
+       ("libvpx" ,libvpx)
+       ("libx264" ,libx264)
+       ("mlt" ,mlt)
+       ("pulseaudio" ,pulseaudio)
+       ("qtbase" ,qtbase-5)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtgraphicaleffects" ,qtgraphicaleffects)
+       ("qtmultimedia" ,qtmultimedia)
+       ("qtquickcontrols" ,qtquickcontrols)
+       ("qtquickcontrols2" ,qtquickcontrols2)
+       ("qtsvg" ,qtsvg)
+       ("qtwebkit" ,qtwebkit)
+       ("qtwebsockets" ,qtwebsockets)
+       ("qtx11extras" ,qtx11extras)
+       ("sdl2" ,sdl2)))
+    (home-page "https://www.shotcut.org/")
+    (synopsis "Video editor built on the MLT framework")
+    (description
+     "Shotcut is a video editor built on the MLT framework.  Features include
+a wide range of formats through @code{ffmpeg}, 4k resolution support, webcam
+and audio capture, network stream playback, and many more.")
     (license license:gpl3+)))
 
 (define-public dav1d
