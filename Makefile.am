@@ -730,16 +730,13 @@ AM_DISTCHECK_CONFIGURE_FLAGS =			\
   --enable-daemon				\
   ac_cv_guix_test_root="$(GUIX_TEST_ROOT)"
 
-# Name of the 'guix' package shipped in the binary tarball.
-GUIX_FOR_BINARY_TARBALL = guix
-
 # The self-contained tarball.
 guix-binary.%.tar.xz:
 	$(AM_V_GEN)GUIX_PACKAGE_PATH=					\
 	tarball=`$(top_builddir)/pre-inst-env guix pack -C xz		\
 	  --fallback							\
 	  -s "$*" --localstatedir --profile-name=current-guix		\
-	  $(GUIX_FOR_BINARY_TARBALL)` ;					\
+	  guix` ;					\
 	cp "$$tarball" "$@.tmp" ; mv "$@.tmp" "$@"
 
 
@@ -857,7 +854,7 @@ release: dist-with-updated-version
 	   	"`git rev-parse HEAD`" "$(PACKAGE_VERSION)"
 	git add $(top_srcdir)/gnu/packages/package-management.scm
 	git commit -m "gnu: guix: Update to $(PACKAGE_VERSION)."
-	$(top_builddir)/pre-inst-env guix build $(GUIX_FOR_BINARY_TARBALL)	\
+	$(top_builddir)/pre-inst-env guix build guix	\
 	      $(call system_flags,$(SUPPORTED_SYSTEMS))	\
 	      -v1 --no-grafts --fallback
 	rm -f $(BINARY_TARBALLS)
