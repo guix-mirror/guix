@@ -420,6 +420,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/openldap.scm			\
   %D%/packages/openpgp.scm			\
   %D%/packages/openstack.scm			\
+  %D%/packages/orange.scm			\
   %D%/packages/orpheus.scm			\
   %D%/packages/ots.scm				\
   %D%/packages/package-management.scm		\
