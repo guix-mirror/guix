@@ -901,9 +901,9 @@ release: dist-with-updated-version
 	    echo "failed to produced Guix VM image for $$system" >&2 ;			\
 	    exit 1 ;									\
 	  fi ;										\
-	  xz < "$$image" > "$(releasedir)/$(GUIX_SYSTEM_VM_IMAGE_BASE).$$system.xz.tmp" ;	\
-	  mv "$(releasedir)/$(GUIX_SYSTEM_VM_IMAGE_BASE).$$system.xz.tmp"			\
-	     "$(releasedir)/$(GUIX_SYSTEM_VM_IMAGE_BASE).$$system.xz" ;			\
+	  xz < "$$image" > "$(releasedir)/$(GUIX_SYSTEM_VM_IMAGE_BASE).$$system.qcow2.xz.tmp" ;	\
+	  mv "$(releasedir)/$(GUIX_SYSTEM_VM_IMAGE_BASE).$$system.qcow2.xz.tmp"			\
+	     "$(releasedir)/$(GUIX_SYSTEM_VM_IMAGE_BASE).$$system.qcow2.xz" ;			\
 	done
 	@echo
 	@echo "Congratulations!  All the release files are now in $(releasedir)."
