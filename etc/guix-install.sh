@@ -563,6 +563,7 @@ main()
             _err "$ARCH_OS not in ${GUIX_BINARY_FILE_NAME}; aborting"
         fi
         _msg "Using manually provided binary ${GUIX_BINARY_FILE_NAME}"
+        GUIX_BINARY_FILE_NAME=$(realpath $GUIX_BINARY_FILE_NAME)
     fi
 
     sys_create_store "${GUIX_BINARY_FILE_NAME}" "${tmp_path}"
