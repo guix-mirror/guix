@@ -12555,6 +12555,32 @@ ISO 8859, etc.).")
 (define-public python2-translitcodec
   (package-with-python2 python-translitcodec))
 
+(define-public python-anyqt
+  (package
+    (name "python-anyqt")
+    (version "0.0.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "AnyQt" version))
+       (sha256
+        (base32 "0gl2czirzjvhbq963i2awxp8kwbc1grh67lpcwfipyn9w3kdwdj4"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ;there are no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'delete-files
+           ;; Delete files related to other operating systems.
+           (lambda _
+             (delete-file "AnyQt/QtMacExtras.py")
+             (delete-file "AnyQt/QtWinExtras.py")
+             #t)))))
+    (home-page "https://github.com/ales-erjavec/anyqt")
+    (synopsis "PyQt4/PyQt5 compatibility layer")
+    (description "AnyQt is a PyQt4/PyQt5 compatibility layer.")
+    (license license:gpl3)))
+
 (define-public python-editor
   (package
   (name "python-editor")
