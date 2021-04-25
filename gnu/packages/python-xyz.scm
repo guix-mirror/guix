@@ -12633,6 +12633,41 @@ and PySide6.  It is intended for use in mathematics, scientific or engineering
 applications.")
     (license license:expat)))
 
+(define-public python-qasync
+  (package
+    (name "python-qasync")
+    (version "0.15.0")
+    (source
+     (origin
+       ;; There are no tests in the PyPI tarball.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/CabbageDevelopment/qasync/")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0va9h6v102d7mxz608banjc0l0v02dq3ywhr5i4nqaxx3qkazc2l"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:test-target "pytest"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-qpa
+           (lambda _
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             #t)))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (propagated-inputs
+     `(("python-pyqt" ,python-pyqt)))
+    (home-page "https://github.com/CabbageDevelopment/qasync")
+    (synopsis "Implementation of the PEP 3156 Event-Loop with Qt")
+    (description
+     "@code{qasync} allows coroutines to be used in PyQt/PySide applications
+by providing an implementation of the PEP 3156 event-loop.")
+    (license license:bsd-2)))
+
 (define-public python-editor
   (package
   (name "python-editor")
