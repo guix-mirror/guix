@@ -64,3 +64,38 @@
 for editing workflows.  It is a component used to build the Orange Canvas
 data-mining application.")
     (license license:gpl3)))
+
+(define-public python-orange-widget-base
+  (package
+    (name "python-orange-widget-base")
+    (version "4.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "orange-widget-base" version))
+       (sha256
+        (base32 "13sy3s8rdqs3i3ghixljpqvnfz81qmbb0kqlasw39zvf39qc22kz"))))
+    (build-system python-build-system)
+    (arguments
+     `(;; unittest fails to load one test, all other tests are passing:
+       ;; AttributeError: module 'orangewidget' has no attribute 'version'.
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'check-setup
+           (lambda _
+             (setenv "HOME" "/tmp")
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             #t)))))
+    (propagated-inputs
+     `(("python-anyqt" ,python-anyqt)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-orange-canvas-core"
+        ,python-orange-canvas-core)
+       ("python-pyqtgraph" ,python-pyqtgraph)))
+    (home-page "https://github.com/biolab/orange-widget-base")
+    (synopsis "Base Widget for Orange Canvas")
+    (description
+     "Orange Widget Base provides a base widget component for a interactive
+GUI based workflow.  It is primarily used in the Orange framework.")
+    (license license:gpl3+)))
