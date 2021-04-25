@@ -70,6 +70,7 @@
             small-freespace-partition?
             esp-partition?
             boot-partition?
+            efi-installation?
             default-esp-mount-point
 
             with-delay-device-in-use?
@@ -193,12 +194,8 @@ inferior to MAX-SIZE, #f otherwise."
 (define (esp-partition? partition)
   "Return #t if partition has the ESP flag, return #f otherwise."
   (let* ((disk (partition-disk partition))
-         (disk-type (disk-disk-type disk))
-         (has-extended? (disk-type-check-feature
-                         disk-type
-                         DISK-TYPE-FEATURE-EXTENDED)))
+         (disk-type (disk-disk-type disk)))
     (and (data-partition? partition)
-         (not has-extended?)
          (partition-is-flag-available? partition PARTITION-FLAG-ESP)
          (partition-get-flag partition PARTITION-FLAG-ESP))))
 
@@ -918,30 +915,26 @@ exists."
          ;; disk space. Otherwise, set the swap size to 5% of the disk space.
          (swap-size (min default-swap-size five-percent-disk)))
 
-    (if has-extended?
-        ;; msdos - remove everything.
-        (disk-remove-all-partitions disk)
-        ;; gpt - remove everything but esp if it exists.
-        (for-each
-         (lambda (partition)
-           (and (data-partition? partition)
-                (disk-remove-partition* disk partition)))
-         non-boot-partitions))
+    ;; Remove everything but esp if it exists.
+    (for-each
+     (lambda (partition)
+       (and (data-partition? partition)
+            (disk-remove-partition* disk partition)))
+     non-boot-partitions)
 
     (let* ((start-partition
-            (and (not has-extended?)
-                 (if (efi-installation?)
-                     (and (not esp-partition)
-                          (user-partition
-                           (fs-type 'fat32)
-                           (esp? #t)
-                           (size new-esp-size)
-                           (mount-point (default-esp-mount-point))))
+            (if (efi-installation?)
+                (and (not esp-partition)
                      (user-partition
-                      (fs-type 'ext4)
-                      (bootable? #t)
-                      (bios-grub? #t)
-                      (size bios-grub-size)))))
+                      (fs-type 'fat32)
+                      (esp? #t)
+                      (size new-esp-size)
+                      (mount-point (default-esp-mount-point))))
+                (user-partition
+                 (fs-type 'ext4)
+                 (bootable? #t)
+                 (bios-grub? #t)
+                 (size bios-grub-size))))
            (new-partitions
             (cond
              ((or (eq? scheme 'entire-root)
