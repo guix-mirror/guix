@@ -2,7 +2,7 @@
 ;;; Copyright © 2016 Petter <petter@mykolab.ch>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
@@ -87,9 +87,11 @@
                (invoke "go" "run" "build.go" "-no-upgrade" "build" "syncthing"))))
 
          (replace 'check
-           (lambda _
-             (with-directory-excursion "src/github.com/syncthing/syncthing"
-               (invoke "go" "run" "build.go" "test"))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (with-directory-excursion "src/github.com/syncthing/syncthing"
+                 (invoke "go" "run" "build.go" "test")))
+             #t))
 
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
