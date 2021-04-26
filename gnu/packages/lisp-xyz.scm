@@ -16163,3 +16163,41 @@ described in RFC 2045 (see @url{http://tools.ietf.org/html/rfc2045}).")
 
 (define-public cl-qprint
   (sbcl-package->cl-source-package sbcl-cl-qprint))
+
+(define-public sbcl-cl-mime
+  (let ((commit "d30a28e0a40393bd3af7d138daa05319ed2e9d07")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-mime")
+      ;; One commit says "update to cl-mime-0.5.3", even though the .asd is at 0.5.1.
+      (version (git-version "0.5.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               ;; Maintained fork according to http://www.cliki.net/CL-MIME:
+               (url "https://github.com/40ants/cl-mime")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0qn8if0fj6vzc897pqqqs0m1y107gmzqngpqhqmwrcsp1ckj5k0v"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("ppcre" ,sbcl-cl-ppcre)
+         ("cl-base64" ,sbcl-cl-base64)
+         ("cl-qprint" ,sbcl-cl-qprint)))
+      (native-inputs
+       `(("rove" ,sbcl-rove)))
+      (home-page "https://github.com/eugeneia/cl-qprint/")
+      (synopsis "Read and print MIME content in Common Lisp")
+      (description
+       "This is a Common Lisp library for reading and printing MIME content.
+It supports automatic conversion between 7-bit, quoted-printable and base64
+encodings.")
+      (license license:lgpl2.1))))
+
+(define-public ecl-cl-mime
+  (sbcl-package->ecl-package sbcl-cl-mime))
+
+(define-public cl-mime
+  (sbcl-package->cl-source-package sbcl-cl-mime))
