@@ -4,7 +4,7 @@
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
-;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -131,7 +131,7 @@
 ;;
 ;; Code:
 
-(define* (setup-go-environment #:key inputs outputs #:allow-other-keys)
+(define* (setup-go-environment #:key inputs outputs goos goarch #:allow-other-keys)
   "Prepare a Go build environment for INPUTS and OUTPUTS.  Build a file system
 union of INPUTS.  Export GOPATH, which helps the compiler find the source code
 of the package being built and its dependencies, and GOBIN, which determines
@@ -149,6 +149,22 @@ dependencies, so it should be self-contained."
   ;; GOPATH behavior.
   (setenv "GO111MODULE" "off")
   (setenv "GOBIN" (string-append (assoc-ref outputs "out") "/bin"))
+
+  ;; Make sure we're building for the correct architecture and OS targets
+  ;; that Guix targets.
+  (setenv "GOARCH" goarch)
+  (setenv "GOOS" goos)
+  (match goarch
+    ("arm"
+     (setenv "GOARM" "7"))
+    ((or "mips" "mipsel")
+     (setenv "GOMIPS" "hardfloat"))
+    ((or "mips64" "mips64le")
+     (setenv "GOMIPS64" "hardfloat"))
+    ((or "ppc64" "ppc64le")
+     (setenv "GOPPC64" "power8"))
+    (_ #t))
+
   (let ((tmpdir (tmpnam)))
     (match (go-inputs inputs)
       (((names . directories) ...)
