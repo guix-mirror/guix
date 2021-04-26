@@ -81,6 +81,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages sdl)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages tls)
@@ -16201,3 +16202,49 @@ encodings.")
 
 (define-public cl-mime
   (sbcl-package->cl-source-package sbcl-cl-mime))
+
+(define-public sbcl-lispbuilder-sdl
+  (let ((commit "589b3c6d552bbec4b520f61388117d6c7b3de5ab"))
+    (package
+      (name "sbcl-lispbuilder-sdl")
+      (version (git-version "0.9.8.2" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/lispbuilder/lispbuilder")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0zga59fjlhq3mhwbf80qwqwpkjkxqnn2mhxajlb8563vhn3dbafp"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("cffi" ,sbcl-cffi)
+         ("trivial-garbage" ,sbcl-trivial-garbage)
+         ("sdl" ,sdl)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'cd-sdl
+             (lambda _
+               (chdir "lispbuilder-sdl")
+               #t))
+           (add-after 'cd-sdl 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "cffi/library.lisp"
+                 (("libSDL[^\"]*" all)
+                  (string-append (assoc-ref inputs "sdl") "/lib/" all)))
+               #t)))))
+      (home-page "https://github.com/lispbuilder/lispbuilder/wiki/LispbuilderSDL")
+      (synopsis "Common Lisp wrapper for SDL")
+      (description
+       "This library is an SDL wrapper as part of an umbrella project that
+provides cross-platform packages for building large, interactive applications
+in Common Lisp.")
+      (license license:expat))))
+
+(define-public ecl-lispbuilder-sdl
+  (sbcl-package->ecl-package sbcl-lispbuilder-sdl))
+
+(define-public cl-lispbuilder-sdl
+  (sbcl-package->cl-source-package sbcl-lispbuilder-sdl))
