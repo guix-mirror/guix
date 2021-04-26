@@ -1080,12 +1080,14 @@ rebuilding induced, commits go to different branches, along these lines:
 @code{staging} branch (non-disruptive changes).  This branch is intended
 to be merged in @code{master} every 6 weeks or so.  Topical changes
 (e.g., an update of the GNOME stack) can instead go to a specific branch
-(say, @code{gnome-updates}).
+(say, @code{gnome-updates}).  This branch is not expected to be
+buildable or usable until late in its development process.
 
 @item more than 1,800 dependent packages
 @code{core-updates} branch (may include major and potentially disruptive
 changes).  This branch is intended to be merged in @code{master} every
-6 months or so.
+6 months or so.  This branch is not expected to be buildable or usable
+until late in its development process.
 @end table
 
 All these branches are @uref{@value{SUBSTITUTE-URL},
