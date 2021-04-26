@@ -16102,3 +16102,33 @@ handling the accessing of files on the underlying system however.")
 
 (define-public cl-terrable
   (sbcl-package->cl-source-package sbcl-terrable))
+
+(define-public sbcl-simple-rgb
+  (let ((commit "ba9b0689362c28aa6a91c0636796c6c372657293")
+        (revision "1"))
+    (package
+      (name "sbcl-simple-rgb")
+      (version (git-version "0.01" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/wmannis/simple-rgb/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0ggv0h2n4mvwnggjr1b40gw667gnyykzki2zadaczi38ydzyzlp1"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/wmannis/simple-rgb")
+      (synopsis "Manipulate colors in RGB format")
+      (description
+       "This Common Lisp library focuses on the small set of basic color
+manipulations (lightening, compliments, etc.) you might use to generate a
+color palette for a GUI or web page.")
+      (license license:bsd-2))))
+
+(define-public ecl-simple-rgb
+  (sbcl-package->ecl-package sbcl-simple-rgb))
+
+(define-public cl-simple-rgb
+  (sbcl-package->cl-source-package sbcl-simple-rgb))
