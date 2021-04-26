@@ -16132,3 +16132,34 @@ color palette for a GUI or web page.")
 
 (define-public cl-simple-rgb
   (sbcl-package->cl-source-package sbcl-simple-rgb))
+
+(define-public sbcl-cl-qprint
+  (let ((commit "bfe398551cbfb7ca84a9ba59a26a1116ac5c06eb")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-qprint")
+      (version (git-version "0.9.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/eugeneia/cl-qprint/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "099h0rrdzxnlmn8avi72mg2dl0kccp7w01b2p9nwyy4b8yr32cir"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("flexi-streams" ,sbcl-flexi-streams)))
+      (home-page "https://github.com/eugeneia/cl-qprint/")
+      (synopsis "Implementation of the quoted-printable encoding")
+      (description
+       "This Common Lisp library implements the quoted-printable encoding as
+described in RFC 2045 (see @url{http://tools.ietf.org/html/rfc2045}).")
+      (license license:lgpl2.1))))
+
+(define-public ecl-cl-qprint
+  (sbcl-package->ecl-package sbcl-cl-qprint))
+
+(define-public cl-qprint
+  (sbcl-package->cl-source-package sbcl-cl-qprint))
