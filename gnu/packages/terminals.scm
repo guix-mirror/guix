@@ -24,6 +24,7 @@
 ;;; Copyright © 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2021 Ekaitz Zarraga <ekaitz@elenq.tech>
+;;; Copyright © 2021 Raphaël Mélotte <raphael.melotte@mind.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1240,6 +1241,26 @@ while also supporting native scrolling and @command{tmux} control mode
 an st fork using wld. st is a simple terminal emulator for X originally
 made by suckless.")
     (license license:x11)))
+
+(define-public tio
+  (package
+    (name "tio")
+    (version "1.32")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/tio/tio/releases/download/v"
+             version "/tio-" version ".tar.xz"))
+       (sha256
+        (base32 "0i5fhi4xdk4yznj8wahniizddmx6wlcnnhda1dw9djyajilyvxd8"))))
+    (build-system gnu-build-system)
+    (home-page "https://tio.github.io/")
+    (synopsis "Simple TTY terminal I/O application")
+    (description "tio is a simple TTY terminal application which features a
+straightforward commandline interface to easily connect to TTY devices for
+basic input/output.")
+    (license license:gpl2+)))
 
 (define-public alacritty
   (package
