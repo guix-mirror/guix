@@ -481,7 +481,10 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 (define-public linux-libre-5.11-source
   (source-with-patches linux-libre-5.11-pristine-source
                        (list %boot-logo-patch
-                             %linux-libre-arm-export-__sync_icache_dcache-patch)))
+                             %linux-libre-arm-export-__sync_icache_dcache-patch
+                             ;; Pinebook Pro patch to fix LCD display
+                             (search-patch
+                              "linux-libre-arm64-generic-pinebook-lcd.patch"))))
 
 (define-public linux-libre-5.10-source
   (source-with-patches linux-libre-5.10-pristine-source
@@ -1044,7 +1047,11 @@ It has been modified to remove all non-free binary blobs.")
                         ("CONFIG_BATTERY_AXP20X" . m)
                         ("CONFIG_PINCTRL_AXP209" . m)
                         ("CONFIG_AXP20X_POWER" . m)
-                        ("CONFIG_AXP20X_ADC" . m))
+                        ("CONFIG_AXP20X_ADC" . m)
+                        ;; Pinebook PRO battery and sound support
+                        ("CONFIG_BATTERY_CW2015" . m)
+                        ("CONFIG_CHARGER_GPIO" . m)
+                        ("CONFIG_SND_SOC_ES8316" . m))
                       %default-extra-linux-options)))
 
 (define-public linux-libre-arm64-generic-5.10

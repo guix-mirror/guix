@@ -1375,6 +1375,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/linkchecker-tests-require-network.patch	\
   %D%/packages/patches/linphone-desktop-without-sdk.patch           \
   %D%/packages/patches/linux-libre-support-for-Pinebook-Pro.patch \
+  %D%/packages/patches/linux-libre-arm64-generic-pinebook-lcd.patch \
   %D%/packages/patches/linux-pam-no-setfsuid.patch		\
   %D%/packages/patches/lirc-localstatedir.patch			\
   %D%/packages/patches/lirc-reproducible-build.patch		\
