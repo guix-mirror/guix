@@ -260,6 +260,9 @@ acceleration in mind, leveraging common 3D graphics APIs for best performance.")
                           ;; now, we explicitly disable it to prevent an error
                           ;; at configuration time.
                           "-DUSE_GSTREAMER_GL=OFF")
+       #:make-flags
+       ;; Never build with unsupported -j1: https://issues.guix.gnu.org/47964#5
+       (list "-j" (number->string (max 2 (parallel-job-count))))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'configure-bubblewrap-store-directory
