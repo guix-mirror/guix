@@ -71,6 +71,7 @@
   #:use-module (guix build-system waf)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system go)
+  #:use-module (guix build-system qt)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages algebra)
@@ -4780,7 +4781,7 @@ sample library.")
               (sha256
                (base32
                 "1gamr9ln10l26wwyin1a4grrqy6h05qzcgp28wsp85yczkpsh02c"))))
-    (build-system cmake-build-system)
+    (build-system qt-build-system)
     (arguments
      `(#:tests? #f ; there is no test target
        #:configure-flags
