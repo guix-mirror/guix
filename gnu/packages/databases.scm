@@ -49,6 +49,7 @@
 ;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
 ;;; Copyright © 2021 David Larsson <david.larsson@selfhosted.xyz>
+;;; Copyright © 2021 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2180,6 +2181,27 @@ supports many data structures including strings, hashes, lists, sets, sorted
 sets, bitmaps and hyperloglogs.")
     (home-page "https://redis.io/")
     (license license:bsd-3)))
+
+(define-public ruby-redis
+  (package
+    (name "ruby-redis")
+    (version "4.2.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (rubygems-uri "redis" version))
+        (sha256
+         (base32
+          "15x2sr6h094rjbvg8pkq6m3lcd5abpyx93aifvfdz3wv6x55xa48"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:tests? #f))    ; Tests require a running redis server.
+    (synopsis "Ruby client for Redis' API")
+    (description
+     "This package provides a Ruby client that tries to match Redis' API
+one-to-one, while still providing an idiomatic interface.")
+    (home-page "https://github.com/redis/redis-rb")
+    (license license:expat)))
 
 (define-public kyotocabinet
   (package
