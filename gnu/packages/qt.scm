@@ -2687,9 +2687,10 @@ color-related widgets.")
        ("qtwebsockets" ,qtwebsockets)
        ("qtx11extras" ,qtx11extras)
        ("qtxmlpatterns" ,qtxmlpatterns)))
+    (propagated-inputs
+     `(("python-shiboken-2" ,python-shiboken-2)))
     (native-inputs
      `(("cmake" ,cmake-minimal)
-       ("python-shiboken-2" ,python-shiboken-2)
        ("python" ,python-wrapper)
        ("qttools" ,qttools)
        ("which" ,which)))
