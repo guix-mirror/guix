@@ -4784,8 +4784,7 @@ sample library.")
     (arguments
      `(#:tests? #f ; there is no test target
        #:configure-flags
-       (list "-DENABLE_INSTPATCH=OFF"  ; FIXME: not packaged
-             "-DENABLE_VST_NATIVE=OFF"
+       (list "-DENABLE_VST_NATIVE=OFF"
              (string-append "-DCMAKE_EXE_LINKER_FLAGS="
                             "-Wl,-rpath="
                             (assoc-ref %outputs "out") "/lib/muse-"
@@ -4805,26 +4804,30 @@ sample library.")
              #t)))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
-       ("lash" ,lash)
-       ("jack" ,jack-1)
-       ("liblo" ,liblo)
        ("dssi" ,dssi)
-       ("ladspa" ,ladspa)
-       ("lv2" ,lv2)
-       ("lilv" ,lilv)
-       ("sord" ,sord)
-       ("libsndfile" ,libsndfile)
-       ("libsamplerate" ,libsamplerate)
-       ("lrdf" ,lrdf)
        ("fluidsynth" ,fluidsynth)
+       ("glib" ,glib)
+       ("jack" ,jack-1)
+       ("ladspa" ,ladspa)
+       ("lash" ,lash)
+       ("libinstpatch" ,libinstpatch)
+       ("liblo" ,liblo)
+       ("libsamplerate" ,libsamplerate)
+       ("libsndfile" ,libsndfile)
+       ("lilv" ,lilv)
+       ("lrdf" ,lrdf)
+       ("lv2" ,lv2)
        ("pcre" ,pcre)
        ("pulseaudio" ,pulseaudio) ; required by rtaudio
        ("qtbase" ,qtbase)
        ("qtsvg" ,qtsvg)
        ("rtaudio" ,rtaudio)
-       ("rubberband" ,rubberband)))
+       ("rubberband" ,rubberband)
+       ("sord" ,sord)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)
        ("qttools" ,qttools)))
     (home-page "https://muse-sequencer.github.io/")
     (synopsis "MIDI/Audio sequencer")
