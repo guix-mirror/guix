@@ -2355,7 +2355,7 @@ foreground and background colors, text justification and more.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://sourceforge/gtkdatabox/gtkdatabox3/"
+       (uri (string-append "mirror://sourceforge/gtkdatabox/gtkdatabox-1/"
                            "gtkdatabox-" version ".tar.gz"))
        (sha256
         (base32 "1qykm551bx8j8pfgxs60l2vhpi8lv4r8va69zvn2594lchh71vlb"))))
