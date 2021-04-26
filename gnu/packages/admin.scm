@@ -4044,7 +4044,7 @@ cache of unix and unix-like systems.")
 (define-public solaar
   (package
     (name "solaar")
-    (version "1.0.5")
+    (version "1.0.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4053,7 +4053,7 @@ cache of unix and unix-like systems.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "17gkr2lf1kzp1198gcdr30j3c8xd81kg7ly12aar1jrgi6lc7klk"))))
+                "04zclzfc31l2fj5shcsngnmcvcmmhnc567l3wb9yfhs8k39k9kb2"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
