@@ -16248,3 +16248,39 @@ in Common Lisp.")
 
 (define-public cl-lispbuilder-sdl
   (sbcl-package->cl-source-package sbcl-lispbuilder-sdl))
+
+(define-public sbcl-dufy
+  (package
+    (name "sbcl-dufy")
+    (version "0.4.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/privet-kitty/dufy")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "15vrp1kayhjb5c1vc9x8wlm8rimk73vpa7yc101cf0gsg1fjazl6"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("ppcre" ,sbcl-cl-ppcre)))
+    (native-inputs
+     `(("fiveam" ,sbcl-fiveam)
+       ("cl-csv" ,sbcl-cl-csv)
+       ("parse-float" ,sbcl-parse-float)
+       ("lispbuilder-sdl" ,sbcl-lispbuilder-sdl)
+       ("lparallel" ,sbcl-lparallel)))
+    (home-page "https://github.com/privet-kitty/dufy")
+    (synopsis "Color library for Common Lisp")
+    (description
+     "Dufy is a library for exact color manipulation and conversion in various
+color spaces, which supports many color models.")
+    (license license:expat)))
+
+(define-public ecl-dufy
+  (sbcl-package->ecl-package sbcl-dufy))
+
+(define-public cl-dufy
+  (sbcl-package->cl-source-package sbcl-dufy))
