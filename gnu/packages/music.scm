@@ -4770,19 +4770,16 @@ sample library.")
 (define-public muse-sequencer
   (package
     (name "muse-sequencer")
-    (version "3.1.1")
+    (version "4.0.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/muse-sequencer/muse")
-                    (commit (string-append "muse_"
-                                           (string-map (lambda (c)
-                                                         (if (char=? c #\.)
-                                                             #\_ c)) version)))))
+                    (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1rasp2v1ds2aw296lbf27rzw0l9fjl0cvbvw85d5ycvh6wkm301p"))))
+                "1gamr9ln10l26wwyin1a4grrqy6h05qzcgp28wsp85yczkpsh02c"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; there is no test target
@@ -4800,7 +4797,7 @@ sample library.")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'chdir
-           (lambda _ (chdir "muse3") #t))
+           (lambda _ (chdir "src") #t))
          (add-after 'chdir 'fix-include
            (lambda _
              (substitute* "muse/driver/rtaudio.h"
