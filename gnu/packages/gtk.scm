@@ -1605,10 +1605,11 @@ library.")
                        name "-" version ".tar.xz"))
        (sha256
         (base32 "0hv7pviln4cpjvpz7m7ga5krcsbibqzixdcn0dwzpz0cx71p3swv"))))
-    (build-system glib-or-gtk-build-system)
+    (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments
-     `(#:phases
+     `(#:configure-flags '("-Dbuild-documentation=true")
+       #:phases
        (modify-phases %standard-phases
          (add-before 'check 'pre-check
            (lambda _
