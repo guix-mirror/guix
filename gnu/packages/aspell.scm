@@ -12,6 +12,7 @@
 ;;; Copyright © 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Noah Landis <noahlandis@posteo.net>
+;;; Copyright © 2021 Sergiu Ivanov <sivanov@colimite.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -355,6 +356,14 @@ dictionaries, including personal ones.")
                      #:sha256
                      (base32
                       "137i4njvnslab6l4s291s11xijr5jsy75lbdph32f9y183lagy9m")))
+
+(define-public aspell-dict-ro
+  (aspell-dictionary "ro" "Romanian"
+                     #:version "3.3-2"
+                     #:prefix "aspell5-"
+                     #:sha256
+                     (base32
+                      "0gb8j9iy1acdl11jq76idgc2lbc1rq3w04favn8cyh55d1v8phsk")))
 
 
 ;;;
