@@ -802,3 +802,40 @@ the details of how it was triggered.
 library and a dynamic library, and a C header to be used by any C (and
 C-compatible) software.")
     (license license:expat)))
+
+(define-public zoxide
+  (package
+    (name "zoxide")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "zoxide" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1ih01l3xp8plicxhmyxjkq12ncpdb8954jcj3dh3lwvkhvw29nkk"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-anyhow" ,rust-anyhow-1)
+        ("rust-askama" ,rust-askama-0.10)
+        ("rust-bincode" ,rust-bincode-1)
+        ("rust-clap" ,rust-clap-3)
+        ("rust-dirs-next" ,rust-dirs-next-2)
+        ("rust-dunce" ,rust-dunce-1)
+        ("rust-glob" ,rust-glob-0.3)
+        ("rust-once-cell" ,rust-once-cell-1)
+        ("rust-ordered-float" ,rust-ordered-float-2)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-tempfile" ,rust-tempfile-3))
+       #:cargo-development-inputs
+       (("rust-assert-cmd" ,rust-assert-cmd-1)
+        ("rust-seq-macro" ,rust-seq-macro-0.2))))
+    (home-page "https://github.com/ajeetdsouza/zoxide/")
+    (synopsis "Fast way to navigate your filesystem")
+    (description
+     "Zoxide is a fast replacement for your @command{cd} command. It keeps
+track of the directories you use most frequently, and uses a ranking algorithm
+to navigate to the best match.")
+    (license license:expat)))
