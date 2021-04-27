@@ -27278,6 +27278,30 @@ under its new name.")
      "A cross-platform library for opening OS pipes.")
     (license license:expat)))
 
+(define-public rust-os-str-bytes-2
+  (package
+    (name "rust-os-str-bytes")
+    (version "2.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "os_str_bytes" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "11agh8n3x2l4sr3sxvx6byc1j3ryb1g6flb1ywn0qhq7xv1y3cmg"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page
+     "https://github.com/dylni/os_str_bytes")
+    (synopsis
+     "Traits for converting between byte sequences and platform-native strings")
+    (description
+     "This package provides a traits for converting between byte sequences and
+platform-native strings.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-output-vt100-0.1
   (package
     (name "rust-output-vt100")
