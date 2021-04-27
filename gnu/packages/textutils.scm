@@ -1011,6 +1011,39 @@ indentation.
     (home-page "http://docx2txt.sourceforge.net")
     (license license:gpl3+)))
 
+(define-public html2text
+  ;; Use commit directly to get the fixes to the installation phase
+  ;; that are not in a release yet.
+  (let ((commit "05364c1028026a87d6f45130a8e86e1ee67704d2")
+        (revision "1"))
+    (package
+      (name "html2text")
+      (version (git-version "2.0.1_pre" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/grobian/html2text")
+               (commit (string-append commit))))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0n6pl0nijcn4z3p0dvf3gmvvpjq261pagnk84s9f78c4c55bw5cm"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key outputs #:allow-other-keys)
+               (substitute* "Makefile.in"
+                 (("/usr/local")
+                  (assoc-ref outputs "out"))))))))
+      (home-page "https://github.com/grobian/html2text")
+      (synopsis "HTML to plain text converter")
+      (description
+       "@code{html2text} is a command line utility that converts HTML
+documents into plain text.")
+      (license license:gpl2+))))
+
 (define-public odt2txt
   (package
     (name "odt2txt")
