@@ -19160,6 +19160,46 @@ with hyper.")
      "This package provides a proemial code for the @code{hyphenation} library.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-hyphenation-0.8
+  (package
+    (name "rust-hyphenation")
+    (version "0.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "hyphenation" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "117h952d2zlpyqmy0kb49wb42rd3l5m5kl3ldfhgygv6lin09b2w"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build?
+       #t
+       #:cargo-inputs
+       (("rust-bincode" ,rust-bincode-1)
+        ("rust-bincode" ,rust-bincode-1)
+        ("rust-fst" ,rust-fst-0.4)
+        ("rust-fst" ,rust-fst-0.4)
+        ("rust-hyphenation-commons"
+         ,rust-hyphenation-commons-0.8)
+        ("rust-hyphenation-commons"
+         ,rust-hyphenation-commons-0.8)
+        ("rust-pocket-resources"
+         ,rust-pocket-resources-0.3)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-unicode-normalization"
+         ,rust-unicode-normalization-0.1))))
+    (home-page
+     "https://github.com/tapeinosyne/hyphenation")
+    (synopsis
+     "Knuth-Liang hyphenation for a variety of languages")
+    (description
+     "This package provides a Knuth-Liang hyphenation for a variety of languages.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-ident-case-1
   (package
     (name "rust-ident-case")
