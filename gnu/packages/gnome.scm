@@ -4938,7 +4938,7 @@ libxml to ease remote use of the RESTful API.")
     (inputs
      `(("mit-krb5" ,mit-krb5)
        ("ntlm_auth" ,samba))) ; For ntlm_auth support
-    (home-page "https://live.gnome.org/LibSoup/")
+    (home-page "https://wiki.gnome.org/Projects/libsoup")
     (synopsis "GLib-based HTTP Library")
     (description
      "LibSoup is an HTTP client/server library for GNOME.  It uses GObjects
