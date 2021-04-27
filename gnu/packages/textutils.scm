@@ -1038,7 +1038,8 @@ indentation.
              ;; The configure script is not from autotools and does not accept
              ;; ‘--style’ options.  There is no proper error handling.
              (lambda* (#:key outputs #:allow-other-keys)
-               (invoke "./configure"))))))
+               (invoke "./configure"
+                       (string-append "CXX=" ,(cxx-for-target))))))))
       (home-page "https://github.com/grobian/html2text")
       (synopsis "HTML to plain text converter")
       (description
