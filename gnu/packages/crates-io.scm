@@ -19132,6 +19132,34 @@ with hyper.")
        #:cargo-development-inputs
        (("rust-tokio" ,rust-tokio-0.1))))))
 
+(define-public rust-hyphenation-commons-0.8
+  (package
+    (name "rust-hyphenation-commons")
+    (version "0.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "hyphenation_commons" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "089jv1pr718aq0yjfcv6x0zljw9f73jm15khdsydzfln3ci7n4hj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build?
+       #t
+       #:cargo-inputs
+       (("rust-fst" ,rust-fst-0.4)
+        ("rust-serde" ,rust-serde-1))))
+    (home-page
+     "https://github.com/tapeinosyne/hyphenation")
+    (synopsis
+     "Proemial code for the @code{hyphenation} library")
+    (description
+     "This package provides a proemial code for the @code{hyphenation} library.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-ident-case-1
   (package
     (name "rust-ident-case")
