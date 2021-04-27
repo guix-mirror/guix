@@ -1672,6 +1672,16 @@ tutorial.")
                        name "-" version ".tar.xz"))
        (sha256
         (base32 "0wkbzvsx4kgw16f6xjdc1dz7f77ldngdila4yi5lw2zrgcxsb006"))))
+    (build-system gnu-build-system)
+    (arguments
+     (substitute-keyword-arguments (package-arguments gtkmm)
+       ((#:modules modules %gnu-build-system-modules)
+        `((srfi srfi-1)
+          ,@modules))
+       ((#:configure-flags flags)
+        `(fold delete
+               ,flags
+               '("-Dbuild-documentation=true")))))
     (propagated-inputs
      `(("atkmm" ,atkmm-2.28)
        ("cairomm" ,cairomm-1.13)
