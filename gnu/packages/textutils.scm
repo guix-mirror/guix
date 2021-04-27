@@ -1030,13 +1030,15 @@ indentation.
           (base32 "0n6pl0nijcn4z3p0dvf3gmvvpjq261pagnk84s9f78c4c55bw5cm"))))
       (build-system gnu-build-system)
       (arguments
-       `(#:phases
+       `(#:make-flags
+         (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+         #:phases
          (modify-phases %standard-phases
-           (add-after 'unpack 'fix-paths
+           (replace 'configure
+             ;; The configure script is not from autotools and does not accept
+             ;; ‘--style’ options.  There is no proper error handling.
              (lambda* (#:key outputs #:allow-other-keys)
-               (substitute* "Makefile.in"
-                 (("/usr/local")
-                  (assoc-ref outputs "out"))))))))
+               (invoke "./configure"))))))
       (home-page "https://github.com/grobian/html2text")
       (synopsis "HTML to plain text converter")
       (description
