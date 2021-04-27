@@ -906,7 +906,8 @@ useful for C++.")
     (native-inputs
      `(("glib-bin" ,glib "bin")
        ("pkg-config" ,pkg-config)
-       ("python-pytest" ,python-pytest)))
+       ("python-pytest" ,python-pytest)
+       ("python-wrapper" ,python-wrapper))) ; For patching shebangs
     (inputs
      `(("python" ,python)
        ("python-pycairo" ,python-pycairo)
