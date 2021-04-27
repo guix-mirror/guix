@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -100,9 +100,14 @@ TARGET."
   (manifest
    (append-map (lambda (system)
                  (map (cut package->manifest-entry* <> system)
-                      (if (string=? system "i586-gnu")
-                          %base-packages/hurd
-                          %base-packages)))
+                      (cond ((string=? system "i586-gnu")
+                             %base-packages/hurd)
+                            ((string=? system "powerpc64le-linux")
+                             ;; FIXME: Drop 'bootstrap-tarballs' until
+                             ;; <https://bugs.gnu.org/48055> is fixed.
+                             (drop %base-packages 1))
+                            (else
+                             %base-packages))))
                %cuirass-supported-systems)))
 
 (define %system-manifest
