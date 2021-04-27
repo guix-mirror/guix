@@ -681,14 +681,13 @@ memory, disks, network and processes.")
 (define-public bpytop
   (package
     (name "bpytop")
-    (version "1.0.63")
+    (version "1.0.64")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "bpytop" version))
        (sha256
-        (base32
-         "0ql72s842g56rnzdqja6m53lw5y68c4gb540ihp1bjg7x9ycim11"))))
+        (base32 "02m25i79fp5cpz0i1b2r5is7z2w7pz2x2yqvlnmvsyqlssaai3vm"))))
     (build-system python-build-system)
     (inputs
      `(("python-psutil" ,python-psutil)))
@@ -708,7 +707,7 @@ memory, disks, network and processes.")
      "https://github.com/aristocratos/bpytop")
     (synopsis "Resource monitor")
     (description "Resource monitor that shows usage and stats for processor,
-memory, disks, network and processes.  It's a Python port of
+memory, disks, network and processes.  It's a Python port and continuation of
 @command{bashtop}.")
     (license license:asl2.0)))
 
