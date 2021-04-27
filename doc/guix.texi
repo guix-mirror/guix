@@ -29028,10 +29028,11 @@ By default, it produces
 
 @lisp
 '("--device" "rtl8139,netdev=net0"
-  "--netdev" "user,id=net0\
-              ,hostfwd=tcp:127.0.0.1:@var{secrets-port}-:1004\
-              ,hostfwd=tcp:127.0.0.1:@var{ssh-port}-:2222\
-              ,hostfwd=tcp:127.0.0.1:@var{vnc-port}-:5900")
+  "--netdev" (string-append
+              "user,id=net0,"
+              "hostfwd=tcp:127.0.0.1:@var{secrets-port}-:1004,"
+              "hostfwd=tcp:127.0.0.1:@var{ssh-port}-:2222,"
+              "hostfwd=tcp:127.0.0.1:@var{vnc-port}-:5900"))
 @end lisp
 
 with forwarded ports:
