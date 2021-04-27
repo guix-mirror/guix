@@ -359,6 +359,7 @@ server}.  The main advantage compared to @code{vc-hg} is speed.")
      `(#:include '("DEMO"
                    "DEMO-ROLO.otl"
                    "HY-ABOUT"
+                   "man/hkey-help.txt"
                    "\\.el$"
                    "\\.info$"
                    "\\.kotl$")
@@ -373,8 +374,15 @@ server}.  The main advantage compared to @code{vc-hg} is speed.")
                 (string-append (assoc-ref inputs "inetutils")
                                "/bin/dnsdomainname")))
              (substitute* "hyperbole.el"
-               (("\\(hyperb:check-dir-user\\)") ""))
-             #t)))))
+               (("\\(hyperb:check-dir-user\\)") ""))))
+         (add-after 'install 'install-images
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (for-each (lambda (file)
+                           (install-file
+                            file
+                            (string-append out "/share/info/im")))
+                         (find-files "man/im" "\\.png$"))))))))
     (inputs
      `(("inetutils" ,inetutils)))
     (home-page "https://www.gnu.org/software/hyperbole/")
