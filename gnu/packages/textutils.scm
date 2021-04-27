@@ -1045,7 +1045,8 @@ indentation.
       (description
        "@code{html2text} is a command line utility that converts HTML
 documents into plain text.")
-      (license license:gpl2+))))
+      (license (list license:bsd-4      ; cmp_nocase.cpp & sgml.h
+                     license:gpl2+))))) ; everything else
 
 (define-public odt2txt
   (package
