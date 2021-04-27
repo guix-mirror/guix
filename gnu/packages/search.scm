@@ -428,7 +428,7 @@ bibliographic data and simple document and bibtex retrieval.")
                     (commit (string-append "v" version))))
               (sha256
                (base32 "06y61sf2ywjaix4nss11wwkxipj8cc9ccx6bsmdm31h8d8wd2s0j"))
-              (file-name (string-append name "-" version "-checkout"))
+              (file-name (git-file-name name version))
               (modules '((guix build utils)))
               (snippet
                '(begin
