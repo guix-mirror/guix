@@ -50,7 +50,7 @@
 (define-public fcitx-qt5
   (package
     (name "fcitx-qt5")
-    (version "1.2.5")
+    (version "1.2.6")
     (source
      (origin
        (method git-fetch)
@@ -61,7 +61,7 @@
        (file-name
         (git-file-name name version))
        (sha256
-        (base32 "1d56bp11jp85b2r4syw1clfg4vqxqfh7gygpwz8wk5sxmfmmdq83"))))
+        (base32 "13sanrir696fv7s44b7q453s5qi4r7ag0r3iyggyzk8xyf6rw8fk"))))
     (build-system qt-build-system)
     (arguments
      `(#:tests? #f                      ; No target
