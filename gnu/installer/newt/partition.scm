@@ -95,14 +95,17 @@ DEVICES list."
 
 (define (run-label-page button-text button-callback)
   "Run a page asking the user to select a partition table label."
-  (run-listbox-selection-page
-   #:info-text (G_ "Select a new partition table type. \
+  ;; Force the GPT label if UEFI is supported.
+  (if (efi-installation?)
+      "gpt"
+      (run-listbox-selection-page
+       #:info-text (G_ "Select a new partition table type. \
 Be careful, all data on the disk will be lost.")
-   #:title (G_ "Partition table")
-   #:listbox-items '("msdos" "gpt")
-   #:listbox-item->text identity
-   #:button-text button-text
-   #:button-callback-procedure button-callback))
+       #:title (G_ "Partition table")
+       #:listbox-items '("msdos" "gpt")
+       #:listbox-item->text identity
+       #:button-text button-text
+       #:button-callback-procedure button-callback)))
 
 (define (run-type-page partition)
   "Run a page asking the user to select a partition type."
