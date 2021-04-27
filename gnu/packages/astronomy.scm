@@ -887,13 +887,13 @@ JPL ephemerides use to predict raw (x,y,z) planetary positions.")
 (define-public python-pyerfa
   (package
     (name "python-pyerfa")
-    (version "1.7.2")
+    (version "1.7.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyerfa" version))
        (sha256
-        (base32 "1s78mdyrxha2jcckfs0wg5ynkf0pwh1bw9mmh99vprinxh9n4xri"))
+        (base32 "1jqqrxvrgly4r0br5f6dsy8nab2xmhz915vp6md5f31ysr2sdwvc"))
        (modules '((guix build utils)))
        (snippet
         '(begin
