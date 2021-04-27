@@ -4480,7 +4480,7 @@ evaluates expressions using the standard order of operations.")
 (define-public xaos
   (package
     (name "xaos")
-    (version "4.0")
+    (version "4.2.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4489,7 +4489,7 @@ evaluates expressions using the standard order of operations.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "00110p5xscjsmn7avfqgydn656zbmdj3l3y2fpv9b4ihzpid8n7a"))))
+                "0maw5am6rrkyjrprfg113zjq37mqj0iaznkg4h2927ff7wrprc94"))))
     (build-system gnu-build-system)
     (native-inputs `(("gettext" ,gettext-minimal)
                      ("qtbase" ,qtbase)
@@ -4512,12 +4512,14 @@ evaluates expressions using the standard order of operations.")
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               ;; The DESTDIR is originally set to install the xaos binary to
-               ;; the "bin" folder inside the build directory.  Setting make
-               ;; flags doesn't seem to change this.
                (substitute* "XaoS.pro"
+                 ;; The DESTDIR is originally set to install the xaos binary to
+                 ;; the "bin" folder inside the build directory.  Setting make
+                 ;; flags doesn't seem to change this.
                  (("DESTDIR.*$")
-                  (string-append "DESTDIR=" out "/bin")))
+                  (string-append "DESTDIR=" out "/bin"))
+                 ;; Set the correct path to the lrelease binary.
+                 (("lrelease-qt5") "lrelease"))
                (substitute* "src/include/config.h"
                  (("/usr/share/XaoS")
                   (string-append out "/share/XaoS")))
