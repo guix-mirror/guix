@@ -2279,6 +2279,35 @@ Askama.")
      "This package provide procedural macro package for Askama.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-askama-0.10
+  (package
+    (name "rust-askama")
+    (version "0.10.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "askama" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0d1iwywdgw3nba2iphayw8sfm3s8m9izwnhfar707qa7ds5p766j"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-askama-derive" ,rust-askama-derive-0.10)
+        ("rust-askama-escape" ,rust-askama-escape-0.10)
+        ("rust-askama-shared" ,rust-askama-shared-0.11)
+        ("rust-mime" ,rust-mime-0.3)
+        ("rust-mime-guess" ,rust-mime-guess-2))))
+    (home-page "https://github.com/djc/askama")
+    (synopsis
+     "Type-safe, compiled Jinja-like templates for Rust")
+    (description
+     "This package provides a type-safe, compiled Jinja-like templates for Rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-as-slice-0.1
   (package
     (name "rust-as-slice")
