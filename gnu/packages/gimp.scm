@@ -269,7 +269,7 @@ buffers.")
 (define-public gimp
   (package
     (name "gimp")
-    (version "2.10.22")
+    (version "2.10.24")
     (source
      (origin
        (method url-fetch)
@@ -277,8 +277,7 @@ buffers.")
                            (version-major+minor version)
                            "/gimp-" version ".tar.bz2"))
        (sha256
-        (base32 "1fqqyshakvdarf1jipk2n33ibqr23ni22z3d8srq13bpydblpf1d"))
-       (patches (search-patches "gimp-make-gegl-introspect-optional.patch"))))
+        (base32 "17lq6ns5qhspd171zqh76yf98xnn5n0hcl7hbhbx63cc6ribf6xx"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                            ; 9 MiB of gtk-doc HTML
