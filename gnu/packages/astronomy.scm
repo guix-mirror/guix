@@ -1024,10 +1024,10 @@ astronomical images, especially when there is no WCS information available.")
      ;; framework https://github.com/brandon-rhodes/assay
      `(#:tests? #f))
     (inputs
-     `(("certifi" ,python-certifi)
-       ("jplephem" ,python-jplephem)
-       ("numpy" ,python-numpy)
-       ("sgp4" ,python-sgp4)))
+     `(("python-certifi" ,python-certifi)
+       ("python-jplephem" ,python-jplephem)
+       ("python-numpy" ,python-numpy)
+       ("python-sgp4" ,python-sgp4)))
     (home-page "https://rhodesmill.org/skyfield/")
     (synopsis "Astronomy for Python")
     (description
