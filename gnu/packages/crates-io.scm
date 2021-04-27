@@ -36963,6 +36963,33 @@ also have to make sure that the wrapper is dropped from within the original
 thread.  If any of these constraints is violated, a panic occurs.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-seq-macro-0.2
+  (package
+    (name "rust-seq-macro")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "seq-macro" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "168y8k344gssy1q0q6napy8cswgl4hyh2kcim9pk3b9wxbx4g7ss"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-rustversion" ,rust-rustversion-1)
+        ("rust-trybuild" ,rust-trybuild-1))))
+    (home-page
+     "https://github.com/dtolnay/seq-macro")
+    (synopsis
+     "Macro to repeat sequentially indexed copies of a fragment of code")
+    (description
+     "This package provides a macro to repeat sequentially indexed copies of a
+fragment of code.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-sequoia-openpgp-0.9
   (package
     (name "rust-sequoia-openpgp")
