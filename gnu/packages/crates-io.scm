@@ -27107,8 +27107,37 @@ system for OpenSSL.")
 PartialOrd types, like floats.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-ordered-float-2
+  (package
+    (name "rust-ordered-float")
+    (version "2.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ordered-float" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0632g8bacvras6nig1bb1ihgc560476jkrb3is6n542ll86q8vvn"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build?
+       #t
+       #:cargo-inputs
+       (("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-serde" ,rust-serde-1))
+       #:cargo-development-inputs
+       (("rust-serde-test" ,rust-serde-test-1))))
+    (home-page "https://github.com/reem/rust-ordered-float")
+    (synopsis "Wrappers for total ordering on floats")
+    (description
+     "This package provides wrappers for total ordering on floats in Rust.")
+    (license license:expat)))
+
 (define-public rust-ordered-float-1
   (package
+    (inherit rust-ordered-float-2)
     (name "rust-ordered-float")
     (version "1.0.2")
     (source
@@ -27119,19 +27148,7 @@ PartialOrd types, like floats.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0625x96987kspdxbikry5mb7hsf5pdc5bbanxd8wjwqlx0ar71hq"))))
-    (build-system cargo-build-system)
-    (arguments
-     `(#:cargo-inputs
-       (("rust-num-traits" ,rust-num-traits-0.2)
-        ("rust-serde" ,rust-serde-1))
-       #:cargo-development-inputs
-       (("rust-serde-test" ,rust-serde-test-1))))
-    (home-page "https://github.com/reem/rust-ordered-float")
-    (synopsis "Wrappers for total ordering on floats")
-    (description
-     "This package provides wrappers for total ordering on floats in Rust.")
-    (license license:expat)))
+         "0625x96987kspdxbikry5mb7hsf5pdc5bbanxd8wjwqlx0ar71hq"))))))
 
 (define-public rust-ordermap-0.3
   (package
