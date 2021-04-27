@@ -772,6 +772,11 @@ as the 'native-search-paths' field."
    (custom-gcc gcc-10 "gdc" '("d")
                %generic-search-paths)))
 
+(define-public gdc-11
+  (hidden-package
+   (custom-gcc gcc-11 "gdc" '("d")
+               %generic-search-paths)))
+
 (define-public libgccjit
   (package
     (inherit gcc-9)
