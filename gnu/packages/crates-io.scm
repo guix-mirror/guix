@@ -7088,6 +7088,37 @@ traits.")
         ("rust-libc" ,rust-libc-0.2)
         ("rust-libloading" ,rust-libloading-0.3))))))
 
+(define-public rust-clap-derive-3
+  (package
+    (name "rust-clap-derive")
+    (version "3.0.0-beta.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "clap_derive" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "18cn82jhcha7m0nkpi1a03jx8k7aaq5kxfcxnsqpaa8ih5dp23rp"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-heck" ,rust-heck-0.3)
+        ("rust-proc-macro-error"
+         ,rust-proc-macro-error-1)
+        ("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://clap.rs/")
+    (synopsis
+     "Parse command line argument by defining a struct, derive crate")
+    (description
+     "This package provides a parse command line argument by defining a struct,
+derive crate.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-clap-2
   (package
     (name "rust-clap")
