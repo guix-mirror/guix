@@ -2537,7 +2537,7 @@ Its features are:
 (define-public emacs-corfu
   (package
     (name "emacs-corfu")
-    (version "0.2")
+    (version "0.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2546,7 +2546,7 @@ Its features are:
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0xb2si8il6j2mkkiac6pcx2yj83n82j4rsxxcn7gprpzzm1f9j61"))))
+                "1yw90clfbqny2pchjc1cxqgr0gjag7bz6hys6jgidsxifzr662ps"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/minad/corfu")
     (synopsis "Completion overlay region function")
