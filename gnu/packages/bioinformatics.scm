@@ -15247,6 +15247,40 @@ database. That database maps k-mers to the lowest common ancestor (LCA) of all
 genomes known to contain a given k-mer.")
   (license license:expat)))
 
+(define-public lofreq
+  (package
+    (name "lofreq")
+    (version "2.1.5")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/CSB5/lofreq")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0qssrn3mgjak7df6iqc1rljqd3g3a5syvg0lsv4vds43s3fq23bl"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:test-target "bug-tests"
+       #:tests? #false)) ; test data are not included
+    (inputs
+     `(("htslib" ,htslib)
+       ("python" ,python-wrapper)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("which" ,which)))
+    (home-page "https://csb5.github.io/lofreq/")
+    (synopsis "Sensitive variant calling from sequencing data ")
+    (description "LoFreq is a fast and sensitive variant-caller for inferring
+SNVs and indels from next-generation sequencing data.  It makes full use of
+base-call qualities and other sources of errors inherent in
+sequencing (e.g. mapping or base/indel alignment uncertainty), which are
+usually ignored by other methods or only used for filtering.")
+    (license license:expat)))
+
 (define-public python-pyliftover
   (package
     (name "python-pyliftover")
