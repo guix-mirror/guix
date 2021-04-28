@@ -66,7 +66,10 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
-  #:export (%core-packages
+  #:export (derivation->job
+            image->job
+
+            %core-packages
             %cross-targets
             channel-source->package
             cuirass-jobs))
@@ -232,43 +235,48 @@ SYSTEM."
 (define (hours hours)
   (* 3600 hours))
 
+(define* (image->job store image
+                     #:key name system)
+  "Return the job for IMAGE on SYSTEM.  If NAME is passed, use it as job name,
+otherwise use the IMAGE name."
+  (let* ((image-name (or name
+                         (symbol->string (image-name image))))
+         (name (string-append image-name "." system))
+         (drv (run-with-store store
+                (mbegin %store-monad
+                  (set-guile-for-build (default-guile))
+                  (lower-object (system-image image))))))
+    (parameterize ((%graft? #f))
+      (derivation->job name drv))))
+
 (define (image-jobs store system)
   "Return a list of jobs that build images for SYSTEM."
-  (define (->job name drv)
-    (let ((name (string-append name "." system)))
-      (parameterize ((%graft? #f))
-        (derivation->job name drv))))
-
-  (define (build-image image)
-    (run-with-store store
-      (mbegin %store-monad
-        (set-guile-for-build (default-guile))
-        (lower-object (system-image image)))))
-
   (define MiB
     (expt 2 20))
 
   (if (member system %guix-system-supported-systems)
-      `(,(->job "usb-image"
-                (build-image
-                 (image
-                  (inherit efi-disk-image)
-                  (operating-system installation-os))))
-        ,(->job "iso9660-image"
-                (build-image
-                 (image
-                  (inherit (image-with-label
-                            iso9660-image
-                            (string-append "GUIX_" system "_"
-                                           (if (> (string-length %guix-version) 7)
-                                               (substring %guix-version 0 7)
-                                               %guix-version))))
-                  (operating-system installation-os))))
+      `(,(image->job store
+                     (image
+                      (inherit efi-disk-image)
+                      (operating-system installation-os))
+                     #:name "usb-image"
+                     #:system system)
+        ,(image->job
+          store
+          (image
+           (inherit (image-with-label
+                     iso9660-image
+                     (string-append "GUIX_" system "_"
+                                    (if (> (string-length %guix-version) 7)
+                                        (substring %guix-version 0 7)
+                                        %guix-version))))
+           (operating-system installation-os))
+          #:name "iso9660-image"
+          #:system system)
         ;; Only cross-compile Guix System images from x86_64-linux for now.
         ,@(if (string=? system "x86_64-linux")
-              (map (lambda (image)
-                     (->job (symbol->string (image-name image))
-                            (build-image image)))
+              (map (cut image->job store <>
+                        #:system system)
                    %guix-system-images)
               '()))
       '()))
