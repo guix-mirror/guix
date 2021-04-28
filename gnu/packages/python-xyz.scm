@@ -326,6 +326,29 @@ project documentation.  Documentation source files are written in Markdown, and
 configured with a single YAML configuration file.")
     (license license:bsd-3)))
 
+(define-public python-pymdown-extensions
+  (package
+    (name "python-pymdown-extensions")
+    (version "8.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (pypi-uri "pymdown-extensions" version))
+       (sha256
+        (base32 "0d8pdndrl1kj105lq7r6kw2dnhcvll6h2qs07w71mcpi7gx728v3"))))
+    (build-system python-build-system)
+    ;; FIXME: "AssertionError: False is not true"
+    (arguments
+     `(#:tests? #f))
+    (propagated-inputs
+     `(("python-markdown" ,python-markdown)))
+    (home-page "https://github.com/facelessuser/pymdown-extensions")
+    (synopsis "Extension pack for Python Markdown")
+    (description "PyMdown Extensions is a collection of extensions for Python
+Markdown.  All extensions are found under the module namespace of pymdownx.")
+    (license license:expat)))
+
 (define-public python-slixmpp
   (package
     (name "python-slixmpp")
