@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Steve Sprang <scs@stevesprang.com>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Aljosha Papsch <misc@rpapsch.de>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Jessica Tallon <tsyesika@tsyesika.se>
@@ -136,19 +136,18 @@ human.")
         (base32 "0azq20rqsx7axrigha4qh81ipvhqnnlb27w3xdjg5z4h3jky4dp5"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:configure-flags '("-DWITH_XC_ALL=YES"
+     `(#:modules ((guix build cmake-build-system)
+                  (guix build qt-utils)
+                  (guix build utils))
+       #:imported-modules (,@%cmake-build-system-modules
+                            (guix build qt-utils))
+       #:configure-flags '("-DWITH_XC_ALL=YES"
                            "-DWITH_XC_UPDATECHECK=NO")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'install 'wrap-bin
-           (lambda* (#:key outputs inputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (wrap-program (string-append out "/bin/keepassxc")
-                 `("QT_PLUGIN_PATH" ":" prefix
-                   ,(map (lambda (label)
-                           (string-append (assoc-ref inputs label)
-                                          "/lib/qt5/plugins"))
-                         '("qtbase" "qtsvg")))))
+         (add-after 'install 'wrap-qt
+           (lambda* (#:key outputs #:allow-other-keys)
+             (wrap-qt-program (assoc-ref outputs "out") "keepassxc")
              #t)))))
     (native-inputs
      `(("asciidoctor" ,ruby-asciidoctor)
