@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
@@ -790,7 +790,8 @@ specifies modules in scope when evaluating SNIPPET."
   "Return package ORIGINAL with PATCHES applied."
   (package (inherit original)
            (source (origin (inherit (package-source original))
-                           (patches patches)))))
+                           (patches patches)))
+           (location (package-location original))))
 
 (define (package-with-extra-patches original patches)
   "Return package ORIGINAL with all PATCHES appended to its list of patches."
