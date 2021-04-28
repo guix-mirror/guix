@@ -59,6 +59,7 @@
 ;;; Copyright © 2021 Olivier Rojon <o.rojon@posteo.net>
 ;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
+;;; Copyright © 2021 David Pflug <david@pflug.io>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -7494,22 +7495,25 @@ Strife, Chex Quest, and fan-created games like Harmony, Hacx and Freedoom.")
 (define-public odamex
   (package
     (name "odamex")
-    (version "0.8.3")
+    (version "0.9.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "mirror://sourceforge/odamex/Odamex/" version "/"
-             "odamex-src-" version ".tar.gz"))
+             "odamex-src-" version ".tar.bz2"))
        (sha256
-        (base32 "0f887g87bmcq4dpcga7xc2mpxs947dkbc934ir9xs55gz6z13q96"))))
+        (base32 "0yfrvx8zb3chy47fyz4nik6gbh0y5608yvld4gz4y8l158qk71y1"))))
     (build-system cmake-build-system)
     (arguments `(#:tests? #f))          ; no tests
+    (native-inputs
+     `(("deutex" ,deutex)))
     (inputs
-     `(("sdl" ,sdl)
-       ("sdl-mixer" ,sdl-mixer)
+     `(("sdl" ,sdl2)
+       ("sdl-mixer" ,sdl2-mixer)
        ("zlib" ,zlib)
        ("libpng" ,libpng)
+       ("curl" ,curl-minimal)
        ("alsa-lib" ,alsa-lib)))
     (home-page "https://odamex.net/")
     (synopsis "Multiplayer Doom port")
