@@ -265,6 +265,31 @@ as functions or string constants to form colored terminal output.")
 during long operations.")
     (license license:expat)))
 
+(define-public python-lunr
+  (package
+    (name "python-lunr")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (pypi-uri "lunr" version))
+       (sha256
+        (base32 "106akalywfmnypzkdrhgz4n4740a8xayspybsw59kq06vz8i2qrc"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-nltk" ,python-nltk-3.4)))
+    (home-page
+     "https://github.com/yeraydiazdiaz/lunr.py")
+    (synopsis "Full-text search library")
+    (description "This package provides python library for full-text search.
+It indexes documents and provides a search interface for retrieving documents
+that best match text queries.")
+    (license license:expat)))
+
 (define-public python-slixmpp
   (package
     (name "python-slixmpp")
