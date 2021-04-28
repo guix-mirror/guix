@@ -290,6 +290,42 @@ It indexes documents and provides a search interface for retrieving documents
 that best match text queries.")
     (license license:expat)))
 
+(define-public python-mkdocs
+  (package
+    (name "python-mkdocs")
+    (version "1.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (pypi-uri "mkdocs" version))
+       (sha256
+        (base32 "0fgv5zawpyyv0vd4j5y8m4h058lh9jkwfcm0xy4pg7dr09a1xdph"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Requirements refer to a specific version of dependencies,
+         ;; which are too old. So we patch to refer to any later version.
+         (add-after 'unpack 'patch-requirements
+           (lambda _
+             (substitute* "setup.py"
+               (("==") ">=")))))))
+    (propagated-inputs
+     `(("python-click" ,python-click)
+       ("python-jinja2" ,python-jinja2)
+       ("python-livereload" ,python-livereload)
+       ("python-lunr" ,python-lunr)
+       ("python-markdown" ,python-markdown)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-tornado" ,python-tornado)))
+    (home-page "https://www.mkdocs.org")
+    (synopsis "Project documentation with Markdown")
+    (description "MkDocs is a static site generator geared towards building
+project documentation.  Documentation source files are written in Markdown, and
+configured with a single YAML configuration file.")
+    (license license:bsd-3)))
+
 (define-public python-slixmpp
   (package
     (name "python-slixmpp")
