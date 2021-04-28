@@ -33,7 +33,7 @@
 (define-public less
   (package
     (name "less")
-    (version "581")
+    (version "581.2")
     (source
      (origin
        (method url-fetch)
@@ -43,7 +43,7 @@
                                  version ".tar.gz")))
        (patches (search-patches "less-hurd-path-max.patch"))
        (sha256
-        (base32 "0r9cdawhk3n3i5hkcqci5k122srj48qsp3i7zpnf0rvqzs1py1qx"))))
+        (base32 "0fyqslvrasv19qjvqrwfwz2n7mnm93y61x9bcx09ga90mxyb8d6f"))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)))
     (home-page "https://www.gnu.org/software/less/")
