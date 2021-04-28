@@ -95,9 +95,8 @@ $(srcdir)/po/doc/%.pot-update: doc/%.texi
 TMP_POT_FILES = contributing.pot guix.pot
 
 doc-pot-update:
-	for f in $(TMP_POT_FILES); do \
-		$(MAKE) $(srcdir)/po/doc/guix.pot-update; \
-		$(MAKE) $(srcdir)/po/doc/contributing.pot-update; \
+	for f in $(TMP_POT_FILES); do 		\
+	  $(MAKE) $(srcdir)/po/doc/$$f-update; 	\
 	done
 	$(MAKE) $(srcdir)/po/doc/guix-cookbook.pot-update;
 	msgcat $(addprefix $(srcdir)/po/doc/, $(TMP_POT_FILES)) > $(srcdir)/po/doc/guix-manual.pot
