@@ -315,7 +315,7 @@ input bits thoroughly but are not suitable for cryptography.")
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
-       (list "CC=gcc"
+       (list (string-append "CC=" ,(cc-for-target))
              "HIDE="
              ;; Override "/sbin/ldconfig" with "echo" because we don't need
              ;; "ldconfig".
@@ -324,6 +324,18 @@ input bits thoroughly but are not suitable for cryptography.")
              "all-shared")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-cross-compilation
+           ;; The Makefile contains more insults than cross-compilation support.
+           ;; It poorly reinvents autotools by compiling C programmes with $CC,
+           ;; then tries to run them during the build.  Hard-code the results.
+           (lambda _
+             (substitute* "Makefile"
+               (("\\./autoconf_64b")
+                ,(if (target-64bit? (or (%current-target-system)
+                                        (%current-system)))
+                     "echo 1"
+                     "echo 0"))
+               (("\\./autoconf_vsnprintf") "echo 1"))))
          (add-after 'unpack 'disable-check-for-stdint
            (lambda _
              ;; Of course we have stdint.h, just not in /usr/include
