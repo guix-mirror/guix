@@ -198,7 +198,12 @@ execution is also possible.")
             ,@(if (target-64bit?) '() '("--enable-deprecated")))
       #:phases
       (modify-phases %standard-phases
-        (add-after 'unpack 'autoconf
+        (add-after 'unpack 'patch-plugin-linker-flags
+          (lambda _
+            (substitute* (find-files "src/plugins/" "Makefile.in")
+              (("_la_LDFLAGS = ")
+               "_la_LDFLAGS = ../../../api/libslurm.la "))))
+        (add-after 'patch-plugin-linker-flags 'autoconf
           (lambda _ (invoke "autoconf")))         ;configure.ac was patched
         (add-after 'install 'install-libpmi
           (lambda _
