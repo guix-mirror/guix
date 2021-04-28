@@ -475,11 +475,19 @@ menu to select one of the installed operating systems.")
 tree binary files.  These are board description files used by Linux and BSD.")
     (license license:gpl2+)))
 
+(define %u-boot-rockchip-inno-usb-patch
+  ;; Fix regression in 2020.10 causing freezes on boot with USB boot enabled.
+  ;; See https://gitlab.manjaro.org/manjaro-arm/packages/core/uboot-rockpro64/-/issues/4
+  ;; and https://patchwork.ozlabs.org/project/uboot/patch/20210406151059.1187379-1-icenowy@aosc.io
+  (search-patch "u-boot-rockchip-inno-usb.patch"))
+
 (define u-boot
   (package
     (name "u-boot")
     (version "2021.04")
     (source (origin
+	      (patches
+               (list %u-boot-rockchip-inno-usb-patch))
               (method url-fetch)
               (uri (string-append
                     "https://ftp.denx.de/pub/u-boot/"
@@ -889,13 +897,6 @@ to Novena upstream, does not load u-boot.img from the first partition.")
         (substitute-keyword-arguments (package-arguments base)
           ((#:phases phases)
            `(modify-phases ,phases
-              (add-after 'unpack 'patch-rockpro64-config
-                ;; Fix regression in 2020.10 causing freezes on boot with USB boot enabled.
-                ;; See https://gitlab.manjaro.org/manjaro-arm/packages/core/uboot-rockpro64/-/issues/4
-                (lambda _
-                  (substitute* "configs/rockpro64-rk3399_defconfig"
-                    (("CONFIG_USE_PREBOOT=y") "CONFIG_USE_PREBOOT=n"))
-                  #t))
               (add-after 'patch-rockpro64-config 'set-environment
                 (lambda* (#:key inputs #:allow-other-keys)
                   (setenv "BL31" (string-append (assoc-ref inputs "firmware")
@@ -916,13 +917,6 @@ to Novena upstream, does not load u-boot.img from the first partition.")
         (substitute-keyword-arguments (package-arguments base)
           ((#:phases phases)
            `(modify-phases ,phases
-              (add-after 'unpack 'patch-pinebook-pro-config
-                ;; Fix regression in 2020.10 causing freezes on boot with USB boot enabled.
-                ;; See https://gitlab.manjaro.org/manjaro-arm/packages/core/uboot-rockpro64/-/issues/4
-                (lambda _
-                  (substitute* "configs/pinebook-pro-rk3399_defconfig"
-                    (("CONFIG_USE_PREBOOT=y") "CONFIG_USE_PREBOOT=n"))
-                  #t))
               (add-after 'unpack 'set-environment
                 (lambda* (#:key inputs #:allow-other-keys)
                   (setenv "BL31" (string-append (assoc-ref inputs "firmware")
