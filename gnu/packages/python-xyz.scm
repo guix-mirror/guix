@@ -15075,6 +15075,19 @@ for classification, tokenization, stemming, tagging, parsing, and semantic
 reasoning, wrappers for natural language processing libraries.")
     (license license:asl2.0)))
 
+;; Versions >=3.5 breaks backward-compatibility,
+;; so we keep version 3.4.x around for a while.
+(define-public python-nltk-3.4
+  (package
+    (inherit python-nltk)
+    (version "3.4.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "nltk" version ".zip"))
+       (sha256
+        (base32 "153x2clrnigs74jdgnn3qmljdjj4gprmvpdvh49i18ls4m8mbm5y"))))))
+
 (define-public python2-nltk
   (package-with-python2 python-nltk))
 
