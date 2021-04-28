@@ -349,6 +349,40 @@ configured with a single YAML configuration file.")
 Markdown.  All extensions are found under the module namespace of pymdownx.")
     (license license:expat)))
 
+(define-public python-mkdocs-material
+  (package
+    (name "python-mkdocs-material")
+    (version "7.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (pypi-uri "mkdocs-material" version))
+       (sha256
+        (base32 "0ci9xiasq9nfn09v11m7p49vzazdbgslw7rpzjd6y3hsmn9vljz3"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Requirement mkdocs-material-extensions
+         ;; in-turn requires mkdocs-material. This causes
+         ;; circular dependency, so we remove this requirement.
+         (add-after 'unpack 'patch-requirements
+           (lambda _
+             (substitute* "requirements.txt"
+               (("mkdocs-material-extensions.*$") "")))))))
+    (propagated-inputs
+     `(("python-markdown" ,python-markdown)
+       ("python-mkdocs" ,python-mkdocs)
+       ("python-pygments" ,python-pygments)
+       ("python-pymdown-extensions"
+        ,python-pymdown-extensions)))
+    (home-page "https://squidfunk.github.io/mkdocs-material/")
+    (synopsis "Material Design theme for MkDocs")
+    (description "This package provides a theme plugin for the static site
+generator MkDocs.")
+    (license license:expat)))
+
 (define-public python-slixmpp
   (package
     (name "python-slixmpp")
