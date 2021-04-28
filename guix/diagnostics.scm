@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -233,6 +233,10 @@ etc."
           (make-location file (+ line 1) col)))
     (#f
      #f)
+    (#(file line column)
+     ;; Guile >= 3.0.6 uses vectors instead of alists internally, which can be
+     ;; seen in the arguments to 'syntax-error' exceptions.
+     (location file (+ 1 line) column))
     (_
      (let ((file (assq-ref loc 'filename))
            (line (assq-ref loc 'line))
