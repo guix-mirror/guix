@@ -3,7 +3,7 @@
 ;;; Copyright © 2013 Aljosha Papsch <misc@rpapsch.de>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Eric Bavier <bavier@posteo.net>
@@ -1175,7 +1175,7 @@ efficiently.  It gives the application developer no more than 4 methods.")
 (define-public krona-tools
   (package
    (name "krona-tools")
-   (version "2.7")
+   (version "2.8")
    (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1183,7 +1183,7 @@ efficiently.  It gives the application developer no more than 4 methods.")
                    version "/KronaTools-" version ".tar"))
              (sha256
               (base32
-               "0wvgllcqscsfb4xc09y3fqhx8i38pmr4w55vjs5y79wx56n710iq"))))
+               "1h698wddb3hii68mnkby7s1x81vbhd4z1sf4ivm1lsi2nqlc1vsn"))))
    (build-system perl-build-system)
    (arguments
      `(#:phases
