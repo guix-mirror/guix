@@ -336,6 +336,11 @@ input bits thoroughly but are not suitable for cryptography.")
                      "echo 1"
                      "echo 0"))
                (("\\./autoconf_vsnprintf") "echo 0"))))
+         (add-after 'unpack 'omit-static-libraries
+           ;; These are needed to build & test ustr, but don't install them.
+           (lambda _
+             (substitute* "Makefile"
+               ((".*install.*LIB_STATIC.*") ""))))
          (add-after 'unpack 'disable-check-for-stdint
            (lambda _
              ;; Of course we have stdint.h, just not in /usr/include
