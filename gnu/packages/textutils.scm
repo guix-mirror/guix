@@ -335,7 +335,7 @@ input bits thoroughly but are not suitable for cryptography.")
                                         (%current-system)))
                      "echo 1"
                      "echo 0"))
-               (("\\./autoconf_vsnprintf") "echo 1"))))
+               (("\\./autoconf_vsnprintf") "echo 0"))))
          (add-after 'unpack 'disable-check-for-stdint
            (lambda _
              ;; Of course we have stdint.h, just not in /usr/include
