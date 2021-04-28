@@ -528,6 +528,15 @@ valid."
          ('tarball
           ;; Build Guix tarball only.
           (tarball-jobs store system))
+         (('custom . modules)
+          ;; Build custom modules jobs only.
+          (append-map
+           (lambda (module)
+             (let ((proc (module-ref
+                          (resolve-interface module)
+                          'cuirass-jobs)))
+               (proc store arguments)))
+           modules))
          (('channels . channels)
           ;; Build only the packages from CHANNELS.
           (let ((all (all-packages)))
