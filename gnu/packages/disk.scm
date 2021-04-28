@@ -13,7 +13,7 @@
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018, 2019, 2020 Pierre Neidhardt <mail@ambrevar.xyz>
-;;; Copyright © 2019 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2019, 2021 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2020 Pkill -9 <pkill9@runbox.com>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
@@ -1216,3 +1216,40 @@ that support this feature).")
 built on top of jemalloc which enables control of memory characteristics
 and a partitioning of the heap between kinds of memory (for NUMA).")
     (license license:bsd-3)))
+
+(define-public mmc-utils
+  (let ((commit "e9654ebc4a6a48642848822c4a1355a9de4958d1")
+        (revision "0"))
+    (package
+      (name "mmc-utils")
+      (version (git-version "0.1" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://git.kernel.org/pub/scm/linux/kernel/git/cjb/mmc-utils.git")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+           (base32
+            "1dbsppsmky0r4z6kxwczrw8pih8bhc2pb61gsvs986r4xy6jr17a"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f ; No test suite
+         #:make-flags (list (string-append "prefix=" (assoc-ref %outputs "out"))
+                            (string-append "CC=" ,(cc-for-target)))
+         #:phases
+         (modify-phases %standard-phases
+           ;; No ./configure script
+           (delete 'configure)
+           ;; The Makefile's "install-man" target is a no-op.
+           (add-after 'install 'install-doc
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (man1 (string-append out "/share/man/man1")))
+                 (install-file "man/mmc.1" man1)))))))
+      (home-page "https://git.kernel.org/pub/scm/linux/kernel/git/cjb/mmc-utils.git/")
+      (synopsis "Configure MMC storage devices from userspace")
+      (description "mmc-utils is a command-line tool for configuring and
+inspecting MMC storage devices from userspace.")
+      (license license:gpl2))))
