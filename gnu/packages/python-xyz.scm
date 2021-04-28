@@ -217,6 +217,34 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26))
 
+(define-public python-colorful
+  (package
+    (name "python-colorful")
+    (version "0.5.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (pypi-uri "colorful" version))
+       (sha256
+        (base32 "1sh7g2cn1fyz2hzmzs933razdxi2bna9i1lxa790r9pdwba8m146"))))
+    (build-system python-build-system)
+    ;; FIXME: tests cannot be computed:
+    ;; "Can't perform this operation for unregistered loader type"
+    (arguments
+     `(#:tests? #f))
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-flake8" ,python-flake8)
+       ("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-colorama" ,python-colorama)))
+    (home-page "http://github.com/timofurrer/colorful")
+    (synopsis "Terminal string styling")
+    (description "Colorful provides an array of text styles, that can be used
+as functions or string constants to form colored terminal output.")
+    (license license:expat)))
+
 (define-public python-slixmpp
   (package
     (name "python-slixmpp")
