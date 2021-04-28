@@ -72,6 +72,8 @@
             %core-packages
             %cross-targets
             channel-source->package
+
+            arguments->systems
             cuirass-jobs))
 
 ;;; Commentary:
@@ -443,6 +445,13 @@ valid."
                              load-manifest)
                     manifests))))
 
+(define (arguments->systems arguments)
+  "Return the systems list from ARGUMENTS."
+  (match (assoc-ref arguments 'systems)
+    (#f              %cuirass-supported-systems)
+    ((lst ...)       lst)
+    ((? string? str) (call-with-input-string str read))))
+
 
 ;;;
 ;;; Cuirass entry point.
@@ -454,10 +463,7 @@ valid."
     (assoc-ref arguments 'subset))
 
   (define systems
-    (match (assoc-ref arguments 'systems)
-      (#f              %cuirass-supported-systems)
-      ((lst ...)       lst)
-      ((? string? str) (call-with-input-string str read))))
+    (arguments->systems arguments))
 
   (define channels
     (let ((channels (assq-ref arguments 'channels)))
