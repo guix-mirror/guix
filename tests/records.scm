@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +28,16 @@
   (let ((module (make-fresh-user-module)))
     (module-use! module (resolve-interface '(guix records)))
     module))
+
+(define (location-alist loc)
+  ;; Return a location alist.  In Guile < 3.0.6, LOC is always an alist, but
+  ;; starting with 3.0.6, LOC is a vector (at least when it comes from
+  ;; 'syntax-error' exceptions), hence this conversion.
+  (match loc
+    (#(file line column)
+     `((line . ,line) (column . ,column)
+       (filename . ,file)))
+    (_ loc)))
 
 
 (test-begin "records")
@@ -298,7 +308,7 @@
                     (pk 'expected-loc
                         `((line . ,(- (assq-ref loc 'line) 1))
                           ,@(alist-delete 'line loc)))
-                    (pk 'actual-loc location)))))))
+                    (pk 'actual-loc (location-alist location))))))))
 
 (test-assert "define-record-type* & wrong field specifier, identifier"
   (let ((exp '(begin
@@ -325,7 +335,7 @@
                     (pk 'expected-loc
                         `((line . ,(- (assq-ref loc 'line) 2))
                           ,@(alist-delete 'line loc)))
-                    (pk 'actual-loc location)))))))
+                    (pk 'actual-loc (location-alist location))))))))
 
 (test-assert "define-record-type* & missing initializers"
   (catch 'syntax-error
@@ -396,7 +406,7 @@
                     (pk 'expected-loc
                         `((line . ,(- (assq-ref loc 'line) 1))
                           ,@(alist-delete 'line loc)))
-                    (pk 'actual-loc location)))))))
+                    (pk 'actual-loc (location-alist location))))))))
 
 (test-assert "ABI checks"
   (let ((module (test-module)))
