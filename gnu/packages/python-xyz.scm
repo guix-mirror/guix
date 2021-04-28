@@ -15053,18 +15053,20 @@ extracting firmware images")
 (define-public python-nltk
   (package
     (name "python-nltk")
-    (version "3.2.1")
+    (version "3.6.2")
     (source (origin
               (method url-fetch)
-              (uri (pypi-uri "nltk" version))
+              (uri (pypi-uri "nltk" version ".zip"))
               (sha256
                (base32
-                "0skxbhnymwlspjkzga0f7x1hg3y50fwpfghs8g8k7fh6f4nknlym"))))
+                "1sq32lwgij9h8rsksymnxxr7bqfw3vgx5ijw4azbj6k2xnmmdmap"))))
     (build-system python-build-system)
     (arguments
      '(;; The tests require some extra resources to be downloaded.
        ;; TODO Try packaging these resources.
        #:tests? #f))
+    (native-inputs
+     `(("unzip" ,unzip)))
     (home-page "http://nltk.org/")
     (synopsis "Natural Language Toolkit")
     (description "It provides interfaces to over 50 corpora and lexical
