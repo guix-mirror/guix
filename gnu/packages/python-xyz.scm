@@ -245,6 +245,26 @@
 as functions or string constants to form colored terminal output.")
     (license license:expat)))
 
+(define-public python-yaspin
+  (package
+    (name "python-yaspin")
+    (version "1.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (pypi-uri "yaspin" version))
+       (sha256
+        (base32 "1iirah0kydrdp505qnjj6gi54avcr7z0hbkfx9vmh8myr30rpz6q"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/pavdmyt/yaspin")
+    (synopsis "Yet Another Terminal Spinner")
+    (description "Yaspin provides a terminal spinner to indicate the progress
+during long operations.")
+    (license license:expat)))
+
 (define-public python-slixmpp
   (package
     (name "python-slixmpp")
