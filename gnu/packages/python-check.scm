@@ -46,6 +46,27 @@
   #:use-module (guix download)
   #:use-module (guix build-system python))
 
+(define-public python-pytest-click
+  (package
+    (name "python-pytest-click")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (pypi-uri "pytest_click" version))
+       (sha256
+        (base32 "1rcv4m850rl7djzdgzz2zhjd8g5ih8w6l0sj2f9hsynymlsq82xl"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-click" ,python-click)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/Stranger6667/pytest-click")
+    (synopsis "Py.test plugin for Click")
+    (description "This package provides a plugin to test Python click
+interfaces with pytest.")
+    (license license:expat)))
+
 (define-public python-testfixtures
   (package
     (name "python-testfixtures")
