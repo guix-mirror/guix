@@ -130,6 +130,7 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages rdf)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages rsync)
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages shells)
@@ -15182,50 +15183,58 @@ international community.")
          (add-before 'install 'install-scripts
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((bin (string-append (assoc-ref outputs "out") "/bin"))
-                    (scripts (find-files "scripts" ".*"))
                     (replacements `(("KRAKEN2_DIR" . ,bin)
                                     ("VERSION" . ,,version))))
                (mkdir-p bin)
-               (substitute* scripts
-                 (("#####=([^=]+)=#####" _ key)
-                  (or (assoc-ref replacements key)
-                      (error (format #false "unknown key: ~a~%" key)))))
-               (substitute* "scripts/kraken2"
-                 (("compression_program = \"bzip2\"")
-                  (string-append "compression_program = \""
-                                 (which "bzip2")
-                                 "\""))
-                 (("compression_program = \"gzip\"")
-                  (string-append "compression_program = \""
-                                 (which "gzip")
-                                 "\"")))
-               (substitute* '("scripts/download_genomic_library.sh"
-                              "scripts/download_taxonomy.sh"
-                              "scripts/16S_gg_installation.sh"
-                              "scripts/16S_silva_installation.sh"
-                              "scripts/16S_rdp_installation.sh")
-                 (("wget") (which "wget")))
-               (substitute* "scripts/mask_low_complexity.sh"
-                 (("which") (which "which")))
-               (substitute* '("scripts/mask_low_complexity.sh"
-                              "scripts/download_genomic_library.sh"
-                              "scripts/16S_silva_installation.sh")
-                 (("sed -e ")
-                  (string-append (which "sed") " -e ")))
-               (substitute* '("scripts/rsync_from_ncbi.pl"
-                              "scripts/16S_rdp_installation.sh"
-                              "scripts/16S_silva_installation.sh"
-                              "scripts/16S_gg_installation.sh"
-                              "scripts/download_taxonomy.sh"
-                              "scripts/download_genomic_library.sh")
-                 (("gunzip") (which "gunzip")))
-               (for-each (lambda (script)
-                           (chmod script #o555)
-                           (install-file script bin))
-                         scripts)))))))
+
+               (with-directory-excursion "scripts"
+                 (let ((scripts (find-files "." ".*")))
+                   (substitute* scripts
+                     (("#####=([^=]+)=#####" _ key)
+                      (or (assoc-ref replacements key)
+                          (error (format #false "unknown key: ~a~%" key)))))
+                   (substitute* "kraken2"
+                     (("compression_program = \"bzip2\"")
+                      (string-append "compression_program = \""
+                                     (which "bzip2")
+                                     "\""))
+                     (("compression_program = \"gzip\"")
+                      (string-append "compression_program = \""
+                                     (which "gzip")
+                                     "\"")))
+                   (substitute* '("download_genomic_library.sh"
+                                  "download_taxonomy.sh"
+                                  "16S_gg_installation.sh"
+                                  "16S_silva_installation.sh"
+                                  "16S_rdp_installation.sh")
+                     (("wget") (which "wget")))
+                   (substitute* '("download_taxonomy.sh"
+			          "download_genomic_library.sh"
+			          "rsync_from_ncbi.pl")
+		     (("rsync -")
+                      (string-append (which "rsync") " -")))
+                   (substitute* "mask_low_complexity.sh"
+                     (("which") (which "which")))
+                   (substitute* '("mask_low_complexity.sh"
+                                  "download_genomic_library.sh"
+                                  "16S_silva_installation.sh")
+                     (("sed -e ")
+                      (string-append (which "sed") " -e ")))
+                   (substitute* '("rsync_from_ncbi.pl"
+                                  "16S_rdp_installation.sh"
+                                  "16S_silva_installation.sh"
+                                  "16S_gg_installation.sh"
+                                  "download_taxonomy.sh"
+                                  "download_genomic_library.sh")
+                     (("gunzip") (which "gunzip")))
+                   (for-each (lambda (script)
+                               (chmod script #o555)
+                               (install-file script bin))
+                             scripts)))))))))
     (inputs
      `(("gzip" ,gzip)
        ("perl" ,perl)
+       ("rsync" ,rsync)
        ("sed" ,sed)
        ("wget" ,wget)
        ("which" ,which)))
