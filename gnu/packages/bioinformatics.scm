@@ -15238,6 +15238,31 @@ database. That database maps k-mers to the lowest common ancestor (LCA) of all
 genomes known to contain a given k-mer.")
   (license license:expat)))
 
+(define-public python-pyliftover
+  (package
+    (name "python-pyliftover")
+    (version "0.4")
+    ;; The version of pypi does not include test data.
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/konstantint/pyliftover")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1j8jp9iynv2l3jv5pr0pn0p3azlama1bqg233piglzm6bqh3m2m3"))))
+    (build-system python-build-system)
+    (arguments `(#:tests? #false)) ; the tests access the web
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/konstantint/pyliftover")
+    (synopsis "Python implementation of UCSC liftOver genome coordinate conversion")
+    (description
+     "PyLiftover is a library for quick and easy conversion of genomic (point)
+coordinates between different assemblies.")
+    (license license:expat)))
+
 (define-public r-signac
   (let ((commit "e0512d348adeda4a3f23a2e8f56d1fe09840e03c")
         (revision "1"))
