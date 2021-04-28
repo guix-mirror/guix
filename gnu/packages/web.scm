@@ -1198,11 +1198,13 @@ efficiently.  It gives the application developer no more than 4 methods.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((bin   (string-append (assoc-ref outputs "out") "/bin"))
                    (perl  (string-append (assoc-ref outputs "out")
-                                         "/lib/perl5/site_perl/krona-tools/lib")))
+                                         "/lib/perl5/site_perl/krona-tools/lib"))
+                   (share (string-append (assoc-ref outputs "out")
+                                         "/share/krona-tools")))
                (mkdir-p bin)
                (for-each
                 (lambda (script)
-                  (let* ((executable (string-append "scripts/" script ".pl")))
+                  (let ((executable (string-append "scripts/" script ".pl")))
                     ;; Prefix executables with 'kt' as install script does.
                     (copy-file executable (string-append bin "/kt" script))))
                 '("ClassifyBLAST"
@@ -1230,7 +1232,32 @@ efficiently.  It gives the application developer no more than 4 methods.")
                   (copy-recursively directory
                                     (string-append perl "/../" directory)))
                 (list "data" "img" "taxonomy" "src"))
-               (install-file "lib/KronaTools.pm" perl))))
+               (install-file "lib/KronaTools.pm" perl)
+
+               ;; Install downloaders
+               (substitute* "updateAccessions.sh"
+                 (("ktPath=.*") (string-append "ktPath=" share "\n")))
+               (substitute* "updateTaxonomy.sh"
+                 (("ktPath=.*") (string-append "ktPath=" share "\n"))
+                 (("command -v curl")
+                  (string-append "command -v " (which "curl")))
+                 (("curl -s")
+                  (string-append (which "curl") " -s"))
+                 (("curl\\$timestring")
+                  (string-append (which "curl") "$timestring"))
+                 (("perl -M")
+                  (string-append (which "perl") " -M"))
+                 (("make ")
+                  (string-append (which "make") " ")))
+               (for-each (lambda (file)
+                           (install-file file (string-append share "/scripts")))
+                         '("scripts/extractTaxonomy.pl"
+                           "scripts/accession2taxid.make"
+                           "scripts/taxonomy.make"))
+               (for-each (lambda (file)
+                           (install-file file share))
+                         '("updateAccessions.sh"
+                           "updateTaxonomy.sh")))))
          (add-after 'install 'wrap-program
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -1248,7 +1275,9 @@ efficiently.  It gives the application developer no more than 4 methods.")
                (invoke (string-append (assoc-ref outputs "out") "/bin/ktImportText")
                        "ec.tsv")))))))
    (inputs
-    `(("perl" ,perl)))
+    `(("curl" ,curl)
+      ("make" ,gnu-make)
+      ("perl" ,perl)))
    (home-page "https://github.com/marbl/Krona/wiki")
    (synopsis "Hierarchical data exploration with zoomable HTML5 pie charts")
    (description
