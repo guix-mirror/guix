@@ -3,6 +3,7 @@
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
+;;; Copyright © 2021 Brendan Tildesley <mail@brendan.scot>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -167,9 +168,7 @@ echo hello world"))
                                    "/some/path:/some/other/path"))))
              '(let ((cl (command-line)))
                 (apply execl "/anything/cabbage-bash-1.2.3/bin/sh"
-                       (car cl)
-                       (cons (car cl)
-                             (append '("") cl)))))
+                       (car cl) (append (quote ()) cl))))
      script-contents)
     (call-with-temporary-directory
      (lambda (directory)
@@ -208,8 +207,7 @@ print('hello world')"))
              `(let ((cl (command-line)))
                 (apply execl "/anything/cabbage-bash-1.2.3/bin/python3"
                        (car cl)
-                       (cons (car cl)
-                             (append '("" "-and" "-args") cl)))))
+                       (append '("-and" "-args") cl))))
      script-contents)
     (call-with-temporary-directory
      (lambda (directory)
@@ -242,6 +240,54 @@ print('hello world')"))
                       `("GUIX_FOO" prefix ("/some/path"
                                            "/some/other/path")))
          #f)))))
+
+(define (arg-test bash-args)
+  (call-with-temporary-directory
+   (lambda (directory)
+     (let ((script-file-name (string-append directory "/bash-test.sh")))
+       (call-with-output-file script-file-name
+         (lambda (port)
+           (display (string-append "\
+#!" (which "bash") bash-args "
+echo \"$#$0$*${A}\"")
+                    port)))
+
+       (display "Unwrapped script contents:\n")
+       (call-with-input-file script-file-name
+         (lambda (port) (display (get-string-all port))))
+       (newline) (newline)
+       (chmod script-file-name #o777)
+       (setenv "A" "A")
+       (let* ((run-script (lambda _
+                            (open-pipe*
+                             OPEN_READ
+                             script-file-name "1" "2" "3 3" "4")))
+              (pipe (run-script))
+              (unwrapped-output (get-string-all pipe)))
+         (close-pipe pipe)
+
+         (wrap-script script-file-name `("A" = ("A\nA")))
+
+         (display "Wrapped script contents:\n")
+         (call-with-input-file script-file-name
+           (lambda (port) (display (get-string-all port))))
+         (newline) (newline)
+
+         (let* ((pipe (run-script))
+                (wrapped-output (get-string-all pipe)))
+           (close-pipe pipe)
+           (display "./bash-test.sh 1 2 3\\ 3 4 # Output:\n")
+           (display unwrapped-output) (newline)
+           (display "./bash-test.sh 1 2 3\\ 3 4 # Output (wrapped):\n")
+           (display wrapped-output) (newline)
+           (string=? (string-append unwrapped-output "A\n")
+                     wrapped-output)))))))
+
+(test-assert "wrap-script, argument handling"
+  (arg-test ""))
+
+(test-assert "wrap-script, argument handling, bash --norc"
+  (arg-test " --norc"))
 
 (test-equal "substitute*, text contains a NUL byte, UTF-8"
   "c\0d"
@@ -286,6 +332,5 @@ print('hello world')"))
         `(("irrelevant" . ,directory)
           ("guile/bin" . ,(dirname (which "guile"))))
         "guile"))))
-
 
 (test-end)

@@ -8,6 +8,7 @@
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
+;;; Copyright © 2021 Brendan Tildesley <mail@brendan.scot>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1462,10 +1463,9 @@ not supported."
                                    `(let ((cl (command-line)))
                                       (apply execl ,interpreter
                                              (car cl)
-                                             (cons (car cl)
-                                                   (append
-                                                    ',(string-split args #\space)
-                                                    cl))))))
+                                             (append
+                                              ',(string-tokenize args char-set:graphic)
+                                              cl)))))
                    (template (string-append prog ".XXXXXX"))
                    (out      (mkstemp! template))
                    (st       (stat prog))
