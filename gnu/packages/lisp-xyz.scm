@@ -16284,3 +16284,30 @@ color spaces, which supports many color models.")
 
 (define-public cl-dufy
   (sbcl-package->cl-source-package sbcl-dufy))
+
+(define-public sbcl-unit-test
+  (let ((commit "266afaf4ac091fe0e8803bac2ae72d238144e735")
+        (revision "1"))
+    (package
+      (name "sbcl-unit-test")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/hanshuebner/unit-test")
+               (commit commit)))
+         (file-name (git-file-name "unit-test" version))
+         (sha256
+          (base32 "11hpksz56iqkv7jw25p2a8r3n9dj922fyarn16d98589g6hdskj9"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/hanshuebner/unit-test")
+      (synopsis "Unit-testing framework for Common Lisp")
+      (description "This is a unit-testing framework for Common Lisp.")
+      (license license:unlicense))))
+
+(define-public ecl-unit-test
+  (sbcl-package->ecl-package sbcl-unit-test))
+
+(define-public cl-unit-test
+  (sbcl-package->cl-source-package sbcl-unit-test))
