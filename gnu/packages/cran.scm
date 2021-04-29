@@ -28307,6 +28307,33 @@ OpenStreetMap, Google Maps, and Bing to reverse geocode coordinate pairs with
 minimal hassle.")
     (license license:gpl3+)))
 
+(define-public r-qpcr
+  (package
+    (name "r-qpcr")
+    (version "1.4-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "qpcR" version))
+       (sha256
+        (base32
+         "1r01q7jv3w59yx1gc0qw91rq7rvdhqsi8y57sqqkmwyqfw2x2vsv"))))
+    (properties `((upstream-name . "qpcR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mass" ,r-mass)
+       ("r-matrix" ,r-matrix)
+       ("r-minpack-lm" ,r-minpack-lm)
+       ("r-rgl" ,r-rgl)
+       ("r-robustbase" ,r-robustbase)))
+    (home-page "https://cran.r-project.org/package=qpcR")
+    (synopsis "Modelling and analysis of real-time PCR data")
+    (description
+     "This is a package for model fitting, optimal model selection and
+calculation of various features that are essential in the analysis of
+quantitative real-time polymerase chain reaction (qPCR).")
+    (license license:gpl2+)))
+
 (define-public r-textplot
   (package
     (name "r-textplot")
