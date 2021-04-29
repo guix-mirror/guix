@@ -79,11 +79,13 @@ diff --git a/src/uterm_input.c b/src/uterm_input.c
 index 6fcbc4b..990a09d 100644
 --- a/src/uterm_input.c
 +++ b/src/uterm_input.c
-@@ -178,6 +178,8 @@ static void input_new_dev(struct uterm_input *input,
+@@ -178,6 +178,10 @@ static void input_new_dev(struct uterm_input *input,
  	if (ret)
  		goto err_rcodepoints;
  
-+	uxkb_dev_keymap_update(dev);
++       /* Add the FIFO fd only to the first input poll loop. */
++       if (shl_dlist_empty(&input->devices))
++       	uxkb_dev_keymap_update(dev);
 +
  	if (input->awake > 0) {
  		ret = input_wake_up_dev(dev);
@@ -132,7 +134,7 @@ index 925c755..8fe08f8 100644
  #include <xkbcommon/xkbcommon.h>
  #include "shl_hook.h"
  #include "shl_llog.h"
-@@ -178,6 +181,95 @@ static void timer_event(struct ev_timer *timer, uint64_t num, void *data)
+@@ -178,6 +181,106 @@ static void timer_event(struct ev_timer *timer, uint64_t num, void *data)
  	shl_hook_call(dev->input->hook, dev->input, &dev->repeat_event);
  }
  
@@ -171,7 +173,23 @@ index 925c755..8fe08f8 100644
 +
 +	llog_info(dev->input, "HANDLER CALLED %s|%s|%s\n",
 +		  model, layout, variant);
-+	uxkb_desc_init(dev->input, model, layout, variant, options, NULL);
++
++	struct uterm_input *input = dev->input;
++	struct shl_dlist *iter;
++
++       /* Apply the new layout to all the inputs. */
++       shl_dlist_for_each(iter, &input->devices) {
++       	struct uterm_input_dev *dev;
++		dev = shl_dlist_entry(iter,
++					struct uterm_input_dev,
++					list);
++	        uxkb_desc_init(dev->input, model, layout, variant, options, NULL);
++               dev->state = xkb_state_new(dev->input->keymap);
++               if (!dev->state) {
++               	llog_error(dev->input, "cannot create XKB state");
++                      	return;
++                }
++       }
 +
 +	/* The client will now close the FIFO.  Close it too, and re-create a
 +	 * FIFO so other clients can eventually connect.  */
@@ -180,11 +198,6 @@ index 925c755..8fe08f8 100644
 +	dev->rupdate_fd = -1;
 +	uxkb_dev_keymap_update(dev);
 +
-+	dev->state = xkb_state_new(dev->input->keymap);
-+	if (!dev->state) {
-+		llog_error(dev->input, "cannot create XKB state");
-+		return;
-+	}
 +}
 +
 +int uxkb_dev_keymap_update(struct uterm_input_dev *dev)
