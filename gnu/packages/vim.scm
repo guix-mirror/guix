@@ -842,7 +842,7 @@ through its msgpack-rpc API.")
 (define-public vim-asyncrun
   (package
     (name "vim-asyncrun")
-    (version "2.8.5")
+    (version "2.8.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -851,7 +851,7 @@ through its msgpack-rpc API.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0mxsmjv497h6w8dxw0zvqginlx0yvrvrx4z3jhq2x3y2dfvpcm41"))))
+                "11zcw0sll6qg6ha0rr6n1cw5v73azvf7ycwn9lgiwa5cj7rrqjf4"))))
     (build-system copy-build-system)
     (arguments
      '(#:install-plan
