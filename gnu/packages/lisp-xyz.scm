@@ -16311,3 +16311,63 @@ color spaces, which supports many color models.")
 
 (define-public cl-unit-test
   (sbcl-package->cl-source-package sbcl-unit-test))
+
+(define-public sbcl-bknr-datastore
+  (let ((commit "c98d44f47cc88d19ff91ca3eefbd9719a8ace022")
+        (revision "1"))
+    (package
+      (name "sbcl-bknr-datastore")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/hanshuebner/bknr-datastore")
+               (commit commit)))
+         (file-name (git-file-name "bknr-datastore" version))
+         (sha256
+          (base32 "1vi3w65fnczqvswkm381n6liqfrzjrg40y698qvj7skj28dm5vrm"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:asd-systems
+         '("bknr.datastore"
+           "bknr.impex"
+           "bknr.indices"
+           "bknr.skip-list"
+           "bknr.utils"
+           "bknr.xml")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'enter-source-directory
+             (lambda _
+               (chdir "src")
+               #t)))))
+      (native-inputs
+       `(("cl-store" ,sbcl-cl-store)
+         ("fiveam" ,sbcl-fiveam)
+         ("unit-test" ,sbcl-unit-test)))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("bordeaux-threads" ,sbcl-bordeaux-threads)
+         ("closer-mop" ,sbcl-closer-mop)
+         ("cl-interpol" ,sbcl-cl-interpol)
+         ("cl-ppcre" ,sbcl-cl-ppcre)
+         ("cxml" ,sbcl-cxml)
+         ("flexi-streams" ,sbcl-flexi-streams)
+         ("md5" ,sbcl-md5)
+         ("trivial-utf-8" ,sbcl-trivial-utf-8)
+         ("yason" ,sbcl-yason)))
+      (home-page "https://github.com/hanshuebner/bknr-datastore")
+      (synopsis "In-memory database for Common Lisp")
+      (description
+       "BKNR.DATASTORE is an in-memory CLOS based database with transactions
+for Common Lisp.")
+      (license license:bsd-0))))
+
+;; NOTE: (Sharlatan-20210429T191426+0100):
+;; There is no port for ECL in upstream yet
+;; (define-public ecl-bknr-datastore
+;;   (sbcl-package->ecl-package sbcl-bknr-datastore))
+
+(define-public cl-bknr-datastore
+  (sbcl-package->cl-source-package sbcl-bknr-datastore))
