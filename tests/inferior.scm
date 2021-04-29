@@ -173,9 +173,9 @@
                               ,(package-version package)
                               ,(package-location package))
                      ,@rest)))))
-    (list (map ->list (package-inputs guile-2.2))
-          (map ->list (package-native-inputs guile-2.2))
-          (map ->list (package-propagated-inputs guile-2.2))))
+    (list (map ->list (package-inputs guile-3.0-latest))
+          (map ->list (package-native-inputs guile-3.0-latest))
+          (map ->list (package-propagated-inputs guile-3.0-latest))))
   (let* ((inferior (open-inferior %top-builddir
                                   #:command "scripts/guix"))
          (guile    (first (lookup-inferior-packages inferior "guile")))

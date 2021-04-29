@@ -525,7 +525,7 @@ stressing the robustness of differentiation tools.")
      `(("julia-staticarrays" ,julia-staticarrays)))
     (home-page "https://github.com/JuliaArrays/FillArrays.jl")
     (synopsis "Lazy matrix representation")
-    (description "This package allows to lazily represent matrices filled with
+    (description "This package lazily represents matrices filled with
 a single entry, as well as identity matrices.  This package exports the
 following types: @code{Eye}, @code{Fill}, @code{Ones}, @code{Zeros},
 @code{Trues} and @code{Falses}.")
@@ -699,7 +699,7 @@ implementing both a client and a server.")
     (home-page "https://github.com/JuliaIO/IniFile.jl")
     (synopsis "Reading Windows-style INI files")
     (description "This is a Julia package that defines an IniFile type that
-allows to interface with @file{.ini} files.")
+interfaces with @file{.ini} files.")
     (license license:expat)))
 
 (define-public julia-irtools

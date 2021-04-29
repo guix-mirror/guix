@@ -273,7 +273,7 @@ combination of these streams.")
 (define-public xsimd
   (package
     (name "xsimd")
-    (version "7.4.10")
+    (version "7.5.0")
     (source
      (origin
        (method git-fetch)
@@ -281,7 +281,7 @@ combination of these streams.")
              (url "https://github.com/QuantStack/xsimd")
              (commit version)))
        (sha256
-        (base32 "097yvxrxdldi5s5m4nsxv8f4gwv9xj42mqig98a1z3hkjj1j2gn5"))
+        (base32 "0c9pq5vz43j99z83w3b9qylfi66mn749k1afpv5cwfxggbxvy63f"))
        (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (arguments
@@ -775,7 +775,7 @@ standard GNU style syntax for options.")
 (define-public folly
   (package
     (name "folly")
-    (version "2021.01.25.00")
+    (version "2021.04.26.00")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -784,7 +784,7 @@ standard GNU style syntax for options.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "14dl1g6vf7mc90mcync5h2lp14fwcx8n9h91pmiq6rfgv1fjjrwz"))))
+                "0s3jb02qjl9f4gfj01pa01cilkfpc4p0gbpn6bg5vcicyj76garg"))))
     (build-system cmake-build-system)
     (arguments
      '(;; Tests must be explicitly enabled

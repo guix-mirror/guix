@@ -28,7 +28,7 @@
 ;;; Copyright © 2017, 2018 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017, 2018 Pierre Langlois <pierre.langlois@gmx.com>
-;;; Copyright © 2015, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017, 2018, 2019, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Kristofer Buffington <kristoferbuffington@gmail.com>
 ;;; Copyright © 2018 Amirouche Boubekki <amirouche@hypermove.net>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
@@ -49,6 +49,7 @@
 ;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
 ;;; Copyright © 2021 David Larsson <david.larsson@selfhosted.xyz>
+;;; Copyright © 2021 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2073,6 +2074,36 @@ Driver.")
    ;; COPYING contains copy of lgpl2.1 - but copyright notices just say "LGPL"
    (home-page "http://www.unixodbc.org")))
 
+(define-public nanodbc
+  (package
+    (name "nanodbc")
+    (version "2.13.0")
+    (source (origin
+              (method git-fetch)
+              (uri
+               (git-reference
+                (url "https://github.com/nanodbc/nanodbc")
+                (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1q80p7yv9mcl4hyvnvcjdr70y8nc940ypf368lp97vpqn5yckkgm"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       ;; The tests require ODBC backends to be installed.
+       (list "-DNANODBC_DISABLE_TESTS=ON"
+             "-DBUILD_SHARED_LIBS=ON")
+       #:tests? #false))
+    (inputs
+     `(("unixodbc" ,unixodbc)))
+    (home-page "https://nanodbc.io/")
+    (synopsis "C++ wrapper for the native C ODBC API")
+    (description "The goal for nanodbc is to make developers happy by providing
+a simpler and less verbose API for working with ODBC.  Common tasks should be
+easy, requiring concise and simple code.")
+    (license license:expat)))
+
 (define-public unqlite
   (package
     (name "unqlite")
@@ -2150,6 +2181,27 @@ supports many data structures including strings, hashes, lists, sets, sorted
 sets, bitmaps and hyperloglogs.")
     (home-page "https://redis.io/")
     (license license:bsd-3)))
+
+(define-public ruby-redis
+  (package
+    (name "ruby-redis")
+    (version "4.2.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (rubygems-uri "redis" version))
+        (sha256
+         (base32
+          "15x2sr6h094rjbvg8pkq6m3lcd5abpyx93aifvfdz3wv6x55xa48"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:tests? #f))    ; Tests require a running redis server.
+    (synopsis "Ruby client for Redis' API")
+    (description
+     "This package provides a Ruby client that tries to match Redis' API
+one-to-one, while still providing an idiomatic interface.")
+    (home-page "https://github.com/redis/redis-rb")
+    (license license:expat)))
 
 (define-public kyotocabinet
   (package
@@ -3836,14 +3888,14 @@ PostreSQL, SQLite, ODBC and MySQL.")
 (define-public freetds
   (package
     (name "freetds")
-    (version "1.2.19")
+    (version "1.2.20")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.freetds.org/files/stable/"
                            "freetds-" version ".tar.gz"))
        (sha256
-        (base32 "11xf2w8gh2p9cq4i38jfvdiwgig8wqbg098xjc08kx4iii8lxy3m"))))
+        (base32 "11fzwcahc1bc8npxbif0448v9cwyf7k04167i7fcspmfw7a0hj0d"))))
     (build-system gnu-build-system)
     (arguments
      ;; NOTE: (Sharlatan-20210110213908+0000) some tests require DB connection,

@@ -146,7 +146,7 @@ tmp
 /doc/os-config-lightweight-desktop.texi
 /nix/scripts/download
 /.version
-/doc/stamp-[0-9]
+/doc/stamp-[0-9]*
 /gnu/packages/bootstrap
 /gnu/packages/aux-files/guile-guile-launcher.o
 /guile

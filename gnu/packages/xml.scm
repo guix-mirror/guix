@@ -12,7 +12,7 @@
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
@@ -221,7 +221,7 @@ project (but it is usable outside of the Gnome platform).")
 (define-public libxlsxwriter
   (package
     (name "libxlsxwriter")
-    (version "1.0.1")
+    (version "1.0.3")
     (source
      (origin
        (method git-fetch)
@@ -230,7 +230,7 @@ project (but it is usable outside of the Gnome platform).")
          (commit (string-append "RELEASE_" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0dsqv4qdd582fhwj6m80iz50gkyw4m8n9h4mkd2871csa03sbilf"))
+        (base32 "14c5rgx87nhzasr0j7mcfr1w7ifz0gmdiqy2xq59di5xvcdrpxpv"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled minizip source
@@ -1210,14 +1210,14 @@ XSL-T processor.  It also performs any necessary post-processing.")
 (define-public xmlsec
   (package
     (name "xmlsec")
-    (version "1.2.31")
+    (version "1.2.32")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.aleksey.com/xmlsec/download/"
                                   "xmlsec1-" version ".tar.gz"))
               (sha256
                (base32
-                "09hbbaz2d9hw645q27apkjs1mdr6vd85x5z3c9hzgr1iri9bq44v"))))
+                "0hy0nwz57n9r5wwab9xa66gzwlwvzs54nhlfn3jh8q13acl710z3"))))
     (build-system gnu-build-system)
     (propagated-inputs                  ; according to xmlsec1.pc
      `(("libxml2" ,libxml2)

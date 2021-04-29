@@ -915,13 +915,13 @@ for scientific computing and data science (e.g. BLAS and OpenMP).")
 (define-public python-pynndescent
   (package
     (name "python-pynndescent")
-    (version "0.4.8")
+    (version "0.5.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pynndescent" version))
        (sha256
-        (base32 "0li1fclif50v6xrq7wh3lif9vv5jpj7xhrb0z6g89wwjnp9b9833"))))
+        (base32 "0w87c2v0li2rdbx6qfc2lb6y6bxpdy3jwfgzfs1kcr4d1chj5zfr"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)))
@@ -941,7 +941,7 @@ for k-neighbor-graph construction and approximate nearest neighbor search.")
 (define-public python-opentsne
   (package
     (name "python-opentsne")
-    (version "0.4.4")
+    (version "0.5.2")
     (source
      (origin
        ;; No tests in the PyPI tarball.
@@ -951,7 +951,7 @@ for k-neighbor-graph construction and approximate nearest neighbor search.")
              (commit (string-append "v" version))))
        (file-name (string-append name "-" version "-checkout"))
        (sha256
-        (base32 "08wamsssmyf6511cbmglm67dp48i6xazs89m1cskdk219v90bc76"))))
+        (base32 "1hl42wmafydk4fxdx05l180k3canmqw8h9r20fsqq2aq440b09gh"))))
     (build-system python-build-system)
     (arguments
      `(#:phases

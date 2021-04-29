@@ -15,7 +15,7 @@
 ;;; Copyright © 2018 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2019 Taylan Kammer <taylan.kammer@gmail.com>
-;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -360,6 +360,7 @@ without requiring the source code to be rewritten.")
                 (uri (git-reference
                       (url "https://git.savannah.gnu.org/git/guile.git")
                       (commit commit)))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "09i1c77h2shygylfk0av31jsc1my6zjl230b2cx6vyl58q8c0cqy"))))
@@ -776,21 +777,25 @@ type system, elevating types to first-class status.")
 (define-public guile-git
   (package
     (name "guile-git")
-    (version "0.5.0")
+    (version "0.5.1")
     (home-page "https://gitlab.com/guile-git/guile-git.git")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://gitlab.com/guile-git/guile-git/uploads/"
-                                  "30be542d90619ca844dd3a3ed2e13808/guile-git-"
-                                  version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1j39c1cq9cbwir90mpnbdijpbwh7wkxampgl2r177bv8bfw6y203"))))
+                "1x3wa6la4j1wcfxyhhjlmd7yp85wwpny0y6lrzpz803i9z5fwagc"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags '("GUILE_AUTO_COMPILE=0")))     ; to prevent guild warnings
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("texinfo" ,texinfo)
        ("guile" ,guile-3.0)
        ("guile-bytestructures" ,guile-bytestructures)))
     (inputs

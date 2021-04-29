@@ -130,6 +130,7 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages rdf)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages rsync)
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages shells)
@@ -144,6 +145,7 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages vim)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages wget)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (srfi srfi-1)
@@ -327,7 +329,7 @@ BAM files.")
 (define-public bcftools
   (package
     (name "bcftools")
-    (version "1.11")
+    (version "1.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/samtools/bcftools/"
@@ -335,11 +337,11 @@ BAM files.")
                                   version "/bcftools-" version ".tar.bz2"))
               (sha256
                (base32
-                "0r508mp15pqzf8r1269kb4v5naw9zsvbwd3cz8s1yj7carsf9viw"))
+                "1x94l1hy2pi3lbz0sxlbw0g6q5z5apcrhrlcwda94ns9n4r6a3ks"))
               (modules '((guix build utils)))
               (snippet '(begin
                           ;; Delete bundled htslib.
-                          (delete-file-recursively "htslib-1.11")
+                          (delete-file-recursively "htslib-1.12")
                           #t))))
     (build-system gnu-build-system)
     (arguments
@@ -453,7 +455,7 @@ computational cluster.")
 (define-public bedtools
   (package
     (name "bedtools")
-    (version "2.29.2")
+    (version "2.30.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/arq5x/bedtools2/releases/"
@@ -461,7 +463,7 @@ computational cluster.")
                                   "bedtools-" version ".tar.gz"))
               (sha256
                (base32
-                "0m3hk6548846w83a9s5drsczvy67n2azx41kj71n03klb2gbzwg3"))))
+                "1f2hh79l7dn147c2xyfgf5wfjvlqfw32kjfnnh2n1qy6rpzx2fik"))))
     (build-system gnu-build-system)
     (arguments
      '(#:test-target "test"
@@ -473,7 +475,7 @@ computational cluster.")
     (native-inputs
      `(("python" ,python-wrapper)))
     (inputs
-     `(("samtools" ,samtools-1.9)
+     `(("samtools" ,samtools)
        ("zlib" ,zlib)))
     (home-page "https://github.com/arq5x/bedtools2")
     (synopsis "Tools for genome analysis and arithmetic")
@@ -4476,7 +4478,7 @@ performance.")
 (define-public htslib
   (package
     (name "htslib")
-    (version "1.11")
+    (version "1.12")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -4484,7 +4486,7 @@ performance.")
                     version "/htslib-" version ".tar.bz2"))
               (sha256
                (base32
-                "1mrq4mihzx37yqhj3sfz6da6mw49niia808bzsw2gkkgmadxvyng"))))
+                "1jplnvizgr0fyyvvmkfmnsywrrpqhid3760vw15bllz98qdi9012"))))
     (build-system gnu-build-system)
     ;; Let htslib translate "gs://" and "s3://" to regular https links with
     ;; "--enable-gcs" and "--enable-s3". For these options to work, we also
@@ -5901,7 +5903,7 @@ to the user's query of interest.")
 (define-public samtools
   (package
     (name "samtools")
-    (version "1.11")
+    (version "1.12")
     (source
      (origin
        (method url-fetch)
@@ -5910,11 +5912,11 @@ to the user's query of interest.")
                        version "/samtools-" version ".tar.bz2"))
        (sha256
         (base32
-         "1dp5wknak4arnw5ghhif9mmljlfnw5bgm91wib7z0j8wdjywx0z2"))
+         "1jrdj2idpma5ja9cg0rr73b565vdbr9wyy6zig54bidicc2pg8vd"))
        (modules '((guix build utils)))
        (snippet '(begin
                    ;; Delete bundled htslib.
-                   (delete-file-recursively "htslib-1.11")
+                   (delete-file-recursively "htslib-1.12")
                    #t))))
     (build-system gnu-build-system)
     (arguments
@@ -7249,6 +7251,43 @@ clustering analysis, differential analysis, motif inference and exploration of
 single cell ATAC-seq sequencing data.")
     (license license:gpl3)))
 
+(define-public r-shinycell
+  (let ((commit
+         "aecbd56e66802f28e397f5ae1f19403aadd12163")
+        (revision "1"))
+    (package
+      (name "r-shinycell")
+      (version (git-version "2.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/SGDDNB/ShinyCell")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "13jn2ikmvljnzayk485g1mmq5abcp9m1b8n1djdb1agmn83zaki5"))))
+      (properties `((upstream-name . "ShinyCell")))
+      (build-system r-build-system)
+      (propagated-inputs
+       `(("r-data-table" ,r-data-table)
+         ("r-ggplot2" ,r-ggplot2)
+         ("r-glue" ,r-glue)
+         ("r-gridextra" ,r-gridextra)
+         ("r-hdf5r" ,r-hdf5r)
+         ("r-matrix" ,r-matrix)
+         ("r-r-utils" ,r-r-utils)
+         ("r-rcolorbrewer" ,r-rcolorbrewer)
+         ("r-readr" ,r-readr)
+         ("r-reticulate" ,r-reticulate)))
+      (home-page "https://github.com/SGDDNB/ShinyCell")
+      (synopsis "Shiny interactive web apps for single-cell data")
+      (description
+       "This package provides Shiny apps for interactive exploration of
+single-cell data.")
+      (license license:gpl3))))
+
 (define-public r-archr
   (let ((commit "46b519ffb6f73edf132497ac31650d19ef055dc1")
         (revision "1"))
@@ -7561,6 +7600,64 @@ experience substantial biological insertions and deletions.")
 metagenomic sequence data in FASTA or FASTQ formats.  The tool is written in
 Perl and can be helpful if you want to filter, reformat, or trim your sequence
 data.  It also generates basic statistics for your sequences.")
+    (license license:gpl3+)))
+
+(define-public shorah
+  (package
+    (name "shorah")
+    (version "1.99.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/cbg-ethz/shorah"
+                           "/releases/download/v" version
+                           "/shorah-" version ".tar.xz"))
+       (sha256
+        (base32
+         "158dir9qcqspknlnyfr9zwk41x48nrh5wcg10k2grh9cidp9daiq"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-test-wrapper
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+               (substitute* "examples/run_end2end_test"
+                 (("\\$\\{interpreter\\} ../\\$\\{testscript\\}")
+                  (string-append bin "/${testscript}"))))))
+         (delete 'check)
+         (add-after 'install 'wrap-programs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (site (string-append
+                           out "/lib/python"
+                           ,(version-major+minor
+                             (package-version python))
+                           "/site-packages"))
+                    (pythonpath (getenv "PYTHONPATH"))
+                    (script (string-append out "/bin/shorah")))
+               (chmod script #o555)
+               (wrap-program script `("PYTHONPATH" ":" prefix (,site ,pythonpath))))))
+         (add-after 'wrap-programs 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "make" "check")))))))
+    (inputs
+     `(("boost" ,boost)
+       ("htslib" ,htslib)
+       ("python" ,python)
+       ("python-biopython" ,python-biopython)
+       ("python-numpy" ,python-numpy)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "")
+    (synopsis "Short reads assembly into haplotypes")
+    (description
+     "ShoRAH is a project for the analysis of next generation sequencing data.
+It is designed to analyse genetically heterogeneous samples.  Its tools
+provide error correction, haplotype reconstruction and estimation of the
+frequency of the different genetic variants present in a mixed sample.")
     (license license:gpl3+)))
 
 (define-public ruby-bio-kseq
@@ -11853,7 +11950,7 @@ in an easily configurable manner.")
 (define-public pigx-bsseq
   (package
     (name "pigx-bsseq")
-    (version "0.1.2")
+    (version "0.1.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_bsseq/"
@@ -11861,7 +11958,7 @@ in an easily configurable manner.")
                                   "/pigx_bsseq-" version ".tar.gz"))
               (sha256
                (base32
-                "0mpzlay2d5cjpmrcp7knff6rg1c2mqszd638n7lw0mc0cycbp9f8"))))
+                "0blm0bl5z3ng01n7hh2ffk4rkzvf7vb3nm0crgdzrxr5cahxdxql"))))
     (build-system gnu-build-system)
     (arguments
      `(;; TODO: tests currently require 12+GB of RAM.  See
@@ -11887,8 +11984,11 @@ in an easily configurable manner.")
        ("r-annotationhub" ,r-annotationhub)
        ("r-dt" ,r-dt)
        ("r-genomation" ,r-genomation)
+       ("r-ggbio" ,r-ggbio)
        ("r-ggrepel" ,r-ggrepel)
+       ("r-matrixstats" ,r-matrixstats)
        ("r-methylkit" ,r-methylkit)
+       ("r-reshape2" ,r-reshape2)
        ("r-rtracklayer" ,r-rtracklayer)
        ("r-rmarkdown" ,r-rmarkdown)
        ("r-bookdown" ,r-bookdown)
@@ -12490,7 +12590,7 @@ in RNA-seq data.")
        ("python-igraph" ,python-igraph)
        ("python-joblib" ,python-joblib)
        ("python-legacy-api-wrap" ,python-legacy-api-wrap)
-       ("python-louvain" ,python-louvain)
+       ("python-louvain" ,python-louvain-0.6)
        ("python-matplotlib" ,python-matplotlib)
        ("python-natsort" ,python-natsort)
        ("python-networkx" ,python-networkx)
@@ -15060,6 +15160,154 @@ biological processes.  SBML is useful for models of metabolism, cell
 signaling, and more.  It continues to be evolved and expanded by an
 international community.")
     (license license:lgpl2.1+)))
+
+(define-public kraken2
+  (package
+    (name "kraken2")
+    (version "2.1.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/DerrickWood/kraken2")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0h7a7vygd7y5isbrnc6srwq6xj1rmyd33pm8mmcgfkmlxlg5vkg3"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #false                  ; there are none
+       #:make-flags (list "-C" "src"
+                          (string-append "KRAKEN2_DIR="
+                                         (assoc-ref %outputs "out") "/bin"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'install 'install-scripts
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((bin (string-append (assoc-ref outputs "out") "/bin"))
+                    (replacements `(("KRAKEN2_DIR" . ,bin)
+                                    ("VERSION" . ,,version))))
+               (mkdir-p bin)
+
+               (with-directory-excursion "scripts"
+                 (let ((scripts (find-files "." ".*")))
+                   (substitute* scripts
+                     (("#####=([^=]+)=#####" _ key)
+                      (or (assoc-ref replacements key)
+                          (error (format #false "unknown key: ~a~%" key)))))
+                   (substitute* "kraken2"
+                     (("compression_program = \"bzip2\"")
+                      (string-append "compression_program = \""
+                                     (which "bzip2")
+                                     "\""))
+                     (("compression_program = \"gzip\"")
+                      (string-append "compression_program = \""
+                                     (which "gzip")
+                                     "\"")))
+                   (substitute* '("download_genomic_library.sh"
+                                  "download_taxonomy.sh"
+                                  "16S_gg_installation.sh"
+                                  "16S_silva_installation.sh"
+                                  "16S_rdp_installation.sh")
+                     (("wget") (which "wget")))
+                   (substitute* '("download_taxonomy.sh"
+			          "download_genomic_library.sh"
+			          "rsync_from_ncbi.pl")
+		     (("rsync -")
+                      (string-append (which "rsync") " -")))
+                   (substitute* "mask_low_complexity.sh"
+                     (("which") (which "which")))
+                   (substitute* '("mask_low_complexity.sh"
+                                  "download_genomic_library.sh"
+                                  "16S_silva_installation.sh")
+                     (("sed -e ")
+                      (string-append (which "sed") " -e ")))
+                   (substitute* '("rsync_from_ncbi.pl"
+                                  "16S_rdp_installation.sh"
+                                  "16S_silva_installation.sh"
+                                  "16S_gg_installation.sh"
+                                  "download_taxonomy.sh"
+                                  "download_genomic_library.sh")
+                     (("gunzip") (which "gunzip")))
+                   (for-each (lambda (script)
+                               (chmod script #o555)
+                               (install-file script bin))
+                             scripts)))))))))
+    (inputs
+     `(("gzip" ,gzip)
+       ("perl" ,perl)
+       ("rsync" ,rsync)
+       ("sed" ,sed)
+       ("wget" ,wget)
+       ("which" ,which)))
+  (home-page "https://github.com/DerrickWood/kraken2")
+  (synopsis "Taxonomic sequence classification system")
+  (description "Kraken is a taxonomic sequence classifier that assigns
+taxonomic labels to DNA sequences.  Kraken examines the k-mers within a query
+sequence and uses the information within those k-mers to query a
+database. That database maps k-mers to the lowest common ancestor (LCA) of all
+genomes known to contain a given k-mer.")
+  (license license:expat)))
+
+(define-public lofreq
+  (package
+    (name "lofreq")
+    (version "2.1.5")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/CSB5/lofreq")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0qssrn3mgjak7df6iqc1rljqd3g3a5syvg0lsv4vds43s3fq23bl"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:test-target "bug-tests"
+       #:tests? #false)) ; test data are not included
+    (inputs
+     `(("htslib" ,htslib)
+       ("python" ,python-wrapper)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("which" ,which)))
+    (home-page "https://csb5.github.io/lofreq/")
+    (synopsis "Sensitive variant calling from sequencing data ")
+    (description "LoFreq is a fast and sensitive variant-caller for inferring
+SNVs and indels from next-generation sequencing data.  It makes full use of
+base-call qualities and other sources of errors inherent in
+sequencing (e.g. mapping or base/indel alignment uncertainty), which are
+usually ignored by other methods or only used for filtering.")
+    (license license:expat)))
+
+(define-public python-pyliftover
+  (package
+    (name "python-pyliftover")
+    (version "0.4")
+    ;; The version of pypi does not include test data.
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/konstantint/pyliftover")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1j8jp9iynv2l3jv5pr0pn0p3azlama1bqg233piglzm6bqh3m2m3"))))
+    (build-system python-build-system)
+    (arguments `(#:tests? #false)) ; the tests access the web
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/konstantint/pyliftover")
+    (synopsis "Python implementation of UCSC liftOver genome coordinate conversion")
+    (description
+     "PyLiftover is a library for quick and easy conversion of genomic (point)
+coordinates between different assemblies.")
+    (license license:expat)))
 
 (define-public r-signac
   (let ((commit "e0512d348adeda4a3f23a2e8f56d1fe09840e03c")

@@ -5987,7 +5987,7 @@ queries upon that data.")
 (define-public libgnome-games-support
   (package
     (name "libgnome-games-support")
-    (version "1.4.4")
+    (version "1.7.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/libgnome-games-support/"
@@ -5995,16 +5995,17 @@ queries upon that data.")
                                   "libgnome-games-support-" version ".tar.xz"))
               (sha256
                (base32
-                "1zkbmnrn161p74qg6jhsn9f66yjjzxfm13pl1klv9av8k1bax9pq"))))
-    (build-system gnu-build-system)
+                "11g1r3ppb9v8m3anks9gxf7fv1x38vmjiya3lr7zjjv328pb69d6"))))
+    (build-system meson-build-system)
     (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'pre-check
-           (lambda _
-             ;; Tests require a writable HOME.
-             (setenv "HOME" (getcwd))
-             #t)))))
+      '(#:glib-or-gtk? #t
+        #:phases
+          (modify-phases %standard-phases
+            (add-before 'check 'pre-check
+              (lambda _
+                ;; Tests require a writable HOME.
+                (setenv "HOME" (getcwd))
+                #t)))))
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
@@ -10631,7 +10632,7 @@ configurable file renaming. ")
 (define-public workrave
   (package
     (name "workrave")
-    (version "1.10.42")
+    (version "1.10.43")
     (source
      (origin
        (method git-fetch)
@@ -10642,7 +10643,7 @@ configurable file renaming. ")
                                          version)))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "03i9kk8r1wgrfkkbwikx8wxaw4r4kn62vismr2zdq5g34fkkjh95"))))
+        (base32 "1baa9qjzd4b3q1zy5vhvyrx0hyz17mk237373ca48647897kw4cr"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      ;; The only tests are maintainer tests (in po/), which fail.
@@ -10955,7 +10956,7 @@ tabs, and it supports drag and drop re-ordering of terminals.")
 (define-public libhandy
   (package
     (name "libhandy")
-    (version "1.2.0")
+    (version "1.2.1")
     (source
      (origin
        (method git-fetch)
@@ -10964,7 +10965,7 @@ tabs, and it supports drag and drop re-ordering of terminals.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1a8wfgm2jd3gcbk1nzhq6f2xq7vkxdc9qky8p9k0za9gqi7xfg4v"))))
+        (base32 "1mkxvqk8r6kk5my2c7nnb7z0y39grgrl7y41cnq857qs6ljqlrfv"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags

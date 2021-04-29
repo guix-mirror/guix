@@ -2,7 +2,7 @@
 ;;; Copyright © 2014, 2015, 2020 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
@@ -719,14 +719,14 @@ to not fully trusted targets.  Borg is a fork of Attic.")
 (define-public wimlib
   (package
     (name "wimlib")
-    (version "1.13.3")
+    (version "1.13.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://wimlib.net/downloads/"
                                   "wimlib-" version ".tar.gz"))
               (sha256
                (base32
-                "0zpsbl9iicc6y81xfl6kf8farwfsyrl63shc0idp654kgp8421wa"))))
+                "04ny5s5z05gk6davbwkjkraan781k2xzw6kjwp75h6ncv45dv1sb"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -736,7 +736,9 @@ to not fully trusted targets.  Borg is a fork of Attic.")
        ("ntfs-3g" ,ntfs-3g)
        ("openssl" ,openssl)))
     (arguments
-     `(#:configure-flags (list "--enable-test-support")))
+     `(#:configure-flags
+       (list "--disable-static"
+             "--enable-test-support")))
     (home-page "https://wimlib.net/")
     (synopsis "WIM file manipulation library and utilities")
     (description "wimlib is a C library and set of command-line utilities for

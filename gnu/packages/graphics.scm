@@ -527,6 +527,7 @@ typically encountered in feature film production.")
                "-DWITH_INSTALL_PORTABLE=OFF"
                "-DWITH_JACK=ON"
                "-DWITH_MOD_OCEANSIM=ON"
+               "-DWITH_OPENVDB=ON"
                "-DWITH_OPENSUBDIV=ON"
                "-DWITH_PYTHON_INSTALL=OFF"
                (string-append "-DPYTHON_LIBRARY=python" ,python-version)
@@ -582,6 +583,7 @@ typically encountered in feature film production.")
        ("pugixml" ,pugixml)
        ("python" ,python)
        ("python-numpy" ,python-numpy)
+       ("openvdb" ,openvdb)
        ("tbb" ,tbb)
        ("zlib" ,zlib)
        ("embree" ,embree)))

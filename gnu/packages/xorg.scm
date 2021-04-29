@@ -26,6 +26,7 @@
 ;;; Copyright © 2020, 2021 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Jean-Baptiste Note <jean-baptiste.note@m4x.org>
+;;; Copyright © 2021 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5302,7 +5303,7 @@ over Xlib, including:
 (define-public xorg-server
   (package
     (name "xorg-server")
-    (version "1.20.10")
+    (version "1.20.11")
     (source
       (origin
         (method url-fetch)
@@ -5310,7 +5311,7 @@ over Xlib, including:
                             "xorg-server-" version ".tar.bz2"))
         (sha256
          (base32
-          "16bwrf0ag41l7jbrllbix8z6avc5yimga7ihvq4ch3a5hb020x4p"))
+          "0jacqgin8kcyy8fyv0lhgb4if8g9hp60rm3ih3s1mgps7xp7jk4i"))
         (patches
          (list
           ;; See:
@@ -5432,7 +5433,30 @@ draggable titlebars and borders.")
 (define-public xorg-server-for-tests
   (hidden-package
    (package
-     (inherit xorg-server))))
+     (inherit xorg-server)
+     (version "1.20.10")
+     (source
+       (origin
+         (method url-fetch)
+         (uri (string-append "mirror://xorg/individual/xserver/"
+                             "xorg-server-" version ".tar.bz2"))
+         (sha256
+          (base32
+           "16bwrf0ag41l7jbrllbix8z6avc5yimga7ihvq4ch3a5hb020x4p"))
+         (patches
+          (list
+           ;; See:
+           ;;   https://lists.fedoraproject.org/archives/list/devel@lists.
+           ;;      fedoraproject.org/message/JU655YB7AM4OOEQ4MOMCRHJTYJ76VFOK/
+           (origin
+             (method url-fetch)
+             (uri (string-append
+                   "http://pkgs.fedoraproject.org/cgit/rpms/xorg-x11-server.git"
+                   "/plain/06_use-intel-only-on-pre-gen4.diff"))
+             (sha256
+              (base32
+               "0mm70y058r8s9y9jiv7q2myv0ycnaw3iqzm7d274410s0ik38w7q"))
+             (file-name "xorg-server-use-intel-only-on-pre-gen4.diff")))))))))
 
 (define-public xorg-server-xwayland
   (package/inherit xorg-server

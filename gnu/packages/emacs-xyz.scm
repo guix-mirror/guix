@@ -318,6 +318,29 @@ using geiser.")
 a generic Scheme interaction mode for the GNU Emacs editor.")
     (license license:expat)))
 
+(define-public emacs-vc-hgcmd
+  (package
+    (name "emacs-vc-hgcmd")
+    (version "1.13")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/muffinmad/emacs-vc-hgcmd")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "14c2brvw6vnf1h3lbpap4jh5d7mjnzxrbny4jk77832v09mj2ria"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/muffinmad/emacs-vc-hgcmd")
+    (synopsis "Version control (VC) backend for the Mercurial command server")
+    (description
+     "This package provides an Emacs VC backend to work with Mercurial
+repositories through the
+@uref{https://www.mercurial-scm.org/wiki/CommandServer,Mercurial command
+server}.  The main advantage compared to @code{vc-hg} is speed.")
+    (license license:gpl3+)))
+
 (define-public emacs-hyperbole
   (package
     (name "emacs-hyperbole")
@@ -336,6 +359,7 @@ a generic Scheme interaction mode for the GNU Emacs editor.")
      `(#:include '("DEMO"
                    "DEMO-ROLO.otl"
                    "HY-ABOUT"
+                   "man/hkey-help.txt"
                    "\\.el$"
                    "\\.info$"
                    "\\.kotl$")
@@ -350,8 +374,15 @@ a generic Scheme interaction mode for the GNU Emacs editor.")
                 (string-append (assoc-ref inputs "inetutils")
                                "/bin/dnsdomainname")))
              (substitute* "hyperbole.el"
-               (("\\(hyperb:check-dir-user\\)") ""))
-             #t)))))
+               (("\\(hyperb:check-dir-user\\)") ""))))
+         (add-after 'install 'install-images
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (for-each (lambda (file)
+                           (install-file
+                            file
+                            (string-append out "/share/info/im")))
+                         (find-files "man/im" "\\.png$"))))))))
     (inputs
      `(("inetutils" ,inetutils)))
     (home-page "https://www.gnu.org/software/hyperbole/")
@@ -2276,14 +2307,14 @@ as a library for other Emacs packages.")
 (define-public emacs-auctex
   (package
     (name "emacs-auctex")
-    (version "13.0.6")
+    (version "13.0.10")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "auctex-" version ".tar"))
        (sha256
-        (base32 "00wp388rh2nnk8fam53kilykg90jylps31qxv9ijy1lsp1hqdjys"))))
+        (base32 "150b0xh71xwva7599arjapspdxyy70yyk6a5nabaq22w3dcpasb5"))))
     (build-system emacs-build-system)
     ;; We use 'emacs' because AUCTeX requires dbus at compile time
     ;; ('emacs-minimal' does not provide dbus).
@@ -2510,6 +2541,28 @@ Its features are:
 @end itemize")
     ;; Software is dual-licensed.
     (license (list license:unlicense license:wtfpl2))))
+
+(define-public emacs-corfu
+  (package
+    (name "emacs-corfu")
+    (version "0.4")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/minad/corfu")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1yw90clfbqny2pchjc1cxqgr0gjag7bz6hys6jgidsxifzr662ps"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/minad/corfu")
+    (synopsis "Completion overlay region function")
+    (description "Corfu enhances the default completion in region function
+with a completion overlay.  The current candidates are shown in a popup
+overlay below or above the point.  Corfu can be considered the minimalistic
+@code{completion-in-region} counterpart of the Vertico minibuffer UI.")
+    (license license:gpl3+)))
 
 (define-public emacs-direnv
   (package
@@ -4875,6 +4928,27 @@ file).")
        "This package provides a macro that writes your namespaces for you.")
       (license license:gpl3+))))
 
+(define-public emacs-nameless
+  (package
+    (name "emacs-nameless")
+    (version "1.0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Malabarba/Nameless")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "107q1rximjnag9r9vgwh0iv687i3rsscbdnjc46f8l16j6vi4n7d"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/Malabarba/nameless")
+    (synopsis "Hide package namespace in your Emacs-lisp code")
+    (description
+     "This package provides a @code{nameless-mode} minor mode in which the
+package namespace prefix is ​​hidden by a colon.")
+    (license license:gpl2+)))
+
 (define-public emacs-evil-leader
   (package
     (name "emacs-evil-leader")
@@ -5291,14 +5365,14 @@ source code using IPython.")
 (define-public emacs-debbugs
   (package
     (name "emacs-debbugs")
-    (version "0.27")
+    (version "0.28")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/debbugs-"
                            version ".tar"))
        (sha256
-        (base32 "1zn9p9vmfv5ihrp8d06b6abs48q225v42cgwa01s39hld6zg6wbv"))))
+        (base32 "1qks38hpg3drhxzw66n5yxfq0v6fj9ya7d9dc6x0xwfp6r2x0li0"))))
     (build-system emacs-build-system)
     (arguments '(#:include '("\\.el$" "\\.wsdl$" "\\.info$")))
     (propagated-inputs
@@ -7444,7 +7518,7 @@ style, or as multiple word prefixes.")
     (home-page "https://github.com/minad/consult")
     (synopsis "Consulting completing-read")
     (description "This package provides various handy commands based on the
-Emacs completion function completing-read, which allows to quickly select from a
+Emacs completion function completing-read, which allows quickly selecting from a
 list of candidates.")
     (license license:gpl3+)))
 
@@ -7764,7 +7838,7 @@ after buffer changes.")
     (description
      "RealGUD is a modular, extensible GNU Emacs front-end for interacting
 with external debuggers.  It integrates various debuggers such as gdb, pdb,
-ipdb, jdb, lldb, bashdb, zshdb, etc. and allows to visually step code in the
+ipdb, jdb, lldb, bashdb, zshdb, etc. and allows visually steping through code in the
 sources.  Unlike GUD, it also supports running multiple debug sessions in
 parallel.")
     (license license:gpl3+)))
@@ -8542,28 +8616,31 @@ asynchronously, with Counsel and Ivy.  Simply call
       (license license:gpl3+))))
 
 (define-public emacs-counsel-projectile
-  (package
-    (name "emacs-counsel-projectile")
-    (version "0.3.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/ericdanan/counsel-projectile")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1k4n5lw6wwbgpwv0dg9dw0bjzi0hvbgkzrs1zmq36yhfz6y8gwnh"))))
-    (build-system emacs-build-system)
-    (propagated-inputs
-     `(("emacs-counsel" ,emacs-counsel)
-       ("emacs-projectile" ,emacs-projectile)))
-    (home-page "https://github.com/ericdanan/counsel-projectile")
-    (synopsis "Enhance Projectile with Ivy")
-    (description
-     "This package uses Ivy to provide additional actions for Projectile
+  ;; Use a recent commit in order to fix recent breakage with Ivy.
+  (let ((commit "06b03c1080d3ccc3fa9b9c41b1ccbcf13f058e4b")
+        (revision "0"))
+    (package
+      (name "emacs-counsel-projectile")
+      (version (git-version "0.3.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ericdanan/counsel-projectile")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "10afil6grwxj1x8fxd3ar7ikw3s3hzrkjsjin8wzchbz04389l7s"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-counsel" ,emacs-counsel)
+         ("emacs-projectile" ,emacs-projectile)))
+      (home-page "https://github.com/ericdanan/counsel-projectile")
+      (synopsis "Enhance Projectile with Ivy")
+      (description
+       "This package uses Ivy to provide additional actions for Projectile
 commands and replacements for existing functions.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-qml-mode
   (package
@@ -10112,7 +10189,7 @@ target will call @code{compile} on it.")
 (define-public emacs-cider
   (package
     (name "emacs-cider")
-    (version "1.0.0")
+    (version "1.1.0")
     (source
      (origin
        (method git-fetch)
@@ -10121,7 +10198,7 @@ target will call @code{compile} on it.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "143kh9k34yk0g6kdlkma6g432kmb2r9r1lhyq4irsw6d3vaql7dj"))))
+        (base32 "0wigprg45n6q6jmkw2a9s7mr4h500l2ky9244rrdvkjsgj6af8q8"))))
     (build-system emacs-build-system)
     (arguments
      '(#:exclude                        ;don't exclude 'cider-test.el'
@@ -12126,8 +12203,18 @@ highlights quasi-quoted expressions.")
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
-           (lambda _
+           (lambda* (#:key inputs outputs #:allow-other-keys)
              (setenv "SHELL" (which "sh"))
+             ;; Ensure the tclespeak.so binary is found in the correct location
+             ;; by adding the path to the Tclx library to the Tcl $auto_path
+             ;; variable.
+             (with-fluids ((%default-port-encoding "ISO-8859-1"))
+               (substitute* "servers/espeak"
+                 (("package require Tclx")
+                  (string-append "set auto_path [linsert $auto_path 0 "
+                                 (assoc-ref inputs "tclx")
+                                 "/lib]\n"
+                                 "package require Tclx"))))
              ;; Configure Emacspeak according to etc/install.org.
              (invoke "make" "config")))
          (add-after 'build 'build-espeak
@@ -12155,18 +12242,7 @@ highlights quasi-quoted expressions.")
                ;; Install the convenient startup script.
                (mkdir-p bin)
                (copy-file "run" (string-append bin "/emacspeak")))
-             #t))
-         (add-after 'install 'wrap-program
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (emacspeak (string-append out "/bin/emacspeak"))
-                    (espeak (string-append (assoc-ref inputs "espeak")
-                                           "/bin/espeak")))
-               ;; The environment variable DTK_PROGRAM tells emacspeak what
-               ;; program to use for speech.
-               (wrap-program emacspeak
-                 `("DTK_PROGRAM" ":" prefix (,espeak)))
-               #t))))
+             #t)))
        #:tests? #f))                    ; no check target
     (inputs
      `(("emacs" ,emacs)
@@ -12650,14 +12726,14 @@ shuangpin, wubi and cangjie.")
 (define-public emacs-posframe
   (package
     (name "emacs-posframe")
-    (version "1.0.1")
+    (version "1.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "posframe-" version ".tar"))
        (sha256
-        (base32 "17znlh5xkk57imbblnfndwvld9m02h5fkr9gys89n2skdbxw9c7r"))))
+        (base32 "19a1dkjyw9m74aamyqrsvzrdwshngqpmjzdngx6v5nifvcilrlnk"))))
     (build-system emacs-build-system)
     ;; emacs-minimal does not include the function font-info.
     (arguments
@@ -17074,7 +17150,7 @@ or expressions with SVG rounded box labels that are fully customizable.")
       (build-system emacs-build-system)
       (home-page "https://github.com/rougier/emacs-svg-icon")
       (synopsis "Emacs library to create SVG icons on the fly")
-      (description "This library allows to create SVG icons by parsing remote
+      (description "This library allows creating SVG icons by parsing remote
 collections whose license are compatibles with Emacs.  The default size of an
 icon is exactly 2x1 characters such that it can be inserted inside a text
 without disturbing alignment.")
@@ -17309,6 +17385,28 @@ within Emacs.")
     (synopsis "Group ibuffer's list by projectile root")
     (description "Adds functionality to Emacs @code{ibuffer} for
 grouping buffers by their projectile root directory.")
+    (license license:gpl3+)))
+
+(define-public emacs-ibuffer-vc
+  (package
+    (name "emacs-ibuffer-vc")
+    (version "0.11")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/purcell/ibuffer-vc")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1mgn7b786j4hwq1ks012hxxgvrfn5rz90adi2j190gmjz60rc5g5"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/purcell/ibuffer-vc")
+    (synopsis "Group Ibuffer's list by revision control system indications")
+    (description
+     "Ibuffer-VC adds functionality to Ibuffer for grouping buffers by their
+parent revision control system root directory, and for displaying, or sorting,
+by the status of listed files.")
     (license license:gpl3+)))
 
 (define-public emacs-elm-mode
@@ -22521,6 +22619,29 @@ displays as you type thanks to Helm, though @command{notmuch-search} does the
 real search.")
     (license license:gpl3+)))
 
+(define-public emacs-notmuch-maildir
+  (package
+    (name "emacs-notmuch-maildir")
+    (version "0.2.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://git.sr.ht/~tarsius/notmuch-maildir")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0pmikf1djkr07067nkgmdcxyn7l7ibswx6qlnai8v1v51f9h1g9q"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("notmuch" ,notmuch)))
+    (home-page "https://git.sr.ht/~tarsius/notmuch-maildir")
+    (synopsis "Visualize maildirs as a tree")
+    (description
+     "This package can visualize maildirs hierarchically in Notmuch's ``hello
+buffer''.")
+    (license license:gpl3+)))
+
 (define-public emacs-elmacro
   (package
     (name "emacs-elmacro")
@@ -22548,7 +22669,7 @@ as Emacs Lisp.")
 (define-public emacs-transient
   (package
     (name "emacs-transient")
-    (version "0.3.0")
+    (version "0.3.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -22557,7 +22678,7 @@ as Emacs Lisp.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0g694ydmb9zjn99hxgfjd3m73kpmnkbrgqhr73b4crbxza5sl29c"))))
+                "1766hdqzg95k62nqhadfv502mpnjlx1l59ppqmc6r0las82dc6a8"))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #f                      ;no test suite
@@ -24808,7 +24929,7 @@ Emacs that integrate with major modes like Org-mode.")
 (define-public emacs-modus-themes
   (package
     (name "emacs-modus-themes")
-    (version "1.2.3")
+    (version "1.3.0")
     (source
      (origin
        (method git-fetch)
@@ -24817,7 +24938,7 @@ Emacs that integrate with major modes like Org-mode.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1l392hz6zs6wg06x2zxnk7s0h5cpmvbkcynh68gjmqjj84l7mqrk"))))
+        (base32 "0dw33kvs6k1a933d64fnrckzhs12d8m03a31cwblm39vmirgmf6y"))))
     (build-system emacs-build-system)
     (home-page "https://protesilaos.com/modus-themes/")
     (synopsis "Accessible themes (WCAG AAA)")
@@ -26975,6 +27096,26 @@ Features:
 @end itemize\n")
     (license license:gpl3+)))
 
+(define-public emacs-shell-command+
+  (package
+    (name "emacs-shell-command+")
+    (version "2.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://elpa.gnu.org/packages/"
+                                  "shell-command+-" version ".tar"))
+              (sha256
+               (base32 "1jyrnv89989bi03m5h8dj0cllsw3rvyxkiyfrh9v6gpxjwfy8lmq"))))
+    (build-system emacs-build-system)
+    (home-page "http://elpa.gnu.org/packages/shell-command+.html")
+    (synopsis "Extended Emacs @code{shell-command}")
+    (description
+     "Shell-command+ is a @code{shell-command} substitute that extends the
+regular Emacs command with several features.  You can for example count all
+the lines in a buffer with @code{> wc -l}, or delete all lower case letters in
+the selected region with @code{| tr -d a-z}.")
+    (license license:gpl3+)))
+
 (define-public emacs-shell-pop
   (let ((commit "4b4394037940a890a313d715d203d9ead2d156a6")
         (revision "0"))
@@ -27552,7 +27693,7 @@ rules about where space should be left to separate words and parentheses.")
      `(("emacs-request" ,emacs-request)))
     (home-page "https://github.com/etu/webpaste.el")
     (synopsis "Paste to pastebin-like services")
-    (description "This mode allows to paste whole buffers or parts of buffers
+    (description "This mode pastes whole buffers or parts of buffers
 to pastebin-like services.  It supports more than one service and will
 failover if one service fails.  More services can easily be added over time
 and preferred services can easily be configured.")
@@ -27620,7 +27761,7 @@ and preferred services can easily be configured.")
 (define-public emacs-vertico
   (package
     (name "emacs-vertico")
-    (version "0.4")
+    (version "0.6")
     (source
      (origin
        (method git-fetch)
@@ -27629,14 +27770,8 @@ and preferred services can easily be configured.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0ijahr9dzs7v56w2n74xp0akzbzbxlw5852bywc4h24xdspakj52"))))
+        (base32 "1is189z4hmrq49zqvm10xmq7ggj0zy57p0drzcrn1m94qicxnwj2"))))
     (build-system emacs-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'install 'build-doc
-           (lambda _
-             (invoke "makeinfo" "vertico.texi"))))))
     (native-inputs
      `(("texinfo" ,texinfo)))
     (home-page "https://github.com/minad/vertico")
@@ -27648,6 +27783,27 @@ achieves full compatibility with built-in Emacs commands and completion
 tables.  Vertico is pretty bare-bone and only provides a minimal set of
 commands.  Additional optional enhancements can be provided externally by
 complementary packages.")
+    (license license:gpl3+)))
+
+(define-public emacs-wisp-mode
+  (package
+    (name "emacs-wisp-mode")
+    (version "0.2.9")
+    (source
+     (origin
+       (method hg-fetch)
+       (uri (hg-reference
+             (url "https://hg.sr.ht/~arnebab/wisp")
+             (changeset (string-append "wisp-mode-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1xdzyj3yqzvdg0vrllp9wi8cswpa89i0gmiz22a25brw4qy185ar"))))
+    (build-system emacs-build-system)
+    (home-page "https://www.draketo.de/software/wisp")
+    (synopsis "Syntax highlighting and indentation support for Wisp files")
+    (description
+     "This package provides @code{wisp-mode}, an Emacs major mode for Wisp
+files, providing syntax highlighting and indentation rules.")
     (license license:gpl3+)))
 
 (define-public emacs-ivy-hydra
@@ -27673,4 +27829,3 @@ complementary packages.")
 quasi-prefix map, with many useful bindings.  These bindings are
 shorter than usual, using mostly unprefixed keys.")
     (license license:gpl3+)))
-

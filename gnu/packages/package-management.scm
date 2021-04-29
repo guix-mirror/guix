@@ -1049,8 +1049,8 @@ environments.")
     (license (list license:gpl3+ license:agpl3+ license:silofl1.1))))
 
 (define-public guix-build-coordinator
-  (let ((commit "6fb5eafc33efa109b220efe71594cfcdb2efe133")
-        (revision "24"))
+  (let ((commit "1305724c7ea3c2bb3e557918d5a1b17d572aa110")
+        (revision "27"))
     (package
       (name "guix-build-coordinator")
       (version (git-version "0" revision commit))
@@ -1061,7 +1061,7 @@ environments.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "1lf7jry18kwglvyakfkmi8bif8ppsdinl0xjgmkgkp4mvmymh2gj"))
+                  "179n33mkhl6f2fv0gyn7sdm3k4hhm1hvca6dgc923d0w7zv4p577"))
                 (file-name (string-append name "-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -1096,6 +1096,7 @@ environments.")
                                          "guile-lib"
                                          "guile-lzlib"
                                          "guile-zlib"
+                                         "guile-sqlite3"
                                          "gnutls"
                                          ,@(if (hurd-target?)
                                                '()

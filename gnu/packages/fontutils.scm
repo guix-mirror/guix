@@ -6,7 +6,7 @@
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
-;;; Copyright © 2017, 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
@@ -800,7 +800,7 @@ maintain the Noto Fonts project.")
 (define-public fcft
   (package
     (name "fcft")
-    (version "2.3.2")
+    (version "2.3.3")
     (home-page "https://codeberg.org/dnkl/fcft")
     (source (origin
               (method git-fetch)
@@ -808,7 +808,7 @@ maintain the Noto Fonts project.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0k2i57rakm4g86f7hbhkby8af0vv7v63a70lk3m58mkycpy5q2rm"))))
+                "0314r038jl17hrhc9nrbx30jk0pz8ckbdnizws4r46b1rf4h0b1f"))))
     (build-system meson-build-system)
     (arguments
      `(#:meson ,meson-0.55))

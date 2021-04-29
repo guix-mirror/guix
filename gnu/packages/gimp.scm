@@ -208,7 +208,7 @@ provided, as well as a framework to add new color models and data types.")
 (define-public gegl
   (package
     (name "gegl")
-    (version "0.4.28")
+    (version "0.4.30")
     (source (origin
               (method url-fetch)
               (uri (list (string-append "https://download.gimp.org/pub/gegl/"
@@ -222,7 +222,7 @@ provided, as well as a framework to add new color models and data types.")
                                         "/gegl-" version ".tar.xz")))
               (sha256
                (base32
-                "003ri7yv7lm2fi86ama3vlkwnz656yyib4r36hxwlk6mfy2hs48x"))))
+                "1pd8xkx70k0fsi1hrzrmaify7112wjmxzk0p6bi6js89yhn7h4n1"))))
     (build-system meson-build-system)
     (arguments
      `(#:meson ,meson-0.55
@@ -269,7 +269,7 @@ buffers.")
 (define-public gimp
   (package
     (name "gimp")
-    (version "2.10.22")
+    (version "2.10.24")
     (source
      (origin
        (method url-fetch)
@@ -277,8 +277,7 @@ buffers.")
                            (version-major+minor version)
                            "/gimp-" version ".tar.bz2"))
        (sha256
-        (base32 "1fqqyshakvdarf1jipk2n33ibqr23ni22z3d8srq13bpydblpf1d"))
-       (patches (search-patches "gimp-make-gegl-introspect-optional.patch"))))
+        (base32 "17lq6ns5qhspd171zqh76yf98xnn5n0hcl7hbhbx63cc6ribf6xx"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                            ; 9 MiB of gtk-doc HTML

@@ -1509,7 +1509,7 @@ modules for building a Wayland compositor.")
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("scdoc" ,scdoc)
                      ("wayland-protocols" ,wayland-protocols)))
-    (home-page "https://github.com/swaywm/sway")
+    (home-page "https://github.com/swaywm/swayidle")
     (synopsis "Idle management daemon for Wayland compositors")
     (description "Swayidle is a idle management daemon for Wayland compositors.")
     (license license:expat))) ; MIT license
@@ -1570,7 +1570,7 @@ modules for building a Wayland compositor.")
 (define-public waybar
   (package
     (name "waybar")
-    (version "0.9.5")
+    (version "0.9.7")
     (source
      (origin
        (method git-fetch)
@@ -1579,7 +1579,7 @@ modules for building a Wayland compositor.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1kzrgqaclfk6gcwhknxn28xl74gm5swipgn8kk8avacb4nsw1l9q"))))
+        (base32 "17cn4d3dx92v40jd9vl41smp8hh3gf5chd1j2f7l1lrpfpnllg5x"))))
     (build-system meson-build-system)
     (inputs `(("date" ,date)
               ("fmt" ,fmt)
@@ -2222,7 +2222,7 @@ button is pressed on the root window.")
 (define-public xmenu
   (package
     (name "xmenu")
-    (version "4.4.1")
+    (version "4.5.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2231,7 +2231,7 @@ button is pressed on the root window.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1s70zvsaqnsjqs298vw3py0vcvia68xlks1wcz37pb88bwligz1x"))))
+                "0qgxkrv9jnnnf3px7zh0paf8xsr4bcpf0f2nq9zy012m214223hs"))))
     (build-system gnu-build-system)
     (inputs
      `(("libx11" ,libx11)

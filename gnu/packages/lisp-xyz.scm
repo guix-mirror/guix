@@ -68,6 +68,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libffi)
@@ -80,6 +81,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages sdl)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages tls)
@@ -5682,6 +5684,79 @@ basic everyday functions and macros.")
 (define-public ecl-fare-utils
   (sbcl-package->ecl-package sbcl-fare-utils))
 
+(define-public sbcl-fare-mop
+  (let ((commit "538aa94590a0354f382eddd9238934763434af30")
+        (revision "1"))
+    (package
+      (name "sbcl-fare-mop")
+      (version (git-version "1.0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/fare/fare-mop")
+               (commit commit)))
+         (file-name (git-file-name "fare-mop" version))
+         (sha256
+          (base32
+           "0maxs8392953fhnaa6zwnm2mdbhxjxipp4g4rvypm06ixr6pyv1c"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("close-mop" ,sbcl-closer-mop)
+         ("fare-utils" ,sbcl-fare-utils)))
+      (home-page "https://github.com/fare/fare-mop")
+      (synopsis "General purpose Common Lisp utilities using the MOP")
+      (description
+       "FARE-MOP is a small collection of utilities using the MetaObject
+Protocol.  It notably contains a SIMPLE-PRINT-OBJECT method, and
+a SIMPLE-PRINT-OBJECT-MIXIN mixin that allow you to trivially define
+PRINT-OBJECT methods that print the interesting slots in your objects, which is
+great for REPL interaction and debugging.")
+      (license license:unlicense))))
+
+(define-public ecl-fare-mop
+  (sbcl-package->ecl-package sbcl-fare-mop))
+
+(define-public cl-fare-mop
+  (sbcl-package->cl-source-package sbcl-fare-mop))
+
+(define-public sbcl-inferior-shell
+  (let ((commit "15c2d04a7398db965ea1c3ba2d49efa7c851f2c2")
+        (revision "1"))
+    (package
+      (name "sbcl-inferior-shell")
+      (version (git-version "2.0.5" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/fare/inferior-shell")
+               (commit commit)))
+         (file-name (git-file-name "inferior-shell" version))
+         (sha256
+          (base32 "02qx37zzk5j4xmwh77k2qa2wvnzvaj6qml5dh2q7b6b1ljvgcj4m"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("hu.dwim.stefil" ,sbcl-hu.dwim.stefil)))
+      (inputs
+       `(("alexandira" ,sbcl-alexandria)
+         ("fare-mop" ,sbcl-fare-mop)
+         ("fare-quasiquote" ,sbcl-fare-quasiquote)
+         ("fare-utils" ,sbcl-fare-utils)
+         ("trivia" ,sbcl-trivia)))
+      (home-page "https://github.com/fare/inferior-shell")
+      (synopsis "Spawn local or remote processes and shell pipes")
+      (description
+       "This package provides a Common Lisp system helping in scripting, it
+uses @code{uiop:run-program} as a backend.")
+      (license license:expat))))
+
+(define-public ecl-inferior-shell
+  (sbcl-package->ecl-package sbcl-inferior-shell))
+
+(define-public cl-inferior-shell
+  (sbcl-package->cl-source-package sbcl-inferior-shell))
+
 (define-public sbcl-trivial-utf-8
   (let ((commit "4d427cfbb1c452436a0efb71c3205c9da67f718f")
         (revision "1"))
@@ -9223,6 +9298,77 @@ for reading and writing JPEG image files.")
 
 (define-public ecl-cl-jpeg
   (sbcl-package->ecl-package sbcl-cl-jpeg))
+
+(define-public sbcl-png
+  (let ((commit "11b965fe378fd0561abe3616b18ff03af5179648")
+        (revision "1"))
+    (package
+      (name "sbcl-png")
+      (version (git-version "0.6" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ljosa/cl-png")
+               (commit commit)))
+         (file-name (git-file-name "cl-png" version))
+         (sha256
+          (base32 "173hqwpd0rwqf95mfx1h9l9c3i8bb0gvnpspzmmz3g5x3440czy4"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-lib-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "libpng.lisp"
+                 (("\"libpng\"")
+                  (string-append "\""
+                                 (assoc-ref inputs "libpng")
+                                 "/lib/libpng\""))))))))
+      (inputs
+       `(("cffi" ,sbcl-cffi)
+         ("libpng" ,libpng)))
+      (home-page "https://github.com/ljosa/cl-png")
+      (synopsis "Read and write PNG file format")
+      (description
+       "This package provides a @code{PNG} Common Lisp system to operate with
+Portable Network Graphics file format.")
+      (license license:lgpl2.1))))
+
+(define-public ecl-png
+  (sbcl-package->ecl-package sbcl-png))
+
+(define-public cl-png
+  (sbcl-package->cl-source-package sbcl-png))
+
+(define-public sbcl-cl-svg
+  (let ((commit "1e988ebd2d6e2ee7be4744208828ef1b59e5dcdc")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-svg")
+      (version (git-version "0.0.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/wmannis/cl-svg")
+               (commit commit)))
+         (file-name (git-file-name "cl-svg" version))
+         (sha256
+          (base32 "11rmzimy6j7ln7q5y1h2kw1225rsfb6fpn89qjcq7h5lc8fay0wz"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/wmannis/cl-svg")
+      (synopsis "Write SVG file format")
+      (description
+       "This package provides the @code{CL-SVG} Common Lisp system to produce
+Scalable Vector Graphics files.")
+      (license license:expat))))
+
+(define-public ecl-cl-svg
+  (sbcl-package->ecl-package sbcl-cl-svg))
+
+(define-public cl-svg
+  (sbcl-package->cl-source-package sbcl-cl-svg))
 
 (define-public sbcl-nodgui
   (let ((commit "4a9c2e7714b278fbe97d198c56f54ea87290001d")
@@ -15014,8 +15160,8 @@ protocol for Mastodon.")
   (sbcl-package->cl-source-package sbcl-tooter))
 
 (define-public sbcl-croatoan
-  (let ((commit "89ecd147cf1548f569f23353b3ab656cfb74de1f")
-        (revision "1"))
+  (let ((commit "7077ef14d27e8708515ad8d309886f516e7fbd98")
+        (revision "2"))
     (package
       (name "sbcl-croatoan")
       (version (git-version "0.0.1" revision commit))
@@ -15027,7 +15173,7 @@ protocol for Mastodon.")
                (commit commit)))
          (file-name (git-file-name "croatoan" version))
          (sha256
-          (base32 "0pk4mym88531jx0f1zmm6gmvrmdjzj2zcl2cdywdsxvjygr53zyx"))))
+          (base32 "0gf2sjpsdkd9s8imwy2wjrkdx82a5sc4yy9bndlnjlwmdraw4j37"))))
       (build-system asdf-build-system/sbcl)
       (arguments
        '(#:phases
@@ -15880,7 +16026,7 @@ allows one to gradually make their programs safer.")
        "Clip is an attempt at a templating library that allows you to write
 templates in a way that is both accessible to direct webdesign and
 flexible.  The main idea is to incorporate transformation commands into an HTML
-file through tags and attributes.  Clip is heavily dependant on Plump and
+file through tags and attributes.  Clip is heavily dependent on Plump and
 lQuery.")
       (license license:zlib))))
 
@@ -15889,3 +16035,252 @@ lQuery.")
 
 (define-public cl-clip
   (sbcl-package->cl-source-package sbcl-clip))
+
+(define-public sbcl-pathname-utils
+  (let ((commit "70f517e44e13a38e0c8f296613236376d679fa8f")
+        (revision "1"))
+    (package
+      (name "sbcl-pathname-utils")
+      (version (git-version "1.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shinmera/pathname-utils")
+               (commit commit)))
+         (file-name (git-file-name "pathname-utils" version))
+         (sha256
+          (base32 "1zm4bf6gajpgmhr7zwf7600zlaf8fs1fcyzabqsh2ma2crkgqdxq"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("parachute" ,sbcl-parachute)))
+      (home-page "https://shinmera.github.io/pathname-utils/")
+      (synopsis "Collection of utilities to help with pathname operations")
+      (description
+       "This package provides a Common Lisp system a with collection of common
+tests and operations to help handling pathnames.  It does not actually deal in
+handling the accessing of files on the underlying system however.")
+      (license license:zlib))))
+
+(define-public ecl-pathname-utils
+  (sbcl-package->ecl-package sbcl-pathname-utils))
+
+(define-public cl-pathname-utils
+  (sbcl-package->cl-source-package sbcl-pathname-utils))
+
+(define-public sbcl-terrable
+  (let ((commit "e4fe23ffa08e8d53a8168105b413861da59cc786")
+        (revision "1"))
+    (package
+     (name "sbcl-terrable")
+     (version (git-version "1.0.0" revision commit))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Shirakumo/terrable")
+             (commit commit)))
+       (file-name (git-file-name "terrable" version))
+       (sha256
+        (base32 "0pnqflgz410zydc1ivwnd8hcl24bgr7x12yjzr7g4lq3ibc8y97b"))))
+     (build-system asdf-build-system/sbcl)
+     (inputs
+      `(("documentation-utils" ,sbcl-documentation-utils)
+        ("fast-io" ,sbcl-fast-io)
+        ("ieee-floats" ,sbcl-ieee-floats)
+        ("static-vectors" ,sbcl-static-vectors)
+        ("trivial-garbage" ,sbcl-trivial-garbage)))
+     (home-page "https://shirakumo.github.io/terrable/")
+     (synopsis "Parser library for Terragen TER terrain files")
+     (description
+      "This package provides Common Lisp support for reading the Terragen
+@code{.TER} format.  The format specification can be found at
+@url{https://planetside.co.uk/wiki/index.php?title=Terragen_.TER_Format}")
+     (license license:zlib))))
+
+(define-public ecl-terrable
+  (sbcl-package->ecl-package sbcl-terrable))
+
+(define-public cl-terrable
+  (sbcl-package->cl-source-package sbcl-terrable))
+
+(define-public sbcl-simple-rgb
+  (let ((commit "ba9b0689362c28aa6a91c0636796c6c372657293")
+        (revision "1"))
+    (package
+      (name "sbcl-simple-rgb")
+      (version (git-version "0.01" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/wmannis/simple-rgb/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0ggv0h2n4mvwnggjr1b40gw667gnyykzki2zadaczi38ydzyzlp1"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/wmannis/simple-rgb")
+      (synopsis "Manipulate colors in RGB format")
+      (description
+       "This Common Lisp library focuses on the small set of basic color
+manipulations (lightening, compliments, etc.) you might use to generate a
+color palette for a GUI or web page.")
+      (license license:bsd-2))))
+
+(define-public ecl-simple-rgb
+  (sbcl-package->ecl-package sbcl-simple-rgb))
+
+(define-public cl-simple-rgb
+  (sbcl-package->cl-source-package sbcl-simple-rgb))
+
+(define-public sbcl-cl-qprint
+  (let ((commit "bfe398551cbfb7ca84a9ba59a26a1116ac5c06eb")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-qprint")
+      (version (git-version "0.9.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/eugeneia/cl-qprint/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "099h0rrdzxnlmn8avi72mg2dl0kccp7w01b2p9nwyy4b8yr32cir"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("flexi-streams" ,sbcl-flexi-streams)))
+      (home-page "https://github.com/eugeneia/cl-qprint/")
+      (synopsis "Implementation of the quoted-printable encoding")
+      (description
+       "This Common Lisp library implements the quoted-printable encoding as
+described in RFC 2045 (see @url{http://tools.ietf.org/html/rfc2045}).")
+      (license license:lgpl2.1))))
+
+(define-public ecl-cl-qprint
+  (sbcl-package->ecl-package sbcl-cl-qprint))
+
+(define-public cl-qprint
+  (sbcl-package->cl-source-package sbcl-cl-qprint))
+
+(define-public sbcl-cl-mime
+  (let ((commit "d30a28e0a40393bd3af7d138daa05319ed2e9d07")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-mime")
+      ;; One commit says "update to cl-mime-0.5.3", even though the .asd is at 0.5.1.
+      (version (git-version "0.5.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               ;; Maintained fork according to http://www.cliki.net/CL-MIME:
+               (url "https://github.com/40ants/cl-mime")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0qn8if0fj6vzc897pqqqs0m1y107gmzqngpqhqmwrcsp1ckj5k0v"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("ppcre" ,sbcl-cl-ppcre)
+         ("cl-base64" ,sbcl-cl-base64)
+         ("cl-qprint" ,sbcl-cl-qprint)))
+      (native-inputs
+       `(("rove" ,sbcl-rove)))
+      (home-page "https://github.com/eugeneia/cl-qprint/")
+      (synopsis "Read and print MIME content in Common Lisp")
+      (description
+       "This is a Common Lisp library for reading and printing MIME content.
+It supports automatic conversion between 7-bit, quoted-printable and base64
+encodings.")
+      (license license:lgpl2.1))))
+
+(define-public ecl-cl-mime
+  (sbcl-package->ecl-package sbcl-cl-mime))
+
+(define-public cl-mime
+  (sbcl-package->cl-source-package sbcl-cl-mime))
+
+(define-public sbcl-lispbuilder-sdl
+  (let ((commit "589b3c6d552bbec4b520f61388117d6c7b3de5ab"))
+    (package
+      (name "sbcl-lispbuilder-sdl")
+      (version (git-version "0.9.8.2" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/lispbuilder/lispbuilder")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0zga59fjlhq3mhwbf80qwqwpkjkxqnn2mhxajlb8563vhn3dbafp"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("cffi" ,sbcl-cffi)
+         ("trivial-garbage" ,sbcl-trivial-garbage)
+         ("sdl" ,sdl)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'cd-sdl
+             (lambda _
+               (chdir "lispbuilder-sdl")
+               #t))
+           (add-after 'cd-sdl 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "cffi/library.lisp"
+                 (("libSDL[^\"]*" all)
+                  (string-append (assoc-ref inputs "sdl") "/lib/" all)))
+               #t)))))
+      (home-page "https://github.com/lispbuilder/lispbuilder/wiki/LispbuilderSDL")
+      (synopsis "Common Lisp wrapper for SDL")
+      (description
+       "This library is an SDL wrapper as part of an umbrella project that
+provides cross-platform packages for building large, interactive applications
+in Common Lisp.")
+      (license license:expat))))
+
+(define-public ecl-lispbuilder-sdl
+  (sbcl-package->ecl-package sbcl-lispbuilder-sdl))
+
+(define-public cl-lispbuilder-sdl
+  (sbcl-package->cl-source-package sbcl-lispbuilder-sdl))
+
+(define-public sbcl-dufy
+  (package
+    (name "sbcl-dufy")
+    (version "0.4.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/privet-kitty/dufy")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "15vrp1kayhjb5c1vc9x8wlm8rimk73vpa7yc101cf0gsg1fjazl6"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("ppcre" ,sbcl-cl-ppcre)))
+    (native-inputs
+     `(("fiveam" ,sbcl-fiveam)
+       ("cl-csv" ,sbcl-cl-csv)
+       ("parse-float" ,sbcl-parse-float)
+       ("lispbuilder-sdl" ,sbcl-lispbuilder-sdl)
+       ("lparallel" ,sbcl-lparallel)))
+    (home-page "https://github.com/privet-kitty/dufy")
+    (synopsis "Color library for Common Lisp")
+    (description
+     "Dufy is a library for exact color manipulation and conversion in various
+color spaces, which supports many color models.")
+    (license license:expat)))
+
+(define-public ecl-dufy
+  (sbcl-package->ecl-package sbcl-dufy))
+
+(define-public cl-dufy
+  (sbcl-package->cl-source-package sbcl-dufy))

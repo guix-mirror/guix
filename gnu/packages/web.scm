@@ -3,7 +3,7 @@
 ;;; Copyright © 2013 Aljosha Papsch <misc@rpapsch.de>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Eric Bavier <bavier@posteo.net>
@@ -367,14 +367,14 @@ the same, being completely separated from the Internet.")
     ;; ’stable’ and recommends that “in general you deploy the NGINX mainline
     ;; branch at all times” (https://www.nginx.com/blog/nginx-1-6-1-7-released/)
     ;; Consider updating the nginx-documentation package together with this one.
-    (version "1.19.9")
+    (version "1.19.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0hfqqyfgqa6wqazmb3d434nb3r5p8szfisa0m6nfh9lqdbqdyd9f"))))
+                "121d11693d6dbim3lh64hrqi66z129z30cvcrpbnm631yl7jkl78"))))
     (build-system gnu-build-system)
     (inputs `(("openssl" ,openssl)
               ("pcre" ,pcre)
@@ -458,9 +458,9 @@ and as a proxy to reduce the load on back-end HTTP or mail servers.")
 
 (define-public nginx-documentation
   ;; This documentation should be relevant for the current nginx package.
-  (let ((version "1.19.9")
-        (revision 2696)
-        (changeset "f85798c1c70a"))
+  (let ((version "1.19.10")
+        (revision 2708)
+        (changeset "f8686d85df53"))
     (package
       (name "nginx-documentation")
       (version (simple-format #f "~A-~A-~A" version revision changeset))
@@ -472,7 +472,7 @@ and as a proxy to reduce the load on back-end HTTP or mail servers.")
                (file-name (string-append name "-" version))
                (sha256
                 (base32
-                 "1ksl32jw6h3qzyxxlsdjag7fcjvk3md3hdxn6ljs8pr2nhk1v6cs"))))
+                 "00b0dkpblw3m2cwbbzv3miw47c0m3s0dvh1xy0hihkggy7mqv2r2"))))
       (build-system gnu-build-system)
       (arguments
        '(#:tests? #f                    ; no test suite
@@ -1175,7 +1175,7 @@ efficiently.  It gives the application developer no more than 4 methods.")
 (define-public krona-tools
   (package
    (name "krona-tools")
-   (version "2.7")
+   (version "2.8")
    (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1183,7 +1183,7 @@ efficiently.  It gives the application developer no more than 4 methods.")
                    version "/KronaTools-" version ".tar"))
              (sha256
               (base32
-               "0wvgllcqscsfb4xc09y3fqhx8i38pmr4w55vjs5y79wx56n710iq"))))
+               "1h698wddb3hii68mnkby7s1x81vbhd4z1sf4ivm1lsi2nqlc1vsn"))))
    (build-system perl-build-system)
    (arguments
      `(#:phases
@@ -1198,11 +1198,13 @@ efficiently.  It gives the application developer no more than 4 methods.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((bin   (string-append (assoc-ref outputs "out") "/bin"))
                    (perl  (string-append (assoc-ref outputs "out")
-                                         "/lib/perl5/site_perl/krona-tools/lib")))
+                                         "/lib/perl5/site_perl/krona-tools/lib"))
+                   (share (string-append (assoc-ref outputs "out")
+                                         "/share/krona-tools")))
                (mkdir-p bin)
                (for-each
                 (lambda (script)
-                  (let* ((executable (string-append "scripts/" script ".pl")))
+                  (let ((executable (string-append "scripts/" script ".pl")))
                     ;; Prefix executables with 'kt' as install script does.
                     (copy-file executable (string-append bin "/kt" script))))
                 '("ClassifyBLAST"
@@ -1230,7 +1232,32 @@ efficiently.  It gives the application developer no more than 4 methods.")
                   (copy-recursively directory
                                     (string-append perl "/../" directory)))
                 (list "data" "img" "taxonomy" "src"))
-               (install-file "lib/KronaTools.pm" perl))))
+               (install-file "lib/KronaTools.pm" perl)
+
+               ;; Install downloaders
+               (substitute* "updateAccessions.sh"
+                 (("ktPath=.*") (string-append "ktPath=" share "\n")))
+               (substitute* "updateTaxonomy.sh"
+                 (("ktPath=.*") (string-append "ktPath=" share "\n"))
+                 (("command -v curl")
+                  (string-append "command -v " (which "curl")))
+                 (("curl -s")
+                  (string-append (which "curl") " -s"))
+                 (("curl\\$timestring")
+                  (string-append (which "curl") "$timestring"))
+                 (("perl -M")
+                  (string-append (which "perl") " -M"))
+                 (("make ")
+                  (string-append (which "make") " ")))
+               (for-each (lambda (file)
+                           (install-file file (string-append share "/scripts")))
+                         '("scripts/extractTaxonomy.pl"
+                           "scripts/accession2taxid.make"
+                           "scripts/taxonomy.make"))
+               (for-each (lambda (file)
+                           (install-file file share))
+                         '("updateAccessions.sh"
+                           "updateTaxonomy.sh")))))
          (add-after 'install 'wrap-program
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -1248,7 +1275,9 @@ efficiently.  It gives the application developer no more than 4 methods.")
                (invoke (string-append (assoc-ref outputs "out") "/bin/ktImportText")
                        "ec.tsv")))))))
    (inputs
-    `(("perl" ,perl)))
+    `(("curl" ,curl)
+      ("make" ,gnu-make)
+      ("perl" ,perl)))
    (home-page "https://github.com/marbl/Krona/wiki")
    (synopsis "Hierarchical data exploration with zoomable HTML5 pie charts")
    (description
@@ -1554,7 +1583,7 @@ used to validate and fix HTML data.")
 (define-public esbuild
   (package
     (name "esbuild")
-    (version "0.11.9")
+    (version "0.11.14")
     (source
      (origin
        (method git-fetch)
@@ -1563,7 +1592,7 @@ used to validate and fix HTML data.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0pi5ydvbcfi8dbq2ryw8z4197pf4jrlz8mj1vzkdff22ga9qcmxy"))
+        (base32 "0qxylzc7lzpsp5hm3dl5jvy9aca8azn8dmbjz9z5n5rkdmm8vd9p"))
        (modules '((guix build utils)))
        (snippet
         '(begin

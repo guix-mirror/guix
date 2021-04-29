@@ -1945,7 +1945,7 @@ identical visual appearance.")
 (define-public grim
   (package
    (name "grim")
-   (version "1.3.1")
+   (version "1.3.2")
    (source
     (origin
      (method git-fetch)
@@ -1954,7 +1954,7 @@ identical visual appearance.")
            (commit (string-append "v" version))))
      (file-name (git-file-name name version))
      (sha256
-      (base32 "0fjmjq0ws9rlblkcqxxw2lv7zvvyi618jqzlnz5z9zb477jwdfib"))))
+      (base32 "1l4gwvvc0zvg5b6f6w92xjhmwj7cg9hlgrf43lc7ygaz8dh6cmzg"))))
    (build-system meson-build-system)
    (native-inputs `(("pkg-config" ,pkg-config)
                     ("scdoc" ,scdoc)))
@@ -1971,7 +1971,7 @@ identical visual appearance.")
 (define-public slurp
   (package
    (name "slurp")
-   (version "1.3.1")
+   (version "1.3.2")
    (source
     (origin
      (method git-fetch)
@@ -1980,7 +1980,7 @@ identical visual appearance.")
            (commit (string-append "v" version))))
      (file-name (git-file-name name version))
      (sha256
-      (base32 "1fby2v2ylcadgclds05wpkl9xi2r9dfz49dqyqpn20rjv1wnz3jv"))))
+      (base32 "00dx6ds1227qnxqrw58k0am78q8fa49rgp1zingrkjcbpbi7g475"))))
    (build-system meson-build-system)
    (native-inputs
     `(("pkg-config" ,pkg-config)

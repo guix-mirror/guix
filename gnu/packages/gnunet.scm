@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Sree Harsha Totakura <sreeharsha@totakura.in>
 ;;; Copyright © 2015, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015, 2017, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2017, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Nikita <nikita@n0.is>
@@ -74,14 +74,14 @@
 (define-public libextractor
   (package
    (name "libextractor")
-   (version "1.10")
+   (version "1.11")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/libextractor/libextractor-"
                                 version ".tar.gz"))
             (sha256
              (base32
-              "0mr38g7kfn3p050hd3hckbcz2yd3za6dwl1c26x2kjf7vnsi3vcy"))))
+              "13xxv11mif3m0mpk7i43mljhhaqrj52kznm1qi3qb8s6hymk7xhn"))))
    (build-system gnu-build-system)
    ;; WARNING: Checks require /dev/shm to be in the build chroot, especially
    ;; not to be a symbolic link to /run/shm.
@@ -115,7 +115,7 @@
    (native-inputs
     `(("pkg-config" ,pkg-config)))
    (outputs '("out"
-              "static")) ; 396 KiB .a files
+              "static")) ; 420 KiB .a files
    (arguments
     `(#:configure-flags
       (list (string-append "--with-ltdl="
@@ -157,14 +157,14 @@ tool to extract metadata from a file and print the results.")
 (define-public libmicrohttpd
   (package
    (name "libmicrohttpd")
-   (version "0.9.72")
+   (version "0.9.73")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/libmicrohttpd/libmicrohttpd-"
                                 version ".tar.gz"))
             (sha256
              (base32
-              "1y1g9hk608jm4sfdbs8gql5wphalyhfdz824zl0i5x6pw3w2bs0a"))))
+              "0bh39irwzkv48fkw43skfgkk8ka3793bx1lm21sgw6zxi0djyyx3"))))
    (build-system gnu-build-system)
    (inputs
     `(("curl" ,curl)

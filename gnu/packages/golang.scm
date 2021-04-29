@@ -6837,7 +6837,7 @@ sinks and sources.")
       (home-page "https://github.com/mesilliac/pulse-simple")
       (synopsis "Cgo bindings to PulseAudio's Simple API")
       (description
-       "This packages provides Cgo bindings to PulseAudio's Simple API, to play
+       "This package provides Cgo bindings to PulseAudio's Simple API, to play
 or capture raw audio.")
       (license license:expat))))
 

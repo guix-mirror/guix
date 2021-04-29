@@ -527,6 +527,7 @@ This package provides the core library and elements.")
       (method url-fetch)
       (uri (string-append "https://gstreamer.freedesktop.org/src/" name "/"
                           name "-" version ".tar.xz"))
+      (patches (search-patches "gst-plugins-base-fix-id3v2-invalid-read.patch"))
       (sha256
        (base32
         "1b05kg46azrxxvq42c71071lfsnc34pw4vynnkczdqi6g0gzn16x"))))
@@ -591,7 +592,9 @@ for the GStreamer multimedia library.")
         (string-append
          "https://gstreamer.freedesktop.org/src/" name "/"
          name "-" version ".tar.xz"))
-       (patches (search-patches "gst-plugins-good-fix-test.patch"))
+       (patches (search-patches "gst-plugins-good-fix-test.patch"
+                                "gst-plugins-good-CVE-2021-3497.patch"
+                                "gst-plugins-good-CVE-2021-3498.patch"))
        (sha256
         (base32 "1929nhjsvbl4bw37nfagnfsnxz737cm2x3ayz9ayrn9lwkfm45zp"))))
     (build-system meson-build-system)
@@ -679,6 +682,7 @@ model to base your own plug-in on, here it is.")
               (method url-fetch)
               (uri (string-append "https://gstreamer.freedesktop.org/src/"
                                   name "/" name "-" version ".tar.xz"))
+              (patches (search-patches "gst-plugins-bad-fix-overflow.patch"))
               (sha256
                (base32
                 "06ildd4rl6cynirv3p00d2ddf5is9svj4i7mkahldzhq24pq5mca"))))
@@ -789,6 +793,7 @@ par compared to the rest.")
        (uri
         (string-append "https://gstreamer.freedesktop.org/src/"
                        name "/" name "-" version ".tar.xz"))
+       (patches (search-patches "gst-plugins-ugly-fix-out-of-bound-reads.patch"))
        (sha256
         (base32 "1nwbcv5yaib3d8icvyja3zf6lyjf5zf1hndbijrhj8j7xlia0dx3"))))
     (build-system meson-build-system)
@@ -849,6 +854,7 @@ think twice about shipping them.")
         (string-append
          "https://gstreamer.freedesktop.org/src/" name "/"
          name "-" version ".tar.xz"))
+       (patches (search-patches "gst-libav-64channels-stack-corruption.patch"))
        (sha256
         (base32 "0jbzams9ggk3sq9ywv4gsl9rghyn203l2582m6l5c1sz9ka9m5in"))))
     (build-system meson-build-system)

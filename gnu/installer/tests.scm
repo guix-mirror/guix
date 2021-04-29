@@ -37,7 +37,8 @@
             enter-host-name+passwords
             choose-services
             choose-partitioning
-            conclude-installation
+            start-installation
+            complete-installation
 
             edit-configuration-file))
 
@@ -281,14 +282,19 @@ instrumented for further testing."
 (define* (choose-partitioning port
                               #:key
                               (encrypted? #t)
+                              (uefi-support? #f)
                               (passphrase "thepassphrase")
                               (edit-configuration-file
                                edit-configuration-file))
   "Converse over PORT to choose the partitioning method.  When ENCRYPTED? is
 true, choose full-disk encryption with PASSPHRASE as the LUKS passphrase.
+
+When UEFI-SUPPORT? is true, assume that we are running the installation tests
+on an UEFI capable machine.
+
 This conversation stops when the user partitions have been formatted, right
 before the installer generates the configuration file and shows it in a dialog
-box."
+box. "
   (converse port
     ((list-selection (title "Partitioning method")
                      (multiple-choices? #f)
@@ -306,11 +312,15 @@ box."
            disks))
 
     ;; The "Partition table" dialog pops up only if there's not already a
-    ;; partition table.
+    ;; partition table and if the system does not support UEFI.
     ((list-selection (title "Partition table")
                      (multiple-choices? #f)
                      (items _))
+     ;; When UEFI is supported, the partition is forced to GPT by the
+     ;; installer.
+     (not uefi-support?)
      "gpt")
+
     ((list-selection (title "Partition scheme")
                      (multiple-choices? #f)
                      (items (,one-partition _ ...)))
@@ -338,10 +348,10 @@ box."
      ;; UUIDs before it generates the configuration file.
      (values))))
 
-(define (conclude-installation port)
-  "Conclude the installation by checking over PORT that we get the generated
+(define (start-installation port)
+  "Start the installation by checking over PORT that we get the generated
 configuration file, accepting it and starting the installation, and then
-receiving the final messages once the 'guix system init' process has
+receiving the pause message once the 'guix system init' process has
 completed."
   ;; Assume the previous message received was 'starting-final-step'; here we
   ;; send the reply to that message, which lets the installer continue.
@@ -355,8 +365,19 @@ completed."
                   (file ,configuration-file))
      (edit-configuration-file configuration-file))
     ((pause)                                      ;"Press Enter to continue."
-     #t)
-    ((installation-complete)                      ;congratulations!
+     (values))))
+
+(define (complete-installation port)
+  "Complete the installation by replying to the installer pause message and
+waiting for the installation-complete message."
+  ;; Assume the previous message received was 'pause'; here we send the reply
+  ;; to that message, which lets the installer continue.
+  (write #t port)
+  (newline port)
+  (force-output port)
+
+  (converse port
+    ((installation-complete)
      (values))))
 
 ;;; Local Variables:

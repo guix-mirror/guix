@@ -1207,8 +1207,8 @@ order to add a suitable bootloader menu entry.")
       (description "iPXE is a network boot firmware.  It provides a full PXE
 implementation enhanced with additional features such as booting from: a web
 server via HTTP, an iSCSI SAN, a Fibre Channel SAN via FCoE, an AoE SAN, a
-wireless network, a wide-area network, an Infiniband network.  It allows to
-control the boot process with a script.  You can use iPXE to replace the
+wireless network, a wide-area network, an Infiniband network.  It
+controls the boot process with a script.  You can use iPXE to replace the
 existing PXE ROM on your network card, or you can chainload into iPXE to obtain
 the features of iPXE without the hassle of reflashing.")
       (license license:gpl2+))))

@@ -2743,7 +2743,7 @@ social and chat platform.")
 (define-public psi-plus
   (package
     (name "psi-plus")
-    (version "1.5.1482")
+    (version "1.5.1484")
     (source
      (origin
        (method git-fetch)
@@ -2757,7 +2757,7 @@ social and chat platform.")
         `(begin
            (delete-file-recursively "3rdparty")))
        (sha256
-        (base32 "0lcx616hchwf492m1dm8ddb4qd2pmgf703ajnnb0y9ky99kgg8q2"))))
+        (base32 "1jsm39nzzbqkp3zc0xqx7jid6p4q1ra28xad38wjr2l1jb8qjn24"))))
     (build-system qt-build-system)
     (arguments
      `(#:tests? #f                      ; No target

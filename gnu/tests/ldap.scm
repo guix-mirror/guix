@@ -84,7 +84,7 @@
 config_version = 2
 
 \n[slapd]
-root_password = SECRET
+root_password = SECRET_PASS
 user = root
 group = root
 
@@ -112,7 +112,7 @@ suffix = dc=example,dc=com")))
             (marionette-eval
              '(zero? (system* #$(file-append openldap "/bin/ldapwhoami")
                               "-H" "ldap://localhost" "-D"
-                              "cn=Directory Manager" "-w" "SECRET"))
+                              "cn=Directory Manager" "-w" "SECRET_PASS"))
              marionette))
 
           ;; Wait for nslcd to be up and running.

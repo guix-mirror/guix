@@ -614,14 +614,14 @@ Portuguese, Spanish and Italian.")
 (define-public fet
   (package
     (name "fet")
-    (version "5.49.1")
+    (version "6.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.lalescu.ro/liviu/fet/download/"
                            "fet-" version ".tar.bz2"))
        (sha256
-        (base32 "1aa8xnhwvbhvp7yigcdk7qdwqh59yyfknqbpn3ybgjljc22m8w5n"))))
+        (base32 "08q265i43bnj9syh3xlp11fr47xmzb0nma3nnwm76xq314102f0f"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -653,14 +653,14 @@ hours.")
 (define-public klavaro
   (package
     (name "klavaro")
-    (version "3.11")
+    (version "3.12")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "mirror://sourceforge/klavaro/klavaro-"
                             version ".tar.bz2"))
         (sha256
-         (base32 "1rkxaqb62w4mv86fcnmr32lq6y0h4hh92wmsy5ddb9a8jnzx6r7w"))))
+         (base32 "0ymrmgllyjk9wp1f1ayw51xc3myar8ld9a5531wdbrym0xzy4l64"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -669,6 +669,7 @@ hours.")
      `(("cairo" ,cairo)
        ("curl" ,curl)
        ("gtk+" ,gtk+)
+       ("gtkdatabox" ,gtkdatabox)
        ("pango" ,pango)))
     (home-page "https://klavaro.sourceforge.io/en/index.html")
     (synopsis "Touch typing tutor")

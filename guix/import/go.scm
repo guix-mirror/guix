@@ -33,7 +33,7 @@
   #:use-module (guix http-client)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix memoization)
-  #:use-module (htmlprag)               ;from Guile-Lib
+  #:autoload   (htmlprag) (html->sxml)            ;from Guile-Lib
   #:autoload   (guix git) (update-cached-checkout)
   #:autoload   (gcrypt hash) (open-hash-port hash-algorithm sha256)
   #:autoload   (guix serialization) (write-file)
@@ -62,9 +62,6 @@
 
   #:export (go-module->guix-package
             go-module-recursive-import))
-
-;;; Parameterize htmlprag to parse valid HTML more reliably.
-(%strict-tokenizer? #t)
 
 ;;; Commentary:
 ;;;
@@ -149,7 +146,7 @@ name (e.g. \"github.com/golang/protobuf/proto\")."
          ;; element marked with a "License" class attribute.
          (select (sxpath `(// (* (@ (equal? (class "License"))))
                               h2 // *text*))))
-    (select (html->sxml body))))
+    (select (html->sxml body #:strict? #t))))
 
 (define (sxml->texi sxml-node)
   "A very basic SXML to Texinfo converter which attempts to preserve HTML
@@ -167,7 +164,7 @@ formatting and links as text."
   "Retrieve a short description for NAME, a Go package name,
 e.g. \"google.golang.org/protobuf/proto\"."
   (let* ((body (go.pkg.dev-info name))
-         (sxml (html->sxml body))
+         (sxml (html->sxml body #:strict? #t))
          (overview ((sxpath
                      `(//
                        (* (@ (equal? (class "Documentation-overview"))))
@@ -209,7 +206,7 @@ the https://pkg.go.dev/ web site."
          (select-title (sxpath
                         `(// (div (@ (equal? (class "UnitReadme-content"))))
                              // h3 *text*))))
-    (match (select-title (html->sxml body))
+    (match (select-title (html->sxml body #:strict? #t))
       (() #f)                           ;nothing selected
       ((title more ...)                 ;title is the first string of the list
        (string-trim-both title)))))
@@ -465,7 +462,7 @@ build a package."
   (let* ((meta-data (http-fetch* (format #f "https://~a?go-get=1" module-path)))
          (select (sxpath `(// head (meta (@ (equal? (name "go-import"))))
                               // content))))
-    (match (select (html->sxml meta-data))
+    (match (select (html->sxml meta-data #:strict? #t))
       (() #f)                           ;nothing selected
       (((content content-text))
        (match (string-split content-text #\space)

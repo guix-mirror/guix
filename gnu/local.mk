@@ -420,6 +420,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/openldap.scm			\
   %D%/packages/openpgp.scm			\
   %D%/packages/openstack.scm			\
+  %D%/packages/orange.scm			\
   %D%/packages/orpheus.scm			\
   %D%/packages/ots.scm				\
   %D%/packages/package-management.scm		\
@@ -901,6 +902,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/clang-9.0-libc-search-path.patch		\
   %D%/packages/patches/clang-10.0-libc-search-path.patch	\
   %D%/packages/patches/clang-11.0-libc-search-path.patch	\
+  %D%/packages/patches/clang-12-tools-extra-directory.patch	\
   %D%/packages/patches/clang-runtime-asan-build-fixes.patch	\
   %D%/packages/patches/clang-runtime-esan-build-fixes.patch	\
   %D%/packages/patches/clang-runtime-9-libsanitizer-mode-field.patch	\
@@ -1084,7 +1086,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/ghostscript-no-header-id.patch		\
   %D%/packages/patches/ghostscript-no-header-uuid.patch		\
   %D%/packages/patches/ghostscript-no-header-creationdate.patch \
-  %D%/packages/patches/gimp-make-gegl-introspect-optional.patch	\
   %D%/packages/patches/glib-appinfo-watch.patch			\
   %D%/packages/patches/glib-tests-timer.patch			\
   %D%/packages/patches/glib-CVE-2021-27218.patch		\
@@ -1169,7 +1170,13 @@ dist_patch_DATA =						\
   %D%/packages/patches/grub-setup-root.patch			\
   %D%/packages/patches/grub-verifiers-Blocklist-fallout-cleanup.patch \
   %D%/packages/patches/gspell-dash-test.patch			\
+  %D%/packages/patches/gst-libav-64channels-stack-corruption.patch	\
+  %D%/packages/patches/gst-plugins-bad-fix-overflow.patch	\
+  %D%/packages/patches/gst-plugins-base-fix-id3v2-invalid-read.patch	\
   %D%/packages/patches/gst-plugins-good-fix-test.patch		\
+  %D%/packages/patches/gst-plugins-good-CVE-2021-3497.patch	\
+  %D%/packages/patches/gst-plugins-good-CVE-2021-3498.patch	\
+  %D%/packages/patches/gst-plugins-ugly-fix-out-of-bound-reads.patch	\
   %D%/packages/patches/guile-1.8-cpp-4.5.patch			\
   %D%/packages/patches/guile-2.2-skip-oom-test.patch            \
   %D%/packages/patches/guile-2.2-skip-so-test.patch             \
@@ -1368,6 +1375,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/linkchecker-tests-require-network.patch	\
   %D%/packages/patches/linphone-desktop-without-sdk.patch           \
   %D%/packages/patches/linux-libre-support-for-Pinebook-Pro.patch \
+  %D%/packages/patches/linux-libre-arm64-generic-pinebook-lcd.patch \
   %D%/packages/patches/linux-pam-no-setfsuid.patch		\
   %D%/packages/patches/lirc-localstatedir.patch			\
   %D%/packages/patches/lirc-reproducible-build.patch		\
@@ -1735,8 +1743,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/ucx-tcp-iface-ioctl.patch		\
   %D%/packages/patches/udiskie-no-appindicator.patch		\
   %D%/packages/patches/ungoogled-chromium-extension-search-path.patch	\
-  %D%/packages/patches/ungoogled-chromium-system-nspr.patch	\
-  %D%/packages/patches/ungoogled-chromium-system-opus.patch	\
   %D%/packages/patches/unison-fix-ocaml-4.08.patch		\
   %D%/packages/patches/unknown-horizons-python-3.8-distro.patch	\
   %D%/packages/patches/unzip-CVE-2014-8139.patch		\

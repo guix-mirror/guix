@@ -28260,6 +28260,80 @@ Xiaohui Yan, Jiafeng Guo, Yanyan Lan, Xueqi Cheng (2013)
 BTM-WWW13.pdf}.")
     (license license:asl2.0)))
 
+(define-public r-rjsonio
+  (package
+    (name "r-rjsonio")
+    (version "1.3-1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "RJSONIO" version))
+       (sha256
+        (base32
+         "141ijm9570mg1180isvi0jb9vd3b08s5gb9dl1wa5v0m3s9jq52l"))))
+    (properties `((upstream-name . "RJSONIO")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/package=RJSONIO")
+    (synopsis "Serialize R objects to JSON")
+    (description
+     "This is a package that allows conversion to and from data in JavaScript
+Object Notation (JSON) format.  This allows R objects to be inserted into
+Javascript/ECMAScript/ActionScript code and allows R programmers to read and
+convert JSON content to R objects.  This is an alternative to the @code{rjson}
+package.")
+    (license license:bsd-3)))
+
+(define-public r-revgeo
+  (package
+    (name "r-revgeo")
+    (version "0.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "revgeo" version))
+       (sha256
+        (base32
+         "1ns7d1817475lriss6wwgvdm6lj760p40yxqaifla13c2xb73a55"))))
+    (properties `((upstream-name . "revgeo")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcurl" ,r-rcurl)
+       ("r-rjsonio" ,r-rjsonio)))
+    (home-page "https://cran.r-project.org/package=revgeo")
+    (synopsis "Reverse geocoding")
+    (description
+     "The @code{revgeo} procedure allows you to use the Photon geocoder for
+OpenStreetMap, Google Maps, and Bing to reverse geocode coordinate pairs with
+minimal hassle.")
+    (license license:gpl3+)))
+
+(define-public r-qpcr
+  (package
+    (name "r-qpcr")
+    (version "1.4-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "qpcR" version))
+       (sha256
+        (base32
+         "1r01q7jv3w59yx1gc0qw91rq7rvdhqsi8y57sqqkmwyqfw2x2vsv"))))
+    (properties `((upstream-name . "qpcR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mass" ,r-mass)
+       ("r-matrix" ,r-matrix)
+       ("r-minpack-lm" ,r-minpack-lm)
+       ("r-rgl" ,r-rgl)
+       ("r-robustbase" ,r-robustbase)))
+    (home-page "https://cran.r-project.org/package=qpcR")
+    (synopsis "Modelling and analysis of real-time PCR data")
+    (description
+     "This is a package for model fitting, optimal model selection and
+calculation of various features that are essential in the analysis of
+quantitative real-time polymerase chain reaction (qPCR).")
+    (license license:gpl2+)))
+
 (define-public r-textplot
   (package
     (name "r-textplot")

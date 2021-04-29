@@ -1919,14 +1919,14 @@ RCS, PRCS, and Aegis packages.")
 (define-public cvs-fast-export
   (package
     (name "cvs-fast-export")
-    (version "1.55")
+    (version "1.56")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.catb.org/~esr/cvs-fast-export/"
                                   "cvs-fast-export-" version ".tar.gz"))
               (sha256
                (base32
-                "06y2myhhv2ap08bq7d7shq0b7lq6wgznwrpz6622xq66cxkf2n5g"))))
+                "058bzp3npng48ascls943m16kgvrl0h197a10brf7mvx8zpfc7sc"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

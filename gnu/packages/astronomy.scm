@@ -887,13 +887,13 @@ JPL ephemerides use to predict raw (x,y,z) planetary positions.")
 (define-public python-pyerfa
   (package
     (name "python-pyerfa")
-    (version "1.7.2")
+    (version "1.7.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyerfa" version))
        (sha256
-        (base32 "1s78mdyrxha2jcckfs0wg5ynkf0pwh1bw9mmh99vprinxh9n4xri"))
+        (base32 "1jqqrxvrgly4r0br5f6dsy8nab2xmhz915vp6md5f31ysr2sdwvc"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -1011,23 +1011,23 @@ astronomical images, especially when there is no WCS information available.")
 (define-public python-skyfield
   (package
     (name "python-skyfield")
-    (version "1.38")
+    (version "1.39")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "skyfield" version))
        (sha256
-        (base32 "1qi1l8qn6irdv6w41qq30s2yjwak7h6ayywr1pry9gwcm2c25bv5"))))
+        (base32 "1qh3k7g9dm6idppk87hnwxpx9a22xx98vav0zk31p6291drak3as"))))
     (build-system python-build-system)
     (arguments
      ;; NOTE: (Sharlatan-20210207T163305+0000): tests depend on custom test
      ;; framework https://github.com/brandon-rhodes/assay
      `(#:tests? #f))
     (inputs
-     `(("certifi" ,python-certifi)
-       ("jplephem" ,python-jplephem)
-       ("numpy" ,python-numpy)
-       ("sgp4" ,python-sgp4)))
+     `(("python-certifi" ,python-certifi)
+       ("python-jplephem" ,python-jplephem)
+       ("python-numpy" ,python-numpy)
+       ("python-sgp4" ,python-sgp4)))
     (home-page "https://rhodesmill.org/skyfield/")
     (synopsis "Astronomy for Python")
     (description

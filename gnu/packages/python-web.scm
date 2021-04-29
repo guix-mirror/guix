@@ -2916,14 +2916,13 @@ file.")
 (define-public python-webtest
   (package
     (name "python-webtest")
-    (version "2.0.33")
+    (version "2.0.35")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "WebTest" version))
        (sha256
-        (base32
-         "1l3z0cwqslsf4rcrhi2gr8kdfh74wn2dw76376i4g9i38gz8wd21"))))
+        (base32 "11xhgdj251zkvz5w30fvspii08ki2vrpr1im9sph1wmlnasnihda"))))
     (build-system python-build-system)
     (arguments
      ;; Tests require python-pyquery, which creates a circular dependency.

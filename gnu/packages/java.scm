@@ -2,11 +2,11 @@
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2017, 2019 Carlo Zancanaro <carlo@zancanaro.id.au>
+;;; Copyright © 2017, 2019, 2021 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2017-2020 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2016, 2017, 2018 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2019, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
@@ -1749,6 +1749,9 @@ IcedTea build harness.")
          ((guix build ant-build-system)
           (guix build syscalls)
           ,@%gnu-build-system-modules)
+
+         #:disallowed-references ((,icedtea-7 "jdk"))
+
          ,@(substitute-keyword-arguments (package-arguments icedtea-7)
              ((#:modules modules)
               `((guix build utils)
@@ -1792,12 +1795,21 @@ new Date();"))
                  (add-after 'unpack 'patch-jni-libs
                    ;; Hardcode dynamically loaded libraries.
                    (lambda _
-                     (let* ((library-path (search-path-as-string->list
-                                           (getenv "LIBRARY_PATH")))
+                     (define remove
+                       (@ (srfi srfi-1) remove))
+
+                     (define (icedtea-or-openjdk? path)
+                       (or (string-contains path "openjdk")
+                           (string-contains path "icedtea")))
+
+                     (let* ((library-path (remove icedtea-or-openjdk?
+                                                  (search-path-as-string->list
+                                                   (getenv "LIBRARY_PATH"))))
                             (find-library (lambda (name)
-                                            (search-path
-                                             library-path
-                                             (string-append "lib" name ".so")))))
+                                            (or (search-path
+                                                 library-path
+                                                 (string-append "lib" name ".so"))
+                                                (string-append "lib" name ".so")))))
                        (for-each
                         (lambda (file)
                           (catch 'decoding-error
@@ -1805,9 +1817,9 @@ new Date();"))
                               (substitute* file
                                 (("VERSIONED_JNI_LIB_NAME\\(\"(.*)\", \"(.*)\"\\)"
                                   _ name version)
-                                 (format #f "\"~a\""  (find-library name)))
+                                 (string-append "\"" (find-library name) "\""))
                                 (("JNI_LIB_NAME\\(\"(.*)\"\\)" _ name)
-                                 (format #f "\"~a\"" (find-library name)))))
+                                 (string-append "\"" (find-library name) "\""))))
                             (lambda _
                               ;; Those are safe to skip.
                               (format (current-error-port)
@@ -1893,6 +1905,9 @@ new Date();"))
        #:imported-modules
        ((guix build syscalls)
         ,@%gnu-build-system-modules)
+
+       #:disallowed-references (,icedtea-8 (,icedtea-8 "jdk"))
+
        #:phases
        (modify-phases %standard-phases
          (add-after 'patch-source-shebangs 'fix-java-shebangs
@@ -1931,12 +1946,21 @@ new Date();"))
          (add-after 'unpack 'patch-jni-libs
            ;; Hardcode dynamically loaded libraries.
            (lambda _
-             (let* ((library-path (search-path-as-string->list
-                                   (getenv "LIBRARY_PATH")))
+             (define remove
+               (@ (srfi srfi-1) remove))
+
+             (define (icedtea-or-openjdk? path)
+               (or (string-contains path "openjdk")
+                   (string-contains path "icedtea")))
+
+             (let* ((library-path (remove icedtea-or-openjdk?
+                                          (search-path-as-string->list
+                                           (getenv "LIBRARY_PATH"))))
                     (find-library (lambda (name)
-                                    (search-path
-                                     library-path
-                                     (string-append "lib" name ".so")))))
+                                    (or (search-path
+                                         library-path
+                                         (string-append "lib" name ".so"))
+                                        (string-append "lib" name ".so")))))
                (for-each
                 (lambda (file)
                   (catch 'decoding-error
@@ -1944,9 +1968,9 @@ new Date();"))
                       (substitute* file
                         (("VERSIONED_JNI_LIB_NAME\\(\"(.*)\", \"(.*)\"\\)"
                           _ name version)
-                         (format #f "\"~a\""  (find-library name)))
+                         (string-append "\"" (find-library name) "\""))
                         (("JNI_LIB_NAME\\(\"(.*)\"\\)" _ name)
-                         (format #f "\"~a\"" (find-library name)))))
+                         (string-append "\"" (find-library name) "\""))))
                     (lambda _
                       ;; Those are safe to skip.
                       (format (current-error-port)
@@ -2079,7 +2103,9 @@ new Date();"))
                        "--with-libjpeg=system"
                        "--with-native-debug-symbols=zipped"
                        (string-append "--prefix=" (assoc-ref outputs "out")))
-               #t))))))
+               #t))))
+       ((#:disallowed-references _ '())
+        `(,openjdk9 (,openjdk9 "jdk")))))
     (native-inputs
      `(("openjdk9" ,openjdk9)
        ("openjdk9:jdk" ,openjdk9 "jdk")
@@ -2109,6 +2135,9 @@ new Date();"))
     (arguments
      `(#:imported-modules ((guix build syscalls)
                            ,@%gnu-build-system-modules)
+
+       #:disallowed-references (,openjdk10 (,openjdk10 "jdk"))
+
        #:tests? #f; requires jtreg
        ;; TODO package jtreg
        #:configure-flags
@@ -2139,12 +2168,21 @@ new Date();"))
          (add-after 'unpack 'patch-jni-libs
            ;; Hardcode dynamically loaded libraries.
            (lambda _
-             (let* ((library-path (search-path-as-string->list
-                                   (getenv "LIBRARY_PATH")))
+             (define remove
+               (@ (srfi srfi-1) remove))
+
+             (define (icedtea-or-openjdk? path)
+               (or (string-contains path "openjdk")
+                   (string-contains path "icedtea")))
+
+             (let* ((library-path (remove icedtea-or-openjdk?
+                                          (search-path-as-string->list
+                                           (getenv "LIBRARY_PATH"))))
                     (find-library (lambda (name)
-                                    (search-path
-                                     library-path
-                                     (string-append "lib" name ".so")))))
+                                    (or (search-path
+                                         library-path
+                                         (string-append "lib" name ".so"))
+                                        (string-append "lib" name ".so")))))
                (for-each
                 (lambda (file)
                   (catch 'decoding-error
@@ -2152,9 +2190,9 @@ new Date();"))
                       (substitute* file
                         (("VERSIONED_JNI_LIB_NAME\\(\"(.*)\", \"(.*)\"\\)"
                           _ name version)
-                         (format #f "\"~a\""  (find-library name)))
+                         (string-append "\"" (find-library name) "\""))
                         (("JNI_LIB_NAME\\(\"(.*)\"\\)" _ name)
-                         (format #f "\"~a\"" (find-library name)))))
+                         (string-append "\"" (find-library name) "\""))))
                     (lambda _
                       ;; Those are safe to skip.
                       (format (current-error-port)
@@ -2478,14 +2516,14 @@ new Date();"))
 (define-public ant/java8
   (package (inherit ant-bootstrap)
     (name "ant")
-    (version "1.10.9")
+    (version "1.10.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://apache/ant/source/apache-ant-"
                                   version "-src.tar.gz"))
               (sha256
                (base32
-                "0x78434q5ab193ma7ys27m9kwpdgrfzqj00hrf1szwcgk0lzw01z"))
+                "1dhkk9ajc378cln6sj9q0ya8bl9dpyji5xcrl1zq41zx1k6j54g5"))
               (modules '((guix build utils)))
               (snippet
                '(begin

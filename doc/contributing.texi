@@ -29,6 +29,7 @@ choice.
 * Tracking Bugs and Patches::   Using Debbugs.
 * Commit Access::               Pushing to the official repository.
 * Updating the Guix Package::   Updating the Guix package definition.
+* Translating Guix::            Make Guix speak your native language.
 @end menu
 
 @node Building from Git
@@ -1079,12 +1080,14 @@ rebuilding induced, commits go to different branches, along these lines:
 @code{staging} branch (non-disruptive changes).  This branch is intended
 to be merged in @code{master} every 6 weeks or so.  Topical changes
 (e.g., an update of the GNOME stack) can instead go to a specific branch
-(say, @code{gnome-updates}).
+(say, @code{gnome-updates}).  This branch is not expected to be
+buildable or usable until late in its development process.
 
 @item more than 1,800 dependent packages
 @code{core-updates} branch (may include major and potentially disruptive
 changes).  This branch is intended to be merged in @code{master} every
-6 months or so.
+6 months or so.  This branch is not expected to be buildable or usable
+until late in its development process.
 @end table
 
 All these branches are @uref{@value{SUBSTITUTE-URL},
@@ -1429,3 +1432,266 @@ This check can be disabled, @emph{at your own peril}, by setting the
 @code{GUIX_ALLOW_ME_TO_USE_PRIVATE_COMMIT} environment variable.  When
 this variable is set, the updated package source is also added to the
 store.  This is used as part of the release process of Guix.
+
+@cindex translation
+@cindex l10n
+@cindex i18n
+@cindex native language support
+@node Translating Guix
+@section Translating Guix
+
+Writing code and packages is not the only way to provide a meaningful
+contribution to Guix.  Translating to a language you speak is another
+example of a valuable contribution you can make.  This section is designed
+to describe the translation process.  It gives you advice on how you can
+get involved, what can be translated, what mistakes you should avoid and
+what we can do to help you!
+
+Guix is a big project that has multiple components that can be translated.
+We coordinate the translation effort on a
+@uref{https://translate.fedoraproject.org/projects/guix/,Weblate instance}
+hosted by our friends at Fedora.  You will need an account to submit
+translations.
+
+Some of the software packaged in Guix also contain translations.  We do not
+host a translation platform for them.  If you want to translate a package
+provided by Guix, you should contact their developpers or find the information
+on their website.  As an example, you can find the homepage of the
+@code{hello} package by typing @code{guix show hello}.  On the ``homepage''
+line, you will see @url{https://www.gnu.org/software/hello/} as the homepage.
+
+Many GNU and non-GNU packages can be translated on the
+@uref{https://translationproject.org,Translation Project}.  Some projects
+with multiple components have their own platform.  For instance, GNOME has
+its own platform, @uref{https://l10n.gnome.org/,Damned Lies}.
+
+Guix has five components hosted on Weblate.
+
+@itemize
+@item @code{guix} contains all the strings from the Guix software (the
+      guided system installer, the package manager, etc), excluding packages.
+@item @code{packages} contains the synopsis (single-sentence description
+      of a package) and description (longer description) of packages in Guix.
+@item @code{website} contains the official Guix website, except for
+      blog posts and multimedia content.
+@item @code{documentation-manual} corresponds to this manual.
+@item @code{documentation-cookbook} is the component for the cookbook.
+@end itemize
+
+@subsubheading General Directions
+
+Once you get an account, you should be able to select a component from
+@uref{https://translate.fedoraproject.org/projects/guix/,the guix project},
+and select a language.  If your language does not appear in the list, go
+to the bottom and click on the ``Start new translation'' button.  Select
+the language you want to translate to from the list, to start your new
+translation.
+
+Like lots of other free software packages, Guix uses
+@uref{https://www.gnu.org/software/gettext,GNU Gettext} for its translations,
+with which translatable strings are extracted from the source code to so-called
+PO files.
+
+Even though PO files are text files, changes should not be made with a text
+editor but with PO editing software.  Weblate integrates PO editing
+functionality.  Alternatively, translators can use any of various
+free-software tools for filling in translations, of which
+@uref{https://poedit.net/,Poedit} is one example, and (after logging in)
+@uref{https://docs.weblate.org/en/latest/user/files.html,upload} the changed
+file.  There is also a special
+@uref{https://www.emacswiki.org/emacs/PoMode,PO editing mode} for users of GNU
+Emacs.  Over time translators find out what software they are happy with and
+what features they need.
+
+On Weblate, you will find various links to the editor, that will show various
+subsets (or all) of the strings.  Have a look around and at the
+@uref{https://docs.weblate.org/en/latest/,documentation} to familiarize
+yourself with the platform.
+
+@subsubheading Translation Components
+
+In this section, we provide more detailed guidance on the translation
+process, as well as details on what you should or should not do.  When in
+doubt, please contact us, we will be happy to help!
+
+@table @asis
+@item guix
+Guix is written in the Guile programming language, and some strings contain
+special formating that is interpreted by Guile.  These special formating
+should be highlighted by Weblate.  They start with @code{~} followed by one
+or more characters.
+
+When printing the string, Guile replaces the special formating symbols with
+actual values.  For instance, the string @samp{ambiguous package specification
+`~a'} would be substituted to contain said package specification instead of
+@code{~a}.  To properly translate this string, you must keep the formating
+code in your translation, although you can place it where it makes sense in
+your language.  For instance, the French translation says @samp{spécification
+du paquet « ~a » ambiguë} because the adjective needs to be placed in the
+end of the sentence.
+
+If there are multiple formating symbols, make sure to respect the order.
+Guile does not know in which order you intended the string to be read, so it
+will substitute the symbols in the same order as the English sentence.
+
+As an example, you cannot translate @samp{package '~a' has been superseded by
+'~a'} by @samp{'~a' superseeds package '~a'}, because the meaning would be
+reversed.  If foo is superseeded by bar, the translation would read
+@samp{'foo' superseeds package 'bar'}.  To work around this problem, it
+is possible to use more advanced formating to select a given piece of data,
+instead of following the default English order.  @xref{Formatted Output,,,
+guile, GNU Guile Reference Manual}, for more information on formating in Guile.
+
+@item packages
+
+Package descriptions occasionally contain Texinfo markup (@pxref{Synopses
+and Descriptions}).   Texinfo markup looks like @samp{@@code@{rm -rf@}},
+@samp{@@emph@{important@}}, etc.  When translating, please leave markup as is.
+
+The characters after ``@@'' form the name of the markup, and the text between
+``@{'' and ``@}'' is its content.  In general, you should not translate the
+content of markup like @code{@@code}, as it contains literal code that do not
+change with language.  You can translate the content of formating markup such
+as @code{@@emph}, @code{@@i}, @code{@@itemize}, @code{@@item}.  However, do
+not translate the name of the markup, or it will not be recognized.  Do
+not translate the word after @code{@@end}, it is the name of the markup that
+is closed at this position (e.g.@: @code{@@itemize ... @@end itemize}).
+
+@item documentation-manual and documentation-cookbook
+
+The first step to ensure a successful translation of the manual is to find
+and translate the following strings @emph{first}:
+
+@itemize
+@item @code{version.texi}: Translate this string as @code{version-xx.texi},
+      where @code{xx} is your language code (the one shown in the URL on
+      weblate).
+@item @code{contributing.texi}: Translate this string as
+      @code{contributing.xx.texi}, where @code{xx} is the same language code.
+@item @code{Top}: Do not translate this string, it is important for Texinfo.
+      If you translate it, the document will be empty (missing a Top node).
+      Please look for it, and register @code{Top} as its translation.
+@end itemize
+
+Translating these strings first ensure we can include your translation in
+the guix repository without breaking the make process or the
+@command{guix pull} machinery.
+
+The manual and the cookbook both use Texinfo.  As for @code{packages}, please
+keep Texinfo markup as is.  There are more possible markup types in the manual
+than in the package descriptions.  In general, do not translate the content
+of @code{@@code}, @code{@@file}, @code{@@var}, @code{@@value}, etc.  You
+should translate the content of formating markup such as @code{@@emph},
+@code{@@i}, etc.
+
+The manual contains sections that can be refered to by name by @code{@@ref},
+@code{@@xref} and @code{@@pxref}.  We have a mechanism in place so you do
+not have to translate their content.  If you keep the English title, we will
+automatically replace it with your translation of that title.  This ensures
+that Texinfo will always be able to find the node. If you decide to change
+the translation of the title, the references will automatically be updated
+and you will not have to update them all yourself.
+
+When translating references from the cookbook to the manual, you need to
+replace the name of the manual and the name of the section.  For instance,
+to translate @code{@@pxref@{Defining Packages,,, guix, GNU Guix Reference
+Manual@}}, you would replace @code{Defining Packages} with the title of that
+section in the translated manual @emph{only} if that title is translated.
+If the title is not translated in your language yet, do not translate it here,
+or the link will be broken.  Replace @code{guix} with @code{guix.xx} where
+@code{xx} is your language code.  @code{GNU Guix Reference Manual} is the
+text of the link.  You can translate it however you wish.
+
+@item website
+
+The website pages are written using SXML, an s-expression version of HTML,
+the basic language of the web.  We have a process to extract translatable
+strings from the source, and replace complex s-expressions with a more familiar
+XML markup, where each markup is numbered.  Translators can arbitrarily change
+the ordering, as in the following example.
+
+@example
+#. TRANSLATORS: Defining Packages is a section name
+#. in the English (en) manual.
+#: apps/base/templates/about.scm:64
+msgid "Packages are <1>defined<1.1>en</1.1><1.2>Defining-Packages.html</1.2></1> as native <2>Guile</2> modules."
+msgstr "Pakete werden als reine <2>Guile</2>-Module <1>definiert<1.1>de</1.1><1.2>Pakete-definieren.html</1.2></1>."
+@end example
+
+Note that you need to include the same markups.  You cannot skip any.
+@end table
+
+In case you make a mistake, the component might fail to build properly with your
+language, or even make guix pull fail.  To prevent that, we have a process
+in place to check the content of the files before pushing to our repository.
+We will not be able to update the translation for your language in Guix, so
+we will notify you (through weblate and/or by email) so you get a chance to
+fix the issue.
+
+@subsubheading Outside of Weblate
+
+Currently, some parts of Guix cannot be translated on Weblate, help wanted!
+
+@itemize
+@item @command{guix pull} news can be translated in @file{news.scm}, but is not
+      available from Weblate.  If you want to provide a translation, you
+      can prepare a patch as described above, or simply send us your
+      translation with the name of the news entry you translated and your
+      language. @xref{Writing Channel News}, for more information about
+      channel news.
+@item Guix blog posts cannot currently be translated.
+@item The installer script (for foreign distributions) is entirely in English.
+@item Some of the libraries Guix uses cannot be translated or are translated
+      outside of the Guix project.  Guile itself is not internationalized.
+@item Other manuals linked from this manual or the cookbook might not be
+      translated.
+@end itemize
+
+@subsubheading Translation Infrastructure
+
+Weblate is backed by a git repository from which it discovers new strings to
+translate and pushes new and updated translations.  Normally, it would be
+enough to give it commit access to our repositories.  However, we decided
+to use a separate repository for two reasons.  First, we would have to give
+Weblate commit access and authorize its signing key, but we do not trust it
+in the same way we trust guix developpers, especially since we do not manage
+the instance ourselves.  Second, if translators mess something up, it can
+break the generation of the website and/or guix pull for all our users,
+independently of their language.
+
+For these reasons, we use a dedicated repository to host translations, and we
+synchronize it with our guix and artworks repositories after checking no issue
+was introduced in the translation.
+
+Developpers can download the latest PO files from weblate in the Guix
+repository by runnig the @command{make download-po} target.  It will
+automatically download the latest files from weblate, reformat them to a
+canonical form, and check they do not contain issues.  The manual needs to be
+built again to check for additional issues that might crash Texinfo.
+
+Before pushing new translation files, developpers should add them to the
+make machinery so the translations are actually available.  The process
+differs for the various components.
+
+@itemize
+@item New po files for the @code{guix} and @code{packages} components must
+      be registered by adding the new language to @file{po/guix/LINGUAS} or
+      @file{po/packages/LINGUAS}.
+@item New po files for the @code{documentation-manual} component must be
+      registered by adding the file name to @code{DOC_PO_FILES} in
+      @file{po/doc/local.mk}, the generated @file{%D%/guix.xx.texi} manual to
+      @code{info_TEXINFOS} in @file{doc/local.mk} and the generated
+      @file{%D%/guix.xx.texi} and @file{%D%/contributing.xx.texi} to
+      @code{TRANSLATED_INFO} also in @file{doc/local.mk}.
+@item New po files for the @code{documentation-cookbook} component must be
+      registered by adding the file name to @code{DOC_COOKBOOK_PO_FILES} in
+      @file{po/doc/local.mk}, the generated @file{%D%/guix-cookbook.xx.texi}
+      manual to @code{info_TEXINFOS} in @file{doc/local.mk} and the generated
+      @file{%D%/guix-cookbook.xx.texi} to @code{TRANSLATED_INFO} also
+      in @file{doc/local.mk}.
+@item New po files for the @code{website} component must be added to the
+      @code{guix-artwork} repository, in @file{website/po/}.
+      @file{website/po/LINGUAS} and @file{website/po/ietf-tags.scm} must
+      be updated accordingly (see @file{website/i18n-howto.txt} for more
+      information on the process).
+@end itemize

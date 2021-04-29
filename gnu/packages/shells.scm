@@ -825,14 +825,14 @@ Shell (pdksh).")
 (define-public oil
   (package
     (name "oil")
-    (version "0.8.9")
+    (version "0.8.10")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.oilshell.org/download/oil-"
                            version ".tar.gz"))
        (sha256
-        (base32 "080lsx7hyjhny3jzscwr152vr0g9s3c2iqg3vrpgsbk8vv7vw5l7"))))
+        (base32 "03ixqspizvgj869b524c33pg9c6h64g04r4pjkxfp1fxvgca70db"))))
     (build-system gnu-build-system)
     (arguments
      `(#:strip-binaries? #f             ; strip breaks the binary

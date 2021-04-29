@@ -15,6 +15,7 @@
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Edouard Klein <edk@beaver-labs.com>
 ;;; Copyright © 2021 Philip McGrath <philip@philipmcgrath.com>
+;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -230,29 +231,34 @@ features an integrated Emacs-like editor and a large runtime library.")
 (define-public bigloo
   ;; Upstream modifies source tarballs in place, making significant changes
   ;; long after the initial publication: <https://bugs.gnu.org/33525>.
-  (let ((upstream-version "4.3f"))
+  (let ((upstream-version "4.3g"))
     (package
       (name "bigloo")
-      (version "4.3f")
+      (version "4.3g")
       (source (origin
                 (method url-fetch)
                 (uri (string-append "ftp://ftp-sop.inria.fr/indes/fp/Bigloo/bigloo"
                                     upstream-version ".tar.gz"))
                 (sha256
                  (base32
-                  "09whj8z91qbihk59dw2yb2ccbx9nk1c4l65j62pfs1pz822cpyh9"))
+                  "07305c134v7s1nz44igwsyqpb9qqia5zyng1q2qj60sskw3nbd67"))
                 ;; Remove bundled libraries.
                 (modules '((guix build utils)))
                 (snippet
                  '(begin
                     (for-each delete-file-recursively
-                              '("gc" "gmp" "libuv"))
+                              '("gc" "gmp" "libuv" "libunistring" "pcre"))
                     #t))))
       (build-system gnu-build-system)
       (arguments
        `(#:test-target "test"
          #:phases
          (modify-phases %standard-phases
+           (add-after 'unpack 'fix-gmp-detection
+             (lambda _
+               (substitute* "configure"
+                 (("gmpversion=`\\$autoconf gmp --lib=\\$gmplib`")
+                  "gmpversion=`\\$autoconf gmp --lib=\"\\$gmplib\"`"))))
            (replace 'configure
              (lambda* (#:key inputs outputs #:allow-other-keys)
 
@@ -275,6 +281,8 @@ features an integrated Emacs-like editor and a large runtime library.")
                          (string-append "--prefix=" out)
                                                   ; use system libraries
                          "--customgc=no"
+                         "--enable-gmp"
+                         "--customgmp=no"
                          "--customunistring=no"
                          "--customlibuv=no"
                          (string-append"--mv=" (which "mv"))

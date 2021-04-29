@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2017, 2018, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -46,54 +46,22 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages xml))
 
-(define podofo-for-scribus
-  (package
-    (inherit podofo)
-    (version "0.9.6")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://sourceforge/podofo/podofo/" version
-                           "/podofo-" version ".tar.gz"))
-       (sha256
-        (base32 "0wj0y4zcmj4q79wrn3vv3xq4bb0vhhxs8yifafwy9f2sjm83c5p9"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           ;; Fix the build with CMake 3.12.0.
-           (substitute* "test/TokenizerTest/CMakeLists.txt"
-             (("\\$\\{CMAKE_COMMAND\\}")
-              "true"))
-           #t))))))
-
 (define-public scribus
   (package
     (name "scribus")
-    (version "1.5.6.1")
+    (version "1.5.7")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/scribus/scribus-devel/"
                            version "/scribus-" version ".tar.xz"))
        (sha256
-        (base32 "1axp8ffnx3nh6k4s5mfa9gbx8d0yql2azgcampg41ylwafapc9fl"))))
+        (base32 "1kpq4vc95hj3w8l205kh0pmdlisi4v1gilz0sf8n39y7ryr1d0ri"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;no test target
        #:configure-flags
-       '("-DWANT_GRAPHICSMAGICK=1")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'wrap-program
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             ;; Fix "ImportError: No module named _sysconfigdata_nd"
-             ;; runtime error where Scribus checks PATH and eventually
-             ;; runs system's Python instead of package's.
-             (let* ((out (assoc-ref outputs "out"))
-                    (py2 (assoc-ref inputs "python")))
-               (wrap-program (string-append out "/bin/scribus")
-                 `("PATH" ":" prefix (,(string-append py2 "/bin")))))
-             #t)))))
+       '("-DWANT_GRAPHICSMAGICK=1")))
     (inputs
      `(("boost" ,boost)
        ("cairo" ,cairo)
@@ -116,9 +84,7 @@
        ("libxml2" ,libxml2)
        ("libzmf" ,libzmf)
        ("openssl" ,openssl)
-       ;; Scribus 1.5.6.1 does not build with later versions, see
-       ;; <https://bugs.scribus.net/view.php?id=16427>.
-       ("podofo" ,podofo-for-scribus)
+       ("podofo" ,podofo)
        ("poppler" ,poppler)
        ("python" ,python)               ; need Python library
        ("qtbase" ,qtbase)

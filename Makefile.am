@@ -261,7 +261,6 @@ MODULES =					\
   guix/import/opam.scm				\
   guix/import/print.scm				\
   guix/import/pypi.scm				\
-  guix/import/snix.scm				\
   guix/import/stackage.scm			\
   guix/import/texlive.scm   			\
   guix/import/utils.scm				\
@@ -300,7 +299,6 @@ MODULES =					\
   guix/scripts/import/go.scm			\
   guix/scripts/import/hackage.scm		\
   guix/scripts/import/json.scm  		\
-  guix/scripts/import/nix.scm			\
   guix/scripts/import/opam.scm			\
   guix/scripts/import/pypi.scm			\
   guix/scripts/import/stackage.scm		\
@@ -489,7 +487,6 @@ SCM_TESTS =					\
   tests/services/linux.scm			\
   tests/sets.scm				\
   tests/size.scm				\
-  tests/snix.scm				\
   tests/status.scm				\
   tests/store-database.scm			\
   tests/store-deduplication.scm		\

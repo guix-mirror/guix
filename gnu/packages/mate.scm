@@ -3,7 +3,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2019 Guy Fleury Iteriteka <hoonandon@gmail.com>
 ;;; Copyright © 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -1580,6 +1580,9 @@ used to bring up authentication dialogs.")
        ("shared-mime-info"          ,shared-mime-info)
        ("yelp"                      ,yelp)
        ("zenity"                    ,zenity)))
+    (propagated-inputs
+     ;; Default font that applications such as IceCat require.
+     `(("font-dejavu"             ,font-dejavu)))
     (synopsis "The MATE desktop environment")
     (home-page "https://mate-desktop.org/")
     (description

@@ -53,6 +53,7 @@
 ;;; Copyright © 2020 Zhu Zihao <all_but_last@163.com>
 ;;; Copyright © 2020 David Dashyan <mail@davie.li>
 ;;; Copyright © 2020 pukkamustard <pukkamustard@posteo.net>
+;;; Copyright © 2021 B. Wilson <elaexuotee@wilsonb.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -130,6 +131,7 @@
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages slang)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages valgrind)
@@ -354,7 +356,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 
 ;; The current "stable" kernels. That is, the most recently released major
 ;; versions that are still supported upstream.
-(define-public linux-libre-5.11-version "5.11.14")
+(define-public linux-libre-5.11-version "5.11.17")
 (define deblob-scripts-5.11
   (linux-libre-deblob-scripts
    linux-libre-5.11-version
@@ -362,7 +364,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0yvr80g200hdryz54gdnzj4fl38pf7g4qbgj475rhcfwixhp1j7n")))
 (define-public linux-libre-5.11-pristine-source
   (let ((version linux-libre-5.11-version)
-        (hash (base32 "1ia4wzh44lkvrbvnhdnnjcdyvqx2ihpbwkih7wqm1n5prhq38ql7")))
+        (hash (base32 "18yld85jymb3wf71kd425zzzvriz9wxlw90pklgf91q37r9rxpa1")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.11)))
@@ -370,7 +372,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 ;; The "longterm" kernels — the older releases with long-term upstream support.
 ;; Here are the support timelines:
 ;; <https://www.kernel.org/category/releases.html>
-(define-public linux-libre-5.10-version "5.10.30")
+(define-public linux-libre-5.10-version "5.10.33")
 (define deblob-scripts-5.10
   (linux-libre-deblob-scripts
    linux-libre-5.10-version
@@ -378,12 +380,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0hh27ccqimagr3aij7ygwikxw66y63sqwd0xlf49bhpjd090r9a7")))
 (define-public linux-libre-5.10-pristine-source
   (let ((version linux-libre-5.10-version)
-        (hash (base32 "0h06lavcbbj9a4dfzca9sprghiq9z33q8i4gh3n2912wmjsnj0nl")))
+        (hash (base32 "05a3bcc6ic9gyhp8bahfrk8xm8pwb6jmgad6nwqgih3icg1xngwk")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.10)))
 
-(define-public linux-libre-5.4-version "5.4.112")
+(define-public linux-libre-5.4-version "5.4.115")
 (define deblob-scripts-5.4
   (linux-libre-deblob-scripts
    linux-libre-5.4-version
@@ -391,12 +393,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1xghbbnaisjd0k1klbyn1p7r6r4x5a1bpmkm56a3gh2zvw4s7mj8")))
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "190cq97pm0r6s115ay66rjra7fnyn7m4rak89inwhm223931sdmq")))
+        (hash (base32 "1llxk04vlpi7a4ca2f5vlcxfn68n8yhmsar3hsl259i7hms28isv")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.187")
+(define-public linux-libre-4.19-version "4.19.189")
 (define deblob-scripts-4.19
   (linux-libre-deblob-scripts
    linux-libre-4.19-version
@@ -404,12 +406,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1jiaw0as1ippkrjdpd52657w5mz9qczg3y2hlra7m9k0xawwiqlf")))
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "1hx0jw11xmj57v9a8w34729vgrandaing2n9qkhx5dq4mhy04k50")))
+        (hash (base32 "12a3qn5s66rrbrq5p8dsf7kn0l74q0ahqkl3bmbw1fvyy1fhwyvi")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.230")
+(define-public linux-libre-4.14-version "4.14.232")
 (define deblob-scripts-4.14
   (linux-libre-deblob-scripts
    linux-libre-4.14-version
@@ -417,12 +419,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1qij18inijj6c3ma8hv98yjagnzxdxyn134da9fd23ky8q6hbvky")))
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "1gn5cs1ss4bfsnnv0b2s4g5ibiigpzsx0i3qfswchdbxvdag75cw")))
+        (hash (base32 "0sa3sz7bznlhijd0iwv37nyrrnw34iq6dq1bqr6cj2wpyrhr7h8x")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.266")
+(define-public linux-libre-4.9-version "4.9.268")
 (define deblob-scripts-4.9
   (linux-libre-deblob-scripts
    linux-libre-4.9-version
@@ -430,12 +432,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0fxajshb75siq39lj5h8xvhdj8lcmddkslwlyj65rhlwk6g2r4b2")))
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "0qzigcslfp714vaswwlw93xj0h2f8laikppw6krrhfnh5wwrp5dr")))
+        (hash (base32 "0aknrlf5q0dsqib8c9klmf5c60dy7hg2zksb020qvyrp077gcrjv")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.266")
+(define-public linux-libre-4.4-version "4.4.268")
 (define deblob-scripts-4.4
   (linux-libre-deblob-scripts
    linux-libre-4.4-version
@@ -443,7 +445,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0hhin1jpfkd6nwrb6xqxjzl3hdxy4pn8a15hy2d3d83yw6pflbsf")))
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
-        (hash (base32 "00x2dmjiiv9zpc0vih9xqmf78kynqzj9q9v1chc2q2hcjpqfj31c")))
+        (hash (base32 "1srk08kaxq5jjlqx804cgjffhcsrdkv3idh8ipagl6v2w4kas5v8")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.4)))
@@ -479,12 +481,17 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 (define-public linux-libre-5.11-source
   (source-with-patches linux-libre-5.11-pristine-source
                        (list %boot-logo-patch
-                             %linux-libre-arm-export-__sync_icache_dcache-patch)))
+                             %linux-libre-arm-export-__sync_icache_dcache-patch
+                             ;; Pinebook Pro patch to fix LCD display
+                             (search-patch
+                              "linux-libre-arm64-generic-pinebook-lcd.patch"))))
 
 (define-public linux-libre-5.10-source
   (source-with-patches linux-libre-5.10-pristine-source
                        (list %boot-logo-patch
-                             %linux-libre-arm-export-__sync_icache_dcache-patch)))
+                             %linux-libre-arm-export-__sync_icache_dcache-patch
+			     (search-patch
+			      "linux-libre-arm64-generic-pinebook-lcd.patch"))))
 
 (define-public linux-libre-5.4-source
   (source-with-patches linux-libre-5.4-pristine-source
@@ -1042,7 +1049,11 @@ It has been modified to remove all non-free binary blobs.")
                         ("CONFIG_BATTERY_AXP20X" . m)
                         ("CONFIG_PINCTRL_AXP209" . m)
                         ("CONFIG_AXP20X_POWER" . m)
-                        ("CONFIG_AXP20X_ADC" . m))
+                        ("CONFIG_AXP20X_ADC" . m)
+                        ;; Pinebook PRO battery and sound support
+                        ("CONFIG_BATTERY_CW2015" . m)
+                        ("CONFIG_CHARGER_GPIO" . m)
+                        ("CONFIG_SND_SOC_ES8316" . m))
                       %default-extra-linux-options)))
 
 (define-public linux-libre-arm64-generic-5.10
@@ -1063,7 +1074,11 @@ It has been modified to remove all non-free binary blobs.")
                         ("CONFIG_BATTERY_AXP20X" . m)
                         ("CONFIG_PINCTRL_AXP209" . m)
                         ("CONFIG_AXP20X_POWER" . m)
-                        ("CONFIG_AXP20X_ADC" . m))
+                        ("CONFIG_AXP20X_ADC" . m)
+                        ;; Pinebook PRO battery and sound support
+                        ("CONFIG_BATTERY_CW2015" . m)
+                        ("CONFIG_CHARGER_GPIO" . m)
+                        ("CONFIG_SND_SOC_ES8316" . m))
                       %default-extra-linux-options)))
 
 (define-public linux-libre-arm64-generic-5.4
@@ -1600,6 +1615,12 @@ providing the system administrator with some help in common tasks.")
                                (string-append "--with-bashcompletiondir="
                                               (assoc-ref %outputs "out")
                                               "/etc/bash_completion.d"))
+
+       ;; FIXME: For now we cannot reliably run tests on GNU/Hurd:
+       ;; <https://bugs.gnu.org/47791>.
+       #:tests? ,(and (not (%current-target-system))
+                      (not (string-suffix? "-gnu" (%current-system))))
+
        #:phases (modify-phases %standard-phases
                   (add-before 'configure 'patch-build-scripts
                     (lambda* (#:key outputs #:allow-other-keys)
@@ -2411,7 +2432,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
 (define-public iproute
   (package
     (name "iproute2")
-    (version "5.10.0")
+    (version "5.12.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2419,7 +2440,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "1sakmhvh40gh4x55vzgy6cyvizqkhqalcfpvs6r0c14w62p38jm5"))))
+                "0vrjbzhwzcvaxyyhkr2ii89w2vznzwp2pfgk7w72mviniawqs9lx"))))
     (build-system gnu-build-system)
     (arguments
      `( ;; There is a test suite, but it wants network namespaces and sudo.
@@ -4311,14 +4332,14 @@ isolation or root privileges.")
 (define-public hdparm
   (package
     (name "hdparm")
-    (version "9.60")
+    (version "9.61")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/hdparm/hdparm/"
                                   "hdparm-" version ".tar.gz"))
               (sha256
                (base32
-                "1k1mcv7naiacw1y6bdd1adnjfiq1kkx2ivsadjwmlkg4fff775w3"))))
+                "0hskvzsg58hw8abkkmxh5kky0hhilv516870x2bq62zihww1q6ns"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -4350,7 +4371,7 @@ Translation (@dfn{SAT}) are also supported.")
 (define-public nvme-cli
   (package
     (name "nvme-cli")
-    (version "1.13")
+    (version "1.14")
     (home-page "https://github.com/linux-nvme/nvme-cli")
     (source (origin
               (method git-fetch)
@@ -4358,7 +4379,7 @@ Translation (@dfn{SAT}) are also supported.")
                     (url home-page)
                     (commit (string-append "v" version))))
               (sha256
-               (base32 "1d538kp841bjh8h8d9q7inqz56rdcwb3m78zfx8607ddykv7wcqb"))
+               (base32 "0dpadz945482srqpsbfx1bh7rc499fgpyzz1flhk9g9xjbpapkzc"))
               (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
@@ -6842,7 +6863,7 @@ the MTP device as a file system.")
 (define-public procenv
   (package
    (name "procenv")
-   (version "0.51")
+   (version "0.55")
    (source
     (origin
      (method git-fetch)
@@ -6851,9 +6872,8 @@ the MTP device as a file system.")
             (commit version)))
      (file-name (git-file-name name version))
      (sha256
-      (base32 "1ilrsw1rc85w29mkbkmm5n5w427gapv43yrjzvkb4kc9xhscgdjn"))))
+      (base32 "13fnr4gfj2xlxghw93m5gsxzlwzv3s6jv9hja0w0pb23hlncbmhy"))))
    (build-system gnu-build-system)
-   (arguments `(#:configure-flags '("--disable-silent-rules")))
    (native-inputs
     `(("pkg-config" ,pkg-config)
 
@@ -8031,3 +8051,46 @@ kernel side implementation.")
 read-only file system optimized for resource-scarce devices.  This package
 provides user-space tools for creating EROFS file systems.")
     (license license:gpl2+)))
+
+(define-public rasdaemon
+  (package
+    (name "rasdaemon")
+    (version "0.6.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mchehab/rasdaemon")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "13g39x19lfjf9izdcb0nlyfjrgpliivhv4nw3ndgyzi59l3yqc0v"))))
+    (native-inputs `(("autoconf" ,autoconf)
+                     ("automake" ,automake)
+                     ("libtool" ,libtool)))
+    (inputs `(("sqlite" ,sqlite)))
+    (arguments
+     `(#:configure-flags '("--enable-all"
+                           "--localstatedir=/var")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'munge-autotools
+           (lambda _
+             ;; For some reason upstream forces sysconfdir=/etc.  This results
+             ;; in EPERM during the install phase.  Removing the offending
+             ;; line lets sysconfdir correctly pick up DESTDIR.
+             (substitute* "configure.ac"
+               (("^test .* sysconfdir=/etc\n$") ""))
+             ;; Upstream tries to create /var/lib/rasdaemon at install time.
+             ;; This results in EPERM on guix.  Instead, the service should
+             ;; create this at activation time.
+             (substitute* "Makefile.am"
+               (("^\\s*\\$\\(install_sh\\) -d .*@RASSTATEDIR@.*$") "")))))))
+    (build-system gnu-build-system)
+    (home-page "https://github.com/mchehab/rasdaemon")
+    (synopsis "Platform Reliability, Availability and Serviceability tools")
+    (description "The @code{rasdaemon} program is a daemon which monitors the
+platform Reliablity, Availability and Serviceability (RAS) reports from the
+Linux kernel trace events.  These trace events are logged in
+/sys/kernel/debug/tracing, reporting them via syslog/journald.")
+    (license license:gpl2)))

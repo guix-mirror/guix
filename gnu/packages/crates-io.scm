@@ -15831,7 +15831,7 @@ derived from an internal hasher used in FireFox and Rustc.")
     (home-page "https://github.com/Stebalien/gag-rs")
     (synopsis "Gag, redirect, or hold stdout/stderr output")
     (description
-     "This packages gags, redirects, or holds stdout/stderr output.")
+     "This package gags, redirects, or holds stdout/stderr output.")
     (license license:expat)))
 
 (define-public rust-galil-seiferas-0.1
@@ -20378,8 +20378,8 @@ byte slices for sets of ASCII characters or bytes.")
     (home-page "https://github.com/jni-rs/jni-rs")
     (synopsis "Rust bindings to the JNI")
     (description
-     "This package provides Rust bindings to the JNI.  It permits to
-implement native Java methods for JVM and Android in Rust, call Java
+     "This package provides Rust bindings to the JNI.  It
+implements native Java methods for JVM and Android in Rust, call Java
 code from Rust, embed JVM in Rust applications and use any Java
 libraries.")
     (license (list license:expat license:asl2.0))))
@@ -27399,7 +27399,7 @@ deserialization, and interpreter in Rust.")
        (("rust-easy-parallel" ,rust-easy-parallel-3))))
     (home-page "https://github.com/stjepang/parking")
     (synopsis "Thread parking and unparking")
-    (description "This packages provides methods for thread parking and
+    (description "This package provides methods for thread parking and
 unparking.")
     (license (list license:asl2.0 license:expat))))
 
@@ -27707,7 +27707,7 @@ synchronization primitives.")
     (home-page "")
     (synopsis "Parse zoneinfo files from the IANA database")
     (description
-     "This packages parses zoneinfo files from the IANA database.")
+     "This package parses zoneinfo files from the IANA database.")
     (license license:expat)))
 
 (define-public rust-partial-io-0.3
@@ -32078,7 +32078,7 @@ Rust.")
     (home-page "https://github.com/jonathandturner/rawkey")
     (synopsis "Raw terminal key input")
     (description
-     "This packages provides support for raw key input in terminals.")
+     "This package provides support for raw key input in terminals.")
     (license license:expat)))
 
 (define-public rust-rayon-core-1
@@ -42640,7 +42640,7 @@ closures after a delay or at a given timestamp.")
        (("rust-lazy-static" ,rust-lazy-static-0.2))))
     (home-page "https://github.com/savage13/tint")
     (synopsis "Color creation and manipulation")
-    (description "This packages provides tools for color creation and
+    (description "This package provides tools for color creation and
 manipulation in Rust.")
     (license license:expat)))
 

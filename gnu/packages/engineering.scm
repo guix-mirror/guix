@@ -2359,7 +2359,7 @@ comments.")))
 (define-public freecad
   (package
     (name "freecad")
-    (version "0.19.1")
+    (version "0.19.2")
     (source
       (origin
         (method git-fetch)
@@ -2368,8 +2368,7 @@ comments.")))
                (commit version)))
         (file-name (git-file-name name version))
         (sha256
-          (base32
-            "0c53q2iawy4yfp11czyc7lbr9ivp3r7v24x4c20myh11wyplffc0"))))
+          (base32 "0fhjv0x3dix1c7jml91yx63z9xifjlbhjbcdb73lw80smpxrq7mm"))))
     (build-system qt-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
@@ -2734,14 +2733,14 @@ GUI.")
 (define-public poke
   (package
     (name "poke")
-    (version "1.1")
+    (version "1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/poke/poke-" version
                                   ".tar.gz"))
               (sha256
                (base32
-                "1mkaq19a8d951n9l6d3f8rwq45a7gkr05snb285idd21qxixys6d"))))
+                "0qnz7lc681nxa16rw9n9q4spy9fas6m2adrpb49imh34bgdgh77n"))))
     (build-system gnu-build-system)
     ;; The GUI, which we elide, requires tcl and tk.
     (native-inputs `(;; Requires bison 3.6+ but we currently only have 3.5.

@@ -160,13 +160,13 @@ order to make bootstrapping easier.")
 (define-public python-poetry-core
   (package
     (name "python-poetry-core")
-    (version "1.0.2")
+    (version "1.0.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "poetry-core" version))
        (sha256
-        (base32 "0wgfc51dgymnfg23mvsxl4iqbdrppysxi4s3z3xhzx3cd9jmsl7z"))))
+        (base32 "1ichii48zkywcnj8v3bcn9vk09v69jv6h65805w21hwz4hlcj593"))))
     (build-system python-build-system)
     (home-page "https://github.com/python-poetry/poetry-core")
     (synopsis "Poetry PEP 517 build back-end")

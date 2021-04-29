@@ -14,6 +14,7 @@
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2020, 2021 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2021 Brendan Tildesley <mail@brendan.scot>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,6 +37,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages calendar)
   #:use-module (gnu packages cdrom)
+  #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
@@ -48,6 +50,7 @@
   #:use-module (gnu packages inkscape)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages mate)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages photo)
@@ -313,7 +316,7 @@ upstream occasionally.")
 (define-public exo
   (package
     (name "exo")
-    (version "4.16.1")
+    (version "4.16.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
@@ -321,7 +324,7 @@ upstream occasionally.")
                                   "exo-" version ".tar.bz2"))
               (sha256
                (base32
-                "0fxm2aczzbi0z4y6x24934964y9jg4cl4frvlnjc5zqmccjsr3aj"))))
+                "17cybaml221jnw99aig3zajg2kbnn87p5sycj68wpwgvd99zb2af"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -725,7 +728,7 @@ allows you to shut down the computer from Xfce.")
 (define-public xfce4-settings
   (package
     (name "xfce4-settings")
-    (version "4.16.0")
+    (version "4.16.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
@@ -733,7 +736,7 @@ allows you to shut down the computer from Xfce.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1hnx88a8xmi38mdf5gxdvx7n8yax1vzah8hy8g37bijlqx7l18b7"))
+                "1iim6sbh58hjwdmwsdlbh9bdnrs2k98crapv3kdhwkd3gazf2a5v"))
               (patches (search-patches "xfce4-settings-defaults.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -892,7 +895,8 @@ on the screen.")
                                   (copy-file "/tmp/final.jpg" image))
                                 '(;; "backgrounds/xfce-blue.jpg"
                                   "backgrounds/xfce-stripes.png"
-                                  "backgrounds/xfce-teal.jpg"))
+                                  "backgrounds/xfce-teal.jpg"
+                                  "backgrounds/xfce-verticals.png"))
                       #t)))
 
        #:disallowed-references (,inkscape ,imagemagick)))
@@ -948,6 +952,23 @@ menubar and the window decorations are hidden) that helps you to save space
 on your desktop.")
     (license gpl2+)))
 
+(define-public mate-polkit-for-xfce
+  (package/inherit mate-polkit
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'patch-desktop
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((common (string-append
+                             (assoc-ref outputs "out") "/etc/xdg/autostart/"
+                             "polkit-mate-authentication-agent-"))
+                    (old (string-append common "1.desktop"))
+                    (new (string-append common "for-xfce-1.desktop")))
+               (substitute* old (("MATE;") "XFCE;"))
+               ;; To avoid a conflict if both MATE and XFCE are installed.
+               (rename-file old new)))))))
+    (properties `((hidden? . #t)))))
+
 (define-public xfce
   (package
     (name "xfce")
@@ -971,6 +992,7 @@ on your desktop.")
        ("gnome-icon-theme"     ,gnome-icon-theme)
        ("gtk-xfce-engine"      ,gtk-xfce-engine)
        ("hicolor-icon-theme"   ,hicolor-icon-theme)
+       ("mate-polkit-for-xfce" ,mate-polkit-for-xfce)
        ("ristretto"            ,ristretto)
        ("shared-mime-info"     ,shared-mime-info)
        ("thunar"               ,thunar)
@@ -990,6 +1012,9 @@ on your desktop.")
        ("xfce4-clipman-plugin"    ,xfce4-clipman-plugin)
        ("xfce4-pulseaudio-plugin" ,xfce4-pulseaudio-plugin)
        ("xfce4-xkb-plugin"        ,xfce4-xkb-plugin)))
+    (propagated-inputs
+     ;; Default font that applications such as IceCat require.
+     `(("font-dejavu"             ,font-dejavu)))
     (native-search-paths
      ;; For finding panel plugins.
      (package-native-search-paths xfce4-panel))

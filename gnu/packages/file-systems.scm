@@ -340,8 +340,8 @@ from a mounted file system.")
     (license license:gpl2+)))
 
 (define-public bcachefs-tools
-  (let ((commit "bb6eccc2ecd4728871bfc70462d3a4a20daa9d68")
-        (revision "4"))
+  (let ((commit "ce906d661e63d4318b9f26ec145f2ff5fddf5162")
+        (revision "5"))
     (package
       (name "bcachefs-tools")
       (version (git-version "0.1" revision commit))
@@ -353,7 +353,7 @@ from a mounted file system.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0ziqmcxbrak6bjck6s46hqrqx44zc97yaj0kbk3amsxf18rsfs0n"))))
+          (base32 "1fkfqrk3q6shjr8jnpf3myd79xdpc8hbs0grwdmzb3dhw65k9isi"))))
       (build-system gnu-build-system)
       (arguments
        `(#:make-flags
@@ -472,7 +472,7 @@ from the bcachefs-tools package.  It is meant to be used in initrds.")
 (define-public exfatprogs
   (package
     (name "exfatprogs")
-    (version "1.1.0")
+    (version "1.1.1")
     (source
      (origin
        (method git-fetch)
@@ -481,7 +481,7 @@ from the bcachefs-tools package.  It is meant to be used in initrds.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1ciy28lx7c1vr1f138qi0mkz88pzlkay6nlwmp1yjzd830x48549"))))
+        (base32 "1zl3w5w2mzyggizc4dsiln0pa013f8sf5dxmm5wflplpfm6k4brk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

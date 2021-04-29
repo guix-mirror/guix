@@ -108,6 +108,7 @@
 
             commit-id?
 
+            swh-download-directory
             swh-download))
 
 ;;; Commentary:
@@ -558,12 +559,6 @@ requested bundle cooking, waiting for completion...~%"))
 ;;; High-level interface.
 ;;;
 
-(define (commit-id? reference)
-  "Return true if REFERENCE is likely a commit ID, false otherwise---e.g., if
-it is a tag name.  This is based on a simple heuristic so use with care!"
-  (and (= (string-length reference) 40)
-       (string-every char-set:hex-digit reference)))
-
 (define (call-with-temporary-directory proc)      ;FIXME: factorize
   "Call PROC with a name of a temporary directory; close the directory and
 delete it when leaving the dynamic extent of this call."
@@ -576,6 +571,39 @@ delete it when leaving the dynamic extent of this call."
         (proc tmp-dir))
       (lambda ()
         (false-if-exception (delete-file-recursively tmp-dir))))))
+
+(define* (swh-download-directory id output
+                                 #:key (log-port (current-error-port)))
+  "Download from Software Heritage the directory with the given ID, and
+unpack it to OUTPUT.  Return #t on success and #f on failure"
+  (call-with-temporary-directory
+   (lambda (directory)
+     (match (vault-fetch id 'directory #:log-port log-port)
+       (#f
+        (format log-port
+                "SWH: directory ~a could not be fetched from the vault~%"
+                id)
+        #f)
+       ((? port? input)
+        (let ((tar (open-pipe* OPEN_WRITE "tar" "-C" directory "-xzvf" "-")))
+          (dump-port input tar)
+          (close-port input)
+          (let ((status (close-pipe tar)))
+            (unless (zero? status)
+              (error "tar extraction failure" status)))
+
+          (match (scandir directory)
+            (("." ".." sub-directory)
+             (copy-recursively (string-append directory "/" sub-directory)
+                               output
+                               #:log (%make-void-port "w"))
+             #t))))))))
+
+(define (commit-id? reference)
+  "Return true if REFERENCE is likely a commit ID, false otherwise---e.g., if
+it is a tag name.  This is based on a simple heuristic so use with care!"
+  (and (= (string-length reference) 40)
+       (string-every char-set:hex-digit reference)))
 
 (define* (swh-download url reference output
                        #:key (log-port (current-error-port)))
@@ -593,28 +621,7 @@ wait until it becomes available, which could take several minutes."
      (format log-port "SWH: found revision ~a with directory at '~a'~%"
              (revision-id revision)
              (swh-url (revision-directory-url revision)))
-     (call-with-temporary-directory
-      (lambda (directory)
-        (match (vault-fetch (revision-directory revision) 'directory
-                            #:log-port log-port)
-          (#f
-           (format log-port
-                   "SWH: directory ~a could not be fetched from the vault~%"
-                   (revision-directory revision))
-           #f)
-          ((? port? input)
-           (let ((tar (open-pipe* OPEN_WRITE "tar" "-C" directory "-xzvf" "-")))
-             (dump-port input tar)
-             (close-port input)
-             (let ((status (close-pipe tar)))
-               (unless (zero? status)
-                 (error "tar extraction failure" status)))
-
-             (match (scandir directory)
-               (("." ".." sub-directory)
-                (copy-recursively (string-append directory "/" sub-directory)
-                                  output
-                                  #:log (%make-void-port "w"))
-                #t))))))))
+     (swh-download-directory (revision-directory revision) output
+                             #:log-port log-port))
     (#f
      #f)))

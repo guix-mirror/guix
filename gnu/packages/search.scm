@@ -420,19 +420,19 @@ bibliographic data and simple document and bibtex retrieval.")
 (define-public ugrep
   (package
     (name "ugrep")
-    (version "3.1.11")
+    (version "3.1.12")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/Genivia/ugrep")
                     (commit (string-append "v" version))))
               (sha256
-               (base32 "1g3sxnrcaz1jxwa8nwrxpr63g4y0ha5zcf10053ciy9wjh6wqs1w"))
-              (file-name (string-append name "-" version "-checkout"))
+               (base32 "06y61sf2ywjaix4nss11wwkxipj8cc9ccx6bsmdm31h8d8wd2s0j"))
+              (file-name (git-file-name name version))
               (modules '((guix build utils)))
               (snippet
                '(begin
-                  (delete-file-recursively "bin")  ;; pre-build executables
+                  (delete-file-recursively "bin") ; pre-built executables
                   (for-each delete-file (find-files "tests" "^archive\\..*"))
                   (for-each delete-file (find-files "tests" "^.*\\.pdf$"))
                   (for-each delete-file (find-files "tests" "^.*\\.class$"))
