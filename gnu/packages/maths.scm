@@ -39,7 +39,7 @@
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
-;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2021 Gerd Heber <gerd.heber@gmail.com>
@@ -697,6 +697,30 @@ multiple precision or fixed integer arithmetic.  Output is not stored
 in memory, so even problems with very large output sizes can sometimes
 be solved.")
     (license license:gpl2+)))
+
+(define-public libcerf
+  (package
+    (name "libcerf")
+    (version "1.14")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://jugit.fz-juelich.de/mlz/libcerf")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1ic2q7kvxpqmgxlishygvx8d00i4wn51vkq4fyac44ahhf6c3kwd"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("perl" ,perl)))
+    (home-page "https://jugit.fz-juelich.de/mlz/libcerf")
+    (synopsis "Library for complex error functions")
+    (description
+     "@code{libcerf} is a self-contained numeric library that provides an
+efficient and accurate implementation of complex error functions, along with
+Dawson, Faddeeva, and Voigt functions.")
+    (license license:expat)))
 
 (define-public vinci
   (package
