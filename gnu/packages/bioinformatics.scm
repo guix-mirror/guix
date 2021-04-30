@@ -3,7 +3,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015, 2016, 2018, 2019, 2020 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2016, 2020 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2016, 2020, 2021 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2018 Raoul Bonnal <ilpuccio.febo@gmail.com>
@@ -570,6 +570,40 @@ This library is not intended to be used as a general-purpose BAM utility - all
 input and output BAMs must adhere to the PacBio BAM format specification.
 Non-PacBio BAMs will cause exceptions to be thrown.")
     (license license:bsd-3)))
+
+(define-public pbgzip
+  (let ((commit "2b09f97b5f20b6d83c63a5c6b408d152e3982974"))
+    (package
+      (name "pbgzip")
+      (version (git-version "0.0.0" "0" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/nh13/pbgzip")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1mlmq0v96irbz71bgw5zcc43g1x32zwnxx21a5p1f1ch4cikw1yd"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)))
+      (inputs
+       `(("zlib" ,zlib)))
+      (home-page "https://github.com/nh13/pbgzip")
+      (synopsis "Parallel Block GZIP")
+      (description "This package implements parallel block gzip.  For many
+formats, in particular genomics data formats, data are compressed in
+fixed-length blocks such that they can be easily indexed based on a (genomic)
+coordinate order, since typically each block is sorted according to this order.
+This allows for each block to be individually compressed (deflated), or more
+importantly, decompressed (inflated), with the latter enabling random retrieval
+of data in large files (gigabytes to terabytes).  @code{pbgzip} is not limited
+to any particular format, but certain features are tailored to genomics data
+formats when enabled.  Parallel decompression is somewhat faster, but the true
+speedup comes during compression.")
+      (license license:expat))))
 
 (define-public blasr-libcpp
   (package
