@@ -881,6 +881,45 @@ of C++14 components that complements @code{std} and Boost.")
     (supported-systems '("aarch64-linux" "x86_64-linux"))
     (license license:asl2.0)))
 
+(define-public aws-crt-cpp
+  (let* ((commit "c2d6ffa5597825111cc76ad71ffc6aef664d0f25")
+         (revision "1"))
+    (package
+      (name "aws-crt-cpp")
+      (version (git-version "0.14.2" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/awslabs/aws-crt-cpp")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0l7iwynk2rgzjnr1hi1raazghmk4m7pj47vdq2kf2cfz0b6v9jf5"))
+                (patches
+                 (search-patches
+                  "aws-crt-cpp-cmake-prefix.patch"
+                  "aws-crt-cpp-disable-networking-tests.patch"))))
+      (build-system cmake-build-system)
+      (arguments
+       '(#:configure-flags
+         '("-DBUILD_SHARED_LIBS=ON"
+           "-DBUILD_DEPS=OFF")))
+      (propagated-inputs
+       `(("aws-c-auth" ,aws-c-auth)
+         ("aws-c-cal" ,aws-c-cal)
+         ("aws-c-event-stream" ,aws-c-event-stream)
+         ("aws-c-http" ,aws-c-http)
+         ("aws-c-mqtt" ,aws-c-mqtt)
+         ("aws-c-s3" ,aws-c-s3)))
+      (synopsis "C++ wrapper for Amazon Web Services C libraries")
+      (description "The AWS Common Runtime (CRT) library provides a C++ wrapper
+implementation for the following @acronym{AWS,Amazon Web Services} C libraries:
+aws-c-auth, aws-c-cal, aws-c-common, aws-c-compression, aws-c-event-stream,
+aws-c-http, aws-c-io, aws-c-mqtt, aws-checksums, and s2n.")
+      (home-page "https://github.com/awslabs/aws-crt-cpp")
+      (license license:asl2.0))))
+
 (define-public aws-sdk-cpp
   (package
     (name "aws-sdk-cpp")
