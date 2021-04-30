@@ -770,3 +770,36 @@ specifications.")
 currently limited to Huffman encoding and decoding.")
     (home-page "https://github.com/awslabs/aws-c-compression")
     (license license:asl2.0)))
+
+(define-public aws-c-auth
+  (package
+    (name "aws-c-auth")
+    (version "0.6.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url (string-append "https://github.com/awslabs/" name))
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0yh9s6q3ahq39xgvihp2a5cn9h39qlq8wfjc32m0ayi9x739rbqg"))
+              (patches
+               (search-patches
+                "aws-c-auth-cmake-prefix.patch"
+                "aws-c-auth-disable-networking-tests.patch"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags
+       '("-DBUILD_SHARED_LIBS=ON")))
+    (propagated-inputs
+     `(("aws-c-cal" ,aws-c-cal)
+       ("aws-c-common" ,aws-c-common)
+       ("aws-c-http" ,aws-c-http)
+       ("aws-c-io" ,aws-c-io)))
+    (synopsis "Amazon Web Services client-side authentication library")
+    (description
+     "This library provides a C99 implementation for AWS client-side
+authentication.")
+    (home-page "https://github.com/awslabs/aws-c-auth")
+    (license license:asl2.0)))
