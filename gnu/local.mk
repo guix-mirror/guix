@@ -878,6 +878,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/aws-c-http-disable-networking-tests.patch\
   %D%/packages/patches/aws-c-io-cmake-prefix.patch		\
   %D%/packages/patches/aws-c-io-disable-networking-tests.patch	\
+  %D%/packages/patches/aws-c-s3-cmake-prefix.patch		\
+  %D%/packages/patches/aws-c-s3-disable-networking-tests.patch	\
   %D%/packages/patches/aws-checksums-cmake-prefix.patch		\
   %D%/packages/patches/azr3.patch				\
   %D%/packages/patches/bash-reproducible-linux-pgrp-pipe.patch	\

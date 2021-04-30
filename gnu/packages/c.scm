@@ -803,3 +803,34 @@ currently limited to Huffman encoding and decoding.")
 authentication.")
     (home-page "https://github.com/awslabs/aws-c-auth")
     (license license:asl2.0)))
+
+(define-public aws-c-s3
+  (package
+    (name "aws-c-s3")
+    (version "0.1.19")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url (string-append "https://github.com/awslabs/" name))
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1vkjd8dh99d8qsl7irnbkcdf9vjmcznx0jz186la0472z4h48wjj"))
+              (patches
+               (search-patches
+                "aws-c-s3-cmake-prefix.patch"
+                "aws-c-s3-disable-networking-tests.patch"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags
+       '("-DBUILD_SHARED_LIBS=ON")))
+    (propagated-inputs
+     `(("aws-c-auth" ,aws-c-auth)
+       ("aws-c-http" ,aws-c-http)))
+    (synopsis "Amazon Web Services client library for Amazon S3")
+    (description
+     "This library provides a C99 client implementation of the Simple Storage
+Service (S3) protocol for object storage.")
+    (home-page "https://github.com/awslabs/aws-c-s3")
+    (license license:asl2.0)))
