@@ -424,13 +424,13 @@ when typing parentheses directly or commenting out code line by line.")
 (define-public emacs-project
   (package
     (name "emacs-project")
-    (version "0.5.4")
+    (version "0.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/project-" version ".tar"))
        (sha256
-        (base32 "0arjvhzzcf8b80w94yvpgfdlhsjwf5jk1r7vcai5a4dg3bi9cxyb"))))
+        (base32 "0m0r1xgz1ffx6mi2gjz1dkgrn89sh4y5ysi0gj6p1w05bf8p0lc0"))))
     (build-system emacs-build-system)
     (propagated-inputs `(("emacs-xref" ,emacs-xref)))
     (home-page "http://elpa.gnu.org/packages/project.html")
