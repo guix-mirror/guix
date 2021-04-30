@@ -11907,6 +11907,12 @@ and chess engines.")
            (lambda _
              (setenv "QT_RCC_SOURCE_DATE_OVERRIDE" "1")
              #t))
+         (add-after 'make-qt-deterministic 'disable-versioncheck
+           (lambda _
+             (substitute* "src/database/settings.cpp"
+               (("\"/General/onlineVersionCheck\", true")
+                "\"/General/onlineVersionCheck\", false"))
+             #t))
          (replace 'configure
            (lambda _
              (invoke "qmake")
