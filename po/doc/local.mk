@@ -47,7 +47,7 @@ POT_OPTIONS = \
 	--copyright-holder "the authors of Guix (msgids)" 		\
 	--msgid-bugs-address "bug-guix@gnu.org"
 
-# make-download-po-files-rule PO_FILES POT_FILE_INPUT
+# make-update-po-files-rule PO_FILES POT_FILE_INPUT
 define make-update-po-files-rule
 $(1): $(2)
 	@if ! [ -f "$$@" ]; then \
@@ -67,7 +67,7 @@ endef
 	touch $@
 
 %D%/guix-manual.pot: %D%/guix.pot %D%/contributing.pot
-	msgcat $< > $@
+	msgcat $^ > $@
 
 $(eval $(call make-update-po-files-rule,$(DOC_PO_FILES),%D%/guix-manual.pot))
 $(eval $(call make-update-po-files-rule,\
