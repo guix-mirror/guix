@@ -712,3 +712,34 @@ cryptographic primitives for the @acronym{AWS,Amazon Web Services} SDK.")
     (description "The @acronym{PCL, Portable Coroutine Library} implements the
 low level functionality for coroutines.")
     (license license:gpl2+)))
+
+(define-public aws-c-http
+  (package
+    (name "aws-c-http")
+    (version "0.6.4")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url (string-append "https://github.com/awslabs/" name))
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "18xlgz68zizkcp784bs6hkyx0gvp0f1p076i46z653bcd3qa87b4"))
+              (patches
+               (search-patches
+                "aws-c-http-cmake-prefix.patch"
+                "aws-c-http-disable-networking-tests.patch"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags
+       '("-DBUILD_SHARED_LIBS=ON")))
+    (propagated-inputs
+     `(("aws-c-compression" ,aws-c-compression)
+       ("aws-c-io" ,aws-c-io)))
+    (synopsis "Amazon Web Services HTTP library")
+    (description
+     "This library provides a C99 implementation of the HTTP/1.1 and HTTP/2
+specifications.")
+    (home-page "https://github.com/awslabs/aws-c-http")
+    (license license:asl2.0)))
