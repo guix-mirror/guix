@@ -7525,7 +7525,7 @@ list of candidates.")
 (define-public emacs-marginalia
   (package
     (name "emacs-marginalia")
-    (version "0.4")
+    (version "0.5")
     (source
      (origin
        (method git-fetch)
@@ -7534,7 +7534,7 @@ list of candidates.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0piwzxp1zmwp876kyca0xcgyxgn8bn4wh5fnn88dkvdzi8mcgmkh"))))
+        (base32 "07vfidgq9am07zz2ydhdifmp4jmgs9jn5l1nfqiyp16sd1br6czj"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/minad/marginalia")
     (synopsis "Marginalia in the minibuffer completions")
