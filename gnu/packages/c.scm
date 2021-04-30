@@ -834,3 +834,31 @@ authentication.")
 Service (S3) protocol for object storage.")
     (home-page "https://github.com/awslabs/aws-c-s3")
     (license license:asl2.0)))
+
+(define-public aws-c-mqtt
+  (package
+    (name "aws-c-mqtt")
+    (version "0.7.6")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url (string-append "https://github.com/awslabs/" name))
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0qgblakp9n281z5w1kmmy9sjiz6s44kg487l76w7p43p1dp7s401"))
+              (patches (search-patches "aws-c-mqtt-cmake-prefix.patch"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags
+       '("-DBUILD_SHARED_LIBS=ON")))
+    (propagated-inputs
+     `(("aws-c-http" ,aws-c-http)
+       ("aws-c-io" ,aws-c-io)))
+    (synopsis "Amazon Web Services MQTT library")
+    (description
+     "This library provides a C99 implementation of the Message Queuing
+Telemetry Transport (MQTT) publish-subscribe messaging protocol.")
+    (home-page "https://github.com/awslabs/aws-c-mqtt")
+    (license license:asl2.0)))
