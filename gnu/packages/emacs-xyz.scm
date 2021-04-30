@@ -27598,8 +27598,8 @@ work on alists, hash-table and arrays.  All functions are prefixed with
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://elpa.gnu.org/packages/"
-                           "xref-" version ".el"))
+       (uri (string-append "https://elpa.gnu.org/packages/xref-"
+                           version ".tar"))
        (sha256
         (base32 "1s7pwk09bry4nqr4bc78a3mbwyrxagai2gpsd49x47czy2x7m3ax"))))
     (build-system emacs-build-system)
