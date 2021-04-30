@@ -553,7 +553,7 @@ portability.")
 (define-public aws-c-common
   (package
     (name "aws-c-common")
-    (version "0.5.3")
+    (version "0.6.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -562,7 +562,7 @@ portability.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "03fcvh3l1l6fkzkcbaprk10qmy8l77zhmh60h1px2ik09sqd9p72"))))
+                "17iknzqs6dl0ixajplc47ylkyynwpi3x2dxh56wa8ylhgy53d09x"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
