@@ -60,7 +60,7 @@
 (define-public php
   (package
     (name "php")
-    (version "7.4.16")
+    (version "7.4.18")
     (home-page "https://secure.php.net/")
     (source (origin
               (method url-fetch)
@@ -68,7 +68,7 @@
                                   "php-" version ".tar.xz"))
               (sha256
                (base32
-                "12xr7w2mk8ab3igvbpi94ks2xfw2nqga9a6nxs94rvcdz3xcw5hw"))
+                "1qdpqk1zzrh0kqni5kfb44kin1d0mrxa6l4v02ydq8cd28mz55xb"))
               (modules '((guix build utils)))
               (snippet
                '(with-directory-excursion "ext"
@@ -325,7 +325,9 @@
                          ;; Expects an Array with 3 preg_matches; gets 0.
                          "ext/pcre/tests/bug79846.phpt"
                          ;; Expects an empty Array; gets one with " " in it.
-                         "ext/pcre/tests/bug80118.phpt"))
+                         "ext/pcre/tests/bug80118.phpt"
+                         ;; Renicing a process fails in the build environment.
+                         "ext/standard/tests/general_functions/proc_nice_basic.phpt"))
 
              ;; Accomodate two extra openssl errors flanking the expected one:
              ;; random number generator:RAND_{load,write}_file:Cannot open file
