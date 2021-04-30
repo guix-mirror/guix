@@ -2013,7 +2013,7 @@ can solve two kinds of problems:
                  "\"" (assoc-ref inputs "texinfo") "/bin/makeinfo\"")))
              #t)))))
     (home-page "https://www.gnu.org/software/octave/")
-    (synopsis "High-level language for numerical computation")
+    (synopsis "High-level language for numerical computation (no GUI)")
     (description "GNU Octave is a high-level interpreted language that is
 specialized for numerical computations.  It can be used for both linear and
 non-linear applications and it provides great support for visualizing results.
@@ -2045,7 +2045,8 @@ script files.")
                (substitute* "configure"
                  (("qscintilla2-qt5")
                   "qscintilla2_qt5"))
-               #t))))))))
+               #t))))))
+    (synopsis "High-level language for numerical computation (with GUI)")))
 
 (define-public opencascade-oce
   (package
