@@ -36,7 +36,8 @@
         (ice-9 popen)
         (ice-9 match)
         (ice-9 rdelim)
-        (ice-9 textual-ports))
+        (ice-9 textual-ports)
+        (guix gexp))
 
 (define* (break-string str #:optional (max-line-length 70))
   "Break the string STR into lines that are no longer than MAX-LINE-LENGTH.
