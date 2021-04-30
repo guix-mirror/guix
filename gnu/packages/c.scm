@@ -637,7 +637,7 @@ communication.")
 (define-public aws-c-io
   (package
     (name "aws-c-io")
-    (version "0.9.2")
+    (version "0.10.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -646,7 +646,7 @@ communication.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1vwyf1pm0hhcypyjc9xh9x7y50ic79xlbck1yf9d9wz0bnh43p7v"))
+                "1jrnzs803jqprnvbw6rqr834qld5sd7flaqzgssp3099m189szpq"))
               (patches
                (search-patches
                 "aws-c-io-cmake-prefix.patch"
