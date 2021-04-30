@@ -743,3 +743,30 @@ low level functionality for coroutines.")
 specifications.")
     (home-page "https://github.com/awslabs/aws-c-http")
     (license license:asl2.0)))
+
+(define-public aws-c-compression
+  (package
+    (name "aws-c-compression")
+    (version "0.2.13")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url (string-append "https://github.com/awslabs/" name))
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0zqfxi0fdgapfsfgvsindv63pq7vyl1s376qkpv4jgflyb1v6gp5"))
+              (patches (search-patches "aws-c-compression-cmake-prefix.patch"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags
+       '("-DBUILD_SHARED_LIBS=ON")))
+    (propagated-inputs
+     `(("aws-c-common" ,aws-c-common)))
+    (synopsis "Amazon Web Services compression library")
+    (description
+     "This library provides a C99 implementation of compression algorithms,
+currently limited to Huffman encoding and decoding.")
+    (home-page "https://github.com/awslabs/aws-c-compression")
+    (license license:asl2.0)))
