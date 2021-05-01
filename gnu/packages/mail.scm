@@ -971,7 +971,7 @@ MIME-encoded email package.")
       (license license:bsd-3))))
 
 (define-public mailcap
-  (let* ((version "2.1.49")
+  (let* ((version "2.1.53")
          (tag ;; mailcap tags their releases like this: rMajor-minor-patch
           (string-append "r" (string-join (string-split version #\.) "-"))))
     (package
@@ -985,8 +985,7 @@ MIME-encoded email package.")
                (commit tag)))
          (file-name (git-file-name name version))
          (sha256
-          (base32
-           "0ck1fw6gqn51phcfakhfpfq1yziv3gnmgjvswzhj9x0p162n6alj"))))
+          (base32 "14939pq7h25rh9100z72vzzx810yqg98im9gz2fbhh47iaj1wrbb"))))
       (build-system gnu-build-system)
       (arguments
        '(#:phases
