@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017 Dave Love <fx@gnu.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
@@ -193,7 +193,7 @@ bind processes, and much more.")
 (define-public openmpi
   (package
     (name "openmpi")
-    (version "4.1.0")
+    (version "4.1.1")
     (source
      (origin
       (method url-fetch)
@@ -201,7 +201,7 @@ bind processes, and much more.")
                           (version-major+minor version)
                           "/downloads/openmpi-" version ".tar.bz2"))
       (sha256
-       (base32 "1dfmkyilgml9w9s5p0jmfj3xcdwdccwqbjw5iim9p0chf2vnz1kk"))
+       (base32 "1nkwq123vvmggcay48snm9qqmrh0bdzpln0l1jnp26niidvplkz2"))
       (patches (search-patches "openmpi-mtl-priorities.patch"))))
 
     (properties
