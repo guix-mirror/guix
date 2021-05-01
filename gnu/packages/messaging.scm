@@ -788,7 +788,7 @@ authentication.")
 (define-public pidgin
   (package
     (name "pidgin")
-    (version "2.14.3")
+    (version "2.14.4")
     (source
      (origin
        (method url-fetch)
@@ -796,7 +796,7 @@ authentication.")
         (string-append "mirror://sourceforge/pidgin/Pidgin/"
                        version "/pidgin-" version ".tar.gz"))
        (sha256
-        (base32 "0vdfnm96m1kh4gm6xn6i7s9c5zjh1p18jg4595k4p5bplvd6fmm8"))
+        (base32 "1h952bh2jdm9jymzpj4dgmh530yh7pag2janfz6d5m1r4mljwraq"))
        (patches
         (search-patches "pidgin-add-search-path.patch"))
        (modules '((guix build utils)))
@@ -863,7 +863,7 @@ authentication.")
                        (assoc-ref %build-inputs "gst-plugins-base")
                        "/include/gstreamer-1.0")
         "--disable-gtkspell"
-        ;; "--enable-gevolution"
+        "--disable-gevolution"
         "--enable-cap"
         "--enable-mono"
         "--enable-cyrus-sasl"
@@ -875,16 +875,7 @@ authentication.")
                        "/lib")
         (string-append "--with-tkconfig="
                        (assoc-ref %build-inputs "tk")
-                       "/lib"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'eat-leftovers
-           ;; XXX Remove when updating beyond 2.14.3.  Equivalent to
-           ;; <https://keep.imfreedom.org/pidgin/pidgin/rev/d4d72fde60c2>.
-           (lambda _
-             ;; Remove a lingering [broken] oscar reference.
-             (substitute* "libpurple/tests/check_libpurple.c"
-               ((".*oscar_util_suite.*") "")))))))
+                       "/lib"))))
     (native-search-paths
      (list
       (search-path-specification
