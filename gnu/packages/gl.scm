@@ -9,7 +9,7 @@
 ;;; Copyright © 2017, 2018, 2019, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
-;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
@@ -702,7 +702,7 @@ OpenGL graphics API.")
 (define-public libglvnd
   (package
     (name "libglvnd")
-    (version "1.3.2")
+    (version "1.3.3")
     (home-page "https://gitlab.freedesktop.org/glvnd/libglvnd")
     (source (origin
               (method git-fetch)
@@ -712,7 +712,7 @@ OpenGL graphics API.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "10x7fgb114r4gikdg6flszl3kwzcb9y5qa7sj9936mk0zxhjaylz"))))
+                "0gjk6m3gkdm12bmih2jflp0v5s1ibkixk7mrzrk0cj884m3hy1z6"))))
     (build-system meson-build-system)
     (arguments
      '(#:configure-flags '("-Dx11=enabled")
