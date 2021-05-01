@@ -3339,15 +3339,14 @@ and check if the WLAN key or the master key was transmitted unencrypted.")
 (define-public dante
   (package
     (name "dante")
-    (version "1.4.2")
+    (version "1.4.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.inet.no/dante/files/dante-"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "19rqzj167q73ag20zxpvswhkk0bj56r5maf83v5016sw7vrcz5sc"))))
+        (base32 "0pbahkj43rx7rmv2x40mf5p3g3x9d6i2sz7pzglarf54w5ghd2j1"))))
     (build-system gnu-build-system)
     (arguments
      ;; XXX: The dynamic socks library doesn't work with 'libc.so' (GNU ld
