@@ -1055,6 +1055,7 @@ Some codes examples can be find at:
     (build-system meson-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
+       ("gsettings" ,gsettings-desktop-schemas) ; for ‘org.gnome.system.proxy’
        ("glib:bin" ,glib "bin")         ; for glib-compile-resources
        ("pkg-config" ,pkg-config)))
     (propagated-inputs
