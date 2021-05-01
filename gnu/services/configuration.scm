@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -63,6 +64,10 @@
 (define (configuration-missing-field kind field)
   (configuration-error
    (format #f "~a configuration missing required field ~a" kind field)))
+(define (configuration-no-default-value kind field)
+  (configuration-error
+   (format #f "The field `~a' of the `~a' configuration record \
+does not have a default value" field kind)))
 
 (define-record-type* <configuration-field>
   configuration-field make-configuration-field configuration-field?
@@ -112,7 +117,7 @@
 (define-syntax define-configuration
   (lambda (stx)
     (syntax-case stx ()
-      ((_ stem (field (field-type def) doc) ...)
+      ((_ stem (field (field-type def ...) doc) ...)
        (with-syntax (((field-getter ...)
                       (map (lambda (field)
                              (id #'stem #'stem #'- field))
@@ -121,36 +126,57 @@
                       (map (lambda (type)
                              (id #'stem type #'?))
                            #'(field-type ...)))
+                     ((field-default ...)
+                      (map (match-lambda
+                             ((field-type default-value)
+                              default-value)
+                             ((field-type)
+                              ;; Quote `undefined' to prevent a possibly
+                              ;; unbound warning.
+                              (syntax 'undefined)))
+                           #'((field-type def ...) ...)))
                      ((field-serializer ...)
                       (map (lambda (type)
                              (id #'stem #'serialize- type))
                            #'(field-type ...))))
-           #`(begin
-               (define-record-type* #,(id #'stem #'< #'stem #'>)
-                 #,(id #'stem #'% #'stem)
-                 #,(id #'stem #'make- #'stem)
-                 #,(id #'stem #'stem #'?)
-                 (%location #,(id #'stem #'-location)
-                            (default (and=> (current-source-location)
-                                            source-properties->location))
-                            (innate))
-                 (field field-getter (default def))
-                 ...)
-               (define #,(id #'stem #'stem #'-fields)
-                 (list (configuration-field
-                        (name 'field)
-                        (type 'field-type)
-                        (getter field-getter)
-                        (predicate field-predicate)
-                        (serializer field-serializer)
-                        (default-value-thunk (lambda () def))
-                        (documentation doc))
-                       ...))
-               (define-syntax-rule (stem arg (... ...))
-                 (let ((conf (#,(id #'stem #'% #'stem) arg (... ...))))
-                   (validate-configuration conf
-                                           #,(id #'stem #'stem #'-fields))
-                   conf))))))))
+         #`(begin
+             (define-record-type* #,(id #'stem #'< #'stem #'>)
+               #,(id #'stem #'% #'stem)
+               #,(id #'stem #'make- #'stem)
+               #,(id #'stem #'stem #'?)
+               (%location #,(id #'stem #'-location)
+                          (default (and=> (current-source-location)
+                                          source-properties->location))
+                          (innate))
+               #,@(map (lambda (name getter def)
+                         (if (eq? (syntax->datum def) (quote 'undefined))
+                             #`(#,name #,getter)
+                             #`(#,name #,getter (default #,def))))
+                       #'(field ...)
+                       #'(field-getter ...)
+                       #'(field-default ...)))
+             (define #,(id #'stem #'stem #'-fields)
+               (list (configuration-field
+                      (name 'field)
+                      (type 'field-type)
+                      (getter field-getter)
+                      (predicate field-predicate)
+                      (serializer field-serializer)
+                      (default-value-thunk
+                        (lambda ()
+                          (display '#,(id #'stem #'% #'stem))
+                          (if (eq? (syntax->datum field-default)
+                                   'undefined)
+                              (configuration-no-default-value
+                               '#,(id #'stem #'% #'stem) 'field)
+                              field-default)))
+                      (documentation doc))
+                     ...))
+             (define-syntax-rule (stem arg (... ...))
+               (let ((conf (#,(id #'stem #'% #'stem) arg (... ...))))
+                 (validate-configuration conf
+                                         #,(id #'stem #'stem #'-fields))
+                 conf))))))))
 
 (define (serialize-package field-name val)
   "")
