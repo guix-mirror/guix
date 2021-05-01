@@ -29,6 +29,7 @@
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Malte Frank Gerdes <malte.f.gerdes@gmail.com>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5902,6 +5903,28 @@ expression and a list of abbreviations (built in and given).")
     (description "@code{Lingua::Translit} can be used to convert text from one
 writing system to another, based on national or international transliteration
 tables.  Where possible a reverse transliteration is supported.")
+    (license (package-license perl))))
+
+(define-public perl-linux-inotify2
+  (package
+    (name "perl-linux-inotify2")
+    (version "2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/M/ML/MLEHMANN/Linux-Inotify2-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0crlxmaa4lsgdjm5p9ib8rdxiy70qj1s68za3q3v57v8ll6s4hfx"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-common-sense" ,perl-common-sense)))
+    (home-page "https://metacpan.org/release/Linux-Inotify2")
+    (synopsis "Scalable file change notification")
+    (description "This module implements an interface to the Linux 2.6.13 and
+later Inotify file change notification system.")
     (license (package-license perl))))
 
 (define-public perl-list-allutils
