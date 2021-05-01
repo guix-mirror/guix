@@ -85,7 +85,7 @@
 (define-public duplicity
   (package
     (name "duplicity")
-    (version "0.8.17")
+    (version "0.8.19")
     (source
      (origin
       (method url-fetch)
@@ -94,7 +94,7 @@
                           "-series/" version "/+download/duplicity-"
                           version ".tar.gz"))
       (sha256
-       (base32 "114rwkf9b3h4fcagrx013sb7krc4hafbwl9gawjph2wd9pkv2wx2"))))
+       (base32 "1c03rp4gw97gz3dzrbrray3dh4q5an3gdq0cmxbhw3qa1nw8ni4c"))))
     (build-system python-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)     ; for msgfmt
@@ -130,12 +130,15 @@
                             "testing/overrides/bin/lftp")
                (("/bin/sh") (which "sh")))
              #t))
-         (add-before 'check 'check-setup
+         (add-before 'check 'set-up-tests
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "HOME" (getcwd))   ; gpg needs to write to $HOME
              (setenv "TZDIR"            ; some timestamp checks need TZDIR
                      (string-append (assoc-ref inputs "tzdata")
                                     "/share/zoneinfo"))
+             ;; Some things respect TMPDIR, others hard-code /tmp, and the
+             ;; defaults don't match up, breaking test_restart.  Fix it.
+             (setenv "TMPDIR" "/tmp")
              #t)))))
     (home-page "http://duplicity.nongnu.org/index.html")
     (synopsis "Encrypted backup using rsync algorithm")
