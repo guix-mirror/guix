@@ -598,7 +598,7 @@ It also includes runtime support libraries for these languages.")))
 
 ;; Note: When changing the default gcc version, update
 ;;       the gcc-toolchain-* definitions.
-(define-public gcc gcc-8)
+(define-public gcc gcc-10)
 
 (define-public (make-libstdc++ gcc)
   "Return a libstdc++ package based on GCC.  The primary use case is when
@@ -838,7 +838,7 @@ provides the GNU compiler for the Go programming language."))
   (custom-gcc gcc-10 "gcc-objc" '("objc")
               %objc-search-paths))
 
-(define-public gcc-objc gcc-objc-7)
+(define-public gcc-objc gcc-objc-10)
 
 (define %objc++-search-paths
   (list (search-path-specification
@@ -880,7 +880,7 @@ provides the GNU compiler for the Go programming language."))
   (custom-gcc gcc-10 "gcc-objc++" '("obj-c++")
               %objc++-search-paths))
 
-(define-public gcc-objc++ gcc-objc++-7)
+(define-public gcc-objc++ gcc-objc++-10)
 
 (define (make-libstdc++-doc gcc)
   "Return a package with the libstdc++ documentation for GCC."

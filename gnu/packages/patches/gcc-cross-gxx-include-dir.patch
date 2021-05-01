@@ -1,0 +1,73 @@
+This patch reverts upstream commit b4d3485e4fc1d:
+
+  https://gcc.gnu.org/git/?p=gcc.git;a=commitdiff;h=b4d3485e4fc1d029e620a59deb54b3f4f3f6b209
+
+Otherwise, GCC ends up searching the wrong target directory for cross-headers.
+
+diff --git a/gcc/configure b/gcc/configure
+--- a/gcc/configure
++++ b/gcc/configure
+@@ -3689,11 +3689,6 @@ esac
+ fi
+ 
+ 
+-# If both --with-sysroot and --with-gxx-include-dir are passed, we interpolate
+-# the former in the latter and, upon success, compute gcc_gxx_include_dir as
+-# relative to the sysroot.
+-gcc_gxx_include_dir_add_sysroot=0
+-
+ # This logic must match libstdc++-v3/acinclude.m4:GLIBCXX_EXPORT_INSTALL_INFO.
+ if test x${gcc_gxx_include_dir} = x; then
+   if test x${enable_version_specific_runtime_libs} = xyes; then
+@@ -3705,10 +3700,15 @@ if test x${gcc_gxx_include_dir} = x; then
+     fi
+     gcc_gxx_include_dir="\$(libsubdir)/\$(libsubdir_to_prefix)$libstdcxx_incdir"
+   fi
+-elif test "${with_sysroot+set}" = set; then
++fi
++
++gcc_gxx_include_dir_add_sysroot=0
++if test "${with_sysroot+set}" = set; then
+   gcc_gxx_without_sysroot=`expr "${gcc_gxx_include_dir}" : "${with_sysroot}"'\(.*\)'`
+   if test "${gcc_gxx_without_sysroot}"; then
+-    gcc_gxx_include_dir="${gcc_gxx_without_sysroot}"
++    if test x${with_sysroot} != x/; then
++      gcc_gxx_include_dir="${gcc_gxx_without_sysroot}"
++    fi
+     gcc_gxx_include_dir_add_sysroot=1
+   fi
+ fi
+diff --git a/gcc/configure.ac b/gcc/configure.ac
+index 715fcba0482..88136e232df 100644
+--- a/gcc/configure.ac
++++ b/gcc/configure.ac
+@@ -204,11 +204,6 @@ no)	;;
+ *)	gcc_gxx_include_dir=$with_gxx_include_dir ;;
+ esac])
+ 
+-# If both --with-sysroot and --with-gxx-include-dir are passed, we interpolate
+-# the former in the latter and, upon success, compute gcc_gxx_include_dir as
+-# relative to the sysroot.
+-gcc_gxx_include_dir_add_sysroot=0
+-
+ # This logic must match libstdc++-v3/acinclude.m4:GLIBCXX_EXPORT_INSTALL_INFO.
+ if test x${gcc_gxx_include_dir} = x; then
+   if test x${enable_version_specific_runtime_libs} = xyes; then
+@@ -220,10 +215,15 @@ if test x${gcc_gxx_include_dir} = x; then
+     fi
+     gcc_gxx_include_dir="\$(libsubdir)/\$(libsubdir_to_prefix)$libstdcxx_incdir"
+   fi
+-elif test "${with_sysroot+set}" = set; then
++fi
++
++gcc_gxx_include_dir_add_sysroot=0
++if test "${with_sysroot+set}" = set; then
+   gcc_gxx_without_sysroot=`expr "${gcc_gxx_include_dir}" : "${with_sysroot}"'\(.*\)'`
+   if test "${gcc_gxx_without_sysroot}"; then
+-    gcc_gxx_include_dir="${gcc_gxx_without_sysroot}"
++    if test x${with_sysroot} != x/; then
++      gcc_gxx_include_dir="${gcc_gxx_without_sysroot}"
++    fi
+     gcc_gxx_include_dir_add_sysroot=1
+   fi
+ fi
