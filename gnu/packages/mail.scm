@@ -4080,7 +4080,7 @@ Git and exports them in maildir format or to an MDA through a pipe.")
 (define-public public-inbox
   (package
     (name "public-inbox")
-    (version "1.5.0")
+    (version "1.6.1")
     (source
      (origin (method git-fetch)
              (uri (git-reference
@@ -4088,7 +4088,7 @@ Git and exports them in maildir format or to an MDA through a pipe.")
                    (commit (string-append "v" version))))
              (sha256
               (base32
-               "03zj7shdl3vibs7k5lr673bwcf8j1xx8is3mjz34ca4cdh6p5j2k"))
+               "0mlwnp5knr7rk9kv8grlh342wsq2193m22zs83cjn9p7x9r2x5f9"))
              (file-name (git-file-name name version))))
     (build-system perl-build-system)
     (arguments
@@ -4143,22 +4143,28 @@ Git and exports them in maildir format or to an MDA through a pipe.")
        ("perl-email-mime" ,perl-email-mime)
        ("perl-email-simple" ,perl-email-simple)
        ("perl-net-server" ,perl-net-server)
-       ("perl-filesys-notify-simple" ,perl-filesys-notify-simple)
        ("perl-plack-middleware-deflater" ,perl-plack-middleware-deflater)
        ("perl-plack-middleware-reverseproxy" ,perl-plack-middleware-reverseproxy)
        ("perl-plack" ,perl-plack)
        ("perl-search-xapian" ,perl-search-xapian)
        ("perl-timedate" ,perl-timedate)
        ("perl-uri-escape" ,perl-uri-escape)
+       ("perl-inline-c" ,perl-inline-c)
+       ("perl-parse-recdescent" ,perl-parse-recdescent)
+       ("perl-linux-inotify2" ,perl-linux-inotify2)
+       ;; FIXME: Perl modules are unable to find the config file for highlight
+       ;; https://issues.guix.gnu.org/48033#4
+       ;; ("highlight" ,highlight)
+
        ;; For testing.
        ("perl-ipc-run" ,perl-ipc-run)
        ("perl-xml-feed" ,perl-xml-feed)))
     (home-page "https://public-inbox.org/README.html")
-    (synopsis "Archive mailing lists in git repositories")
+    (synopsis "Archive mailing lists in Git repositories")
     (description
-     "public-inbox implements the sharing of an email inbox via git to
+     "public-inbox implements the sharing of an email inbox via Git to
 complement or replace traditional mailing lists.  Readers may read via NNTP,
-Atom feeds or HTML archives.")
+IMAP, Atom feeds or HTML archives.")
     (license license:agpl3+)))
 
 (define-public sylpheed
