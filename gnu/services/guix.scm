@@ -523,9 +523,9 @@
 
       (mkdir-p "/var/log/guix-build-coordinator")
 
-      ;; Allow writing the PID file
-      (mkdir-p "/var/run/guix-build-coordinator-queue-builds")
-      (chown "/var/run/guix-build-coordinator-queue-builds"
+      ;; Allow writing the processed commits file
+      (mkdir-p "/var/cache/guix-build-coordinator-queue-builds")
+      (chown "/var/cache/guix-build-coordinator-queue-builds"
              (passwd:uid %user)
              (passwd:gid %user))))
 
