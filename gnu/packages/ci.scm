@@ -73,8 +73,8 @@
                 (file-name (string-append name "-" version "-checkout")))))))
 
 (define-public cuirass
-  (let ((commit "40b32387cf290a84660d34c42da0637bc93c2b00")
-        (revision "16"))
+  (let ((commit "31fd4d4fe107d86f5e202510e177726a1f49e828")
+        (revision "17"))
     (package
       (name "cuirass")
       (version (git-version "1.0.0" revision commit))
@@ -87,7 +87,7 @@
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0sxcms1lz3mn02a48gqrlapyg2p2jjrsc9pjvri2lkq0lyy02w7b"))))
+           "08phqr0sfi6hkzrqhqsh9ri9434sd41qg1b5vijbadgsj1ql33rw"))))
       (build-system gnu-build-system)
       (arguments
        `(#:modules ((guix build utils)
@@ -174,7 +174,7 @@
          ("guile-gcrypt" ,guile-gcrypt)
          ("guile-json" ,guile-json-4)
          ("guile-simple-zmq" ,guile-simple-zmq)
-         ("guile-squee" ,guile-squee)
+         ("guile-squee" ,guile-squee-dev)
          ("guile-git" ,guile-git)
          ("guile-zlib" ,guile-zlib)
          ("guile-mastodon" ,guile-mastodon)
