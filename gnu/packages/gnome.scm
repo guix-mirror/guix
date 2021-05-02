@@ -1323,6 +1323,8 @@ a debugging tool, @command{gssdp-device-sniffer}.")
     `(("gettext" ,gettext-minimal)
       ("glib:bin" ,glib "bin")
       ("gobject-introspection" ,gobject-introspection)
+      ;; For ‘org.gnome.system.proxy’.
+      ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
       ("gtk-doc" ,gtk-doc/stable)
       ("pkg-config" ,pkg-config)
       ("vala" ,vala)))
