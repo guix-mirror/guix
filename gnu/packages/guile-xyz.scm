@@ -1778,7 +1778,7 @@ user which package sets would they like to install from it.")
 (define-public guile-wisp
   (package
     (name "guile-wisp")
-    (version "1.0.4")
+    (version "1.0.5")
     (source (origin
               (method hg-fetch)
               (uri (hg-reference
@@ -1787,7 +1787,7 @@ user which package sets would they like to install from it.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0d54l2s8qsfckg0imbx40npggi6f867hn7fsy0jjsmxz4b8a3949"))))
+                "00iknn03gf421gg3061g35fbraqrkcqypkrfn10rhlgg6j0lgk67"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -1854,7 +1854,8 @@ user which package sets would they like to install from it.")
     (description "Wisp is a syntax for Guile which provides a Python-like
 whitespace-significant language.  It may be easier on the eyes for some
 users and in some situations.")
-    (license license:gpl3+)))
+    (license (list license:gpl3+        ; the project as a whole
+                   license:expat))))    ; the language spec (see also SRFI 119)
 
 (define-public guile2.2-wisp
   (package
