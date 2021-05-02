@@ -15392,13 +15392,13 @@ command @command{natsort} that exposes this functionality in the command line.")
 (define-public glances
   (package
   (name "glances")
-  (version "3.1.6")
+  (version "3.1.7")
   (source
     (origin
       (method url-fetch)
       (uri (pypi-uri "Glances" version))
       (sha256
-        (base32 "11xbm8jgcxha191ly7q76nab1ilabiz14mqf6i3y6aw5xvgg017c"))
+        (base32 "020vb38qrb0m3sdr7xjr43cmcfxpnyg4hmb97wgxsa9zvwsjwa5x"))
       (modules '((guix build utils)))
       (snippet
        '(begin
