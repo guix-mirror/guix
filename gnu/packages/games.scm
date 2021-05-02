@@ -4711,7 +4711,18 @@ are only two levels to play with, but they are very addictive.")
                (base32
                 "07b3xdd81n8ybsb4fzc5lx0813y9crzp1hj69khncf4faj48sdcs"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Fixes https://issues.guix.gnu.org/47131.
+         (add-after 'unpack 'patch-beep-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "client/gtk/audio.c"
+               (("\"beep\"")
+                (string-append "\"" (assoc-ref inputs "beep") "/bin/beep\"")))
+             #t)))))
     (inputs `(("avahi" ,avahi)
+              ("beep" ,beep)
               ("gtk+" ,gtk+)
               ("librsvg" ,librsvg)))
     (native-inputs `(("intltool" ,intltool)
