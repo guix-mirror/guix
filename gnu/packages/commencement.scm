@@ -50,7 +50,6 @@
   #:use-module (gnu packages shells)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages rsync)
   #:use-module (gnu packages xml)
   #:use-module (guix gexp)
   #:use-module (guix packages)
@@ -2916,15 +2915,6 @@ exec " gcc "/bin/" program
        #:guile ,%bootstrap-guile
        #:tests? #f))))
 
-(define rsync-boot0
-  (package
-    (inherit rsync)
-    (native-inputs `(("perl" ,perl-boot0)))
-    (inputs (%boot0-inputs))
-    (arguments
-     `(#:implicit-inputs? #f
-       #:guile ,%bootstrap-guile))))
-
 (define-syntax define/system-dependent
   (lambda (s)
     "Bind IDENTIFIER to EXP, where the value of EXP is known to depend on
@@ -2960,9 +2950,6 @@ memoized as a function of '%current-system'."
        ;; Flex and Bison are required since version 4.16.
        ("flex" ,flex-boot0)
        ("bison" ,bison-boot0)
-
-       ;; Rsync is required since version 5.3.
-       ("rsync" ,rsync-boot0)
        ,@(%boot0-inputs)))))
 
 (define with-boot0

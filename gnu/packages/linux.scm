@@ -141,7 +141,6 @@
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages groff)
-  #:use-module (gnu packages rsync)
   #:use-module (gnu packages selinux)
   #:use-module (gnu packages swig)
   #:use-module (guix build-system cmake)
@@ -534,14 +533,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                      ,@(if (version>=? version "4.16")
                            `(("flex" ,flex)
                              ("bison" ,bison))
-                           '())
-                     ,@(if (version>=? version "5.3")
-                           `(("rsync" ,rsync))
                            '())))
     (arguments
      `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
-                  (srfi srfi-1))
+                  (srfi srfi-1)
+                  (ice-9 match))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
@@ -552,32 +549,37 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                               (%current-system))))
                    (defconfig ,(system->defconfig
                                 (or (%current-target-system)
-                                    (%current-system)))))
+                                    (%current-system))))
+                   (make-target ,(if (version>=? version "5.3")
+                                     "headers"
+                                     "headers_check")))
                (setenv "ARCH" arch)
                (format #t "`ARCH' set to `~a'~%" (getenv "ARCH"))
                (invoke "make" defconfig)
-               (invoke "make" "mrproper" "headers_check"))))
+               (invoke "make" "mrproper" make-target))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               (invoke "make"
-                       (string-append "INSTALL_HDR_PATH=" out)
-                       "headers_install")
+
+               ;; Mimic the quiet_cmd_headers_install target to avoid a
+               ;; dependency on rsync.
+               (for-each (lambda (file)
+                           (let ((destination (string-append
+                                               out "/include/"
+                                               ;; Drop the 'usr/include' prefix.
+                                               (match (string-split file #\/)
+                                                 ((_ _ path ...)
+                                                  (string-join path "/"))))))
+                             (format #t "`~a' -> `~a'~%" file destination)
+                             (install-file file (dirname destination))))
+                         (find-files "usr/include" "\\.h$"))
 
                (mkdir (string-append out "/include/config"))
                (call-with-output-file
                    (string-append out
                                   "/include/config/kernel.release")
                  (lambda (p)
-                   (format p "~a-default~%" ,version)))
-
-               ;; Remove the '.install' and '..install.cmd' files; the
-               ;; latter contains store paths, which pulls in bootstrap
-               ;; binaries in the build environment, and prevents bit
-               ;; reproducibility for the bootstrap binaries.
-               (for-each delete-file (find-files out "\\.install"))
-
-               #t))))
+                   (format p "~a-default~%" ,version)))))))
        #:allowed-references ()
        #:tests? #f))
     (home-page "https://www.gnu.org/software/linux-libre/")
