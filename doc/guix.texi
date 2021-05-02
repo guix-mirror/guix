@@ -2099,7 +2099,7 @@ about their support in GNU/Linux.
 
 An ISO-9660 installation image that can be written to a USB stick or
 burnt to a DVD can be downloaded from
-@indicateurl{@value{BASE-URL}/guix-system-install-@value{VERSION}.x86_64-linux.iso.xz},
+@indicateurl{@value{BASE-URL}/guix-system-install-@value{VERSION}.x86_64-linux.iso},
 where you can replace @code{x86_64-linux} with one of:
 
 @table @code
@@ -2115,8 +2115,8 @@ Make sure to download the associated @file{.sig} file and to verify the
 authenticity of the image against it, along these lines:
 
 @example
-$ wget @value{BASE-URL}/guix-system-install-@value{VERSION}.x86_64-linux.iso.xz.sig
-$ gpg --verify guix-system-install-@value{VERSION}.x86_64-linux.iso.xz.sig
+$ wget @value{BASE-URL}/guix-system-install-@value{VERSION}.x86_64-linux.iso.sig
+$ gpg --verify guix-system-install-@value{VERSION}.x86_64-linux.iso.sig
 @end example
 
 If that command fails because you do not have the required public key,
@@ -2140,17 +2140,6 @@ It is meant to be copied @emph{as is} to a large-enough USB stick or DVD.
 
 @unnumberedsubsec Copying to a USB Stick
 
-To copy the image to a USB stick, follow these steps:
-
-@enumerate
-@item
-Decompress the image using the @command{xz} command:
-
-@example
-xz -d guix-system-install-@value{VERSION}.x86_64-linux.iso.xz
-@end example
-
-@item
 Insert a USB stick of 1@tie{}GiB or more into your machine, and determine
 its device name.  Assuming that the USB stick is known as @file{/dev/sdX},
 copy the image with:
@@ -2161,21 +2150,9 @@ sync
 @end example
 
 Access to @file{/dev/sdX} usually requires root privileges.
-@end enumerate
 
 @unnumberedsubsec Burning on a DVD
 
-To copy the image to a DVD, follow these steps:
-
-@enumerate
-@item
-Decompress the image using the @command{xz} command:
-
-@example
-xz -d guix-system-install-@value{VERSION}.x86_64-linux.iso.xz
-@end example
-
-@item
 Insert a blank DVD into your machine, and determine
 its device name.  Assuming that the DVD drive is known as @file{/dev/srX},
 copy the image with:
@@ -2185,7 +2162,6 @@ growisofs -dvd-compat -Z /dev/srX=guix-system-install-@value{VERSION}.x86_64-lin
 @end example
 
 Access to @file{/dev/srX} usually requires root privileges.
-@end enumerate
 
 @unnumberedsubsec Booting
 

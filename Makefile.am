@@ -886,9 +886,9 @@ release: dist-with-updated-version all
 	    echo "failed to produced Guix installation image for $$system" >&2 ;	\
 	    exit 1 ;									\
 	  fi ;										\
-	  xz < "$$image" > "$(releasedir)/$(GUIX_SYSTEM_IMAGE_BASE).$$system.iso.xz.tmp" ;	\
-	  mv "$(releasedir)/$(GUIX_SYSTEM_IMAGE_BASE).$$system.iso.xz.tmp"		\
-	     "$(releasedir)/$(GUIX_SYSTEM_IMAGE_BASE).$$system.iso.xz" ;		\
+	  cp "$$image" "$(releasedir)/$(GUIX_SYSTEM_IMAGE_BASE).$$system.iso.tmp" ;	\
+	  mv "$(releasedir)/$(GUIX_SYSTEM_IMAGE_BASE).$$system.iso.tmp"			\
+	     "$(releasedir)/$(GUIX_SYSTEM_IMAGE_BASE).$$system.iso" ;			\
 	done
 # Generate the VM images.
 	for system in $(GUIX_SYSTEM_VM_SYSTEMS) ; do					\
