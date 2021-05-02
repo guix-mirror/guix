@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019, 2020, 2021 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,20 +22,27 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages groff)
+  #:use-module (gnu packages mp3)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
-  #:use-module (gnu packages video))
+  #:use-module (gnu packages video)
+  #:use-module (gnu packages xml))
 
 (define-public gpodder
   (package
@@ -203,3 +211,36 @@ downloading episode status changes.")
 provide an easy and reliable way of parsing RSS and Atom-based podcast feeds
 in Python.")
     (license license:isc)))
+
+(define-public castget
+  (package
+    (name "castget")
+    (version "2.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mlj/castget")
+             (commit (string-append "rel_" (string-replace-substring
+                                            version "." "_")))))
+       (sha256
+        (base32 "1129x64rw587q3sdpa3lrgs0gni5f0siwbvmfz8ya4zkbhgi2ik7"))
+       (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ("ronn-ng" ,ronn-ng)))
+    (inputs `(("curl" ,curl)
+              ("glib" ,glib)
+              ("id3lib" ,id3lib)
+              ("libxml2" ,libxml2)))
+    (synopsis "Command line podcast downloader")
+    (description
+     "castget is a simple, command-line based RSS enclosure downloader.  It is
+primarily intended for automatic, unattended downloading of podcasts.  It uses
+libcurl for the download process.")
+    (license license:lgpl2.1+)
+    (home-page "https://castget.johndal.com")))
