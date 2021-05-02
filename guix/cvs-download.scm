@@ -63,13 +63,20 @@ HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if #f."
   (define guile-zlib
     (module-ref (resolve-interface '(gnu packages guile)) 'guile-zlib))
 
+  (define guile-json
+    (module-ref (resolve-interface '(gnu packages guile)) 'guile-json-4))
+
+  (define gnutls
+    (module-ref (resolve-interface '(gnu packages tls)) 'gnutls))
+
   (define modules
     (delete '(guix config)
             (source-module-closure '((guix build cvs)
                                      (guix build download-nar)))))
   (define build
     (with-imported-modules modules
-      (with-extensions (list guile-zlib)
+      (with-extensions (list guile-json gnutls ;for (guix swh)
+                             guile-zlib)
         #~(begin
             (use-modules (guix build cvs)
                          (guix build download-nar))
