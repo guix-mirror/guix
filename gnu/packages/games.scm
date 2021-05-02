@@ -3323,8 +3323,19 @@ exec ~a/bin/freedink -refdir ~a/share/dink\n"
         (base32
          "1mkh36xnnacnz9r00b5f9ld9309k32jv6mcavklbdnca8bl56bib"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Fixes https://issues.guix.gnu.org/47195.
+         (add-after 'unpack 'patch-aplay-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "xboard.conf"
+               (("aplay -q")
+                (string-append (assoc-ref inputs "alsa-utils") "/bin/aplay -q")))
+             #t)))))
     (inputs
-     `(("gtk+" ,gtk+-2)
+     `(("alsa-utils" ,alsa-utils)
+       ("gtk+" ,gtk+-2)
        ("librsvg" ,librsvg)))
     (native-inputs
      `(("texinfo" ,texinfo)
