@@ -64,7 +64,6 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
-  #:use-module (gnu packages selinux)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
@@ -201,7 +200,8 @@ shared NFS home directories.")
                "bin")) ; glib-mkenums, gtester, etc.; depends on Python
     (arguments
      `(#:disallowed-references (,tzdata-for-tests)
-       #:configure-flags '("-Dman=true")
+       #:configure-flags '("-Dman=true"
+                           "-Dselinux=disabled")
        #:phases
        (modify-phases %standard-phases
          ;; Needed to pass the test phase on slower ARM and i686 machines.
@@ -286,7 +286,6 @@ shared NFS home directories.")
        ("libelf" ,libelf)))
     (propagated-inputs
      `(("libffi" ,libffi) ; in the Requires.private field of gobject-2.0.pc
-       ("libselinux" ,libselinux) ; in the Requires.private field of gio-2.0.pc
        ("pcre" ,pcre)   ; in the Requires.private field of glib-2.0.pc
        ("util-linux" ,util-linux "lib") ;for libmount
        ("zlib" ,zlib))) ; in the Requires.private field of glib-2.0.pc
