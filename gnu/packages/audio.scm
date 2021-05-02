@@ -4466,7 +4466,7 @@ library.")
 (define-public faudio
   (package
     (name "faudio")
-    (version "21.04")
+    (version "21.05")
     (source
      (origin
        (method git-fetch)
@@ -4475,7 +4475,7 @@ library.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1g3zp7igh4ns31sqnxddxqhgibijngkbcqqsj23i9d1lah6k4747"))))
+        (base32 "0lzvfx5gg5m6jbdzqwkjl4wq4fdg5n98fxn5x8n65vgvrj95sx6z"))))
     (arguments
      '(#:tests? #f                      ; No tests.
        #:configure-flags '("-DGSTREAMER=ON")))
