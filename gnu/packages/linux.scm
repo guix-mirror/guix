@@ -7700,14 +7700,14 @@ to ring buffers shared with a consumer daemon.")
 (define-public kexec-tools
   (package
     (name "kexec-tools")
-    (version "2.0.21")
+    (version "2.0.22")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/utils/kernel"
                                   "/kexec/kexec-tools-" version ".tar.xz"))
               (sha256
                (base32
-                "00l7iqp337cr846b6w4lc5vl893v4zwjrxz0jsnkh5l9xqni84z1"))))
+                "1hj9mj6x3qs9c8x8mrri9xd3wsg3gwzbab3jfa5ry146xm4pzjcn"))))
     (build-system gnu-build-system)
     (arguments
      ;; There are no automated tests.
