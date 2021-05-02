@@ -1031,7 +1031,7 @@ tmux.")
 (define-public kitty
   (package
     (name "kitty")
-    (version "0.20.1")
+    (version "0.20.2")
     (home-page "https://sw.kovidgoyal.net/kitty/")
     (source
      (origin
@@ -1041,7 +1041,7 @@ tmux.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0ncal16x3mz24f4l2lk50khzv3xacynk2pf3cklbvm2n7j69qca1"))
+        (base32 "0ka58abn3lvghhfpx0h6jk42kp3lknnrm42ksxxsxrsbgc5szaqn"))
        (modules '((guix build utils)))
        (snippet
         '(begin
