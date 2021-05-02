@@ -4656,17 +4656,16 @@ matching a regular expression.")
 (define-public perl-file-readbackwards
   (package
     (name "perl-file-readbackwards")
-    (version "1.05")
+    (version "1.06")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "mirror://cpan/authors/id/U/UR/URI/File-ReadBackwards-"
+             "mirror://cpan/authors/id/P/PL/PLICEASE/File-ReadBackwards-"
              version
              ".tar.gz"))
        (sha256
-        (base32
-         "0vldy5q0zyf1cwzwb1gv14f8vg2f21bw96b8wvkw6z2hhypn3cl2"))))
+        (base32 "0qig206v2jvb5y0pqnx8xiwmjbgzpzmxf0zgfn4gial9jdaa1cij"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/File-ReadBackwards")
     (synopsis "Read a file backwards by lines")
