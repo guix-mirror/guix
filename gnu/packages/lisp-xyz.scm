@@ -3861,11 +3861,11 @@ client and server.")
   (sbcl-package->ecl-package sbcl-trivial-clipboard))
 
 (define-public sbcl-trivial-backtrace
-  (let ((commit "ca81c011b86424a381a7563cea3b924f24e6fbeb")
+  (let ((commit "6eb65bde7229413040c81d42ea22f0e4c9c8cfc9")
         (revision "1"))
     (package
      (name "sbcl-trivial-backtrace")
-     (version (git-version "0.0.0" revision commit))
+     (version (git-version "1.1.0" revision commit))
      (source
       (origin
        (method git-fetch)
@@ -3874,7 +3874,7 @@ client and server.")
              (commit commit)))
        (file-name (git-file-name "trivial-backtrace" version))
        (sha256
-        (base32 "10p41p43skj6cimdg8skjy7372s8v2xpkg8djjy0l8rm45i654k1"))))
+        (base32 "1mbaqiwj5034iw6jzw30jyhwzp1pvhnz1zcy0lns0z5j2h9ldapw"))))
      (build-system asdf-build-system/sbcl)
      (inputs
       `(("sbcl-lift" ,sbcl-lift)))
