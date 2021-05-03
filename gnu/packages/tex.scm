@@ -3380,6 +3380,31 @@ traditional and reformed German orthography as well as for the Austrian and
 Swiss varieties of German.")
     (license license:lppl1.3+)))
 
+(define-public texlive-babel-swedish
+  (let ((template (simple-texlive-package
+                   "texlive-babel-swedish"
+                   (list "/source/generic/babel-swedish/")
+                   (base32
+                    "0swdg2l5i7cbcvy4q4xgsnwwnbxiyvs6f5b72kiw7mjn24v27g8f"))))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ '())
+          "generic/babel-swedish")
+         ((#:build-targets _ '())
+          ''("swedish.ins")) ; TODO: use dtx and build documentation
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'chdir
+               (lambda _ (chdir "source/generic/babel-swedish")))))))
+      (home-page "https://www.ctan.org/pkg/babel-swedish")
+      (synopsis "Babel support for Swedish")
+      (description "This package provides the language definition file for
+support of Swedish in @code{babel}.  It provides all the necessary macros,
+definitions and settings to typeset Swedish documents.")
+      (license license:lppl1.3c+))))
+
 (define-public texlive-latex-cyrillic
   (package
     (name "texlive-latex-cyrillic")
