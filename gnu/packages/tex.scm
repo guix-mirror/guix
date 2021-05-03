@@ -8113,6 +8113,34 @@ However, if your floats can’t be placed anywhere, extending the number of
 floats merely delays the arrival of the inevitable error message.")
       (license license:lppl1.3c+))))
 
+(define-public texlive-ifmtarg
+  (let ((template (simple-texlive-package
+                   "texlive-ifmtarg"
+                   (list "/doc/latex/ifmtarg/"
+                         "/source/latex/ifmtarg/")
+                   (base32
+                    "0cwjn4bhq9zyfxr1595hgyc1d7rcsf9lva55x98q81xy5xrrmrb2"))))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ '())
+          "latex/ifmtarg")
+         ((#:build-targets _ '())
+          ''("ifmtarg.ins"))
+         ((#:tex-format _ "latex") "latex")
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'chdir
+               (lambda _ (chdir "source/latex/ifmtarg")))))))
+      (inputs
+       `(("texlive-latex-filecontents" ,texlive-latex-filecontents)))
+      (home-page "https://www.ctan.org/pkg/ifmtarg")
+      (synopsis "If-then-else command for processing potentially empty arguments")
+      (description "This package provides a command for the LaTeX programmer for
+testing whether an argument is empty.")
+      (license license:lppl1.3c+))))
+
 (define-public texlive-kastrup
   (package
     (name "texlive-kastrup")
