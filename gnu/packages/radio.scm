@@ -1702,3 +1702,43 @@ Codec.")
       (description "This is a library to decode @acronym{DAB/DAB+, Digital
 Audio Broadcasting}.")
       (license license:gpl2+))))
+
+(define-public dsdcc
+  (package
+    (name "dsdcc")
+    (version "1.9.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/f4exb/dsdcc")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0jgzpv4d6ckd0sdq6438rjh3m6knj6gx63627fajch74hxrvclzj"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("mbelib" ,mbelib)
+       ("serialdv" ,serialdv)))
+    (arguments
+     `(#:tests? #f  ; No test suite.
+       #:configure-flags
+       (list "-DUSE_MBELIB=ON"
+             (string-append "-DLIBMBE_INCLUDE_DIR="
+                            (assoc-ref %build-inputs "mbelib")
+                            "/include")
+             (string-append "-DLIBMBE_LIBRARY="
+                            (assoc-ref %build-inputs "mbelib")
+                            "/lib/libmbe.so")
+             (string-append "-DLIBSERIALDV_INCLUDE_DIR="
+                            (assoc-ref %build-inputs "serialdv")
+                            "/include/serialdv")
+             (string-append "-DLIBSERIALDV_LIBRARY="
+                            (assoc-ref %build-inputs "serialdv")
+                            "/lib/libserialdv.so"))))
+    (home-page "https://github.com/f4exb/dsdcc")
+    (synopsis "Digital speech decoder")
+    (description
+     "This package provides a library and a program to decode several digital
+voice formats.")
+    (license license:gpl3+)))
