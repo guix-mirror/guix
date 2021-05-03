@@ -492,12 +492,11 @@ part."
     (lambda _
       (setlocale LC_ALL ""))
     (lambda args
-      (display-hint (G_ "Consider installing the @code{glibc-utf8-locales} or
-@code{glibc-locales} package and defining @code{GUIX_LOCPATH}, along these
-lines:
+      (display-hint (G_ "Consider installing the @code{glibc-locales} package
+and defining @code{GUIX_LOCPATH}, along these lines:
 
 @example
-guix install glibc-utf8-locales
+guix install glibc-locales
 export GUIX_LOCPATH=\"$HOME/.guix-profile/lib/locale\"
 @end example
 
