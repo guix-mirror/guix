@@ -3498,6 +3498,18 @@ It includes little more than the required set of LaTeX packages.")
                      '()
                      default-packages)))))
 
+(define-public texlive-default-updmap.cfg
+  (origin
+    (method url-fetch)
+    (uri (string-append "https://tug.org/svn/texlive/tags/"
+                        %texlive-tag "/Master/texmf-dist/web2c/updmap.cfg"
+                        "?revision=" (number->string %texlive-revision)))
+    (file-name (string-append "updmap.cfg-"
+                              (number->string %texlive-revision)))
+    (sha256
+     (base32
+      "0faqknqxs80qp9ywk0by5k85s0yalg97c4lja4q56lsyblrr4j7i"))))
+
 ;; For use in package definitions only
 (define-public texlive-union
   (lambda* (#:optional (packages '()))
