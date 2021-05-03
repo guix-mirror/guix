@@ -1638,3 +1638,33 @@ program that can be used to build simple signal processing flow graphs.")
      "SerialDV is a minimal interface to encode and decode audio with AMBE3000
 based devices in packet mode over a serial link.")
     (license license:gpl3+)))
+
+(define-public cm256cc
+  (package
+    (name "cm256cc")
+    (version "1.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/f4exb/cm256cc")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1n9v7g6d370263bgqrjv38s9aq5953rzy7jvd8i30xq6aram9djg"))))
+    (build-system cmake-build-system)
+    (arguments
+     ;; Disable some SIMD features for reproducibility.
+     `(#:configure-flags '("-DENABLE_DISTRIBUTION=1")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "./cm256_test")))))))
+    (home-page "https://github.com/f4exb/cm256cc")
+    (synopsis "Cauchy MDS Block Erasure Codec")
+    (description
+     "This is a C++ library implementing fast GF(256) Cauchy MDS Block Erasure
+Codec.")
+    (license license:gpl3+)))
