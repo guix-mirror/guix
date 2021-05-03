@@ -13135,41 +13135,40 @@ collecting values easier.")
   (sbcl-package->ecl-package sbcl-collectors))
 
 (define-public sbcl-cl-environments
-  (let ((commit "0b22154c5afefef23d1eba9a4fae11d73580ef41")) ; No version in 2 years.
-    (package
-      (name "sbcl-cl-environments")
-      (version (git-version "0.2.3" "1" commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/alex-gutev/cl-environments")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "18r3wfarr7lgn78m6c66r0r9aazirv07gy7xgvqkl9pmrz1bc47m"))))
-      (build-system asdf-build-system/sbcl)
-      (inputs
-       `(("alexandria" ,sbcl-alexandria)
-         ("anaphora" ,sbcl-anaphora)
-         ("collectors" ,sbcl-collectors)
-         ("optima" ,sbcl-optima)))
-      (native-inputs
-       `(("prove" ,sbcl-prove)))
-      (home-page "https://github.com/alex-gutev/cl-environments")
-      (synopsis "Implements the Common Lisp standard environment access API")
-      (description "This library provides a uniform API, as specified in Common
-Lisp the Language 2, for accessing information about variable and function
-bindings from implementation-defined lexical environment objects.  All major
-Common Lisp implementations are supported, even those which don't support the
-CLTL2 environment access API.")
-      (license license:expat))))
+  (package
+    (name "sbcl-cl-environments")
+    (version "0.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/alex-gutev/cl-environments")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name "cl-environments" version))
+       (sha256
+        (base32 "10jxj043d2dw5vc0i0lz0lsa4qszn8him5is8jdhl4nsyfcazmky"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("anaphora" ,sbcl-anaphora)
+       ("collectors" ,sbcl-collectors)
+       ("optima" ,sbcl-optima)))
+    (native-inputs
+     `(("prove" ,sbcl-prove)))
+    (home-page "https://github.com/alex-gutev/cl-environments")
+    (synopsis "Implements the Common Lisp standard environment access API")
+    (description
+     "This library provides a uniform API, as specified in Common Lisp the
+Language 2, for accessing information about variable and function bindings
+from implementation-defined lexical environment objects.  All major Common
+Lisp implementations are supported, even those which don't support the CLTL2
+environment access API.")
+    (license license:expat)))
 
 (define-public cl-environments
   (sbcl-package->cl-source-package sbcl-cl-environments))
 
-(define-public ecl-environments
+(define-public ecl-cl-environments
   (sbcl-package->ecl-package sbcl-cl-environments))
 
 (define-public sbcl-static-dispatch
