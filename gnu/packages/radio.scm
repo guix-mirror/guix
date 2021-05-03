@@ -246,50 +246,35 @@ memory contents between them.")
                    license:lgpl3+)))) ; chirp/elib_intl.py
 
 (define-public aptdec
-  (package
-    (name "aptdec")
-    (version "1.7")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/Xerbo/aptdec")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "1hf0zb51qc6fyhdjxyij1n3vgwnw3cwksc3r11szbhkml14qjnzk"))))
-    (build-system gnu-build-system)
-    (inputs
-     `(("libpng" ,libpng)
-       ("libsndfile" ,libsndfile)))
-    (arguments
-     `(#:make-flags
-       (list
-        (string-append "CC="
-                       (if ,(%current-target-system)
-                           (string-append (assoc-ref %build-inputs "cross-gcc")
-                                          "/bin/" ,(%current-target-system) "-gcc")
-                           "gcc"))
-        (string-append "PREFIX=" %output)
-        (string-append "RPM_BUILD_ROOT=" %output))
-       #:tests? #f ; no tests
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (install-file "atpdec" (string-append out "/bin")))
-             #t)))))
-    (home-page "https://github.com/Xerbo/aptdec")
-    (synopsis "NOAA Automatic Picture Transmission (APT) decoder")
-    (description "Aptdec decodes Automatic Picture Transmission (APT) images.
+  ;; No release since 2013, use commit directly.
+  (let ((commit "5f91799637d93dfe7791caa7e9a6683050c4f8f3")
+        (revision "1"))
+    (package
+      (name "aptdec")
+      (version (git-version "1.7" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Xerbo/aptdec")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0i7vkjjrq392gs9qaibr7j3v4hijqqg8458dn21dwh16ncrvr9bp"))))
+      (build-system cmake-build-system)
+      (inputs
+       `(("libpng" ,libpng)
+         ("libsndfile" ,libsndfile)))
+      (arguments
+       `(#:tests? #f))  ; no tests
+      (home-page "https://github.com/Xerbo/aptdec")
+      (synopsis "NOAA Automatic Picture Transmission (APT) decoder")
+      (description "Aptdec decodes Automatic Picture Transmission (APT) images.
 These are medium resolution images of the Earth transmitted by, among other
 satellites, the POES NOAA weather satellite series.  These transmissions are
 on a frequency of 137 MHz.  They can be received using an inexpensive antenna
 and a dedicated receiver.")
-    (license license:gpl2+)))
+      (license license:gpl2+))))
 
 (define-public redsea
   (package
