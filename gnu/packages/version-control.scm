@@ -31,7 +31,7 @@
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
-;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020, 2021 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Chris Marusich <cmmarusich@gmail.com>
@@ -1316,7 +1316,7 @@ manipulate them in various ways.")
 (define-public vcsh
   (package
     (name "vcsh")
-    (version "1.20151229")
+    (version "1.20190621")
     (source
      (origin
        (method git-fetch)
@@ -1325,7 +1325,7 @@ manipulate them in various ways.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1grpj45nbpv4j60vd2kg4rj53zrm0bc0h9l4pfd3c2mwbvywm6ab"))))
+        (base32 "1s9l47wm9r7sndcgc778mq60wkzkhvfv7rkrwci5kjvw8vsddvcc"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)))
@@ -1336,9 +1336,18 @@ manipulate them in various ways.")
        ("perl-shell-command" ,perl-shell-command)
        ("perl-test-most" ,perl-test-most)))
     (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (delete 'configure)
-                  (delete 'build))
+     '(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (add-after 'install 'install-bash-completion
+           ;; As of 1.20190621, zsh completion is installed by default but bash
+           ;; completion is not.  Do so manually.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out         (assoc-ref outputs "out"))
+                    (completions (string-append out "/etc/bash_completion.d")))
+               (mkdir-p completions)
+               (copy-file "_vcsh_bash" (string-append completions "/vcsh"))))))
        #:make-flags (list (string-append "PREFIX="
                                          (assoc-ref %outputs "out")))
        #:test-target "test"))
