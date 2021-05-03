@@ -47,20 +47,6 @@ POT_OPTIONS = \
 	--copyright-holder "the authors of Guix (msgids)" 		\
 	--msgid-bugs-address "bug-guix@gnu.org"
 
-# make-update-po-files-rule PO_FILES POT_FILE_INPUT
-define make-update-po-files-rule
-$(1): $(2)
-	@if ! [ -f "$$@" ]; then \
-	    echo "File $$po_file does not exist.  If you are a translator, \
-you can create it with 'msginit'." 1>&2; \
-	    exit 1; \
-	fi && \
-	lang=$$$$(echo $$@ | $(SED) -E 's|.*\.([^.]*)\.po$$$$|\1|') && \
-	echo $(MSGMERGE_UPDATE) $(MSGMERGE_OPTIONS) \
-	  --lang=$$$${lang} "$$@" "$$<" && \
-	$(MSGMERGE_UPDATE) $(MSGMERGE_OPTIONS) --lang=$$$${lang} "$$@" "$$<"
-endef
-
 %D%/%.pot: $(srcdir)/doc/%.texi
 	$(AM_V_PO4A)$(PO4A_UPDATEPO) -M UTF-8 -f texinfo -m "$<" \
 	   -p "$@" $(POT_OPTIONS) && \
@@ -69,10 +55,5 @@ endef
 %D%/guix-manual.pot: %D%/guix.pot %D%/contributing.pot
 	msgcat $^ > $@
 
-$(eval $(call make-update-po-files-rule,$(DOC_PO_FILES),%D%/guix-manual.pot))
-$(eval $(call make-update-po-files-rule,\
-  $(DOC_COOKBOOK_PO_FILES),%D%/guix-cookbook.pot))
-
 doc-pot-update: %D%/guix-manual.pot %D%/guix-cookbook.pot
-doc-po-update: $(DOC_PO_FILES) $(DOC_COOKBOOK_PO_FILES)
-.PHONY: doc-pot-update doc-po-update
+.PHONY: doc-pot-update
