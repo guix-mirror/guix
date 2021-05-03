@@ -11926,7 +11926,7 @@ type an abbreviation and automatically expand it into function templates.")
 (define-public emacs-yasnippet-snippets
   (package
     (name "emacs-yasnippet-snippets")
-    (version "0.23")
+    (version "0.24")
     (source
      (origin
        (method git-fetch)
@@ -11935,13 +11935,12 @@ type an abbreviation and automatically expand it into function templates.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "18pcnjnqvcky6i49p38vy3ms5xiisn27vy47pc3vsgr3r2n87mqb"))))
+        (base32 "0ak0drxlg3m2v4ya5chpgl82rcl7ic2nmnybhpw1qk51mcmv643y"))))
     (build-system emacs-build-system)
     (arguments
      `(#:include (cons* "^snippets\\/" %default-include)))
     (propagated-inputs
-     `(("emacs-s" ,emacs-s)             ;for snippets/rjsx-mode/.yas-setup.el
-       ("emacs-yasnippet" ,emacs-yasnippet)))
+     `(("emacs-yasnippet" ,emacs-yasnippet)))
     (home-page "https://github.com/AndreaCrotti/yasnippet-snippets")
     (synopsis "Collection of YASnippet snippets for many languages")
     (description "This package provides an extensive collection of YASnippet
