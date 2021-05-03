@@ -31,6 +31,7 @@
   #:use-module (guix utils)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages astronomy)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
@@ -52,9 +53,11 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages golang)
   #:use-module (gnu packages gps)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages image-processing)
   #:use-module (gnu packages javascript)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
@@ -1741,4 +1744,74 @@ Audio Broadcasting}.")
     (description
      "This package provides a library and a program to decode several digital
 voice formats.")
+    (license license:gpl3+)))
+
+(define-public sdrangel
+  (package
+    (name "sdrangel")
+    (version "6.10.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/f4exb/sdrangel")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0dpymjpg1x7yyrlhh8sdmf5l7il9ymx32zcpm78wwrw3df4q1w3m"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("doxygen" ,doxygen)
+       ("graphviz" ,graphviz)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("airspyhf" ,airspyhf)
+       ("alsa-lib" ,alsa-lib)
+       ("aptdec" ,aptdec)
+       ("boost" ,boost)
+       ("cm256cc" ,cm256cc)
+       ("codec2" ,codec2)
+       ("dsdcc" ,dsdcc)
+       ("faad2" ,faad2)
+       ("ffmpeg" ,ffmpeg)
+       ("fftwf" ,fftwf)
+       ("hackrf" ,hackrf)
+       ("libdab" ,libdab)
+       ("libusb" ,libusb)
+       ("mbelib" ,mbelib)
+       ("opencv" ,opencv)
+       ("opus" ,opus)
+       ("pulseaudio" ,pulseaudio)
+       ("qtbase" ,qtbase)
+       ("qtcharts" ,qtcharts)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtlocation" ,qtlocation)
+       ("qtmultimedia" ,qtmultimedia)
+       ("qtserialport" ,qtserialport)
+       ("qtspeech" ,qtspeech)
+       ("qtwebsockets" ,qtwebsockets)
+       ("rtl-sdr" ,rtl-sdr)
+       ("serialdv" ,serialdv)
+       ("sgp4" ,sgp4)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:tests? #f  ; No test suite.
+       #:configure-flags
+       (list (string-append "-DAPT_DIR="
+                            (assoc-ref %build-inputs "aptdec"))
+             (string-append "-DDAB_DIR="
+                            (assoc-ref %build-inputs "libdab"))
+             (string-append "-DDSDCC_DIR="
+                            (assoc-ref %build-inputs "dsdcc"))
+             (string-append "-DMBE_DIR="
+                            (assoc-ref %build-inputs "mbelib"))
+             (string-append "-DSERIALDV_DIR="
+                            (assoc-ref %build-inputs "serialdv"))
+             (string-append "-DSGP4_DIR="
+                            (assoc-ref %build-inputs "sgp4")))))
+    (home-page "https://github.com/f4exb/sdrangel/wiki")
+    (synopsis "Software defined radio")
+    (description
+     "SDRangel is a Qt software defined radio and signal analyzer frontend for
+various hardware.")
     (license license:gpl3+)))
