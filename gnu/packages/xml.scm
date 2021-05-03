@@ -1253,6 +1253,14 @@ Libxml2).")
      '(#:configure-flags '("--disable-md5")))
     (synopsis "XML Security Library (using NSS instead of GnuTLS)")))
 
+(define-public xmlsec-openssl
+  (package/inherit xmlsec
+    (name "xmlsec-openssl")
+    (inputs
+     `(("openssl" ,openssl)
+       ("libltdl" ,libltdl)))
+    (synopsis "XML Security Library (using OpenSSL instead of GnuTLS)")))
+
 (define-public minixml
   (package
     (name "minixml")
