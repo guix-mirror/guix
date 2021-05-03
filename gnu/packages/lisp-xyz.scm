@@ -16362,3 +16362,37 @@ for Common Lisp.")
 
 (define-public cl-bknr-datastore
   (sbcl-package->cl-source-package sbcl-bknr-datastore))
+
+(define-public sbcl-3d-vectors
+  (let ((commit "29bb9684df803590deed344af63dbf7b712aabc0")
+        (revision "1"))
+    (package
+      (name "sbcl-3d-vectors")
+      (version (git-version "3.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shinmera/3d-vectors")
+               (commit commit)))
+         (file-name (git-file-name "3d-vectors" version))
+         (sha256
+          (base32 "0qc7m5brhpwi531rgmlaj1c609by533a1ia5hv8f90ilm8ksmw3l"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("parachute" ,sbcl-parachute)))
+      (inputs
+       `(("documentation-utils" ,sbcl-documentation-utils)))
+      (home-page "https://shinmera.github.io/3d-vectors/")
+      (synopsis "Utility library implementing 2D, 3D, and 4D vectors")
+      (description
+       "@code{3D-VECTORS} is a library for vector math in 3D space.  It contains
+most of the vector operations one would usually expect out of such a library and
+offers them both in non-modifying and modifying versions where applicable.")
+      (license license:zlib))))
+
+(define-public ecl-3d-vectors
+  (sbcl-package->ecl-package sbcl-3d-vectors))
+
+(define-public cl-3d-vectors
+  (sbcl-package->cl-source-package sbcl-3d-vectors))
