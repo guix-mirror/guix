@@ -8141,6 +8141,33 @@ floats merely delays the arrival of the inevitable error message.")
 testing whether an argument is empty.")
       (license license:lppl1.3c+))))
 
+(define-public texlive-pagenote
+  (let ((template (simple-texlive-package
+                   "texlive-pagenote"
+                   (list "/doc/latex/pagenote/"
+                         "/source/latex/pagenote/")
+                   (base32
+                    "0cqfqrfvnzq7ldaf255hcvi8xsfx8h7iha3hs8p9gdi3cfzbcmjm"))))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ '())
+          "latex/pagenote")
+         ((#:build-targets _ '())
+          ''("pagenote.ins"))
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'chdir
+               (lambda _ (chdir "source/latex/pagenote")))))))
+      (propagated-inputs
+       `(("texlive-ifmtarg" ,texlive-ifmtarg)))
+      (home-page "https://www.ctan.org/pkg/pagenote")
+      (synopsis "Notes at end of document")
+      (description "The pagenote package provides tagged notes on a separate
+page (also known as ‘end notes’).")
+      (license license:lppl1.3c+))))
+
 (define-public texlive-kastrup
   (package
     (name "texlive-kastrup")
