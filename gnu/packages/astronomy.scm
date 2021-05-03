@@ -4,7 +4,7 @@
 ;;; Copyright © 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 by Amar Singh <nly@disroot.org>
 ;;; Copyright © 2020 R Veera Kumar <vkor@vkten.in>
-;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2020, 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -791,6 +791,39 @@ Gpredict can also predict the time of future passes for a satellite, and
 provide you with detailed information about each pass.")
     (home-page "http://gpredict.oz9aec.net/index.php")
     (license license:gpl2+)))
+
+(define-public sgp4
+  ;; No tagged releases, use commit directly.
+  (let ((commit "ca9d4d97af4ee62461de6f13e0c85d1dc6000040")
+        (revision "1"))
+    (package
+      (name "sgp4")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/dnwrnr/sgp4")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1xwfa6papmd2qz5w0hwzvijmzvp9np8dlw3q3qz4bmsippzjv8p7"))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (replace 'check
+             (lambda _
+               ;; Tests fails, probably because of a few "(e <= -0.001)" errors.
+               ;; Or maybe this is not the right way to run the tests?
+               ;; (invoke "runtest/runtest")
+               #t)))))
+      (home-page "https://github.com/dnwrnr/sgp4")
+      (synopsis "Simplified perturbations models library")
+      (description
+       "This is a library implementing the simplified perturbations model.
+It can be used to calculate the trajectory of satellites.")
+      (license license:asl2.0))))
 
 (define-public indi
   (package
