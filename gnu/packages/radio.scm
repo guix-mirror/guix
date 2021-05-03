@@ -1668,3 +1668,37 @@ based devices in packet mode over a serial link.")
      "This is a C++ library implementing fast GF(256) Cauchy MDS Block Erasure
 Codec.")
     (license license:gpl3+)))
+
+(define-public libdab
+  ;; No release since 2017, use commit directly.
+  (let ((commit "b578d02eda60f613d35bab5d762ae7c9a27758d8")
+        (revision "1"))
+    (package
+      (name "libdab")
+      (version (git-version "0.8" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/JvanKatwijk/dab-cmdline")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0j339kx3n2plgfw7ikpp7b81h5n68wmsgflwljbh2sy8j62faik9"))))
+      (build-system cmake-build-system)
+      (inputs
+       `(("faad2" ,faad2)
+         ("fftwf" ,fftwf)
+         ("zlib" ,zlib)))
+      (arguments
+       `(#:tests? #f  ; No test suite.
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'enter-sources-directory
+             (lambda _
+               (chdir "library"))))))
+      (home-page "https://github.com/JvanKatwijk/dab-cmdline")
+      (synopsis "DAB decoding library")
+      (description "This is a library to decode @acronym{DAB/DAB+, Digital
+Audio Broadcasting}.")
+      (license license:gpl2+))))
