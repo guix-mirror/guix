@@ -953,13 +953,13 @@ of stand-alone functions and classes.")
 (define-public python-asdf
   (package
     (name "python-asdf")
-    (version "2.7.2")
+    (version "2.7.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "asdf" version))
        (sha256
-        (base32 "1y47zhkd90i8wmm2i35amfl0rvjqlb3fcx90xp7n9kr2z0byzyzg"))))
+        (base32 "1mj52l2m8pbhiqacgjakjpvqi8kyx470yw151lcsswbq5wp0rsc6"))))
     (build-system python-build-system)
     (arguments
      ;; TODO: (Sharlatan-20210207T165820+0000): Tests depend on astropy, astropy
