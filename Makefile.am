@@ -740,9 +740,9 @@ guix-binary.%.tar.xz:
 	cp "$$tarball" "$@.tmp" ; mv "$@.tmp" "$@"
 
 
-# The dependency on doc-po-update is to generate the .pot files, which are not
-# checked in.
-dist: doc-po-update
+# The dependency on doc-pot-update is to generate the .pot files, which are
+# not checked in.
+dist: doc-pot-update
 
 dist-hook: gen-ChangeLog gen-AUTHORS gen-tarball-version
 dist-hook: assert-no-store-file-names
