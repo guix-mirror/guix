@@ -1630,3 +1630,26 @@ defined radio with support for rtl-sdr.")
 @acronym{SDRs, Software Defined Radios}, and the @code{csdr} command line
 program that can be used to build simple signal processing flow graphs.")
       (license license:gpl3+))))
+
+(define-public serialdv
+  (package
+    (name "serialdv")
+    (version "1.1.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/f4exb/serialDV")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0d88h2wjhf79nisiv96bq522hkbknzm88wsv0q9k33mzmrwnrx93"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f))  ; No test suite.
+    (home-page "https://github.com/f4exb/serialDV")
+    (synopsis "Audio interface for AMBE3000 based devices")
+    (description
+     "SerialDV is a minimal interface to encode and decode audio with AMBE3000
+based devices in packet mode over a serial link.")
+    (license license:gpl3+)))
