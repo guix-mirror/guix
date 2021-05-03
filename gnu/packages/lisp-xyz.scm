@@ -16396,3 +16396,38 @@ offers them both in non-modifying and modifying versions where applicable.")
 
 (define-public cl-3d-vectors
   (sbcl-package->cl-source-package sbcl-3d-vectors))
+
+(define-public sbcl-3d-matrices
+  (let ((commit "f453b521b8f2ceabb01eac94389119dece8c05f8")
+        (revision "1"))
+    (package
+      (name "sbcl-3d-matrices")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shinmera/3d-matrices")
+               (commit commit)))
+         (file-name (git-file-name "3d-matrices" version))
+         (sha256
+          (base32 "10q9c96gqzq6k8n89agy0khgimmnsn4s69171m3vhghqa2yv5n6v"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("parachute" ,sbcl-parachute)))
+      (inputs
+       `(("3d-vectors" ,sbcl-3d-vectors)
+         ("documentation-utils" ,sbcl-documentation-utils)))
+      (home-page "https://shinmera.github.io/3d-matrices/")
+      (synopsis "Utility library implementing 2x2, 3x3, 4x4 and NxM matrices")
+      (description
+       "@code{3D-MATRICES} is a library implementing common matrix operations,
+mainly intended as the counterpiece to @code{3d-vectors} and thus being aimed at
+operations in 3D space.")
+      (license license:zlib))))
+
+(define-public ecl-3d-matrices
+  (sbcl-package->ecl-package sbcl-3d-matrices))
+
+(define-public cl-3d-matrices
+  (sbcl-package->cl-source-package sbcl-3d-matrices))
