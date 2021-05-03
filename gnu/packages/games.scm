@@ -3163,6 +3163,16 @@ asynchronously and at a user-defined speed.")
         (base32
          "0ilq4bfl0lwyzf11q7n2skydjhalfn3bgxhrp5hjxs5bc5d6fdp5"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'fix-shell-scripts
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (chdir bin)
+               (substitute* '("gnuchessx" "gnuchessu")
+                 (("^gnuchess") (string-append bin "/gnuchess")))))))))
     (home-page "https://www.gnu.org/software/chess/")
     (synopsis "Full chess implementation")
     (description "GNU Chess is a chess engine.  It allows you to compete
