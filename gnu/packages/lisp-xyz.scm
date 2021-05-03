@@ -13172,35 +13172,33 @@ environment access API.")
   (sbcl-package->ecl-package sbcl-cl-environments))
 
 (define-public sbcl-static-dispatch
-  (let ((commit "6243afcd152854c52ba33daef7394367b657d9c6")
-        (revision "1"))
-    (package
-      (name "sbcl-static-dispatch")
-      (version (git-version "0.3" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/alex-gutev/static-dispatch")
-               (commit commit)))
-         (file-name (git-file-name "static-dispatch" version))
-         (sha256
-          (base32 "1lli9ar1xbnhkgb5d01rlw4pvfylg2arrw68np2c07fpkkafimg7"))))
-      (build-system asdf-build-system/sbcl)
-      (native-inputs
-       `(("prove" ,sbcl-prove)))
-      (inputs
-       `(("agutil" ,sbcl-agutil)
-         ("alexandria" ,sbcl-alexandria)
-         ("anaphora" ,sbcl-anaphora)
-         ("arrows" ,sbcl-arrows)
-         ("cl-environments" ,sbcl-cl-environments)
-         ("closer-mop" ,sbcl-closer-mop)
-         ("iterate" ,sbcl-iterate)
-         ("trivia" ,sbcl-trivia)))
-      (home-page "https://github.com/alex-gutev/static-dispatch")
-      (synopsis "Static generic function dispatch for Common Lisp")
-      (description "Static dispatch is a Common Lisp library, inspired by
+  (package
+    (name "sbcl-static-dispatch")
+    (version "0.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/alex-gutev/static-dispatch")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name "static-dispatch" version))
+       (sha256
+        (base32 "1a4vgfcn6qnpdkxxv93rri7zf3c92alixp6nyqwpz8mg2xmvy1j3"))))
+    (build-system asdf-build-system/sbcl)
+    (native-inputs
+     `(("fiveam" ,sbcl-fiveam)))
+    (inputs
+     `(("agutil" ,sbcl-agutil)
+       ("alexandria" ,sbcl-alexandria)
+       ("anaphora" ,sbcl-anaphora)
+       ("arrows" ,sbcl-arrows)
+       ("cl-environments" ,sbcl-cl-environments)
+       ("closer-mop" ,sbcl-closer-mop)
+       ("iterate" ,sbcl-iterate)
+       ("trivia" ,sbcl-trivia)))
+    (home-page "https://github.com/alex-gutev/static-dispatch")
+    (synopsis "Static generic function dispatch for Common Lisp")
+    (description "Static dispatch is a Common Lisp library, inspired by
 @code{inlined-generic-function}, which allows standard Common Lisp generic
 function dispatch to be performed statically (at compile time) rather than
 dynamically (runtime).  This is similar to what is known as \"overloading\" in
@@ -13212,7 +13210,7 @@ functions, such as adding/removing methods at runtime are not required.  An
 example of such a case is a generic equality comparison function.  Currently
 generic functions are considered far too slow to implement generic arithmetic
 and comparison operations when used heavily in numeric code.")
-      (license license:expat))))
+    (license license:expat)))
 
 (define-public cl-static-dispatch
   (sbcl-package->cl-source-package sbcl-static-dispatch))
