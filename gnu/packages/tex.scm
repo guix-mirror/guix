@@ -6,7 +6,7 @@
 ;;; Copyright © 2016, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -8055,6 +8055,33 @@ is known in the LaTeX scheme of things as @emph{LY1} encoding.  The
 basic Adobe Type 1 fonts (Times, Helvetica and Courier) in LaTeX using
 LY1 encoding.")
     (license license:lppl1.0+)))
+
+(define-public texlive-sectsty
+  (let ((template (simple-texlive-package
+                   "texlive-sectsty"
+                   (list "/doc/latex/sectsty/"
+                         "/source/latex/sectsty/")
+                   (base32
+                    "08m90j7cg6w46vnwgsp10clpj4l6c9a6l8dad20q3mnd32l84hbl"))))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ '())
+          "latex/sectsty")
+         ((#:build-targets _ '())
+          ''("sectsty.ins"))
+         ((#:tex-format _ "latex") "latex")
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'chdir
+               (lambda _ (chdir "source/latex/sectsty")))))))
+      (home-page "https://www.ctan.org/pkg/sectsty")
+      (synopsis "Control sectional headers")
+      (description "This is a LaTeX2ε package to help change the style of any or
+all of LaTeX's sectional headers in the article, book, or report classes.
+Examples include the addition of rules above or below a section title. ")
+      (license license:lppl1.2+))))
 
 (define-public texlive-kastrup
   (package
