@@ -50,7 +50,8 @@
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags (list (string-append "--with-guile-site-dir=" %output
-                                              "/share/guile/site/2.0"))
+                                              "/share/guile/site/2.0")
+                               "--disable-static")
        #:make-flags '("V=1")
        #:phases (modify-phases %standard-phases
                   (add-before 'check 'silence-guile
