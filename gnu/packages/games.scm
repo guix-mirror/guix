@@ -3342,10 +3342,18 @@ exec ~a/bin/freedink -refdir ~a/share/dink\n"
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "xboard.conf"
                (("aplay -q")
-                (string-append (assoc-ref inputs "alsa-utils") "/bin/aplay -q")))
-             #t)))))
+                (string-append (assoc-ref inputs "alsa-utils") "/bin/aplay -q")))))
+         ;; Fixes https://issues.guix.gnu.org/45236.
+         (add-after 'unpack 'patch-default-engine
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "xboard.conf"
+               (("-firstChessProgram fairymax")
+                (string-append "-firstChessProgram "
+                               (assoc-ref inputs "chess")
+                               "/bin/gnuchessx"))))))))
     (inputs
      `(("alsa-utils" ,alsa-utils)
+       ("chess" ,chess)
        ("gtk+" ,gtk+-2)
        ("librsvg" ,librsvg)))
     (native-inputs
