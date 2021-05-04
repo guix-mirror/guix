@@ -65,9 +65,9 @@ shell provides options to redirect the output into a pipe or a file.")
 (define fdik-libetpan
   ;; pEp Engine requires libetpan with a set of patches that have not been
   ;; upstreamed yet.
-  (let ((commit "210ba2b3b310b8b7a6ee4a4e35e50f7fa379643f") ; 2020-06-03
-        (checksum "00000nij3ray7nssvq0lzb352wmnab8ffzk7dgff2c68mvjbh1l6")
-        (revision "5"))
+  (let ((commit "0b80c39dd1504462ba3a39dc53db7c960c3a63f3") ; 2020-11-27
+        (checksum "0gv3ivaziadybjlf6rfpv1j5z5418243v5cvl4swlxd2njsh7gjk")
+        (revision "6"))
    (package
     (inherit libetpan)
     (name "fdik-libetpan")
@@ -77,7 +77,7 @@ shell provides options to redirect the output into a pipe or a file.")
        (inherit (package-source libetpan))
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/fdik/libetpan")
+             (url "https://gitea.pep.foundation/pEp.foundation/libetpan")
              (commit commit)))
        (file-name (string-append name "-" version))
        (sha256 (base32 checksum)))))))
@@ -85,23 +85,24 @@ shell provides options to redirect the output into a pipe or a file.")
 (define-public pep-engine
   (package
     (name "pep-engine")
-    (version "2.0.6")
+    (version "2.1.34")
     (source
      (origin
-       (method hg-fetch)
-       (uri (hg-reference
-             (url "https://pep.foundation/dev/repos/pEpEngine")
-             (changeset "ebb62ba262dd"))) ;; r4721
-       (file-name (string-append name "-" version "-checkout"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitea.pep.foundation/pEp.foundation/pEpEngine")
+             (commit (string-append "Release_" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0ljf79j4ng7l8w6pbdcrfzb4yk51zslypvq0n72ib1d7grqvnagi"))))
+        (base32 "00q96y9j985qfa382acsz02i0zf6ayq2gmg8z70jzl04isg1h3cn"))))
     (build-system gnu-build-system)
     (arguments
      '(#:parallel-build? #f
+       #:make-flags '("NDEBUG=1") ; release build
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
-           ;; pEpEngie does not use autotools and configure,
+           ;; pEpEngine does not use autotools and configure,
            ;; but a local.conf. We need to tweak the values there.
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
@@ -132,7 +133,7 @@ OPENPGP=SEQUOIA
        ("libiconv" ,libiconv)
        ("nettle" ,nettle)
        ("openssl" ,openssl)
-       ("sequoia" ,sequoia4pEp)
+       ("sequoia" ,sequoia)
        ("sqlite3" ,sqlite)
        ("util-linux" ,util-linux "lib"))) ;; uuid.h
     (home-page "https://pep.foundation/")
