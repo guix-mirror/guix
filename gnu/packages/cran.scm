@@ -26036,19 +26036,20 @@ methods, and post-processing steps.")
 (define-public r-workflowsets
   (package
     (name "r-workflowsets")
-    (version "0.0.1")
+    (version "0.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "workflowsets" version))
        (sha256
         (base32
-         "1q41isvj7hhbkx3y8k6kazpiygig92xannsz8dpklh0k3j9l3c2p"))))
+         "0kzr2sm9xpikc0r7qzkrm4vm03vxh7vcvqvaqvp727qfbpm4cly0"))))
     (properties `((upstream-name . "workflowsets")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cli" ,r-cli)
        ("r-dplyr" ,r-dplyr)
+       ("r-generics" ,r-generics)
        ("r-ggplot2" ,r-ggplot2)
        ("r-prettyunits" ,r-prettyunits)
        ("r-purrr" ,r-purrr)
