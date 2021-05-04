@@ -790,13 +790,13 @@ objects.")
 (define-public r-mboost
   (package
    (name "r-mboost")
-   (version "2.9-4")
+   (version "2.9-5")
    (source (origin
             (method url-fetch)
             (uri (cran-uri "mboost" version))
             (sha256
              (base32
-              "1dgyc38axfk2a430wsdnnk76xikizkyxf5r0l1kbp6cacrx6idz0"))))
+              "0yg07fdd1sbjfhhxn1dqgph2vzqyq7l52cdk5iq2a2zy1vh176yg"))))
    (build-system r-build-system)
    (propagated-inputs
     `(("r-lattice" ,r-lattice)
