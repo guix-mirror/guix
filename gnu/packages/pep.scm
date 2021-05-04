@@ -147,20 +147,21 @@ privacy).")
 (define-public libpepadapter
   (package
     (name "libpepadapter")
-    (version "2.0.2")
+    (version "2.1.21")
     (source
      (origin
-       (method hg-fetch)
-       (uri (hg-reference
-             (url "https://pep.foundation/dev/repos/libpEpAdapter")
-             (changeset "e8fe371c870a"))) ;; r168
-       (file-name (string-append name "-" version "-checkout"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitea.pep.foundation/pEp.foundation/libpEpAdapter")
+             (commit (string-append "Release_" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1mlpavjbnmslvmr5jxcvpjgb2x40nhmxjb10hza3kn4qzj0k1pjz"))))
+        (base32 "09ljj3x09y99wc47n063hpn62zi8cdvdha82rnaypvirrlga6a5w"))))
     (build-system gnu-build-system)
     (arguments
      '(#:test-target "test"
        #:tests? #f ;; building the tests fails
+       #:make-flags '("NDEBUG=1") ; release build
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
@@ -170,7 +171,7 @@ privacy).")
              (let ((out (assoc-ref outputs "out"))
                    (engine (assoc-ref inputs "pep-engine")))
                (with-output-to-file "local.conf"
-                 (lambda _ ;()
+                 (lambda _
                    (format #t "
 PREFIX=~a
 ENGINE_LIB_PATH=~a/lib
