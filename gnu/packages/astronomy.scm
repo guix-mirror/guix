@@ -820,13 +820,11 @@ provide you with detailed information about each pass.")
            (lambda* (#:key tests? #:allow-other-keys)
              (when tests?
                (with-directory-excursion "test"
-                 (invoke "ctest"))
-               #t)))
+                 (invoke "ctest")))))
          (add-before 'install 'set-install-directories
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               (mkdir-p (string-append out "/lib/udev/rules.d")))
-             #t)))))
+               (mkdir-p (string-append out "/lib/udev/rules.d"))))))))
     (native-inputs
      `(("googletest" ,googletest)))
     (inputs
