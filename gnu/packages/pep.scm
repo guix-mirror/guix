@@ -26,12 +26,14 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages java)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages mail) ; for libetpan
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages sequoia)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tls)
@@ -189,16 +191,16 @@ ENGINE_INC_PATH=~a/include
 (define-public python-pep-adapter
   (package
     (name "python-pep-adapter")
-    (version "2.0.5")
+    (version "2.1.3")
     (source
      (origin
-       (method hg-fetch)
-       (uri (hg-reference
-             (url "https://pep.foundation/dev/repos/pEpPythonAdapter")
-             (changeset "66df0e5b9405"))) ;; r374
-       (file-name (string-append name "-" version "-checkout"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitea.pep.foundation/pEp.foundation/pEpPythonAdapter")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "107i1s8jf8gyhpmqcs64q9csxa3fwc8g7s57iyccqb4czw8gph6d"))))
+        (base32 "0ssz21p1k7xx3snmd4g3ggzq565rlzdmp90l2mph6yfp1y65p39s"))))
     (build-system python-build-system)
     (arguments
      `(;; Adding configure-flags does not work, running `build_ext`
@@ -226,12 +228,24 @@ ENGINE_INC_PATH=~a/include
                 (string-append a "os.getenv('LIBRARY_PATH', '').split(os.pathsep)\n"))
                (("^(\\s+SYS_SHARES = )\\['/usr.*" _ a)
                 (string-append a "['" (assoc-ref %build-inputs "asn1c") "/share']\n")))
+             #t))
+         (add-before 'build 'remove-wheel-requirement
+           ;; we dont't build a wheel
+           (lambda _
+             (substitute* "setup.cfg"
+               ((" wheel *>= [0-9.]*") ""))
+             (substitute* "pyproject.toml"
+               (("\"wheel *>=.*\"") ""))
              #t)))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-forked" ,python-pytest-forked)))
     (inputs
-     `(("asn1c" ,asn1c)
-       ("boost-python" ,boost-with-python3)
+     `(("boost-python" ,boost-with-python3)
        ("libpepadapter" ,libpepadapter)
-       ("pep-engine" ,pep-engine)))
+       ("pep-engine" ,pep-engine)
+       ("python-setuptools-scm" ,python-setuptools-scm/next)
+       ("util-linux" ,util-linux "lib"))) ;; uuid.h
     (home-page "https://pep.foundation/")
     (synopsis "Python adapter for p≡p (pretty Easy Privacy)")
     (description "The p≡p Python adapter is an adaptor interface to the p≡p
