@@ -3609,6 +3609,11 @@ persistent (on the file system).")
                 "0n9sxrffahgxcc8h9vgxg5i446g14cibixpf82nkpm5bvidhfsc9"))))
     (properties `((upstream-name . "R.rsp")))
     (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-HOME
+           (lambda _ (setenv "HOME" "/tmp"))))))
     (propagated-inputs
      `(("r-digest" ,r-digest)
        ("r-r-cache" ,r-r-cache)
