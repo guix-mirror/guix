@@ -20,7 +20,6 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix git-download)
-  #:use-module (guix hg-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
@@ -28,6 +27,7 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages java)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages mail) ; for libetpan
@@ -255,35 +255,26 @@ ENGINE_INC_PATH=~a/include
 (define-public java-pep-adapter
   (package
     (name "java-pep-adapter")
-    (version "2.0.5")
+    (version "2.1.23")
     (source
      (origin
-       (method hg-fetch)
-       (uri (hg-reference
-             (url "https://pep.foundation/dev/repos/pEpJNIAdapter")
-             (changeset "534537c9cd50"))) ;; r763
-       (file-name (string-append name "-" version "-checkout"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitea.pep.foundation/pEp.foundation/pEpJNIAdapter")
+             (commit (string-append "Release_" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "107ldpssc80bq8kndn2n000000gphj4lqagaiv3fddlfph4vji48"))))
+        (base32 "1sw3a5ggxcrkghvpp0a6h2lz461x55ldgfw5y4pw7c3gk5wynvjk"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (arguments
      `(#:test-target "test"
-       #:make-flags (list "doxy-all")
+       #:make-flags '("NDEBUG=1" "all" "doc") ; release build
        #:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'fix-includes
-           (lambda _
-             (substitute* "src/jniutils.hh"
-               (("#pragma once\n" line)
-                (string-append line
-                               "#include <mutex>\n"
-                               "#include <cassert>\n"
-                               "#include <cstring>\n")))
-             #t))
          (add-before 'configure 'pin-shared-lib-path
            (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* "src/foundation/pEp/jniadapter/AbstractEngine.java"
+             (substitute* "src/java/foundation/pEp/jniadapter/AbstractEngine.java"
                (("System.loadLibrary\\(\"pEpJNI\"\\);")
                 (string-append "System.load(\""
                                (assoc-ref outputs "out")
@@ -298,7 +289,7 @@ ENGINE_INC_PATH=~a/include
                    (libadapter (assoc-ref inputs "libpepadapter"))
                    (openjdk  (assoc-ref inputs "openjdk")))
                (with-output-to-file "local.conf"
-                 (lambda _ ;()
+                 (lambda _
                    (format #t "
 PREFIX=~a
 ENGINE_LIB_PATH=~a/lib
@@ -313,16 +304,18 @@ JAVA_HOME=~a
                (substitute* "src/Makefile"  ;; suppress some warnings
                  (("^\\s+OLD_JAVA=") "    xxx_OLD_JAVA="))
                #t)))
+         (add-before 'build 'build-codegen
+           ;; run codegen first to allow parallel build of other parts
+           (lambda _
+             (invoke "make" "-C" "src" "create-dirs" "codegen")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (libout (string-append out "/lib/"))
                     (javaout (string-append out "/share/java/")))
-               (mkdir-p libout)
-               (mkdir-p javaout)
-               (copy-file "src/libpEpJNI.so"
-                          (string-append libout "/libpEpJNI.so"))
-               (copy-file "src/pEp.jar" (string-append javaout "/pEp.jar"))
+               (install-file "dist/libpEpJNI.a" libout)
+               (install-file "dist/libpEpJNI.so" libout)
+               (install-file "dist/pEp.jar" javaout)
                #t)))
          (add-after 'install 'install-docs
            (lambda* (#:key outputs #:allow-other-keys)
@@ -337,13 +330,14 @@ JAVA_HOME=~a
                #t))))))
     (native-inputs
      `(("doxygen" ,doxygen)
+       ("graphviz" ,graphviz)
        ("openjdk" ,openjdk9 "jdk")
        ("which" ,which)
        ("yml2" ,yml2)))
     (inputs
      `(("libpepadapter" ,libpepadapter)
        ("pep-engine" ,pep-engine)
-       ("util-linux" ,util-linux))) ;; uuid.h
+       ("util-linux" ,util-linux "lib"))) ;; uuid.h
     (home-page "https://pep.foundation/")
     (synopsis "Java adapter for p≡p (pretty Easy Privacy)")
     (description "The p≡p JNI adapter is a Java adapter interface to the p≡p
