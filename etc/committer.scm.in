@@ -38,6 +38,33 @@
         (ice-9 rdelim)
         (ice-9 textual-ports))
 
+(define* (break-string str #:optional (max-line-length 70))
+  "Break the string STR into lines that are no longer than MAX-LINE-LENGTH.
+Return a single string."
+  (define (restore-line words)
+    (string-join (reverse words) " "))
+  (if (<= (string-length str) max-line-length)
+      str
+      (let ((words+lengths (map (lambda (word)
+                                  (cons word (string-length word)))
+                                (string-tokenize str))))
+        (match (fold (match-lambda*
+                       (((word . length)
+                         (count current lines))
+                        (let ((new-count (+ count length 1)))
+                          (if (< new-count max-line-length)
+                              (list new-count
+                                    (cons word current)
+                                    lines)
+                              (list length
+                                    (list word)
+                                    (cons (restore-line current) lines))))))
+                     '(0 () ())
+                     words+lengths)
+          ((_ last-words lines)
+           (string-join (reverse (cons (restore-line last-words) lines))
+                        "\n"))))))
+
 (define (read-excursion port)
   "Read an expression from PORT and reset the port position before returning
 the expression."
@@ -204,18 +231,19 @@ corresponding to the top-level definition containing the staged changes."
                           (added (lset-difference equal? new-values old-values)))
                       (format port
                               "[~a]: ~a~%" field
-                              (match (list (map symbol->string removed)
-                                           (map symbol->string added))
-                                ((() added)
-                                 (format #f "Add ~a."
-                                         (listify added)))
-                                ((removed ())
-                                 (format #f "Remove ~a."
-                                         (listify removed)))
-                                ((removed added)
-                                 (format #f "Remove ~a; add ~a."
-                                         (listify removed)
-                                         (listify added)))))))))
+                              (break-string
+                               (match (list (map symbol->string removed)
+                                            (map symbol->string added))
+                                 ((() added)
+                                  (format #f "Add ~a."
+                                          (listify added)))
+                                 ((removed ())
+                                  (format #f "Remove ~a."
+                                          (listify removed)))
+                                 ((removed added)
+                                  (format #f "Remove ~a; add ~a."
+                                          (listify removed)
+                                          (listify added))))))))))
             '(inputs propagated-inputs native-inputs)))
 
 (define* (add-commit-message file-name variable-name #:optional (port (current-output-port)))
