@@ -656,7 +656,7 @@ way of specifying command line options.")
      '(#:import-path "gopkg.in/go-playground/assert.v1"))
     (synopsis "Basic assertion library used alongside native Go testing")
     (description
-     "This package provides bassic assertions along with building blocks for
+     "This package provides basic assertions along with building blocks for
 custom assertions to be used alongside native Go testing.")
     (license license:expat)))
 
