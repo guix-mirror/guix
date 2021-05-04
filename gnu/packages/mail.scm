@@ -4432,12 +4432,11 @@ score.")
                ;; Install mail related crm scripts.
                (for-each (lambda (file)
                            (install-file file (string-append out "/bin")))
-                         (list "mailfilter.crm" "mailreaver.crm" "mailtrainer.crm"))
-               ;; Create emacs site-lisp directory so that the install phase
-               ;; can install crm-mode.
-               (mkdir-p (string-append out "/share/emacs/site-lisp")))))
+                         (list "mailfilter.crm" "mailreaver.crm" "mailtrainer.crm")))))
+         (add-after 'install 'install-emacs-mode
+           (assoc-ref emacs:%standard-phases 'install))
          ;; Run phases from the emacs build system.
-         (add-after 'install 'make-autoloads
+         (add-after 'install-emacs-mode 'make-autoloads
            (assoc-ref emacs:%standard-phases 'make-autoloads))
          (add-after 'make-autoloads 'enable-autoloads-compilation
            (assoc-ref emacs:%standard-phases 'enable-autoloads-compilation))
