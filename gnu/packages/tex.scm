@@ -8205,6 +8205,38 @@ testing whether an argument is empty.")
 page (also known as ‘end notes’).")
       (license license:lppl1.3c+))))
 
+(define-public texlive-titling
+  (let ((template (simple-texlive-package
+                   "texlive-titling"
+                   (list "/doc/latex/titling/"
+                         "/source/latex/titling/")
+                   (base32
+                    "0pc3806kc9p2dizdghis0p0b00xs0gmlh2nmf94f5wasz5mkw6bk"))))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ '())
+          "latex/titling")
+         ((#:build-targets _ '())
+          ''("titling.ins"))
+         ((#:tex-format _ "latex") "latex")
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'chdir
+               (lambda _ (chdir "source/latex/titling")))))))
+      (native-inputs
+       `(("texlive-cm" ,texlive-cm)))
+      (home-page "https://www.ctan.org/pkg/titling")
+      (synopsis "Control typesetting of the \\maketitle command")
+      (description "The @code{titling} package provides control over the
+typesetting of the @code{\\maketitle} command and @code{\\thanks} commands,
+and makes the \title, @code{\\author} and @code{\\date} information
+permanently available.  Multiple titles are allowed in a single document.  New
+titling elements can be added and a @code{titlepage} title can be centered on
+a physical page.")
+      (license license:lppl))))
+
 (define-public texlive-kastrup
   (package
     (name "texlive-kastrup")
