@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018, 2020 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
@@ -1185,13 +1185,13 @@ of Bioconductor.")
 (define-public r-biocgenerics
   (package
     (name "r-biocgenerics")
-    (version "0.36.0")
+    (version "0.36.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "BiocGenerics" version))
               (sha256
                (base32
-                "1y9pgangz2f0n9v3zj8brz8bv7a1yjsncdnd5h1l7zv0c0j9fh9q"))))
+                "0x8cllriayrs99wd5l003iq6i28rb1mci23qcn13ga85578f5lz5"))))
     (properties
      `((upstream-name . "BiocGenerics")))
     (build-system r-build-system)
