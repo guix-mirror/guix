@@ -1722,7 +1722,7 @@ delivery.")
 (define-public exim
   (package
     (name "exim")
-    (version "4.94")
+    (version "4.94.2")
     (source
      (origin
        (method url-fetch)
@@ -1736,7 +1736,7 @@ delivery.")
                     (string-append "https://ftp.exim.org/pub/exim/exim4/old/"
                                    file-name))))
        (sha256
-        (base32 "1nsb2i5mqxfz1sl1bmbxmpb2qiaf3wffhfiw4j9vfpagy3xfhzpp"))))
+        (base32 "0x4j698gsawm8a3bz531pf1k6izyxfvry4hj5wb0aqphi7y62605"))))
     (build-system gnu-build-system)
     (inputs
      `(("bdb" ,bdb-5.3) ; ‘#error Version 6 and later BDB API is not supported’
