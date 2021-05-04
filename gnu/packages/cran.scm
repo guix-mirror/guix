@@ -13917,6 +13917,11 @@ the local machine to, say, distributed processing on a remote compute cluster.")
          "1ns5cf80vyabvyz9qp6kpvkg4jycinn7x6v7x6692fgjapdnmyig"))))
     (properties `((upstream-name . "future.apply")))
     (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-HOME
+           (lambda _ (setenv "HOME" "/tmp"))))))
     (propagated-inputs
      `(("r-future" ,r-future)
        ("r-globals" ,r-globals)))
