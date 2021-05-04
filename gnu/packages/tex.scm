@@ -8267,6 +8267,35 @@ the conditional @code{\\ifoddpageoronside} is provided which is also true in
 @code{oneside} mode where all pages use the odd page layout.")
       (license license:lppl1.3))))
 
+(define-public texlive-storebox
+  (let ((template (simple-texlive-package
+                   "texlive-storebox"
+                   (list "/source/latex/storebox/")
+                   (base32
+                    "1ybpjfrria57fwvr9kriiw6y76ivwvsyb6ayp0bi750smsv8k5n1"))))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ '())
+          "latex/storebox")
+         ((#:build-targets _ '())
+          ''("storebox.ins"))
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'chdir
+               (lambda _ (chdir "source/latex/storebox")))))))
+      (native-inputs
+       `(("texlive-ydoc" ,texlive-ydoc)))
+      (home-page "https://www.ctan.org/pkg/storebox")
+      (synopsis "Storing information for reuse")
+      (description "The package provides \"store boxes\" whose user interface
+matches that of normal LaTeX \"save boxes\", except that the content of a
+store box appears at most once in the output PDF file, however often it is
+used.  The present version of the package supports pdfLaTeX and LuaLaTeX; when
+DVI is output, store boxes behave the same as save boxes.")
+      (license license:lppl1.3))))
+
 (define-public texlive-kastrup
   (package
     (name "texlive-kastrup")
