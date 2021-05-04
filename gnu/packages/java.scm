@@ -13748,7 +13748,7 @@ can be interpreted by IDEs and static analysis tools to improve code analysis.")
                  (("\\$\\{java.vendor.url\\}") "https://gnu.org/software/guix")
                  (("\\$\\{java.version\\}") "1.8")
                  (("\\$\\{os.arch\\}") "any")
-                 (("\\$\\{os.name\\}") "GuixSD")
+                 (("\\$\\{os.name\\}") "Guix")
                  (("\\$\\{os.version\\}") "not available")))
              #t))
          (add-before 'build 'generate-javacc
