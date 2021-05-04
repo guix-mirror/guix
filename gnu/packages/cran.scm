@@ -1555,19 +1555,19 @@ multi-state models.")
 (define-public r-jquerylib
   (package
     (name "r-jquerylib")
-    (version "0.1.3")
+    (version "0.1.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "jquerylib" version))
        (sha256
         (base32
-         "1s0d6mws13hwkx07jqmry7vp30a05b2p9w7ir68bmkhasidwkzdq"))
+         "04a40v4znpj98j7y6009d74a6g9dchj5rr3p08cgz9p3rlfw3g7h"))
        (snippet
         '(for-each delete-file
-                   '("inst/lib/jquery-1.12.4.min.js"
-                     "inst/lib/jquery-2.2.4.min.js"
-                     "inst/lib/jquery-3.5.1.min.js")))))
+                   '("inst/lib/1.12.4/jquery-1.12.4.min.js"
+                     "inst/lib/2.2.4/jquery-2.2.4.min.js"
+                     "inst/lib/3.6.0/jquery-3.6.0.min.js")))))
     (properties `((upstream-name . "jquerylib")))
     (build-system r-build-system)
     (arguments
@@ -1582,12 +1582,12 @@ multi-state models.")
                (call-with-values
                    (lambda ()
                      (unzip2
-                      `(("jquery-1.12.4.js"
-                         "jquery-1.12.4.min.js")
-                        ("jquery-2.2.4.js"
-                         "jquery-2.2.4.min.js")
-                        ("jquery-3.5.1.js"
-                         "jquery-3.5.1.min.js"))))
+                      `(("1.12.4/jquery-1.12.4.js"
+                         "1.12.4/jquery-1.12.4.min.js")
+                        ("2.2.4/jquery-2.2.4.js"
+                         "2.2.4/jquery-2.2.4.min.js")
+                        ("3.6.0/jquery-3.6.0.js"
+                         "3.6.0/jquery-3.6.0.min.js"))))
                  (lambda (sources targets)
                    (for-each (lambda (source target)
                                (format #t "Processing ~a --> ~a~%"
