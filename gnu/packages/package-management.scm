@@ -317,7 +317,7 @@ $(prefix)/etc/openrc\n")))
                                (gnutls (assoc-ref inputs "gnutls"))
                                (locales (assoc-ref inputs "glibc-utf8-locales"))
                                (deps   (list gcrypt json sqlite gnutls git
-                                             bs ssh zlib lzlib zstd))
+                                             bs ssh zlib lzlib zstd guile-lib))
                                (deps*  ,@(if (%current-target-system)
                                              '(deps)
                                              '((cons avahi deps))))
