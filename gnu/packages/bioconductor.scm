@@ -10996,6 +10996,44 @@ optionally include the physical locations or genetic map distances of each SNP
 on the plot.")
     (license license:gpl3)))
 
+;; This is a CRAN package, but it depends on r-rgraphviz, which is a
+;; Bioconductor package.
+(define-public r-abn
+  (package
+    (name "r-abn")
+    (version "2.5-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "abn" version))
+       (sha256
+        (base32
+         "1fqmhw0mhdl6az1gpg0byvx5snhz1pl3fqikhyfjcjrc9xbsq8yw"))))
+    (build-system r-build-system)
+    (inputs
+     `(("gsl" ,gsl)))
+    (propagated-inputs
+     `(("r-lme4" ,r-lme4)
+       ("r-nnet" ,r-nnet)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)
+       ("r-rgraphviz" ,r-rgraphviz)
+       ("r-rjags" ,r-rjags)))
+    (home-page "https://r-bayesian-networks.org/")
+    (synopsis "Modelling multivariate data with additive bayesian networks")
+    (description
+     "Bayesian network analysis is a form of probabilistic graphical models
+which derives from empirical data a directed acyclic graph, DAG, describing
+the dependency structure between random variables.  An additive Bayesian
+network model consists of a form of a DAG where each node comprises a
+@dfn{generalized linear model} (GLM).  Additive Bayesian network models are
+equivalent to Bayesian multivariate regression using graphical modelling, they
+generalises the usual multivariable regression, GLM, to multiple dependent
+variables.  This package provides routines to help determine optimal Bayesian
+network models for a given data set, where these models are used to identify
+statistical dependencies in messy, complex data.")
+    (license license:gpl2+)))
+
 (define-public r-pathview
   (package
     (name "r-pathview")
