@@ -16114,14 +16114,14 @@ the corresponding outputs (tables and graphs).")
 (define-public r-rjava
   (package
     (name "r-rjava")
-    (version "0.9-13")
+    (version "1.0-4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rJava" version))
        (sha256
         (base32
-         "1x3mihyqzr61j52rwaqciw43mkjzmhib4s6qf57v6xj40ksqh5jv"))))
+         "1rd9hcwp4464icy22mmis94jb9w5gk90h97j79cy6fixdxwq4ihx"))))
     (properties `((upstream-name . "rJava")))
     (build-system r-build-system)
     (arguments
@@ -16148,7 +16148,6 @@ the corresponding outputs (tables and graphs).")
     (inputs
      `(("icu4c" ,icu4c)
        ("jdk" ,icedtea-8 "jdk")
-       ("pcre" ,pcre)
        ("zlib" ,zlib)))
     (home-page "https://www.rforge.net/rJava/")
     (synopsis "Low-Level R to Java interface")
