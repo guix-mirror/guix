@@ -10832,34 +10832,29 @@ time.")
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-paths-and-tests
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((pandoc (string-append (assoc-ref inputs "pandoc") "/bin/pandoc"))
-                   (texlive-root (string-append (assoc-ref inputs "texlive")))
-                   (xelatex (string-append texlive-root "/bin/xelatex"))
-                   (bibtex (string-append texlive-root "/bin/bibtex")))
-               ;; Use pandoc binary from input.
-               (substitute* "nbconvert/utils/pandoc.py"
-                 (("'pandoc'") (string-append "'" pandoc "'")))
-               ;; Same for LaTeX.
-               (substitute* "nbconvert/exporters/pdf.py"
-                 (("\"xelatex\"") (string-append "\"" xelatex "\""))
-                 (("\"bibtex\"") (string-append "\"" bibtex "\"")))
-               ;; Make sure tests are not skipped.
-               (substitute* (find-files "." "test_.+\\.py$")
-                 (("@onlyif_cmds_exist\\(('(pandoc|xelatex)'(, )?)+\\)") ""))
-              ;; Pandoc is never missing, disable test.
-              (substitute* "nbconvert/utils/tests/test_pandoc.py"
-                (("import os" all) (string-append all "\nimport pytest"))
-                (("(.+)(def test_pandoc_available)" all indent def)
+           (lambda _
+             ;; Use pandoc binary from input.
+             (substitute* "nbconvert/utils/pandoc.py"
+               (("'pandoc'") (string-append "'" (which "pandoc") "'")))
+             ;; Same for LaTeX.
+             (substitute* "nbconvert/exporters/pdf.py"
+               (("\"xelatex\"") (string-append "\"" (which "xelatex") "\""))
+               (("\"bibtex\"") (string-append "\"" (which "bibtex") "\"")))
+             ;; Make sure tests are not skipped.
+             (substitute* (find-files "." "test_.+\\.py$")
+               (("@onlyif_cmds_exist\\(('(pandoc|xelatex)'(, )?)+\\)") ""))
+             ;; Pandoc is never missing, disable test.
+             (substitute* "nbconvert/utils/tests/test_pandoc.py"
+               (("import os" all) (string-append all "\nimport pytest"))
+               (("(.+)(def test_pandoc_available)" all indent def)
                 (string-append indent "@pytest.mark.skip('disabled by guix')\n"
                                indent def)))
-              ; Not installing pyppeteer, delete test.
-              (delete-file "nbconvert/exporters/tests/test_webpdf.py")
-              (substitute* "nbconvert/tests/test_nbconvertapp.py"
-                (("(.+)(def test_webpdf_with_chromium)" all indent def)
+             ;; Not installing pyppeteer, delete test.
+             (delete-file "nbconvert/exporters/tests/test_webpdf.py")
+             (substitute* "nbconvert/tests/test_nbconvertapp.py"
+               (("(.+)(def test_webpdf_with_chromium)" all indent def)
                 (string-append indent "@pytest.mark.skip('disabled by guix')\n"
-                               indent def)))
-             #t)))
+                               indent def)))))
          (replace 'check
            (lambda* (#:key tests? inputs outputs #:allow-other-keys)
              (when tests?
@@ -10869,7 +10864,7 @@ time.")
                (unsetenv "JUPYTER_CONFIG_DIR")
                ;; Tests depend on templates installed to output.
                (setenv "JUPYTER_PATH"
-                      (string-append
+                       (string-append
                         (assoc-ref outputs "out")
                         "/share/jupyter:"
                         (getenv "JUPYTER_PATH")))
