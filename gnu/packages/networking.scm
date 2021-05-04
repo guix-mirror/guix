@@ -509,14 +509,14 @@ SCTP-aware kernel (most are).")
 (define-public knockd
   (package
     (name "knockd")
-    (version "0.7")
+    (version "0.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.zeroflux.org/proj/knock/files/knock-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "193qcpsy7v51c6awhg9652l5blyz8vp6n7y6fi7l4rhh6af4ff4r"))))
+                "1iv9h7a9l81ilbld3pi0dmzkizjss1755x1x3v5jxsi4asb8r3b9"))))
     (build-system gnu-build-system)
     (inputs
      `(("libpcap" ,libpcap)))
