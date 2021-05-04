@@ -8329,6 +8329,47 @@ Arguments may contain verbatim material or other special use of characters.
 The macros were designed for use within other macros.")
       (license license:lppl1.3))))
 
+(define-public texlive-adjustbox
+  (let ((template (simple-texlive-package
+                   "texlive-adjustbox"
+                   (list "/doc/latex/adjustbox/"
+                         "/source/latex/adjustbox/")
+                   (base32
+                    "14vd0yd50bky2pbbjkn59q1aglnqpdhh8vwjdyan0jkzljsr2ch8"))))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ '())
+          "latex/adjustbox")
+         ((#:build-targets _ '())
+          ''("adjustbox.ins"))
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'chdir
+               (lambda _ (chdir "source/latex/adjustbox")))))))
+      (native-inputs
+       `(("texlive-ydoc" ,texlive-ydoc)))
+      (propagated-inputs
+       `(("texlive-latex-pgf" ,texlive-latex-pgf)
+         ("texlive-latex-varwidth" ,texlive-latex-varwidth)
+         ("texlive-latex-xkeyval" ,texlive-latex-xkeyval)
+         ("texlive-collectbox" ,texlive-collectbox)
+         ("texlive-ifoddpage" ,texlive-ifoddpage)
+         ("texlive-storebox" ,texlive-storebox)))
+      (home-page "https://www.ctan.org/pkg/adjustbox")
+      (synopsis "Graphics package-alike macros for “general” boxes")
+      (description "The package provides several macros to adjust boxed
+content.  One purpose is to supplement the standard @code{graphics} package,
+which defines the macros @code{\\resizebox}, @code{\\scalebox} and
+@code{\\rotatebox} , with the macros @code{\\trimbox} and @code{\\clipbox}.
+The main feature is the general @code{\\adjustbox} macro which extends the
+@code{key=value} interface of @code{\\includegraphics} from the
+@code{graphics} package and applies it to general text content.  Additional
+provided box macros are @code{\\lapbox}, @code{\\marginbox},
+@code{\\minsizebox}, @code{\\maxsizebox} and @code{\\phantombox}.")
+      (license license:lppl1.3))))
+
 (define-public texlive-kastrup
   (package
     (name "texlive-kastrup")
