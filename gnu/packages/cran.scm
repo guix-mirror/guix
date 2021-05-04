@@ -22883,14 +22883,14 @@ well as Ravand and Robitzsch (2015).")
 (define-public r-tam
   (package
     (name "r-tam")
-    (version "3.5-19")
+    (version "3.6-45")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "TAM" version))
        (sha256
         (base32
-         "1x1pdy0hrk4c3x5l4gcslpvyb0sv2zgly4n3a7y8j6yrzajx0sg7"))))
+         "1i9frqh6xf7h8r3q66xy0kfgwsxdhj6p9r9ga043aqmwk92q78b8"))))
     (properties `((upstream-name . "TAM")))
     (build-system r-build-system)
     (propagated-inputs
