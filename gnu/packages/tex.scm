@@ -8296,6 +8296,39 @@ used.  The present version of the package supports pdfLaTeX and LuaLaTeX; when
 DVI is output, store boxes behave the same as save boxes.")
       (license license:lppl1.3))))
 
+(define-public texlive-collectbox
+  (let ((template (simple-texlive-package
+                   "texlive-collectbox"
+                   (list "/source/latex/collectbox/")
+                   (base32
+                    "1k0bbphvr20k9hgpr3dv869h9ygxx3g8vjapkc63nq8i13crpsvz"))))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ '())
+          "latex/collectbox")
+         ((#:build-targets _ '())
+          ''("collectbox.ins"))
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'chdir
+               (lambda _ (chdir "source/latex/collectbox")))))))
+      (native-inputs
+       `(("texlive-ydoc" ,texlive-ydoc)))
+      (home-page "https://www.ctan.org/pkg/collectbox")
+      (synopsis "Collect and process macro arguments as boxes")
+      (description "The package provides macros to collect and process a macro
+argument (i.e., something which looks like a macro argument) as a horizontal
+box rather than as a real macro argument.  The \"arguments\" are stored as if
+they had been saved by @code{\\savebox} or by the @code{lrbox} environment.
+Grouping tokens @code{\\bgroup} and @code{\\egroup} may be used, which allows
+the user to have the beginning and end of a group in different macro
+invocations, or to place them in the begin and end code of an environment.
+Arguments may contain verbatim material or other special use of characters.
+The macros were designed for use within other macros.")
+      (license license:lppl1.3))))
+
 (define-public texlive-kastrup
   (package
     (name "texlive-kastrup")
