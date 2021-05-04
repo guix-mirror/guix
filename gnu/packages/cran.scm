@@ -2531,14 +2531,14 @@ including functions for geolocation and routing.")
 (define-public r-haven
   (package
     (name "r-haven")
-    (version "2.3.1")
+    (version "2.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "haven" version))
        (sha256
         (base32
-         "03cypgqhdkrfbfpl1yx2wb7flczrbak1w654wkicmd5ajwr9zvkf"))
+         "1san6dc7kg2wy6f1jr5p1br28zdrand8wwgg7p6xxnx45h773320"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -2560,9 +2560,9 @@ including functions for geolocation and routing.")
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (propagated-inputs
-     `(("r-forcats" ,r-forcats)
+     `(("r-cpp11" ,r-cpp11)
+       ("r-forcats" ,r-forcats)
        ("r-hms" ,r-hms)
-       ("r-rcpp" ,r-rcpp)
        ("r-rlang" ,r-rlang)
        ("r-readr" ,r-readr)
        ("r-tibble" ,r-tibble)
