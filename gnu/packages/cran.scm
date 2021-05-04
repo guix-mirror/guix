@@ -8145,14 +8145,14 @@ on the methods that are implemented can be found in Kosmidis (2008)
 (define-public r-brglm
   (package
     (name "r-brglm")
-    (version "0.7.1")
+    (version "0.7.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "brglm" version))
        (sha256
         (base32
-         "1v68ma1agwhxar76mfvdfkcnd5h4gmxiz8j491rhdsckg271j7sa"))))
+         "08shcz0j1npdn7xkhsvlzs3z4rdwq3g4rk6a4xx8wirqw8n8s2an"))))
     (properties `((upstream-name . "brglm")))
     (build-system r-build-system)
     (propagated-inputs
