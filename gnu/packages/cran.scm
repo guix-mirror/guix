@@ -21550,18 +21550,20 @@ finding peaks in spectra, converting humidity measures.")
 (define-public r-qqman
   (package
     (name "r-qqman")
-    (version "0.1.4")
+    (version "0.1.8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "qqman" version))
        (sha256
         (base32
-         "1v9s9ag1hfb47py87wb2nad4mbsfx35832hdmrh5kxrb2f11zl1s"))))
+         "1a6qp5wv9bvwjchfw8x4jh48hkynlnfr21a8vqgnswldvwbq7njq"))))
     (properties `((upstream-name . "qqman")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-calibrate" ,r-calibrate)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://cran.r-project.org/web/packages/qqman/")
     (synopsis "Q-Q and Manhattan plots for GWAS data")
     (description
