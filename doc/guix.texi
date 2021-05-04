@@ -31457,9 +31457,9 @@ parameters, can be done as follow:
 @cindex Platform Reliability, Availability and Serviceability daemon
 @subsubheading Rasdaemon Service
 
-The Rasdaemon service provides a daemon which monitors the platform Reliablity,
-Availability and Serviceability (RAS) reports from the Linux kernel trace
-events, logging them to syslogd.
+The Rasdaemon service provides a daemon which monitors platform
+@acronym{RAS, Reliability, Availability, and Serviceability} reports from
+Linux kernel trace events, logging them to syslogd.
 
 Reliability, Availability and Serviceability is a concept used on servers meant
 to measure their robustness.
