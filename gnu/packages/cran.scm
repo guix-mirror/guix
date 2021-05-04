@@ -5469,14 +5469,14 @@ to variables on the left-hand side of the assignment.")
 (define-public r-vctrs
   (package
     (name "r-vctrs")
-    (version "0.3.7")
+    (version "0.3.8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "vctrs" version))
        (sha256
         (base32
-         "03hyxk3x635xfdn2x707gygdb2xk0cayl1nl44zib9bwqyyb7nas"))))
+         "1c8v5lmap6iq4jpi7p3w05hsv2dq7rjg057pvnfyc5d1xmsqnkkz"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ellipsis" ,r-ellipsis)
