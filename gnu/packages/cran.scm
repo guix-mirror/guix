@@ -16160,16 +16160,18 @@ and accessing fields.")
 (define-public r-svmisc
   (package
     (name "r-svmisc")
-    (version "1.1.0")
+    (version "1.1.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "svMisc" version))
        (sha256
         (base32
-         "01r2a73wx2sh1njky961fxabx5wgddqqjqba6vjg0f3h8r3abmn2"))))
+         "0y8mhiblyzwads4gf4whmxi7c6wdmqs3ahbj132l79bbdk40p83a"))))
     (properties `((upstream-name . "svMisc")))
     (build-system r-build-system)
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/SciViews/svMisc")
     (synopsis "Miscellaneous functions for SciViews")
     (description
