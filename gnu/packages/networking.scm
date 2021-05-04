@@ -518,6 +518,10 @@ SCTP-aware kernel (most are).")
                (base32
                 "1iv9h7a9l81ilbld3pi0dmzkizjss1755x1x3v5jxsi4asb8r3b9"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--docdir=" (assoc-ref %outputs "out")
+                            "/share/doc/" ,name "-" ,version))))
     (inputs
      `(("libpcap" ,libpcap)))
     (home-page "https://www.zeroflux.org/projects/knock")
