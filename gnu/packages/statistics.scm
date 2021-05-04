@@ -2463,23 +2463,23 @@ informative error messages when it's not available.")
 (define-public r-devtools
   (package
     (name "r-devtools")
-    (version "2.3.2")
+    (version "2.4.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "devtools" version))
               (sha256
                (base32
-                "0vcqs4c5dfjs2ddkclv3z7zzix2zrnrxvzax8hjvjszgp8362275"))))
+                "094kl4d07kvmn1dcvq73mn4r30c4vpshrqj4998azh7garjlz3kj"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-callr" ,r-callr)
        ("r-cli" ,r-cli)
-       ("r-covr" ,r-covr)
        ("r-desc" ,r-desc)
-       ("r-dt" ,r-dt)
        ("r-ellipsis" ,r-ellipsis)
+       ("r-fs" ,r-fs)
        ("r-httr" ,r-httr)
        ("r-jsonlite" ,r-jsonlite)
+       ("r-lifecycle" ,r-lifecycle)
        ("r-memoise" ,r-memoise)
        ("r-pkgbuild" ,r-pkgbuild)
        ("r-pkgload" ,r-pkgload)
