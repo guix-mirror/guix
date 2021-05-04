@@ -153,6 +153,35 @@ can limit either their total size or the age of the oldest object (or both),
 automatically pruning objects to maintain the constraints.")
     (license license:expat)))
 
+(define-public r-curry
+  (package
+    (name "r-curry")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "curry" version))
+       (sha256
+        (base32
+         "1ps9hvbnb02m0b8hlw4admwbziyjvswj08ldi2dk3ymnrpawcc29"))))
+    (properties `((upstream-name . "curry")))
+    (build-system r-build-system)
+    (home-page "https://github.com/thomasp85/curry")
+    (synopsis "Partial function application")
+    (description
+     "Partial application is the process of reducing the arity of a function
+by fixing one or more arguments, thus creating a new function lacking the
+fixed arguments.  The @code{curry} package provides three different ways of
+performing partial function application by fixing arguments from either end of
+the argument list (currying and tail currying) or by fixing multiple named
+arguments (partial application).  This package provides this functionality
+through the @code{%<%}, @code{%-<%}, and @code{%><%} operators which allows
+for a programming style comparable to modern functional languages.  Compared
+to other implementations such a @code{purrr::partial()} the operators in
+@code{curry} composes functions with named arguments, aiding in autocomplete
+etc.")
+    (license license:gpl2+)))
+
 (define-public r-diffobj
   (package
     (name "r-diffobj")
