@@ -7838,40 +7838,6 @@ including VCF header and contents in RDF and JSON.")
     (home-page "https://github.com/vcflib/bio-vcf")
     (license license:expat)))
 
-(define-public r-summarizedexperiment
-  (package
-    (name "r-summarizedexperiment")
-    (version "1.20.0")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "SummarizedExperiment" version))
-              (sha256
-               (base32
-                "04x6d4mcsnvz6glkmf6k2cv3fs8zk03i9rvv0ahpl793n8l411ps"))))
-    (properties
-     `((upstream-name . "SummarizedExperiment")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-biobase" ,r-biobase)
-       ("r-biocgenerics" ,r-biocgenerics)
-       ("r-delayedarray" ,r-delayedarray)
-       ("r-genomeinfodb" ,r-genomeinfodb)
-       ("r-genomicranges" ,r-genomicranges)
-       ("r-iranges" ,r-iranges)
-       ("r-matrix" ,r-matrix)
-       ("r-matrixgenerics" ,r-matrixgenerics)
-       ("r-s4vectors" ,r-s4vectors)))
-    (native-inputs
-     `(("r-knitr" ,r-knitr)))
-    (home-page "https://bioconductor.org/packages/SummarizedExperiment")
-    (synopsis "Container for representing genomic ranges by sample")
-    (description
-     "The SummarizedExperiment container contains one or more assays, each
-represented by a matrix-like object of numeric or other mode.  The rows
-typically represent genomic ranges of interest and the columns represent
-samples.")
-    (license license:artistic2.0)))
-
 (define-public r-genomicalignments
   (package
     (name "r-genomicalignments")
