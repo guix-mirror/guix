@@ -206,6 +206,30 @@ visualization of their differences.")
     (description "This package lets you manage Google Drive files from R.")
     (license license:expat)))
 
+(define-public r-ids
+  (package
+    (name "r-ids")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ids" version))
+       (sha256
+        (base32
+         "1s6ga94gds5ydr9f8qbjfgfpg2dvbnkcrlybqlb33hk3c0c2l8dn"))))
+    (properties `((upstream-name . "ids")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-openssl" ,r-openssl)
+       ("r-uuid" ,r-uuid)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/richfitz/ids")
+    (synopsis "Generate random identifiers")
+    (description
+     "This package lets you generate random or human readable and
+pronounceable identifiers.")
+    (license license:expat)))
+
 (define-public r-waldo
   (package
     (name "r-waldo")
