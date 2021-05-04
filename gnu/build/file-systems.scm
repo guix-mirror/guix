@@ -3,7 +3,7 @@
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
-;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 David C. Trudgian <dave@trudgian.net>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
@@ -264,11 +264,12 @@ bytevector."
   "Return the health of a bcachefs file system on DEVICE."
   (let ((ignored-bits (logior 2))       ; DEVICE was mounted read-only
         (status
+         ;; A number, or #f on abnormal termination (e.g., assertion failure).
          (status:exit-val
           (apply system* "bcachefs" "fsck" "-p" "-v"
                  ;; Make each multi-device member a separate argument.
                  (string-split device #\:)))))
-    (match (logand (lognot ignored-bits) status)
+    (match (and=> status (cut logand <> (lognot ignored-bits)))
       (0 'pass)
       (1 'errors-corrected)
       (_ 'fatal-error))))
