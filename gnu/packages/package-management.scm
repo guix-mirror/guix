@@ -261,11 +261,9 @@ $(prefix)/etc/openrc\n")))
                           (intern (assoc-ref inputs "boot-guile") #f)
 
                           ;; On x86_64 some tests need the i686 Guile.
-                          ,@(if (and (not (%current-target-system))
-                                     (string=? (%current-system)
-                                               "x86_64-linux"))
-                                '((intern (assoc-ref inputs "boot-guile/i686") #f))
-                                '())
+                          (when (and (not target)
+                                     (string=? system "x86_64-linux"))
+                            (intern (assoc-ref inputs "boot-guile/i686") #f))
 
                           ;; Copy the bootstrap executables.
                           (for-each (lambda (input)
@@ -299,9 +297,8 @@ $(prefix)/etc/openrc\n")))
                         ;; Make sure the 'guix' command finds GnuTLS,
                         ;; Guile-JSON, and Guile-Git automatically.
                         (let* ((out    (assoc-ref outputs "out"))
-                               (guile  ,@(if (%current-target-system)
-                                             '((assoc-ref native-inputs "guile"))
-                                             '((assoc-ref inputs "guile"))))
+                               (guile  (assoc-ref (or native-inputs inputs)
+                                                  "guile"))
                                (avahi  (assoc-ref inputs "guile-avahi"))
                                (gcrypt (assoc-ref inputs "guile-gcrypt"))
                                (guile-lib   (assoc-ref inputs "guile-lib"))
@@ -318,9 +315,7 @@ $(prefix)/etc/openrc\n")))
                                (locales (assoc-ref inputs "glibc-utf8-locales"))
                                (deps   (list gcrypt json sqlite gnutls git
                                              bs ssh zlib lzlib zstd guile-lib))
-                               (deps*  ,@(if (%current-target-system)
-                                             '(deps)
-                                             '((cons avahi deps))))
+                               (deps*  (if avahi (cons avahi deps) deps))
                                (effective
                                 (read-line
                                  (open-pipe* OPEN_READ
