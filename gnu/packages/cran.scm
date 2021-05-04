@@ -25424,14 +25424,14 @@ models.")
 (define-public r-transphylo
   (package
     (name "r-transphylo")
-    (version "1.4.4")
+    (version "1.4.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "TransPhylo" version))
        (sha256
         (base32
-         "1506c97y8dnhd0c38rgvmg70q0l3xmmn07mjglhnw7hi5n5y9mv9"))))
+         "0g92kwi1nlmpc8m4pc9kv9xhczryr2kn9icfr3js7da7vy8g50xy"))))
     (properties `((upstream-name . "TransPhylo")))
     (build-system r-build-system)
     (propagated-inputs
