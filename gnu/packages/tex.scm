@@ -8396,6 +8396,29 @@ theorems.  The package supports saving and reuse of source code and text
 parts.")
       (license license:lppl1.3c+))))
 
+(define-public texlive-eurosym
+  (let ((template (simple-texlive-package
+                   "texlive-eurosym"
+                   (list "/doc/fonts/eurosym/"
+                         "/fonts/map/dvips/eurosym/"
+                         "/fonts/source/public/eurosym/"
+                         "/fonts/tfm/public/eurosym/"
+                         "/fonts/type1/public/eurosym/"
+                         "/tex/latex/eurosym/eurosym.sty")
+                   (base32
+                    "0ml24rxbl1yir4s3fjjxm0z7axklc3p33syg41b76zc7hck9mk8s")
+                   #:trivial? #true)))
+    (package
+      (inherit template)
+      (home-page "https://www.ctan.org/pkg/eurosym")
+      (synopsis "METAFONT and macros for Euro sign")
+      (description "This package provides the European currency symbol for the
+Euro implemented in METAFONT, using the official European Commission
+dimensions, and providing several shapes (normal, slanted, bold, outline).
+The package also includes a LaTeX package which defines the macro,
+pre-compiled font files, and documentation.")
+      (license (license:non-copyleft "file:///doc/fonts/eurosym/COPYING")))))
+
 (define-public texlive-kastrup
   (package
     (name "texlive-kastrup")
