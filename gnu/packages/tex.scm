@@ -8370,6 +8370,32 @@ provided box macros are @code{\\lapbox}, @code{\\marginbox},
 @code{\\minsizebox}, @code{\\maxsizebox} and @code{\\phantombox}.")
       (license license:lppl1.3))))
 
+(define-public texlive-tcolorbox
+  (let ((template (simple-texlive-package
+                   "texlive-tcolorbox"
+                   (list "/doc/latex/tcolorbox/"
+                         "/tex/latex/tcolorbox/")
+                   (base32
+                    "172lcnk6964alsga5w6kcvjhpjjcw1g9df73k8pyhl5lf4fmxa29")
+                   #:trivial? #true)))
+    (package
+      (inherit template)
+      (propagated-inputs
+       `(("texlive-etoolbox" ,texlive-etoolbox)
+         ("texlive-latex-environ" ,texlive-latex-environ)
+         ("texlive-latex-pgf" ,texlive-latex-pgf)
+         ("texlive-latex-tools" ,texlive-latex-tools)))
+      (home-page "https://www.ctan.org/pkg/tcolorbox")
+      (synopsis "Colored boxes, for LaTeX examples and theorems, etc")
+      (description "This package provides an environment for colored and
+framed text boxes with a heading line.  Optionally, such a box may be split in
+an upper and a lower part; thus the package may be used for the setting of
+LaTeX examples where one part of the box displays the source code and the
+other part shows the output.  Another common use case is the setting of
+theorems.  The package supports saving and reuse of source code and text
+parts.")
+      (license license:lppl1.3c+))))
+
 (define-public texlive-kastrup
   (package
     (name "texlive-kastrup")
