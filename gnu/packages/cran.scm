@@ -23371,20 +23371,20 @@ trend test.")
 (define-public r-keyring
   (package
     (name "r-keyring")
-    (version "1.1.0")
+    (version "1.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "keyring" version))
        (sha256
         (base32
-         "1hpfd4hbx43i39l995rg86kfxi7wlyla1gv8mwcdr4xx7z122zzq"))))
+         "1rqz29ycsmfqixhnzhhfd89j9ivnmp7x2z3vxdla622zmakbcy4c"))))
     (properties `((upstream-name . "keyring")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-assertthat" ,r-assertthat)
+     `(("r-askpass" ,r-askpass)
+       ("r-assertthat" ,r-assertthat)
        ("r-filelock" ,r-filelock)
-       ("r-getpass" ,r-getpass)
        ("r-openssl" ,r-openssl)
        ("r-r6" ,r-r6)
        ("r-rappdirs" ,r-rappdirs)
