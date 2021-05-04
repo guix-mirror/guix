@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2016, 2020, 2021 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,15 +40,16 @@
 (define-public yml2
   (package
     (name "yml2")
-    (version "2.6.3")
-    (source (origin
-       (method hg-fetch)
-       (uri (hg-reference
-             (url "https://pep.foundation/dev/repos/yml2")
-             (changeset version)))
-       (file-name (string-append name "-" version "-checkout"))
+    (version "2.7.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitea.pep.foundation/fdik/yml2")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "10jjjyq1mz18zkzvxd62aba00h69gd9cglisqcvb81j67ml2v1bx"))))
+        (base32 "0fm1x1fv4lwcpbn59s55idzf7x173n59xpz8rlrxalmi6gvsjijr"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-lxml" ,python-lxml)))
