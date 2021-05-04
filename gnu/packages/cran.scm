@@ -8700,24 +8700,26 @@ the work.")
 (define-public r-doby
   (package
     (name "r-doby")
-    (version "4.6.9")
+    (version "4.6.10")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "doBy" version))
        (sha256
         (base32
-         "02f545md5yhbpp3wb3q2c8zabqwgf02555r5c6g7znab5zjbyr00"))))
+         "0vqmmxhr3mx8yyl38abvy0zqswfgn7jqgwvc5gdchdiq6v8flnfr"))))
     (properties `((upstream-name . "doBy")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-broom" ,r-broom)
+       ("r-curry" ,r-curry)
        ("r-deriv" ,r-deriv)
        ("r-dplyr" ,r-dplyr)
        ("r-ggplot2" ,r-ggplot2)
        ("r-magrittr" ,r-magrittr)
        ("r-mass" ,r-mass)
        ("r-matrix" ,r-matrix)
+       ("r-microbenchmark" ,r-microbenchmark)
        ("r-pbkrtest" ,r-pbkrtest)
        ("r-tibble" ,r-tibble)))
     (native-inputs
