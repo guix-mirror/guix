@@ -7564,21 +7564,23 @@ obtain a better initial configuration in non-metric MDS.")
 (define-public r-reticulate
   (package
     (name "r-reticulate")
-    (version "1.18")
+    (version "1.20")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "reticulate" version))
        (sha256
         (base32
-         "04w5c9jfxakb4rr2qjynxgagb42khsja3y4dwgxywiplb1d8agxk"))))
+         "0ay8cb0d3lj702aw338lkc7sxj9j05izji3waww1z0lph16406bh"))))
     (build-system r-build-system)
     (inputs `(("python" ,python)))
     (propagated-inputs
      `(("r-rappdirs" ,r-rappdirs)
        ("r-jsonlite" ,r-jsonlite)
        ("r-matrix" ,r-matrix)
-       ("r-rcpp" ,r-rcpp)))
+       ("r-png" ,r-png)
+       ("r-rcpp" ,r-rcpp)
+       ("r-withr" ,r-withr)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/rstudio/reticulate")
