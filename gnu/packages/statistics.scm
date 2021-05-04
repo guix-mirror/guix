@@ -3569,15 +3569,20 @@ developing R packages.")
 (define-public r-r-cache
   (package
     (name "r-r-cache")
-    (version "0.14.0")
+    (version "0.15.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "R.cache" version))
               (sha256
                (base32
-                "1n8n5ihkryrbxv630dwhz4r048nyv676qd3i9f5z5fa04hvlxbqq"))))
+                "09pipn1974ivjh4sm3n5fjlh31rilf87p30qwq7y25vriyqd7d5d"))))
     (properties `((upstream-name . "R.cache")))
     (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-HOME
+           (lambda _ (setenv "HOME" "/tmp"))))))
     (propagated-inputs
      `(("r-digest" ,r-digest)
        ("r-r-methodss3" ,r-r-methodss3)
