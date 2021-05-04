@@ -23857,14 +23857,14 @@ evaluated interactively.")
 (define-public r-bridgesampling
   (package
     (name "r-bridgesampling")
-    (version "1.0-0")
+    (version "1.1-2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "bridgesampling" version))
        (sha256
         (base32
-         "1awhvv0v42w2q6llqi1wqpaiv5zx74cqzigdsvphy2jfp8ajw64y"))))
+         "0sry1xwiv4y52k44hq6z8y2kysp5kxgl4dix3m94svg3ladd7v2l"))))
     (properties
      `((upstream-name . "bridgesampling")))
     (build-system r-build-system)
