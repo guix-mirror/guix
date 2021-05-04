@@ -8088,9 +8088,10 @@ provides user-space tools for creating EROFS file systems.")
                (("^\\s*\\$\\(install_sh\\) -d .*@RASSTATEDIR@.*$") "")))))))
     (build-system gnu-build-system)
     (home-page "https://github.com/mchehab/rasdaemon")
-    (synopsis "Platform Reliability, Availability and Serviceability tools")
-    (description "The @code{rasdaemon} program is a daemon which monitors the
-platform Reliablity, Availability and Serviceability (RAS) reports from the
-Linux kernel trace events.  These trace events are logged in
-/sys/kernel/debug/tracing, reporting them via syslog/journald.")
+    (synopsis "Platform Reliability, Availability, and Serviceability tools")
+    (description
+     "The @code{rasdaemon} daemon monitors platform @acronym{RAS, Reliability,
+Availability, and Serviceability} reports from Linux kernel trace events.
+These trace events are logged in @file{/sys/kernel/debug/tracing} and reported
+through standard log mechanisms like syslog.")
     (license license:gpl2)))
