@@ -1390,13 +1390,13 @@ LaTeX.")
 (define-public r-curl
   (package
     (name "r-curl")
-    (version "4.3")
+    (version "4.3.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "curl" version))
               (sha256
                (base32
-                "1nrf6md41b37j424y6rvifdj9zb3j14f60fj7q71k9jhpf2x81kl"))))
+                "0qpzbzd5xvihqvp9akkvd8237i1lmphmm5q8a4cj3wfx382cnri2"))))
     (build-system r-build-system)
     (arguments
      `(#:phases
@@ -1414,13 +1414,13 @@ LaTeX.")
                 (string-append "\
 const char *_ca_bundle = getenv(\"CURL_CA_BUNDLE\");
 if(_ca_bundle != NULL) { curl_easy_setopt(handle, CURLOPT_CAINFO, _ca_bundle); }
-" m)))
-             #t)))))
+" m))))))))
     (inputs
      `(("libcurl" ,curl)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("r-knitr" ,r-knitr)))
     (home-page "https://github.com/jeroenooms/curl")
     (synopsis "HTTP client for R")
     (description
