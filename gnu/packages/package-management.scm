@@ -326,31 +326,38 @@ $(prefix)/etc/openrc\n")))
                                  (open-pipe* OPEN_READ
                                              (string-append guile "/bin/guile")
                                              "-c" "(display (effective-version))")))
-                               (path   (string-join
-                                        (map (cut string-append <>
-                                                  "/share/guile/site/"
-                                                  effective)
-                                             (delete #f deps*))
-                                        ":"))
-                               (gopath (string-join
-                                        (map (cut string-append <>
-                                                  "/lib/guile/" effective
-                                                  "/site-ccache")
-                                             (delete #f deps*))
-                                        ":"))
+                               (path   (map (cut string-append <>
+                                                 "/share/guile/site/"
+                                                 effective)
+                                            (delete #f deps*)))
+                               (gopath (map (cut string-append <>
+                                                 "/lib/guile/" effective
+                                                 "/site-ccache")
+                                            (delete #f deps*)))
                                (locpath (string-append locales "/lib/locale")))
 
-                          (wrap-program (string-append out "/bin/guix")
-                            `("GUILE_LOAD_PATH" ":" prefix (,path))
-                            `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,gopath))
-                            `("GUIX_LOCPATH" ":" suffix (,locpath)))
-
-                          (when target
-                            ;; XXX Touching wrap-program rebuilds world
-                            (let ((bash (assoc-ref inputs "bash")))
-                              (substitute* (string-append out "/bin/guix")
-                                (("^#!.*/bash") (string-append "#! " bash "/bin/bash")))))
-                          #t)))
+                          ;; Modify 'guix' directly instead of using
+                          ;; 'wrap-program'.  This avoids the indirection
+                          ;; through Bash, which in turn avoids getting Bash's
+                          ;; own locale warnings.
+                          (substitute* (string-append out "/bin/guix")
+                            (("!#")
+                             (string-append
+                              "!#\n\n"
+                              (object->string
+                               `(set! %load-path (append ',path %load-path)))
+                              "\n"
+                              (object->string
+                               `(set! %load-compiled-path
+                                  (append ',gopath %load-compiled-path)))
+                              "\n"
+                              (object->string
+                               `(let ((path (getenv "GUIX_LOCPATH")))
+                                  (setenv "GUIX_LOCPATH"
+                                          (if path
+                                              (string-append path ":" ,locpath)
+                                              ,locpath))))
+                              "\n\n"))))))
 
                     ;; The 'guix' executable has 'OUT/libexec/guix/guile' as
                     ;; its shebang; that should remain unchanged, thus remove
@@ -405,8 +412,7 @@ $(prefix)/etc/openrc\n")))
                `(("boot-guile/i686" ,(bootstrap-guile-origin "i686-linux")))
                '())
          ,@(if (%current-target-system)
-               `(("bash" ,bash-minimal)
-                 ("xz" ,xz))
+               `(("xz" ,xz))
                '())
 
          ;; Tests also rely on these bootstrap executables.
