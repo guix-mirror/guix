@@ -896,6 +896,9 @@ pure Scheme by using Guile's foreign function interface.")
     (home-page "https://notabug.org/guile-lzlib/guile-lzlib")
     (license license:gpl3+)))
 
+(define-public guile2.2-lzlib
+  (package-for-guile-2.2 guile-lzlib))
+
 (define-public guile-zstd
   (package
     (name "guile-zstd")
