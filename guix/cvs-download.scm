@@ -28,7 +28,8 @@
   #:use-module (ice-9 match)
   #:export (cvs-reference
             cvs-reference?
-            cvs-reference-url
+            cvs-reference-root-directory
+            cvs-reference-module
             cvs-reference-revision
             cvs-fetch))
 
