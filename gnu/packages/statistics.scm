@@ -1351,14 +1351,21 @@ There is also a Shiny app as a user interface in this package.")
 (define-public r-highr
   (package
     (name "r-highr")
-    (version "0.8")
+    (version "0.9")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "highr" version))
               (sha256
                (base32
-                "0my6idnhmmgs4q1vs40y2lh56yij2p59mpwvm53wjs2zk6x1zl2b"))))
+                "0kgdv2vf1lz3b5kbal9s83gg6812nw7fvrq0rkyr0v4k1lwi3zxy"))))
     (build-system r-build-system)
+    (propagated-inputs
+     `(("r-xfun" ,r-xfun)))
+    ;; We cannot add knitr to the inputs, because highr depends on xfun, which
+    ;; is an input to knitr.
+    #;
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/yihui/highr")
     (synopsis "Syntax highlighting for R source code")
     (description
