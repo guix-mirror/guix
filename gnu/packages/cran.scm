@@ -26385,24 +26385,24 @@ use.")
 (define-public r-tidymodels
   (package
     (name "r-tidymodels")
-    (version "0.1.2")
+    (version "0.1.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tidymodels" version))
        (sha256
         (base32
-         "09njrl655sh82xrzckgg56a6ndfrjla5fy8675wj4jsj14jpv0fw"))))
+         "18vz0xsgxrfzcfxpvilhj1w0f4v4lx5ws37nwmy40lhv3v05nxn8"))))
     (properties `((upstream-name . "tidymodels")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-broom" ,r-broom)
        ("r-cli" ,r-cli)
+       ("r-conflicted" ,r-conflicted)
        ("r-dials" ,r-dials)
        ("r-dplyr" ,r-dplyr)
        ("r-ggplot2" ,r-ggplot2)
        ("r-infer" ,r-infer)
-       ("r-magrittr" ,r-magrittr)
        ("r-modeldata" ,r-modeldata)
        ("r-parsnip" ,r-parsnip)
        ("r-purrr" ,r-purrr)
@@ -26414,6 +26414,7 @@ use.")
        ("r-tidyr" ,r-tidyr)
        ("r-tune" ,r-tune)
        ("r-workflows" ,r-workflows)
+       ("r-workflowsets" ,r-workflowsets)
        ("r-yardstick" ,r-yardstick)))
     (native-inputs
      `(("r-knitr" ,r-knitr)
