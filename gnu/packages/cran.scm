@@ -4835,14 +4835,14 @@ programming} (SQP) based solver).")
 (define-public r-hardyweinberg
   (package
     (name "r-hardyweinberg")
-    (version "1.7.1")
+    (version "1.7.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "HardyWeinberg" version))
        (sha256
         (base32
-         "0afjz818yvaq3akvgpy4irnlpspd2dj71qkrwj81lm9y36ypwlw6"))))
+         "0g10jh71yp0pcag44z409xqb6d941l7y887a632962bk5rgn6q5p"))))
     (properties `((upstream-name . "HardyWeinberg")))
     (build-system r-build-system)
     (propagated-inputs
