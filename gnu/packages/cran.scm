@@ -947,14 +947,14 @@ data types as well.")
 (define-public r-tidyverse
   (package
     (name "r-tidyverse")
-    (version "1.3.0")
+    (version "1.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tidyverse" version))
        (sha256
         (base32
-         "02gyys08qv2v4cl2d66gml4d31ipxay0iyfwwksvxyclx60wp2kd"))))
+         "0ck6xmsw5p168jmw2fqv79fzfnw5jckfra7mfii261j6kl89bkw3"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-broom" ,r-broom)
@@ -962,8 +962,11 @@ data types as well.")
        ("r-crayon" ,r-crayon)
        ("r-dbplyr" ,r-dbplyr)
        ("r-dplyr" ,r-dplyr)
+       ("r-dtplyr" ,r-dtplyr)
        ("r-forcats" ,r-forcats)
        ("r-ggplot2" ,r-ggplot2)
+       ("r-googledrive" ,r-googledrive)
+       ("r-googlesheets4" ,r-googlesheets4)
        ("r-haven" ,r-haven)
        ("r-hms" ,r-hms)
        ("r-httr" ,r-httr)
@@ -983,6 +986,8 @@ data types as well.")
        ("r-tibble" ,r-tibble)
        ("r-tidyr" ,r-tidyr)
        ("r-xml2" ,r-xml2)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://tidyverse.tidyverse.org")
     (synopsis "Install and load packages from the \"Tidyverse\"")
     (description
