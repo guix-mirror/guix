@@ -3876,7 +3876,7 @@ client and server.")
        (sha256
         (base32 "1mbaqiwj5034iw6jzw30jyhwzp1pvhnz1zcy0lns0z5j2h9ldapw"))))
      (build-system asdf-build-system/sbcl)
-     (inputs
+     (native-inputs
       `(("sbcl-lift" ,sbcl-lift)))
      (arguments
       `(#:phases
