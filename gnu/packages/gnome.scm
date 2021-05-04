@@ -10838,7 +10838,7 @@ functionality.")
 (define-public gthumb
   (package
     (name "gthumb")
-    (version "3.10.2")
+    (version "3.10.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/gthumb/"
@@ -10846,7 +10846,7 @@ functionality.")
                                   "gthumb-" version ".tar.xz"))
               (sha256
                (base32
-                "14sw8d37g1lkp44dwsgyxjjsgh5pnpp4wq00mcy9p3rp30lf9spx"))))
+                "04n2sgasc03kiczyzkq362pjilj12hq2r5qj07lynqr9rivkzdys"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
