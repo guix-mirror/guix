@@ -22606,14 +22606,14 @@ Complete access to optimized C functions is made available with
 (define-public r-openmx
   (package
     (name "r-openmx")
-    (version "2.19.1")
+    (version "2.19.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "OpenMx" version))
        (sha256
         (base32
-         "0fbndmwb3krypsavgm3blqkhh8blmi3p186yxmvgv3a9m6r154rj"))))
+         "0k8j6wi30yf1r550hpwl87x63i5kznz5gs46b1pl8xxcrmb863sv"))))
     (properties `((upstream-name . "OpenMx")))
     (build-system r-build-system)
     (propagated-inputs
