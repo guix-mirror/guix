@@ -26163,6 +26163,33 @@ expressive statistical grammar that coheres with the Tidy design framework.")
 model-related packages.")
     (license license:expat)))
 
+(define-public r-conflicted
+  (package
+    (name "r-conflicted")
+    (version "1.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "conflicted" version))
+       (sha256
+        (base32
+         "0xp04cdvmp3b1phazhmjqn0vmax1b2218xsb5854ffv43m7qvrra"))))
+    (properties `((upstream-name . "conflicted")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-memoise" ,r-memoise)
+       ("r-rlang" ,r-rlang)))
+    (home-page "https://github.com/r-lib/conflicted")
+    (synopsis "Alternative conflict resolution strategy")
+    (description
+     "R's default conflict management system gives the most recently loaded
+package precedence.  This can make it hard to detect conflicts, particularly
+when they arise because a package update creates ambiguity that did not
+previously exist.  The @code{conflicted} package takes a different approach,
+making every conflict an error and forcing you to choose which function to
+use.")
+    (license license:gpl3)))
+
 (define-public r-tidymodels
   (package
     (name "r-tidymodels")
