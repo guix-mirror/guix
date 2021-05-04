@@ -7176,6 +7176,41 @@ data.frame and more.  This is useful for decision trees, machine learning,
 finance, conversion from and to JSON, and many other applications.")
     (license license:gpl2+)))
 
+(define-public r-dtplyr
+  (package
+    (name "r-dtplyr")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "dtplyr" version))
+       (sha256
+        (base32
+         "0cn7vxn92dcxrnabccla6ppf5x7pxfz6pjlmamp0imfphmr1ns4r"))))
+    (properties `((upstream-name . "dtplyr")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-crayon" ,r-crayon)
+       ("r-data-table" ,r-data-table)
+       ("r-dplyr" ,r-dplyr)
+       ("r-ellipsis" ,r-ellipsis)
+       ("r-glue" ,r-glue)
+       ("r-lifecycle" ,r-lifecycle)
+       ("r-rlang" ,r-rlang)
+       ("r-tibble" ,r-tibble)
+       ("r-tidyselect" ,r-tidyselect)
+       ("r-vctrs" ,r-vctrs)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/tidyverse/dtplyr")
+    (synopsis "Data Table back-end for dplyr")
+    (description
+     "This package provides a @code{data.table} backend for @code{dplyr}.  The
+goal of @code{dtplyr} is to allow you to write @code{dplyr} code that is
+automatically translated to the equivalent, but usually much faster,
+@code{data.table} code.")
+    (license license:expat)))
+
 (define-public r-collapsibletree
   (package
     (name "r-collapsibletree")
