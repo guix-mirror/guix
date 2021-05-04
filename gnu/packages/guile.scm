@@ -857,6 +857,9 @@ Guile's foreign function interface.")
     (home-page "https://notabug.org/guile-zlib/guile-zlib")
     (license license:gpl3+)))
 
+(define-public guile2.2-zlib
+  (package-for-guile-2.2 guile-zlib))
+
 (define-public guile-lzlib
   (package
     (name "guile-lzlib")
