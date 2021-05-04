@@ -818,9 +818,8 @@ provide you with detailed information about each pass.")
        (modify-phases %standard-phases
          (replace  'check
            (lambda _
-             (chdir "test")
-             (invoke "ctest")
-             (chdir "..")
+             (with-directory-excursion "test"
+               (invoke "ctest"))
              #t))
          (add-before 'install 'set-install-directories
            (lambda* (#:key outputs #:allow-other-keys)
