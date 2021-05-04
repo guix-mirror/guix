@@ -13878,6 +13878,11 @@ port-forwarding to your local computer.")
         (base32
          "0bfiy17n5rghxw0702k0vgpjkk13268lniifdlx59flf0q16d7lh"))))
     (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-HOME
+           (lambda _ (setenv "HOME" "/tmp"))))))
     (propagated-inputs
      `(("r-digest" ,r-digest)
        ("r-globals" ,r-globals)
