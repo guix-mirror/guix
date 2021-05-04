@@ -230,6 +230,42 @@ visualization of their differences.")
 pronounceable identifiers.")
     (license license:expat)))
 
+(define-public r-googlesheets4
+  (package
+    (name "r-googlesheets4")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "googlesheets4" version))
+       (sha256
+        (base32
+         "04b17cdzah2r92qj7imrdlpfzyxwyf1vx8k1kvsr36nqg383f4b2"))))
+    (properties `((upstream-name . "googlesheets4")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-cellranger" ,r-cellranger)
+       ("r-curl" ,r-curl)
+       ("r-gargle" ,r-gargle)
+       ("r-glue" ,r-glue)
+       ("r-googledrive" ,r-googledrive)
+       ("r-httr" ,r-httr)
+       ("r-ids" ,r-ids)
+       ("r-lifecycle" ,r-lifecycle)
+       ("r-magrittr" ,r-magrittr)
+       ("r-purrr" ,r-purrr)
+       ("r-rematch2" ,r-rematch2)
+       ("r-rlang" ,r-rlang)
+       ("r-tibble" ,r-tibble)
+       ("r-vctrs" ,r-vctrs)))
+    (home-page "https://github.com/tidyverse/googlesheets4")
+    (synopsis "Access Google Sheets using the Sheets API V4")
+    (description
+     "This package lets you interact with Google Sheets through the
+@url{https://developers.google.com/sheets/api,Sheets API v4}.  This package
+can read and write both the metadata and the cell data in a Sheet.")
+    (license license:expat)))
+
 (define-public r-waldo
   (package
     (name "r-waldo")
