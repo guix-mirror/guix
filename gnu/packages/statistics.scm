@@ -416,14 +416,14 @@ available, greatly increasing its breadth and scope.")
 (define-public r-boot
   (package
     (name "r-boot")
-    (version "1.3-27")
+    (version "1.3-28")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "boot" version))
        (sha256
         (base32
-         "1v9anpxj4p83kd40gyfy8a454b2jmn11incrzym7wdvh8mdxpcil"))))
+         "0cjafhqv1c1mrjjcasqr767vs96wjcc6am9r1icryr8l4zymhwcz"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/boot")
     (synopsis "Bootstrap functions for R")
