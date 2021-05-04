@@ -1207,13 +1207,13 @@ models.")
 (define-public r-httpuv
   (package
     (name "r-httpuv")
-    (version "1.5.5")
+    (version "1.6.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "httpuv" version))
               (sha256
                (base32
-                "05rir03xwamwfq5691vx0x957sgmr4i8iv5vpx5rv1f74y4wkrhb"))
+                "01i0x9234fsyinzfjyl9a807kyvb0nivr6jx9911fp0msdmy1vkm"))
               ;; Unvendor bundled libraries. As of 1.5.4 the vendored libuv
               ;; only contains fixes for building on Solaris.
               (patches (search-patches "r-httpuv-1.5.5-unvendor-libuv.patch"))
@@ -1241,8 +1241,7 @@ models.")
     (inputs
      `(("libuv" ,libuv)))
     (propagated-inputs
-     `(("r-bh" ,r-bh)
-       ("r-later" ,r-later)
+     `(("r-later" ,r-later)
        ("r-promises" ,r-promises)
        ("r-r6" ,r-r6)
        ("r-rcpp" ,r-rcpp)))
