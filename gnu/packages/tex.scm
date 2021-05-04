@@ -8237,6 +8237,36 @@ titling elements can be added and a @code{titlepage} title can be centered on
 a physical page.")
       (license license:lppl))))
 
+(define-public texlive-ifoddpage
+  (let ((template (simple-texlive-package
+                   "texlive-ifoddpage"
+                   (list "/source/latex/ifoddpage/")
+                   (base32
+                    "14x0haj3xjsk9dn2djg117sl7x5nbwgbivhjj3ichnxlgrlf1bis"))))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ '())
+          "latex/ifoddpage")
+         ((#:build-targets _ '())
+          ''("ifoddpage.ins"))
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'chdir
+               (lambda _ (chdir "source/latex/ifoddpage")))))))
+      (native-inputs
+       `(("texlive-ydoc" ,texlive-ydoc)))
+      (home-page "https://www.ctan.org/pkg/ifoddpage")
+      (synopsis "Determine if the current page is odd or even")
+      (description "This package provides an @code{\\ifoddpage} conditional to
+determine if the current page is odd or even.  The macro @code{\\checkoddpage}
+must be used directly before to check the page number using a label.  Two
+compiler runs are therefore required to achieve correct results.  In addition,
+the conditional @code{\\ifoddpageoronside} is provided which is also true in
+@code{oneside} mode where all pages use the odd page layout.")
+      (license license:lppl1.3))))
+
 (define-public texlive-kastrup
   (package
     (name "texlive-kastrup")
