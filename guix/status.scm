@@ -380,7 +380,7 @@ the current build phase."
     ('ca-certificate-bundle
      (G_ "building CA certificate bundle..."))
     ('emacs-subdirs
-     (G_ "listing Emacs subdirs..."))
+     (G_ "listing Emacs sub-directories..."))
     ('glib-schemas
      (G_ "generating GLib schema cache..."))
     ('gtk-icon-themes
