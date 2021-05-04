@@ -2849,18 +2849,17 @@ a column in data frame.")
 (define-public r-rsqlite
   (package
     (name "r-rsqlite")
-    (version "2.2.5")
+    (version "2.2.7")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "RSQLite" version))
               (sha256
                (base32
-                "14cxqh8j5v2rqs6yiargy1miycvx7xj47lppvpnnchi5plimlvyy"))))
+                "1j89n4ydv42y5hqqv8nz72sa5wncws074kg527s902k1a67s69ii"))))
     (properties `((upstream-name . "RSQLite")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dbi" ,r-dbi)
-       ("r-bh" ,r-bh)
        ("r-memoise" ,r-memoise)
        ("r-plogr" ,r-plogr)
        ("r-rcpp" ,r-rcpp)
