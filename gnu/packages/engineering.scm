@@ -281,14 +281,14 @@ utilities.")
   (package
     (inherit geda-gaf)
     (name "lepton-eda")
-    (version "1.9.13-20201211")
+    (version "1.9.14-20210407")
     (home-page "https://github.com/lepton-eda/lepton-eda")
     (source (origin
               (method git-fetch)
               (uri (git-reference (url home-page) (commit version)))
               (sha256
                (base32
-                "0xfx6d0pyfrxr1c0nm4pbmb716hng78rgizaa6vsas9347n4kk1n"))
+                "0kyq0g6271vlwraw98637fn8bq2l6q4rll6748nn8rwsmfz71d0m"))
               (file-name (git-file-name name version))))
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -332,15 +332,19 @@ utilities.")
                 (string-append (assoc-ref outputs "out")
                                "/lib/libleptongui.so")))
              (substitute* '("libleptongui/scheme/schematic/ffi/gtk.scm.in"
-                            "libleptonattrib/lepton-attrib.scm")
+                            "utils/attrib/lepton-attrib.scm")
                (("@LIBGTK@")
                 (string-append (assoc-ref inputs "gtk")
                                "/lib/libgtk-3.so")))
+             (substitute* '("libleptongui/scheme/schematic/ffi/gobject.scm.in")
+               (("@LIBGOBJECT@")
+                (string-append (assoc-ref inputs "glib")
+                               "/lib/libgobject-2.0.so")))
              (substitute* "liblepton/scheme/lepton/ffi.scm.in"
                (("@LIBLEPTON@")
                 (string-append (assoc-ref outputs "out")
                                "/lib/liblepton.so")))
-             (substitute* "libleptonattrib/lepton-attrib.scm"
+             (substitute* "utils/attrib/lepton-attrib.scm"
                (("@LIBLEPTONATTRIB@")
                 (string-append (assoc-ref outputs "out")
                                "/lib/libleptonattrib.so")))
