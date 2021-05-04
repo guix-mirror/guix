@@ -2504,13 +2504,13 @@ tools to simplify the devolpment of R packages.")
 (define-public r-withr
   (package
     (name "r-withr")
-    (version "2.4.1")
+    (version "2.4.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "withr" version))
               (sha256
                (base32
-                "13qpcx7vjnqchvbbdwiqw286gkiajp02pcvhn7w7ddjiil2xjpjz"))))
+                "1j5srffi748yxphwli56lkbh4cga0kmz38dyzganzkw0nx66mya8"))))
     (build-system r-build-system)
     (native-inputs
      `(("r-knitr" ,r-knitr)))
