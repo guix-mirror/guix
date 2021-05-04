@@ -816,11 +816,12 @@ provide you with detailed information about each pass.")
           (string-append "-DUDEVRULES_INSTALL_DIR=" out "/lib/udev/rules.d")))
        #:phases
        (modify-phases %standard-phases
-         (replace  'check
-           (lambda _
-             (with-directory-excursion "test"
-               (invoke "ctest"))
-             #t))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (with-directory-excursion "test"
+                 (invoke "ctest"))
+               #t)))
          (add-before 'install 'set-install-directories
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
