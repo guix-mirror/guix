@@ -19183,14 +19183,14 @@ such as Ghostscript is needed to use this package.")
 (define-public r-emojifont
   (package
     (name "r-emojifont")
-    (version "0.5.3")
+    (version "0.5.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "emojifont" version))
        (sha256
         (base32
-         "1cdrrl3hvrs8rskyy6zgr7q2mmg8yb9k8sld1m64zsp7y009g19k"))))
+         "1hhrwilv36hd9gs1kcl2zsi6519md0h9aixjrm6lfclxvz8r6k1i"))))
     (properties `((upstream-name . "emojifont")))
     (build-system r-build-system)
     (propagated-inputs
@@ -19198,6 +19198,8 @@ such as Ghostscript is needed to use this package.")
        ("r-proto" ,r-proto)
        ("r-showtext" ,r-showtext)
        ("r-sysfonts" ,r-sysfonts)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://guangchuangyu.github.io/emojifont")
     (synopsis "Emoji and Font Awesome in R graphics")
     (description
