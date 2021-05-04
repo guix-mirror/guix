@@ -25353,14 +25353,14 @@ to speed up repeated queries of the same set of target points.")
 (define-public r-muhaz
   (package
     (name "r-muhaz")
-    (version "1.2.6.3")
+    (version "1.2.6.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "muhaz" version))
        (sha256
         (base32
-         "1lzc8arbpcxgfap3dfsgq8crpp1cxd9qlbrhvyvl79zgpxjqx4q2"))))
+         "1ddy8ayr4rdhzcipdvxdwd7z5g9hfp0ppacl7xf6f2612cn1185g"))))
     (properties `((upstream-name . "muhaz")))
     (build-system r-build-system)
     (propagated-inputs
