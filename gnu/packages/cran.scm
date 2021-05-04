@@ -15941,13 +15941,13 @@ SELECT or UPDATE queries to an end-point.")
 (define-public r-bookdown
   (package
     (name "r-bookdown")
-    (version "0.21")
+    (version "0.22")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "bookdown" version))
               (sha256
                (base32
-                "0xms1srx9l2mn8xaxnpic0s21y8k56bhwpj45wy7b0yscmxgmh27"))))
+                "0j80wm36mw3f14ncfwm6xx09wff1kswfiv8b309x9y0f9r46dr0z"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-htmltools" ,r-htmltools)
@@ -15957,6 +15957,11 @@ SELECT or UPDATE queries to an end-point.")
        ("r-xfun" ,r-xfun)
        ("r-yaml" ,r-yaml)
        ("pandoc" ,pandoc)))
+    ;; We cannot add knitr because this package depends on xfun, which is an
+    ;; input to knitr.
+    #;
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/rstudio/bookdown")
     (synopsis "Authoring books and technical documents with R markdown")
     (description "This package provides output formats and utilities for
