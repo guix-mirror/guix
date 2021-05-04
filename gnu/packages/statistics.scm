@@ -3665,6 +3665,11 @@ t-probabilities, quantiles, random deviates and densities.")
                 "0jab3xk56vqqzgz8jbsvxvsvr83sj0gb3cic0906wjyjijwv8rw3"))))
     (properties `((upstream-name . "matrixStats")))
     (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-HOME
+           (lambda _ (setenv "HOME" "/tmp"))))))
     (native-inputs
      `(("r-r-rsp" ,r-r-rsp))) ;used to build vignettes
     (home-page "https://github.com/HenrikBengtsson/matrixStats")
