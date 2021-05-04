@@ -9,6 +9,7 @@
 # Copyright © 2020 Daniel Brooks <db48x@db48x.net>
 # Copyright © 2021 Jakub Kądziołka <kuba@kadziolka.net>
 # Copyright © 2021 Chris Marusich <cmmarusich@gmail.com>
+# Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 #
 # This file is part of GNU Guix.
 #
@@ -71,11 +72,6 @@ declare -A GPG_SIGNING_KEYS
 GPG_SIGNING_KEYS[15145]=3CE464558A84FDC69DB40CFB090B11993D9AEBB5  # ludo
 GPG_SIGNING_KEYS[127547]=27D586A4F8900854329FF09F1260E46482E63562 # maxim
 
-# This script needs to know where root's home directory is.  However, we
-# cannot simply use the HOME environment variable, since there is no guarantee
-# that it points to root's home directory.
-ROOT_HOME="$(echo ~root)"
-
 # ------------------------------------------------------------------------------
 #+UTILITIES
 
@@ -102,7 +98,7 @@ chk_require()
     declare -a warn
     local c
 
-    _debug "--- [ $FUNCNAME ] ---"
+    _debug "--- [ ${FUNCNAME[0]} ] ---"
 
     for c in "$@"; do
         command -v "$c" &>/dev/null || warn+=("$c")
@@ -117,7 +113,7 @@ chk_require()
 
 chk_gpg_keyring()
 { # Check whether the Guix release signing public key is present.
-    _debug "--- [ $FUNCNAME ] ---"
+    _debug "--- [ ${FUNCNAME[0]} ] ---"
     local user_id
     local gpg_key_id
     local exit_flag
@@ -132,21 +128,19 @@ chk_gpg_keyring()
             exit_flag=yes
         fi
     done
-    test "$exit_flag" = yes && exit 1 || true
+    if [ "$exit_flag" = yes ]; then
+        exit 1
+    fi
 }
 
 chk_term()
 { # Check for ANSI terminal for color printing.
-    local ansi_term
-
     if [ -t 2 ]; then
         if [ "${TERM+set}" = 'set' ]; then
             case "$TERM" in
                 xterm*|rxvt*|urxvt*|linux*|vt*|eterm*|screen*)
-                    ansi_term=true
                     ;;
                 *)
-                    ansi_term=false
                     ERR="[ FAIL ] "
                     PAS="[ PASS ] "
                     ;;
@@ -243,7 +237,7 @@ guix_get_bin_list()
     local latest_ver
     local default_ver
 
-    _debug "--- [ $FUNCNAME ] ---"
+    _debug "--- [ ${FUNCNAME[0]} ] ---"
 
     # Filter only version and architecture
     bin_ver_ls=("$(wget -qO- "$gnu_url" \
@@ -272,25 +266,25 @@ guix_get_bin()
     local url="$1"
     local bin_ver="$2"
     local dl_path="$3"
+    local wget_args=()
 
-    _debug "--- [ $FUNCNAME ] ---"
+    _debug "--- [ ${FUNCNAME[0]} ] ---"
 
     _msg "${INF}Downloading Guix release archive"
 
-    wget --help | grep -q '\--show-progress' && \
-        _PROGRESS_OPT="-q --show-progress" || _PROGRESS_OPT=""
-    wget $_PROGRESS_OPT -P "$dl_path" "${url}/${bin_ver}.tar.xz" "${url}/${bin_ver}.tar.xz.sig"
+    wget --help | grep -q '\--show-progress' \
+        && wget_args=("-q" "--show-progress")
 
-    if [[ "$?" -eq 0 ]]; then
-       _msg "${PAS}download completed."
+    if wget "${wget_args[@]}" -P "$dl_path" \
+            "${url}/${bin_ver}.tar.xz" "${url}/${bin_ver}.tar.xz.sig"; then
+        _msg "${PAS}download completed."
     else
         _err "${ERR}could not download ${url}/${bin_ver}.tar.xz."
         exit 1
     fi
 
     pushd "${dl_path}" >/dev/null
-    gpg --verify "${bin_ver}.tar.xz.sig" >/dev/null 2>&1
-    if [[ "$?" -eq 0 ]]; then
+    if gpg --verify "${bin_ver}.tar.xz.sig" >/dev/null 2>&1; then
         _msg "${PAS}Signature is valid."
         popd >/dev/null
     else
@@ -304,7 +298,7 @@ sys_create_store()
     local pkg="$1"
     local tmp_path="$2"
 
-    _debug "--- [ $FUNCNAME ] ---"
+    _debug "--- [ ${FUNCNAME[0]} ] ---"
 
     cd "$tmp_path"
     tar --extract \
@@ -321,28 +315,29 @@ sys_create_store()
     fi
 
     _msg "${INF}Linking the root user's profile"
-    mkdir -p "${ROOT_HOME}/.config/guix"
+    mkdir -p "~root/.config/guix"
     ln -sf /var/guix/profiles/per-user/root/current-guix \
-       "${ROOT_HOME}/.config/guix/current"
+       "~root/.config/guix/current"
 
-    GUIX_PROFILE="${ROOT_HOME}/.config/guix/current"
+    GUIX_PROFILE="~root/.config/guix/current"
+    # shellcheck disable=SC1090
     source "${GUIX_PROFILE}/etc/profile"
-    _msg "${PAS}activated root profile at ${ROOT_HOME}/.config/guix/current"
+    _msg "${PAS}activated root profile at ${GUIX_PROFILE}"
 }
 
 sys_create_build_user()
 { # Create the group and user accounts for build users.
 
-    _debug "--- [ $FUNCNAME ] ---"
+    _debug "--- [ ${FUNCNAME[0]} ] ---"
 
-    if [ $(getent group guixbuild) ]; then
+    if getent group guixbuild > /dev/null; then
         _msg "${INF}group guixbuild exists"
     else
         groupadd --system guixbuild
         _msg "${PAS}group <guixbuild> created"
     fi
 
-    if [ $(getent group kvm) ]; then
+    if getent group kvm > /dev/null; then
         _msg "${INF}group kvm exists and build users will be added to it"
 	local KVMGROUP=,kvm
     fi
@@ -371,7 +366,7 @@ sys_enable_guix_daemon()
     local local_bin
     local var_guix
 
-    _debug "--- [ $FUNCNAME ] ---"
+    _debug "--- [ ${FUNCNAME[0]} ] ---"
 
     info_path="/usr/local/share/info"
     local_bin="/usr/local/bin"
@@ -380,7 +375,7 @@ sys_enable_guix_daemon()
     case "$INIT_SYS" in
         upstart)
             { initctl reload-configuration;
-              cp "${ROOT_HOME}/.config/guix/current/lib/upstart/system/guix-daemon.conf" \
+              cp "~root/.config/guix/current/lib/upstart/system/guix-daemon.conf" \
                  /etc/init/ &&
                   start guix-daemon; } &&
                 _msg "${PAS}enabled Guix daemon via upstart"
@@ -389,15 +384,15 @@ sys_enable_guix_daemon()
             { # systemd .mount units must be named after the target directory.
               # Here we assume a hard-coded name of /gnu/store.
               # XXX Work around <https://issues.guix.gnu.org/41356> until next release.
-              if [ -f "${ROOT_HOME}/.config/guix/current/lib/systemd/system/gnu-store.mount" ]; then
-                  cp "${ROOT_HOME}/.config/guix/current/lib/systemd/system/gnu-store.mount" \
+              if [ -f "~root/.config/guix/current/lib/systemd/system/gnu-store.mount" ]; then
+                  cp "~root/.config/guix/current/lib/systemd/system/gnu-store.mount" \
                      /etc/systemd/system/;
                   chmod 664 /etc/systemd/system/gnu-store.mount;
                   systemctl daemon-reload &&
                       systemctl enable gnu-store.mount;
               fi
 
-              cp "${ROOT_HOME}/.config/guix/current/lib/systemd/system/guix-daemon.service" \
+              cp "~root/.config/guix/current/lib/systemd/system/guix-daemon.service" \
                  /etc/systemd/system/;
               chmod 664 /etc/systemd/system/guix-daemon.service;
 
@@ -418,7 +413,7 @@ sys_enable_guix_daemon()
             ;;
         sysv-init)
             { mkdir -p /etc/init.d;
-              cp "${ROOT_HOME}/.config/guix/current/etc/init.d/guix-daemon" \
+              cp "~root/.config/guix/current/etc/init.d/guix-daemon" \
                  /etc/init.d/guix-daemon;
               chmod 775 /etc/init.d/guix-daemon;
 
@@ -429,7 +424,7 @@ sys_enable_guix_daemon()
             ;;
         openrc)
             { mkdir -p /etc/init.d;
-              cp "${ROOT_HOME}/.config/guix/current/etc/openrc/guix-daemon" \
+              cp "~root/.config/guix/current/etc/openrc/guix-daemon" \
                  /etc/init.d/guix-daemon;
               chmod 775 /etc/init.d/guix-daemon;
 
@@ -439,7 +434,7 @@ sys_enable_guix_daemon()
             ;;
         NA|*)
             _msg "${ERR}unsupported init system; run the daemon manually:"
-            echo "  ${ROOT_HOME}/.config/guix/current/bin/guix-daemon --build-users-group=guixbuild"
+            echo "  ~root/.config/guix/current/bin/guix-daemon --build-users-group=guixbuild"
             ;;
     esac
 
@@ -457,9 +452,9 @@ sys_enable_guix_daemon()
 sys_authorize_build_farms()
 { # authorize the public key of the build farm
     while true; do
-        read -p "Permit downloading pre-built package binaries from the project's build farm? (yes/no) " yn
+        read -rp "Permit downloading pre-built package binaries from the project's build farm? (yes/no) " yn
         case $yn in
-            [Yy]*) guix archive --authorize < "${ROOT_HOME}/.config/guix/current/share/guix/ci.guix.gnu.org.pub" &&
+            [Yy]*) guix archive --authorize < "~root/.config/guix/current/share/guix/ci.guix.gnu.org.pub" &&
                        _msg "${PAS}Authorized public key for ci.guix.gnu.org";
                    break;;
             [Nn]*) _msg "${INF}Skipped authorizing build farm public keys"
@@ -470,7 +465,7 @@ sys_authorize_build_farms()
 }
 
 sys_create_init_profile()
-{ # Create /etc/profile.d/guix.sh for better desktop integration
+{ # Define for better desktop integration
   # This will not take effect until the next shell or desktop session!
     [ -d "/etc/profile.d" ] || mkdir /etc/profile.d # Just in case
     cat <<"EOF" > /etc/profile.d/guix.sh
@@ -544,7 +539,7 @@ This script installs GNU Guix on your system
 https://www.gnu.org/software/guix/
 EOF
     echo -n "Press return to continue..."
-    read -r  ANSWER
+    read -r
 }
 
 main()
@@ -574,7 +569,7 @@ main()
         if ! [[ $GUIX_BINARY_FILE_NAME =~ $ARCH_OS ]]; then
             _err "$ARCH_OS not in ${GUIX_BINARY_FILE_NAME}; aborting"
         fi
-        _msg "Using manually provided binary ${GUIX_BINARY_FILE_NAME}"
+        _msg "${INF}Using manually provided binary ${GUIX_BINARY_FILE_NAME}"
         GUIX_BINARY_FILE_NAME=$(realpath "$GUIX_BINARY_FILE_NAME")
     fi
 
