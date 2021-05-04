@@ -1455,7 +1455,7 @@ translations.
 
 Some of the software packaged in Guix also contain translations.  We do not
 host a translation platform for them.  If you want to translate a package
-provided by Guix, you should contact their developpers or find the information
+provided by Guix, you should contact their developers or find the information
 on their website.  As an example, you can find the homepage of the
 @code{hello} package by typing @code{guix show hello}.  On the ``homepage''
 line, you will see @url{https://www.gnu.org/software/hello/} as the homepage.
@@ -1536,7 +1536,7 @@ will substitute the symbols in the same order as the English sentence.
 
 As an example, you cannot translate @samp{package '~a' has been superseded by
 '~a'} by @samp{'~a' superseeds package '~a'}, because the meaning would be
-reversed.  If foo is superseeded by bar, the translation would read
+reversed.  If @var{foo} is superseded by @var{bar}, the translation would read
 @samp{'foo' superseeds package 'bar'}.  To work around this problem, it
 is possible to use more advanced formating to select a given piece of data,
 instead of following the default English order.  @xref{Formatted Output,,,
@@ -1654,7 +1654,7 @@ translate and pushes new and updated translations.  Normally, it would be
 enough to give it commit access to our repositories.  However, we decided
 to use a separate repository for two reasons.  First, we would have to give
 Weblate commit access and authorize its signing key, but we do not trust it
-in the same way we trust guix developpers, especially since we do not manage
+in the same way we trust guix developers, especially since we do not manage
 the instance ourselves.  Second, if translators mess something up, it can
 break the generation of the website and/or guix pull for all our users,
 independently of their language.
@@ -1663,13 +1663,13 @@ For these reasons, we use a dedicated repository to host translations, and we
 synchronize it with our guix and artworks repositories after checking no issue
 was introduced in the translation.
 
-Developpers can download the latest PO files from weblate in the Guix
+Developers can download the latest PO files from weblate in the Guix
 repository by runnig the @command{make download-po} target.  It will
 automatically download the latest files from weblate, reformat them to a
 canonical form, and check they do not contain issues.  The manual needs to be
 built again to check for additional issues that might crash Texinfo.
 
-Before pushing new translation files, developpers should add them to the
+Before pushing new translation files, developers should add them to the
 make machinery so the translations are actually available.  The process
 differs for the various components.
 
