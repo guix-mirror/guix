@@ -21188,17 +21188,18 @@ done.")
 (define-public r-adagio
   (package
     (name "r-adagio")
-    (version "0.7.1")
+    (version "0.8.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "adagio" version))
        (sha256
         (base32
-         "1h9l0ddrxq8y35iy9hdkxdvdwsqpnpkzzbkbwwhm4380lq1m7a3k"))))
+         "0ihv05402iq003m0338f85pnqnlnrmx0pf1mg8cz9sgi5h98mbnl"))))
     (properties `((upstream-name . "adagio")))
     (build-system r-build-system)
-    (native-inputs `(("gfortran" ,gfortran)))
+    (propagated-inputs
+     `(("r-lpsolve" ,r-lpsolve)))
     (home-page "https://cran.r-project.org/web/packages/adagio/")
     (synopsis "Discrete and global optimization routines")
     (description
