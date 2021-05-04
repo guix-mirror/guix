@@ -1170,14 +1170,14 @@ receiving NDP messages.")
 (define-public ethtool
   (package
     (name "ethtool")
-    (version "5.10")
+    (version "5.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/software/network/"
                                   "ethtool/ethtool-" version ".tar.xz"))
               (sha256
                (base32
-                "1kygjg6g90017k53b8342i59cpwgidalqpa3gdilqyrhm6b56zc1"))))
+                "01vgyczgldrfss98cqrgjz8krj6kwb29xjf8p08q0g85fnfgmpgm"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
