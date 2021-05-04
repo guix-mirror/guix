@@ -239,15 +239,15 @@ if DEVICE does not contain an linux-swap file system."
 (define (read-bcachefs-superblock device)
   "Return the raw contents of DEVICE's bcachefs superblock as a bytevector, or #f
 if DEVICE does not contain a bcachefs file system."
-  ;; We completely ignore the back-up superblock & any checksum errors.
-  ;; Superblock field names, with offset & length respectively, in bytes:
+  ;; Field offsets & lengths, in bytes.  There are more (and the superblock is
+  ;; extensible) but we need only some basic information here:
   ;;  0 16 bch_csum
   ;; 16  8 version
   ;; 24 16 magic
-  ;; 40 16 uuid ← ‘internal UUID’, you probably don't want this
-  ;; 56 16 user_uuid ← ‘external UUID’, the one by which to mount
+  ;; 40 16 uuid               ← ‘internal’: you probably don't want this one
+  ;; 56 16 user_uuid          ← ‘external’: user-visible one by which to mount
   ;; 72 32 label
-  ;; … there are more & the superblock is extensible, but we don't care yet.
+  ;; Assume a sane file system: ignore the back-up superblock & checksums.
   (read-superblock device 4096 104 bcachefs-superblock?))
 
 (define (bcachefs-superblock-external-uuid sblock)
