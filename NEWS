@@ -2,7 +2,7 @@
 #+TITLE: Guix NEWS – history of user-visible changes
 #+STARTUP: content hidestars
 
-Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 Copyright © 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 
   Copying and distribution of this file, with or without modification,
@@ -10,6 +10,89 @@ Copyright © 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
   notice and this notice are preserved.
 
 Please send Guix bug reports to bug-guix@gnu.org.
+
+* Changes in 1.3.0 (since 1.2.0)
+
+** Package management
+
+*** POWER9 (powerpc64le-linux) is now supported as a technology preview
+*** New ‘--export-manifest’ and ‘--export-channels’ options of ‘guix package’
+*** New ‘--profile’ option for ‘guix environment’
+*** New ‘--discover’ option of ‘guix-daemon’, for local substitute discovery
+*** New ‘--advertise’ option of ‘guix publish’
+*** New ‘--with-patch’ and ‘--with-latest’ package transformation options
+*** ‘guix system image’ supersedes the ‘disk-image’ and ‘vm-image’ sub-commands
+*** ‘--verbosity=1’ no longer displays download URLs
+*** ‘guix publish -C’ now supports zstd compression via Guile-zstd
+*** ‘guix-daemon’ now supports zstd substitutes, which decompress faster
+*** New ‘guix import go’ command, to import Go packages
+*** ‘guix import opam’ now supports Coq packages and has a ‘--repo’ option
+*** ‘guix import crate’ now honors semantic versioning (“semver”)
+*** ‘guix import nix’ has been removed
+*** New updaters (see ‘guix refresh’): ‘sourceforge’ and ‘generic-html’
+*** Substitute installation has been optimized
+*** ‘guix’ commands suggest alternative sub-commands or options upon typos
+*** Offloading no longer requires ‘guile’ to be in $PATH on build machines
+*** ‘GUIX_EXTENSIONS_PATH’ is honored when looking for extensions such as GWL
+*** New ‘--format’ option for ‘guix processes’
+
+** Distribution
+
+*** ‘qemu-binfmt-service-type’ now relies on statically-linked QEMU
+*** ‘guix system init’ has been optimized
+*** New ‘--graph-backend’ option for ‘guix system {extension,shepherd}-graph’
+
+** Programming interfaces
+
+*** New ‘channel-with-substitutes-available’ procedure in (guix channels)
+*** New modules (guix substitutes), (guix narinfo), and (guix avahi)
+*** <image> records can be passed to ‘guix system image’
+*** New (guix ipfs) module to interact with an IPFS gateway
+
+** Noteworthy bug fixes
+
+*** Risk of local privilege escalation via guix-daemon fixed
+    (<https://issues.guix.gnu.org/47229>, CVE-2021-27851)
+*** Setuid programs on Guix System are no longer setgid root
+    (<https://issues.guix.gnu.org/46395>)
+*** Risk of local privilege escalation during reconfigure fixed
+    (<https://issues.guix.gnu.org/47584>)
+*** Grafting recognizes UTF-16 and UTF-32 store references
+    (<https://issues.guix.gnu.org/33848>)
+*** (guix git) honors HTTP/HTTPS proxy settings for Git submodules
+    (<https://issues.guix.gnu.org/44593>)
+*** Fix ‘guix substitute’ crash when interleaving lzip and gzip
+    (<https://issues.guix.gnu.org/46967>)
+*** Fix GnuTLS memory corruption when used from Guile
+    (<https://issues.guix.gnu.org/46330>)
+*** Update GnuTLS to 3.6.15, addressing a time-dependent test failure
+    (<https://issues.guix.gnu.org/44559>)
+
+** Native language support
+
+*** Updated translations of the manual
+
+The manual is fully translated into French and German, 90% translated into
+Spanish, and has preliminary translations into Chinese, Brazilian Portuguese,
+and Russian.
+
+*** Update translations of the cookbook
+
+The cookbook is fully translated in French and German and has a preliminary
+translation into Korean.
+
+*** Updated translations of messages
+
+This version of Guix is fully translated in French, German, and Slovak; it has
+good translation into Brazilian Portuguese and Spanish, and preliminary
+translations in a dozen other languages.
+
+*** Translations now hosted on Fedora’s Weblate instance
+
+Translations are now handled at
+<https://translate.fedoraproject.org/projects/guix/guix/> (thanks, Fedora!).
+You can join to help improve translations in your native language of messages,
+documentation, package descriptions, and the web site.
 
 * Changes in 1.2.0 (since 1.1.0)
 
