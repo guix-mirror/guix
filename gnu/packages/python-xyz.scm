@@ -10877,18 +10877,47 @@ time.")
                (setenv "HOME" "/tmp")
                (invoke "pytest" "-vv")))))))
     (inputs
-      `(("pandoc" ,pandoc)
-        ; XXX: Disabled, needs substitute*.
-        ;("inkscape" ,inkscape)
-        ("texlive" ,texlive)))
+     `(("pandoc" ,pandoc)
+       ;; XXX: Disabled, needs substitute*.
+       ;;("inkscape" ,inkscape)
+       ))
     (native-inputs
-      `(("python-ipykernel" ,python-ipykernel)
-        ; XXX: Disabled, not in guix.
-        ;("python-pyppeteer" ,python-pyppeteer)
-        ("python-pytest" ,python-pytest)
-        ("python-pytest-cov" ,python-pytest-cov)
-        ("python-pytest-dependency"
-         ,python-pytest-dependency)))
+     `(("python-ipykernel" ,python-ipykernel)
+       ;; XXX: Disabled, not in guix.
+       ;;("python-pyppeteer" ,python-pyppeteer)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-dependency" ,python-pytest-dependency)
+       ("texlive" ,(texlive-union (list texlive-adjustbox
+                                        texlive-amsfonts
+                                        texlive-booktabs
+                                        texlive-caption
+                                        texlive-eurosym
+                                        texlive-fonts-rsfs
+                                        texlive-generic-ulem
+                                        texlive-iftex
+                                        texlive-jknappen
+                                        texlive-latex-amsmath
+                                        texlive-latex-enumitem
+                                        texlive-latex-fancyvrb
+                                        texlive-latex-float
+                                        texlive-latex-fontspec
+                                        texlive-latex-geometry
+                                        texlive-latex-hyperref
+                                        texlive-latex-jknapltx
+                                        texlive-latex-ms
+                                        texlive-latex-oberdiek
+                                        texlive-latex-parskip
+                                        texlive-latex-trimspaces
+                                        texlive-latex-upquote
+                                        texlive-latex-ucs
+                                        texlive-lm
+                                        texlive-mathpazo
+                                        texlive-tcolorbox
+                                        texlive-titling
+                                        texlive-tools
+                                        texlive-xcolor
+                                        texlive-zapfding)))))
     (propagated-inputs
      `(("python-bleach" ,python-bleach)
        ("python-defusedxml" ,python-defusedxml)
