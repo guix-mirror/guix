@@ -11168,6 +11168,38 @@ export to genome browser viewable files, and functions for enrichment
 analyses.")
     (license license:artistic2.0)))
 
+(define-public r-guitar
+  (package
+    (name "r-guitar")
+    (version "2.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "Guitar" version))
+       (sha256
+        (base32
+         "0lvfrpgrvmrz4f4qmsii70hw10h72zh1g1alv2sf6a6ixhndm0mz"))))
+    (properties `((upstream-name . "Guitar")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-dplyr" ,r-dplyr)
+       ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-knitr" ,r-knitr)
+       ("r-magrittr" ,r-magrittr)
+       ("r-rtracklayer" ,r-rtracklayer)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://bioconductor.org/packages/Guitar")
+    (synopsis "Visualize genomic features")
+    (description
+     "This package is designed for visualization of RNA-related genomic
+features with respect to the landmarks of RNA transcripts, i.e., transcription
+starting site, start codon, stop codon and transcription ending site.")
+    (license license:gpl2)))
+
 (define-public r-sushi
   (package
     (name "r-sushi")
