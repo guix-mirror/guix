@@ -360,7 +360,8 @@ from a mounted file system.")
          (list ,(string-append "VERSION=" version) ; bogus vX.Y-nogit otherwise
                (string-append "PREFIX=" (assoc-ref %outputs "out"))
                "INITRAMFS_DIR=$(PREFIX)/share/initramfs-tools"
-               "CC=gcc"
+               ,(string-append "CC=" (cc-for-target))
+               ,(string-append "PKG_CONFIG=" (pkg-config-for-target))
                "PYTEST=pytest")
          #:phases
          (modify-phases %standard-phases
