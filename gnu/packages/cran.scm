@@ -13798,6 +13798,11 @@ by change of variable.")
         (base32
          "0ps8bk7zlhbviawrw7vw25skjq81hkk3ijyi6g74dmfqy8zsyapx"))))
     (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-HOME
+           (lambda _ (setenv "HOME" "/tmp"))))))
     (native-inputs
      `(("r-r-rsp" ,r-r-rsp))) ; vignette builder
     (home-page "https://github.com/HenrikBengtsson/listenv")
