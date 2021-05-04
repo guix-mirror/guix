@@ -2871,20 +2871,19 @@ is configured appropriately so R can use them.")
 (define-public r-pkgload
   (package
     (name "r-pkgload")
-    (version "1.2.0")
+    (version "1.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "pkgload" version))
        (sha256
         (base32
-         "185xr79z2vncq62bni7x4qv3p7dxvnfsbdnnglma0a196hz6pj7v"))))
+         "0ghpkv0p0xz4gpm49sywhvahhzwdakfb5kqm6yz8s1fr5gdpy9z6"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cli" ,r-cli)
        ("r-crayon" ,r-crayon)
        ("r-desc" ,r-desc)
-       ("r-pkgbuild" ,r-pkgbuild)
        ("r-rlang" ,r-rlang)
        ("r-rprojroot" ,r-rprojroot)
        ("r-rstudioapi" ,r-rstudioapi)
