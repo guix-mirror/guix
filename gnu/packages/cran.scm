@@ -25048,14 +25048,14 @@ for the geometry of linear networks.")
 (define-public r-spatstat-core
   (package
     (name "r-spatstat-core")
-    (version "2.0-0")
+    (version "2.1-2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "spatstat.core" version))
        (sha256
         (base32
-         "19wv27nfx48xkqa1amys4jf93k0d8xns20p84n5kqyibscdsksgx"))))
+         "0l0x461m8v93b15ywwb39mmy86qb8nsmas075x5lrzf9c31zdyns"))))
     (properties `((upstream-name . "spatstat.core")))
     (build-system r-build-system)
     (propagated-inputs
