@@ -27078,13 +27078,13 @@ are.")
 (define-public r-mlr3misc
   (package
     (name "r-mlr3misc")
-    (version "0.8.0")
+    (version "0.9.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "mlr3misc" version))
               (sha256
                (base32
-                "0mzicqs8rhzppyd7v3ljqs35k8pp7p2jg5cs7hx21mxr831bwsys"))))
+                "0x1jsysw04a0y5arxl0vbv89s6bhffkwarbvgl1z2jjwz8xcd3jj"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-backports" ,r-backports)
