@@ -2821,17 +2821,21 @@ devices.  It replaces @code{iwconfig}, which is deprecated.")
 (define-public powertop
   (package
     (name "powertop")
-    (version "2.13")
+    (version "2.14")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://01.org/sites/default/files/downloads/"
-                           "powertop-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/fenrus75/powertop")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0y1ixw8v17fdb1ima0zshrd0rh4zxdh10r93nrrvq6d4lhn9jpx6"))))
+        (base32 "1zkr2y5nb1nr22nq8a3zli87iyfasfq6489p7h1k428pv8k45w4f"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     '(#:configure-flags
+       (list "LDFLAGS=-pthread")
+       #:phases
        (modify-phases %standard-phases
          ;; TODO: Patch some hardcoded "wlan0" in calibrate/calibrate.cpp to
          ;; allow calibrating the network interface in Guix System.
@@ -2856,7 +2860,11 @@ devices.  It replaces @code{iwconfig}, which is deprecated.")
        ("pciutils" ,pciutils)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gettext-minimal)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
     (home-page "https://01.org/powertop/")
     (synopsis "Analyze power consumption on Intel-based laptops")
     (description
