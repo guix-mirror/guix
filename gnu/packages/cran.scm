@@ -373,14 +373,14 @@ degree elevation and curve fitting.")
 (define-public r-v8
   (package
     (name "r-v8")
-    (version "3.4.0")
+    (version "3.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "V8" version))
        (sha256
         (base32
-         "1g9z22pc8ydx1yhv57ww2d2jg5hvrl7ilwa79x89zgn17jha5j7m"))))
+         "1vfj89shfzx7b6papi2y671l8gksng775kilmqzl5gx87i3l61i1"))))
     (properties `((upstream-name . "V8")))
     (build-system r-build-system)
     (arguments
@@ -402,7 +402,8 @@ degree elevation and curve fitting.")
                       (assoc-ref inputs "node") "/lib"))
              #t)))))
     (inputs
-     `(("node" ,libnode)))
+     `(("node" ,libnode)
+       ("zlib" ,zlib)))
     (propagated-inputs
      `(("r-curl" ,r-curl)
        ("r-jsonlite" ,r-jsonlite)
