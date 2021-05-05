@@ -840,7 +840,6 @@ system_flags = $(foreach system,$(1),-s $(system))
 # XXX: Depend on 'dist' rather than 'distcheck' to work around the Gettext
 # issue described at <https://savannah.gnu.org/bugs/index.php?51027>.
 release: dist-with-updated-version all
-	cd po; git checkout .
 	@if ! git diff-index --quiet HEAD; then			\
 	  echo "There are uncommitted changes; stopping." >&2 ;	\
 	  exit 1 ;						\
