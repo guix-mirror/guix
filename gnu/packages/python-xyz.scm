@@ -21887,14 +21887,14 @@ one-off scripts.")
 (define-public python-cached-property
   (package
     (name "python-cached-property")
-    (version "1.5.1")
+    (version "1.5.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cached-property" version))
        (sha256
         (base32
-         "010m1bl380l2r3vwq24r5v14l6gwvgm9v0mqqjkjss552jgsa5wj"))))
+         "0c51i6yzg6dlq6zhk4c6nv33mg8gv05kkan36k9b5jzf71c7b9cz"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
