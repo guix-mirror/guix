@@ -158,10 +158,6 @@ require github.com/kr/pretty v0.2.1
   "v1.0.2"
   (go-version->git-ref "v1.0.2"))
 
-(test-equal "go-version omited 'v' character"
-  "v1.0.2"
-  (go-version->git-ref "v1.0.2"))
-
 (test-equal "go-version with embedded git-ref"
   "65e3620a7ae7"
   (go-version->git-ref "v0.0.0-20190821162956-65e3620a7ae7"))
