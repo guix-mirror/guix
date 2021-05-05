@@ -8098,8 +8098,8 @@ provides user-space tools for creating EROFS file systems.")
     (home-page "https://github.com/mchehab/rasdaemon")
     (synopsis "Platform Reliability, Availability, and Serviceability tools")
     (description
-     "The @code{rasdaemon} daemon monitors platform @acronym{RAS, Reliability,
-Availability, and Serviceability} reports from Linux kernel trace events.
+     "The @code{rasdaemon} daemon monitors platform Reliability,
+Availability, and Serviceability (RAS) reports from Linux kernel trace events.
 These trace events are logged in @file{/sys/kernel/debug/tracing} and reported
 through standard log mechanisms like syslog.")
     (license license:gpl2)))

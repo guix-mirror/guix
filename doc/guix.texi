@@ -31452,7 +31452,7 @@ parameters, can be done as follow:
 @subsubheading Rasdaemon Service
 
 The Rasdaemon service provides a daemon which monitors platform
-@acronym{RAS, Reliability, Availability, and Serviceability} reports from
+@acronym{RAS, Reliability@comma{} Availability@comma{} and Serviceability} reports from
 Linux kernel trace events, logging them to syslogd.
 
 Reliability, Availability and Serviceability is a concept used on servers meant
