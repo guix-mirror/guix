@@ -849,13 +849,13 @@ intended to behave exactly the same as the original BWK awk.")
 (define-public python-pybedtools
   (package
     (name "python-pybedtools")
-    (version "0.8.1")
+    (version "0.8.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "pybedtools" version))
               (sha256
                (base32
-                "14w5i40gi25clrr7h4wa2pcpnyipya8hrqi7nq77553zc5wf0df0"))))
+                "0wc7z8g8prgdx7n5chjva2fdq03wiwhqisjjxzkjg1j5k5ha7151"))))
     (build-system python-build-system)
     (arguments
      `(#:modules ((ice-9 ftw)
@@ -868,13 +868,6 @@ intended to behave exactly the same as the original BWK awk.")
        (modify-phases %standard-phases
          (add-after 'unpack 'disable-broken-tests
            (lambda _
-             (substitute* "pybedtools/test/test_scripts.py"
-               ;; This test freezes.
-               (("def test_intron_exon_reads")
-                "def _do_not_test_intron_exon_reads")
-               ;; This test fails in the Python 2 build.
-               (("def test_venn_mpl")
-                "def _do_not_test_venn_mpl"))
              (substitute* "pybedtools/test/test_helpers.py"
                ;; Requires internet access.
                (("def test_chromsizes")
@@ -886,8 +879,7 @@ intended to behave exactly the same as the original BWK awk.")
              ;; This issue still occurs on python2
              (substitute* "pybedtools/test/test_issues.py"
                (("def test_issue_303")
-                "def _test_issue_303"))
-             #t))
+                "def _test_issue_303"))))
          ;; TODO: Remove phase after it's part of PYTHON-BUILD-SYSTEM.
          ;; build system.
          ;; Force the Cythonization of C++ files to guard against compilation
@@ -908,23 +900,13 @@ intended to behave exactly the same as the original BWK awk.")
              (invoke "python" "setup.py" "cythonize")))
          (replace 'check
            (lambda _
-             (let* ((cwd (getcwd))
-                    (build-root-directory (string-append cwd "/build/"))
+             (let* ((build-root-directory (string-append (getcwd) "/build/"))
                     (build (string-append
                             build-root-directory
                             (find (cut string-prefix? "lib" <>)
-                                  (scandir (string-append
-                                            build-root-directory)))))
-                    (scripts (string-append
-                              build-root-directory
-                              (find (cut string-prefix? "scripts" <>)
-                                    (scandir build-root-directory)))))
+                                  (scandir build-root-directory)))))
                (setenv "PYTHONPATH"
-                       (string-append build ":" (getenv "PYTHONPATH")))
-               ;; Executable scripts such as 'intron_exon_reads.py' must be
-               ;; available in the PATH.
-               (setenv "PATH"
-                       (string-append scripts ":" (getenv "PATH"))))
+                       (string-append build ":" (getenv "PYTHONPATH"))))
              ;; The tests need to be run from elsewhere...
              (mkdir-p "/tmp/test")
              (copy-recursively "pybedtools/test" "/tmp/test")
