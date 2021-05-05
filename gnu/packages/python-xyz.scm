@@ -10884,7 +10884,7 @@ time.")
        ("python-pytest-cov" ,python-pytest-cov)
        ("python-pytest-dependency" ,python-pytest-dependency)
        ("texlive" ,(texlive-union (list texlive-adjustbox
-                                        texlive-amsfonts
+                                        texlive-amsfonts/patched
                                         texlive-booktabs
                                         texlive-caption
                                         texlive-eurosym
