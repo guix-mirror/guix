@@ -99,6 +99,7 @@
 ;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;; Copyright © 2021 Ellis Kenyő <me@elken.dev>
 ;;; Copyright © 2021 LibreMiami <packaging-guix@libremiami.org>
+;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -181,6 +182,7 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages rdf)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages regex)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages search)
   #:use-module (gnu packages scanner)
@@ -1303,6 +1305,30 @@ conventions and aliases in the same expression.")
      "The lockfile package exports a LockFile class which provides a simple
 API for locking files.")
     (license license:expat)))
+
+(define-public python-fb-re2
+  (package
+    (name "python-fb-re2")
+    (version "1.0.7")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/facebook/pyre2")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0snprxdnh3m45r3b0az4v0l28h90ycmfbybzla6xg1qviwv9w1ak"))))
+    (build-system python-build-system)
+    (inputs
+     `(("re2" ,re2)))
+    (home-page "https://github.com/facebook/pyre2")
+    (synopsis "Python wrapper for RE2")
+    (description "This package provides a Python extension that wraps Google's
+RE2 regular expression library.  It implements many of the features of
+Python's built-in @code{re} module with compatible interfaces.")
+    (license license:bsd-3)))
 
 (define-public python-filelock
   (package
