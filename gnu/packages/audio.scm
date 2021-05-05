@@ -29,7 +29,7 @@
 ;;; Copyright © 2019 Hartmt Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2019, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
-;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2020, 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Jonathan Frederickson <jonathan@terracrypt.net>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
@@ -5035,6 +5035,31 @@ between 700 and 3200 bit/s.  The main application is low bandwidth HF/VHF
 digital radio.")
     (home-page "https://www.rowetel.com/?page_id=452")
     (license license:lgpl2.1)))
+
+(define-public mbelib
+  ;; No release since 2016, use commit directly.
+  (let ((commit "9a04ed5c78176a9965f3d43f7aa1b1f5330e771f")
+        (revision "1"))
+    (package
+      (name "mbelib")
+      (version "1.3.0")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/szechyjs/mbelib")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0a7xmf87xnjzm5b437j2vnwv39x0ascja1j04c5wj6xs1529gw8h"))))
+      (build-system cmake-build-system)
+      (home-page "https://github.com/szechyjs/mbelib")
+      (synopsis "P25 Phase 1 and ProVoice vocoder")
+      (description
+       "The mbelib library provides support for the 7200x4400 bit/s codec used
+in P25 Phase 1, the 7100x4400 bit/s codec used in ProVoice and the @emph{Half
+Rate} 3600x2250 bit/s vocoder used in various radio systems.")
+      (license license:bsd-0))))
 
 (define-public ableton-link
   (package
