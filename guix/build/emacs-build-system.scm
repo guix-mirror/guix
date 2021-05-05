@@ -43,9 +43,12 @@
 ;;
 ;; Code:
 
-;;; All the packages are installed directly under site-lisp, which means that
-;;; having that directory in the EMACSLOADPATH is enough to have them found by
-;;; Emacs.
+;;; The location in which Emacs looks for packages.  Emacs Lisp code that is
+;;; installed there directly will be found when that directory is added to
+;;; EMACSLOADPATH.  To avoid clashes between packages (particularly considering
+;;; auxiliary files), we install them one directory level below, however.
+;;; This indirection is handled by ‘expand-load-path’ during build and a
+;;; profile hook otherwise.
 (define %install-dir "/share/emacs/site-lisp")
 
 ;; These are the default inclusion/exclusion regexps for the install phase.
