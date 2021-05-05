@@ -6,7 +6,7 @@
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Vijayalakshmi Vedantham <vijimay12@gmail.com>
 ;;; Copyright © 2019 Sam <smbaines8@gmail.com>
-;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -87,15 +87,17 @@
 
              #t))
          (replace 'check
-           (lambda _
-             (with-directory-excursion "tests"
-               (setenv "PYTHONPATH"
-                       (string-append "..:" (getenv "PYTHONPATH")))
-               (invoke "python" "runtests.py"
-                       ;; By default tests run in parallel, which may cause
-                       ;; various race conditions.  Run sequentially for
-                       ;; consistent results.
-                       "--parallel=1")))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (if tests?
+                 (with-directory-excursion "tests"
+                   (setenv "PYTHONPATH"
+                           (string-append "..:" (getenv "PYTHONPATH")))
+                   (invoke "python" "runtests.py"
+                           ;; By default tests run in parallel, which may cause
+                           ;; various race conditions.  Run sequentially for
+                           ;; consistent results.
+                           "--parallel=1"))
+                 (format #t "test suite not run~%")))))))
     ;; TODO: Install extras/django_bash_completion.
     (native-inputs
      `(("tzdata" ,tzdata-for-tests)
