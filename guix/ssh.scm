@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -253,7 +253,22 @@ EXP never returns or calls 'primitive-exit' when it's done."
        (use-modules (ice-9 match) (rnrs io ports)
                     (rnrs bytevectors))
 
-       (let ((sock    (socket AF_UNIX SOCK_STREAM 0))
+       (define connect-to-daemon
+         ;; XXX: 'connect-to-daemon' used to be private and before that it
+         ;; didn't even exist, hence these shenanigans.
+         (let ((connect-to-daemon
+                (false-if-exception (module-ref (resolve-module '(guix store))
+                                                'connect-to-daemon))))
+           (lambda (uri)
+             (if connect-to-daemon
+                 (connect-to-daemon uri)
+                 (let ((sock (socket AF_UNIX SOCK_STREAM 0)))
+                   (connect sock AF_UNIX ,socket-name)
+                   sock)))))
+
+       ;; Use 'connect-to-daemon' to honor GUIX_DAEMON_SOCKET.
+       (let ((sock    (connect-to-daemon (or (getenv "GUIX_DAEMON_SOCKET")
+                                             socket-name)))
              (stdin   (current-input-port))
              (stdout  (current-output-port))
              (select* (lambda (read write except)
@@ -271,8 +286,6 @@ EXP never returns or calls 'primitive-exit' when it's done."
          ;; whole buffer like read(2) would--see <https://bugs.gnu.org/30066>.
          (setvbuf stdin 'block 65536)
          (setvbuf sock 'block 65536)
-
-         (connect sock AF_UNIX ,socket-name)
 
          (let loop ()
            (match (select* (list stdin sock) '() '())
