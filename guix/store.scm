@@ -90,6 +90,7 @@
             hash-algo
             build-mode
 
+            connect-to-daemon
             open-connection
             port->connection
             close-connection
@@ -501,7 +502,10 @@
 
 (define (connect-to-daemon uri)
   "Connect to the daemon at URI, a string that may be an actual URI or a file
-name."
+name, and return an input/output port.
+
+This is a low-level procedure that does not perform the initial handshake with
+the daemon.  Use 'open-connection' for that."
   (define (not-supported)
     (raise (condition (&store-connection-error
                        (file uri)
