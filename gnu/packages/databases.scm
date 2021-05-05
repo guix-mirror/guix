@@ -17,7 +17,7 @@
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2017, 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017, 2020 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Jelle Licht <jlicht@fsfe.org>
@@ -3520,7 +3520,22 @@ is designed to have a low barrier to entry.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _ (invoke "py.test"))))))
+           (lambda _
+             (invoke "py.test")))
+         ;; XXX: The regular wrap phase ends up storing pytest as a runtime
+         ;; dependency.  See <https://bugs.gnu.org/25235>.
+         (replace 'wrap
+           (lambda* (#:key native-inputs inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (python (assoc-ref (or native-inputs inputs) "python"))
+                    (sitedir (string-append "/lib/python"
+                                            (python-version python)
+                                            "/site-packages")))
+               (wrap-program (string-append out "/bin/sqlformat")
+                 `("PYTHONPATH" ":" prefix
+                   ,(map (lambda (output)
+                           (string-append output sitedir))
+                         (list python out))))))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (home-page "https://github.com/andialbrecht/sqlparse")
