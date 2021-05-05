@@ -113,13 +113,13 @@ with what is used by the Bitcoin network.")
 (define-public python-bcrypt
   (package
     (name "python-bcrypt")
-    (version "3.1.7")
+    (version "3.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "bcrypt" version))
        (sha256
-        (base32 "0hhywhxx301cxivgxrpslrangbfpccc8y83qbwn1f57cab3nj00b"))))
+        (base32 "0agvzdn7r7jx5y4scl5gjmrmr6njvizwmr9n7h1kmaahdrrc34sv"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pycparser" ,python-pycparser)
