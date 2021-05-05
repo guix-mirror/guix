@@ -147,6 +147,7 @@ stamp-h[0-9]
 tmp
 /doc/os-config-lightweight-desktop.texi
 /nix/scripts/download
+/.tarball-version
 /.version
 /doc/stamp-*
 /gnu/packages/bootstrap
