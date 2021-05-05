@@ -97,7 +97,13 @@
                            ;; various race conditions.  Run sequentially for
                            ;; consistent results.
                            "--parallel=1"))
-                 (format #t "test suite not run~%")))))))
+                 (format #t "test suite not run~%"))))
+         ;; XXX: The 'wrap' phase adds native inputs as runtime dependencies,
+         ;; see <https://bugs.gnu.org/25235>.  The django-admin script typically
+         ;; runs in an environment that has Django and its dependencies on
+         ;; PYTHONPATH, so just disable the wrapper to reduce the size from
+         ;; ~710 MiB to ~203 MiB.
+         (delete 'wrap))))
     ;; TODO: Install extras/django_bash_completion.
     (native-inputs
      `(("tzdata" ,tzdata-for-tests)
@@ -105,7 +111,6 @@
        ;; tests/requirements/py3.txt
        ("python-docutils" ,python-docutils)
        ;; optional for tests: ("python-geoip2" ,python-geoip2)
-       ("python-jinja2" ,python-jinja2)           ; >= 2.7
        ;; optional for tests: ("python-memcached" ,python-memcached)
        ("python-numpy" ,python-numpy)
        ("python-pillow" ,python-pillow)
@@ -113,14 +118,17 @@
        ;; optional for tests: ("python-selenium" ,python-selenium)
        ("python-tblib" ,python-tblib)))
     (propagated-inputs
-     `(("python-argon2-cffi" ,python-argon2-cffi)
-       ("python-asgiref" ,python-asgiref)
-       ("python-bcrypt" ,python-bcrypt)
+     `(("python-asgiref" ,python-asgiref)
        ("python-pytz" ,python-pytz)
+       ("python-sqlparse" ,python-sqlparse)
+
+       ;; Optional dependencies.
+       ("python-argon2-cffi" ,python-argon2-cffi)
+       ("python-bcrypt" ,python-bcrypt)
 
        ;; This input is not strictly required, but in practice many Django
        ;; libraries need it for test suites and similar.
-       ("python-sqlparse" ,python-sqlparse)))
+       ("python-jinja2" ,python-jinja2)))
     (home-page "https://www.djangoproject.com/")
     (synopsis "High-level Python Web framework")
     (description
