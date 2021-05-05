@@ -663,7 +663,10 @@ conn_max_age argument to easily enable Django’s connection pool.")
                     (lambda _
                       (invoke "python" "-m" "django" "test" "-v2"
                               "--settings=tests.settings"))))))
-    (native-inputs `(("python-django" ,python-django)))
+    (native-inputs
+     ;; XXX: Picklefield has not been updated in 10+ years and fails tests
+     ;; with Django 3.2.
+     `(("python-django@2.2" ,python-django-2.2)))
     (synopsis "Pickled object field for Django")
     (description "Pickled object field for Django")
     (license license:expat)))
