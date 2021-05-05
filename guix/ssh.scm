@@ -302,8 +302,13 @@ EXP never returns or calls 'primitive-exit' when it's done."
                                     "/var/guix/daemon-socket/socket"))
   "Connect to the remote build daemon listening on SOCKET-NAME over SESSION,
 an SSH session.  Return a <store-connection> object."
-  (open-connection #:port (remote-daemon-channel session socket-name)))
-
+  (guard (c ((store-connection-error? c)
+             ;; Raise a more focused error condition.
+             (raise (formatted-message
+                     (G_ "failed to connect over SSH to daemon at '~a', socket ~a")
+                     (session-get session 'host)
+                     socket-name))))
+    (open-connection #:port (remote-daemon-channel session socket-name))))
 
 (define (store-import-channel session)
   "Return an output port to which archives to be exported to SESSION's store
