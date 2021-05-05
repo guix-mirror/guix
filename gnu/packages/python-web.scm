@@ -4730,8 +4730,22 @@ event loop.  It is implemented in Cython and uses libuv under the hood.")
                (copy-recursively "examples" examples)
                (for-each (lambda (file)
                            (copy-file file (string-append doc "/" file)))
-                         '("README.rst" "NOTICE" "LICENSE" "THANKS")))
-             #t)))))
+                         '("README.rst" "NOTICE" "LICENSE" "THANKS")))))
+         ;; XXX: The wrap phase includes native inputs on PYTHONPATH, (see
+         ;; <https://bugs.gnu.org/25235>), leading to an inflated closure
+         ;; size.  Override it to only add the essential entries.
+         (replace 'wrap
+           (lambda* (#:key native-inputs inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (python (assoc-ref (or native-inputs inputs) "python"))
+                    (sitedir (string-append "/lib/python"
+                                            (python-version python)
+                                            "/site-packages")))
+               (wrap-program (string-append out "/bin/gunicorn")
+                 `("PYTHONPATH" ":" prefix
+                   ,(map (lambda (output)
+                           (string-append output sitedir))
+                         (list python out))))))))))
     (native-inputs
      `(("binutils" ,binutils)  ;; for ctypes.util.find_library()
        ("python-aiohttp" ,python-aiohttp)
