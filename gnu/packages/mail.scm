@@ -1707,7 +1707,7 @@ addons which can add many functionalities to the base client.")
                (install-file (string-append msmtpq "/README.msmtpq") doc)
                (install-file "scripts/vim/msmtp.vim" vimfiles)
                ;; Don't rely on netcat being in the PATH to test for a
-               ;; connection, instead try tp ing debian.org.
+               ;; connection, instead look up and ping debian.org.
                (substitute* (string-append bin "/msmtpq")
                  (("EMAIL_CONN_TEST=n") "EMAIL_CONN_TEST=p"))
                #t))))))
