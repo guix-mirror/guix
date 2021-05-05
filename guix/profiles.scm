@@ -1712,11 +1712,18 @@ MANIFEST."
               (setenv "TEXMF" (string-append #$output "/share/texmf-dist"))
 
               ;; Remove invalid maps from config file.
-              (let ((web2c (string-append #$output "/share/texmf-config/web2c/"))
-                    (maproot (string-append #$output "/share/texmf-dist/fonts/map/")))
+              (let* ((web2c (string-append #$output "/share/texmf-config/web2c/"))
+                     (maproot (string-append #$output "/share/texmf-dist/fonts/map/"))
+                     (updmap.cfg (string-append web2c "updmap.cfg")))
                 (mkdir-p web2c)
-                (copy-file #$updmap.cfg (string-append web2c "updmap.cfg"))
-                (make-file-writable (string-append web2c "updmap.cfg"))
+
+                ;; Some profiles may already have this file, which prevents us
+                ;; from copying it.  Since we need to generate it from scratch
+                ;; anyway, we delete it here.
+                (when (file-exists? updmap.cfg)
+                  (delete-file updmap.cfg))
+                (copy-file #$updmap.cfg updmap.cfg)
+                (make-file-writable updmap.cfg)
                 (let* ((port (open-pipe* OPEN_WRITE
                                          #$(file-append texlive-bin "/bin/updmap-sys")
                                          "--syncwithtrees"
