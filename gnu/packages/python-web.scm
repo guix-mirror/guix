@@ -4688,14 +4688,14 @@ event loop.  It is implemented in Cython and uses libuv under the hood.")
 (define-public gunicorn
   (package
     (name "gunicorn")
-    (version "20.0.4")
+    (version "20.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "gunicorn" version))
        (sha256
         (base32
-         "09n6fc019bgrvph1s5h1lwhn2avcsprw6ncd203qhra3i8mvn10r"))))
+         "1s7670qw36x90bgmazmgib170i5gnpyb2ypxzlla7y0mpasniag0"))))
     (outputs '("out" "doc"))
     (build-system python-build-system)
     (arguments
@@ -4713,7 +4713,11 @@ event loop.  It is implemented in Cython and uses libuv under the hood.")
                  (begin
                    (setenv "PYTHONPATH"
                            (string-append ".:" (getenv "PYTHONPATH")))
-                   (invoke "pytest" "-vv"))
+                   (invoke "pytest" "-vv"
+                           ;; Disable the geventlet tests because eventlet uses
+                           ;; dnspython, which does not work in the build
+                           ;; container due to lack of /etc/resolv.conf, etc.
+                           "--ignore=tests/workers/test_geventlet.py"))
                  (format #t "test suite not run~%"))))
          (add-after 'install 'install-doc
            (lambda* (#:key outputs #:allow-other-keys)
@@ -4749,6 +4753,7 @@ event loop.  It is implemented in Cython and uses libuv under the hood.")
     (native-inputs
      `(("binutils" ,binutils)  ;; for ctypes.util.find_library()
        ("python-aiohttp" ,python-aiohttp)
+       ("python-gevent" ,python-gevent)
        ("python-pytest" ,python-pytest)
        ("python-pytest-cov" ,python-pytest-cov)
        ("python-sphinx" ,python-sphinx)
