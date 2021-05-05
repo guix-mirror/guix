@@ -10,8 +10,8 @@
 @include version.texi
 
 @c Identifier of the OpenPGP key used to sign tarballs and such.
-@set OPENPGP-SIGNING-KEY-ID 3CE464558A84FDC69DB40CFB090B11993D9AEBB5
-@set OPENPGP-SIGNING-KEY-URL https://sv.gnu.org/people/viewgpg.php?user_id=15145
+@set OPENPGP-SIGNING-KEY-ID 27D586A4F8900854329FF09F1260E46482E63562
+@set OPENPGP-SIGNING-KEY-URL https://sv.gnu.org/people/viewgpg.php?user_id=127547
 
 @c Base URL for downloads.
 @set BASE-URL https://ftp.gnu.org/gnu/guix
