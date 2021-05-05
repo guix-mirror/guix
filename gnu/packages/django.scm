@@ -1015,14 +1015,14 @@ Django projects, which allows association of a number of tags with any
 (define-public python-djangorestframework
   (package
     (name "python-djangorestframework")
-    (version "3.12.1")
+    (version "3.12.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "djangorestframework" version))
        (sha256
         (base32
-         "0jb22psb823vh5fj9az63p5lgyax9ygjy2faah16ajxvvsp54i6m"))))
+         "1wm7q3vp4226n6fhjnkjxg6pgh95p6ag238rg7l7dj6sind98izp"))))
     (build-system python-build-system)
     (arguments
      '(;; No included tests
