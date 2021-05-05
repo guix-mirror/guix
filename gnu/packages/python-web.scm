@@ -4,7 +4,7 @@
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2016, 2017 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2013, 2014, 2015, 2016, 2020 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2016, 2017, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2019, 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016, 2017, 2020 Julien Lepiller <julien@lepiller.eu>
@@ -4708,10 +4708,13 @@ event loop.  It is implemented in Cython and uses libuv under the hood.")
              (delete-file "docs/build/texinfo/Gunicorn.texi")
              #t))
          (replace 'check
-           (lambda _
-             (setenv "PYTHONPATH"
-                     (string-append ".:" (getenv "PYTHONPATH")))
-             (invoke "pytest")))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (if tests?
+                 (begin
+                   (setenv "PYTHONPATH"
+                           (string-append ".:" (getenv "PYTHONPATH")))
+                   (invoke "pytest" "-vv"))
+                 (format #t "test suite not run~%"))))
          (add-after 'install 'install-doc
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((doc (string-append (assoc-ref outputs "doc")
