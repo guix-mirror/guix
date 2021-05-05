@@ -65,6 +65,7 @@
   #:use-module (guix build-system cargo)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (guix download)
@@ -750,30 +751,26 @@ The OpenBSD Korn Shell is a cleaned up and enhanced ksh.")
 (define-public loksh
   (package
     (name "loksh")
-    (version "6.6")
+    (version "6.9")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/dimkr/loksh")
-             (commit version)))
+             (commit version)
+             ;; Include the ‘lolibc’ submodule, a static compatibility library
+             ;; created for and currently used only by loksh.
+             (recursive? #t)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1a8s64n97ikvvi7ckirxnnjvcmhr3dd4rnqm2ivapyzb0wp42jk7"))))
-    (build-system gnu-build-system)
+        (base32 "0x33plxqhh5202hgqidgccz5hpg8d2q71ylgnm437g60mfi9z0px"))))
+    (build-system meson-build-system)
     (inputs
-     `(("libbsd" ,libbsd)
-       ("ncurses" ,ncurses)))
+     `(("ncurses" ,ncurses)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (arguments
-     `(#:tests? #f                      ; no tests included
-       #:make-flags (list "CC=gcc" "HAVE_LIBBSD=1"
-                          (string-append "PREFIX="
-                                         (assoc-ref %outputs "out")))
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure))))         ; no configure script
+     `(#:tests? #f))                    ; no tests included
     (home-page "https://github.com/dimkr/loksh")
     (synopsis "Korn Shell from OpenBSD")
     (description
