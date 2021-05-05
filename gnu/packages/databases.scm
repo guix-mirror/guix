@@ -3508,13 +3508,13 @@ is designed to have a low barrier to entry.")
 (define-public python-sqlparse
   (package
     (name "python-sqlparse")
-    (version "0.3.1")
+    (version "0.4.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "sqlparse" version))
               (sha256
                (base32
-                "0j652a6z7bdf6c77aczfn8m8b2nsr1bcqq48wzghf8vi6wvj0qp1"))))
+                "1s2l0jgi1v7rk7smzb99iamasaz22apfkczsphn3ci4wh8pgv48g"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
