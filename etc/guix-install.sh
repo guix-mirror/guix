@@ -322,19 +322,17 @@ sys_create_store()
 
     _debug "--- [ ${FUNCNAME[0]} ] ---"
 
-    cd "$tmp_path"
-    tar --extract \
-        --file "$pkg" &&
-    _msg "${PAS}unpacked archive"
-
     if [[ -e "/var/guix" || -e "/gnu" ]]; then
         _err "${ERR}A previous Guix installation was found.  Refusing to overwrite."
         exit 1
-    else
-        _msg "${INF}Installing /var/guix and /gnu..."
-        mv "${tmp_path}/var/guix" /var/
-        mv "${tmp_path}/gnu" /
     fi
+
+    cd "$tmp_path"
+    tar --extract --file "$pkg" && _msg "${PAS}unpacked archive"
+
+    _msg "${INF}Installing /var/guix and /gnu..."
+    mv "${tmp_path}/var/guix" /var/
+    mv "${tmp_path}/gnu" /
 
     _msg "${INF}Linking the root user's profile"
     mkdir -p "~root/.config/guix"
