@@ -92,6 +92,18 @@ _debug()
     fi
 }
 
+# Return true if user answered yes, false otherwise.
+# $1: The prompt question.
+prompt_yes_no() {
+    while true; do
+        read -rp "$1" yn
+        case $yn in
+            [Yy]*) return 0;;
+            [Nn]*) return 1;;
+            *) _msg "Please answer yes or no."
+        esac
+    done
+}
 
 chk_require()
 { # Check that every required command is available.
@@ -123,9 +135,19 @@ chk_gpg_keyring()
         # Without --dry-run this command will create a ~/.gnupg owned by root on
         # systems where gpg has never been used, causing errors and confusion.
         if ! gpg --dry-run --list-keys "$gpg_key_id" >/dev/null 2>&1; then
-            _err "${ERR}Missing OpenPGP public key ($gpg_key_id).  Fetch it with this command:"
-            echo "  wget \"https://sv.gnu.org/people/viewgpg.php?user_id=$user_id\" -qO - | sudo -i gpg --import -"
-            exit_flag=yes
+            if prompt_yes_no "${INF}The following OpenPGP public key is \
+required to verify the Guix binary signature: $gpg_key_id.
+Would you like me to fetch it for you? (yes/no)"; then
+                wget "https://sv.gnu.org/people/viewgpg.php?user_id=$user_id" \
+                     -qO - | gpg --import -
+            else
+                _err "${ERR}Missing OpenPGP public key ($gpg_key_id).
+Fetch it with this command:
+
+  wget \"https://sv.gnu.org/people/viewgpg.php?user_id=$user_id\" -qO - | \
+sudo -i gpg --import -"
+                exit_flag=yes
+            fi
         fi
     done
     if [ "$exit_flag" = yes ]; then
@@ -451,17 +473,14 @@ sys_enable_guix_daemon()
 
 sys_authorize_build_farms()
 { # authorize the public key of the build farm
-    while true; do
-        read -rp "Permit downloading pre-built package binaries from the project's build farm? (yes/no) " yn
-        case $yn in
-            [Yy]*) guix archive --authorize < "~root/.config/guix/current/share/guix/ci.guix.gnu.org.pub" &&
-                       _msg "${PAS}Authorized public key for ci.guix.gnu.org";
-                   break;;
-            [Nn]*) _msg "${INF}Skipped authorizing build farm public keys"
-                   break;;
-            *) _msg "Please answer yes or no.";
-        esac
-    done
+    if prompt_yes_no "Permit downloading pre-built package binaries from the \
+project's build farm? (yes/no) "; then
+        guix archive --authorize \
+             < "~root/.config/guix/current/share/guix/ci.guix.gnu.org.pub" \
+            && _msg "${PAS}Authorized public key for ci.guix.gnu.org"
+        else
+            _msg "${INF}Skipped authorizing build farm public keys"
+    fi
 }
 
 sys_create_init_profile()
