@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Andy Patterson <ajpatter@uwaterloo.ca>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019, 2020 Brett Gilio <brettg@gnu.org>
 ;;;
@@ -33,7 +33,7 @@
 (define-public polyml
   (package
     (name "polyml")
-    (version "5.8.1")
+    (version "5.8.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -42,7 +42,7 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1ag7n55ym1zxksi89dvs17j6iaa58v4mg47s92zpa1b49k4fql1k"))))
+                "1y3i919kzylvhwfsi6adnc0ah0xahl6ncna0g5bcjyhxsq2416rn"))))
     (build-system gnu-build-system)
     (inputs
      `(("gmp" ,gmp)
