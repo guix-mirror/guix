@@ -47,13 +47,13 @@
 (define-public python-django
   (package
     (name "python-django")
-    (version "3.2.1")
+    (version "3.2.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "Django" version))
               (sha256
                (base32
-                "1pgwzygcx5gq4r0hpg9fdig7jplafv184ay9vsx4l88z1xskrhcm"))))
+                "0gffaabnnpzj0sl3jl7mllvi3gc0jvab6xw2bckvyljwsrd1j78a"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
