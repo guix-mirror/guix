@@ -60,7 +60,7 @@
 (define-public php
   (package
     (name "php")
-    (version "7.4.18")
+    (version "7.4.19")
     (home-page "https://secure.php.net/")
     (source (origin
               (method url-fetch)
@@ -68,7 +68,7 @@
                                   "php-" version ".tar.xz"))
               (sha256
                (base32
-                "1qdpqk1zzrh0kqni5kfb44kin1d0mrxa6l4v02ydq8cd28mz55xb"))
+                "1ck72j56a4xw2s8hirgblfh74g5nkf4xwllp9mlwn72198n1f5vc"))
               (modules '((guix build utils)))
               (snippet
                '(with-directory-excursion "ext"
