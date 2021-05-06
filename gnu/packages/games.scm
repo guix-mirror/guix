@@ -3062,7 +3062,7 @@ a C library, so they can easily be integrated into other programs.")
 (define-public taisei
   (package
     (name "taisei")
-    (version "1.3.1")
+    (version "1.3.2")
     (source
      (origin
        (method url-fetch)
@@ -3070,7 +3070,7 @@ a C library, so they can easily be integrated into other programs.")
                            "taisei/releases/download/v" version
                            "/taisei-v" version ".tar.xz"))
        (sha256
-        (base32 "11f9mlqmzy1lszwcc1nsbar9q1hs4ml6pbm52hqfd4q0f4x3ln46"))))
+        (base32 "1g53fcyrlzmvlsb40pw90gaglysv6n1w42hk263iv61ibhdmzh6v"))))
     (build-system meson-build-system)
     (arguments
      `(#:build-type "release"      ;comment out for bug-reporting (and cheats)
@@ -3085,7 +3085,8 @@ a C library, so they can easily be integrated into other programs.")
        ("python-docutils" ,python-docutils)
        ("python-pygments" ,python-pygments)))
     (inputs
-     `(("freetype" ,freetype)
+     `(("cglm" ,cglm)
+       ("freetype" ,freetype)
        ("libpng" ,libpng)
        ("libwebp" ,libwebp)
        ("libzip" ,libzip)
