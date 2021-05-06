@@ -204,6 +204,12 @@ shared NFS home directories.")
        #:configure-flags '("-Dman=true")
        #:phases
        (modify-phases %standard-phases
+         ;; Needed to pass the test phase on slower ARM and i686 machines.
+         (add-after 'unpack 'increase-test-timeout
+           (lambda _
+             (substitute* "meson.build"
+               (("(test_timeout.*) = ([[:digit:]]+)" all first second)
+                (string-append first " = " second "0")))))
          (add-after 'unpack 'disable-failing-tests
            (lambda _
              (with-directory-excursion "glib/tests"
