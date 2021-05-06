@@ -4227,6 +4227,34 @@ done in the BIOS, or, on GNU/Linux, with the following command:
 Failure to do so will result in a library with poor performance.")
     (license license:bsd-3)))
 
+(define-public cglm
+  (package
+    (name "cglm")
+    (version "0.8.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/recp/cglm")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1lcfl9ph4bnl3hckpx4hzwh8r4llnw94ik75igc5qy38wk468gmk"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "-DCGLM_USE_TEST=ON")))
+    (home-page "https://github.com/recp/cglm")
+    (synopsis "Mathematics C library for graphics programming")
+    (description
+     "@acronym{CGLM, C OpenGL Mathematics} is an optimised 3D maths library
+for graphics software based on the @acronym{GLSL, OpenGL Shading Language}
+specifications.
+
+It's similar to the original C++ GLM library but written in C99 and compatible
+with C89.")
+    (license license:expat)))
+
 (define-public glm
   (package
     (name "glm")
