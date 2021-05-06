@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2017 Andy Patterson <ajpatter@uwaterloo.ca>
-;;; Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2019, 2020, 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -291,16 +291,16 @@ set up using CL source package conventions."
                   (imported-modules %asdf-build-system-modules)
                   (modules %asdf-build-modules))
 
-    ;; FIXME: The definition of 'systems' is pretty hacky.
-    ;; Is there a more elegant way to do it?
     (define systems
       (if (null? (cadr asd-systems))
-          `(quote
-            ,(list
-              (string-drop
-               ;; NAME is the value returned from `package-full-name'.
-               (hyphen-separated-name->name+version name)
-               (1+ (string-length lisp-type))))) ; drop the "<lisp>-" prefix.
+          ;; FIXME: Find a more reliable way to get the main system name.
+          (let* ((lisp-prefix (string-append lisp-type "-"))
+                 (package-name (hyphen-separated-name->name+version
+                                (if (string-prefix? lisp-prefix name)
+                                    (string-drop name
+                                                 (string-length lisp-prefix))
+                                    name))))
+            `(quote ,(list package-name)))
           asd-systems))
 
     (define builder
