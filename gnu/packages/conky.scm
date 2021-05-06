@@ -51,10 +51,10 @@
         (base32 "1grxapl4q37fzk2rsijwz2rrl0aj520y8daki6bg48jb9vjd39n7"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f                      ; there are no tests
-       #:configure-flags
+     `(#:configure-flags
        (list "-DRELEASE=true"
-             "-DBUILD_PULSEAUDIO=ON")
+             "-DBUILD_PULSEAUDIO=ON"
+             "-DBUILD_TESTS=ON")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'add-freetype-to-search-path
