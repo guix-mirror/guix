@@ -240,7 +240,7 @@ able to synchronize with CalDAV servers through vdirsyncer.")
         (base32 "0nszv62gqyclsvsygqj4b1c5h40rp66s5njgcf1h7iy9f00hr6ln"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f))                    ; no "check" target
+     '(#:test-target "test"))
     (home-page "https://dianne.skoll.ca/projects/remind/")
     (synopsis "Sophisticated calendar and alarm program")
     (description
