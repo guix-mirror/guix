@@ -2528,7 +2528,10 @@ messaging that aren’t available to clients that connect over XMPP.")
     (description
      "Telegram-purple is a plugin for Libpurple, the communication library
 used by the Pidgin instant messaging client, that adds support for the
-Telegram messenger.")
+Telegram messenger.
+
+This package is on ``life support'' until @code{tdlib-purple} is a full
+replacement.")
 
     ;; Code under tgl/ (the Telegram library) is LGPLv2.1+, but the plugin
     ;; itself is GPLv2+.
