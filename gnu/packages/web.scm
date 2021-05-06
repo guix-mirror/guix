@@ -376,7 +376,9 @@ the same, being completely separated from the Internet.")
                (base32
                 "121d11693d6dbim3lh64hrqi66z129z30cvcrpbnm631yl7jkl78"))))
     (build-system gnu-build-system)
-    (inputs `(("openssl" ,openssl)
+    (inputs `(("libxml2" ,libxml2)
+              ("libxslt" ,libxslt)
+              ("openssl" ,openssl)
               ("pcre" ,pcre)
               ("zlib" ,zlib)))
     (arguments
@@ -390,11 +392,12 @@ the same, being completely separated from the Internet.")
              #t))
          (replace 'configure
            ;; The configure script is hand-written, not from GNU autotools.
-           (lambda* (#:key configure-flags outputs #:allow-other-keys)
+           (lambda* (#:key configure-flags inputs outputs #:allow-other-keys)
              (let ((flags
                     (append (list (string-append "--prefix=" (assoc-ref outputs "out"))
                                   "--with-http_ssl_module"
                                   "--with-http_v2_module"
+                                  "--with-http_xslt_module"
                                   "--with-pcre-jit"
                                   "--with-debug"
                                   "--with-stream"
@@ -418,6 +421,10 @@ the same, being completely separated from the Internet.")
                                                     system ":" release ":" machine)))
                             configure-flags)))
                (setenv "CC" "gcc")
+               ;; Fix ./configure test for ‘#include <libxml/parser.h>’.
+               (setenv "CFLAGS"         ; CPPFLAGS is not respected
+                       (string-append "-I" (assoc-ref inputs "libxml2")
+                                      "/include/libxml2"))
                (format #t "configure flags: ~s~%" flags)
                (apply invoke "./configure" flags)
                #t)))
