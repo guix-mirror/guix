@@ -601,7 +601,7 @@ driven and does not detract you from your daily work.")
     (name "nyxt")
     ;; Package the pre-release because latest stable 1.5.0 does not build
     ;; anymore.
-    (version "2-pre-release-6")
+    (version "2-pre-release-7")
     (source
      (origin
        (method git-fetch)
@@ -612,7 +612,7 @@ driven and does not detract you from your daily work.")
              (commit version)))
        (sha256
         (base32
-         "0kcqp3p070i6x2jj27h8pxzvmhrzsl4kl3vkc8m76abkxc9lvn03"))
+         "0d5mawka26gwi9nb45x1n33vgskwyn46jrvfz7nzmm2jfaq4ipn6"))
        (file-name (git-file-name "nyxt" version))))
     (build-system gnu-build-system)
     (arguments
@@ -646,12 +646,7 @@ driven and does not detract you from your daily work.")
                                   (string-append (assoc-ref inputs lib) "/lib"))
                                 libs)
                            ":"))
-                    (gi-path (string-join
-                              (map (lambda (lib)
-                                     (string-append (assoc-ref inputs lib)
-                                                    "/lib/girepository-1.0"))
-                                   libs)
-                              ":"))
+                    (gi-path (getenv "GI_TYPELIB_PATH"))
                     (xdg-path (string-join
                                (map (lambda (lib)
                                       (string-append (assoc-ref inputs lib) "/share"))
@@ -708,7 +703,12 @@ driven and does not detract you from your daily work.")
        ("cl-cffi-gtk" ,sbcl-cl-cffi-gtk)
        ("cl-webkit" ,sbcl-cl-webkit)
        ("glib-networking" ,glib-networking)
-       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ;; GObjectIntrospection
+       ("cl-gobject-introspection" ,sbcl-cl-gobject-introspection)
+       ("gtk" ,gtk+)                    ; For the main loop.
+       ("webkitgtk" ,webkitgtk)         ; Required when we use its typelib.
+       ("gobject-introspection" ,gobject-introspection)))
     (synopsis "Extensible web-browser in Common Lisp")
     (home-page "https://nyxt.atlas.engineer")
     (description "Nyxt is a keyboard-oriented, extensible web-browser
