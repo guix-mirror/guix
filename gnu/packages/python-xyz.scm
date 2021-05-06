@@ -9009,12 +9009,10 @@ complexity of Python source code.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (delete 'check)
-         (add-after 'install 'check
+         (replace 'check
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (add-installed-pythonpath inputs outputs)
-             (invoke "pytest" "-v")
-             #t)))))
+             (invoke "pytest" "-v"))))))
     (propagated-inputs
      `(("python-pycodestyle" ,python-pycodestyle)
        ("python-entrypoints" ,python-entrypoints)
