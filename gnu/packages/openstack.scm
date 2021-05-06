@@ -150,7 +150,7 @@ manner.")
          "062rvbkvbavqqz55f7q00ikwipkn5j0rdls1rrajdbfwgckjcrsm"))))
     (build-system python-build-system)
      (propagated-inputs
-     `(("python-flake8" ,python-flake8)))
+     `(("python-flake8" ,python-flake8-3.8)))
     (native-inputs
      `( ;; Tests
        ("python-coverage" ,python-coverage)

@@ -5842,6 +5842,17 @@ Python code against some of the style conventions in
 (define-public python2-pycodestyle
   (package-with-python2 python-pycodestyle))
 
+(define-public python-pycodestyle-2.6
+  (package
+    (inherit python-pycodestyle)
+    (version "2.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pycodestyle" version))
+              (sha256
+               (base32
+                "0bhr6ia0hmgx3nhgibc9pmkzhlh1zcqk707i5fbxgs702ll7v2n5"))))))
+
 (define-public python-multidict
   (package
     (name "python-multidict")
@@ -8970,6 +8981,17 @@ PEP 8.")
 (define-public python2-pyflakes
   (package-with-python2 python-pyflakes))
 
+(define-public python-pyflakes-2.2
+  (package
+    (inherit python-pyflakes)
+    (version "2.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pyflakes" version))
+              (sha256
+               (base32
+                "1j3zqbiwkyicvww499bblq33x0bjpzdrxajhaysr7sk7x5gdgcim"))))))
+
 (define-public python-mccabe
   (package
     (name "python-mccabe")
@@ -9038,6 +9060,22 @@ complexity of Python source code.")
          ("python2-functools32" ,python2-functools32)
          ("python2-typing" ,python2-typing)
           ,@(package-propagated-inputs base))))))
+
+(define-public python-flake8-3.8
+  (package
+    (inherit python-flake8)
+    (version "3.8.4")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "flake8" version))
+              (sha256
+               (base32
+                "0fvcrsbyzjpcli8ldbpsdbpmf238nkvwc1dy4hy82lf63rvfinma"))))
+    (propagated-inputs
+     `(("python-pycodestyle" ,python-pycodestyle-2.6)
+       ("python-entrypoints" ,python-entrypoints)
+       ("python-pyflakes" ,python-pyflakes-2.2)
+       ("python-mccabe" ,python-mccabe)))))
 
 (define-public python-flake8-bugbear
   (package
