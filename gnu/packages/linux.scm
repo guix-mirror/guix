@@ -2386,14 +2386,14 @@ early boot when entropy may be low, especially in virtualised environments.")
 (define-public lsscsi
   (package
     (name "lsscsi")
-    (version "0.31")
+    (version "0.32")
     (source (origin
              (method url-fetch)
              (uri (string-append
                    "http://sg.danny.cz/scsi/lsscsi-" version ".tar.xz"))
              (sha256
               (base32
-               "1ry2y34xmpgxdbfbyvs8cjmbx0fn222yjdab87wj21q60nab5p75"))))
+               "0jp458m2b3wckr18qkln69i01152qlwz33zm49103lq8fgx0n6d4"))))
     (build-system gnu-build-system)
     (synopsis "Lists information about SCSI or NVMe devices in Linux")
     (home-page "http://sg.danny.cz/scsi/lsscsi.html")
