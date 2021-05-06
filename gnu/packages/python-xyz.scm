@@ -14649,13 +14649,13 @@ until the object is actually required, and caches the result of said call.")
 (define-public python-dnspython
   (package
     (name "python-dnspython")
-    (version "2.0.0")
+    (version "2.1.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "dnspython" version ".zip"))
               (sha256
                (base32
-                "1dyip5ygqqhrgcaiy7qzjpndl9xciip186paxqwkm726fj9z0jh4"))))
+                "1m0xvyby8baaxp6pfm0fgq8d2pq5dd8qm8bzfbrs009jaw5pza74"))))
     (build-system python-build-system)
     (native-inputs `(("unzip" ,unzip)))
     (arguments '(#:tests? #f))          ; XXX: requires internet access
