@@ -662,14 +662,15 @@ and write the output to FILE."
                 (lambda (disarchive)
                   (cons (module-ref disarchive '%disarchive-log-port)
                         (module-ref disarchive 'disarchive-assemble))))
-    (#f
-     (format #t "could not load Disarchive~%"))
+    (#f (format #t "could not load Disarchive~%")
+        #f)
     ((%disarchive-log-port . disarchive-assemble)
      (match (fetch-specification uris)
-       (#f
-        (format #t "could not find its Disarchive specification~%"))
+       (#f (format #t "could not find its Disarchive specification~%")
+           #f)
        (spec (parameterize ((%disarchive-log-port (current-output-port)))
-               (disarchive-assemble spec file #:resolver resolve)))))))
+               (false-if-exception*
+                (disarchive-assemble spec file #:resolver resolve))))))))
 
 (define* (url-fetch url file
                     #:key
