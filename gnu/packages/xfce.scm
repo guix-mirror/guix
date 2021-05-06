@@ -707,7 +707,14 @@ your system in categories, so you can quickly find and launch them.")
        (list (string-append "--with-xsession-prefix=" %output))
        ;; Disable icon cache update.
        #:make-flags
-       '("gtk_update_icon_cache=true")))
+       '("gtk_update_icon_cache=true")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-xflock
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((xset (assoc-ref inputs "xset")))
+               (substitute* "scripts/xflock4"
+                 (("xset") (string-append xset "/bin/xset")))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
@@ -717,7 +724,8 @@ your system in categories, so you can quickly find and launch them.")
        ("polkit" ,polkit)
        ("libsm" ,libsm)
        ("libwnck" ,libwnck)
-       ("libxfce4ui" ,libxfce4ui)))
+       ("libxfce4ui" ,libxfce4ui)
+       ("xset" ,xset)))
     (home-page "https://www.xfce.org/")
     (synopsis "Xfce session manager")
     (description
