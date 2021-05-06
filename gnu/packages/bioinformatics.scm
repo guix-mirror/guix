@@ -1154,6 +1154,31 @@ converted to Alignment objects, and so on.  This means that the objects
 provide a coordinated and extensible framework to do computational biology.")
       (license license:perl-license))))
 
+(define-public perl-bio-db-hts
+  (package
+    (name "perl-bio-db-hts")
+    (version "3.01")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/A/AV/AVULLO/Bio-DB-HTS-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0hjg0igfkpvh27zdkdr6pa7cqm9n6r7cwz0np74cl4wmawgvr9hj"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)
+       ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("bioperl-minimal" ,bioperl-minimal)
+       ("htslib" ,htslib-1.9)))
+    (home-page "https://metacpan.org/release/Bio-DB-HTS")
+    (synopsis "Perl interface to HTS library for DNA sequencing")
+    (description "This is a Perl interface to the HTS library for DNA
+sequencing.")
+    (license license:asl2.0)))
+
 (define-public python-biopython
   (package
     (name "python-biopython")
