@@ -420,7 +420,7 @@ the same, being completely separated from the Internet.")
                                      (string-append "--crossbuild="
                                                     system ":" release ":" machine)))
                             configure-flags)))
-               (setenv "CC" "gcc")
+               (setenv "CC" ,(cc-for-target))
                ;; Fix ./configure test for ‘#include <libxml/parser.h>’.
                (setenv "CFLAGS"         ; CPPFLAGS is not respected
                        (string-append "-I" (assoc-ref inputs "libxml2")
