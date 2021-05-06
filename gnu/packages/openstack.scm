@@ -140,14 +140,14 @@ manner.")
 (define-public python-hacking
   (package
     (name "python-hacking")
-    (version "4.0.0")
+    (version "4.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "hacking" version))
        (sha256
         (base32
-         "062rvbkvbavqqz55f7q00ikwipkn5j0rdls1rrajdbfwgckjcrsm"))))
+         "0fg19rlcky3n1y1ri61xyjp7534yzf8r102z9dw3zqg93f4kj20m"))))
     (build-system python-build-system)
      (propagated-inputs
      `(("python-flake8" ,python-flake8-3.8)))
