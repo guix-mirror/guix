@@ -3451,10 +3451,10 @@ is a library for creating graphical user interfaces.")
   (sbcl-package->ecl-package sbcl-cl-cffi-gtk))
 
 (define-public sbcl-cl-webkit
-  (let ((commit "db855639d4a13f6ba296959cf11635b6b67421bf"))
+  (let ((commit "9ead3cac1382154fe03c61a1cabd483a8e5dfbfb"))
     (package
       (name "sbcl-cl-webkit")
-      (version (git-version "2.4" "13" commit))
+      (version (git-version "2.4" "14" commit))
       (source
        (origin
          (method git-fetch)
@@ -3464,7 +3464,7 @@ is a library for creating graphical user interfaces.")
          (file-name (git-file-name "cl-webkit" version))
          (sha256
           (base32
-           "01alj5bfsh2983pwpdy0zpa2rvl4kl0mqzs08ff46is3cb8fqs0g"))))
+           "1brrd9ha5j3z2p8nf0mbw25pslhj3cdqjljff8ignr5idq3ggsd1"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("cffi" ,sbcl-cffi)
