@@ -35,6 +35,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system python)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages base)
   #:use-module (gnu packages check)
   #:use-module (gnu packages dav)
@@ -51,6 +52,7 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages tcl)
   #:use-module (gnu packages time)
   #:use-module (gnu packages xml)
   #:use-module (srfi srfi-26))
@@ -239,8 +241,42 @@ able to synchronize with CalDAV servers through vdirsyncer.")
        (sha256
         (base32 "0nszv62gqyclsvsygqj4b1c5h40rp66s5njgcf1h7iy9f00hr6ln"))))
     (build-system gnu-build-system)
+    (outputs (list "out"
+                   "tcl"))           ; more than doubles the closure by >110 MiB
     (arguments
-     '(#:test-target "test"))
+     '(#:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'split-:tcl
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (tcl (assoc-ref outputs "tcl")))
+               (for-each
+                (lambda (file)
+                  (let ((from (string-append out "/" file))
+                        (to   (string-append tcl "/" file)))
+                    (mkdir-p (dirname to))
+                    (rename-file from to)
+                    ;; For simplicity, wrap all scripts with the same variables
+                    ;; even though, e.g., inetutils is not needed by cm2rem.tcl.
+                    ;; XXX Using WRAP-SCRIPT currently breaks tkremind.
+                    (wrap-program to
+                      `("PATH" ":" prefix
+                        ,(map (lambda (dir)
+                                (string-append dir "/bin"))
+                              (append (list out tcl)
+                                      (map (lambda (input)
+                                             (assoc-ref inputs input))
+                                           (list "tcl" "tk" "inetutils")))))
+                      `("TCLLIBPATH" " " =
+                        (,(getenv "TCLLIBPATH"))))))
+                (list "bin/cm2rem.tcl"
+                      "bin/tkremind"))))))))
+    (inputs
+     `(("inetutils" ,inetutils)
+       ("tcl" ,tcl)
+       ("tcllib" ,tcllib)
+       ("tk" ,tk)))
     (home-page "https://dianne.skoll.ca/projects/remind/")
     (synopsis "Sophisticated calendar and alarm program")
     (description
