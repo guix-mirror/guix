@@ -39,7 +39,7 @@
   (package
     (name "conky")
     (home-page "https://github.com/brndnmtthws/conky")
-    (version "1.11.6")
+    (version "1.12.2")
     (source
      (origin
        (method git-fetch)
@@ -48,7 +48,7 @@
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0y2g66fjqp2hdk0y1h4ijxhnv34j16gizvxpmbigwh4n6zijcm6v"))))
+        (base32 "1grxapl4q37fzk2rsijwz2rrl0aj520y8daki6bg48jb9vjd39n7"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; there are no tests
