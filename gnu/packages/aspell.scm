@@ -203,10 +203,10 @@ dictionaries, including personal ones.")
 
 (define-public aspell-dict-en
   (aspell-dictionary "en" "English"
-                     #:version "2019.10.06-0"
+                     #:version "2020.12.07-0"
                      #:sha256
                      (base32
-                      "1zai9wrqwgb9z9vfgb22qhrvxvg73jg0ix44j1khm2f6m96lncr4")))
+                      "1cwzqkm8gr1w51rpckwlvb43sb0b5nbwy7s8ns5vi250515773sc")))
 
 (define-public aspell-dict-eo
   (aspell-dictionary "eo" "Esperanto"
