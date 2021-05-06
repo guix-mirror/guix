@@ -277,17 +277,18 @@ and a Python library.")
                                                 rlwrap "/bin")))))
              #t))
          (add-after 'install 'emacs-install
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out   (assoc-ref outputs "out"))
-                    (dest  (string-append out "/share/emacs/site-lisp"))
-                    (emacs (string-append (assoc-ref inputs "emacs") "/bin/emacs")))
-               (install-file "google-translate-mode.el" dest)
-               (emacs-generate-autoloads ,name dest)))))
+           (assoc-ref emacs:%standard-phases 'install))
+         (add-after 'emacs-install 'emacs-make-autoloads
+           (assoc-ref emacs:%standard-phases 'make-autoloads))
+         (add-after 'emacs-make-autoloads 'emacs-autoloads-compilation
+           (assoc-ref emacs:%standard-phases 'enable-autoloads-compilation)))
        #:make-flags (list (string-append "PREFIX=" %output)
                           "NETWORK_ACCESS=no test")
-       #:imported-modules (,@%gnu-build-system-modules (guix build emacs-utils))
+       #:imported-modules (,@%gnu-build-system-modules
+                            (guix build emacs-build-system)
+                            (guix build emacs-utils))
        #:modules ((guix build gnu-build-system)
-                  (guix build emacs-utils)
+                  ((guix build emacs-build-system) #:prefix emacs:)
                   (guix build utils))
        #:test-target "test"))
     (inputs
