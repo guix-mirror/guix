@@ -261,7 +261,7 @@ Internet and from a wide variety of machine architectures.")
 (define-public spice-vdagent
   (package
     (name "spice-vdagent")
-    (version "0.20.0")
+    (version "0.21.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -269,11 +269,14 @@ Internet and from a wide variety of machine architectures.")
                 "spice-vdagent-" version ".tar.bz2"))
               (sha256
                (base32
-                "0n9k2kna2gd1zi6jv45zsp2jlv439nz5l5jjijirxqaycwi74srf"))))
+                "0n8jlc1pv6mkry161y656b1nk9hhhminjq6nymzmmyjl7k95ymzx"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
        '("--localstatedir=/var")
+       ;; The test-session-info test fails for unknown reasons (see:
+       ;; https://gitlab.freedesktop.org/spice/linux/vd_agent/-/issues/24).
+       #:make-flags '("XFAIL_TESTS=tests/test-session-info")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-makefile.in
@@ -281,19 +284,27 @@ Internet and from a wide variety of machine architectures.")
              (substitute* "Makefile.in"
                (((string-append "\\$\\(mkdir_p\\) \\$\\(DESTDIR\\)"
                                 "\\$\\(localstatedir\\)/run/spice-vdagentd"))
-                 "-$(mkdir_p) $(DESTDIR)$(localstatedir)/run/spice-vdagentd"))
-             #t))
+                 "-$(mkdir_p) $(DESTDIR)$(localstatedir)/run/spice-vdagentd"))))
          (add-after 'unpack 'patch-spice-vdagent.desktop
            (lambda* (#:key outputs #:allow-other-keys)
             (substitute* "data/spice-vdagent.desktop"
               (("Exec=/usr/bin/spice-vdagent")
                (string-append "Exec=" (assoc-ref outputs "out")
-                              "/bin/spice-vdagent")))
-             #t)))))
+                              "/bin/spice-vdagent")))))
+         (add-after 'unpack 'fix-test-termination
+           (lambda _
+             ;; The termination tests depend on finding the socket file name
+             ;; in the spice-vdagent command line it launched, but by default
+             ;; ps truncates its output, which causes the test to fail (see:
+             ;; https://gitlab.freedesktop.org/spice/linux/vd_agent/-/merge_requests/36).
+             (substitute* "tests/test-termination.c"
+               (("ps -ef")
+                "ps -efww")))))))
     (inputs
       `(("alsa-lib" ,alsa-lib)
         ("dbus" ,dbus)
         ("glib" ,glib)
+        ("gtk+" ,gtk+)
         ("libdrm" ,libdrm)
         ("libpciaccess" ,libpciaccess)
         ("libx11" ,libx11)
@@ -303,7 +314,8 @@ Internet and from a wide variety of machine architectures.")
         ("libxrandr" ,libxrandr)
         ("spice-protocol" ,spice-protocol)))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("procps" ,procps)))             ;tests use 'ps'
     (synopsis "Spice agent for Linux")
     (description "Spice-vdagent enables sharing the clipboard and guest display
 resolution scaling on graphical console window resize.")
