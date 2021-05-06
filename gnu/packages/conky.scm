@@ -29,6 +29,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pkg-config)
@@ -54,6 +55,7 @@
      `(#:configure-flags
        (list "-DRELEASE=true"
              "-DBUILD_PULSEAUDIO=ON"
+             "-DBUILD_WLAN=ON"
              "-DBUILD_TESTS=ON")
        #:phases
        (modify-phases %standard-phases
@@ -82,7 +84,8 @@
        ("pulseaudio" ,pulseaudio)
        ("lua" ,lua)
        ("ncurses" ,ncurses)
-       ("curl" ,curl)))
+       ("curl" ,curl)
+       ("wireless-tools" ,wireless-tools)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (synopsis "Lightweight system monitor for X")
