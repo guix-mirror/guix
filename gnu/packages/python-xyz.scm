@@ -9022,7 +9022,7 @@ complexity of Python source code.")
        ("python-mccabe" ,python-mccabe)))
     (native-inputs
      `(("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest-bootstrap)))
+       ("python-pytest" ,python-pytest)))
     (home-page "https://gitlab.com/pycqa/flake8")
     (synopsis
       "The modular source code checker: pep8, pyflakes and co")
