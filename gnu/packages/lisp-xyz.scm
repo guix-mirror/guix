@@ -10006,7 +10006,10 @@ type correctness in Common Lisp.  It is based on CLtL2 extensions.")
       (build-system asdf-build-system/sbcl)
       (arguments
        `(#:test-asd-file "numcl.test.asd"
-         #:asd-files '("numcl.asd")))
+         #:asd-files '("numcl.asd")
+         ;; Tests often fail because they require a dynamic-space-size much
+         ;; bigger than the default one. Disable them for now.
+         #:tests? #f))
       (native-inputs
        `(("fiveam" ,sbcl-fiveam)))
       (inputs
