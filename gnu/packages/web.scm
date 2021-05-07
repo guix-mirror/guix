@@ -1633,7 +1633,7 @@ and other data, for distribution on the web.")
 (define-public tinyproxy
   (package
     (name "tinyproxy")
-    (version "1.10.0")
+    (version "1.11.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/tinyproxy/tinyproxy/"
@@ -1641,7 +1641,7 @@ and other data, for distribution on the web.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "10jnk6y2swld25mm47mjc0nkffyzsfysnsxwr7cs0ns1kil8ggjr"))))
+                "0cizm8pbh5p557birdirkayj71xdxapaa9q29v1d4lf5qk7q3v61"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
