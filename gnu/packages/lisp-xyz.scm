@@ -14428,19 +14428,20 @@ determination library using @emph{magic} numbers.")
   (sbcl-package->cl-source-package sbcl-magicffi))
 
 (define-public sbcl-shlex
-  (let ((commit "c5616dffca0d4d8ddbc1cd6f37a96d88477b2740"))
+  (let ((commit "3dee1cb7c0140fa7660ca7a3b2ac5e75d1218e5c")
+        (revision "2"))
     (package
       (name "sbcl-shlex")
-      (version (git-version "0.0.0" "1" commit))
+      (version (git-version "0.0.0" revision commit))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
                (url "https://github.com/ruricolist/cl-shlex")
                (commit commit)))
-         (file-name (git-file-name name version))
+         (file-name (git-file-name "cl-shlex" version))
          (sha256
-          (base32 "1nas024n4wv319bf40aal96g72bgi9nkapj2chywj2cc6r8hzkfg"))))
+          (base32 "16ag48sswgimr1fzr582vhym4s03idpd4lkydw5s58lv80ibpim8"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("alexandria" ,sbcl-alexandria)
