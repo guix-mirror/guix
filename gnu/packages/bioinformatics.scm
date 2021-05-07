@@ -15316,6 +15316,151 @@ usually ignored by other methods or only used for filtering.")
 coordinates between different assemblies.")
     (license license:expat)))
 
+(define-public ensembl-vep
+  (let* ((api-version "103")
+         (api-module
+          (lambda (name hash)
+            (origin (method git-fetch)
+                    (uri (git-reference
+                          (url (string-append "https://github.com/Ensembl/"
+                                              name ".git"))
+                          (commit (string-append "release/" api-version))))
+                    (file-name (string-append name "-" api-version "-checkout"))
+                    (sha256 (base32 hash))))))
+    (package
+      (name "ensembl-vep")
+      (version (string-append api-version ".1"))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Ensembl/ensembl-vep.git")
+               (commit (string-append "release/" version))))
+         (sha256
+          (base32
+           "1iq7p72cv9b38jz2v8a4slzy2n8y0md487943180ym9xc8qvw09c"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:modules ((guix build gnu-build-system)
+                    (guix build utils)
+                    (ice-9 match))
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (delete 'build)
+           ;; Tests need to run after installation
+           (delete 'check)
+           (replace 'install
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((modules '(("ensembl" "/")
+                                 ("ensembl-variation" "/Variation")
+                                 ("ensembl-funcgen"   "/Funcgen")
+                                 ("ensembl-io"        "/")))
+                      (scripts '(("convert_cache.pl" "vep_convert_cache.pl")
+                                 ("INSTALL.pl"       "vep_install.pl")
+                                 ("haplo"            #f)
+                                 ("variant_recoder"  #f)
+                                 ("filter_vep"       #f)
+                                 ("vep"              #f)))
+                      (out  (assoc-ref outputs "out"))
+                      (bin  (string-append out "/bin"))
+                      (perl (string-append out "/lib/perl5/site_perl")))
+                 (for-each
+                  (match-lambda
+                    ((name path)
+                     (let ((dir (string-append perl "/Bio/EnsEMBL" path)))
+                       (mkdir-p dir)
+                       (copy-recursively
+                        (string-append (assoc-ref inputs (string-append "api-module-" name))
+                                       "/modules/Bio/EnsEMBL" path)
+                        dir))))
+                  modules)
+                 (copy-recursively "modules/" perl)
+                 (mkdir-p bin)
+                 (for-each
+                  (match-lambda
+                    ((script new-name)
+                     (let ((location (string-append bin "/"
+                                                    (or new-name (basename script)))))
+                       (copy-file script location)
+                       (chmod location #o555)
+                       (wrap-program location
+                         `("PERL5LIB" ":" prefix (,(getenv "PERL5LIB")
+                                                  ,perl))))))
+                  scripts)
+
+                 ;; Fix path to tools
+                 (with-directory-excursion (string-append perl "/Bio/EnsEMBL")
+                   (substitute* '("Funcgen/RunnableDB/ProbeMapping/PrePipelineChecks.pm"
+                                  "VEP/BaseRunner.pm"
+                                  "VEP/Utils.pm"
+                                  "VEP/AnnotationSource/Cache/VariationTabix.pm"
+                                  "VEP/AnnotationSource/Cache/BaseSerialized.pm"
+                                  "Variation/Utils/BaseVepTabixPlugin.pm"
+                                  "Variation/Utils/VEP.pm"
+                                  "Variation/Pipeline/ReleaseDataDumps/PreRunChecks.pm")
+                     (("`which")
+                      (string-append "`"
+                                     (assoc-ref inputs "which")
+                                     "/bin/which")))))))
+           (add-after 'install 'check
+             (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+               (when tests?
+                 (setenv "PERL5LIB"
+                         (string-append (getenv "PERL5LIB")
+                                        ":"
+                                        (assoc-ref outputs "out")
+                                        "/lib/perl5/site_perl"))
+                 (copy-recursively (string-append (assoc-ref inputs "source") "/t")
+                                   "/tmp/t")
+                 (for-each make-file-writable (find-files "/tmp/t"))
+                 ;; TODO: haplo needs Set/IntervalTree.pm
+                 (invoke "perl" "-e" (string-append "
+use Test::Harness; use Test::Exception;
+my $dirname = \"/tmp\";
+opendir TEST, \"$dirname\\/t\";
+my @test_files = map {\"$dirname\\/t\\/\".$_} grep {!/^\\./ && /\\.t$/} readdir TEST; closedir TEST;
+@test_files = grep {!/Haplo/} @test_files;
+runtests(@test_files);
+"))))))))
+      (inputs
+       `(("bioperl-minimal" ,bioperl-minimal)
+         ("perl-bio-db-hts" ,perl-bio-db-hts)
+         ("perl-dbi" ,perl-dbi)
+         ("perl-dbd-mysql" ,perl-dbd-mysql)
+         ("perl-libwww" ,perl-libwww)
+         ("perl-http-tiny" ,perl-http-tiny)
+         ("perl-json" ,perl-json)
+         ("which" ,which)))
+      (propagated-inputs
+       `(("kentutils" ,kentutils)))
+      (native-inputs
+       `(("unzip" ,unzip)
+         ("perl" ,perl)
+         ("api-module-ensembl"
+          ,(api-module "ensembl"
+                       "0s59rj905g72hljzfpvnx5nxwz925b917y4jp912i23f5gwxh14v"))
+         ("api-module-ensembl-variation"
+          ,(api-module "ensembl-variation"
+                       "1dvwdzzfjhzymq02b6n4p6j3a9q4jgq0g89hs7hj1apd7zhirgkq"))
+         ("api-module-ensembl-funcgen"
+          ,(api-module "ensembl-funcgen"
+                       "1x23pv38dmv0w0gby6rv3wds50qghb4v3v1mf43vk55msfxzry8n"))
+         ("api-module-ensembl-io"
+          ,(api-module "ensembl-io"
+                       "14adb2x934lzsq20035mazdkhrkcw0qzb0xhz6zps9vk4wixwaix"))
+         ("perl-test-harness" ,perl-test-harness)
+         ("perl-test-exception" ,perl-test-exception)))
+      (home-page "http://www.ensembl.org/vep")
+      (synopsis "Predict functional effects of genomic variants")
+      (description
+       "This package provides a Variant Effect Predictor, which predicts
+the functional effects of genomic variants.  It also provides
+Haplosaurus, which uses phased genotype data to predict
+whole-transcript haplotype sequences, and Variant Recoder, which
+translates between different variant encodings.")
+      (license license:asl2.0))))
+
 (define-public r-signac
   (let ((commit "e0512d348adeda4a3f23a2e8f56d1fe09840e03c")
         (revision "1"))
