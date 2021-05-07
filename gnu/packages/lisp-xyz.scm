@@ -1959,7 +1959,6 @@ C, C++, Java, Python, Erlang, Haskell, Objective-C, Diff, Webkit.")
          (file-name (git-file-name "3bmd" version))))
       (build-system asdf-build-system/sbcl)
       (arguments
-       ;; FIXME: #41437 - Build fails when package name starts from a digit
        `(#:asd-systems
          '("3bmd"
            "3bmd-ext-definition-lists"
@@ -11191,8 +11190,6 @@ learn about each of the parameters.")
           (base32
            "05ss4nz1jb9kb796295482b62w5cj29msfj8zis33sp2rw2vmv2g"))))
       (build-system asdf-build-system/sbcl)
-      (arguments
-       `(#:asd-systems '("1am")))
       (home-page "https://github.com/lmj/1am")
       (synopsis "Minimal testing framework for Common Lisp")
       (description "A minimal testing framework for Common Lisp.")
@@ -11967,9 +11964,6 @@ than a few Kb.")
          ("mmap" ,sbcl-mmap)
          ("nibbles" ,sbcl-nibbles)
          ("trivial-features" ,sbcl-trivial-features)))
-      (arguments
-       ;; FIXME: #41437 - Build fails when package name starts from a digit
-       `(#:asd-systems '("3bz")))
       (home-page "https://github.com/3b/3bz")
       (synopsis "Deflate decompression for Common Lisp")
       (description
