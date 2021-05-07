@@ -10151,9 +10151,9 @@ implementations of ASN.1-based codecs and protocols.")
 (define-public python2-pyasn1-modules
   (package-with-python2 python-pyasn1-modules))
 
-(define-public python-ipaddress
+(define-public python2-ipaddress
   (package
-    (name "python-ipaddress")
+    (name "python2-ipaddress")
     (version "1.0.23")
     (source (origin
               (method url-fetch)
@@ -10162,6 +10162,8 @@ implementations of ASN.1-based codecs and protocols.")
                (base32
                 "1qp743h30s04m3cg3yk3fycad930jv17q7dsslj4mfw0jlvf1y5p"))))
     (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))
     (home-page "https://github.com/phihag/ipaddress")
     (synopsis "IP address manipulation library")
     (description
@@ -10170,9 +10172,6 @@ implementations of ASN.1-based codecs and protocols.")
  IPv6 addresses and networks.  This is a port of the Python 3.3 ipaddress
  module to older versions of Python.")
     (license license:psfl)))
-
-(define-public python2-ipaddress
-  (package-with-python2 python-ipaddress))
 
 (define-public python2-ipaddr
   (package
