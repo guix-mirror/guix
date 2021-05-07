@@ -200,8 +200,7 @@ This package produces a native @command{ocamlc} and a bytecode @command{ocamllex
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("libx11" ,libx11)
-       ;; For libiberty, needed for objdump support.
-       ("gcc:lib" ,(canonical-package gcc) "lib")
+       ("libiberty" ,libiberty)               ;needed for objdump support
        ("zlib" ,zlib)))                       ;also needed for objdump support
     (arguments
      `(#:phases
