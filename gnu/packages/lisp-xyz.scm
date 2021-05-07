@@ -16368,35 +16368,3 @@ for Common Lisp.")
 
 (define-public cl-bknr-datastore
   (sbcl-package->cl-source-package sbcl-bknr-datastore))
-
-(define-public sbcl-pathname-utils
-  ;; No new release in years.
-  (let ((commit "4ebc0fe97b7e299ba93cc9c50938445eef77e352"))
-    (package
-      (name "sbcl-pathname-utils")
-      (version (git-version "1.1.0" "1" commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/Shinmera/pathname-utils")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "0zjv39lrqdq96m4cypig33fh3iw5l7ivm3lwvzh08h70jswda0y4"))))
-      (build-system asdf-build-system/sbcl)
-      (native-inputs
-       `(("parachute" ,sbcl-parachute)))
-      (home-page "https://github.com/privet-kitty/dufy")
-      (synopsis "Pathname manipulation library for Common Lisp")
-      (description
-       "This is a Common Lisp collection of common tests and operations to
-help handling pathnames.  It does not actually deal in handling the accessing
-of files on the underlying system however.")
-      (license license:zlib))))
-
-(define-public ecl-pathname-utils
-  (sbcl-package->ecl-package sbcl-pathname-utils))
-
-(define-public cl-pathname-utils
-  (sbcl-package->cl-source-package sbcl-pathname-utils))
