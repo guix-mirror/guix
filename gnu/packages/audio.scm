@@ -5042,7 +5042,7 @@ digital radio.")
         (revision "1"))
     (package
       (name "mbelib")
-      (version "1.3.0")
+      (version (git-version "1.3.0" revision commit))
       (source
        (origin
          (method git-fetch)
