@@ -2205,7 +2205,7 @@ library.")
     (inherit guile-ncurses)
     (name "guile-ncurses-with-gpm")
     (inputs `(("ncurses" ,ncurses/gpm)
-              ("guile" ,guile-2.2)))))
+              ("guile" ,guile-3.0)))))
 
 (define-public guile3.0-ncurses/gpm
   (package
