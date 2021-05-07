@@ -400,22 +400,13 @@ in ability, and easy to use.")
        (file-name (git-file-name name version))
        (sha256
         (base32 "1r5rcyxd6d1rqwamzpvqdbkbdf1zbj75aaciqijrklnm59ps244y"))))
-    (build-system cmake-build-system)
+    (build-system emacs-build-system)
     (arguments
-     `(#:modules ((guix build cmake-build-system)
-                  (guix build utils)
-                  (guix build emacs-utils))
-       #:imported-modules (,@%cmake-build-system-modules
-                           (guix build emacs-utils))
+     `(;; ledger-test.el is needed at runtime (but probably not for a good reason).
+       #:exclude '()
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-site-dir
-           (lambda _
-             (substitute* "CMakeLists.txt"
-               (("DESTINATION share/emacs/site-lisp/ledger-mode")
-                "DESTINATION share/emacs/site-lisp"))
-             #t))
-         (add-before 'build 'patch-path
+         (add-after 'unpack 'patch-path
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((ledger (assoc-ref inputs "ledger")))
                (make-file-writable "ledger-exec.el")
@@ -430,12 +421,6 @@ in ability, and easy to use.")
                (invoke "makeinfo" "-o" target
                        "../source/doc/ledger-mode.texi"))
              #t))
-         (add-after 'install 'generate-autoload
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((site-dir (string-append (assoc-ref outputs "out")
-                                             "/share/emacs/site-lisp")))
-               (emacs-generate-autoloads ,name site-dir))
-             #t))
          (replace 'check
            (lambda _
              (with-directory-excursion "../source/test"
@@ -443,8 +428,7 @@ in ability, and easy to use.")
     (inputs
      `(("ledger" ,ledger)))
     (native-inputs
-     `(("emacs-minimal" ,emacs-minimal)
-       ("texinfo" ,texinfo)))
+     `(("texinfo" ,texinfo)))
     (home-page "https://ledger-cli.org/")
     (synopsis "Command-line double-entry accounting program")
     (description
