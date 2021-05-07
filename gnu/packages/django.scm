@@ -1028,15 +1028,33 @@ Django projects, which allows association of a number of tags with any
     (version "3.12.4")
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri "djangorestframework" version))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/encode/django-rest-framework")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1wm7q3vp4226n6fhjnkjxg6pgh95p6ag238rg7l7dj6sind98izp"))))
+         "16n17dw35wqv47m8k8fixn0yywrvd6v4r573yr4nx6lbbiyi2cqn"))))
     (build-system python-build-system)
     (arguments
-     '(;; No included tests
-       #:tests? #f))
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             ;; Add a fix from the master branch for compatibility with Django
+             ;; 3.2: https://github.com/encode/django-rest-framework/pull/7911
+             ;; Remove for versions > 3.12.4.
+             (substitute* "tests/test_fields.py"
+               (("class MockTimezone:")
+                "class MockTimezone(pytz.BaseTzInfo):"))
+             (if tests?
+                 (invoke "python" "runtests.py" "--nolint")
+                 (format #t "test suite not run~%")))))))
+    (native-inputs
+     `(("python-django" ,python-django)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-django" ,python-pytest-django)))
     (home-page "https://www.django-rest-framework.org")
     (synopsis "Toolkit for building Web APIs with Django")
     (description
