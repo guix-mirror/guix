@@ -1644,7 +1644,8 @@ and other data, for distribution on the web.")
                 "0cizm8pbh5p557birdirkayj71xdxapaa9q29v1d4lf5qk7q3v61"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags
+     `(#:test-target "test"             ; ‘make check’ silently does nothing
+       #:configure-flags
        (list
         ;; For the log file, etc.
         "--localstatedir=/var")
@@ -1656,6 +1657,8 @@ and other data, for distribution on the web.")
              ;; (substitute* "docs/man5/Makefile" (("a2x") "a2x -v"))
              ;; (setenv "XML_DEBUG_CATALOG" "1")
              #t)))))
+    (native-inputs
+     `(("perl" ,perl)))                 ; for tests
     (home-page "https://tinyproxy.github.io/")
     (synopsis "Light-weight HTTP/HTTPS proxy daemon")
     (description "Tinyproxy is a light-weight HTTP/HTTPS proxy
