@@ -1267,8 +1267,7 @@ to ElasticSearch.")
     (native-inputs
      `(("python-django" ,python-django)))
     (propagated-inputs
-     `(("python-ipaddress" ,python-ipaddress)
-       ("python-netaddr" ,python-netaddr)
+     `(("python-netaddr" ,python-netaddr)
        ("python-six" ,python-six)))
     (home-page "https://github.com/jimfunk/django-postgresql-netfields")
     (synopsis "PostgreSQL netfields implementation for Django")
