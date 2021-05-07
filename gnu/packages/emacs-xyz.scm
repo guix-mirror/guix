@@ -20649,7 +20649,7 @@ can be queued at any time.")
 (define-public emacs-ytdl
   (package
     (name "emacs-ytdl")
-    (version "1.3.5")
+    (version "1.3.6")
     (source
      (origin
        (method git-fetch)
@@ -20658,7 +20658,7 @@ can be queued at any time.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1xv93ny942gha1ipic5r6z4icjsb7src7ssdck9983kks3zacjk7"))))
+        (base32 "010arhvibyw50lqhsr8bm0vj3pzry1h1vgcvxnmyryirk3dv40jl"))))
     (build-system emacs-build-system)
     (inputs
      `(("youtube-dl" ,youtube-dl)))
