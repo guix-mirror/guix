@@ -5059,7 +5059,8 @@ digital radio.")
        "The mbelib library provides support for the 7200x4400 bit/s codec used
 in P25 Phase 1, the 7100x4400 bit/s codec used in ProVoice and the @emph{Half
 Rate} 3600x2250 bit/s vocoder used in various radio systems.")
-      (license license:bsd-0))))
+      (license (list license:bsd-3      ; test/ framework
+                     license:isc)))))   ; the rest
 
 (define-public ableton-link
   (package
