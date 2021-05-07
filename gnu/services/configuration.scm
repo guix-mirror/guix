@@ -226,5 +226,5 @@ Texinfo documentation of its fields."
   (let ((fields-getter (module-ref (current-module)
                                    (symbol-append configuration-symbol
                                                   '-fields))))
-    (format #t (generate-documentation `((,configuration-symbol ,fields-getter))
-                                       configuration-symbol))))
+    (display (generate-documentation `((,configuration-symbol ,fields-getter))
+                                     configuration-symbol))))
