@@ -12740,24 +12740,26 @@ function to be used by other frontend programs.")
     (license license:gpl2+)))
 
 (define-public emacs-pyim-basedict
-  (package
-    (name "emacs-pyim-basedict")
-    (version "0.3.1")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/tumashu/pyim-basedict")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "0576r8ap9gp91ycjf1d47pn13kxp0f9fysn09zlq44hr0s1y2y5d"))))
-    (build-system emacs-build-system)
-    (home-page "https://github.com/tumashu/pyim-basedict")
-    (synopsis "Input method dictionary of pyim")
-    (description "Pyim-basedict is the default pinyin input method dictionary,
+  ;; XXX: The commit below points to the un-tagged 0.5.0 release.
+  (let ((commit "7495c974ada99f9fed96d8e85d8b97dabce9532c"))
+    (package
+      (name "emacs-pyim-basedict")
+      (version "0.5.0")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/tumashu/pyim-basedict")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "02asrh0adgjc5nn1ps7dq5zr38hkscnzc04sdpyjzvnmfcqsw7qb"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/tumashu/pyim-basedict")
+      (synopsis "Input method dictionary of pyim")
+      (description "Pyim-basedict is the default pinyin input method dictionary,
 containing words from the Rime project.")
-    (license license:gpl2+)))
+      (license license:gpl2+))))
 
 (define-public emacs-pyim
   (package
