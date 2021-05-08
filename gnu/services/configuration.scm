@@ -44,6 +44,7 @@
             configuration-error?
 
             define-configuration
+            no-serialization
 
             serialize-configuration
             define-maybe
@@ -189,6 +190,9 @@ does not have a default value" field kind)))
     	       (validate-configuration conf
     				       #,(id #'stem #'stem #'-fields))
     	       conf)))))))
+
+(define no-serialization         ;syntactic keyword for 'define-configuration'
+  '(no serialization))
 
 (define-syntax define-configuration
   (lambda (s)
