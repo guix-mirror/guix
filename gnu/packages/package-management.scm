@@ -131,9 +131,9 @@
   ;; Latest version of Guix, which may or may not correspond to a release.
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
-  (let ((version "1.3.0rc1")
-        (commit "6fd7f161d7cd6248e99e9ba44424b162d443cd61")
-        (revision 1))
+  (let ((version "1.3.0rc2")
+        (commit "7a65beff0f3c3958ae38087bb7b565e981e99ac1")
+        (revision 0))
     (package
       (name "guix")
 
@@ -149,7 +149,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "0b92w6lqp4h75dds3fbxdp5shvfpkcdin809f8v94l4a2fbxkais"))
+                  "18gi8v2xni8q8xrcmcbzqs6q2gkghvbi9456ly8q0isv14b11g6s"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
