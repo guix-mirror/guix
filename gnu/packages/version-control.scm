@@ -1607,18 +1607,21 @@ execution of any hook written in any language before every commit.")
 (define-public mercurial
   (package
     (name "mercurial")
-    (version "5.6.1")
+    (version "5.8")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://www.mercurial-scm.org/"
                                  "release/mercurial-" version ".tar.gz"))
              (sha256
               (base32
-               "1bgz8f1a7lnmh6lzcvwg6q1yx6i7yibhwy06l4k55i04957jap75"))))
-    (build-system python-build-system)
+               "17rhlmmkqz5ll3k68jfzpcifg3nndbcbc2nx7kw8xn3qcj7nlpgw"))))
+    (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
        (modify-phases %standard-phases
+         (delete 'configure)
          (add-after 'unpack 'patch-tests
            (lambda _
              (substitute* '("tests/test-extdiff.t"
@@ -1671,17 +1674,20 @@ execution of any hook written in any language before every commit.")
                          ;; The test suite takes a long time and produces little
                          ;; output by default.  Prevent timeouts due to silence.
                          "-v"))))))))
-    ;; The following inputs are only needed to run the tests.
     (native-inputs
-     `(("python-nose" ,python-nose)
+     `(("python-docutils", python-docutils)
+       ;; The following inputs are only needed to run the tests.
+       ("python-nose" ,python-nose)
        ("unzip" ,unzip)
        ("which" ,which)))
+    (inputs
+     `(("python" ,python)))
     (home-page "https://www.mercurial-scm.org/")
     (synopsis "Decentralized version control system")
     (description
-     "Mercurial is a free, distributed source control management tool.
-It efficiently handles projects of any size
-and offers an easy and intuitive interface.")
+     "Mercurial is a free, distributed source control management tool.  It
+efficiently handles projects of any size and offers an easy and intuitive
+interface.")
     (license license:gpl2+)))
 
 (define-public python-hg-evolve
