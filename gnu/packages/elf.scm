@@ -70,6 +70,7 @@
      `(#:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath="
                                               (assoc-ref %outputs "out")
                                               "/lib")
+                               "--disable-static"
                                ;; TODO: Enable the debuginfo server.  It
                                ;; increases the closure size significantly
                                ;; and presents bootstrapping problems, so
