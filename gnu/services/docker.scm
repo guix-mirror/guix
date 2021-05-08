@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
-;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Jesse Dowell <jessedowell@gmail.com>
 ;;;
@@ -37,11 +37,6 @@
             docker-service-type
             singularity-service-type))
 
-;;; We're not using serialize-configuration, but we must define this because
-;;; the define-configuration macro validates it exists.
-(define (serialize-boolean field-name val)
-  "")
-
 (define-configuration docker-configuration
   (docker
    (package docker)
@@ -64,7 +59,8 @@ loop-back communications.")
    "Enable or disable debug output.")
   (enable-iptables?
    (boolean #t)
-   "Enable addition of iptables rules (enabled by default)."))
+   "Enable addition of iptables rules (enabled by default).")
+  (no-serialization))
 
 (define %docker-accounts
   (list (user-group (name "docker") (system? #t))))
