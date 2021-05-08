@@ -16543,3 +16543,37 @@ allow to wrangle OpenGL Shader Language (GLSL) source files.")
 
 (define-public cl-simple-tasks
   (sbcl-package->cl-source-package sbcl-simple-tasks))
+
+(define-public sbcl-trivial-main-thread
+  (let ((commit "25f114973bb69eb63e01d0bbfead31f8e682846a")
+        (revision "1"))
+    (package
+      (name "sbcl-trivial-main-thread")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shinmera/trivial-main-thread")
+               (commit commit)))
+         (file-name (git-file-name "trivial-main-thread" version))
+         (sha256
+          (base32 "0bw1887i7396lqg75qvmgjfzz4xbiq9w5dp8wxdgrcsm0qwlraw7"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("bordeaux-threads" ,sbcl-bordeaux-threads)
+         ("simple-tasks" ,sbcl-simple-tasks)
+         ("trivial-features" ,sbcl-trivial-features)))
+      (home-page "https://shinmera.github.io/trivial-main-thread/")
+      (synopsis "Compatibility library to run things in the main thread")
+      (description
+       "This package provides a Common Lisp system which wraps the
+BORDEAUX-THREADS system to be able to run things in the main thread of the
+implementation, for example drawing calls of GUI applications.")
+      (license license:zlib))))
+
+(define-public ecl-trivial-main-thread
+  (sbcl-package->ecl-package sbcl-trivial-main-thread))
+
+(define-public cl-trivial-main-thread
+  (sbcl-package->cl-source-package sbcl-trivial-main-thread))
