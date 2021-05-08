@@ -150,7 +150,7 @@
                    `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,objs)))
                  #t))))))
       (inputs
-       `(("guile" ,guile-3.0/libgc-7)
+       `(("guile" ,guile-3.0-latest)
          ("guile-avahi" ,guile-avahi)
          ("guile-fibers" ,guile-fibers)
          ("guile-gcrypt" ,guile-gcrypt)

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2016, 2017, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2016, 2017, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
@@ -46,7 +46,11 @@
       (list
        ;; Install gc_cpp.h et al.
        "--enable-cplusplus"
-       ;; In GNU/Hurd systems during the 'Check' phase,
+
+       ;; Work around <https://github.com/ivmai/bdwgc/issues/353>.
+       "--disable-munmap"
+
+       ;; In GNU/Hurd systems during the 'check' phase,
        ;; there is a deadlock caused by the 'gctest' test.
        ;; To disable the error set "--disable-gcj-support"
        ;; to configure script. See bug report and discussion:
