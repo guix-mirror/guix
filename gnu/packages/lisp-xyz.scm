@@ -16478,3 +16478,37 @@ application fail and be unable to do so using its standard UI.")
 
 (define-public cl-messagebox
   (sbcl-package->cl-source-package sbcl-messagebox))
+
+(define-public sbcl-glsl-toolkit
+  (let ((commit "d00ba1906e3b5eb08ea346ac300a1e77bb999d04")
+        (revision "1"))
+    (package
+      (name "sbcl-glsl-toolkit")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shirakumo/glsl-toolkit")
+               (commit commit)))
+         (file-name (git-file-name "glsl-toolkit" version))
+         (sha256
+          (base32 "0as5796yazchq1qkna3srxlz5v7cf7ffny9cbqi41wsa2s20vbh9"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("cl-ppcre" ,sbcl-cl-ppcre)
+         ("documentation-utils" ,sbcl-documentation-utils)
+         ("parse-float" ,sbcl-parse-float)
+         ("trivial-indent" ,sbcl-trivial-indent)))
+      (home-page "https://shirakumo.github.io/glsl-toolkit/")
+      (synopsis "Parser for OpenGL Shader Language source files")
+      (description
+       "This package provides a Common Lisp system collecting tools written to
+allow to wrangle OpenGL Shader Language (GLSL) source files.")
+      (license license:zlib))))
+
+(define-public ecl-glsl-toolkit
+  (sbcl-package->ecl-package sbcl-glsl-toolkit))
+
+(define-public cl-glsl-toolkit
+  (sbcl-package->cl-source-package sbcl-glsl-toolkit))
