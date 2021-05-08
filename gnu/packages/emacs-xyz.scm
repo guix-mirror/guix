@@ -27906,3 +27906,26 @@ files, providing syntax highlighting and indentation rules.")
 quasi-prefix map, with many useful bindings.  These bindings are
 shorter than usual, using mostly unprefixed keys.")
     (license license:gpl3+)))
+
+(define-public emacs-cwl-mode
+  (package
+    (name "emacs-cwl-mode")
+    (version "0.2.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tom-tan/cwl-mode")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0x9rvyhgy7ijq2r9pin94jz7nisrw6z91jch7d27lkhrmyb1rwk3"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-yaml-mode" ,emacs-yaml-mode)))
+    (home-page "https://github.com/tom-tan/cwl-mode")
+    (synopsis "Emacs mode for @acronym{CWL, Common Workflow Language} files")
+    (description "This packages provides a major mode for editing
+@acronym{CWL, Common Workflow Language} files.")
+    (license license:gpl3+)))
