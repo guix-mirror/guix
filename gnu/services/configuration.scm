@@ -40,12 +40,17 @@
             configuration-field-getter
             configuration-field-default-value-thunk
             configuration-field-documentation
+
+            configuration-error?
+
+            define-configuration
+
             serialize-configuration
             define-maybe
-            define-configuration
             validate-configuration
             generate-documentation
             configuration->documentation
+            empty-serializer
             serialize-package))
 
 ;;; Commentary:
@@ -118,7 +123,7 @@ does not have a default value" field kind)))
 
 (define (define-configuration-helper serialize? syn)
   (syntax-case syn ()
-    ((_ stem (field (field-type def ...) doc) ...)
+    ((_ stem (field (field-type def ...) doc custom-serializer ...) ...)
      (with-syntax (((field-getter ...)
                     (map (lambda (field)
                            (id #'stem #'stem #'- field))
@@ -137,11 +142,15 @@ does not have a default value" field kind)))
                             (syntax 'undefined)))
     			 #'((field-type def ...) ...)))
                    ((field-serializer ...)
-                    (map (lambda (type)
-    			   (if serialize?
-    			       (id #'stem #'serialize- type)
-    			       #f))
-    			 #'(field-type ...))))
+                    (map (lambda (type custom-serializer)
+                           (and serialize?
+                                (match custom-serializer
+                                  ((serializer)
+                                   serializer)
+                                  (()
+                                  (id #'stem #'serialize- type)))))
+                         #'(field-type ...)
+                         #'((custom-serializer ...) ...))))
        #`(begin
     	   (define-record-type* #,(id #'stem #'< #'stem #'>)
     	     #,(id #'stem #'% #'stem)
@@ -184,15 +193,18 @@ does not have a default value" field kind)))
 (define-syntax define-configuration
   (lambda (s)
     (syntax-case s (no-serialization)
-      ((_ stem (field (field-type def ...) doc) ... (no-serialization))
+      ((_ stem (field (field-type def ...) doc custom-serializer ...) ...
+          (no-serialization))
        (define-configuration-helper
-         #f #'(_ stem (field (field-type def ...) doc) ...)))
-      ((_ stem (field (field-type def ...) doc) ...)
+         #f #'(_ stem (field (field-type def ...) doc custom-serializer ...)
+                 ...)))
+      ((_ stem (field (field-type def ...) doc custom-serializer ...) ...)
        (define-configuration-helper
-         #t #'(_ stem (field (field-type def ...) doc) ...))))))
+         #t #'(_ stem (field (field-type def ...) doc custom-serializer ...)
+                 ...))))))
 
-(define (serialize-package field-name val)
-  "")
+(define (empty-serializer field-name val) "")
+(define serialize-package empty-serializer)
 
 ;; A little helper to make it easier to document all those fields.
 (define (generate-documentation documentation documentation-name)
