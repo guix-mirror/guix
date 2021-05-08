@@ -66,6 +66,16 @@
                      (substitute* "test/Makefile"
                        (("\\| more") ""))
 
+                     ;; Silence a warning from bash about not being able
+                     ;; to change to an ISO-8859-1 locale.  The test itself
+                     ;; works fine, but newer versions of bash give a
+                     ;; locale warning which mangles the test output.
+                     (substitute* "test/localenl.sh"
+                       (("for LC_ALL in")
+                        "for LC in")
+                       (("export LC_ALL\n")
+                        "export LC_ALL=$LC 2>/dev/null\n"))
+
                      ;; Adjust the shebang in that file since it is then diff'd
                      ;; against the actual test output.
                      (substitute* "test/watchpoint1.ok"
