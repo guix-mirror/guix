@@ -2399,4 +2399,7 @@ user interaction (e.g.  measuring distances).")
 OSD applet for graphical desktops.  It's not meant to be an replacement for a
 full-featured mixer application.  If you're looking for that check out the
 excellent pavucontrol.")
+
+    ;; XXX: 'setup.py' says "GPLv2" but nothing says "version 2 only".  Is
+    ;; GPLv2+ intended?
     (license license:gpl2)))
