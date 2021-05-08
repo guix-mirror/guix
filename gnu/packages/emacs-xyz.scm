@@ -16,7 +16,7 @@
 ;;; Copyright © 2016, 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016, 2017, 2018 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2017, 2018, 2019, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017, 2018, 2019, 2020, 2021 Clément Lassieur <clement@lassieur.org>
@@ -12764,13 +12764,13 @@ containing words from the Rime project.")
 (define-public emacs-pyim
   (package
     (name "emacs-pyim")
-    (version "3.7.2")
+    (version "3.7.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/pyim-" version ".tar"))
        (sha256
-        (base32 "1kq7b22l8h14nc8pdrk5d9riw51za50i1kpkwbg64bdrs7abif3m"))))
+        (base32 "0h6cp48hjdfnwbi799hrar5hlcag2339ygdq8qfds2iawrzk6y74"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-async" ,emacs-async)
