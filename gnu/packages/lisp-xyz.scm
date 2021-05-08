@@ -16512,3 +16512,34 @@ allow to wrangle OpenGL Shader Language (GLSL) source files.")
 
 (define-public cl-glsl-toolkit
   (sbcl-package->cl-source-package sbcl-glsl-toolkit))
+
+(define-public sbcl-simple-tasks
+  (let ((commit "745d4b54eac9bf5d6909792e63ecd2ef8d303cf2")
+        (revision "1"))
+    (package
+      (name "sbcl-simple-tasks")
+      (version (git-version "1.3.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shinmera/simple-tasks")
+               (commit commit)))
+         (file-name (git-file-name "simple-tasks" version))
+         (sha256
+          (base32 "1ls1pij7dvb65g4nam7nvik1218jvfk5iplr48vy290fw3lq7v98"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("array-utils" ,sbcl-array-utils)
+         ("bordeaux-threads" ,sbcl-bordeaux-threads)
+         ("dissect" ,sbcl-dissect)))
+      (home-page "https://shinmera.github.io/simple-tasks/")
+      (synopsis "Simple task scheduling framework")
+      (description "This is a task scheduling framework for Common Lisp.")
+      (license license:zlib))))
+
+(define-public ecl-simple-tasks
+  (sbcl-package->ecl-package sbcl-simple-tasks))
+
+(define-public cl-simple-tasks
+  (sbcl-package->cl-source-package sbcl-simple-tasks))
