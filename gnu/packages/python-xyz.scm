@@ -11938,13 +11938,13 @@ output, progress bar display, and pipes.")
 (define-public python-rply
   (package
     (name "python-rply")
-    (version "0.7.5")
+    (version "0.7.8")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "rply" version))
               (sha256
                (base32
-                "0lv428895zxsz43968qx0q9bimwqnfykndz4dpjbq515w2gvzhjh"))))
+                "1j81nddvnb145x4p81bnfpyai6g26i2dc1633ycsk025bb18m01a"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-appdirs" ,python-appdirs)))
