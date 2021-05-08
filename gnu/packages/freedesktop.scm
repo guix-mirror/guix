@@ -95,6 +95,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages samba)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages valgrind)
   #:use-module (gnu packages video)
@@ -2330,3 +2331,35 @@ which uses GTK+ and various pieces of GNOME infrastructure, such as the
 @code{org.gnome.Shell.Screenshot} or @code{org.gnome.SessionManager} D-Bus
 interfaces.")
     (license license:lgpl2.1+)))
+
+(define-public xdg-desktop-portal-wlr
+  (package
+    (name "xdg-desktop-portal-wlr")
+    (version "0.3.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/emersion/xdg-desktop-portal-wlr")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "18nlkqqxgxh7k0r2nk867wnp2nmaiinl6z67lrfv7rmiym0x82p8"))))
+    (build-system meson-build-system)
+    (native-inputs
+     `(("cmake" ,cmake)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("elogind" ,elogind)
+       ("iniparser" ,iniparser)
+       ("pipewire" ,pipewire-0.3)
+       ("wayland" ,wayland)
+       ("wayland-protocols" ,wayland-protocols)))
+    (home-page "https://github.com/emersion/xdg-desktop-portal-wlr")
+    (synopsis "@code{xdg-desktop-portal} backend for wlroots")
+    (description
+     "This package provides @code{xdg-desktop-portal-wlr}.  This project
+seeks to add support for the screenshot, screencast, and possibly
+remote-desktop @code{xdg-desktop-portal} interfaces for wlroots based
+compositors.")
+    (license license:expat)))
