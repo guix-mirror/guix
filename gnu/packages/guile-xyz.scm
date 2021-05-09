@@ -2127,6 +2127,38 @@ microAdapton.  Both miniAdapton and microAdapton are designed to be easy to
 understand, extend, and port to host languages other than Scheme.")
       (license license:expat))))
 
+(define-public guile-raw-strings
+  (let ((commit "aa1cf783f2542811b473f797e12490920b779baa")
+        (revision "0"))
+    (package
+      (name "guile-raw-strings")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/lloda/guile-raw-strings")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1r2gx86zw5hb6byllra3nap3fw9p7q7rvdmg6qn9myrdxyjpns3l"))))
+      (build-system guile-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'build 'check
+             (lambda* (#:key tests? #:allow-other-keys)
+               (when tests?
+                 (invoke "guile" "-L" "." "-s" "test.scm")))))))
+      (native-inputs
+       `(("guile" ,guile-3.0)))
+      (home-page "https://github.com/lloda/guile-raw-strings")
+      (synopsis "Guile reader extension for `raw strings'")
+      (description "This package provides A Guile reader extension for `raw
+strings', it lets you write verbatim strings without having to escape double
+quotes. ")
+      (license license:public-domain))))
+
 (define-public guile-reader
   (package
     (name "guile-reader")
