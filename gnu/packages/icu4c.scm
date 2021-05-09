@@ -39,7 +39,7 @@
 (define-public icu4c
   (package
    (name "icu4c")
-   (version "67.1")
+   (version "69.1")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -49,7 +49,7 @@
                   (string-map (lambda (x) (if (char=? x #\.) #\_ x)) version)
                   "-src.tgz"))
             (sha256
-             (base32 "1p6mhvxl0xr2n0g6xdps3mwzwlv6mjsz3xlpm793p9aiybb0ra4l"))))
+             (base32 "0icps0avkwy5df3wwc5kybxcg63hcgk4phdh9g244g0xrmx7pfjc"))))
    (build-system gnu-build-system)
    ;; When cross-compiling, this package needs a source directory of a
    ;; native-build of itself.
