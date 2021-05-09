@@ -159,7 +159,7 @@ printing, and psresize, for adjusting page sizes.")
 (define-public ghostscript
   (package
     (name "ghostscript")
-    (version "9.53.3")
+    (version "9.54.0")
     (source
       (origin
         (method url-fetch)
@@ -169,9 +169,8 @@ printing, and psresize, for adjusting page sizes.")
                             "/ghostscript-" version ".tar.xz"))
         (sha256
          (base32
-          "0d52w9ajv1rz533119ywgmkzkapp74riwny0d21v0zkcbg45p7ww"))
-        (patches (search-patches "ghostscript-freetype-compat.patch"
-                                 "ghostscript-no-header-creationdate.patch"
+          "0fvfvv6di5s6j4sy4gaw65klm23dby39bkdjxxq4w3v0vqyb9dy2"))
+        (patches (search-patches "ghostscript-no-header-creationdate.patch"
                                  "ghostscript-no-header-id.patch"
                                  "ghostscript-no-header-uuid.patch"))
         (modules '((guix build utils)))
