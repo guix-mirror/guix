@@ -2654,7 +2654,7 @@ portable to just about any platform.")
 (define-public libfaketime
   (package
     (name "libfaketime")
-    (version "0.9.8")
+    (version "0.9.9")
     (home-page "https://github.com/wolfcw/libfaketime")
     (source (origin
               (method git-fetch)
@@ -2663,32 +2663,24 @@ portable to just about any platform.")
                     (commit (string-append "v" version))))
               (sha256
                (base32
-                "1mfdl82ppgbdvy1ny8mb7xii7p0g7awvn4bn36jb8v4r545slmjc"))
+                "1gi1xciqga5hl2xlk7rc3j8wy47ag97pi7ngmdl6ny1d11b2wn1z"))
               (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (modify-phases %standard-phases
+     `(#:phases (modify-phases %standard-phases
                   (replace 'configure
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let ((out (assoc-ref outputs "out")))
-                        (setenv "CC" "gcc")
+                        (setenv "CC" ,(cc-for-target))
                         (setenv "PREFIX" out)
 
                         ;; XXX: Without this flag, the CLOCK_REALTIME test hangs
                         ;; indefinitely.  See README.packagers for more information.
-                        ;; Try removing this for future versions of libfaketime.
-                        (setenv "FAKETIME_COMPILE_CFLAGS" "-DFORCE_MONOTONIC_FIX")
-
-                        #t)))
+                        (setenv "FAKETIME_COMPILE_CFLAGS" "-DFORCE_MONOTONIC_FIX"))))
                   (add-before 'check 'pre-check
                     (lambda _
                       (substitute* "test/functests/test_exclude_mono.sh"
-                        (("/bin/bash") (which "bash")))
-
-                      ;; Do not fail due to use of 'ftime', which was deprecated in
-                      ;; glibc 2.31.  Remove this for later versions of libfaketime.
-                      (setenv "FAKETIME_COMPILE_CFLAGS" "-Wno-deprecated-declarations")
-                      #t)))
+                        (("/bin/bash") (which "bash"))))))
        #:test-target "test"))
     (native-inputs
      `(("perl" ,perl)))                           ;for tests
