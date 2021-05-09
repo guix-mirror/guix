@@ -301,4 +301,11 @@ text.  The hyperlink links to a web view of COMMIT, when available."
            (channels
             (display-profile-info #f format channels))))
         (profile
-         (display-profile-info (canonicalize-profile profile) format))))))
+         ;; For the current profile, resort to 'current-channels', which has a
+         ;; fallback to metadata from (guix config) in case PROFILE lacks it.
+         (let ((channels (if (and (current-profile)
+                                  (string=? profile (current-profile)))
+                             (current-channels)
+                             (profile-channels profile))))
+           (display-profile-info (canonicalize-profile profile)
+                                 format channels)))))))

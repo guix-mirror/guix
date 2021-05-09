@@ -122,15 +122,24 @@ lives in, or the empty list if this is not applicable."
   (mlambda ()
     "Return the list of channels currently available, including the 'guix'
 channel.  Return the empty list if this information is missing."
+    (define (build-time-metadata)
+      (match (channel-metadata)
+        (#f '())
+        (sexp (or (and=> (sexp->channel sexp 'guix) list) '()))))
+
     (match (current-profile-entries)
       (()
        ;; As a fallback, if we're not running from a profile, use 'guix'
        ;; channel metadata from (guix config).
-       (match (channel-metadata)
-         (#f '())
-         (sexp (or (and=> (sexp->channel sexp 'guix) list) '()))))
+       (build-time-metadata))
       (entries
-       (filter-map manifest-entry-channel entries)))))
+       (match (filter-map manifest-entry-channel entries)
+         (()
+          ;; This profile lacks provenance metadata, so fall back to
+          ;; build-time metadata as returned by 'channel-metadata'.
+          (build-time-metadata))
+         (lst
+          lst))))))
 
 (define (package-path-entries)
   "Return two values: the list of package path entries to be added to the
