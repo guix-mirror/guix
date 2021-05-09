@@ -328,6 +328,7 @@ MTP, and much more.")
              ;; New releases may take a while to hit CPAN.
              (string-append "https://www.sno.phy.queensu.ca/~phil/exiftool/"
                             "Image-ExifTool-" version ".tar.gz")))
+       (patches (search-patches "perl-image-exiftool-CVE-2021-22204.patch"))
        (sha256
         (base32
          "0skm22b3gg1bfk0amklrprpva41m6mkrhqp0gi7z1nmcf9ypjh61"))))

@@ -1525,6 +1525,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/perl-cross.patch				\
   %D%/packages/patches/perl-deterministic-ordering.patch	\
   %D%/packages/patches/perl-finance-quote-unuse-mozilla-ca.patch \
+  %D%/packages/patches/perl-image-exiftool-CVE-2021-22204.patch	\
   %D%/packages/patches/perl-io-socket-ssl-openssl-1.0.2f-fix.patch \
   %D%/packages/patches/perl-net-amazon-s3-moose-warning.patch	\
   %D%/packages/patches/perl-net-dns-resolver-programmable-fix.patch	\
