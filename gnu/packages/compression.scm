@@ -1606,8 +1606,32 @@ Compression ratios of 2:1 to 3:1 are common for text files.")
                                 "unzip-attribs-overflow.patch"
                                 "unzip-overflow-on-invalid-input.patch"
                                 "unzip-format-secure.patch"
-                                "unzip-overflow-long-fsize.patch"))))
-    (replacement unzip/fixed)
+                                "unzip-overflow-long-fsize.patch"
+
+                                ;; From Fedora
+                                "unzip-alt-iconv-utf8.patch"
+                                "unzip-alt-iconv-utf8-print.patch"
+                                "unzip-fix-recmatch.patch"
+                                "unzip-case-insensitive.patch"
+                                "unzip-close.patch"
+                                "unzip-COVSCAN-fix-unterminated-string.patch"
+                                "unzip-CVE-2016-9844.patch"
+                                "unzip-CVE-2018-1000035.patch"
+                                "unzip-CVE-2018-18384.patch"
+                                "unzip-exec-shield.patch"
+                                "unzip-manpage-fix.patch"
+                                "unzip-overflow.patch"
+                                "unzip-timestamp.patch"
+                                "unzip-valgrind.patch"
+                                "unzip-x-option.patch"
+                                ;; CVE-2019-13232
+                                "unzip-zipbomb-manpage.patch"
+                                "unzip-zipbomb-part1.patch"
+                                "unzip-zipbomb-part2.patch"
+                                "unzip-zipbomb-part3.patch"
+
+                                ;; https://github.com/madler/unzip/issues/2
+                                "unzip-32bit-zipbomb-fix.patch"))))
     (build-system gnu-build-system)
     ;; no inputs; bzip2 is not supported, since not compiled with BZ_NO_STDIO
     (arguments
@@ -1642,57 +1666,6 @@ subdirectories below it, all files from the specified zipfile.  UnZip
 recreates the stored directory structure by default.")
     (license (license:non-copyleft "file://LICENSE"
                                    "See LICENSE in the distribution."))))
-
-(define unzip/fixed
-  (package
-    (inherit unzip)
-    (version "6.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://sourceforge/infozip"
-                           "/UnZip%206.x%20%28latest%29/UnZip%206.0/unzip60.tar.gz"))
-       (sha256
-        (base32
-         "0dxx11knh3nk95p2gg2ak777dd11pr7jx5das2g49l262scrcv83"))
-       (patches (search-patches "unzip-CVE-2014-8139.patch"
-                                "unzip-CVE-2014-8140.patch"
-                                "unzip-CVE-2014-8141.patch"
-                                "unzip-CVE-2014-9636.patch"
-                                "unzip-CVE-2015-7696.patch"
-                                "unzip-CVE-2015-7697.patch"
-                                "unzip-allow-greater-hostver-values.patch"
-                                "unzip-initialize-symlink-flag.patch"
-                                "unzip-remove-build-date.patch"
-                                "unzip-attribs-overflow.patch"
-                                "unzip-overflow-on-invalid-input.patch"
-                                "unzip-format-secure.patch"
-                                "unzip-overflow-long-fsize.patch"
-
-                                ;; From Fedora
-                                "unzip-alt-iconv-utf8.patch"
-                                "unzip-alt-iconv-utf8-print.patch"
-                                "unzip-fix-recmatch.patch"
-                                "unzip-case-insensitive.patch"
-                                "unzip-close.patch"
-                                "unzip-COVSCAN-fix-unterminated-string.patch"
-                                "unzip-CVE-2016-9844.patch"
-                                "unzip-CVE-2018-1000035.patch"
-                                "unzip-CVE-2018-18384.patch"
-                                "unzip-exec-shield.patch"
-                                "unzip-manpage-fix.patch"
-                                "unzip-overflow.patch"
-                                "unzip-timestamp.patch"
-                                "unzip-valgrind.patch"
-                                "unzip-x-option.patch"
-                                ;; CVE-2019-13232
-                                "unzip-zipbomb-manpage.patch"
-                                "unzip-zipbomb-part1.patch"
-                                "unzip-zipbomb-part2.patch"
-                                "unzip-zipbomb-part3.patch"
-
-                                ;; https://github.com/madler/unzip/issues/2
-                                "unzip-32bit-zipbomb-fix.patch"))))))
 
 (define-public ziptime
   (let ((commit "2a5bc9dfbf7c6a80e5f7cb4dd05b4036741478bc")
