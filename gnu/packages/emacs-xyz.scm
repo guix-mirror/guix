@@ -8578,7 +8578,7 @@ allowing unprefixed keys to insert their respective characters as expected.")
 (define-public emacs-clojure-mode
   (package
     (name "emacs-clojure-mode")
-    (version "5.12.0")
+    (version "5.13.0")
     (source
      (origin
        (method git-fetch)
@@ -8587,7 +8587,7 @@ allowing unprefixed keys to insert their respective characters as expected.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "14ipfy9ji39pnb9x7bzjp8lyqyxk168fx017m823j7a2g9i0sgp3"))))
+        (base32 "1ikl29rygr1habcsglz07m4ihd4ivi732kkzg8q676ihf367wa9i"))))
     (build-system emacs-build-system)
     (native-inputs
      `(("emacs-buttercup" ,emacs-buttercup)
@@ -8596,17 +8596,7 @@ allowing unprefixed keys to insert their respective characters as expected.")
        ("emacs-s" ,emacs-s)))
     (arguments
      `(#:tests? #t
-       #:test-command '("buttercup")
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'fix-tests
-           ;; See: https://github.com/clojure-emacs/clojure-mode/issues/568
-           (lambda _
-             (substitute* "clojure-mode.el"
-               (("\\(list \\(cdr project\\)\\)" line)
-                (string-append "\"Return the list of directory roots of the PROJECT.\"\n"
-                               line)))
-             #t)))))
+       #:test-command '("buttercup")))
     (home-page "https://github.com/clojure-emacs/clojure-mode")
     (synopsis "Major mode for Clojure code")
     (description
