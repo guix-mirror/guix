@@ -7122,7 +7122,8 @@ or embedded instantiation.  This package provides the JMX management.")))
     (source (package-source java-eclipse-jetty-util-9.2))
     (inputs
      `(("http" ,java-eclipse-jetty-http-9.2)
-       ,@(package-inputs java-eclipse-jetty-http-9.2)))))
+       ,@(package-inputs java-eclipse-jetty-http-9.2)))
+    (native-inputs (package-native-inputs java-eclipse-jetty-util-9.2))))
 
 (define-public java-eclipse-jetty-server
   (package
