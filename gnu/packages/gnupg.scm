@@ -82,7 +82,7 @@
 (define-public libgpg-error
   (package
     (name "libgpg-error")
-    (version "1.39")
+    (version "1.42")
     (source
      (origin
       (method url-fetch)
@@ -90,7 +90,7 @@
                           version ".tar.bz2"))
       (sha256
        (base32
-        "13r9vf6dyjab6jh2821fp2r6m624iy838j2s3kpr882rmvf6x0sa"))))
+        "08syj8mlarww8mh8x3s0x6hjqbnxp2lkg3hab57qqpv1dh7yf1zw"))))
     (build-system gnu-build-system)
     (arguments
      (if (%current-target-system)
