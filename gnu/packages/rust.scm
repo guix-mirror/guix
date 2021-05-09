@@ -134,7 +134,7 @@
 
 ;;; Rust 1.29 is special in that it is built with mrustc, which shortens the
 ;;; bootstrap path.  Note: the build is non-deterministic.
-(define rust-1.29
+(define-public rust-1.29
   (package
     (name "rust")
     (version "1.29.2")
@@ -291,7 +291,7 @@ safety and thread safety guarantees.")
     ;; Dual licensed.
     (license (list license:asl2.0 license:expat))))
 
-(define rust-1.30
+(define-public rust-1.30
   (package
     (name "rust")
     (version "1.30.1")
@@ -459,11 +459,11 @@ safety and thread safety guarantees.")
     ;; Dual licensed.
     (license (list license:asl2.0 license:expat))))
 
-(define rust-1.31
+(define-public rust-1.31
   (rust-bootstrapped-package
    rust-1.30 "1.31.1" "0sk84ff0cklybcp0jbbxcw7lk7mrm6kb6km5nzd6m64dy0igrlli"))
 
-(define rust-1.32
+(define-public rust-1.32
   (let ((base-rust (rust-bootstrapped-package
                     rust-1.31 "1.32.0"
                     "0ji2l9xv53y27xy72qagggvq47gayr5lcv2jwvmfirx029vlqnac")))
@@ -512,7 +512,7 @@ safety and thread safety guarantees.")
                          (string-append (assoc-ref inputs "jemalloc")
                                         "/lib/libjemalloc_pic.a")))))))))))
 
-(define rust-1.33
+(define-public rust-1.33
   (let ((base-rust (rust-bootstrapped-package
                     rust-1.32 "1.33.0"
                     "152x91mg7bz4ygligwjb05fgm1blwy2i70s2j03zc9jiwvbsh0as")))
@@ -527,7 +527,7 @@ safety and thread safety guarantees.")
        ;; Upgrade jemalloc.
        (alist-replace "jemalloc" (list jemalloc) (package-inputs base-rust))))))
 
-(define rust-1.34
+(define-public rust-1.34
   (let ((base-rust (rust-bootstrapped-package
                     rust-1.33 "1.34.1"
                     "19s09k7y5j6g3y4d2rk6kg9pvq6ml94c49w6b72dmq8p9lk8bixh")))
@@ -541,7 +541,7 @@ safety and thread safety guarantees.")
                                "src/llvm-project"
                                "vendor/jemalloc-sys/jemalloc"))))))))
 
-(define rust-1.35
+(define-public rust-1.35
   (let ((base-rust (rust-bootstrapped-package
                     rust-1.34 "1.35.0"
                     "0bbizy6b7002v1rdhrxrf5gijclbyizdhkglhp81ib3bf5x66kas")))
@@ -553,11 +553,11 @@ safety and thread safety guarantees.")
           `(modify-phases ,phases
              (delete 'disable-codegen-tests))))))))
 
-(define rust-1.36
+(define-public rust-1.36
   (rust-bootstrapped-package
    rust-1.35 "1.36.0" "06xv2p6zq03lidr0yaf029ii8wnjjqa894nkmrm6s0rx47by9i04"))
 
-(define rust-1.37
+(define-public rust-1.37
   (let ((base-rust (rust-bootstrapped-package
                     rust-1.36 "1.37.0"
                     "1hrqprybhkhs6d9b5pjskfnc5z9v2l2gync7nb39qjb5s0h703hj")))
@@ -573,11 +573,11 @@ safety and thread safety guarantees.")
                    (mkdir-p cargo-home)
                    (setenv "CARGO_HOME" cargo-home)))))))))))
 
-(define rust-1.38
+(define-public rust-1.38
   (rust-bootstrapped-package
     rust-1.37 "1.38.0" "101dlpsfkq67p0hbwx4acqq6n90dj4bbprndizpgh1kigk566hk4"))
 
-(define rust-1.39
+(define-public rust-1.39
   (let ((base-rust (rust-bootstrapped-package
                     rust-1.38 "1.39.0"
                     "0mwkc1bnil2cfyf6nglpvbn2y0zfbv44zfhsd5qg4c9rm6vgd8dl")))
@@ -596,7 +596,7 @@ safety and thread safety guarantees.")
                     (string-append name "\"" ,%cargo-reference-hash "\"")))
                  (generate-all-checksums "vendor"))))))))))
 
-(define rust-1.40
+(define-public rust-1.40
   (let ((base-rust (rust-bootstrapped-package
                     rust-1.39 "1.40.0"
                     "1ba9llwhqm49w7sz3z0gqscj039m53ky9wxzhaj11z6yg1ah15yx")))
@@ -624,7 +624,7 @@ safety and thread safety guarantees.")
          ((#:validate-runpath? _ #f)
           #f))))))
 
-(define rust-1.41
+(define-public rust-1.41
   (let ((base-rust (rust-bootstrapped-package
                     rust-1.40 "1.41.1"
                     "0ws5x0fxv57fyllsa6025h3q6j9v3m8nb3syl4x0hgkddq0kvj9q")))
@@ -635,16 +635,16 @@ safety and thread safety guarantees.")
          ((#:validate-runpath? _ #t)
           #t))))))
 
-(define rust-1.42
+(define-public rust-1.42
   (rust-bootstrapped-package
    rust-1.41 "1.42.0" "0x9lxs82may6c0iln0b908cxyn1cv7h03n5cmbx3j1bas4qzks6j"))
 
-(define rust-1.43
+(define-public rust-1.43
   (rust-bootstrapped-package
    rust-1.42 "1.43.0" "18akhk0wz1my6y9vhardriy2ysc482z0fnjdcgs9gy59kmnarxkm"))
 
 ;; This version needs llvm >= 8.0 and NOT 11
-(define rust-1.44
+(define-public rust-1.44
   (let ((base-rust  (rust-bootstrapped-package
                       rust-1.43 "1.44.1"
                       "0ww4z2v3gxgn3zddqzwqya1gln04p91ykbrflnpdbmcd575n8bky")))
@@ -653,7 +653,7 @@ safety and thread safety guarantees.")
       (inputs
        (alist-replace "llvm" (list llvm-10) (package-inputs base-rust))))))
 
-(define rust-1.45
+(define-public rust-1.45
   (let ((base-rust (rust-bootstrapped-package
                     rust-1.44 "1.45.2"
                     "0273a1g3f59plyi1n0azf21qjzwml1yqdnj5z472crz37qggr8xp")))
@@ -669,7 +669,7 @@ safety and thread safety guarantees.")
                    (("linker.env\\(\"LC_ALL\", \"C\"\\);")
                     "linker.env(\"LC_ALL\", \"en_US.UTF-8\");")))))))))))
 
-(define rust-1.46
+(define-public rust-1.46
   (let ((base-rust (rust-bootstrapped-package
                     rust-1.45 "1.46.0"
                     "0a17jby2pd050s24cy4dfc0gzvgcl585v3vvyfilniyvjrqknsid")))
@@ -716,20 +716,15 @@ safety and thread safety guarantees.")
                     (format #f "prefix = ~s" (assoc-ref outputs "rustfmt"))))
                  (invoke "./x.py" "install" "rustfmt"))))))))))
 
-(define rust-1.47
+(define-public rust-1.47
   (rust-bootstrapped-package
     rust-1.46 "1.47.0" "07fqd2vp7cf1ka3hr207dnnz93ymxml4935vp74g4is79h3dz19i"))
 
-(define rust-1.48
+(define-public rust-1.48
   (rust-bootstrapped-package
    rust-1.47 "1.48.0" "0fz4gbb5hp5qalrl9lcl8yw4kk7ai7wx511jb28nypbxninkwxhf"))
 
-;;; Note: Only the current version of rust is supported and tested.  The
-;;; other, intermediate rusts built for bootstrapping purposes should be
-;;; private and stripped from any test fixing patches or phases.  This is to
-;;; ease maintenance and reduce the time required to build the full Rust
-;;; bootstrap chain.
-(define-public rust
+(define-public rust-1.49
   (let ((base-rust (rust-bootstrapped-package
                     rust-1.48 "1.49.0"
                     "0yf7kll517398dgqsr7m3gldzj0iwsp3ggzxrayckpqzvylfy2mm")))
@@ -843,9 +838,15 @@ safety and thread safety guarantees.")
                       (package-native-inputs base-rust))))))
 
 (define-public rust-1.50
-  (rust-bootstrapped-package rust "1.50.0"
+  (rust-bootstrapped-package rust-1.49 "1.50.0"
     "0pjs7j62maiyvkmhp9zrxl528g2n0fphp4rq6ap7aqdv0a6qz5wm"))
 
 (define-public rust-1.51
   (rust-bootstrapped-package rust-1.50 "1.51.0"
     "0ixqkqglv3isxbvl4ldr4byrkx692wghsz3fasy1pn5kr2prnsvs"))
+
+;;; Note: Only the latest versions of Rust are supported and tested.  The
+;;; intermediate rusts are built for bootstrapping purposes and should not
+;;; be relied upon.  This is to ease maintenance and reduce the time
+;;; required to build the full Rust bootstrap chain.
+(define-public rust rust-1.49)
