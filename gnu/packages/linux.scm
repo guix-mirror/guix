@@ -2610,10 +2610,10 @@ network hardware types (plipconfig, slattach) and advanced aspects of IP
 configuration (iptunnel, ipmaddr).")
       (license license:gpl2+))))
 
-(define-public libcap-2.31
+(define-public libcap
   (package
     (name "libcap")
-    (version "2.31")
+    (version "2.49")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -2621,7 +2621,7 @@ configuration (iptunnel, ipmaddr).")
                    "libcap2/libcap-" version ".tar.xz"))
              (sha256
               (base32
-               "0ikwm0kngrqa4ci80lqnrkk17kg09q7dxrz28y0gm5qw3vj8s266"))))
+               "10g13s1kihqpvrvmfl2w8s18icqjlz8hy2vkhz3jw2256vcw92z9"))))
     (build-system gnu-build-system)
     (arguments '(#:phases
                  (modify-phases %standard-phases
@@ -2629,10 +2629,9 @@ configuration (iptunnel, ipmaddr).")
                             ;; Add $libdir to the RUNPATH of executables.
                             (lambda _
                               (substitute* "Make.Rules"
-                                (("LDFLAGS := #-g")
-                                 (string-append "LDFLAGS := -Wl,-rpath="
-                                                %output "/lib")))
-                              #t)))
+                                (("LDFLAGS \\?= #-g")
+                                 (string-append "LDFLAGS ?= -Wl,-rpath="
+                                                %output "/lib"))))))
                  #:test-target "test"
                  #:make-flags (list "lib=lib"
                                     (string-append "prefix="
@@ -2648,37 +2647,6 @@ Linux-based operating systems.")
 
     ;; License is BSD-3 or GPLv2, at the user's choice.
     (license license:gpl2)))
-
-;; libcap 2.31 has problems with newer kernels, so provide this newer variant.
-;; Keep the old libcap around to avoid rebuilding 'coreutils' and 'avahi'.
-;; To be merged with libcap on the next rebuild cycle.
-(define-public libcap
-  (package
-    (inherit libcap-2.31)
-    (version "2.45")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "mirror://kernel.org/linux/libs/security/linux-privs/"
-                    "libcap2/libcap-" version ".tar.xz"))
-              (sha256
-               (base32
-                "11ijmi7jik9iw6pdszc6bylhggghr8cza03bcrbhbqf0cpvkjrnn"))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments libcap-2.31)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (replace 'configure
-             (lambda _
-               ;; Add $libdir to the RUNPATH of executables.
-               (substitute* "Make.Rules"
-                 (("LDFLAGS \\?= #-g")
-                  (string-append "LDFLAGS ?= -Wl,-rpath="
-                                 %output "/lib")))
-               #t))))))))
-
-(define-deprecated libcap/next libcap)
-(export libcap/next)
 
 (define-public bridge-utils
   (package

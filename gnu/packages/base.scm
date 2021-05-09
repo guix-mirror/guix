@@ -339,8 +339,8 @@ used to apply commands with arbitrarily long arguments.")
              ,@(if (and (not (%current-target-system))
                         (member (%current-system)
                                 (package-supported-systems libcap)))
-             `(("libcap" ,libcap-2.31))        ;capability support in 'ls', etc.
-             '())))
+                   `(("libcap" ,libcap)) ;capability support in 'ls', etc.
+                   '())))
    (native-inputs
     ;; Perl is needed to run tests in native builds, and to run the bundled
     ;; copy of help2man.  However, don't pass it when cross-compiling since
