@@ -716,7 +716,8 @@ Language.")
               (sha256
                (base32
                 "1s3vfm73911cddjhgpcbkya6nz7ag2zygg56qqzwscn5ybv28j7b"))
-              (patches (search-patches "mariadb-CVE-2021-27928.patch"))
+              (patches (search-patches "mariadb-CVE-2021-27928.patch"
+                                       "mariadb-cmake-compat.patch"))
               (modules '((guix build utils)))
               (snippet
                '(begin

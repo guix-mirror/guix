@@ -5,7 +5,7 @@
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017, 2018, 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018, 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
@@ -123,9 +123,7 @@ using the CMake build system.")
     ;; This test requires 'ldconfig' which is not available in Guix.
     "RunCMake.install"
     ;; This test fails for unknown reason.
-    "RunCMake.file-GET_RUNTIME_DEPENDENCIES"
-    ;; This test requires the bundled libuv.
-    "BootstrapTest"))
+    "RunCMake.file-GET_RUNTIME_DEPENDENCIES"))
 
 (define %preserved-third-party-files
   '(;; 'Source/cm_getdate.c' includes archive_getdate.c wholesale, so it must
@@ -140,7 +138,7 @@ using the CMake build system.")
 (define-public cmake-bootstrap
   (package
     (name "cmake-bootstrap")
-    (version "3.19.2")
+    (version "3.20.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://cmake.org/files/v"
@@ -148,49 +146,7 @@ using the CMake build system.")
                                   "/cmake-" version ".tar.gz"))
               (sha256
                (base32
-                "1w67w0ak6vf37501dlz9yhnzlvvpw1w10n2nm3hi7yxp4cxzvq73"))
-              (modules '((guix build utils)
-                         (ice-9 ftw)))
-              (snippet
-               `(begin
-                  ;; CMake bundles its dependencies in the "Utilities" directory.
-                  ;; Delete those to ensure the system libraries are used.
-                  (define preserved-files
-                    '(,@%preserved-third-party-files
-                      ;; Use the bundled JsonCpp during bootstrap to work around
-                      ;; a circular dependency.  TODO: JsonCpp can be built with
-                      ;; Meson instead of CMake, but meson-build-system currently
-                      ;; does not support cross-compilation.
-                      "Utilities/cmjsoncpp"
-                      ;; LibUV is required to bootstrap the initial build system.
-                      "Utilities/cmlibuv"))
-
-                  (file-system-fold (lambda (dir stat result)         ;enter?
-                                      (or (string=? "Utilities" dir)  ;init
-                                          ;; The bundled dependencies are
-                                          ;; distinguished by having a "cm"
-                                          ;; prefix to their upstream names.
-                                          (and (string-prefix? "Utilities/cm" dir)
-                                               (not (member dir preserved-files)))))
-                                    (lambda (file stat result)        ;leaf
-                                      (unless (or (member file preserved-files)
-                                                  ;; Preserve top-level files.
-                                                  (string=? "Utilities"
-                                                            (dirname file)))
-                                        (delete-file file)))
-                                    (const #t)                        ;down
-                                    (lambda (dir stat result)         ;up
-                                      (when (equal? (scandir dir) '("." ".."))
-                                        (rmdir dir)))
-                                    (const #t)                        ;skip
-                                    (lambda (file stat errno result)
-                                      (format (current-error-port)
-                                              "warning: failed to delete ~a: ~a~%"
-                                              file (strerror errno)))
-                                    #t
-                                    "Utilities"
-                                    lstat)
-                  #t))
+                "0kjlb7sxbwg8z4027c3jjcmyjh9d36p0r9d4nqxynyaijz5nxkxf"))
               (patches (search-patches "cmake-curl-certificates.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -290,13 +246,38 @@ and workspaces that can be used in the compiler environment of your choice.")
     (name "cmake-minimal")
     (source (origin
               (inherit (package-source cmake-bootstrap))
+              ;; Purge CMakes bundled dependencies as they are no longer needed.
+              (modules '((ice-9 ftw)))
               (snippet
-               (match (origin-snippet (package-source cmake-bootstrap))
-                 ((_ _ exp ...)
-                  ;; Now we can delete the remaining software bundles.
-                  (append `(begin
-                             (define preserved-files ',%preserved-third-party-files))
-                          exp))))))
+               `(begin
+                  (define preserved-files ',%preserved-third-party-files)
+
+                  (file-system-fold (lambda (dir stat result)         ;enter?
+                                      (or (string=? "Utilities" dir)  ;init
+                                          ;; The bundled dependencies are
+                                          ;; distinguished by having a "cm"
+                                          ;; prefix to their upstream names.
+                                          (and (string-prefix? "Utilities/cm" dir)
+                                               (not (member dir preserved-files)))))
+                                    (lambda (file stat result)        ;leaf
+                                      (unless (or (member file preserved-files)
+                                                  ;; Preserve top-level files.
+                                                  (string=? "Utilities"
+                                                            (dirname file)))
+                                        (delete-file file)))
+                                    (const #t)                        ;down
+                                    (lambda (dir stat result)         ;up
+                                      (when (equal? (scandir dir) '("." ".."))
+                                        (rmdir dir)))
+                                    (const #t)                        ;skip
+                                    (lambda (file stat errno result)
+                                      (format (current-error-port)
+                                              "warning: failed to delete ~a: ~a~%"
+                                              file (strerror errno)))
+                                    #t
+                                    "Utilities"
+                                    lstat)
+                  #t))))
     (inputs
      `(("jsoncpp" ,jsoncpp)
        ,@(package-inputs cmake-bootstrap)))
