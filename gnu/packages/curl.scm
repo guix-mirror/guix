@@ -53,16 +53,15 @@
 (define-public curl
   (package
    (name "curl")
-   (version "7.76.0")
+   (version "7.76.1")
    (source (origin
              (method url-fetch)
              (uri (string-append "https://curl.haxx.se/download/curl-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1j2g04m6als6hmqzvddv84c31m0x90bfgyz3bjrwdkarbkby40k3"))
+               "0icicyg8bk1471955p62lsgvn71f0pck0zh7gp04024zqf455fv4"))
              (patches (search-patches "curl-use-ssl-cert-env.patch"))))
-   (replacement curl/fixed)
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                             ;1.2 MiB of man3 pages
@@ -145,20 +144,6 @@ tunneling, and so on.")
 
 (define-public curl-minimal
   (deprecated-package "curl-minimal" curl))
-
-(define-public curl/fixed
-  (package
-    (inherit curl)
-    (version "7.76.0")
-    (source
-     (origin
-       (inherit (package-source curl))
-       (uri (string-append "https://curl.haxx.se/download/curl-"
-                           version ".tar.xz"))
-       (patches (search-patches "curl-7.76-use-ssl-cert-env.patch"))
-       (sha256
-        (base32
-         "1j2g04m6als6hmqzvddv84c31m0x90bfgyz3bjrwdkarbkby40k3"))))))
 
 (define-public kurly
   (package
