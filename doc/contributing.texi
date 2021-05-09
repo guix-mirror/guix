@@ -1180,6 +1180,11 @@ MIME attachments.  You are advised to pay attention if your email client
 changes anything like line breaks or indentation which could potentially
 break the patches.
 
+Expect some delay when you submit your very first patch to
+@email{guix-patches@@gnu.org}. You have to wait until you get an
+acnowledgement with the assigned tracking number. Future acnowledgements
+should not be delayed.
+
 When a bug is resolved, please close the thread by sending an email to
 @email{@var{NNN}-done@@debbugs.gnu.org}.
 
