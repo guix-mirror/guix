@@ -54,7 +54,7 @@
 (define-public mit-krb5
   (package
     (name "mit-krb5")
-    (version "1.18")
+    (version "1.19.1")
     (source (origin
               (method url-fetch)
               (uri (list
@@ -64,11 +64,10 @@
                     (string-append "https://kerberos.org/dist/krb5/"
                                    (version-major+minor version)
                                    "/krb5-" version ".tar.gz")))
-              (patches (search-patches "mit-krb5-qualify-short-hostnames.patch"
-                                       "mit-krb5-hurd.patch"))
+              (patches (search-patches "mit-krb5-hurd.patch"))
               (sha256
                (base32
-                "121c5xsy3x0i4wdkrpw62yhvji6virbh6n30ypazkp0isws3k4bk"))))
+                "02xjpsfy84l6v7vjlxzhrl6mx2zrmxz0v01w2j33bv73nxzgh5ps"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
@@ -99,20 +98,14 @@
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-source-directory
            (lambda _
-             (chdir "src")
-             #t))
+             (chdir "src")))
          (add-before 'check 'pre-check
            (lambda* (#:key inputs native-inputs #:allow-other-keys)
              (let ((perl (assoc-ref (or native-inputs inputs) "perl")))
                (substitute* "plugins/kdb/db2/libdb2/test/run.test"
                  (("/bin/cat") (string-append perl "/bin/perl"))
                  (("D/bin/sh") (string-append "D" (which "sh")))
-                 (("bindir=/bin/.") (string-append "bindir=" perl "/bin"))))
-
-             ;; avoid service names since /etc/services is unavailable
-             (substitute* "tests/resolve/Makefile"
-               (("-p telnet") "-p 23"))
-             #t)))))
+                 (("bindir=/bin/.") (string-append "bindir=" perl "/bin")))))))))
     (synopsis "MIT Kerberos 5")
     (description
      "Massachusetts Institute of Technology implementation of Kerberos.

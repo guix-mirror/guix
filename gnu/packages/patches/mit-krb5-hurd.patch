@@ -148,18 +148,3 @@ index 7e981d4..d83b3b6 100644
 +# define MAXPATHLEN 4096
 +#endif
  #endif /* _DB_INT_H_ */
-diff --git a/src/tests/resolve/resolve.c b/src/tests/resolve/resolve.c
-index 7339d21..38f7253 100644
---- a/src/tests/resolve/resolve.c
-+++ b/src/tests/resolve/resolve.c
-@@ -73,6 +73,10 @@ char *strchr();
- #include <netinet/in.h>
- #include <netdb.h>
- 
-+#ifndef MAXHOSTNAMELEN
-+# define MAXHOSTNAMELEN 256
-+#endif
-+
- int
- main(argc, argv)
-     int argc;
