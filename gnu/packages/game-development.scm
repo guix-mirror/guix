@@ -348,14 +348,14 @@ files) into @file{.grf} and/or @file{.nfo} files.")
 (define-public python-sge
   (package
     (name "python-sge")
-    (version "1.7")
+    (version "2.0.post0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "sge" version))
        (sha256
         (base32
-         "02fn6v6bxk3sngwd4kd3mglrp0jlnhx7x6h8nnkik6wdv150a0wv"))))
+         "0s5d5qzlzfmqb10iyrqi62n36ll94d99xjaznp5ca6dz1b91qkvr"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-pygame" ,python-pygame)
