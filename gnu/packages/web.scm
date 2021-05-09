@@ -7602,7 +7602,7 @@ derivation by David Revoy from the original MonsterID by Andreas Gohr.")
 (define-public nghttp2
   (package
     (name "nghttp2")
-    (version "1.41.0")
+    (version "1.43.0")
     (source
      (origin
        (method url-fetch)
@@ -7611,7 +7611,7 @@ derivation by David Revoy from the original MonsterID by Andreas Gohr.")
                            "nghttp2-" version ".tar.xz"))
        (sha256
         (base32
-         "1hk77vngjmvvzb5y1gi1aqwf6qywrc7yak08zvzb7x81qs6mphmb"))))
+         "03vbl80rxjpzzvgxb53kah9r0dd2dw9i4im4bilrzlmfz2k4zmgp"))))
     (build-system gnu-build-system)
     (outputs (list "out"
                    "lib"))              ; only libnghttp2
@@ -7620,6 +7620,7 @@ derivation by David Revoy from the original MonsterID by Andreas Gohr.")
 
        ;; Required by tests.
        ("cunit" ,cunit)
+       ("python" ,python)
        ("tzdata" ,tzdata-for-tests)))
     (inputs
      ;; Required to build the tools (i.e. without ‘--enable-lib-only’).
