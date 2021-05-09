@@ -4,7 +4,7 @@
 ;;; Copyright © 2016, 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2019, 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2019 Carl Dong <contact@carldong.me>
 ;;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
@@ -341,15 +341,18 @@ target that libc."
            `(#:implicit-cross-inputs? #f
              ,@(package-arguments linux-headers))
          ((#:phases phases)
-          `(alist-replace
-            'build
-            (lambda _
-              (setenv "ARCH" ,(system->linux-architecture target))
-              (format #t "`ARCH' set to `~a' (cross compiling)~%" (getenv "ARCH"))
+          `(modify-phases ,phases
+             (replace 'build
+               (lambda _
+                 (setenv "ARCH" ,(system->linux-architecture target))
+                 (format #t "`ARCH' set to `~a' (cross compiling)~%"
+                         (getenv "ARCH"))
 
-              (invoke "make" ,(system->defconfig target))
-              (invoke "make" "mrproper" "headers_check"))
-            ,phases))))
+                 (invoke "make" ,(system->defconfig target))
+                 (invoke "make" "mrproper"
+                         ,@(if (version>=? (package-version linux-headers) "5.3")
+                               '("headers")
+                               '("headers_check")))))))))
       (native-inputs `(("cross-gcc" ,xgcc)
                        ("cross-binutils" ,xbinutils)
                        ,@(package-native-inputs linux-headers)))))
