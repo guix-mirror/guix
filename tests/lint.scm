@@ -277,6 +277,29 @@
    (let ((pkg (dummy-package "under_score")))
      (check-name pkg))))
 
+(test-equal "tests-true: #:tests? must not be set to #t"
+  "#:tests? must not be explicitly set to #t"
+  (single-lint-warning-message
+   (let ((pkg (dummy-package "x" (arguments '(#:tests? #t)))))
+     (check-tests-true pkg))))
+
+(test-equal "tests-true: absent #:tests? is acceptable"
+  '()
+  (let ((pkg (dummy-package "x")))
+    (check-tests-true pkg)))
+
+(test-equal "tests-true: #:tests? #f is acceptable"
+  '()
+  (let ((pkg (dummy-package "x" (arguments '(#:tests? #f)))))
+    (check-tests-true pkg)))
+
+(test-equal "tests-true: #:tests? #t acceptable when compiling natively"
+  '()
+  (let ((pkg (dummy-package "x"
+                            (arguments
+                             `(#:tests? ,(not (%current-target-system)))))))
+    (check-tests-true pkg)))
+
 (test-equal "inputs: pkg-config is probably a native input"
   "'pkg-config' should probably be a native input"
   (single-lint-warning-message

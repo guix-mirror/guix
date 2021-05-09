@@ -12,6 +12,7 @@
 ;;; Copyright © 2020 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2020 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -96,6 +97,7 @@
             check-archival
             check-profile-collisions
             check-haskell-stackage
+            check-tests-true
 
             lint-warning
             lint-warning?
@@ -190,6 +192,26 @@
                      (G_ "name should use hyphens instead of underscores")
                      #:field 'name)))
      (else '()))))
+
+(define (check-tests-true package)
+  "Check whether PACKAGE explicitly requests to run tests, which is
+superfluous when building natively and incorrect when cross-compiling."
+  (define (tests-explicitly-enabled?)
+    (apply (lambda* (#:key tests? #:allow-other-keys)
+             (eq? tests? #t))
+           (package-arguments package)))
+  (if (and (tests-explicitly-enabled?)
+           ;; Some packages, e.g. gnutls, set #:tests?
+           ;; differently depending on whether it is being
+           ;; cross-compiled.
+           (parameterize ((%current-target-system "aarch64-linux-gnu"))
+             (tests-explicitly-enabled?)))
+      (list (make-warning package
+                          ;; TRANSLATORS: #:tests? and #t are Scheme constants
+                          ;; and must not be translated.
+                          (G_ "#:tests? must not be explicitly set to #t")
+                          #:field 'arguments))
+      '()))
 
 (define (properly-starts-sentence? s)
   (string-match "^[(\"'`[:upper:][:digit:]]" s))
@@ -1524,6 +1546,10 @@ them for PACKAGE."
      (name        'name)
      (description "Validate package names")
      (check       check-name))
+   (lint-checker
+     (name        'tests-true)
+     (description "Check if tests are explicitly enabled")
+     (check       check-tests-true))
    (lint-checker
      (name        'description)
      (description "Validate package descriptions")
