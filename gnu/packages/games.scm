@@ -2086,8 +2086,8 @@ Every puzzle has a complete solution, although there may be more than one.")
    (license license:gpl2+)))
 
 (define-public retux
-  (let ((release "1.4.1")
-        (revision 1))
+  (let ((release "1.5")
+        (revision 0))
     (package
       (name "retux")
       (version (if (zero? revision)
@@ -2099,10 +2099,10 @@ Every puzzle has a complete solution, although there may be more than one.")
                 (uri (string-append "https://github.com/retux-game/retux/"
                                     "releases/download/v"
                                     version "/retux-"
-                                    release "-src.tar.gz"))
+                                    release "-src.zip"))
                 (sha256
                  (base32
-                  "1vrldg2qh2gqfswj7vkpc589ldrrjd903j6cnfdik9zh0jhlq4h2"))))
+                  "1yima7s36hn2kh5h08lczc5iid8jbdxk7x1g5ms6knaznzj7rll3"))))
       (build-system python-build-system)
       (arguments
        `(#:tests? #f                    ; no check target
@@ -2125,6 +2125,8 @@ Every puzzle has a complete solution, although there may be more than one.")
                  (copy-file "retux.py" (string-append bin "/retux"))
                  (copy-recursively "data" data)
                  #t))))))
+      (native-inputs
+       `(("unzip" ,unzip)))
       (inputs
        `(("python-sge-pygame" ,python-sge-pygame)
          ("python-six" ,python-six)
