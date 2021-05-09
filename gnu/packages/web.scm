@@ -6971,7 +6971,12 @@ or embedded instantiation.  This package provides utility classes.")
                   "testdir.getPathFile(\"foo\").toFile()")
                  (("testdir.getFile\\(name\\)")
                   "testdir.getPathFile(name).toFile()")))
-             #t)))))))
+             #t)))))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-all" ,java-hamcrest-all)
+       ("perf-helper" ,java-eclipse-jetty-perf-helper)
+       ("test-helper" ,java-eclipse-jetty-test-helper)))))
 
 (define-public java-eclipse-jetty-io
   (package
