@@ -43,7 +43,7 @@
 
             checkout?
             checkout-commit
-            checkout-input
+            checkout-channel
 
             evaluation?
             evaluation-id
@@ -94,7 +94,7 @@
 (define-json-mapping <checkout> make-checkout checkout?
   json->checkout
   (commit      checkout-commit)                   ;string (SHA1)
-  (input       checkout-input))                   ;string (name)
+  (channel     checkout-channel))                 ;string (name)
 
 (define-json-mapping <evaluation> make-evaluation evaluation?
   json->evaluation

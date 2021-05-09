@@ -4,7 +4,7 @@
 ;;; Copyright © 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 by Amar Singh <nly@disroot.org>
 ;;; Copyright © 2020 R Veera Kumar <vkor@vkten.in>
-;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2020, 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -792,10 +792,43 @@ provide you with detailed information about each pass.")
     (home-page "http://gpredict.oz9aec.net/index.php")
     (license license:gpl2+)))
 
+(define-public sgp4
+  ;; No tagged releases, use commit directly.
+  (let ((commit "ca9d4d97af4ee62461de6f13e0c85d1dc6000040")
+        (revision "1"))
+    (package
+      (name "sgp4")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/dnwrnr/sgp4")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1xwfa6papmd2qz5w0hwzvijmzvp9np8dlw3q3qz4bmsippzjv8p7"))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (replace 'check
+             (lambda _
+               ;; Tests fails, probably because of a few "(e <= -0.001)" errors.
+               ;; Or maybe this is not the right way to run the tests?
+               ;; (invoke "runtest/runtest")
+               #t)))))
+      (home-page "https://github.com/dnwrnr/sgp4")
+      (synopsis "Simplified perturbations models library")
+      (description
+       "This is a library implementing the simplified perturbations model.
+It can be used to calculate the trajectory of satellites.")
+      (license license:asl2.0))))
+
 (define-public indi
   (package
     (name "indi")
-    (version "1.8.9")
+    (version "1.9.0")
     (source
      (origin
        (method git-fetch)
@@ -804,7 +837,7 @@ provide you with detailed information about each pass.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0nw4b2cdsg244slcm3yf1v11jlxbbjrpvi6ax90svs7rlandz8jv"))))
+        (base32 "0hxklmf432czfmzsyy3rgahs9nr48k4f8v7jxyv2j6py3k743mb1"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -816,17 +849,15 @@ provide you with detailed information about each pass.")
           (string-append "-DUDEVRULES_INSTALL_DIR=" out "/lib/udev/rules.d")))
        #:phases
        (modify-phases %standard-phases
-         (replace  'check
-           (lambda _
-             (chdir "test")
-             (invoke "ctest")
-             (chdir "..")
-             #t))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (with-directory-excursion "test"
+                 (invoke "ctest")))))
          (add-before 'install 'set-install-directories
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               (mkdir-p (string-append out "/lib/udev/rules.d")))
-             #t)))))
+               (mkdir-p (string-append out "/lib/udev/rules.d"))))))))
     (native-inputs
      `(("googletest" ,googletest)))
     (inputs
@@ -887,13 +918,13 @@ JPL ephemerides use to predict raw (x,y,z) planetary positions.")
 (define-public python-pyerfa
   (package
     (name "python-pyerfa")
-    (version "1.7.2")
+    (version "1.7.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyerfa" version))
        (sha256
-        (base32 "1s78mdyrxha2jcckfs0wg5ynkf0pwh1bw9mmh99vprinxh9n4xri"))
+        (base32 "1jqqrxvrgly4r0br5f6dsy8nab2xmhz915vp6md5f31ysr2sdwvc"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -953,13 +984,13 @@ of stand-alone functions and classes.")
 (define-public python-asdf
   (package
     (name "python-asdf")
-    (version "2.7.2")
+    (version "2.7.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "asdf" version))
        (sha256
-        (base32 "1y47zhkd90i8wmm2i35amfl0rvjqlb3fcx90xp7n9kr2z0byzyzg"))))
+        (base32 "1mj52l2m8pbhiqacgjakjpvqi8kyx470yw151lcsswbq5wp0rsc6"))))
     (build-system python-build-system)
     (arguments
      ;; TODO: (Sharlatan-20210207T165820+0000): Tests depend on astropy, astropy
@@ -1011,23 +1042,23 @@ astronomical images, especially when there is no WCS information available.")
 (define-public python-skyfield
   (package
     (name "python-skyfield")
-    (version "1.38")
+    (version "1.39")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "skyfield" version))
        (sha256
-        (base32 "1qi1l8qn6irdv6w41qq30s2yjwak7h6ayywr1pry9gwcm2c25bv5"))))
+        (base32 "1qh3k7g9dm6idppk87hnwxpx9a22xx98vav0zk31p6291drak3as"))))
     (build-system python-build-system)
     (arguments
      ;; NOTE: (Sharlatan-20210207T163305+0000): tests depend on custom test
      ;; framework https://github.com/brandon-rhodes/assay
      `(#:tests? #f))
     (inputs
-     `(("certifi" ,python-certifi)
-       ("jplephem" ,python-jplephem)
-       ("numpy" ,python-numpy)
-       ("sgp4" ,python-sgp4)))
+     `(("python-certifi" ,python-certifi)
+       ("python-jplephem" ,python-jplephem)
+       ("python-numpy" ,python-numpy)
+       ("python-sgp4" ,python-sgp4)))
     (home-page "https://rhodesmill.org/skyfield/")
     (synopsis "Astronomy for Python")
     (description

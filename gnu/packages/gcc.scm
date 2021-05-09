@@ -582,6 +582,20 @@ It also includes runtime support libraries for these languages.")))
             (patches (search-patches "gcc-9-strmov-store-file-names.patch"
                                      "gcc-5.0-libvtv-runpath.patch"))))))
 
+(define-public gcc-11
+  (package
+   (inherit gcc-8)
+   (version "11.1.0")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://gnu/gcc/gcc-"
+                                version "/gcc-" version ".tar.xz"))
+            (sha256
+             (base32
+              "1pwxrjhsymv90xzh0x42cxfnmhjinf2lnrrf3hj5jq1rm2w6yjjc"))
+            (patches (search-patches "gcc-9-strmov-store-file-names.patch"
+                                     "gcc-5.0-libvtv-runpath.patch"))))))
+
 ;; Note: When changing the default gcc version, update
 ;;       the gcc-toolchain-* definitions.
 (define-public gcc gcc-8)
@@ -732,6 +746,11 @@ as the 'native-search-paths' field."
 (define-public gdc-10
   (hidden-package
    (custom-gcc gcc-10 "gdc" '("d")
+               %generic-search-paths)))
+
+(define-public gdc-11
+  (hidden-package
+   (custom-gcc gcc-11 "gdc" '("d")
                %generic-search-paths)))
 
 (define-public libgccjit

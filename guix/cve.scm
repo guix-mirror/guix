@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -99,7 +99,9 @@
 
 (define (reference-data->cve-references alist)
   (map json->cve-reference
-       (vector->list (assoc-ref alist "reference_data"))))
+       ;; Normally "reference_data" is always present but rejected CVEs such
+       ;; as CVE-2020-10020 can lack it.
+       (vector->list (or (assoc-ref alist "reference_data") '#()))))
 
 (define %cpe-package-rx
   ;; For applications: "cpe:2.3:a:VENDOR:PACKAGE:VERSION", or sometimes
@@ -137,17 +139,20 @@ package."
         (starte (assoc-ref alist "versionStartExcluding"))
         (endi   (assoc-ref alist "versionEndIncluding"))
         (ende   (assoc-ref alist "versionEndExcluding")))
-    (let-values (((package version) (cpe->package-name cpe)))
-      (and package
-           `(,package
-              ,(cond ((and (or starti starte) (or endi ende))
-                      `(and ,(if starti `(>= ,starti) `(> ,starte))
-                            ,(if endi `(<= ,endi) `(< ,ende))))
-                     (starti `(>= ,starti))
-                     (starte `(> ,starte))
-                     (endi   `(<= ,endi))
-                     (ende   `(< ,ende))
-                     (else   version)))))))
+    ;; Normally "cpe23Uri" is here in each "cpe_match" item, but CVE-2020-0534
+    ;; has a configuration that lacks it.
+    (and cpe
+         (let-values (((package version) (cpe->package-name cpe)))
+           (and package
+                `(,package
+                   ,(cond ((and (or starti starte) (or endi ende))
+                           `(and ,(if starti `(>= ,starti) `(> ,starte))
+                                 ,(if endi `(<= ,endi) `(< ,ende))))
+                          (starti `(>= ,starti))
+                          (starte `(> ,starte))
+                          (endi   `(<= ,endi))
+                          (ende   `(< ,ende))
+                          (else   version))))))))
 
 (define (configuration-data->cve-configurations alist)
   "Given ALIST, a JSON dictionary for the baroque \"configurations\"

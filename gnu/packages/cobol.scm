@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,7 +25,9 @@
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
-  #:use-module (gnu packages perl))
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages web)
+  #:use-module (gnu packages xml))
 
 (define-public gnucobol
   (package
@@ -43,7 +45,10 @@
     (arguments
      '(#:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath="
                                               (assoc-ref %outputs "out")
-                                              "/lib"))
+                                              "/lib")
+                               (string-append "JSON_C_CFLAGS=-I"
+                                              (assoc-ref %build-inputs "json-c")
+                                              "/include/json-c"))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'place-cobol85-test-suite
@@ -55,19 +60,21 @@
            (lambda _ (setenv "TERM" "xterm-256color"))))
        #:test-target "checkall"))
     (native-inputs
-     `(("perl" ,perl)))
-    (inputs
-     `(("bdb" ,bdb)
-       ("gmp" ,gmp)
-       ("ncurses" ,ncurses)
+     `(("perl" ,perl)
        ("newcob" ,(origin
                     (method url-fetch)
                     (uri "https://www.itl.nist.gov/div897/ctg/suites/newcob.val.Z")
                     (sha256
                      (base32
                       "1yb1plmv4firfnbb119r2vh1hay221w1ya34nyz0qwsxppfr56hy"))))))
+    (inputs
+     `(("bdb" ,bdb)
+       ("gmp" ,gmp)
+       ("json-c" ,json-c)
+       ("libxml2" ,libxml2)
+       ("ncurses" ,ncurses)))
     (build-system gnu-build-system)
-    (home-page "https://savannah.gnu.org/projects/gnucobol/")
+    (home-page "https://www.gnu.org/software/gnucobol/")
     (synopsis "A modern COBOL compiler")
     (description "GnuCOBOL is a free, modern COBOL compiler.  GnuCOBOL
 implements a substantial part of the COBOL 85, COBOL 2002 and COBOL 2014

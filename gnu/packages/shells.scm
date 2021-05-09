@@ -66,6 +66,7 @@
   #:use-module (guix build-system cargo)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (guix download)
@@ -112,19 +113,20 @@ direct descendant of NetBSD's Almquist Shell (@command{ash}).")
 (define-public fish
   (package
     (name "fish")
-    (version "3.1.2")
+    (version "3.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/fish-shell/fish-shell/"
                            "releases/download/" version "/"
-                           "fish-" version ".tar.gz"))
+                           "fish-" version ".tar.xz"))
        (sha256
-        (base32 "1vblmb3x2k2cb0db5jdyflppnlqsm7i6jjaidyhmvaaw7ch2gffm"))
+        (base32 "02a0dgz5cy4iv3ysvl5kzzd4ji8pxqv93zd45041plcki0ddli2r"))
        (modules '((guix build utils)))
        (snippet
         '(begin
-           (delete-file-recursively "pcre2-10.32") #t))))
+           ;; Remove bundled software.
+           (delete-file-recursively "pcre2")))))
     (build-system cmake-build-system)
     (inputs
      `(("fish-foreign-env" ,fish-foreign-env)
@@ -133,8 +135,8 @@ direct descendant of NetBSD's Almquist Shell (@command{ash}).")
        ("python" ,python)))  ; for fish_config and manpage completions
     (native-inputs
      `(("doxygen" ,doxygen)
-       ; for 'fish --help'
-       ("groff" ,groff)))
+       ("groff" ,groff)                 ; for 'fish --help'
+       ("procps" ,procps)))             ; for the test suite
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -147,12 +149,15 @@ direct descendant of NetBSD's Almquist Shell (@command{ash}).")
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((coreutils (assoc-ref inputs "coreutils"))
                    (bash (assoc-ref inputs "bash")))
-               ;; This test fails
+               ;; This test fails.
                (delete-file "tests/checks/pipeline-pgroup.fish")
-               ;; These try to open a terminal
-               (delete-file "tests/checks/interactive.fish")
-               (delete-file "tests/checks/login-interactive.fish")
-               ;; These contain absolute path references
+               ;; This one tries to open a terminal & can't simply be deleted.
+               (substitute* "cmake/Tests.cmake"
+                 ((".* interactive\\.fish.*") ""))
+               ;; This one needs to chdir successfully.
+               (substitute* "tests/checks/vars_as_commands.fish"
+                 (("/usr/bin") "/tmp"))
+               ;; These contain absolute path references.
                (substitute* "src/fish_tests.cpp"
                  (("/bin/echo" echo) (string-append coreutils echo))
                  (("/bin/ca" ca) (string-append coreutils ca))
@@ -165,7 +170,10 @@ direct descendant of NetBSD's Almquist Shell (@command{ash}).")
                  (((string-append
                     "do_test\\(is_potential_path\\("
                     "L\"/usr\", wds, vars, PATH_REQUIRE_DIR\\)\\);"))
-                  ""))
+                  "")
+                 ;; Not all mentions of /usr... need to exist, but these do.
+                 (("\"/usr(|/lib)\"" _ subdirectory)
+                  (string-append "\"/tmp" subdirectory "\"")))
                (substitute*
                  (append (find-files "tests" ".*\\.(in|out|err)$")
                          (find-files "tests/checks" ".*\\.fish"))
@@ -761,30 +769,26 @@ The OpenBSD Korn Shell is a cleaned up and enhanced ksh.")
 (define-public loksh
   (package
     (name "loksh")
-    (version "6.6")
+    (version "6.9")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/dimkr/loksh")
-             (commit version)))
+             (commit version)
+             ;; Include the ‘lolibc’ submodule, a static compatibility library
+             ;; created for and currently used only by loksh.
+             (recursive? #t)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1a8s64n97ikvvi7ckirxnnjvcmhr3dd4rnqm2ivapyzb0wp42jk7"))))
-    (build-system gnu-build-system)
+        (base32 "0x33plxqhh5202hgqidgccz5hpg8d2q71ylgnm437g60mfi9z0px"))))
+    (build-system meson-build-system)
     (inputs
-     `(("libbsd" ,libbsd)
-       ("ncurses" ,ncurses)))
+     `(("ncurses" ,ncurses)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (arguments
-     `(#:tests? #f                      ; no tests included
-       #:make-flags (list "CC=gcc" "HAVE_LIBBSD=1"
-                          (string-append "PREFIX="
-                                         (assoc-ref %outputs "out")))
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure))))         ; no configure script
+     `(#:tests? #f))                    ; no tests included
     (home-page "https://github.com/dimkr/loksh")
     (synopsis "Korn Shell from OpenBSD")
     (description
@@ -836,14 +840,14 @@ Shell (pdksh).")
 (define-public oil
   (package
     (name "oil")
-    (version "0.8.9")
+    (version "0.8.10")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.oilshell.org/download/oil-"
                            version ".tar.gz"))
        (sha256
-        (base32 "080lsx7hyjhny3jzscwr152vr0g9s3c2iqg3vrpgsbk8vv7vw5l7"))))
+        (base32 "03ixqspizvgj869b524c33pg9c6h64g04r4pjkxfp1fxvgca70db"))))
     (build-system gnu-build-system)
     (arguments
      `(#:strip-binaries? #f             ; strip breaks the binary

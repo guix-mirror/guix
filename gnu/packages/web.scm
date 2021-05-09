@@ -3,7 +3,7 @@
 ;;; Copyright © 2013 Aljosha Papsch <misc@rpapsch.de>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Eric Bavier <bavier@posteo.net>
@@ -248,14 +248,14 @@
 (define-public httpd
   (package
     (name "httpd")
-    (version "2.4.46")
+    (version "2.4.47")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://apache/httpd/httpd-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1sj1rwgbcjgkzac3ybjy7j68c9b3dv3ap71m48mrjhf6w7vds3kl"))))
+               "1jh31j4740wz463l1j49ir2lhh42x9z4byiq25m12y75r3dhdl13"))))
     (build-system gnu-build-system)
     (native-inputs `(("pcre" ,pcre "bin")))       ;for 'pcre-config'
     (inputs `(("apr" ,apr)
@@ -368,16 +368,18 @@ the same, being completely separated from the Internet.")
     ;; ’stable’ and recommends that “in general you deploy the NGINX mainline
     ;; branch at all times” (https://www.nginx.com/blog/nginx-1-6-1-7-released/)
     ;; Consider updating the nginx-documentation package together with this one.
-    (version "1.19.9")
+    (version "1.19.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0hfqqyfgqa6wqazmb3d434nb3r5p8szfisa0m6nfh9lqdbqdyd9f"))))
+                "121d11693d6dbim3lh64hrqi66z129z30cvcrpbnm631yl7jkl78"))))
     (build-system gnu-build-system)
-    (inputs `(("openssl" ,openssl)
+    (inputs `(("libxml2" ,libxml2)
+              ("libxslt" ,libxslt)
+              ("openssl" ,openssl)
               ("pcre" ,pcre)
               ("zlib" ,zlib)))
     (arguments
@@ -391,11 +393,12 @@ the same, being completely separated from the Internet.")
              #t))
          (replace 'configure
            ;; The configure script is hand-written, not from GNU autotools.
-           (lambda* (#:key configure-flags outputs #:allow-other-keys)
+           (lambda* (#:key configure-flags inputs outputs #:allow-other-keys)
              (let ((flags
                     (append (list (string-append "--prefix=" (assoc-ref outputs "out"))
                                   "--with-http_ssl_module"
                                   "--with-http_v2_module"
+                                  "--with-http_xslt_module"
                                   "--with-pcre-jit"
                                   "--with-debug"
                                   "--with-stream"
@@ -418,7 +421,11 @@ the same, being completely separated from the Internet.")
                                      (string-append "--crossbuild="
                                                     system ":" release ":" machine)))
                             configure-flags)))
-               (setenv "CC" "gcc")
+               (setenv "CC" ,(cc-for-target))
+               ;; Fix ./configure test for ‘#include <libxml/parser.h>’.
+               (setenv "CFLAGS"         ; CPPFLAGS is not respected
+                       (string-append "-I" (assoc-ref inputs "libxml2")
+                                      "/include/libxml2"))
                (format #t "configure flags: ~s~%" flags)
                (apply invoke "./configure" flags)
                #t)))
@@ -459,9 +466,9 @@ and as a proxy to reduce the load on back-end HTTP or mail servers.")
 
 (define-public nginx-documentation
   ;; This documentation should be relevant for the current nginx package.
-  (let ((version "1.19.9")
-        (revision 2696)
-        (changeset "f85798c1c70a"))
+  (let ((version "1.19.10")
+        (revision 2708)
+        (changeset "f8686d85df53"))
     (package
       (name "nginx-documentation")
       (version (simple-format #f "~A-~A-~A" version revision changeset))
@@ -473,7 +480,7 @@ and as a proxy to reduce the load on back-end HTTP or mail servers.")
                (file-name (string-append name "-" version))
                (sha256
                 (base32
-                 "1ksl32jw6h3qzyxxlsdjag7fcjvk3md3hdxn6ljs8pr2nhk1v6cs"))))
+                 "00b0dkpblw3m2cwbbzv3miw47c0m3s0dvh1xy0hihkggy7mqv2r2"))))
       (build-system gnu-build-system)
       (arguments
        '(#:tests? #f                    ; no test suite
@@ -1176,7 +1183,7 @@ efficiently.  It gives the application developer no more than 4 methods.")
 (define-public krona-tools
   (package
    (name "krona-tools")
-   (version "2.7")
+   (version "2.8")
    (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1184,7 +1191,7 @@ efficiently.  It gives the application developer no more than 4 methods.")
                    version "/KronaTools-" version ".tar"))
              (sha256
               (base32
-               "0wvgllcqscsfb4xc09y3fqhx8i38pmr4w55vjs5y79wx56n710iq"))))
+               "1h698wddb3hii68mnkby7s1x81vbhd4z1sf4ivm1lsi2nqlc1vsn"))))
    (build-system perl-build-system)
    (arguments
      `(#:phases
@@ -1199,11 +1206,13 @@ efficiently.  It gives the application developer no more than 4 methods.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((bin   (string-append (assoc-ref outputs "out") "/bin"))
                    (perl  (string-append (assoc-ref outputs "out")
-                                         "/lib/perl5/site_perl/krona-tools/lib")))
+                                         "/lib/perl5/site_perl/krona-tools/lib"))
+                   (share (string-append (assoc-ref outputs "out")
+                                         "/share/krona-tools")))
                (mkdir-p bin)
                (for-each
                 (lambda (script)
-                  (let* ((executable (string-append "scripts/" script ".pl")))
+                  (let ((executable (string-append "scripts/" script ".pl")))
                     ;; Prefix executables with 'kt' as install script does.
                     (copy-file executable (string-append bin "/kt" script))))
                 '("ClassifyBLAST"
@@ -1231,7 +1240,32 @@ efficiently.  It gives the application developer no more than 4 methods.")
                   (copy-recursively directory
                                     (string-append perl "/../" directory)))
                 (list "data" "img" "taxonomy" "src"))
-               (install-file "lib/KronaTools.pm" perl))))
+               (install-file "lib/KronaTools.pm" perl)
+
+               ;; Install downloaders
+               (substitute* "updateAccessions.sh"
+                 (("ktPath=.*") (string-append "ktPath=" share "\n")))
+               (substitute* "updateTaxonomy.sh"
+                 (("ktPath=.*") (string-append "ktPath=" share "\n"))
+                 (("command -v curl")
+                  (string-append "command -v " (which "curl")))
+                 (("curl -s")
+                  (string-append (which "curl") " -s"))
+                 (("curl\\$timestring")
+                  (string-append (which "curl") "$timestring"))
+                 (("perl -M")
+                  (string-append (which "perl") " -M"))
+                 (("make ")
+                  (string-append (which "make") " ")))
+               (for-each (lambda (file)
+                           (install-file file (string-append share "/scripts")))
+                         '("scripts/extractTaxonomy.pl"
+                           "scripts/accession2taxid.make"
+                           "scripts/taxonomy.make"))
+               (for-each (lambda (file)
+                           (install-file file share))
+                         '("updateAccessions.sh"
+                           "updateTaxonomy.sh")))))
          (add-after 'install 'wrap-program
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -1249,7 +1283,9 @@ efficiently.  It gives the application developer no more than 4 methods.")
                (invoke (string-append (assoc-ref outputs "out") "/bin/ktImportText")
                        "ec.tsv")))))))
    (inputs
-    `(("perl" ,perl)))
+    `(("curl" ,curl)
+      ("make" ,gnu-make)
+      ("perl" ,perl)))
    (home-page "https://github.com/marbl/Krona/wiki")
    (synopsis "Hierarchical data exploration with zoomable HTML5 pie charts")
    (description
@@ -1555,7 +1591,7 @@ used to validate and fix HTML data.")
 (define-public esbuild
   (package
     (name "esbuild")
-    (version "0.11.9")
+    (version "0.11.14")
     (source
      (origin
        (method git-fetch)
@@ -1564,7 +1600,7 @@ used to validate and fix HTML data.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0pi5ydvbcfi8dbq2ryw8z4197pf4jrlz8mj1vzkdff22ga9qcmxy"))
+        (base32 "0qxylzc7lzpsp5hm3dl5jvy9aca8azn8dmbjz9z5n5rkdmm8vd9p"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -1598,7 +1634,7 @@ and other data, for distribution on the web.")
 (define-public tinyproxy
   (package
     (name "tinyproxy")
-    (version "1.10.0")
+    (version "1.11.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/tinyproxy/tinyproxy/"
@@ -1606,10 +1642,11 @@ and other data, for distribution on the web.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "10jnk6y2swld25mm47mjc0nkffyzsfysnsxwr7cs0ns1kil8ggjr"))))
+                "0cizm8pbh5p557birdirkayj71xdxapaa9q29v1d4lf5qk7q3v61"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags
+     `(#:test-target "test"             ; ‘make check’ silently does nothing
+       #:configure-flags
        (list
         ;; For the log file, etc.
         "--localstatedir=/var")
@@ -1621,6 +1658,8 @@ and other data, for distribution on the web.")
              ;; (substitute* "docs/man5/Makefile" (("a2x") "a2x -v"))
              ;; (setenv "XML_DEBUG_CATALOG" "1")
              #t)))))
+    (native-inputs
+     `(("perl" ,perl)))                 ; for tests
     (home-page "https://tinyproxy.github.io/")
     (synopsis "Light-weight HTTP/HTTPS proxy daemon")
     (description "Tinyproxy is a light-weight HTTP/HTTPS proxy
@@ -2889,14 +2928,14 @@ development server with Starman.")
 (define-public perl-cgi
   (package
     (name "perl-cgi")
-    (version "4.51")
+    (version "4.52")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/L/LE/LEEJO/"
                            "CGI-" version ".tar.gz"))
        (sha256
-        (base32 "02k0p8zwbn0fz9r39rg8jvbmky8fwdg6kznklzk557rg07kiblhb"))))
+        (base32 "1bxrpxv95js8yinicminxdg41xvd85haj2gvlywg3zqdb66smqy8"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-deep" ,perl-test-deep)
@@ -6921,7 +6960,12 @@ or embedded instantiation.  This package provides utility classes.")
                   "testdir.getPathFile(\"foo\").toFile()")
                  (("testdir.getFile\\(name\\)")
                   "testdir.getPathFile(name).toFile()")))
-             #t)))))))
+             #t)))))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-all" ,java-hamcrest-all)
+       ("perf-helper" ,java-eclipse-jetty-perf-helper)
+       ("test-helper" ,java-eclipse-jetty-test-helper)))))
 
 (define-public java-eclipse-jetty-io
   (package
@@ -7067,7 +7111,8 @@ or embedded instantiation.  This package provides the JMX management.")))
     (source (package-source java-eclipse-jetty-util-9.2))
     (inputs
      `(("http" ,java-eclipse-jetty-http-9.2)
-       ,@(package-inputs java-eclipse-jetty-http-9.2)))))
+       ,@(package-inputs java-eclipse-jetty-http-9.2)))
+    (native-inputs (package-native-inputs java-eclipse-jetty-util-9.2))))
 
 (define-public java-eclipse-jetty-server
   (package

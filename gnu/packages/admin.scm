@@ -41,6 +41,7 @@
 ;;; Copyright © 2021 qblade <qblade@protonmail.com>
 ;;; Copyright © 2021 Hyunseok Kim <lasnesne@lagunposprasihopre.org>
 ;;; Copyright © 2021 David Larsson <david.larsson@selfhosted.xyz>
+;;; Copyright © 2021 WinterHound <winterhound@yandex.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -470,6 +471,34 @@ services.")
     (license license:public-domain)
     (home-page "https://cr.yp.to/daemontools.html")))
 
+(define-public daemonize
+  (package
+    (name "daemonize")
+    (version "1.7.8")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/bmc/daemonize")
+             (commit (string-append "release-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0w4g0iyssyw7dd0061881z8s5czcl01mz6v00znax57zfxjqpvnm"))))
+    (build-system gnu-build-system)
+    (arguments '(#:tests? #f))          ; No tests available.
+    (home-page "http://software.clapper.org/daemonize/")
+    (synopsis "Command line utility to run a program as a daemon")
+    (description
+     "daemonize runs a command as a Unix daemon.  It will close all open file
+descriptors, change working directory of the process to the root filesystem,
+reset its umask, run in the background, ignore I/O signals, handle
+@code{SIGCLD}, etc.  Most programs that are designed to be run as daemons do
+that work for themselves.  However, you’ll occasionally run across one that
+does not.  When you must run a daemon program that does not properly make
+itself into a true Unix daemon, you can use daemonize to force it to run as a
+true daemon.")
+    (license license:bsd-3)))
+
 (define-public dfc
   (package
    (name "dfc")
@@ -654,14 +683,13 @@ memory, disks, network and processes.")
 (define-public bpytop
   (package
     (name "bpytop")
-    (version "1.0.63")
+    (version "1.0.65")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "bpytop" version))
        (sha256
-        (base32
-         "0ql72s842g56rnzdqja6m53lw5y68c4gb540ihp1bjg7x9ycim11"))))
+        (base32 "1vq51vg2ygk2p738zi21v5chn908d4bd5zkb8s4fbgf4zqp425ny"))))
     (build-system python-build-system)
     (inputs
      `(("python-psutil" ,python-psutil)))
@@ -681,7 +709,7 @@ memory, disks, network and processes.")
      "https://github.com/aristocratos/bpytop")
     (synopsis "Resource monitor")
     (description "Resource monitor that shows usage and stats for processor,
-memory, disks, network and processes.  It's a Python port of
+memory, disks, network and processes.  It's a Python port and continuation of
 @command{bashtop}.")
     (license license:asl2.0)))
 
@@ -1115,7 +1143,7 @@ connection alive.")
 (define-public isc-dhcp
   (let* ((bind-major-version "9")
          (bind-minor-version "11")
-         (bind-patch-version "29")
+         (bind-patch-version "31")
          (bind-release-type "")         ; for patch release, use "-P"
          (bind-release-version "")      ; for patch release, e.g. "6"
          (bind-version (string-append bind-major-version
@@ -1252,7 +1280,7 @@ connection alive.")
                                         "/bind-" bind-version ".tar.gz"))
                     (sha256
                      (base32
-                      "01vvkvlhsxz4ffz2fw86z0fsf170b93jjnn5710ai6vfri8wgfy7"))))
+                      "0sm3vy5g21isdywxr650442x9r00fpj9cxc81n3qcbibyibl9wpm"))))
 
                 ("coreutils*" ,coreutils)
                 ("sed*" ,sed)))
@@ -3039,7 +3067,7 @@ produce uniform output across heterogeneous networks.")
      `(#:tests? #f                      ; no tests
        #:make-flags
        (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
-             "CC=gcc")
+             ,(string-append "CC=" (cc-for-target)))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))         ; no configure script
@@ -3571,14 +3599,14 @@ information tool.")
 (define-public nnn
   (package
     (name "nnn")
-    (version "3.6")
+    (version "4.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/jarun/nnn/releases/download/v"
                            version "/nnn-v" version ".tar.gz"))
        (sha256
-        (base32 "1dbq16cdipij5ws59ab3alfmxli7n4wx28ip7gsyq8ncxg598l47"))))
+        (base32 "0m07nh1cdfikn4bkpni29j61hr9jdwbl0n5fmlm53l1xmn7yq6d2"))))
     (build-system gnu-build-system)
     (inputs
      `(("ncurses" ,ncurses)
@@ -3594,10 +3622,7 @@ information tool.")
            (lambda _
              (substitute* "Makefile"
                (("pkg-config")
-                (or (which "pkg-config")
-                    (string-append ,(%current-target-system)
-                                   "-pkg-config"))))
-             #t)))
+                ,(pkg-config-for-target))))))
        #:make-flags
        (list
         (string-append "PREFIX="
@@ -3615,7 +3640,7 @@ make it a perfect utility on modern distros.")
 (define-public thermald
   (package
     (name "thermald")
-    (version "2.4.3")
+    (version "2.4.4")
     (source
      (origin
       (method git-fetch)
@@ -3624,7 +3649,7 @@ make it a perfect utility on modern distros.")
              (commit (string-append "v" version))))
       (file-name (git-file-name name version))
       (sha256
-       (base32 "1ibihgpmx038xci0k2h471scs5ssn7z5kcvjrfz63qf2ppdf9yh8"))))
+       (base32 "1k0r2c13fihjndwfh0byw0i8ni4lzsjgwz874pvpj1l1nvjj0ajx"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -3813,7 +3838,7 @@ Python loading in HPC environments.")
   (let ((real-name "inxi"))
     (package
       (name "inxi-minimal")
-      (version "3.3.03-1")
+      (version "3.3.04-1")
       (source
        (origin
          (method git-fetch)
@@ -3822,7 +3847,7 @@ Python loading in HPC environments.")
                (commit version)))
          (file-name (git-file-name real-name version))
          (sha256
-          (base32 "1pahns10i5farw47v9v8cykrk5arq8218vpsa8c0bmaia0rf2n1q"))))
+          (base32 "1rrhycp8i43yf9wi80n4pq2hkfhvb2rg1srz8if28bh6fhhasjzw"))))
       (build-system trivial-build-system)
       (inputs
        `(("bash" ,bash-minimal)
@@ -4023,7 +4048,7 @@ cache of unix and unix-like systems.")
 (define-public solaar
   (package
     (name "solaar")
-    (version "1.0.5")
+    (version "1.0.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4032,7 +4057,7 @@ cache of unix and unix-like systems.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "17gkr2lf1kzp1198gcdr30j3c8xd81kg7ly12aar1jrgi6lc7klk"))))
+                "04zclzfc31l2fj5shcsngnmcvcmmhnc567l3wb9yfhs8k39k9kb2"))))
     (build-system python-build-system)
     (arguments
      `(#:phases

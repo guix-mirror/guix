@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018, 2020 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
@@ -1185,13 +1185,13 @@ of Bioconductor.")
 (define-public r-biocgenerics
   (package
     (name "r-biocgenerics")
-    (version "0.36.0")
+    (version "0.36.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "BiocGenerics" version))
               (sha256
                (base32
-                "1y9pgangz2f0n9v3zj8brz8bv7a1yjsncdnd5h1l7zv0c0j9fh9q"))))
+                "0x8cllriayrs99wd5l003iq6i28rb1mci23qcn13ga85578f5lz5"))))
     (properties
      `((upstream-name . "BiocGenerics")))
     (build-system r-build-system)
@@ -2048,13 +2048,13 @@ high-throughput sequencing experiments.")
 (define-public r-genomeinfodb
   (package
     (name "r-genomeinfodb")
-    (version "1.26.6")
+    (version "1.26.7")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "GenomeInfoDb" version))
               (sha256
                (base32
-                "1wy4dwiv0pgim975var802z565py4a0nakx6zdvbhry4c0dfczd1"))))
+                "0fp7sp3jmc2a1hk4r624lfavx8gc2ik3lv43ksc2jmspg6cvh516"))))
     (properties
      `((upstream-name . "GenomeInfoDb")))
     (build-system r-build-system)
@@ -2395,17 +2395,51 @@ purposes.  The package also contains legacy support for early single-end,
 ungapped alignment formats.")
     (license license:artistic2.0)))
 
+(define-public r-summarizedexperiment
+  (package
+    (name "r-summarizedexperiment")
+    (version "1.20.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "SummarizedExperiment" version))
+              (sha256
+               (base32
+                "04x6d4mcsnvz6glkmf6k2cv3fs8zk03i9rvv0ahpl793n8l411ps"))))
+    (properties
+     `((upstream-name . "SummarizedExperiment")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-delayedarray" ,r-delayedarray)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-matrix" ,r-matrix)
+       ("r-matrixgenerics" ,r-matrixgenerics)
+       ("r-s4vectors" ,r-s4vectors)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://bioconductor.org/packages/SummarizedExperiment")
+    (synopsis "Container for representing genomic ranges by sample")
+    (description
+     "The SummarizedExperiment container contains one or more assays, each
+represented by a matrix-like object of numeric or other mode.  The rows
+typically represent genomic ranges of interest and the columns represent
+samples.")
+    (license license:artistic2.0)))
+
 (define-public r-systempiper
   (package
     (name "r-systempiper")
-    (version "1.24.3")
+    (version "1.24.6")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "systemPipeR" version))
        (sha256
         (base32
-         "0ffazyl2q9plbhwlxi04s3fvnli6qj95n7bkjc21535bbi08xfki"))))
+         "05qnn105gm423fka4kb84vpgzjmz1py6mxpfa2agwwmc5v012qbp"))))
     (properties `((upstream-name . "systemPipeR")))
     (build-system r-build-system)
     (propagated-inputs
@@ -3247,16 +3281,16 @@ parsing of genetic sequencing data from ribosome profiling experiments.")
     (license license:gpl3)))
 
 (define-public r-interactionset
-  (package                              ;BROKEN
+  (package
     (name "r-interactionset")
-    (version "1.18.0")
+    (version "1.18.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "InteractionSet" version))
        (sha256
         (base32
-         "14lp23b298wr3r7ggcfvas0xlf1866cpla0rv7dz589f50z6bj31"))))
+         "0dx6yw6rxgkcidnnyjzv57vzd112nf9n2bj6dkv7r3a2d2wj6xh4"))))
     (properties
      `((upstream-name . "InteractionSet")))
     (build-system r-build-system)
@@ -3979,14 +4013,14 @@ independent of the p-value under the null hypothesis.")
 (define-public r-icobra
   (package
     (name "r-icobra")
-    (version "1.18.0")
+    (version "1.18.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "iCOBRA" version))
        (sha256
         (base32
-         "0knqvvfi5y53jk8s2g2bqgxnh2pbdf38676fk7pkdp1r2j6cbi3s"))))
+         "183asczy9v2v1vrzxb7n7pa2yfzym3l24r3737k0jg6hnp2bpw50"))))
     (properties `((upstream-name . "iCOBRA")))
     (build-system r-build-system)
     (propagated-inputs
@@ -7528,18 +7562,19 @@ self-organizing map clustering and minimal spanning trees.")
 (define-public r-mixomics
   (package
     (name "r-mixomics")
-    (version "6.14.0")
+    (version "6.14.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "mixOmics" version))
        (sha256
         (base32
-         "0q43ay5r0qsx0zjjnrq24fk6pq5cimviky5lm4w2mbjclqf0gv0q"))))
+         "07d1z33bc3bym1jwp1qqfhs18w4v9axk0ycnmldmj6piswvp44wk"))))
     (properties `((upstream-name . "mixOmics")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-corpcor" ,r-corpcor)
+     `(("r-biocparallel" ,r-biocparallel)
+       ("r-corpcor" ,r-corpcor)
        ("r-dplyr" ,r-dplyr)
        ("r-ellipse" ,r-ellipse)
        ("r-ggrepel" ,r-ggrepel)
@@ -7767,7 +7802,7 @@ accessibility data.")
     (description
      "@code{r-circrnaprofiler} is a computational framework for a comprehensive
 in silico analysis of @dfn{circular RNA} (circRNAs).  This computational
-framework allows to combine and analyze circRNAs previously detected by
+framework allows combining and analyzing circRNAs previously detected by
 multiple publicly available annotation-based circRNA detection tools.  It
 covers different aspects of circRNAs analysis from differential expression
 analysis, evolutionary conservation, biogenesis to functional analysis.")
@@ -8401,14 +8436,14 @@ data.")
 (define-public r-universalmotif
   (package
     (name "r-universalmotif")
-    (version "1.8.4")
+    (version "1.8.5")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "universalmotif" version))
        (sha256
         (base32
-         "0pmi5mp5v0srr482vlkfmkp28bywq969fvv9g5kjl5rxki963zmr"))))
+         "07862bs771xldmdnq0zr8926dr299ach8nrgci14p5bbrc88l3ly"))))
     (properties
      `((upstream-name . "universalmotif")))
     (build-system r-build-system)
@@ -8866,14 +8901,14 @@ structures.")
 (define-public r-bioassayr
   (package
     (name "r-bioassayr")
-    (version "1.28.2")
+    (version "1.28.3")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "bioassayR" version))
        (sha256
         (base32
-         "0ylnnm31jkmi8zz78kngqv36yn6i5lvjp1i27v59svw13m4r03g5"))))
+         "03pdb76j7c28b1h1flb40ahq7i9iha22kblq6mkl3x4xmrdgaw5y"))))
     (properties `((upstream-name . "bioassayR")))
     (build-system r-build-system)
     (propagated-inputs
@@ -9168,14 +9203,14 @@ also known as views, in a controlled vocabulary.")
 (define-public r-experimenthub
   (package
     (name "r-experimenthub")
-    (version "1.16.0")
+    (version "1.16.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ExperimentHub" version))
        (sha256
         (base32
-         "1zi7vsrhf1hj27rlzrxl4jd81fqh1yhn0svp2d9w71fizsi71akg"))))
+         "1iyf052hh2dhlwzwwrj571cwr3hd9wp2j915sqg77x6jn40wjr1g"))))
     (properties `((upstream-name . "ExperimentHub")))
     (build-system r-build-system)
     (propagated-inputs
@@ -9338,14 +9373,14 @@ gene selection, testing relationships, and so on.")
 (define-public r-biocpkgtools
   (package
     (name "r-biocpkgtools")
-    (version "1.8.0")
+    (version "1.8.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "BiocPkgTools" version))
        (sha256
         (base32
-         "12j4vag40zdgrxfzaqvf3ly7776qyziryz04c3jqzgsqfvzvzz8m"))))
+         "18m816mh1ic0znp38wax8xppai77lkym3w84x4x30x2mf0vriqfw"))))
     (properties `((upstream-name . "BiocPkgTools")))
     (build-system r-build-system)
     (propagated-inputs
@@ -10329,14 +10364,14 @@ quality control.")
 (define-public r-scran
   (package
     (name "r-scran")
-    (version "1.18.5")
+    (version "1.18.7")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "scran" version))
        (sha256
         (base32
-         "0mk4bs7pkzbaiaaap75nzsrlwr883h45xnbpn94fy91i8d9w1xy1"))))
+         "0hsr58b7xj2cqdkyjdpzyifg5wrl1lbylq2h91zbjh5861qjv2n4"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-beachmat" ,r-beachmat)
@@ -10550,7 +10585,7 @@ experiments, and visualize de influence of the involved factors.")
      "https://bioconductor.org/packages/msmsTests")
     (synopsis "Differential LC-MS/MS expression tests")
     (description
-     "This packages provides statistical tests for label-free LC-MS/MS data
+     "This package provides statistical tests for label-free LC-MS/MS data
 by spectral counts, to discover differentially expressed proteins between two
 biological conditions.  Three tests are available: Poisson GLM regression,
 quasi-likelihood GLM regression, and the negative binomial of the edgeR
@@ -10563,14 +10598,14 @@ relevant, and the minimum expression of the most abundant condition.")
 (define-public r-catalyst
   (package
     (name "r-catalyst")
-    (version "1.14.0")
+    (version "1.14.1")
     (source
       (origin
         (method url-fetch)
         (uri (bioconductor-uri "CATALYST" version))
         (sha256
           (base32
-            "13af7c4irx1f5yqi32k7kj661vzg32wn3dnps7r9pjijfl4drhrh"))))
+            "04b5kcvkfiw4ina11x3qf5kwrb7056zihm7xp1919bqm8k7nl3mn"))))
     (properties `((upstream-name . "CATALYST")))
     (build-system r-build-system)
     (propagated-inputs
@@ -10996,6 +11031,44 @@ optionally include the physical locations or genetic map distances of each SNP
 on the plot.")
     (license license:gpl3)))
 
+;; This is a CRAN package, but it depends on r-rgraphviz, which is a
+;; Bioconductor package.
+(define-public r-abn
+  (package
+    (name "r-abn")
+    (version "2.5-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "abn" version))
+       (sha256
+        (base32
+         "1fqmhw0mhdl6az1gpg0byvx5snhz1pl3fqikhyfjcjrc9xbsq8yw"))))
+    (build-system r-build-system)
+    (inputs
+     `(("gsl" ,gsl)))
+    (propagated-inputs
+     `(("r-lme4" ,r-lme4)
+       ("r-nnet" ,r-nnet)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)
+       ("r-rgraphviz" ,r-rgraphviz)
+       ("r-rjags" ,r-rjags)))
+    (home-page "https://r-bayesian-networks.org/")
+    (synopsis "Modelling multivariate data with additive bayesian networks")
+    (description
+     "Bayesian network analysis is a form of probabilistic graphical models
+which derives from empirical data a directed acyclic graph, DAG, describing
+the dependency structure between random variables.  An additive Bayesian
+network model consists of a form of a DAG where each node comprises a
+@dfn{generalized linear model} (GLM).  Additive Bayesian network models are
+equivalent to Bayesian multivariate regression using graphical modelling, they
+generalises the usual multivariable regression, GLM, to multiple dependent
+variables.  This package provides routines to help determine optimal Bayesian
+network models for a given data set, where these models are used to identify
+statistical dependencies in messy, complex data.")
+    (license license:gpl2+)))
+
 (define-public r-pathview
   (package
     (name "r-pathview")
@@ -11094,6 +11167,38 @@ analysis of ChIP-seq data.  It includes uni- and multivariate peak-calling,
 export to genome browser viewable files, and functions for enrichment
 analyses.")
     (license license:artistic2.0)))
+
+(define-public r-guitar
+  (package
+    (name "r-guitar")
+    (version "2.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "Guitar" version))
+       (sha256
+        (base32
+         "0lvfrpgrvmrz4f4qmsii70hw10h72zh1g1alv2sf6a6ixhndm0mz"))))
+    (properties `((upstream-name . "Guitar")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-dplyr" ,r-dplyr)
+       ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-knitr" ,r-knitr)
+       ("r-magrittr" ,r-magrittr)
+       ("r-rtracklayer" ,r-rtracklayer)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://bioconductor.org/packages/Guitar")
+    (synopsis "Visualize genomic features")
+    (description
+     "This package is designed for visualization of RNA-related genomic
+features with respect to the landmarks of RNA transcripts, i.e., transcription
+starting site, start codon, stop codon and transcription ending site.")
+    (license license:gpl2)))
 
 (define-public r-sushi
   (package

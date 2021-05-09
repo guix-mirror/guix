@@ -65,6 +65,26 @@
         (lambda (port)
           (display #$%index.html-contents port)))))
 
+(define retry-on-error
+  #~(lambda* (f #:key times delay)
+      (let loop ((attempt 1))
+        (match (catch
+                 #t
+                 (lambda ()
+                   (cons #t
+                         (f)))
+                 (lambda args
+                   (cons #f
+                         args)))
+          ((#t . return-value)
+           return-value)
+          ((#f . error-args)
+           (if (>= attempt times)
+               error-args
+               (begin
+                 (sleep delay)
+                 (loop (+ 1 attempt)))))))))
+
 (define* (run-webserver-test name test-os #:key (log-file #f) (http-port 8080))
   "Run tests in %NGINX-OS, which has nginx running and listening on
 HTTP-PORT."
@@ -472,28 +492,9 @@ HTTP-PORT."
                 (start-service 'tailon))
              marionette))
 
-          (define* (retry-on-error f #:key times delay)
-            (let loop ((attempt 1))
-              (match (catch
-                      #t
-                      (lambda ()
-                        (cons #t
-                              (f)))
-                      (lambda args
-                        (cons #f
-                              args)))
-                ((#t . return-value)
-                 return-value)
-                ((#f . error-args)
-                 (if (>= attempt times)
-                     error-args
-                     (begin
-                       (sleep delay)
-                       (loop (+ 1 attempt))))))))
-
           (test-equal "http-get"
             200
-            (retry-on-error
+            (#$retry-on-error
              (lambda ()
                (let-values (((response text)
                              (http-get #$(format
@@ -607,12 +608,14 @@ HTTP-PORT."
   (define vm
     (virtual-machine
      (operating-system os)
-     (port-forwardings `((8080 . ,forwarded-port)))))
+     (port-forwardings `((8080 . ,forwarded-port)))
+     (memory-size 1024)))
 
   (define test
     (with-imported-modules '((gnu build marionette))
       #~(begin
           (use-modules (srfi srfi-11) (srfi srfi-64)
+                       (ice-9 match)
                        (gnu build marionette)
                        (web uri)
                        (web client)
@@ -647,12 +650,16 @@ HTTP-PORT."
 
           (test-equal "http-get"
             200
-            (let-values
-                (((response text)
-                  (http-get #$(simple-format
-                               #f "http://localhost:~A/" forwarded-port)
-                            #:decode-body? #t)))
-              (response-code response)))
+            (#$retry-on-error
+             (lambda ()
+               (let-values
+                   (((response text)
+                     (http-get #$(simple-format
+                                  #f "http://localhost:~A/" forwarded-port)
+                               #:decode-body? #t)))
+                 (response-code response)))
+             #:times 10
+             #:delay 5))
 
           (test-end)
           (exit (= (test-runner-fail-count (test-runner-current)) 0)))))

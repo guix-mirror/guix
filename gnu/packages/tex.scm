@@ -6,7 +6,7 @@
 ;;; Copyright © 2016, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -1341,6 +1341,156 @@ Taco Hoekwater.")
       (native-inputs
        `(("texlive-updmap.cfg" ,(texlive-updmap.cfg
                                  (list texlive-fontinst)))))
+      (home-page "https://www.ctan.org/pkg/amsfonts")
+      (synopsis "TeX fonts from the American Mathematical Society")
+      (description
+       "This package provides an extended set of fonts for use in mathematics,
+including: extra mathematical symbols; blackboard bold letters (uppercase
+only); fraktur letters; subscript sizes of bold math italic and bold Greek
+letters; subscript sizes of large symbols such as sum and product; added sizes
+of the Computer Modern small caps font; cyrillic fonts (from the University of
+Washington); Euler mathematical fonts.  All fonts are provided as Adobe Type 1
+files, and all except the Euler fonts are provided as Metafont source.  The
+distribution also includes the canonical Type 1 versions of the Computer
+Modern family of fonts.  The Euler fonts are supported by separate packages;
+details can be found in the documentation.")
+      (license license:silofl1.1))))
+
+;; XXX: we can only change texlive-amsfonts on the core-updates branch.  This
+;; patched version generates only tfm files for fonts provided by the source
+;; files of this package, not variants of the fonts provided by texlive-cm.
+(define-public texlive-amsfonts/patched
+  (let ((template (simple-texlive-package
+                   "texlive-amsfonts"
+                   (list "/source/latex/amsfonts/"
+                         "/fonts/source/public/amsfonts/"
+                         "/fonts/type1/public/amsfonts/"
+                         "/fonts/afm/public/amsfonts/"
+                         "/fonts/map/dvips/amsfonts/"
+                         "/tex/plain/amsfonts/"
+                         "/doc/fonts/amsfonts/")
+                   (base32
+                    "15q70nkjf8wqzbd5ivcdx3i2sdgqxjb38q0qn9a2qw9i0qcnx6zw"))))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:build-targets _ #t)
+          '(list "amsfonts.ins"))
+         ((#:tex-directory _ #t)
+          "latex/amsfonts")
+         ((#:modules modules '())
+          `((guix build texlive-build-system)
+            (guix build utils)
+            (ice-9 match)
+            (srfi srfi-1)
+            (srfi srfi-26)))
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-before 'build 'build-fonts
+               (lambda* (#:key inputs #:allow-other-keys)
+                 (let ((mf  (assoc-ref inputs "texlive-union"))
+                       (src (string-append (getcwd) "/fonts/source/public/amsfonts/")))
+                   ;; Make METAFONT reproducible
+                   (setenv "SOURCE_DATE_EPOCH" "1")
+                   ;; Tell mf where to find mf.base
+                   (setenv "MFBASES" (string-append mf "/share/texmf-dist/web2c"))
+                   ;; Tell mf where to look for source files
+                   (setenv "MFINPUTS"
+                           (string-append src ":"
+                                          src "/cmextra:"
+                                          src "/cyrillic:"
+                                          src "/dummy:"
+                                          src "/symbols:"
+                                          mf "/share/texmf-dist/metafont/base:"
+                                          (assoc-ref inputs "texlive-cm")
+                                          "/share/texmf-dist/fonts/source/public/cm")))
+                 (let ((build (string-append (getcwd) "/build-fonts")))
+                   (mkdir-p build)
+                   (with-directory-excursion "fonts/source/public/amsfonts"
+                     (for-each (lambda (font)
+                                 (format #t "building font ~a\n" (basename font ".mf"))
+                                 (with-directory-excursion (dirname font)
+                                   (invoke "mf" "-progname=mf"
+                                           (string-append "-output-directory=" build)
+                                           (string-append "\\"
+                                                          "mode:=ljfour; "
+                                                          "mag:=1; "
+                                                          "nonstopmode; "
+                                                          "input "
+                                                          (getcwd) "/"
+                                                          (basename font ".mf")))))
+                               (find-files "." "[0-9]+\\.mf$"))))
+
+                 ;; There are no metafont sources for the Euler fonts, so we
+                 ;; convert the afm files instead.
+                 (let ((build (string-append (getcwd) "/build-fonts/euler")))
+                   (mkdir build)
+                   (with-directory-excursion "fonts/afm/public/amsfonts/"
+                     (for-each (lambda (font)
+                                 (format #t "converting afm font ~a\n" (basename font ".afm"))
+                                 (invoke "afm2tfm" font
+                                         (string-append build "/"
+                                                        (basename font ".tfm"))))
+                               (find-files "(cmextra|cyrillic|dummy|euler|symbols)"
+                                           "\\.afm$")))
+
+                   ;; Frustratingly, not all fonts can be created this way.  To
+                   ;; generate eufm8.tfm, for example, we first scale down
+                   ;; eufm10.afm to eufm8.pl, and then generate the tfm file from
+                   ;; the pl file.
+                   (setenv "TEXINPUTS"
+                           (string-append build "//:"
+                                          (getcwd) "/fonts/afm/public/amsfonts//:"
+                                          (getcwd) "/source/latex/amsfonts//:"
+                                          (assoc-ref inputs "texlive-union") "//"))
+                   (with-directory-excursion build
+                     (for-each (match-lambda
+                                 (((target-base target-size)
+                                   (source-base source-size))
+                                  (let ((factor (number->string
+                                                 (truncate/ (* 1000 target-size)
+                                                            source-size))))
+                                    (invoke "tex"
+                                            "-interaction=scrollmode"
+                                            (string-append "\\input fontinst.sty "
+                                                           "\\transformfont{" target-base "}"
+                                                           "{\\scalefont{" factor "}"
+                                                           "{\\fromafm{" source-base "}}} "
+                                                           "\\bye")))
+                                  (invoke "pltotf"
+                                          (string-append target-base ".pl")
+                                          (string-append target-base ".tfm"))
+                                  (delete-file (string-append target-base ".pl"))))
+
+                               '((("eufm8" 8) ("eufm10" 10))
+
+                                 (("eufb6" 6) ("eufb7" 7))
+                                 (("eufb8" 8) ("eufb10" 10))
+                                 (("eufb9" 9) ("eufb10" 10))
+
+                                 (("eufm6" 6) ("eufb7" 7))
+                                 (("eufm9" 9) ("eufb10" 10))
+
+                                 (("eurb6" 6) ("eurb7" 7))
+                                 (("eurb8" 8) ("eurb10" 10))
+                                 (("eurb9" 9) ("eurb10" 10))
+
+                                 (("eurm6" 6) ("eurm7" 7))
+                                 (("eurm8" 8) ("eurm10" 10))
+                                 (("eurm9" 9) ("eurm10" 10))))))
+                 #t))
+             (add-after 'install 'install-generated-fonts
+               (lambda* (#:key inputs outputs #:allow-other-keys)
+                 (copy-recursively "build-fonts"
+                                   (string-append
+                                    (assoc-ref outputs "out")
+                                    "/share/texmf-dist/fonts/tfm/public/amsfonts"))
+                 #t))))))
+      (native-inputs
+       `(("texlive-union" ,(texlive-union (list texlive-tex-fontinst-base
+                                                texlive-cm
+                                                texlive-metafont-base)))))
       (home-page "https://www.ctan.org/pkg/amsfonts")
       (synopsis "TeX fonts from the American Mathematical Society")
       (description
@@ -3581,6 +3731,31 @@ traditional and reformed German orthography as well as for the Austrian and
 Swiss varieties of German.")
     (license license:lppl1.3+)))
 
+(define-public texlive-babel-swedish
+  (let ((template (simple-texlive-package
+                   "texlive-babel-swedish"
+                   (list "/source/generic/babel-swedish/")
+                   (base32
+                    "0swdg2l5i7cbcvy4q4xgsnwwnbxiyvs6f5b72kiw7mjn24v27g8f"))))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ '())
+          "generic/babel-swedish")
+         ((#:build-targets _ '())
+          ''("swedish.ins")) ; TODO: use dtx and build documentation
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'chdir
+               (lambda _ (chdir "source/generic/babel-swedish")))))))
+      (home-page "https://www.ctan.org/pkg/babel-swedish")
+      (synopsis "Babel support for Swedish")
+      (description "This package provides the language definition file for
+support of Swedish in @code{babel}.  It provides all the necessary macros,
+definitions and settings to typeset Swedish documents.")
+      (license license:lppl1.3c+))))
+
 (define-public texlive-latex-cyrillic
   (package
     (name "texlive-latex-cyrillic")
@@ -3777,6 +3952,18 @@ It includes little more than the required set of LaTeX packages.")
                           (cons license result))))
                      '()
                      default-packages)))))
+
+(define-public texlive-default-updmap.cfg
+  (origin
+    (method url-fetch)
+    (uri (string-append "https://tug.org/svn/texlive/tags/"
+                        %texlive-tag "/Master/texmf-dist/web2c/updmap.cfg"
+                        "?revision=" (number->string %texlive-revision)))
+    (file-name (string-append "updmap.cfg-"
+                              (number->string %texlive-revision)))
+    (sha256
+     (base32
+      "0faqknqxs80qp9ywk0by5k85s0yalg97c4lja4q56lsyblrr4j7i"))))
 
 ;;; TODO: Add a TeX Live profile hook computing fonts maps (and others?)
 ;;; configuration from the packages in the profile, similar to what's done
@@ -8434,6 +8621,332 @@ is known in the LaTeX scheme of things as @emph{LY1} encoding.  The
 basic Adobe Type 1 fonts (Times, Helvetica and Courier) in LaTeX using
 LY1 encoding.")
     (license license:lppl1.0+)))
+
+(define-public texlive-sectsty
+  (let ((template (simple-texlive-package
+                   "texlive-sectsty"
+                   (list "/doc/latex/sectsty/"
+                         "/source/latex/sectsty/")
+                   (base32
+                    "08m90j7cg6w46vnwgsp10clpj4l6c9a6l8dad20q3mnd32l84hbl"))))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ '())
+          "latex/sectsty")
+         ((#:build-targets _ '())
+          ''("sectsty.ins"))
+         ((#:tex-format _ "latex") "latex")
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'chdir
+               (lambda _ (chdir "source/latex/sectsty")))))))
+      (home-page "https://www.ctan.org/pkg/sectsty")
+      (synopsis "Control sectional headers")
+      (description "This is a LaTeX2ε package to help change the style of any or
+all of LaTeX's sectional headers in the article, book, or report classes.
+Examples include the addition of rules above or below a section title. ")
+      (license license:lppl1.2+))))
+
+(define-public texlive-morefloats
+  (let ((template (simple-texlive-package
+                   "texlive-morefloats"
+                   (list "/doc/latex/morefloats/"
+                         "/source/latex/morefloats/")
+                   (base32
+                    "0n0405fjxyjlbjspzfvhl0wjkwiqicj3hk8fa0g7agw72wlxscpl"))))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ '())
+          "latex/morefloats")
+         ((#:build-targets _ '())
+          ''("morefloats.ins"))
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'chdir
+               (lambda _ (chdir "source/latex/morefloats")))))))
+      (home-page "https://www.ctan.org/pkg/morefloats")
+      (synopsis "Increase the number of simultaneous LaTeX floats")
+      (description "LaTeX can, by default, only cope with 18 outstanding floats;
+any more, and you get the error “too many unprocessed floats”.  This package
+releases the limit; TeX itself imposes limits (which are independent of the
+help offered by e-TeX).
+
+However, if your floats can’t be placed anywhere, extending the number of
+floats merely delays the arrival of the inevitable error message.")
+      (license license:lppl1.3c+))))
+
+(define-public texlive-ifmtarg
+  (let ((template (simple-texlive-package
+                   "texlive-ifmtarg"
+                   (list "/doc/latex/ifmtarg/"
+                         "/source/latex/ifmtarg/")
+                   (base32
+                    "0cwjn4bhq9zyfxr1595hgyc1d7rcsf9lva55x98q81xy5xrrmrb2"))))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ '())
+          "latex/ifmtarg")
+         ((#:build-targets _ '())
+          ''("ifmtarg.ins"))
+         ((#:tex-format _ "latex") "latex")
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'chdir
+               (lambda _ (chdir "source/latex/ifmtarg")))))))
+      (inputs
+       `(("texlive-latex-filecontents" ,texlive-latex-filecontents)))
+      (home-page "https://www.ctan.org/pkg/ifmtarg")
+      (synopsis "If-then-else command for processing potentially empty arguments")
+      (description "This package provides a command for the LaTeX programmer for
+testing whether an argument is empty.")
+      (license license:lppl1.3c+))))
+
+(define-public texlive-pagenote
+  (let ((template (simple-texlive-package
+                   "texlive-pagenote"
+                   (list "/doc/latex/pagenote/"
+                         "/source/latex/pagenote/")
+                   (base32
+                    "0cqfqrfvnzq7ldaf255hcvi8xsfx8h7iha3hs8p9gdi3cfzbcmjm"))))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ '())
+          "latex/pagenote")
+         ((#:build-targets _ '())
+          ''("pagenote.ins"))
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'chdir
+               (lambda _ (chdir "source/latex/pagenote")))))))
+      (propagated-inputs
+       `(("texlive-ifmtarg" ,texlive-ifmtarg)))
+      (home-page "https://www.ctan.org/pkg/pagenote")
+      (synopsis "Notes at end of document")
+      (description "The pagenote package provides tagged notes on a separate
+page (also known as ‘end notes’).")
+      (license license:lppl1.3c+))))
+
+(define-public texlive-titling
+  (let ((template (simple-texlive-package
+                   "texlive-titling"
+                   (list "/doc/latex/titling/"
+                         "/source/latex/titling/")
+                   (base32
+                    "0pc3806kc9p2dizdghis0p0b00xs0gmlh2nmf94f5wasz5mkw6bk"))))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ '())
+          "latex/titling")
+         ((#:build-targets _ '())
+          ''("titling.ins"))
+         ((#:tex-format _ "latex") "latex")
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'chdir
+               (lambda _ (chdir "source/latex/titling")))))))
+      (native-inputs
+       `(("texlive-cm" ,texlive-cm)))
+      (home-page "https://www.ctan.org/pkg/titling")
+      (synopsis "Control typesetting of the \\maketitle command")
+      (description "The @code{titling} package provides control over the
+typesetting of the @code{\\maketitle} command and @code{\\thanks} commands,
+and makes the \title, @code{\\author} and @code{\\date} information
+permanently available.  Multiple titles are allowed in a single document.  New
+titling elements can be added and a @code{titlepage} title can be centered on
+a physical page.")
+      (license license:lppl))))
+
+(define-public texlive-ifoddpage
+  (let ((template (simple-texlive-package
+                   "texlive-ifoddpage"
+                   (list "/source/latex/ifoddpage/")
+                   (base32
+                    "14x0haj3xjsk9dn2djg117sl7x5nbwgbivhjj3ichnxlgrlf1bis"))))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ '())
+          "latex/ifoddpage")
+         ((#:build-targets _ '())
+          ''("ifoddpage.ins"))
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'chdir
+               (lambda _ (chdir "source/latex/ifoddpage")))))))
+      (native-inputs
+       `(("texlive-ydoc" ,texlive-ydoc)))
+      (home-page "https://www.ctan.org/pkg/ifoddpage")
+      (synopsis "Determine if the current page is odd or even")
+      (description "This package provides an @code{\\ifoddpage} conditional to
+determine if the current page is odd or even.  The macro @code{\\checkoddpage}
+must be used directly before to check the page number using a label.  Two
+compiler runs are therefore required to achieve correct results.  In addition,
+the conditional @code{\\ifoddpageoronside} is provided which is also true in
+@code{oneside} mode where all pages use the odd page layout.")
+      (license license:lppl1.3))))
+
+(define-public texlive-storebox
+  (let ((template (simple-texlive-package
+                   "texlive-storebox"
+                   (list "/source/latex/storebox/")
+                   (base32
+                    "1ybpjfrria57fwvr9kriiw6y76ivwvsyb6ayp0bi750smsv8k5n1"))))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ '())
+          "latex/storebox")
+         ((#:build-targets _ '())
+          ''("storebox.ins"))
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'chdir
+               (lambda _ (chdir "source/latex/storebox")))))))
+      (native-inputs
+       `(("texlive-ydoc" ,texlive-ydoc)))
+      (home-page "https://www.ctan.org/pkg/storebox")
+      (synopsis "Storing information for reuse")
+      (description "The package provides \"store boxes\" whose user interface
+matches that of normal LaTeX \"save boxes\", except that the content of a
+store box appears at most once in the output PDF file, however often it is
+used.  The present version of the package supports pdfLaTeX and LuaLaTeX; when
+DVI is output, store boxes behave the same as save boxes.")
+      (license license:lppl1.3))))
+
+(define-public texlive-collectbox
+  (let ((template (simple-texlive-package
+                   "texlive-collectbox"
+                   (list "/source/latex/collectbox/")
+                   (base32
+                    "1k0bbphvr20k9hgpr3dv869h9ygxx3g8vjapkc63nq8i13crpsvz"))))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ '())
+          "latex/collectbox")
+         ((#:build-targets _ '())
+          ''("collectbox.ins"))
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'chdir
+               (lambda _ (chdir "source/latex/collectbox")))))))
+      (native-inputs
+       `(("texlive-ydoc" ,texlive-ydoc)))
+      (home-page "https://www.ctan.org/pkg/collectbox")
+      (synopsis "Collect and process macro arguments as boxes")
+      (description "The package provides macros to collect and process a macro
+argument (i.e., something which looks like a macro argument) as a horizontal
+box rather than as a real macro argument.  The \"arguments\" are stored as if
+they had been saved by @code{\\savebox} or by the @code{lrbox} environment.
+Grouping tokens @code{\\bgroup} and @code{\\egroup} may be used, which allows
+the user to have the beginning and end of a group in different macro
+invocations, or to place them in the begin and end code of an environment.
+Arguments may contain verbatim material or other special use of characters.
+The macros were designed for use within other macros.")
+      (license license:lppl1.3))))
+
+(define-public texlive-adjustbox
+  (let ((template (simple-texlive-package
+                   "texlive-adjustbox"
+                   (list "/doc/latex/adjustbox/"
+                         "/source/latex/adjustbox/")
+                   (base32
+                    "14vd0yd50bky2pbbjkn59q1aglnqpdhh8vwjdyan0jkzljsr2ch8"))))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ '())
+          "latex/adjustbox")
+         ((#:build-targets _ '())
+          ''("adjustbox.ins"))
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'chdir
+               (lambda _ (chdir "source/latex/adjustbox")))))))
+      (native-inputs
+       `(("texlive-ydoc" ,texlive-ydoc)))
+      (propagated-inputs
+       `(("texlive-latex-pgf" ,texlive-latex-pgf)
+         ("texlive-latex-varwidth" ,texlive-latex-varwidth)
+         ("texlive-latex-xkeyval" ,texlive-latex-xkeyval)
+         ("texlive-collectbox" ,texlive-collectbox)
+         ("texlive-ifoddpage" ,texlive-ifoddpage)
+         ("texlive-storebox" ,texlive-storebox)))
+      (home-page "https://www.ctan.org/pkg/adjustbox")
+      (synopsis "Graphics package-alike macros for “general” boxes")
+      (description "The package provides several macros to adjust boxed
+content.  One purpose is to supplement the standard @code{graphics} package,
+which defines the macros @code{\\resizebox}, @code{\\scalebox} and
+@code{\\rotatebox} , with the macros @code{\\trimbox} and @code{\\clipbox}.
+The main feature is the general @code{\\adjustbox} macro which extends the
+@code{key=value} interface of @code{\\includegraphics} from the
+@code{graphics} package and applies it to general text content.  Additional
+provided box macros are @code{\\lapbox}, @code{\\marginbox},
+@code{\\minsizebox}, @code{\\maxsizebox} and @code{\\phantombox}.")
+      (license license:lppl1.3))))
+
+(define-public texlive-tcolorbox
+  (let ((template (simple-texlive-package
+                   "texlive-tcolorbox"
+                   (list "/doc/latex/tcolorbox/"
+                         "/tex/latex/tcolorbox/")
+                   (base32
+                    "172lcnk6964alsga5w6kcvjhpjjcw1g9df73k8pyhl5lf4fmxa29")
+                   #:trivial? #true)))
+    (package
+      (inherit template)
+      (propagated-inputs
+       `(("texlive-etoolbox" ,texlive-etoolbox)
+         ("texlive-latex-environ" ,texlive-latex-environ)
+         ("texlive-latex-pgf" ,texlive-latex-pgf)
+         ("texlive-latex-tools" ,texlive-latex-tools)))
+      (home-page "https://www.ctan.org/pkg/tcolorbox")
+      (synopsis "Colored boxes, for LaTeX examples and theorems, etc")
+      (description "This package provides an environment for colored and
+framed text boxes with a heading line.  Optionally, such a box may be split in
+an upper and a lower part; thus the package may be used for the setting of
+LaTeX examples where one part of the box displays the source code and the
+other part shows the output.  Another common use case is the setting of
+theorems.  The package supports saving and reuse of source code and text
+parts.")
+      (license license:lppl1.3c+))))
+
+(define-public texlive-eurosym
+  (let ((template (simple-texlive-package
+                   "texlive-eurosym"
+                   (list "/doc/fonts/eurosym/"
+                         "/fonts/map/dvips/eurosym/"
+                         "/fonts/source/public/eurosym/"
+                         "/fonts/tfm/public/eurosym/"
+                         "/fonts/type1/public/eurosym/"
+                         "/tex/latex/eurosym/eurosym.sty")
+                   (base32
+                    "0ml24rxbl1yir4s3fjjxm0z7axklc3p33syg41b76zc7hck9mk8s")
+                   #:trivial? #true)))
+    (package
+      (inherit template)
+      (home-page "https://www.ctan.org/pkg/eurosym")
+      (synopsis "METAFONT and macros for Euro sign")
+      (description "This package provides the European currency symbol for the
+Euro implemented in METAFONT, using the official European Commission
+dimensions, and providing several shapes (normal, slanted, bold, outline).
+The package also includes a LaTeX package which defines the macro,
+pre-compiled font files, and documentation.")
+      (license (license:non-copyleft "file:///doc/fonts/eurosym/COPYING")))))
 
 (define-public texlive-kastrup
   (package

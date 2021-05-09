@@ -2,7 +2,7 @@
 ;;; Copyright © 2014, 2015, 2020 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
@@ -85,7 +85,7 @@
 (define-public duplicity
   (package
     (name "duplicity")
-    (version "0.8.17")
+    (version "0.8.19")
     (source
      (origin
       (method url-fetch)
@@ -94,7 +94,7 @@
                           "-series/" version "/+download/duplicity-"
                           version ".tar.gz"))
       (sha256
-       (base32 "114rwkf9b3h4fcagrx013sb7krc4hafbwl9gawjph2wd9pkv2wx2"))))
+       (base32 "1c03rp4gw97gz3dzrbrray3dh4q5an3gdq0cmxbhw3qa1nw8ni4c"))))
     (build-system python-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)     ; for msgfmt
@@ -130,12 +130,15 @@
                             "testing/overrides/bin/lftp")
                (("/bin/sh") (which "sh")))
              #t))
-         (add-before 'check 'check-setup
+         (add-before 'check 'set-up-tests
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "HOME" (getcwd))   ; gpg needs to write to $HOME
              (setenv "TZDIR"            ; some timestamp checks need TZDIR
                      (string-append (assoc-ref inputs "tzdata")
                                     "/share/zoneinfo"))
+             ;; Some things respect TMPDIR, others hard-code /tmp, and the
+             ;; defaults don't match up, breaking test_restart.  Fix it.
+             (setenv "TMPDIR" "/tmp")
              #t)))))
     (home-page "http://duplicity.nongnu.org/index.html")
     (synopsis "Encrypted backup using rsync algorithm")
@@ -719,14 +722,14 @@ to not fully trusted targets.  Borg is a fork of Attic.")
 (define-public wimlib
   (package
     (name "wimlib")
-    (version "1.13.3")
+    (version "1.13.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://wimlib.net/downloads/"
                                   "wimlib-" version ".tar.gz"))
               (sha256
                (base32
-                "0zpsbl9iicc6y81xfl6kf8farwfsyrl63shc0idp654kgp8421wa"))))
+                "04ny5s5z05gk6davbwkjkraan781k2xzw6kjwp75h6ncv45dv1sb"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -736,7 +739,9 @@ to not fully trusted targets.  Borg is a fork of Attic.")
        ("ntfs-3g" ,ntfs-3g)
        ("openssl" ,openssl)))
     (arguments
-     `(#:configure-flags (list "--enable-test-support")))
+     `(#:configure-flags
+       (list "--disable-static"
+             "--enable-test-support")))
     (home-page "https://wimlib.net/")
     (synopsis "WIM file manipulation library and utilities")
     (description "wimlib is a C library and set of command-line utilities for

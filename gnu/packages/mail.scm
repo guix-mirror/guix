@@ -17,7 +17,7 @@
 ;;; Copyright © 2016, 2017 Troy Sankey <sankeytms@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
@@ -130,6 +130,7 @@
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages ragel)
+  #:use-module (gnu packages regex)
   #:use-module (gnu packages rdf)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages ruby)
@@ -493,7 +494,7 @@ to run without any changes.")
 (define-public fetchmail
   (package
     (name "fetchmail")
-    (version "6.4.18")
+    (version "6.4.19")
     (source
      (origin
        (method url-fetch)
@@ -501,7 +502,7 @@ to run without any changes.")
                            (version-major+minor version) "/"
                            "fetchmail-" version ".tar.xz"))
        (sha256
-        (base32 "17r5zfk9yh7jhgdb360dlzx5fx9lsbmalasx6zgxw9v9vjycjb9h"))))
+        (base32 "0pvbknpimf38ws4gskad79wd1cvy62kcsjy65sm0rr83s6ii33fd"))))
     (build-system gnu-build-system)
     (inputs
      `(("openssl" ,openssl)))
@@ -528,7 +529,7 @@ aliasing facilities to work just as they would on normal mail.")
 (define-public mutt
   (package
     (name "mutt")
-    (version "2.0.6")
+    (version "2.0.7")
     (source (origin
              (method url-fetch)
              (uri (list
@@ -538,7 +539,7 @@ aliasing facilities to work just as they would on normal mail.")
                                    version ".tar.gz")))
              (sha256
               (base32
-               "165mpivdhvhavglykwlz0hss2akxd6i6l40rgxs29mjzi52irqw1"))
+               "14fc4vfsfx74q1hn0b04q33cffdjzvwprwpjsj91jmi1lp38hxlm"))
              (patches (search-patches "mutt-store-references.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -971,7 +972,7 @@ MIME-encoded email package.")
       (license license:bsd-3))))
 
 (define-public mailcap
-  (let* ((version "2.1.49")
+  (let* ((version "2.1.53")
          (tag ;; mailcap tags their releases like this: rMajor-minor-patch
           (string-append "r" (string-join (string-split version #\.) "-"))))
     (package
@@ -985,8 +986,7 @@ MIME-encoded email package.")
                (commit tag)))
          (file-name (git-file-name name version))
          (sha256
-          (base32
-           "0ck1fw6gqn51phcfakhfpfq1yziv3gnmgjvswzhj9x0p162n6alj"))))
+          (base32 "14939pq7h25rh9100z72vzzx810yqg98im9gz2fbhh47iaj1wrbb"))))
       (build-system gnu-build-system)
       (arguments
        '(#:phases
@@ -1363,8 +1363,7 @@ invoking @command{notifymuch} from the post-new hook.")
                       (setenv "CONFIG_SHELL" (which "sh"))
 
                       (let* ((out (assoc-ref outputs "out"))
-                             (elisp
-                              (string-append out "/share/emacs/site-lisp/")))
+                             (elisp (emacs:elpa-directory out)))
                         (invoke "./configure"
                                 (string-append "--prefix=" out)
                                 (string-append "--emacslispdir=" elisp)
@@ -1709,7 +1708,7 @@ addons which can add many functionalities to the base client.")
                (install-file (string-append msmtpq "/README.msmtpq") doc)
                (install-file "scripts/vim/msmtp.vim" vimfiles)
                ;; Don't rely on netcat being in the PATH to test for a
-               ;; connection, instead try tp ing debian.org.
+               ;; connection, instead look up and ping debian.org.
                (substitute* (string-append bin "/msmtpq")
                  (("EMAIL_CONN_TEST=n") "EMAIL_CONN_TEST=p"))
                #t))))))
@@ -1724,7 +1723,7 @@ delivery.")
 (define-public exim
   (package
     (name "exim")
-    (version "4.94")
+    (version "4.94.2")
     (source
      (origin
        (method url-fetch)
@@ -1738,7 +1737,7 @@ delivery.")
                     (string-append "https://ftp.exim.org/pub/exim/exim4/old/"
                                    file-name))))
        (sha256
-        (base32 "1nsb2i5mqxfz1sl1bmbxmpb2qiaf3wffhfiw4j9vfpagy3xfhzpp"))))
+        (base32 "0x4j698gsawm8a3bz531pf1k6izyxfvry4hj5wb0aqphi7y62605"))))
     (build-system gnu-build-system)
     (inputs
      `(("bdb" ,bdb-5.3) ; ‘#error Version 6 and later BDB API is not supported’
@@ -3659,7 +3658,7 @@ operators and scripters.")
 (define-public alpine
   (package
     (name "alpine")
-    (version "2.24")
+    (version "2.24.1")
     (source
      (origin
        (method git-fetch)
@@ -3672,7 +3671,7 @@ operators and scripters.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0d5ybnsv29gs8krl66db56avmssq28jlg0qj5i1wka05ncc3740d"))
+        (base32 "0dvp6m9xdxycc2lh4cbp6wvq0bkqmmkzs4c4aqsa321p7y03vs9q"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -4081,7 +4080,7 @@ Git and exports them in maildir format or to an MDA through a pipe.")
 (define-public public-inbox
   (package
     (name "public-inbox")
-    (version "1.5.0")
+    (version "1.6.1")
     (source
      (origin (method git-fetch)
              (uri (git-reference
@@ -4089,7 +4088,7 @@ Git and exports them in maildir format or to an MDA through a pipe.")
                    (commit (string-append "v" version))))
              (sha256
               (base32
-               "03zj7shdl3vibs7k5lr673bwcf8j1xx8is3mjz34ca4cdh6p5j2k"))
+               "0mlwnp5knr7rk9kv8grlh342wsq2193m22zs83cjn9p7x9r2x5f9"))
              (file-name (git-file-name name version))))
     (build-system perl-build-system)
     (arguments
@@ -4144,22 +4143,28 @@ Git and exports them in maildir format or to an MDA through a pipe.")
        ("perl-email-mime" ,perl-email-mime)
        ("perl-email-simple" ,perl-email-simple)
        ("perl-net-server" ,perl-net-server)
-       ("perl-filesys-notify-simple" ,perl-filesys-notify-simple)
        ("perl-plack-middleware-deflater" ,perl-plack-middleware-deflater)
        ("perl-plack-middleware-reverseproxy" ,perl-plack-middleware-reverseproxy)
        ("perl-plack" ,perl-plack)
        ("perl-search-xapian" ,perl-search-xapian)
        ("perl-timedate" ,perl-timedate)
        ("perl-uri-escape" ,perl-uri-escape)
+       ("perl-inline-c" ,perl-inline-c)
+       ("perl-parse-recdescent" ,perl-parse-recdescent)
+       ("perl-linux-inotify2" ,perl-linux-inotify2)
+       ;; FIXME: Perl modules are unable to find the config file for highlight
+       ;; https://issues.guix.gnu.org/48033#4
+       ;; ("highlight" ,highlight)
+
        ;; For testing.
        ("perl-ipc-run" ,perl-ipc-run)
        ("perl-xml-feed" ,perl-xml-feed)))
     (home-page "https://public-inbox.org/README.html")
-    (synopsis "Archive mailing lists in git repositories")
+    (synopsis "Archive mailing lists in Git repositories")
     (description
-     "public-inbox implements the sharing of an email inbox via git to
+     "public-inbox implements the sharing of an email inbox via Git to
 complement or replace traditional mailing lists.  Readers may read via NNTP,
-Atom feeds or HTML archives.")
+IMAP, Atom feeds or HTML archives.")
     (license license:agpl3+)))
 
 (define-public sylpheed
@@ -4375,3 +4380,81 @@ black lists.  Each message is analysed by Rspamd and given a spam
 score.")
     (home-page "https://www.rspamd.com/")
     (license license:asl2.0)))
+
+(define-public crm114
+  (package
+    (name "crm114")
+    (version "20100106")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://crm114.sourceforge.net/tarballs/crm114-"
+                           version "-BlameMichelson.src.tar.gz"))
+       (sha256
+        (base32
+         "0awcjc5j2mclkkpbjyijj9mv8xjz3haljvaj0fyc4fm4xir68qpv"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:modules ((guix build gnu-build-system)
+                  ((guix build emacs-build-system) #:prefix emacs:)
+                  (guix build utils)
+                  (ice-9 string-fun))
+       #:imported-modules (,@%gnu-build-system-modules
+                           (guix build emacs-build-system)
+                           (guix build emacs-utils))
+       #:make-flags (list (string-append "prefix=" %output)
+                          "LDFLAGS=")   ; disable static linking
+       ;; Test suite is not fully automated. It requires a human to read the
+       ;; results and determine if the tests have passed.
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'fix-build
+           (lambda _
+             ;; Inline functions can only be used from the same compilation
+             ;; unit. This causes the build to fail.
+             (substitute* "crm_svm_matrix.c"
+               (("^inline ") ""))))
+         (add-before 'install 'pre-install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               ;; Install maillib.crm library.
+               (install-file "maillib.crm" (string-append out "/share/crm"))
+               ;; Set absolute store paths.
+               (substitute* "mailreaver.crm"
+                 (("insert maillib.crm")
+                  (string-append "insert " out "/share/crm/maillib.crm"))
+                 (("\\\\/bin\\\\/ls")
+                  (string-replace-substring (which "ls") "/" "\\/"))
+                 ((":\\*:trainer_invoke_command:")
+                  (string-append out "/bin/mailtrainer.crm")))
+               ;; Install mail related crm scripts.
+               (for-each (lambda (file)
+                           (install-file file (string-append out "/bin")))
+                         (list "mailfilter.crm" "mailreaver.crm" "mailtrainer.crm")))))
+         (add-after 'install 'install-emacs-mode
+           (assoc-ref emacs:%standard-phases 'install))
+         ;; Run phases from the emacs build system.
+         (add-after 'install-emacs-mode 'make-autoloads
+           (assoc-ref emacs:%standard-phases 'make-autoloads))
+         (add-after 'make-autoloads 'enable-autoloads-compilation
+           (assoc-ref emacs:%standard-phases 'enable-autoloads-compilation))
+         (add-after 'enable-autoloads-compilation 'emacs-build
+           (assoc-ref emacs:%standard-phases 'build))
+         (add-after 'emacs-build 'validate-compiled-autoloads
+           (assoc-ref emacs:%standard-phases 'validate-compiled-autoloads)))))
+    (inputs
+     `(("tre" ,tre)))
+    (native-inputs
+     `(("emacs" ,emacs-minimal)))
+    (home-page "http://crm114.sourceforge.net/")
+    (synopsis "Controllable regex mutilator")
+    (description "CRM114 is a system to examine incoming e-mail, system log
+streams, data files or other data streams, and to sort, filter, or alter the
+incoming files or data streams according to the user's wildest desires.
+Criteria for categorization of data can be via a host of methods, including
+regexes, approximate regexes, a Hidden Markov Model, Orthogonal Sparse
+Bigrams, WINNOW, Correllation, KNN/Hyperspace, or Bit Entropy (or by other
+means--it's all programmable).")
+    (license license:gpl3)))

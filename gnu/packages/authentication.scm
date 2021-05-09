@@ -24,6 +24,8 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages security-token)
+  #:use-module (gnu packages tls)
+  #:use-module (gnu packages xml)
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -33,19 +35,21 @@
 (define-public oath-toolkit
   (package
     (name "oath-toolkit")
-    (version "2.6.6")
+    (version "2.6.7")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.savannah.nongnu.org/releases/"
                            name "/" name "-" version ".tar.gz"))
        (sha256
-        (base32 "0v4lrgip08b8xlivsfn3mwql3nv8hmcpzrn6pi3xp88vqwav6s7x"))))
+        (base32 "1aa620k05lsw3l3slkp2mzma40q3p9wginspn9zk8digiz7dzv9n"))))
     (build-system gnu-build-system)
     (arguments
      ;; TODO ‘--enable-pskc’ causes xmlsec-related test suite failures.
      `(#:configure-flags
-       (list "--enable-pam")
+       (list "--enable-pam"
+             "--enable-pskc"
+             "--with-xmlsec-crypto-engine=openssl")
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'delete-static-libraries
@@ -55,16 +59,16 @@
                (for-each delete-file (find-files lib "\\.a$"))
                #t))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+
+       ;; XXX: Perhaps this should be propagated from xmlsec.
+       ("libltdl" ,libltdl)))
     (inputs
-     `(("linux-pam" ,linux-pam)))       ; for --enable-pam
+     `(("linux-pam" ,linux-pam)
+       ("openssl" ,openssl)
+       ("xmlsec-openssl" ,xmlsec-openssl)))
     (home-page "https://www.nongnu.org/oath-toolkit/")
     (synopsis "One-time password (OTP) components")
-    ;; TODO Add the following items after they've been enabled.
-    ;; @item @command{pskctool}, a command-line tool for manipulating secret key
-    ;; files in the Portable Symmetric Key Container (@dfn{PSKC}) format
-    ;; described in RFC6030.
-    ;; @item @code{libpskc}, a shared and static C library for PSKC handling.
     (description
      "The @dfn{OATH} (Open AuTHentication) Toolkit provides various components
 for building one-time password (@dfn{OTP}) authentication systems:
@@ -72,11 +76,18 @@ for building one-time password (@dfn{OTP}) authentication systems:
 @itemize
 @item @command{oathtool}, a command-line tool for generating & validating OTPs.
 @item @code{liboath}, a C library for OATH handling.
+@item @command{pskctool}, a command-line tool for manipulating secret key
+files in the Portable Symmetric Key Container (@dfn{PSKC}) format
+described in RFC6030.
+@item @code{libpskc}, a shared and static C library for PSKC handling.
 @item @code{pam_oath}, a PAM module for pluggable login authentication.
 @end itemize
 
-Supported technologies include the event-based @dfn{HOTP} algorithm (RFC4226)
-and the time-based @dfn{TOTP} algorithm (RFC6238).")
+Supported technologies include the event-based @acronym{HOTP, Hash-based Message
+Authentication Code One-Time Password} algorithm (RFC4226), the time-based
+@acronym{TOTP, Time-based One-Time Password} algorithm (RFC6238), and
+@acronym{PSKC, Portable Symmetric Key Container} (RFC6030) to manage secret key
+data.")
     (license (list license:lgpl2.1+     ; the libraries (liboath/ & libpskc/)
                    license:gpl3+))))    ; the tools (everything else)
 

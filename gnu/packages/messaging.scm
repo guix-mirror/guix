@@ -788,7 +788,7 @@ authentication.")
 (define-public pidgin
   (package
     (name "pidgin")
-    (version "2.14.3")
+    (version "2.14.4")
     (source
      (origin
        (method url-fetch)
@@ -796,7 +796,7 @@ authentication.")
         (string-append "mirror://sourceforge/pidgin/Pidgin/"
                        version "/pidgin-" version ".tar.gz"))
        (sha256
-        (base32 "0vdfnm96m1kh4gm6xn6i7s9c5zjh1p18jg4595k4p5bplvd6fmm8"))
+        (base32 "1h952bh2jdm9jymzpj4dgmh530yh7pag2janfz6d5m1r4mljwraq"))
        (patches
         (search-patches "pidgin-add-search-path.patch"))
        (modules '((guix build utils)))
@@ -863,7 +863,7 @@ authentication.")
                        (assoc-ref %build-inputs "gst-plugins-base")
                        "/include/gstreamer-1.0")
         "--disable-gtkspell"
-        ;; "--enable-gevolution"
+        "--disable-gevolution"
         "--enable-cap"
         "--enable-mono"
         "--enable-cyrus-sasl"
@@ -875,16 +875,7 @@ authentication.")
                        "/lib")
         (string-append "--with-tkconfig="
                        (assoc-ref %build-inputs "tk")
-                       "/lib"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'eat-leftovers
-           ;; XXX Remove when updating beyond 2.14.3.  Equivalent to
-           ;; <https://keep.imfreedom.org/pidgin/pidgin/rev/d4d72fde60c2>.
-           (lambda _
-             ;; Remove a lingering [broken] oscar reference.
-             (substitute* "libpurple/tests/check_libpurple.c"
-               ((".*oscar_util_suite.*") "")))))))
+                       "/lib"))))
     (native-search-paths
      (list
       (search-path-specification
@@ -1030,7 +1021,7 @@ of xmpppy.")
 (define-public gajim
   (package
     (name "gajim")
-    (version "1.3.1")
+    (version "1.3.2")
     (source
      (origin
        (method url-fetch)
@@ -1039,7 +1030,7 @@ of xmpppy.")
                        (version-major+minor version)
                        "/gajim-" version ".tar.gz"))
        (sha256
-        (base32 "070h1n3miq99z6ln77plk3jlisgfqfs2yyn4rhchpf25zd8is1ba"))
+        (base32 "1vjzv8zg9s393xw81klcgbkn4h6j2blzla9iil5kqfrw7wmldskh"))
        (patches (search-patches "gajim-honour-GAJIM_PLUGIN_PATH.patch"))))
     (build-system python-build-system)
     (arguments
@@ -2464,7 +2455,7 @@ messaging that aren’t available to clients that connect over XMPP.")
 (define-public telegram-purple
   (package
     (name "telegram-purple")
-    (version "1.4.2")
+    (version "1.4.7")
     (home-page "https://github.com/majn/telegram-purple")
     (source (origin
               (method git-fetch)
@@ -2474,7 +2465,7 @@ messaging that aren’t available to clients that connect over XMPP.")
                     (recursive? #t)))
               (sha256
                (base32
-                "0imbzhhq9qbj6gvkckrnjhls2vvmmy8db7l6gsd7lng2pbfcn522"))
+                "14h8lvj0kjvy1b5i84ha2w9rl3akxjwwvsp5j4dcxwfghrkzqgf2"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -2537,7 +2528,10 @@ messaging that aren’t available to clients that connect over XMPP.")
     (description
      "Telegram-purple is a plugin for Libpurple, the communication library
 used by the Pidgin instant messaging client, that adds support for the
-Telegram messenger.")
+Telegram messenger.
+
+This package is on ``life support'' until @code{tdlib-purple} is a full
+replacement.")
 
     ;; Code under tgl/ (the Telegram library) is LGPLv2.1+, but the plugin
     ;; itself is GPLv2+.
@@ -2743,7 +2737,7 @@ social and chat platform.")
 (define-public psi-plus
   (package
     (name "psi-plus")
-    (version "1.5.1482")
+    (version "1.5.1484")
     (source
      (origin
        (method git-fetch)
@@ -2757,7 +2751,7 @@ social and chat platform.")
         `(begin
            (delete-file-recursively "3rdparty")))
        (sha256
-        (base32 "0lcx616hchwf492m1dm8ddb4qd2pmgf703ajnnb0y9ky99kgg8q2"))))
+        (base32 "1jsm39nzzbqkp3zc0xqx7jid6p4q1ra28xad38wjr2l1jb8qjn24"))))
     (build-system qt-build-system)
     (arguments
      `(#:tests? #f                      ; No target

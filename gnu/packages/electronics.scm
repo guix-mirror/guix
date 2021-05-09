@@ -43,6 +43,7 @@
   #:use-module (gnu packages libftdi)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages m4)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages qt))
@@ -308,22 +309,23 @@ individual low-level driver modules.")
 (define-public xoscope
   (package
     (name "xoscope")
-    (version "2.2")
+    (version "2.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/xoscope/xoscope/"
                                   version "/xoscope-" version ".tar.gz"))
               (sha256
                (base32
-                "1b9wxnrwz8qy6qyx5icrklb4720rlxnr1c4h3dr6g0dzj6nkc5av"))))
+                "0a5ycfc1qdmibvagc82r2mhv2i99m6pndy5i6ixas3j2297g6pgq"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("m4" ,m4)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("comedilib" ,comedilib)
        ("fftw" ,fftw)
-       ("gtk+-2" ,gtk+-2)
+       ("gtk+" ,gtk+)
        ("gtkdatabox" ,gtkdatabox)))
     (synopsis "Digital oscilloscope")
     (description "Xoscope is a digital oscilloscope that can acquire signals

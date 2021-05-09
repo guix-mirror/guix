@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016, 2017, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2017, 2018, 2019, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -113,14 +113,14 @@ acronyms distributed as an info document.")
 (define-public gcide
   (package
     (name "gcide")
-    (version "0.52")
+    (version "0.53")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "mirror://gnu/gcide/gcide-" version ".tar.xz"))
               (sha256
                (base32
-                "1n3bp91sik66z3ca7mjqbr9nck3hg5ck0c8g84xc0qnfpx5vznh2"))))
+                "17rigzfmih5i1z5s5v1hdr1jw8rngf40768kblnh5kp19ncbvb6k"))))
     (build-system copy-build-system)
     (arguments
      '(#:install-plan
@@ -277,17 +277,18 @@ and a Python library.")
                                                 rlwrap "/bin")))))
              #t))
          (add-after 'install 'emacs-install
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out   (assoc-ref outputs "out"))
-                    (dest  (string-append out "/share/emacs/site-lisp"))
-                    (emacs (string-append (assoc-ref inputs "emacs") "/bin/emacs")))
-               (install-file "google-translate-mode.el" dest)
-               (emacs-generate-autoloads ,name dest)))))
+           (assoc-ref emacs:%standard-phases 'install))
+         (add-after 'emacs-install 'emacs-make-autoloads
+           (assoc-ref emacs:%standard-phases 'make-autoloads))
+         (add-after 'emacs-make-autoloads 'emacs-autoloads-compilation
+           (assoc-ref emacs:%standard-phases 'enable-autoloads-compilation)))
        #:make-flags (list (string-append "PREFIX=" %output)
                           "NETWORK_ACCESS=no test")
-       #:imported-modules (,@%gnu-build-system-modules (guix build emacs-utils))
+       #:imported-modules (,@%gnu-build-system-modules
+                            (guix build emacs-build-system)
+                            (guix build emacs-utils))
        #:modules ((guix build gnu-build-system)
-                  (guix build emacs-utils)
+                  ((guix build emacs-build-system) #:prefix emacs:)
                   (guix build utils))
        #:test-target "test"))
     (inputs

@@ -44,8 +44,8 @@
                         version ".tar.gz")))
             (sha256 (base32
                      "1m85zcpgfdhm43cavpdkhb1s2zq1b31472hq1w1gs3xh94anp1i6"))
-            (patches (search-patches "cyrus-sasl-ac-try-run-fix.patch"))))
-   (replacement cyrus-sasl/fixed)
+            (patches (search-patches "cyrus-sasl-ac-try-run-fix.patch"
+                                     "cyrus-sasl-CVE-2019-19906.patch"))))
    (build-system gnu-build-system)
    (native-inputs
      `(("autoconf" ,autoconf)
@@ -81,20 +81,3 @@ server writers.")
    (license (license:non-copyleft "file://COPYING"
                                   "See COPYING in the distribution."))
    (home-page "https://cyrusimap.org/sasl/")))
-
-(define cyrus-sasl/fixed
-  (package
-    (inherit cyrus-sasl)
-    (version "2.1.27")
-    (source (origin
-              (method url-fetch)
-              (uri (list (string-append
-                          "https://cyrusimap.org/releases/cyrus-sasl-"
-                          version ".tar.gz")
-                         (string-append
-                          "ftp://ftp.cyrusimap.org/cyrus-sasl/cyrus-sasl-"
-                          version ".tar.gz")))
-              (sha256 (base32
-                       "1m85zcpgfdhm43cavpdkhb1s2zq1b31472hq1w1gs3xh94anp1i6"))
-              (patches (search-patches "cyrus-sasl-ac-try-run-fix.patch"
-                                       "cyrus-sasl-CVE-2019-19906.patch"))))))

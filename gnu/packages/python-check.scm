@@ -7,7 +7,7 @@
 ;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Edouard Klein <edk@beaver-labs.com>
-;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;; Copyright © 2021 Brendan Tildesley <mail@brendan.scot>
@@ -37,14 +37,37 @@
   #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages xorg)
   #:use-module (guix utils)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix git-download)
   #:use-module (guix download)
   #:use-module (guix build-system python))
+
+(define-public python-pytest-click
+  (package
+    (name "python-pytest-click")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (pypi-uri "pytest_click" version))
+       (sha256
+        (base32 "1rcv4m850rl7djzdgzz2zhjd8g5ih8w6l0sj2f9hsynymlsq82xl"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-click" ,python-click)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/Stranger6667/pytest-click")
+    (synopsis "Py.test plugin for Click")
+    (description "This package provides a plugin to test Python click
+interfaces with pytest.")
+    (license license:expat)))
 
 (define-public python-testfixtures
   (package
@@ -861,6 +884,42 @@ for the @code{pytest} framework.")
 rounds that are calibrated to the chosen timer.")
     (license license:bsd-2)))
 
+(define-public python-pytest-xvfb
+  (package
+    (name "python-pytest-xvfb")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-xvfb" version))
+       (sha256
+        (base32 "1kyq5rg27dsnj7dc6x9y7r8vwf8rc88y2ppnnw6r96alw0nn9fn4"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:test-target "pytest"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'prepare-tests
+           (lambda _
+             (system "Xvfb &")
+             (setenv "DISPLAY" ":0")
+
+             ;; This test is meant to run on Windows.
+             (delete-file "tests/test_xvfb_windows.py")
+             #t)))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)
+       ("xorg-server" ,xorg-server-for-tests)))
+    (propagated-inputs
+     `(("python-pyvirtualdisplay"
+        ,python-pyvirtualdisplay)))
+    (home-page "https://github.com/The-Compiler/pytest-xvfb")
+    (synopsis "Pytest plugin to run Xvfb for tests")
+    (description
+     "This package provides a Pytest plugin to run Xvfb for tests.")
+    (license license:expat)))
+
 (define-public python-pytest-services
   (package
     (name "python-pytest-services")
@@ -1058,6 +1117,42 @@ variables in the @file{pytest.ini} file.")
     (synopsis "Utility to check API integrity in Python libraries")
     (description "The pyux utility detects API changes in Python
 libraries.")
+    (license license:expat)))
+
+(define-public python-pytest-qt
+  (package
+    (name "python-pytest-qt")
+    (version "3.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-qt" version))
+       (sha256
+        (base32 "09c9psfn3zigpaw1l1cmynpa3csxa49wc2ih5lzl24skdkw0njvi"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:test-target "pytest"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-qpa
+           (lambda _
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             #t)))))
+    (propagated-inputs
+     `(("python-pyqt" ,python-pyqt)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
+    (home-page "https://github.com/pytest-dev/pytest-qt")
+    (synopsis "Pytest support for PyQt and PySide applications")
+    (description
+     "@code{pytest-qt} is a Pytest plugin that allows programmers to write
+tests for PyQt5 and PySide2 applications.
+
+The main usage is to use the @code{qtbot} fixture, responsible for handling
+@code{qApp} creation as needed and provides methods to simulate user
+interaction, like key presses and mouse clicks.")
     (license license:expat)))
 
 (define-public python-codacy-coverage

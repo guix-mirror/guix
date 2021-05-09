@@ -3,7 +3,7 @@
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
-;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 David C. Trudgian <dave@trudgian.net>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
@@ -239,15 +239,15 @@ if DEVICE does not contain an linux-swap file system."
 (define (read-bcachefs-superblock device)
   "Return the raw contents of DEVICE's bcachefs superblock as a bytevector, or #f
 if DEVICE does not contain a bcachefs file system."
-  ;; We completely ignore the back-up superblock & any checksum errors.
-  ;; Superblock field names, with offset & length respectively, in bytes:
+  ;; Field offsets & lengths, in bytes.  There are more (and the superblock is
+  ;; extensible) but we need only some basic information here:
   ;;  0 16 bch_csum
   ;; 16  8 version
   ;; 24 16 magic
-  ;; 40 16 uuid ← ‘internal UUID’, you probably don't want this
-  ;; 56 16 user_uuid ← ‘external UUID’, the one by which to mount
+  ;; 40 16 uuid               ← ‘internal’: you probably don't want this one
+  ;; 56 16 user_uuid          ← ‘external’: user-visible one by which to mount
   ;; 72 32 label
-  ;; … there are more & the superblock is extensible, but we don't care yet.
+  ;; Assume a sane file system: ignore the back-up superblock & checksums.
   (read-superblock device 4096 104 bcachefs-superblock?))
 
 (define (bcachefs-superblock-external-uuid sblock)
@@ -264,11 +264,12 @@ bytevector."
   "Return the health of a bcachefs file system on DEVICE."
   (let ((ignored-bits (logior 2))       ; DEVICE was mounted read-only
         (status
+         ;; A number, or #f on abnormal termination (e.g., assertion failure).
          (status:exit-val
           (apply system* "bcachefs" "fsck" "-p" "-v"
                  ;; Make each multi-device member a separate argument.
                  (string-split device #\:)))))
-    (match (logand (lognot ignored-bits) status)
+    (match (and=> status (cut logand <> (lognot ignored-bits)))
       (0 'pass)
       (1 'errors-corrected)
       (_ 'fatal-error))))
@@ -644,16 +645,13 @@ if DEVICE does not contain a NTFS file system."
                      (loop parts))))))))))
 
 (define (ENOENT-safe proc)
-  "Wrap the one-argument PROC such that ENOENT errors are caught and lead to a
-warning and #f as the result."
+  "Wrap the one-argument PROC such that ENOENT, EIO, and ENOMEDIUM errors are
+caught and lead to a warning and #f as the result."
   (lambda (device)
     (catch 'system-error
       (lambda ()
         (proc device))
       (lambda args
-        ;; When running on the hand-made /dev,
-        ;; 'disk-partitions' could return partitions for which
-        ;; we have no /dev node.  Handle that gracefully.
         (let ((errno (system-error-errno args)))
           (cond ((= ENOENT errno)
                  (format (current-error-port)
@@ -671,11 +669,10 @@ warning and #f as the result."
 (define (partition-field-reader read field)
   "Return a procedure that takes a device and returns the value of a FIELD in
 the partition superblock or #f."
-  (let ((read (ENOENT-safe read)))
-    (lambda (device)
-      (let ((sblock (read device)))
-        (and sblock
-             (field sblock))))))
+  (lambda (device)
+    (let ((sblock (read device)))
+      (and sblock
+           (field sblock)))))
 
 (define (read-partition-field device partition-field-readers)
   "Returns the value of a FIELD in the partition superblock of DEVICE or #f. It
@@ -742,11 +739,14 @@ partition field reader that returned a value."
 (define (partition-predicate reader =)
   "Return a predicate that returns true if the FIELD of partition header that
 was READ is = to the given value."
-  (lambda (expected)
-    (lambda (device)
-      (let ((actual (reader device)))
-        (and actual
-             (= actual expected))))))
+  ;; When running on the hand-made /dev, 'disk-partitions' could return
+  ;; partitions for which we have no /dev node.  Handle that gracefully.
+  (let ((reader (ENOENT-safe reader)))
+    (lambda (expected)
+      (lambda (device)
+        (let ((actual (reader device)))
+          (and actual
+               (= actual expected)))))))
 
 (define partition-label-predicate
   (partition-predicate read-partition-label string=?))

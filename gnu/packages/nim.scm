@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -28,15 +28,14 @@
 (define-public nim
   (package
     (name "nim")
-    (version "1.4.2")
+    (version "1.4.6")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "https://nim-lang.org/download/"
                           name "-" version ".tar.xz"))
       (sha256
-       (base32
-        "0q8i56343b69f1bh48a8vxkqman9i2kscyj0lf017n3xfy1pb903"))))
+       (base32 "1gfkk15q022s31ffbsm2lbfrsnsjfslbyixwk7g8bzngha90zg0g"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; No tests.

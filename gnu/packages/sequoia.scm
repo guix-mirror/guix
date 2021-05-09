@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2019, 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2019, 2020, 2021 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -42,15 +42,15 @@
 (define-public sequoia
   (package
     (name "sequoia")
-    (version "1.0.0")
+    (version "1.1.0")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://gitlab.com/sequoia-pgp/sequoia.git")
-             (commit (string-append "v" version))))
+             (commit (string-append "openpgp/v" version))))
        (sha256
-        (base32 "0y80bl786m29ww3272qsl1ql0xc3pwd6iiqlkv3nmhnjsmygbn0d"))
+        (base32 "0knkm0nw1h4ww51vks4jnnp1yc45llfi7j0i70f6vf2bcknnbmci"))
        (file-name (git-file-name name version))))
     (build-system cargo-build-system)
     (outputs '("out" "python"))
@@ -140,12 +140,25 @@
          ;; Run make instead of using the rust build system, as
          ;; suggested by the installation instructions
          (replace 'build (lambda _ (invoke "make" "build-release") #t))
+         (delete 'package)  ;; cargo can't package a multi-crate workspace
          (replace 'check
            (lambda* (#:key tests?  #:allow-other-keys)
              (if tests?
                  (invoke "make" "check")
                  #t)))
          (replace 'install (lambda _ (invoke "make" "install") #t))
+         (add-after 'unpack 'fix-rand-dependency
+           (lambda _
+             (substitute* "ipc/Cargo.toml"
+               ;; required: enable rand::rngs::OsRng in rand >= 0.8
+               (("(^rand =.*,) default-features = false(.*)" _ a b)
+                (string-append a " features = [\"getrandom\"]" b)))
+             #t))
+         (add-after 'unpack 'fix-permissions
+           (lambda _
+             (chmod "sq/src/sq-usage.rs" #o644)
+             (chmod "sqv/src/sqv-usage.rs" #o644)
+             #t))
          (add-after 'unpack 'fix-environment
            (lambda* (#:key outputs #:allow-other-keys)
              ;; adjust prefix

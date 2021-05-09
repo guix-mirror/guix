@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2013, 2019, 2020 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2019, 2020, 2021 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016, 2017, 2019, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017, 2019, 2020 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
@@ -29,6 +29,7 @@
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Malte Frank Gerdes <malte.f.gerdes@gmail.com>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2034,14 +2035,14 @@ CPAN::Meta object are present.")
 (define-public perl-cpanel-json-xs
   (package
     (name "perl-cpanel-json-xs")
-    (version "4.25")
+    (version "4.26")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/R/RU/RURBAN/"
                            "Cpanel-JSON-XS-" version ".tar.gz"))
        (sha256
-        (base32 "061940vyj9y3rzwq47z2a3f5i5rfpa90ccz7fgz228zr7njkvfpr"))))
+        (base32 "0c07jfh6pq0f3hlhg0cqmznna7rlcflgrqv17mbkz9gnvg4x3szv"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-common-sense" ,perl-common-sense)))
@@ -3749,16 +3750,15 @@ each stack frame.")
 (define-public perl-digest-crc
   (package
     (name "perl-digest-crc")
-    (version "0.22")
+    (version "0.23")
     (source
      (origin
       (method url-fetch)
       (uri (string-append
             "mirror://cpan/authors/id/O/OL/OLIMAUL/Digest-CRC-"
-            version ".2.tar.gz"))
+            version ".tar.gz"))
       (sha256
-       (base32
-        "1jvqcyrbi11cj3vlfc9sq2g6rv9caizyjkjqsksvmxn6zgvm0aqi"))))
+       (base32 "1n64qnjxhw1jjikxgfa1x5a4f7qi298839r3xhzvmj5736754j51"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Digest-CRC")
     (synopsis "Generic CRC functions")
@@ -3827,6 +3827,30 @@ of the input.  MD4 is described in RFC 1320.")
 algorithm from within Perl programs.  The algorithm takes as
 input a message of arbitrary length and produces as output a
 128-bit \"fingerprint\" or \"message digest\" of the input.")
+    (license (package-license perl))))
+
+(define-public perl-digest-sha
+  (package
+    (name "perl-digest-sha")
+    (version "6.02")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://cpan/authors/id/M/MS/MSHELOR/Digest-SHA-"
+               version
+               ".tar.gz"))
+        (sha256
+          (base32
+            "01lv0dc3mgnl3ap8npdnqiwmdqz2yc5bziss648c5jgalfzacric"))))
+    (build-system perl-build-system)
+    (home-page
+      "https://metacpan.org/release/Digest-SHA")
+    (synopsis
+      "Perl extension for SHA-1/224/256/384/512")
+    (description
+     "The @code{Digest::SHA} Perl module implements the hash functions
+of the SHA family. It also provides the @code{shasum} binary.")
     (license (package-license perl))))
 
 (define-public perl-digest-sha1
@@ -4632,17 +4656,16 @@ matching a regular expression.")
 (define-public perl-file-readbackwards
   (package
     (name "perl-file-readbackwards")
-    (version "1.05")
+    (version "1.06")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "mirror://cpan/authors/id/U/UR/URI/File-ReadBackwards-"
+             "mirror://cpan/authors/id/P/PL/PLICEASE/File-ReadBackwards-"
              version
              ".tar.gz"))
        (sha256
-        (base32
-         "0vldy5q0zyf1cwzwb1gv14f8vg2f21bw96b8wvkw6z2hhypn3cl2"))))
+        (base32 "0qig206v2jvb5y0pqnx8xiwmjbgzpzmxf0zgfn4gial9jdaa1cij"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/File-ReadBackwards")
     (synopsis "Read a file backwards by lines")
@@ -5898,6 +5921,28 @@ expression and a list of abbreviations (built in and given).")
     (description "@code{Lingua::Translit} can be used to convert text from one
 writing system to another, based on national or international transliteration
 tables.  Where possible a reverse transliteration is supported.")
+    (license (package-license perl))))
+
+(define-public perl-linux-inotify2
+  (package
+    (name "perl-linux-inotify2")
+    (version "2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/M/ML/MLEHMANN/Linux-Inotify2-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0crlxmaa4lsgdjm5p9ib8rdxiy70qj1s68za3q3v57v8ll6s4hfx"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-common-sense" ,perl-common-sense)))
+    (home-page "https://metacpan.org/release/Linux-Inotify2")
+    (synopsis "Scalable file change notification")
+    (description "This module implements an interface to the Linux 2.6.13 and
+later Inotify file change notification system.")
     (license (package-license perl))))
 
 (define-public perl-list-allutils
@@ -8327,7 +8372,7 @@ with file paths.")
 (define-public perl-pdf-api2
   (package
     (name "perl-pdf-api2")
-    (version "2.039")
+    (version "2.040")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -8335,7 +8380,7 @@ with file paths.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "08x1anlvmxwym081flkrz7wr9q89y9wbq8ajqk72xsbzhhc479rn"))))
+                "0nlks4p33d08h0fiv6aivinalf9f9zdkgkxqvvbbvdkvyh4z29a9"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-exception" ,perl-test-exception)
@@ -9423,14 +9468,14 @@ support for run-time mix-ins and roles.")
 (define-public perl-svg
   (package
     (name "perl-svg")
-    (version "2.84")
+    (version "2.86")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/M/MA/MANWAR/SVG-"
                            version ".tar.gz"))
        (sha256
-        (base32 "1br8dwh2363s6r0qgy7vv30gv5kj456vj5m6x83savx4wzfnsggc"))))
+        (base32 "0yx661fznk70lgxl87rdl9fsswr6pd1d7wzrh0136b5vhrpypikj"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/SVG")
     (synopsis "Perl extension for generating SVG documents")

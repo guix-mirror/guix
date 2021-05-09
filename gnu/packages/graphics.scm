@@ -503,14 +503,14 @@ typically encountered in feature film production.")
 (define-public blender
   (package
     (name "blender")
-    (version "2.91.0")
+    (version "2.92.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.blender.org/source/"
                                   "blender-" version ".tar.xz"))
               (sha256
                (base32
-                "0x396lgmk0dq9115yrc36s8zwxzmjr490sr5n2y6w27y17yllyjm"))))
+                "15a5vffn18a920286x0avbc2rap56k6y531wgibq68r90g2cz4g7"))))
     (build-system cmake-build-system)
     (arguments
       (let ((python-version (version-major+minor (package-version python))))
@@ -527,6 +527,7 @@ typically encountered in feature film production.")
                "-DWITH_INSTALL_PORTABLE=OFF"
                "-DWITH_JACK=ON"
                "-DWITH_MOD_OCEANSIM=ON"
+               "-DWITH_OPENVDB=ON"
                "-DWITH_OPENSUBDIV=ON"
                "-DWITH_PYTHON_INSTALL=OFF"
                (string-append "-DPYTHON_LIBRARY=python" ,python-version)
@@ -535,6 +536,9 @@ typically encountered in feature film production.")
                (string-append "-DPYTHON_INCLUDE_DIR=" (assoc-ref %build-inputs "python")
                               "/include/python" ,python-version)
                (string-append "-DPYTHON_VERSION=" ,python-version)
+               (string-append "-DPYTHON_NUMPY_INCLUDE_DIRS="
+                              (assoc-ref %build-inputs "python-numpy")
+                              "/lib/python" ,python-version "/site-packages/numpy/core/include/")
                (string-append "-DPYTHON_NUMPY_PATH="
                               (assoc-ref %build-inputs "python-numpy")
                               "/lib/python" ,python-version "/site-packages/"))
@@ -582,6 +586,7 @@ typically encountered in feature film production.")
        ("pugixml" ,pugixml)
        ("python" ,python)
        ("python-numpy" ,python-numpy)
+       ("openvdb" ,openvdb)
        ("tbb" ,tbb)
        ("zlib" ,zlib)
        ("embree" ,embree)))

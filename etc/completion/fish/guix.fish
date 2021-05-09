@@ -322,8 +322,6 @@ complete -f -c guix -n '__fish_guix_needs_command' -a import -d 'Run IMPORTER wi
 ##### import gnu
 complete -f -c guix -n '__fish_guix_using_command import; and not __fish_seen_subcommand_from $remotecommands' -a gnu -d 'Return a package declaration template for PACKAGE, a GNU package.'
 complete -f -c guix -n '__fish_guix_using_command import; and __fish_seen_subcommand_from gnu' -a "--key-download=" -d 'handle missing OpenPGP keys according to POLICY: "always", "never", and "interactive", which is also used when "key-download" is not specified.'
-##### import nix
-complete -f -c guix -n '__fish_guix_using_command import; and not __fish_seen_subcommand_from $remotecommands' -a nix -d 'Import and convert the Nix expression ATTRIBUTE of NIXPKGS.'
 ##### import pypi
 complete -f -c guix -n '__fish_guix_using_command import; and not __fish_seen_subcommand_from $remotecommands' -a pypi -d 'Import and convert the PyPI package for PACKAGE-NAME.'
 ##### import cpan

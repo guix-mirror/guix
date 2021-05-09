@@ -32,6 +32,7 @@
   #:use-module (gnu packages cpio)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
@@ -175,20 +176,21 @@ as required.")
 (define-public libfilezilla
   (package
     (name "libfilezilla")
-    (version "0.24.1")
+    (version "0.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.filezilla-project.org/"
                            "libfilezilla/libfilezilla-" version ".tar.bz2"))
        (sha256
-        (base32 "1zfnqbn14dx0fl45mfaznr5n5xsxy1kx8z9f80fppbqn37pb9mgx"))))
+        (base32 "0f0n0kkhclp387glmc758134z4l0qk8935mi523q60b11q3j3h77"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
        (list "--disable-static")))
     (native-inputs
      `(("cppunit" ,cppunit)
+       ("gcc" ,gcc-8)                   ; XXX remove when it's the default
        ("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
     (inputs
@@ -218,14 +220,14 @@ output.
 (define-public filezilla
   (package
     (name "filezilla")
-    (version "3.50.0")
+    (version "3.53.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.filezilla-project.org/client/"
                            "FileZilla_" version "_src.tar.bz2"))
        (sha256
-        (base32 "042w2f5cf8g9cr7d3m6294ygx7jggcria9502jnql855khk8gnz0"))))
+        (base32 "0ygpqfzj5ms1pd46fpfya1y1jl4w2kmaa7plf8n6fm7cxbr78s35"))))
     (build-system gnu-build-system)
     (arguments
       ;; Don't let filezilla phone home to check for updates.

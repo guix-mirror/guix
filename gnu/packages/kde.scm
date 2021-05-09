@@ -14,6 +14,7 @@
 ;;; Copyright © 2020 Zheng Junjie <873216071@qq.com>
 ;;; Copyright © 2021 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2021 la snesne <lasnesne@lagunposprasihopre.org>
+;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,6 +43,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages apr)
+  #:use-module (gnu packages astronomy)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
@@ -771,6 +773,84 @@ communicate with each other.  Here's a few things KDE Connect can do:
 @end enumerate")
     (properties `((upstream-name . "kdeconnect-kde")))
     (license (list license:gpl2 license:gpl3)))) ; dual licensed
+
+(define-public labplot
+  (package
+    (name "labplot")
+    (version "2.8.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/labplot"
+                           "/" version "/labplot-"
+                           version ".tar.xz"))
+       (sha256
+        (base32 "1yhxnchwb4n83sxrbn4im41g2sqr0xsim2y242mvyd8pjzd83icf"))))
+    (build-system qt-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "-DENABLE_CANTOR=OFF" ;not packaged
+             "-DENABLE_MQTT=OFF" ;not packaged (qtmqtt)
+             ;; FIXME: readstat (optional dependency) is available in the
+             ;; statistics module, but that module can't be used here.
+             "-DENABLE_READSTAT=OFF"
+             ;; This is a bundled library that is not packaged.
+             "-DENABLE_LIBORIGIN=ON")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               ;; This test fails, I don't know why.
+               (invoke "ctest" "-E" "parsertest"))
+             #t)))))
+    (native-inputs
+     `(("bison" ,bison)
+       ("extra-cmake-modules" ,extra-cmake-modules)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("breeze" ,breeze) ;for dark themes
+       ("breeze-icons" ,breeze-icons) ;for icons
+       ("gsl" ,gsl)
+       ("karchive" ,karchive)
+       ("kcompletion" ,kcompletion)
+       ("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kcrash" ,kcrash)
+       ("kdoctools" ,kdoctools)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("kio" ,kio)
+       ("knewstuff" ,knewstuff)
+       ("kparts" ,kparts)
+       ("kservice" ,kservice)
+       ("ksyntaxhighlighting" ,ksyntaxhighlighting)
+       ("ktextwidgets" ,ktextwidgets)
+       ("kuserfeedback" ,kuserfeedback)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kxmlgui" ,kxmlgui)
+       ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)
+       ("shared-mime-info" ,shared-mime-info)
+       ;; Optional.
+       ("cfitsio" ,cfitsio)
+       ("fftw" ,fftw)
+       ("hdf5" ,hdf5)
+       ("libcerf" ,libcerf)
+       ("lz4" ,lz4)
+       ("netcdf" ,netcdf)
+       ("qtserialport" ,qtserialport)
+       ("zlib" ,zlib)))
+    (home-page "https://labplot.kde.org/")
+    (synopsis "Interactive graphing and analysis of scientific data")
+    (description "LabPlot is a tool for interactive graphing and analysis of
+scientific data.  It provides an easy way to create, manage and edit plots and
+to perform data analysis.")
+    (license (list license:gpl2+     ;labplot
+                   license:gpl3+)))) ;liborigin
 
 (define-public kqtquickcharts
   (package

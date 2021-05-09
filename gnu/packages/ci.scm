@@ -54,9 +54,27 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu))
 
+(define-public guile-squee-dev
+  (let ((commit "e0614273ad4067af82f508db51c8a100131151ea")
+        (revision "3"))
+    (package
+      (inherit guile-squee)
+      (name "guile-squee")
+      (version (string-append "0-" revision "." (string-take commit 7)))
+      (home-page "https://notabug.org/mothacehe/guile-squee.git")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1jps14z8653ah2kr367iayzyi3ql2s55l77xrafz7gk3mzcvgrrg"))
+                (file-name (string-append name "-" version "-checkout")))))))
+
 (define-public cuirass
-  (let ((commit "922cc66089035d4dbc277df06366e41a0806bffb")
-        (revision "11"))
+  (let ((commit "31fd4d4fe107d86f5e202510e177726a1f49e828")
+        (revision "17"))
     (package
       (name "cuirass")
       (version (git-version "1.0.0" revision commit))
@@ -69,7 +87,7 @@
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1kanag19dvaqpij7j6gznsfzajc5iir9qj6vq016bc4al5x6ggj4"))))
+           "08phqr0sfi6hkzrqhqsh9ri9434sd41qg1b5vijbadgsj1ql33rw"))))
       (build-system gnu-build-system)
       (arguments
        `(#:modules ((guix build utils)
@@ -156,7 +174,7 @@
          ("guile-gcrypt" ,guile-gcrypt)
          ("guile-json" ,guile-json-4)
          ("guile-simple-zmq" ,guile-simple-zmq)
-         ("guile-squee" ,guile-squee)
+         ("guile-squee" ,guile-squee-dev)
          ("guile-git" ,guile-git)
          ("guile-zlib" ,guile-zlib)
          ("guile-mastodon" ,guile-mastodon)

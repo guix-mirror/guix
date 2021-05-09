@@ -474,7 +474,7 @@ following formats:
 (define-public cozy
   (package
     (name "cozy")
-    (version "0.7.8")
+    (version "0.9.4")
     (source
      (origin
        (method git-fetch)
@@ -483,7 +483,7 @@ following formats:
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0z2wj9g32aa5g9pw81q49iv1smb6yvlv9zs0vrzbx6mw8cj3c5d2"))))
+        (base32 "182y6mkr39qgwk1n33nhfngqjyadrijiyfkzxydx9hfch302i8wz"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t

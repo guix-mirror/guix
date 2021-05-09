@@ -167,7 +167,6 @@ living in the same process.")
   (package
     (name "gnutls")
     (version "3.6.15")
-    (replacement gnutls/fixed)
     (source (origin
               (method url-fetch)
               ;; Note: Releases are no longer on ftp.gnu.org since the
@@ -176,7 +175,9 @@ living in the same process.")
                                   (version-major+minor version)
                                   "/gnutls-" version ".tar.xz"))
               (patches (search-patches "gnutls-skip-trust-store-test.patch"
-                                       "gnutls-cross.patch"))
+                                       "gnutls-cross.patch"
+                                       "gnutls-CVE-2021-20231.patch"
+                                       "gnutls-CVE-2021-20232.patch"))
               (sha256
                (base32
                 "0n0m93ymzd0q9hbknxc2ycanz49sqlkyyf73g9fk7n787llc7a0f"))))
@@ -283,15 +284,6 @@ required structures.")
     (properties '((ftp-server . "ftp.gnutls.org")
                   (ftp-directory . "/gcrypt/gnutls")))))
 
-(define gnutls/fixed
-  (package
-    (inherit gnutls)
-    (source (origin
-              (inherit (package-source gnutls))
-              (patches (append (search-patches "gnutls-CVE-2021-20231.patch"
-                                               "gnutls-CVE-2021-20232.patch")
-                               (origin-patches (package-source gnutls))))))))
-
 (define-public gnutls/guile-2.0
   ;; GnuTLS for Guile 2.0.
   (package/inherit gnutls
@@ -322,8 +314,7 @@ required structures.")
 (define-public openssl
   (package
    (name "openssl")
-   (replacement openssl/fixed)
-   (version "1.1.1i")
+   (version "1.1.1j")
    (source (origin
              (method url-fetch)
              (uri (list (string-append "https://www.openssl.org/source/openssl-"
@@ -336,7 +327,7 @@ required structures.")
              (patches (search-patches "openssl-1.1-c-rehash-in.patch"))
              (sha256
               (base32
-               "0hjj1phcwkz69lx1lrvr9grhpl4y529mwqycqc1hdla1zqsnmgp8"))))
+               "1gw17520vh13izy1xf5q0a2fqgcayymjjj5bk0dlkxndfnszrwma"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"         ;6.8 MiB of man3 pages and full HTML documentation
@@ -456,24 +447,6 @@ required structures.")
     "OpenSSL is an implementation of SSL/TLS.")
    (license license:openssl)
    (home-page "https://www.openssl.org/")))
-
-(define-public openssl/fixed
-  (package
-   (inherit openssl)
-   (version "1.1.1k")
-   (source (origin
-             (method url-fetch)
-             (uri (list (string-append "https://www.openssl.org/source/openssl-"
-                                       version ".tar.gz")
-                        (string-append "ftp://ftp.openssl.org/source/"
-                                       "openssl-" version ".tar.gz")
-                        (string-append "ftp://ftp.openssl.org/source/old/"
-                                       (string-trim-right version char-set:letter)
-                                       "/openssl-" version ".tar.gz")))
-             (patches (search-patches "openssl-1.1-c-rehash-in.patch"))
-             (sha256
-              (base32
-               "1rdfzcrxy9y38wqdw5942vmdax9hjhgrprzxm42csal7p5shhal9"))))))
 
 (define-public openssl-1.0
   (package
@@ -613,13 +586,13 @@ netcat implementation that supports TLS.")
   (package
     (name "python-acme")
     ;; Remember to update the hash of certbot when updating python-acme.
-    (version "1.13.0")
+    (version "1.15.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "acme" version))
               (sha256
                (base32
-                "1260a7bcgmha19drqzn6syz3cy61482b3w6lihgg1md6svgmfhkb"))))
+                "0kgf1d3gl7dg1rz3q4093kf8g0p2d0m40c7qmn96ihz2224wa307"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -667,7 +640,7 @@ netcat implementation that supports TLS.")
               (uri (pypi-uri "certbot" version))
               (sha256
                (base32
-                "0n7lwajmlypkqgsd2cv74j41f5ag381skjlzhjfpsrppgnsl3kv4"))))
+                "1qcznszgqdgx1nhk4vdi896gknvx8rg4w8iw15lwqg6byhiyazyv"))))
     (build-system python-build-system)
     (arguments
      `(,@(substitute-keyword-arguments (package-arguments python-acme)

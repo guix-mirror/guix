@@ -376,12 +376,14 @@ ARGS is the list of arguments received by the 'throw' handler."
     (('system-error . rest)
      (let ((err (system-error-errno args)))
        (report-error (G_ "failed to load '~a': ~a~%") file (strerror err))))
-    (('read-error "scm_i_lreadparen" message _ ...)
+    (('read-error _ message args ...)
      ;; Guile's missing-paren messages are obscure so we make them more
      ;; intelligible here.
-     (if (string-suffix? "end of file" message)
-         (let ((location (string-drop-right message
-                                            (string-length "end of file"))))
+     (if (or (string-suffix? "end of file" message) ;Guile < 3.0.6
+             (and (string-contains message "unexpected end of input")
+                  (member '(#\)) args)))
+         (let ((location (string-take message
+                                      (+ 2 (string-contains message ": ")))))
            (format (current-error-port) (G_ "~amissing closing parenthesis~%")
                    location))
          (apply throw args)))
@@ -490,12 +492,11 @@ part."
     (lambda _
       (setlocale LC_ALL ""))
     (lambda args
-      (display-hint (G_ "Consider installing the @code{glibc-utf8-locales} or
-@code{glibc-locales} package and defining @code{GUIX_LOCPATH}, along these
-lines:
+      (display-hint (G_ "Consider installing the @code{glibc-locales} package
+and defining @code{GUIX_LOCPATH}, along these lines:
 
 @example
-guix install glibc-utf8-locales
+guix install glibc-locales
 export GUIX_LOCPATH=\"$HOME/.guix-profile/lib/locale\"
 @end example
 

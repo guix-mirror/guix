@@ -64,7 +64,12 @@ INF="[ INFO ] "
 DEBUG=0
 GNU_URL="https://ftp.gnu.org/gnu/guix/"
 #GNU_URL="https://alpha.gnu.org/gnu/guix/"
-OPENPGP_SIGNING_KEY_ID="3CE464558A84FDC69DB40CFB090B11993D9AEBB5"
+
+# The following associative array holds set of GPG keys used to sign the
+# releases, keyed by their corresponding Savannah user ID.
+declare -A GPG_SIGNING_KEYS
+GPG_SIGNING_KEYS[15145]=3CE464558A84FDC69DB40CFB090B11993D9AEBB5  # ludo
+GPG_SIGNING_KEYS[127547]=27D586A4F8900854329FF09F1260E46482E63562 # maxim
 
 # This script needs to know where root's home directory is.  However, we
 # cannot simply use the HOME environment variable, since there is no guarantee
@@ -113,14 +118,21 @@ chk_require()
 chk_gpg_keyring()
 { # Check whether the Guix release signing public key is present.
     _debug "--- [ $FUNCNAME ] ---"
+    local user_id
+    local gpg_key_id
+    local exit_flag
 
-    # Without --dry-run this command will create a ~/.gnupg owned by root on
-    # systems where gpg has never been used, causing errors and confusion.
-    gpg --dry-run --list-keys ${OPENPGP_SIGNING_KEY_ID} >/dev/null 2>&1 || (
-        _err "${ERR}Missing OpenPGP public key.  Fetch it with this command:"
-        echo "  wget 'https://sv.gnu.org/people/viewgpg.php?user_id=15145' -qO - | sudo -i gpg --import -"
-        exit 1
-    )
+    for user_id in "${!GPG_SIGNING_KEYS[@]}"; do
+        gpg_key_id=${GPG_SIGNING_KEYS[$user_id]}
+        # Without --dry-run this command will create a ~/.gnupg owned by root on
+        # systems where gpg has never been used, causing errors and confusion.
+        if ! gpg --dry-run --list-keys "$gpg_key_id" >/dev/null 2>&1; then
+            _err "${ERR}Missing OpenPGP public key ($gpg_key_id).  Fetch it with this command:"
+            echo "  wget \"https://sv.gnu.org/people/viewgpg.php?user_id=$user_id\" -qO - | sudo -i gpg --import -"
+            exit_flag=yes
+        fi
+    done
+    test "$exit_flag" = yes && exit 1 || true
 }
 
 chk_term()
@@ -554,10 +566,19 @@ main()
     umask 0022
     tmp_path="$(mktemp -t -d guix.XXX)"
 
-    guix_get_bin_list "${GNU_URL}"
-    guix_get_bin "${GNU_URL}" "${BIN_VER}" "$tmp_path"
+    if [ -z "${GUIX_BINARY_FILE_NAME}" ]; then
+        guix_get_bin_list "${GNU_URL}"
+        guix_get_bin "${GNU_URL}" "${BIN_VER}" "$tmp_path"
+        GUIX_BINARY_FILE_NAME=${BIN_VER}.tar.xz
+    else
+        if ! [[ $GUIX_BINARY_FILE_NAME =~ $ARCH_OS ]]; then
+            _err "$ARCH_OS not in ${GUIX_BINARY_FILE_NAME}; aborting"
+        fi
+        _msg "Using manually provided binary ${GUIX_BINARY_FILE_NAME}"
+        GUIX_BINARY_FILE_NAME=$(realpath "$GUIX_BINARY_FILE_NAME")
+    fi
 
-    sys_create_store "${BIN_VER}.tar.xz" "${tmp_path}"
+    sys_create_store "${GUIX_BINARY_FILE_NAME}" "${tmp_path}"
     sys_create_build_user
     sys_enable_guix_daemon
     sys_authorize_build_farms

@@ -10,6 +10,7 @@
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
+;;; Copyright © 2021 WinterHound <winterhound@yandex.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,7 +31,9 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix utils)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
@@ -341,7 +344,7 @@ for the IRCv3 protocol.")
     (arguments
      `(#:tests? #f                      ; no tests
        #:make-flags (list (string-append "PREFIX=" %output)
-                          "CC=gcc")
+                          ,(string-append "CC=" (cc-for-target)))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))         ; no configure
@@ -365,7 +368,7 @@ for the IRCv3 protocol.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no tests
-       #:make-flags (list "CC=gcc"
+       #:make-flags (list ,(string-append "CC=" (cc-for-target))
                           (string-append "PREFIX=" %output))
        #:phases
        (modify-phases %standard-phases
@@ -374,6 +377,36 @@ for the IRCv3 protocol.")
     (synopsis "Simple IRC client")
     (description
      "sic is a simple IRC client, even more minimalistic than ii.")
+    (license license:expat)))
+
+(define-public kirc
+  (package
+    (name "kirc")
+    (version "0.2.6")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/mcpcpc/kirc")
+                     (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32 "11pwbil44q7sm3mp1khgw8wmwln2n03f1qawlgmg168jzyxqrs16"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no tests
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))         ; No ./configure script
+    (synopsis "IRC client written in POSIX C99")
+    (description "Kirc is an Internet Relay Chat (IRC) client.  It includes
+support for Simple Authentication and Security Layer (SASL), the
+client-to-client (CTCP) protocol, simple chat history logging, synchronous
+message handling, multi-channel joining at server connection, full support for
+all RFC 2812 commands, and customized color scheme definitions.")
+    (home-page "http://kirc.io/index.html")
     (license license:expat)))
 
 (define-public limnoria

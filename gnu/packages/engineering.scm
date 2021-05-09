@@ -281,14 +281,14 @@ utilities.")
   (package
     (inherit geda-gaf)
     (name "lepton-eda")
-    (version "1.9.13-20201211")
+    (version "1.9.14-20210407")
     (home-page "https://github.com/lepton-eda/lepton-eda")
     (source (origin
               (method git-fetch)
               (uri (git-reference (url home-page) (commit version)))
               (sha256
                (base32
-                "0xfx6d0pyfrxr1c0nm4pbmb716hng78rgizaa6vsas9347n4kk1n"))
+                "0kyq0g6271vlwraw98637fn8bq2l6q4rll6748nn8rwsmfz71d0m"))
               (file-name (git-file-name name version))))
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -304,7 +304,7 @@ utilities.")
      `(("glib" ,glib)
        ("gtk" ,gtk+)
        ("gtksheet" ,gtksheet)
-       ("guile" ,guile-2.2)
+       ("guile" ,guile-3.0)
        ("shared-mime-info" ,shared-mime-info)
        ("m4" ,m4)
        ("pcb" ,pcb)))
@@ -332,15 +332,19 @@ utilities.")
                 (string-append (assoc-ref outputs "out")
                                "/lib/libleptongui.so")))
              (substitute* '("libleptongui/scheme/schematic/ffi/gtk.scm.in"
-                            "libleptonattrib/lepton-attrib.scm")
+                            "utils/attrib/lepton-attrib.scm")
                (("@LIBGTK@")
                 (string-append (assoc-ref inputs "gtk")
                                "/lib/libgtk-3.so")))
+             (substitute* '("libleptongui/scheme/schematic/ffi/gobject.scm.in")
+               (("@LIBGOBJECT@")
+                (string-append (assoc-ref inputs "glib")
+                               "/lib/libgobject-2.0.so")))
              (substitute* "liblepton/scheme/lepton/ffi.scm.in"
                (("@LIBLEPTON@")
                 (string-append (assoc-ref outputs "out")
                                "/lib/liblepton.so")))
-             (substitute* "libleptonattrib/lepton-attrib.scm"
+             (substitute* "utils/attrib/lepton-attrib.scm"
                (("@LIBLEPTONATTRIB@")
                 (string-append (assoc-ref outputs "out")
                                "/lib/libleptonattrib.so")))
@@ -2359,7 +2363,7 @@ comments.")))
 (define-public freecad
   (package
     (name "freecad")
-    (version "0.19.1")
+    (version "0.19.2")
     (source
       (origin
         (method git-fetch)
@@ -2368,8 +2372,7 @@ comments.")))
                (commit version)))
         (file-name (git-file-name name version))
         (sha256
-          (base32
-            "0c53q2iawy4yfp11czyc7lbr9ivp3r7v24x4c20myh11wyplffc0"))))
+          (base32 "0fhjv0x3dix1c7jml91yx63z9xifjlbhjbcdb73lw80smpxrq7mm"))))
     (build-system qt-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
@@ -2734,14 +2737,14 @@ GUI.")
 (define-public poke
   (package
     (name "poke")
-    (version "1.1")
+    (version "1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/poke/poke-" version
                                   ".tar.gz"))
               (sha256
                (base32
-                "1mkaq19a8d951n9l6d3f8rwq45a7gkr05snb285idd21qxixys6d"))))
+                "0qnz7lc681nxa16rw9n9q4spy9fas6m2adrpb49imh34bgdgh77n"))))
     (build-system gnu-build-system)
     ;; The GUI, which we elide, requires tcl and tk.
     (native-inputs `(("bison" ,bison)

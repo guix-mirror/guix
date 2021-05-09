@@ -4,7 +4,7 @@
 ;;; Copyright © 2015, 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Timo Eisenmann <eisenmann@fn.de>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
@@ -483,7 +483,7 @@ interface.")
 (define-public qutebrowser
   (package
     (name "qutebrowser")
-    (version "2.0.2")
+    (version "2.2.1")
     (source
      (origin
        (method url-fetch)
@@ -491,7 +491,7 @@ interface.")
                            "qutebrowser/releases/download/v" version "/"
                            "qutebrowser-" version ".tar.gz"))
        (sha256
-        (base32 "0fxkazz4ykmkiww27l92yr96hq00qn5vvjmknxcy4cl97d2pxa28"))))
+        (base32 "0vr6xpjy93w4i0x408vvs9xl497sjah51lxdk4awnx2gfg3acz14"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-attrs" ,python-attrs))) ; for tests
@@ -601,7 +601,7 @@ driven and does not detract you from your daily work.")
     (name "nyxt")
     ;; Package the pre-release because latest stable 1.5.0 does not build
     ;; anymore.
-    (version "2-pre-release-6")
+    (version "2-pre-release-7")
     (source
      (origin
        (method git-fetch)
@@ -612,7 +612,7 @@ driven and does not detract you from your daily work.")
              (commit version)))
        (sha256
         (base32
-         "0kcqp3p070i6x2jj27h8pxzvmhrzsl4kl3vkc8m76abkxc9lvn03"))
+         "0d5mawka26gwi9nb45x1n33vgskwyn46jrvfz7nzmm2jfaq4ipn6"))
        (file-name (git-file-name "nyxt" version))))
     (build-system gnu-build-system)
     (arguments
@@ -646,12 +646,7 @@ driven and does not detract you from your daily work.")
                                   (string-append (assoc-ref inputs lib) "/lib"))
                                 libs)
                            ":"))
-                    (gi-path (string-join
-                              (map (lambda (lib)
-                                     (string-append (assoc-ref inputs lib)
-                                                    "/lib/girepository-1.0"))
-                                   libs)
-                              ":"))
+                    (gi-path (getenv "GI_TYPELIB_PATH"))
                     (xdg-path (string-join
                                (map (lambda (lib)
                                       (string-append (assoc-ref inputs lib) "/share"))
@@ -708,7 +703,12 @@ driven and does not detract you from your daily work.")
        ("cl-cffi-gtk" ,sbcl-cl-cffi-gtk)
        ("cl-webkit" ,sbcl-cl-webkit)
        ("glib-networking" ,glib-networking)
-       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ;; GObjectIntrospection
+       ("cl-gobject-introspection" ,sbcl-cl-gobject-introspection)
+       ("gtk" ,gtk+)                    ; For the main loop.
+       ("webkitgtk" ,webkitgtk)         ; Required when we use its typelib.
+       ("gobject-introspection" ,gobject-introspection)))
     (synopsis "Extensible web-browser in Common Lisp")
     (home-page "https://nyxt.atlas.engineer")
     (description "Nyxt is a keyboard-oriented, extensible web-browser
@@ -725,7 +725,7 @@ key-bindings and is fully configurable and extensible in Common Lisp.")
 (define-public lagrange
   (package
     (name "lagrange")
-    (version "1.3.2")
+    (version "1.3.4")
     (source
      (origin
        (method url-fetch)
@@ -733,7 +733,7 @@ key-bindings and is fully configurable and extensible in Common Lisp.")
         (string-append "https://git.skyjake.fi/skyjake/lagrange/releases/"
                        "download/v" version "/lagrange-" version ".tar.gz"))
        (sha256
-        (base32 "14yj3l3h6i6ygdhyiwdg2cg6y5imlkql09r7dm5v7xm1ja0sr9lp"))))
+        (base32 "108b8a9vdmf846v7p30fs9z0b68w3naifixnia0ra54ssxjvy0h6"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #false))                ;no tests
@@ -837,7 +837,7 @@ http, and https via third-party applications.")
 (define-public tinmop
   (package
     (name "tinmop")
-    (version "0.5.9")
+    (version "0.6.2")
     (source
      (origin
        (method git-fetch)
@@ -846,7 +846,7 @@ http, and https via third-party applications.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1zdra4q4mkrldv7dpag9p1bsma2k9pvp9pp9k7qsbm0alj7xwqpr"))))
+        (base32 "1fz52agvxnavz375apb1pjalf3myjllr4pc096b6qvc6vzhadg4c"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("curl" ,curl)

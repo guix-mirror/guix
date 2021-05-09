@@ -24,7 +24,8 @@
   #:use-module (guix build-system julia)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages maths)
-  #:use-module (gnu packages tls))
+  #:use-module (gnu packages tls)
+  #:use-module (gnu packages web))
 
 (define-public julia-abstractffts
   (package
@@ -49,6 +50,29 @@ the same underlying @code{fft(x)} and @code{plan_fft(x)} interface.  It is
 mainly not intended to be used directly.  Instead, developers of packages that
 implement FFTs (such as @code{FFTW.jl} or @code{FastTransforms.jl}) extend the
 types/functions defined in AbstractFFTs.")
+    (license license:expat)))
+
+(define-public julia-abstracttrees
+  (package
+    (name "julia-abstracttrees")
+    (version "0.3.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaCollections/AbstractTrees.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "16is5n2qa69cci34vfazxsa7ik6q0hbnnqrbrhkq8frh142f1xs8"))))
+    (build-system julia-build-system)
+    (home-page "https://juliacollections.github.io/AbstractTrees.jl/stable/")
+    (synopsis "Abstract Julia interfaces for working with trees")
+    (description "This Julia package provides several utilities for working
+with tree-like data structures.  Most importantly, it defines the
+@code{children} method that any package that contains such a data structure
+may import and extend in order to take advantage of any generic tree algorithm
+in this package.")
     (license license:expat)))
 
 (define-public julia-adapt
@@ -525,7 +549,7 @@ stressing the robustness of differentiation tools.")
      `(("julia-staticarrays" ,julia-staticarrays)))
     (home-page "https://github.com/JuliaArrays/FillArrays.jl")
     (synopsis "Lazy matrix representation")
-    (description "This package allows to lazily represent matrices filled with
+    (description "This package lazily represents matrices filled with
 a single entry, as well as identity matrices.  This package exports the
 following types: @code{Eye}, @code{Fill}, @code{Ones}, @code{Zeros},
 @code{Trues} and @code{Falses}.")
@@ -624,6 +648,68 @@ functions (or any callable object, really) using forward mode automatic
 differentiation (AD).")
     (license license:expat)))
 
+(define-public julia-gumbo
+  (package
+    (name "julia-gumbo")
+    (version "0.8.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaWeb/Gumbo.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1g22dv3v7caakspv3pdahnqn937fzzsg9y87rj72hid9g8lxl1gm"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-abstracttrees" ,julia-abstracttrees)
+       ("julia-gumbo-jll" ,julia-gumbo-jll)))
+    (home-page "https://github.com/JuliaWeb/Gumbo.jl")
+    (synopsis "Julia wrapper around Google's gumbo C library for parsing HTML")
+    (description "@code{Gumbo.jl} is a Julia wrapper around Google's gumbo
+library for parsing HTML.")
+    (license license:expat)))
+
+(define-public julia-gumbo-jll
+  (package
+    (name "julia-gumbo-jll")
+    (version "0.10.1+1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaBinaryWrappers/Gumbo_jll.jl")
+             (commit (string-append "Gumbo-v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "00a182x5hfpjzyvrxdn8wh4h67q899p5dzqp19a5s22si4g41k76"))))
+    (build-system julia-build-system)
+    (arguments
+     '(#:tests? #f ; no runtests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'override-binary-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((gumbo (string-append (assoc-ref inputs "gumbo-parser"))))
+               (for-each
+                (lambda (wrapper)
+                  (substitute* wrapper
+                    (("(const libgumbo = )\"(.*)\"" all const libname)
+                     (string-append const "\"" gumbo "/lib/" libname "\"\n"))
+                    (("(global artifact_dir =).*" all m)
+                     (string-append m " \"" gumbo "\""))))
+                ;; There's a Julia file for each platform, override them all
+                (find-files "src/wrappers/" "\\.jl$"))))))))
+    (inputs
+     `(("gumbo-parser" ,gumbo-parser)))
+    (propagated-inputs
+     `(("julia-jllwrappers" ,julia-jllwrappers)))
+    (home-page "https://github.com/JuliaBinaryWrappers/Gumbo_jll.jl")
+    (synopsis "Gumbo HTML parsing library wrappers")
+    (description "This package provides a wrapper for Gumbo HTML parsing library.")
+    (license license:expat)))
+
 (define-public julia-http
   (package
     (name "julia-http")
@@ -699,7 +785,7 @@ implementing both a client and a server.")
     (home-page "https://github.com/JuliaIO/IniFile.jl")
     (synopsis "Reading Windows-style INI files")
     (description "This is a Julia package that defines an IniFile type that
-allows to interface with @file{.ini} files.")
+interfaces with @file{.ini} files.")
     (license license:expat)))
 
 (define-public julia-irtools

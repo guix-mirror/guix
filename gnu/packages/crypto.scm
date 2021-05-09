@@ -7,7 +7,7 @@
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2016, 2017, 2019, 2020 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
-;;; Copyright © 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018, 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
@@ -214,7 +214,7 @@ communication, encryption, decryption, signatures, etc.")
     ;; like OpenBSD's pledge().
     (arguments
      `(#:make-flags
-       (list "CC=gcc"
+       (list ,(string-append "CC=" (cc-for-target))
              (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
@@ -376,7 +376,7 @@ the wrong hands.")
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (delete 'configure))          ; no configure script
-       #:make-flags (list "CC=gcc"
+       #:make-flags (list ,(string-append "CC=" (cc-for-target))
                           "RPATH=-Wl,-rpath,$(DESTDIR)$(LIBDIR)"
                           (string-append "DESTDIR="
                                          (assoc-ref %outputs "out"))
@@ -469,7 +469,7 @@ no man page, refer to the home page for usage details.")
     (arguments
      `(#:tests? #f ; No test suite
        #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
-                          "CC=gcc")
+                          ,(string-append "CC=" (cc-for-target)))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure) ; no configuration to be done
@@ -629,7 +629,7 @@ attacks than alternative functions such as @code{PBKDF2} or @code{bcrypt}.")
     (outputs (list "out" "static"))
     (arguments
      `(#:make-flags (list (string-append "PREFIX=" %output)
-                          "CC=gcc")
+                          ,(string-append "CC=" (cc-for-target)))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)            ; no configure script
@@ -782,6 +782,7 @@ data on your platform, so the seed itself will be as random as possible.
                 (commit
                  (string-append "CRYPTOPP_"
                                 (string-replace-substring version "." "_")))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "0in7rlazq91vfi519g9wr7bh87hii47cimxv7fmj0f88vhjaidq3"))))
@@ -1069,8 +1070,9 @@ cannot sign messages in OpenBSD format yet.")
                 (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f                      ; no check target         '
-       #:make-flags (list "CC=gcc" "PREFIX=$(out)")
+     `(#:tests? #f                      ; no check target         '
+       #:make-flags (list ,(string-append "CC=" (cc-for-target))
+                          "PREFIX=$(out)")
        #:phases (modify-phases %standard-phases
                   (delete 'configure)
                   (add-after 'install 'post-install

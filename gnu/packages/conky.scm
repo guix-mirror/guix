@@ -29,6 +29,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pkg-config)
@@ -39,7 +40,7 @@
   (package
     (name "conky")
     (home-page "https://github.com/brndnmtthws/conky")
-    (version "1.11.6")
+    (version "1.12.2")
     (source
      (origin
        (method git-fetch)
@@ -48,13 +49,14 @@
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0y2g66fjqp2hdk0y1h4ijxhnv34j16gizvxpmbigwh4n6zijcm6v"))))
+        (base32 "1grxapl4q37fzk2rsijwz2rrl0aj520y8daki6bg48jb9vjd39n7"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f                      ; there are no tests
-       #:configure-flags
+     `(#:configure-flags
        (list "-DRELEASE=true"
-             "-DBUILD_PULSEAUDIO=ON")
+             "-DBUILD_PULSEAUDIO=ON"
+             "-DBUILD_WLAN=ON"
+             "-DBUILD_TESTS=ON")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'add-freetype-to-search-path
@@ -82,7 +84,8 @@
        ("pulseaudio" ,pulseaudio)
        ("lua" ,lua)
        ("ncurses" ,ncurses)
-       ("curl" ,curl)))
+       ("curl" ,curl)
+       ("wireless-tools" ,wireless-tools)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (synopsis "Lightweight system monitor for X")

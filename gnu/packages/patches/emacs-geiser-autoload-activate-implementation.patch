@@ -1,0 +1,26 @@
+From 9fd3174cead8bfa17a8413bffa38362853d71a02 Mon Sep 17 00:00:00 2001
+From: jao <jao@gnu.org>
+Date: Mon, 5 Apr 2021 23:06:56 +0100
+Subject: [PATCH] autoload geiser activate implementation
+
+---
+ elisp/geiser.el | 3 +++
+ readme.org      | 4 ++--
+ 2 files changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/elisp/geiser.el b/elisp/geiser.el
+index 887b8da..96c1dd6 100644
+--- a/elisp/geiser.el
++++ b/elisp/geiser.el
+@@ -104,6 +104,9 @@
+ ;;;###autoload
+ (autoload 'geiser-mode--maybe-activate "geiser-mode")
+
++;;;###autoload
++(autoload 'geiser-activate-implementation "geiser-impl")
++
+ ;;;###autoload
+ (mapc (lambda (group)
+         (custom-add-load group (symbol-name group))
+--
+GitLab

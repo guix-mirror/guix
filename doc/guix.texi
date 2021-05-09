@@ -36,7 +36,7 @@ Copyright @copyright{} 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner@*
 Copyright @copyright{} 2016 John Darrington@*
 Copyright @copyright{} 2016, 2017 Nikita Gillmann@*
 Copyright @copyright{} 2016, 2017, 2018, 2019, 2020 Jan Nieuwenhuizen@*
-Copyright @copyright{} 2016, 2017, 2018, 2019, 2020 Julien Lepiller@*
+Copyright @copyright{} 2016, 2017, 2018, 2019, 2020, 2021 Julien Lepiller@*
 Copyright @copyright{} 2016 Alex ter Weele@*
 Copyright @copyright{} 2016, 2017, 2018, 2019, 2020, 2021 Christopher Baines@*
 Copyright @copyright{} 2017, 2018, 2019 Clément Lassieur@*
@@ -68,7 +68,7 @@ Copyright @copyright{} 2019 Ivan Petkov@*
 Copyright @copyright{} 2019 Jakob L. Kreuze@*
 Copyright @copyright{} 2019 Kyle Andrews@*
 Copyright @copyright{} 2019 Alex Griffin@*
-Copyright @copyright{} 2019, 2020 Guillaume Le Vaillant@*
+Copyright @copyright{} 2019, 2020, 2021 Guillaume Le Vaillant@*
 Copyright @copyright{} 2020 Leo Prikler@*
 Copyright @copyright{} 2019, 2020 Simon Tournier@*
 Copyright @copyright{} 2020 Wiktor Żelazny@*
@@ -88,6 +88,7 @@ Copyright @copyright{} 2020 John Soo@*
 Copyright @copyright{} 2020 Jonathan Brielmaier@*
 Copyright @copyright{} 2020 Edgar Vincent@*
 Copyright @copyright{} 2021 Maxime Devos@*
+Copyright @copyright{} 2021 B. Wilson@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -146,7 +147,7 @@ Spanish (@pxref{Top,,, guix.es, Manual de referencia de GNU Guix}), and
 Russian (@pxref{Top,,, guix.ru, Руководство GNU Guix}).  If you
 would like to translate it in your native language, consider joining
 @uref{https://translate.fedoraproject.org/projects/guix/documentation-manual,
-Weblate}.
+Weblate} (@pxref{Translating Guix}).
 
 @menu
 * Introduction::                What is Guix about?
@@ -11427,36 +11428,6 @@ and outputs a package expression:
 guix import json hello.json
 @end example
 
-@item nix
-Import metadata from a local copy of the source of the
-@uref{https://nixos.org/nixpkgs/, Nixpkgs distribution}@footnote{This
-relies on the @command{nix-instantiate} command of
-@uref{https://nixos.org/nix/, Nix}.}.  Package definitions in Nixpkgs are
-typically written in a mixture of Nix-language and Bash code.  This
-command only imports the high-level package structure that is written in
-the Nix language.  It normally includes all the basic fields of a
-package definition.
-
-When importing a GNU package, the synopsis and descriptions are replaced
-by their canonical upstream variant.
-
-Usually, you will first need to do:
-
-@example
-export NIX_REMOTE=daemon
-@end example
-
-@noindent
-so that @command{nix-instantiate} does not try to open the Nix database.
-
-As an example, the command below imports the package definition of
-LibreOffice (more precisely, it imports the definition of the package
-bound to the @code{libreoffice} top-level attribute):
-
-@example
-guix import nix ~/path/to/nixpkgs libreoffice
-@end example
-
 @item hackage
 @cindex hackage
 Import metadata from the Haskell community's central package archive
@@ -19958,6 +19929,9 @@ Socket file to use for local (non-network) connections.
 @item @code{extra-content} (default: @code{""})
 Additional settings for the @file{my.cnf} configuration file.
 
+@item @code{extra-environment} (default: @code{#~'()})
+List of environment variables passed to the @command{mysqld} process.
+
 @item @code{auto-upgrade?} (default: @code{#t})
 Whether to automatically run @command{mysql_upgrade} after starting the
 service.  This is necessary to upgrade the @dfn{system schema} after
@@ -20104,6 +20078,38 @@ The name of the protocol.
 UNIX socket path to the master authentication server to find users.
 This is used by imap (for shared users) and lda.
 It defaults to @samp{"/var/run/dovecot/auth-userdb"}.
+@end deftypevr
+
+@deftypevr {@code{protocol-configuration} parameter} boolean imap-metadata?
+Whether to enable the @code{IMAP METADATA} extension as defined in
+@uref{https://tools.ietf.org/html/rfc5464,RFC@tie{}5464}, which provides
+a means for clients to set and retrieve per-mailbox, per-user metadata
+and annotations over IMAP.
+
+If this is @samp{#t}, you must also specify a dictionary @i{via} the
+@code{mail-attribute-dict} setting.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{protocol-configuration} parameter} space-separated-string-list managesieve-notify-capabilities
+Which NOTIFY capabilities to report to clients that first connect to
+the ManageSieve service, before authentication.  These may differ from the
+capabilities offered to authenticated users.  If this field is left empty,
+report what the Sieve interpreter supports by default.
+
+Defaults to @samp{()}.
+@end deftypevr
+
+@deftypevr {@code{protocol-configuration} parameter} space-separated-string-list managesieve-sieve-capability
+Which SIEVE capabilities to report to clients that first connect to
+the ManageSieve service, before authentication.  These may differ from the
+capabilities offered to authenticated users.  If this field is left empty,
+report what the Sieve interpreter supports by default.
+
+Defaults to @samp{()}.
+
 @end deftypevr
 
 @deftypevr {@code{protocol-configuration} parameter} space-separated-string-list mail-plugins
@@ -20802,6 +20808,17 @@ that it may be dangerous to set these if users can create symlinks
 could allow a user to delete others' mailboxes, or @code{ln -s
 /secret/shared/box ~/mail/mybox} would allow reading it).  Defaults to
 @samp{""}.
+@end deftypevr
+
+@deftypevr {@code{dovecot-configuration} parameter} string mail-attribute-dict
+The location of a dictionary used to store @code{IMAP METADATA}
+as defined by @uref{https://tools.ietf.org/html/rfc5464, RFC@tie{}5464}.
+
+The IMAP METADATA commands are available only if the ``imap''
+protocol configuration's @code{imap-metadata?} field is @samp{#t}.
+
+Defaults to @samp{""}.
+
 @end deftypevr
 
 @deftypevr {@code{dovecot-configuration} parameter} boolean mail-full-filesystem-access?
@@ -27039,6 +27056,12 @@ The peer public-key represented as a base64 string.
 A list of IP addresses from which incoming traffic for this peer is
 allowed and to which incoming traffic for this peer is directed.
 
+@item @code{keep-alive} (default: @code{#f})
+An optional time interval in seconds.  A packet will be sent to the
+server endpoint once per time interval.  This helps receiving
+incoming connections from this peer when you are behind a NAT or
+a firewall.
+
 @end table
 @end deftp
 
@@ -29061,10 +29084,11 @@ By default, it produces
 
 @lisp
 '("--device" "rtl8139,netdev=net0"
-  "--netdev" "user,id=net0\
-              ,hostfwd=tcp:127.0.0.1:@var{secrets-port}-:1004\
-              ,hostfwd=tcp:127.0.0.1:@var{ssh-port}-:2222\
-              ,hostfwd=tcp:127.0.0.1:@var{vnc-port}-:5900")
+  "--netdev" (string-append
+              "user,id=net0,"
+              "hostfwd=tcp:127.0.0.1:@var{secrets-port}-:1004,"
+              "hostfwd=tcp:127.0.0.1:@var{ssh-port}-:2222,"
+              "hostfwd=tcp:127.0.0.1:@var{vnc-port}-:5900"))
 @end lisp
 
 with forwarded ports:
@@ -31189,6 +31213,15 @@ will use the current system it's running on as the default.
 @item @code{max-parallel-builds} (default: @code{1})
 The number of builds to perform in parallel.
 
+@item @code{max-1min-load-average} (default: @code{#f})
+Load average value to look at when considering starting new builds, if
+the 1 minute load average exceeds this value, the agent will wait before
+starting new builds.
+
+This will be unspecified if the value is @code{#f}, and the agent will
+use the number of cores reported by the system as the max 1 minute load
+average.
+
 @item @code{derivation-substitute-urls} (default: @code{#f})
 URLs from which to attempt to fetch substitutes for derivations, if the
 derivations aren't already available.
@@ -31292,7 +31325,7 @@ The Guix Build Coordinator package to use.
 @item @code{user} (default: @code{"guix-build-coordinator-queue-builds"})
 The system user to run the service as.
 
-@item @code{coordinator} (default: @code{"http://localhost:8745"})
+@item @code{coordinator} (default: @code{"http://localhost:8746"})
 The URI to use when connecting to the coordinator.
 
 @item @code{systems} (default: @code{#f})
@@ -31466,6 +31499,86 @@ parameters, can be done as follow:
   (kernel-loadable-modules (list ddcci-driver-linux)))
 @end lisp
 @end deffn
+
+@cindex rasdaemon
+@cindex Platform Reliability, Availability and Serviceability daemon
+@subsubheading Rasdaemon Service
+
+The Rasdaemon service provides a daemon which monitors platform
+@acronym{RAS, Reliability@comma{} Availability@comma{} and Serviceability} reports from
+Linux kernel trace events, logging them to syslogd.
+
+Reliability, Availability and Serviceability is a concept used on servers meant
+to measure their robustness.
+
+@strong{Relability} is the probability that a system will produce correct
+outputs:
+
+@itemize @bullet
+@item Generally measured as Mean Time Between Failures (MTBF), and
+@item Enhanced by features that help to avoid, detect and repair hardware
+faults
+@end itemize
+
+@strong{Availability} is the probability that a system is operational at a
+given time:
+
+@itemize @bullet
+@item Generally measured as a percentage of downtime per a period of time, and
+@item Often uses mechanisms to detect and correct hardware faults in runtime.
+@end itemize
+
+@strong{Serviceability} is the simplicity and speed with which a system can be
+repaired or maintained:
+
+@itemize @bullet
+@item Generally measured on Mean Time Between Repair (MTBR).
+@end itemize
+
+
+Among the monitoring measures, the most usual ones include:
+
+@itemize @bullet
+@item CPU – detect errors at instruction execution and at L1/L2/L3 caches;
+@item Memory – add error correction logic (ECC) to detect and correct errors;
+@item I/O – add CRC checksums for transferred data;
+@item Storage – RAID, journal file systems, checksums, Self-Monitoring,
+Analysis and Reporting Technology (SMART).
+@end itemize
+
+By monitoring the number of occurrences of error detections, it is possible to
+identify if the probability of hardware errors is increasing, and, on such
+case, do a preventive maintenance to replace a degraded component while those
+errors are correctable.
+
+For detailed information about the types of error events gathered and how to
+make sense of them, see the kernel administrator's guide at
+@url{https://www.kernel.org/doc/html/latest/admin-guide/ras.html}.
+
+@defvr {Scheme Variable} rasdaemon-service-type
+Service type for the @command{rasdaemon} service.  It accepts a
+@code{rasdaemon-configuration} object.  Instantiating like
+
+@lisp
+(service rasdaemon-service-type)
+@end lisp
+
+will load with a default configuration, which monitors all events and logs to
+syslogd.
+@end defvr
+
+@deftp {Data Type} rasdaemon-configuration
+The data type representing the configuration of @command{rasdaemon}.
+
+@table @asis
+@item @code{record?} (default: @code{#f})
+
+A boolean indicating whether to record the events in an SQLite database.  This
+provides a more structured access to the information contained in the log file.
+The database location is hard-coded to @file{/var/lib/rasdaemon/ras-mc_event.db}.
+
+@end table
+@end deftp
 
 @cindex zram
 @cindex compressed swap

@@ -72,6 +72,7 @@
   #:use-module (gnu packages xml)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
@@ -996,7 +997,7 @@ them to transform your existing public key into a secret key.")
     (arguments
      `(#:tests? #f ; no make check
        #:configure-flags (list "--prefix=/")
-       #:make-flags (list "CC=gcc"
+       #:make-flags (list ,(string-append "CC=" (cc-for-target))
                           (string-append "DESTDIR=" (assoc-ref %outputs "out")))))
     (inputs
      `(("zlib" ,zlib)))

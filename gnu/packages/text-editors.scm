@@ -276,7 +276,7 @@ bindings and many of the powerful features of GNU Emacs.")
 (define-public jucipp
   (package
     (name "jucipp")
-    (version "1.6.2")
+    (version "1.6.3")
     (home-page "https://gitlab.com/cppit/jucipp")
     (source (origin
               (method git-fetch)
@@ -288,7 +288,7 @@ bindings and many of the powerful features of GNU Emacs.")
                                   (recursive? #t)))
               (file-name (git-file-name name version))
               (sha256
-               (base32 "10idv2kyw2dg45wfcnh7nybs8qys7kfvif90sjrff3541k97pm5y"))))
+               (base32 "1gy2xb5rm7q4zx9rl23h96b1i46fz27v25nklj50fvqp8ax2gxqy"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DBUILD_TESTING=ON"
@@ -358,11 +358,11 @@ bindings and many of the powerful features of GNU Emacs.")
        ("ctags" ,universal-ctags)
        ("gtkmm" ,gtkmm)
        ("gtksourceviewmm" ,gtksourceviewmm)
-       ("libclang" ,clang-10)     ;XXX: must be the same version as Mesas LLVM
+       ("libclang" ,clang-11)     ;XXX: must be the same version as Mesas LLVM
        ("libgit2" ,libgit2)))
     (synopsis "Lightweight C++ IDE")
     (description
-     "juCi++ is a small @dfn{IDE} (Integrated Development Environment)
+     "juCi++ is a small @acronym{IDE, Integrated Development Environment}
 designed especially towards libclang with speed, stability, and ease of use
 in mind.
 
@@ -657,7 +657,7 @@ environment with Markdown markup.")
 (define-public manuskript
   (package
     (name "manuskript")
-    (version "0.11.0")
+    (version "0.12.0")
     (source
      (origin
        (method git-fetch)
@@ -666,7 +666,7 @@ environment with Markdown markup.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1l6l9k6k69yv8xqpll0zv9cwdqqg4zvxy90l6sx5nv2yywh5crla"))))
+        (base32 "0gfwwnpjslb0g8y3v9ha4sd8in6bpy6bhi4rn4hmfd2vmq2flpbd"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f                      ;no test
@@ -807,14 +807,14 @@ editors.")
 (define-public texmacs
   (package
     (name "texmacs")
-    (version "1.99.19")
+    (version "1.99.20")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.texmacs.org/Download/ftp/tmftp/"
                            "source/TeXmacs-" version "-src.tar.gz"))
        (sha256
-        (base32 "1izwqb0z4gqiglv57mjswk6sjivny73kd2sxrf3nmj7wr12pn5m8"))))
+        (base32 "0wny36qsgzpp084h2i85rd3l8fq1q69sglc266prb06ygcb0iyia"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)

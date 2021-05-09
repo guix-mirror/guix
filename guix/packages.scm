@@ -807,7 +807,8 @@ specifies modules in scope when evaluating SNIPPET."
   "Return package ORIGINAL with PATCHES applied."
   (package (inherit original)
            (source (origin (inherit (package-source original))
-                           (patches patches)))))
+                           (patches patches)))
+           (location (package-location original))))
 
 (define (package-with-extra-patches original patches)
   "Return package ORIGINAL with all PATCHES appended to its list of patches."

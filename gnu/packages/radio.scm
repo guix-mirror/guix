@@ -31,6 +31,7 @@
   #:use-module (guix utils)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages astronomy)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
@@ -52,9 +53,11 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages golang)
   #:use-module (gnu packages gps)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages image-processing)
   #:use-module (gnu packages javascript)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
@@ -246,50 +249,35 @@ memory contents between them.")
                    license:lgpl3+)))) ; chirp/elib_intl.py
 
 (define-public aptdec
-  (package
-    (name "aptdec")
-    (version "1.7")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/Xerbo/aptdec")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "1hf0zb51qc6fyhdjxyij1n3vgwnw3cwksc3r11szbhkml14qjnzk"))))
-    (build-system gnu-build-system)
-    (inputs
-     `(("libpng" ,libpng)
-       ("libsndfile" ,libsndfile)))
-    (arguments
-     `(#:make-flags
-       (list
-        (string-append "CC="
-                       (if ,(%current-target-system)
-                           (string-append (assoc-ref %build-inputs "cross-gcc")
-                                          "/bin/" ,(%current-target-system) "-gcc")
-                           "gcc"))
-        (string-append "PREFIX=" %output)
-        (string-append "RPM_BUILD_ROOT=" %output))
-       #:tests? #f ; no tests
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (install-file "atpdec" (string-append out "/bin")))
-             #t)))))
-    (home-page "https://github.com/Xerbo/aptdec")
-    (synopsis "NOAA Automatic Picture Transmission (APT) decoder")
-    (description "Aptdec decodes Automatic Picture Transmission (APT) images.
+  ;; No release since 2013, use commit directly.
+  (let ((commit "5f91799637d93dfe7791caa7e9a6683050c4f8f3")
+        (revision "1"))
+    (package
+      (name "aptdec")
+      (version (git-version "1.7" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Xerbo/aptdec")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0i7vkjjrq392gs9qaibr7j3v4hijqqg8458dn21dwh16ncrvr9bp"))))
+      (build-system cmake-build-system)
+      (inputs
+       `(("libpng" ,libpng)
+         ("libsndfile" ,libsndfile)))
+      (arguments
+       `(#:tests? #f))  ; no tests
+      (home-page "https://github.com/Xerbo/aptdec")
+      (synopsis "NOAA Automatic Picture Transmission (APT) decoder")
+      (description "Aptdec decodes Automatic Picture Transmission (APT) images.
 These are medium resolution images of the Earth transmitted by, among other
 satellites, the POES NOAA weather satellite series.  These transmissions are
 on a frequency of 137 MHz.  They can be received using an inexpensive antenna
 and a dedicated receiver.")
-    (license license:gpl2+)))
+      (license license:gpl2+))))
 
 (define-public redsea
   (package
@@ -1575,3 +1563,255 @@ receiver.")
      "@code{welle.io} is a Digital Audio Broadcasting (DAB and DAB+) software
 defined radio with support for rtl-sdr.")
     (license license:gpl2+)))
+
+(define-public csdr
+  ;; No release since 2017, use commit directly.
+  (let ((commit "6ef2a74206887155290a54c7117636f66742f858")
+        (revision "1"))
+    (package
+      (name "csdr")
+      (version (git-version "0.15" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ha7ilm/csdr")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0ic35130lf66lk3wawgc5bcg711l7chv9al1hzdc1xrmq9qf9hri"))))
+      (build-system gnu-build-system)
+      (inputs
+       `(("fftwf" ,fftwf)))
+      (arguments
+       `(#:make-flags
+         (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+               ;; Don't print summary of SIMD optimized functions.
+               "PARSEVECT=no")
+         #:tests? #f  ; No check phase
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'configure
+             (lambda* (#:key outputs #:allow-other-keys)
+               (substitute* "Makefile"
+                 (("PARAMS_MISC = -Wno-unused-result" all)
+                  ;; The 'validate-runpath' phase fails without this.
+                  (string-append
+                   all " -Wl,-rpath=" (assoc-ref outputs "out") "/lib"))
+                 (("PARAMS_SIMD =.*")
+                  ;; Disable to make reproducibility and cross-compilation work.
+                  "")
+                 (("gcc ")
+                  ,(string-append (cc-for-target) " "))
+                 (("g\\+\\+ ")
+                  ,(string-append (cxx-for-target) " ")))))
+           (add-before 'install 'make-installation-directories
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (mkdir-p (string-append out "/bin"))
+                 (mkdir-p (string-append out "/lib"))))))))
+      (home-page "https://github.com/ha7ilm/csdr")
+      (synopsis "DSP for software defined radio")
+      (description
+       "This package includes the @code{libcsdr} library of
+@acronym{DSP, Digital Signal Processing} functions for
+@acronym{SDRs, Software Defined Radios}, and the @code{csdr} command line
+program that can be used to build simple signal processing flow graphs.")
+      (license license:gpl3+))))
+
+(define-public serialdv
+  (package
+    (name "serialdv")
+    (version "1.1.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/f4exb/serialDV")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0d88h2wjhf79nisiv96bq522hkbknzm88wsv0q9k33mzmrwnrx93"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f))  ; No test suite.
+    (home-page "https://github.com/f4exb/serialDV")
+    (synopsis "Audio interface for AMBE3000 based devices")
+    (description
+     "SerialDV is a minimal interface to encode and decode audio with AMBE3000
+based devices in packet mode over a serial link.")
+    (license license:gpl3+)))
+
+(define-public cm256cc
+  (package
+    (name "cm256cc")
+    (version "1.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/f4exb/cm256cc")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1n9v7g6d370263bgqrjv38s9aq5953rzy7jvd8i30xq6aram9djg"))))
+    (build-system cmake-build-system)
+    (arguments
+     ;; Disable some SIMD features for reproducibility.
+     `(#:configure-flags '("-DENABLE_DISTRIBUTION=1")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "./cm256_test")))))))
+    (home-page "https://github.com/f4exb/cm256cc")
+    (synopsis "Cauchy MDS Block Erasure Codec")
+    (description
+     "This is a C++ library implementing fast GF(256) Cauchy MDS Block Erasure
+Codec.")
+    (license license:gpl3+)))
+
+(define-public libdab
+  ;; No release since 2017, use commit directly.
+  (let ((commit "b578d02eda60f613d35bab5d762ae7c9a27758d8")
+        (revision "1"))
+    (package
+      (name "libdab")
+      (version (git-version "0.8" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/JvanKatwijk/dab-cmdline")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0j339kx3n2plgfw7ikpp7b81h5n68wmsgflwljbh2sy8j62faik9"))))
+      (build-system cmake-build-system)
+      (inputs
+       `(("faad2" ,faad2)
+         ("fftwf" ,fftwf)
+         ("zlib" ,zlib)))
+      (arguments
+       `(#:tests? #f  ; No test suite.
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'enter-sources-directory
+             (lambda _
+               (chdir "library"))))))
+      (home-page "https://github.com/JvanKatwijk/dab-cmdline")
+      (synopsis "DAB decoding library")
+      (description "This is a library to decode @acronym{DAB/DAB+, Digital
+Audio Broadcasting}.")
+      (license license:gpl2+))))
+
+(define-public dsdcc
+  (package
+    (name "dsdcc")
+    (version "1.9.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/f4exb/dsdcc")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0jgzpv4d6ckd0sdq6438rjh3m6knj6gx63627fajch74hxrvclzj"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("mbelib" ,mbelib)
+       ("serialdv" ,serialdv)))
+    (arguments
+     `(#:tests? #f  ; No test suite.
+       #:configure-flags
+       (list "-DUSE_MBELIB=ON"
+             (string-append "-DLIBMBE_INCLUDE_DIR="
+                            (assoc-ref %build-inputs "mbelib")
+                            "/include")
+             (string-append "-DLIBMBE_LIBRARY="
+                            (assoc-ref %build-inputs "mbelib")
+                            "/lib/libmbe.so")
+             (string-append "-DLIBSERIALDV_INCLUDE_DIR="
+                            (assoc-ref %build-inputs "serialdv")
+                            "/include/serialdv")
+             (string-append "-DLIBSERIALDV_LIBRARY="
+                            (assoc-ref %build-inputs "serialdv")
+                            "/lib/libserialdv.so"))))
+    (home-page "https://github.com/f4exb/dsdcc")
+    (synopsis "Digital speech decoder")
+    (description
+     "This package provides a library and a program to decode several digital
+voice formats.")
+    (license license:gpl3+)))
+
+(define-public sdrangel
+  (package
+    (name "sdrangel")
+    (version "6.10.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/f4exb/sdrangel")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0dpymjpg1x7yyrlhh8sdmf5l7il9ymx32zcpm78wwrw3df4q1w3m"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("doxygen" ,doxygen)
+       ("graphviz" ,graphviz)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("airspyhf" ,airspyhf)
+       ("alsa-lib" ,alsa-lib)
+       ("aptdec" ,aptdec)
+       ("boost" ,boost)
+       ("cm256cc" ,cm256cc)
+       ("codec2" ,codec2)
+       ("dsdcc" ,dsdcc)
+       ("faad2" ,faad2)
+       ("ffmpeg" ,ffmpeg)
+       ("fftwf" ,fftwf)
+       ("hackrf" ,hackrf)
+       ("libdab" ,libdab)
+       ("libusb" ,libusb)
+       ("mbelib" ,mbelib)
+       ("opencv" ,opencv)
+       ("opus" ,opus)
+       ("pulseaudio" ,pulseaudio)
+       ("qtbase" ,qtbase)
+       ("qtcharts" ,qtcharts)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtlocation" ,qtlocation)
+       ("qtmultimedia" ,qtmultimedia)
+       ("qtserialport" ,qtserialport)
+       ("qtspeech" ,qtspeech)
+       ("qtwebsockets" ,qtwebsockets)
+       ("rtl-sdr" ,rtl-sdr)
+       ("serialdv" ,serialdv)
+       ("sgp4" ,sgp4)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:tests? #f  ; No test suite.
+       #:configure-flags
+       (list (string-append "-DAPT_DIR="
+                            (assoc-ref %build-inputs "aptdec"))
+             (string-append "-DDAB_DIR="
+                            (assoc-ref %build-inputs "libdab"))
+             (string-append "-DDSDCC_DIR="
+                            (assoc-ref %build-inputs "dsdcc"))
+             (string-append "-DMBE_DIR="
+                            (assoc-ref %build-inputs "mbelib"))
+             (string-append "-DSERIALDV_DIR="
+                            (assoc-ref %build-inputs "serialdv"))
+             (string-append "-DSGP4_DIR="
+                            (assoc-ref %build-inputs "sgp4")))))
+    (home-page "https://github.com/f4exb/sdrangel/wiki")
+    (synopsis "Software defined radio")
+    (description
+     "SDRangel is a Qt software defined radio and signal analyzer frontend for
+various hardware.")
+    (license license:gpl3+)))

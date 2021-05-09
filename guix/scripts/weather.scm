@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2020 Simon Tournier <zimon.toutoune@gmail.com>
@@ -171,6 +171,16 @@ about the derivations queued, as is the case with Hydra."
       #f                                          ;no derivation information
       (lset-intersection string=? queued items)))
 
+(define (store-item-system store item)
+  "Return the system (a string such as \"aarch64-linux\")) ITEM targets,
+or #f if it could not be determined."
+  (match (valid-derivers store item)
+    ((drv . _)
+     (and=> (false-if-exception (read-derivation-from-file drv))
+            derivation-system))
+    (()
+     #f)))
+
 (define* (report-server-coverage server items
                                  #:key display-missing?)
   "Report the subset of ITEMS available as substitutes on SERVER.
@@ -270,7 +280,22 @@ are queued~%")
       (when (and display-missing? (not (null? missing)))
         (newline)
         (format #t (G_ "Substitutes are missing for the following items:~%"))
-        (format #t "~{  ~a~%~}" missing))
+
+        ;; Display two columns: store items, and their system type.
+        (format #t "~:{  ~a ~a~%~}"
+                (zip (map (let ((width (max (- (current-terminal-columns)
+                                               20)
+                                            0)))
+                            (lambda (item)
+                              (if (> (string-length item) width)
+                                  item
+                                  (string-pad-right item width))))
+                          missing)
+                     (with-store store
+                       (map (lambda (item)
+                              (or (store-item-system store item)
+                                  (G_ "unknown system")))
+                            missing)))))
 
       ;; Return the coverage ratio.
       (let ((total (length items)))

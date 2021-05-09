@@ -58,6 +58,7 @@
             guix-build-coordinator-agent-configuration-authentication
             guix-build-coordinator-agent-configuration-systems
             guix-build-coordinator-agent-configuration-max-parallel-builds
+            guix-build-coordinator-agent-configuration-max-1min-load-average
             guix-build-coordinator-agent-configuration-derivation-substitute-urls
             guix-build-coordinator-agent-configuration-non-derivation-substitute-urls
 
@@ -156,6 +157,9 @@
   (max-parallel-builds
    guix-build-coordinator-agent-configuration-max-parallel-builds
    (default 1))
+  (max-1min-load-average
+   guix-build-coordinator-agent-configuration-max-1min-load-average
+   (default #f))
   (derivation-substitute-urls
    guix-build-coordinator-agent-configuration-derivation-substitute-urls
    (default #f))
@@ -201,7 +205,7 @@
   (user                 guix-build-coordinator-queue-builds-configuration-user
                         (default "guix-build-coordinator-queue-builds"))
   (coordinator          guix-build-coordinator-queue-builds-coordinator
-                        (default "http://localhost:8745"))
+                        (default "http://localhost:8746"))
   (systems              guix-build-coordinator-queue-builds-configuration-systems
                         (default #f))
   (systems-and-targets
@@ -325,7 +329,9 @@
   #~(begin
       (use-modules (guix build utils))
 
-      (define %user (getpw "guix-build-coordinator"))
+      (define %user
+        (getpw #$(guix-build-coordinator-configuration-user
+                  config)))
 
       (chmod "/var/lib/guix-build-coordinator" #o755)
 
@@ -370,6 +376,7 @@
 (define (guix-build-coordinator-agent-shepherd-services config)
   (match-record config <guix-build-coordinator-agent-configuration>
     (package user coordinator authentication max-parallel-builds
+             max-1min-load-average
              derivation-substitute-urls non-derivation-substitute-urls
              systems)
     (list
@@ -402,6 +409,10 @@
                                                 token-file))))
                       #$(simple-format #f "--max-parallel-builds=~A"
                                        max-parallel-builds)
+                      #$@(if max-1min-load-average
+                             #~(#$(simple-format #f "--max-1min-load-average=~A"
+                                                 max-1min-load-average))
+                             #~())
                       #$@(if derivation-substitute-urls
                              #~(#$(string-append
                                    "--derivation-substitute-urls="
@@ -429,7 +440,9 @@
   #~(begin
       (use-modules (guix build utils))
 
-      (define %user (getpw "guix-build-coordinator-agent"))
+      (define %user
+        (getpw #$(guix-build-coordinator-agent-configuration-user
+                  config)))
 
       (mkdir-p "/var/log/guix-build-coordinator")
 
@@ -493,7 +506,6 @@
                                       processed-commits-file))
                   #~()))
           #:user #$user
-          #:pid-file "/var/run/guix-build-coordinator-queue-builds/pid"
           #:environment-variables
           `(,(string-append
               "GUIX_LOCPATH=" #$glibc-utf8-locales "/lib/locale")
@@ -505,11 +517,15 @@
   #~(begin
       (use-modules (guix build utils))
 
+      (define %user
+        (getpw #$(guix-build-coordinator-queue-builds-configuration-user
+                  config)))
+
       (mkdir-p "/var/log/guix-build-coordinator")
 
-      ;; Allow writing the PID file
-      (mkdir-p "/var/run/guix-build-coordinator-queue-builds")
-      (chown "/var/run/guix-build-coordinator-queue-builds"
+      ;; Allow writing the processed commits file
+      (mkdir-p "/var/cache/guix-build-coordinator-queue-builds")
+      (chown "/var/cache/guix-build-coordinator-queue-builds"
              (passwd:uid %user)
              (passwd:gid %user))))
 

@@ -315,7 +315,7 @@ input bits thoroughly but are not suitable for cryptography.")
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
-       (list "CC=gcc"
+       (list (string-append "CC=" ,(cc-for-target))
              "HIDE="
              ;; Override "/sbin/ldconfig" with "echo" because we don't need
              ;; "ldconfig".
@@ -324,6 +324,23 @@ input bits thoroughly but are not suitable for cryptography.")
              "all-shared")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-cross-compilation
+           ;; The Makefile contains more insults than cross-compilation support.
+           ;; It poorly reinvents autotools by compiling C programmes with $CC,
+           ;; then tries to run them during the build.  Hard-code the results.
+           (lambda _
+             (substitute* "Makefile"
+               (("\\./autoconf_64b")
+                ,(if (target-64bit? (or (%current-target-system)
+                                        (%current-system)))
+                     "echo 1"
+                     "echo 0"))
+               (("\\./autoconf_vsnprintf") "echo 0"))))
+         (add-after 'unpack 'omit-static-libraries
+           ;; These are needed to build & test ustr, but don't install them.
+           (lambda _
+             (substitute* "Makefile"
+               ((".*install.*LIB_STATIC.*") ""))))
          (add-after 'unpack 'disable-check-for-stdint
            (lambda _
              ;; Of course we have stdint.h, just not in /usr/include
@@ -1010,6 +1027,43 @@ indentation.
 @end itemize\n")
     (home-page "http://docx2txt.sourceforge.net")
     (license license:gpl3+)))
+
+(define-public html2text
+  ;; Use commit directly to get the fixes to the installation phase
+  ;; that are not in a release yet.
+  (let ((commit "05364c1028026a87d6f45130a8e86e1ee67704d2")
+        (revision "1"))
+    (package
+      (name "html2text")
+      (version (git-version "2.0.1_pre" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/grobian/html2text")
+               (commit (string-append commit))))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0n6pl0nijcn4z3p0dvf3gmvvpjq261pagnk84s9f78c4c55bw5cm"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:make-flags
+         (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'configure
+             ;; The configure script is not from autotools and does not accept
+             ;; ‘--style’ options.  There is no proper error handling.
+             (lambda* (#:key outputs #:allow-other-keys)
+               (invoke "./configure"
+                       (string-append "CXX=" ,(cxx-for-target))))))))
+      (home-page "https://github.com/grobian/html2text")
+      (synopsis "HTML to plain text converter")
+      (description
+       "@code{html2text} is a command line utility that converts HTML
+documents into plain text.")
+      (license (list license:bsd-4      ; cmp_nocase.cpp & sgml.h
+                     license:gpl2+))))) ; everything else
 
 (define-public odt2txt
   (package

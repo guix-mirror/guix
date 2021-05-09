@@ -2,11 +2,11 @@
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2017, 2019 Carlo Zancanaro <carlo@zancanaro.id.au>
+;;; Copyright © 2017, 2019, 2021 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2017-2020 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2016, 2017, 2018 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2019, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
@@ -15,6 +15,7 @@
 ;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2021 Mike Gerwitz <mtg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -70,6 +71,7 @@
   #:use-module (gnu packages maths)
   #:use-module (gnu packages maven)
   #:use-module (gnu packages maven-parent-pom)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages nss)
   #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages web)
@@ -1749,6 +1751,9 @@ IcedTea build harness.")
          ((guix build ant-build-system)
           (guix build syscalls)
           ,@%gnu-build-system-modules)
+
+         #:disallowed-references ((,icedtea-7 "jdk"))
+
          ,@(substitute-keyword-arguments (package-arguments icedtea-7)
              ((#:modules modules)
               `((guix build utils)
@@ -1792,12 +1797,21 @@ new Date();"))
                  (add-after 'unpack 'patch-jni-libs
                    ;; Hardcode dynamically loaded libraries.
                    (lambda _
-                     (let* ((library-path (search-path-as-string->list
-                                           (getenv "LIBRARY_PATH")))
+                     (define remove
+                       (@ (srfi srfi-1) remove))
+
+                     (define (icedtea-or-openjdk? path)
+                       (or (string-contains path "openjdk")
+                           (string-contains path "icedtea")))
+
+                     (let* ((library-path (remove icedtea-or-openjdk?
+                                                  (search-path-as-string->list
+                                                   (getenv "LIBRARY_PATH"))))
                             (find-library (lambda (name)
-                                            (search-path
-                                             library-path
-                                             (string-append "lib" name ".so")))))
+                                            (or (search-path
+                                                 library-path
+                                                 (string-append "lib" name ".so"))
+                                                (string-append "lib" name ".so")))))
                        (for-each
                         (lambda (file)
                           (catch 'decoding-error
@@ -1805,9 +1819,9 @@ new Date();"))
                               (substitute* file
                                 (("VERSIONED_JNI_LIB_NAME\\(\"(.*)\", \"(.*)\"\\)"
                                   _ name version)
-                                 (format #f "\"~a\""  (find-library name)))
+                                 (string-append "\"" (find-library name) "\""))
                                 (("JNI_LIB_NAME\\(\"(.*)\"\\)" _ name)
-                                 (format #f "\"~a\"" (find-library name)))))
+                                 (string-append "\"" (find-library name) "\""))))
                             (lambda _
                               ;; Those are safe to skip.
                               (format (current-error-port)
@@ -1893,6 +1907,9 @@ new Date();"))
        #:imported-modules
        ((guix build syscalls)
         ,@%gnu-build-system-modules)
+
+       #:disallowed-references (,icedtea-8 (,icedtea-8 "jdk"))
+
        #:phases
        (modify-phases %standard-phases
          (add-after 'patch-source-shebangs 'fix-java-shebangs
@@ -1931,12 +1948,21 @@ new Date();"))
          (add-after 'unpack 'patch-jni-libs
            ;; Hardcode dynamically loaded libraries.
            (lambda _
-             (let* ((library-path (search-path-as-string->list
-                                   (getenv "LIBRARY_PATH")))
+             (define remove
+               (@ (srfi srfi-1) remove))
+
+             (define (icedtea-or-openjdk? path)
+               (or (string-contains path "openjdk")
+                   (string-contains path "icedtea")))
+
+             (let* ((library-path (remove icedtea-or-openjdk?
+                                          (search-path-as-string->list
+                                           (getenv "LIBRARY_PATH"))))
                     (find-library (lambda (name)
-                                    (search-path
-                                     library-path
-                                     (string-append "lib" name ".so")))))
+                                    (or (search-path
+                                         library-path
+                                         (string-append "lib" name ".so"))
+                                        (string-append "lib" name ".so")))))
                (for-each
                 (lambda (file)
                   (catch 'decoding-error
@@ -1944,9 +1970,9 @@ new Date();"))
                       (substitute* file
                         (("VERSIONED_JNI_LIB_NAME\\(\"(.*)\", \"(.*)\"\\)"
                           _ name version)
-                         (format #f "\"~a\""  (find-library name)))
+                         (string-append "\"" (find-library name) "\""))
                         (("JNI_LIB_NAME\\(\"(.*)\"\\)" _ name)
-                         (format #f "\"~a\"" (find-library name)))))
+                         (string-append "\"" (find-library name) "\""))))
                     (lambda _
                       ;; Those are safe to skip.
                       (format (current-error-port)
@@ -2079,7 +2105,9 @@ new Date();"))
                        "--with-libjpeg=system"
                        "--with-native-debug-symbols=zipped"
                        (string-append "--prefix=" (assoc-ref outputs "out")))
-               #t))))))
+               #t))))
+       ((#:disallowed-references _ '())
+        `(,openjdk9 (,openjdk9 "jdk")))))
     (native-inputs
      `(("openjdk9" ,openjdk9)
        ("openjdk9:jdk" ,openjdk9 "jdk")
@@ -2109,6 +2137,9 @@ new Date();"))
     (arguments
      `(#:imported-modules ((guix build syscalls)
                            ,@%gnu-build-system-modules)
+
+       #:disallowed-references (,openjdk10 (,openjdk10 "jdk"))
+
        #:tests? #f; requires jtreg
        ;; TODO package jtreg
        #:configure-flags
@@ -2139,12 +2170,21 @@ new Date();"))
          (add-after 'unpack 'patch-jni-libs
            ;; Hardcode dynamically loaded libraries.
            (lambda _
-             (let* ((library-path (search-path-as-string->list
-                                   (getenv "LIBRARY_PATH")))
+             (define remove
+               (@ (srfi srfi-1) remove))
+
+             (define (icedtea-or-openjdk? path)
+               (or (string-contains path "openjdk")
+                   (string-contains path "icedtea")))
+
+             (let* ((library-path (remove icedtea-or-openjdk?
+                                          (search-path-as-string->list
+                                           (getenv "LIBRARY_PATH"))))
                     (find-library (lambda (name)
-                                    (search-path
-                                     library-path
-                                     (string-append "lib" name ".so")))))
+                                    (or (search-path
+                                         library-path
+                                         (string-append "lib" name ".so"))
+                                        (string-append "lib" name ".so")))))
                (for-each
                 (lambda (file)
                   (catch 'decoding-error
@@ -2152,9 +2192,9 @@ new Date();"))
                       (substitute* file
                         (("VERSIONED_JNI_LIB_NAME\\(\"(.*)\", \"(.*)\"\\)"
                           _ name version)
-                         (format #f "\"~a\""  (find-library name)))
+                         (string-append "\"" (find-library name) "\""))
                         (("JNI_LIB_NAME\\(\"(.*)\"\\)" _ name)
-                         (format #f "\"~a\"" (find-library name)))))
+                         (string-append "\"" (find-library name) "\""))))
                     (lambda _
                       ;; Those are safe to skip.
                       (format (current-error-port)
@@ -2478,14 +2518,14 @@ new Date();"))
 (define-public ant/java8
   (package (inherit ant-bootstrap)
     (name "ant")
-    (version "1.10.9")
+    (version "1.10.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://apache/ant/source/apache-ant-"
                                   version "-src.tar.gz"))
               (sha256
                (base32
-                "0x78434q5ab193ma7ys27m9kwpdgrfzqj00hrf1szwcgk0lzw01z"))
+                "1dhkk9ajc378cln6sj9q0ya8bl9dpyji5xcrl1zq41zx1k6j54g5"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -7546,6 +7586,139 @@ means for generating files and compiling new Java classes based on annotations
 found in your source code.")
     (license license:epl2.0)))
 
+(define-public java-eclipse-lsp4j-common
+  (package
+    (name "java-eclipse-lsp4j-common")
+    (version "0.10.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/eclipse/lsp4j")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "17srrac0pkpybwwc21rzdvn762zzl9m80rlqihc9b4l55hkqpk98"))))
+    (build-system ant-build-system)
+    (home-page "https://eclipse.org/lsp4j/")
+    (synopsis "LSP4J common package")
+    (description "Eclipse LSP4J provides Java bindings for the Language
+Server Protocol and the Debug Adapter Protocol.  This package is a common
+definition intended to be inherited by other packages.")
+    (license license:epl2.0)))
+
+(define-public java-eclipse-lsp4j-debug
+  (package
+    (inherit java-eclipse-lsp4j-common)
+    (name "java-eclipse-lsp4j-debug")
+    (arguments
+     `(#:jar-name "eclipse-lsp4j-debug.jar"
+       #:jdk ,openjdk11
+       #:tests? #f; tests fail with reflection errors
+       #:source-dir "org.eclipse.lsp4j.debug/src/main/java"
+       #:test-dir "org.eclipse.lsp4j.debug/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-xtend
+           (lambda _
+             (copy-recursively "org.eclipse.lsp4j.debug/src/main/xtend-gen"
+                               "org.eclipse.lsp4j.debug/src/main/java"))))))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (inputs
+     `(("java-gson" ,java-gson-2.8.6)
+       ("java-eclipse-lsp4j-generaor" ,java-eclipse-lsp4j-generator)
+       ("java-eclipse-lsp4j-jsonrpc" ,java-eclipse-lsp4j-jsonrpc)
+       ("java-eclipse-lsp4j-jsonrpc-debug" ,java-eclipse-lsp4j-jsonrpc-debug)
+       ("java-eclipse-xtext-xbase-lib" ,java-eclipse-xtext-xbase-lib)))
+    (synopsis "Eclipse LSP4J Java bindings for the Debug Server Protocol")
+    (description "Eclipse LSP4J provides Java bindings for the Language
+Server Protocol and the Debug Adapter Protocol.  This package contains its
+LSP4J Java bindings for the Debug Server Protocol.")))
+
+(define-public java-eclipse-lsp4j-generator
+  (package
+    (inherit java-eclipse-lsp4j-common)
+    (name "java-eclipse-lsp4j-generator")
+    (arguments
+     `(#:jar-name "eclipse-lsp4j-generator.jar"
+       #:jdk ,openjdk11
+       #:tests? #f; no tests
+       #:source-dir "org.eclipse.lsp4j.generator/src/main/java"))
+    (inputs
+     `(("java-eclipse-lsp4j-jsonrpc" ,java-eclipse-lsp4j-jsonrpc)))
+    (synopsis "Eclipse LSP4J Generator")
+    (description "Eclipse LSP4J provides Java bindings for the Language
+Server Protocol and the Debug Adapter Protocol.  This package contains its
+LSP4J code generator for Language Server Protocol classes.")))
+
+(define-public java-eclipse-lsp4j-jsonrpc
+  (package
+    (inherit java-eclipse-lsp4j-common)
+    (name "java-eclipse-lsp4j-jsonrpc")
+    (arguments
+     `(#:jar-name "eclipse-lsp4j-jsonrpc.jar"
+       #:jdk ,openjdk11
+       #:source-dir "org.eclipse.lsp4j.jsonrpc/src/main/java"
+       #:test-dir "org.eclipse.lsp4j.jsonrpc/src/test"))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (inputs
+     `(("java-gson" ,java-gson-2.8.6)))
+    (synopsis "Java JSON-RPC implementation")
+    (description "Eclipse LSP4J provides Java bindings for the Language
+Server Protocol and the Debug Adapter Protocol.  This package contains its
+JSON-RPC implementation.")))
+
+(define-public java-eclipse-lsp4j-jsonrpc-debug
+  (package
+    (inherit java-eclipse-lsp4j-common)
+    (name "java-eclipse-lsp4j-jsonrpc-debug")
+    (arguments
+     `(#:jar-name "eclipse-lsp4j-jsonrpc-debug.jar"
+       #:jdk ,openjdk11
+       #:source-dir "org.eclipse.lsp4j.jsonrpc.debug/src/main/java"
+       #:test-dir "org.eclipse.lsp4j.jsonrpc.debug/src/test"))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (inputs
+     `(("java-eclipse-lsp4j-jsonrpc" ,java-eclipse-lsp4j-jsonrpc)
+       ("java-gson" ,java-gson-2.8.6)))
+    (synopsis "Java JSON-RPC implementation (debug protocol)")
+    (description "Eclipse LSP4J provides Java bindings for the Language
+Server Protocol and the Debug Adapter Protocol.  This package contains its
+JSON-RPC implementation's debug protocol.")))
+
+(define-public java-eclipse-xtext-xbase-lib
+  (package
+    (name "java-eclipse-xtext-xbase-lib")
+    (version "2.25.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/eclipse/xtext-lib")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "13b9lf6lnsprkik665m1qcyyc8cs16k33xm7as4rjcfcpn4pln71"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "eclipse-xtext-xbase-lib.jar"
+       #:jdk ,openjdk11
+       #:tests? #f; TODO (maybe needs newer guava version?)
+       #:source-dir "org.eclipse.xtext.xbase.lib/src"
+       #:test-dir "org.eclipse.xtext.xbase.lib.tests/src"))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (inputs
+     `(("java-guava" ,java-guava)))
+    (home-page "https://www.eclipse.org/Xtext/")
+    (synopsis "Eclipse Xbase Runtime Library")
+    (description "This package contains runtime libraries for Xbase languages
+such as Xtend.")
+    (license license:epl2.0)))
+
 (define-public java-javax-mail
   (package
     (name "java-javax-mail")
@@ -11724,6 +11897,37 @@ string to an equivalent Java object.  Gson can work with arbitrary Java objects
 including pre-existing objects that you do not have source-code of.")
     (license license:asl2.0)))
 
+;; This requires a different Java version than 2.8.2 above
+(define-public java-gson-2.8.6
+  (package
+    (inherit java-gson)
+    (name "java-gson")
+    (version "2.8.6")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/google/gson")
+                    (commit (string-append "gson-parent-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0kk5p3vichdb0ph1lzknrcpbklgnmq455mngmjpxvvj29p3rgpk3"))))
+    (arguments
+     `(#:jar-name "gson.jar"
+       #:jdk ,openjdk11
+       #:source-dir "gson/src/main/java"
+       #:test-dir "gson/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         ;; avoid Maven dependency
+         (add-before 'build 'fill-template
+           (lambda _
+             (with-directory-excursion "gson/src/main"
+               (copy-file "java-templates/com/google/gson/internal/GsonBuildConfig.java"
+                          "java/com/google/gson/internal/GsonBuildConfig.java")
+               (substitute* "java/com/google/gson/internal/GsonBuildConfig.java"
+                 (("\\$\\{project.version\\}") ,version))))))))))
+
 (define-public java-hawtjni
   (package
     (name "java-hawtjni")
@@ -12299,6 +12503,104 @@ features that bring it on par with the Z shell line editor.")
        ("java-cglib" ,java-cglib)
        ("java-junit" ,java-junit)
        ("java-hawtjni" ,java-hawtjni)))))
+
+(define-public java-jline-terminal
+  (package
+    (name "java-jline-terminal")
+    (version "3.14.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/jline/jline3")
+                    (commit (string-append "jline-parent-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0ilhk9ljp0pivl1rn0bb06syshc67p6imcjhrg6vr7kv15p3w4lr"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "jline-terminal.jar"
+       #:jdk ,openjdk11
+       #:tests? #f; TODO: tests fail on *.caps resource lookups
+       #:source-dir "terminal/src/main/java"
+       #:test-dir "terminal/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-build-file
+           (lambda _
+             ;; Conflicts with build directory generated by ant-build-system.
+             (delete-file "build")))
+         (add-after 'unpack 'patch-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "terminal/src/main/java/org/jline/utils/OSUtils.java"
+               (("= \"infocmp\"")
+                (string-append "= \"" (assoc-ref inputs "ncurses")
+                               "/bin/infocmp\""))
+               (("= \"(s?tty)\"" _ cmd)
+                (string-append "= \"" (assoc-ref inputs "coreutils")
+                               "/bin/" cmd "\"")))))
+         ;; Resources are not added to the JAR by ant-build-system.
+         (add-after 'build 'add-resources
+           (lambda* (#:key jar-name source-dir #:allow-other-keys)
+             (let ((build (string-append (getcwd) "/build")))
+               (with-directory-excursion
+                   (string-append source-dir "/../resources")
+                 (apply invoke "jar" "-uvf"
+                        (string-append build "/jar/" jar-name)
+                        (find-files ".")))))))))
+    (inputs
+     `(("ncurses" ,ncurses))); infocmp
+    (home-page "https://github.com/jline/jline3")
+    (synopsis "Java JLine Terminal API and implementations")
+    (description "JLine is a Java library for handling console input.  It is
+similar in functionality to BSD editline and GNU readline but with additional
+features that bring it in par with ZSH line editor.  People familiar with the
+readline/editline capabilities for modern shells (such as bash and tcsh) will
+find most of the command editing features of JLine to be familiar.
+
+This package includes the @var{Terminal} API and implementations.")
+    (license license:bsd-3)))
+
+(define-public java-jline-reader
+  (package
+    (name "java-jline-reader")
+    (version "3.14.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/jline/jline3")
+                    (commit (string-append "jline-parent-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0ilhk9ljp0pivl1rn0bb06syshc67p6imcjhrg6vr7kv15p3w4lr"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "jline-reader.jar"
+       #:jdk ,openjdk11
+       #:source-dir "reader/src/main/java"
+       #:test-dir "reader/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'remove-build-file
+           (lambda _
+             ;; conflicts with build directory generated by ant-build-system
+             (delete-file "build"))))))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-easymock" ,java-easymock)))
+    (inputs
+     `(("java-jline-terminal" ,java-jline-terminal)))
+    (home-page "https://github.com/jline/jline3")
+    (synopsis "Java JLine line reader")
+    (description "JLine is a Java library for handling console input.  It is
+similar in functionality to BSD editline and GNU readline but with additional
+features that bring it in par with ZSH line editor.  People familiar with the
+readline/editline capabilities for modern shells (such as bash and tcsh) will
+find most of the command editing features of JLine to be familiar.
+
+This package includes the line reader.")
+    (license license:bsd-3)))
 
 (define-public java-xmlunit
   (package
@@ -13710,7 +14012,7 @@ can be interpreted by IDEs and static analysis tools to improve code analysis.")
                  (("\\$\\{java.vendor.url\\}") "https://gnu.org/software/guix")
                  (("\\$\\{java.version\\}") "1.8")
                  (("\\$\\{os.arch\\}") "any")
-                 (("\\$\\{os.name\\}") "GuixSD")
+                 (("\\$\\{os.name\\}") "Guix")
                  (("\\$\\{os.version\\}") "not available")))
              #t))
          (add-before 'build 'generate-javacc
@@ -13764,3 +14066,135 @@ can be interpreted by IDEs and static analysis tools to improve code analysis.")
                ;; either lgpl or asl
                license:lgpl3+
                license:asl2.0))))
+
+(define-public tla2tools
+  (let* ((version "1.8.0")
+         (tag (string-append "v" version)))
+    (package
+      (name "tla2tools")
+      (version version)
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/tlaplus/tlaplus")
+                      (commit tag)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1hhx8gmn81k8qrkx4p7ppinmygxga9fqffd626wkvhjgg2ky8lhs"))
+                (patches
+                 (search-patches "tla2tools-build-xml.patch"))
+                (modules '((guix build utils)))
+                (snippet
+                 '(begin
+                    ;; Remove packaged libraries (see 'replace-libs below)
+                    (for-each delete-file (find-files "." ".*.jar$"))))))
+      (build-system ant-build-system)
+      (arguments
+       (let* ((tlatools "tlatools/org.lamport.tlatools/")
+              (build-xml (string-append tlatools "customBuild.xml")))
+         `(#:jdk ,openjdk11
+           #:modules ((guix build ant-build-system)
+                      (guix build utils)
+                      (ice-9 match)
+                      (srfi srfi-26))
+           #:make-flags '("-f" ,build-xml)
+           #:phases
+           (modify-phases %standard-phases
+            ;; Replace packed libs with references to jars in store
+             (add-after 'unpack 'replace-libs
+               (lambda* (#:key inputs #:allow-other-keys)
+                 (define (input-jar input)
+                   (car (find-files (assoc-ref inputs input) "\\.jar$")))
+                 (for-each
+                  (match-lambda
+                    ((file . input)
+                     (symlink (input-jar input)
+                              (string-append ,tlatools "/lib/" file))))
+                  '(("gson/gson-2.8.6.jar" . "java-gson")
+                    ("javax.mail/mailapi-1.6.3.jar" . "java-javax-mail")
+                    ("jline/jline-terminal-3.14.1.jar" . "java-jline-terminal")
+                    ("jline/jline-reader-3.14.1.jar" . "java-jline-reader")
+                    ("lsp/org.eclipse.lsp4j.debug-0.10.0.jar" .
+                     "java-eclipse-lsp4j-debug")
+                    ("lsp/org.eclipse.lsp4j.jsonrpc-0.10.0.jar" .
+                     "java-eclipse-lsp4j-jsonrpc")
+                    ("lsp/org.eclipse.lsp4j.jsonrpc.debug-0.10.0.jar" .
+                     "java-eclipse-lsp4j-jsonrpc-debug")
+                    ("junit-4.12.jar" . "java-junit")
+                    ("easymock-3.3.1.jar" . "java-easymock")))
+                 ;; Retain a tiny subset of the original X-Git-*
+                 ;; manifest values just to aid in debugging
+                 (substitute* ,build-xml
+                   (("\\$\\{git.tag\\}") ,tag))))
+             (add-before 'check 'prepare-tests
+               (lambda _
+                 ;; pcal tests write to cfg files
+                 (for-each (cut chmod <> #o644)
+                           (find-files (string-append ,tlatools
+                                                      "/test-model/pcal")
+                                       "\\.cfg$"))))
+             (replace 'install
+               (lambda* (#:key inputs #:allow-other-keys)
+                 (let* ((share (string-append %output "/share/java"))
+                        (jar-name "tla2tools.jar"); set in project.properties
+                        (jar (string-append ,tlatools
+                                            "/dist/" jar-name))
+                        (java-cp (string-append share "/" jar-name))
+                        (bin (string-append %output "/bin"))
+                        (java (string-append (assoc-ref inputs "jdk")
+                                             "/bin/java")))
+                   (install-file jar share)
+                   (mkdir-p bin)
+                   ;; Generate wrapper scripts for bin/, which invoke common
+                   ;; commands within tla2tools.jar.  Users can still invoke
+                   ;; tla2tools.jar for the rest.
+                   (for-each
+                    (match-lambda
+                      ((wrapper . class)
+                       (let ((file (string-append bin "/" wrapper)))
+                         (begin
+                           (with-output-to-file file
+                             (lambda _
+                               (display
+                                (string-append
+                                 "#!/bin/sh\n"
+                                 java " -cp " java-cp " " class " \"$@\""))))
+                           (chmod file #o755)))))
+                    ;; bin/wrapper . java-class
+                    '(("pcal" . "pcal.trans")
+                      ("tlatex" . "tla2tex.TLA")
+                      ("tla2sany" . "tla2sany.SANY")
+                      ("tlc2" . "tlc2.TLC")
+                      ("tlc2-repl" . "tlc2.REPL"))))))))))
+      (native-inputs
+       `(("java-junit" ,java-junit)
+         ("java-easymock" ,java-easymock)))
+      (inputs
+       `(("java-javax-mail" ,java-javax-mail)
+         ("java-gson" ,java-gson-2.8.6)
+         ("java-jline-terminal" ,java-jline-terminal)
+         ("java-jline-reader" ,java-jline-reader)
+         ("java-eclipse-lsp4j-jsonrpc" ,java-eclipse-lsp4j-jsonrpc)
+         ("java-eclipse-lsp4j-jsonrpc-debug" ,java-eclipse-lsp4j-jsonrpc-debug)
+         ("java-eclipse-lsp4j-debug" ,java-eclipse-lsp4j-debug)))
+      (home-page "https://lamport.azurewebsites.net/tla/tools.html")
+      (synopsis "TLA+ tools (analyzer, TLC, TLATeX, PlusCal translator)")
+      (description "TLA+ is a high-level language for modeling programs and
+systems---especially concurrent and distributed ones.  It's based on the idea
+that the best way to describe things precisely is with simple
+mathematics.  TLA+ and its tools are useful for eliminating fundamental design
+errors, which are hard to find and expensive to correct in code.
+
+The following TLA+ tools are available in this distribution:
+
+@itemize
+@item The Syntactic Analyzer: A parser and syntax checker for
+  TLA+ specifications;
+@item TLC: A model checker and simulator for a subclass of \"executable\" TLA+
+  specifications;
+@item TLATeX: A program for typesetting TLA+ specifications;
+@item Beta test versions of 1-3 for the TLA+2 language; and
+@item The PlusCal translator.
+@end itemize")
+      (license license:expat))))

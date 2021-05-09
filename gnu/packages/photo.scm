@@ -2,7 +2,7 @@
 ;;; Copyright © 2014, 2015, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2017 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
@@ -318,7 +318,7 @@ MTP, and much more.")
 (define-public perl-image-exiftool
   (package
     (name "perl-image-exiftool")
-    (version "12.00")
+    (version "12.16")
     (source
      (origin
        (method url-fetch)
@@ -328,9 +328,10 @@ MTP, and much more.")
              ;; New releases may take a while to hit CPAN.
              (string-append "https://www.sno.phy.queensu.ca/~phil/exiftool/"
                             "Image-ExifTool-" version ".tar.gz")))
+       (patches (search-patches "perl-image-exiftool-CVE-2021-22204.patch"))
        (sha256
         (base32
-         "0nl5djf6hs6brnp7qnqvj3xwhj1qnjwcv35ih4yqp2mm9b4jqyfh"))))
+         "0skm22b3gg1bfk0amklrprpva41m6mkrhqp0gi7z1nmcf9ypjh61"))))
     (build-system perl-build-system)
     (arguments
      '(#:phases
@@ -586,7 +587,7 @@ and enhance them.")
 (define-public photoflare
   (package
     (name "photoflare")
-    (version "1.6.7")
+    (version "1.6.8")
     (source
      (origin
        (method git-fetch)
@@ -595,7 +596,7 @@ and enhance them.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0rh5gvnc1zwx4p9h599s82m69gsxp19nnfcxsblx3b2ddwzxh78v"))))
+        (base32 "0vdn5pk5hrw4i0q3wzzgcggcc9i575ymccm44vq3xihy84c3vnc9"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ;no tests

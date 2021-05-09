@@ -397,15 +397,15 @@ guile-gtk	node	${GS}/guile-gtk/docs/guile-gtk/
 guile-rpc	mono	${GS}/guile-rpc/manual/guile-rpc.html
 guile-rpc	node	${GS}/guile-rpc/manual/html_node/
 
-guix.de		mono	${GS}/guix/manual/de/guix.html
+guix.de		mono	${GS}/guix/manual/de/guix.de.html
 guix.de		node	${GS}/guix/manual/de/html_node/
-guix.es		mono	${GS}/guix/manual/es/guix.html
+guix.es		mono	${GS}/guix/manual/es/guix.es.html
 guix.es		node	${GS}/guix/manual/es/html_node/
-guix.fr		mono	${GS}/guix/manual/fr/guix.html
+guix.fr		mono	${GS}/guix/manual/fr/guix.fr.html
 guix.fr		node	${GS}/guix/manual/fr/html_node/
-guix.ru		mono	${GS}/guix/manual/ru/guix.html
+guix.ru		mono	${GS}/guix/manual/ru/guix.ru.html
 guix.ru		node	${GS}/guix/manual/ru/html_node/
-guix.zh_CN	mono	${GS}/guix/manual/zh-cn/guix.html
+guix.zh_CN	mono	${GS}/guix/manual/zh-cn/guix.zh_CN.html
 guix.zh_CN	node	${GS}/guix/manual/zh-cn/html_node/
 guix		mono	${GS}/guix/manual/en/guix.html
 guix		node	${GS}/guix/manual/en/html_node/

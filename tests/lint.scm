@@ -8,6 +8,7 @@
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Timothy Sample <samplet@ngyro.com>
+;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -269,6 +270,12 @@
                             (synopsis "UUCP implementation")
                             (description "Imagine this is Taylor UUCP."))))
     (check-synopsis-style pkg)))
+
+(test-equal "name: use underscore in package name"
+  "name should use hyphens instead of underscores"
+  (single-lint-warning-message
+   (let ((pkg (dummy-package "under_score")))
+     (check-name pkg))))
 
 (test-equal "inputs: pkg-config is probably a native input"
   "'pkg-config' should probably be a native input"

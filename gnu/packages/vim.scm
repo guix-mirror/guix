@@ -467,7 +467,7 @@ trouble using them, because you do not have to remember each snippet name.")
 (define-public vim-fugitive
   (package
     (name "vim-fugitive")
-    (version "3.2")
+    (version "3.3")
     (source
       (origin
         (method git-fetch)
@@ -477,7 +477,7 @@ trouble using them, because you do not have to remember each snippet name.")
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "1jbn5jxadccmcz01j94d0i1bp74cixr0fpxxf1h0aqdf1ljk3d7n"))))
+          "1ybmy2dk9zsmd3kyyj40qn20gzgd16n5p77sjxp8bspx3zb7km5y"))))
     (build-system copy-build-system)
     (arguments
      '(#:install-plan
@@ -842,7 +842,7 @@ through its msgpack-rpc API.")
 (define-public vim-asyncrun
   (package
     (name "vim-asyncrun")
-    (version "2.8.5")
+    (version "2.8.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -851,7 +851,7 @@ through its msgpack-rpc API.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0mxsmjv497h6w8dxw0zvqginlx0yvrvrx4z3jhq2x3y2dfvpcm41"))))
+                "11zcw0sll6qg6ha0rr6n1cw5v73azvf7ycwn9lgiwa5cj7rrqjf4"))))
     (build-system copy-build-system)
     (arguments
      '(#:install-plan

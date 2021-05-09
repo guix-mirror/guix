@@ -8,7 +8,7 @@
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
@@ -599,9 +599,9 @@ the data.")
                   #t))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f
+     `(#:tests? #f
        #:phases (modify-phases %standard-phases (delete 'configure))
-       #:make-flags (list "CC=gcc"
+       #:make-flags (list ,(string-append "CC=" (cc-for-target))
                           (string-append "PREFIX="
                                          (assoc-ref %outputs "out")))))
     (synopsis "Get CDDB discid information from an audio CD")
@@ -953,15 +953,15 @@ CD data, and more.  It's mostly compatible with @code{cdrtools}.")
 (define-public libmirage
   (package
     (name "libmirage")
-    (version "3.2.4")
+    (version "3.2.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "mirror://sourceforge/cdemu/libmirage/libmirage-"
-                    version ".tar.bz2"))
+                    version ".tar.xz"))
               (sha256
                (base32
-                "0md3f71x2dbgyw5s254vx1s80slh3f25r9pvjihkrmj0rn53nnzw"))))
+                "0f8i2ha44rykkk3ac2q8zsw3y1zckw6qnf6zvkyrj3qqbzhrf3fm"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -982,15 +982,15 @@ the data stored in various image formats.")
 (define-public cdemu-daemon
   (package
     (name "cdemu-daemon")
-    (version "3.2.4")
+    (version "3.2.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "mirror://sourceforge/cdemu/cdemu-daemon/"
-                    "cdemu-daemon-" version ".tar.bz2"))
+                    "cdemu-daemon-" version ".tar.xz"))
               (sha256
                (base32
-                "02yyj8sr7d5briamhzrqh8zdsiiggxmx5y05kx25y7k3g15jvcx6"))))
+                "16g6fv1lxkdmbsy6zh5sj54dvgwvm900fd18aq609yg8jnqm644d"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1011,15 +1011,15 @@ drive and disc (including CD-ROMs and DVD-ROMs).")
 (define-public cdemu-client
   (package
     (name "cdemu-client")
-    (version "3.2.4")
+    (version "3.2.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "mirror://sourceforge/cdemu/cdemu-client/cdemu-client-"
-                    version ".tar.bz2"))
+                    version ".tar.xz"))
               (sha256
                (base32
-                "1swylaja1p1jfjf3s58c9hsk1cyy20i7mrq32kcg6kzp88grs8my"))))
+                "1prrdhv0ia0axc6b73crszqzh802wlkihz6d100yvg7wbgmqabd7"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)

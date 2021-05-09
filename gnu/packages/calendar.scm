@@ -5,7 +5,7 @@
 ;;; Copyright © 2016, 2017, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Troy Sankey <sankeytms@gmail.com>
 ;;; Copyright © 2016, 2021 Stefan Reichoer <stefan@xsteve.at>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com
 ;;; Copyright © 2020 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
@@ -35,6 +35,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system python)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages base)
   #:use-module (gnu packages check)
   #:use-module (gnu packages dav)
@@ -51,6 +52,7 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages tcl)
   #:use-module (gnu packages time)
   #:use-module (gnu packages xml)
   #:use-module (srfi srfi-26))
@@ -178,13 +180,13 @@ data units.")
 (define-public khal
   (package
     (name "khal")
-    (version "0.10.2")
+    (version "0.10.3")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "khal" version))
               (sha256
                (base32
-                "11qhrga44knlnp88py9p547d4nr5kn041d2nszwa3dqw7mf22ks9"))))
+                "0cm4xn871w3i99l3qmhv0bnv8q6rd1w3rip9sskyb5z59z0qzp9g"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ; The test suite is unreliable. See <https://bugs.gnu.org/44197>
@@ -226,7 +228,7 @@ able to synchronize with CalDAV servers through vdirsyncer.")
 (define-public remind
   (package
     (name "remind")
-    (version "3.3.5")
+    (version "3.3.6")
     (source
      (origin
        (method url-fetch)
@@ -237,10 +239,44 @@ able to synchronize with CalDAV servers through vdirsyncer.")
                                         ".")
                            ".tar.gz"))
        (sha256
-        (base32 "1hbfsq6444abkiws28xqy0k9cwzgzfi1hwfmd1rgm4yydgc1gvb1"))))
+        (base32 "0nszv62gqyclsvsygqj4b1c5h40rp66s5njgcf1h7iy9f00hr6ln"))))
     (build-system gnu-build-system)
+    (outputs (list "out"
+                   "tcl"))           ; more than doubles the closure by >110 MiB
     (arguments
-     '(#:tests? #f))                    ; no "check" target
+     '(#:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'split-:tcl
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (tcl (assoc-ref outputs "tcl")))
+               (for-each
+                (lambda (file)
+                  (let ((from (string-append out "/" file))
+                        (to   (string-append tcl "/" file)))
+                    (mkdir-p (dirname to))
+                    (rename-file from to)
+                    ;; For simplicity, wrap all scripts with the same variables
+                    ;; even though, e.g., inetutils is not needed by cm2rem.tcl.
+                    ;; XXX Using WRAP-SCRIPT currently breaks tkremind.
+                    (wrap-program to
+                      `("PATH" ":" prefix
+                        ,(map (lambda (dir)
+                                (string-append dir "/bin"))
+                              (append (list out tcl)
+                                      (map (lambda (input)
+                                             (assoc-ref inputs input))
+                                           (list "tcl" "tk" "inetutils")))))
+                      `("TCLLIBPATH" " " =
+                        (,(getenv "TCLLIBPATH"))))))
+                (list "bin/cm2rem.tcl"
+                      "bin/tkremind"))))))))
+    (inputs
+     `(("inetutils" ,inetutils)
+       ("tcl" ,tcl)
+       ("tcllib" ,tcllib)
+       ("tk" ,tk)))
     (home-page "https://dianne.skoll.ca/projects/remind/")
     (synopsis "Sophisticated calendar and alarm program")
     (description

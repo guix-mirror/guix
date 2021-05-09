@@ -36,6 +36,7 @@
   #:use-module (gnu packages code)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages fribidi)
@@ -370,7 +371,10 @@ Libraries with some extra bells and whistles.")
     (propagated-inputs
      `(("efl" ,efl)
        ("libxkbcommon" ,libxkbcommon)
-       ("wayland-protocols" ,wayland-protocols)))
+       ("wayland-protocols" ,wayland-protocols)
+
+       ;; Default font that applications such as IceCat require.
+       ("font-dejavu" ,font-dejavu)))
     (home-page "https://www.enlightenment.org/about-enlightenment")
     (synopsis "Lightweight desktop environment")
     (description

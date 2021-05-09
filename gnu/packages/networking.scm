@@ -387,7 +387,7 @@ supported, including rtmp://, rtmpt://, rtmpe://, rtmpte://, and rtmps://.")
 (define-public srt
   (package
     (name "srt")
-    (version "1.4.2")
+    (version "1.4.3")
     (source
      (origin
        (method git-fetch)
@@ -397,7 +397,7 @@ supported, including rtmp://, rtmpt://, rtmpe://, rtmpte://, and rtmps://.")
          (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "01nx3a35hzq2x0dvp2n2b86phpdy1z83kdraag7aq3hmc7f8iagg"))))
+        (base32 "1f60vlfxhh9bhafws82c3301whjlz5gy92jz9a9ymwfg5h53bv1j"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -509,15 +509,19 @@ SCTP-aware kernel (most are).")
 (define-public knockd
   (package
     (name "knockd")
-    (version "0.7")
+    (version "0.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.zeroflux.org/proj/knock/files/knock-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "193qcpsy7v51c6awhg9652l5blyz8vp6n7y6fi7l4rhh6af4ff4r"))))
+                "1iv9h7a9l81ilbld3pi0dmzkizjss1755x1x3v5jxsi4asb8r3b9"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--docdir=" (assoc-ref %outputs "out")
+                            "/share/doc/" ,name "-" ,version))))
     (inputs
      `(("libpcap" ,libpcap)))
     (home-page "https://www.zeroflux.org/projects/knock")
@@ -1170,14 +1174,14 @@ receiving NDP messages.")
 (define-public ethtool
   (package
     (name "ethtool")
-    (version "5.10")
+    (version "5.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/software/network/"
                                   "ethtool/ethtool-" version ".tar.xz"))
               (sha256
                (base32
-                "1kygjg6g90017k53b8342i59cpwgidalqpa3gdilqyrhm6b56zc1"))))
+                "01vgyczgldrfss98cqrgjz8krj6kwb29xjf8p08q0g85fnfgmpgm"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1339,7 +1343,7 @@ and min/max network usage.")
                 "0gh17kcxxi37k65zm4gqsvbk3aw7yphcs3c02pn1c4s2y6n40axd"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     `(#:phases
        (modify-phases %standard-phases
          (delete 'configure)
          (add-before 'build 'fix-ifconfig-path
@@ -1357,7 +1361,7 @@ and min/max network usage.")
 test_parse_format_ipv(4(|_listen_all|_mapped_ipv6)|6)\\);")
                 ""))
              #t)))
-       #:make-flags (list "CC=gcc"
+       #:make-flags (list ,(string-append "CC=" (cc-for-target))
                           (string-append "prefix=" (assoc-ref %outputs "out")))
        #:test-target "test"))
     (inputs `(("net-tools" ,net-tools)
@@ -1421,14 +1425,14 @@ of the same name.")
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "3.4.4")
+    (version "3.4.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.wireshark.org/download/src/wireshark-"
                            version ".tar.xz"))
        (sha256
-        (base32 "0aad3m8nh4i75dgjs68217135bzqmhmlgjklmpjh1ihmjwgd373j"))))
+        (base32 "0cyk8nqws9gp8p2ywszbynh8vawivnbhw60dhmy21qd1038sy6ny"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -1639,7 +1643,7 @@ transmission protocol (SCTP) in a Go application.")
        ("ncurses" ,ncurses)
        ("openssl" ,openssl)))
     (arguments
-     `(#:make-flags (list "CC=gcc"
+     `(#:make-flags (list ,(string-append "CC=" (cc-for-target))
                           (string-append "DESTDIR=" (assoc-ref %outputs "out"))
                           "PREFIX=")
        #:tests? #f)) ; no tests
@@ -1840,8 +1844,8 @@ allows for heavy scripting.")
                 "07nym6bqml0k9v29vnj003nrgnwrywgjvnljb7cdpsvnwilhbp64"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:make-flags
-       (list "CC=gcc"
+     `(#:make-flags
+       (list ,(string-append "CC=" (cc-for-target))
              (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
@@ -1957,7 +1961,7 @@ private (reserved).")
 (define-public perl-net-dns
  (package
   (name "perl-net-dns")
-  (version "1.30")
+  (version "1.31")
   (source
     (origin
       (method url-fetch)
@@ -1968,7 +1972,7 @@ private (reserved).")
         (string-append "mirror://cpan/authors/id/N/NL/NLNETLABS/Net-DNS-"
                        version ".tar.gz")))
       (sha256
-       (base32 "1nm560xjg173wvv736ai3ib1gwssyy41gi0yv4j5fqamfav70ph5"))))
+       (base32 "05f6rzvvmm6xd0p100k5y9kczdzqgala09ra8bccc18n6y74l0h0"))))
   (build-system perl-build-system)
   (inputs
     `(("perl-digest-hmac" ,perl-digest-hmac)))
@@ -2299,7 +2303,7 @@ library remains flexible, portable, and easily embeddable.")
        ("pcre" ,pcre)
        ("tcp-wrappers" ,tcp-wrappers)))
     (arguments
-     '(#:phases
+     `(#:phases
        (modify-phases %standard-phases
          (delete 'configure)            ; no configure script
          (add-before 'check 'fix-tests
@@ -2321,7 +2325,7 @@ library remains flexible, portable, and easily embeddable.")
                 (append (find-files "." "\\.cfg")
                         (find-files "scripts"))))
              #t)))
-       #:make-flags (list "CC=gcc"
+       #:make-flags (list ,(string-append "CC=" (cc-for-target))
                           "USELIBCAP=1"
                           "USELIBWRAP=1"
                           (string-append "PREFIX=" (assoc-ref %outputs "out")))
@@ -2384,7 +2388,7 @@ the bandwidth, loss, and other parameters.")
      `(("libpcap" ,libpcap)
        ("ncurses" ,ncurses)))
     (arguments
-     `(#:make-flags `("CC=gcc"
+     `(#:make-flags `(,,(string-append "CC=" (cc-for-target))
                       ,(string-append "PREFIX=" %output)
                       ,(string-append "VERSION=" ,version))
        #:phases
@@ -2612,11 +2616,11 @@ returns the user name and other information about the connection.")
                 "04rpnc53whfky7pp2m9h35gwzwn6788pnl6c1qd576mpknbqjw4d"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:test-target "test"
+     `(#:test-target "test"
        #:make-flags (let* ((out (assoc-ref %outputs "out"))
                            (bindir (string-append out "/bin"))
                            (man1dir (string-append out "/share/man/man1")))
-                      (list "CC=gcc" ; It tries to invoke `c99`.
+                      (list ,(string-append "CC=" (cc-for-target)) ; It tries to invoke `c99`.
                             (string-append "BINDIR=" bindir)
                             (string-append "MAN1DIR=" man1dir)))
        #:phases
@@ -3035,7 +3039,7 @@ from user-space.  It requires a kernel built with SocketCAN support.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; No tests exist.
-       #:make-flags (list "CC=gcc"
+       #:make-flags (list ,(string-append "CC=" (cc-for-target))
                           (string-append "PREFIX="
                                          (assoc-ref %outputs "out")))
        #:phases
@@ -3288,7 +3292,7 @@ Ethernet and TAP interfaces is supported.  Packet capture is also supported.")
        ("zlib" ,zlib)))
     (arguments
      `(#:make-flags
-       (list "CC=gcc"
+       (list ,(string-append "CC=" (cc-for-target))
              (string-append "INSTALLDIR=" (assoc-ref %outputs "out") "/bin"))
        #:tests? #f                      ; no test suite
        #:phases
@@ -3339,15 +3343,14 @@ and check if the WLAN key or the master key was transmitted unencrypted.")
 (define-public dante
   (package
     (name "dante")
-    (version "1.4.2")
+    (version "1.4.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.inet.no/dante/files/dante-"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "19rqzj167q73ag20zxpvswhkk0bj56r5maf83v5016sw7vrcz5sc"))))
+        (base32 "0pbahkj43rx7rmv2x40mf5p3g3x9d6i2sz7pzglarf54w5ghd2j1"))))
     (build-system gnu-build-system)
     (arguments
      ;; XXX: The dynamic socks library doesn't work with 'libc.so' (GNU ld
@@ -3646,7 +3649,7 @@ written (and providing API) in C.  Current implementation covers YANG 1.0 (RFC
       (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
             (string-append "PKG_CONFIG=" (assoc-ref %build-inputs "pkg-config")
                            "/bin/pkg-config")
-            "CC=gcc")))
+            ,(string-append "CC=" (cc-for-target)))))
    (home-page "https://www.open-mesh.org/projects/batman-adv/wiki/Wiki")
    (synopsis "Management tool for the mesh networking BATMAN protocol")
    (description "This package provides a control tool for the
@@ -3866,14 +3869,14 @@ thousands of connections is clearly realistic with today's hardware.")
 (define-public lldpd
   (package
     (name "lldpd")
-    (version "1.0.10")
+    (version "1.0.11")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://media.luffy.cx/files/lldpd/lldpd-"
                            version ".tar.gz"))
        (sha256
-        (base32 "08kppk49f9wmdf2gw29sm8pi027g54gzrqa07p8fpwvy0dv2sns4"))
+        (base32 "1r265ns6fh04xwrzj06p2l7kl5rkkns0cdawp1zwpvxs1xq1a7dm"))
        (modules '((guix build utils)))
        (snippet
         '(begin

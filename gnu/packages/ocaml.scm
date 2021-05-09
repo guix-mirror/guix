@@ -200,8 +200,7 @@ This package produces a native @command{ocamlc} and a bytecode @command{ocamllex
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("libx11" ,libx11)
-       ;; For libiberty, needed for objdump support.
-       ("gcc:lib" ,(canonical-package gcc) "lib")
+       ("libiberty" ,libiberty)               ;needed for objdump support
        ("zlib" ,zlib)))                       ;also needed for objdump support
     (arguments
      `(#:phases
@@ -6373,15 +6372,15 @@ variants.")
     (synopsis
      "Executable code blocks inside markdown files")
     (description
-     "@code{ocaml-mdx} allows to execute code blocks inside markdown files.
+     "@code{ocaml-mdx} executes code blocks inside markdown files.
 There are (currently) two sub-commands, corresponding
 to two modes of operations: pre-processing (@code{ocaml-mdx pp})
 and tests (@code{ocaml-mdx test}]).
 
-The pre-processor mode allows to mix documentation and code,
+The pre-processor mode allows mixing documentation and code,
 and to practice @dfn{literate programming} using markdown and OCaml.
 
-The test mode allows to ensure that shell scripts and OCaml fragments
+The test mode ensures that shell scripts and OCaml fragments
 in the documentation always stays up-to-date.
 
 @code{ocaml-mdx} is released as two binaries called @code{ocaml-mdx} and

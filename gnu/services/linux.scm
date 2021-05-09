@@ -3,6 +3,7 @@
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2021 raid5atemyhomework <raid5atemyhomework@protonmail.com>
+;;; Copyright © 2021 B. Wilson <elaexuotee@wilsonb.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -46,6 +47,11 @@
             earlyoom-service-type
 
             kernel-module-loader-service-type
+
+            rasdaemon-configuration
+            rasdaemon-configuration?
+            rasdaemon-configuration-record?
+            rasdaemon-service-type
 
             zram-device-configuration
             zram-device-configuration?
@@ -187,6 +193,49 @@ representation."
    (compose concatenate)
    (extend append)
    (default-value '())))
+
+
+;;;
+;;; Reliability, Availability, and Serviceability (RAS) daemon
+;;;
+
+(define-record-type* <rasdaemon-configuration>
+  rasdaemon-configuration make-rasdaemon-configuration
+  rasdaemon-configuration?
+  (record? rasdaemon-configuration-record? (default #f)))
+
+(define (rasdaemon-configuration->command-line-args config)
+  "Translate <rasdaemon-configuration> to its command line arguments
+  representation"
+  (let ((record? (rasdaemon-configuration-record? config)))
+    `(,(file-append rasdaemon "/sbin/rasdaemon")
+      "--foreground" ,@(if record? '("--record") '()))))
+
+(define (rasdaemon-activation config)
+  (let ((record? (rasdaemon-configuration-record? config))
+        (rasdaemon-dir "/var/lib/rasdaemon"))
+    (with-imported-modules '((guix build utils))
+      #~(if #$record? (mkdir-p #$rasdaemon-dir)))))
+
+(define (rasdaemon-shepherd-service config)
+  (shepherd-service
+   (documentation "Run rasdaemon")
+   (provision '(rasdaemon))
+   (requirement '(syslogd))
+   (start #~(make-forkexec-constructor
+             '#$(rasdaemon-configuration->command-line-args config)))
+   (stop #~(make-kill-destructor))))
+
+(define rasdaemon-service-type
+  (service-type
+   (name 'rasdaemon)
+   (default-value (rasdaemon-configuration))
+   (extensions
+    (list (service-extension shepherd-root-service-type
+                             (compose list rasdaemon-shepherd-service))
+          (service-extension activation-service-type rasdaemon-activation)))
+   (compose concatenate)
+   (description "Run @command{rasdaemon}, the RAS monitor")))
 
 
 ;;;

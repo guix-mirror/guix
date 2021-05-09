@@ -293,14 +293,13 @@ and probably others.")
 (define-public openconnect-sso
   (package
     (name "openconnect-sso")
-    (version "0.7.2")
+    (version "0.7.3")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "openconnect-sso" version))
         (sha256
-         (base32
-          "0nb40zfpp38mz6389y0qvrr4mmak53swpg7578cldnhnk0g15qni"))))
+         (base32 "065s5c8q80jh0psdw7694nlabwpra7aw6yc4jlgsc9vxx8rx2na1"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f  ; Tests not included, building from git requires poetry.
@@ -383,7 +382,7 @@ this process.  It is compatible with Fortinet VPNs.")
 (define-public openvpn
   (package
     (name "openvpn")
-    (version "2.5.1")
+    (version "2.5.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -391,7 +390,7 @@ this process.  It is compatible with Fortinet VPNs.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "157ikzap2bbkzx34hkh33bpk2i14xjx1x3pkadhmzh1pr24h94s0"))))
+                "1j0xkiya20hhvalfjg5l3v1226vyjs9j9aw2mzpnbwq1d61l69xi"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-iproute2=yes")))
@@ -678,7 +677,7 @@ WireGuard was added to Linux 5.6.")
 (define-public wireguard-tools
   (package
     (name "wireguard-tools")
-    (version "1.0.20210315")
+    (version "1.0.20210424")
     (source
      (origin
        (method git-fetch)
@@ -687,7 +686,7 @@ WireGuard was added to Linux 5.6.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1an5gm2dv111n3fylbrnyynxmi2d3iwf2b46zq08hc54kzazxcml"))))
+        (base32 "12v0ykaz7phv1gqin35wf6ndgb9819vai17ynjxssq00xwcbsq43"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags

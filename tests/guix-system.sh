@@ -51,6 +51,7 @@ then
     # This must not succeed.
     exit 1
 else
+    cat "$errorfile"
     grep "$tmpfile:2:3:.*missing.* initializers" "$errorfile"
 fi
 
@@ -66,7 +67,12 @@ then
     # This must not succeed.
     exit 1
 else
-    grep "$tmpfile:4:1: missing closing paren" "$errorfile"
+    cat "$errorfile"
+
+    # Guile 3.0.6 gets line/column numbers for 'read-error' wrong
+    # (zero-indexed): <https://bugs.gnu.org/48089>.
+    grep "$tmpfile:4:1: missing closing paren" "$errorfile" || \
+    grep "$tmpfile:3:0: missing closing paren" "$errorfile"
 fi
 
 

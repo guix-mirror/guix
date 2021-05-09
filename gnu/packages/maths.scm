@@ -39,7 +39,7 @@
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
-;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2021 Gerd Heber <gerd.heber@gmail.com>
@@ -700,6 +700,30 @@ multiple precision or fixed integer arithmetic.  Output is not stored
 in memory, so even problems with very large output sizes can sometimes
 be solved.")
     (license license:gpl2+)))
+
+(define-public libcerf
+  (package
+    (name "libcerf")
+    (version "1.14")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://jugit.fz-juelich.de/mlz/libcerf")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1ic2q7kvxpqmgxlishygvx8d00i4wn51vkq4fyac44ahhf6c3kwd"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("perl" ,perl)))
+    (home-page "https://jugit.fz-juelich.de/mlz/libcerf")
+    (synopsis "Library for complex error functions")
+    (description
+     "@code{libcerf} is a self-contained numeric library that provides an
+efficient and accurate implementation of complex error functions, along with
+Dawson, Faddeeva, and Voigt functions.")
+    (license license:expat)))
 
 (define-public vinci
   (package
@@ -2016,7 +2040,7 @@ can solve two kinds of problems:
                  "\"" (assoc-ref inputs "texinfo") "/bin/makeinfo\"")))
              #t)))))
     (home-page "https://www.gnu.org/software/octave/")
-    (synopsis "High-level language for numerical computation")
+    (synopsis "High-level language for numerical computation (no GUI)")
     (description "GNU Octave is a high-level interpreted language that is
 specialized for numerical computations.  It can be used for both linear and
 non-linear applications and it provides great support for visualizing results.
@@ -2048,7 +2072,8 @@ script files.")
                (substitute* "configure"
                  (("qscintilla2-qt5")
                   "qscintilla2_qt5"))
-               #t))))))))
+               #t))))))
+    (synopsis "High-level language for numerical computation (with GUI)")))
 
 (define-public opencascade-oce
   (package
@@ -3611,7 +3636,7 @@ point numbers.")
 (define-public wxmaxima
   (package
     (name "wxmaxima")
-    (version "21.02.0")
+    (version "21.04.0")
     (source
      (origin
        (method git-fetch)
@@ -3620,7 +3645,7 @@ point numbers.")
              (commit (string-append "Version-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "19sab596ydwz65151bwymnfilyfmr8qcxb0k8cxlnj1gmdldlyz6"))))
+        (base32 "0xj95zk16x8kac8qhzd5kvf3b00x7hgdw85da9ww63xyndvhh2lw"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)))
@@ -4206,6 +4231,34 @@ done in the BIOS, or, on GNU/Linux, with the following command:
 Failure to do so will result in a library with poor performance.")
     (license license:bsd-3)))
 
+(define-public cglm
+  (package
+    (name "cglm")
+    (version "0.8.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/recp/cglm")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1lcfl9ph4bnl3hckpx4hzwh8r4llnw94ik75igc5qy38wk468gmk"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "-DCGLM_USE_TEST=ON")))
+    (home-page "https://github.com/recp/cglm")
+    (synopsis "Mathematics C library for graphics programming")
+    (description
+     "@acronym{CGLM, C OpenGL Mathematics} is an optimised 3D maths library
+for graphics software based on the @acronym{GLSL, OpenGL Shading Language}
+specifications.
+
+It's similar to the original C++ GLM library but written in C99 and compatible
+with C89.")
+    (license license:expat)))
+
 (define-public glm
   (package
     (name "glm")
@@ -4484,7 +4537,7 @@ evaluates expressions using the standard order of operations.")
 (define-public xaos
   (package
     (name "xaos")
-    (version "4.0")
+    (version "4.2.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4493,7 +4546,7 @@ evaluates expressions using the standard order of operations.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "00110p5xscjsmn7avfqgydn656zbmdj3l3y2fpv9b4ihzpid8n7a"))))
+                "0maw5am6rrkyjrprfg113zjq37mqj0iaznkg4h2927ff7wrprc94"))))
     (build-system gnu-build-system)
     (native-inputs `(("gettext" ,gettext-minimal)
                      ("qtbase" ,qtbase)
@@ -4516,12 +4569,14 @@ evaluates expressions using the standard order of operations.")
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               ;; The DESTDIR is originally set to install the xaos binary to
-               ;; the "bin" folder inside the build directory.  Setting make
-               ;; flags doesn't seem to change this.
                (substitute* "XaoS.pro"
+                 ;; The DESTDIR is originally set to install the xaos binary to
+                 ;; the "bin" folder inside the build directory.  Setting make
+                 ;; flags doesn't seem to change this.
                  (("DESTDIR.*$")
-                  (string-append "DESTDIR=" out "/bin")))
+                  (string-append "DESTDIR=" out "/bin"))
+                 ;; Set the correct path to the lrelease binary.
+                 (("lrelease-qt5") "lrelease"))
                (substitute* "src/include/config.h"
                  (("/usr/share/XaoS")
                   (string-append out "/share/XaoS")))

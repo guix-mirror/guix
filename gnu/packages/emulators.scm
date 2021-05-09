@@ -13,6 +13,7 @@
 ;;; Copyright © 2019 David Wilson <david@daviwil.com>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Christopher Howard <christopher@librehacker.com>
+;;; Copyright © 2021 Felipe Balbi <balbi@kernel.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -44,6 +45,7 @@
   #:use-module (gnu packages autogen)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages cdrom)
@@ -53,6 +55,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages digest)
   #:use-module (gnu packages elf)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
@@ -96,6 +99,45 @@
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python))
+
+(define-public vice
+  (package
+    (name "vice")
+    (version "3.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/vice-emu/releases/"
+                           "vice-" version ".tar.gz"))
+       (sha256
+        (base32
+         "03nwcldg2h7dxj6aa77ggqc0442hqc1lsq5x69h8kcmqmvx7ifan"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--disable-pdf-docs")))
+    (native-inputs
+     `(("bison" ,bison)
+       ("dos2unix" ,dos2unix)
+       ("flex" ,flex)
+       ("glib" ,glib "bin")             ; for glib-genmarshal, etc.
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("glew" ,glew)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("pulseaudio" ,pulseaudio)
+       ("sdl" ,sdl)
+       ("sdl-image" ,sdl-image)
+       ("xa" ,xa)))
+    (home-page "https://vice-emu.sourceforge.io/")
+    (synopsis "The versatile Commodore emulator")
+    (description
+     "VICE is a program that emulates the C64, the C64DTV, the C128, the
+VIC20, practically all PET models, the PLUS4 and the CBM-II (aka
+C610/C510).  An extra emulator is provided for C64 expanded with the CMD
+SuperCPU.")
+    (license license:gpl2+)))
 
 (define-public desmume
   (package
@@ -540,7 +582,7 @@ The following systems are supported:
 (define-public mgba
   (package
     (name "mgba")
-    (version "0.9.0")
+    (version "0.9.1")
     (source
      (origin
        (method git-fetch)
@@ -549,7 +591,7 @@ The following systems are supported:
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "16v08m9irping65d94vb5skp4m6nc63zj6bfajbzhmf944dswmi5"))
+        (base32 "163azad5y4zxwzxyrb481rwfc2p86v99pf7nvdr6bavzq98x2z8h"))
        (modules '((guix build utils)))
        (snippet
         ;; Make sure we don't use the bundled software.
@@ -1233,47 +1275,45 @@ emulation community.  It provides highly accurate emulation.")
     (license license:gpl2+)))
 
 (define-public libretro-lowresnx
-  (let ((commit "743ab43a6c4a13e0d5363b0d25ac12c7511c6581")
-        (revision "1"))
-    (package
-      (name "libretro-lowresnx")
-      (version (git-version "1.1" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/timoinutilis/lowres-nx")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0r15kb5p5s2jwky6zy4v1j9i95i4rz36p9wxg0g6xdjksf04b5cf"))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:tests? #f                    ; no tests
-         #:make-flags (list "-C" "platform/LibRetro"
-                            (string-append "CC=" ,(cc-for-target)))
-         #:phases
-         (modify-phases %standard-phases
-           (delete 'configure)          ; no configure script
-           (replace 'install
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (libretrodir (string-append out "/lib/libretro")))
-                 (install-file "platform/LibRetro/lowresnx_libretro.so"
-                               libretrodir)
-                 #t))))))
-      (home-page "https://lowresnx.inutilis.com/")
-      (synopsis "Libretro core for LowRES NX")
-      (description "LowRES NX is a simulated retro game console, which can be
+  (package
+    (name "libretro-lowresnx")
+    (version "1.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/timoinutilis/lowres-nx")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0b0vg3iz342dpkffvf7frsnqh8inj8yzi8550bsx8vnbpq5r2ay5"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                    ; no tests
+       #:make-flags (list "-C" "platform/LibRetro"
+                          (string-append "CC=" ,(cc-for-target)))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)          ; no configure script
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (libretrodir (string-append out "/lib/libretro")))
+               (install-file "platform/LibRetro/lowresnx_libretro.so"
+                             libretrodir)
+               #t))))))
+    (home-page "https://lowresnx.inutilis.com/")
+    (synopsis "Libretro core for LowRES NX")
+    (description "LowRES NX is a simulated retro game console, which can be
 programmed in the classic BASIC language.  This package provides a libretro
 core allowing the lowRES NX programs to be used with libretro frontends such
 as RetroArch.")
-      (license license:zlib))))
+    (license license:zlib)))
 
 (define-public retroarch
   (package
     (name "retroarch")
-    (version "1.9.0")
+    (version "1.9.2")
     (source
      (origin
        (method git-fetch)
@@ -1282,7 +1322,7 @@ as RetroArch.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1n0dcv85vqrdr79psnf009hi4r2mvsgsjbghrrc9pm5g7ywwwcvp"))
+        (base32 "0zrry2zwknzsrrz8r6rl1iy9hmiv4dwjmf61aidx3xwxby3g82qg"))
        (patches
         (search-patches "retroarch-LIBRETRO_DIRECTORY.patch"))))
     (build-system gnu-build-system)
@@ -1589,7 +1629,7 @@ This is a part of the TiLP project.")
 (define-public mame
   (package
     (name "mame")
-    (version "0.230")
+    (version "0.231")
     (source
      (origin
        (method git-fetch)
@@ -1598,7 +1638,7 @@ This is a part of the TiLP project.")
              (commit (apply string-append "mame" (string-split version #\.)))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0dk8q2691pycv9mq77h6sdfwjnwdrfwrblf8nwyykrmdawzi56ks"))
+        (base32 "0rgch8fg8ra48wa4gl5ah70q6191sxs28x39iyalb6ballmz8v1w"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled libraries.
@@ -1755,6 +1795,7 @@ This is a part of the TiLP project.")
        ("portaudio" ,portaudio)
        ("portmidi" ,portmidi)
        ("pugixml" ,pugixml)
+       ("pulseaudio" ,pulseaudio)
        ("python-wrapper" ,python-wrapper)
        ("qtbase" ,qtbase)
        ("rapidjson" ,rapidjson)

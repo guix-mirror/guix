@@ -24,11 +24,20 @@
 info_TEXINFOS = %D%/guix.texi			\
   %D%/guix.de.texi				\
   %D%/guix.es.texi				\
+  %D%/guix.fa.texi				\
   %D%/guix.fr.texi				\
+  %D%/guix.it.texi				\
+  %D%/guix.ko.texi				\
+  %D%/guix.pt_BR.texi				\
   %D%/guix.ru.texi				\
+  %D%/guix.sk.texi				\
   %D%/guix.zh_CN.texi				\
   %D%/guix-cookbook.texi			\
-  %D%/guix-cookbook.de.texi
+  %D%/guix-cookbook.de.texi			\
+  %D%/guix-cookbook.fa.texi			\
+  %D%/guix-cookbook.fr.texi			\
+  %D%/guix-cookbook.ko.texi			\
+  %D%/guix-cookbook.zh_Hans.texi
 
 %C%_guix_TEXINFOS = \
   %D%/contributing.texi \
@@ -61,18 +70,33 @@ OS_CONFIG_EXAMPLES_TEXI =			\
   %D%/os-config-desktop.texi			\
   %D%/os-config-lightweight-desktop.texi
 
+# Do not forget to update these, when updating info_TEXINFOS
 TRANSLATED_INFO =				\
   %D%/guix.de.texi				\
   %D%/guix.es.texi				\
+  %D%/guix.fa.texi				\
   %D%/guix.fr.texi				\
+  %D%/guix.it.texi				\
+  %D%/guix.ko.texi				\
+  %D%/guix.pt_BR.texi				\
   %D%/guix.ru.texi				\
+  %D%/guix.sk.texi				\
   %D%/guix.zh_CN.texi				\
   %D%/contributing.de.texi			\
   %D%/contributing.es.texi			\
+  %D%/contributing.fa.texi			\
   %D%/contributing.fr.texi			\
+  %D%/contributing.it.texi			\
+  %D%/contributing.ko.texi			\
+  %D%/contributing.pt_BR.texi			\
   %D%/contributing.ru.texi			\
+  %D%/contributing.sk.texi			\
   %D%/contributing.zh_CN.texi			\
-  %D%/guix-cookbook.de.texi
+  %D%/guix-cookbook.de.texi			\
+  %D%/guix-cookbook.fa.texi			\
+  %D%/guix-cookbook.fr.texi			\
+  %D%/guix-cookbook.ko.texi			\
+  %D%/guix-cookbook.zh_Hans.texi
 
 # Bundle this file so that makeinfo finds it in out-of-source-tree builds.
 BUILT_SOURCES        += $(OS_CONFIG_EXAMPLES_TEXI) $(TRANSLATED_INFO)
@@ -100,7 +124,7 @@ cat "$@.tmp" | egrep '@p?x?ref' -A1 | sed 'N;s|--\n||g;P;D' | sed 's|^| |g' | \
       line=$$(grep -n "^msgid \"$$e\"" "$<" | cut -f1 --delimiter=":") ;\
       ((line++)) ;\
       if [ "$$line" != "1" ]; then \
-	translation=$$(head -n "$$line" "$<" | tail -1 | grep msgstr | sed 's|msgstr "\(.*\)"|\1|') ;\
+	translation=$$(head -n "$$line" "$<" | tail -1 | grep msgstr | sed 's|msgstr "\([^"]*\)"|\1|') ;\
 	if [ "$$translation" != "" ]; then \
 	      sed "N;s@\(p\?x\?ref\){$$(echo $$e | sed 's| |[\\n ]|g')\(,\|}\)@\1{$$translation\2@g;P;D" -i "$@.tmp" ;\
 	fi ;\

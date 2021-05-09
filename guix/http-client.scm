@@ -38,7 +38,7 @@
   #:use-module (guix utils)
   #:use-module (guix base64)
   #:autoload   (gcrypt hash) (sha256)
-  #:autoload   (gnutls) (error/invalid-session)
+  #:autoload   (gnutls) (error/invalid-session error/again error/interrupted)
   #:use-module ((guix build utils)
                 #:select (mkdir-p dump-port))
   #:use-module ((guix build download)
@@ -163,7 +163,14 @@ reusing stale cached connections."
       (if (or (and (eq? key 'system-error)
                    (= EPIPE (system-error-errno `(,key ,@args))))
               (and (eq? key 'gnutls-error)
-                   (eq? (first args) error/invalid-session))
+                   (memq (first args)
+                         (list error/invalid-session
+
+                               ;; XXX: These two are not properly handled in
+                               ;; GnuTLS < 3.7.2, in
+                               ;; 'write_to_session_record_port'; see
+                               ;; <https://bugs.gnu.org/47867>.
+                               error/again error/interrupted)))
               (memq key
                     '(bad-response bad-header bad-header-component)))
           #f
@@ -207,15 +214,14 @@ returning."
         ;; Inherit the HTTP proxying property from P.
         (set-http-proxy-port?! buffer (http-proxy-port? p))
 
-        (unless (false-if-networking-error
-                 (begin
-                   (for-each (cut write-request <> buffer) batch)
-                   (put-bytevector p (get))
-                   (force-output p)
-                   #t))
-          ;; If PORT becomes unusable, open a fresh connection and retry.
-          (close-port p)                          ; close the broken port
-          (connect #f requests result)))
+        ;; Swallow networking errors that could occur due to connection reuse
+        ;; and the like; they will be handled down the road when trying to
+        ;; read responses.
+        (false-if-networking-error
+         (begin
+           (for-each (cut write-request <> buffer) batch)
+           (put-bytevector p (get))
+           (force-output p))))
 
       ;; Now start processing responses.
       (let loop ((sent      batch)

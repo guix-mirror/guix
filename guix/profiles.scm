@@ -4,7 +4,7 @@
 ;;; Copyright © 2014, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
-;;; Copyright © 2016, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2018, 2019, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Huang Ying <huang.ying.caritas@gmail.com>
 ;;; Copyright © 2017 Maxim Cournoyer <maxim.cournoyer@gmail.com>
@@ -1115,6 +1115,46 @@ MANIFEST.  Single-file bundles are required by programs such as Git and Lynx."
                     `((type . profile-hook)
                       (hook . ca-certificate-bundle))))
 
+(define (emacs-subdirs manifest)
+  (define build
+    (with-imported-modules (source-module-closure
+                            '((guix build profiles)
+                              (guix build utils)))
+      #~(begin
+          (use-modules (guix build utils)
+                       (guix build profiles)
+                       (ice-9 ftw) ; scandir
+                       (srfi srfi-1) ; append-map
+                       (srfi srfi-26))
+
+          (let ((destdir (string-append #$output "/share/emacs/site-lisp"))
+                (subdirs
+                 (append-map
+                  (lambda (dir)
+                    (filter
+                     file-is-directory?
+                     (map (cute string-append dir "/" <>)
+                          (scandir dir (negate (cute member <> '("." "..")))))))
+                  (filter file-exists?
+                          (map (cute string-append <> "/share/emacs/site-lisp")
+                               '#$(manifest-inputs manifest))))))
+            (mkdir-p destdir)
+            (with-directory-excursion destdir
+              (call-with-output-file "subdirs.el"
+                (lambda (port)
+                  (write
+                   `(normal-top-level-add-to-load-path
+                     (list ,@subdirs))
+                   port)
+                  (newline port)
+                  #t)))))))
+  (gexp->derivation "emacs-subdirs" build
+                    #:local-build? #t
+                    #:substitutable? #f
+                    #:properties
+                    `((type . profile-hook)
+                      (hook . emacs-subdirs))))
+
 (define (glib-schemas manifest)
   "Return a derivation that unions all schemas from manifest entries and
 creates the Glib 'gschemas.compiled' file."
@@ -1625,6 +1665,7 @@ the entries in MANIFEST."
         fonts-dir-file
         ghc-package-cache-file
         ca-certificate-bundle
+        emacs-subdirs
         glib-schemas
         gtk-icon-themes
         gtk-im-modules

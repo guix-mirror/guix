@@ -12,6 +12,7 @@
 ;;; Copyright © 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Noah Landis <noahlandis@posteo.net>
+;;; Copyright © 2021 Sergiu Ivanov <sivanov@colimite.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -202,10 +203,10 @@ dictionaries, including personal ones.")
 
 (define-public aspell-dict-en
   (aspell-dictionary "en" "English"
-                     #:version "2019.10.06-0"
+                     #:version "2020.12.07-0"
                      #:sha256
                      (base32
-                      "1zai9wrqwgb9z9vfgb22qhrvxvg73jg0ix44j1khm2f6m96lncr4")))
+                      "1cwzqkm8gr1w51rpckwlvb43sb0b5nbwy7s8ns5vi250515773sc")))
 
 (define-public aspell-dict-eo
   (aspell-dictionary "eo" "Esperanto"
@@ -355,6 +356,14 @@ dictionaries, including personal ones.")
                      #:sha256
                      (base32
                       "137i4njvnslab6l4s291s11xijr5jsy75lbdph32f9y183lagy9m")))
+
+(define-public aspell-dict-ro
+  (aspell-dictionary "ro" "Romanian"
+                     #:version "3.3-2"
+                     #:prefix "aspell5-"
+                     #:sha256
+                     (base32
+                      "0gb8j9iy1acdl11jq76idgc2lbc1rq3w04favn8cyh55d1v8phsk")))
 
 
 ;;;

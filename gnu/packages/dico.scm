@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -39,18 +39,19 @@
 (define-public dico
   (package
     (name "dico")
-    (version "2.10")
+    (version "2.11")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/dico/dico-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0qag47mzs00d53hnrmh381r0jay42766vp5xrffmzmsn2307x8vl"))))
+               "0nic4mggc0yhms130k7x4qp5k9c42fwg6n8hmk5cmynh6gi9h7xc"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags (list (string-append "--with-guile-site-dir=" %output
-                                              "/share/guile/site/2.0"))
+                                              "/share/guile/site/2.0")
+                               "--disable-static")
        #:make-flags '("V=1")
        #:phases (modify-phases %standard-phases
                   (add-before 'check 'silence-guile

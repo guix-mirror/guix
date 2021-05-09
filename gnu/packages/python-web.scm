@@ -4,7 +4,7 @@
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2016, 2017 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2013, 2014, 2015, 2016, 2020 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2016, 2017, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2019, 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016, 2017, 2020 Julien Lepiller <julien@lepiller.eu>
@@ -37,7 +37,7 @@
 ;;; Copyright © 2020 Holger Peters <holger.peters@posteo.de>
 ;;; Copyright © 2020 Noisytoot <noisytoot@gmail.com>
 ;;; Copyright © 2020 Edouard Klein <edk@beaver-labs.com>
-;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2021 Ekaitz Zarraga <ekaitz@elenq.tech>
@@ -304,13 +304,13 @@ comes with a SOCKS proxy client.")
 (define-public python-asgiref
   (package
     (name "python-asgiref")
-    (version "3.2.10")
+    (version "3.3.4")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "asgiref" version))
               (sha256
                (base32
-                "06kg3hnnvh7qg0w9amkvk1hd6n6bs055r04b7if6ipa7w4g92lby"))))
+                "0y0vdzldjkbs4pxf10pi6jpxq9b2sfp1rlwm153jcf5nvzxns8fi"))))
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -2896,14 +2896,13 @@ file.")
 (define-public python-webtest
   (package
     (name "python-webtest")
-    (version "2.0.33")
+    (version "2.0.35")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "WebTest" version))
        (sha256
-        (base32
-         "1l3z0cwqslsf4rcrhi2gr8kdfh74wn2dw76376i4g9i38gz8wd21"))))
+        (base32 "11xhgdj251zkvz5w30fvspii08ki2vrpr1im9sph1wmlnasnihda"))))
     (build-system python-build-system)
     (arguments
      ;; Tests require python-pyquery, which creates a circular dependency.
@@ -4530,6 +4529,49 @@ library to create slugs from unicode strings while keeping it DRY.")
     (description "Generate complex HTML+JS pages with Python")
     (license license:expat)))
 
+(define-public python-tinycss
+  (package
+    (name "python-tinycss")
+    (version "0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "tinycss" version))
+       (sha256
+        (base32 "0vkifr595h28ymkjhrswwf0bm23lhznh5f44xyp7x7jy1ssnyc0j"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-flake8-isort
+           ;; Flake8 and isort tests fail.
+           (lambda _
+             (substitute* "setup.cfg" ((" --flake8 --isort") ""))
+             #t))
+         (replace 'check
+           (lambda _
+             ;; Disable failing test.
+             (invoke "python" "-m" "pytest" "-k"
+                     "not test_speedups"))))))
+    (native-inputs
+     `(("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-flake8" ,python-pytest-flake8)
+       ("python-pytest-isort" ,python-pytest-isort)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (home-page "https://tinycss.readthedocs.io/")
+    (synopsis "Complete yet simple CSS parser for Python")
+    (description
+     "@code{tinycss} is a complete yet simple CSS parser for Python.  It
+supports the full syntax and error handling for CSS 2.1 as well as some CSS 3
+modules:
+
+@itemize
+@item CSS Color 3
+@item CSS Fonts 3
+@item CSS Paged Media 3
+@end itemize")
+    (license license:bsd-3)))
+
 (define-public python-tinycss2
   (package
     (name "python-tinycss2")
@@ -4662,14 +4704,14 @@ event loop.  It is implemented in Cython and uses libuv under the hood.")
 (define-public gunicorn
   (package
     (name "gunicorn")
-    (version "20.0.4")
+    (version "20.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "gunicorn" version))
        (sha256
         (base32
-         "09n6fc019bgrvph1s5h1lwhn2avcsprw6ncd203qhra3i8mvn10r"))))
+         "1s7670qw36x90bgmazmgib170i5gnpyb2ypxzlla7y0mpasniag0"))))
     (outputs '("out" "doc"))
     (build-system python-build-system)
     (arguments
@@ -4681,8 +4723,15 @@ event loop.  It is implemented in Cython and uses libuv under the hood.")
              (delete-file "docs/build/texinfo/Makefile")
              (delete-file "docs/build/texinfo/Gunicorn.texi")))
          (replace 'check
-           (lambda _
-             (invoke "pytest")))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (if tests?
+                 (begin
+                   (invoke "pytest" "-vv"
+                           ;; Disable the geventlet tests because eventlet uses
+                           ;; dnspython, which does not work in the build
+                           ;; container due to lack of /etc/resolv.conf, etc.
+                           "--ignore=tests/workers/test_geventlet.py"))
+                 (format #t "test suite not run~%"))))
          (add-after 'install 'install-doc
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((doc (string-append (assoc-ref outputs "doc")
@@ -4698,10 +4747,26 @@ event loop.  It is implemented in Cython and uses libuv under the hood.")
                (copy-recursively "examples" examples)
                (for-each (lambda (file)
                            (copy-file file (string-append doc "/" file)))
-                         '("README.rst" "NOTICE" "LICENSE" "THANKS"))))))))
+                         '("README.rst" "NOTICE" "LICENSE" "THANKS")))))
+         ;; XXX: The wrap phase includes native inputs on PYTHONPATH, (see
+         ;; <https://bugs.gnu.org/25235>), leading to an inflated closure
+         ;; size.  Override it to only add the essential entries.
+         (replace 'wrap
+           (lambda* (#:key native-inputs inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (python (assoc-ref (or native-inputs inputs) "python"))
+                    (sitedir (string-append "/lib/python"
+                                            (python-version python)
+                                            "/site-packages")))
+               (wrap-program (string-append out "/bin/gunicorn")
+                 `("PYTHONPATH" ":" prefix
+                   ,(map (lambda (output)
+                           (string-append output sitedir))
+                         (list python out))))))))))
     (native-inputs
      `(("binutils" ,binutils)  ;; for ctypes.util.find_library()
        ("python-aiohttp" ,python-aiohttp)
+       ("python-gevent" ,python-gevent)
        ("python-pytest" ,python-pytest)
        ("python-pytest-cov" ,python-pytest-cov)
        ("python-sphinx" ,python-sphinx)

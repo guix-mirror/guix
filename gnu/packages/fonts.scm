@@ -39,6 +39,7 @@
 ;;; Copyright © 2020 Tim Van den Langenbergh <tmt_vdl@gmx.com>
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2021 Antoine Côté <antoine.cote@posteo.net>
+;;; Copyright © 2021 Sergiu Ivanov <sivanov@colimite.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -334,15 +335,15 @@ The Lato 2.010 family supports more than 100 Latin-based languages, over
 (define-public font-liberation
   (package
     (name "font-liberation")
-    (version "2.1.3")
+    (version "2.1.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "https://github.com/liberationfonts/liberation-fonts/"
-             "files/6060976/liberation-fonts-ttf-" version ".tar.gz"))
+             "files/6418984/liberation-fonts-ttf-" version ".tar.gz"))
        (sha256
-        (base32 "0bv8i47iq2irxkkjlqwdli4zz01sb1qg2n6vbdqjrqqhx912zji2"))))
+        (base32 "1vx5q5bif9d1cn5pvm78203sf4may2mch72aa1hx1a8avl959y16"))))
     (build-system font-build-system)
     (home-page "https://github.com/liberationfonts")
     (synopsis "Fonts compatible with Arial, Times New Roman, and Courier New")
@@ -2156,3 +2157,25 @@ suitable for a wide range of uses.")
     (description "Cozette is a 6x13px (bounding box) bitmap font based on Dina
 and heavily inspired by Creep.")
     (license license:expat)))
+
+(define-public font-montserrat
+  (package
+    (name "font-montserrat")
+    (version "7.210")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/JulietaUla/Montserrat")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0jn1yvfamq5xazw85sfnxgriji60g7mkss9mkf8d0117vdk838bn"))))
+    (build-system font-build-system)
+    (home-page "https://github.com/JulietaUla/Montserrat")
+    (synopsis "The Montserrat font")
+    (description "The old posters and signs in the traditional Montserrat
+neighborhood of Buenos Aires inspired Julieta Ulanovsky to design this
+typeface and rescue the beauty of urban typography that emerged in the first
+half of the twentieth century.")
+    (license license:silofl1.1)))

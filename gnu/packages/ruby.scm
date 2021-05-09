@@ -10114,6 +10114,24 @@ are doing, you can fiddle with every last bit of your email directly.")
     (home-page "https://github.com/mikel/mail")
     (license license:expat)))
 
+(define-public ruby-email-reply-trimmer
+  (package
+    (name "ruby-email-reply-trimmer")
+    (version "0.1.13")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (rubygems-uri "email_reply_trimmer" version))
+        (sha256
+         (base32
+          "1jgcxifm48xq5dz9k47q43pqm5bfnf14l62l3bqhmv8f6z8dw4ki"))))
+    (build-system ruby-build-system)
+    (synopsis "Trim replies from plain text email")
+    (description "EmailReplyTrimmer is a Ruby small library to trim replies
+from plain text email.")
+    (home-page "https://github.com/discourse/email_reply_trimmer")
+    (license license:expat)))
+
 (define-public ruby-mathn
   (package
     (name "ruby-mathn")

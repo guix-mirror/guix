@@ -90,6 +90,7 @@
             hash-algo
             build-mode
 
+            connect-to-daemon
             open-connection
             port->connection
             close-connection
@@ -501,7 +502,10 @@
 
 (define (connect-to-daemon uri)
   "Connect to the daemon at URI, a string that may be an actual URI or a file
-name."
+name, and return an input/output port.
+
+This is a low-level procedure that does not perform the initial handshake with
+the daemon.  Use 'open-connection' for that."
   (define (not-supported)
     (raise (condition (&store-connection-error
                        (file uri)
@@ -548,13 +552,16 @@ space on the file system so that the garbage collector can still operate,
 should the disk become full.  When CPU-AFFINITY is true, it must be an integer
 corresponding to an OS-level CPU number to which the daemon's worker process
 for this connection will be pinned.  Return a server object."
+  (define (handshake-error)
+    (raise (condition
+            (&store-connection-error (file (or port uri))
+                                     (errno EPROTO))
+            (&message (message "build daemon handshake failed")))))
+
   (guard (c ((nar-error? c)
              ;; One of the 'write-' or 'read-' calls below failed, but this is
              ;; really a connection error.
-             (raise (condition
-                     (&store-connection-error (file (or port uri))
-                                              (errno EPROTO))
-                     (&message (message "build daemon handshake failed"))))))
+             (handshake-error)))
     (let*-values (((port)
                    (or port (connect-to-daemon uri)))
                   ((output flush)
@@ -562,32 +569,35 @@ for this connection will be pinned.  Return a server object."
                                           (make-bytevector 8192))))
       (write-int %worker-magic-1 port)
       (let ((r (read-int port)))
-        (and (= r %worker-magic-2)
-             (let ((v (read-int port)))
-               (and (= (protocol-major %protocol-version)
-                       (protocol-major v))
-                    (begin
-                      (write-int %protocol-version port)
-                      (when (>= (protocol-minor v) 14)
-                        (write-int (if cpu-affinity 1 0) port)
-                        (when cpu-affinity
-                          (write-int cpu-affinity port)))
-                      (when (>= (protocol-minor v) 11)
-                        (write-int (if reserve-space? 1 0) port))
-                      (letrec* ((built-in-builders
-                                 (delay (%built-in-builders conn)))
-                                (conn
-                                 (%make-store-connection port
-                                                         (protocol-major v)
-                                                         (protocol-minor v)
-                                                         output flush
-                                                         (make-hash-table 100)
-                                                         (make-hash-table 100)
-                                                         vlist-null
-                                                         built-in-builders)))
-                        (let loop ((done? (process-stderr conn)))
-                          (or done? (process-stderr conn)))
-                        conn)))))))))
+        (unless (= r %worker-magic-2)
+          (handshake-error))
+
+        (let ((v (read-int port)))
+          (unless (= (protocol-major %protocol-version)
+                     (protocol-major v))
+            (handshake-error))
+
+          (write-int %protocol-version port)
+          (when (>= (protocol-minor v) 14)
+            (write-int (if cpu-affinity 1 0) port)
+            (when cpu-affinity
+              (write-int cpu-affinity port)))
+          (when (>= (protocol-minor v) 11)
+            (write-int (if reserve-space? 1 0) port))
+          (letrec* ((built-in-builders
+                     (delay (%built-in-builders conn)))
+                    (conn
+                     (%make-store-connection port
+                                             (protocol-major v)
+                                             (protocol-minor v)
+                                             output flush
+                                             (make-hash-table 100)
+                                             (make-hash-table 100)
+                                             vlist-null
+                                             built-in-builders)))
+            (let loop ((done? (process-stderr conn)))
+              (or done? (process-stderr conn)))
+            conn))))))
 
 (define* (port->connection port
                            #:key (version %protocol-version))

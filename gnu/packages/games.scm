@@ -59,6 +59,7 @@
 ;;; Copyright © 2021 Olivier Rojon <o.rojon@posteo.net>
 ;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
+;;; Copyright © 2021 David Pflug <david@pflug.io>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1623,6 +1624,50 @@ destroying an ancient book using a special wand.")
     ;; license.  The whole package is released under GPLv3+.
     (license license:gpl3+)))
 
+(define-public gnome-2048
+  (package
+    (name "gnome-2048")
+    (version "3.38.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/gnome-2048/"
+                                  (version-major+minor version)  "/"
+                                  "gnome-2048-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0s5fg4z5in1h39fcr69j1qc5ynmg7a8mfprk3mc3c0csq3snfwz2"))))
+    (build-system meson-build-system)
+    (arguments
+     '(#:glib-or-gtk? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "meson_post_install.py"
+               (("gtk-update-icon-cache") "true"))
+             #t)))))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("clutter" ,clutter)
+       ("clutter-gtk" ,clutter-gtk)
+       ("libgee" ,libgee)
+       ("libgnome-games-support" ,libgnome-games-support)))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin") ; for desktop-file-validate and appstream-util
+       ("itstool" ,itstool)
+       ("libxml2" ,libxml2)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
+    (home-page "https://wiki.gnome.org/Apps/2048")
+    (synopsis "Move the tiles until you obtain the 2048 tile")
+    (description "GNOME 2048 provides a 2D grid for playing 2048, a
+single-player sliding tile puzzle game.  The objective of the game is to merge
+together adjacent tiles of the same number until the sum of 2048 is achieved
+in one tile.")
+    (license license:gpl3+)))
+
 (define-public gnome-chess
   (package
     (name "gnome-chess")
@@ -3017,7 +3062,7 @@ a C library, so they can easily be integrated into other programs.")
 (define-public taisei
   (package
     (name "taisei")
-    (version "1.3.1")
+    (version "1.3.2")
     (source
      (origin
        (method url-fetch)
@@ -3025,7 +3070,7 @@ a C library, so they can easily be integrated into other programs.")
                            "taisei/releases/download/v" version
                            "/taisei-v" version ".tar.xz"))
        (sha256
-        (base32 "11f9mlqmzy1lszwcc1nsbar9q1hs4ml6pbm52hqfd4q0f4x3ln46"))))
+        (base32 "1g53fcyrlzmvlsb40pw90gaglysv6n1w42hk263iv61ibhdmzh6v"))))
     (build-system meson-build-system)
     (arguments
      `(#:build-type "release"      ;comment out for bug-reporting (and cheats)
@@ -3040,7 +3085,8 @@ a C library, so they can easily be integrated into other programs.")
        ("python-docutils" ,python-docutils)
        ("python-pygments" ,python-pygments)))
     (inputs
-     `(("freetype" ,freetype)
+     `(("cglm" ,cglm)
+       ("freetype" ,freetype)
        ("libpng" ,libpng)
        ("libwebp" ,libwebp)
        ("libzip" ,libzip)
@@ -3118,6 +3164,16 @@ asynchronously and at a user-defined speed.")
         (base32
          "0ilq4bfl0lwyzf11q7n2skydjhalfn3bgxhrp5hjxs5bc5d6fdp5"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'fix-shell-scripts
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (chdir bin)
+               (substitute* '("gnuchessx" "gnuchessu")
+                 (("^gnuchess") (string-append bin "/gnuchess")))))))))
     (home-page "https://www.gnu.org/software/chess/")
     (synopsis "Full chess implementation")
     (description "GNU Chess is a chess engine.  It allows you to compete
@@ -3279,8 +3335,27 @@ exec ~a/bin/freedink -refdir ~a/share/dink\n"
         (base32
          "1mkh36xnnacnz9r00b5f9ld9309k32jv6mcavklbdnca8bl56bib"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Fixes https://issues.guix.gnu.org/47195.
+         (add-after 'unpack 'patch-aplay-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "xboard.conf"
+               (("aplay -q")
+                (string-append (assoc-ref inputs "alsa-utils") "/bin/aplay -q")))))
+         ;; Fixes https://issues.guix.gnu.org/45236.
+         (add-after 'unpack 'patch-default-engine
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "xboard.conf"
+               (("-firstChessProgram fairymax")
+                (string-append "-firstChessProgram "
+                               (assoc-ref inputs "chess")
+                               "/bin/gnuchessx"))))))))
     (inputs
-     `(("gtk+" ,gtk+-2)
+     `(("alsa-utils" ,alsa-utils)
+       ("chess" ,chess)
+       ("gtk+" ,gtk+-2)
        ("librsvg" ,librsvg)))
     (native-inputs
      `(("texinfo" ,texinfo)
@@ -4528,7 +4603,7 @@ Transport Tycoon Deluxe.")
 (define-public openrct2
   (package
     (name "openrct2")
-    (version "0.3.2")
+    (version "0.3.3")
     (source
      (origin
        (method git-fetch)
@@ -4537,7 +4612,7 @@ Transport Tycoon Deluxe.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1fd32wniiy6qz2046ppqfj2sb3rf2qf086rf9v1bdhyj254d0b1z"))))
+        (base32 "01nanpbz5ycdhkyd46fjfvj18sw729l4vk7xg12600f9rjngjk76"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags (list "-DDOWNLOAD_OBJECTS=OFF"
@@ -4644,7 +4719,18 @@ are only two levels to play with, but they are very addictive.")
                (base32
                 "07b3xdd81n8ybsb4fzc5lx0813y9crzp1hj69khncf4faj48sdcs"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Fixes https://issues.guix.gnu.org/47131.
+         (add-after 'unpack 'patch-beep-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "client/gtk/audio.c"
+               (("\"beep\"")
+                (string-append "\"" (assoc-ref inputs "beep") "/bin/beep\"")))
+             #t)))))
     (inputs `(("avahi" ,avahi)
+              ("beep" ,beep)
               ("gtk+" ,gtk+)
               ("librsvg" ,librsvg)))
     (native-inputs `(("intltool" ,intltool)
@@ -5498,7 +5584,7 @@ a style similar to the original Super Mario games.")
 (define-public tintin++
   (package
     (name "tintin++")
-    (version "2.02.05")
+    (version "2.02.11")
     (source
      (origin
        (method url-fetch)
@@ -5506,7 +5592,7 @@ a style similar to the original Super Mario games.")
                            (string-drop-right version 1)
                            "/tintin-" version ".tar.gz"))
        (sha256
-        (base32 "18fm9ga08mxqmblahmnlzwnl387i8mbkj4n0gffxc91d299019v3"))))
+        (base32 "1xdim1ckq1kgjyxmghcnvnahq1llv2y70gz3yyvzbli63vpqk4mk"))))
     (inputs
      `(("gnutls" ,gnutls)
        ("pcre" ,pcre)
@@ -7416,22 +7502,25 @@ Strife, Chex Quest, and fan-created games like Harmony, Hacx and Freedoom.")
 (define-public odamex
   (package
     (name "odamex")
-    (version "0.8.3")
+    (version "0.9.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "mirror://sourceforge/odamex/Odamex/" version "/"
-             "odamex-src-" version ".tar.gz"))
+             "odamex-src-" version ".tar.bz2"))
        (sha256
-        (base32 "0f887g87bmcq4dpcga7xc2mpxs947dkbc934ir9xs55gz6z13q96"))))
+        (base32 "0yfrvx8zb3chy47fyz4nik6gbh0y5608yvld4gz4y8l158qk71y1"))))
     (build-system cmake-build-system)
     (arguments `(#:tests? #f))          ; no tests
+    (native-inputs
+     `(("deutex" ,deutex)))
     (inputs
-     `(("sdl" ,sdl)
-       ("sdl-mixer" ,sdl-mixer)
+     `(("sdl" ,sdl2)
+       ("sdl-mixer" ,sdl2-mixer)
        ("zlib" ,zlib)
        ("libpng" ,libpng)
+       ("curl" ,curl-minimal)
        ("alsa-lib" ,alsa-lib)))
     (home-page "https://odamex.net/")
     (synopsis "Multiplayer Doom port")
@@ -11828,6 +11917,12 @@ and chess engines.")
          (add-after 'fix-paths 'make-qt-deterministic
            (lambda _
              (setenv "QT_RCC_SOURCE_DATE_OVERRIDE" "1")
+             #t))
+         (add-after 'make-qt-deterministic 'disable-versioncheck
+           (lambda _
+             (substitute* "src/database/settings.cpp"
+               (("\"/General/onlineVersionCheck\", true")
+                "\"/General/onlineVersionCheck\", false"))
              #t))
          (replace 'configure
            (lambda _

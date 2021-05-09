@@ -250,6 +250,7 @@ interface (FFI) of Guile.")
     (match-lambda
       (('guix 'config) #f)
       (('guix 'channels) #f)
+      (('guix 'build 'download) #f)             ;autoloaded by (guix download)
       (('guix _ ...)   #t)
       (('gnu _ ...)    #t)
       (_               #f)))

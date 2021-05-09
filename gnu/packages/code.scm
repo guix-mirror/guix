@@ -15,6 +15,7 @@
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2021 lu hui <luhuins@163.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -126,16 +127,17 @@ highlighting your own code that seemed comprehensible when you wrote it.")
 (define-public global                             ; a global variable
   (package
     (name "global")
-    (version "6.6.5")
+    (version "6.6.6")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/global/global-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "10vvsgx8v54whb4j9mk5qqyb5h3rdd9da0il3wir8pcpksyk0dww"))))
+               "0pad5p31rdspyrzqky3ppgx7f6gdlfnwg1c7qm8w1m4qzyppi03m"))))
     (build-system gnu-build-system)
-    (inputs `(("ncurses" ,ncurses)
+    (inputs `(("coreutils" ,coreutils)
+              ("ncurses" ,ncurses)
               ("libltdl" ,libltdl)
               ("sqlite" ,sqlite)
               ("python-wrapper" ,python-wrapper)))
@@ -149,6 +151,12 @@ highlighting your own code that seemed comprehensible when you wrote it.")
 
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-globash
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((echo (string-append
+                           (assoc-ref inputs "coreutils") "/bin/echo")))
+               (substitute* "globash/globash.in"
+                 (("/bin/echo") echo)))))
         (add-after 'install 'post-install
           (lambda* (#:key outputs #:allow-other-keys)
             ;; Install the plugin files in the right place.
@@ -234,16 +242,16 @@ COCOMO model or user-provided parameters.")
 (define-public cloc
   (package
     (name "cloc")
-    (version "1.88")
+    (version "1.90")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/AlDanial/cloc")
-             (commit version)))
+             (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1ixgswzbzv63bl50gb2kgaqr0jcicjz6w610hi9fal1i7744zraw"))))
+        (base32 "0ic9q6qqw5f1wafp9lpmhr0miasbdb9zr59c0jlymnzffdmnliyc"))))
     (build-system gnu-build-system)
     (inputs
      `(("coreutils" ,coreutils)

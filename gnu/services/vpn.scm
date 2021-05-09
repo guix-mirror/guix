@@ -2,6 +2,7 @@
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -537,7 +538,9 @@ is truncated and rewritten every minute.")
   (endpoint          wireguard-peer-endpoint
                      (default #f))     ;string
   (public-key        wireguard-peer-public-key)   ;string
-  (allowed-ips       wireguard-peer-allowed-ips)) ;list of strings
+  (allowed-ips       wireguard-peer-allowed-ips) ;list of strings
+  (keep-alive        wireguard-peer-keep-alive
+                     (default #f)))    ;integer
 
 (define-record-type* <wireguard-configuration>
   wireguard-configuration make-wireguard-configuration
@@ -560,16 +563,20 @@ is truncated and rewritten every minute.")
     (let ((name (wireguard-peer-name peer))
           (public-key (wireguard-peer-public-key peer))
           (endpoint (wireguard-peer-endpoint peer))
-          (allowed-ips (wireguard-peer-allowed-ips peer)))
+          (allowed-ips (wireguard-peer-allowed-ips peer))
+          (keep-alive (wireguard-peer-keep-alive peer)))
       (format #f "[Peer] #~a
 PublicKey = ~a
 AllowedIPs = ~a
-~a"
+~a~a"
               name
               public-key
               (string-join allowed-ips ",")
               (if endpoint
                   (format #f "Endpoint = ~a\n" endpoint)
+                  "")
+              (if keep-alive
+                  (format #f "PersistentKeepalive = ~a\n" keep-alive)
                   "\n"))))
 
   (match-record config <wireguard-configuration>

@@ -29,7 +29,7 @@
 ;;; Copyright © 2019 Kyle Andrews <kyle.c.andrews@gmail.com>
 ;;; Copyright © 2019, 2020 Josh Holland <josh@inv.alid.pw>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
-;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2020, 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 David Wilson <david@daviwil.com>
 ;;; Copyright © 2020 Ivan Vilata i Balaguer <ivan@selidor.net>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
@@ -270,8 +270,8 @@ used to further tweak the behaviour of the different profiles.")
         (base32 "1fjcs9d3533ay3nz79cx3c0lmy2chgragr2lhsy0xl2ckr0iins0"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f
-       #:make-flags (list "CC=gcc"
+     `(#:tests? #f
+       #:make-flags (list ,(string-append "CC=" (cc-for-target))
                           "CFLAGS=-O2 -fPIC"
                           (string-append "LDFLAGS=-Wl,-rpath="
                                          (assoc-ref %outputs "out") "/lib")
@@ -897,7 +897,7 @@ to find buttons, etc, on the screen to click on.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
-       #:make-flags (list "CC=gcc"
+       #:make-flags (list ,(string-append "CC=" (cc-for-target))
                           (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases (modify-phases %standard-phases
                   (delete 'configure)))) ; no configure script
@@ -1076,7 +1076,7 @@ Guile will work for XBindKeys.")
      `(#:phases (modify-phases %standard-phases (delete 'configure))
        #:tests? #f  ; no check target
        #:make-flags
-       (list "CC=gcc"
+       (list ,(string-append "CC=" (cc-for-target))
              (string-append "PREFIX=" %output)
              ;; Keep the documentation where the build system installs LICENSE.
              (string-append "DOCPREFIX=" %output
@@ -1189,7 +1189,7 @@ within a single process.")
        #:phases (modify-phases %standard-phases (delete 'configure))
        #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
                           "MANDIR=/share/man/man1"
-                          "CC=gcc")))
+                          ,(string-append "CC=" (cc-for-target)))))
     (inputs
      `(("libxtst" ,libxtst)
        ("libx11" ,libx11)))
@@ -1555,7 +1555,7 @@ demos.  It also acts as a nice screen locker.")
     (arguments `(#:make-flags `("bindir=/bin"
                                 "man1dir=/share/man/man1"
                                 ,(string-append "DESTDIR=" (assoc-ref %outputs "out"))
-                                "CC=gcc")
+                                ,,(string-append "CC=" (cc-for-target)))
                  #:phases (modify-phases %standard-phases
                             (delete 'configure)
                             (delete 'check))))
@@ -2104,7 +2104,7 @@ to automatically turn it on on login.")
                 "1br3x9vr6xm4ika06n8cfxx1b3wdchdqvyzjl4y1chmivrml8x9h"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags (list "CC=gcc")
+     `(#:make-flags (list ,(string-append "CC=" (cc-for-target)))
        #:tests? #f ; there are none
        #:phases
        (modify-phases %standard-phases
@@ -2276,7 +2276,7 @@ The cutbuffer and clipboard selection are always synchronized.")
 (define-public jgmenu
   (package
     (name "jgmenu")
-    (version "4.1.0")
+    (version "4.3.0")
     (source
      (origin
        (method git-fetch)
@@ -2285,8 +2285,7 @@ The cutbuffer and clipboard selection are always synchronized.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1wsh37rapb1bszlq36hvwxqvfds39hbvbl152m8as4zlh93wfvvk"))))
+        (base32 "13y4ra2hjfqbn2vxyyn4ar5iqklbabyfwksbryc2gzxspw1vz4zq"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("cppcheck" ,cppcheck)
@@ -2301,17 +2300,12 @@ The cutbuffer and clipboard selection are always synchronized.")
        ("libxrandr" ,libxrandr)
        ("pango" ,pango)))
     (arguments
-     `(#:phases
+     `(#:test-target "test"
+       #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'fix-tests
-           (lambda _
-             (substitute* "scripts/cppcheck-wrapper.sh"
-               (("--library=/usr/share/cppcheck/cfg/gnu\\.cfg")
-                ""))
-             #t))
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
-             (setenv "CC" "gcc")
+             (setenv "CC" ,(cc-for-target))
              (invoke "./configure"
                      (string-append "--prefix=" (assoc-ref outputs "out")))
              #t)))))
@@ -2415,7 +2409,7 @@ Xwrits hides itself until you should take another break.")
     (arguments
      `(#:scons ,scons-python2
        #:scons-flags
-       (list "CC=gcc")
+       (list ,(string-append "CC=" (cc-for-target)))
        #:phases
        (modify-phases %standard-phases
          (add-before 'build 'patch-sconstruct
@@ -2770,7 +2764,7 @@ and execute @file{.desktop} files of the Application type.")
      `(#:tests? #f
        #:make-flags
        (list
-        "CC=gcc"
+        ,(string-append "CC=" (cc-for-target))
         (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases

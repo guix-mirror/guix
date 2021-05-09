@@ -1778,7 +1778,7 @@ user which package sets would they like to install from it.")
 (define-public guile-wisp
   (package
     (name "guile-wisp")
-    (version "1.0.3")
+    (version "1.0.5")
     (source (origin
               (method hg-fetch)
               (uri (hg-reference
@@ -1787,7 +1787,7 @@ user which package sets would they like to install from it.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "10g97jz3ahpb5mg933ajsc3pa9jxlg14f42yf01qwx0dwq1b06d5"))))
+                "00iknn03gf421gg3061g35fbraqrkcqypkrfn10rhlgg6j0lgk67"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -1854,7 +1854,8 @@ user which package sets would they like to install from it.")
     (description "Wisp is a syntax for Guile which provides a Python-like
 whitespace-significant language.  It may be easier on the eyes for some
 users and in some situations.")
-    (license license:gpl3+)))
+    (license (list license:gpl3+        ; the project as a whole
+                   license:expat))))    ; the language spec (see also SRFI 119)
 
 (define-public guile2.2-wisp
   (package
@@ -2204,7 +2205,7 @@ library.")
     (inherit guile-ncurses)
     (name "guile-ncurses-with-gpm")
     (inputs `(("ncurses" ,ncurses/gpm)
-              ("guile" ,guile-2.2)))))
+              ("guile" ,guile-3.0)))))
 
 (define-public guile3.0-ncurses/gpm
   (package
@@ -2742,6 +2743,7 @@ The picture values can directly be displayed in Geiser.")
          ("emacs-doom-modeline" ,emacs-doom-modeline)
          ("emacs-modus-themes" ,emacs-modus-themes)
          ("emacs-geiser" ,emacs-geiser)
+         ("emacs-geiser-guile" ,emacs-geiser-guile)
          ("emacs-company" ,emacs-company)
          ("emacs-ivy" ,emacs-ivy)
          ("emacs-flycheck" ,emacs-flycheck)
