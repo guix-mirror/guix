@@ -119,7 +119,7 @@ the entire document.")
 (define-public expat
   (package
     (name "expat")
-    (version "2.2.10")
+    (version "2.3.0")
     (source (let ((dot->underscore (lambda (c) (if (char=? #\. c) #\_ c))))
               (origin
                 (method url-fetch)
@@ -131,7 +131,7 @@ the entire document.")
                             "/expat-" version ".tar.xz")))
                 (sha256
                  (base32
-                  "1wi5bi4cbz069mnwkrc2whi4sslsgl6m5b7dk0zg0qsvif7m7zjx")))))
+                  "1ab7fkab4wbj53xqsx2a4h5m310ak9abczjh0a2ymg73nsclz8ya")))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
