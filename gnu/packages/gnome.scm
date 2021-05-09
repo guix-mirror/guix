@@ -58,6 +58,7 @@
 ;;; Copyright © 2020 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2020, 2021 Andy Tai <atai@atai.org>
 ;;; Copyright © 2020, 2021 Sébastien Lerique <sl@eauchat.org>
+;;; Copyright © 2021 Trevor Hass <thass@okstate.edu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -10487,7 +10488,7 @@ apply fancy special effects and lets you share the fun with others.")
 (define-public passwordsafe
   (package
     (name "passwordsafe")
-    (version "3.99.2")
+    (version "5.0")
     (source
      (origin
        (method git-fetch)
@@ -10496,7 +10497,7 @@ apply fancy special effects and lets you share the fun with others.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0pi2l4gwf8paxm858mxrcsk5nr0c0zw5ycax40mghndb6b1qmmhf"))))
+        (base32 "1xh64bbg10gnfzlck5jvqy2zk6hbk9cyqgv85xc9kbdvs8n4lhgh"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -10526,7 +10527,7 @@ apply fancy special effects and lets you share the fun with others.")
      `(("glib" ,glib)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("gtk+" ,gtk+)
-       ("libhandy" ,libhandy-0.0)
+       ("libhandy" ,libhandy)
        ("libpwquality" ,libpwquality)
        ("python-pygobject" ,python-pygobject)
        ("python-pykeepass" ,python-pykeepass)))
