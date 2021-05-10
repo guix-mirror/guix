@@ -107,6 +107,7 @@ as ASCII text.")
               (uri (string-append
                     "mirror://sourceforge/freeglut/freeglut/"
                     version "/freeglut-" version ".tar.gz"))
+              (patches (search-patches "freeglut-gcc-compat.patch"))
               (sha256
                (base32
                 "0s6sk49q8ijgbsrrryb7dzqx2fa744jhx1wck5cz5jia2010w06l"))))
