@@ -35,12 +35,30 @@ Please send Guix bug reports to bug-guix@gnu.org.
 *** Offloading no longer requires ‘guile’ to be in $PATH on build machines
 *** ‘GUIX_EXTENSIONS_PATH’ is honored when looking for extensions such as GWL
 *** New ‘--format’ option for ‘guix processes’
+*** ‘guix upgrade’ can now be passed several regexps
 
 ** Distribution
 
 *** ‘qemu-binfmt-service-type’ now relies on statically-linked QEMU
+*** ‘sysctl-service-type’ enables Linux protected hardlinks/symlinks by default
+*** ‘%base-services’ now includes a default ‘sysctl-service-type’ instance
+*** Linux Logical Volumne Manager (LVM) now supported, via ‘lvm-device-mapping’
 *** ‘guix system init’ has been optimized
+*** ‘guix system’ warns when users/groups appear more than once
+*** ‘guix system image -t rock64-raw’ produces images for Rock64 devices
+*** ‘herd discover guix-daemon on’ turns on substitute server discovery
+*** Default initrd now supports bcachefs
+*** CUPS service includes ‘brlaser’ extension by default
+*** “lp” group is no longer included in ‘%base-groups’
 *** New ‘--graph-backend’ option for ‘guix system {extension,shepherd}-graph’
+*** New services
+
+agate, cuirass-remote-worker, ipfs, keepalived, laminar, radicale, syncthing,
+transmission-daemon, wireguard, xorg-server
+
+*** XXX new packages
+
+*** XXX package updates
 
 ** Programming interfaces
 
@@ -67,6 +85,24 @@ Please send Guix bug reports to bug-guix@gnu.org.
     (<https://issues.guix.gnu.org/46330>)
 *** Update GnuTLS to 3.6.15, addressing a time-dependent test failure
     (<https://issues.guix.gnu.org/44559>)
+*** Booted system is fully protected from garbage collection
+    (<https://issues.guix.gnu.org/46767>)
+*** Add MSDOS disk label support on UEFI systems
+    (<https://issues.guix.gnu.org/47889>)
+*** Installer’s kmscon no longer uses up 100% CPU
+    (<https://issues.guix.gnu.org/39341>)
+*** Git checkouts can be updated to the remote’s default HEAD
+    (<https://issues.guix.gnu.org/45187>)
+*** ‘guix pull’ correctly displays early builds and downloads
+    (<https://issues.guix.gnu.org/41930>)
+*** Fix OpenRC init scripts for ‘guix-daemon’
+    (<https://issues.guix.gnu.org/46871>)
+*** Activate system when switching generations
+    (<https://issues.guix.gnu.org/38884>)
+*** ‘guix environment -C’ preserves original mount flags
+    (<https://issues.guix.gnu.org/46292>)
+*** Remove duplicates in profile transactions
+    (<https://issues.guix.gnu.org/23874>)
 
 ** Native language support
 
