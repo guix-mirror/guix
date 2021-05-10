@@ -1285,7 +1285,7 @@ language bindings to VIGRA.")
 (define-public libwebp
   (package
     (name "libwebp")
-    (version "1.1.0")
+    (version "1.2.0")
     (source
      (origin
        ;; No tarballs are provided for >0.6.1.
@@ -1296,7 +1296,7 @@ language bindings to VIGRA.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0r2yy9if0ndvpzadk39bigvsygyqnlv0xjb9w2aj6rs534mncazz"))))
+         "1rgblphsd56033w7lpkrzl7m5w0fi7wavxri1ayzlg8fhpmmqp4k"))))
     (build-system gnu-build-system)
     (inputs
      `(("freeglut" ,freeglut)
