@@ -10159,13 +10159,13 @@ designed to efficiently cope with extremely large amounts of data.")
 (define-public python-sniffio
   (package
     (name "python-sniffio")
-    (version "1.1.0")
+    (version "1.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "sniffio" version))
        (sha256
-        (base32 "08bsp2pp2dxzn9yzcafwzw8jlm0jf50as0ix8vfhxzk91w810f4f"))))
+        (base32 "1pnkvi6wvn4qd37y69n1ls6n8l63gfmn3pvb1jb50gqxxkn6wrn4"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
