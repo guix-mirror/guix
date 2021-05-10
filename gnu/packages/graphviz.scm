@@ -62,16 +62,15 @@
 (define-public graphviz
   (package
     (name "graphviz")
-    (replacement graphviz/fixed)
-    (version "2.42.3")
+    (version "2.47.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://www2.graphviz.org/Packages/stable/portable_source/"
-                    "graphviz-" version ".tar.gz"))
+              (uri (string-append "https://gitlab.com/graphviz/graphviz"
+                                  "/-/package_files/9573974/download"))
+              (file-name (string-append "graphviz-" version ".tar.xz"))
               (sha256
                (base32
-                "1pbswjbx3fjdlsxcm7cmlsl5bvaa3d6gcnr0cr8x3c8pag13zbwg"))))
+                "1hff831p300n989x1gmyzh3ix43xd2mgx01qgrrqill44n7zxfza"))))
     (build-system gnu-build-system)
     (arguments
      ;; FIXME: rtest/rtest.sh is a ksh script (!).  Add ksh as an input.
@@ -126,15 +125,6 @@ networks.  It has important applications in networking, bioinformatics,
 software engineering, database and web design, machine learning, and in visual
 interfaces for other technical domains.")
     (license license:epl1.0)))
-
-(define-public graphviz/fixed
-  (hidden-package
-    (package
-      (inherit graphviz)
-      (source (origin
-                (inherit (package-source graphviz))
-                (patches (append (search-patches "graphviz-CVE-2020-18032.patch")
-                                 (origin-patches (package-source graphviz)))))))))
 
 ;; Older Graphviz needed for pygraphviz.  See
 ;; https://github.com/pygraphviz/pygraphviz/issues/175
