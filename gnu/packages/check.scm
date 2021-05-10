@@ -1662,13 +1662,13 @@ executed.")
 (define-public python-pytest-asyncio
   (package
     (name "python-pytest-asyncio")
-    (version "0.10.0")
+    (version "0.15.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytest-asyncio" version))
        (sha256
-        (base32 "1bysy4nii13bm7h345wxf8fxcjhab7l374pqdv7vwv3izl053b4z"))))
+        (base32 "0vrzsrg3j1cfd57m0b3r5xf87rslgcs42jya346mdg9bc6wwwr15"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-coverage" ,python-coverage)
