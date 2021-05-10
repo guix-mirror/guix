@@ -67,6 +67,7 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
@@ -16434,3 +16435,46 @@ operations in 3D space.")
 
 (define-public cl-3d-matrices
   (sbcl-package->cl-source-package sbcl-3d-matrices))
+
+(define-public sbcl-messagebox
+  (let ((commit "ea3688d9a9954bee7079c0173bc7b3f327021e9f")
+        (revision "1"))
+    (package
+      (name "sbcl-messagebox")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shinmera/messagebox")
+               (commit commit)))
+         (file-name (git-file-name "messagebox" version))
+         (sha256
+          (base32 "0jkbzlca0wvspgsfj0b0hjwlyyy8jlywsldsbkp79q48fc3aa8jd"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-zenity-path
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "zenity.lisp"
+                 (("\"zenity\"")
+                  (string-append "\"" (assoc-ref inputs "zenity")
+                                 "/bin/zenity\""))))))))
+      (inputs
+       `(("documentation-utils" ,sbcl-documentation-utils)
+         ("trivial-features" ,sbcl-trivial-features)
+         ("zenity" ,zenity)))
+      (home-page "https://shinmera.github.io/messagebox/")
+      (synopsis "Display a native GUI message box")
+      (description
+       "This is a small library to display a native GUI message box.  This can be
+useful to show error messages and other informational pieces should the
+application fail and be unable to do so using its standard UI.")
+      (license license:zlib))))
+
+(define-public ecl-messagebox
+  (sbcl-package->ecl-package sbcl-messagebox))
+
+(define-public cl-messagebox
+  (sbcl-package->cl-source-package sbcl-messagebox))
