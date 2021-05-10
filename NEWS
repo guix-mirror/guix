@@ -39,6 +39,8 @@ Please send Guix bug reports to bug-guix@gnu.org.
 
 ** Distribution
 
+*** The Guix System demonstration VM now supports the SPICE protocol
+*** The installation script can now run in a fully automated manner
 *** ‘qemu-binfmt-service-type’ now relies on statically-linked QEMU
 *** ‘sysctl-service-type’ enables Linux protected hardlinks/symlinks by default
 *** ‘%base-services’ now includes a default ‘sysctl-service-type’ instance
@@ -56,9 +58,17 @@ Please send Guix bug reports to bug-guix@gnu.org.
 agate, cuirass-remote-worker, ipfs, keepalived, laminar, radicale, syncthing,
 transmission-daemon, wireguard, xorg-server
 
-*** XXX new packages
+*** 2009 new packages
 
-*** XXX package updates
+*** 3100 package updates
+
+Noteworthy updates:
+emacs 27.2, gcc-toolchain 10.3.0, ghc 8.8.3, glibc 2.31, gnome 3.34.5,
+gnupg 2.2.27, go 1.14.15, guile 3.0.5, icecat 78.10.0-guix0-preview1,
+icedtea 3.7.0, inkscape 1.0.2, julia 1.5.3, libreoffice 6.4.7.2,
+linux-libre 5.11.15, ocaml 4.11.1, octave 6.2.0, openjdk 14.0,
+python 3.8.2, racket 8.0, rust 1.51.0, r 4.0.4, sbcl 2.1.3, xfce 4.16.0,
+xorg-server 1.20.10
 
 ** Programming interfaces
 
