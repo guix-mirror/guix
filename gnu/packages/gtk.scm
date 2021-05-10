@@ -162,8 +162,8 @@ tools have full access to view and control running applications.")
         ;; "--enable-cogl=yes"
         ;; "--enable-directfb=yes"
         ;; "--enable-vg=yes"
-        "--enable-tee=yes"
-        "--enable-xml=yes"
+        "--enable-tee=yes"              ;needed for GNU IceCat
+        "--enable-xml=yes"              ;for cairo-xml support
         (string-append "--with-html-dir="
                        (assoc-ref %outputs "doc")
                        "/share/gtk-doc/html"))))
@@ -179,7 +179,6 @@ tools have full access to view and control running applications.")
     (propagated-inputs
      `( ;; ("cogl" ,cogl)
        ;; ("directfb" ,directfb)
-       ("fontconfig" ,fontconfig)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
        ("glib" ,glib)
