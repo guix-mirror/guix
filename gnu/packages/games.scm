@@ -5127,7 +5127,7 @@ in-window at 640x480 resolution or fullscreen.")
 (define-public warzone2100
   (package
     (name "warzone2100")
-    (version "3.4.1")
+    (version "4.0.1")
     (source
      (origin
        (method url-fetch)
@@ -5135,7 +5135,7 @@ in-window at 640x480 resolution or fullscreen.")
                            version
                            "/warzone2100_src.tar.xz"))
        (sha256
-        (base32 "0savalmw1kp1sf8vg5aqrl5hc77p4jacxy5y9qj8k2hi2vqdfb7a"))
+        (base32 "1f8a4kflslsjl8jrryhwg034h1yc9y3y1zmllgww3fqkz3aj4xik"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -5149,6 +5149,7 @@ in-window at 640x480 resolution or fullscreen.")
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DWZ_DISTRIBUTOR=Guix"
+                           "-DWZ_ENABLE_BACKEND_VULKAN=off"
                            "-DENABLE_DISCORD=off")
        #:tests? #f ; TODO: Tests seem to be broken, configure.ac is missing.
        #:phases
@@ -5194,6 +5195,7 @@ in-window at 640x480 resolution or fullscreen.")
               ("qtscript" ,qtscript)
               ("openssl" ,openssl)
               ("sdl2" ,sdl2)
+              ("sqlite" ,sqlite)
               ("utfcpp" ,utfcpp)))
     (home-page "https://wz2100.net")
     (synopsis "3D Real-time strategy and real-time tactics game")
