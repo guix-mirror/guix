@@ -481,14 +481,18 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 (define-public linux-libre-5.12-source
   (source-with-patches linux-libre-5.12-pristine-source
                        (list %boot-logo-patch
-                             %linux-libre-arm-export-__sync_icache_dcache-patch)))
+                             %linux-libre-arm-export-__sync_icache_dcache-patch
+                             ;; Pinebook Pro patch to fix LCD display
+                             (search-patch
+                              "linux-libre-arm64-generic-pinebook-lcd.patch"))))
 
 (define-public linux-libre-5.10-source
   (source-with-patches linux-libre-5.10-pristine-source
                        (list %boot-logo-patch
                              %linux-libre-arm-export-__sync_icache_dcache-patch
-			     (search-patch
-			      "linux-libre-arm64-generic-pinebook-lcd.patch"))))
+                             ;; Pinebook Pro patch to fix LCD display
+                             (search-patch
+                              "linux-libre-arm64-generic-pinebook-lcd.patch"))))
 
 (define-public linux-libre-5.4-source
   (source-with-patches linux-libre-5.4-pristine-source
