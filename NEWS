@@ -103,6 +103,8 @@ transmission-daemon, wireguard, xorg-server
     (<https://issues.guix.gnu.org/46292>)
 *** Remove duplicates in profile transactions
     (<https://issues.guix.gnu.org/23874>)
+*** Fix sound problems with ALSA plugins on foreign distros
+    (<https://issues.guix.gnu.org/40832>)
 
 ** Native language support
 
