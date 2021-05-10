@@ -968,8 +968,7 @@ files and text.")
         (base32 "0x7r8ipvypf6py2h03pdqr8pal6vyp6mskvss1rr8f0bcy3gr725"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:rust ,rust-1.47
-       #:tests? #false                  ;missing files
+     `(#:tests? #false                  ;missing files
        #:features '("extra")
        #:cargo-inputs
        (("rust-clap" ,rust-clap-2)

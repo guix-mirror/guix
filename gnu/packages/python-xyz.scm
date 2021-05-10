@@ -10673,7 +10673,7 @@ JSON Reference and JSON Pointer.")
         ("python-json-spec" ,python-json-spec)
         ("python-jsonschema" ,python-jsonschema)
         ("python-pylint" ,python-pylint)
-        ("python-pytest" ,python-pytest-6)
+        ("python-pytest" ,python-pytest)
         ("python-pytest-benchmark"
          ,python-pytest-benchmark)
         ("python-pytest-cache" ,python-pytest-cache)
@@ -10954,7 +10954,7 @@ time.")
        ("python-pytest" ,python-pytest)
        ("python-pytest-cov" ,python-pytest-cov)
        ("python-pytest-dependency" ,python-pytest-dependency)
-       ("texlive" ,(texlive-union (list texlive-adjustbox
+       ("texlive" ,(texlive-updmap.cfg (list texlive-adjustbox
                                         texlive-amsfonts/patched
                                         texlive-booktabs
                                         texlive-caption
