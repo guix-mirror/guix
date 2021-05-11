@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: guix-packages 1.2.0-pre3\n"
 "Report-Msgid-Bugs-To: bug-guix@gnu.org\n"
-"POT-Creation-Date: 2021-04-13 01:18+0200\n"
+"POT-Creation-Date: 2021-05-10 22:57+0200\n"
 "PO-Revision-Date: 2020-11-05 19:55+0100\n"
 "Last-Translator: Miguel Ángel Arruga Vivas <rosen644835@gmail.com>\n"
 "Language-Team: Spanish <es@tp.org.es>\n"
@@ -1456,7 +1456,7 @@ msgid ""
 "taken from the NSS package and thus ultimately from the Mozilla project."
 msgstr ""
 
-#: gnu/packages/certs.scm:211
+#: gnu/packages/certs.scm:245
 msgid ""
 "This package provides a certificate store containing only the\n"
 "Let's Encrypt root and intermediate certificates.  It is intended to be used\n"
@@ -3377,7 +3377,7 @@ msgid ""
 "match, cannon keep, and grave-itation pit."
 msgstr ""
 
-#: gnu/packages/games.scm:3534
+#: gnu/packages/games.scm:3540
 msgid ""
 "Minetest is a sandbox construction game.  Players can create and destroy\n"
 "various types of blocks in a three-dimensional open world.  This allows\n"
@@ -3386,18 +3386,18 @@ msgid ""
 "in different ways."
 msgstr ""
 
-#: gnu/packages/games.scm:3572
+#: gnu/packages/games.scm:3578
 #, fuzzy
 msgid "Game data for the Minetest infinite-world block sandbox game."
 msgstr "Juego de arena de bloque de palabra infinitas"
 
-#: gnu/packages/games.scm:3595
+#: gnu/packages/games.scm:3601
 msgid ""
 "MineClone is a Minetest subgame, that aims to recreate Minecraft as\n"
 "closely as the engine allows."
 msgstr ""
 
-#: gnu/packages/games.scm:3633
+#: gnu/packages/games.scm:3639
 msgid ""
 "Glk defines a portable API for applications with text UIs.  It was\n"
 "primarily designed for interactive fiction, but it should be suitable for many\n"
@@ -3406,7 +3406,7 @@ msgid ""
 "using the @code{curses.h} library for screen control."
 msgstr ""
 
-#: gnu/packages/games.scm:3673
+#: gnu/packages/games.scm:3679
 msgid ""
 "Glulx is a 32-bit portable virtual machine intended for writing and\n"
 "playing interactive fiction.  It was designed by Andrew Plotkin to relieve\n"
@@ -3414,28 +3414,28 @@ msgid ""
 "reference interpreter, using the Glk API."
 msgstr ""
 
-#: gnu/packages/games.scm:3701
+#: gnu/packages/games.scm:3707
 msgid ""
 "Fifechan is a lightweight cross platform GUI library written in C++\n"
 "specifically designed for games.  It has a built in set of extendable GUI\n"
 "Widgets, and allows users to create more."
 msgstr ""
 
-#: gnu/packages/games.scm:3797
+#: gnu/packages/games.scm:3803
 msgid ""
 "@acronym{FIFE, Flexible Isometric Free Engine} is a multi-platform\n"
 "isometric game engine.  Python bindings are included allowing users to create\n"
 "games using Python as well as C++."
 msgstr ""
 
-#: gnu/packages/games.scm:3832
+#: gnu/packages/games.scm:3838
 msgid ""
 "Fizmo is a console-based Z-machine interpreter.  It is used to play\n"
 "interactive fiction, also known as text adventures, which were implemented\n"
 "either by Infocom or created using the Inform compiler."
 msgstr ""
 
-#: gnu/packages/games.scm:3852
+#: gnu/packages/games.scm:3858
 msgid ""
 "GNU Go is a program that plays the game of Go, in which players\n"
 "place stones on a grid to form territory or capture other stones.  While\n"
@@ -3446,7 +3446,7 @@ msgid ""
 "Protocol)."
 msgstr ""
 
-#: gnu/packages/games.scm:3882
+#: gnu/packages/games.scm:3888
 msgid ""
 "Extreme Tux Racer, or etracer as it is called for short, is\n"
 "a simple OpenGL racing game featuring Tux, the Linux mascot.  The goal of the\n"
@@ -3459,7 +3459,7 @@ msgid ""
 "This game is based on the GPL version of the famous game TuxRacer."
 msgstr ""
 
-#: gnu/packages/games.scm:3953
+#: gnu/packages/games.scm:3959
 msgid ""
 "SuperTuxKart is a 3D kart racing game, with a focus on\n"
 "having fun over realism.  You can play with up to 4 friends on one PC, racing\n"
@@ -3467,7 +3467,7 @@ msgid ""
 "also available."
 msgstr ""
 
-#: gnu/packages/games.scm:4030
+#: gnu/packages/games.scm:4036
 msgid ""
 "Unknown Horizons is a 2D realtime strategy simulation with an emphasis\n"
 "on economy and city building.  Expand your small settlement to a strong and\n"
@@ -3476,7 +3476,7 @@ msgid ""
 "trade and diplomacy."
 msgstr ""
 
-#: gnu/packages/games.scm:4087
+#: gnu/packages/games.scm:4093
 msgid ""
 "GNUjump is a simple, yet addictive game in which you must jump from\n"
 "platform to platform to avoid falling, while the platforms drop at faster rates\n"
@@ -3484,7 +3484,7 @@ msgid ""
 "falling, themeable graphics and sounds, and replays."
 msgstr ""
 
-#: gnu/packages/games.scm:4123
+#: gnu/packages/games.scm:4129
 msgid ""
 "The Battle for Wesnoth is a fantasy, turn based tactical strategy game,\n"
 "with several single player campaigns, and multiplayer games (both networked and\n"
@@ -3496,20 +3496,20 @@ msgid ""
 "next campaign."
 msgstr ""
 
-#: gnu/packages/games.scm:4146
+#: gnu/packages/games.scm:4152
 msgid ""
 "This package contains a dedicated server for @emph{The\n"
 "Battle for Wesnoth}."
 msgstr ""
 
-#: gnu/packages/games.scm:4189
+#: gnu/packages/games.scm:4195
 msgid ""
 "Gamine is a game designed for young children who are learning to use the\n"
 "mouse and keyboard.  The child uses the mouse to draw colored dots and lines\n"
 "on the screen and keyboard to display letters."
 msgstr ""
 
-#: gnu/packages/games.scm:4224
+#: gnu/packages/games.scm:4230
 msgid ""
 "ManaPlus is a 2D MMORPG client for game servers.  It is the only\n"
 "fully supported client for @uref{http://www.themanaworld.org, The mana\n"
@@ -3517,7 +3517,7 @@ msgid ""
 "@uref{http://landoffire.org, Land of fire}."
 msgstr ""
 
-#: gnu/packages/games.scm:4276
+#: gnu/packages/games.scm:4282
 msgid ""
 "OpenTTD is a game in which you transport goods and\n"
 "passengers by land, water and air.  It is a re-implementation of Transport\n"
@@ -3527,7 +3527,7 @@ msgid ""
 "engine.  When you start it you will be prompted to download a graphics set."
 msgstr ""
 
-#: gnu/packages/games.scm:4336
+#: gnu/packages/games.scm:4342
 msgid ""
 "The OpenGFX project is an implementation of the OpenTTD base graphics\n"
 "set that aims to ensure the best possible out-of-the-box experience.\n"
@@ -3542,29 +3542,29 @@ msgid ""
 "@end enumerate"
 msgstr ""
 
-#: gnu/packages/games.scm:4382
+#: gnu/packages/games.scm:4388
 msgid ""
 "OpenSFX is a set of free base sounds for OpenTTD which make\n"
 "it possible to play OpenTTD without requiring the proprietary sound files from\n"
 "the original Transport Tycoon Deluxe."
 msgstr ""
 
-#: gnu/packages/games.scm:4420
+#: gnu/packages/games.scm:4426
 msgid ""
 "OpenMSX is a music set for OpenTTD which makes it possible\n"
 "to play OpenTTD without requiring the proprietary music from the original\n"
 "Transport Tycoon Deluxe."
 msgstr ""
 
-#: gnu/packages/games.scm:4491
+#: gnu/packages/games.scm:4497
 msgid "openrct2-title-sequences is a set of title sequences for OpenRCT2."
 msgstr ""
 
-#: gnu/packages/games.scm:4531
+#: gnu/packages/games.scm:4537
 msgid "openrct2-objects is a set of objects for OpenRCT2."
 msgstr ""
 
-#: gnu/packages/games.scm:4594
+#: gnu/packages/games.scm:4600
 msgid ""
 "OpenRCT2 is a free software re-implementation of\n"
 "RollerCoaster Tycoon 2 (RCT2).  The gameplay revolves around building and\n"
@@ -3574,13 +3574,13 @@ msgid ""
 "images, etc.)"
 msgstr ""
 
-#: gnu/packages/games.scm:4637
+#: gnu/packages/games.scm:4643
 msgid ""
 "The Emilia Pinball Project is a pinball simulator.  There\n"
 "are only two levels to play with, but they are very addictive."
 msgstr ""
 
-#: gnu/packages/games.scm:4661
+#: gnu/packages/games.scm:4667
 msgid ""
 "Pioneers is an emulation of the board game The Settlers of\n"
 "Catan.  It can be played on a local network, on the internet, and with AI\n"
@@ -3589,14 +3589,14 @@ msgstr ""
 "Pioneros es una emulación del juego The Settlers od Catan.\n"
 "Puede jugarse en una red local, o en interred, y con jugadores IA."
 
-#: gnu/packages/games.scm:4703
+#: gnu/packages/games.scm:4709
 msgid ""
 "The goal of this logic game is to open all cards in a 6x6\n"
 "grid, using a number of hints as to their relative position.  The game idea\n"
 "is attributed to Albert Einstein."
 msgstr ""
 
-#: gnu/packages/games.scm:4733
+#: gnu/packages/games.scm:4739
 msgid ""
 "POWWOW is a client software which can be used for telnet as well as for\n"
 "@dfn{Multi-User Dungeon} (MUD).  Additionally it can serve as a nice client for\n"
@@ -3604,21 +3604,21 @@ msgid ""
 "http://lavachat.symlynx.com/unix/"
 msgstr ""
 
-#: gnu/packages/games.scm:4845
+#: gnu/packages/games.scm:4851
 msgid ""
 "Red Eclipse is an arena shooter, created from the Cube2 engine.\n"
 "Offering an innovative parkour system and distinct but all potent weapons,\n"
 "Red Eclipse provides fast paced and accessible gameplay."
 msgstr ""
 
-#: gnu/packages/games.scm:4910
+#: gnu/packages/games.scm:4916
 msgid ""
 "Grue Hunter is a text adventure game written in Perl.  You must make\n"
 "your way through an underground cave system in search of the Grue.  Can you\n"
 "capture it and get out alive?"
 msgstr ""
 
-#: gnu/packages/games.scm:4954
+#: gnu/packages/games.scm:4960
 msgid ""
 "lierolibre is an earthworm action game where you fight another player\n"
 "(or the computer) underground using a wide array of weapons.\n"
@@ -3643,14 +3643,14 @@ msgid ""
 "fullscreen, use F5 or Alt+Enter."
 msgstr ""
 
-#: gnu/packages/games.scm:5033
+#: gnu/packages/games.scm:5039
 msgid ""
 "Tennix is a 2D tennis game.  You can play against the\n"
 "computer or against another player using the keyboard.  The game runs\n"
 "in-window at 640x480 resolution or fullscreen."
 msgstr ""
 
-#: gnu/packages/games.scm:5115
+#: gnu/packages/games.scm:5121
 msgid ""
 "Warzone 2100 offers campaign, multi-player, and single-player skirmish\n"
 "modes.  An extensive tech tree with over 400 different technologies, combined\n"
@@ -3658,7 +3658,7 @@ msgid ""
 "tactics."
 msgstr ""
 
-#: gnu/packages/games.scm:5191
+#: gnu/packages/games.scm:5197
 msgid ""
 "In Widelands, you are the regent of a small clan.  You start out with\n"
 "nothing but your headquarters, where all your resources are stored.\n"
@@ -3680,7 +3680,7 @@ msgid ""
 "of war.  Widelands also offers an Artificial Intelligence to challenge you."
 msgstr ""
 
-#: gnu/packages/games.scm:5241
+#: gnu/packages/games.scm:5247
 msgid ""
 "In the year 2579, the intergalactic weapons corporation, WEAPCO, has\n"
 "dominated the galaxy.  Guide Chris Bainfield and his friend Sid Wilson on\n"
@@ -3694,7 +3694,7 @@ msgstr ""
 "necesitara colaborar nuevos enemigos, crear nuevas alianzas, y asistir\n"
 "rebeliones locales en intentos dente la corporación maligna."
 
-#: gnu/packages/games.scm:5274
+#: gnu/packages/games.scm:5280
 msgid ""
 "In this game you are the captain of the cargo ship Chromium B.S.U. and\n"
 "are responsible for delivering supplies to the troops on the front line.  Your\n"
@@ -3702,7 +3702,7 @@ msgid ""
 "safety of the Chromium vessel."
 msgstr ""
 
-#: gnu/packages/games.scm:5358
+#: gnu/packages/games.scm:5364
 msgid ""
 "Tux Paint is a free drawing program designed for young children (kids\n"
 "ages 3 and up).  It has a simple, easy-to-use interface; fun sound effects;\n"
@@ -3711,23 +3711,23 @@ msgid ""
 "your child be creative."
 msgstr ""
 
-#: gnu/packages/games.scm:5399
+#: gnu/packages/games.scm:5405
 msgid ""
 "This package contains a set of \"Rubber Stamp\" images which can be used\n"
 "with the \"Stamp\" tool within Tux Paint."
 msgstr ""
 
-#: gnu/packages/games.scm:5448
+#: gnu/packages/games.scm:5454
 msgid "Tux Paint Config is a graphical configuration editor for Tux Paint."
 msgstr ""
 
-#: gnu/packages/games.scm:5499
+#: gnu/packages/games.scm:5505
 msgid ""
 "SuperTux is a classic 2D jump'n run sidescroller game in\n"
 "a style similar to the original Super Mario games."
 msgstr ""
 
-#: gnu/packages/games.scm:5534
+#: gnu/packages/games.scm:5540
 msgid ""
 "TinTin++ is a MUD client which supports MCCP (Mud Client Compression\n"
 "Protocol), MMCP (Mud Master Chat Protocol), xterm 256 colors, most TELNET\n"
@@ -3735,7 +3735,7 @@ msgid ""
 "Linux / Mac OS X servers, and an auto mapper with a VT100 map display."
 msgstr ""
 
-#: gnu/packages/games.scm:5580
+#: gnu/packages/games.scm:5586
 msgid ""
 "Learn programming, playing with ants and spider webs ;-)\n"
 "Your robot ant can be programmed in many languages: OCaml, Python, C, C++,\n"
@@ -3743,14 +3743,14 @@ msgid ""
 "programmers may also add their own favorite language."
 msgstr ""
 
-#: gnu/packages/games.scm:5619
+#: gnu/packages/games.scm:5625
 msgid ""
 "Bambam is a simple baby keyboard (and gamepad) masher\n"
 "application that locks the keyboard and mouse and instead displays bright\n"
 "colors, pictures, and sounds."
 msgstr ""
 
-#: gnu/packages/games.scm:5685
+#: gnu/packages/games.scm:5691
 msgid ""
 "Mr. Rescue is an arcade styled 2d action game centered around evacuating\n"
 "civilians from burning buildings.  The game features fast-paced fire\n"
@@ -3758,7 +3758,7 @@ msgid ""
 "throwing people around in pseudo-randomly generated buildings."
 msgstr ""
 
-#: gnu/packages/games.scm:5797
+#: gnu/packages/games.scm:5803
 msgid ""
 "HyperRogue is a game in which the player collects treasures and fights\n"
 "monsters -- rogue-like but for the fact that it is played on the hyperbolic\n"
@@ -3772,13 +3772,13 @@ msgid ""
 "symbols, it still needs graphics to render the non-euclidean world."
 msgstr ""
 
-#: gnu/packages/games.scm:5844
+#: gnu/packages/games.scm:5850
 msgid ""
 "Kobo Deluxe is an enhanced version of Akira Higuchi's XKobo graphical game\n"
 "for Un*x systems with X11."
 msgstr ""
 
-#: gnu/packages/games.scm:5876
+#: gnu/packages/games.scm:5882
 msgid ""
 "Freeciv is a turn-based empire building strategy game\n"
 "inspired by the history of human civilization.  The game commences in\n"
@@ -3786,7 +3786,7 @@ msgid ""
 "into the Space Age."
 msgstr ""
 
-#: gnu/packages/games.scm:5909
+#: gnu/packages/games.scm:5915
 msgid ""
 "@code{No More Secrets} provides a command line tool called \"nms\"\n"
 "that recreates the famous data decryption effect seen on screen in the 1992\n"
@@ -3797,25 +3797,25 @@ msgid ""
 "starting a decryption sequence to reveal the original plaintext characters."
 msgstr ""
 
-#: gnu/packages/games.scm:5937
+#: gnu/packages/games.scm:5943
 msgid "This package contains the data files required for MegaGlest."
 msgstr ""
 
-#: gnu/packages/games.scm:5991
+#: gnu/packages/games.scm:5997
 msgid ""
 "MegaGlest is a cross-platform 3D real-time strategy (RTS)\n"
 "game, where you control the armies of one of seven different factions: Tech,\n"
 "Magic, Egypt, Indians, Norsemen, Persian or Romans."
 msgstr ""
 
-#: gnu/packages/games.scm:6043
+#: gnu/packages/games.scm:6049
 msgid ""
 "In FreeGish you control Gish, a ball of tar who lives\n"
 "happily with his girlfriend Brea, until one day a mysterious dark creature\n"
 "emerges from a sewer hole and pulls her below ground."
 msgstr ""
 
-#: gnu/packages/games.scm:6083
+#: gnu/packages/games.scm:6089
 msgid ""
 "C-Dogs SDL is a classic overhead run-and-gun game,\n"
 "supporting up to 4 players in co-op and deathmatch modes.  Customize your\n"
@@ -3823,21 +3823,21 @@ msgid ""
 "over 100 user-created campaigns."
 msgstr ""
 
-#: gnu/packages/games.scm:6184
+#: gnu/packages/games.scm:6190
 msgid ""
 "Kiki the nano bot is a 3D puzzle game.  It is basically a\n"
 "mixture of the games Sokoban and Kula-World.  Your task is to help Kiki, a\n"
 "small robot living in the nano world, repair its maker."
 msgstr ""
 
-#: gnu/packages/games.scm:6251
+#: gnu/packages/games.scm:6257
 msgid ""
 "Teeworlds is an online multiplayer game.  Battle with up to\n"
 "16 players in a variety of game modes, including Team Deathmatch and Capture\n"
 "The Flag.  You can even design your own maps!"
 msgstr ""
 
-#: gnu/packages/games.scm:6313
+#: gnu/packages/games.scm:6319
 msgid ""
 "Enigma is a puzzle game with 550 unique levels.  The object\n"
 "of the game is to find and uncover pairs of identically colored ‘Oxyd’ stones.\n"
@@ -3849,7 +3849,7 @@ msgid ""
 "with the mouse isn’t always trivial."
 msgstr ""
 
-#: gnu/packages/games.scm:6348
+#: gnu/packages/games.scm:6354
 msgid ""
 "Chroma is an abstract puzzle game. A variety of colourful\n"
 "shapes are arranged in a series of increasingly complex patterns, forming\n"
@@ -3859,7 +3859,7 @@ msgid ""
 "becoming difficult enough to tax even the brightest of minds."
 msgstr ""
 
-#: gnu/packages/games.scm:6418
+#: gnu/packages/games.scm:6424
 msgid ""
 "Fish Fillets NG is strictly a puzzle game.  The goal in\n"
 "every of the seventy levels is always the same: find a safe way out.  The fish\n"
@@ -3868,14 +3868,14 @@ msgid ""
 "fish.  The whole game is accompanied by quiet, comforting music."
 msgstr ""
 
-#: gnu/packages/games.scm:6486
+#: gnu/packages/games.scm:6492
 msgid ""
 "Dungeon Crawl Stone Soup (also known as \"Crawl\" or DCSS\n"
 "for short) is a roguelike adventure through dungeons filled with dangerous\n"
 "monsters in a quest to find the mystifyingly fabulous Orb of Zot."
 msgstr ""
 
-#: gnu/packages/games.scm:6563
+#: gnu/packages/games.scm:6569
 msgid ""
 "Lugaru is a third-person action game.  The main character,\n"
 "Turner, is an anthropomorphic rebel bunny rabbit with impressive combat skills.\n"
@@ -3885,11 +3885,11 @@ msgid ""
 "fight against their plot and save his fellow rabbits from slavery."
 msgstr ""
 
-#: gnu/packages/games.scm:6614
+#: gnu/packages/games.scm:6620
 msgid "0ad-data provides the data files required by the game 0ad."
 msgstr "0ad-data proporciona el fichero de datos solicitado por el juego 0ad."
 
-#: gnu/packages/games.scm:6733
+#: gnu/packages/games.scm:6739
 msgid ""
 "0 A.D. is a real-time strategy (RTS) game of ancient\n"
 "warfare.  It's a historically-based war/economy game that allows players to\n"
@@ -3905,7 +3905,7 @@ msgstr ""
 "\n"
 "0ad requiere un gestor de ventanas que sea compatible con 'Extended Window Manager Hints'."
 
-#: gnu/packages/games.scm:6799
+#: gnu/packages/games.scm:6805
 msgid ""
 "The original Colossal Cave Adventure from 1976 was the origin of all\n"
 "text adventures, dungeon-crawl (computer) games, and computer-hosted\n"
@@ -3914,7 +3914,7 @@ msgid ""
 "``adventure 2.5'' and ``430-point adventure''."
 msgstr ""
 
-#: gnu/packages/games.scm:6926
+#: gnu/packages/games.scm:6932
 msgid ""
 "Tales of Maj’Eyal (ToME) RPG, featuring tactical turn-based\n"
 "combat and advanced character building.  Play as one of many unique races and\n"
@@ -3925,21 +3925,21 @@ msgid ""
 "Tales of Maj’Eyal offers engaging roguelike gameplay for the 21st century."
 msgstr ""
 
-#: gnu/packages/games.scm:6972
+#: gnu/packages/games.scm:6978
 msgid ""
 "Quakespasm is a modern engine for id software's Quake 1.\n"
 "It includes support for 64 bit CPUs, custom music playback, a new sound driver,\n"
 "some graphical niceities, and numerous bug-fixes and other improvements."
 msgstr ""
 
-#: gnu/packages/games.scm:7030
+#: gnu/packages/games.scm:7036
 msgid ""
 "vkquake is a modern engine for id software's Quake 1.\n"
 "It includes support for 64 bit CPUs, custom music playback, a new sound driver,\n"
 "some graphical niceities, and numerous bug-fixes and other improvements."
 msgstr ""
 
-#: gnu/packages/games.scm:7084
+#: gnu/packages/games.scm:7090
 msgid ""
 "Yamagi Quake II is an enhanced client for id Software's Quake II.\n"
 "The main focus is an unchanged single player experience like back in 1997,\n"
@@ -3949,18 +3949,18 @@ msgid ""
 "making Yamagi Quake II one of the most solid Quake II implementations available."
 msgstr ""
 
-#: gnu/packages/games.scm:7120
+#: gnu/packages/games.scm:7126
 msgid "Nudoku is a ncurses-based Sudoku game for your terminal."
 msgstr ""
 
-#: gnu/packages/games.scm:7167
+#: gnu/packages/games.scm:7173
 msgid ""
 "The Butterfly Effect (tbe) is a game that uses\n"
 "realistic physics simulations to combine lots of simple mechanical\n"
 "elements to achieve a simple goal in the most complex way possible."
 msgstr ""
 
-#: gnu/packages/games.scm:7212
+#: gnu/packages/games.scm:7218
 msgid ""
 "Pioneer is a space adventure game set in our galaxy at the turn of the\n"
 "31st century.  The game is open-ended, and you are free to eke out whatever\n"
@@ -3971,14 +3971,14 @@ msgid ""
 "whatever you make of it."
 msgstr ""
 
-#: gnu/packages/games.scm:7241
+#: gnu/packages/games.scm:7247
 msgid ""
 "Badass generates false commits for a range of dates, essentially\n"
 "hacking the gamification of contribution graphs on platforms such as\n"
 "Github or Gitlab."
 msgstr ""
 
-#: gnu/packages/games.scm:7315
+#: gnu/packages/games.scm:7321
 msgid ""
 "Colobot: Gold Edition is a real-time strategy game, where\n"
 "you can program your units (bots) in a language called CBOT, which is similar\n"
@@ -3986,7 +3986,7 @@ msgid ""
 "You can save humanity and get programming skills!"
 msgstr ""
 
-#: gnu/packages/games.scm:7408
+#: gnu/packages/games.scm:7414
 msgid ""
 "GZdoom is a port of the Doom 2 game engine, with a modern\n"
 "renderer.  It improves modding support with ZDoom's advanced mapping features\n"
@@ -3994,14 +3994,14 @@ msgid ""
 "Strife, Chex Quest, and fan-created games like Harmony, Hacx and Freedoom."
 msgstr ""
 
-#: gnu/packages/games.scm:7444
+#: gnu/packages/games.scm:7450
 msgid ""
 "Odamex is a modification of the Doom engine that\n"
 "allows players to easily join servers dedicated to playing Doom\n"
 "online."
 msgstr ""
 
-#: gnu/packages/games.scm:7472
+#: gnu/packages/games.scm:7478
 msgid ""
 "Chocolate Doom takes a different approach to other source ports.  Its\n"
 "aim is to accurately reproduce the experience of playing Vanilla Doom.  It is\n"
@@ -4014,7 +4014,7 @@ msgid ""
 "affect gameplay)."
 msgstr ""
 
-#: gnu/packages/games.scm:7511
+#: gnu/packages/games.scm:7517
 msgid ""
 "Crispy Doom is a friendly fork of Chocolate Doom that provides a higher\n"
 "display resolution, removes the static limits of the Doom engine and offers\n"
@@ -4023,23 +4023,23 @@ msgid ""
 "original."
 msgstr ""
 
-#: gnu/packages/games.scm:7584
+#: gnu/packages/games.scm:7590
 msgid "This package provides C11 / gnu11 utilities C library"
 msgstr ""
 
-#: gnu/packages/games.scm:7642
+#: gnu/packages/games.scm:7648
 msgid ""
 "Fortune is a command-line utility which displays a random\n"
 "quotation from a collection of quotes."
 msgstr ""
 
-#: gnu/packages/games.scm:7684
+#: gnu/packages/games.scm:7690
 msgid "Xonotic-data provides the data files required by the game Xonotic."
 msgstr ""
 "Xonotic-data proporciona los ficheros de datos necesarios para el\n"
 "juego Xonotic."
 
-#: gnu/packages/games.scm:7880
+#: gnu/packages/games.scm:7886
 msgid ""
 "Xonotic is a free, fast-paced first-person shooter.\n"
 "The project is geared towards providing addictive arena shooter\n"
@@ -4049,7 +4049,7 @@ msgid ""
 "open-source FPS of its kind."
 msgstr ""
 
-#: gnu/packages/games.scm:7931
+#: gnu/packages/games.scm:7937
 msgid ""
 "Frotz is an interpreter for Infocom games and other Z-machine\n"
 "games in the text adventure/interactive fiction genre.  This version of Frotz\n"
@@ -4058,7 +4058,7 @@ msgid ""
 "ncurses for text display."
 msgstr ""
 
-#: gnu/packages/games.scm:7973
+#: gnu/packages/games.scm:7979
 msgid ""
 "Frotz is an interpreter for Infocom games and\n"
 "other Z-machine games in the text adventure/interactive fiction genre.\n"
@@ -4070,7 +4070,7 @@ msgid ""
 "to play games on webpages.  It can also be made into a chat bot."
 msgstr ""
 
-#: gnu/packages/games.scm:8037
+#: gnu/packages/games.scm:8043
 msgid ""
 "Frotz is an interpreter for Infocom games and other Z-machine\n"
 "games in the text adventure/interactive fiction genre.  This version of Frotz\n"
@@ -4080,7 +4080,7 @@ msgid ""
 "when packaged in Blorb container files or optionally from individual files."
 msgstr ""
 
-#: gnu/packages/games.scm:8131
+#: gnu/packages/games.scm:8137
 msgid ""
 "Frozen-Bubble is a clone of the popular Puzzle Bobble game, in which\n"
 "you attempt to shoot bubbles into groups of the same color to cause them to\n"
@@ -4095,7 +4095,7 @@ msgid ""
 "their own levels."
 msgstr ""
 
-#: gnu/packages/games.scm:8167
+#: gnu/packages/games.scm:8173
 msgid ""
 "Libmanette is a small GObject library giving you simple\n"
 "access to game controllers.  It supports the de-facto standard gamepads as\n"
@@ -4103,7 +4103,7 @@ msgid ""
 "GameController."
 msgstr ""
 
-#: gnu/packages/games.scm:8214
+#: gnu/packages/games.scm:8220
 msgid ""
 "Quadrapassel comes from the classic falling-block game,\n"
 "Tetris.  The goal of the game is to create complete horizontal lines of\n"
@@ -4115,7 +4115,7 @@ msgid ""
 "your score gets higher, you level up and the blocks fall faster."
 msgstr ""
 
-#: gnu/packages/games.scm:8268
+#: gnu/packages/games.scm:8274
 msgid ""
 "Endless Sky is a 2D space trading and combat game.  Explore\n"
 "other star systems.  Earn money by trading, carrying passengers, or completing\n"
@@ -4125,7 +4125,7 @@ msgid ""
 "civilized than your own."
 msgstr ""
 
-#: gnu/packages/games.scm:8418
+#: gnu/packages/games.scm:8424
 msgid ""
 "StepMania is a dance and rhythm game.  It features 3D\n"
 "graphics, keyboard and dance pad support, and an editor for creating your own\n"
@@ -4135,7 +4135,7 @@ msgid ""
 "to download and install them in @file{$HOME/.stepmania-X.Y/Songs} directory."
 msgstr ""
 
-#: gnu/packages/games.scm:8458
+#: gnu/packages/games.scm:8464
 msgid ""
 "@i{oshu!} is a minimalist variant of the @i{osu!} rhythm game,\n"
 "which is played by pressing buttons and following along sliders as they appear\n"
@@ -4145,7 +4145,7 @@ msgid ""
 "download and unpack them separately."
 msgstr ""
 
-#: gnu/packages/games.scm:8543
+#: gnu/packages/games.scm:8549
 msgid ""
 "Battle Tanks (also known as \"btanks\") is a funny battle\n"
 "game, where you can choose one of three vehicles and eliminate your enemy\n"
@@ -4154,7 +4154,7 @@ msgid ""
 "and cooperative."
 msgstr ""
 
-#: gnu/packages/games.scm:8577
+#: gnu/packages/games.scm:8583
 msgid ""
 "Slime Volley is a 2D arcade-oriented volleyball simulation, in\n"
 "the spirit of some Java games of the same name.\n"
@@ -4165,7 +4165,7 @@ msgid ""
 "the ground, the set ends and all balls are served again."
 msgstr ""
 
-#: gnu/packages/games.scm:8607
+#: gnu/packages/games.scm:8613
 msgid ""
 "Slingshot is a two-dimensional strategy game where two\n"
 "players attempt to shoot one another through a section of space populated by\n"
@@ -4173,14 +4173,14 @@ msgid ""
 "affected by the gravity of the planets."
 msgstr ""
 
-#: gnu/packages/games.scm:8655
+#: gnu/packages/games.scm:8661
 msgid ""
 "4D-TRIS is an alteration of the well-known Tetris game.  The\n"
 "game field is extended to 4D space, which has to filled up by the gamer with\n"
 "4D hyper cubes."
 msgstr ""
 
-#: gnu/packages/games.scm:8732
+#: gnu/packages/games.scm:8738
 msgid ""
 "Arx Libertatis is a cross-platform port of Arx Fatalis, a 2002\n"
 "first-person role-playing game / dungeon crawler developed by Arkane Studios.\n"
@@ -4190,7 +4190,7 @@ msgid ""
 "where the player draws runes in real time to effect the desired spell."
 msgstr ""
 
-#: gnu/packages/games.scm:8779
+#: gnu/packages/games.scm:8785
 msgid ""
 "The Legend of Edgar is a 2D platform game with a persistent world.\n"
 "When Edgar's father fails to return home after venturing out one dark and stormy night,\n"
@@ -4198,7 +4198,7 @@ msgid ""
 "a fortress beyond the forbidden swamp."
 msgstr ""
 
-#: gnu/packages/games.scm:8881
+#: gnu/packages/games.scm:8887
 msgid ""
 "OpenClonk is a multiplayer action/tactics/skill game.  It is\n"
 "often referred to as a mixture of The Settlers and Worms.  In a simple 2D\n"
@@ -4208,20 +4208,20 @@ msgid ""
 "fight each other on an arena-like map."
 msgstr ""
 
-#: gnu/packages/games.scm:8913
+#: gnu/packages/games.scm:8919
 msgid ""
 "Flare (Free Libre Action Roleplaying Engine) is a simple\n"
 "game engine built to handle a very specific kind of game: single-player 2D\n"
 "action RPGs."
 msgstr ""
 
-#: gnu/packages/games.scm:8978
+#: gnu/packages/games.scm:8984
 msgid ""
 "Flare is a single-player 2D action RPG with\n"
 "fast-paced action and a dark fantasy style."
 msgstr ""
 
-#: gnu/packages/games.scm:9030
+#: gnu/packages/games.scm:9036
 msgid ""
 "Far below the surface of the planet is a place of limitless\n"
 "power.  Those that seek to control such a utopia will soon bring an end to\n"
@@ -4235,7 +4235,7 @@ msgid ""
 "Orcus Dome from evil."
 msgstr ""
 
-#: gnu/packages/games.scm:9094
+#: gnu/packages/games.scm:9100
 msgid ""
 "Marble Marcher is a video game that uses a fractal physics\n"
 "engine and fully procedural rendering to produce beautiful and unique\n"
@@ -4245,7 +4245,7 @@ msgid ""
 "levels to unlock."
 msgstr ""
 
-#: gnu/packages/games.scm:9136
+#: gnu/packages/games.scm:9142
 msgid ""
 "SimGear is a set of libraries designed to be used as\n"
 "building blocks for quickly assembling 3D simulations, games, and\n"
@@ -4255,7 +4255,7 @@ msgstr ""
 
 # FUZZY
 # TODO: Revisar traducción.
-#: gnu/packages/games.scm:9229
+#: gnu/packages/games.scm:9235
 msgid ""
 "The goal of the FlightGear project is to create a\n"
 "sophisticated flight simulator framework for use in research or academic\n"
@@ -4272,14 +4272,14 @@ msgstr ""
 "importante, como un simulador de vuelo de escritorio divertido,\n"
 "realista y desafiante."
 
-#: gnu/packages/games.scm:9276
+#: gnu/packages/games.scm:9282
 msgid ""
 "You, as a bunny, have to jump on your opponents to make them\n"
 "explode.  It is a true multiplayer game; you cannot play this alone.  You can\n"
 "play with up to four players simultaneously.  It has network support."
 msgstr ""
 
-#: gnu/packages/games.scm:9345
+#: gnu/packages/games.scm:9351
 msgid ""
 "Hedgewars is a turn based strategy, artillery, action and comedy game,\n"
 "featuring the antics of pink hedgehogs with attitude as they battle from the\n"
@@ -4289,7 +4289,7 @@ msgid ""
 "and bring the war to your enemy."
 msgstr ""
 
-#: gnu/packages/games.scm:9378
+#: gnu/packages/games.scm:9384
 msgid ""
 "Harmonist: Dayoriah Clan Infiltration is a stealth\n"
 "coffee-break roguelike game.  The game has a heavy focus on tactical\n"
@@ -4299,7 +4299,7 @@ msgid ""
 "on items and player adaptability for character progression."
 msgstr ""
 
-#: gnu/packages/games.scm:9510
+#: gnu/packages/games.scm:9516
 msgid ""
 "Drascula: The Vampire Strikes Back is a classic humorous 2D\n"
 "point and click adventure game.\n"
@@ -4311,7 +4311,7 @@ msgid ""
 "the World and demonstrating that he is even more evil than his brother Vlad."
 msgstr ""
 
-#: gnu/packages/games.scm:9592
+#: gnu/packages/games.scm:9598
 msgid ""
 "Lure of the Temptress is a classic 2D point and click adventure game.\n"
 "\n"
@@ -4330,7 +4330,7 @@ msgid ""
 "Skorl.  Maybe it would be an idea to try and escape..."
 msgstr ""
 
-#: gnu/packages/games.scm:9693
+#: gnu/packages/games.scm:9699
 msgid ""
 "Flight of the Amazon Queen is a 2D point-and-click\n"
 "adventure game set in the 1940s.\n"
@@ -4347,7 +4347,7 @@ msgid ""
 "women and 6-foot-tall pygmies."
 msgstr ""
 
-#: gnu/packages/games.scm:9795
+#: gnu/packages/games.scm:9801
 msgid ""
 "Beneath a Steel Sky is a science-fiction thriller set in a bleak\n"
 "post-apocalyptic vision of the future.  It revolves around Union City,\n"
@@ -4370,7 +4370,7 @@ msgid ""
 "and to seek vengeance for the killing of his tribe."
 msgstr ""
 
-#: gnu/packages/games.scm:9858
+#: gnu/packages/games.scm:9864
 msgid ""
 "GNU Robots is a game in which you program a robot to explore a world\n"
 "full of enemies that can hurt it, obstacles and food to be eaten.  The goal of\n"
@@ -4378,14 +4378,14 @@ msgid ""
 "may be written in a plain text file in the Scheme programming language."
 msgstr ""
 
-#: gnu/packages/games.scm:9928
+#: gnu/packages/games.scm:9934
 msgid ""
 "Ri-li is a game in which you drive a wooden toy\n"
 "steam locomotive across many levels and collect all the coaches to\n"
 "win."
 msgstr ""
 
-#: gnu/packages/games.scm:9984
+#: gnu/packages/games.scm:9990
 msgid ""
 "FreeOrion is a turn-based space empire and galactic conquest (4X)\n"
 "computer game being designed and built by the FreeOrion project.  Control an\n"
@@ -4395,14 +4395,14 @@ msgid ""
 "remake of that series or any other game."
 msgstr ""
 
-#: gnu/packages/games.scm:10040
+#: gnu/packages/games.scm:10046
 msgid ""
 "Leela-zero is a Go engine with no human-provided knowledge, modeled after\n"
 "the AlphaGo Zero paper.  The current best network weights file for the engine\n"
 "can be downloaded from @url{https://zero.sjeng.org/best-network}."
 msgstr ""
 
-#: gnu/packages/games.scm:10115
+#: gnu/packages/games.scm:10121
 msgid ""
 "This a tool for Go players which performs the following functions:\n"
 "@itemize\n"
@@ -4414,7 +4414,7 @@ msgid ""
 "@end itemize"
 msgstr ""
 
-#: gnu/packages/games.scm:10160
+#: gnu/packages/games.scm:10166
 msgid ""
 "KTuberling is a drawing toy intended for small children and\n"
 "adults who remain young at heart.  The game has no winner; the only purpose is\n"
@@ -4433,7 +4433,7 @@ msgid ""
 "This package is part of the KDE games module."
 msgstr ""
 
-#: gnu/packages/games.scm:10207
+#: gnu/packages/games.scm:10213
 msgid ""
 "Picmi is a number logic game in which cells in a grid have\n"
 "to be colored or left blank according to numbers given at the side of the\n"
@@ -4442,7 +4442,7 @@ msgid ""
 "This package is part of the KDE games module."
 msgstr ""
 
-#: gnu/packages/games.scm:10245
+#: gnu/packages/games.scm:10251
 msgid ""
 "Kolf is a miniature golf game for one to ten players.  The\n"
 "game is played from an overhead view, with a short bar representing the golf\n"
@@ -4461,13 +4461,13 @@ msgid ""
 "This package is part of the KDE games module."
 msgstr ""
 
-#: gnu/packages/games.scm:10289
+#: gnu/packages/games.scm:10295
 msgid ""
 "Shared library and common files for kmahjongg, kshisen and\n"
 "other Mah Jongg like games."
 msgstr ""
 
-#: gnu/packages/games.scm:10323
+#: gnu/packages/games.scm:10329
 msgid ""
 "In KMahjongg the tiles are scrambled and staked on top of\n"
 "each other to resemble a certain shape.  The player is then expected to remove\n"
@@ -4479,7 +4479,7 @@ msgid ""
 "This package is part of the KDE games module."
 msgstr ""
 
-#: gnu/packages/games.scm:10365
+#: gnu/packages/games.scm:10371
 msgid ""
 "KShisen is a solitaire-like game played using the standard\n"
 "set of Mahjong tiles.  Unlike Mahjong however, KShisen has only one layer of\n"
@@ -4488,7 +4488,7 @@ msgid ""
 "This package is part of the KDE games module."
 msgstr ""
 
-#: gnu/packages/games.scm:10410
+#: gnu/packages/games.scm:10416
 msgid ""
 "Kajongg is the ancient Chinese board game for 4 players.\n"
 "\n"
@@ -4503,7 +4503,7 @@ msgid ""
 "This package is part of the KDE games module."
 msgstr ""
 
-#: gnu/packages/games.scm:10453
+#: gnu/packages/games.scm:10459
 msgid ""
 "KBreakout is similar to the classics breakout and xboing,\n"
 "featuring a number of added graphical enhancements and effects.  You control a\n"
@@ -4513,7 +4513,7 @@ msgid ""
 "This package is part of the KDE games module."
 msgstr ""
 
-#: gnu/packages/games.scm:10492
+#: gnu/packages/games.scm:10498
 msgid ""
 "KMines is a classic Minesweeper game.  The idea is to\n"
 "uncover all the squares without blowing up any mines.  When a mine is blown\n"
@@ -4522,7 +4522,7 @@ msgid ""
 "This package is part of the KDE games module."
 msgstr ""
 
-#: gnu/packages/games.scm:10530
+#: gnu/packages/games.scm:10536
 msgid ""
 "Konquest is the KDE version of Gnu-Lactic Konquest.  Players\n"
 "conquer other planets by sending ships to them.  The goal is to build an\n"
@@ -4533,7 +4533,7 @@ msgid ""
 "This package is part of the KDE games module."
 msgstr ""
 
-#: gnu/packages/games.scm:10570
+#: gnu/packages/games.scm:10576
 msgid ""
 "KBounce is a single player arcade game with the elements of\n"
 "puzzle.  It is played on a field, surrounded by wall, with two or more balls\n"
@@ -4543,7 +4543,7 @@ msgid ""
 "This package is part of the KDE games module."
 msgstr ""
 
-#: gnu/packages/games.scm:10609
+#: gnu/packages/games.scm:10615
 msgid ""
 "KBlocks is the classic Tetris-like falling blocks game.\n"
 "\n"
@@ -4555,7 +4555,7 @@ msgid ""
 "This package is part of the KDE games module."
 msgstr ""
 
-#: gnu/packages/games.scm:10653
+#: gnu/packages/games.scm:10659
 msgid ""
 "KSudoku is a Sudoku game and solver, supporting a range of\n"
 "2D and 3D Sudoku variants.  In addition to playing Sudoku, it can print Sudoku\n"
@@ -4584,7 +4584,7 @@ msgid ""
 "This package is part of the KDE games module."
 msgstr ""
 
-#: gnu/packages/games.scm:10709
+#: gnu/packages/games.scm:10715
 msgid ""
 "KLines is a simple but highly addictive one player game.\n"
 "\n"
@@ -4601,7 +4601,7 @@ msgid ""
 "This package is part of the KDE games module."
 msgstr ""
 
-#: gnu/packages/games.scm:10753
+#: gnu/packages/games.scm:10759
 msgid ""
 "KGoldrunner is an action game where the hero runs through a\n"
 "maze, climbs stairs, dig holes and dodges enemies in order to collect all the\n"
@@ -4615,7 +4615,7 @@ msgid ""
 "This package is part of the KDE games module."
 msgstr ""
 
-#: gnu/packages/games.scm:10797
+#: gnu/packages/games.scm:10803
 msgid ""
 "KDiamond is a three-in-a-row game like Bejeweled.  It\n"
 "features unlimited fun with randomly generated games and five difficulty\n"
@@ -4624,7 +4624,7 @@ msgid ""
 "This package is part of the KDE games module."
 msgstr ""
 
-#: gnu/packages/games.scm:10834
+#: gnu/packages/games.scm:10840
 msgid ""
 "KFourInLine is a board game for two players based on the\n"
 "Connect-Four game.\n"
@@ -4635,7 +4635,7 @@ msgid ""
 "This package is part of the KDE games module."
 msgstr ""
 
-#: gnu/packages/games.scm:10874
+#: gnu/packages/games.scm:10880
 msgid ""
 "KBlackbox is a game of hide and seek played on a grid of\n"
 "boxes where the computer has hidden several balls.  The position of the hidden\n"
@@ -4647,7 +4647,7 @@ msgid ""
 "This package is part of the KDE games module."
 msgstr ""
 
-#: gnu/packages/games.scm:10915
+#: gnu/packages/games.scm:10921
 msgid ""
 "KNetWalk is a small game where you have to build up a\n"
 "computer network by rotating the wires to connect the terminals to the server.\n"
@@ -4660,7 +4660,7 @@ msgid ""
 "This package is part of the KDE games module."
 msgstr ""
 
-#: gnu/packages/games.scm:10954
+#: gnu/packages/games.scm:10960
 msgid ""
 "Bomber is a single player arcade game.\n"
 "\n"
@@ -4676,7 +4676,7 @@ msgid ""
 "This package is part of the KDE games module."
 msgstr ""
 
-#: gnu/packages/games.scm:11000
+#: gnu/packages/games.scm:11006
 msgid ""
 "Granatier is a clone of the classic Bomberman game,\n"
 "inspired by the work of the Clanbomber clone.\n"
@@ -4684,7 +4684,7 @@ msgid ""
 "This package is part of the KDE games module."
 msgstr ""
 
-#: gnu/packages/games.scm:11039
+#: gnu/packages/games.scm:11045
 msgid ""
 "KsirK is a multi-player network-enabled game.  The goal of\n"
 "the game is simply to conquer the world by attacking your neighbors with your\n"
@@ -4709,7 +4709,7 @@ msgid ""
 "This package is part of the KDE games module."
 msgstr ""
 
-#: gnu/packages/games.scm:11100
+#: gnu/packages/games.scm:11106
 msgid ""
 "Palapeli is a jigsaw puzzle game.  Unlike other games in\n"
 "that genre, you are not limited to aligning pieces on imaginary grids.  The\n"
@@ -4721,7 +4721,7 @@ msgid ""
 "This package is part of the KDE games module."
 msgstr ""
 
-#: gnu/packages/games.scm:11140
+#: gnu/packages/games.scm:11146
 msgid ""
 "Kiriki is an addictive and fun dice game, designed to be\n"
 "played by as many as six players.\n"
@@ -4732,7 +4732,7 @@ msgid ""
 "This package is part of the KDE games module."
 msgstr ""
 
-#: gnu/packages/games.scm:11181
+#: gnu/packages/games.scm:11187
 msgid ""
 "Kigo is an open-source implementation of the popular Go\n"
 "game.\n"
@@ -4749,7 +4749,7 @@ msgid ""
 "This package is part of the KDE games module."
 msgstr ""
 
-#: gnu/packages/games.scm:11227
+#: gnu/packages/games.scm:11233
 msgid ""
 "Kubrick is a game based on the Rubik's Cube puzzle.\n"
 "\n"
@@ -4762,7 +4762,7 @@ msgid ""
 "This package is part of the KDE games module."
 msgstr ""
 
-#: gnu/packages/games.scm:11268
+#: gnu/packages/games.scm:11274
 msgid ""
 "Lieutnant Skat (from German \"Offiziersskat\") is a fun and\n"
 "engaging card game for two players, where the second player is either live\n"
@@ -4773,7 +4773,7 @@ msgid ""
 "This package is part of the KDE games module."
 msgstr ""
 
-#: gnu/packages/games.scm:11307
+#: gnu/packages/games.scm:11313
 msgid ""
 "Kapman is a clone of the well known game Pac-Man.\n"
 "\n"
@@ -4785,7 +4785,7 @@ msgid ""
 "This package is part of the KDE games module."
 msgstr ""
 
-#: gnu/packages/games.scm:11347
+#: gnu/packages/games.scm:11353
 msgid ""
 "KSpaceduel is a space battle game for one or two players,\n"
 "where two ships fly around a star in a struggle to be the only survivor.\n"
@@ -4793,7 +4793,7 @@ msgid ""
 "This package is part of the KDE games module."
 msgstr ""
 
-#: gnu/packages/games.scm:11381
+#: gnu/packages/games.scm:11387
 msgid ""
 "Bovo is a Gomoku (from Japanese 五目並べ - lit.  \"five\n"
 "points\") like game for two players, where the opponents alternate in placing\n"
@@ -4804,7 +4804,7 @@ msgid ""
 "This package is part of the KDE games module."
 msgstr ""
 
-#: gnu/packages/games.scm:11420
+#: gnu/packages/games.scm:11426
 msgid ""
 "Killbots is a simple game of evading killer robots.\n"
 "\n"
@@ -4818,7 +4818,7 @@ msgid ""
 "This package is part of the KDE games module."
 msgstr ""
 
-#: gnu/packages/games.scm:11463
+#: gnu/packages/games.scm:11469
 msgid ""
 "KSnakeDuel is a fast action game where you steer a snake\n"
 "which has to eat food.  While eating the snake grows.  But once a player\n"
@@ -4828,7 +4828,7 @@ msgid ""
 "This package is part of the KDE games module."
 msgstr ""
 
-#: gnu/packages/games.scm:11500
+#: gnu/packages/games.scm:11506
 msgid ""
 "In Kollision you use mouse to control a small blue ball in a\n"
 "closed space environment filled with small red balls, which move about\n"
@@ -4839,7 +4839,7 @@ msgid ""
 "This package is part of the KDE games module."
 msgstr ""
 
-#: gnu/packages/games.scm:11541
+#: gnu/packages/games.scm:11547
 msgid ""
 "KBattleship is a Battle Ship game for KDE.\n"
 "\n"
@@ -4850,7 +4850,7 @@ msgid ""
 "This package is part of the KDE games module."
 msgstr ""
 
-#: gnu/packages/games.scm:11582
+#: gnu/packages/games.scm:11588
 msgid ""
 "KReversi is a simple one player strategy game played\n"
 "against the computer.\n"
@@ -4863,7 +4863,7 @@ msgid ""
 "This package is part of the KDE games module."
 msgstr ""
 
-#: gnu/packages/games.scm:11623
+#: gnu/packages/games.scm:11629
 msgid ""
 "KSquares is an implementation of the popular paper based\n"
 "game Squares.  Two players take turns connecting dots on a grid to complete\n"
@@ -4872,7 +4872,7 @@ msgid ""
 "This package is part of the KDE games module."
 msgstr ""
 
-#: gnu/packages/games.scm:11661
+#: gnu/packages/games.scm:11667
 msgid ""
 "KJumpingcube is a simple tactical game for one or two\n"
 "players, played on a grid of numbered squares.  Each turn, players compete for\n"
@@ -4881,7 +4881,7 @@ msgid ""
 "This package is part of the KDE games module."
 msgstr ""
 
-#: gnu/packages/games.scm:11751
+#: gnu/packages/games.scm:11757
 msgid ""
 "X-Moto is a challenging 2D motocross platform game, where\n"
 "physics play an all important role in the gameplay.  You need to\n"
@@ -4889,27 +4889,27 @@ msgid ""
 "the more difficult challenges."
 msgstr ""
 
-#: gnu/packages/games.scm:11799
+#: gnu/packages/games.scm:11805
 msgid ""
 "Eboard is a chess board interface for ICS (Internet Chess Servers)\n"
 "and chess engines."
 msgstr ""
 
-#: gnu/packages/games.scm:11851
+#: gnu/packages/games.scm:11857
 msgid ""
 "ChessX is a chess database.  With ChessX you can operate on your\n"
 "collection of chess games in many ways: browse, edit, add, organize, analyze,\n"
 "etc.  You can also play games on FICS or against an engine."
 msgstr ""
 
-#: gnu/packages/games.scm:11903
+#: gnu/packages/games.scm:11909
 msgid ""
 "Stockfish is a very strong chess engine.  It is much stronger than the\n"
 "best human chess grandmasters.  It can be used with UCI-compatible GUIs like\n"
 "ChessX."
 msgstr ""
 
-#: gnu/packages/games.scm:11934
+#: gnu/packages/games.scm:11940
 msgid ""
 "Barrage is a rather destructive action game that puts you on a shooting\n"
 "range with the objective to hit as many dummy targets as possible within\n"
@@ -4918,7 +4918,7 @@ msgid ""
 "get high scores."
 msgstr ""
 
-#: gnu/packages/games.scm:11960
+#: gnu/packages/games.scm:11966
 msgid ""
 "This is a clone of the classic game BurgerTime.  In it, you play\n"
 "the part of a chef who must create burgers by stepping repeatedly on\n"
@@ -4928,7 +4928,7 @@ msgid ""
 "protect you."
 msgstr ""
 
-#: gnu/packages/games.scm:11992
+#: gnu/packages/games.scm:11998
 msgid ""
 "Seven Kingdoms, designed by Trevor Chan, brings a blend of Real-Time\n"
 "Strategy with the addition of trade, diplomacy, and espionage.  The game\n"
@@ -4938,7 +4938,7 @@ msgid ""
 "kingdom."
 msgstr ""
 
-#: gnu/packages/games.scm:12108
+#: gnu/packages/games.scm:12114
 msgid ""
 "In the grand tradition of Marble Madness and Super Monkey Ball,\n"
 "Neverball has you guide a rolling ball through dangerous territory.  Balance\n"
@@ -4948,19 +4948,19 @@ msgid ""
 "game."
 msgstr ""
 
-#: gnu/packages/games.scm:12185
+#: gnu/packages/games.scm:12191
 msgid ""
 "With PokerTH you can play the Texas holdem poker game, either against\n"
 "computer opponents or against real players online."
 msgstr ""
 
-#: gnu/packages/games.scm:12222
+#: gnu/packages/games.scm:12228
 msgid ""
 "Pilot your ship inside a planet to find and rescue the colonists trapped\n"
 "inside the Zenith Colony."
 msgstr ""
 
-#: gnu/packages/games.scm:12244
+#: gnu/packages/games.scm:12250
 msgid ""
 "Provides a large set of Go-related services for X11:\n"
 "@itemize\n"
@@ -4971,7 +4971,7 @@ msgid ""
 "@end itemize"
 msgstr ""
 
-#: gnu/packages/games.scm:12304
+#: gnu/packages/games.scm:12310
 msgid ""
 "Passage is meant to be a memento mori game.  It presents an entire life,\n"
 "from young adulthood through old age and death, in the span of five minutes.\n"
@@ -4980,14 +4980,14 @@ msgid ""
 "there's no right way to interpret it."
 msgstr ""
 
-#: gnu/packages/games.scm:12338
+#: gnu/packages/games.scm:12344
 msgid ""
 "High performance animated desktop background setter for\n"
 "X11 that won't set your CPU on fire, drain your laptop battery, or lower video\n"
 "game FPS."
 msgstr ""
 
-#: gnu/packages/games.scm:12368
+#: gnu/packages/games.scm:12374
 msgid ""
 "Curse of War is a fast-paced action strategy game originally\n"
 "implemented using ncurses user interface.  An SDL graphical version is also\n"
@@ -5700,19 +5700,19 @@ msgid ""
 "XML/CSS rendering engine."
 msgstr ""
 
-#: gnu/packages/gnome.scm:3293
+#: gnu/packages/gnome.scm:3278
 msgid ""
 "Libgsf aims to provide an efficient extensible I/O abstraction for\n"
 "dealing with different structured file formats."
 msgstr ""
 
-#: gnu/packages/gnome.scm:3363
+#: gnu/packages/gnome.scm:3348
 msgid ""
 "Librsvg is a C library to render SVG files using the Cairo 2D graphics\n"
 "library."
 msgstr ""
 
-#: gnu/packages/gnome.scm:3543
+#: gnu/packages/gnome.scm:3528
 msgid ""
 "Librsvg is a library to render SVG images to Cairo surfaces.\n"
 "GNOME uses this to render SVG icons.  Outside of GNOME, other desktop\n"
@@ -5720,7 +5720,7 @@ msgid ""
 "diagrams."
 msgstr ""
 
-#: gnu/packages/gnome.scm:3570
+#: gnu/packages/gnome.scm:3555
 msgid ""
 "Libidl is a library for creating trees of CORBA Interface\n"
 "Definition Language (idl) files, which is a specification for defining\n"
@@ -5729,19 +5729,19 @@ msgid ""
 "functionality was designed to be as reusable and portable as possible."
 msgstr ""
 
-#: gnu/packages/gnome.scm:3618
+#: gnu/packages/gnome.scm:3603
 msgid ""
 "ORBit2 is a CORBA 2.4-compliant Object Request Broker (orb)\n"
 "featuring mature C, C++ and Python bindings."
 msgstr ""
 
-#: gnu/packages/gnome.scm:3674
+#: gnu/packages/gnome.scm:3659
 msgid ""
 "Bonobo is a framework for creating reusable components for\n"
 "use in GNOME applications, built on top of CORBA."
 msgstr ""
 
-#: gnu/packages/gnome.scm:3706
+#: gnu/packages/gnome.scm:3691
 msgid ""
 "Gconf is a system for storing application preferences.  It\n"
 "is intended for user preferences; not arbitrary data storage."
@@ -5750,58 +5750,58 @@ msgstr ""
 "aplicaciones. Está pensado para las preferencias de cada usuaria; no\n"
 "para el almacenamiento arbitrario de datos."
 
-#: gnu/packages/gnome.scm:3741
+#: gnu/packages/gnome.scm:3726
 msgid ""
 "GNOME Mime Data is a module which contains the base MIME\n"
 "and Application database for GNOME.  The data stored by this module is\n"
 "designed to be accessed through the MIME functions in GnomeVFS."
 msgstr ""
 
-#: gnu/packages/gnome.scm:3786
+#: gnu/packages/gnome.scm:3771
 msgid ""
 "GnomeVFS is the core library used to access files and folders in GNOME\n"
 "applications.  It provides a file system abstraction which allows applications\n"
 "to access local and remote files with a single consistent API."
 msgstr ""
 
-#: gnu/packages/gnome.scm:3832
+#: gnu/packages/gnome.scm:3817
 msgid ""
 "The libgnome library provides a number of useful routines\n"
 "for building modern applications, including session management, activation of\n"
 "files and URIs, and displaying help."
 msgstr ""
 
-#: gnu/packages/gnome.scm:3856
+#: gnu/packages/gnome.scm:3841
 msgid ""
 "Libart is a 2D drawing library intended as a\n"
 "high-quality vector-based 2D library with antialiasing and alpha composition."
 msgstr ""
 
-#: gnu/packages/gnome.scm:3884
+#: gnu/packages/gnome.scm:3869
 msgid ""
 "The GnomeCanvas widget provides a flexible widget for\n"
 "creating interactive structured graphics."
 msgstr ""
 
-#: gnu/packages/gnome.scm:3907
+#: gnu/packages/gnome.scm:3892
 msgid "C++ bindings to the GNOME Canvas library."
 msgstr ""
 
-#: gnu/packages/gnome.scm:3940
+#: gnu/packages/gnome.scm:3925
 msgid ""
 "The libgnomeui library provides additional widgets for\n"
 "applications.  Many of the widgets from libgnomeui have already been\n"
 "ported to GTK+."
 msgstr ""
 
-#: gnu/packages/gnome.scm:3967
+#: gnu/packages/gnome.scm:3952
 msgid ""
 "Libglade is a library that provides interfaces for loading\n"
 "graphical interfaces described in glade files and for accessing the\n"
 "widgets built in the loading process."
 msgstr ""
 
-#: gnu/packages/gnome.scm:3999
+#: gnu/packages/gnome.scm:3984
 msgid ""
 "GNOME-print was a printing framework for GNOME.  It has been deprecated\n"
 "since ca. 2006, when GTK+ itself incorporated printing support."
@@ -5809,13 +5809,13 @@ msgstr ""
 "GNOME-print fue un marco referencial de impresión para GNOME.  Ha sido obsoleto\n"
 "desde el 2006, cuando el mismo GTK+ incorpora apoyo de impresión."
 
-#: gnu/packages/gnome.scm:4074
+#: gnu/packages/gnome.scm:4059
 msgid ""
 "The Bonobo UI library provides a number of user interface\n"
 "controls using the Bonobo component framework."
 msgstr ""
 
-#: gnu/packages/gnome.scm:4103
+#: gnu/packages/gnome.scm:4088
 msgid ""
 "Libwnck is the Window Navigator Construction Kit, a library for use in\n"
 "writing pagers, tasklists, and more generally applications that are dealing\n"
@@ -5823,11 +5823,11 @@ msgid ""
 "Hints specification (EWMH)."
 msgstr ""
 
-#: gnu/packages/gnome.scm:4161
+#: gnu/packages/gnome.scm:4146
 msgid "A GLib/GTK+ set of document-centric objects and utilities."
 msgstr "Un conjunto GLib/GTK+ de objetos y utilidades documentales-centrados."
 
-#: gnu/packages/gnome.scm:4247
+#: gnu/packages/gnome.scm:4232
 msgid ""
 "GNUmeric is a GNU spreadsheet application, running under GNOME.  It is\n"
 "interoperable with other spreadsheet applications.  It has a vast array of\n"
@@ -5836,21 +5836,21 @@ msgid ""
 "engineering."
 msgstr ""
 
-#: gnu/packages/gnome.scm:4304
+#: gnu/packages/gnome.scm:4289
 msgid "Drawing is a basic image editor aiming at the GNOME desktop."
 msgstr ""
 
-#: gnu/packages/gnome.scm:4340
+#: gnu/packages/gnome.scm:4325
 msgid "The default GNOME 3 themes (Adwaita and some accessibility themes)."
 msgstr ""
 
-#: gnu/packages/gnome.scm:4388
+#: gnu/packages/gnome.scm:4373
 msgid ""
 "Seahorse is a GNOME application for managing encryption keys and\n"
 "passwords in the GNOME keyring."
 msgstr ""
 
-#: gnu/packages/gnome.scm:4431
+#: gnu/packages/gnome.scm:4416
 msgid ""
 "Vala is a programming language that aims to bring modern programming\n"
 "language features to GNOME developers without imposing any additional runtime\n"
@@ -5858,7 +5858,7 @@ msgid ""
 "libraries written in C."
 msgstr ""
 
-#: gnu/packages/gnome.scm:4482
+#: gnu/packages/gnome.scm:4467
 msgid ""
 "VTE is a library (libvte) implementing a terminal emulator widget for\n"
 "GTK+, and a minimal sample application (vte) using that.  Vte is mainly used in\n"
@@ -5866,27 +5866,27 @@ msgid ""
 "editors, IDEs, etc."
 msgstr ""
 
-#: gnu/packages/gnome.scm:4509
+#: gnu/packages/gnome.scm:4494
 msgid ""
 "VTE is a library (libvte) implementing a terminal emulator widget for\n"
 "GTK+, this fork provides additional functions exposed for keyboard text\n"
 "selection and URL hints."
 msgstr ""
 
-#: gnu/packages/gnome.scm:4589
+#: gnu/packages/gnome.scm:4574
 msgid ""
 "Vinagre is a remote display client supporting the VNC, SPICE\n"
 "and RDP protocols."
 msgstr ""
 
-#: gnu/packages/gnome.scm:4637
+#: gnu/packages/gnome.scm:4622
 msgid ""
 "Dconf is a low-level configuration system.  Its main purpose\n"
 "is to provide a backend to GSettings on platforms that don't already have\n"
 "configuration storage systems."
 msgstr ""
 
-#: gnu/packages/gnome.scm:4665
+#: gnu/packages/gnome.scm:4650
 msgid ""
 "JSON-GLib is a C library based on GLib providing serialization and\n"
 "deserialization support for the JavaScript Object Notation (JSON) format\n"
@@ -5895,7 +5895,7 @@ msgid ""
 "and objects."
 msgstr ""
 
-#: gnu/packages/gnome.scm:4716
+#: gnu/packages/gnome.scm:4701
 msgid ""
 "LibXklavier is a library providing high-level API for X Keyboard\n"
 "Extension known as XKB.  This library is intended to support XFree86 and other\n"
@@ -5903,7 +5903,7 @@ msgid ""
 "indicators etc)."
 msgstr ""
 
-#: gnu/packages/gnome.scm:4746
+#: gnu/packages/gnome.scm:4731
 #, fuzzy
 msgid ""
 "This package provides Python bindings to librsvg, the SVG rendering\n"
@@ -5912,32 +5912,32 @@ msgstr ""
 "Este paquete proporciona un diccionario para la biblioteca de\n"
 "comprobación ortográfica Hunspell."
 
-#: gnu/packages/gnome.scm:4778
+#: gnu/packages/gnome.scm:4763
 msgid ""
 "This package contains various network related extensions for the GIO\n"
 "library."
 msgstr ""
 
-#: gnu/packages/gnome.scm:4811
+#: gnu/packages/gnome.scm:4796
 msgid ""
 "This library was designed to make it easier to access web services that\n"
 "claim to be \"RESTful\".  It includes convenience wrappers for libsoup and\n"
 "libxml to ease remote use of the RESTful API."
 msgstr ""
 
-#: gnu/packages/gnome.scm:4943
+#: gnu/packages/gnome.scm:4928
 msgid ""
 "LibSoup is an HTTP client/server library for GNOME.  It uses GObjects\n"
 "and the GLib main loop, to integrate well with GNOME applications."
 msgstr ""
 
-#: gnu/packages/gnome.scm:5008
+#: gnu/packages/gnome.scm:4993
 msgid ""
 "Libsecret is a GObject based library for storing and retrieving passwords\n"
 "and other secrets.  It communicates with the \"Secret Service\" using DBus."
 msgstr ""
 
-#: gnu/packages/gnome.scm:5049
+#: gnu/packages/gnome.scm:5034
 msgid ""
 "Five or More is a game where you try to align\n"
 " five or more objects of the same color and shape causing them to disappear.\n"
@@ -5945,19 +5945,19 @@ msgid ""
 " Try to last as long as possible."
 msgstr ""
 
-#: gnu/packages/gnome.scm:5093
+#: gnu/packages/gnome.scm:5078
 msgid ""
 "Mines (previously gnomine) is a puzzle game where you locate mines\n"
 "floating in an ocean using only your brain and a little bit of luck."
 msgstr ""
 
-#: gnu/packages/gnome.scm:5134
+#: gnu/packages/gnome.scm:5119
 msgid ""
 "MultiWriter can be used to write an ISO file to multiple USB devices at\n"
 "once."
 msgstr ""
 
-#: gnu/packages/gnome.scm:5178
+#: gnu/packages/gnome.scm:5163
 msgid ""
 "Sudoku is a Japanese logic game that exploded in popularity in 2005.\n"
 "GNOME Sudoku is meant to have an interface as simple and unobstrusive as\n"
@@ -5965,7 +5965,7 @@ msgid ""
 "more fun."
 msgstr ""
 
-#: gnu/packages/gnome.scm:5226
+#: gnu/packages/gnome.scm:5211
 msgid ""
 "GNOME Terminal is a terminal emulator application for accessing a\n"
 "UNIX shell environment which can be used to run programs available on\n"
@@ -5975,14 +5975,14 @@ msgid ""
 "keyboard shortcuts."
 msgstr ""
 
-#: gnu/packages/gnome.scm:5306
+#: gnu/packages/gnome.scm:5291
 msgid ""
 "Colord is a system service that makes it easy to manage,\n"
 "install and generate color profiles to accurately color manage input and\n"
 "output devices."
 msgstr ""
 
-#: gnu/packages/gnome.scm:5342
+#: gnu/packages/gnome.scm:5327
 msgid ""
 "Geoclue is a D-Bus service that provides location\n"
 "information.  The primary goal of the Geoclue project is to make creating\n"
@@ -5991,7 +5991,7 @@ msgid ""
 "permission from user."
 msgstr ""
 
-#: gnu/packages/gnome.scm:5388
+#: gnu/packages/gnome.scm:5373
 msgid ""
 "geocode-glib is a convenience library for geocoding (finding longitude,\n"
 "and latitude from an address) and reverse geocoding (finding an address from\n"
@@ -5999,7 +5999,7 @@ msgid ""
 "faster results and to avoid unnecessary server load."
 msgstr ""
 
-#: gnu/packages/gnome.scm:5459
+#: gnu/packages/gnome.scm:5444
 msgid ""
 "UPower is an abstraction for enumerating power devices,\n"
 "listening to device events and querying history and statistics.  Any\n"
@@ -6007,13 +6007,13 @@ msgid ""
 "service via the system message bus."
 msgstr ""
 
-#: gnu/packages/gnome.scm:5503
+#: gnu/packages/gnome.scm:5488
 msgid ""
 "libgweather is a library to access weather information from online\n"
 "services for numerous locations."
 msgstr ""
 
-#: gnu/packages/gnome.scm:5588
+#: gnu/packages/gnome.scm:5573
 msgid ""
 "This package contains the daemon responsible for setting the various\n"
 "parameters of a GNOME session and the applications that run under it.  It\n"
@@ -6021,33 +6021,33 @@ msgid ""
 "settings, themes, mouse settings, and startup of other daemons."
 msgstr ""
 
-#: gnu/packages/gnome.scm:5625
+#: gnu/packages/gnome.scm:5610
 msgid ""
 "Totem-pl-parser is a GObjects-based library to parse and save\n"
 "playlists in a variety of formats."
 msgstr ""
 
-#: gnu/packages/gnome.scm:5661
+#: gnu/packages/gnome.scm:5646
 msgid ""
 "Aisleriot (also known as Solitaire or sol) is a collection of card games\n"
 "which are easy to play with the aid of a mouse."
 msgstr ""
 
-#: gnu/packages/gnome.scm:5691
+#: gnu/packages/gnome.scm:5676
 msgid ""
 "Amtk is the acronym for @acronym{Amtk, Actions Menus and Toolbars Kit}.\n"
 "It is a basic GtkUIManager replacement based on GAction.  It is suitable for\n"
 "both a traditional UI or a modern UI with a GtkHeaderBar."
 msgstr ""
 
-#: gnu/packages/gnome.scm:5732
+#: gnu/packages/gnome.scm:5717
 msgid ""
 "Devhelp is an API documentation browser for GTK+ and GNOME.  It works\n"
 "natively with GTK-Doc (the API reference system developed for GTK+ and used\n"
 "throughout GNOME for API documentation)."
 msgstr ""
 
-#: gnu/packages/gnome.scm:5811
+#: gnu/packages/gnome.scm:5796
 msgid ""
 "Cogl is a small library for using 3D graphics hardware to draw pretty\n"
 "pictures.  The API departs from the flat state machine style of OpenGL and is\n"
@@ -6055,14 +6055,14 @@ msgid ""
 "without stepping on each others toes."
 msgstr ""
 
-#: gnu/packages/gnome.scm:5870 gnu/packages/gnome.scm:5899
+#: gnu/packages/gnome.scm:5855 gnu/packages/gnome.scm:5884
 msgid ""
 "Clutter is an OpenGL-based interactive canvas library, designed for\n"
 "creating fast, mainly 2D single window applications such as media box UIs,\n"
 "presentations, kiosk style applications and so on."
 msgstr ""
 
-#: gnu/packages/gnome.scm:5928
+#: gnu/packages/gnome.scm:5913
 msgid ""
 "Clutter-Gst is an integration library for using GStreamer with Clutter.\n"
 "It provides a GStreamer sink to upload frames to GL and an actor that\n"
@@ -6070,7 +6070,7 @@ msgid ""
 "OpenGL-based interactive canvas library."
 msgstr ""
 
-#: gnu/packages/gnome.scm:5964
+#: gnu/packages/gnome.scm:5949
 msgid ""
 "libchamplain is a C library providing a ClutterActor to display maps.\n"
 "It also provides a Gtk+ widget to display maps in Gtk+ applications.  Python\n"
@@ -6078,7 +6078,7 @@ msgid ""
 "such as OpenStreetMap, OpenCycleMap, OpenAerialMap, and Maps for free."
 msgstr ""
 
-#: gnu/packages/gnome.scm:5997
+#: gnu/packages/gnome.scm:5982
 msgid ""
 "Gom provides an object mapper from GObjects to SQLite.  It helps you\n"
 "write applications that need to store structured data as well as make complex\n"
@@ -6089,13 +6089,13 @@ msgstr ""
 "datos estructurados así como realizar consultas complejas sobre dichos\n"
 "datos."
 
-#: gnu/packages/gnome.scm:6034
+#: gnu/packages/gnome.scm:6019
 msgid ""
 "libgnome-games-support is a small library intended for internal use by\n"
 "GNOME Games, but it may be used by others."
 msgstr ""
 
-#: gnu/packages/gnome.scm:6076
+#: gnu/packages/gnome.scm:6061
 msgid ""
 "GNOME Klotski is a set of block sliding puzzles.  The objective is to move\n"
 "the patterned block to the area bordered by green markers.  To do so, you will\n"
@@ -6103,20 +6103,20 @@ msgid ""
 "as possible!"
 msgstr ""
 
-#: gnu/packages/gnome.scm:6118
+#: gnu/packages/gnome.scm:6103
 msgid ""
 "Grilo is a framework focused on making media discovery and browsing easy\n"
 "for application developers."
 msgstr ""
 
-#: gnu/packages/gnome.scm:6165
+#: gnu/packages/gnome.scm:6150
 msgid ""
 "Grilo is a framework focused on making media discovery and browsing easy\n"
 "for application developers.  This package provides plugins for common media\n"
 "discovery protocols."
 msgstr ""
 
-#: gnu/packages/gnome.scm:6277
+#: gnu/packages/gnome.scm:6262
 msgid ""
 "Totem is a simple yet featureful media player for GNOME\n"
 "which can read a large number of file formats."
@@ -6125,13 +6125,13 @@ msgstr ""
 "características para GNOME que puede leer un gran número de formatos\n"
 "de fichero."
 
-#: gnu/packages/gnome.scm:6367
+#: gnu/packages/gnome.scm:6352
 msgid ""
 "Rhythmbox is a music playing application for GNOME.  It\n"
 "supports playlists, song ratings, and any codecs installed through gstreamer."
 msgstr ""
 
-#: gnu/packages/gnome.scm:6427
+#: gnu/packages/gnome.scm:6412
 msgid ""
 "Eye of GNOME is the GNOME image viewer.  It\n"
 "supports image conversion, rotation, and slideshows."
@@ -6139,7 +6139,7 @@ msgstr ""
 "«Eye of GNOME» es el visor de imágenes de GNOME. Es posible convertir,\n"
 "rotar y mostrar en diapositivas las imágenes."
 
-#: gnu/packages/gnome.scm:6461
+#: gnu/packages/gnome.scm:6446
 msgid ""
 "This package provides plugins for the Eye of GNOME (EOG) image viewer,\n"
 "notably:\n"
@@ -6162,13 +6162,13 @@ msgstr ""
 "aleatorio cuando se muestran como diapositivas.\n"
 "@end itemize\n"
 
-#: gnu/packages/gnome.scm:6503
+#: gnu/packages/gnome.scm:6488
 msgid ""
 "This library provides GObject bindings for libudev.  It was originally\n"
 "part of udev-extras, then udev, then systemd.  It's now a project on its own."
 msgstr ""
 
-#: gnu/packages/gnome.scm:6572
+#: gnu/packages/gnome.scm:6557
 msgid ""
 "GVFS is a userspace virtual file system designed to work with the I/O\n"
 "abstraction of GIO.  It contains a GIO module that seamlessly adds GVFS support\n"
@@ -6179,7 +6179,7 @@ msgid ""
 "DAV, and others."
 msgstr ""
 
-#: gnu/packages/gnome.scm:6609
+#: gnu/packages/gnome.scm:6594
 msgid ""
 "GUsb is a GObject wrapper for libusb1 that makes it easy to do\n"
 "asynchronous control, bulk and interrupt transfers with proper cancellation\n"
@@ -6187,7 +6187,7 @@ msgid ""
 "USB transfers with your high-level application or system daemon."
 msgstr ""
 
-#: gnu/packages/gnome.scm:6649
+#: gnu/packages/gnome.scm:6634
 msgid ""
 "Document Scanner is an easy-to-use application that lets you connect your\n"
 "scanner and quickly capture images and documents in an appropriate format.  It\n"
@@ -6195,25 +6195,25 @@ msgid ""
 "almost all of them."
 msgstr ""
 
-#: gnu/packages/gnome.scm:6721
+#: gnu/packages/gnome.scm:6706
 msgid ""
 "Eolie is a new web browser for GNOME.  It features Firefox sync support,\n"
 "a secret password store, an adblocker, and a modern UI."
 msgstr ""
 
-#: gnu/packages/gnome.scm:6797
+#: gnu/packages/gnome.scm:6782
 msgid ""
 "Epiphany is a GNOME web browser targeted at non-technical users.  Its\n"
 "principles are simplicity and standards compliance."
 msgstr ""
 
-#: gnu/packages/gnome.scm:6856
+#: gnu/packages/gnome.scm:6841
 msgid ""
 "D-Feet is a D-Bus debugger, which can be used to inspect D-Bus interfaces\n"
 "of running programs and invoke methods on those interfaces."
 msgstr ""
 
-#: gnu/packages/gnome.scm:6879
+#: gnu/packages/gnome.scm:6864
 msgid ""
 "Yelp-XSL is a collection of programs and data files to help\n"
 "you build, maintain, and distribute documentation.  It provides XSLT stylesheets\n"
@@ -6223,14 +6223,14 @@ msgid ""
 "jQuery.Syntax JavaScript libraries."
 msgstr ""
 
-#: gnu/packages/gnome.scm:6924
+#: gnu/packages/gnome.scm:6909
 msgid ""
 "Yelp is the help viewer in Gnome.  It natively views Mallard, DocBook,\n"
 "man, info, and HTML documents.  It can locate documents according to the\n"
 "freedesktop.org help system specification."
 msgstr ""
 
-#: gnu/packages/gnome.scm:6954
+#: gnu/packages/gnome.scm:6939
 msgid ""
 "Yelp-tools is a collection of scripts and build utilities to help create,\n"
 "manage, and publish documentation for Yelp and the web.  Most of the heavy\n"
@@ -6238,20 +6238,20 @@ msgid ""
 "wraps things up in a developer-friendly way."
 msgstr ""
 
-#: gnu/packages/gnome.scm:6994
+#: gnu/packages/gnome.scm:6979
 msgid ""
 "Libgee is a utility library providing GObject-based interfaces and\n"
 "classes for commonly used data structures."
 msgstr ""
 
-#: gnu/packages/gnome.scm:7025
+#: gnu/packages/gnome.scm:7010
 msgid ""
 "Gexiv2 is a GObject wrapper around the Exiv2 photo metadata library.  It\n"
 "allows for GNOME applications to easily inspect and update EXIF, IPTC, and XMP\n"
 "metadata in photo and video files of various formats."
 msgstr ""
 
-#: gnu/packages/gnome.scm:7079
+#: gnu/packages/gnome.scm:7064
 msgid ""
 "Shotwell is a digital photo manager designed for the GNOME desktop\n"
 "environment.  It allows you to import photos from disk or camera, organize\n"
@@ -6259,38 +6259,38 @@ msgid ""
 "share them with others via social networking and more."
 msgstr ""
 
-#: gnu/packages/gnome.scm:7115
+#: gnu/packages/gnome.scm:7100
 msgid ""
 "File Roller is an archive manager for the GNOME desktop\n"
 "environment that allows users to view, unpack, and create compressed archives\n"
 "such as gzip tarballs."
 msgstr ""
 
-#: gnu/packages/gnome.scm:7187
+#: gnu/packages/gnome.scm:7172
 msgid ""
 "This package contains the GNOME session manager, as well as a\n"
 "configuration program to choose applications starting on login."
 msgstr ""
 
-#: gnu/packages/gnome.scm:7247
+#: gnu/packages/gnome.scm:7232
 msgid ""
 "Gjs is a javascript binding for GNOME.  It's mainly based on spidermonkey\n"
 "javascript engine and the GObject introspection framework."
 msgstr ""
 
-#: gnu/packages/gnome.scm:7341
+#: gnu/packages/gnome.scm:7326
 msgid ""
 "While aiming at simplicity and ease of use, gedit is a\n"
 "powerful general purpose text editor."
 msgstr ""
 
-#: gnu/packages/gnome.scm:7368
+#: gnu/packages/gnome.scm:7353
 msgid ""
 "Zenity is a rewrite of gdialog, the GNOME port of dialog which allows you\n"
 "to display dialog boxes from the commandline and shell scripts."
 msgstr ""
 
-#: gnu/packages/gnome.scm:7479
+#: gnu/packages/gnome.scm:7464
 msgid ""
 "Mutter is a window and compositing manager that displays and manages your\n"
 "desktop via OpenGL.  Mutter combines a sophisticated display engine using the\n"
@@ -6298,7 +6298,7 @@ msgid ""
 "window manager."
 msgstr ""
 
-#: gnu/packages/gnome.scm:7536
+#: gnu/packages/gnome.scm:7521
 msgid ""
 "GNOME Online Accounts provides interfaces so that applications and\n"
 "libraries in GNOME can access the user's online accounts.  It has providers for\n"
@@ -6306,20 +6306,20 @@ msgid ""
 "Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos."
 msgstr ""
 
-#: gnu/packages/gnome.scm:7629
+#: gnu/packages/gnome.scm:7614
 msgid ""
 "This package provides a unified backend for programs that work with\n"
 "contacts, tasks, and calendar information.  It was originally developed for\n"
 "Evolution (hence the name), but is now used by other packages as well."
 msgstr ""
 
-#: gnu/packages/gnome.scm:7695
+#: gnu/packages/gnome.scm:7680
 msgid ""
 "Caribou is an input assistive technology intended for switch and pointer\n"
 "users."
 msgstr ""
 
-#: gnu/packages/gnome.scm:7846
+#: gnu/packages/gnome.scm:7831
 msgid ""
 "NetworkManager is a system network service that manages your network\n"
 "devices and connections, attempting to keep active network connectivity when\n"
@@ -6328,60 +6328,60 @@ msgid ""
 "services."
 msgstr ""
 
-#: gnu/packages/gnome.scm:7905
+#: gnu/packages/gnome.scm:7890
 msgid ""
 "This extension of NetworkManager allows it to take care of connections\n"
 "to virtual private networks (VPNs) via OpenVPN."
 msgstr ""
 
-#: gnu/packages/gnome.scm:7958
+#: gnu/packages/gnome.scm:7943
 msgid ""
 "Support for configuring virtual private networks based on VPNC.\n"
 "Compatible with Cisco VPN concentrators configured to use IPsec."
 msgstr ""
 
-#: gnu/packages/gnome.scm:8008
+#: gnu/packages/gnome.scm:7993
 msgid ""
 "This extension of NetworkManager allows it to take care of connections\n"
 "to @acronym{VPNs, virtual private networks} via OpenConnect, an open client for\n"
 "Cisco's AnyConnect SSL VPN."
 msgstr ""
 
-#: gnu/packages/gnome.scm:8037
+#: gnu/packages/gnome.scm:8022
 msgid "Database of broadband connection configuration."
 msgstr "Configuración de BD para conexión ancha."
 
-#: gnu/packages/gnome.scm:8082
+#: gnu/packages/gnome.scm:8067
 msgid ""
 "This package contains a systray applet for NetworkManager.  It displays\n"
 "the available networks and allows users to easily switch between them."
 msgstr ""
 
-#: gnu/packages/gnome.scm:8109
+#: gnu/packages/gnome.scm:8094
 msgid ""
 "This package provides a C++ wrapper for the XML parser library\n"
 "libxml2."
 msgstr ""
 
-#: gnu/packages/gnome.scm:8314
+#: gnu/packages/gnome.scm:8299
 msgid ""
 "GNOME Display Manager is a system service that is responsible for\n"
 "providing graphical log-ins and managing local and remote displays."
 msgstr ""
 
-#: gnu/packages/gnome.scm:8341
+#: gnu/packages/gnome.scm:8326
 msgid ""
 "LibGTop is a library to get system specific data such as CPU and memory\n"
 "usage and information about running processes."
 msgstr ""
 
-#: gnu/packages/gnome.scm:8376
+#: gnu/packages/gnome.scm:8361
 msgid ""
 "This package contains tools for managing and manipulating Bluetooth\n"
 "devices using the GNOME desktop."
 msgstr ""
 
-#: gnu/packages/gnome.scm:8488
+#: gnu/packages/gnome.scm:8473
 msgid ""
 "This package contains configuration applets for the GNOME desktop,\n"
 "allowing to set accessibility configuration, desktop fonts, keyboard and mouse\n"
@@ -6389,13 +6389,13 @@ msgid ""
 "properties, screen resolution, and other GNOME parameters."
 msgstr ""
 
-#: gnu/packages/gnome.scm:8655
+#: gnu/packages/gnome.scm:8640
 msgid ""
 "GNOME Shell provides core user interface functions for the GNOME desktop,\n"
 "like switching to windows and launching applications."
 msgstr ""
 
-#: gnu/packages/gnome.scm:8698
+#: gnu/packages/gnome.scm:8683
 msgid ""
 "GTK-VNC is a project providing client side APIs for the RFB\n"
 "protocol / VNC remote desktop technology.  It is built using coroutines allowing\n"
@@ -6403,13 +6403,13 @@ msgid ""
 "core C library, and bindings for Python (PyGTK)."
 msgstr ""
 
-#: gnu/packages/gnome.scm:8728
+#: gnu/packages/gnome.scm:8713
 msgid ""
 "GNOME Autoar is a library which makes creating and extracting archives\n"
 "easy, safe, and automatic."
 msgstr ""
 
-#: gnu/packages/gnome.scm:8776
+#: gnu/packages/gnome.scm:8761
 msgid ""
 "Tracker is a search engine and triplestore for desktop, embedded and mobile.\n"
 "\n"
@@ -6432,21 +6432,21 @@ msgid ""
 "endpoint and it understands SPARQL. "
 msgstr ""
 
-#: gnu/packages/gnome.scm:8864
+#: gnu/packages/gnome.scm:8849
 msgid ""
 "Tracker is an advanced framework for first class objects with associated\n"
 "metadata and tags.  It provides a one stop solution for all metadata, tags,\n"
 "shared object databases, search tools and indexing."
 msgstr ""
 
-#: gnu/packages/gnome.scm:8928
+#: gnu/packages/gnome.scm:8913
 msgid ""
 "Nautilus (Files) is a file manager designed to fit the GNOME desktop\n"
 "design and behaviour, giving the user a simple way to navigate and manage its\n"
 "files."
 msgstr ""
 
-#: gnu/packages/gnome.scm:8962
+#: gnu/packages/gnome.scm:8947
 msgid ""
 "Baobab (Disk Usage Analyzer) is a graphical application to analyse disk\n"
 "usage in the GNOME desktop environment.  It can easily scan device volumes or\n"
@@ -6454,7 +6454,7 @@ msgid ""
 "is complete it provides a graphical representation of each selected folder."
 msgstr ""
 
-#: gnu/packages/gnome.scm:8988
+#: gnu/packages/gnome.scm:8973
 msgid ""
 "GNOME backgrounds package contains a collection of graphics files which\n"
 "can be used as backgrounds in the GNOME Desktop environment.  Additionally,\n"
@@ -6462,21 +6462,21 @@ msgid ""
 "can add your own files to the collection."
 msgstr ""
 
-#: gnu/packages/gnome.scm:9034
+#: gnu/packages/gnome.scm:9019
 msgid ""
 "GNOME Screenshot is a utility used for taking screenshots of the entire\n"
 "screen, a window or a user defined area of the screen, with optional\n"
 "beautifying border effects."
 msgstr ""
 
-#: gnu/packages/gnome.scm:9066
+#: gnu/packages/gnome.scm:9051
 msgid ""
 "Dconf-editor is a graphical tool for browsing and editing the dconf\n"
 "configuration system for GNOME.  It allows users to configure desktop\n"
 "software that do not provide their own configuration interface."
 msgstr ""
 
-#: gnu/packages/gnome.scm:9097
+#: gnu/packages/gnome.scm:9082
 msgid ""
 "Given many installed packages which might handle a given MIME type, a\n"
 "user running the GNOME desktop probably has some preferences: for example,\n"
@@ -6485,32 +6485,32 @@ msgid ""
 "associations for GNOME."
 msgstr ""
 
-#: gnu/packages/gnome.scm:9129
+#: gnu/packages/gnome.scm:9114
 msgid "GoVirt is a GObject wrapper for the oVirt REST API."
 msgstr ""
 
-#: gnu/packages/gnome.scm:9182
+#: gnu/packages/gnome.scm:9167
 msgid ""
 "GNOME Weather is a small application that allows you to\n"
 "monitor the current weather conditions for your city, or anywhere in the\n"
 "world."
 msgstr ""
 
-#: gnu/packages/gnome.scm:9289
+#: gnu/packages/gnome.scm:9274
 msgid ""
 "GNOME is the graphical desktop for GNU.  It includes a wide variety of\n"
 "applications for browsing the web, editing text and images, creating\n"
 "documents and diagrams, playing media, scanning, and much more."
 msgstr ""
 
-#: gnu/packages/gnome.scm:9338
+#: gnu/packages/gnome.scm:9323
 msgid ""
 "Byzanz is a simple desktop recording program with a\n"
 "command-line interface.  It can record part or all of an X display for a\n"
 "specified duration and save it as a GIF encoded animated image file."
 msgstr ""
 
-#: gnu/packages/gnome.scm:9398
+#: gnu/packages/gnome.scm:9383
 msgid ""
 "Authenticator is a two-factor authentication (2FA) application built for\n"
 "the GNOME desktop environment.\n"
@@ -6527,26 +6527,26 @@ msgid ""
 "@end itemize"
 msgstr ""
 
-#: gnu/packages/gnome.scm:9436
+#: gnu/packages/gnome.scm:9421
 msgid ""
 "GSound is a small library for playing system sounds.  It's designed to be\n"
 "used via GObject Introspection, and is a thin wrapper around the libcanberra C\n"
 "library."
 msgstr ""
 
-#: gnu/packages/gnome.scm:9465
+#: gnu/packages/gnome.scm:9450
 msgid ""
 "Libzapojit is a GLib-based library for accessing online service APIs of\n"
 "Microsoft SkyDrive and Hotmail, using their REST protocols."
 msgstr ""
 
-#: gnu/packages/gnome.scm:9510
+#: gnu/packages/gnome.scm:9495
 msgid ""
 "GNOME Clocks is a simple clocks application designed to fit the GNOME\n"
 "desktop.  It supports world clock, stop watch, alarms, and count down timer."
 msgstr ""
 
-#: gnu/packages/gnome.scm:9556
+#: gnu/packages/gnome.scm:9541
 msgid ""
 "GNOME Calendar is a simple calendar application designed to fit the GNOME\n"
 "desktop.  It supports multiple calendars, month, week and year view."
@@ -6554,19 +6554,19 @@ msgstr ""
 "Calendario GNOME es una pliacación simple de calendario diseñado para ajustar\n"
 "el escritorio de GNOME.  Apoya múltiples vistas de calendarios, meses, semanas y año."
 
-#: gnu/packages/gnome.scm:9610
+#: gnu/packages/gnome.scm:9595
 msgid ""
 "GNOME To Do is a simplistic personal task manager designed to perfectly\n"
 "fit the GNOME desktop."
 msgstr ""
 
-#: gnu/packages/gnome.scm:9650
+#: gnu/packages/gnome.scm:9635
 msgid ""
 "GNOME Dictionary can look for the definition or translation of a word in\n"
 "existing databases over the internet."
 msgstr ""
 
-#: gnu/packages/gnome.scm:9709
+#: gnu/packages/gnome.scm:9694
 msgid ""
 "GNOME Tweaks allows adjusting advanced configuration settings in\n"
 "GNOME 3.  This includes things like the fonts used in user interface elements,\n"
@@ -6574,13 +6574,13 @@ msgid ""
 "GNOME Shell appearance and extension, etc."
 msgstr ""
 
-#: gnu/packages/gnome.scm:9737
+#: gnu/packages/gnome.scm:9722
 msgid ""
 "GNOME Shell extensions modify and extend GNOME Shell\n"
 "functionality and behavior."
 msgstr ""
 
-#: gnu/packages/gnome.scm:9780
+#: gnu/packages/gnome.scm:9765
 msgid ""
 "Libfolks is a library that aggregates information about people\n"
 "from multiple sources (e.g., Telepathy connection managers for IM contacts,\n"
@@ -6589,19 +6589,19 @@ msgid ""
 "compiled."
 msgstr ""
 
-#: gnu/packages/gnome.scm:9822
+#: gnu/packages/gnome.scm:9807
 msgid ""
 "This library allows you to use the Facebook API from\n"
 "GLib/GObject code."
 msgstr ""
 
-#: gnu/packages/gnome.scm:9852
+#: gnu/packages/gnome.scm:9837
 msgid ""
 "Libgnomekbd is a keyboard configuration library for the GNOME desktop\n"
 "environment, which can notably display keyboard layouts."
 msgstr ""
 
-#: gnu/packages/gnome.scm:9888
+#: gnu/packages/gnome.scm:9873
 msgid ""
 "Libunique is a library for writing single instance applications.  If you\n"
 "launch a single instance application twice, the second instance will either just\n"
@@ -6611,20 +6611,20 @@ msgid ""
 "handling the startup notification side."
 msgstr ""
 
-#: gnu/packages/gnome.scm:9929
+#: gnu/packages/gnome.scm:9914
 msgid ""
 "Calculator is an application that solves mathematical equations and\n"
 "is suitable as a default application in a Desktop environment."
 msgstr ""
 
-#: gnu/packages/gnome.scm:9959
+#: gnu/packages/gnome.scm:9944
 msgid ""
 "Xpad is a sticky note that strives to be simple, fault tolerant,\n"
 "and customizable.  Xpad consists of independent pad windows, each is\n"
 "basically a text box in which notes can be written."
 msgstr ""
 
-#: gnu/packages/gnome.scm:10032
+#: gnu/packages/gnome.scm:10017
 msgid ""
 "This program allows you to browse through all the available Unicode\n"
 "characters and categories for the installed fonts, and to examine their\n"
@@ -6632,14 +6632,14 @@ msgid ""
 "only know by its Unicode name or code point."
 msgstr ""
 
-#: gnu/packages/gnome.scm:10063
+#: gnu/packages/gnome.scm:10048
 msgid ""
 "Bluefish is an editor aimed at programmers and web developers,\n"
 "with many options to write web sites, scripts and other code.\n"
 "Bluefish supports many programming and markup languages."
 msgstr ""
 
-#: gnu/packages/gnome.scm:10103
+#: gnu/packages/gnome.scm:10088
 msgid ""
 "GNOME System Monitor is a GNOME process viewer and system monitor with\n"
 "an attractive, easy-to-use interface.  It has features, such as a tree view\n"
@@ -6655,13 +6655,13 @@ msgstr ""
 "y memoria de intercambio y la capacidad de finalizar o cambiar el\n"
 "valor «nice» de procesos."
 
-#: gnu/packages/gnome.scm:10145
+#: gnu/packages/gnome.scm:10130
 msgid ""
 "This package includes a python client library for the AT-SPI D-Bus\n"
 "accessibility infrastructure."
 msgstr ""
 
-#: gnu/packages/gnome.scm:10215
+#: gnu/packages/gnome.scm:10200
 msgid ""
 "Orca is a screen reader that provides access to the graphical desktop\n"
 "via speech and refreshable braille.  Orca works with applications and toolkits\n"
@@ -6673,14 +6673,14 @@ msgstr ""
 "AT-SPI (interfaz para proveedores de servicios de tecnologías de\n"
 "asistencia)."
 
-#: gnu/packages/gnome.scm:10272
+#: gnu/packages/gnome.scm:10257
 msgid ""
 "gspell provides a flexible API to add spell-checking to a GTK+\n"
 "application.  It provides a GObject API, spell-checking to text entries and\n"
 "text views, and buttons to choose the language."
 msgstr ""
 
-#: gnu/packages/gnome.scm:10316
+#: gnu/packages/gnome.scm:10301
 msgid ""
 "GNOME Planner is a project management tool based on the Work Breakdown\n"
 "Structure (WBS).  Its goal is to enable you to easily plan projects.  Based on\n"
@@ -6692,7 +6692,7 @@ msgid ""
 "views can be printed as PDF or PostScript files, or exported to HTML."
 msgstr ""
 
-#: gnu/packages/gnome.scm:10391
+#: gnu/packages/gnome.scm:10376
 msgid ""
 "Lollypop is a music player designed to play well with GNOME desktop.\n"
 "Lollypop plays audio formats such as mp3, mp4, ogg and flac and gets information\n"
@@ -6700,7 +6700,7 @@ msgid ""
 "automatically and it can stream songs from online music services and charts."
 msgstr ""
 
-#: gnu/packages/gnome.scm:10416
+#: gnu/packages/gnome.scm:10401
 msgid ""
 "A collection of GStreamer video filters and effects to be used in\n"
 "photo-booth-like software, such as Cheese."
@@ -6708,7 +6708,7 @@ msgstr ""
 "Una colección de filtros de vídeo GStreamer y efectos para ser\n"
 "utilizados en software de captura fotográfica, como Cheese."
 
-#: gnu/packages/gnome.scm:10493
+#: gnu/packages/gnome.scm:10478
 msgid ""
 "Cheese uses your webcam to take photos and videos.  Cheese can also\n"
 "apply fancy special effects and lets you share the fun with others."
@@ -6716,14 +6716,14 @@ msgstr ""
 "Cheese utiliza su cámara web para tomar fotos y vídeos.  Cheese también\n"
 "puede aplicar efectos especiales divertidos y deja compartir con otros."
 
-#: gnu/packages/gnome.scm:10546
+#: gnu/packages/gnome.scm:10531
 msgid ""
 "Password Safe is a password manager which makes use of the KeePass v4\n"
 "format.  It integrates perfectly with the GNOME desktop and provides an easy\n"
 "and uncluttered interface for the management of password databases."
 msgstr ""
 
-#: gnu/packages/gnome.scm:10585
+#: gnu/packages/gnome.scm:10570
 msgid ""
 "Sound Juicer extracts audio from compact discs and convert it\n"
 "into audio files that a personal computer or digital audio player can play.\n"
@@ -6731,27 +6731,27 @@ msgid ""
 "mp3, Ogg Vorbis and FLAC"
 msgstr ""
 
-#: gnu/packages/gnome.scm:10641
+#: gnu/packages/gnome.scm:10626
 msgid ""
 "SoundConverter supports converting between many audio formats including\n"
 "Opus, Ogg Vorbis, FLAC and more.  It supports parallel conversion, and\n"
 "configurable file renaming. "
 msgstr ""
 
-#: gnu/packages/gnome.scm:10689
+#: gnu/packages/gnome.scm:10674
 msgid ""
 "Workrave is a program that assists in the recovery and prevention of\n"
 "repetitive strain injury (@dfn{RSI}).  The program frequently alerts you to take\n"
 "micro-pauses and rest breaks, and restricts you to your daily limit."
 msgstr ""
 
-#: gnu/packages/gnome.scm:10730
+#: gnu/packages/gnome.scm:10715
 msgid ""
 "The GHex program can view and edit files in two ways:\n"
 "hexadecimal or ASCII.  It is useful for editing binary files in general."
 msgstr ""
 
-#: gnu/packages/gnome.scm:10769
+#: gnu/packages/gnome.scm:10754
 msgid ""
 "The libdazzle library is a companion library to GObject and\n"
 "Gtk+.  It provides various features that the authors wish were in the\n"
@@ -6760,40 +6760,40 @@ msgid ""
 "generic enough to work for everyone."
 msgstr ""
 
-#: gnu/packages/gnome.scm:10840
+#: gnu/packages/gnome.scm:10825
 msgid ""
 "Evolution is a personal information management application\n"
 "that provides integrated mail, calendaring and address book\n"
 "functionality."
 msgstr ""
 
-#: gnu/packages/gnome.scm:10891
+#: gnu/packages/gnome.scm:10876
 msgid ""
 "GThumb is an image viewer, browser, organizer, editor and\n"
 "advanced image management tool"
 msgstr ""
 
-#: gnu/packages/gnome.scm:10966
+#: gnu/packages/gnome.scm:10951
 msgid ""
 "Terminator allows you to run multiple GNOME terminals in a grid and\n"
 "tabs, and it supports drag and drop re-ordering of terminals."
 msgstr ""
 
-#: gnu/packages/gnome.scm:11013
+#: gnu/packages/gnome.scm:10998
 msgid ""
 "The aim of the handy library is to help with developing user\n"
 "interfaces for mobile devices using GTK+.  It provides responsive GTK+ widgets\n"
 "for usage on small and big screens."
 msgstr ""
 
-#: gnu/packages/gnome.scm:11063
+#: gnu/packages/gnome.scm:11048
 msgid ""
 "libgit2-glib is a GLib wrapper library around the libgit2 Git\n"
 "access library.  It only implements the core plumbing functions, not really the\n"
 "higher level porcelain stuff."
 msgstr ""
 
-#: gnu/packages/gnome.scm:11128
+#: gnu/packages/gnome.scm:11113
 msgid ""
 "gitg is a graphical user interface for git.  It aims at being a small,\n"
 "fast and convenient tool to visualize the history of git repositories.\n"
@@ -6801,21 +6801,21 @@ msgid ""
 "repository and commit your work."
 msgstr ""
 
-#: gnu/packages/gnome.scm:11167
+#: gnu/packages/gnome.scm:11152
 msgid ""
 "Gamin is a file and directory monitoring system defined to be a subset\n"
 "of the FAM (File Alteration Monitor) system.  This is a service provided by a\n"
 "library which detects when a file or a directory has been modified."
 msgstr ""
 
-#: gnu/packages/gnome.scm:11203
+#: gnu/packages/gnome.scm:11188
 msgid ""
 "GNOME Mahjongg is a game based on the classic Chinese\n"
 "tile-matching game Mahjong.  It features multiple board layouts, tile themes,\n"
 "and a high score table."
 msgstr ""
 
-#: gnu/packages/gnome.scm:11241
+#: gnu/packages/gnome.scm:11226
 msgid ""
 "This package provides themes and related elements that don't\n"
 "really fit in other upstream packages.  It offers legacy support for GTK+ 2\n"
@@ -6823,19 +6823,19 @@ msgid ""
 "index files needed for Adwaita to be used outside of GNOME."
 msgstr ""
 
-#: gnu/packages/gnome.scm:11280
+#: gnu/packages/gnome.scm:11265
 msgid ""
 "Gnote is a note-taking application written for the GNOME desktop\n"
 "environment."
 msgstr ""
 
-#: gnu/packages/gnome.scm:11335
+#: gnu/packages/gnome.scm:11320
 msgid ""
 "Polari is a simple Internet Relay Chat (IRC) client that is designed to\n"
 "integrate seamlessly with the GNOME desktop."
 msgstr ""
 
-#: gnu/packages/gnome.scm:11388
+#: gnu/packages/gnome.scm:11373
 msgid ""
 "GNOME Boxes is a simple application to view, access, and\n"
 "manage remote and virtual systems.  Note that this application requires the\n"
@@ -6844,7 +6844,7 @@ msgid ""
 "these services on the Guix System."
 msgstr ""
 
-#: gnu/packages/gnome.scm:11471
+#: gnu/packages/gnome.scm:11456
 msgid ""
 "Geary collects related messages together into conversations,\n"
 "making it easy to find and follow your discussions.  Full-text and keyword\n"
@@ -6856,14 +6856,14 @@ msgid ""
 "to."
 msgstr ""
 
-#: gnu/packages/gnome.scm:11516
+#: gnu/packages/gnome.scm:11501
 msgid ""
 "gLabels is a program for creating labels and business cards.  It is\n"
 "designed to work with various laser/ink-jet peel-off label and business\n"
 "card sheets that you’ll find at most office supply stores."
 msgstr ""
 
-#: gnu/packages/gnome.scm:11558
+#: gnu/packages/gnome.scm:11543
 msgid ""
 "GNOME LaTeX is a LaTeX editor for the GNOME desktop.  It has features\n"
 "such as build tools, completion of LaTeX commands, structure navigation,\n"
@@ -6871,13 +6871,13 @@ msgid ""
 "and toolbars."
 msgstr ""
 
-#: gnu/packages/gnome.scm:11617
+#: gnu/packages/gnome.scm:11602
 msgid ""
 "Setzer is a simple yet full-featured LaTeX editor written in Python with\n"
 "GTK+.  It integrates well with the GNOME desktop environment."
 msgstr ""
 
-#: gnu/packages/gnome.scm:11673
+#: gnu/packages/gnome.scm:11658
 msgid ""
 "libratbag provides @command{ratbagd}, a DBus daemon to\n"
 "configure input devices, mainly gaming mice.  The daemon provides a generic\n"
@@ -6894,7 +6894,7 @@ msgid ""
 "  (simple-service 'ratbagd dbus-root-service-type (list libratbag))"
 msgstr ""
 
-#: gnu/packages/gnome.scm:11742
+#: gnu/packages/gnome.scm:11727
 msgid ""
 "Piper is a GTK+ application for configuring gaming mice with\n"
 "onboard configuration for key bindings via libratbag.  Piper requires\n"
@@ -6906,14 +6906,14 @@ msgid ""
 "  (simple-service 'ratbagd dbus-root-service-type (list libratbag))"
 msgstr ""
 
-#: gnu/packages/gnome.scm:11800
+#: gnu/packages/gnome.scm:11785
 msgid ""
 "Parlatype is an audio player for the GNOME desktop\n"
 "environment.  Its main purpose is the manual transcription of spoken\n"
 "audio files."
 msgstr ""
 
-#: gnu/packages/gnome.scm:11828
+#: gnu/packages/gnome.scm:11813
 msgid ""
 "Jsonrpc-GLib is a library to communicate with JSON-RPC based\n"
 "peers in either a synchronous or asynchronous fashion.  It also allows\n"
@@ -6922,14 +6922,14 @@ msgid ""
 "host to avoid parser overhead and memory-allocator fragmentation."
 msgstr ""
 
-#: gnu/packages/gnome.scm:11862
+#: gnu/packages/gnome.scm:11847
 msgid ""
 "Feedbackd provides a DBus daemon to act on events to provide\n"
 "haptic, visual and audio feedback.  It offers the libfeedbackd library and\n"
 "GObject introspection bindings."
 msgstr ""
 
-#: gnu/packages/gnome.scm:11912
+#: gnu/packages/gnome.scm:11897
 msgid ""
 "Sysprof performs detailed, accurate, and fast CPU profiling of an entire\n"
 "GNU/Linux system including the kernel and all user-space applications.  This\n"
@@ -6939,7 +6939,7 @@ msgid ""
 "libraries.  Applications do not need to be recompiled--or even restarted."
 msgstr ""
 
-#: gnu/packages/gnome.scm:11993
+#: gnu/packages/gnome.scm:11978
 msgid ""
 "Builder aims to be an integrated development\n"
 "environment (IDE) for writing GNOME-based software.  It features fuzzy search,\n"
@@ -6947,13 +6947,13 @@ msgid ""
 "integrated profiler via Sysprof, debugging support, and more."
 msgstr ""
 
-#: gnu/packages/gnome.scm:12064
+#: gnu/packages/gnome.scm:12049
 msgid ""
 "Komikku is an online/offline manga reader for GNOME,\n"
 "developed with the aim of being used with the Librem 5 phone."
 msgstr ""
 
-#: gnu/packages/gnome.scm:12142
+#: gnu/packages/gnome.scm:12127
 msgid ""
 "GNU Data Access (GDA) is an attempt to provide uniform access to\n"
 "different kinds of data sources (databases, information servers, mail spools,\n"
@@ -6961,7 +6961,7 @@ msgid ""
 "your data."
 msgstr ""
 
-#: gnu/packages/gnome.scm:12191
+#: gnu/packages/gnome.scm:12176
 msgid ""
 "gtranslator is a quite comfortable gettext po/po.gz/(g)mo files editor\n"
 "for the GNOME 3.x platform with many features.  It aims to be a very complete\n"
@@ -6969,7 +6969,7 @@ msgid ""
 "world."
 msgstr ""
 
-#: gnu/packages/gnome.scm:12257
+#: gnu/packages/gnome.scm:12242
 msgid ""
 "OCRFeeder is a complete Optical Character Recognition and\n"
 "Document Analysis and Recognition program."
@@ -7015,7 +7015,7 @@ msgstr ""
 "de accesibilidad tienen acceso completo para ver ty controlar ejecuciones de \n"
 "aplicaciones."
 
-#: gnu/packages/gtk.scm:162
+#: gnu/packages/gtk.scm:163
 msgid ""
 "Cairo is a 2D graphics library with support for multiple output devices.\n"
 "Currently supported output targets include the X Window System (via both\n"
@@ -7033,45 +7033,45 @@ msgid ""
 "affine transformation (scale, rotation, shear, etc.)."
 msgstr ""
 
-#: gnu/packages/gtk.scm:241
+#: gnu/packages/gtk.scm:233
 msgid "HarfBuzz is an OpenType text shaping engine."
 msgstr ""
 
-#: gnu/packages/gtk.scm:270
+#: gnu/packages/gtk.scm:262
 msgid ""
 "Libdatrie is an implementation of double-array structure for\n"
 "representing trie.  Trie is a kind of digital search tree."
 msgstr ""
 
-#: gnu/packages/gtk.scm:301
+#: gnu/packages/gtk.scm:293
 msgid ""
 "LibThai is a set of Thai language support routines aimed to\n"
 "ease developers’ tasks to incorporate Thai language support in their\n"
 "applications."
 msgstr ""
 
-#: gnu/packages/gtk.scm:352
+#: gnu/packages/gtk.scm:344
 msgid ""
 "Pango is the core text and font handling library used in GNOME\n"
 "applications.  It has extensive support for the different writing systems\n"
 "used throughout the world."
 msgstr ""
 
-#: gnu/packages/gtk.scm:405
+#: gnu/packages/gtk.scm:397
 msgid ""
 "Pangox was a X backend to pango.  It is now obsolete and no\n"
 "longer provided by recent pango releases.  pangox-compat provides the\n"
 "functions which were removed."
 msgstr ""
 
-#: gnu/packages/gtk.scm:442
+#: gnu/packages/gtk.scm:434
 msgid ""
 "Ganv is an interactive GTK+ widget for interactive “boxes and lines” or\n"
 "graph-like environments, e.g. modular synths or finite state machine\n"
 "diagrams."
 msgstr ""
 
-#: gnu/packages/gtk.scm:498
+#: gnu/packages/gtk.scm:490
 msgid ""
 "GtkSourceView is a portable C library that extends the standard GTK+\n"
 "framework for multiline text editing with support for configurable syntax\n"
@@ -7079,32 +7079,32 @@ msgid ""
 "printing and other features typical of a source code editor."
 msgstr ""
 
-#: gnu/packages/gtk.scm:548
+#: gnu/packages/gtk.scm:540
 msgid ""
 "GtkSourceView is a text widget that extends the standard\n"
 "GTK+ text widget GtkTextView.  It improves GtkTextView by implementing syntax\n"
 "highlighting and other features typical of a source code editor."
 msgstr ""
 
-#: gnu/packages/gtk.scm:622
+#: gnu/packages/gtk.scm:614
 msgid ""
 "GdkPixbuf is a library for image loading and manipulation developed\n"
 "in the GNOME project."
 msgstr ""
 
-#: gnu/packages/gtk.scm:731
+#: gnu/packages/gtk.scm:714
 msgid ""
 "The Assistive Technology Service Provider Interface, core components,\n"
 "is part of the GNOME accessibility project."
 msgstr ""
 
-#: gnu/packages/gtk.scm:788
+#: gnu/packages/gtk.scm:771
 msgid ""
 "The Assistive Technology Service Provider Interface\n"
 "is part of the GNOME accessibility project."
 msgstr ""
 
-#: gnu/packages/gtk.scm:855
+#: gnu/packages/gtk.scm:838
 msgid ""
 "GTK+, or the GIMP Toolkit, is a multi-platform toolkit for creating\n"
 "graphical user interfaces.  Offering a complete set of widgets, GTK+ is\n"
@@ -7112,7 +7112,7 @@ msgid ""
 "application suites."
 msgstr ""
 
-#: gnu/packages/gtk.scm:1021
+#: gnu/packages/gtk.scm:1004
 msgid ""
 "Guile-Cairo wraps the Cairo graphics library for Guile Scheme.\n"
 "Guile-Cairo is complete, wrapping almost all of the Cairo API.  It is API\n"
@@ -7122,13 +7122,13 @@ msgid ""
 "exceptions, macros, and a dynamic programming environment."
 msgstr ""
 
-#: gnu/packages/gtk.scm:1110
+#: gnu/packages/gtk.scm:1093
 msgid ""
 "Guile-RSVG wraps the RSVG library for Guile, allowing you to render SVG\n"
 "images onto Cairo surfaces."
 msgstr ""
 
-#: gnu/packages/gtk.scm:1182
+#: gnu/packages/gtk.scm:1165
 msgid ""
 "Guile-Present defines a declarative vocabulary for presentations,\n"
 "together with tools to render presentation documents as SVG or PDF.\n"
@@ -7137,31 +7137,31 @@ msgid ""
 "documents."
 msgstr ""
 
-#: gnu/packages/gtk.scm:1251
+#: gnu/packages/gtk.scm:1234
 msgid ""
 "Includes guile-clutter, guile-gnome-gstreamer,\n"
 "guile-gnome-platform (GNOME developer libraries), and guile-gtksourceview."
 msgstr ""
 
-#: gnu/packages/gtk.scm:1286
+#: gnu/packages/gtk.scm:1269
 msgid ""
 "Cairomm provides a C++ programming interface to the Cairo 2D graphics\n"
 "library."
 msgstr ""
 
-#: gnu/packages/gtk.scm:1329
+#: gnu/packages/gtk.scm:1312
 msgid ""
 "Pangomm provides a C++ programming interface to the Pango text rendering\n"
 "library."
 msgstr ""
 
-#: gnu/packages/gtk.scm:1371
+#: gnu/packages/gtk.scm:1354
 msgid ""
 "ATKmm provides a C++ programming interface to the ATK accessibility\n"
 "toolkit."
 msgstr ""
 
-#: gnu/packages/gtk.scm:1414
+#: gnu/packages/gtk.scm:1397
 msgid ""
 "gtkmm is the official C++ interface for the popular GUI library GTK+.\n"
 "Highlights include typesafe callbacks, and a comprehensive set of widgets that\n"
@@ -7170,7 +7170,7 @@ msgid ""
 "extensive documentation, including API reference and a tutorial."
 msgstr ""
 
-#: gnu/packages/gtk.scm:1464
+#: gnu/packages/gtk.scm:1447
 msgid ""
 "gtksourceviewmm is a portable C++ library that extends the standard GTK+\n"
 "framework for multiline text editing with support for configurable syntax\n"
@@ -7178,25 +7178,25 @@ msgid ""
 "printing and other features typical of a source code editor."
 msgstr ""
 
-#: gnu/packages/gtk.scm:1496
+#: gnu/packages/gtk.scm:1479
 msgid "Pycairo is a set of Python bindings for the Cairo graphics library."
 msgstr ""
 
-#: gnu/packages/gtk.scm:1583
+#: gnu/packages/gtk.scm:1566
 msgid ""
 "PyGTK allows you to write full featured GTK programs in Python.  It is\n"
 "targeted at GTK 2.x, and can be used in conjunction with gnome-python to\n"
 "write GNOME applications."
 msgstr ""
 
-#: gnu/packages/gtk.scm:1608
+#: gnu/packages/gtk.scm:1591
 msgid ""
 "Cairo provides Perl bindings for the vector graphics library\n"
 "cairo.  It supports multiple output targets, including PNG, PDF and SVG.  Cairo\n"
 "produces identical output on all those targets."
 msgstr ""
 
-#: gnu/packages/gtk.scm:1644
+#: gnu/packages/gtk.scm:1627
 msgid ""
 "Perl bindings to the 2.x series of the Gtk+ widget set.\n"
 "This module allows you to write graphical user interfaces in a Perlish and\n"
@@ -7204,7 +7204,7 @@ msgid ""
 "yet remaining very close in spirit to original API."
 msgstr ""
 
-#: gnu/packages/gtk.scm:1672
+#: gnu/packages/gtk.scm:1655
 msgid ""
 "Pango is a library for laying out and rendering text, with an\n"
 "emphasis on internationalization.  Pango can be used anywhere that text layout\n"
@@ -7221,7 +7221,7 @@ msgid ""
 "and routines to assist in editing internationalized text."
 msgstr ""
 
-#: gnu/packages/gtk.scm:1727
+#: gnu/packages/gtk.scm:1710
 msgid ""
 "Girara is a library that implements a user interface that\n"
 "focuses on simplicity and minimalism.  Currently based on GTK+, a\n"
@@ -7232,7 +7232,7 @@ msgid ""
 "information."
 msgstr ""
 
-#: gnu/packages/gtk.scm:1828
+#: gnu/packages/gtk.scm:1811
 msgid ""
 "GTK-Doc generates API documentation from comments added to C code.  It is\n"
 "typically used to document the public API of GTK+ and GNOME libraries, but it\n"
@@ -7242,60 +7242,60 @@ msgstr ""
 "Típicamente es utilizado para documentos al API pública de bibliotecas GTK+ y\n"
 "GNOME, pero puede ser además utilizado al código de aplicación documentado."
 
-#: gnu/packages/gtk.scm:1869
+#: gnu/packages/gtk.scm:1852
 msgid ""
 "This package contains the standard GTK+ 2.x theming engines including\n"
 "Clearlooks, Crux, High Contrast, Industrial, LighthouseBlue, Metal, Mist,\n"
 "Redmond95 and ThinIce."
 msgstr ""
 
-#: gnu/packages/gtk.scm:1899
+#: gnu/packages/gtk.scm:1882
 msgid ""
 "Murrine is a cairo-based GTK+ theming engine.  It is named after the\n"
 "glass artworks done by Venicians glass blowers."
 msgstr ""
 
-#: gnu/packages/gtk.scm:1928
+#: gnu/packages/gtk.scm:1911
 msgid ""
 "GtkSpell provides word-processor-style highlighting and replacement of\n"
 "misspelled words in a GtkTextView widget."
 msgstr ""
 
-#: gnu/packages/gtk.scm:1956
+#: gnu/packages/gtk.scm:1939
 msgid ""
 "ClipIt is a clipboard manager with features such as a history, search\n"
 "thereof, global hotkeys and clipboard item actions.  It was forked from\n"
 "Parcellite and adds bugfixes and features."
 msgstr ""
 
-#: gnu/packages/gtk.scm:1990
+#: gnu/packages/gtk.scm:1973
 msgid ""
 "Graphene provides graphic types and their relative API; it\n"
 "does not deal with windowing system surfaces, drawing, scene graphs, or input."
 msgstr ""
 
-#: gnu/packages/gtk.scm:2017
+#: gnu/packages/gtk.scm:2000
 msgid ""
 "GNU Spread Sheet Widget is a library for Gtk+ which provides a widget for\n"
 "viewing and manipulating 2 dimensional tabular data in a manner similar to many\n"
 "popular spread sheet programs."
 msgstr ""
 
-#: gnu/packages/gtk.scm:2047
+#: gnu/packages/gtk.scm:2030
 msgid ""
 "Volume Icon is a volume indicator and control applet for @acronym{the\n"
 "Advanced Linux Sound Architecture, ALSA}.  It sits in the system tray,\n"
 "independent of your desktop environment, and supports global key bindings."
 msgstr ""
 
-#: gnu/packages/gtk.scm:2092
+#: gnu/packages/gtk.scm:2075
 msgid ""
 "This program allows you to display GTK+ dialog boxes from command line or\n"
 "shell scripts.  Example of how to use @code{yad} can be consulted at\n"
 "@url{https://sourceforge.net/p/yad-dialog/wiki/browse_pages/}."
 msgstr ""
 
-#: gnu/packages/gtk.scm:2126
+#: gnu/packages/gtk.scm:2109
 msgid ""
 "Dragon is a lightweight drag-and-drop source for X where you can run:\n"
 "\n"
@@ -7314,14 +7314,14 @@ msgid ""
 "printed to standard output."
 msgstr ""
 
-#: gnu/packages/gtk.scm:2197
+#: gnu/packages/gtk.scm:2180
 msgid ""
 "@code{libdbusmenu} passes a menu structure across DBus so\n"
 "that a program can create a menu simply without worrying about how it is\n"
 "displayed on the other side of the bus."
 msgstr ""
 
-#: gnu/packages/gtk.scm:2226
+#: gnu/packages/gtk.scm:2209
 msgid ""
 "Layer Shell is a Wayland protocol for desktop shell\n"
 "components, such as panels, notifications and wallpapers.  It can be used to\n"
@@ -7330,13 +7330,13 @@ msgid ""
 "popovers."
 msgstr ""
 
-#: gnu/packages/gtk.scm:2274
+#: gnu/packages/gtk.scm:2257
 msgid ""
 "GooCanvas is a canvas widget for GTK+ that uses the cairo 2D\n"
 "library for drawing."
 msgstr ""
 
-#: gnu/packages/gtk.scm:2335
+#: gnu/packages/gtk.scm:2318
 msgid ""
 "GtkSheet is a matrix widget for GTK+.  It consists of an\n"
 "scrollable grid of cells where you can allocate text.  Cell contents can be\n"
@@ -7346,7 +7346,7 @@ msgid ""
 "foreground and background colors, text justification and more."
 msgstr ""
 
-#: gnu/packages/gtk.scm:2368
+#: gnu/packages/gtk.scm:2351
 msgid ""
 "GtkDatabox is a widget for live display of large amounts of\n"
 "fluctuating numerical data.  It enables data presentation (for example, on\n"
@@ -7402,27 +7402,27 @@ msgid ""
 "type system, elevating types to first-class status."
 msgstr ""
 
-#: gnu/packages/guile.scm:803
+#: gnu/packages/guile.scm:807
 msgid ""
 "This package provides Guile bindings to libgit2, a library to\n"
 "manipulate repositories of the Git version control system."
 msgstr ""
 
-#: gnu/packages/guile.scm:849
+#: gnu/packages/guile.scm:853
 msgid ""
 "This package provides Guile bindings for zlib, a lossless\n"
 "data-compression library.  The bindings are written in pure Scheme by using\n"
 "Guile's foreign function interface."
 msgstr ""
 
-#: gnu/packages/guile.scm:885
+#: gnu/packages/guile.scm:892
 msgid ""
 "This package provides Guile bindings for lzlib, a C library for\n"
 "in-memory LZMA compression and decompression.  The bindings are written in\n"
 "pure Scheme by using Guile's foreign function interface."
 msgstr ""
 
-#: gnu/packages/guile.scm:915
+#: gnu/packages/guile.scm:925
 #, fuzzy
 msgid ""
 "This package provides a GNU Guile interface to the zstd (``zstandard'')\n"
@@ -8445,21 +8445,21 @@ msgid ""
 "providing the system administrator with some help in common tasks."
 msgstr ""
 
-#: gnu/packages/linux.scm:1691
+#: gnu/packages/linux.scm:1697
 msgid ""
 "Util-linux is a diverse collection of Linux kernel\n"
 "utilities.  It provides dmesg and includes tools for working with file systems,\n"
 "block devices, UUIDs, TTYs, and many other tools."
 msgstr ""
 
-#: gnu/packages/linux.scm:1729
+#: gnu/packages/linux.scm:1735
 msgid ""
 "ddate displays the Discordian date and holidays of a given date.\n"
 "The Discordian calendar was made popular by the \"Illuminatus!\" trilogy\n"
 "by Robert Shea and Robert Anton Wilson."
 msgstr ""
 
-#: gnu/packages/linux.scm:1784
+#: gnu/packages/linux.scm:1790
 msgid ""
 "The kernel Linux's @dfn{frame buffers} provide a simple interface to\n"
 "different kinds of graphic displays.  The @command{fbset} utility can query and\n"
@@ -8467,7 +8467,7 @@ msgid ""
 "parameters."
 msgstr ""
 
-#: gnu/packages/linux.scm:1829
+#: gnu/packages/linux.scm:1835
 msgid ""
 "Procps is the package that has a bunch of small useful utilities\n"
 "that give information about processes using the Linux /proc file system.\n"
@@ -8475,27 +8475,27 @@ msgid ""
 "slabtop, tload, top, vmstat, w, watch and sysctl."
 msgstr ""
 
-#: gnu/packages/linux.scm:1885
+#: gnu/packages/linux.scm:1891
 msgid "Tools for working with USB devices, such as lsusb."
 msgstr ""
 
-#: gnu/packages/linux.scm:1963
+#: gnu/packages/linux.scm:1969
 msgid "This package provides tools for manipulating ext2/ext3/ext4 file systems."
 msgstr ""
 
-#: gnu/packages/linux.scm:2006
+#: gnu/packages/linux.scm:2012
 msgid ""
 "This package provides statically-linked e2fsck command taken\n"
 "from the e2fsprogs package.  It is meant to be used in initrds."
 msgstr ""
 
-#: gnu/packages/linux.scm:2029
+#: gnu/packages/linux.scm:2035
 msgid ""
 "Extundelete is a set of tools that can recover deleted files from an\n"
 "ext3 or ext4 partition."
 msgstr ""
 
-#: gnu/packages/linux.scm:2062
+#: gnu/packages/linux.scm:2068
 msgid ""
 "Zerofree finds the unallocated blocks with non-zero value content in an\n"
 "ext2, ext3, or ext4 file system and fills them with zeroes (or another value).\n"
@@ -8503,26 +8503,26 @@ msgid ""
 "Zerofree requires the file system to be unmounted or mounted read-only."
 msgstr ""
 
-#: gnu/packages/linux.scm:2102
+#: gnu/packages/linux.scm:2108
 msgid ""
 "strace is a system call tracer, i.e. a debugging tool which prints out a\n"
 "trace of all the system calls made by a another process/program."
 msgstr ""
 
-#: gnu/packages/linux.scm:2125
+#: gnu/packages/linux.scm:2131
 msgid ""
 "ltrace intercepts and records dynamic library calls which are called by\n"
 "an executed process and the signals received by that process.  It can also\n"
 "intercept and print the system calls executed by the program."
 msgstr ""
 
-#: gnu/packages/linux.scm:2150 gnu/packages/linux.scm:2202
+#: gnu/packages/linux.scm:2156 gnu/packages/linux.scm:2208
 msgid ""
 "The Advanced Linux Sound Architecture (ALSA) provides audio and\n"
 "MIDI functionality to the Linux-based operating system."
 msgstr ""
 
-#: gnu/packages/linux.scm:2271
+#: gnu/packages/linux.scm:2277
 msgid ""
 "The Advanced Linux Sound Architecture (ALSA) provides audio and\n"
 "MIDI functionality to the Linux-based operating system.  This package enhances ALSA\n"
@@ -8531,7 +8531,7 @@ msgid ""
 "external rate conversion."
 msgstr ""
 
-#: gnu/packages/linux.scm:2308
+#: gnu/packages/linux.scm:2314
 msgid ""
 "@command{iptables} is the user-space command line program used to\n"
 "configure the Linux 2.4.x and later IPv4 packet filtering ruleset\n"
@@ -8543,7 +8543,7 @@ msgid ""
 "Both commands are targeted at system administrators."
 msgstr ""
 
-#: gnu/packages/linux.scm:2344
+#: gnu/packages/linux.scm:2350
 msgid ""
 "This simple daemon feeds entropy from the CPU Jitter @acronym{RNG, random\n"
 "number generator} core to the kernel Linux's entropy estimator.  This prevents\n"
@@ -8565,7 +8565,7 @@ msgid ""
 "early boot when entropy may be low, especially in virtualised environments."
 msgstr ""
 
-#: gnu/packages/linux.scm:2380
+#: gnu/packages/linux.scm:2386
 msgid ""
 "@command{lsscsi} lists SCSI logical units or SCSI targets.  It can\n"
 "also list NVMe namespaces or controllers and show the relationship between a\n"
@@ -8573,7 +8573,7 @@ msgid ""
 "name."
 msgstr ""
 
-#: gnu/packages/linux.scm:2405
+#: gnu/packages/linux.scm:2411
 msgid ""
 "ebtables is an application program used to set up and maintain the\n"
 "tables of rules (inside the Linux kernel) that inspect Ethernet frames.  It is\n"
@@ -8581,7 +8581,7 @@ msgid ""
 "that the Ethernet protocol is much simpler than the IP protocol."
 msgstr ""
 
-#: gnu/packages/linux.scm:2472
+#: gnu/packages/linux.scm:2478
 msgid ""
 "Iproute2 is a collection of utilities for controlling TCP/IP networking\n"
 "and traffic with the Linux kernel.  The most important of these are\n"
@@ -8593,7 +8593,7 @@ msgid ""
 "inadequately in modern network environments, and both should be deprecated."
 msgstr ""
 
-#: gnu/packages/linux.scm:2552
+#: gnu/packages/linux.scm:2558
 msgid ""
 "This package includes the important tools for controlling the network\n"
 "subsystem of the Linux kernel.  This includes arp, ifconfig, netstat, rarp and\n"
@@ -8602,13 +8602,13 @@ msgid ""
 "configuration (iptunnel, ipmaddr)."
 msgstr ""
 
-#: gnu/packages/linux.scm:2592
+#: gnu/packages/linux.scm:2598
 msgid ""
 "Libcap2 provides a programming interface to POSIX capabilities on\n"
 "Linux-based operating systems."
 msgstr ""
 
-#: gnu/packages/linux.scm:2667
+#: gnu/packages/linux.scm:2673
 msgid ""
 "Utilities for Linux's Ethernet bridging facilities.  A bridge is a way\n"
 "to connect two Ethernet segments together in a protocol independent way.\n"
@@ -8617,7 +8617,7 @@ msgid ""
 "transparently through a bridge."
 msgstr ""
 
-#: gnu/packages/linux.scm:2718
+#: gnu/packages/linux.scm:2724
 msgid ""
 "The libnl suite is a collection of libraries providing APIs to netlink\n"
 "protocol based Linux kernel interfaces.  Netlink is an IPC mechanism primarily\n"
@@ -8626,13 +8626,13 @@ msgid ""
 "configuration and monitoring interfaces."
 msgstr ""
 
-#: gnu/packages/linux.scm:2796
+#: gnu/packages/linux.scm:2802
 msgid ""
 "iw is a new nl80211 based CLI configuration utility for wireless\n"
 "devices.  It replaces @code{iwconfig}, which is deprecated."
 msgstr ""
 
-#: gnu/packages/linux.scm:2842
+#: gnu/packages/linux.scm:2848
 msgid ""
 "PowerTOP is a Linux tool to diagnose issues with power consumption and\n"
 "power management.  In addition to being a diagnostic tool, PowerTOP also has\n"
@@ -8641,19 +8641,19 @@ msgid ""
 "settings."
 msgstr ""
 
-#: gnu/packages/linux.scm:2866
+#: gnu/packages/linux.scm:2872
 msgid ""
 "Aumix adjusts an audio mixer from X, the console, a terminal,\n"
 "the command line or a script."
 msgstr ""
 
-#: gnu/packages/linux.scm:2897
+#: gnu/packages/linux.scm:2903
 msgid ""
 "Iotop is a Python program with a top like user interface to show the\n"
 "processes currently causing I/O."
 msgstr ""
 
-#: gnu/packages/linux.scm:2954
+#: gnu/packages/linux.scm:2960
 msgid ""
 "As a consequence of its monolithic design, file system code for Linux\n"
 "normally goes into the kernel itself---which is not only a robustness issue,\n"
@@ -8663,7 +8663,7 @@ msgid ""
 "user-space processes."
 msgstr ""
 
-#: gnu/packages/linux.scm:2987
+#: gnu/packages/linux.scm:2993
 msgid ""
 "UnionFS-FUSE is a flexible union file system implementation in user\n"
 "space, using the FUSE library.  Mounting a union file system allows you to\n"
@@ -8671,7 +8671,7 @@ msgid ""
 "UnionFS-FUSE additionally supports copy-on-write."
 msgstr ""
 
-#: gnu/packages/linux.scm:3067
+#: gnu/packages/linux.scm:3073
 msgid ""
 "This is a file system client based on the SSH File Transfer Protocol.\n"
 "Since most SSH servers already support this protocol it is very easy to set\n"
@@ -8679,7 +8679,7 @@ msgid ""
 "file system is as easy as logging into the server with an SSH client."
 msgstr ""
 
-#: gnu/packages/linux.scm:3095
+#: gnu/packages/linux.scm:3101
 msgid ""
 "archivemount is a FUSE-based file system for Unix variants,\n"
 "including Linux.  Its purpose is to mount archives (i.e. tar, tar.gz, etc.) to a\n"
@@ -8688,7 +8688,7 @@ msgid ""
 "compressed, transparent to other programs, without decompressing them."
 msgstr ""
 
-#: gnu/packages/linux.scm:3126
+#: gnu/packages/linux.scm:3132
 msgid ""
 "NUMA stands for Non-Uniform Memory Access, in other words a system whose\n"
 "memory is not all in one place.  The @command{numactl} program allows you to\n"
@@ -8701,26 +8701,26 @@ msgid ""
 "NUMA performance on your system."
 msgstr ""
 
-#: gnu/packages/linux.scm:3164
+#: gnu/packages/linux.scm:3170
 msgid ""
 "Kbd-neo provides the Neo2 keyboard layout for use with\n"
 "@command{loadkeys(1)} from @code{kbd(4)}."
 msgstr ""
 
-#: gnu/packages/linux.scm:3232
+#: gnu/packages/linux.scm:3238
 msgid ""
 "This package contains keytable files and keyboard utilities compatible\n"
 "for systems using the Linux kernel.  This includes commands such as\n"
 "@code{loadkeys}, @code{setfont}, @code{kbdinfo}, and @code{chvt}."
 msgstr ""
 
-#: gnu/packages/linux.scm:3298
+#: gnu/packages/linux.scm:3304
 msgid ""
 "The inotify-tools packages provides a C library and command-line tools\n"
 "to use Linux' inotify mechanism, which allows file accesses to be monitored."
 msgstr ""
 
-#: gnu/packages/linux.scm:3347
+#: gnu/packages/linux.scm:3353
 msgid ""
 "Kmod is a set of tools to handle common tasks with Linux\n"
 "kernel modules like insert, remove, list, check properties, resolve\n"
@@ -8731,21 +8731,21 @@ msgid ""
 "from the module-init-tools project."
 msgstr ""
 
-#: gnu/packages/linux.scm:3395
+#: gnu/packages/linux.scm:3401
 msgid ""
 "Early OOM is a minimalist out of memory (OOM) daemon that\n"
 "runs in user space and provides a more responsive and configurable alternative\n"
 "to the in-kernel OOM killer."
 msgstr ""
 
-#: gnu/packages/linux.scm:3493
+#: gnu/packages/linux.scm:3499
 msgid ""
 "Udev is a daemon which dynamically creates and removes\n"
 "device nodes from /dev/, handles hotplug events and loads drivers at boot\n"
 "time."
 msgstr ""
 
-#: gnu/packages/linux.scm:3525
+#: gnu/packages/linux.scm:3531
 msgid ""
 "Python-evdev provides bindings to the generic input event interface in\n"
 "Linux.  The @code{evdev} interface serves the purpose of passing events\n"
@@ -8757,7 +8757,7 @@ msgid ""
 "devices that can inject events directly into the input subsystem."
 msgstr ""
 
-#: gnu/packages/linux.scm:3569
+#: gnu/packages/linux.scm:3575
 msgid ""
 "Interception Tools provides a composable infrastructure on top of\n"
 "@code{libudev} and @code{libevdev}.  The following utilities are provided:\n"
@@ -8770,26 +8770,26 @@ msgid ""
 "@end itemize"
 msgstr ""
 
-#: gnu/packages/linux.scm:3618
+#: gnu/packages/linux.scm:3624
 msgid ""
 "Dual Function Keys is a plugin for @code{interception-tools} that allows\n"
 "one to send arbitrary keycodes when a given key is tapped or held."
 msgstr ""
 
-#: gnu/packages/linux.scm:3696
+#: gnu/packages/linux.scm:3702
 msgid ""
 "LVM2 is the logical volume management tool set for Linux-based systems.\n"
 "This package includes the user-space libraries and tools, including the device\n"
 "mapper.  Kernel components are part of Linux-libre."
 msgstr ""
 
-#: gnu/packages/linux.scm:3764
+#: gnu/packages/linux.scm:3770
 msgid ""
 "A suite of tools for manipulating the metadata of the\n"
 "dm-thin, dm-cache and dm-era device-mapper targets."
 msgstr ""
 
-#: gnu/packages/linux.scm:3810
+#: gnu/packages/linux.scm:3816
 msgid ""
 "Wireless Tools are used to manipulate the now-deprecated\n"
 "Linux Wireless Extensions; consider using @code{iw} instead.  The Wireless\n"
@@ -8798,35 +8798,35 @@ msgid ""
 "interface."
 msgstr ""
 
-#: gnu/packages/linux.scm:3902
+#: gnu/packages/linux.scm:3908
 msgid ""
 "The Central Regulatory Domain Agent (CRDA) acts as the udev helper for\n"
 "communication between the kernel Linux and user space for regulatory\n"
 "compliance."
 msgstr ""
 
-#: gnu/packages/linux.scm:3972
+#: gnu/packages/linux.scm:3978
 msgid ""
-"This package contains the wireless regulatory database Central\n"
-"Regulatory Database Agent (CRDA) daemon.  The database contains information on\n"
+"This package contains the wireless regulatory database for the Central\n"
+"Regulatory Database Agent (CRDA).  The database contains information on\n"
 "country-specific regulations for the wireless spectrum."
 msgstr ""
 
-#: gnu/packages/linux.scm:4051
+#: gnu/packages/linux.scm:4057
 msgid ""
 "Lm-sensors is a hardware health monitoring package for Linux.  It allows\n"
 "you to access information from temperature, voltage, and fan speed sensors.\n"
 "It works with most newer systems."
 msgstr ""
 
-#: gnu/packages/linux.scm:4071
+#: gnu/packages/linux.scm:4077
 msgid ""
 "@command{iucode_tool} is a utility to work with microcode packages for\n"
 "Intel processors.  It can convert between formats, extract specific versions,\n"
 "create a firmware image suitable for the Linux kernel, and more."
 msgstr ""
 
-#: gnu/packages/linux.scm:4102
+#: gnu/packages/linux.scm:4108
 msgid ""
 "The i2c-tools package contains a heterogeneous set of I2C tools for\n"
 "Linux: a bus probing tool, a chip dumper, register-level SMBus access helpers,\n"
@@ -8834,14 +8834,14 @@ msgid ""
 "SMBus access."
 msgstr ""
 
-#: gnu/packages/linux.scm:4141
+#: gnu/packages/linux.scm:4147
 msgid ""
 "Xsensors reads data from the libsensors library regarding hardware\n"
 "health such as temperature, voltage and fan speed and displays the information\n"
 "in a digital read-out."
 msgstr ""
 
-#: gnu/packages/linux.scm:4195
+#: gnu/packages/linux.scm:4201
 msgid ""
 "perf is a tool suite for profiling using hardware performance counters,\n"
 "with support in the Linux kernel.  perf can instrument CPU performance\n"
@@ -8850,7 +8850,7 @@ msgid ""
 "particular the @code{perf} command."
 msgstr ""
 
-#: gnu/packages/linux.scm:4220
+#: gnu/packages/linux.scm:4226
 msgid ""
 "pflask is a simple tool for creating Linux namespace\n"
 "containers.  It can be used for running a command or even booting an OS inside\n"
@@ -8859,7 +8859,7 @@ msgid ""
 "thanks to the use of namespaces."
 msgstr ""
 
-#: gnu/packages/linux.scm:4305
+#: gnu/packages/linux.scm:4311
 msgid ""
 "Singularity is a container platform supporting a number of\n"
 "container image formats.  It can build SquashFS container images or import\n"
@@ -8867,7 +8867,7 @@ msgid ""
 "isolation or root privileges."
 msgstr ""
 
-#: gnu/packages/linux.scm:4338
+#: gnu/packages/linux.scm:4344
 msgid ""
 "@command{hdparm} is a command-line utility to control ATA controllers and\n"
 "disk drives.  It can increase performance and/or reliability by careful tuning\n"
@@ -8881,21 +8881,21 @@ msgid ""
 "Translation (@dfn{SAT}) are also supported."
 msgstr ""
 
-#: gnu/packages/linux.scm:4377
+#: gnu/packages/linux.scm:4383
 msgid ""
 "Nvme-cli is a utility to provide standards compliant tooling\n"
 "for NVM-Express drives.  It was made specifically for Linux as it relies on the\n"
 "IOCTLs defined by the mainline kernel driver."
 msgstr ""
 
-#: gnu/packages/linux.scm:4403
+#: gnu/packages/linux.scm:4409
 msgid ""
 "rfkill is a simple tool for accessing the rfkill device interface,\n"
 "which is used to enable and disable wireless networking devices, typically\n"
 "WLAN, Bluetooth and mobile broadband."
 msgstr ""
 
-#: gnu/packages/linux.scm:4425
+#: gnu/packages/linux.scm:4431
 msgid ""
 "@code{acpi} attempts to replicate the functionality of the\n"
 "\"old\" @code{apm} command on ACPI systems, including battery and thermal\n"
@@ -8903,7 +8903,7 @@ msgid ""
 "about ACPI devices."
 msgstr ""
 
-#: gnu/packages/linux.scm:4446
+#: gnu/packages/linux.scm:4452
 msgid ""
 "acpid is designed to notify user-space programs of Advanced\n"
 "Configuration and Power Interface (ACPI) events.  acpid should be started\n"
@@ -8912,21 +8912,21 @@ msgid ""
 "specified in /etc/acpi/events and execute the rules that match the event."
 msgstr ""
 
-#: gnu/packages/linux.scm:4470
+#: gnu/packages/linux.scm:4476
 msgid ""
 "These are a set of utilities built upon sysfs, a virtual file system in\n"
 "Linux kernel versions 2.5+ that exposes a system's device tree.  The package\n"
 "also contains the libsysfs library."
 msgstr ""
 
-#: gnu/packages/linux.scm:4523
+#: gnu/packages/linux.scm:4529
 msgid ""
 "The cpufrequtils suite contains utilities to retrieve CPU frequency\n"
 "information, and set the CPU frequency if supported, using the cpufreq\n"
 "capabilities of the Linux kernel."
 msgstr ""
 
-#: gnu/packages/linux.scm:4544
+#: gnu/packages/linux.scm:4550
 msgid ""
 "Libraw1394 is the only supported interface to the kernel side raw1394 of\n"
 "the Linux IEEE-1394 subsystem, which provides direct access to the connected\n"
@@ -8935,26 +8935,26 @@ msgid ""
 "protocol in question."
 msgstr ""
 
-#: gnu/packages/linux.scm:4570
+#: gnu/packages/linux.scm:4576
 msgid ""
 "Libavc1394 is a programming interface to the AV/C specification from\n"
 "the 1394 Trade Association.  AV/C stands for Audio/Video Control."
 msgstr ""
 
-#: gnu/packages/linux.scm:4594
+#: gnu/packages/linux.scm:4600
 msgid ""
 "The libiec61883 library provides a higher level API for streaming DV,\n"
 "MPEG-2 and audio over Linux IEEE 1394."
 msgstr ""
 
-#: gnu/packages/linux.scm:4647
+#: gnu/packages/linux.scm:4653
 msgid ""
 "mdadm is a tool for managing Linux Software RAID arrays.  It can create,\n"
 "assemble, report on, and monitor arrays.  It can also move spares between raid\n"
 "arrays when needed."
 msgstr ""
 
-#: gnu/packages/linux.scm:4781
+#: gnu/packages/linux.scm:4787
 msgid ""
 "This package provides the following binaries to drive the\n"
 "Linux Device Mapper multipathing driver:\n"
@@ -8967,66 +8967,66 @@ msgid ""
 "@end enumerate"
 msgstr ""
 
-#: gnu/packages/linux.scm:4821
+#: gnu/packages/linux.scm:4827
 msgid ""
 "This library enables userspace to use Linux kernel asynchronous I/O\n"
 "system calls, important for the performance of databases and other advanced\n"
 "applications."
 msgstr ""
 
-#: gnu/packages/linux.scm:4864
+#: gnu/packages/linux.scm:4870
 msgid ""
 "Blktrace is a block layer IO tracing mechanism which provides\n"
 "detailed information about request queue operations to user space.  It extracts\n"
 "event traces from the kernel (via the relaying through the debug file system)."
 msgstr ""
 
-#: gnu/packages/linux.scm:4889
+#: gnu/packages/linux.scm:4895
 msgid ""
 "The SBC is a digital audio encoder and decoder used to transfer data to\n"
 "Bluetooth audio output devices like headphones or loudspeakers."
 msgstr ""
 
-#: gnu/packages/linux.scm:4959
+#: gnu/packages/linux.scm:4965
 msgid ""
 "BlueZ provides support for the core Bluetooth layers and protocols.  It\n"
 "is flexible, efficient and uses a modular implementation."
 msgstr ""
 
-#: gnu/packages/linux.scm:4983
+#: gnu/packages/linux.scm:4989
 msgid ""
 "This package provides a FUSE-based file system that provides read and\n"
 "write access to exFAT devices."
 msgstr ""
 
-#: gnu/packages/linux.scm:5008
+#: gnu/packages/linux.scm:5014
 msgid ""
 "FuseISO is a FUSE module to mount ISO file system images (.iso, .nrg,\n"
 ".bin, .mdf and .img files).  It supports plain ISO9660 Level 1 and 2, Rock\n"
 "Ridge, Joliet, and zisofs."
 msgstr ""
 
-#: gnu/packages/linux.scm:5053
+#: gnu/packages/linux.scm:5059
 msgid ""
 "The GPM (general-purpose mouse) daemon is a mouse server for\n"
 "applications running on the Linux console.  It allows users to select items\n"
 "and copy/paste text in the console and in xterm."
 msgstr ""
 
-#: gnu/packages/linux.scm:5126
+#: gnu/packages/linux.scm:5132
 msgid ""
 "Btrfs is a @dfn{copy-on-write} (CoW) file system for Linux\n"
 "aimed at implementing advanced features while focusing on fault tolerance,\n"
 "repair and easy administration."
 msgstr ""
 
-#: gnu/packages/linux.scm:5160
+#: gnu/packages/linux.scm:5166
 msgid ""
 "This package provides the statically-linked @command{btrfs}\n"
 "from the btrfs-progs package.  It is meant to be used in initrds."
 msgstr ""
 
-#: gnu/packages/linux.scm:5192
+#: gnu/packages/linux.scm:5198
 msgid ""
 "Cramfs is a Linux file system designed to be simple, small,\n"
 "and to compress things well.  It is used on a number of embedded systems and\n"
@@ -9034,7 +9034,7 @@ msgid ""
 "blocks and random block placement."
 msgstr ""
 
-#: gnu/packages/linux.scm:5227
+#: gnu/packages/linux.scm:5233
 msgid ""
 "@command{compsize} takes a list of files (given as\n"
 "arguments) on a Btrfs file system and measures used compression types and\n"
@@ -9051,20 +9051,20 @@ msgid ""
 "obviously it can be shared with files outside our set)."
 msgstr ""
 
-#: gnu/packages/linux.scm:5277
+#: gnu/packages/linux.scm:5283
 msgid ""
 "F2FS, the Flash-Friendly File System, is a modern file system\n"
 "designed to be fast and durable on flash devices such as solid-state\n"
 "disks and SD cards.  This package provides the userland utilities."
 msgstr ""
 
-#: gnu/packages/linux.scm:5367
+#: gnu/packages/linux.scm:5373
 msgid ""
 "This package provides statically-linked fsck.f2fs command taken\n"
 "from the f2fs-tools package. It is meant to be used in initrds."
 msgstr ""
 
-#: gnu/packages/linux.scm:5398
+#: gnu/packages/linux.scm:5404
 msgid ""
 "Prevents shock damage to the internal spinning hard drive(s) of some\n"
 "HP and Dell laptops.  When sudden movement is detected, all input/output\n"
@@ -9074,7 +9074,7 @@ msgid ""
 "feature, and a laptop with an accelerometer.  It has no effect on SSDs."
 msgstr ""
 
-#: gnu/packages/linux.scm:5457
+#: gnu/packages/linux.scm:5463
 msgid ""
 "Thinkfan is a simple fan control program.  It reads temperatures,\n"
 "checks them against configured limits and switches to appropriate (also\n"
@@ -9083,7 +9083,7 @@ msgid ""
 "from userspace."
 msgstr ""
 
-#: gnu/packages/linux.scm:5513
+#: gnu/packages/linux.scm:5519
 msgid ""
 "Tpacpi-bat is a command-line interface to control battery charging on\n"
 "@uref{https://github.com/teleshoes/tpacpi-bat/wiki/Supported-Hardware, Lenovo\n"
@@ -9098,7 +9098,7 @@ msgid ""
 "supported."
 msgstr ""
 
-#: gnu/packages/linux.scm:5557
+#: gnu/packages/linux.scm:5563
 msgid ""
 "Tmon is a tool to interact with the complex thermal subsystem of the\n"
 "kernel Linux.  It helps visualize thermal relationships and real-time thermal\n"
@@ -9115,7 +9115,7 @@ msgid ""
 "by hand is no trivial task: @command{tmon} aims to make it understandable."
 msgstr ""
 
-#: gnu/packages/linux.scm:5599
+#: gnu/packages/linux.scm:5605
 msgid ""
 "Turbostat reports x86 processor topology, frequency, idle power state\n"
 "statistics, temperature, and power consumption.  Some information is unavailable\n"
@@ -9130,14 +9130,14 @@ msgid ""
 "invocations of itself."
 msgstr ""
 
-#: gnu/packages/linux.scm:5658
+#: gnu/packages/linux.scm:5664
 msgid ""
 "NTFS-3G provides read-write access to NTFS file systems, which are\n"
 "commonly found on Microsoft Windows.  It is implemented as a FUSE file system.\n"
 "The package provides additional NTFS tools."
 msgstr ""
 
-#: gnu/packages/linux.scm:5706
+#: gnu/packages/linux.scm:5712
 msgid ""
 "This package provides userspace components for the InfiniBand\n"
 "subsystem of the Linux kernel.  Specifically it contains userspace\n"
@@ -9157,7 +9157,7 @@ msgid ""
 "@end enumerate"
 msgstr ""
 
-#: gnu/packages/linux.scm:5760
+#: gnu/packages/linux.scm:5766
 msgid ""
 "This is a collection of tests written over uverbs intended for\n"
 "use as a performance micro-benchmark. The tests may be used for hardware or\n"
@@ -9173,20 +9173,20 @@ msgid ""
 "@end enumerate"
 msgstr ""
 
-#: gnu/packages/linux.scm:5804
+#: gnu/packages/linux.scm:5810
 msgid ""
 "Monitor a hardware random number generator, and supply entropy\n"
 "from that to the system kernel's @file{/dev/random} machinery."
 msgstr ""
 
-#: gnu/packages/linux.scm:5846
+#: gnu/packages/linux.scm:5852
 msgid ""
 "cpupower is a set of user-space tools that use the cpufreq feature of the\n"
 "Linux kernel to retrieve and control processor features related to power saving,\n"
 "such as frequency and voltage scaling."
 msgstr ""
 
-#: gnu/packages/linux.scm:5878
+#: gnu/packages/linux.scm:5884
 msgid ""
 "@command{x86_energy_perf_policy} displays and updates energy-performance\n"
 "policy settings specific to Intel Architecture Processors.  Settings are\n"
@@ -9194,7 +9194,7 @@ msgid ""
 "cpufreq sub-system is enabled or not."
 msgstr ""
 
-#: gnu/packages/linux.scm:5901
+#: gnu/packages/linux.scm:5907
 msgid ""
 "haveged generates an unpredictable stream of random numbers for use by\n"
 "Linux's @file{/dev/random} and @file{/dev/urandom} devices.  The kernel's\n"
@@ -9212,7 +9212,7 @@ msgid ""
 "not as a replacement for it."
 msgstr ""
 
-#: gnu/packages/linux.scm:5988
+#: gnu/packages/linux.scm:5994
 msgid ""
 "eCryptfs is a POSIX-compliant stacked cryptographic file system for Linux.\n"
 "Each file's cryptographic meta-data is stored inside the file itself, along\n"
@@ -9222,7 +9222,7 @@ msgid ""
 "2.6.19.  This package contains the userland utilities to manage it."
 msgstr ""
 
-#: gnu/packages/linux.scm:6020
+#: gnu/packages/linux.scm:6026
 msgid ""
 "Libnfsidmap is a library holding mulitiple methods of\n"
 "mapping names to ids and visa versa, mainly for NFSv4.  It provides an\n"
@@ -9230,13 +9230,13 @@ msgid ""
 "the default @code{nsswitch} and the experimental @code{umich_ldap}."
 msgstr ""
 
-#: gnu/packages/linux.scm:6056
+#: gnu/packages/linux.scm:6062
 msgid ""
 "Tools for loading and managing Linux kernel modules, such as\n"
 "@code{modprobe}, @code{insmod}, @code{lsmod}, and more."
 msgstr ""
 
-#: gnu/packages/linux.scm:6096
+#: gnu/packages/linux.scm:6102
 msgid ""
 "The mcelog daemon logs memory, I/O, CPU, and other hardware errors on x86\n"
 "systems running the kernel Linux.  It can also perform user-defined tasks, such\n"
@@ -9244,13 +9244,13 @@ msgid ""
 "exceeded."
 msgstr ""
 
-#: gnu/packages/linux.scm:6128
+#: gnu/packages/linux.scm:6134
 msgid ""
 "This package provides utilities for testing, partitioning, etc\n"
 "of flash storage."
 msgstr ""
 
-#: gnu/packages/linux.scm:6162
+#: gnu/packages/linux.scm:6168
 msgid ""
 "The libseccomp library provides an easy to use, platform\n"
 "independent, interface to the Linux Kernel's syscall filtering mechanism.  The\n"
@@ -9260,7 +9260,7 @@ msgid ""
 "developers."
 msgstr ""
 
-#: gnu/packages/linux.scm:6209
+#: gnu/packages/linux.scm:6215
 msgid ""
 "RadeonTop monitors resource consumption on supported AMD\n"
 "Radeon Graphics Processing Units (GPUs), either in real time as bar graphs on\n"
@@ -9270,13 +9270,13 @@ msgid ""
 "under OpenGL graphics workloads."
 msgstr ""
 
-#: gnu/packages/linux.scm:6246
+#: gnu/packages/linux.scm:6252
 msgid ""
 "This package provides a library and a command line\n"
 "interface to the variable facility of UEFI boot firmware."
 msgstr ""
 
-#: gnu/packages/linux.scm:6284
+#: gnu/packages/linux.scm:6290
 msgid ""
 "@code{efibootmgr} is a user-space application to modify the Intel\n"
 "Extensible Firmware Interface (EFI) Boot Manager.  This application can\n"
@@ -9284,7 +9284,7 @@ msgid ""
 "running boot option, and more."
 msgstr ""
 
-#: gnu/packages/linux.scm:6321
+#: gnu/packages/linux.scm:6327
 msgid ""
 "The sysstat utilities are a collection of performance\n"
 "monitoring tools for Linux.  These include @code{mpstat}, @code{iostat},\n"
@@ -9292,7 +9292,7 @@ msgid ""
 "@code{sadf} and @code{sa}."
 msgstr ""
 
-#: gnu/packages/linux.scm:6362
+#: gnu/packages/linux.scm:6368
 msgid ""
 "Light is a program to send commands to screen backlight controllers\n"
 "under GNU/Linux.  Features include:\n"
@@ -9306,7 +9306,7 @@ msgid ""
 "@end itemize\n"
 msgstr ""
 
-#: gnu/packages/linux.scm:6402
+#: gnu/packages/linux.scm:6408
 msgid ""
 "This program allows you read and control device brightness.  Devices\n"
 "include backlight and LEDs.  It can also preserve current brightness before\n"
@@ -9316,7 +9316,7 @@ msgid ""
 "interface in sysfs, which can be accomplished with the included udev rules."
 msgstr ""
 
-#: gnu/packages/linux.scm:6526
+#: gnu/packages/linux.scm:6532
 msgid ""
 "TLP is a power management tool for Linux.  It comes with\n"
 "a default configuration already optimized for battery life.  Nevertheless,\n"
@@ -9324,7 +9324,7 @@ msgid ""
 "every time the power supply source is changed."
 msgstr ""
 
-#: gnu/packages/linux.scm:6554
+#: gnu/packages/linux.scm:6560
 msgid ""
 "@command{lshw} (Hardware Lister) is a small tool to provide\n"
 "detailed information on the hardware configuration of the machine.\n"
@@ -9334,7 +9334,7 @@ msgid ""
 "machines (PowerMac G4 is known to work)."
 msgstr ""
 
-#: gnu/packages/linux.scm:6578
+#: gnu/packages/linux.scm:6584
 msgid ""
 "Libmnl is a minimalistic user-space library oriented to\n"
 "Netlink developers.  There are a lot of common tasks in parsing, validating,\n"
@@ -9343,7 +9343,7 @@ msgid ""
 "re-use code and to avoid re-inventing the wheel."
 msgstr ""
 
-#: gnu/packages/linux.scm:6603
+#: gnu/packages/linux.scm:6609
 msgid ""
 "Libnftnl is a userspace library providing a low-level netlink\n"
 "programming interface to the in-kernel nf_tables subsystem.  The library\n"
@@ -9351,7 +9351,7 @@ msgid ""
 "used by nftables."
 msgstr ""
 
-#: gnu/packages/linux.scm:6634
+#: gnu/packages/linux.scm:6640
 msgid ""
 "nftables is the project that aims to replace the existing\n"
 "{ip,ip6,arp,eb}tables framework.  Basically, this project provides a new packet\n"
@@ -9361,7 +9361,7 @@ msgid ""
 "userspace queueing component and the logging subsystem."
 msgstr ""
 
-#: gnu/packages/linux.scm:6744
+#: gnu/packages/linux.scm:6750
 msgid ""
 "PRoot is a user-space implementation of @code{chroot}, @code{mount --bind},\n"
 "and @code{binfmt_misc}.  This means that users don't need any privileges or\n"
@@ -9374,7 +9374,7 @@ msgid ""
 "available in the kernel Linux."
 msgstr ""
 
-#: gnu/packages/linux.scm:6808
+#: gnu/packages/linux.scm:6814
 msgid ""
 "cpuid dumps detailed information about the CPU(s) gathered\n"
 "from the CPUID instruction, and also determines the exact model of CPU(s).  It\n"
@@ -9382,14 +9382,14 @@ msgid ""
 "NexGen, Rise, and SiS CPUs."
 msgstr ""
 
-#: gnu/packages/linux.scm:6837
+#: gnu/packages/linux.scm:6843
 msgid ""
 "jmtpfs uses FUSE (file system in userspace) to provide access\n"
 "to data over the Media Transfer Protocol (MTP).  Unprivileged users can mount\n"
 "the MTP device as a file system."
 msgstr ""
 
-#: gnu/packages/linux.scm:6868
+#: gnu/packages/linux.scm:6874
 msgid ""
 "Procenv is a command-line tool that displays as much detail about\n"
 "itself and its environment as possible.  It can be used as a test\n"
@@ -9397,7 +9397,7 @@ msgid ""
 "comparing system environments."
 msgstr ""
 
-#: gnu/packages/linux.scm:6897
+#: gnu/packages/linux.scm:6903
 msgid ""
 "OpenFabrics Interfaces (OFI) is a framework focused on exporting fabric\n"
 "communication services to applications.  OFI is best described as a collection\n"
@@ -9411,7 +9411,7 @@ msgid ""
 "libraries, which are often integrated directly into libfabric."
 msgstr ""
 
-#: gnu/packages/linux.scm:6954
+#: gnu/packages/linux.scm:6960
 msgid ""
 "The PSM Messaging API, or PSM API, is Intel's low-level user-level\n"
 "communications interface for the True Scale family of products.  PSM users are\n"
@@ -9419,14 +9419,14 @@ msgid ""
 "interfaces in parallel environments."
 msgstr ""
 
-#: gnu/packages/linux.scm:6997
+#: gnu/packages/linux.scm:7003
 msgid ""
 "snapscreenshot saves a screenshot of one or more Linux text consoles as a\n"
 "Targa (@dfn{.tga}) image.  It can be used by anyone with read access to the\n"
 "relevant @file{/dev/vcs*} file(s)."
 msgstr ""
 
-#: gnu/packages/linux.scm:7053
+#: gnu/packages/linux.scm:7059
 msgid ""
 "fbcat saves the contents of the Linux framebuffer (@file{/dev/fb*}), or\n"
 "a dump therof.  It supports a wide range of drivers and pixel formats.\n"
@@ -9438,14 +9438,14 @@ msgid ""
 "emulates the behaviour of Gunnar Monell's older fbgrab utility."
 msgstr ""
 
-#: gnu/packages/linux.scm:7085
+#: gnu/packages/linux.scm:7091
 msgid ""
 "Control groups is Linux kernel method for process resource\n"
 "restriction, permission handling and more.  This package provides userspace\n"
 "interface to this kernel feature."
 msgstr ""
 
-#: gnu/packages/linux.scm:7120
+#: gnu/packages/linux.scm:7126
 msgid ""
 "mbpfan is a fan control daemon for Apple Macbooks.  It uses input from\n"
 "the @code{coretemp} module and sets the fan speed using the @code{applesmc}\n"
@@ -9453,7 +9453,7 @@ msgid ""
 "privileges."
 msgstr ""
 
-#: gnu/packages/linux.scm:7165
+#: gnu/packages/linux.scm:7171
 msgid ""
 "This package is low-level user-level Intel's communications interface.\n"
 "The PSM2 API is a high-performance vendor-specific protocol that provides a\n"
@@ -9461,7 +9461,7 @@ msgid ""
 "high-speed networking devices."
 msgstr ""
 
-#: gnu/packages/linux.scm:7207
+#: gnu/packages/linux.scm:7213
 msgid ""
 "This package provides a library called libpfm4, which is used to develop\n"
 "monitoring tools exploiting the performance monitoring events such as those\n"
@@ -9476,7 +9476,7 @@ msgid ""
 "introduced in Linux 2.6.31."
 msgstr ""
 
-#: gnu/packages/linux.scm:7237
+#: gnu/packages/linux.scm:7243
 msgid ""
 "@code{libnfnetlink} is the low-level library for netfilter related\n"
 "kernel/userspace communication.  It provides a generic messaging\n"
@@ -9485,7 +9485,7 @@ msgid ""
 "management tools in userspace."
 msgstr ""
 
-#: gnu/packages/linux.scm:7265
+#: gnu/packages/linux.scm:7271
 msgid ""
 "The netlink package provides a simple netlink library for\n"
 "Go.  Netlink is the interface a user-space program in Linux uses to\n"
@@ -9493,7 +9493,7 @@ msgid ""
 "IP addresses and routes, and configure IPsec."
 msgstr ""
 
-#: gnu/packages/linux.scm:7289
+#: gnu/packages/linux.scm:7295
 msgid ""
 "The inih (INI Not Invented Here) library is a simple .INI file\n"
 "parser written in C.  It's only a couple of pages of code, and it was designed to\n"
@@ -9502,13 +9502,13 @@ msgid ""
 "822-style multi-line syntax and name: value entries."
 msgstr ""
 
-#: gnu/packages/linux.scm:7336
+#: gnu/packages/linux.scm:7342
 msgid ""
 "This package provides commands to create and check XFS\n"
 "file systems."
 msgstr ""
 
-#: gnu/packages/linux.scm:7375
+#: gnu/packages/linux.scm:7381
 msgid ""
 "This package provides a program to generate an ext2\n"
 "file system as a normal (non-root) user.  It does not require you to mount\n"
@@ -9516,7 +9516,7 @@ msgid ""
 "the superuser to make device nodes."
 msgstr ""
 
-#: gnu/packages/linux.scm:7461
+#: gnu/packages/linux.scm:7467
 msgid ""
 "@command{fakeroot} runs a command in an environment where\n"
 "it appears to have root privileges for file manipulation. This is useful\n"
@@ -9527,7 +9527,7 @@ msgid ""
 "have to construct the archives directly, without using the archiver."
 msgstr ""
 
-#: gnu/packages/linux.scm:7491
+#: gnu/packages/linux.scm:7497
 msgid ""
 "@command{fakechroot} runs a command in an environment were is additional\n"
 "possibility to use @code{chroot} command without root privileges.  This is\n"
@@ -9538,13 +9538,13 @@ msgid ""
 "set as @code{LD_PRELOAD} to override the C library file system functions."
 msgstr ""
 
-#: gnu/packages/linux.scm:7539
+#: gnu/packages/linux.scm:7545
 msgid ""
 "inputattach dispatches input events from several device\n"
 "types and interfaces and translates so that the X server can use them."
 msgstr ""
 
-#: gnu/packages/linux.scm:7574
+#: gnu/packages/linux.scm:7580
 msgid ""
 "PipeWire is a project that aims to greatly improve handling of audio and\n"
 "video under Linux.  It aims to support the usecases currently handled by both\n"
@@ -9556,7 +9556,7 @@ msgid ""
 "of Linux application development."
 msgstr ""
 
-#: gnu/packages/linux.scm:7648
+#: gnu/packages/linux.scm:7654
 msgid ""
 "The Embedded Linux* Library (ELL) provides core, low-level\n"
 "functionality for system daemons.  It typically has no dependencies other than\n"
@@ -9565,7 +9565,7 @@ msgid ""
 "platforms, it is not limited to resource-constrained systems."
 msgstr ""
 
-#: gnu/packages/linux.scm:7674
+#: gnu/packages/linux.scm:7680
 msgid ""
 "The user space tracing library, liblttng-ust, is the LTTng\n"
 "user space tracer.  It receives commands from a session daemon, for example to\n"
@@ -9573,7 +9573,7 @@ msgid ""
 "to ring buffers shared with a consumer daemon."
 msgstr ""
 
-#: gnu/packages/linux.scm:7697
+#: gnu/packages/linux.scm:7703
 msgid ""
 "This package provides the @code{kexec} program and ancillary\n"
 "utilities.  Using @code{kexec}, it is possible to boot directly into a new\n"
@@ -9581,7 +9581,7 @@ msgid ""
 "system boot process."
 msgstr ""
 
-#: gnu/packages/linux.scm:7730
+#: gnu/packages/linux.scm:7736
 msgid ""
 "@code{cachefilesd} is a userspace daemon that manages the\n"
 "cache data store that is used by network file systems such as @code{AFS} and\n"
@@ -9589,14 +9589,14 @@ msgid ""
 "persistent over reboots."
 msgstr ""
 
-#: gnu/packages/linux.scm:7775
+#: gnu/packages/linux.scm:7781
 msgid ""
 "Libbpf supports building BPF CO-RE-enabled applications, which, in\n"
 "contrast to BCC, do not require the Clang/LLVM runtime or linux kernel\n"
 "headers."
 msgstr ""
 
-#: gnu/packages/linux.scm:7855
+#: gnu/packages/linux.scm:7861
 msgid ""
 "BCC is a toolkit for creating efficient kernel tracing and manipulation\n"
 "programs, and includes several useful tools and examples.  It makes use of\n"
@@ -9605,7 +9605,7 @@ msgid ""
 "and above."
 msgstr ""
 
-#: gnu/packages/linux.scm:7896
+#: gnu/packages/linux.scm:7902
 msgid ""
 "bpftrace is a high-level tracing language for Linux enhanced Berkeley\n"
 "Packet Filter (eBPF) available in recent Linux kernels (4.x).  bpftrace uses\n"
@@ -9617,14 +9617,14 @@ msgid ""
 "created by Alastair Robertson."
 msgstr ""
 
-#: gnu/packages/linux.scm:7928
+#: gnu/packages/linux.scm:7934
 msgid ""
 "This package provides a Linux kernel module that will\n"
 "provide a serial device @code{/dev/ttyebus} with almost no latency upon\n"
 "receiving.  It is dedicated to the PL011 UART of the Raspberry Pi."
 msgstr ""
 
-#: gnu/packages/linux.scm:7953
+#: gnu/packages/linux.scm:7959
 msgid ""
 "IP sets are a framework inside the Linux 2.4.x and 2.6.x kernel which\n"
 "can be administered by the ipset utility.  Depending on the type,\n"
@@ -9645,7 +9645,7 @@ msgid ""
 "then IP sets may be the proper tool for you."
 msgstr ""
 
-#: gnu/packages/linux.scm:8000
+#: gnu/packages/linux.scm:8006
 msgid ""
 "This is the io_uring library, liburing. liburing provides\n"
 "helpers to setup and teardown io_uring instances, and also a simplified\n"
@@ -9653,7 +9653,7 @@ msgid ""
 "kernel side implementation."
 msgstr ""
 
-#: gnu/packages/linux.scm:8030
+#: gnu/packages/linux.scm:8036
 msgid ""
 "EROFS (Enhanced Read-Only File System) is a compressed,\n"
 "read-only file system optimized for resource-scarce devices.  This package\n"
@@ -15404,14 +15404,14 @@ msgid ""
 "Shell (pdksh)."
 msgstr ""
 
-#: gnu/packages/shells.scm:861
+#: gnu/packages/shells.scm:862
 msgid ""
 "Oil is a programming language with automatic translation for\n"
 "Bash.  It includes osh, a Unix/POSIX shell that runs unmodified Bash\n"
 "scripts."
 msgstr ""
 
-#: gnu/packages/shells.scm:898
+#: gnu/packages/shells.scm:899
 msgid ""
 "Gash is a POSIX-compatible shell written in Guile\n"
 "Scheme.  It provides both the shell interface, as well as a Guile\n"
@@ -15419,7 +15419,7 @@ msgid ""
 "as part of the Guix bootstrap process."
 msgstr ""
 
-#: gnu/packages/shells.scm:932
+#: gnu/packages/shells.scm:933
 msgid ""
 "Gash-Utils provides Scheme implementations of many\n"
 "common POSIX utilities (there are about 40 of them, ranging in\n"
@@ -15429,7 +15429,7 @@ msgid ""
 "files and text."
 msgstr ""
 
-#: gnu/packages/shells.scm:1011
+#: gnu/packages/shells.scm:1012
 msgid ""
 "Nu draws inspiration from projects like PowerShell, functional\n"
 "programming languages, and modern CLI tools.  Rather than thinking of files\n"
@@ -15440,156 +15440,156 @@ msgid ""
 "of commands called a ``pipeline''."
 msgstr ""
 
-#: gnu/packages/shells.scm:1040
+#: gnu/packages/shells.scm:1041
 #, fuzzy
 msgid ""
 "This package is a library for ANSI terminal colors and styles (bold,\n"
 "underline)."
 msgstr "Este paquete proporciona un diccionario para el comprobador ortográfico GNU Aspell."
 
-#: gnu/packages/shells.scm:1165 gnu/packages/shells.scm:1288
-#: gnu/packages/shells.scm:1334
+#: gnu/packages/shells.scm:1166 gnu/packages/shells.scm:1289
+#: gnu/packages/shells.scm:1335
 msgid "CLI for nushell"
 msgstr ""
 
-#: gnu/packages/shells.scm:1394
+#: gnu/packages/shells.scm:1395
 #, fuzzy
 msgid "Core commands for nushell"
 msgstr "Extensiones para GNOME Shell"
 
-#: gnu/packages/shells.scm:1428
+#: gnu/packages/shells.scm:1429
 msgid "Core error subsystem for Nushell"
 msgstr ""
 
-#: gnu/packages/shells.scm:1454
+#: gnu/packages/shells.scm:1455
 #, fuzzy
 msgid "This package is a fork of @code{serde-hjson}."
 msgstr "Este módulo proporciona un interfaz Perlish para Amazon S3."
 
-#: gnu/packages/shells.scm:1494
+#: gnu/packages/shells.scm:1495
 #, fuzzy
 msgid "Nushell parser"
 msgstr "Clase interpretada HTML en Perl"
 
-#: gnu/packages/shells.scm:1526
+#: gnu/packages/shells.scm:1527
 msgid "Nushell Plugin"
 msgstr ""
 
-#: gnu/packages/shells.scm:1557
+#: gnu/packages/shells.scm:1558
 #, fuzzy
 msgid "This package provides a binary viewer plugin for Nushell."
 msgstr "Este paquete proporciona un diccionario para el comprobador ortográfico GNU Aspell."
 
-#: gnu/packages/shells.scm:1587
+#: gnu/packages/shells.scm:1588
 #, fuzzy
 msgid "This package provides a plugin to display charts in Nushell."
 msgstr "El shell interactivo amigable"
 
-#: gnu/packages/shells.scm:1616
+#: gnu/packages/shells.scm:1617
 #, fuzzy
 msgid "This package provides a URL fetch plugin for Nushell."
 msgstr "Este paquete proporciona un diccionario para el comprobador ortográfico GNU Aspell."
 
-#: gnu/packages/shells.scm:1645 gnu/packages/shells.scm:1676
-#: gnu/packages/shells.scm:1962 gnu/packages/shells.scm:1993
+#: gnu/packages/shells.scm:1646 gnu/packages/shells.scm:1677
+#: gnu/packages/shells.scm:1963 gnu/packages/shells.scm:1994
 #, fuzzy
 msgid ""
 "This package provides a converter plugin to the bson format for\n"
 "Nushell."
 msgstr "Este paquete proporciona un diccionario para el comprobador ortográfico GNU Aspell."
 
-#: gnu/packages/shells.scm:1706
+#: gnu/packages/shells.scm:1707
 #, fuzzy
 msgid ""
 "This package provides a version incrementer plugin for\n"
 "Nushell."
 msgstr "Este paquete proporciona un diccionario para el comprobador ortográfico GNU Aspell."
 
-#: gnu/packages/shells.scm:1733
+#: gnu/packages/shells.scm:1734
 #, fuzzy
 msgid "This package provides a regex match plugin for Nushell."
 msgstr "Este paquete proporciona un diccionario para el comprobador ortográfico GNU Aspell."
 
-#: gnu/packages/shells.scm:1763
+#: gnu/packages/shells.scm:1764
 #, fuzzy
 msgid "This package is an HTTP POST plugin for Nushell."
 msgstr "Este paquete proporciona un diccionario para el comprobador ortográfico GNU Aspell."
 
-#: gnu/packages/shells.scm:1792
+#: gnu/packages/shells.scm:1793
 #, fuzzy
 msgid "This package provides a process list plugin for Nushell."
 msgstr "Este paquete proporciona un diccionario para el comprobador ortográfico GNU Aspell."
 
-#: gnu/packages/shells.scm:1818
+#: gnu/packages/shells.scm:1819
 #, fuzzy
 msgid "This package is an S3 plugin for Nushell."
 msgstr "El shell interactivo amigable"
 
-#: gnu/packages/shells.scm:1844
+#: gnu/packages/shells.scm:1845
 #, fuzzy
 msgid "This package provides web scraping using CSS selector."
 msgstr "Este paquete proporciona un diccionario para el comprobador ortográfico GNU Aspell."
 
-#: gnu/packages/shells.scm:1874
+#: gnu/packages/shells.scm:1875
 #, fuzzy
 msgid ""
 "This package provides a plugin to open files/URLs directly from\n"
 "Nushell."
 msgstr "Este paquete proporciona un diccionario para el comprobador ortográfico GNU Aspell."
 
-#: gnu/packages/shells.scm:1904
+#: gnu/packages/shells.scm:1905
 #, fuzzy
 msgid "This package provides a system info plugin for Nushell."
 msgstr ""
 "Este paquete proporciona un diccionario para la biblioteca de\n"
 "comprobación ortográfica Hunspell."
 
-#: gnu/packages/shells.scm:1933
+#: gnu/packages/shells.scm:1934
 #, fuzzy
 msgid ""
 "This package provides a text viewer plugin for\n"
 "Nushell."
 msgstr "Este paquete proporciona un diccionario para el comprobador ortográfico GNU Aspell."
 
-#: gnu/packages/shells.scm:2020
+#: gnu/packages/shells.scm:2021
 #, fuzzy
 msgid ""
 "This package provides a tree viewer plugin for\n"
 "Nushell."
 msgstr "Este paquete proporciona un diccionario para el comprobador ortográfico GNU Aspell."
 
-#: gnu/packages/shells.scm:2049
+#: gnu/packages/shells.scm:2050
 msgid "Traverses XML"
 msgstr ""
 
-#: gnu/packages/shells.scm:2086
+#: gnu/packages/shells.scm:2087
 msgid "Core values and protocols for Nushell"
 msgstr ""
 
-#: gnu/packages/shells.scm:2112
+#: gnu/packages/shells.scm:2113
 #, fuzzy
 msgid ""
 "This package provides a source string characterizer for\n"
 "Nushell."
 msgstr "El shell interactivo amigable"
 
-#: gnu/packages/shells.scm:2137
+#: gnu/packages/shells.scm:2138
 #, fuzzy
 msgid "This package provides Nushell stream."
 msgstr "Este módulo proporciona un interfaz Perlish para Amazon S3."
 
-#: gnu/packages/shells.scm:2160
+#: gnu/packages/shells.scm:2161
 msgid "Nushell table printing"
 msgstr ""
 
-#: gnu/packages/shells.scm:2193
+#: gnu/packages/shells.scm:2194
 #, fuzzy
 msgid ""
 "This package provides support for writing Nushell\n"
 "tests."
 msgstr "Este paquete proporciona un diccionario para el comprobador ortográfico GNU Aspell."
 
-#: gnu/packages/shells.scm:2222
+#: gnu/packages/shells.scm:2223
 #, fuzzy
 msgid ""
 "This package provides @code{Extension} traits for values in\n"
@@ -17997,6 +17997,34 @@ msgid ""
 "@code{libertine} option that substitutes Libertine italic and Greek\n"
 "letters for the existing math italic and Greek glyphs, making a\n"
 "mathematics package that matches Libertine text quite well."
+msgstr ""
+
+#: gnu/packages/tex.scm:8028
+msgid ""
+"@code{xcharter} repackages Bitstream Charter with an\n"
+"extended set of features.  The extension provides small caps, oldstyle\n"
+"figures and superior figures in all four styles, accompanied by LaTeX\n"
+"font support files.  The fonts themselves are provided in both Adobe\n"
+"Type 1 and OTF formats, with supporting files as necessary."
+msgstr ""
+
+#: gnu/packages/tex.scm:8052
+msgid ""
+"The legacy @emph{texnansi} (TeX and ANSI) encoding\n"
+"is known in the LaTeX scheme of things as @emph{LY1} encoding.  The\n"
+"@code{ly1} bundle includes metrics and LaTeX macros to use the three\n"
+"basic Adobe Type 1 fonts (Times, Helvetica and Courier) in LaTeX using\n"
+"LY1 encoding."
+msgstr ""
+
+#: gnu/packages/tex.scm:8082
+msgid ""
+"The @code{kastrup} package provides the\n"
+"@emph{binhex.tex} file.  This file provides expandable macros for both\n"
+"fixed-width and minimum-width numbers to bases 2, 4, 8 and 16.  All\n"
+"constructs TeX accepts as arguments to its @code{\\number} primitive\n"
+"are valid as arguments for the macros.  The package may be used under\n"
+"LaTeX and plain TeX."
 msgstr ""
 
 #: gnu/packages/texinfo.scm:92

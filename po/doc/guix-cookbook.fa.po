@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: guix manual checkout\n"
 "Report-Msgid-Bugs-To: bug-guix@gnu.org\n"
 "POT-Creation-Date: 2021-01-25 00:00+0100\n"
-"PO-Revision-Date: 2021-02-19 10:40+0000\n"
+"PO-Revision-Date: 2021-05-03 02:58+0000\n"
 "Last-Translator: Soheil Khanalipur <soheil@disroot.org>\n"
 "Language-Team: Persian <https://translate.fedoraproject.org/projects/guix/documentation-cookbook/fa/>\n"
 "Language: fa\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.4.2\n"
+"X-Generator: Weblate 4.6.1\n"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:7
@@ -154,7 +154,7 @@ msgstr ""
 #. type: menuentry
 #: guix-git/doc/guix-cookbook.texi:74
 msgid "Thanks!"
-msgstr "سپاس"
+msgstr "سِپاس!"
 
 #. type: appendix
 #: guix-git/doc/guix-cookbook.texi:74 guix-git/doc/guix-cookbook.texi:2941

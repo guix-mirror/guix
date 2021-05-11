@@ -3,20 +3,21 @@
 # This file is distributed under the same license as the GNU guix package.
 # Tobias Geerinckx-Rice <fedora@tobias.gr>, 2021.
 # Maxime Devos <maximedevos@telenet.be>, 2021.
+# Geert Warrink <geert.warrink@onsnet.nu>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: GNU guix\n"
 "Report-Msgid-Bugs-To: bug-guix@gnu.org\n"
-"POT-Creation-Date: 2021-04-13 01:18+0200\n"
-"PO-Revision-Date: 2021-04-18 00:40+0000\n"
-"Last-Translator: Tobias Geerinckx-Rice <fedora@tobias.gr>\n"
+"POT-Creation-Date: 2021-05-10 22:57+0200\n"
+"PO-Revision-Date: 2021-05-09 18:02+0000\n"
+"Last-Translator: Maxime Devos <maximedevos@telenet.be>\n"
 "Language-Team: Dutch <https://translate.fedoraproject.org/projects/guix/guix/nl/>\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.5.3\n"
+"X-Generator: Weblate 4.6.2\n"
 
 #: gnu.scm:81
 #, scheme-format
@@ -32,7 +33,8 @@ msgid ""
 msgstr ""
 "Je kan @command{guix package --show=foo | grep location} gebruiken om\n"
 "de locatie van het pakket @code{foo} terug te vinden.\n"
-"Als je de lijn @code{location: gnu/packages/bar.scm:174:2} als uitkomst krijgt, voeg dan @code{bar} toe aan de @code{use-package-modules} uitdrukking."
+"Als je de lijn @code{location: gnu/packages/bar.scm:174:2} als uitkomst krijgt,\n"
+"voeg dan @code{bar} toe aan de @code{use-package-modules} uitdrukking."
 
 #: gnu.scm:107
 #, scheme-format
@@ -60,7 +62,7 @@ msgstr "Probeer @code{(use-service-modules ~a)} toe te voegen."
 #: gnu/packages.scm:96
 #, scheme-format
 msgid "~a: patch not found"
-msgstr "~a: patch niet gevonden"
+msgstr "~a: pleister niet gevonden"
 
 #: gnu/packages.scm:480 gnu/packages.scm:521
 #, scheme-format
@@ -147,7 +149,7 @@ msgstr ""
 #: gnu/services.scm:760
 #, scheme-format
 msgid "duplicate '~a' entry for /etc"
-msgstr "‘~a’ meermaals opgegeven voor /etc"
+msgstr "‘~a’ meermaals gegeven voor /etc"
 
 #: gnu/services.scm:788
 msgid "Populate the @file{/etc} directory."
@@ -187,7 +189,7 @@ msgid ""
 "will not be reclaimed by the garbage collector."
 msgstr ""
 "Registreer een afvalophalerwortel — d.w.z., depotobjecten\n"
-"die niet opgeruimd zullen worden door de afvalverzamelaar."
+"die niet opgeruimd zullen worden door de afvalophaler."
 
 #: gnu/services.scm:908
 #, scheme-format
@@ -204,41 +206,41 @@ msgstr "meer dan één dienst van type ‘~a’ als doelwit"
 msgid "service of type '~a' not found"
 msgstr "geen dienst van type ‘~a’ gevonden"
 
-#: gnu/system.scm:351
+#: gnu/system.scm:352
 #, scheme-format
 msgid "unrecognized uuid ~a at '~a'~%"
 msgstr "UUID ~a in ‘~a’ niet herkend~%"
 
-#: gnu/system.scm:433
+#: gnu/system.scm:434
 #, scheme-format
 msgid "unrecognized crypto-devices ~S at '~a'~%"
 msgstr "crypto-devices ~S in ‘~a’ niet herkend~%"
 
-#: gnu/system.scm:450
+#: gnu/system.scm:451
 #, scheme-format
 msgid "unrecognized boot parameters at '~a'~%"
 msgstr "opstartparameters in ‘~a’ niet herkend~%"
 
-#: gnu/system.scm:563
+#: gnu/system.scm:564
 #, scheme-format
 msgid "mapped-device '~a' may not be mounted by the bootloader.~%"
 msgstr "mapped-device ‘~a’ mogelijk niet aangekoppeld door de bootloader.~%"
 
-#: gnu/system.scm:1023
+#: gnu/system.scm:1025
 #, scheme-format
 msgid "using a string for file '~a' is deprecated; use 'plain-file' instead~%"
 msgstr "een tekenreeks voor bestand ‘~a’ gebruiken is verouderd; gebruik nu ‘plain-file’~%"
 
-#: gnu/system.scm:1039
+#: gnu/system.scm:1041
 #, scheme-format
 msgid "using a monadic value for '~a' is deprecated; use 'plain-file' instead~%"
 msgstr "een monadische waarde voor ‘~a’ gebruiken is verouderd; gebruik nu ‘plain-file’~%"
 
-#: gnu/system.scm:1167
+#: gnu/system.scm:1169
 msgid "missing root file system"
 msgstr "de wortel van het bestandssysteem ontbreekt"
 
-#: gnu/system.scm:1243
+#: gnu/system.scm:1245
 #, scheme-format
 msgid "~a: invalid locale name"
 msgstr "~a: benoemt geen geldig taalgebied"
@@ -271,10 +273,11 @@ msgid ""
 "seconds after @code{SIGTERM} has been sent are terminated with\n"
 "@code{SIGKILL}."
 msgstr ""
-"De @code{user-processes} dienst is verantwoordelijk voor\n"
-"het beëindigen van alle processen, zodanig dat de wortel van het bestandssysteem kan heraangekoppeld worden in alleen-lezenmodus, net voordat het systeem heropgestart of gestopt wordt. Processen die nog steeds aan het draaien zijn een aantal seconden nadat het\n"
-"@code{SIGTERM} signaal verzonden is, worden beëindigd met\n"
-"@code{SIGKILL}."
+"De @code{user-processes} service is verantwoordelijk voor het beëindigen van alle\n"
+"processen, zodanig dat het rootbestandssysteem opnieuw kan worden aangekoppeld\n"
+"in alleen-lezenmodus, net voordat het systeem opnieuw opgestart of gestopt wordt. Processen\n"
+"die nog steeds aan het draaien zijn een aantal seconden nadat het @code{SIGTERM} signaal\n"
+"verzonden is, worden beëindigd met @code{SIGKILL}."
 
 #: gnu/system/mapped-devices.scm:134
 msgid "Map a device node using Linux's device mapper."
@@ -413,7 +416,7 @@ msgstr "Druk op <F1> voor installatieparameters."
 #: gnu/installer/newt.scm:65
 #, scheme-format
 msgid "The installer has encountered an unexpected problem. The backtrace is displayed below. Please report it by email to <~a>."
-msgstr "Tijdens de installatie trad een onverwachte fout op. Hieronder zijn de stappen (“backtrace”) die daartoe hebben geleid. Gelieve dit via e-mail te melden aan <~a>."
+msgstr "Tijdens de installatie trad een onverwachte fout op. Hieronder zijn de stappen (‘backtrace’) die daartoe hebben geleid. Gelieve dit via e-mail te melden aan <~a>."
 
 #: gnu/installer/newt.scm:68
 msgid "Unexpected problem"
@@ -440,10 +443,10 @@ msgstr "Bedrade verbinding"
 #: gnu/installer/newt/network.scm:84 gnu/installer/newt/page.scm:309
 #: gnu/installer/newt/page.scm:673 gnu/installer/newt/page.scm:758
 #: gnu/installer/newt/partition.scm:56 gnu/installer/newt/partition.scm:91
-#: gnu/installer/newt/partition.scm:123 gnu/installer/newt/partition.scm:134
-#: gnu/installer/newt/partition.scm:631 gnu/installer/newt/partition.scm:652
-#: gnu/installer/newt/partition.scm:698 gnu/installer/newt/partition.scm:749
-#: gnu/installer/newt/partition.scm:760 gnu/installer/newt/services.scm:88
+#: gnu/installer/newt/partition.scm:126 gnu/installer/newt/partition.scm:137
+#: gnu/installer/newt/partition.scm:634 gnu/installer/newt/partition.scm:655
+#: gnu/installer/newt/partition.scm:701 gnu/installer/newt/partition.scm:752
+#: gnu/installer/newt/partition.scm:763 gnu/installer/newt/services.scm:88
 #: gnu/installer/newt/timezone.scm:63 gnu/installer/newt/user.scm:204
 #: gnu/installer/newt/wifi.scm:206
 msgid "Exit"
@@ -509,7 +512,7 @@ msgstr "Installatieparameters"
 
 #: gnu/installer/newt/parameters.scm:55 gnu/installer/newt/keymap.scm:74
 #: gnu/installer/newt/locale.scm:63 gnu/installer/newt/locale.scm:78
-#: gnu/installer/newt/locale.scm:94 gnu/installer/newt/partition.scm:588
+#: gnu/installer/newt/locale.scm:94 gnu/installer/newt/partition.scm:591
 #: gnu/installer/newt/timezone.scm:64
 msgid "Back"
 msgstr "Terug"
@@ -585,9 +588,7 @@ msgstr "Geen variant"
 
 #: gnu/installer/newt/menu.scm:35
 msgid "Choose where you want to resume the install.  You can also abort the installation by pressing the Abort button."
-msgstr ""
-"Kies vanwaar je de installatie wilt hervatten.  Je kunt ook de installatie stopzetten door\n"
-"op de stopknop te drukken."
+msgstr "Kies vanwaar je de installatie wilt hervatten.  Je kunt ook de installatie stopzetten door op de stopknop te drukken."
 
 #: gnu/installer/newt/menu.scm:37
 msgid "Installation menu"
@@ -648,9 +649,9 @@ msgid "Show"
 msgstr "Toon"
 
 #: gnu/installer/newt/page.scm:225 gnu/installer/newt/page.scm:672
-#: gnu/installer/newt/page.scm:757 gnu/installer/newt/partition.scm:451
-#: gnu/installer/newt/partition.scm:630 gnu/installer/newt/partition.scm:651
-#: gnu/installer/newt/partition.scm:690 gnu/installer/newt/user.scm:66
+#: gnu/installer/newt/page.scm:757 gnu/installer/newt/partition.scm:454
+#: gnu/installer/newt/partition.scm:633 gnu/installer/newt/partition.scm:654
+#: gnu/installer/newt/partition.scm:693 gnu/installer/newt/user.scm:66
 #: gnu/installer/newt/user.scm:203
 msgid "OK"
 msgstr "OK"
@@ -710,164 +711,164 @@ msgstr "Kies een opslagapparaat."
 msgid "Disk"
 msgstr "Opslagapparaat"
 
-#: gnu/installer/newt/partition.scm:99
+#: gnu/installer/newt/partition.scm:102
 msgid "Select a new partition table type. Be careful, all data on the disk will be lost."
 msgstr "Kies een nieuwe partitietabeltype. Wees voorzichting; alle oude gegevens op de schijf zal verloren gaan."
 
-#: gnu/installer/newt/partition.scm:101
+#: gnu/installer/newt/partition.scm:104
 msgid "Partition table"
 msgstr "Partitietabel"
 
-#: gnu/installer/newt/partition.scm:118
+#: gnu/installer/newt/partition.scm:121
 msgid "Please select a partition type."
 msgstr "Kies een partitietype."
 
-#: gnu/installer/newt/partition.scm:119
+#: gnu/installer/newt/partition.scm:122
 msgid "Partition type"
 msgstr "Partitietype"
 
-#: gnu/installer/newt/partition.scm:129
+#: gnu/installer/newt/partition.scm:132
 msgid "Please select the file-system type for this partition."
 msgstr "Kies een bestandssysteemtype voor deze partitie."
 
-#: gnu/installer/newt/partition.scm:130
+#: gnu/installer/newt/partition.scm:133
 msgid "File-system type"
 msgstr "Bestandssysteemtype"
 
-#: gnu/installer/newt/partition.scm:143
+#: gnu/installer/newt/partition.scm:146
 msgid "Primary partitions count exceeded."
 msgstr "Het maximaal aantal primaire partities is overschreden."
 
-#: gnu/installer/newt/partition.scm:144 gnu/installer/newt/partition.scm:149
-#: gnu/installer/newt/partition.scm:154
+#: gnu/installer/newt/partition.scm:147 gnu/installer/newt/partition.scm:152
+#: gnu/installer/newt/partition.scm:157
 msgid "Creation error"
 msgstr "Aanmaakfout"
 
-#: gnu/installer/newt/partition.scm:148
+#: gnu/installer/newt/partition.scm:151
 msgid "Extended partition creation error."
 msgstr "Fout bij aanmaak van uitgebreide partitie"
 
-#: gnu/installer/newt/partition.scm:153
+#: gnu/installer/newt/partition.scm:156
 msgid "Logical partition creation error."
-msgstr "Fout bij het aanmaken van een logische partitie"
+msgstr "Fout bij het aanmaken van een logische partitie."
 
-#: gnu/installer/newt/partition.scm:167
+#: gnu/installer/newt/partition.scm:170
 #, scheme-format
 msgid "Please enter the password for the encryption of partition ~a (label: ~a)."
 msgstr "Voer het wachtwoord voor de versleuteling van partitie ~a (label: ~a) in."
 
-#: gnu/installer/newt/partition.scm:169 gnu/installer/newt/wifi.scm:92
+#: gnu/installer/newt/partition.scm:172 gnu/installer/newt/wifi.scm:92
 msgid "Password required"
 msgstr "Wachtwoord is vereist"
 
-#: gnu/installer/newt/partition.scm:174
+#: gnu/installer/newt/partition.scm:177
 #, scheme-format
 msgid "Please confirm the password for the encryption of partition ~a (label: ~a)."
 msgstr "Bevestig het wachtwoord voor de versleuteling van de partitie ~a (label: ~a)."
 
-#: gnu/installer/newt/partition.scm:176 gnu/installer/newt/user.scm:160
+#: gnu/installer/newt/partition.scm:179 gnu/installer/newt/user.scm:160
 msgid "Password confirmation required"
 msgstr "Het wachtwoord moet bevestigd worden."
 
-#: gnu/installer/newt/partition.scm:188 gnu/installer/newt/user.scm:168
+#: gnu/installer/newt/partition.scm:191 gnu/installer/newt/user.scm:168
 msgid "Password mismatch, please try again."
 msgstr "De wachtwoorden komen niet overeen. Probeer eens opnieuw."
 
-#: gnu/installer/newt/partition.scm:189 gnu/installer/newt/user.scm:169
+#: gnu/installer/newt/partition.scm:192 gnu/installer/newt/user.scm:169
 msgid "Password error"
 msgstr "Wachtwoordfout"
 
-#: gnu/installer/newt/partition.scm:275
+#: gnu/installer/newt/partition.scm:278
 msgid "Please enter the partition gpt name."
 msgstr "Voer de naam van de gpt-partitie in."
 
-#: gnu/installer/newt/partition.scm:276
+#: gnu/installer/newt/partition.scm:279
 msgid "Partition name"
 msgstr "Naam van de partitie"
 
-#: gnu/installer/newt/partition.scm:306
+#: gnu/installer/newt/partition.scm:309
 msgid "Please enter the encrypted label"
-msgstr "Voer het label van de versluitelde schijf in."
+msgstr "Voer het label van de versleutelde schijf in"
 
-#: gnu/installer/newt/partition.scm:307
+#: gnu/installer/newt/partition.scm:310
 msgid "Encryption label"
 msgstr "Versleutellabel"
 
-#: gnu/installer/newt/partition.scm:324
+#: gnu/installer/newt/partition.scm:327
 #, scheme-format
 msgid "Please enter the size of the partition. The maximum size is ~a."
 msgstr "Kies de grootte van de partitie in. De maximumgrootte is ~a."
 
-#: gnu/installer/newt/partition.scm:326
+#: gnu/installer/newt/partition.scm:329
 msgid "Partition size"
 msgstr "Partitiegrootte"
 
-#: gnu/installer/newt/partition.scm:344
+#: gnu/installer/newt/partition.scm:347
 msgid "The percentage can not be superior to 100."
 msgstr "Het percentage mag 100% niet overschrijden."
 
-#: gnu/installer/newt/partition.scm:345 gnu/installer/newt/partition.scm:350
-#: gnu/installer/newt/partition.scm:355
+#: gnu/installer/newt/partition.scm:348 gnu/installer/newt/partition.scm:353
+#: gnu/installer/newt/partition.scm:358
 msgid "Size error"
 msgstr "Fout in grootte"
 
-#: gnu/installer/newt/partition.scm:349
+#: gnu/installer/newt/partition.scm:352
 msgid "The requested size is incorrectly formatted, or too large."
 msgstr "De ingegeven grootte is niet in het juiste formaat of te groot."
 
-#: gnu/installer/newt/partition.scm:354
+#: gnu/installer/newt/partition.scm:357
 msgid "The request size is superior to the maximum size."
 msgstr "De ingegeven grootte is groter dan de maximumgrootte."
 
-#: gnu/installer/newt/partition.scm:374
+#: gnu/installer/newt/partition.scm:377
 msgid "Please enter the desired mounting point for this partition. Leave this field empty if you don't want to set a mounting point."
 msgstr "Voer het gewenste aankoppelpunt voor deze partitie in. Laat dit veld leeg als je deze partitie niet wilt aankoppelen."
 
-#: gnu/installer/newt/partition.scm:376
+#: gnu/installer/newt/partition.scm:379
 msgid "Mounting point"
 msgstr "Aankoppelpunt"
 
-#: gnu/installer/newt/partition.scm:440
+#: gnu/installer/newt/partition.scm:443
 #, scheme-format
 msgid "Creating ~a partition starting at ~a of ~a."
-msgstr "Een ~a-partitie wordt aangemaakt beginnend op ~a van ~a."
+msgstr "Een ~a-partitie wordt aangemaakt op ~a van het begin van ~a."
 
-#: gnu/installer/newt/partition.scm:442
+#: gnu/installer/newt/partition.scm:445
 #, scheme-format
 msgid "You are currently editing partition ~a."
 msgstr "Je bent nu de partitie ~a aan het bewerken."
 
-#: gnu/installer/newt/partition.scm:445
+#: gnu/installer/newt/partition.scm:448
 msgid "Partition creation"
 msgstr "Aanmaak van partities"
 
-#: gnu/installer/newt/partition.scm:446
+#: gnu/installer/newt/partition.scm:449
 msgid "Partition edit"
 msgstr "Partitiebewerking"
 
-#: gnu/installer/newt/partition.scm:627
+#: gnu/installer/newt/partition.scm:630
 #, scheme-format
 msgid "Are you sure you want to delete everything on disk ~a?"
 msgstr "Weet je zeker dat je alles op de schijf ~a wilt wissen?"
 
-#: gnu/installer/newt/partition.scm:629
+#: gnu/installer/newt/partition.scm:632
 msgid "Delete disk"
 msgstr "Opslagapparaat verwijderen"
 
-#: gnu/installer/newt/partition.scm:643
+#: gnu/installer/newt/partition.scm:646
 msgid "You cannot delete a free space area."
 msgstr "Je kan geen lege ruimte verwijderen."
 
-#: gnu/installer/newt/partition.scm:644 gnu/installer/newt/partition.scm:650
+#: gnu/installer/newt/partition.scm:647 gnu/installer/newt/partition.scm:653
 msgid "Delete partition"
 msgstr "Verwijder partitie"
 
-#: gnu/installer/newt/partition.scm:648
+#: gnu/installer/newt/partition.scm:651
 #, scheme-format
 msgid "Are you sure you want to delete partition ~a?"
 msgstr "Weet je zeker dat je de partitie ~a wilt verwijderen?"
 
-#: gnu/installer/newt/partition.scm:665
+#: gnu/installer/newt/partition.scm:668
 msgid ""
 "You can change a disk's partition table by selecting it and pressing ENTER. You can also edit a partition by selecting it and pressing ENTER, or remove it by pressing DELETE. To create a new partition, select a free space area and press ENTER.\n"
 "\n"
@@ -877,44 +878,44 @@ msgstr ""
 "\n"
 "Er moet ten minste één partitie bestaan met als aankoppelpunt '/'."
 
-#: gnu/installer/newt/partition.scm:671
+#: gnu/installer/newt/partition.scm:674
 #, scheme-format
 msgid "This is the proposed partitioning. It is still possible to edit it or to go back to install menu by pressing the Exit button.~%~%"
 msgstr "Dit is de voorgestelde partitionering. Het is nog steeds mogelijk de schijven anders te partitioneren of terug te keren naar het installatiemenu door op de verlaatknop te drukken.~%~%"
 
-#: gnu/installer/newt/partition.scm:681
+#: gnu/installer/newt/partition.scm:684
 msgid "Guided partitioning"
 msgstr "Geassisteerde configuratie van partities"
 
-#: gnu/installer/newt/partition.scm:682
+#: gnu/installer/newt/partition.scm:685
 msgid "Manual partitioning"
 msgstr "Handmatig verdelen in partities"
 
-#: gnu/installer/newt/partition.scm:707
+#: gnu/installer/newt/partition.scm:710
 msgid "No root mount point found."
 msgstr "Er werd geen wortelaankoppelpunt gevonden."
 
-#: gnu/installer/newt/partition.scm:708
+#: gnu/installer/newt/partition.scm:711
 msgid "Missing mount point"
 msgstr "Aankoppelpunt ontbreekt"
 
-#: gnu/installer/newt/partition.scm:739
+#: gnu/installer/newt/partition.scm:742
 msgid "Guided - using the entire disk"
 msgstr "Geassisteerd – gebruik de volledige schijf"
 
-#: gnu/installer/newt/partition.scm:740
+#: gnu/installer/newt/partition.scm:743
 msgid "Guided - using the entire disk with encryption"
 msgstr "Geassisteerd – gebruik de volledige schijf met versleuteling"
 
-#: gnu/installer/newt/partition.scm:741
+#: gnu/installer/newt/partition.scm:744
 msgid "Manual"
 msgstr "Handmatig"
 
-#: gnu/installer/newt/partition.scm:743
+#: gnu/installer/newt/partition.scm:746
 msgid "Please select a partitioning method."
 msgstr "Kies een partitiemethode."
 
-#: gnu/installer/newt/partition.scm:744
+#: gnu/installer/newt/partition.scm:747
 msgid "Partitioning method"
 msgstr "Partitiemethode"
 
@@ -1100,60 +1101,60 @@ msgstr "Geen WiFi gedetecteerd"
 msgid "Wifi"
 msgstr "WiFi"
 
-#: gnu/installer/parted.scm:402 gnu/installer/parted.scm:439
+#: gnu/installer/parted.scm:399 gnu/installer/parted.scm:436
 msgid "Free space"
 msgstr "Vrije ruimte"
 
-#: gnu/installer/parted.scm:528
+#: gnu/installer/parted.scm:525
 #, scheme-format
 msgid "Name: ~a"
 msgstr "Naam: ~a"
 
-#: gnu/installer/parted.scm:529 gnu/installer/parted.scm:575
+#: gnu/installer/parted.scm:526 gnu/installer/parted.scm:572
 msgid "None"
 msgstr "Geen"
 
-#: gnu/installer/parted.scm:534
+#: gnu/installer/parted.scm:531
 #, scheme-format
 msgid "Type: ~a"
 msgstr "Type: ~a"
 
-#: gnu/installer/parted.scm:538
+#: gnu/installer/parted.scm:535
 #, scheme-format
 msgid "File system type: ~a"
 msgstr "Bestandssysteemtype: ~a"
 
-#: gnu/installer/parted.scm:544
+#: gnu/installer/parted.scm:541
 #, scheme-format
 msgid "Bootable flag: ~:[off~;on~]"
 msgstr "Opstartbaarheidsvlagje: ~:[uit~;aan~]"
 
-#: gnu/installer/parted.scm:548
+#: gnu/installer/parted.scm:545
 #, scheme-format
 msgid "ESP flag: ~:[off~;on~]"
 msgstr "ESP-vlagje: ~:[uit~;aan~]"
 
-#: gnu/installer/parted.scm:554
+#: gnu/installer/parted.scm:551
 #, scheme-format
 msgid "Size: ~a"
 msgstr "Grootte: ~a"
 
-#: gnu/installer/parted.scm:560
+#: gnu/installer/parted.scm:557
 #, scheme-format
 msgid "Encryption: ~:[No~a~;Yes (label '~a')~]"
 msgstr "Versleuteling: ~:[Uit~a~;Aan (etiket '~a')~]"
 
-#: gnu/installer/parted.scm:566
+#: gnu/installer/parted.scm:563
 #, scheme-format
 msgid "Format the partition? ~:[No~;Yes~]"
 msgstr "Partitie formatteren? ~:[Nee~;Ja~]"
 
-#: gnu/installer/parted.scm:572
+#: gnu/installer/parted.scm:569
 #, scheme-format
 msgid "Mount point: ~a"
 msgstr "Aankoppelpunt: ~a"
 
-#: gnu/installer/parted.scm:1395
+#: gnu/installer/parted.scm:1388
 #, scheme-format
 msgid "Device ~a is still in use."
 msgstr "Apparaat ~a is nog in gebruik."
@@ -1182,6 +1183,17 @@ msgstr "Connman - beheerder voor netwerkverbindingen"
 msgid "DHCP client (dynamic IP address assignment)"
 msgstr "DHCP-cliënt (dynamische toekenning van IP-adressen)"
 
+#. TRANSLATORS: This is a comment within a Scheme file.  Each line must
+#. start with ";; " (two semicolons and a space).  Please keep line
+#. length below 60 characters.
+#: gnu/installer/steps.scm:252
+msgid ""
+";; This is an operating system configuration generated\n"
+";; by the graphical installer.\n"
+msgstr ""
+";; Dit is een besturingssysteemconfiguratie aangemaakt\n"
+";; door het grafisch installatieprogramma.\n"
+
 #: gnu/installer/timezone.scm:110
 #, scheme-format
 msgid "Unable to locate path: ~a."
@@ -1195,7 +1207,7 @@ msgstr "Druk op de entertoets om verder te gaan.~%"
 #: gnu/installer/utils.scm:108
 #, scheme-format
 msgid "Command failed with exit code ~a.~%"
-msgstr "Opdracht is mislukt met afsluitcode ~a.~%."
+msgstr "Opdracht mislukt met afsluitcode ~a.~%"
 
 #: gnu/machine/ssh.scm:114
 #, scheme-format
@@ -1266,7 +1278,7 @@ msgstr "Ongeraffineerd bouwsysteem met directe toegang tot het depot"
 
 #: gnu/packages/bootstrap.scm:484
 msgid "Pre-built Guile for bootstrapping purposes."
-msgstr "Voorgebouwde Guile voor ontkiemingsdoeleinden"
+msgstr "Voorgebouwde Guile voor ontkiemingsdoeleinden."
 
 #: guix/build/utils.scm:715
 #, scheme-format
@@ -1307,9 +1319,8 @@ msgstr "ongeldig argument: ~a~%"
 #: guix/scripts/import/crate.scm:80 guix/scripts/import/gem.scm:78
 #: guix/scripts/import/gnu.scm:86 guix/scripts/import/go.scm:89
 #: guix/scripts/import/hackage.scm:110 guix/scripts/import/json.scm:79
-#: guix/scripts/import/nix.scm:71 guix/scripts/import/opam.scm:81
-#: guix/scripts/import/pypi.scm:77 guix/scripts/import/stackage.scm:94
-#: guix/scripts/import/texlive.scm:78
+#: guix/scripts/import/opam.scm:81 guix/scripts/import/pypi.scm:77
+#: guix/scripts/import/stackage.scm:94 guix/scripts/import/texlive.scm:78
 #, scheme-format
 msgid "~A: unrecognized option~%"
 msgstr "~A: optie is niet herkend~%"
@@ -1364,7 +1375,7 @@ msgstr "heb het bouwlogboek ‘~a’ niet vinden: ~%"
 #: guix/scripts/build.scm:139
 #, scheme-format
 msgid "failed to create GC root `~a': ~a~%"
-msgstr "kon geen afvalverzamelaarwortel ‘~a’ aanmaken: ~a~%"
+msgstr "kon geen wortel ‘~a’ aanmaken voor de afvalophaler: ~a~%"
 
 #: guix/scripts/build.scm:154 guix/scripts/search.scm:42
 #: guix/scripts/show.scm:41 guix/scripts/lint.scm:112 guix/scripts/edit.scm:48
@@ -1459,7 +1470,7 @@ msgid ""
 "      --timeout=SECONDS  mark the build as failed after SECONDS of activity"
 msgstr ""
 "\n"
-"      --timeout=SECONDEN  markeer the build als mislukt na SECONDEN zonder activiteit"
+"      --timeout=SECONDEN markeer the build als mislukt na SECONDEN zonder activiteit"
 
 #: guix/scripts/build.scm:178
 msgid ""
@@ -1491,7 +1502,7 @@ msgid ""
 "      --debug=LEVEL      produce debugging output at LEVEL"
 msgstr ""
 "\n"
-"      --debug=NIVEAU      produceer foutopsporingsinformatie op NIVEAU"
+"      --debug=LEVEL     produce debugging output at LEVEL"
 
 #: guix/scripts/build.scm:201
 msgid "'--keep-failed' ignored since you are talking to a remote daemon\n"
@@ -1530,7 +1541,7 @@ msgid ""
 "                         FILE evaluates to"
 msgstr ""
 "\n"
-"  -f, --file=BESTAND        bouw het pakket of de distillatie waar de uitkomst\n"
+"  -f, --file=BESTAND     bouw het pakket of de distillatie waar de uitkomst\n"
 " van de code in BESTAND naar verwijst"
 
 #: guix/scripts/build.scm:347
@@ -1540,7 +1551,7 @@ msgid ""
 "                         evaluates to"
 msgstr ""
 "\n"
-"  -m, --manifest=BESTAND    bouw de pakketten in de paklijst bepaald door\n"
+"  -m, --manifest=BESTAND bouw de pakketten in de paklijst bepaald door\n"
 " de code in BESTAND"
 
 #: guix/scripts/build.scm:350 guix/scripts/archive.scm:93
@@ -1569,7 +1580,7 @@ msgid ""
 "  -s, --system=SYSTEM    attempt to build for SYSTEM--e.g., \"i686-linux\""
 msgstr ""
 "\n"
-"  -s, --system=SYSTEEM    probeer te bouwen voor SYSTEEM, bv. \"i686-linux\""
+"  -s, --system=SYSTEEM   probeer te bouwen voor SYSTEEM, bv. \"i686-linux\""
 
 #: guix/scripts/build.scm:357 guix/scripts/system.scm:1015
 #: guix/scripts/pack.scm:1088 guix/scripts/archive.scm:97
@@ -1578,7 +1589,7 @@ msgid ""
 "      --target=TRIPLET   cross-build for TRIPLET--e.g., \"armel-linux-gnu\""
 msgstr ""
 "\n"
-"      --target=DRIELING   kruisbouw naar DRIELING, bv. ‘armel-linux-gnu’"
+"      --target=DRIELING  kruisbouw naar DRIELING, bv. ‘armel-linux-gnu’"
 
 #: guix/scripts/build.scm:359
 msgid ""
@@ -1613,7 +1624,7 @@ msgid ""
 msgstr ""
 "\n"
 "  -r, --root=FILE        laat FILE een symbolische verwijzing naar het eindresultaat zijn\n"
-"                         en registreer het als een afvalverzamelaarwortel"
+"                         en leg het vast als wortel voor de afvalophaler"
 
 #: guix/scripts/build.scm:368 guix/scripts/package.scm:480
 #: guix/scripts/install.scm:37 guix/scripts/remove.scm:36
@@ -1626,7 +1637,7 @@ msgid ""
 "  -v, --verbosity=LEVEL  use the given verbosity LEVEL"
 msgstr ""
 "\n"
-"  -v, --verbosity=NIVEAU  gebruik het opgegeven langdradigheidsniveau NIVEAU"
+"  -v, --verbosity=NIVEAU gebruik het opgegeven langdradigheidsniveau NIVEAU"
 
 #: guix/scripts/build.scm:370
 msgid ""
@@ -1663,10 +1674,9 @@ msgstr ""
 #: guix/scripts/time-machine.scm:67 guix/scripts/import/cpan.scm:43
 #: guix/scripts/import/crate.scm:49 guix/scripts/import/gem.scm:44
 #: guix/scripts/import/gnu.scm:49 guix/scripts/import/go.scm:48
-#: guix/scripts/import/json.scm:51 guix/scripts/import/nix.scm:43
-#: guix/scripts/import/opam.scm:43 guix/scripts/import/pypi.scm:44
-#: guix/scripts/import/texlive.scm:46 guix/scripts/refresh.scm:186
-#: guix/scripts/repl.scm:83
+#: guix/scripts/import/json.scm:51 guix/scripts/import/opam.scm:43
+#: guix/scripts/import/pypi.scm:44 guix/scripts/import/texlive.scm:46
+#: guix/scripts/refresh.scm:186 guix/scripts/repl.scm:83
 msgid ""
 "\n"
 "  -h, --help             display this help and exit"
@@ -1693,9 +1703,9 @@ msgstr ""
 #: guix/scripts/time-machine.scm:69 guix/scripts/import/cpan.scm:45
 #: guix/scripts/import/crate.scm:51 guix/scripts/import/gem.scm:46
 #: guix/scripts/import/gnu.scm:51 guix/scripts/import/json.scm:53
-#: guix/scripts/import/nix.scm:45 guix/scripts/import/opam.scm:49
-#: guix/scripts/import/pypi.scm:48 guix/scripts/import/texlive.scm:48
-#: guix/scripts/refresh.scm:188 guix/scripts/repl.scm:85
+#: guix/scripts/import/opam.scm:49 guix/scripts/import/pypi.scm:48
+#: guix/scripts/import/texlive.scm:48 guix/scripts/refresh.scm:188
+#: guix/scripts/repl.scm:85
 msgid ""
 "\n"
 "  -V, --version          display version information and exit"
@@ -1771,19 +1781,23 @@ msgstr "geen bouwlogboek voor ‘~a’~%"
 msgid "cannot access `~a': ~a~%"
 msgstr "heb geen toegang tot ‘~a’: ~a~%"
 
-#: guix/lint.scm:181
+#: guix/lint.scm:184
 msgid "name should be longer than a single character"
 msgstr "naam zou langer dan een enkel teken moeten zijn"
 
-#: guix/lint.scm:202
+#: guix/lint.scm:189
+msgid "name should use hyphens instead of underscores"
+msgstr "naam moet koppeltekens gebruiken in plaats van onderstrepingstekens"
+
+#: guix/lint.scm:210
 msgid "description should not be empty"
 msgstr "beschrijving hoort niet leeg te zijn"
 
-#: guix/lint.scm:213
+#: guix/lint.scm:221
 msgid "Texinfo markup in description is invalid"
 msgstr "Texinfo-opmaak in beschrijving is ongeldig"
 
-#: guix/lint.scm:223
+#: guix/lint.scm:231
 #, scheme-format
 msgid ""
 "description should not contain ~\n"
@@ -1794,15 +1808,15 @@ msgstr ""
 
 #. TRANSLATORS: '@code' is Texinfo markup and must be kept
 #. as is.
-#: guix/lint.scm:236
+#: guix/lint.scm:244
 msgid "use @code or similar ornament instead of quotes"
 msgstr "gebruik @code of gelijkaardige versieringen in plaats van aanhalingstekens"
 
-#: guix/lint.scm:248
+#: guix/lint.scm:256
 msgid "description should start with an upper-case letter or digit"
 msgstr "beschrijving hoort te beginnen met een hoofdletter of cijfer"
 
-#: guix/lint.scm:266
+#: guix/lint.scm:274
 #, scheme-format
 msgid ""
 "sentences in description should be followed ~\n"
@@ -1811,222 +1825,222 @@ msgstr ""
 "zinnen in beschrijvingen horen gevolgd te worden ~\n"
 "door twee spaties; mogelijke ~[overtredingen~;overtreding~:;overtredingen~] op ~{~a~^,~}"
 
-#: guix/lint.scm:287
+#: guix/lint.scm:295
 #, scheme-format
 msgid "invalid description: ~s"
 msgstr "ongeldige beschrijving: ~s"
 
-#: guix/lint.scm:357
+#: guix/lint.scm:365
 #, scheme-format
 msgid "'~a' should probably be a native input"
 msgstr "‘~a’ zou waarschijnlijk inheemse voer moeten zijn"
 
-#: guix/lint.scm:372
+#: guix/lint.scm:380
 #, scheme-format
 msgid "'~a' should probably not be an input at all"
 msgstr "'~a' zou waarschijnlijk helemaal geen voer moeten zijn"
 
-#: guix/lint.scm:393
+#: guix/lint.scm:401
 msgid "no period allowed at the end of the synopsis"
 msgstr "geen punt toegestaan aan het einde van de synopsis"
 
-#: guix/lint.scm:407
+#: guix/lint.scm:415
 msgid "no article allowed at the beginning of the synopsis"
 msgstr "geen lidwoord toegestaan aan het begin van de synopsis"
 
-#: guix/lint.scm:416
+#: guix/lint.scm:424
 msgid "synopsis should be less than 80 characters long"
 msgstr "synopsis zou korter dan 80 tekens moeten zijn"
 
-#: guix/lint.scm:425
+#: guix/lint.scm:433
 msgid "synopsis should start with an upper-case letter or digit"
 msgstr "synopsis zou moeten beginnen met een hoofdletter of cijfer"
 
-#: guix/lint.scm:433
+#: guix/lint.scm:441
 msgid "synopsis should not start with the package name"
 msgstr "synopsis mag niet beginnen met de pakketnaam"
 
-#: guix/lint.scm:447
+#: guix/lint.scm:455
 msgid "Texinfo markup in synopsis is invalid"
 msgstr "Texinfo-opmaak in synopsis klopt niet"
 
-#: guix/lint.scm:462
+#: guix/lint.scm:470
 msgid "synopsis should not be empty"
 msgstr "synopsis hoort niet leeg te zijn"
 
-#: guix/lint.scm:472
+#: guix/lint.scm:480
 #, scheme-format
 msgid "invalid synopsis: ~s"
 msgstr "ongeldige synopsis: ~s"
 
-#: guix/lint.scm:590
+#: guix/lint.scm:598
 #, scheme-format
 msgid "URI ~a returned suspiciously small file (~a bytes)"
 msgstr "URI ~a verwijst naar een verdacht klein bestand (~a bytes)"
 
-#: guix/lint.scm:599
+#: guix/lint.scm:607
 #, scheme-format
 msgid "permanent redirect from ~a to ~a"
 msgstr "permanente omwijzing van ~a naar ~a"
 
-#: guix/lint.scm:605
+#: guix/lint.scm:613
 #, scheme-format
 msgid "invalid permanent redirect from ~a"
 msgstr "ongeldige permanente omwijzing van ~a"
 
-#: guix/lint.scm:611 guix/lint.scm:621
+#: guix/lint.scm:619 guix/lint.scm:629
 #, scheme-format
 msgid "URI ~a not reachable: ~a (~s)"
 msgstr "URI ~a kon niet bereikt worden: ~a (~s)"
 
-#: guix/lint.scm:627
+#: guix/lint.scm:635
 #, scheme-format
 msgid "URI ~a domain not found: ~a"
 msgstr "URI ~a domein niet gevonden: ~a"
 
-#: guix/lint.scm:633
+#: guix/lint.scm:641
 #, scheme-format
 msgid "URI ~a unreachable: ~a"
 msgstr "URI ~a niet bereikbaar: ~a"
 
-#: guix/lint.scm:641
+#: guix/lint.scm:649
 #, scheme-format
 msgid "TLS certificate error: ~a"
 msgstr "TLS-certificaatfout: ~a"
 
-#: guix/lint.scm:668
+#: guix/lint.scm:676
 msgid "invalid value for home page"
 msgstr "ongeldige waarde voor thuispagina"
 
-#: guix/lint.scm:673
+#: guix/lint.scm:681
 #, scheme-format
 msgid "invalid home page URL: ~s"
 msgstr "ongeldige URL voor thuispagina: ~s"
 
-#: guix/lint.scm:710
+#: guix/lint.scm:718
 msgid "file names of patches should start with the package name"
 msgstr "bestandsnamen van pleisters zouden moeten starten met de pakketnaam"
 
-#: guix/lint.scm:726
+#: guix/lint.scm:734
 #, scheme-format
 msgid "~a: file name is too long"
 msgstr "~a: bestandsnaam is te lang"
 
-#: guix/lint.scm:747
+#: guix/lint.scm:755
 #, scheme-format
 msgid "~a: empty patch"
 msgstr "~a: pleisterbestand is leeg"
 
-#: guix/lint.scm:755
+#: guix/lint.scm:763
 #, scheme-format
 msgid "~a: patch lacks comment and upstream status"
 msgstr "~a: pleister heeft geen commentaar en geen informatie over bovenenstrooms"
 
-#: guix/lint.scm:816
+#: guix/lint.scm:824
 #, scheme-format
 msgid "proposed synopsis: ~s~%"
 msgstr "voorgestelde synopsis: ~s~%"
 
-#: guix/lint.scm:830
+#: guix/lint.scm:838
 #, scheme-format
 msgid "proposed description:~%     \"~a\"~%"
 msgstr "voorgestelde beschrijving:~%     \"~a\"~%"
 
-#: guix/lint.scm:881
+#: guix/lint.scm:889
 msgid "all the source URIs are unreachable:"
 msgstr "al deze broncode URI's zijn onreikbaar:"
 
-#: guix/lint.scm:910
+#: guix/lint.scm:918
 msgid "the source file name should contain the package name"
 msgstr "de bestandsnaam van de bron zou de pakketnaam moeten bevatten"
 
-#: guix/lint.scm:922
+#: guix/lint.scm:930
 msgid "the source URI should not be an autogenerated tarball"
 msgstr "de URI van de broncode zou geen automatisch aangemaakt archief mogen zijn"
 
-#: guix/lint.scm:946
+#: guix/lint.scm:954
 #, scheme-format
 msgid "URL should be 'mirror://~a/~a'"
 msgstr "URL zou ‘mirror://~a/~a’ moeten zijn"
 
-#: guix/lint.scm:991
+#: guix/lint.scm:999
 #, scheme-format
 msgid "URL should be '~a'"
 msgstr "URL zou ‘~a’ moeten zijn"
 
-#: guix/lint.scm:1013 guix/lint.scm:1024 guix/lint.scm:1032
+#: guix/lint.scm:1021 guix/lint.scm:1032 guix/lint.scm:1040
 #, scheme-format
 msgid "failed to create ~a derivation: ~a"
 msgstr "het aanmaken van de afgeleide ~a mislukte: ~a"
 
-#: guix/lint.scm:1018 guix/lint.scm:1046
+#: guix/lint.scm:1026 guix/lint.scm:1054
 #, scheme-format
 msgid "failed to create ~a derivation: ~s"
 msgstr "maken van de afgeleide ~a mislukte: ~s"
 
-#: guix/lint.scm:1074
+#: guix/lint.scm:1082
 #, scheme-format
 msgid "propagated inputs ~a and ~a collide"
 msgstr "herkauwd voer ~a en ~a staan in conflict"
 
-#: guix/lint.scm:1098
+#: guix/lint.scm:1106
 msgid "invalid license field"
 msgstr "ongeldig licentieveld"
 
-#: guix/lint.scm:1105
+#: guix/lint.scm:1113
 #, scheme-format
 msgid "~a: HTTP GET error for ~a: ~a (~s)~%"
 msgstr "~a: HTTP GET fout voor ~a: ~a (~s)~%"
 
-#: guix/lint.scm:1115
+#: guix/lint.scm:1123
 #, scheme-format
 msgid "~a: host lookup failure: ~a~%"
 msgstr "~a: fout bij opzoeken van domein: ~a~%"
 
-#: guix/lint.scm:1120
+#: guix/lint.scm:1128
 #, scheme-format
 msgid "~a: TLS certificate error: ~a"
 msgstr "~a: TLS-certificaatfout: ~a"
 
-#: guix/lint.scm:1131 guix/ui.scm:846 guix/scripts/offload.scm:191
+#: guix/lint.scm:1139 guix/ui.scm:848 guix/scripts/offload.scm:191
 #, scheme-format
 msgid "~a: ~a~%"
 msgstr "~a: ~a~%"
 
-#: guix/lint.scm:1145
+#: guix/lint.scm:1153
 msgid "while retrieving CVE vulnerabilities"
 msgstr "bij het binnenhalen van CVE-zwaktes"
 
-#: guix/lint.scm:1188
+#: guix/lint.scm:1196
 #, scheme-format
 msgid "probably vulnerable to ~a"
 msgstr "waarschijnlijk onderhevig aan de zwakte ~a"
 
-#: guix/lint.scm:1196
+#: guix/lint.scm:1204
 #, scheme-format
 msgid "no updater for ~a"
 msgstr "geen updater voor ~a"
 
-#: guix/lint.scm:1201 guix/lint.scm:1319
+#: guix/lint.scm:1209 guix/lint.scm:1327
 #, scheme-format
 msgid "while retrieving upstream info for '~a'"
 msgstr "bij het ophalen van bovenstroomse informatie over ‘~a’"
 
-#: guix/lint.scm:1210
+#: guix/lint.scm:1218
 #, scheme-format
 msgid "can be upgraded to ~a"
 msgstr "kan geüpgraded worden tot ~a"
 
-#: guix/lint.scm:1216
+#: guix/lint.scm:1224
 #, scheme-format
 msgid "updater '~a' failed to find upstream releases"
 msgstr "updater ‘~a’ kon niet de bovenstroomse uitgaves vinden"
 
-#: guix/lint.scm:1233
+#: guix/lint.scm:1241
 msgid "Software Heritage rate limit reached; try again later"
 msgstr "De beperking op het aantal verzoeken aan Software Heritage is overschreden; probeer later opnieuw"
 
-#: guix/lint.scm:1237
+#: guix/lint.scm:1245
 #, scheme-format
 msgid "'~a' returned ~a"
 msgstr "‘~a’ gaf ~a terug"
@@ -2034,137 +2048,137 @@ msgstr "‘~a’ gaf ~a terug"
 #. TRANSLATORS: "Software Heritage" is a proper noun
 #. that must remain untranslated.  See
 #. <https://www.softwareheritage.org>.
-#: guix/lint.scm:1276
+#: guix/lint.scm:1284
 msgid "scheduled Software Heritage archival"
 msgstr "afspraak gemaakt voor deponering in Software Heritage"
 
-#: guix/lint.scm:1282
+#: guix/lint.scm:1290
 msgid "archival rate limit exceeded; try again later"
 msgstr "het limiet op verzoeken voor deponering is overschreden; probeer later opnieuw"
 
-#: guix/lint.scm:1298
+#: guix/lint.scm:1306
 msgid "source not archived on Software Heritage"
 msgstr "broncode is niet gearchiveerd op Software Heritage"
 
-#: guix/lint.scm:1311
+#: guix/lint.scm:1319
 msgid "while connecting to Software Heritage"
 msgstr "bij het verbinden met Software Heritage"
 
-#: guix/lint.scm:1328
+#: guix/lint.scm:1336
 #, scheme-format
 msgid "ahead of Stackage LTS version ~a"
 msgstr "loopt voor op de versie ~a op Stackage LTS"
 
-#: guix/lint.scm:1345
+#: guix/lint.scm:1353
 #, scheme-format
 msgid "tabulation on line ~a, column ~a"
 msgstr "tabulator op lijn ~a, kolom ~a"
 
-#: guix/lint.scm:1357
+#: guix/lint.scm:1365
 #, scheme-format
 msgid "trailing white space on line ~a"
 msgstr "spatie aan het begin van de lijn ~a"
 
-#: guix/lint.scm:1371
+#: guix/lint.scm:1379
 #, scheme-format
 msgid "line ~a is way too long (~a characters)"
 msgstr "lijn ~a is veel te lang (~a tekens)"
 
-#: guix/lint.scm:1385
+#: guix/lint.scm:1393
 msgid "parentheses feel lonely, move to the previous or next line"
 msgstr "haakjes voelen zich eenzaam, verplaats ze naar de vorige of volgende lijn"
 
-#: guix/lint.scm:1462
+#: guix/lint.scm:1470
 msgid "source file not found"
 msgstr "bronbestand niet gevonden"
 
-#: guix/lint.scm:1474
+#: guix/lint.scm:1482
 msgid "Validate package names"
 msgstr "Controleer pakketnamen"
 
-#: guix/lint.scm:1478
+#: guix/lint.scm:1486
 msgid "Validate package descriptions"
 msgstr "Controleer pakketbeschrijvingen"
 
-#: guix/lint.scm:1482
+#: guix/lint.scm:1490
 msgid "Identify inputs that should be native inputs"
 msgstr "Identificeer het voer dat inheems zou moeten zijn"
 
-#: guix/lint.scm:1486
+#: guix/lint.scm:1494
 msgid "Identify inputs that shouldn't be inputs at all"
 msgstr "Identificeer voer dat helemaal geen voer moet zijn"
 
 #. TRANSLATORS: <license> is the name of a data type and must not be
 #. translated.
-#: guix/lint.scm:1492
+#: guix/lint.scm:1500
 msgid "Make sure the 'license' field is a <license> or a list thereof"
 msgstr "Zorg ervoor dat het ‘license’-veld een <license> is of een lijst van <license>"
 
-#: guix/lint.scm:1497
+#: guix/lint.scm:1505
 msgid "Suggest 'mirror://' URLs"
 msgstr "Stel ‘mirror://’ URL's voor"
 
-#: guix/lint.scm:1501
+#: guix/lint.scm:1509
 msgid "Validate file names of sources"
 msgstr "Controleer bestandsnamen van bronnen"
 
-#: guix/lint.scm:1505
+#: guix/lint.scm:1513
 msgid "Check for autogenerated tarballs"
 msgstr "Controleer of er geen automatisch aangemaakte archieven gebruikt worden"
 
-#: guix/lint.scm:1509
+#: guix/lint.scm:1517
 msgid "Report failure to compile a package to a derivation"
 msgstr "Meld het mislukken van het opstellen van een distillatie voor een pakket"
 
-#: guix/lint.scm:1514
+#: guix/lint.scm:1522
 msgid "Report collisions that would occur due to propagated inputs"
 msgstr "Meld botsingen die zouden voorkomen wegens herkauwd voer"
 
-#: guix/lint.scm:1519
+#: guix/lint.scm:1527
 msgid "Validate file names and availability of patches"
 msgstr "Controleer bestandsnamen en de toegankelijkheid van pleisters"
 
-#: guix/lint.scm:1523
+#: guix/lint.scm:1531
 msgid "Validate patch headers"
 msgstr "Controleer de koppen van pleisters"
 
-#: guix/lint.scm:1527
+#: guix/lint.scm:1535
 msgid "Look for formatting issues in the source"
 msgstr "Controleer op opmaakfouten in de broncode"
 
-#: guix/lint.scm:1534
+#: guix/lint.scm:1542
 msgid "Validate package synopses"
 msgstr "Controleer de synopsissen van pakketten"
 
-#: guix/lint.scm:1538
+#: guix/lint.scm:1546
 msgid "Validate synopsis & description of GNU packages"
 msgstr "Controleer de synopsis en beschrijving van GNU-pakketten"
 
-#: guix/lint.scm:1542
+#: guix/lint.scm:1550
 msgid "Validate home-page URLs"
 msgstr "Controleer URL's van startpagina's"
 
-#: guix/lint.scm:1546
+#: guix/lint.scm:1554
 msgid "Validate source URLs"
 msgstr "Controleer URL's van bronnen"
 
-#: guix/lint.scm:1550
+#: guix/lint.scm:1558
 msgid "Suggest GitHub URLs"
 msgstr "Stel GitHub URL's voor"
 
-#: guix/lint.scm:1554
+#: guix/lint.scm:1562
 msgid "Check the Common Vulnerabilities and Exposures (CVE) database"
 msgstr "Controleer de Common Vulnerabilities and Exposures (CVE) database"
 
-#: guix/lint.scm:1559
+#: guix/lint.scm:1567
 msgid "Check the package for new upstream releases"
 msgstr "Controleer het pakket op nieuwe bovenstroomse uitgaves"
 
-#: guix/lint.scm:1563
+#: guix/lint.scm:1571
 msgid "Ensure source code archival on Software Heritage"
 msgstr "Zorg ervoor dat de broncode gearchiveerd is op Software Heritage"
 
-#: guix/lint.scm:1567
+#: guix/lint.scm:1575
 msgid "Ensure Haskell packages use Stackage LTS versions"
 msgstr "Zorg ervoor dat Haskell-pakketten versies van Stackage LTS gebruiken"
 
@@ -2175,9 +2189,8 @@ msgid ""
 "file name and the hash of its contents.\n"
 msgstr ""
 "Gebruik: guix download [OPTIE] URL\n"
-"Haal het bestand waarnaar verwezen wordt met URL op en schrijf het\n"
-"weg naar het depot of het opgegeven bestand, en druk de bestandsnaam\n"
-"en het controlegetal van de inhoud af.\n"
+"Download het bestand van de URL naar de opslag of naar een gegeven bestand,\n"
+"en druk de bestandsnaam hash van de inhoud af.\n"
 
 #: guix/scripts/download.scm:91 guix/scripts/hash.scm:53
 msgid ""
@@ -2304,11 +2317,10 @@ msgid ""
 ";; capture the channels being used, as returned by \"guix describe\".\n"
 ";; See the \"Replicating Guix\" section in the manual.\n"
 msgstr ""
-";; Dit ‘paklijstbestand’ kan gevoerd worden aan ‘guix package -m’ om de inhoud\n"
-";; van je profiel te reproduceren.  De inhoud is ‘symbolisch’: het verwijst enkel\n"
+";; Dit ‘manifest’ kan worden doorgegeven aan ‘guix package -m’ om de inhoud\n"
+";; van je profiel te reproduceren.  Dit is ‘symbolisch’: het verwijst enkel\n"
 ";; naar de pakketnamen.  Om precies hetzelfde profiel te reproduceren, moet\n"
-";; je ook de lijst van gebruikte kanalen bewaren, zoals teruggegeven door\n"
-";; ‘guix describe’.\n"
+";; je ook de lijst van gebruikte kanalen bewaren, zoals teruggegeven door ‘guix describe’.\n"
 ";; Zie de sectie ‘Guix reproduceren’ in de handleiding.\n"
 
 #: guix/scripts/package.scm:387
@@ -2650,7 +2662,7 @@ msgid ""
 "Invoke the garbage collector.\n"
 msgstr ""
 "Gebruik: guix gc [OPTIE]... PLAATSEN...\n"
-"Roep de afvalverzamelaar aan.\n"
+"Roep de afvalophaler aan.\n"
 
 #: guix/scripts/gc.scm:49
 msgid ""
@@ -2694,7 +2706,7 @@ msgid ""
 "      --list-roots       list the user's garbage collector roots"
 msgstr ""
 "\n"
-"      --list-roots       lijst de afvalverzamelaarswortels van de gebruiken op"
+"      --list-roots       lijst de wortels voor de afvalophaler op voor deze gebruiker"
 
 #: guix/scripts/gc.scm:61
 msgid ""
@@ -2944,8 +2956,8 @@ msgstr ""
 "\n"
 "  -r, --recursive        bereken het controlegetal van BESTAND recursief"
 
-#: guix/scripts/hash.scm:172 guix/ui.scm:398 guix/ui.scm:429 guix/ui.scm:789
-#: guix/ui.scm:837 guix/ui.scm:893
+#: guix/scripts/hash.scm:172 guix/ui.scm:400 guix/ui.scm:431 guix/ui.scm:791
+#: guix/ui.scm:839 guix/ui.scm:895
 #, scheme-format
 msgid "~a~%"
 msgstr "~a~%"
@@ -2953,8 +2965,7 @@ msgstr "~a~%"
 #: guix/scripts/hash.scm:175 guix/scripts/system.scm:1298
 #: guix/scripts/system.scm:1314 guix/scripts/system.scm:1321
 #: guix/scripts/system.scm:1327 guix/scripts/import/gnu.scm:103
-#: guix/scripts/import/nix.scm:90 guix/scripts/offload.scm:826
-#: guix/scripts/offload.scm:838
+#: guix/scripts/offload.scm:826 guix/scripts/offload.scm:838
 #, scheme-format
 msgid "wrong number of arguments~%"
 msgstr "verkeerd aantal argumenten~%"
@@ -3306,8 +3317,7 @@ msgid ""
 msgstr ""
 "\n"
 "      --query            meld of er substituten beschikbaar zijn voor\n"
-"                         de depotbestandsnamen die ingegeven worden op\n"
-"                         de standaardinvoer"
+"                         de depotbestandsnamen die ingegeven worden op de standaardinvoer"
 
 #: guix/scripts/substitute.scm:243
 msgid ""
@@ -3326,46 +3336,46 @@ msgstr ""
 msgid "updating substitutes from '~a'... ~5,1f%"
 msgstr "lijst van substitutes van ‘~a’ aan het bijwerken... ~5,1f%"
 
-#: guix/scripts/substitute.scm:462
+#: guix/scripts/substitute.scm:469
 #, scheme-format
 msgid "download from '~a' failed: ~a, ~s~%"
 msgstr "binnenhalen van '~a' mislukte: ~a, ~s~%"
 
-#: guix/scripts/substitute.scm:472
+#: guix/scripts/substitute.scm:479
 #, scheme-format
 msgid "while fetching ~a: server is somewhat slow~%"
 msgstr "tijdens het binnenhalen van ~a: de server is een beetje traag~%"
 
-#: guix/scripts/substitute.scm:474
+#: guix/scripts/substitute.scm:481
 #, scheme-format
 msgid "try `--no-substitutes' if the problem persists~%"
 msgstr "probeer ‘--no-substitutes’ als het probleem hardnekkig is~%"
 
-#: guix/scripts/substitute.scm:481
+#: guix/scripts/substitute.scm:488
 #, scheme-format
 msgid "unsupported substitute URI scheme: ~a~%"
 msgstr "URI-schema van substituut is niet ondersteund: ~a~%"
 
-#: guix/scripts/substitute.scm:485
+#: guix/scripts/substitute.scm:492
 #, scheme-format
 msgid "no valid substitute for '~a'~%"
 msgstr "geen geldig substituut voor ‘~a’~%"
 
-#: guix/scripts/substitute.scm:494
+#: guix/scripts/substitute.scm:501
 #, scheme-format
 msgid "Downloading ~a...~%"
 msgstr "~a aan het binnenhalen ...~%"
 
-#: guix/scripts/substitute.scm:598
+#: guix/scripts/substitute.scm:605
 msgid "ACL for archive imports seems to be uninitialized, substitutes may be unavailable\n"
 msgstr "De ACL voor archiefimport lijkt niet ingesteld te zijn; substituten zouden onbeschikbaar kunnen zijn.\n"
 
-#: guix/scripts/substitute.scm:683
+#: guix/scripts/substitute.scm:690
 #, scheme-format
 msgid "~a: invalid URI~%"
 msgstr "~a: ongeldige URI~%"
 
-#: guix/scripts/substitute.scm:770
+#: guix/scripts/substitute.scm:777
 #, scheme-format
 msgid "~a: unrecognized options~%"
 msgstr "~a: opties niet ondersteund~%"
@@ -3811,7 +3821,7 @@ msgid ""
 msgstr ""
 "\n"
 "      --share=SPEC       voor ‘vm’ en ‘container’, deel het bestandssysteem\n"
-" van de herbergier met lees-schrijftoegang volgens SPEC"
+" van de computer met lees-schrijftoegang volgens SPEC"
 
 #: guix/scripts/system.scm:1002
 msgid ""
@@ -3910,7 +3920,7 @@ msgstr "guix system: ontbrekende opdrachtnaam~%"
 msgid "Try 'guix system --help' for more information.~%"
 msgstr "Probeer ‘guix system --help’ voor meer informatie.~%"
 
-#: guix/scripts/system/search.scm:93 guix/ui.scm:1544 guix/ui.scm:1562
+#: guix/scripts/system/search.scm:93 guix/ui.scm:1546 guix/ui.scm:1564
 msgid "unknown"
 msgstr "onbekend"
 
@@ -4322,12 +4332,16 @@ msgid ""
 "\n"
 "  -b, --backend=TYPE     produce a graph with the given backend TYPE"
 msgstr ""
+"\n"
+"  -b, --backend=TYPE     maak een diagram van het aangegeven TYPE"
 
 #: guix/scripts/graph.scm:534
 msgid ""
 "\n"
 "      --list-backends    list the available graph backends"
 msgstr ""
+"\n"
+"      --list-backends    lijst de mogelijke types diagrammen op"
 
 #: guix/scripts/graph.scm:536
 msgid ""
@@ -4514,12 +4528,12 @@ msgstr "gebruik ‘--to’ of ‘--from’~%"
 #: guix/scripts/pack.scm:111
 #, scheme-format
 msgid "~a: compressor not found~%"
-msgstr ""
+msgstr "~a: compressor niet gevonden~%"
 
 #: guix/scripts/pack.scm:323
 #, scheme-format
 msgid "entry point not supported in the '~a' format~%"
-msgstr ""
+msgstr "ingangspunt niet ondersteund door de ‘~a’-indeling~%"
 
 #: guix/scripts/pack.scm:705
 #, scheme-format
@@ -4539,6 +4553,8 @@ msgid ""
 "\n"
 "  tarball       Self-contained tarball, ready to run on another machine"
 msgstr ""
+"\n"
+"  tarball       Opzichzelfstaand tar-archief, klaar om op een andere machine uitgevoerd te worden"
 
 #: guix/scripts/pack.scm:969
 msgid ""
@@ -4595,6 +4611,8 @@ msgid ""
 "\n"
 "  -R, --relocatable      produce relocatable executables"
 msgstr ""
+"\n"
+"  -R, --relocatable      maak bestanden uitvoerbaar ongeacht hun locatie"
 
 #: guix/scripts/pack.scm:1090
 msgid ""
@@ -4626,12 +4644,17 @@ msgid ""
 "      --entry-point=PROGRAM\n"
 "                         use PROGRAM as the entry point of the pack"
 msgstr ""
+"\n"
+"      --entry-point=PROGRAMMA\n"
+"                         gebruik PROGRAMMA als ingangspunt van het pakje"
 
 #: guix/scripts/pack.scm:1101
 msgid ""
 "\n"
 "      --localstatedir    include /var/guix in the resulting pack"
 msgstr ""
+"\n"
+"      --localstatedir    /var/guix bij het uiteindelijke pakje voegen"
 
 #: guix/scripts/pack.scm:1103
 msgid ""
@@ -4639,6 +4662,9 @@ msgid ""
 "      --profile-name=NAME\n"
 "                         populate /var/guix/profiles/.../NAME"
 msgstr ""
+"\n"
+"      --profile-name=NAAM\n"
+"                         toevoegen aan /var/guix/profiles/.../NAAM"
 
 #: guix/scripts/pack.scm:1109
 msgid ""
@@ -4716,7 +4742,7 @@ msgstr "  ~,1h MiB op schijf (ongecomprimeerd)~%"
 
 #: guix/scripts/weather.scm:216
 msgid "  ~,3h seconds per request (~,1h seconds in total)~%"
-msgstr ""
+msgstr "  ~,3h seconden per verzoek (~,1h seconden in totaal)~%"
 
 #: guix/scripts/weather.scm:218
 msgid "  ~,1h requests per second~%"
@@ -4725,7 +4751,7 @@ msgstr "  ~,1h verzoeken per seconde~%"
 #: guix/scripts/weather.scm:224
 #, scheme-format
 msgid "  (continuous integration information unavailable)~%"
-msgstr ""
+msgstr "  (geen informatie over doorlopende integratie beschikbaar)~%"
 
 #: guix/scripts/weather.scm:227
 #, scheme-format
@@ -4734,7 +4760,7 @@ msgstr "  ‘~a’ gaf ~a terug (~s)~%"
 
 #: guix/scripts/weather.scm:244
 msgid "  ~,1f% (~h out of ~h) of the missing items are queued~%"
-msgstr "  ~,1f% (~h uit ~h) van de ontbrekende objecten staan in de wachtrij~%"
+msgstr "  ~,1f% (~h van ~h) van de ontbrekende objecten staan in de wachtrij~%"
 
 #: guix/scripts/weather.scm:250
 msgid "  at least ~h queued builds~%"
@@ -4745,7 +4771,7 @@ msgid "  ~h queued builds~%"
 msgstr "  ~h bouwels in de wachtrij~%"
 
 #: guix/scripts/weather.scm:254
-#, fuzzy, scheme-format
+#, scheme-format
 msgid "      ~a: ~a (~0,1f%)~%"
 msgstr "      ~a: ~a (~0,1f%)~%"
 
@@ -4769,6 +4795,8 @@ msgid ""
 "Usage: guix weather [OPTIONS] [PACKAGES ...]\n"
 "Report the availability of substitutes.\n"
 msgstr ""
+"Gebruik: guix weather [OPTIES] [PAKKETTEN ...]\n"
+"Bericht over de beschikbaarheid van vervangingen.\n"
 
 #: guix/scripts/weather.scm:287
 msgid ""
@@ -4776,6 +4804,9 @@ msgid ""
 "      --substitute-urls=URLS\n"
 "                         check for available substitutes at URLS"
 msgstr ""
+"\n"
+"      --substitute-urls=URLS\n"
+"                         kijk URLS na op beschikbare vervangingen"
 
 #: guix/scripts/weather.scm:290
 msgid ""
@@ -4783,6 +4814,9 @@ msgid ""
 "  -m, --manifest=MANIFEST\n"
 "                         look up substitutes for packages specified in MANIFEST"
 msgstr ""
+"\n"
+"  -m, --manifest=PAKLIJST\n"
+"                         zoek vervangingen voor pakketten in PAKLIJST"
 
 #: guix/scripts/weather.scm:293
 msgid ""
@@ -4791,85 +4825,101 @@ msgid ""
 "                         show substitute coverage for packages with at least\n"
 "                         COUNT dependents"
 msgstr ""
+"\n"
+"  -c, --coverage[=AANTAL]\n"
+"                         geef weer hoeveel vervangingen beschikbaar zijn\n"
+"                         voor pakketten met ten minste AANTAL afhankelijken"
 
 #: guix/scripts/weather.scm:297
 msgid ""
 "\n"
 "      --display-missing  display the list of missing substitutes"
 msgstr ""
+"\n"
+"      --display-missing  toon de lijst van ontbrekende substituten"
 
 #: guix/scripts/weather.scm:299
 msgid ""
 "\n"
 "  -s, --system=SYSTEM    consider substitutes for SYSTEM--e.g., \"i686-linux\""
 msgstr ""
+"\n"
+"  -s, --system=SYSTEEM    beschouw substituten voor SYSTEEM, bv. ‘i686-linux’"
 
 #: guix/scripts/weather.scm:323
 #, scheme-format
 msgid "~a: invalid URL~%"
-msgstr ""
+msgstr "~a: ongeldige URL~%"
 
 #: guix/scripts/weather.scm:456
 #, scheme-format
 msgid "The following ~a package is missing from '~a' for '~a':~%"
 msgid_plural "The following ~a packages are missing from '~a' for '~a':~%"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Dit (~a) pakket ontbreekt op ‘~a’ voor ‘~a’:~%"
+msgstr[1] "Deze ~a pakketten ontbreken op ‘~a’ voor ‘~a’:~%"
 
 #: guix/scripts/weather.scm:462
 #, scheme-format
 msgid "~a package is missing from '~a' for '~a':~%"
 msgid_plural "~a packages are missing from '~a' for '~a', among which:~%"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "~a pakket ontbreekt op ‘~a’ voor ‘~a’:~%"
+msgstr[1] "~a pakketten ontbreken op ‘~a’ voor ‘~a’, waaronder:~%"
 
 #: guix/scripts/describe.scm:53 guix/scripts/processes.scm:291
 msgid "The available formats are:\n"
-msgstr ""
+msgstr "De beschikbare indelingen zijn:\n"
 
 #: guix/scripts/describe.scm:64 guix/scripts/processes.scm:324
 #, scheme-format
 msgid "~a: unsupported output format~%"
-msgstr ""
+msgstr "~a: uitvoerindeling wordt niet ondersteund~%"
 
 #: guix/scripts/describe.scm:87
 msgid ""
 "Usage: guix describe [OPTION]...\n"
 "Display information about the channels currently in use.\n"
 msgstr ""
+"Gebruik: guix describe [OPTIE]…\n"
+"Geef informatie over de kanalen die op dit moment worden gebruikt.\n"
 
 #: guix/scripts/describe.scm:89
 msgid ""
 "\n"
 "  -f, --format=FORMAT    display information in the given FORMAT"
 msgstr ""
+"\n"
+"  -f, --format=INDELING    toon informatie over het opgegeven INDELING"
 
 #: guix/scripts/describe.scm:91 guix/scripts/processes.scm:308
 msgid ""
 "\n"
 "      --list-formats     display available formats"
 msgstr ""
+"\n"
+"      --list-formats     toon beschikbare indelingen"
 
 #: guix/scripts/describe.scm:93
 msgid ""
 "\n"
 "  -p, --profile=PROFILE  display information about PROFILE"
 msgstr ""
+"\n"
+"  -p, --profile=PROFIEL  toon informatie over PROFIEL"
 
 #: guix/scripts/describe.scm:112
 #, scheme-format
 msgid "~%;; warning: GUIX_PACKAGE_PATH=\"~a\"~%"
-msgstr ""
+msgstr "~%;; waarschuwing: GUIX_PACKAGE_PATH=\"~a\"~%"
 
 #: guix/scripts/describe.scm:115
 #, scheme-format
 msgid "'GUIX_PACKAGE_PATH' is set but it is not captured~%"
-msgstr ""
+msgstr "‘GUIX_PACKAGE_PATH’ is ingesteld maar wordt niet weergegeven~%"
 
 #: guix/scripts/describe.scm:155
 #, scheme-format
 msgid "failed to determine origin~%"
-msgstr ""
+msgstr "kon herkomst niet bepalen~%"
 
 #: guix/scripts/describe.scm:156
 #, scheme-format
@@ -4878,217 +4928,230 @@ msgid ""
 "@command{guix} command was not obtained with @command{guix pull}?  Its version\n"
 "string is ~a.~%"
 msgstr ""
+"Misschien werd deze\n"
+"@command{guix}-opdracht niet met @command{guix pull} bekomen?\n"
+"Zijn versietekenreeks is ~a.~%"
 
 #: guix/scripts/describe.scm:166
 #, scheme-format
 msgid "Git checkout:~%"
-msgstr ""
+msgstr "Git-werkkopie:~%"
 
 #: guix/scripts/describe.scm:167
 #, scheme-format
 msgid "  repository: ~a~%"
-msgstr ""
+msgstr "  bewaarplaats: ~a~%"
 
 #: guix/scripts/describe.scm:168
 #, scheme-format
 msgid "  branch: ~a~%"
-msgstr ""
+msgstr "  tak: ~a~%"
 
 #: guix/scripts/describe.scm:169
 #, scheme-format
 msgid "  commit: ~a~%"
-msgstr ""
+msgstr "  commit: ~a~%"
 
 #: guix/scripts/describe.scm:236
 #, scheme-format
 msgid "    repository URL: ~a~%"
-msgstr ""
+msgstr "    bewaarplaats-URL: ~a~%"
 
 #: guix/scripts/describe.scm:239
 #, scheme-format
 msgid "    branch: ~a~%"
-msgstr ""
+msgstr "    tak: ~a~%"
 
 #: guix/scripts/describe.scm:241
 #, scheme-format
 msgid "    commit: ~a~%"
-msgstr ""
+msgstr "    commit: ~a~%"
 
 #: guix/scripts/processes.scm:298
 msgid ""
 "Usage: guix processes\n"
 "List the current Guix sessions and their processes."
 msgstr ""
+"Gebruik: guix processes\n"
+"Lijst de lopende Guix-sessies op met hun processen."
 
 #: guix/scripts/processes.scm:306
 msgid ""
 "\n"
 "  -f, --format=FORMAT    display results as normalized record sets"
 msgstr ""
+"\n"
+"  -f, --format=FORMAAT    toont resultaten als genormaliseerde recordsets"
 
 #: guix/scripts/deploy.scm:49
 msgid ""
 "Usage: guix deploy [OPTION] FILE...\n"
 "Perform the deployment specified by FILE.\n"
 msgstr ""
+"Usage: guix deploy [OPTIE] BESTAND…\n"
+"Rol het door BESTAND omschreven systeem uit.\n"
 
 #: guix/scripts/deploy.scm:106
 #, scheme-format
 msgid "The following ~d machine will be deployed:~%"
 msgid_plural "The following ~d machines will be deployed:~%"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Deze (~d) machine zal uitgerold worden:~%"
+msgstr[1] "Deze ~d machines zullen uitgerold worden:~%"
 
 #: guix/scripts/deploy.scm:120
 #, scheme-format
 msgid "deploying to ~a...~%"
-msgstr ""
+msgstr "~a wordt uitgerold...~%"
 
 #: guix/scripts/deploy.scm:135
 #, scheme-format
 msgid "failed to deploy ~a: ~a~%"
-msgstr ""
+msgstr "kon ~a niet uitrollen: ~a~%"
 
 #: guix/scripts/deploy.scm:140
 #, scheme-format
 msgid "rolling back ~a...~%"
-msgstr ""
+msgstr "~a wordt teruggedraaid…~%"
 
 #: guix/scripts/deploy.scm:146
 #, scheme-format
 msgid "successfully deployed ~a~%"
-msgstr ""
+msgstr "~a succesvol uitgerold~%"
 
 #: guix/gexp.scm:423
 #, scheme-format
 msgid "resolving '~a' relative to current directory~%"
-msgstr ""
+msgstr "‘~a’ wordt opgezocht vanaf huidige map~%"
 
 #: guix/gexp.scm:815
 #, scheme-format
 msgid "importing module~{ ~a~} from the host~%"
 msgid_plural "importing modules~{ ~a~} from the host~%"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "module ~{ ~a~} wordt ingevoerd vanop de externe machine~%"
+msgstr[1] "modules~{ ~a~} worden ingevoerd vanop de externe machine~%"
 
 #: guix/gnu-maintenance.scm:809
 msgid "Updater for GNU packages"
-msgstr ""
+msgstr "Bijwerker voor GNU-pakketten"
 
 #: guix/gnu-maintenance.scm:818
 msgid "Updater for GNU packages only available via FTP"
-msgstr ""
+msgstr "Bijwerker voor GNU-pakketten die enkel beschikbaar zijn over FTP"
 
 #: guix/gnu-maintenance.scm:827
 msgid "Updater for packages hosted on savannah.gnu.org"
-msgstr ""
+msgstr "Bijwerker voor pakketten gehuisvest door savannah.gnu.org"
 
 #: guix/gnu-maintenance.scm:834
 msgid "Updater for packages hosted on sourceforge.net"
-msgstr ""
+msgstr "Bijwerker voor pakketten gehuisvest door sourceforge.net"
 
 #: guix/gnu-maintenance.scm:841
 msgid "Updater for X.org packages"
-msgstr ""
+msgstr "Bijwerker voor X.org-pakketten"
 
 #: guix/gnu-maintenance.scm:848
 msgid "Updater for packages hosted on kernel.org"
-msgstr ""
+msgstr "Bijwerker voor pakketten gehuisvest door kernel.org"
 
 #: guix/gnu-maintenance.scm:855
 msgid "Updater that crawls HTML pages."
-msgstr ""
+msgstr "Bijwerker die door HTML-pagina's snuistert."
 
 #: guix/scripts/container.scm:27
 msgid ""
 "Usage: guix container ACTION ARGS...\n"
 "Build and manipulate Linux containers.\n"
 msgstr ""
+"Gebruik: guix container ACTIE ARGUMENTEN...\n"
+"Linux-containers bouwen en beheren.\n"
 
 #: guix/scripts/container.scm:32
 msgid "   exec            execute a command inside of an existing container\n"
-msgstr ""
+msgstr "   exec            voer een opdracht uit in een bestaande container\n"
 
 #: guix/scripts/container.scm:58
 #, scheme-format
 msgid "guix container: missing action~%"
-msgstr ""
+msgstr "guix container: actie ontbreekt~%"
 
 #: guix/scripts/container.scm:68
 #, scheme-format
 msgid "guix container: invalid action~%"
-msgstr ""
+msgstr "guix container: ongeldige actie~%"
 
 #: guix/scripts/container/exec.scm:40
 msgid ""
 "Usage: guix container exec PID COMMAND [ARGS...]\n"
 "Execute COMMAND within the container process PID.\n"
 msgstr ""
+"Gebruik: guix container exec PID OPDRACHT [ARGUMENTEN...]\n"
+"Voer OPDRACHT uit in de container met proces PID.\n"
 
 #: guix/scripts/container/exec.scm:69
 #, scheme-format
 msgid "~a: extraneous argument~%"
-msgstr ""
+msgstr "~a: overtollig argument~%"
 
 #: guix/scripts/container/exec.scm:87
 #, scheme-format
 msgid "no pid specified~%"
-msgstr ""
+msgstr "geen procesnummer (PID) gegeven~%"
 
 #: guix/scripts/container/exec.scm:90
 #, scheme-format
 msgid "no command specified~%"
-msgstr ""
+msgstr "geen opdracht gegeven~%"
 
 #: guix/scripts/container/exec.scm:93
 #, scheme-format
 msgid "no such process ~d~%"
-msgstr ""
+msgstr "geen proces ~d~%"
 
 #: guix/scripts/container/exec.scm:105
 #, scheme-format
 msgid "exec failed with status ~d~%"
-msgstr ""
+msgstr "exec mislukt met status ~d~%"
 
 #: guix/transformations.scm:178 guix/transformations.scm:246
 #, scheme-format
 msgid "invalid replacement specification: ~s"
-msgstr ""
+msgstr "vervangingsopgave is ongeldig: ~s"
 
 #: guix/transformations.scm:227
 #, scheme-format
 msgid "the source of ~a is not a Git reference"
-msgstr ""
+msgstr "de bron van ~a is geen Git-referentie"
 
 #: guix/transformations.scm:319
 #, scheme-format
 msgid "~a: invalid Git URL replacement specification"
-msgstr ""
+msgstr "~a: ongeldige vervangingsopgave voor Git-URL"
 
 #: guix/transformations.scm:397
 #, scheme-format
 msgid "~a: invalid toolchain replacement specification"
-msgstr ""
+msgstr "~a: ongeldige vervangingsopdracht voor toolchain"
 
 #: guix/transformations.scm:501
 #, scheme-format
 msgid "~a: invalid package patch specification"
-msgstr ""
+msgstr "~a: ongeldige vervangingsopdracht voor pakketpleister"
 
 #: guix/transformations.scm:524
 #, scheme-format
 msgid "could not determine latest upstream release of '~a'~%"
-msgstr ""
+msgstr "kon de laatste bovenstroomse uitgave van ‘~a’ niet vinden~%"
 
 #: guix/transformations.scm:532
 #, scheme-format
 msgid "cannot authenticate source of '~a', version ~a~%"
-msgstr ""
+msgstr "kan de authenticiteit van de bron van ‘~a’, versie ~a, niet controleren~%"
 
 #: guix/transformations.scm:616
 #, scheme-format
 msgid "Available package transformation options:~%"
-msgstr ""
+msgstr "Beschikbare pakkettransformatieopties:~%"
 
 #: guix/transformations.scm:622
 msgid ""
@@ -5096,6 +5159,9 @@ msgid ""
 "      --with-source=[PACKAGE=]SOURCE\n"
 "                         use SOURCE when building the corresponding package"
 msgstr ""
+"\n"
+"      --with-source=[PAKKET=]BRON\n"
+"                         gebruik BRON bij het bouwen van het PAKKET"
 
 #: guix/transformations.scm:625
 msgid ""
@@ -5103,6 +5169,9 @@ msgid ""
 "      --with-input=PACKAGE=REPLACEMENT\n"
 "                         replace dependency PACKAGE by REPLACEMENT"
 msgstr ""
+"\n"
+"      --with-input=PAKKET=VERVANGING\n"
+"                         vervang afhankelijkheid PAKKET door VERVANGING"
 
 #: guix/transformations.scm:628
 msgid ""
@@ -5110,6 +5179,9 @@ msgid ""
 "      --with-graft=PACKAGE=REPLACEMENT\n"
 "                         graft REPLACEMENT on packages that refer to PACKAGE"
 msgstr ""
+"\n"
+"      --with-graft=PAKKET=VERVANGING\n"
+"                         ent VERVANGING op pakketten die verwijzen naar PAKKET"
 
 #: guix/transformations.scm:631
 msgid ""
@@ -5117,6 +5189,9 @@ msgid ""
 "      --with-branch=PACKAGE=BRANCH\n"
 "                         build PACKAGE from the latest commit of BRANCH"
 msgstr ""
+"\n"
+"      --with-branch=PAKKET=TAK\n"
+"                         bouw PAKKET van de nieuwste commit op TAK"
 
 #: guix/transformations.scm:634
 msgid ""
@@ -5124,6 +5199,9 @@ msgid ""
 "      --with-commit=PACKAGE=COMMIT\n"
 "                         build PACKAGE from COMMIT"
 msgstr ""
+"\n"
+"      --with-commit=PAKKET=COMMIT\n"
+"                         bouw PAKKET vanop COMMIT"
 
 #: guix/transformations.scm:637
 msgid ""
@@ -5131,6 +5209,9 @@ msgid ""
 "      --with-git-url=PACKAGE=URL\n"
 "                         build PACKAGE from the repository at URL"
 msgstr ""
+"\n"
+"      --with-git-url=PAKKET=URL\n"
+"                         bouw PAKKET vanuit de bewaarplaats te URL"
 
 #: guix/transformations.scm:640
 msgid ""
@@ -5138,6 +5219,9 @@ msgid ""
 "      --with-patch=PACKAGE=FILE\n"
 "                         add FILE to the list of patches of PACKAGE"
 msgstr ""
+"\n"
+"      --with-patch=PAKKET=BESTAND\n"
+"                         voeg BESTAND toe aan de lijst met pleisters voor PAKKET"
 
 #: guix/transformations.scm:643
 msgid ""
@@ -5145,6 +5229,9 @@ msgid ""
 "      --with-latest=PACKAGE\n"
 "                         use the latest upstream release of PACKAGE"
 msgstr ""
+"\n"
+"      --with-latest=PAKKET\n"
+"                         gebruik de nieuwste bovenstroomse uitgave van PAKKET"
 
 #: guix/transformations.scm:646
 msgid ""
@@ -5152,6 +5239,9 @@ msgid ""
 "      --with-c-toolchain=PACKAGE=TOOLCHAIN\n"
 "                         build PACKAGE and its dependents with TOOLCHAIN"
 msgstr ""
+"\n"
+"      --with-c-toolchain=PAKKET=GEREEDSCHAP\n"
+"                         bouw PAKKET en zijn afhankelijkheden met GEREEDSCHAP"
 
 #: guix/transformations.scm:649
 msgid ""
@@ -5159,6 +5249,9 @@ msgid ""
 "      --with-debug-info=PACKAGE\n"
 "                         build PACKAGE and preserve its debug info"
 msgstr ""
+"\n"
+"      --with-debug-info=PAKKET\n"
+"                         bouw PAKKET en bewaar zijn foutopsporingsinformatie"
 
 #: guix/transformations.scm:652
 msgid ""
@@ -5166,74 +5259,79 @@ msgid ""
 "      --without-tests=PACKAGE\n"
 "                         build PACKAGE without running its tests"
 msgstr ""
+"\n"
+"      --without-tests=PAKKET\n"
+"                         bouw PAKKET zonder zijn controles uit te voeren"
 
 #: guix/transformations.scm:658
 msgid ""
 "\n"
 "      --help-transform   list package transformation options not shown here"
 msgstr ""
+"\n"
+"      --help-transform   lijst hier niet getoonde opties op voor het omvormen van pakketten"
 
 #: guix/transformations.scm:707
 #, scheme-format
 msgid "transformation '~a' had no effect on ~a~%"
-msgstr ""
+msgstr "omvorming ‘~a’ had geen uitwerking op ~a~%"
 
 #: guix/upstream.scm:348
 #, scheme-format
 msgid "failed to download detached signature from ~a~%"
-msgstr ""
+msgstr "ophalen van gescheiden handtekening voor ~a mislukt~%"
 
 #: guix/upstream.scm:352
 #, scheme-format
 msgid "signature verification failed for '~a' (key: ~a)~%"
-msgstr ""
+msgstr "controle van handtekening ‘~a’ (sleutel: ~a) mislukt~%"
 
 #: guix/upstream.scm:356
 #, scheme-format
 msgid "missing public key ~a for '~a'~%"
-msgstr ""
+msgstr "publieke sleutel ~a voor ‘~a’ ontbreekt~%"
 
 #: guix/upstream.scm:370
 #, scheme-format
 msgid "failed to fetch source from '~a'"
-msgstr ""
+msgstr "ophalen van bron voor ‘~a’ mislukt"
 
 #: guix/upstream.scm:454
 #, scheme-format
 msgid "cannot download for this method: ~s"
-msgstr ""
+msgstr "kan niet met deze methode ophalen: ~s"
 
 #: guix/upstream.scm:519
 #, scheme-format
 msgid "~a: could not locate source file"
-msgstr ""
+msgstr "~a: bronbestand niet gevonden"
 
 #: guix/upstream.scm:523
 #, scheme-format
 msgid "~a: no `version' field in source; skipping~%"
-msgstr ""
+msgstr "~a: heeft geen ‘version’-veld in bron en wordt overgeslagen~%"
 
 #: guix/ui.scm:162
 #, scheme-format
 msgid "error: ~a: unbound variable"
-msgstr ""
+msgstr "fout: ~a: variabele niet gebonden"
 
 #: guix/ui.scm:262
 msgid "entering debugger; type ',bt' for a backtrace\n"
-msgstr ""
+msgstr "foutopsporing wordt gestart; voer ‘,bt’ in om de stappen (‘backtrace’) weer te geven die daartoe leidden\n"
 
 #: guix/ui.scm:320
 msgid "hint: "
-msgstr ""
+msgstr "tip: "
 
 #: guix/ui.scm:337
 msgid "Did you forget a @code{use-modules} form?"
-msgstr ""
+msgstr "Vergat je @code{use-modules} te gebruiken?"
 
 #: guix/ui.scm:339
 #, scheme-format
 msgid "Did you forget @code{(use-modules ~a)}?"
-msgstr ""
+msgstr "Vergat je @code{(use-modules ~a)} te gebruiken?"
 
 #: guix/ui.scm:349
 #, scheme-format
@@ -5244,48 +5342,53 @@ msgid ""
 "(define-module ~a)\n"
 "@end example"
 msgstr ""
+"Bestand @file{~a} begint waarschijnlijk best zo:\n"
+"\n"
+"@example\n"
+"(define-module ~a)\n"
+"@end example"
 
 #: guix/ui.scm:363
 #, scheme-format
 msgid "module name ~a does not match file name '~a'~%"
-msgstr ""
+msgstr "modulenaam ~a komt niet overeen met bestandsnaam ‘~a’~%"
 
 #: guix/ui.scm:367
 #, scheme-format
 msgid "~a: file is empty~%"
-msgstr ""
+msgstr "~a: bestand is leeg~%"
 
-#: guix/ui.scm:378 guix/ui.scm:426 guix/ui.scm:434 guix/ui.scm:438
+#: guix/ui.scm:378 guix/ui.scm:428 guix/ui.scm:436 guix/ui.scm:440
 #, scheme-format
 msgid "failed to load '~a': ~a~%"
-msgstr ""
+msgstr "‘~a’ laden mislukt: ~a~%"
 
-#: guix/ui.scm:385
+#: guix/ui.scm:387
 #, scheme-format
 msgid "~amissing closing parenthesis~%"
-msgstr ""
+msgstr "~asluitingshaakje ontbreekt~%"
 
-#: guix/ui.scm:390
+#: guix/ui.scm:392
 #, scheme-format
 msgid "~s: ~a~%"
-msgstr ""
+msgstr "~s: ~a~%"
 
-#: guix/ui.scm:406 guix/ui.scm:902
+#: guix/ui.scm:408 guix/ui.scm:904
 #, scheme-format
 msgid "exception thrown: ~s~%"
-msgstr ""
+msgstr "uitzondering gemeld: ~s~%"
 
-#: guix/ui.scm:410 guix/ui.scm:448
+#: guix/ui.scm:412 guix/ui.scm:450
 #, scheme-format
 msgid "failed to load '~a':~%"
-msgstr ""
+msgstr "kon ‘~a’ niet laden:~%"
 
-#: guix/ui.scm:445
+#: guix/ui.scm:447
 #, scheme-format
 msgid "failed to load '~a': exception thrown: ~s~%"
-msgstr ""
+msgstr "‘~a’ laden mislukt: uitzondering gemeld: ~s~%"
 
-#: guix/ui.scm:493
+#: guix/ui.scm:495
 msgid ""
 "Consider installing the @code{glibc-utf8-locales} or\n"
 "@code{glibc-locales} package and defining @code{GUIX_LOCPATH}, along these\n"
@@ -5298,428 +5401,452 @@ msgid ""
 "\n"
 "See the \"Application Setup\" section in the manual, for more info.\n"
 msgstr ""
+"Overweeg het pakket @code{glibc-utf8-locales} of @code{glibc-locales}\n"
+"te installeren en @code{GUIX_LOCPATH} te definiëren als volgt:\n"
+"\n"
+"@example\n"
+"guix install glibc-utf8-locales\n"
+"export GUIX_LOCPATH=\"$HOME/.guix-profile/lib/locale\"\n"
+"@end example\n"
+"\n"
+"Zie de sectie ‘Application Setup’ in de handleiding voor meer informatie.\n"
 
 #. TRANSLATORS: Translate "(C)" to the copyright symbol
 #. (C-in-a-circle), if this symbol is available in the user's
 #. locale.  Otherwise, do not translate "(C)"; leave it as-is.  */
-#: guix/ui.scm:535
-msgid "(C)"
-msgstr ""
-
-#: guix/ui.scm:536
-msgid "the Guix authors\n"
-msgstr ""
-
 #: guix/ui.scm:537
+msgid "(C)"
+msgstr "©"
+
+#: guix/ui.scm:538
+msgid "the Guix authors\n"
+msgstr "de auteurs van Guix\n"
+
+#: guix/ui.scm:539
 msgid ""
 "License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\n"
 "This is free software: you are free to change and redistribute it.\n"
 "There is NO WARRANTY, to the extent permitted by law.\n"
 msgstr ""
+"Licentie GPLv3+: GNU GPL versie 3 of nieuwer <http://gnu.org/licenses/gpl.nl.html>\n"
+"Dit is vrije software: je bent vrij om het aan te passen en het verder te verspreiden.\n"
+"Er is GEEN ENKELE GARANTIE, voor zover wettelijk toegestaan.\n"
 
 #. TRANSLATORS: The placeholder indicates the bug-reporting address for this
 #. package.  Please add another line saying "Report translation bugs to
 #. ...\n" with the address for translation bugs (typically your translation
 #. team's web or email address).
-#: guix/ui.scm:549
+#: guix/ui.scm:551
 #, scheme-format
 msgid ""
 "\n"
 "Report bugs to: ~a."
 msgstr ""
-
-#: guix/ui.scm:551
-#, scheme-format
-msgid ""
 "\n"
-"~a home page: <~a>"
-msgstr ""
+"Meld fouten aan: ~a."
 
 #: guix/ui.scm:553
 #, scheme-format
 msgid ""
 "\n"
+"~a home page: <~a>"
+msgstr ""
+"\n"
+"~a hoofdpagina: <~a>"
+
+#: guix/ui.scm:555
+#, scheme-format
+msgid ""
+"\n"
 "General help using Guix and GNU software: <~a>"
 msgstr ""
+"\n"
+"Algemene hulp voor het gebruik van Guix en GNU-software: <~a>"
 
 #. TRANSLATORS: Change the "/en" bit of this URL appropriately if
 #. the web site is translated in your language.
-#: guix/ui.scm:557
+#: guix/ui.scm:559
 msgid "https://guix.gnu.org/en/help/"
-msgstr ""
+msgstr "https://guix.gnu.org/nl/help/"
 
-#: guix/ui.scm:611
+#: guix/ui.scm:613
 #, scheme-format
 msgid "'~a' is not a valid regular expression: ~a~%"
-msgstr ""
+msgstr "‘~a’ is geen geldige reguliere expressie: ~a~%"
 
-#: guix/ui.scm:617
+#: guix/ui.scm:619
 #, scheme-format
 msgid "~a: invalid number~%"
-msgstr ""
+msgstr "~a: ongeldig getal~%"
 
-#: guix/ui.scm:635
+#: guix/ui.scm:637
 #, scheme-format
 msgid "invalid number: ~a~%"
-msgstr ""
+msgstr "ongeldig getal: ~a~%"
 
-#: guix/ui.scm:658
+#: guix/ui.scm:660
 #, scheme-format
 msgid "unknown unit: ~a~%"
-msgstr ""
+msgstr "onbekende eenheid: ~a~%"
 
-#: guix/ui.scm:673
+#: guix/ui.scm:675
 #, scheme-format
 msgid ""
 "You cannot have two different versions\n"
 "or variants of @code{~a} in the same profile."
 msgstr ""
+"Je kan geen twee verschillende versies\n"
+"of varianten van @code{~a} in hetzelfde profiel hebben."
 
-#: guix/ui.scm:676
+#: guix/ui.scm:678
 #, scheme-format
 msgid ""
 "Try upgrading both @code{~a} and @code{~a},\n"
 "or remove one of them from the profile."
 msgstr ""
+"Probeer zowel @code{~a} en @code{~a} bij te werken,\n"
+"of verwijder één van beiden uit het profiel."
 
-#: guix/ui.scm:712
+#: guix/ui.scm:714
 #, scheme-format
 msgid "~a:~a:~a: package `~a' has an invalid input: ~s~%"
-msgstr ""
+msgstr "~a:~a:~a: pakket ‘~a’ heeft een ongeldige invoer: ~s~%"
 
-#: guix/ui.scm:719
+#: guix/ui.scm:721
 #, scheme-format
 msgid "~a: ~a: build system `~a' does not support cross builds~%"
-msgstr ""
+msgstr "~a: ~a: bouwsysteem ‘~a’ ondersteunt geen kruisbouw~%"
 
-#: guix/ui.scm:725
+#: guix/ui.scm:727
 #, scheme-format
 msgid "~s: invalid G-expression input~%"
-msgstr ""
+msgstr "~s: ongeldige invoer voor G-uitdrukking~%"
 
-#: guix/ui.scm:728
+#: guix/ui.scm:730
 #, scheme-format
 msgid "profile '~a' does not exist~%"
-msgstr ""
+msgstr "profiel ‘~a’ bestaat niet~%"
 
-#: guix/ui.scm:731
+#: guix/ui.scm:733
 #, scheme-format
 msgid "generation ~a of profile '~a' does not exist~%"
-msgstr ""
+msgstr "generatie ~a van profiel ‘~a’ bestaat niet~%"
 
-#: guix/ui.scm:736
+#: guix/ui.scm:738
 #, scheme-format
 msgid "package '~a~@[@~a~]~@[:~a~]' not found in profile~%"
-msgstr ""
+msgstr "pakket ‘~a~@[@~a~]~@[:~a~]’ niet gevonden in profiel~%"
 
-#: guix/ui.scm:748
+#: guix/ui.scm:750
 #, scheme-format
 msgid "   ... propagated from ~a@~a~%"
-msgstr ""
+msgstr "   …doorgegeven door ~a@~a~%"
 
-#: guix/ui.scm:758
+#: guix/ui.scm:760
 #, scheme-format
 msgid "profile contains conflicting entries for ~a~a~%"
-msgstr ""
+msgstr "profiel bevat tegenstrijdige vermeldingen van ~a~a~%"
 
-#: guix/ui.scm:761
+#: guix/ui.scm:763
 #, scheme-format
 msgid "  first entry: ~a@~a~a ~a~%"
-msgstr ""
+msgstr "  eerste vermelding: ~a@~a~a ~a~%"
 
-#: guix/ui.scm:767
+#: guix/ui.scm:769
 #, scheme-format
 msgid "  second entry: ~a@~a~a ~a~%"
-msgstr ""
-
-#: guix/ui.scm:779
-#, scheme-format
-msgid "corrupt input while restoring '~a' from ~s~%"
-msgstr ""
+msgstr "  tweede vermelding: ~a@~a~a ~a~%"
 
 #: guix/ui.scm:781
 #, scheme-format
-msgid "corrupt input while restoring archive from ~s~%"
-msgstr ""
+msgid "corrupt input while restoring '~a' from ~s~%"
+msgstr "beschadigde invoer tijdens het terugplaatsen van ‘~a’ van ~s~%"
 
-#: guix/ui.scm:784
+#: guix/ui.scm:783
+#, scheme-format
+msgid "corrupt input while restoring archive from ~s~%"
+msgstr "beschadigde invoer tijdens het terugplaatsen van het archief uit ~s~%"
+
+#: guix/ui.scm:786
 #, scheme-format
 msgid "failed to connect to `~a': ~a~%"
-msgstr ""
+msgstr "kon niet verbinden met ‘~a’: ~a~%"
 
-#: guix/ui.scm:792
+#: guix/ui.scm:794
 #, scheme-format
 msgid "reference to invalid output '~a' of derivation '~a'~%"
-msgstr ""
+msgstr "verwijzing naar ongeldige uitvoer ‘~a’ van distillatie ‘~a’~%"
 
-#: guix/ui.scm:796
+#: guix/ui.scm:798
 #, scheme-format
 msgid "file '~a' could not be found in these directories:~{ ~a~}~%"
-msgstr ""
+msgstr "bestand ‘~a’ kon niet gevonden worden in volgende mappen:~{ ~a~}~%"
 
-#: guix/ui.scm:801
+#: guix/ui.scm:803
 #, scheme-format
 msgid "program exited~@[ with non-zero exit status ~a~]~@[ terminated by signal ~a~]~@[ stopped by signal ~a~]: ~s~%"
-msgstr ""
+msgstr "programma ~@[ eindigde met een niet-nul eindstatus ~a~]~@[ werd beëindigd door signaal ~a~]~@[ werd gestopt door signaal ~a~]: ~s~%"
 
-#: guix/ui.scm:881
+#: guix/ui.scm:883
 #, scheme-format
 msgid "failed to read expression ~s: ~s~%"
-msgstr ""
+msgstr "kon de uitdrukking ~s niet lezen: ~s~%"
 
-#: guix/ui.scm:887
+#: guix/ui.scm:889
 #, scheme-format
 msgid "failed to evaluate expression '~a':~%"
-msgstr ""
+msgstr "kon de uitdrukking ‘~a’ niet uitrekenen:~%"
 
-#: guix/ui.scm:890
+#: guix/ui.scm:892
 #, scheme-format
 msgid "syntax error: ~a~%"
-msgstr ""
+msgstr "syntaxfout: ~a~%"
 
-#: guix/ui.scm:914
+#: guix/ui.scm:916
 #, scheme-format
 msgid "expression ~s does not evaluate to a package~%"
-msgstr ""
+msgstr "uitdrukking ~s kwam niet overeen met een pakket~%"
 
-#: guix/ui.scm:941
+#: guix/ui.scm:943
 msgid "at least ~,1h MB needed but only ~,1h MB available in ~a~%"
-msgstr ""
+msgstr "ten minste ~,1h MB is nodig maar enkel ~,1h MB is beschikbaar in ~a~%"
 
-#: guix/ui.scm:1050
+#: guix/ui.scm:1052
 #, scheme-format
 msgid "~:[The following derivation would be built:~%~{   ~a~%~}~;~]"
 msgid_plural "~:[The following derivations would be built:~%~{   ~a~%~}~;~]"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "~:[De volgende distillatie zou gebouwd worden:~%~{   ~a~%~}~;~]"
+msgstr[1] "~:[The following distillaties zouden gebouwd worden:~%~{   ~a~%~}~;~]"
 
 #. TRANSLATORS: "MB" is for "megabyte"; it should be
 #. translated to the corresponding abbreviation.
-#: guix/ui.scm:1059
+#: guix/ui.scm:1061
 msgid "~:[~,1h MB would be downloaded:~%~{   ~a~%~}~;~]"
-msgstr ""
+msgstr "~:[~,1h MB zouden binnengehaald worden:~%~{   ~a~%~}~;~]"
 
-#: guix/ui.scm:1065
+#: guix/ui.scm:1067
 #, scheme-format
 msgid "~:[The following file would be downloaded:~%~{   ~a~%~}~;~]"
 msgid_plural "~:[The following files would be downloaded:~%~{   ~a~%~}~;~]"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "~:[Het volgende bestand zou binnengehaald worden:~%~{   ~a~%~}~;~]"
+msgstr[1] "~:[De volgende bestanden zouden binnengehaald worden:~%~{   ~a~%~}~;~]"
 
-#: guix/ui.scm:1072
+#: guix/ui.scm:1074
 #, scheme-format
 msgid "~:[The following graft would be made:~%~{   ~a~%~}~;~]"
 msgid_plural "~:[The following grafts would be made:~%~{   ~a~%~}~;~]"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "~:[De volgende enting zouden doorgevoerd worden:~%~{   ~a~%~}~;~]"
+msgstr[1] "~:[De volgende entingen zouden doorgevoerd worden:~%~{   ~a~%~}~;~]"
 
-#: guix/ui.scm:1077
+#: guix/ui.scm:1079
 #, scheme-format
 msgid "~:[The following profile hook would be built:~%~{   ~a~%~}~;~]"
 msgid_plural "~:[The following profile hooks would be built:~%~{   ~a~%~}~;~]"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "~:[De volgende profielhaak zou worden gebouwd:~%~{   ~a~%~}~;~]"
+msgstr[1] "~:[De volgende profielhaken zouden worden gebouwd:~%~{   ~a~%~}~;~]"
 
 #. TRANSLATORS: "MB" is for "megabyte"; it should be
 #. translated to the corresponding abbreviation.
-#: guix/ui.scm:1089
+#: guix/ui.scm:1091
 msgid "~:[~,1h MB would be downloaded~%~;~]"
-msgstr ""
+msgstr "~:[~,1h MB zou binnengehaald worden~%~;~]"
 
-#: guix/ui.scm:1093
+#: guix/ui.scm:1095
 msgid "~:[~h item would be downloaded~%~;~]"
 msgid_plural "~:[~h items would be downloaded~%~;~]"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "~:[~h object zou binnengehaald worden~%~;~]"
+msgstr[1] "~:[~h objecten zouden binnengehaald worden~%~;~]"
 
-#: guix/ui.scm:1101
+#: guix/ui.scm:1103
 #, scheme-format
 msgid "~:[The following derivation will be built:~%~{   ~a~%~}~;~]"
 msgid_plural "~:[The following derivations will be built:~%~{   ~a~%~}~;~]"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "~:[De volgende distillatie zal gebouwd worden:~%~{   ~a~%~}~;~]"
+msgstr[1] "~:[De volgende distillaties zullen gebouwd worden:~%~{   ~a~%~}~;~]"
 
 #. TRANSLATORS: "MB" is for "megabyte"; it should be
 #. translated to the corresponding abbreviation.
-#: guix/ui.scm:1110
+#: guix/ui.scm:1112
 msgid "~:[~,1h MB will be downloaded:~%~{   ~a~%~}~;~]"
-msgstr ""
+msgstr "~:[~,1h MB zal binnengehaald worden:~%~{   ~a~%~}~;~]"
 
-#: guix/ui.scm:1116
+#: guix/ui.scm:1118
 #, scheme-format
 msgid "~:[The following file will be downloaded:~%~{   ~a~%~}~;~]"
 msgid_plural "~:[The following files will be downloaded:~%~{   ~a~%~}~;~]"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "~:[Het volgend bestand zal binnengehaald worden:~%~{   ~a~%~}~;~]"
+msgstr[1] "~:[De volgende bestanden zullen binnengehaald worden:~%~{   ~a~%~}~;~]"
 
-#: guix/ui.scm:1123
+#: guix/ui.scm:1125
 #, scheme-format
 msgid "~:[The following graft will be made:~%~{   ~a~%~}~;~]"
 msgid_plural "~:[The following grafts will be made:~%~{   ~a~%~}~;~]"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "~:[De volgende transplantaat zal worden gemaakt:~%~{   ~a~%~}~;~]"
+msgstr[1] "~:[De volgende transplantaten zullen worden gemaakt:~%~{   ~a~%~}~;~]"
 
-#: guix/ui.scm:1128
+#: guix/ui.scm:1130
 #, scheme-format
 msgid "~:[The following profile hook will be built:~%~{   ~a~%~}~;~]"
 msgid_plural "~:[The following profile hooks will be built:~%~{   ~a~%~}~;~]"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "~:[De volgende profielhaak zal worden gebouwd:~%~{   ~a~%~}~;~]"
+msgstr[1] "~:[De volgende profielhaken zullen worden gebouwd:~%~{   ~a~%~}~;~]"
 
 #. TRANSLATORS: "MB" is for "megabyte"; it should be
 #. translated to the corresponding abbreviation.
-#: guix/ui.scm:1140
+#: guix/ui.scm:1142
 msgid "~:[~,1h MB will be downloaded~%~;~]"
-msgstr ""
+msgstr "~:[~,1h MB zal binnengehaald worden~%~;~]"
 
-#: guix/ui.scm:1144
+#: guix/ui.scm:1146
 msgid "~:[~h item will be downloaded~%~;~]"
 msgid_plural "~:[~h items will be downloaded~%~;~]"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "~:[~h object zal binnengehaald worden~%~;~]"
+msgstr[1] "~:[~h objecten zullen binnengehaald worden~%~;~]"
 
-#: guix/ui.scm:1263
+#: guix/ui.scm:1265
 msgid "(dependencies or package changed)"
-msgstr ""
+msgstr "(afhankelijkheid of pakket veranderd)"
 
-#: guix/ui.scm:1282
+#: guix/ui.scm:1284
 #, scheme-format
 msgid "The following package would be removed:~%~{~a~%~}~%"
 msgid_plural "The following packages would be removed:~%~{~a~%~}~%"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Het volgende pakket zou verwijderd worden:~%~{~a~%~}~%"
+msgstr[1] "De volgende pakketten zouden verwijderd worden:~%~{~a~%~}~%"
 
-#: guix/ui.scm:1287
+#: guix/ui.scm:1289
 #, scheme-format
 msgid "The following package will be removed:~%~{~a~%~}~%"
 msgid_plural "The following packages will be removed:~%~{~a~%~}~%"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Het volgende pakket zal worden verwijderd:~%~{~a~%~}~%"
+msgstr[1] "De volgende pakketten zullen worden verwijderd:~%~{~a~%~}~%"
 
-#: guix/ui.scm:1300
+#: guix/ui.scm:1302
 #, scheme-format
 msgid "The following package would be downgraded:~%~{~a~%~}~%"
 msgid_plural "The following packages would be downgraded:~%~{~a~%~}~%"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Het volgende pakket zou worden gedowngraded:~%~{~a~%~}~%"
+msgstr[1] "De volgende pakketten zouden worden gedowngraded:~%~{~a~%~}~%"
 
-#: guix/ui.scm:1305
+#: guix/ui.scm:1307
 #, scheme-format
 msgid "The following package will be downgraded:~%~{~a~%~}~%"
 msgid_plural "The following packages will be downgraded:~%~{~a~%~}~%"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Het volgende pakket zal worden gedowngraded:~%~{~a~%~}~%"
+msgstr[1] "De volgende pakketten zullen worden gedowngraded:~%~{~a~%~}~%"
 
-#: guix/ui.scm:1318
+#: guix/ui.scm:1320
 #, scheme-format
 msgid "The following package would be upgraded:~%~{~a~%~}~%"
 msgid_plural "The following packages would be upgraded:~%~{~a~%~}~%"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Het volgende pakket zou worden geüpgraded:~%~{~a~%~}~%"
+msgstr[1] "De volgende pakketten zouden worden geüpgraded:~%~{~a~%~}~%"
 
-#: guix/ui.scm:1323
+#: guix/ui.scm:1325
 #, scheme-format
 msgid "The following package will be upgraded:~%~{~a~%~}~%"
 msgid_plural "The following packages will be upgraded:~%~{~a~%~}~%"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Het volgende pakket zal worden geüpgraded:~%~{~a~%~}~%"
+msgstr[1] "De volgende pakketten zullen worden geüpgraded:~%~{~a~%~}~%"
 
-#: guix/ui.scm:1334
+#: guix/ui.scm:1336
 #, scheme-format
 msgid "The following package would be installed:~%~{~a~%~}~%"
 msgid_plural "The following packages would be installed:~%~{~a~%~}~%"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Het volgende pakket wordt geïnstalleerd:~%~{~a~%~}~%"
+msgstr[1] "De volgende pakketten worden geïnstalleerd:~%~{~a~%~}~%"
 
-#: guix/ui.scm:1339
+#: guix/ui.scm:1341
 #, scheme-format
 msgid "The following package will be installed:~%~{~a~%~}~%"
 msgid_plural "The following packages will be installed:~%~{~a~%~}~%"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Het volgende pakket zal worden geïnstalleerd:~%~{~a~%~}~%"
+msgstr[1] "De volgende pakketten zullen worden geïnstalleerd:~%~{~a~%~}~%"
 
-#: guix/ui.scm:1875
+#: guix/ui.scm:1877
 #, scheme-format
 msgid "invalid syntax: ~a~%"
-msgstr ""
+msgstr "ongeldige syntaxis: ~a~%"
 
-#: guix/ui.scm:1884
+#: guix/ui.scm:1886
 #, scheme-format
 msgid "Generation ~a\t~a"
-msgstr ""
+msgstr "Generatie ~a\t~a"
 
 #. TRANSLATORS: This is a format-string for date->string.
 #. Please choose a format that corresponds to the
 #. usual way of presenting dates in your locale.
 #. See https://www.gnu.org/software/guile/manual/html_node/SRFI_002d19-Date-to-string.html
 #. for details.
-#: guix/ui.scm:1894
+#: guix/ui.scm:1896
 #, scheme-format
 msgid "~b ~d ~Y ~T"
-msgstr ""
+msgstr "~T ~d ~b ~Y"
 
 #. TRANSLATORS: The word "current" here is an adjective for
 #. "Generation", as in "current generation".  Use the appropriate
 #. gender where applicable.
-#: guix/ui.scm:1900
+#: guix/ui.scm:1902
 #, scheme-format
 msgid "~a\t(current)~%"
-msgstr ""
-
-#: guix/ui.scm:1934
-#, scheme-format
-msgid "cannot lock profile ~a: ~a~%"
-msgstr ""
+msgstr "~a\t(huidig)~%"
 
 #: guix/ui.scm:1936
 #, scheme-format
-msgid "profile ~a is locked by another process~%"
-msgstr ""
+msgid "cannot lock profile ~a: ~a~%"
+msgstr "kan profiel ~a niet vergrendelen: ~a~%"
 
-#: guix/ui.scm:1963
+#: guix/ui.scm:1938
+#, scheme-format
+msgid "profile ~a is locked by another process~%"
+msgstr "profiel ~a is vergrendeld door een ander proces~%"
+
+#: guix/ui.scm:1965
 #, scheme-format
 msgid "switched from generation ~a to ~a~%"
-msgstr ""
+msgstr "omgeschakeld van generatie ~a naar ~a~%"
 
-#: guix/ui.scm:1979
+#: guix/ui.scm:1981
 #, scheme-format
 msgid "deleting ~a~%"
-msgstr ""
+msgstr "~a~% verwijderen"
 
-#: guix/ui.scm:2010
+#: guix/ui.scm:2012
 #, scheme-format
 msgid "Try `guix --help' for more information.~%"
-msgstr ""
+msgstr "Probeer `guix --help' voor meer informatie.~%"
 
-#: guix/ui.scm:2102
+#: guix/ui.scm:2104
 msgid ""
 "Usage: guix COMMAND ARGS...\n"
 "Run COMMAND with ARGS.\n"
 msgstr ""
+"Gebruik: guix COMMANDO ARGS...\n"
+"Voer COMMANDO uit met ARGS.\n"
 
-#: guix/ui.scm:2105
+#: guix/ui.scm:2107
 msgid "COMMAND must be one of the sub-commands listed below:\n"
-msgstr ""
-
-#: guix/ui.scm:2147
-#, scheme-format
-msgid "guix: ~a: command not found~%"
-msgstr ""
+msgstr "COMMANDO moet een van de sub-commando's zijn hieronder getoond:\n"
 
 #: guix/ui.scm:2149
 #, scheme-format
-msgid "Did you mean @code{~a}?"
-msgstr ""
+msgid "guix: ~a: command not found~%"
+msgstr "guix: ~a: commando niet gevonden~%"
 
-#: guix/ui.scm:2183
+#: guix/ui.scm:2151
+#, scheme-format
+msgid "Did you mean @code{~a}?"
+msgstr "Bedoelde je @code{~a}?"
+
+#: guix/ui.scm:2185
 #, scheme-format
 msgid "guix: missing command name~%"
-msgstr ""
+msgstr "guix: ontbrekende commandonaam~%"
 
-#: guix/ui.scm:2191
+#: guix/ui.scm:2193
 #, scheme-format
 msgid "guix: unrecognized option '~a'~%"
-msgstr ""
+msgstr "guix: niet-herkende optie '~a'~%"
 
 #. TRANSLATORS: The word "phase" here denotes a "build phase";
 #. "~a" is a placeholder for the untranslated name of the current
@@ -5727,121 +5854,121 @@ msgstr ""
 #: guix/status.scm:357
 #, scheme-format
 msgid "'~a' phase"
-msgstr ""
+msgstr "'~a' fase"
 
 #: guix/status.scm:377
 msgid "building directory of Info manuals..."
-msgstr ""
+msgstr "opbouw van map met Info handleidingen..."
 
 #: guix/status.scm:379
 msgid "building GHC package cache..."
-msgstr ""
+msgstr "GHC-pakketcache bouwen..."
 
 #: guix/status.scm:381
 msgid "building CA certificate bundle..."
-msgstr ""
+msgstr "CA-certificaatbundel opbouwen..."
 
 #: guix/status.scm:383
 msgid "generating GLib schema cache..."
-msgstr ""
+msgstr "GLib-schema-cache genereren..."
 
 #: guix/status.scm:385
 msgid "creating GTK+ icon theme cache..."
-msgstr ""
+msgstr "GTK+ pictogramthema-cache aanmaken..."
 
 #: guix/status.scm:387
 msgid "building cache files for GTK+ input methods..."
-msgstr ""
+msgstr "cachebestanden bouwen voor GTK+ invoermethoden..."
 
 #: guix/status.scm:389
 msgid "building XDG desktop file cache..."
-msgstr ""
+msgstr "XDG desktop-bestandscache opbouwen..."
 
 #: guix/status.scm:391
 msgid "building XDG MIME database..."
-msgstr ""
+msgstr "XDG MIME-database opbouwen..."
 
 #: guix/status.scm:393
 msgid "building fonts directory..."
-msgstr ""
+msgstr "map met lettertypen bouwen..."
 
 #: guix/status.scm:395
 msgid "building TeX Live configuration..."
-msgstr ""
+msgstr "TeX Live-configuratie bouwen..."
 
 #: guix/status.scm:397
 msgid "building database for manual pages..."
-msgstr ""
+msgstr "database bouwen voor man-pagina's..."
 
 #: guix/status.scm:399
 msgid "building package cache..."
-msgstr ""
+msgstr "pakketcache bouwen..."
 
 #: guix/status.scm:479
 #, scheme-format
 msgid "applying ~a graft for ~a ..."
 msgid_plural "applying ~a grafts for ~a ..."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "~a transplantaat aanbrengen voor ~a ..."
+msgstr[1] "~a transplantaten aanbrengen voor ~a ..."
 
 #: guix/status.scm:487
 #, scheme-format
 msgid "building profile with ~a package..."
 msgid_plural "building profile with ~a packages..."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "profiel bouwen met ~a pakket..."
+msgstr[1] "profiel bouwen met ~a pakketten..."
 
 #: guix/status.scm:496
 #, scheme-format
 msgid "running profile hook of type '~a'..."
-msgstr ""
+msgstr "uitvoeren van profielhaak met type '~a'..."
 
 #: guix/status.scm:499
 #, scheme-format
 msgid "building ~a..."
-msgstr ""
+msgstr "~a bouwen..."
 
 #: guix/status.scm:504
 #, scheme-format
 msgid "successfully built ~a"
-msgstr ""
+msgstr "~a succesvol gebouwd"
 
 #: guix/status.scm:510
 #, scheme-format
 msgid "The following build is still in progress:~%~{  ~a~%~}~%"
 msgid_plural "The following builds are still in progress:~%~{  ~a~%~}~%"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "De volgende bouw wordt nog uitgevoerd:~%~{  ~a~%~}~%"
+msgstr[1] "De volgende bouw worden nog uitgevoerd:~%~{  ~a~%~}~%"
 
 #: guix/status.scm:516
 #, scheme-format
 msgid "build of ~a failed"
-msgstr ""
+msgstr "de bouw van ~a mislukte"
 
 #: guix/status.scm:520
 #, scheme-format
 msgid "Could not find build log for '~a'."
-msgstr ""
+msgstr "Kon de bouwlog voor '~a' niet vinden."
 
 #: guix/status.scm:523
 #, scheme-format
 msgid "View build log at '~a'."
-msgstr ""
+msgstr "Bekijk de bouwlog op '~a'."
 
 #: guix/status.scm:528
 #, scheme-format
 msgid "substituting ~a..."
-msgstr ""
+msgstr "~a vervangen..."
 
 #: guix/status.scm:533
 #, scheme-format
 msgid "downloading from ~a ..."
-msgstr ""
+msgstr "aan het downloaden van ~a..."
 
 #: guix/status.scm:559
 #, scheme-format
 msgid "substitution of ~a complete"
-msgstr ""
+msgstr "substitutie van ~a is klaar"
 
 #: guix/status.scm:562
 #, scheme-format
@@ -5919,7 +6046,7 @@ msgstr "handtekening voor ingevoerd bestand ontbreekt"
 
 #: guix/nar.scm:287
 msgid "invalid inter-file archive mark"
-msgstr ""
+msgstr "ongeldige inter-file archiefmarkering"
 
 #: guix/narinfo.scm:102
 #, scheme-format
@@ -5956,12 +6083,12 @@ msgstr "ongeldig ‘.guix-channel’-bestand"
 
 #: guix/channels.scm:340
 msgid "Authenticating channel '~a', commits ~a to ~a (~h new commits)...~%"
-msgstr ""
+msgstr "Authenticatiekanaal '~a', kent ~a toe aan ~a (~h nieuwe toekenningen)...~%"
 
 #: guix/channels.scm:404
 #, scheme-format
 msgid "channel '~a' lacks an introduction and cannot be authenticated~%"
-msgstr ""
+msgstr "kanaal '~a' mist een introductie en kan niet worden geverifieerd~%"
 
 #: guix/channels.scm:409
 msgid ""
@@ -5970,22 +6097,28 @@ msgid ""
 "@option{--disable-authentication}, at the risk of running unauthenticated and\n"
 "thus potentially malicious code."
 msgstr ""
+"Voeg de ontbrekende inleiding toe aan je\n"
+"kanalen-bestand om het probleem op te lossen.  Als alternatief kun je\n"
+"@option{--disable-authentication} doorgeven, met het risico van uitvoeren van\n"
+"niet-geverifieerde en dus potentieel schadelijke code."
 
 #: guix/channels.scm:413
 #, scheme-format
 msgid "channel authentication disabled~%"
-msgstr ""
+msgstr "kanaalverificatie uitgeschakeld~%"
 
 #: guix/channels.scm:438
 #, scheme-format
 msgid "aborting update of channel '~a' to commit ~a, which is not a descendant of ~a"
-msgstr ""
+msgstr "het bijwerken van kanaal '~a' afbreken om ~a vast te leggen, welke geen afstammeling is van ~a"
 
 #: guix/channels.scm:449 guix/scripts/system/reconfigure.scm:318
 msgid ""
 "Use @option{--allow-downgrades} to force\n"
 "this downgrade."
 msgstr ""
+"Gebruik @option{--allow-downgrades} om deze\n"
+"downgrade te forceren."
 
 #: guix/channels.scm:453
 msgid ""
@@ -5994,16 +6127,20 @@ msgid ""
 "getting the latest updates.  If you think this is not the case, explicitly\n"
 "allow non-forward updates."
 msgstr ""
+"Dit kan erop duiden dat er met het kanaal\n"
+"geknoeid is en geprobeerd wordt een terugdraaiing af te dwingen, waardoor je de\n"
+"laatste updates niet kunt ophalen. Als je denkt dat dit niet het geval is, sta dan\n"
+"expliciet niet-forward updates toe."
 
 #: guix/channels.scm:506
 #, scheme-format
 msgid "Updating channel '~a' from Git repository at '~a'...~%"
-msgstr ""
+msgstr "Kanaal '~a' bijwerken vanuit Git-repository op '~a'...~%"
 
 #: guix/channels.scm:527
 #, scheme-format
 msgid "pulled channel '~a' from a mirror of ~a, which might be stale~%"
-msgstr ""
+msgstr "kanaal '~a' opgehaald van een spiegel van ~a, die misschien oud is~%"
 
 #: guix/channels.scm:776
 msgid "'guix' channel is lacking"
@@ -6066,27 +6203,27 @@ msgstr "objecten indexeren"
 msgid "Git error ~a~%"
 msgstr "Git-fout ~a~%"
 
-#: guix/git.scm:276 guix/git.scm:487
+#: guix/git.scm:276 guix/git.scm:491
 #, scheme-format
 msgid "Git error: ~a~%"
 msgstr "Git-fout: ~a~%"
 
-#: guix/git.scm:290
+#: guix/git.scm:291
 #, scheme-format
 msgid "updating submodule '~a'...~%"
 msgstr "submodule ‘~a’ bijwerken…~%"
 
-#: guix/git.scm:581
+#: guix/git.scm:585
 #, scheme-format
 msgid "cannot fetch commit ~a from ~a: ~a"
 msgstr "kan commit ~a van ~a niet ophalen: ~a"
 
-#: guix/git.scm:584
+#: guix/git.scm:588
 #, scheme-format
 msgid "cannot fetch branch '~a' from ~a: ~a"
 msgstr "kan aftakking ‘~a’ van ~a niet ophalen: ~a"
 
-#: guix/git.scm:587
+#: guix/git.scm:591
 #, scheme-format
 msgid "Git failure while fetching ~a: ~a"
 msgstr "Git-fout bij het ophalen van ~a: ~a"
@@ -6122,8 +6259,7 @@ msgid ""
 "      --export           export the specified files/packages to stdout"
 msgstr ""
 "\n"
-"      --export           voer de aangegeven bestanden/pakketen uit naar\n"
-"                           standaarduitvoer"
+"      --export           voer de aangegeven bestanden/pakketten uit naar stdout"
 
 #: guix/scripts/archive.scm:74
 msgid ""
@@ -6181,8 +6317,7 @@ msgid ""
 "      --authorize        authorize imports signed by the public key on stdin"
 msgstr ""
 "\n"
-"      --authorize        keur invoer goed die ondertekend is met de publieke\n"
-"                           sleutel op standaardinvoer"
+"      --authorize        keur invoer goed die ondertekend is met de publieke sleutel op stdin"
 
 #: guix/scripts/archive.scm:159
 #, scheme-format
@@ -6262,6 +6397,9 @@ msgid ""
 "  -e, --expression=EXPR  create environment for the package that EXPR\n"
 "                         evaluates to"
 msgstr ""
+"\n"
+"  -e, --expression=EXPR  maak omgeving aan voor het pakket dat EXPR\n"
+"                         evalueert naar"
 
 #: guix/scripts/environment.scm:135
 msgid ""
@@ -6269,18 +6407,25 @@ msgid ""
 "  -l, --load=FILE        create environment for the package that the code within\n"
 "                         FILE evaluates to"
 msgstr ""
+"\n"
+"  -l, --load=BESTAND     maak omgeving aan voor het pakket dat de code in\n"
+"                         BESTAND evalueert naar"
 
 #: guix/scripts/environment.scm:138
 msgid ""
 "\n"
 "  -m, --manifest=FILE    create environment with the manifest from FILE"
 msgstr ""
+"\n"
+"  -m, --manifest=BESTAND maakt een omgeving aan met het manifest uit BESTAND"
 
 #: guix/scripts/environment.scm:140
 msgid ""
 "\n"
 "  -p, --profile=PATH     create environment from profile at PATH"
 msgstr ""
+"\n"
+"  -p, --profile=PAD      maakt een omgeving aan van profiel op PAD"
 
 #: guix/scripts/environment.scm:142
 msgid ""
@@ -6288,36 +6433,49 @@ msgid ""
 "      --ad-hoc           include all specified packages in the environment instead\n"
 "                         of only their inputs"
 msgstr ""
+"\n"
+"      --ad-hoc           neem alle gespecificeerde pakketten in de omgeving mee in plaats van\n"
+"                         alleen hun input"
 
 #: guix/scripts/environment.scm:145
 msgid ""
 "\n"
 "      --pure             unset existing environment variables"
 msgstr ""
+"\n"
+"      --pure             verwijder bestaande omgevingsvariabelen"
 
 #: guix/scripts/environment.scm:147
 msgid ""
 "\n"
 "  -E, --preserve=REGEXP  preserve environment variables that match REGEXP"
 msgstr ""
+"\n"
+"  -E, --preserve=REGEXP  bewaar omgevingsvariabelen die overeenkomen met REGEXP"
 
 #: guix/scripts/environment.scm:149
 msgid ""
 "\n"
 "      --search-paths     display needed environment variable definitions"
 msgstr ""
+"\n"
+"      --search-paths     toon vereiste definities van omgevingsvariabelen"
 
 #: guix/scripts/environment.scm:156
 msgid ""
 "\n"
 "  -C, --container        run command within an isolated container"
 msgstr ""
+"\n"
+"  -C, --container        voer de opdracht uit in een geïsoleerde container"
 
 #: guix/scripts/environment.scm:158
 msgid ""
 "\n"
 "  -N, --network          allow containers to access the network"
 msgstr ""
+"\n"
+"  -N, --network          geef containers toegang tot het network"
 
 #: guix/scripts/environment.scm:160
 #, scheme-format
@@ -6341,6 +6499,8 @@ msgid ""
 "      --no-cwd           do not share current working directory with an\n"
 "                         isolated container"
 msgstr ""
+"\n"
+"      --no-cwd           deel de huidige werkmap niet met een geïsoleerde container"
 
 #: guix/scripts/environment.scm:171
 msgid ""
@@ -6355,6 +6515,9 @@ msgid ""
 "      --expose=SPEC      for containers, expose read-only host file system\n"
 "                         according to SPEC"
 msgstr ""
+"\n"
+"      --expose=SPEC      voor containers, geef alleen-lezen toegang tot het\n"
+"                         volgens SPEC"
 
 #: guix/scripts/environment.scm:179
 msgid ""
@@ -6613,12 +6776,6 @@ msgstr ""
 msgid "failed to access '~a': ~a~%"
 msgstr ""
 
-#: guix/scripts/import/nix.scm:41
-msgid ""
-"Usage: guix import nix NIXPKGS ATTRIBUTE\n"
-"Import and convert the Nix expression ATTRIBUTE of NIXPKGS.\n"
-msgstr ""
-
 #: guix/scripts/import/opam.scm:41
 msgid ""
 "Usage: guix import opam PACKAGE-NAME\n"
@@ -6670,7 +6827,9 @@ msgstr "Het ‘system’-veld is verouderd, gebruik nu ‘systems’.~%"
 msgid ""
 "The build-machine object lacks a value for its 'systems'\n"
 "field."
-msgstr "De waarde van het ‘systems’-veld van het ‘build-machine’-object ontbreekt."
+msgstr ""
+"De waarde van het ‘systems’-veld van het ‘build-machine’-object\n"
+"ontbreekt."
 
 #: guix/scripts/offload.scm:176
 #, scheme-format
@@ -7112,7 +7271,7 @@ msgstr ""
 #: guix/scripts/system/reconfigure.scm:374
 #, scheme-format
 msgid "cannot determine provenance of ~a~%"
-msgstr ""
+msgstr "kan de herkomst van ~a niet bepalen~%"
 
 #: nix/nix-daemon/guix-daemon.cc:66
 msgid "guix-daemon -- perform derivation builds and store accesses"
@@ -7121,6 +7280,8 @@ msgstr ""
 #: nix/nix-daemon/guix-daemon.cc:68
 msgid "This program is a daemon meant to run in the background.  It serves requests sent over a Unix-domain socket.  It accesses the store, and builds derivations on behalf of its clients."
 msgstr ""
+"Dit programma is een daimon om in de achtergrond uit te voeren.  Het behandelt verzoeken over een ‘Unix-domain socket’.  Het heeft toegang tot het depot en bouwt distillaties op\n"
+"verzoek van gebruikers."
 
 #: nix/nix-daemon/guix-daemon.cc:96
 msgid "SYSTEM"
@@ -7128,7 +7289,7 @@ msgstr "SYSTEEM"
 
 #: nix/nix-daemon/guix-daemon.cc:97
 msgid "assume SYSTEM as the current system type"
-msgstr ""
+msgstr "neem aan dat SYSTEEM het huidig systeemtype is"
 
 #: nix/nix-daemon/guix-daemon.cc:98 nix/nix-daemon/guix-daemon.cc:101
 msgid "N"
@@ -7140,7 +7301,7 @@ msgstr ""
 
 #: nix/nix-daemon/guix-daemon.cc:102
 msgid "allow at most N build jobs"
-msgstr ""
+msgstr "sta hoogstens N bouwtaken toe"
 
 #: nix/nix-daemon/guix-daemon.cc:103 nix/nix-daemon/guix-daemon.cc:105
 msgid "SECONDS"
@@ -7216,7 +7377,7 @@ msgstr ""
 
 #: nix/nix-daemon/guix-daemon.cc:139
 msgid "disable automatic file \"deduplication\" in the store"
-msgstr ""
+msgstr "deactiveer automatische ‘ontdubbeling’ van bestanden in het depot"
 
 #: nix/nix-daemon/guix-daemon.cc:149
 msgid "impersonate Linux 2.6"
@@ -7228,7 +7389,7 @@ msgstr ""
 
 #: nix/nix-daemon/guix-daemon.cc:156
 msgid "tell whether the GC must keep derivations corresponding to live outputs"
-msgstr ""
+msgstr "duid aan of de afvalophaler de distillaties die overeenkomen met uitvoer die nog ergens gebruikt worden moet bewaren"
 
 #: nix/nix-daemon/guix-daemon.cc:159
 msgid "SOCKET"
