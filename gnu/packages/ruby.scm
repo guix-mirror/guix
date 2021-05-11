@@ -11339,6 +11339,40 @@ indentation will probably be an issue and hence this gem.")
 YAML.load suitable for accepting user input in Ruby applications.")
     (license license:expat)))
 
+(define-public ruby-yaml-lint
+  (package
+    (name "ruby-yaml-lint")
+    (version "0.0.10")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/Pryz/yaml-lint")
+               (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "1jz26mxjkdyjbgqp7f9isnzd1i6vkizsswyj1v639nmq31hwfh0d"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "rspec"))
+             #t)))))
+    (native-inputs
+     `(("ruby-coveralls" ,ruby-coveralls)
+       ("ruby-rspec" ,ruby-rspec)
+       ("ruby-simplecov" ,ruby-simplecov)))
+    (synopsis "Simple YAML check tool")
+    (description
+     "@code{yaml-lint} will simply try to load the YAML file with the built-in
+Ruby yaml library.")
+    (home-page "https://github.com/Pryz/yaml-lint")
+    (license license:expat)))
+
 (define-public ruby-mercenary
   (package
     (name "ruby-mercenary")
