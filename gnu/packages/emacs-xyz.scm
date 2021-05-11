@@ -55,7 +55,7 @@
 ;;; Copyright © 2019 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2019 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2019 Stephen Webber <montokapro@gmail.com>
-;;; Copyright © 2019 Leo Prikler <leo.prikler@student.tugraz.at>
+;;; Copyright © 2019, 2021 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2019 David Wilson <david@daviwil.com>
 ;;; Copyright © 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;; Copyright © 2020 Robert Smith <robertsmith@posteo.net>
@@ -20483,6 +20483,36 @@ e.g. the package dependencies it requires.  See function
 @code{package-lint-buffer}.  Checks will currently be enabled only if a
 \"Package-Requires:\" or \"Package-Version:\" header is present in the
 file.")
+    (license license:gpl3+)))
+
+(define-public emacs-packed
+  (package
+    (name "emacs-packed")
+    (version "3.0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/emacscollective/packed")
+             (commit version)))
+       (sha256
+        (base32
+         "06blk8parnpq3qi6y5628q3v59c8dyi41glb289a0l16248qwphk"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/emacscollective/packed")
+    (synopsis "Package manager agnostic Emacs Lisp package utilities")
+    (description
+     "Packed provides some package manager agnostic utilities to work
+with Emacs Lisp packages.  As far as Packed is concerned packages
+are collections of Emacs Lisp libraries that are stored in a
+dedicated directory such as a Git repository.  And libraries are
+Emacs Lisp files that provide the correct feature (matching the
+filename).
+
+Where a package manager might depend on metadata, Packed instead
+uses some heuristics to get the same information---that is slower
+and might also fail at times but makes it unnecessary to maintain
+package recipes.")
     (license license:gpl3+)))
 
 (define-public emacs-picpocket
