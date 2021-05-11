@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2020 by Amar M. Singh <nly@disroot.org>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -699,6 +699,36 @@ References: ~%"
       (list (response-code response)
             (= (response-content-length response) (stat:size (stat log)))
             (first (response-content-type response))))))
+
+(test-equal "negative TTL"
+  `(404 42)
+
+  (call-with-temporary-directory
+   (lambda (cache)
+     (let ((thread (with-separate-output-ports
+                    (call-with-new-thread
+                     (lambda ()
+                       (guix-publish "--port=6786" "-C0"
+                                     "--negative-ttl=42s"))))))
+       (wait-until-ready 6786)
+
+       (let* ((base     "http://localhost:6786/")
+              (url      (string-append base (make-string 32 #\z)
+                                       ".narinfo"))
+              (response (http-get url)))
+         (list (response-code response)
+               (match (assq-ref (response-headers response) 'cache-control)
+                 ((('max-age . ttl)) ttl)
+                 (_ #f))))))))
+
+(test-equal "no negative TTL"
+  `(404 #f)
+  (let* ((uri      (publish-uri
+                    (string-append "/" (make-string 32 #\z)
+                                   ".narinfo")))
+         (response (http-get uri)))
+    (list (response-code response)
+          (assq-ref (response-headers response) 'cache-control))))
 
 (test-equal "/log/NAME not found"
   404

@@ -12703,6 +12703,16 @@ Additionally, when @option{--cache} is used, cached entries that have
 not been accessed for @var{ttl} and that no longer have a corresponding
 item in the store, may be deleted.
 
+@item --negative-ttl=@var{ttl}
+Similarly produce @code{Cache-Control} HTTP headers to advertise the
+time-to-live (TTL) of @emph{negative} lookups---missing store items, for
+which the HTTP 404 code is returned.  By default, no negative TTL is
+advertised.
+
+This parameter can help adjust server load and substitute latency by
+instructing cooperating clients to be more or less patient when a store
+item is missing.
+
 @item --cache-bypass-threshold=@var{size}
 When used in conjunction with @option{--cache}, store items smaller than
 @var{size} are immediately available, even when they are not yet in

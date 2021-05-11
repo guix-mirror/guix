@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2020 by Amar M. Singh <nly@disroot.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
@@ -101,6 +101,8 @@ Publish ~a over HTTP.\n") %store-directory)
       --workers=N        use N workers to bake items"))
   (display (G_ "
       --ttl=TTL          announce narinfos can be cached for TTL seconds"))
+  (display (G_ "
+      --negative-ttl=TTL announce missing narinfos can be cached for TTL seconds"))
   (display (G_ "
       --nar-path=PATH    use PATH as the prefix for nar URLs"))
   (display (G_ "
@@ -223,6 +225,13 @@ usage."
                     (unless duration
                       (leave (G_ "~a: invalid duration~%") arg))
                     (alist-cons 'narinfo-ttl (time-second duration)
+                                result))))
+        (option '("negative-ttl") #t #f
+                (lambda (opt name arg result)
+                  (let ((duration (string->duration arg)))
+                    (unless duration
+                      (leave (G_ "~a: invalid duration~%") arg))
+                    (alist-cons 'narinfo-negative-ttl (time-second duration)
                                 result))))
         (option '("nar-path") #t #f
                 (lambda (opt name arg result)
@@ -390,14 +399,14 @@ References: ~a~%"
 
 (define* (render-narinfo store request hash
                          #:key ttl (compressions (list %no-compression))
-                         (nar-path "nar"))
+                         (nar-path "nar") negative-ttl)
   "Render metadata for the store path corresponding to HASH.  If TTL is true,
 advertise it as the maximum validity period (in seconds) via the
 'Cache-Control' header.  This allows 'guix substitute' to cache it for an
 appropriate duration.  NAR-PATH specifies the prefix for nar URLs."
   (let ((store-path (hash-part->path store hash)))
     (if (string-null? store-path)
-        (not-found request #:phrase "")
+        (not-found request #:phrase "" #:ttl negative-ttl)
         (values `((content-type . (application/x-nix-narinfo))
                   ,@(if ttl
                         `((cache-control (max-age . ,ttl)))
@@ -512,7 +521,7 @@ interpreted as the basename of a store item."
 
 (define* (render-narinfo/cached store request hash
                                 #:key ttl (compressions (list %no-compression))
-                                (nar-path "nar")
+                                (nar-path "nar") negative-ttl
                                 cache pool)
   "Respond to the narinfo request for REQUEST.  If the narinfo is available in
 CACHE, then send it; otherwise, return 404 and \"bake\" that nar and narinfo
@@ -536,7 +545,7 @@ requested using POOL."
                                                 #:compression
                                                 (first compressions)))))
     (cond ((string-null? item)
-           (not-found request))
+           (not-found request #:ttl negative-ttl))
           ((file-exists? cached)
            ;; Narinfo is in cache, send it.
            (values `((content-type . (application/x-nix-narinfo))
@@ -584,7 +593,7 @@ requested using POOL."
                           #:phrase "We're baking it"
                           #:ttl 300)))          ;should be available within 5m
           (else
-           (not-found request #:phrase "")))))
+           (not-found request #:phrase "" #:ttl negative-ttl)))))
 
 (define (compress-nar cache item compression)
   "Save in directory CACHE the nar for ITEM compressed with COMPRESSION."
@@ -974,7 +983,7 @@ methods, return the applicable compression."
 (define* (make-request-handler store
                                #:key
                                cache pool
-                               narinfo-ttl
+                               narinfo-ttl narinfo-negative-ttl
                                (nar-path "nar")
                                (compressions (list %no-compression)))
   (define compression-type?
@@ -1006,10 +1015,12 @@ methods, return the applicable compression."
                                       #:cache cache
                                       #:pool pool
                                       #:ttl narinfo-ttl
+                                      #:negative-ttl narinfo-negative-ttl
                                       #:nar-path nar-path
                                       #:compressions compressions)
                (render-narinfo store request hash
                                #:ttl narinfo-ttl
+                               #:negative-ttl narinfo-negative-ttl
                                #:nar-path nar-path
                                #:compressions compressions)))
           ;; /nar/file/NAME/sha256/HASH
@@ -1068,7 +1079,7 @@ methods, return the applicable compression."
                              #:key
                              advertise? port
                              (compressions (list %no-compression))
-                             (nar-path "nar") narinfo-ttl
+                             (nar-path "nar") narinfo-ttl narinfo-negative-ttl
                              cache pool)
   (when advertise?
     (let ((name (service-name)))
@@ -1084,6 +1095,7 @@ methods, return the applicable compression."
                                     #:pool pool
                                     #:nar-path nar-path
                                     #:narinfo-ttl narinfo-ttl
+                                    #:narinfo-negative-ttl narinfo-negative-ttl
                                     #:compressions compressions)
               concurrent-http-server
               `(#:socket ,socket)))
@@ -1127,6 +1139,7 @@ methods, return the applicable compression."
            (user        (assoc-ref opts 'user))
            (port        (assoc-ref opts 'port))
            (ttl         (assoc-ref opts 'narinfo-ttl))
+           (negative-ttl (assoc-ref opts 'narinfo-negative-ttl))
            (compressions (match (filter-map (match-lambda
                                               (('compression . compression)
                                                compression)
@@ -1192,6 +1205,7 @@ consider using the '--user' option!~%")))
                                                            "publish worker"))
                               #:nar-path nar-path
                               #:compressions compressions
+                              #:narinfo-negative-ttl negative-ttl
                               #:narinfo-ttl ttl))))))
 
 ;;; Local Variables:
