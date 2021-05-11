@@ -2835,6 +2835,33 @@ high-level toolkit for building cryptographic systems and protocols.")
     (home-page "https://github.com/crypto-rb/rbnacl")
     (license license:expat)))
 
+(define-public ruby-hkdf
+  (package
+    (name "ruby-hkdf")
+    (version "1.0.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/jtdowney/hkdf")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "1xqwdmxfnhagivwgb5v9ilwpb4jxlsqwj7pnj43d65zzg5m8p9r5"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:test-target "default"))
+    (native-inputs
+     `(("ruby-rspec" ,ruby-rspec)))
+    (synopsis "HMAC-based Key Derivation Function")
+    (description
+     "This package provides a Ruby implementation of RFC5869: @acronym{HKDF,
+HMAC-based Extract-and-Expand Key Derivation Function}.  The goal of HKDF is to
+take some source key material and generate suitable cryptographic keys from it.")
+    (home-page "https://github.com/jtdowney/hkdf")
+    (license license:expat)))
+
 (define-public ruby-nenv
   (package
     (name "ruby-nenv")
