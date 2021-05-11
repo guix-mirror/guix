@@ -2042,7 +2042,7 @@ msgstr "GNU Gix 참조 설명"
 #: guix-git/doc/guix.texi:10
 #, no-wrap
 msgid "version.texi"
-msgstr "version.texi"
+msgstr "version-ko.texi"
 
 #. type: copying
 #: guix-git/doc/guix.texi:91
@@ -2179,7 +2179,7 @@ msgstr "배포판 @value{EDITION} @* @value{UPDATED} @*"
 #: guix-git/doc/guix.texi:133
 #, no-wrap
 msgid "Top"
-msgstr "정상"
+msgstr "Top"
 
 #. type: top
 #: guix-git/doc/guix.texi:134

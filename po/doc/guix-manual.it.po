@@ -1967,7 +1967,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:10
 #, no-wrap
 msgid "version.texi"
-msgstr ""
+msgstr "version-it.texi"
 
 #. type: copying
 #: guix-git/doc/guix.texi:91

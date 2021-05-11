@@ -43,7 +43,7 @@ msgstr ""
 "Project-Id-Version: guix-manual 1.2.0-pre3\n"
 "Report-Msgid-Bugs-To: bug-guix@gnu.org\n"
 "POT-Creation-Date: 2021-04-06 13:33+0200\n"
-"PO-Revision-Date: 2021-05-10 20:56+0000\n"
+"PO-Revision-Date: 2021-05-11 02:57+0000\n"
 "Last-Translator: Julien Lepiller <fedora-account@lepiller.eu>\n"
 "Language-Team: French <https://translate.fedoraproject.org/projects/guix/documentation-manual/fr/>\n"
 "Language: fr\n"
@@ -62220,10 +62220,8 @@ msgstr "Exécuter Guix sur une machine virtuelle"
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:33498
-#, fuzzy
-#| msgid "To run Guix in a virtual machine (VM), one can use the pre-built Guix VM image distributed at @url{@value{BASE-URL}/guix-system-vm-image-@value{VERSION}.x86_64-linux.qcow2.xz}.  This image is a compressed image in QCOW format.  You will first need to decompress with @command{xz -d}, and then you can pass it to an emulator such as QEMU (see below for details)."
 msgid "To run Guix in a virtual machine (VM), one can use the pre-built Guix VM image distributed at @url{@value{BASE-URL}/guix-system-vm-image-@value{VERSION}.x86_64-linux.qcow2}.  This image is a compressed image in QCOW format.  You will first need to decompress with @command{xz -d}, and then you can pass it to an emulator such as QEMU (see below for details)."
-msgstr "Pour exécuter Guix sur une machine virtuelle (VM), on peut soit utiliser l'image de VM Guix pré-construite sur @indicateurl{@value{BASE-URL}/guix-system-vm-image-@value{VERSION}.x86_64-linux.qcow2.xz} .  Cette image est une image compressée au format QCOW.  Vous devrez d'abord la décompresser avec @command{xz -d} puis la passer à un émulateur comme QEMU (voir plus bas pour des détails)."
+msgstr "Pour exécuter Guix sur une machine virtuelle (VM), on peut soit utiliser l'image de VM Guix pré-construite sur @indicateurl{@value{BASE-URL}/guix-system-vm-image-@value{VERSION}.x86_64-linux.qcow2} .  Cette image est une image compressée au format QCOW.  Vous devrez d'abord la décompresser avec @command{xz -d} puis la passer à un émulateur comme QEMU (voir plus bas pour des détails)."
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:33505
