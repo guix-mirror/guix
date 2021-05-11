@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2018 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2020 Christopher Baines <mail@cbaines.net>
@@ -72,11 +72,11 @@
 
 (define %narinfo-negative-ttl
   ;; Likewise, but for negative lookups---i.e., cached lookup failures (404).
-  (* 1 3600))
+  (* 10 60))
 
 (define %narinfo-transient-error-ttl
   ;; Likewise, but for transient errors such as 504 ("Gateway timeout").
-  (* 10 60))
+  (* 5 60))
 
 (define %narinfo-cache-directory
   ;; A local cache of narinfos, to avoid going to the network.  Most of the
