@@ -268,7 +268,7 @@ EXP never returns or calls 'primitive-exit' when it's done."
 
        ;; Use 'connect-to-daemon' to honor GUIX_DAEMON_SOCKET.
        (let ((sock    (connect-to-daemon (or (getenv "GUIX_DAEMON_SOCKET")
-                                             socket-name)))
+                                             ,socket-name)))
              (stdin   (current-input-port))
              (stdout  (current-output-port))
              (select* (lambda (read write except)
