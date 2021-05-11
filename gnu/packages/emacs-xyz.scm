@@ -97,6 +97,7 @@
 ;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2021 Eugene Klimov <lipklim@mailbox.org>
+;;; Copyright © 2021 Zheng Junjie <873216071@qq.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25720,7 +25721,8 @@ REPL appropriate to the current major mode.")
         (base32 "1a50cziwg7lpgh26yvwxs46jfyfq1m0l6igbg5g5m288mz4d3an9"))))
     (build-system emacs-build-system)
     (arguments
-     '(#:phases
+     '(#:include (cons "\\.so$" %default-include)
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-rime-data-path
            (lambda* (#:key inputs #:allow-other-keys)
@@ -25732,13 +25734,7 @@ REPL appropriate to the current major mode.")
              #t))
          (add-before 'install 'build-emacs-module
            (lambda _
-             (invoke "make" "lib")))
-         (add-after 'install 'install-emacs-module
-           (lambda* (#:key outputs #:allow-other-keys)
-             (install-file "librime-emacs.so"
-                           (string-append (assoc-ref outputs "out")
-                                          "/share/emacs/site-lisp"))
-             #t)))))
+             (invoke "make" "lib"))))))
     (inputs
      `(("librime" ,librime)
        ("rime-data" ,rime-data)))
