@@ -1698,14 +1698,14 @@ TCP connection, TLS handshake and so on) in the terminal.")
 (define-public squid
   (package
     (name "squid")
-    (version "4.14")
+    (version "4.15")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://www.squid-cache.org/Versions/v4/squid-"
                            version ".tar.xz"))
        (sha256
-        (base32 "1z4zf98q24ps19fq840n0hwh6z1la65rf061kcapr29lcjm7s2gi"))))
+        (base32 "09aaz0hi7q4s5jalgl5i5fakmgzv5akf03gnajlah498mgjs94xn"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
