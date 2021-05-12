@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2016, 2017, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2016, 2017, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
@@ -84,6 +84,17 @@ C or C++ programs, though that is not its primary goal.")
    (home-page "https://www.hboehm.info/gc/")
 
    (license (x11-style (string-append home-page "license.txt")))))
+
+(define-public libgc/disable-munmap
+  ;; TODO: Use '--disable-munmap' by default on next rebuild cycle.
+  (package/inherit libgc
+    (arguments
+     ;; Work around <https://github.com/ivmai/bdwgc/issues/353>.
+     (substitute-keyword-arguments (package-arguments libgc)
+       ((#:configure-flags flags ''())
+        `(cons "--disable-munmap" ,flags))))
+    (properties `((hidden? . #t)
+                  ,@(package-properties libgc)))))
 
 ;; TODO: Add a static output in libgc in the next rebuild cycle.
 (define-public libgc/static-libs
