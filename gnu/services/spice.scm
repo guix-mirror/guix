@@ -34,41 +34,42 @@
   (spice-vdagent spice-vdagent-configuration-spice-vdagent
                  (default spice-vdagent)))
 
-(define (spice-vdagent-activation config)
-  "Return the activation gexp for CONFIG."
-  #~(begin
-      (use-modules (guix build utils))
-      (mkdir-p "/var/run/spice-vdagentd")))
-
 (define (spice-vdagent-shepherd-service config)
   "Return a <shepherd-service> for spice-vdagentd with CONFIG."
   (define spice-vdagent (spice-vdagent-configuration-spice-vdagent config))
 
   (define spice-vdagentd-command
     (list
-      (file-append spice-vdagent "/sbin/spice-vdagentd")
-      "-x"))
+     (file-append spice-vdagent "/sbin/spice-vdagentd")
+     "-x"))
 
   (list
-    (shepherd-service
-      (documentation "Spice vdagentd service")
-      (requirement '(udev))
-      (provision '(spice-vdagentd))
-      (start #~(make-forkexec-constructor '#$spice-vdagentd-command))
-      (stop #~(make-kill-destructor)))))
+   (shepherd-service
+    (documentation "Spice vdagentd service")
+    (requirement '(dbus-system))
+    (provision '(spice-vdagentd))
+    (start #~(lambda args
+               ;; spice-vdagentd supports being activated upon the client
+               ;; connecting to its socket; when not using such feature, the
+               ;; socket should not exist before vdagentd creates it itself.
+               (mkdir-p "/run/spice-vdagentd")
+               (false-if-exception
+                (delete-file "/run/spice-vdagentd/spice-vdagent-sock"))
+               (fork+exec-command '#$spice-vdagentd-command)))
+    (stop #~(make-kill-destructor)))))
 
 (define spice-vdagent-profile
   (compose list spice-vdagent-configuration-spice-vdagent))
 
 (define spice-vdagent-service-type
-  (service-type (name 'spice-vdagent)
-    (extensions
-      (list (service-extension shepherd-root-service-type
-                               spice-vdagent-shepherd-service)
-            (service-extension activation-service-type
-                               spice-vdagent-activation)
-            (service-extension profile-service-type
-                               spice-vdagent-profile)))))
+  (service-type
+   (name 'spice-vdagent)
+   (default-value (spice-vdagent-configuration))
+   (extensions
+    (list (service-extension shepherd-root-service-type
+                             spice-vdagent-shepherd-service)
+          (service-extension profile-service-type
+                             spice-vdagent-profile)))))
 
 (define* (spice-vdagent-service
           #:optional (config (spice-vdagent-configuration)))

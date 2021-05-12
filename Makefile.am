@@ -735,22 +735,22 @@ AM_DISTCHECK_CONFIGURE_FLAGS =			\
   --enable-daemon				\
   ac_cv_guix_test_root="$(GUIX_TEST_ROOT)"
 
-# Name of the 'guix' package shipped in the binary tarball.
-GUIX_FOR_BINARY_TARBALL = guix
-
 # The self-contained tarball.
 guix-binary.%.tar.xz:
 	$(AM_V_GEN)GUIX_PACKAGE_PATH=					\
 	tarball=`$(top_builddir)/pre-inst-env guix pack -C xz		\
 	  --fallback							\
 	  -s "$*" --localstatedir --profile-name=current-guix		\
-	  $(GUIX_FOR_BINARY_TARBALL)` ;					\
+	  guix` ;					\
 	cp "$$tarball" "$@.tmp" ; mv "$@.tmp" "$@"
 
 
+# The dependency on doc-pot-update is to generate the .pot files, which are
+# not checked in.
+dist: doc-pot-update
+
 dist-hook: gen-ChangeLog gen-AUTHORS gen-tarball-version
 dist-hook: assert-no-store-file-names
-dist-hook: doc-po-update
 
 distcheck-hook: assert-binaries-available assert-final-inputs-self-contained
 
@@ -831,21 +831,20 @@ system_flags = $(foreach system,$(1),-s $(system))
 
 # The release process works in several phases:
 #
-#   0. We assume the developer created a 'vX.Y' tag.
+#   0. We assume the developer created a 'vX.Y.Z' tag.
 #   1. Build the source tarball.
-#   2. Update the 'guix' package so that it corresponds to the 'vX.Y' tag.
+#   2. Update the 'guix' package so that it corresponds to the 'vX.Y.Z' tag.
 #   3. Build the binary tarballs for that 'guix' package.
 #   4. Update the 'guix' package again.
-#   5. Build the installation images.  The images will run 'guix'
-#      corresponding to 'vX.Y' + 1 commit, and they will install 'vX.Y'.
+#   5. Build the installation and VM images.  The images will run 'guix'
+#      corresponding to 'vX.Y.Z' + 1 commit, and they will install 'vX.Y.Z'.
 #
 # This 'release' target takes care of everything and copies the resulting
 # files to $(releasedir).
 #
 # XXX: Depend on 'dist' rather than 'distcheck' to work around the Gettext
 # issue described at <https://savannah.gnu.org/bugs/index.php?51027>.
-release: dist-with-updated-version
-	cd po; git checkout .
+release: dist-with-updated-version all
 	@if ! git diff-index --quiet HEAD; then			\
 	  echo "There are uncommitted changes; stopping." >&2 ;	\
 	  exit 1 ;						\
@@ -853,21 +852,24 @@ release: dist-with-updated-version
 	$(MKDIR_P) "$(releasedir)"
 	rm -f "$(releasedir)"/*
 	mv $(SOURCE_TARBALLS) "$(releasedir)"
+# Bump the Guix package version and build it.
 	GUIX_ALLOW_ME_TO_USE_PRIVATE_COMMIT=yes \
 	$(top_builddir)/pre-inst-env "$(GUILE)"	\
 		$(top_srcdir)/build-aux/update-guix-package.scm	\
 	   	"`git rev-parse HEAD`" "$(PACKAGE_VERSION)"
 	git add $(top_srcdir)/gnu/packages/package-management.scm
 	git commit -m "gnu: guix: Update to $(PACKAGE_VERSION)."
-	$(top_builddir)/pre-inst-env guix build $(GUIX_FOR_BINARY_TARBALL)	\
+	$(top_builddir)/pre-inst-env guix build guix	\
 	      $(call system_flags,$(SUPPORTED_SYSTEMS))	\
 	      -v1 --no-grafts --fallback
+# Generate the binary release tarballs.
 	rm -f $(BINARY_TARBALLS)
 	$(MAKE) $(BINARY_TARBALLS)
 	for system in $(SUPPORTED_SYSTEMS) ; do					\
 	  mv "guix-binary.$$system.tar.xz"					\
 	      "$(releasedir)/guix-binary-$(PACKAGE_VERSION).$$system.tar.xz" ;	\
 	done
+# Bump the Guix package version and build it (again).
 	GUIX_ALLOW_ME_TO_USE_PRIVATE_COMMIT=yes \
 	$(top_builddir)/pre-inst-env "$(GUILE)"	\
 		$(top_srcdir)/build-aux/update-guix-package.scm	\
@@ -877,9 +879,10 @@ release: dist-with-updated-version
 	$(top_builddir)/pre-inst-env guix build guix			\
 	      $(call system_flags,$(GUIX_SYSTEM_SUPPORTED_SYSTEMS))	\
 	      -v1 --no-grafts --fallback
+# Generate the ISO installation images.
 	for system in $(GUIX_SYSTEM_SUPPORTED_SYSTEMS) ; do				\
 	  image=`$(top_builddir)/pre-inst-env						\
-	    guix system disk-image -t iso9660                                           \
+	    guix system image -t iso9660                                           	\
 	    --label="GUIX_$${system}_$(VERSION)"					\
             --system=$$system --fallback						\
 	    gnu/system/install.scm` ;							\
@@ -887,13 +890,14 @@ release: dist-with-updated-version
 	    echo "failed to produced Guix installation image for $$system" >&2 ;	\
 	    exit 1 ;									\
 	  fi ;										\
-	  xz < "$$image" > "$(releasedir)/$(GUIX_SYSTEM_IMAGE_BASE).$$system.iso.xz.tmp" ;	\
-	  mv "$(releasedir)/$(GUIX_SYSTEM_IMAGE_BASE).$$system.iso.xz.tmp"		\
-	     "$(releasedir)/$(GUIX_SYSTEM_IMAGE_BASE).$$system.iso.xz" ;		\
+	  cp "$$image" "$(releasedir)/$(GUIX_SYSTEM_IMAGE_BASE).$$system.iso.tmp" ;	\
+	  mv "$(releasedir)/$(GUIX_SYSTEM_IMAGE_BASE).$$system.iso.tmp"			\
+	     "$(releasedir)/$(GUIX_SYSTEM_IMAGE_BASE).$$system.iso" ;			\
 	done
+# Generate the VM images.
 	for system in $(GUIX_SYSTEM_VM_SYSTEMS) ; do					\
 	  image=`$(top_builddir)/pre-inst-env						\
-	    guix system vm-image $(GUIX_SYSTEM_VM_IMAGE_FLAGS)				\
+	    guix system image -t qcow2 $(GUIX_SYSTEM_VM_IMAGE_FLAGS)			\
 	    --save-provenance								\
 	    --system=$$system --fallback						\
 	    gnu/system/examples/vm-image.tmpl` ;					\
@@ -901,9 +905,7 @@ release: dist-with-updated-version
 	    echo "failed to produced Guix VM image for $$system" >&2 ;			\
 	    exit 1 ;									\
 	  fi ;										\
-	  xz < "$$image" > "$(releasedir)/$(GUIX_SYSTEM_VM_IMAGE_BASE).$$system.xz.tmp" ;	\
-	  mv "$(releasedir)/$(GUIX_SYSTEM_VM_IMAGE_BASE).$$system.xz.tmp"			\
-	     "$(releasedir)/$(GUIX_SYSTEM_VM_IMAGE_BASE).$$system.xz" ;			\
+	  cp "$$image" "$(releasedir)/$(GUIX_SYSTEM_VM_IMAGE_BASE).$$system.qcow2";	\
 	done
 	@echo
 	@echo "Congratulations!  All the release files are now in $(releasedir)."

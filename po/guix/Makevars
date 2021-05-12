@@ -26,3 +26,8 @@ EXTRA_LOCALE_CATEGORIES =
 # "make distcheck -j4".
 # See <https://lists.gnu.org/archive/html/bug-gettext/2014-08/msg00005.html>.
 DIST_DEPENDS_ON_UPDATE_PO = no
+
+# Ignore the timestamp of the .pot file, as .po files are updated by
+# `make download-po` only. This ensures po files are not modified on the
+# first `make` invocation.
+PO_DEPENDS_ON_POT = no

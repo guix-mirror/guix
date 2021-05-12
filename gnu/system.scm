@@ -63,6 +63,7 @@
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages pciutils)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages wget)
   #:use-module (gnu packages zile)
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
@@ -790,6 +791,7 @@ of PROVENANCE-SERVICE-TYPE to its services."
   ;; Default set of networking packages.
   (list inetutils isc-dhcp
         iproute
+        wget
         ;; wireless-tools is deprecated in favor of iw, but it's still what
         ;; many people are familiar with, so keep it around.
         iw wireless-tools))
