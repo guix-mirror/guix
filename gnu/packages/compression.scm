@@ -1000,7 +1000,7 @@ tarballs.")
 (define-public libjcat
   (package
     (name "libjcat")
-    (version "0.1.6")
+    (version "0.1.7")
     (source
      (origin
        (method git-fetch)
@@ -1010,7 +1010,7 @@ tarballs.")
          (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1a2z34m8611xvna9kwch8ralxx7c9mk4rm9vrxx7p9hr8sbqbsaz"))))
+        (base32 "110c8h3p7m4ibrfvgja592z7j5h88qqanllxsvmxkjz3b129i02r"))))
     (build-system meson-build-system)
     (native-inputs
      `(("gobject-introspection" ,gobject-introspection)
