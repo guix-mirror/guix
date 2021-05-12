@@ -2,7 +2,7 @@
 ;;; Copyright © 2014, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017, 2018 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;;
@@ -92,7 +92,7 @@ IPv4 and IPv6.  ONC RPC is notably used by the network file system (NFS).")
 (define-public rpcbind
   (package
     (name "rpcbind")
-    (version "1.2.5")
+    (version "1.2.6")
     (source
      (origin
       (method url-fetch)
@@ -101,8 +101,7 @@ IPv4 and IPv6.  ONC RPC is notably used by the network file system (NFS).")
                           name "-" version ".tar.bz2"))
       (patches (search-patches "rpcbind-CVE-2017-8779.patch"))
       (sha256
-       (base32
-        "0ynszy5hpc7wbz8xngqwyhgbi9cay73y43izqhcmrcv375l61qrc"))))
+       (base32 "1pp8xvprsfz8nlmmvxf829gilx0ibb08bfs3lhisxrfai5j784sn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
