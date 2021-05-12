@@ -2726,7 +2726,7 @@ different audio devices such as ALSA or PulseAudio.")
               (sha256
                (base32
                 "065x66rr1mb2bkqr88l50rcn5c8rsiq4hp5hrlyqqg46371gzhp9"))))
-    (build-system gnu-build-system)
+    (build-system cmake-build-system)
     (arguments
      '(#:tests? #f))                    ; no check target
     (inputs
