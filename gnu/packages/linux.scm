@@ -4368,14 +4368,14 @@ isolation or root privileges.")
 (define-public hdparm
   (package
     (name "hdparm")
-    (version "9.61")
+    (version "9.62")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/hdparm/hdparm/"
                                   "hdparm-" version ".tar.gz"))
               (sha256
                (base32
-                "0hskvzsg58hw8abkkmxh5kky0hhilv516870x2bq62zihww1q6ns"))))
+                "0zvppv8qw0y1shlhn34iq1g4883i1cywsa514n595nmyrmsrs3rc"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
