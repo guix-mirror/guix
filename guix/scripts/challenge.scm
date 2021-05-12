@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -253,10 +253,11 @@ taken since we do not import the archives."
 NARINFO."
   (let*-values (((uri compression size)
                  (narinfo-best-uri narinfo))
-                ((port response)
+                ((port actual-size)
                  (http-fetch uri)))
     (define reporter
-      (progress-reporter/file (narinfo-path narinfo) size
+      (progress-reporter/file (narinfo-path narinfo)
+                              (max size (or actual-size 0)) ;defensive
                               #:abbreviation (const (uri-host uri))))
 
     (define result
