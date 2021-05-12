@@ -4081,7 +4081,7 @@ Logitech Unifying Receiver.")
   (package
     (name "lynis")
     ;; Also update the ‘lynis-sdk’ input to the commit matching this release.
-    (version "3.0.3")
+    (version "3.0.4")
     (source
      (origin
        (method git-fetch)
@@ -4090,7 +4090,7 @@ Logitech Unifying Receiver.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0sdjh2f1563qalp740vkaaxdxl56ny98h168cggpm10h2yq366gr"))
+        (base32 "1i556d8xpas6k5k3ad0xvc6ihxnw27nzrjkf14759jkcqrbpb4gy"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -4107,10 +4107,10 @@ Logitech Unifying Receiver.")
            (method git-fetch)
            (uri (git-reference
                  (url "https://github.com/CISOfy/lynis-sdk")
-                 (commit "ea7a39774fbd71113a1955cf1a4937b489935174")))
+                 (commit "a4087770b7ee794901c5135673e006e8f84bfd3d")))
            (file-name (git-file-name "lynis-sdk" version))
            (sha256
-            (base32 "0q5j2myshjkz9qwvcg8n7c33yw2cp80yvzhckd60qmzabv4g4qb5"))))))
+            (base32 "00wikqydhrjcn0ampgr4qjg30y12as1gm23z94bs72ff035lhcpw"))))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
