@@ -27238,6 +27238,33 @@ easily.  Four pre-set options are: @samp{shell}, @samp{terminal},
 you use some other configuration.")
       (license license:gpl3+))))
 
+(define-public emacs-tshell
+  ;; XXX: Upstream has no tagged release.  Version is extracted from keyword
+  ;; in main file.
+  (let ((commit "47ef3a6c537b06eb422d9a124e1c44062223e323")
+        (revision "0"))
+    (package
+      (name "emacs-tshell")
+      (version (git-version "0.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/TatriX/tshell")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0yv38bqdp6b614lbj4v408vv5mlic3vs1v7266xrfxm1cm903apj"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-transient" ,emacs-transient)))
+      (home-page "https://github.com/TatriX/tshell")
+      (synopsis "Experimental buffer-oriented Emacs shell")
+      (description
+       "Tshell is an experimental buffer-oriented shell.  It supports shell
+and Emacs lisp commands.")
+      (license license:gpl3+))))
+
 (define-public emacs-extmap
   (package
     (name "emacs-extmap")
