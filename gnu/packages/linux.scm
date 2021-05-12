@@ -5115,7 +5115,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "5.11.1")
+    (version "5.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -5123,7 +5123,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "1zpbpmq8qndwls40yg2c9xj9ca6mcxdziadj5i8fbi3ffp2crap3"))))
+                "0mgdcqyww20fvh0js717yvla1hkky12c6dfhascicmrfw5fdcfcf"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of the binaries in "out"
@@ -5168,6 +5168,9 @@ and copy/paste text in the console and in xterm.")
                      ("asciidoc" ,asciidoc)
                      ("python" ,python)
                      ("xmlto" ,xmlto)
+                     ;; Remove this input entirely when the default headers
+                     ;; version provides blk_zone.capacity (>= 5.9).
+                     ("linux-libre-headers" ,linux-libre-headers-5.10)
                      ;; For building documentation.
                      ("libxml2" ,libxml2)
                      ("docbook-xsl" ,docbook-xsl)
