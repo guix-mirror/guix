@@ -37,6 +37,7 @@
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;; Copyright © 2021 Leo Le Bouter <lle-bout@zaclys.net>
 ;;; Copyright © 2021 Zelphir Kaltstahl <zelphirkaltstahl@posteo.de>
+;;; Copyright © 2021 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -362,7 +363,7 @@ $(datadir)/guile/site/$(GUILE_EFFECTIVE_VERSION)\n"))
 dictionary and suggesting spelling corrections.")
     (license license:gpl3+)))
 
-(define-public guile-bash
+(define-public guile2.0-bash
   ;; This project is currently retired.  It was initially announced here:
   ;; <https://lists.gnu.org/archive/html/guile-user/2015-02/msg00003.html>.
   (let ((commit "1eabc563ca5692b3e08d84f1f0e6fd2283284469")
@@ -430,6 +431,25 @@ enable -f ~/.guix-profile/lib/bash/libguile-bash.so scm
 
 and then run @command{scm example.scm}.")
       (license license:gpl3+))))
+
+(define-public guile-bash
+  (package
+    (inherit guile2.0-bash)
+    (name "guile-bash")
+    (inputs
+     `(("guile" ,guile-3.0-latest)
+       ,@(assoc-remove! (package-inputs guile2.0-bash) "guile")))
+    (arguments
+     `(#:tests? #f
+       #:phases (modify-phases %standard-phases
+                  (add-after 'install 'install-guile
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (copy-recursively
+                       (string-append (assoc-ref outputs "out")
+                                      (assoc-ref inputs "guile") "/share")
+                       (string-append (assoc-ref outputs "out") "/share"))
+                      #t)))
+       ,@(package-arguments guile2.0-bash)))))
 
 (define-public guile-8sync
   (package
