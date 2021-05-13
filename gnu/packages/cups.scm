@@ -484,16 +484,15 @@ should only be used as part of the Guix cups-pk-helper service.")
 (define-public hplip
   (package
     (name "hplip")
-    (version "3.21.2")
+    (version "3.21.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/hplip/hplip/" version
                                   "/hplip-" version ".tar.gz"))
               (sha256
                (base32
-                "0hbwx9d4c8177vi0gavz9pxi7rc97jciacndp90ms8327shj2121"))
+                "1lsa0g8lafnmfyia0vy9x1j9q2l80xjjm7clkrawrbg53y3x7ixx"))
               (modules '((guix build utils)))
-              (patches (search-patches "hplip-remove-imageprocessor.patch"))
               (snippet
                '(begin
                   ;; Delete non-free blobs: .so files, pre-compiled
@@ -502,7 +501,14 @@ should only be used as part of the Guix cups-pk-helper service.")
                             (find-files "."
                                         (lambda (file stat)
                                           (elf-file? file))))
+
+                  ;; Now remove some broken references to them.
                   (delete-file "prnt/hpcups/ImageProcessor.h")
+                  (substitute* "Makefile.in"
+                    ((" -lImageProcessor ") " ")
+                    (("(\\@HPLIP_BUILD_TRUE\\@[[:blank:]]*).*libImageProcessor.*"
+                      _ prefix)
+                     (string-append prefix ":; \\\n")))
 
                   ;; Install binaries under libexec/hplip instead of
                   ;; share/hplip; that'll at least ensure they get stripped.
@@ -528,7 +534,8 @@ should only be used as part of the Guix cups-pk-helper service.")
     ;; TODO install apparmor profile files eventually.
     (arguments
      `(#:configure-flags
-       `("--disable-network-build"
+       `("--disable-imageProcessor-build"
+         "--disable-network-build"
          ,(string-append "--prefix=" (assoc-ref %outputs "out"))
          ,(string-append "--sysconfdir=" (assoc-ref %outputs "out") "/etc")
          ,(string-append "LDFLAGS=-Wl,-rpath="
