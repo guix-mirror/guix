@@ -1147,13 +1147,16 @@ community.")
     (name "zfs-auto-snapshot")
     (version "1.2.4")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "https://github.com/zfsonlinux/zfs-auto-snapshot/archive/upstream/"
-               version ".tar.gz"))
-        (sha256
-          (base32 "16ry1w43i44xc67gr73x6fa48ninfhqxr498ad4m3kya93vp2zrh"))))
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url
+              (string-append "https://github.com/zfsonlinux/" name))
+             (commit
+              (string-append "upstream/" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0m4xw7h5qlbn5zdf9wb137pcr5l7hyrr7w2dgr16dfm5ay64vvfq"))))
     (build-system gnu-build-system)
     (inputs
       ;; Note: if you are inheriting from the above zfs package in order
