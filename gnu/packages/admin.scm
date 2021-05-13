@@ -271,7 +271,14 @@ and provides a \"top-like\" mode (monitoring).")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0x9zr0x3xvk4qkb6jnda451d5iyrl06cz1bjzjsm0lxvjj3fabyk"))))
+                "0x9zr0x3xvk4qkb6jnda451d5iyrl06cz1bjzjsm0lxvjj3fabyk"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Build with -O1 to work around <https://bugs.gnu.org/48368>.
+                  (substitute* "Makefile.in"
+                    (("compile --target")
+                     "compile -O1 --target"))))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--localstatedir=/var")
