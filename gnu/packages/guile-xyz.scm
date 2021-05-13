@@ -369,7 +369,7 @@ dictionary and suggesting spelling corrections.")
   (let ((commit "1eabc563ca5692b3e08d84f1f0e6fd2283284469")
         (revision "0"))
     (package
-      (name "guile-bash")
+      (name "guile2.0-bash")
       (version (string-append "0.1.6-" revision "." (string-take commit 7)))
       (home-page
        "https://anonscm.debian.org/cgit/users/kaction-guest/retired/dev.guile-bash.git")
