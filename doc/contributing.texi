@@ -242,7 +242,7 @@ Manual}).  First, you need more than an editor, you need
 wonderful @url{https://nongnu.org/geiser/, Geiser}.  To set that up, run:
 
 @example
-guix package -i emacs guile emacs-geiser
+guix package -i emacs guile emacs-geiser emacs-geiser-guile
 @end example
 
 Geiser allows for interactive and incremental development from within
