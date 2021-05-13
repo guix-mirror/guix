@@ -645,7 +645,7 @@ the freedesktop.org XDG Base Directory specification.")
              ;; logind system so that it can flicker the monitor, etc.
              ;; Just skip it until a more narrow selection can be made.
              (substitute* "src/libelogind/sd-login/test-login.c"
-               (("r = sd_pid_get_slice.*")
+               (("test_login\\(\\);")
                 "return 77;"))
              #t))
          (add-after 'unpack 'change-pid-file-path
