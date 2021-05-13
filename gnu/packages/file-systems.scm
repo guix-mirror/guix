@@ -1208,13 +1208,13 @@ community.")
                         (string-append "DESTDIR=" out)))
               #t)))))
     (home-page "https://github.com/zfsonlinux/zfs-auto-snapshot")
-    (synopsis "Automatically create, rotate, and destroy periodic ZFS snapshots")
-    (description
-      "An alternative implementation of the zfs-auto-snapshot service for Linux
-that is compatible with zfs-linux (now OpenZFS) and zfs-fuse.
+    (synopsis "Automatically create, rotate and destroy ZFS snapshots")
+    (description "An alternative implementation of the zfs-auto-snapshot
+service for Linux that is compatible with zfs-linux (now OpenZFS) and
+zfs-fuse.
 
-On Guix System, you will need to invoke the included shell scripts as @code{job}
-definitions in your @code{operating-system} declaration.")
+On Guix System, you will need to invoke the included shell scripts as
+@code{job} definitions in your @code{operating-system} declaration.")
     (license license:gpl2+)))
 
 (define-public mergerfs
