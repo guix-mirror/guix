@@ -5,7 +5,7 @@
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2019, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017, 2018 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
@@ -75,7 +75,7 @@
 (define-public libtasn1
   (package
     (name "libtasn1")
-    (version "4.16.0")
+    (version "4.17.0")
     (source
      (origin
       (method url-fetch)
@@ -83,7 +83,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "179jskl7dmfp1rd2khkzmlibzgki4wi6hvmmwfv7q49r728b03qf"))))
+        "19a53i1ajs4dd8nnlr2i6gbzvla84ay71g3y1phvh8krx8f5brzc"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-static")))
