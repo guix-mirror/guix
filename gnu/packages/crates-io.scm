@@ -12402,14 +12402,14 @@ programs.")
 (define-public rust-dyn-clone-1
   (package
     (name "rust-dyn-clone")
-    (version "1.0.2")
+    (version "1.0.4")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "dyn-clone" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "10idzzq2sad7dhrfhrhcx7yckzj8il2bzr16204683ryclxdqlsc"))))
+        (base32 "1kxb16nxiixn558gn82yaq2fl6271jay4rqkrw31lmnprjpjc9pf"))))
     (arguments
      `(#:skip-build? #t))
     (build-system cargo-build-system)
