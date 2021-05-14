@@ -16480,6 +16480,30 @@ debugging format.")
 DWARF debugging format.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-git-version-0.3
+  (package
+    (name "rust-git-version")
+    (version "0.3.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "git-version" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1qj1rd19v8vg094b3fj0gy6ca53v93lhrl31wg1fs7g0y61qx4cl"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-git-version-macro" ,rust-git-version-macro-0.3)
+        ("rust-proc-macro-hack" ,rust-proc-macro-hack-0.5))))
+    (home-page "https://github.com/fusion-engineering/rust-git-version")
+    (synopsis "Embed git information in your code at compile-time")
+    (description
+     "This crates compiles the git version (tag name, or hash otherwise) and
+dirty state into your program.")
+    (license license:bsd-2)))
+
 (define-public rust-git-version-macro-0.3
   (package
     (name "rust-git-version-macro")
