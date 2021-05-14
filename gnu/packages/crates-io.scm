@@ -11982,6 +11982,30 @@ reading attributes into structs when implementing custom derives.")
         ("rust-strsim" ,rust-strsim-0.9)
         ("rust-syn" ,rust-syn-1))))))
 
+(define-public rust-darling-core-0.9
+  (package
+    (inherit rust-darling-core-0.10)
+    (name "rust-darling-core")
+    (version "0.9.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "darling_core" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0b201dx4m58l5ac7gmbjvbf4z2xipnk5d4pqa7mz7gy3f21h3z3a"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-fnv" ,rust-fnv-1)
+        ("rust-ident-case" ,rust-ident-case-1)
+        ("rust-proc-macro2" ,rust-proc-macro2-0.4)
+        ("rust-quote" ,rust-quote-0.6)
+        ("rust-strsim" ,rust-strsim-0.7)
+        ("rust-syn" ,rust-syn-0.15))))))
+
 (define-public rust-darling-macro-0.12
   (package
     (name "rust-darling-macro")
