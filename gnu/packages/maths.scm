@@ -800,16 +800,15 @@ large scale eigenvalue problems.")
   (package
     (inherit arpack-ng)
     (version "3.3.0")
-    (name (package-name arpack-ng))
-    (home-page (package-home-page arpack-ng))
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append home-page "/archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference (url (package-home-page arpack-ng))
+                           (commit version)))
+       (file-name (git-file-name (package-name arpack-ng) version))
        (sha256
         (base32
-         "1cz53wqzcf6czmcpfb3vb61xi0rn5bwhinczl65hpmbrglg82ndd"))))))
+         "00h6bjvxjq7bv0b8pwnc0gw33ns6brlqv00xx2rh3w9b5n205918"))))))
 
 (define-public arpack-ng-openmpi
   (package (inherit arpack-ng)
