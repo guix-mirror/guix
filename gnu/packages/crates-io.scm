@@ -2197,7 +2197,7 @@ ArrayVec and ArrayString.")
 (define-public rust-as-slice-0.1
   (package
     (name "rust-as-slice")
-    (version "0.1.4")
+    (version "0.1.5")
     (source
      (origin
        (method url-fetch)
@@ -2205,7 +2205,7 @@ ArrayVec and ArrayString.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1rmhdfj11va424163d6r79wbgf2043i2p37s59ky6x2v8wiiqkdv"))))
+         "1q3a9494ikaq38zjg5px5gwwrbdgnyj23b505224njlmwd4knh25"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
