@@ -16011,7 +16011,7 @@ API library @code{gdi32}.")
   (package
     (inherit rust-generic-array-0.13)
     (name "rust-generic-array")
-    (version "0.12.3")
+    (version "0.12.4")
     (source
      (origin
        (method url-fetch)
@@ -16020,7 +16020,7 @@ API library @code{gdi32}.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1v5jg7djicq34nbiv1dwaki71gkny002wyy9qfn3y0hfmrs053y6"))))))
+         "1gfpay78vijl9vrwl1k9v7fbvbhkhcmnrk4kfg9l6x24y4s9zpzz"))))))
 
 (define-public rust-generic-array-0.9
   (package
