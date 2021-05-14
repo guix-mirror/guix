@@ -12631,7 +12631,7 @@ signing, and verification in pure Rust.")
 (define-public rust-either-1
   (package
     (name "rust-either")
-    (version "1.5.3")
+    (version "1.6.1")
     (source
      (origin
        (method url-fetch)
@@ -12640,7 +12640,7 @@ signing, and verification in pure Rust.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1qyz1b1acad6w0k5928jw5zaq900zhsk7p8dlcp4hh61w4f6n7xv"))))
+         "0mwl9vngqf5jvrhmhn9x60kr5hivxyjxbmby2pybncxfqhf4z3g7"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
