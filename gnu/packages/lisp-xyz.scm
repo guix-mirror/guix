@@ -16577,3 +16577,32 @@ implementation, for example drawing calls of GUI applications.")
 
 (define-public cl-trivial-main-thread
   (sbcl-package->cl-source-package sbcl-trivial-main-thread))
+
+(define-public sbcl-cl-package-locks
+  (let ((commit "96a358ede7cef416d61d2f699e724fe1d9de602c")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-package-locks")
+      (version (git-version "0.0.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/elliottjohnson/cl-package-locks")
+               (commit commit)))
+         (file-name (git-file-name "cl-package-locks" version))
+         (sha256
+          (base32 "0g3gfljnvpgd66ccd2sqawlkwqx4a0wsdrg5180va61w869cgxqq"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/elliottjohnson/cl-package-locks")
+      (synopsis "Compatibility layer for dealing with package locks")
+      (description
+       "This is a Common Lisp library providing a unified way to work with
+package locks across supported Common Lisp implementations.")
+      (license license:expat))))
+
+(define-public ecl-cl-package-locks
+  (sbcl-package->ecl-package sbcl-cl-package-locks))
+
+(define-public cl-package-locks
+  (sbcl-package->cl-source-package sbcl-cl-package-locks))
