@@ -1547,6 +1547,12 @@ and Zilog Z80 families, plus many of their variants.")
            (lambda _
              (substitute* (find-files "." "(\\.mk$|\\.in$)")
                (("/bin/sh") (which "sh")))
+             ;; --disable-ucsim disables sdcc-misc, patch it back in.
+             (substitute* "Makefile.in"
+               (("debugger/mcs51" line)
+                (string-append line  "\n"
+                               "TARGETS += sdcc-misc\n"
+                               "PKGS += $(SDCC_MISC)")))
              #t)))))
     (home-page "http://sdcc.sourceforge.net")
     (synopsis "C compiler suite for 8-bit microcontrollers")
