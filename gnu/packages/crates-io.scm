@@ -41228,17 +41228,17 @@ syntax extension expansion.")
     (description "This package provides a backport of libsyntax.")
     (license (list license:expat license:asl2.0))))
 
-(define-public rust-sys-info-0.7
+(define-public rust-sys-info-0.9
   (package
     (name "rust-sys-info")
-    (version "0.7.0")
+    (version "0.9.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "sys-info" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0facyh6hswp1i7airri8ly5kl6sv5bvkkd21vs51k2b3z22bvkz5"))))
+        (base32 "0fiqhnj1rk69rahz4077lzs8x72gv4zcyknqdg7k359k97pfrz1k"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -41250,6 +41250,19 @@ syntax extension expansion.")
     (description
      "This Rust crate gathers system information.")
     (license license:expat)))
+
+(define-public rust-sys-info-0.7
+  (package
+    (inherit rust-sys-info-0.9)
+    (name "rust-sys-info")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "sys-info" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0facyh6hswp1i7airri8ly5kl6sv5bvkkd21vs51k2b3z22bvkz5"))))))
 
 (define-public rust-sysctl-0.4
   (package
