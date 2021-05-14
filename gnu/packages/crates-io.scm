@@ -44120,6 +44120,20 @@ and Jaro-Winkler.")
          (base32
           "0sjsm7hrvjdifz661pjxq5w4hf190hx53fra8dfvamacvff139cf"))))))
 
+(define-public rust-strsim-0.7
+  (package
+    (inherit rust-strsim-0.9)
+    (name "rust-strsim")
+    (version "0.7.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "strsim" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0l7mkwvdk4vgnml67b85mczk466074aj8yf25gjrjslj4l0khkxv"))))))
+
 (define-public rust-strsim-0.6
   (package
     (inherit rust-strsim-0.9)
