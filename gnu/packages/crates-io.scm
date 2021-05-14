@@ -1580,17 +1580,17 @@ using AES-NI for high performance.")
      "This package provides a failure resistant deserialization derive.")
     (license (list license:expat license:asl2.0))))
 
-(define-public rust-alacritty-terminal-0.12
+(define-public rust-alacritty-terminal-0.13
   (package
     (name "rust-alacritty-terminal")
-    (version "0.12.0")
+    (version "0.13.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "alacritty_terminal" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1q7sm7rm5yny4lka8w4vji2v2crkkbwj3y8l5qnq01qlwmkjmkfd"))))
+        (base32 "13f0pzy9jci57pmmvdd9qcbiycs2fsjqda4qgafxjm6s27sphdx7"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
