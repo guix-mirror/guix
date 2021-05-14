@@ -1467,7 +1467,7 @@ handling communication with eBUS devices connected to a 2-wire bus system
 (define-public ucsim
   (package
     (name "ucsim")
-    (version "0.6-pre67")
+    (version "0.6-pre68")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1475,7 +1475,7 @@ handling communication with eBUS devices connected to a 2-wire bus system
                     "devel/ucsim-" version ".tar.gz"))
               (sha256
                (base32
-                "0aahj9pbfjphjrm4hgs9pfmp6d5aikaq4yvxlrvhywjinnnf0qp1"))))
+                "1bfj21f5pcfcg1xqqynlcfr8mn6qj5705cgc2lfr2s3n97qsd9df"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--enable-avr-port"
