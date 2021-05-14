@@ -455,7 +455,11 @@ URL could not be found."
   (match (lookup-origin url)
     (#f #f)
     (origin
-      (match (filter visit-snapshot-url (origin-visits origin))
+      (match (filter (lambda (visit)
+                       ;; Return #f if (visit-snapshot VISIT) would return #f.
+                       (and (visit-snapshot-url visit)
+                            (eq? 'full (visit-status visit))))
+                     (origin-visits origin))
         ((visit . _)
          (let ((snapshot (visit-snapshot visit)))
            (match (and=> (find (lambda (branch)
