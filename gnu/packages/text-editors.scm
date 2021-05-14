@@ -251,6 +251,40 @@ competitive (as in keystroke count) with Vim.")
 Rust.")
     (license license:unlicense)))
 
+(define-public parinfer-rust
+  (package
+    (name "parinfer-rust")
+    (version "0.4.3")
+    (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/eraserhd/parinfer-rust")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "0hj5in5h7pj72m4ag80ing513fh65q8xlsf341qzm3vmxm3y3jgd"))
+       (file-name (git-file-name name version))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-getopts" ,rust-getopts-0.2)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-emacs" ,rust-emacs-0.11)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-serde-derive" ,rust-serde-derive-1)
+        ("rust-unicode-segmentation" ,rust-unicode-segmentation-1)
+        ("rust-unicode-width" ,rust-unicode-width-0.1))))
+    (inputs
+     `(("clang" ,clang)))
+    (home-page "https://github.com/justinbarclay/parinfer-rust")
+    (synopsis "Infer parantheses for Clojure, Lisp and Scheme")
+    (description
+     "Parinfer is a plugin for Kakoune, Vim, Neovim and Emacs that infers
+paretheses and indentation.  This library can be called from other editors that
+can load dynamic libraries.")
+    (license license:expat)))
+
 (define-public joe
   (package
     (name "joe")
