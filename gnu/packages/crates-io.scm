@@ -16480,6 +16480,31 @@ debugging format.")
 DWARF debugging format.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-git-version-macro-0.3
+  (package
+    (name "rust-git-version-macro")
+    (version "0.3.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "git-version-macro" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0mynlf8sfaa4xx7qff0qgnr339fbf1svgr569yip067fzm97ma9l"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-proc-macro-hack" ,rust-proc-macro-hack-0.5)
+        ("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/fusion-engineering/rust-git-version")
+    (synopsis "Internal macro crate for git-version")
+    (description
+     "This is an internal macro crate for git-version.")
+    (license license:bsd-2)))
+
 (define-public rust-git2-0.13
   (package
     (name "rust-git2")
