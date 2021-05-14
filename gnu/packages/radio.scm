@@ -497,7 +497,6 @@ environment.")
        `(("doxygen" ,doxygen)
          ("pkg-config" ,pkg-config)
          ("pybind11" ,pybind11)
-         ("python" ,python)
          ("python-mako" ,python-mako)
          ("python-six" ,python-six)))
       (inputs
@@ -509,8 +508,21 @@ environment.")
          ("hackrf" ,hackrf)
          ("libsndfile" ,libsndfile)
          ("log4cpp" ,log4cpp)
+         ("python" ,python)
+         ("python-numpy" ,python-numpy)
+         ("python-pyqt" ,python-pyqt)
          ("rtl-sdr" ,rtl-sdr)
          ("volk" ,volk)))
+      (arguments
+       `(#:modules ((guix build cmake-build-system)
+                    ((guix build python-build-system) #:prefix python:)
+                    (guix build utils))
+         #:imported-modules (,@%cmake-build-system-modules
+                             (guix build python-build-system))
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'install 'wrap-python
+             (assoc-ref python:%standard-phases 'wrap)))))
       (synopsis "GNU Radio block for interfacing with various radio hardware")
       (description "This is a block for GNU Radio allowing to use a common API
 to access different radio hardware.")
