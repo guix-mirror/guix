@@ -7605,7 +7605,18 @@ without using the configuration machinery.")
                 "env = {'PATH': '', 'PYTHONPATH': os.environ['PYTHONPATH']}")
                (("env = \\{'PATH':  str\\(b\\)\\}")
                 "env = {'PATH': str(b), 'PYTHONPATH': os.environ['PYTHONPATH']}"))
-             #t)))))
+             #t))
+         ;; Migration is running whenever etc/jupyter exists, but the
+         ;; Guix-managed directory will never contain any migratable IPython
+         ;; config files and cannot be written to anyway, so just pretend we
+         ;; already did that.
+         (add-after 'install 'disable-migration
+           (lambda* (#:key outputs #:allow-other-keys)
+             (mkdir-p (string-append (assoc-ref outputs "out") "/etc/jupyter"))
+             (invoke "touch"
+               (string-append
+                 (assoc-ref outputs "out")
+                 "/etc/jupyter/migrated")))))))
     (propagated-inputs
      `(("python-traitlets" ,python-traitlets)))
     (native-inputs
