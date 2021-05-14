@@ -315,7 +315,8 @@ without requiring the source code to be rewritten.")
     (inherit guile-3.0)
     (version "3.0.7")
     (source (origin
-              (method url-fetch)
+              (inherit (package-source guile-3.0)) ;preserve snippet
+              (patches '())
               (uri (string-append "mirror://gnu/guile/guile-"
                                   version ".tar.xz"))
               (sha256
