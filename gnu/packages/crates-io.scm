@@ -48804,20 +48804,20 @@ using @code{bindgen}.")
 (define-public rust-which-4
   (package
     (name "rust-which")
-    (version "4.0.2")
+    (version "4.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "which" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1vqih4glz0kh3p08bl8mdzk4c02195ws7v6mfpyfrf5qw7vlxhc7"))))
+        (base32 "1zixp9631knhnvd8c3si4wn01fldq063s86jxlmwxwmx5kj52mdm"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-libc" ,rust-libc-0.2)
-        ("rust-thiserror" ,rust-thiserror-1))))
+       (("rust-either" ,rust-either-1)
+        ("rust-libc" ,rust-libc-0.2))))
     (home-page "https://github.com/harryfei/which-rs.git")
     (synopsis "Rust equivalent of Unix command @command{which}")
     (description
