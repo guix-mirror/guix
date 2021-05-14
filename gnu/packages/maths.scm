@@ -770,7 +770,7 @@ halfspaces) or by their double description with both representations.")
 (define-public arpack-ng
   (package
     (name "arpack-ng")
-    (version "3.6.3")
+    (version "3.8.0")
     (home-page "https://github.com/opencollab/arpack-ng")
     (source (origin
               (method git-fetch)
@@ -778,14 +778,16 @@ halfspaces) or by their double description with both representations.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1wljl96yqxc9v8r49c37lscwkdp58kaacfb9p6s6nvpm31haax4y"))))
+                "0l7as5z6xvbxly8alam9s4kws70952qq35a6vkljzayi4b9gbklx"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
-       ("libtool" ,libtool)))
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
     (inputs
-     `(("lapack" ,lapack)
+     `(("eigen" ,eigen)
+       ("lapack" ,lapack)
        ("fortran" ,gfortran)))
     (synopsis "Fortran subroutines for solving eigenvalue problems")
     (description
