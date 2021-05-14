@@ -5537,8 +5537,35 @@ system calls.  Second, exposing the internal buffer allows the user to work
 with data in place, which avoids another copy.")
     (license license:gpl3)))
 
+(define-public rust-bugreport-0.4
+  (package
+    (name "rust-bugreport")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "bugreport" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0gday6f2brqgzl12a0vf7fx1hh1mim6gdjxc6dfwk9v4i19pxsd0"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-git-version" ,rust-git-version-0.3)
+        ("rust-shell-escape" ,rust-shell-escape-0.1)
+        ("rust-sys-info" ,rust-sys-info-0.9))))
+    (home-page "https://github.com/sharkdp/bugreport")
+    (synopsis "Collect system and environment information for bug reports")
+    (description
+     "bugreport is a Rust library that helps application developers to
+automatically collect information about the system and the environment that
+users can send along with a bug report.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-bugreport-0.3
   (package
+    (inherit rust-bugreport-0.4)
     (name "rust-bugreport")
     (version "0.3.0")
     (source
@@ -5548,19 +5575,11 @@ with data in place, which avoids another copy.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1n5f1nkqbc5yf9bckjap49pwnqnvdczm6x9y23caaghpgw0n4rqi"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-snailquote" ,rust-snailquote-0.3)
-        ("rust-sys-info" ,rust-sys-info-0.7))))
-    (home-page "https://github.com/sharkdp/bugreport")
-    (synopsis "Collect system and environment information for bug reports")
-    (description
-     "bugreport is a Rust library that helps application developers to
-automatically collect information about the system and the environment that
-users can send along with a bug report.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-sys-info" ,rust-sys-info-0.7))))))
 
 (define-public rust-build-const-0.2
   (package
