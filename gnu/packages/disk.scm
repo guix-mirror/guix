@@ -1068,19 +1068,27 @@ since they are better handled by external tools.")
 (define-public xfe
   (package
     (name "xfe")
-    (version "1.43.2")
+    (version "1.44")
     (source
      (origin
        (method url-fetch)
        (uri
         (string-append "mirror://sourceforge/xfe/xfe/" version "/"
-                       "xfe-" version ".tar.gz"))
+                       "xfe-" version ".tar.xz"))
        (sha256
-        (base32 "1fl51k5jm2vrfc2g66agbikzirmp0yb0lqhmsssixfb4mky3hpzs"))))
+        (base32 "1dihq03jqjllb69r78d9ihjjadi39v7sgzdf68qpxz5xhp8i8k2r"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-potfiles
+           (lambda _
+             ;; To add missing entry 'intl/plural.c' to potfiles list.
+             ;; Refer to https://sourceforge.net/p/xfe/bugs/257/
+             (substitute* "po/POTFILES.in"
+               (("src/help.h")
+                (string-append "src/help.h\n"
+                               "intl/plural.c")))))
          (add-after 'unpack 'patch-bin-dirs
            (lambda* (#:key inputs #:allow-other-keys)
              (let* ((bash (assoc-ref inputs "bash"))
