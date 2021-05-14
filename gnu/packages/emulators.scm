@@ -14,6 +14,7 @@
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Christopher Howard <christopher@librehacker.com>
 ;;; Copyright © 2021 Felipe Balbi <balbi@kernel.org>
+;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -637,7 +638,7 @@ and Game Boy Color games.")
 (define-public sameboy
   (package
     (name "sameboy")
-    (version "0.13.6")
+    (version "0.14.3")
     (source
      (origin
        (method git-fetch)
@@ -646,17 +647,17 @@ and Game Boy Color games.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "04w8lybi7ssnax37ka4qw7pmcm7cgnmk90p9m73zbyp5chgpqqzc"))))
+        (base32 "1dipidx12ai62hnzf0pvnsk1cgjcmw1h5x2r7ilxq0k0pkia5b7a"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("rgbds" ,rgbds)
-       ("gcc" ,gcc-9)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("sdl2" ,sdl2)))
     (arguments
      `(#:tests? #f                      ; There are no tests
-       #:make-flags `("CC=gcc" "NATIVE_CC=gcc" "CONF=release"
+       #:make-flags `(,(string-append "CC=" ,(cc-for-target))
+                      "NATIVE_CC=gcc" "CONF=release"
                       ,(string-append "DATA_DIR="
                                       (assoc-ref %outputs "out")
                                       "/share/sameboy/"))
