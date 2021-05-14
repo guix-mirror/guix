@@ -17680,8 +17680,36 @@ their key-value pairs in a user controllable order.")
        (("rust-bytes" ,rust-bytes-0.4)
         ("rust-http" ,rust-http-0.1))))))
 
+(define-public rust-heapless-0.6
+  (package
+    (name "rust-heapless")
+    (version "0.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "heapless" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "08il083hcffis6km4is24kf2j0cnqs0bzz2b196l495zkk9d8jv3"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-as-slice" ,rust-as-slice-0.1)
+        ("rust-generic-array" ,rust-generic-array-0.14)
+        ("rust-hash32" ,rust-hash32-0.1)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-stable-deref-trait" ,rust-stable-deref-trait-1)
+        ("rust-ufmt-write" ,rust-ufmt-write-0.1))))
+    (home-page "https://github.com/japaric/heapless")
+    (synopsis "@code{statice} friendly data structures")
+    (description "This package provides @code{static} friendly data structures
+that don't require dynamic memory allocation.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-heapless-0.5
   (package
+    (inherit rust-heapless-0.6)
     (name "rust-heapless")
     (version "0.5.5")
     (source
@@ -17692,7 +17720,6 @@ their key-value pairs in a user controllable order.")
        (sha256
         (base32
          "1h1d6s1f9zn0rz2vkdn0b42kcnkmlpd90yhfyqqhpirv38ws5a3k"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-as-slice" ,rust-as-slice-0.1)
@@ -17703,12 +17730,7 @@ their key-value pairs in a user controllable order.")
         ("rust-ufmt-write" ,rust-ufmt-write-0.1))
        #:cargo-development-inputs
        (("rust-scoped-threadpool" ,rust-scoped-threadpool-0.1)
-        ("rust-ufmt" ,rust-ufmt-0.1))))
-    (home-page "https://github.com/japaric/heapless")
-    (synopsis "@code{statice} friendly data structures")
-    (description "This package provides @code{static} friendly data structures
-that don't require dynamic memory allocation.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-ufmt" ,rust-ufmt-0.1))))))
 
 (define-public rust-heapsize-0.4
   (package
