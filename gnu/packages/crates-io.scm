@@ -16562,6 +16562,24 @@ reading and writing git repositories.")
         ("rust-thread-id" ,rust-thread-id-3)
         ("rust-time" ,rust-time-0.1))))))
 
+(define-public rust-gjson-0.7
+  (package
+    (name "rust-gjson")
+    (version "0.7.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "gjson" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0vhary4ha77scriaw6r4nv16ha9pfzirm84sjc240csqwb542p10"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/tidwall/gjson.rs")
+    (synopsis "JSON parser for Rust")
+    (description "Gjson is a JSON parser for Rust.")
+    (license license:expat)))
+
 (define-public rust-glium-0.25
   (package
     (name "rust-glium")
