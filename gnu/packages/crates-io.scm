@@ -15959,7 +15959,7 @@ API library @code{gdi32}.")
 (define-public rust-generic-array-0.14
   (package
     (name "rust-generic-array")
-    (version "0.14.2")
+    (version "0.14.4")
     (source
       (origin
         (method url-fetch)
@@ -15968,7 +15968,7 @@ API library @code{gdi32}.")
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "107r1fpm8zcab3lzci4x9par6ik8bra390c60rhxvnmz7dgnlx5c"))))
+          "05qqwm9v5asbil9z28wjkmpfvs1c5c99n8n9gwxis3d3r3n6c52h"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
