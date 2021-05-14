@@ -14301,6 +14301,37 @@ signing, and verification in pure Rust.")
 @code{Right} is a general purpose sum type with two cases.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-emacs-0.11
+  (package
+    (name "rust-emacs")
+    (version "0.11.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "emacs" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1xn6nr8m3p24irlmv3i7c9n95yb10qc6aikwqv99qlmhbky5x0z7"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-ctor" ,rust-ctor-0.1)
+        ("rust-emacs-macros" ,rust-emacs-macros-0.11)
+        ("rust-emacs-module" ,rust-emacs-module-0.10)
+        ("rust-failure" ,rust-failure-0.1)
+        ("rust-failure-derive" ,rust-failure-derive-0.1)
+        ("rust-lazy-static" ,rust-lazy-static-1))))
+    (inputs
+     `(("clang" ,clang)))
+    (home-page "https://github.com/ubolonton/emacs-module-rs")
+    (synopsis "Library for creating Emacs's dynamic modules")
+    (description
+     "This crate provides a high level binding to emacs-module:
+Emacs' support for dynamic modules.")
+    (license license:bsd-3)))
+
 (define-public rust-emacs-macros-0.11
   (package
     (name "rust-emacs-macros")
