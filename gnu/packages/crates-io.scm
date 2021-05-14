@@ -48468,6 +48468,32 @@ WebAssembly binary files.")
      "Bindings for all Web APIs, a procedurally generated crate from WebIDL.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-webbrowser-0.5
+  (package
+    (name "rust-webbrowser")
+    (version "0.5.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "webbrowser" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "12hmi768mnpssfh9w61ys75v706jj3pcy4fliqq21dnnj1j1bbgc"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-web-sys" ,rust-web-sys-0.3)
+        ("rust-widestring" ,rust-widestring-0.4)
+        ("rust-winapi" ,rust-winapi-0.3))))
+    (home-page
+     "https://github.com/amodm/webbrowser-rs")
+    (synopsis "Open URLs in web browsers available on a platform")
+    (description
+     "Webbrowser-rs is a Rust library to open URLs in the web browsers
+available on a platform.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-webpki-0.21
   (package
     (name "rust-webpki")
