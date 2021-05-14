@@ -15989,7 +15989,7 @@ API library @code{gdi32}.")
   (package
     (inherit rust-generic-array-0.14)
     (name "rust-generic-array")
-    (version "0.13.2")
+    (version "0.13.3")
     (source
      (origin
        (method url-fetch)
@@ -15998,7 +15998,7 @@ API library @code{gdi32}.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1kddwxpd58y807y1r3lijg7sw3gxm6nczl6wp57gamhv6mhygl8f"))))
+         "02g3zhqc086zmsb6kcmjs2fiprz8gq12g0xbm9g23215ydxfd5zp"))))
     (arguments
      `(#:cargo-inputs
        (("rust-serde" ,rust-serde-1)
