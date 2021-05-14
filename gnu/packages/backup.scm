@@ -1096,14 +1096,14 @@ backup.")
 (define-public disarchive
   (package
     (name "disarchive")
-    (version "0.2.0")
+    (version "0.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://files.ngyro.com/disarchive/"
                                   "disarchive-" version ".tar.gz"))
               (sha256
                (base32
-                "12d4r4i7vi8fxilr2aww6kzq56jax5ymhjfm3cpgx26vj4c70kb6"))))
+                "1jypk0gdwxqbqxiblww863nzq0kwnc676q68j32sprqd7ilnq02s"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
