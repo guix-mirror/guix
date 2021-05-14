@@ -11140,25 +11140,23 @@ learn about each of the parameters.")
   (sbcl-package->ecl-package sbcl-exponential-backoff))
 
 (define-public sbcl-sxql
-  (let ((commit "5aa8b739492c5829e8623432b5d46482263990e8"))
+  (let ((commit "acdd183a4c38b4e0699a285f8a711c88f6b4302c"))
     (package
       (name "sbcl-sxql")
-      (version (git-version "0.1.0" "1" commit))
+      (version (git-version "0.1.0" "2" commit))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
                (url "https://github.com/fukamachi/sxql")
                (commit commit)))
-         (file-name (git-file-name name version))
+         (file-name (git-file-name "sqxl" version))
          (sha256
-          (base32
-           "0k25p6w2ld9cn8q8s20lda6yjfyp4q89219sviayfgixnj27avnj"))))
+          (base32 "1i1crdsf2nbyxxpvjgrwmwpjxn6a4drbcmqs4q4shfi8zyap7vng"))))
       (build-system asdf-build-system/sbcl)
-      (arguments
-       `(#:test-asd-file "sxql-test.asd"))
       (inputs
        `(("alexandria" ,sbcl-alexandria)
+         ("cl-package-locks" ,sbcl-cl-package-locks)
          ("cl-syntax" ,sbcl-cl-syntax)
          ("iterate" ,sbcl-iterate)
          ("optima" ,sbcl-optima)
