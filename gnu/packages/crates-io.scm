@@ -7942,14 +7942,14 @@ this to write Rust programs which can be customized by end users easily.")
 (define-public rust-console-0.14
   (package
     (name "rust-console")
-    (version "0.14.0")
+    (version "0.14.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "console" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1ajnr0rga4vya0fza12ighf3ffkm86w1rv8p5wf443s8nd30kj3w"))))
+        (base32 "0i8z1bdbv8is1lamd81jdsf4pa1ww2jl3h0yjdshc5mabd2fd4rr"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
