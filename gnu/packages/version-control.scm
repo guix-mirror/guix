@@ -62,6 +62,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix hg-download)
+  #:use-module (guix build python-build-system)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system copy)
   #:use-module (guix build-system gnu)
@@ -88,6 +89,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gnupg)
   #:use-module (gnu packages golang)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages guile)
@@ -1715,6 +1717,67 @@ interface.")
     (description "Evolve is a Mercurial extension for faster and safer mutable
 history.  It implements the changeset evolution concept for Mercurial.")
     (license license:gpl2)))
+
+(define-public hg-commitsigs
+  ;; Latest tag is 11 years old.
+  (let ((changeset "b53eb6862bff")
+        (revision "0"))
+    (package
+      (name "hg-commitsigs")
+      (version (git-version "0.1.0" revision changeset))
+      (source (origin
+                (method hg-fetch)
+                (uri (hg-reference
+                      (url "https://foss.heptapod.net/mercurial/commitsigs")
+                      (changeset changeset)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "059gm66q06m6ayl4brsc517zkw3ahmz249b6xm1m32ac5y24wb9x"))))
+      (build-system copy-build-system)
+      (arguments
+       `(#:imported-modules ((guix build python-build-system)
+                             ,@%copy-build-system-modules)
+         #:modules ((srfi srfi-1)
+                    (guix build python-build-system)
+                    ;; Don't use `%copy-build-system-modules' because
+                    ;; `standard-phases' from (guix build gnu-build-system)
+                    ;; shadows the one from (guix build copy-build-system),
+                    ;; which is the one we actually want.
+                    (guix build copy-build-system)
+                    ((guix build gnu-build-system) #:prefix gnu)
+                    (guix build utils)
+                    (guix build gremlin)
+                    (ice-9 ftw)
+                    (guix elf))
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((gpg (string-append (assoc-ref inputs "gnupg")
+                                       "/bin/gpg"))
+                   (openssl (string-append (assoc-ref inputs "openssl")
+                                           "/bin/openssl")))
+               (substitute* "commitsigs.py"
+                 (("b'gpg',") (string-append "b'" gpg "',"))
+                 (("b'openssl',") (string-append "b'" openssl "',")))))))
+         #:install-plan
+         `(("commitsigs.py" ,(string-append "lib/python"
+                                            (python-version
+                                             (assoc-ref %build-inputs "python"))
+                                            "/site-packages/hgext3rd/commitsigs.py")))))
+      (native-inputs
+       `(("python" ,python)))
+      (inputs
+       `(("gnupg" ,gnupg)
+         ("openssl" ,openssl)))
+      (home-page "https://foss.heptapod.net/mercurial/commitsigs")
+      (synopsis "Automatic signing of changeset hashes")
+      (description "This package provides a Mercurial extension for signing
+the changeset hash of commits.  The signure is embedded directly in the
+changeset itself; there won't be any extra commits.  Either GnuPG or OpenSSL
+can be used for signing.")
+      (license license:gpl2))))                   ;per commitsigs.py
 
 (define-public neon
   (package
