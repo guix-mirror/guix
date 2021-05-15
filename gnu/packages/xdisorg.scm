@@ -45,6 +45,7 @@
 ;;; Copyright © 2020, 2021 Zheng Junjie <873216071@qq.com>
 ;;; Copyright © 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
+;;; Copyright © 2021 Renzo Poddighe <renzo@poddighe.nl>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2796,3 +2797,44 @@ and execute @file{.desktop} files of the Application type.")
      "The @command{hsetroot} command composes wallpapers for X.
 This package is the fork of hsetroot by Hyriand.")
     (license license:gpl2+)))
+
+(define-public jumpapp
+  (package
+    (name "jumpapp")
+    (version "1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mkropat/jumpapp")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1jrk4mm42sz6ca2gkb6w3dad53d4im4shpgsq8s4vr6xpl3b43ry"))))
+    (build-system gnu-build-system)
+    (arguments `(#:phases
+                 (modify-phases %standard-phases
+                   (delete 'configure)
+                   (delete 'check)
+                   (add-before 'install 'set-prefix-in-makefile
+                     (lambda* (#:key outputs #:allow-other-keys)
+                       (let ((out (assoc-ref outputs "out")))
+                         (substitute* "Makefile"
+                           (("PREFIX =.*")
+                            (string-append "PREFIX = " out "\n")))
+                         #true))))))
+    (propagated-inputs
+     `(("wmctrl" ,wmctrl)
+       ("xdotool" ,xdotool)
+       ("xprop" ,xprop)))
+    (native-inputs
+     `(("pandoc" ,pandoc)
+       ("perl" ,perl)))
+    (synopsis "Run-or-raise application switcher for any X11 desktop")
+    (description
+     "Bind a key for any given application that will launch the application,
+if it's not already running, or focus the application's window,if it is running.
+Pressing the key again will cycle to the application's next window,
+if there's more than one.")
+    (home-page "https://github.com/mkropat/jumpapp")
+    (license license:expat)))
