@@ -461,7 +461,6 @@ SCM_TESTS =					\
   tests/git-authenticate.scm			\
   tests/glob.scm				\
   tests/gnu-maintenance.scm			\
-  tests/go.scm					\
   tests/grafts.scm				\
   tests/graph.scm				\
   tests/gremlin.scm				\
@@ -509,6 +508,10 @@ SCM_TESTS =					\
   tests/utils.scm				\
   tests/uuid.scm				\
   tests/workers.scm
+
+if HAVE_GUILE_LIB
+SCM_TESTS += tests/go.scm
+endif
 
 if BUILD_DAEMON_OFFLOAD
 SCM_TESTS  += tests/offload.scm
