@@ -970,22 +970,20 @@ a sequence (or chain) of such elements.")
   (sbcl-package->cl-source-package sbcl-flexichain))
 
 (define-public sbcl-cl-pdf
-  ;; There are no releases
-  (let ((commit "752e337e6d6fc206f09d091a982e7f8e5c404e4e")
+  (let ((commit "dbafd62afcb2d2e9164054c72612763721297d59")
         (revision "1"))
     (package
       (name "sbcl-cl-pdf")
-      (version (git-version "0" revision commit))
+      (version (git-version "2.0.0" revision commit))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
                (url "https://github.com/mbattyani/cl-pdf")
                (commit commit)))
-         (file-name (git-file-name name version))
+         (file-name (git-file-name "cl-pdf" version))
          (sha256
-          (base32
-           "1cg3k3m3r11ipb8j008y8ipynj97l3xjlpi2knqc9ndmx4r3kb1r"))))
+          (base32 "0w6igiav35a65h6r4p1g6dw2i7mw0s06mviw31768r6z62l1ny1v"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("iterate" ,sbcl-iterate)
