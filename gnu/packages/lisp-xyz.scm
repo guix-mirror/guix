@@ -13169,7 +13169,7 @@ environment access API.")
 (define-public sbcl-static-dispatch
   (package
     (name "sbcl-static-dispatch")
-    (version "0.5")
+    (version "0.5.1")
     (source
      (origin
        (method git-fetch)
@@ -13178,7 +13178,7 @@ environment access API.")
              (commit (string-append "v" version))))
        (file-name (git-file-name "static-dispatch" version))
        (sha256
-        (base32 "1a4vgfcn6qnpdkxxv93rri7zf3c92alixp6nyqwpz8mg2xmvy1j3"))))
+        (base32 "1602vx6ybp0n8mbrrp6q8397fkkyvhrqpahc302pjdb57qildajz"))))
     (build-system asdf-build-system/sbcl)
     (native-inputs
      `(("fiveam" ,sbcl-fiveam)))
@@ -13190,7 +13190,7 @@ environment access API.")
        ("cl-environments" ,sbcl-cl-environments)
        ("closer-mop" ,sbcl-closer-mop)
        ("iterate" ,sbcl-iterate)
-       ("trivia" ,sbcl-trivia)))
+       ("optima" ,sbcl-optima)))
     (home-page "https://github.com/alex-gutev/static-dispatch")
     (synopsis "Static generic function dispatch for Common Lisp")
     (description "Static dispatch is a Common Lisp library, inspired by
