@@ -9859,7 +9859,7 @@ restrict the text width to 80 characters.")
         (base32 "03a6jlbv9axrd9yr0xscq3ni7fipm20ppc51kxy0sn241rplv0pg"))))
     (build-system emacs-build-system)
     (arguments
-     `(#:tests? #tn
+     `(#:tests? #t
        #:test-command '("make" "test")
        #:phases (modify-phases %standard-phases
                   ;; Set HOME, otherwise tests fail on loading aspell dict.
