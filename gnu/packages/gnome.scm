@@ -2606,9 +2606,7 @@ forgotten when the session ends.")
        ("ghostscript" ,ghostscript)
        ("poppler" ,poppler)
        ("libtiff" ,libtiff)
-       ;; TODO:
-       ;;   Build libkpathsea as a shared library for DVI support.
-       ;; ("libkpathsea" ,texlive-bin)
+       ("texlive-libkpathsea" ,texlive-libkpathsea) ; for DVI support
        ("gnome-desktop" ,gnome-desktop)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("gspell" ,gspell)
