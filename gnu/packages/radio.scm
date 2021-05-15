@@ -476,12 +476,12 @@ environment.")
     (home-page "https://www.gnuradio.org")
     (license license:gpl3+)))
 
-(define-public gnuradio-osmosdr
+(define-public gr-osmosdr
   ;; No tag for version supporting Gnuradio 3.9; use commit.
   (let ((commit "a100eb024c0210b95e4738b6efd836d48225bd03")
         (revision "0"))
     (package
-      (name "gnuradio-osmosdr")
+      (name "gr-osmosdr")
       (version (git-version "0.2.3" revision commit))
       (source
        (origin
@@ -528,6 +528,7 @@ environment.")
 to access different radio hardware.")
       (home-page "https://osmocom.org/projects/gr-osmosdr/wiki/GrOsmoSDR")
       (license license:gpl3+))))
+(deprecated-package "gnuradio-osmosdr" gr-osmosdr)
 
 (define-public libosmo-dsp
   (package
@@ -573,12 +574,12 @@ primitives for SDR (Software Defined Radio).")
     (home-page "https://osmocom.org/projects/libosmo-dsp")
     (license license:gpl2+)))
 
-(define-public gnuradio-iqbalance
+(define-public gr-iqbal
   ;; No tag for version supporting Gnuradio 3.9; use commit.
   (let ((commit "fbee239a6fb36dd2fb564f6e6a0d393c4bc844db")
         (revision "0"))
     (package
-      (name "gnuradio-iqbalance")
+      (name "gr-iqbal")
       (version (git-version "0.38.2" revision commit))
       (source
        (origin
@@ -616,6 +617,7 @@ to the fix block above.
 @end itemize")
       (home-page "https://git.osmocom.org/gr-iqbal/")
       (license license:gpl3+))))
+(deprecated-package "gnuradio-iqbalance" gr-iqbal)
 
 (define-public gqrx
   (package
@@ -639,8 +641,8 @@ to the fix block above.
        ("fftwf" ,fftwf)
        ("gmp" ,gmp)
        ("gnuradio" ,gnuradio)
-       ("gnuradio-iqbalance" ,gnuradio-iqbalance)
-       ("gnuradio-osmosdr" ,gnuradio-osmosdr)
+       ("gr-iqbal" ,gr-iqbal)
+       ("gr-osmosdr" ,gr-osmosdr)
        ("jack" ,jack-1)
        ("libsndfile" ,libsndfile)
        ("log4cpp" ,log4cpp)
