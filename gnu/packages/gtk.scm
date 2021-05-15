@@ -1420,32 +1420,19 @@ guile-gnome-platform (GNOME developer libraries), and guile-gtksourceview.")
 library.")
     (license license:lgpl2.0+)))
 
-(define-public cairomm-1.13
+(define-public cairomm-1.14
   (package
     (inherit cairomm)
     (name "cairomm")
-    (version "1.13.1")
+    (version "1.14.2")
     (source
      (origin
        (method url-fetch)
        (uri
         (string-append "https://www.cairographics.org/releases/"
-                       name "-" version ".tar.gz"))
+                       name "-" version ".tar.xz"))
        (sha256
-        (base32 "1xlfl0fm5mgv53lr8xjv2kqsk3bz67qkk6qzvbrqmbvbvvbqp9wp"))))
-    (build-system glib-or-gtk-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'move-doc
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (doc (assoc-ref outputs "doc")))
-               (mkdir-p (string-append doc "/share"))
-               (rename-file
-                (string-append out "/share/doc")
-                (string-append doc "/share/doc"))
-               #t))))))
+        (base32 "1qwdj9xw1w651kqwh82nipbryimm1ir5n3c6q34nphsx576bj9h1"))))
     (propagated-inputs
      `(("libsigc++" ,libsigc++-2)
        ,@(package-propagated-inputs cairomm)))))
@@ -1515,7 +1502,7 @@ library.")
        (sha256
         (base32 "12nhs94rh38glr5hp31d6k9rmhzp6mfifn3pnp67a4mf4hkcj90v"))))
     (propagated-inputs
-     `(("cairomm" ,cairomm-1.13)
+     `(("cairomm" ,cairomm-1.14)
        ("glibmm" ,glibmm-2.64)
        ("pango" ,pango)))))
 
@@ -1634,7 +1621,7 @@ library.")
        ("xorg-server" ,xorg-server-for-tests)))
     (propagated-inputs
      `(("atkmm" ,atkmm)
-       ("cairomm" ,cairomm)
+       ("cairomm" ,cairomm-1.14)
        ("glibmm" ,glibmm)
        ("gtk+" ,gtk+)
        ("pangomm" ,pangomm)))
@@ -1679,7 +1666,7 @@ tutorial.")
                '("-Dbuild-documentation=true")))))
     (propagated-inputs
      `(("atkmm" ,atkmm-2.28)
-       ("cairomm" ,cairomm-1.13)
+       ("cairomm" ,cairomm-1.14)
        ("glibmm" ,glibmm-2.64)
        ("gtk+" ,gtk+-2)
        ("pangomm" ,pangomm-2.42)))))
