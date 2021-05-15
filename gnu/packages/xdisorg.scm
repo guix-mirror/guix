@@ -2235,11 +2235,25 @@ binary to setuid-binaries:
        (sha256
         (base32 "0c4w87ipsw09aii34szj9p0xfy0m00wyjpll0gb0aqmwa60p0c5d"))))
     (build-system meson-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-file-names
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* (find-files "src" "\\.c$")
+               (("\"(cat|rm)\"" _ command)
+                (string-append "\"" (assoc-ref inputs "coreutils")
+                               "/bin/" command "\""))
+               (("\"xdg-mime\"")
+                (string-append "\"" (assoc-ref inputs "xdg-utils")
+                               "/bin/xdg-mime\""))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("wayland" ,wayland)
-       ("wayland-protocols" ,wayland-protocols)))
+     `(("coreutils" ,coreutils)
+       ("wayland" ,wayland)
+       ("wayland-protocols" ,wayland-protocols)
+       ("xdg-utils" ,xdg-utils)))
     (home-page "https://github.com/bugaevc/wl-clipboard")
     (synopsis "Command-line copy/paste utilities for Wayland")
     (description "Wl-clipboard is a set of command-line copy/paste utilities for
