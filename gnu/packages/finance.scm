@@ -747,7 +747,7 @@ the Monero command line client and daemon.")
 (define-public monero-gui
   (package
     (name "monero-gui")
-    (version "0.17.2.1")
+    (version "0.17.2.2")
     (source
      (origin
        (method git-fetch)
@@ -764,7 +764,7 @@ the Monero command line client and daemon.")
            (delete-file-recursively "monero")
            #t))
        (sha256
-        (base32 "17z4l7xj3zzbkb3fivsam38y5psknc2qbsg6yc72vb6n675khnsa"))))
+        (base32 "0n7gfhm13y18ffqsqdajl4knd4h8m772fz6lh1lpkh198pwmw8f9"))))
     (build-system qt-build-system)
     (native-inputs
      `(,@(package-native-inputs monero)
@@ -803,7 +803,12 @@ the Monero command line client and daemon.")
                (("@VERSION_TAG_GUI@")
                 ,version))
              (substitute* "src/zxcvbn-c/makefile"
-               (("\\?=") "="))))
+               (("\\?=") "="))
+             (substitute* "external/CMakeLists.txt"
+               (("add_library\\(quirc" all)
+                (string-append
+                 "set(CMAKE_C_FLAGS \"${CMAKE_C_FLAGS} -fPIC\")\n"
+                 all)))))
          (add-before 'configure 'generate-zxcvbn-c-header
            (lambda _
              (invoke "make" "-C" "src/zxcvbn-c" "dict-src.h")))
