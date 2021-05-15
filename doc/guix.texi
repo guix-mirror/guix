@@ -17,8 +17,9 @@
 @set BASE-URL https://ftp.gnu.org/gnu/guix
 
 @c The official substitute server used by default.
-@set SUBSTITUTE-SERVER ci.guix.gnu.org
-@set SUBSTITUTE-URL https://@value{SUBSTITUTE-SERVER}
+@set SUBSTITUTE-SERVER-1 ci.guix.gnu.org
+@set SUBSTITUTE-SERVER-2 bordeaux.guix.gnu.org
+@set SUBSTITUTE-URLS https://@value{SUBSTITUTE-SERVER-1} https://@value{SUBSTITUTE-SERVER-2}
 
 @copying
 Copyright @copyright{} 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès@*
@@ -229,7 +230,7 @@ Package Management
 
 Substitutes
 
-* Official Substitute Server::  One particular source of substitutes.
+* Official Substitute Servers::  One particular source of substitutes.
 * Substitute Server Authorization::  How to enable or disable substitutes.
 * Getting Substitutes from Other Servers::  Substitute diversity.
 * Substitute Authentication::   How Guix verifies substitutes.
@@ -780,12 +781,15 @@ Info search path).
 
 @item
 @cindex substitutes, authorization thereof
-To use substitutes from @code{@value{SUBSTITUTE-SERVER}} or one of its mirrors
-(@pxref{Substitutes}), authorize them:
+To use substitutes from @code{@value{SUBSTITUTE-SERVER-1}},
+@code{@value{SUBSTITUTE-SERVER-2}} or a mirror (@pxref{Substitutes}),
+authorize them:
 
 @example
 # guix archive --authorize < \
-     ~root/.config/guix/current/share/guix/@value{SUBSTITUTE-SERVER}.pub
+     ~root/.config/guix/current/share/guix/@value{SUBSTITUTE-SERVER-1}.pub
+# guix archive --authorize < \
+     ~root/.config/guix/current/share/guix/@value{SUBSTITUTE-SERVER-2}.pub
 @end example
 
 @quotation Note
@@ -1547,7 +1551,7 @@ remote procedure call (@pxref{The Store}).
 @item --substitute-urls=@var{urls}
 Consider @var{urls} the default whitespace-separated list of substitute
 source URLs.  When this option is omitted,
-@indicateurl{https://@value{SUBSTITUTE-SERVER}} is used.
+@indicateurl{@value{SUBSTITUTE-URLS}} is used.
 
 This means that substitutes may be downloaded from @var{urls}, as long
 as they are signed by a trusted signature (@pxref{Substitutes}).
@@ -3685,7 +3689,7 @@ pre-built package binaries, but source tarballs, for instance, which
 also result from derivation builds, can be available as substitutes.
 
 @menu
-* Official Substitute Server::  One particular source of substitutes.
+* Official Substitute Servers::  One particular source of substitutes.
 * Substitute Server Authorization::  How to enable or disable substitutes.
 * Getting Substitutes from Other Servers::  Substitute diversity.
 * Substitute Authentication::   How Guix verifies substitutes.
@@ -3694,14 +3698,15 @@ also result from derivation builds, can be available as substitutes.
 * On Trusting Binaries::        How can you trust that binary blob?
 @end menu
 
-@node Official Substitute Server
-@subsection Official Substitute Server
+@node Official Substitute Servers
+@subsection Official Substitute Servers
 
 @cindex build farm
-The @code{@value{SUBSTITUTE-SERVER}} server is a front-end to an official build farm
-that builds packages from Guix continuously for some
-architectures, and makes them available as substitutes.  This is the
-default source of substitutes; it can be overridden by passing the
+@code{@value{SUBSTITUTE-SERVER-1}} and
+@code{@value{SUBSTITUTE-SERVER-2}} are both front-ends to official build
+farms that build packages from Guix continuously for some architectures,
+and make them available as substitutes.  These are the default source of
+substitutes; which can be overridden by passing the
 @option{--substitute-urls} option either to @command{guix-daemon}
 (@pxref{daemon-substitute-urls,, @code{guix-daemon --substitute-urls}})
 or to client tools such as @command{guix package}
@@ -3714,7 +3719,7 @@ using HTTP makes all communications visible to an eavesdropper, who
 could use the information gathered to determine, for instance, whether
 your system has unpatched security vulnerabilities.
 
-Substitutes from the official build farm are enabled by default when
+Substitutes from the official build farms are enabled by default when
 using Guix System (@pxref{GNU Distribution}).  However,
 they are disabled by default when using Guix on a foreign distribution,
 unless you have explicitly enabled them via one of the recommended
@@ -3730,27 +3735,28 @@ other substitute server.
 @cindex substitutes, authorization thereof
 @cindex access control list (ACL), for substitutes
 @cindex ACL (access control list), for substitutes
-To allow Guix to download substitutes from @code{@value{SUBSTITUTE-SERVER}} or a
-mirror thereof, you
-must add its public key to the access control list (ACL) of archive
+To allow Guix to download substitutes from @code{@value{SUBSTITUTE-SERVER-1}}, @code{@value{SUBSTITUTE-SERVER-2}} or a mirror, you
+must add the releavnt public key to the access control list (ACL) of archive
 imports, using the @command{guix archive} command (@pxref{Invoking guix
-archive}).  Doing so implies that you trust @code{@value{SUBSTITUTE-SERVER}} to not
+archive}).  Doing so implies that you trust the substitute server to not
 be compromised and to serve genuine substitutes.
 
 @quotation Note
 If you are using Guix System, you can skip this section: Guix System
-authorizes substitutes from @code{@value{SUBSTITUTE-SERVER}} by default.
+authorizes substitutes from @code{@value{SUBSTITUTE-SERVER-1}} and
+@code{@value{SUBSTITUTE-SERVER-2}} by default.
 @end quotation
 
-The public key for @code{@value{SUBSTITUTE-SERVER}} is installed along with Guix, in
-@code{@var{prefix}/share/guix/@value{SUBSTITUTE-SERVER}.pub}, where @var{prefix} is
-the installation prefix of Guix.  If you installed Guix from source,
-make sure you checked the GPG signature of
+The public keys for each of the project maintained substitute servers
+are installed along with Guix, in @code{@var{prefix}/share/guix/}, where
+@var{prefix} is the installation prefix of Guix.  If you installed Guix
+from source, make sure you checked the GPG signature of
 @file{guix-@value{VERSION}.tar.gz}, which contains this public key file.
 Then, you can run something like this:
 
 @example
-# guix archive --authorize < @var{prefix}/share/guix/@value{SUBSTITUTE-SERVER}.pub
+# guix archive --authorize < @var{prefix}/share/guix/@value{SUBSTITUTE-SERVER-1}.pub
+# guix archive --authorize < @var{prefix}/share/guix/@value{SUBSTITUTE-SERVER-2}.pub
 @end example
 
 Once this is in place, the output of a command like @code{guix build}
@@ -3782,8 +3788,8 @@ $ guix build emacs --dry-run
 @noindent
 The text changed from ``The following derivations would be built'' to
 ``112.3 MB would be downloaded''.  This indicates that substitutes from
-@code{@value{SUBSTITUTE-SERVER}} are usable and will be downloaded, when
-possible, for future builds.
+the configured substitute servers are usable and will be downloaded,
+when possible, for future builds.
 
 @cindex substitutes, how to disable
 The substitute mechanism can be disabled globally by running
@@ -3817,8 +3823,9 @@ its configuration and add the URLs and substitute keys that you want
 
 As an example, suppose you want to fetch substitutes from
 @code{guix.example.org} and to authorize the signing key of that server,
-in addition to the default @code{@value{SUBSTITUTE-SERVER}}.  The
-resulting operating system configuration will look something like:
+in addition to the default @code{@value{SUBSTITUTE-SERVER-1}} and
+@code{@value{SUBSTITUTE-SERVER-2}}.  The resulting operating system
+configuration will look something like:
 
 @lisp
 (operating-system
@@ -3862,7 +3869,7 @@ line and list the URLs of interest (@pxref{daemon-substitute-urls,
 @code{guix-daemon --substitute-urls}}):
 
 @example
-@dots{} --substitute-urls='https://guix.example.org https://@value{SUBSTITUTE-SERVER}'
+@dots{} --substitute-urls='https://guix.example.org @value{SUBSTITUTE-URLS}'
 @end example
 
 @item
@@ -3885,10 +3892,12 @@ Again this assumes @file{key.pub} contains the public key that
 @end enumerate
 
 Now you're all set!  Substitutes will be preferably taken from
-@code{https://guix.example.org}, using @code{@value{SUBSTITUTE-SERVER}}
-as a fallback.  Of course you can list as many substitute servers as you
-like, with the caveat that substitute lookup can be slowed down if too
-many servers need to be contacted.
+@code{https://guix.example.org}, using
+@code{@value{SUBSTITUTE-SERVER-1}} then
+@code{@value{SUBSTITUTE-SERVER-2}} as fallback options.  Of course you
+can list as many substitute servers as you like, with the caveat that
+substitute lookup can be slowed down if too many servers need to be
+contacted.
 
 Note that there are also situations where one may want to add the URL of
 a substitute server @emph{without} authorizing its key.
@@ -3976,12 +3985,12 @@ by a server.
 Today, each individual's control over their own computing is at the
 mercy of institutions, corporations, and groups with enough power and
 determination to subvert the computing infrastructure and exploit its
-weaknesses.  While using @code{@value{SUBSTITUTE-SERVER}} substitutes can be
-convenient, we encourage users to also build on their own, or even run
-their own build farm, such that @code{@value{SUBSTITUTE-SERVER}} is less of an
-interesting target.  One way to help is by publishing the software you
-build using @command{guix publish} so that others have one more choice
-of server to download substitutes from (@pxref{Invoking guix publish}).
+weaknesses.  While using substitutes can be convenient, we encourage
+users to also build on their own, or even run their own build farm, such
+that the project run substitute servers are less of an interesting
+target.  One way to help is by publishing the software you build using
+@command{guix publish} so that others have one more choice of server to
+download substitutes from (@pxref{Invoking guix publish}).
 
 Guix has the foundations to maximize build reproducibility
 (@pxref{Features}).  In most cases, independent builds of a given
@@ -4945,11 +4954,11 @@ Read a single-item archive as served by substitute servers
 low-level operation needed in only very narrow use cases; see below.
 
 For example, the following command extracts the substitute for Emacs
-served by @code{@value{SUBSTITUTE-SERVER}} to @file{/tmp/emacs}:
+served by @code{@value{SUBSTITUTE-SERVER-1}} to @file{/tmp/emacs}:
 
 @example
 $ wget -O - \
-  https://@value{SUBSTITUTE-SERVER}/nar/gzip/@dots{}-emacs-24.5 \
+  https://@value{SUBSTITUTE-SERVER-1}/nar/gzip/@dots{}-emacs-24.5 \
   | gunzip | guix archive -x /tmp/emacs
 @end example
 
@@ -4971,7 +4980,7 @@ this example:
 
 @example
 $ wget -O - \
-  https://@value{SUBSTITUTE-SERVER}/nar/lzip/@dots{}-emacs-26.3 \
+  https://@value{SUBSTITUTE-SERVER-1}/nar/lzip/@dots{}-emacs-26.3 \
   | lzip -d | guix archive -t
 @end example
 
@@ -10905,7 +10914,7 @@ but you are actually on an @code{x86_64} machine:
 
 @example
 $ guix build --log-file gdb -s aarch64-linux
-https://@value{SUBSTITUTE-SERVER}/log/@dots{}-gdb-7.10
+https://@value{SUBSTITUTE-SERVER-1}/log/@dots{}-gdb-7.10
 @end example
 
 You can freely access a huge library of build logs!
@@ -12558,7 +12567,7 @@ When @command{guix publish} runs, it spawns an HTTP server which allows
 anyone with network access to obtain substitutes from it.  This means
 that any machine running Guix can also act as if it were a build farm,
 since the HTTP interface is compatible with Cuirass, the software behind
-the @code{@value{SUBSTITUTE-SERVER}} build farm.
+the @code{@value{SUBSTITUTE-SERVER-1}} build farm.
 
 For security, each substitute is signed, allowing recipients to check
 their authenticity and integrity (@pxref{Substitutes}).  Because
@@ -12847,12 +12856,12 @@ any given store item.
 The command output looks like this:
 
 @smallexample
-$ guix challenge --substitute-urls="https://@value{SUBSTITUTE-SERVER} https://guix.example.org"
-updating list of substitutes from 'https://@value{SUBSTITUTE-SERVER}'... 100.0%
+$ guix challenge --substitute-urls="https://@value{SUBSTITUTE-SERVER-1} https://guix.example.org"
+updating list of substitutes from 'https://@value{SUBSTITUTE-SERVER-1}'... 100.0%
 updating list of substitutes from 'https://guix.example.org'... 100.0%
 /gnu/store/@dots{}-openssl-1.0.2d contents differ:
   local hash: 0725l22r5jnzazaacncwsvp9kgf42266ayyp814v7djxs7nk963q
-  https://@value{SUBSTITUTE-SERVER}/nar/@dots{}-openssl-1.0.2d: 0725l22r5jnzazaacncwsvp9kgf42266ayyp814v7djxs7nk963q
+  https://@value{SUBSTITUTE-SERVER-1}/nar/@dots{}-openssl-1.0.2d: 0725l22r5jnzazaacncwsvp9kgf42266ayyp814v7djxs7nk963q
   https://guix.example.org/nar/@dots{}-openssl-1.0.2d: 1zy4fmaaqcnjrzzajkdn3f5gmjk754b43qkq47llbyak9z0qjyim
   differing files:
     /lib/libcrypto.so.1.1
@@ -12860,14 +12869,14 @@ updating list of substitutes from 'https://guix.example.org'... 100.0%
 
 /gnu/store/@dots{}-git-2.5.0 contents differ:
   local hash: 00p3bmryhjxrhpn2gxs2fy0a15lnip05l97205pgbk5ra395hyha
-  https://@value{SUBSTITUTE-SERVER}/nar/@dots{}-git-2.5.0: 069nb85bv4d4a6slrwjdy8v1cn4cwspm3kdbmyb81d6zckj3nq9f
+  https://@value{SUBSTITUTE-SERVER-1}/nar/@dots{}-git-2.5.0: 069nb85bv4d4a6slrwjdy8v1cn4cwspm3kdbmyb81d6zckj3nq9f
   https://guix.example.org/nar/@dots{}-git-2.5.0: 0mdqa9w1p6cmli6976v4wi0sw9r4p5prkj7lzfd1877wk11c9c73
   differing file:
     /libexec/git-core/git-fsck
 
 /gnu/store/@dots{}-pius-2.1.1 contents differ:
   local hash: 0k4v3m9z1zp8xzzizb7d8kjj72f9172xv078sq4wl73vnq9ig3ax
-  https://@value{SUBSTITUTE-SERVER}/nar/@dots{}-pius-2.1.1: 0k4v3m9z1zp8xzzizb7d8kjj72f9172xv078sq4wl73vnq9ig3ax
+  https://@value{SUBSTITUTE-SERVER-1}/nar/@dots{}-pius-2.1.1: 0k4v3m9z1zp8xzzizb7d8kjj72f9172xv078sq4wl73vnq9ig3ax
   https://guix.example.org/nar/@dots{}-pius-2.1.1: 1cy25x1a4fzq5rk0pmvc8xhwyffnqz95h2bpvqsz2mpvlbccy0gs
   differing file:
     /share/man/man1/pius.1.gz
@@ -12889,7 +12898,7 @@ the servers obtained a result different from the local build.
 
 @cindex non-determinism, in package builds
 As an example, @code{guix.example.org} always gets a different answer.
-Conversely, @code{@value{SUBSTITUTE-SERVER}} agrees with local builds, except in the
+Conversely, @code{@value{SUBSTITUTE-SERVER-1}} agrees with local builds, except in the
 case of Git.  This might indicate that the build process of Git is
 non-deterministic, meaning that its output varies as a function of
 various things that Guix does not fully control, in spite of building
@@ -12905,7 +12914,7 @@ to run:
 @example
 guix challenge git \
   --diff=diffoscope \
-  --substitute-urls="https://@value{SUBSTITUTE-SERVER} https://guix.example.org"
+  --substitute-urls="https://@value{SUBSTITUTE-SERVER-1} https://guix.example.org"
 @end example
 
 This automatically invokes @command{diffoscope}, which displays detailed
@@ -12915,14 +12924,14 @@ Alternatively, we can do something along these lines (@pxref{Invoking guix
 archive}):
 
 @example
-$ wget -q -O - https://@value{SUBSTITUTE-SERVER}/nar/lzip/@dots{}-git-2.5.0 \
+$ wget -q -O - https://@value{SUBSTITUTE-SERVER-1}/nar/lzip/@dots{}-git-2.5.0 \
    | lzip -d | guix archive -x /tmp/git
 $ diff -ur --no-dereference /gnu/store/@dots{}-git.2.5.0 /tmp/git
 @end example
 
 This command shows the difference between the files resulting from the
 local build, and the files resulting from the build on
-@code{@value{SUBSTITUTE-SERVER}} (@pxref{Overview, Comparing and Merging Files,,
+@code{@value{SUBSTITUTE-SERVER-1}} (@pxref{Overview, Comparing and Merging Files,,
 diffutils, Comparing and Merging Files}).  The @command{diff} command
 works great for text files.  When binary files differ, a better option
 is @uref{https://diffoscope.org/, Diffoscope}, a tool that helps
@@ -12937,7 +12946,7 @@ In the meantime, @command{guix challenge} is one tool to help address
 the problem.
 
 If you are writing packages for Guix, you are encouraged to check
-whether @code{@value{SUBSTITUTE-SERVER}} and other substitute servers obtain the
+whether @code{@value{SUBSTITUTE-SERVER-1}} and other substitute servers obtain the
 same build result as you did with:
 
 @example
@@ -13218,14 +13227,14 @@ on @var{a} and @var{a} has no substitutes, only @var{a} is listed, even though
 @var{b} usually lacks substitutes as well.  The result looks like this:
 
 @example
-$ guix weather --substitute-urls=@value{SUBSTITUTE-URL} -c 10
+$ guix weather --substitute-urls=@value{SUBSTITUTE-URLS} -c 10
 computing 8,983 package derivations for x86_64-linux...
-looking for 9,343 store items on @value{SUBSTITUTE-URL}...
-updating substitutes from '@value{SUBSTITUTE-URL}'... 100.0%
-@value{SUBSTITUTE-URL}
+looking for 9,343 store items on @value{SUBSTITUTE-URLS}...
+updating substitutes from '@value{SUBSTITUTE-URLS}'... 100.0%
+@value{SUBSTITUTE-URLS}
   64.7% substitutes available (6,047 out of 9,343)
 @dots{}
-2502 packages are missing from '@value{SUBSTITUTE-URL}' for 'x86_64-linux', among which:
+2502 packages are missing from '@value{SUBSTITUTE-URLS}' for 'x86_64-linux', among which:
     58  kcoreaddons@@5.49.0      /gnu/store/@dots{}-kcoreaddons-5.49.0
     46  qgpgme@@1.11.1           /gnu/store/@dots{}-qgpgme-1.11.1
     37  perl-http-cookiejar@@0.008  /gnu/store/@dots{}-perl-http-cookiejar-0.008
@@ -13234,7 +13243,7 @@ updating substitutes from '@value{SUBSTITUTE-URL}'... 100.0%
 
 What this example shows is that @code{kcoreaddons} and presumably the 58
 packages that depend on it have no substitutes at
-@code{@value{SUBSTITUTE-SERVER}}; likewise for @code{qgpgme} and the 46
+@code{@value{SUBSTITUTE-SERVER-1}}; likewise for @code{qgpgme} and the 46
 packages that depend on it.
 
 If you are a Guix developer, or if you are taking care of this build farm,
@@ -15441,7 +15450,9 @@ Number of build user accounts to create.
 @item @code{authorize-key?} (default: @code{#t})
 @cindex substitutes, authorization thereof
 Whether to authorize the substitute keys listed in
-@code{authorized-keys}---by default that of @code{@value{SUBSTITUTE-SERVER}}
+@code{authorized-keys}---by default that of
+@code{@value{SUBSTITUTE-SERVER-1}} and
+@code{@value{SUBSTITUTE-SERVER-2}}
 (@pxref{Substitutes}).
 
 When @code{authorize-key?} is true, @file{/etc/guix/acl} cannot be
@@ -15462,8 +15473,9 @@ allowed for in-place modifications to @file{/etc/guix/acl}.
 @item @code{authorized-keys} (default: @code{%default-authorized-guix-keys})
 The list of authorized key files for archive imports, as a list of
 string-valued gexps (@pxref{Invoking guix archive}).  By default, it
-contains that of @code{@value{SUBSTITUTE-SERVER}} (@pxref{Substitutes}).
-See @code{substitute-urls} below for an example on how to change it.
+contains that of @code{@value{SUBSTITUTE-SERVER-1}} and
+@code{@value{SUBSTITUTE-SERVER-2}} (@pxref{Substitutes}).  See
+@code{substitute-urls} below for an example on how to change it.
 
 @item @code{use-substitutes?} (default: @code{#t})
 Whether to use substitutes.
@@ -15472,7 +15484,7 @@ Whether to use substitutes.
 The list of URLs where to look for substitutes by default.
 
 Suppose you would like to fetch substitutes from @code{guix.example.org}
-in addition to @code{@value{SUBSTITUTE-SERVER}}.  You will need to do
+in addition to @code{@value{SUBSTITUTE-SERVER-1}}.  You will need to do
 two things: (1) add @code{guix.example.org} to @code{substitute-urls},
 and (2) authorize its signing key, having done appropriate checks
 (@pxref{Substitute Server Authorization}).  The configuration below does

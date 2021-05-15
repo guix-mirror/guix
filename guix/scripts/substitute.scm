@@ -643,7 +643,8 @@ found."
     (#f
      ;; This can only happen when this script is not invoked by the
      ;; daemon.
-     '("http://ci.guix.gnu.org"))))
+     '("http://ci.guix.gnu.org"
+       "http://bordeaux.guix.gnu.org"))))
 
 ;; In order to prevent using large number of discovered local substitute
 ;; servers, limit the local substitute urls list size.

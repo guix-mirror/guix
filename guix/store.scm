@@ -787,7 +787,8 @@ encoding conversion errors."
   (map (if (false-if-exception (resolve-interface '(gnutls)))
            (cut string-append "https://" <>)
            (cut string-append "http://" <>))
-       '("ci.guix.gnu.org")))
+       '("ci.guix.gnu.org"
+         "bordeaux.guix.gnu.org")))
 
 (define (current-user-name)
   "Return the name of the calling user."

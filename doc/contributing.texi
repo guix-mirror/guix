@@ -376,12 +376,12 @@ Once your package builds correctly, please send us a patch
 (@pxref{Submitting Patches}).  Well, if you need help, we will be happy to
 help you too.  Once the patch is committed in the Guix repository, the
 new package automatically gets built on the supported platforms by
-@url{@value{SUBSTITUTE-URL}, our continuous integration system}.
+@url{https://@value{SUBSTITUTE-SERVER-1}, our continuous integration system}.
 
 @cindex substituter
 Users can obtain the new package definition simply by running
 @command{guix pull} (@pxref{Invoking guix pull}).  When
-@code{@value{SUBSTITUTE-SERVER}} is done building the package, installing the
+@code{@value{SUBSTITUTE-SERVER-1}} is done building the package, installing the
 package automatically downloads binaries from there
 (@pxref{Substitutes}).  The only place where human intervention is
 needed is to review and apply the patch.
@@ -1107,7 +1107,7 @@ changes).  This branch is intended to be merged in @code{master} every
 until late in its development process.
 @end table
 
-All these branches are @uref{@value{SUBSTITUTE-URL},
+All these branches are @uref{https://@value{SUBSTITUTE-SERVER-1},
 tracked by our build farm} and merged into @code{master} once
 everything has been successfully built.  This allows us to fix issues
 before they hit users, and to reduce the window during which pre-built
@@ -1141,7 +1141,7 @@ as timestamps or randomly-generated output in the build result.
 
 Another option is to use @command{guix challenge} (@pxref{Invoking guix
 challenge}).  You may run it once the package has been committed and
-built by @code{@value{SUBSTITUTE-SERVER}} to check whether it obtains the same
+built by @code{@value{SUBSTITUTE-SERVER-1}} to check whether it obtains the same
 result as you did.  Better yet: Find another machine that can build it
 and run @command{guix publish}.  Since the remote build machine is
 likely different from yours, this can catch non-determinism issues
