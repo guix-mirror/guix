@@ -408,12 +408,17 @@ the last argument of `mknod'."
 
 (define* (mount-root-file-system root type
                                  #:key volatile-root? (flags 0) options
-                                 check?)
+                                 check? skip-check-if-clean? repair)
   "Mount the root file system of type TYPE at device ROOT. If VOLATILE-ROOT? is
 true, mount ROOT read-only and make it an overlay with a writable tmpfs using
 the kernel built-in overlayfs. FLAGS and OPTIONS indicates the options to use
 to mount ROOT, and behave the same as for the `mount' procedure.
-If CHECK? is true, first run ROOT's fsck tool (if any) non-interactively."
+
+If CHECK? is true, first run ROOT's fsck tool (if any) non-interactively.
+If SKIP-CHECK-IF-CLEAN? is true, ask fsck to return immediately if ROOT is
+marked as clean.  If REPAIR is true, fsck may write to ROOT to perform repairs.
+If REPAIR is also 'PREEN, ask fsck to perform only those repairs that it
+considers safe."
 
   (if volatile-root?
       (begin
@@ -435,7 +440,7 @@ If CHECK? is true, first run ROOT's fsck tool (if any) non-interactively."
                "lowerdir=/real-root,upperdir=/rw-root/upper,workdir=/rw-root/work"))
       (begin
         (when check?
-          (check-file-system root type))
+          (check-file-system root type (not skip-check-if-clean?) repair))
         (mount root "/root" type flags options)))
 
   ;; Make sure /root/etc/mtab is a symlink to /proc/self/mounts.
@@ -612,7 +617,13 @@ upon error."
                                     #:options root-options
                                     #:check? (if root-fs
                                                  (file-system-check? root-fs)
-                                                 #t))
+                                                 #t)
+                                    #:skip-check-if-clean?
+                                    (and=> root-fs
+                                           file-system-skip-check-if-clean?)
+                                    #:repair (if root-fs
+                                                 (file-system-repair root-fs)
+                                                 'preen))
             (mount "none" "/root" "tmpfs"))
 
         ;; Mount the specified file systems.

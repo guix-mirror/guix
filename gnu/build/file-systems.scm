@@ -170,10 +170,19 @@ if DEVICE does not contain an ext2 file system."
 #f if SBLOCK has no volume name."
   (null-terminated-latin1->string (sub-bytevector sblock 120 16)))
 
-(define (check-ext2-file-system device)
-  "Return the health of an ext2 file system on DEVICE."
+(define (check-ext2-file-system device force? repair)
+  "Return the health of an unmounted ext2 file system on DEVICE.  If FORCE? is
+true, check the file system even if it's marked as clean.  If REPAIR is false,
+do not write to the file system to fix errors.  If it's #t, fix all
+errors.  Otherwise, fix only those considered safe to repair automatically."
   (match (status:exit-val
-          (system* "e2fsck" "-v" "-p" "-C" "0" device))
+          (apply system* `("e2fsck" "-v" "-C" "0"
+                           ,@(if force? '("-f") '())
+                           ,@(match repair
+                               (#f '("-n"))
+                               (#t '("-y"))
+                               (_  '("-p")))
+                           ,device)))
     (0 'pass)
     (1 'errors-corrected)
     (2 'reboot-required)
@@ -260,15 +269,23 @@ bytevector."
 #f if SBLOCK has no volume name."
   (null-terminated-latin1->string (sub-bytevector sblock 72 32)))
 
-(define (check-bcachefs-file-system device)
-  "Return the health of a bcachefs file system on DEVICE."
+(define (check-bcachefs-file-system device force? repair)
+  "Return the health of an unmounted bcachefs file system on DEVICE.  If FORCE?
+is true, check the file system even if it's marked as clean.  If REPAIR is
+false, do not write to the file system to fix errors.  If it's #t, fix all
+errors. Otherwise, fix only those considered safe to repair automatically."
   (let ((ignored-bits (logior 2))       ; DEVICE was mounted read-only
         (status
          ;; A number, or #f on abnormal termination (e.g., assertion failure).
          (status:exit-val
-          (apply system* "bcachefs" "fsck" "-p" "-v"
-                 ;; Make each multi-device member a separate argument.
-                 (string-split device #\:)))))
+          (apply system* `("bcachefs" "fsck" "-v"
+                           ,@(if force? '("-f") '())
+                           ,@(match repair
+                               (#f '("-n"))
+                               (#t '("-y"))
+                               (_  '("-p")))
+                           ;; Make each multi-device member a separate argument.
+                           ,@(string-split device #\:))))))
     (match (and=> status (cut logand <> (lognot ignored-bits)))
       (0 'pass)
       (1 'errors-corrected)
@@ -304,12 +321,28 @@ if DEVICE does not contain a btrfs file system."
 #f if SBLOCK has no volume name."
   (null-terminated-latin1->string (sub-bytevector sblock 299 256)))
 
-(define (check-btrfs-file-system device)
-  "Return the health of a btrfs file system on DEVICE."
-  (match (status:exit-val
-          (system* "btrfs" "device" "scan"))
-    (0 'pass)
-    (_ 'fatal-error)))
+(define (check-btrfs-file-system device force? repair)
+  "Return the health of an unmounted btrfs file system on DEVICE.  If FORCE? is
+false, return 'PASS unconditionally as btrfs claims no need for off-line checks.
+When FORCE? is true, do perform a real check.  This is not recommended!  See
+@uref{https://bugzilla.redhat.com/show_bug.cgi?id=625967#c8}.  If REPAIR is
+false, do not write to DEVICE.  If it's #t, fix any errors found.  Otherwise,
+fix only those considered safe to repair automatically."
+  ;; XXX Why make this conditional on (check? #t) at all?
+  (system* "btrfs" "device" "scan")     ; ignore errors
+  (if force?
+      (match (status:exit-val
+              (apply system* `("btrfs" "check" "--progress"
+                               ;; Btrfs's ‘--force’ is not relevant to us here.
+                               ,@(match repair
+                                   ;; Upstream considers ALL repairs dangerous
+                                   ;; and will warn the user at run time.
+                                   (#t '("--repair"))
+                                   (_  '("--readonly"))) ; a no-op for clarity
+                               ,device)))
+        (0 'pass)
+        (_ 'fatal-error))
+      'pass))
 
 
 ;;;
@@ -338,10 +371,17 @@ if DEVICE does not contain a btrfs file system."
 Trailing spaces are trimmed."
   (string-trim-right (latin1->string (sub-bytevector sblock 71 11) (lambda (c) #f)) #\space))
 
-(define (check-fat-file-system device)
-  "Return the health of a fat file system on DEVICE."
+(define (check-fat-file-system device force? repair)
+  "Return the health of an unmounted FAT file system on DEVICE.  FORCE? is
+ignored: a full file system scan is always performed.  If REPAIR is false, do
+not write to the file system to fix errors. Otherwise, automatically fix them
+using the least destructive approach."
   (match (status:exit-val
-          (system* "fsck.vfat" "-v" "-a" device))
+          (apply system* `("fsck.vfat" "-v"
+                           ,@(match repair
+                               (#f '("-n"))
+                               (_  '("-a"))) ; no 'safe/#t distinction
+                           ,device)))
     (0 'pass)
     (1 'errors-corrected)
     (_ 'fatal-error)))
@@ -463,10 +503,28 @@ if DEVICE does not contain a JFS file system."
 #f if SBLOCK has no volume name."
   (null-terminated-latin1->string (sub-bytevector sblock 152 16)))
 
-(define (check-jfs-file-system device)
-  "Return the health of a JFS file system on DEVICE."
+(define (check-jfs-file-system device force? repair)
+  "Return the health of an unmounted JFS file system on DEVICE.  If FORCE? is
+true, check the file system even if it's marked as clean.  If REPAIR is false,
+do not write to the file system to fix errors, and replay the transaction log
+only if FORCE?  is true. Otherwise, replay the transaction log before checking
+and automatically fix found errors."
   (match (status:exit-val
-          (system* "jfs_fsck" "-p" "-v" device))
+          (apply system*
+                 `("jfs_fsck" "-v"
+                   ;; The ‘LEVEL’ logic is convoluted.  To quote fsck/xchkdsk.c
+                   ;; (‘-p’, ‘-a’, and ‘-r’ are aliases in every way):
+                   ;; “If -f was chosen, have it override [-p] by [forcing] a
+                   ;;  check regardless of the outcome after the log is
+                   ;;  replayed”.
+                   ;; “If -n is specified by itself, don't replay the journal.
+                   ;;  If -n is specified with [-p], replay the journal but
+                   ;;  don't make any other changes”.
+                   ,@(if force? '("-f") '())
+                   ,@(match repair
+                       (#f '("-n"))
+                       (_  '("-p"))) ; no 'safe/#t distinction
+                   ,device)))
     (0 'pass)
     (1 'errors-corrected)
     (2 'reboot-required)
@@ -517,12 +575,22 @@ if DEVICE does not contain an F2FS file system."
    (sub-bytevector sblock (- (+ #x470 12) #x400) 512)
    %f2fs-endianness))
 
-(define (check-f2fs-file-system device)
-  "Return the health of a F2FS file system on DEVICE."
+(define (check-f2fs-file-system device force? repair)
+  "Return the health of an unmuounted F2FS file system on DEVICE.  If FORCE? is
+true, check the file system even if it's marked as clean.  If either FORCE? or
+REPAIR are true, automatically fix found errors."
+  ;; There's no ‘-n’ equivalent (‘--dry-run’ does not disable writes).
+  ;; ’-y’ is an alias of ‘-f’.  The man page is bad: read main.c.
+  (when (and force? (not repair))
+    (format (current-error-port)
+            "warning: forced check of F2FS ~a implies repairing any errors~%"
+            device))
   (match (status:exit-val
-          (system* "fsck.f2fs" "-p" device))
-    ;; 0 and -1 are the only two possibilities
-    ;; (according to the manpage)
+          (apply system* `("fsck.f2fs"
+                           ,@(if force? '("-f") '())
+                           ,@(if repair '("-p") '("--dry-run"))
+                           ,device)))
+    ;; 0 and -1 are the only two possibilities according to the man page.
     (0 'pass)
     (_ 'fatal-error)))
 
@@ -600,10 +668,15 @@ if DEVICE does not contain a NTFS file system."
 ;; in the BOOT SECTOR like the UUID, but in the MASTER FILE TABLE, which seems
 ;; way harder to access.
 
-(define (check-ntfs-file-system device)
-  "Return the health of a NTFS file system on DEVICE."
+(define (check-ntfs-file-system device force? repair)
+  "Return the health of an unmounted NTFS file system on DEVICE.  FORCE? is
+ignored: a full check is always performed.  Repair is not possible: if REPAIR is
+true and the volume has been repaired by an external tool, clear the volume
+dirty flag to indicate that it's now safe to mount."
   (match (status:exit-val
-          (system* "ntfsfix" device))
+          (apply system* `("ntfsfix"
+                           ,@(if repair '("--clear-dirty") '("--no-action"))
+                           ,device)))
     (0 'pass)
     (_ 'fatal-error)))
 
@@ -816,8 +889,13 @@ containing ':/')."
               (uuid-bytevector spec)
               uuid->string))))
 
-(define (check-file-system device type)
-  "Run a file system check of TYPE on DEVICE."
+(define (check-file-system device type force? repair)
+  "Check an unmounted TYPE file system on DEVICE.  Do nothing but warn if it is
+mounted.  If FORCE? is true, check even when considered unnecessary.  If REPAIR
+is false, try not to write to DEVICE at all.  If it's #t, try to fix all errors
+found.  Otherwise, fix only those considered safe to repair automatically.  Not
+all TYPEs support all values or combinations of FORCE? and REPAIR.  Don't throw
+an exception in such cases but perform the nearest sane action."
   (define check-procedure
     (cond
      ((string-prefix? "ext" type) check-ext2-file-system)
@@ -831,33 +909,40 @@ containing ':/')."
      (else #f)))
 
   (if check-procedure
-      (match (check-procedure device)
-        ('pass
-         #t)
-        ('errors-corrected
-         (format (current-error-port)
-                 "File system check corrected errors on ~a; continuing~%"
-                 device))
-        ('reboot-required
-         (format (current-error-port)
-                 "File system check corrected errors on ~a; rebooting~%"
-                 device)
-         (sleep 3)
-         (reboot))
-        ('fatal-error
-         (format (current-error-port) "File system check on ~a failed~%"
-                 device)
+      (let ((mount (find (lambda (mount)
+                           (string=? device (mount-source mount)))
+                         (mounts))))
+        (if mount
+            (format (current-error-port)
+                    "Refusing to check ~a file system already mounted at ~a~%"
+                    device (mount-point mount))
+            (match (check-procedure device force? repair)
+              ('pass
+               #t)
+              ('errors-corrected
+               (format (current-error-port)
+                       "File system check corrected errors on ~a; continuing~%"
+                       device))
+              ('reboot-required
+               (format (current-error-port)
+                       "File system check corrected errors on ~a; rebooting~%"
+                       device)
+               (sleep 3)
+               (reboot))
+              ('fatal-error
+               (format (current-error-port) "File system check on ~a failed~%"
+                       device)
 
-         ;; Spawn a REPL only if someone would be able to interact with it.
-         (when (isatty? (current-input-port))
-           (format (current-error-port) "Spawning Bourne-like REPL.~%")
+               ;; Spawn a REPL only if someone might interact with it.
+               (when (isatty? (current-input-port))
+                 (format (current-error-port) "Spawning Bourne-like REPL.~%")
 
-           ;; 'current-output-port' is typically connected to /dev/klog (in
-           ;; PID 1), but here we want to make sure we talk directly to the
-           ;; user.
-           (with-output-to-file "/dev/console"
-             (lambda ()
-               (start-repl %bournish-language))))))
+                 ;; 'current-output-port' is typically connected to /dev/klog
+                 ;; (in PID 1), but here we want to make sure we talk directly
+                 ;; to the user.
+                 (with-output-to-file "/dev/console"
+                   (lambda ()
+                     (start-repl %bournish-language))))))))
       (format (current-error-port)
               "No file system check procedure for ~a; skipping~%"
               device)))
@@ -886,7 +971,11 @@ corresponds to the symbols listed in FLAGS."
       (()
        0))))
 
-(define* (mount-file-system fs #:key (root "/root"))
+(define* (mount-file-system fs #:key (root "/root")
+                            (check? (file-system-check? fs))
+                            (skip-check-if-clean?
+                             (file-system-skip-check-if-clean? fs))
+                            (repair (file-system-repair fs)))
   "Mount the file system described by FS, a <file-system> object, under ROOT."
 
   (define (mount-nfs source mount-point type flags options)
@@ -924,8 +1013,8 @@ corresponds to the symbols listed in FLAGS."
                                (file-system-mount-flags (statfs source)))
                               0)))
          (options (file-system-options fs)))
-    (when (file-system-check? fs)
-      (check-file-system source type))
+    (when check?
+      (check-file-system source type (not skip-check-if-clean?) repair))
 
     (catch 'system-error
       (lambda ()

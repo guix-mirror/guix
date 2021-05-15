@@ -14187,8 +14187,38 @@ initial RAM disk (initrd) is loaded.  This is always the case, for
 instance, for the root file system.
 
 @item @code{check?} (default: @code{#t})
-This Boolean indicates whether the file system needs to be checked for
-errors before being mounted.
+This Boolean indicates whether the file system should be checked for
+errors before being mounted.  How and when this happens can be further
+adjusted with the following options.
+
+@item @code{skip-check-if-clean?} (default: @code{#t})
+When true, this Boolean indicates that a file system check triggered
+by @code{check?} may exit early if the file system is marked as
+``clean'', meaning that it was previously correctly unmounted and
+should not contain errors.
+
+Setting this to false will always force a full consistency check when
+@code{check?} is true.  This may take a very long time and is not
+recommended on healthy systems---in fact, it may reduce reliability!
+
+Conversely, some primitive file systems like @code{fat} do not keep
+track of clean shutdowns and will perform a full scan regardless of the
+value of this option.
+
+@item @code{repair} (default: @code{'preen})
+When @code{check?} finds errors, it can (try to) repair them and
+continue booting.  This option controls when and how to do so.
+
+If false, try not to modify the file system at all.  Checking certain
+file systems like @code{jfs} may still write to the device to replay
+the journal.  No repairs will be attempted.
+
+If @code{#t}, try to repair any errors found and assume ``yes'' to
+all questions.  This will fix the most errors, but may be risky.
+
+If @code{'preen}, repair only errors that are safe to fix without
+human interaction.  What that means is left up to the developers of
+each file system and may be equivalent to ``none'' or ``all''.
 
 @item @code{create-mount-point?} (default: @code{#f})
 When true, the mount point is created if it does not exist yet.
