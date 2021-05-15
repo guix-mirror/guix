@@ -12539,8 +12539,8 @@ can separate configuration system from an implementation.")
   (sbcl-package->ecl-package sbcl-envy))
 
 (define-public sbcl-mito
-  (let ((commit "d3b9e375ef364a65692da2185085a08c969ac88a")
-	(revision "1"))
+  (let ((commit "2fbfc8aa6f9e3e8029bf09888c74b9af98dad341")
+	(revision "2"))
     (package
       (name "sbcl-mito")
       (version (git-version "0.1" revision commit))
@@ -12551,14 +12551,15 @@ can separate configuration system from an implementation.")
          (uri (git-reference
                (url home-page)
                (commit commit)))
-         (file-name (git-file-name name version))
+         (file-name (git-file-name "mito" version))
          (sha256
-          (base32 "08mncgzjnbbsf1a6am3l73iw4lyfvz5ldjg5g84awfaxml4p73mb"))))
+          (base32 "1a9kivpy9j2grf1c6gdjk7fwcdlvvq67p3m98jyfhiyzj7axjymd"))))
       (build-system asdf-build-system/sbcl)
       (native-inputs
        `(("prove" ,sbcl-prove)))
       (inputs
        `(("alexandria" ,sbcl-alexandria)
+         ("cl-package-locks" ,sbcl-cl-package-locks)
          ("cl-ppcre" ,sbcl-cl-ppcre)
          ("cl-reexport" ,sbcl-cl-reexport)
          ("closer-mop" ,sbcl-closer-mop)
@@ -12566,8 +12567,8 @@ can separate configuration system from an implementation.")
          ("dissect" ,sbcl-dissect)
          ("esrap" ,sbcl-esrap)
          ("local-time" ,sbcl-local-time)
-         ("optima" ,sbcl-optima)
          ("sxql" ,sbcl-sxql)
+         ("trivia" ,sbcl-trivia)
          ("uuid" ,sbcl-uuid)))
       (arguments
        '(#:phases
