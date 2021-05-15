@@ -37,6 +37,7 @@
 ;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2021 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2021 Bonface Munyoki Kilyungi <me@bonfacemunyoki.com>
+;;; Copyright © 2021 Frank Pursel <frank.pursel@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5100,7 +5101,7 @@ the electronic or dubstep genre.")
 (define-public sonivox-eas
   (package
     (name "sonivox-eas")
-    (version "1.1.0")
+    (version "1.3.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -5109,7 +5110,7 @@ the electronic or dubstep genre.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0l9gs00p5g4k4qy6i7nv1mfi2n2wnsycwjrgrh9hxzam4irf2mw2"))))
+                "1ygmlrsdzxii2dvj6id2ai3xv3klw2x67ip5rcp823jzczl0wpjd"))))
     (build-system cmake-build-system)
     (arguments '(#:tests? #f)) ; there are no tests
     (inputs
