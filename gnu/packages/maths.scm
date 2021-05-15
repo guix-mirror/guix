@@ -4114,6 +4114,7 @@ packages.")
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/math-atlas/Stable/"
                                   version "/atlas" version ".tar.bz2"))
+              (patches (search-patches "atlas-gfortran-compat.patch"))
               (sha256
                (base32
                 "1dyjlq3fiparvm8ypwk6rsmjzmnwk81l88gkishphpvc79ryp216"))))

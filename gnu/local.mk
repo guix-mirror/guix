@@ -817,6 +817,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ath9k-htc-firmware-binutils.patch	\
   %D%/packages/patches/ath9k-htc-firmware-gcc.patch		\
   %D%/packages/patches/ath9k-htc-firmware-objcopy.patch		\
+  %D%/packages/patches/atlas-gfortran-compat.patch		\
   %D%/packages/patches/audacity-build-with-system-portaudio.patch \
   %D%/packages/patches/audacity-add-include.patch 		\
   %D%/packages/patches/audiofile-fix-datatypes-in-tests.patch	\
