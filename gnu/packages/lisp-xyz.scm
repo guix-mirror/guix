@@ -16608,3 +16608,39 @@ package locks across supported Common Lisp implementations.")
 
 (define-public cl-package-locks
   (sbcl-package->cl-source-package sbcl-cl-package-locks))
+
+(define-public sbcl-cl-typesetting
+  (let ((commit "86eba981fc4254addebecf765578ec350d6e3b75")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-typesetting")
+      (version (git-version "0.8.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/mbattyani/cl-typesetting")
+               (commit commit)))
+         (file-name (git-file-name "cl-typesetting" version))
+         (sha256
+          (base32 "0fcs5mq0gxfczbrg7ay8r4bf5r4g6blvpdbjkhcl8dapcikyn35h"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       ;; NOTE: (Sharlatan-20210515T213014+0100): Circular dependencies with
+       ;; cl-typegraph
+       `(#:tests? #f))
+      (inputs
+       `(("cl-pdf" ,sbcl-cl-pdf)
+         ("xmls" ,sbcl-xmls)))
+      (home-page "https://github.com/mbattyani/cl-typesetting")
+      (synopsis "Stand-alone Common Lisp typesetting system")
+      (description
+       "CL-TYPESETTING is a cross-platform Common Lisp typesetting library for
+all kind of typesetting applications.")
+      (license license:bsd-2))))
+
+(define-public ecl-cl-typesetting
+  (sbcl-package->ecl-package sbcl-cl-typesetting))
+
+(define-public cl-typesetting
+  (sbcl-package->cl-source-package sbcl-cl-typesetting))
