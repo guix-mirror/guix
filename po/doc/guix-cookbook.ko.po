@@ -71,7 +71,7 @@ msgstr "GNU Guix 개발자"
 #: guix-git/doc/guix-cookbook.texi:48
 #, no-wrap
 msgid "Top"
-msgstr "Top"
+msgstr "정상"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:55

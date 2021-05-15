@@ -131,9 +131,9 @@
   ;; Latest version of Guix, which may or may not correspond to a release.
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
-  (let ((version "1.2.0")
-        (commit "4dff6ecde85eec473ab231cf75f51e98e8aca1e9")
-        (revision 21))
+  (let ((version "1.3.0")
+        (commit "771b866c55e5f992df60f6c32f5fdd78b64e17f6")
+        (revision 1))
     (package
       (name "guix")
 
@@ -149,7 +149,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "1n16j7rb4n4pjmp8ck5g206rphmzxii2mbyz1nk4qk70zc3mwszq"))
+                  "0w8w05w6v3lc6478vfw67jzn0hbd9nsncpx9i9ch1lck53r8vs44"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -312,9 +312,11 @@ $(prefix)/etc/openrc\n")))
                                                   "guile-bytestructures"))
                                (ssh    (assoc-ref inputs "guile-ssh"))
                                (gnutls (assoc-ref inputs "gnutls"))
+                               (disarchive (assoc-ref inputs "disarchive"))
                                (locales (assoc-ref inputs "glibc-utf8-locales"))
                                (deps   (list gcrypt json sqlite gnutls git
-                                             bs ssh zlib lzlib zstd guile-lib))
+                                             bs ssh zlib lzlib zstd guile-lib
+                                             disarchive))
                                (deps*  (if avahi (cons avahi deps) deps))
                                (effective
                                 (read-line
@@ -415,6 +417,8 @@ $(prefix)/etc/openrc\n")))
          ("bootstrap/mkdir" ,(bootstrap-executable "mkdir" (%current-system)))
          ("bootstrap/tar" ,(bootstrap-executable "tar" (%current-system)))
          ("bootstrap/xz" ,(bootstrap-executable "xz" (%current-system)))
+
+         ("disarchive" ,disarchive)               ;for 'guix perform-download'
 
          ("glibc-utf8-locales" ,glibc-utf8-locales)))
       (propagated-inputs

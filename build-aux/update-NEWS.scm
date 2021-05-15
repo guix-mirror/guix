@@ -95,7 +95,7 @@ paragraph."
     (with-atomic-file-replacement news-file
       (lambda (input output)
         (rewrite-org-section input output
-                             (make-regexp "^(\\*+) (.*) new packages")
+                             (make-regexp "^(\\*+).*new packages")
                              (lambda (match port)
                                (let ((stars (match:substring match 1)))
                                  (format port
@@ -141,7 +141,7 @@ paragraph."
     (with-atomic-file-replacement news-file
       (lambda (input output)
         (rewrite-org-section input output
-                             (make-regexp "^(\\*+) (.*) package updates")
+                             (make-regexp "^(\\*+).*package updates")
                              (lambda (match port)
                                (let ((stars (match:substring match 1))
                                      (lst   (map (match-lambda
@@ -166,16 +166,22 @@ paragraph."
          (string-append data-directory "/packages-"
                         version ".txt"))
 
+       (define (package<? p1 p2)
+         (string<? (package-full-name p1) (package-full-name p2)))
+
        (let-values (((previous-version new-version)
                      (call-with-input-file news-file NEWS->versions)))
          (format (current-error-port) "Updating NEWS for ~a to ~a...~%"
                  previous-version new-version)
          (let* ((old (call-with-input-file (package-file previous-version)
                        read))
-                (new (fold-packages (lambda (p r)
-                                      (alist-cons (package-name p) (package-version p)
-                                                  r))
-                                    '())))
+                (all-packages/sorted (sort (fold-packages (lambda (p r)
+                                                            (cons p r))
+                                                          '())
+                                           package<?))
+                (new (map (lambda (p)
+                            (cons (package-name p) (package-version p)))
+                          all-packages/sorted)))
            (call-with-output-file (package-file new-version)
              (lambda (port)
                (pretty-print new port)))

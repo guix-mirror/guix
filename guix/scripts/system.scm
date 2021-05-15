@@ -717,6 +717,7 @@ checking this by themselves in their 'check' procedure."
        (lower-object (system-image image)))
       ((docker-image)
        (system-docker-image os
+                            #:memory-size 1024
                             #:shared-network? container-shared-network?)))))
 
 (define (maybe-suggest-running-guix-pull)

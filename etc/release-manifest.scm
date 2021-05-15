@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -48,6 +48,14 @@ TARGET."
   (map specification->package
        '("bootstrap-tarballs" "gcc-toolchain" "nss-certs"
          "openssh" "emacs" "vim" "python" "guile" "guix")))
+
+(define %base-packages/armhf
+  ;; XXX: Relax requirements for armhf-linux for lack of enough build power.
+  (map (lambda (package)
+         (if (string=? (package-name package) "emacs")
+             (specification->package "emacs-no-x")
+             package))
+       %base-packages))
 
 (define %base-packages/hurd
   ;; XXX: For now we are less demanding of "i586-gnu".
@@ -100,9 +108,18 @@ TARGET."
   (manifest
    (append-map (lambda (system)
                  (map (cut package->manifest-entry* <> system)
-                      (if (string=? system "i586-gnu")
-                          %base-packages/hurd
-                          %base-packages)))
+                      (cond ((string=? system "i586-gnu")
+                             %base-packages/hurd)
+                            ((string=? system "armhf-linux")
+                             ;; FIXME: Drop special case when ci.guix.gnu.org
+                             ;; has more ARMv7 build power.
+                             %base-packages/armhf)
+                            ((string=? system "powerpc64le-linux")
+                             ;; FIXME: Drop 'bootstrap-tarballs' until
+                             ;; <https://bugs.gnu.org/48055> is fixed.
+                             (drop %base-packages 1))
+                            (else
+                             %base-packages))))
                %cuirass-supported-systems)))
 
 (define %system-manifest

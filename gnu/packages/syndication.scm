@@ -23,6 +23,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (guix build-system cargo)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
@@ -36,6 +37,7 @@
   #:use-module (gnu packages crates-io)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
@@ -57,7 +59,161 @@
   #:use-module (gnu packages web)
   #:use-module (gnu packages webkit)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages xorg)
   #:use-module (srfi srfi-1))
+
+(define-public cawbird
+  (package
+    (name "cawbird")
+    (version "1.4.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/IBBoard/cawbird")
+             (commit (string-append "v"version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0lmrgcj1ky1vhzynl36k6ba3ws089x4qdrnkjk3lbr334kicx9na"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t
+       #:configure-flags
+       ;; Cawbirds's default key and secret for OAuth process with twitter.
+       (list
+        "-Dconsumer_key_base64=VmY5dG9yRFcyWk93MzJEZmhVdEk5Y3NMOA=="
+        "-Dconsumer_secret_base64=MThCRXIxbWRESDQ2Y0podzVtVU13SGUyVGlCRXhPb3BFRHhGYlB6ZkpybG5GdXZaSjI=")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-failing-tests
+           (lambda _
+             ;; These tests require networking.
+             (substitute* "tests/meson.build"
+               (("[ \t]*.*avatardownload.*$") "")
+               (("[ \t]*.*filters.*$") "")
+               (("[ \t]*.*friends.*$") "")
+               (("[ \t]*.*inlinemediadownloader.*$") "")
+               (("[ \t]*.*tweetparsing.*$") "")
+               (("[ \t]*.*usercounter.*$") ""))))
+         (delete 'check)
+         (add-after 'install 'custom-check
+           (lambda* (#:key outputs tests? #:allow-other-keys)
+             (when tests?
+               ;; Tests require a running X server.
+               (system "Xvfb :1 +extension GLX &")
+               (setenv "DISPLAY" ":1")
+               ;; Tests write to $HOME.
+               (setenv "HOME" (getcwd))
+               ;; Tests look for gsettings-schemas installed by the package.
+               (setenv "XDG_DATA_DIRS"
+                       (string-append (getenv "XDG_DATA_DIRS")
+                                      ":" (assoc-ref outputs "out") "/share"))
+               (invoke "meson" "test"))
+             #t))
+         (add-after 'glib-or-gtk-wrap 'wrap-paths
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin/"))
+                    (gst-plugin-path (getenv "GST_PLUGIN_SYSTEM_PATH"))
+                    (gi-typelib-path (getenv "GI_TYPELIB_PATH")))
+               (wrap-program (string-append bin "cawbird")
+                 `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path))
+                 `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
+             #t)))))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk+:bin" ,gtk+ "bin")
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)
+       ("xmllint" ,libxml2)
+       ("xorg-server" ,xorg-server-for-tests)))
+    (inputs
+     `(("glib" ,glib)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gspell" ,gspell)
+       ("gstreamer" ,gstreamer)
+       ("gst-libav" ,gst-libav)
+       ("gst-plugins-bad" ,gst-plugins-bad)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("gst-plugins-good" ,gst-plugins-good)
+       ("gtk+" ,gtk+)
+       ("json-glib" ,json-glib)
+       ("liboauth" ,liboauth)
+       ("libsoup" ,libsoup)
+       ("rest" ,rest)
+       ("sqlite" ,sqlite)
+       ("x11" ,libx11)))
+    (propagated-inputs
+     `(("dconf" ,dconf)))
+    (synopsis "Client for Twitter")
+    (description "Cawbird is a Twitter client built with GTK and Vala.
+It supports all features except non-mention notifications, polls, threads and
+cards.")
+    (home-page "https://ibboard.co.uk/cawbird/")
+    (license license:gpl3+)))
+
+(define-public giara
+  (package
+    (name "giara")
+    (version "0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.gnome.org/World/giara")
+             (commit version)))
+       (file-name (git-file-name name version))
+       ;; To fix authentication while adding accounts.
+       (patches (search-patches "giara-fix-login.patch"))
+       (sha256
+        (base32 "004qmkfrgd37axv0b6hfh6v7nx4pvy987k5yv4bmlmkj9sbqm6f9"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'glib-or-gtk-wrap 'wrap-paths
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin/"))
+                    (lib (string-append out "/lib/python"
+                                        ,(version-major+minor
+                                          (package-version python))
+                                        "/site-packages")))
+               (wrap-program (string-append bin "giara")
+                 `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH") ,lib))
+                 `("GI_TYPELIB_PATH" ":" prefix (,(getenv "GI_TYPELIB_PATH")))))
+             #t)))))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk+:bin" ,gtk+ "bin")
+       ("pkg-config" ,pkg-config)
+       ("xmllint" ,libxml2)))
+    (inputs
+     `(("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("gtksourceview" ,gtksourceview)
+       ("libhandy" ,libhandy)
+       ("python" ,python)
+       ("python-beautifulsoup" ,python-beautifulsoup4)
+       ("python-dateutil" ,python-dateutil)
+       ("python-mistune" ,python-mistune)
+       ("python-pillow" ,python-pillow)
+       ("python-praw" ,python-praw)
+       ("python-pycairo" ,python-pycairo)
+       ("python-pygobject" ,python-pygobject)
+       ("python-requests" ,python-requests)
+       ("webkitgtk" ,webkitgtk)))
+    (propagated-inputs
+     `(("dconf" ,dconf)))
+    (synopsis "Client for Reddit")
+    (description "Giara is a reddit app, built with Python, GTK and Handy.")
+    (home-page "https://giara.gabmus.org/")
+    (license license:gpl3+)))
 
 (define-public newsboat
   (package

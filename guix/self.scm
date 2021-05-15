@@ -63,6 +63,7 @@
       ("guile-zstd" (ref '(gnu packages guile) 'guile-zstd))
       ("guile-gcrypt"  (ref '(gnu packages gnupg) 'guile-gcrypt))
       ("gnutls"     (ref '(gnu packages tls) 'gnutls))
+      ("disarchive" (ref '(gnu packages backup) 'disarchive))
       ("gzip"       (ref '(gnu packages compression) 'gzip))
       ("bzip2"      (ref '(gnu packages compression) 'bzip2))
       ("xz"         (ref '(gnu packages compression) 'xz))
@@ -842,6 +843,9 @@ itself."
   (define gnutls
     (specification->package "gnutls"))
 
+  (define disarchive
+    (specification->package "disarchive"))
+
   (define dependencies
     (append-map transitive-package-dependencies
                 (list guile-gcrypt gnutls guile-git guile-avahi
@@ -1026,7 +1030,8 @@ itself."
          (let* ((modules  (built-modules (compose list node-source+compiled)))
                 (command  (guix-command modules
                                         #:source source
-                                        #:dependencies dependencies
+                                        #:dependencies
+                                        (cons disarchive dependencies)
                                         #:guile guile-for-build
                                         #:guile-version guile-version)))
            (whole-package name modules dependencies

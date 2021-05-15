@@ -316,8 +316,42 @@ without requiring the source code to be rewritten.")
                      "share/guile/site/3.0")))))))
 
 (define-public guile-3.0-latest
-  ;; The latest 3.0.x version.
-  guile-3.0)
+  ;; TODO: Make this 'guile-3.0' on the next rebuild cycle.
+  (package
+    (inherit guile-3.0)
+    (version "3.0.7")
+    (source (origin
+              (inherit (package-source guile-3.0)) ;preserve snippet
+              (patches '())
+              (uri (string-append "mirror://gnu/guile/guile-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "1dwiwsrpm4f96alfnz6wibq378242z4f16vsxgy1n9r00v3qczgm"))))
+
+    ;; Build with the bundled mini-GMP to avoid interference with GnuTLS' own
+    ;; use of GMP via Nettle: <https://issues.guix.gnu.org/46330>.  Use
+    ;; LIBGC/DISABLE-MUNMAP to work around <https://bugs.gnu.org/40525>.
+    ;; Remove libltdl, which is no longer used.
+    (propagated-inputs
+     `(("bdw-gc" ,libgc/disable-munmap)
+       ,@(srfi-1:fold srfi-1:alist-delete (package-propagated-inputs guile-3.0)
+                      '("gmp" "libltdl" "bdw-gc"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments guile-3.0)
+       ((#:configure-flags flags ''())
+        `(cons "--enable-mini-gmp" ,flags))))))
+
+(define-public guile-3.0/libgc-7
+  ;; Using libgc-7 avoid crashes that can occur, particularly when loading
+  ;; data in to the Guix Data Service:
+  ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=40525
+  (hidden-package
+   (package
+     (inherit guile-3.0-latest)
+     (propagated-inputs
+      `(("bdw-gc" ,libgc-7)
+        ,@(srfi-1:alist-delete "bdw-gc" (package-propagated-inputs guile-3.0)))))))
 
 (define-public guile-3.0/fixed
   ;; A package of Guile that's rarely changed.  It is the one used in the

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: guix manual checkout\n"
 "Report-Msgid-Bugs-To: bug-guix@gnu.org\n"
 "POT-Creation-Date: 2021-01-25 00:00+0100\n"
-"PO-Revision-Date: 2021-04-17 23:47+0000\n"
+"PO-Revision-Date: 2021-04-25 06:02+0000\n"
 "Last-Translator: Julien Lepiller <fedora-account@lepiller.eu>\n"
 "Language-Team: French <https://translate.fedoraproject.org/projects/guix/documentation-cookbook/fr/>\n"
 "Language: fr\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.5.3\n"
+"X-Generator: Weblate 4.6\n"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:7
@@ -2511,12 +2511,12 @@ msgstr "Lancer Guix sur un serveur Linode"
 #: guix-git/doc/guix-cookbook.texi:2226
 #, no-wrap
 msgid "Setting up a bind mount"
-msgstr ""
+msgstr "Mettre en place un montage dupliqué"
 
 #. type: menuentry
 #: guix-git/doc/guix-cookbook.texi:1364
 msgid "Setting up a bind mount in the file-systems definition."
-msgstr ""
+msgstr "Mettre en place un montage dupliqué dans une définition de système de fichiers."
 
 #. type: section
 #: guix-git/doc/guix-cookbook.texi:1364 guix-git/doc/guix-cookbook.texi:2274
@@ -2779,7 +2779,7 @@ msgstr ""
 #: guix-git/doc/guix-cookbook.texi:1507
 #, no-wrap
 msgid "(invoke \"make\" \"oldconfig\")\n"
-msgstr ""
+msgstr "(invoke \"make\" \"oldconfig\")\n"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:1512
@@ -3301,12 +3301,12 @@ msgstr "vous aurez une image QEMU pour le Hurd à la place."
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:1823
 msgid "To connect to a Wireguard VPN server you need the kernel module to be loaded in memory and a package providing networking tools that support it (e.g.  @code{wireguard-tools} or @code{network-manager})."
-msgstr ""
+msgstr "Pour se connecter à un serveur VPN Wireguard, il faut que le module du noyau soit chargé en mémoire et qu'un paquet fournissant des outils de réseau le prenne en charge (par exemple, @code{wireguard-tools} ou @code{network-manager})."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:1827
 msgid "Here is a configuration example for Linux-Libre < 5.6, where the module is out of tree and need to be loaded manually---following revisions of the kernel have it built-in and so don't need such configuration:"
-msgstr ""
+msgstr "Voici un exemple de configuration pour Linux-Libre < 5.6, où le module est hors de l'arborescence des sources et doit être chargé manuellement--les révisions suivantes du noyau l'ont intégré et n'ont donc pas besoin d'une telle configuration :"
 
 #. type: lisp
 #: guix-git/doc/guix-cookbook.texi:1832
@@ -3317,6 +3317,10 @@ msgid ""
 "(use-package-modules vpn)\n"
 "\n"
 msgstr ""
+"(use-modules (gnu))\n"
+"(use-service-modules desktop)\n"
+"(use-package-modules vpn)\n"
+"\n"
 
 #. type: lisp
 #: guix-git/doc/guix-cookbook.texi:1841
@@ -3331,22 +3335,30 @@ msgid ""
 "  (packages (cons wireguard-tools %base-packages))\n"
 "  (kernel-loadable-modules (list wireguard-linux-compat)))\n"
 msgstr ""
+"(operating-system\n"
+"  ;; …\n"
+"  (services (cons (simple-service 'wireguard-module\n"
+"                                  kernel-module-loader-service-type\n"
+"                                  '(\"wireguard\"))\n"
+"                  %desktop-services))\n"
+"  (packages (cons wireguard-tools %base-packages))\n"
+"  (kernel-loadable-modules (list wireguard-linux-compat)))\n"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:1845
 msgid "After reconfiguring and restarting your system you can either use Wireguard tools or NetworkManager to connect to a VPN server."
-msgstr ""
+msgstr "Après avoir reconfiguré et redémarré votre système, vous pouvez utiliser les outils Wireguard ou NetworkManager pour vous connecter à un serveur VPN."
 
 #. type: subsection
 #: guix-git/doc/guix-cookbook.texi:1846
 #, no-wrap
 msgid "Using Wireguard tools"
-msgstr ""
+msgstr "Utilisation des outils Wireguard"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:1852
 msgid "To test your Wireguard setup it is convenient to use @command{wg-quick}.  Just give it a configuration file @command{wg-quick up ./wg0.conf}; or put that file in @file{/etc/wireguard} and run @command{wg-quick up wg0} instead."
-msgstr ""
+msgstr "Pour tester votre configuration Wireguard, vous pouvez utiliser @command{wg-quick}. Donnez-lui simplement un fichier de configuration : @command{wg-quick up ./wg0.conf}, ou placez ce fichier dans @file{/etc/wireguard} et lancez @command{wg-quick up wg0} à la place."
 
 #. type: quotation
 #: guix-git/doc/guix-cookbook.texi:1853
@@ -3357,23 +3369,23 @@ msgstr "Remarque"
 #. type: quotation
 #: guix-git/doc/guix-cookbook.texi:1856
 msgid "Be warned that the author described this command as a: “[…] very quick and dirty bash script […]”."
-msgstr ""
+msgstr "Soyez averti que l'auteur a décrit cette commande comme un : « [...] script bash écrit à la va-vite [...] »."
 
 #. type: subsection
 #: guix-git/doc/guix-cookbook.texi:1858
 #, no-wrap
 msgid "Using NetworkManager"
-msgstr ""
+msgstr "En utilisant NetworkManager"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:1866
 msgid "Thanks to NetworkManager support for Wireguard we can connect to our VPN using @command{nmcli} command.  Up to this point this guide assumes that you're using Network Manager service provided by @code{%desktop-services}.  Ortherwise you need to adjust your services list to load @code{network-manager-service-type} and reconfigure your Guix system."
-msgstr ""
+msgstr "Grâce à la prise en charge de NetworkManager pour Wireguard, nous pouvons nous connecter à notre VPN en utilisant la commande @command{nmcli}.  Jusqu'ici, ce guide suppose que vous utilisez le service Network Manager fourni par @code{%desktop-services}.  Dans le cas contraire, vous devez ajuster votre liste de services pour charger @code{network-manager-service-type} et reconfigurer votre système Guix."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:1868
 msgid "To import your VPN configuration execute nmcli import command:"
-msgstr ""
+msgstr "Pour importer votre configuration VPN, exécutez la commande d'import de nmcli :"
 
 #. type: example
 #: guix-git/doc/guix-cookbook.texi:1872
@@ -3382,11 +3394,13 @@ msgid ""
 "# nmcli connection import type wireguard file wg0.conf\n"
 "Connection 'wg0' (edbee261-aa5a-42db-b032-6c7757c60fde) successfully added\n"
 msgstr ""
+"# nmcli connection import type wireguard file wg0.conf\n"
+"Connection 'wg0' (edbee261-aa5a-42db-b032-6c7757c60fde) successfully added\n"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:1877
 msgid "This will create a configuration file in @file{/etc/NetworkManager/wg0.nmconnection}.  Next connect to the Wireguard server:"
-msgstr ""
+msgstr "Cela va créer un fichier de configuration dans @file{/etc/NetworkManager/wg0.nmconnection}. Ensuite connectez-vous au serveur Wireguard :"
 
 #. type: example
 #: guix-git/doc/guix-cookbook.texi:1881
@@ -3395,22 +3409,24 @@ msgid ""
 "$ nmcli connection up wg0\n"
 "Connection successfully activated (D-Bus active path: /org/freedesktop/NetworkManager/ActiveConnection/6)\n"
 msgstr ""
+"$ nmcli connection up wg0\n"
+"Connection successfully activated (D-Bus active path: /org/freedesktop/NetworkManager/ActiveConnection/6)\n"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:1885
 msgid "By default NetworkManager will connect automatically on system boot.  To change that behaviour you need to edit your config:"
-msgstr ""
+msgstr "Par défaut, NetworkManager se connectera automatiquement au démarrage du système. Pour changer ce comportement vous devez modifier votre configuration :"
 
 #. type: example
 #: guix-git/doc/guix-cookbook.texi:1888
 #, no-wrap
 msgid "# nmcli connection modify wg0 connection.autoconnect no\n"
-msgstr ""
+msgstr "# nmcli connection modify wg0 connection.autoconnect no\n"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:1893
 msgid "For more specific information about NetworkManager and wireguard @uref{https://blogs.gnome.org/thaller/2019/03/15/wireguard-in-networkmanager/,see this post by thaller}."
-msgstr ""
+msgstr "Pour des informations plus spécifiques sur NetworkManager et wireguard @uref{https://blogs.gnome.org/thaller/2019/03/15/wireguard-in-networkmanager/,voir ce billet par thaller}."
 
 #. type: cindex
 #: guix-git/doc/guix-cookbook.texi:1896
@@ -3684,12 +3700,12 @@ msgstr "Périphérique racine : @file{/dev/sda}"
 #. type: itemize
 #: guix-git/doc/guix-cookbook.texi:2047
 msgid "Turn off all the filesystem/boot helpers"
-msgstr ""
+msgstr "Désactivez tous les programmes d'aide pour les systèmes de fichiers et le démarrage"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2054
 msgid "Now power it back up, picking the Debian configuration.  Once it's booted up, ssh in your server via @code{ssh root@@@var{<your-server-IP-here>}}. (You can find your server IP address in your Linode Summary section.) Now you can run the \"install guix from @pxref{Binary Installation,,, guix, GNU Guix}\" steps:"
-msgstr ""
+msgstr "Maintenant démarrez le serveur et choisissez la configuration Debian. Une fois démarré, connectez vous en ssh au serveur avec @code{ssh root@@@var{<IP-de-votre-serveur-ici>}}. (Vous pouvez trouver l'adresse IP de votre serveur dans la section résumé de Linode). Maintenant vous pouvez lancer les étapes d'installation de @pxref{Installation binaire,,, guix.fr, GNU Guix} :"
 
 #. type: example
 #: guix-git/doc/guix-cookbook.texi:2062
@@ -3702,11 +3718,17 @@ msgid ""
 "./guix-install.sh\n"
 "guix pull\n"
 msgstr ""
+"sudo apt-get install gpg\n"
+"wget https://sv.gnu.org/people/viewgpg.php?user_id=15145 -qO - | gpg --import -\n"
+"wget https://git.savannah.gnu.org/cgit/guix.git/plain/etc/guix-install.sh\n"
+"chmod +x guix-install.sh\n"
+"./guix-install.sh\n"
+"guix pull\n"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2066
 msgid "Now it's time to write out a config for the server.  The key information is below. Save the resulting file as @file{guix-config.scm}."
-msgstr ""
+msgstr "Maintenant il est temps d'écrire une configuration pour le serveur. Voici ce que vous devrez obligatoirement écrire, en plus de vos propres configurations. Enregistrez le fichier avec le nom @file{guix-config.scm}."
 
 #. type: lisp
 #: guix-git/doc/guix-cookbook.texi:2077
@@ -3723,6 +3745,16 @@ msgid ""
 "                     tls)\n"
 "\n"
 msgstr ""
+"(use-modules (gnu)\n"
+"             (guix modules))\n"
+"(use-service-modules networking\n"
+"                     ssh)\n"
+"(use-package-modules admin\n"
+"                     certs\n"
+"                     package-management\n"
+"                     ssh\n"
+"                     tls)\n"
+"\n"
 
 #. type: lisp
 #: guix-git/doc/guix-cookbook.texi:2094
@@ -3746,6 +3778,23 @@ msgid ""
 "                      %base-file-systems))\n"
 "\n"
 msgstr ""
+"(operating-system\n"
+"  (host-name \"my-server\")\n"
+"  (timezone \"America/New_York\")\n"
+"  (locale \"en_US.UTF-8\")\n"
+"  ;; Ce code va générer un grub.cfg\n"
+"  ;; sans installer le chargeur d'amorçage grub sur le disque.\n"
+"  (bootloader (bootloader-configuration\n"
+"               (bootloader\n"
+"                (bootloader\n"
+"                 (inherit grub-bootloader)\n"
+"                 (installer #~(const #true))))))\n"
+"  (file-systems (cons (file-system\n"
+"                        (device \"/dev/sda\")\n"
+"                        (mount-point \"/\")\n"
+"                        (type \"ext4\"))\n"
+"                      %base-file-systems))\n"
+"\n"
 
 #. type: lisp
 #: guix-git/doc/guix-cookbook.texi:2097
@@ -3754,6 +3803,8 @@ msgid ""
 "  (swap-devices (list \"/dev/sdb\"))\n"
 "\n"
 msgstr ""
+"  (swap-devices (list \"/dev/sdb\"))\n"
+"\n"
 
 #. type: lisp
 #: guix-git/doc/guix-cookbook.texi:2101
@@ -3763,6 +3814,9 @@ msgid ""
 "                        %base-initrd-modules))\n"
 "\n"
 msgstr ""
+"  (initrd-modules (cons \"virtio_scsi\"    ; Requis pour trouver le disque\n"
+"                        %base-initrd-modules))\n"
+"\n"
 
 #. type: lisp
 #: guix-git/doc/guix-cookbook.texi:2110
@@ -3778,6 +3832,15 @@ msgid ""
 "               %base-user-accounts))\n"
 "\n"
 msgstr ""
+"  (users (cons (user-account\n"
+"                (name \"janedoe\")\n"
+"                (group \"users\")\n"
+"                ;; Ajoute le compte au groupe « wheel »\n"
+"                ;; pour en faire un sudoer.\n"
+"                (supplementary-groups '(\"wheel\"))\n"
+"                (home-directory \"/home/janedoe\"))\n"
+"               %base-user-accounts))\n"
+"\n"
 
 #. type: lisp
 #: guix-git/doc/guix-cookbook.texi:2114
@@ -3788,6 +3851,10 @@ msgid ""
 "                   %base-packages))\n"
 "\n"
 msgstr ""
+"  (packages (cons* nss-certs            ; pour l'accès HTTPS\n"
+"                   openssh-sans-x\n"
+"                   %base-packages))\n"
+"\n"
 
 #. type: lisp
 #: guix-git/doc/guix-cookbook.texi:2125
@@ -3804,11 +3871,21 @@ msgid ""
 "                          (\"root\" ,(local-file \"janedoe_rsa.pub\"))))))\n"
 "             %base-services)))\n"
 msgstr ""
+"  (services (cons*\n"
+"             (service dhcp-client-service-type)\n"
+"             (service openssh-service-type\n"
+"                      (openssh-configuration\n"
+"                       (openssh openssh-sans-x)\n"
+"                       (password-authentication? #false)\n"
+"                       (authorized-keys\n"
+"                        `((\"janedoe\" ,(local-file \"janedoe_rsa.pub\"))\n"
+"                          (\"root\" ,(local-file \"janedoe_rsa.pub\"))))))\n"
+"             %base-services)))\n"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2128
 msgid "Replace the following fields in the above configuration:"
-msgstr ""
+msgstr "Remplacez les champs suivants dans la configuration ci-dessus :"
 
 #. type: lisp
 #: guix-git/doc/guix-cookbook.texi:2136
@@ -3822,16 +3899,23 @@ msgid ""
 "(\"janedoe\" ,(local-file \"janedoe_rsa.pub\")) ; replace with your ssh key\n"
 "(\"root\" ,(local-file \"janedoe_rsa.pub\")) ; replace with your ssh key\n"
 msgstr ""
+"(host-name \"my-server\")       ; remplacez avec le nom de votre serveur\n"
+"; si vous avez choisi un serveur Linode en dehors des U.S.,\n"
+"; utilisez tzselect pour trouver le bon fuseau horaire\n"
+"(timezone \"America/New_York\") ; remplacez le fuseau horaire si besoin\n"
+"(name \"janedoe\")              ; remplacez avec votre nom d'utilisateur\n"
+"(\"janedoe\" ,(local-file \"janedoe_rsa.pub\")) ; remplacez par votre clé ssh\n"
+"(\"root\" ,(local-file \"janedoe_rsa.pub\")) ; remplacez par votre clé ssh\n"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2142
 msgid "The last line in the above example lets you log into the server as root and set the initial root password.  After you have done this, you may delete that line from your configuration and reconfigure to prevent root login."
-msgstr ""
+msgstr "Cette dernière ligne vous permet de vous connecter au serveur en root et de créer le mot de passe initial. Après avoir fait cela, vous pouvez supprimer cette ligne de votre configuration et reconfigurer pour empêcher la connexion directe en root."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2147
 msgid "Save your ssh public key (eg: @file{~/.ssh/id_rsa.pub}) as @file{@var{<your-username-here>}_rsa.pub} and your @file{guix-config.scm} in the same directory.  In a new terminal run these commands."
-msgstr ""
+msgstr "Enregistrez votre clé ssh publique (ex : @file{~/.ssh/id_rsa.pub}) dans @file{@var{<votre-nom-d'utilisateur>}_rsa.pub} et votre @file{guix-config.scm} dans le même répertoire. Dans un nouveau terminal lancez ces commandes."
 
 #. type: example
 #: guix-git/doc/guix-cookbook.texi:2152
@@ -3841,11 +3925,14 @@ msgid ""
 "put /home/<username>/ssh/id_rsa.pub .\n"
 "put /path/to/linode/guix-config.scm .\n"
 msgstr ""
+"sftp root@@<remote server ip address>\n"
+"put /home/<username>/ssh/id_rsa.pub .\n"
+"put /path/to/linode/guix-config.scm .\n"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2155
 msgid "In your first terminal, mount the guix drive:"
-msgstr ""
+msgstr "Dans votre premier terminal, montez le disque guix :"
 
 #. type: example
 #: guix-git/doc/guix-cookbook.texi:2159
@@ -3854,11 +3941,13 @@ msgid ""
 "mkdir /mnt/guix\n"
 "mount /dev/sdc /mnt/guix\n"
 msgstr ""
+"mkdir /mnt/guix\n"
+"mount /dev/sdc /mnt/guix\n"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2164
 msgid "Due to the way we set things up above, we do not install GRUB completely.  Instead we install only our grub configuration file.  So we need to copy over some of the other GRUB stuff that is already there:"
-msgstr ""
+msgstr "À cause de la manière dont nous avons paramétré les choses au-dessus, nous n'installons pas GRUB complètement. Au lieu de cela, nous installons seulement notre fichier de configuration grub. Donc on doit copier certains fichiers GRUB déjà présents :"
 
 #. type: example
 #: guix-git/doc/guix-cookbook.texi:2168
@@ -3867,27 +3956,29 @@ msgid ""
 "mkdir -p /mnt/guix/boot/grub\n"
 "cp -r /boot/grub/* /mnt/guix/boot/grub/\n"
 msgstr ""
+"mkdir -p /mnt/guix/boot/grub\n"
+"cp -r /boot/grub/* /mnt/guix/boot/grub/\n"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2171
 msgid "Now initialize the Guix installation:"
-msgstr ""
+msgstr "Maintenant initialisez l'installation de Guix :"
 
 #. type: example
 #: guix-git/doc/guix-cookbook.texi:2174
 #, no-wrap
 msgid "guix system init guix-config.scm /mnt/guix\n"
-msgstr ""
+msgstr "guix system init guix-config.scm /mnt/guix\n"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2178
 msgid "Ok, power it down! Now from the Linode console, select boot and select \"Guix\"."
-msgstr ""
+msgstr "Ok, éteignez maintenant le serveur ! Depuis la console Linode, démarrez et choisissez « Guix »."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2181
 msgid "Once it boots, you should be able to log in via SSH! (The server config will have changed though.)  You may encounter an error like:"
-msgstr ""
+msgstr "Une fois démarré, vous devriez pouvoir vous connecter en SSH ! (La configuration du serveur aura cependant changé). Vous pouvez rencontrer une erreur de ce type :"
 
 #. type: example
 #: guix-git/doc/guix-cookbook.texi:2197
@@ -3908,16 +3999,30 @@ msgid ""
 "ECDSA host key for 198.58.98.76 has changed and you have requested strict checking.\n"
 "Host key verification failed.\n"
 msgstr ""
+"$ ssh root@@<server ip address>\n"
+"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n"
+"@    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @\n"
+"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n"
+"IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!\n"
+"Someone could be eavesdropping on you right now (man-in-the-middle attack)!\n"
+"It is also possible that a host key has just been changed.\n"
+"The fingerprint for the ECDSA key sent by the remote host is\n"
+"SHA256:0B+wp33w57AnKQuHCvQP0+ZdKaqYrI/kyU7CfVbS7R4.\n"
+"Please contact your system administrator.\n"
+"Add correct host key in /home/joshua/.ssh/known_hosts to get rid of this message.\n"
+"Offending ECDSA key in /home/joshua/.ssh/known_hosts:3\n"
+"ECDSA host key for 198.58.98.76 has changed and you have requested strict checking.\n"
+"Host key verification failed.\n"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2201
 msgid "Either delete @file{~/.ssh/known_hosts} file, or delete the offending line starting with your server IP address."
-msgstr ""
+msgstr "Vous pouvez soit supprimer @file{~/.ssh/known_hosts}, soit supprimer la ligne qui pose problème, qui commence par l'adresse IP de votre serveur."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2203
 msgid "Be sure to set your password and root's password."
-msgstr ""
+msgstr "Assurez-vous de configurer votre mot de passe et celui de root."
 
 #. type: example
 #: guix-git/doc/guix-cookbook.texi:2208
@@ -3927,31 +4032,34 @@ msgid ""
 "passwd  ; for the root password\n"
 "passwd <username> ; for the user password\n"
 msgstr ""
+"ssh root@@<remote ip address>\n"
+"passwd  ; pour le mot de passe root\n"
+"passwd <username> ; pour le mot de passe utilisateur\n"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2215
 msgid "You may not be able to run the above commands at this point.  If you have issues remotely logging into your linode box via SSH, then you may still need to set your root and user password initially by clicking on the ``Launch Console'' option in your linode.  Choose the ``Glish'' instead of ``Weblish''.  Now you should be able to ssh into the machine."
-msgstr ""
+msgstr "Il se peut que vous ne puissiez pas lancer les commandes précédentes si vous n'arrivez pas à vous connecter à distance via SSH, auquel cas vous devrez peut-être configurer vos mot de passes utilisateurs et root en cliquant sur « Launch Console » dans votre espace Linode. Choisissez « Glish » au lieu de « Weblish ». Maintenant vous devriez pouvoir vous connecter en ssh à la machine."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2219
 msgid "Horray! At this point you can shut down the server, delete the Debian disk, and resize the Guix to the rest of the size.  Congratulations!"
-msgstr ""
+msgstr "Hourra ! Maintenant vous pouvez étendre le serveur, supprimer le disque Debian et redimensionner celui de Guix. Bravo !"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2224
 msgid "By the way, if you save it as a disk image right at this point, you'll have an easy time spinning up new Guix images! You may need to down-size the Guix image to 6144MB, to save it as an image.  Then you can resize it again to the max size."
-msgstr ""
+msgstr "Au fait, si vous sauvegardez le résultat dans une image disque maintenant, vous pourrez plus facilement démarrer de nouvelles images de guix ! Vous devrez peut-être réduire la taille de l'image Guix à 6144 Mo, pour la sauvegarder en tant qu'image. Ensuite vous pouvez redimensionner la partition à la taille maximum."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2233
 msgid "To bind mount a file system, one must first set up some definitions before the @code{operating-system} section of the system definition.  In this example we will bind mount a folder from a spinning disk drive to @file{/tmp}, to save wear and tear on the primary SSD, without dedicating an entire partition to be mounted as @file{/tmp}."
-msgstr ""
+msgstr "Pour dupliquer le montage d'un système de fichier (@i{bind mount}), on doit d'abord ajouter quelques définitions avant la section @code{operating-system} de la définition de système d'exploitation. Dans cet exemple nous allons dupliquer le montage d'un dossier d'un disque dur vers @file{/tmp}, pour éviter d'épuiser le SSD principal, sans dédier une partition entière à @file{/tmp}."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2236
 msgid "First, the source drive that hosts the folder we wish to bind mount should be defined, so that the bind mount can depend on it."
-msgstr ""
+msgstr "Déjà, le disque source qui héberge de dossier dont nous voulons dupliquer le montage doit être défini, pour que le montage dupliqué puisse en dépendre."
 
 #. type: lisp
 #: guix-git/doc/guix-cookbook.texi:2243
@@ -3963,22 +4071,27 @@ msgid ""
 "    (mount-point \"/path-to-spinning-disk-goes-here\")\n"
 "    (type \"ext4\"))) ;; Make sure to set this to the appropriate type for your drive.\n"
 msgstr ""
+"(define source-drive ;; vous pouvez nommer « source-drive » comme vous le souhaitez.\n"
+"   (file-system\n"
+"    (device (uuid \"indiquez l'UUID ici\"))\n"
+"    (mount-point \"/chemin-vers-le-disque-dur\")\n"
+"    (type \"ext4\"))) ;; Assurez-vous d'indiquer le bon type pour la partition\n"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2247
 msgid "The source folder must also be defined, so that guix will know it's not a regular block device, but a folder."
-msgstr ""
+msgstr "Le dossier source doit aussi être défini, pour que guix sache qu'il ne s'agit pas d'un périphérique bloc, mais d'un dossier."
 
 #. type: lisp
 #: guix-git/doc/guix-cookbook.texi:2249
 #, no-wrap
 msgid "(define (%source-directory) \"/path-to-spinning-disk-goes-here/tmp\") ;; \"source-directory\" can be named any valid variable name.\n"
-msgstr ""
+msgstr "(define (%source-directory) \"/chemin-vers-le-disque-dur/tmp\") ;; vous pouvez nommer « source-directory » comme vous le souhaitez.\n"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2253
 msgid "Finally, inside the @code{file-systems} definition, we must add the mount itself."
-msgstr ""
+msgstr "Enfin, dans la définition @code{file-systems}, on doit ajouter le montage lui-même."
 
 #. type: lisp
 #: guix-git/doc/guix-cookbook.texi:2256
@@ -3987,6 +4100,8 @@ msgid ""
 "(file-systems (cons*\n"
 "\n"
 msgstr ""
+"(file-systems (cons*\n"
+"\n"
 
 #. type: lisp
 #: guix-git/doc/guix-cookbook.texi:2258
@@ -3995,6 +4110,8 @@ msgid ""
 "                ...<other drives omitted for clarity>...\n"
 "\n"
 msgstr ""
+"                ...<d'autres montages omis pour rester concis>...\n"
+"\n"
 
 #. type: lisp
 #: guix-git/doc/guix-cookbook.texi:2260
@@ -4003,6 +4120,8 @@ msgid ""
 "                source-drive ;; Must match the name you gave the source drive in the earlier definition.\n"
 "\n"
 msgstr ""
+"                source-drive ;; Doit correspondre au nom que vous avez donné au disque source dans la définition précédente.\n"
+"\n"
 
 #. type: lisp
 #: guix-git/doc/guix-cookbook.texi:2268
@@ -4017,6 +4136,14 @@ msgid ""
 "                 )\n"
 "\n"
 msgstr ""
+"                (file-system\n"
+"                 (device (%source-directory)) ;; Assurez-vous que « source-directory » corresponde à la définition précédente.\n"
+"                 (mount-point \"/tmp\")\n"
+"                 (type \"none\") ;; On monte un dossier, pas une partition, donc le montage est de type « none »\n"
+"                 (flags '(bind-mount))\n"
+"                 (dependencies (list source-drive)) ;; Assurez-vous que « source-drive » corresponde au nom de la variable pour le disque.\n"
+"                 )\n"
+"\n"
 
 #. type: lisp
 #: guix-git/doc/guix-cookbook.texi:2270
@@ -4025,17 +4152,19 @@ msgid ""
 "                 ...<other drives omitted for clarity>...\n"
 "\n"
 msgstr ""
+"                 ...<d'autres montages omis pour rester concis>...\n"
+"\n"
 
 #. type: lisp
 #: guix-git/doc/guix-cookbook.texi:2272
 #, no-wrap
 msgid "                ))\n"
-msgstr ""
+msgstr "                ))\n"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2279
 msgid "Guix daemon can use a HTTP proxy to get substitutes, here we are configuring it to get them via Tor."
-msgstr ""
+msgstr "Le démon Guix peut utiliser un mandataire HTTP pour récupérer des substituts. Nous le configurons ici pour les récupérer par Tor."
 
 #. type: quotation
 #: guix-git/doc/guix-cookbook.texi:2280
@@ -4046,17 +4175,17 @@ msgstr "Attention"
 #. type: quotation
 #: guix-git/doc/guix-cookbook.texi:2286
 msgid "@emph{Not all} Guix daemon's traffic will go through Tor! Only HTTP/HTTPS will get proxied; FTP, Git protocol, SSH, etc connections will still go through the clearnet.  Again, this configuration isn't foolproof some of your traffic won't get routed by Tor at all.  Use it at your own risk."
-msgstr ""
+msgstr "@emph{Tout} le trafic du démon de passera @emph{pas} par Tor ! Seuls HTTP/HTTPS passer par le mandataire ; les connexions FTP, avec le protocol Git, SSH, etc, passeront toujours par le réseau en clair. De nouveau, cette configuration n'est pas parfaite et une partie de votre trafic ne sera pas routé par Tor du tout. Utilisez-la à vos risques et périls."
 
 #. type: quotation
 #: guix-git/doc/guix-cookbook.texi:2292
 msgid "Also note that the procedure described here applies only to package substitution. When you update your guix distribution with @command{guix pull}, you still need to use @command{torsocks} if you want to route the connection to guix's git repository servers through Tor."
-msgstr ""
+msgstr "Remarquez aussi que la procédure décrite ici ne s'applique qu'à la substitution de paquets. Lorsque vous mettez à jour la distribution avec @command{guix pull}, vous aurez encore besoin de @command{torsocks} si vous voulez router la connexion vers les serveurs de dépôts git à travers Tor."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2297
 msgid "Guix's substitute server is available as a Onion service, if you want to use it to get your substitutes through Tor configure your system as follow:"
-msgstr ""
+msgstr "Le serveur de substitut de Guix est disponible sur un service Onion. Si vous voulez l'utiliser pour récupérer des substituts par Tor, configurez votre système de cette manière :"
 
 #. type: lisp
 #: guix-git/doc/guix-cookbook.texi:2301
@@ -4066,6 +4195,9 @@ msgid ""
 "(use-service-module base networking)\n"
 "\n"
 msgstr ""
+"(use-modules (gnu))\n"
+"(use-service-module base networking)\n"
+"\n"
 
 #. type: lisp
 #: guix-git/doc/guix-cookbook.texi:2317
@@ -4087,16 +4219,31 @@ msgid ""
 "                      (substitute-urls \"https://bp7o7ckwlewr4slm.onion\")\n"
 "                      (http-proxy \"http://localhost:9250\")))))))\n"
 msgstr ""
+"(operating-system\n"
+"  …\n"
+"  (services\n"
+"    (cons\n"
+"      (service tor-service-type\n"
+"              (tor-configuration\n"
+"                (config-file (plain-file \"tor-config\"\n"
+"                                         \"HTTPTunnelPort 127.0.0.1:9250\"))))\n"
+"      (modify-services %base-services\n"
+"        (guix-service-type\n"
+"          config => (guix-configuration\n"
+"                      (inherit config)\n"
+"                      ;; service Onion de ci.guix.gnu.org\n"
+"                      (substitute-urls \"https://bp7o7ckwlewr4slm.onion\")\n"
+"                      (http-proxy \"http://localhost:9250\")))))))\n"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2326
 msgid "This will keep a tor process running that provides a HTTP CONNECT tunnel which will be used by @command{guix-daemon}.  The daemon can use other protocols than HTTP(S) to get remote resources, request using those protocols won't go through Tor since we are only setting a HTTP tunnel here.  Note that @code{substitutes-urls} is using HTTPS and not HTTP or it won't work, that's a limitation of Tor's tunnel; you may want to use @command{privoxy} instead to avoid such limitations."
-msgstr ""
+msgstr "Cela fera tourner le processus tor et fournira un tunnel HTTP CONNECT qui sera utilisé par @command{guix-daemon}. Le démon peut utiliser d'autres protocoles que HTTP(S) pour récupérer des ressources distantes. Les requêtes utilisant ces protocoles ne passeront pas par Tor puisqu'il s'agit d'un tunnel HTTP uniquement. Remarquez que @code{substitutes-urls} doit utiliser HTTPS et non HTTP, sinon ça ne fonctionne pas. C'est une limite du tunnel de Tor ; vous voudrez peut-être utiliser @command{privoxy} à la place pour éviter ces limites."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2330
 msgid "If you don't want to always get substitutes through Tor but using it just some of the times, then skip the @code{guix-configuration}.  When you want to get a substitute from the Tor tunnel run:"
-msgstr ""
+msgstr "Si vous ne voulez pas toute le temps récupérer des substituts à travers Tor mais l'utiliser seulement de temps en temps, alors ne modifiez pas l'objet @code{guix-configuration}. Lorsque vous voulez récupérer un substitut par le tunnel Tor, lancez :"
 
 #. type: example
 #: guix-git/doc/guix-cookbook.texi:2334
@@ -4105,27 +4252,29 @@ msgid ""
 "sudo herd set-http-proxy guix-daemon http://localhost:9250\n"
 "guix build --substitute-urls=https://bp7o7ckwlewr4slm.onion …\n"
 msgstr ""
+"sudo herd set-http-proxy guix-daemon http://localhost:9250\n"
+"guix build --substitute-urls=https://bp7o7ckwlewr4slm.onion …\n"
 
 #. type: cindex
 #: guix-git/doc/guix-cookbook.texi:2338
 #, no-wrap
 msgid "nginx, lua, openresty, resty"
-msgstr ""
+msgstr "nginx, lua, openresty, resty"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2341
 msgid "NGINX could be extended with Lua scripts."
-msgstr ""
+msgstr "Les fonctionnalités de NGINX peuvent être étendues avec des scripts Lua."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2344
 msgid "Guix provides NGINX service with ability to load Lua module and specific Lua packages, and reply to requests by evaluating Lua scripts."
-msgstr ""
+msgstr "Guix fournit un service NGINX qui est capable de charger des modules et des paquets Lua spécifiques, et de répondre aux requêtes en évaluant des scripts Lua."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2348
 msgid "The following example demonstrates system definition with configuration to evaluate @file{index.lua} Lua script on HTTP request to @uref{http://localhost/hello} endpoint:"
-msgstr ""
+msgstr "L'exemple suivant montre une définition de système avec une configuration qui évalue le script Lua @file{index.lua} lors d'une requête HTTP à @uref{http://localhost/hello} :"
 
 #. type: example
 #: guix-git/doc/guix-cookbook.texi:2351
@@ -4134,6 +4283,8 @@ msgid ""
 "local shell = require \"resty.shell\"\n"
 "\n"
 msgstr ""
+"local shell = require \"resty.shell\"\n"
+"\n"
 
 #. type: example
 #: guix-git/doc/guix-cookbook.texi:2355
@@ -4144,6 +4295,10 @@ msgid ""
 "local max_size = 4096  -- byte\n"
 "\n"
 msgstr ""
+"local stdin = \"\"\n"
+"local timeout = 1000  -- ms\n"
+"local max_size = 4096  -- byte\n"
+"\n"
 
 #. type: example
 #: guix-git/doc/guix-cookbook.texi:2358
@@ -4153,12 +4308,15 @@ msgid ""
 "   shell.run([[/run/current-system/profile/bin/ls /tmp]], stdin, timeout, max_size)\n"
 "\n"
 msgstr ""
+"local ok, stdout, stderr, reason, status =\n"
+"   shell.run([[/run/current-system/profile/bin/ls /tmp]], stdin, timeout, max_size)\n"
+"\n"
 
 #. type: example
 #: guix-git/doc/guix-cookbook.texi:2360
 #, no-wrap
 msgid "ngx.say(stdout)\n"
-msgstr ""
+msgstr "ngx.say(stdout)\n"
 
 #. type: lisp
 #: guix-git/doc/guix-cookbook.texi:2391
@@ -4193,108 +4351,136 @@ msgid ""
 "                                  (body (list #~(format #f \"content_by_lua_file ~s;\"\n"
 "                                                        #$(local-file \"index.lua\"))))))))))))))\n"
 msgstr ""
+"(use-modules (gnu))\n"
+"(use-service-modules #;… web)\n"
+"(use-package-modules #;… lua)\n"
+"(operating-system\n"
+"  ;; …\n"
+"  (services\n"
+"   ;; …\n"
+"   (service nginx-service-type\n"
+"            (nginx-configuration\n"
+"             (modules\n"
+"              (list\n"
+"               (file-append nginx-lua-module \"/etc/nginx/modules/ngx_http_lua_module.so\")))\n"
+"             (lua-package-path (list lua-resty-core\n"
+"                                     lua-resty-lrucache\n"
+"                                     lua-resty-signal\n"
+"                                     lua-tablepool\n"
+"                                     lua-resty-shell))\n"
+"             (lua-package-cpath (list lua-resty-signal))\n"
+"             (server-blocks\n"
+"              (list (nginx-server-configuration\n"
+"                     (server-name '(\"localhost\"))\n"
+"                     (listen '(\"80\"))\n"
+"                     (root \"/etc\")\n"
+"                     (locations (list\n"
+"                                 (nginx-location-configuration\n"
+"                                  (uri \"/hello\")\n"
+"                                  (body (list #~(format #f \"content_by_lua_file ~s;\"\n"
+"                                                        #$(local-file \"index.lua\"))))))))))))))\n"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2402
 msgid "Guix is a functional package manager that offers many features beyond what more traditional package managers can do.  To the uninitiated, those features might not have obvious use cases at first.  The purpose of this chapter is to demonstrate some advanced package management concepts."
-msgstr ""
+msgstr "Guix est un gestionnaire de paquets fonctionnel qui propose de nombreuses fonctionnalités en plus de ce que les gestionnaires de paquets traditionnels peuvent faire. Pour quelqu'un qui n'est pas initié, ces fonctionnalités peuvent ne pas paraître utiles au premier coup d'œil. Le but de ce chapitre est de vous montrer certains concepts avancés en gestion de paquets."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2405
 msgid "@pxref{Package Management,,, guix, GNU Guix Reference Manual} for a complete reference."
-msgstr ""
+msgstr "@pxref{Gestion des paquets,,, guix.fr, le manuel de référence de GNU Guix} pour une référence complète."
 
 #. type: section
 #: guix-git/doc/guix-cookbook.texi:2408 guix-git/doc/guix-cookbook.texi:2410
 #: guix-git/doc/guix-cookbook.texi:2411
 #, no-wrap
 msgid "Guix Profiles in Practice"
-msgstr ""
+msgstr "Les profils Guix en pratique"
 
 #. type: menuentry
 #: guix-git/doc/guix-cookbook.texi:2408
 msgid "Strategies for multiple profiles and manifests."
-msgstr ""
+msgstr "Stratégies pour gérer plusieurs profils et manifestes."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2416
 msgid "Guix provides a very useful feature that may be quite foreign to newcomers: @emph{profiles}.  They are a way to group package installations together and all users on the same system are free to use as many profiles as they want."
-msgstr ""
+msgstr "Guix fournit une fonctionnalité utile que peut être plutôt étrange pour les débutants et débutantes : les @emph{profils}. C'est une manière de regrouper l'installation de paquets ensemble et chaque utilisateur ou utilisatrice du même système peuvent avoir autant de profils que souhaité."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2421
 msgid "Whether you're a developer or not, you may find that multiple profiles bring you great power and flexibility.  While they shift the paradigm somewhat compared to @emph{traditional package managers}, they are very convenient to use once you've understood how to set them up."
-msgstr ""
+msgstr "Que vous programmiez ou non, vous trouverez sans doute plus de flexibilité et de possibilité avec plusieurs profils. Bien qu'ils changent un peu du paradigme des @emph{gestionnaires de paquets traditionnels}, ils sont pratiques à utiliser une fois que vous avec saisi comment les configurer."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2427
 msgid "If you are familiar with Python's @samp{virtualenv}, you can think of a profile as a kind of universal @samp{virtualenv} that can hold any kind of software whatsoever, not just Python software.  Furthermore, profiles are self-sufficient: they capture all the runtime dependencies which guarantees that all programs within a profile will always work at any point in time."
-msgstr ""
+msgstr "Si vous connaissez @samp{virtualenv} de Python, vous pouvez conceptualiser un profil comme une sorte de @samp{virtualenv} universel qui peut contenir n'importe quel sorte de logiciel, pas seulement du code Python. En plus, les profils sont auto-suffisants : ils capturent toutes les dépendances à l'exécution qui garantissent que tous les programmes d'un profil fonctionneront toujours à tout instant."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2429
 msgid "Multiple profiles have many benefits:"
-msgstr ""
+msgstr "Avoir plusieurs profils présente de nombreux intérêts :"
 
 #. type: itemize
 #: guix-git/doc/guix-cookbook.texi:2433
 msgid "Clean semantic separation of the various packages a user needs for different contexts."
-msgstr ""
+msgstr "Une séparation sémantique claire des divers paquets dont vous avez besoin pour différents contextes."
 
 #. type: itemize
 #: guix-git/doc/guix-cookbook.texi:2437
 msgid "Multiple profiles can be made available into the environment either on login or within a dedicated shell."
-msgstr ""
+msgstr "On peut rendre plusieurs profils disponibles dans l'environnement soit à la connexion, soit dans un shell dédié."
 
 #. type: itemize
 #: guix-git/doc/guix-cookbook.texi:2441
 msgid "Profiles can be loaded on demand.  For instance, the user can use multiple shells, each of them running different profiles."
-msgstr ""
+msgstr "Les profils peuvent être chargés à la demande. Par exemple, vous pouvez utiliser plusieurs shells, chacun dans un profil différent."
 
 #. type: itemize
 #: guix-git/doc/guix-cookbook.texi:2446
 msgid "Isolation: Programs from one profile will not use programs from the other, and the user can even install different versions of the same programs to the two profiles without conflict."
-msgstr ""
+msgstr "L'isolation : les programmes d'un profil n'utiliseront pas ceux d'un autre, et vous pouvez même installe plusieurs versions d'un même programme dans deux profils différents, sans conflit."
 
 #. type: itemize
 #: guix-git/doc/guix-cookbook.texi:2450
 msgid "Deduplication: Profiles share dependencies that happens to be the exact same.  This makes multiple profiles storage-efficient."
-msgstr ""
+msgstr "Déduplication : les profils partagent les dépendances qui sont exactement les mêmes. Avoir plusieurs profils ne gâche donc pas d'espace."
 
 #. type: itemize
 #: guix-git/doc/guix-cookbook.texi:2458
 msgid "Reproducible: when used with declarative manifests, a profile can be fully specified by the Guix commit that was active when it was set up.  This means that the exact same profile can be @uref{https://guix.gnu.org/blog/2018/multi-dimensional-transactions-and-rollbacks-oh-my/, set up anywhere and anytime}, with just the commit information.  See the section on @ref{Reproducible profiles}."
-msgstr ""
+msgstr "Reproductible : lorsque vous utilisez des manifestes déclaratifs, un profil peut être entièrement spécifié par le commit Guix qui a été utilisé pour le créer. Cela signifie que vous pouvez @uref{https://guix.gnu.org/blog/2018/multi-dimensional-transactions-and-rollbacks-oh-my/, recréer n'importe où et à n'importe quel moment} exactement le même profil, avec juste l'information du numéro de commit. Voir la section sur les @ref{Reproducible profiles}."
 
 #. type: itemize
 #: guix-git/doc/guix-cookbook.texi:2462
 msgid "Easier upgrades and maintenance: Multiple profiles make it easy to keep package listings at hand and make upgrades completely frictionless."
-msgstr ""
+msgstr "Des mises à jours et une maintenance plus faciles : avoir plusieurs profils facilite la gestion des listes de paquets à la main."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2465
 msgid "Concretely, here follows some typical profiles:"
-msgstr ""
+msgstr "Concrètement voici des profils courants :"
 
 #. type: itemize
 #: guix-git/doc/guix-cookbook.texi:2469
 msgid "The dependencies of a project you are working on."
-msgstr ""
+msgstr "Les dépendances d'un projet sur lequel vous travaillez."
 
 #. type: itemize
 #: guix-git/doc/guix-cookbook.texi:2472
 msgid "Your favourite programming language libraries."
-msgstr ""
+msgstr "Des bibliothèques de votre langage de programmation favori."
 
 #. type: itemize
 #: guix-git/doc/guix-cookbook.texi:2475
 msgid "Laptop-specific programs (like @samp{powertop}) that you don't need on a desktop."
-msgstr ""
+msgstr "Des programmes spécifiques pour les ordinateurs portables (comme @samp{powertop}) dont vous n'avez pas besoin sur un ordinateur de bureau."
 
 #. type: itemize
 #: guix-git/doc/guix-cookbook.texi:2479
 msgid "@TeX{}live (this one can be really useful when you need to install just one package for this one document you've just received over email)."
-msgstr ""
+msgstr "@TeX{}live (il peut être bien pratique si vous avez besoin d'installer un seul paquet pour un document que vous avez reçu par courriel)."
 
 #. type: itemize
 #: guix-git/doc/guix-cookbook.texi:2482
@@ -4304,18 +4490,18 @@ msgstr "Jeux."
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2485
 msgid "Let's dive in the set up!"
-msgstr ""
+msgstr "Voyons cela de plus près !"
 
 #. type: subsection
 #: guix-git/doc/guix-cookbook.texi:2486 guix-git/doc/guix-cookbook.texi:2487
 #, no-wrap
 msgid "Basic setup with manifests"
-msgstr ""
+msgstr "Utilisation de base avec des manifestes"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2491
 msgid "A Guix profile can be set up @emph{via} a so-called @emph{manifest specification} that looks like this:"
-msgstr ""
+msgstr "On peut créer un profil Guix avec une @emph{spécification de manifeste} qui ressemble à ceci :"
 
 #. type: lisp
 #: guix-git/doc/guix-cookbook.texi:2501
@@ -4330,16 +4516,24 @@ msgid ""
 "    ; ...\n"
 "    \"package-N\"))\n"
 msgstr ""
+"(specifications->manifest\n"
+"  '(\"package-1\"\n"
+"    ;; Version 1.3 de package-2.\n"
+"    \"package-2@@1.3\"\n"
+"    ;; La sortie « lib » de package-3.\n"
+"    \"package-3:lib\"\n"
+"    ; ...\n"
+"    \"package-N\"))\n"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2505
 msgid "@pxref{Invoking guix package,,, guix, GNU Guix Reference Manual}, for the syntax details."
-msgstr ""
+msgstr "@pxref{Invoquer guix package,,, guix.fr, le manuel de référence de GNU Guix}, pour les détails sur la syntaxe."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2507
 msgid "We can create a manifest specification per profile and install them this way:"
-msgstr ""
+msgstr "On peut créer une spécification de manifeste par profil et les installer de cette manière :"
 
 #. type: example
 #: guix-git/doc/guix-cookbook.texi:2512
@@ -4349,37 +4543,40 @@ msgid ""
 "mkdir -p \"$GUIX_EXTRA_PROFILES\"/my-project # if it does not exist yet\n"
 "guix package --manifest=/path/to/guix-my-project-manifest.scm --profile=\"$GUIX_EXTRA_PROFILES\"/my-project/my-project\n"
 msgstr ""
+"GUIX_EXTRA_PROFILES=$HOME/.guix-extra-profiles\n"
+"mkdir -p \"$GUIX_EXTRA_PROFILES\"/my-project # s'il n'existe pas encore\n"
+"guix package --manifest=/path/to/guix-my-project-manifest.scm --profile=\"$GUIX_EXTRA_PROFILES\"/my-project/my-project\n"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2516
 msgid "Here we set an arbitrary variable @samp{GUIX_EXTRA_PROFILES} to point to the directory where we will store our profiles in the rest of this article."
-msgstr ""
+msgstr "On spécifie ici une variable arbitraire @samp{GUIX_EXTRA_PROFILES} pour pointer vers le répertoire où seront stockés nos profils dans le reste de cet article."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2522
 msgid "Placing all your profiles in a single directory, with each profile getting its own sub-directory, is somewhat cleaner.  This way, each sub-directory will contain all the symlinks for precisely one profile.  Besides, ``looping over profiles'' becomes obvious from any programming language (e.g.@: a shell script) by simply looping over the sub-directories of @samp{$GUIX_EXTRA_PROFILES}."
-msgstr ""
+msgstr "C'est un peu plus propre de placer tous vos profils dans un répertoire unique, où chaque profil a son propre sous-répertoire. De cette manière, chaque sous-répertoire contiendra tous les liens symboliques pour exactement un profil. En plus, il devient facile d'énumérer les profils depuis n'importe quel langage de programmation (p.@: ex.@: un script shell) en énumérant simplement les sous-répertoires de @samp{$GUIX_EXTRA_PROFILES}."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2524
 msgid "Note that it's also possible to loop over the output of"
-msgstr ""
+msgstr "Remarquez qu'il est aussi possible d'utiliser la sortie de"
 
 #. type: example
 #: guix-git/doc/guix-cookbook.texi:2527
 #, no-wrap
 msgid "guix package --list-profiles\n"
-msgstr ""
+msgstr "guix package --list-profiles\n"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2530
 msgid "although you'll probably have to filter out @file{~/.config/guix/current}."
-msgstr ""
+msgstr "même si vous devrez sans doute enlever @file{~/.config/guix/current}."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2532
 msgid "To enable all profiles on login, add this to your @file{~/.bash_profile} (or similar):"
-msgstr ""
+msgstr "Pour activer tous les profils à la connexion, ajoutez cela à votre @file{~/.bash_profile} (ou similaire) :"
 
 #. type: example
 #: guix-git/doc/guix-cookbook.texi:2542
@@ -4394,16 +4591,24 @@ msgid ""
 "  unset profile\n"
 "done\n"
 msgstr ""
+"for i in $GUIX_EXTRA_PROFILES/*; do\n"
+"  profile=$i/$(basename \"$i\")\n"
+"  if [ -f \"$profile\"/etc/profile ]; then\n"
+"    GUIX_PROFILE=\"$profile\"\n"
+"    . \"$GUIX_PROFILE\"/etc/profile\n"
+"  fi\n"
+"  unset profile\n"
+"done\n"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2547
 msgid "Note to Guix System users: the above reflects how your default profile @file{~/.guix-profile} is activated from @file{/etc/profile}, that latter being loaded by @file{~/.bashrc} by default."
-msgstr ""
+msgstr "Remarque pour les utilisateurs du système Guix : ce qui précède ressemble à la manière dont votre profil par défaut @file{~/.guix-profile} est activé dans @file{/etc/profile}, ce dernier étant chargé par défaut par @file{~/.bashrc}."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2549
 msgid "You can obviously choose to only enable a subset of them:"
-msgstr ""
+msgstr "Vous pouvez évidemment choisir de n'en activer qu'une partie :"
 
 #. type: example
 #: guix-git/doc/guix-cookbook.texi:2559
@@ -4418,49 +4623,57 @@ msgid ""
 "  unset profile\n"
 "done\n"
 msgstr ""
+"for i in \"$GUIX_EXTRA_PROFILES\"/my-project-1 \"$GUIX_EXTRA_PROFILES\"/my-project-2; do\n"
+"  profile=$i/$(basename \"$i\")\n"
+"  if [ -f \"$profile\"/etc/profile ]; then\n"
+"    GUIX_PROFILE=\"$profile\"\n"
+"    . \"$GUIX_PROFILE\"/etc/profile\n"
+"  fi\n"
+"  unset profile\n"
+"done\n"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2563
 msgid "When a profile is off, it's straightforward to enable it for an individual shell without \"polluting\" the rest of the user session:"
-msgstr ""
+msgstr "Lorsqu'un profil est désactivé, il est facile de l'activer pour un shell individuel sans « polluer » le reste de la session :"
 
 #. type: example
 #: guix-git/doc/guix-cookbook.texi:2566
 #, no-wrap
 msgid "GUIX_PROFILE=\"path/to/my-project\" ; . \"$GUIX_PROFILE\"/etc/profile\n"
-msgstr ""
+msgstr "GUIX_PROFILE=\"path/to/my-project\" ; . \"$GUIX_PROFILE\"/etc/profile\n"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2573
 msgid "The key to enabling a profile is to @emph{source} its @samp{etc/profile} file.  This file contains shell code that exports the right environment variables necessary to activate the software contained in the profile.  It is built automatically by Guix and meant to be sourced.  It contains the same variables you would get if you ran:"
-msgstr ""
+msgstr "Le secret pour activer un profil est de @emph{sourcer} son fichier @samp{etc/profile}. Ce fichier contient du code shell qui exporte les bonnes variables d'environnement nécessaires à activer les logiciels présents dans le profil. Il est créé automatiquement par Guix et doit être sourcé. Il contient les mêmes variables que ce que vous obtiendrez en lançant :"
 
 #. type: example
 #: guix-git/doc/guix-cookbook.texi:2576
 #, no-wrap
 msgid "guix package --search-paths=prefix --profile=$my_profile\"\n"
-msgstr ""
+msgstr "guix package --search-paths=prefix --profile=$my_profile\"\n"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2580
 msgid "Once again, see (@pxref{Invoking guix package,,, guix, GNU Guix Reference Manual})  for the command line options."
-msgstr ""
+msgstr "Encore une fois, @xref{Invoquer guix package,,, guix.fr, le manuel de référence de GNU Guix} pour les options de la ligne de commande."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2582
 msgid "To upgrade a profile, simply install the manifest again:"
-msgstr ""
+msgstr "Pour mettre à jour un profil, installez de nouveau le manifeste :"
 
 #. type: example
 #: guix-git/doc/guix-cookbook.texi:2585
 #, no-wrap
 msgid "guix package -m /path/to/guix-my-project-manifest.scm -p \"$GUIX_EXTRA_PROFILES\"/my-project/my-project\n"
-msgstr ""
+msgstr "guix package -m /path/to/guix-my-project-manifest.scm -p \"$GUIX_EXTRA_PROFILES\"/my-project/my-project\n"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2591
 msgid "To upgrade all profiles, it's easy enough to loop over them.  For instance, assuming your manifest specifications are stored in @file{~/.guix-manifests/guix-$profile-manifest.scm}, with @samp{$profile} being the name of the profile (e.g.@: \"project1\"), you could do the following in Bourne shell:"
-msgstr ""
+msgstr "Pour mettre à jour tous les profils, vous pouvez simplement les énumérer. Par exemple, en supposant que vous spécifications sont dans @file{~/.guix-manifests/guix-$profile-manifest.scm}, où @samp{$profile} est le nom du profil (p.@: ex@: « projet1 »), vous pouvez utiliser ce qui suit dans le shell :"
 
 #. type: example
 #: guix-git/doc/guix-cookbook.texi:2596
@@ -4470,33 +4683,36 @@ msgid ""
 "  guix package --profile=\"$profile\" --manifest=\"$HOME/.guix-manifests/guix-$profile-manifest.scm\"\n"
 "done\n"
 msgstr ""
+"for profile in \"$GUIX_EXTRA_PROFILES\"/*; do\n"
+"  guix package --profile=\"$profile\" --manifest=\"$HOME/.guix-manifests/guix-$profile-manifest.scm\"\n"
+"done\n"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2599
 msgid "Each profile has its own generations:"
-msgstr ""
+msgstr "Chaque profil a ses propres générations :"
 
 #. type: example
 #: guix-git/doc/guix-cookbook.texi:2602
 #, no-wrap
 msgid "guix package -p \"$GUIX_EXTRA_PROFILES\"/my-project/my-project --list-generations\n"
-msgstr ""
+msgstr "guix package -p \"$GUIX_EXTRA_PROFILES\"/my-project/my-project --list-generations\n"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2605
 msgid "You can roll-back to any generation of a given profile:"
-msgstr ""
+msgstr "Vous pouvez revenir à n'importe quelle génération d'un profil donné :"
 
 #. type: example
 #: guix-git/doc/guix-cookbook.texi:2608
 #, no-wrap
 msgid "guix package -p \"$GUIX_EXTRA_PROFILES\"/my-project/my-project --switch-generations=17\n"
-msgstr ""
+msgstr "guix package -p \"$GUIX_EXTRA_PROFILES\"/my-project/my-project --switch-generations=17\n"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2612
 msgid "Finally, if you want to switch to a profile without inheriting from the current environment, you can activate it from an empty shell:"
-msgstr ""
+msgstr "Enfin, si vous voulez passer à un profil sans hériter l'environnement actuel, vous pouvez l'activer dans un shell vide :"
 
 #. type: example
 #: guix-git/doc/guix-cookbook.texi:2616
@@ -4505,6 +4721,8 @@ msgid ""
 "env -i $(which bash) --login --noprofile --norc\n"
 ". my-project/etc/profile\n"
 msgstr ""
+"env -i $(which bash) --login --noprofile --norc\n"
+". my-project/etc/profile\n"
 
 #. type: subsection
 #: guix-git/doc/guix-cookbook.texi:2618 guix-git/doc/guix-cookbook.texi:2619
@@ -4515,59 +4733,59 @@ msgstr "Paquets requis"
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2624
 msgid "Activating a profile essentially boils down to exporting a bunch of environmental variables.  This is the role of the @samp{etc/profile} within the profile."
-msgstr ""
+msgstr "Activer un profil consiste en substance à exporter un ensemble de variables d'environnement. C'est le rôle de @samp{etc/profile} dans le profil."
 
 #. type: emph{#1}
 #: guix-git/doc/guix-cookbook.texi:2627
 msgid "Note: Only the environmental variables of the packages that consume them will be set."
-msgstr ""
+msgstr "Remarque : seules les variables d'environnement des paquets qui les utilisent seront modifiées."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2631
 msgid "For instance, @samp{MANPATH} won't be set if there is no consumer application for man pages within the profile.  So if you need to transparently access man pages once the profile is loaded, you've got two options:"
-msgstr ""
+msgstr "Par exemple, @samp{MANPATH} ne sera pas modifié s'il n'y a pas d'application qui utilise les pages de manuel dans le profil. Donc si vous voulez pouvoir accéder aux pages de manuel facilement une fois le profil chargé, vous avez deux possibilités :"
 
 #. type: itemize
 #: guix-git/doc/guix-cookbook.texi:2635
 msgid "Either export the variable manually, e.g."
-msgstr ""
+msgstr "Exporter la variable manuellement, p.@: ex@:"
 
 #. type: example
 #: guix-git/doc/guix-cookbook.texi:2637
 #, no-wrap
 msgid "export MANPATH=/path/to/profile$@{MANPATH:+:@}$MANPATH\n"
-msgstr ""
+msgstr "export MANPATH=/path/to/profile$@{MANPATH:+:@}$MANPATH\n"
 
 #. type: itemize
 #: guix-git/doc/guix-cookbook.texi:2641
 msgid "Or include @samp{man-db} to the profile manifest."
-msgstr ""
+msgstr "Inclure @samp{man-db} dans le manifeste du profil."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2645
 msgid "The same is true for @samp{INFOPATH} (you can install @samp{info-reader}), @samp{PKG_CONFIG_PATH} (install @samp{pkg-config}), etc."
-msgstr ""
+msgstr "Il en va de même pour @samp{INFOPATH} (vous pouvez installer @samp{info-reader}), @samp{PKG_CONFIG_PATH} (installer @samp{pkg-config}), etc."
 
 #. type: subsection
 #: guix-git/doc/guix-cookbook.texi:2646 guix-git/doc/guix-cookbook.texi:2647
 #, no-wrap
 msgid "Default profile"
-msgstr ""
+msgstr "Profil par défaut"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2650
 msgid "What about the default profile that Guix keeps in @file{~/.guix-profile}?"
-msgstr ""
+msgstr "Que faire du profil par défaut que Guix garder dans @file{~/.guix-profile} ?"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2653
 msgid "You can assign it the role you want.  Typically you would install the manifest of the packages you want to use all the time."
-msgstr ""
+msgstr "Vous pouvez lui assigner le rôle que vous souhaitez. Habituellement, vous y installerez un manifeste des paquets que vous voulez pouvoir utiliser dans toutes les situations."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2657
 msgid "Alternatively, you could keep it ``manifest-less'' for throw-away packages that you would just use for a couple of days.  This way makes it convenient to run"
-msgstr ""
+msgstr "Autrement, vous pouvez en faire un profil sans manifeste pour des paquets sans importance que vous voulez juste garder quelques jours. C'est une manière de pouvoir facilement lancer"
 
 #. type: example
 #: guix-git/doc/guix-cookbook.texi:2661
@@ -4576,138 +4794,140 @@ msgid ""
 "guix install package-foo\n"
 "guix upgrade package-bar\n"
 msgstr ""
+"guix install package-foo\n"
+"guix upgrade package-bar\n"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2664
 msgid "without having to specify the path to a profile."
-msgstr ""
+msgstr "sans avoir à spécifier un profil."
 
 #. type: subsection
 #: guix-git/doc/guix-cookbook.texi:2665 guix-git/doc/guix-cookbook.texi:2666
 #, no-wrap
 msgid "The benefits of manifests"
-msgstr ""
+msgstr "Les avantages des manifestes"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2670
 msgid "Manifests are a convenient way to keep your package lists around and, say, to synchronize them across multiple machines using a version control system."
-msgstr ""
+msgstr "Les manifestes sont pratiques pour garder la liste des paquets et, par exemple, les synchroniser entre plusieurs machines avec un système de gestion de versions."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2674
 msgid "A common complaint about manifests is that they can be slow to install when they contain large number of packages.  This is especially cumbersome when you just want get an upgrade for one package within a big manifest."
-msgstr ""
+msgstr "Les gens se plaignent souvent que les manifestes sont lents à installer quand ils contiennent beaucoup de paquets. C'est particulièrement embêtant quand vous voulez juste mettre à jour un paquet dans un gros manifeste."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2679
 msgid "This is one more reason to use multiple profiles, which happen to be just perfect to break down manifests into multiple sets of semantically connected packages.  Using multiple, small profiles provides more flexibility and usability."
-msgstr ""
+msgstr "C'est une raison de plus d'utiliser plusieurs profils, qui sont bien pratiques pour diviser les manifestes en plusieurs ensembles de paquets de même type. Plusieurs petits profils sont plus flexibles et plus maniables."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2681
 msgid "Manifests come with multiple benefits.  In particular, they ease maintenance:"
-msgstr ""
+msgstr "Les manifestes ont de nombreux avantages. En particulier, ils facilitent la maintenance :"
 
 #. type: itemize
 #: guix-git/doc/guix-cookbook.texi:2689
 msgid "When a profile is set up from a manifest, the manifest itself is self-sufficient to keep a ``package listing'' around and reinstall the profile later or on a different system.  For ad-hoc profiles, we would need to generate a manifest specification manually and maintain the package versions for the packages that don't use the default version."
-msgstr ""
+msgstr "Lorsqu'un profil est créé à partir d'un manifeste, le manifeste lui-même est suffisant pour garder la liste des paquets sous le coude et réinstaller le profil plus tard sur un autre système. Pour les profils ad-hoc, il faudrait générer une spécification de manifeste à la main et noter les versions de paquets pour les paquets qui n'utilisent pas la version par défaut."
 
 #. type: itemize
 #: guix-git/doc/guix-cookbook.texi:2694
 msgid "@code{guix package --upgrade} always tries to update the packages that have propagated inputs, even if there is nothing to do.  Guix manifests remove this problem."
-msgstr ""
+msgstr "@code{guix package --upgrade} essaye toujours de mettre à jour les paquets qui ont des entrées propagées, même s'il n'y à rien à faire. Les manifestes de Guix résolvent ce problème."
 
 #. type: itemize
 #: guix-git/doc/guix-cookbook.texi:2700
 msgid "When partially upgrading a profile, conflicts may arise (due to diverging dependencies between the updated and the non-updated packages) and they can be annoying to resolve manually.  Manifests remove this problem altogether since all packages are always upgraded at once."
-msgstr ""
+msgstr "Lorsque vous mettez partiellement à jour un profil, des conflits peuvent survenir (à cause des dépendances différentes entre les paquets à jour et ceux qui ne le sont pas) et ça peut être embêtant à corriger à la main. Les manifestes suppriment ce problème puisque tous les paquets sont toujours mis à jour en même temps."
 
 #. type: itemize
 #: guix-git/doc/guix-cookbook.texi:2706
 msgid "As mentioned above, manifests allow for reproducible profiles, while the imperative @code{guix install}, @code{guix upgrade}, etc. do not, since they produce different profiles every time even when they hold the same packages.  See @uref{https://issues.guix.gnu.org/issue/33285, the related discussion on the matter}."
-msgstr ""
+msgstr "Comme on l'a mentionné plus haut, les manifestes permettent d'avoir des profils reproductibles, alors que les commandes impératives @code{guix install}, @code{guix upgrade}, etc, ne le peuvent pas, puisqu'elles produisent un profil différent à chaque fois qu'elles sont lancées, même avec les même paquets. Voir @uref{https://issues.guix.gnu.org/issue/33285, la discussion sur ce problème}."
 
 #. type: itemize
 #: guix-git/doc/guix-cookbook.texi:2714
 msgid "Manifest specifications are usable by other @samp{guix} commands.  For example, you can run @code{guix weather -m manifest.scm} to see how many substitutes are available, which can help you decide whether you want to try upgrading today or wait a while.  Another example: you can run @code{guix pack -m manifest.scm} to create a pack containing all the packages in the manifest (and their transitive references)."
-msgstr ""
+msgstr "Les spécifications de manifestes sont utilisables par les autres commandes @samp{guix}. Par exemple, vous pouvez lancer @code{guix weather -m manifest} pour voir combien de substituts sont disponibles, ce qui peut vous aider à décider si vous voulez faire la mise à jour maintenant ou un peu plus tard. Un autre exemple : vous pouvez lancer @code{guix package -m manifest.scm} pour créer un lot contenant tous les paquets du manifeste (et leurs références transitives)."
 
 #. type: itemize
 #: guix-git/doc/guix-cookbook.texi:2718
 msgid "Finally, manifests have a Scheme representation, the @samp{<manifest>} record type.  They can be manipulated in Scheme and passed to the various Guix @uref{https://en.wikipedia.org/wiki/Api, APIs}."
-msgstr ""
+msgstr "Enfin, les manifestes ont une représentation Scheme, le type d'enregistrement @samp{<manifest>}. Vous pouvez les manipuler en Scheme et les passer aux diverses @uref{https://fr.wikipedia.org/wiki/Api, API} de Guix."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2726
 msgid "It's important to understand that while manifests can be used to declare profiles, they are not strictly equivalent: profiles have the side effect that they ``pin'' packages in the store, which prevents them from being garbage-collected (@pxref{Invoking guix gc,,, guix, GNU Guix Reference Manual})  and ensures that they will still be available at any point in the future."
-msgstr ""
+msgstr "Vous devez bien comprendre que même si vous pouvez utiliser les manifestes pour déclarer des profils, les deux ne sont pas strictement équivalents : les profils pour l'effet de bord « d'épingler » les paquets dans le dépôt, ce qui évite qu'ils ne soient nettoyés (@pxref{Invoquer guix gc,,, guix.fr, le manuel de référence de GNU Guix}) et s'assure qu'ils seront toujours disponibles à n'importe quel moment dans le futur."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2728
 msgid "Let's take an example:"
-msgstr ""
+msgstr "Voyons un exemple :"
 
 #. type: enumerate
 #: guix-git/doc/guix-cookbook.texi:2734
 msgid "We have an environment for hacking on a project for which there isn't a Guix package yet.  We build the environment using a manifest, and then run @code{guix environment -m manifest.scm}.  So far so good."
-msgstr ""
+msgstr "Vous avez un environnement pour bidouiller un projet pour lequel il n'y a pas encore de paquet Guix. Vous construisez l'environnement avec un manifeste puis lancez @code{guix environment -m manifest.scm}. Jusqu'ici tout va bien."
 
 #. type: enumerate
 #: guix-git/doc/guix-cookbook.texi:2740
 msgid "Many weeks pass and we have run a couple of @code{guix pull} in the mean time.  Maybe a dependency from our manifest has been updated; or we may have run @code{guix gc} and some packages needed by our manifest have been garbage-collected."
-msgstr ""
+msgstr "Plusieurs semaines plus tard vous avez lancé quelques @code{guix pull} entre temps. Plusieurs dépendances du manifeste ont été mises à jour ; ou bien vous avez lancé @code{guix gc} et certains paquets requis par le manifeste ont été nettoyés."
 
 #. type: enumerate
 #: guix-git/doc/guix-cookbook.texi:2745
 msgid "Eventually, we set to work on that project again, so we run @code{guix environment -m manifest.scm}.  But now we have to wait for Guix to build and install stuff!"
-msgstr ""
+msgstr "Finalement, vous vous remettez au travail sur ce projet, donc vous lancez @code{guix environment -m manifest.scm}. Mais maintenant vous devez attendre que Guix construise et installe des paquets !"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2751
 msgid "Ideally, we could spare the rebuild time.  And indeed we can, all we need is to install the manifest to a profile and use @code{GUIX_PROFILE=/the/profile; . \"$GUIX_PROFILE\"/etc/profile} as explained above: this guarantees that our hacking environment will be available at all times."
-msgstr ""
+msgstr "Idéalement, vous voudriez éviter de perdre du temps à reconstruire. C'est en fait possible, tout ce dont on a besoin, c'est d'installer le manifeste dans un profil et d'utiliser @code{GUIX_PROFILE=/le/profil; . \"$GUIX_PROFILE\"/etc/profile} comme on l'a expliqué plus haut : cela garantie que l'environnement de bidouillage sera toujours disponible."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2754
 msgid "@emph{Security warning:} While keeping old profiles around can be convenient, keep in mind that outdated packages may not have received the latest security fixes."
-msgstr ""
+msgstr "@emph{Avertissement de sécurité :} bien que garder d'anciens profils soit pratique, gardez à l'esprit que les anciens paquets n'ont pas forcément reçu les dernières corrections de sécurité."
 
 #. type: subsection
 #: guix-git/doc/guix-cookbook.texi:2755 guix-git/doc/guix-cookbook.texi:2756
 #, no-wrap
 msgid "Reproducible profiles"
-msgstr ""
+msgstr "Profils reproductibles"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2759
 msgid "To reproduce a profile bit-for-bit, we need two pieces of information:"
-msgstr ""
+msgstr "Pour reproduire un profil bit-à-bit, on a besoin de deux informations :"
 
 #. type: itemize
 #: guix-git/doc/guix-cookbook.texi:2763
 msgid "a manifest,"
-msgstr ""
+msgstr "un manifeste,"
 
 #. type: itemize
 #: guix-git/doc/guix-cookbook.texi:2765
 msgid "a Guix channel specification."
-msgstr ""
+msgstr "et une spécification de canaux Guix."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2769
 msgid "Indeed, manifests alone might not be enough: different Guix versions (or different channels) can produce different outputs for a given manifest."
-msgstr ""
+msgstr "En effet, les manifestes seuls ne sont pas forcément suffisants : différentes versions de Guix (ou différents canaux) peuvent produire des sorties différentes avec le même manifeste."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2773
 msgid "You can output the Guix channel specification with @samp{guix describe --format=channels}.  Save this to a file, say @samp{channel-specs.scm}."
-msgstr ""
+msgstr "Vous pouvez afficher la spécification de canaux Guix avec @samp{guix describe --format=channels}. Enregistrez-la dans un fichier, par exemple @samp{channel-specs.scm}."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2776
 msgid "On another computer, you can use the channel specification file and the manifest to reproduce the exact same profile:"
-msgstr ""
+msgstr "Sur un autre ordinateur, vous pouvez utiliser le fichier de spécification de canaux et le manifeste pour reproduire exactement le même profil :"
 
 #. type: example
 #: guix-git/doc/guix-cookbook.texi:2780
@@ -4717,6 +4937,9 @@ msgid ""
 "GUIX_EXTRA=$HOME/.guix-extra\n"
 "\n"
 msgstr ""
+"GUIX_EXTRA_PROFILES=$HOME/.guix-extra-profiles\n"
+"GUIX_EXTRA=$HOME/.guix-extra\n"
+"\n"
 
 #. type: example
 #: guix-git/doc/guix-cookbook.texi:2783
@@ -4726,6 +4949,9 @@ msgid ""
 "guix pull --channels=channel-specs.scm --profile \"$GUIX_EXTRA/my-project/guix\"\n"
 "\n"
 msgstr ""
+"mkdir \"$GUIX_EXTRA\"/my-project\n"
+"guix pull --channels=channel-specs.scm --profile \"$GUIX_EXTRA/my-project/guix\"\n"
+"\n"
 
 #. type: example
 #: guix-git/doc/guix-cookbook.texi:2786
@@ -4734,43 +4960,45 @@ msgid ""
 "mkdir -p \"$GUIX_EXTRA_PROFILES/my-project\"\n"
 "\"$GUIX_EXTRA\"/my-project/guix/bin/guix package --manifest=/path/to/guix-my-project-manifest.scm --profile=\"$GUIX_EXTRA_PROFILES\"/my-project/my-project\n"
 msgstr ""
+"mkdir -p \"$GUIX_EXTRA_PROFILES/my-project\"\n"
+"\"$GUIX_EXTRA\"/my-project/guix/bin/guix package --manifest=/path/to/guix-my-project-manifest.scm --profile=\"$GUIX_EXTRA_PROFILES\"/my-project/my-project\n"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2790
 msgid "It's safe to delete the Guix channel profile you've just installed with the channel specification, the project profile does not depend on it."
-msgstr ""
+msgstr "Vous pouvez supprimer le profil des canaux Guix que vous venez d'installer avec la spécification de canaux, le profil du projet n'en dépend pas."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2797
 msgid "Guix provides multiple tools to manage environment.  This chapter demonstrate such utilities."
-msgstr ""
+msgstr "Guix fournit plusieurs outils pour gérer l'environnement. Ce chapitre vous montre ces outils."
 
 #. type: section
 #: guix-git/doc/guix-cookbook.texi:2800 guix-git/doc/guix-cookbook.texi:2802
 #: guix-git/doc/guix-cookbook.texi:2803
 #, no-wrap
 msgid "Guix environment via direnv"
-msgstr ""
+msgstr "Environnement Guix avec direnv"
 
 #. type: menuentry
 #: guix-git/doc/guix-cookbook.texi:2800
 msgid "Setup Guix environment with direnv"
-msgstr ""
+msgstr "Créer un environnement Guix avec direnv"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2808
 msgid "Guix provides a @samp{direnv} package, which could extend shell after directory change.  This tool could be used to prepare a pure Guix environment."
-msgstr ""
+msgstr "Guix fournit un paquet @samp{direnv}, qui peut étendre le shell après avoir changé de répertoire de travail. Vous pouvez utiliser cet outil pour préparer un environnement Guix pur."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2814
 msgid "The following example provides a shell function for @file{~/.direnvrc} file, which could be used from Guix Git repository in @file{~/src/guix/.envrc} file to setup a build environment similar to described in @pxref{Building from Git,,, guix, GNU Guix Reference Manual}."
-msgstr ""
+msgstr "L'exemple suivant fournit une fonction shell dans @file{~/.direnvrc}, qui peut être utilisée dans le dépôt Git de Guix dans @file{~/src/guix/.envrc} pour créer un environnement de construction similaire à celui décrit dans @ref{Construire depuis Git,,, guix.fr, le manuel de référence de GNU Guix}."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2816
 msgid "Create a @file{~/.direnvrc} with a Bash code:"
-msgstr ""
+msgstr "Créez un fichier @file{~/.direnv} avec le code Bash suivant :"
 
 #. type: example
 #: guix-git/doc/guix-cookbook.texi:2834
@@ -4794,6 +5022,23 @@ msgid ""
 "@}\n"
 "\n"
 msgstr ""
+"# Grâce à <https://github.com/direnv/direnv/issues/73#issuecomment-152284914>\n"
+"export_function()\n"
+"@{\n"
+"  local name=$1\n"
+"  local alias_dir=$PWD/.direnv/aliases\n"
+"  mkdir -p \"$alias_dir\"\n"
+"  PATH_add \"$alias_dir\"\n"
+"  local target=\"$alias_dir/$name\"\n"
+"  if declare -f \"$name\" >/dev/null; then\n"
+"    echo \"#!$SHELL\" > \"$target\"\n"
+"    declare -f \"$name\" >> \"$target\" 2>/dev/null\n"
+"    # Remarquez qu'on ajoute des variables shells au déclencheur de la fonction.\n"
+"    echo \"$name \\$*\" >> \"$target\"\n"
+"    chmod +x \"$target\"\n"
+"  fi\n"
+"@}\n"
+"\n"
 
 #. type: example
 #: guix-git/doc/guix-cookbook.texi:2839
@@ -4805,6 +5050,11 @@ msgid ""
 "    export GUIX_GITHUB_TOKEN=\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n"
 "\n"
 msgstr ""
+"use_guix()\n"
+"@{\n"
+"    # indique un jeton Github.\n"
+"    export GUIX_GITHUB_TOKEN=\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n"
+"\n"
 
 #. type: example
 #: guix-git/doc/guix-cookbook.texi:2842
@@ -4814,6 +5064,9 @@ msgid ""
 "    export GUIX_PACKAGE_PATH=\"\"\n"
 "\n"
 msgstr ""
+"    # Nettoie « GUIX_PACKAGE_PATH ».\n"
+"    export GUIX_PACKAGE_PATH=\"\"\n"
+"\n"
 
 #. type: example
 #: guix-git/doc/guix-cookbook.texi:2851
@@ -4829,6 +5082,15 @@ msgid ""
 "    fi\n"
 "\n"
 msgstr ""
+"    # Recrée une racine du ramasse miettes.\n"
+"    gcroots=\"$HOME/.config/guix/gcroots\"\n"
+"    mkdir -p \"$gcroots\"\n"
+"    gcroot=\"$gcroots/guix\"\n"
+"    if [ -L \"$gcroot\" ]\n"
+"    then\n"
+"        rm -v \"$gcroot\"\n"
+"    fi\n"
+"\n"
 
 #. type: example
 #: guix-git/doc/guix-cookbook.texi:2866
@@ -4850,6 +5112,21 @@ msgid ""
 "    )\n"
 "\n"
 msgstr ""
+"    # Divers paquets.\n"
+"    PACKAGES_MAINTENANCE=(\n"
+"        direnv\n"
+"        git\n"
+"        git:send-email\n"
+"        git-cal\n"
+"        gnupg\n"
+"        guile-colorized\n"
+"        guile-readline\n"
+"        less\n"
+"        ncurses\n"
+"        openssh\n"
+"        xdot\n"
+"    )\n"
+"\n"
 
 #. type: example
 #: guix-git/doc/guix-cookbook.texi:2869
@@ -4859,6 +5136,9 @@ msgid ""
 "    PACKAGES=(help2man guile-sqlite3 guile-gcrypt)\n"
 "\n"
 msgstr ""
+"    # Paquets de l'environnement.\n"
+"    PACKAGES=(help2man guile-sqlite3 guile-gcrypt)\n"
+"\n"
 
 #. type: example
 #: guix-git/doc/guix-cookbook.texi:2872
@@ -4868,6 +5148,9 @@ msgid ""
 "    eval \"$(guix environment --search-paths --root=\"$gcroot\" --pure guix --ad-hoc $@{PACKAGES[@@]@} $@{PACKAGES_MAINTENANCE[@@]@} \"$@@\")\"\n"
 "\n"
 msgstr ""
+"    # Grâce à <https://lists.gnu.org/archive/html/guix-devel/2016-09/msg00859.html>\n"
+"    eval \"$(guix environment --search-paths --root=\"$gcroot\" --pure guix --ad-hoc $@{PACKAGES[@@]@} $@{PACKAGES_MAINTENANCE[@@]@} \"$@@\")\"\n"
+"\n"
 
 #. type: example
 #: guix-git/doc/guix-cookbook.texi:2879
@@ -4881,6 +5164,13 @@ msgid ""
 "    export_function configure\n"
 "\n"
 msgstr ""
+"    # Défini les drapeaux configure à l'avance.\n"
+"    configure()\n"
+"    @{\n"
+"        ./configure --localstatedir=/var --prefix=\n"
+"    @}\n"
+"    export_function configure\n"
+"\n"
 
 #. type: example
 #: guix-git/doc/guix-cookbook.texi:2890
@@ -4898,6 +5188,17 @@ msgid ""
 "    export_function build\n"
 "\n"
 msgstr ""
+"    # Lance make et construit éventuellement quelque chose.\n"
+"    build()\n"
+"    @{\n"
+"        make -j 2\n"
+"        if [ $# -gt 0 ]\n"
+"        then\n"
+"            ./pre-inst-env guix build \"$@@\"\n"
+"        fi\n"
+"    @}\n"
+"    export_function build\n"
+"\n"
 
 #. type: example
 #: guix-git/doc/guix-cookbook.texi:2897
@@ -4911,6 +5212,13 @@ msgid ""
 "    export_function push\n"
 "\n"
 msgstr ""
+"    # Défini une commande Git pour pousser.\n"
+"    push()\n"
+"    @{\n"
+"        git push --set-upstream origin\n"
+"    @}\n"
+"    export_function push\n"
+"\n"
 
 #. type: example
 #: guix-git/doc/guix-cookbook.texi:2900
@@ -4920,6 +5228,9 @@ msgid ""
 "    git-cal --author='Your Name' # Show contributions calendar.\n"
 "\n"
 msgstr ""
+"    clear                        # Nettoie l'écran.\n"
+"    git-cal --author='Votre Nom' # Montre le calendrier des contributions.\n"
+"\n"
 
 #. type: example
 #: guix-git/doc/guix-cookbook.texi:2908
@@ -4933,16 +5244,23 @@ msgid ""
 "\"\n"
 "@}\n"
 msgstr ""
+"    # Montre l'aide des commandes.\n"
+"    echo \"\n"
+"build          construit un paquet ou juste un projet si aucun argument n'est fournit\n"
+"configure      lance ./configure avec les paramètres pré-définis\n"
+"push           pousse un dépôt Git\n"
+"\"\n"
+"@}\n"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2912
 msgid "Every project containing @file{.envrc} with a string @code{use guix} will have predefined environment variables and procedures."
-msgstr ""
+msgstr "Tous les projets contenant un @file{.envrc} avec une chaine @code{use guix} aura des variables d'environnement et des procédures prédéfinies."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2914
 msgid "Run @command{direnv allow} to setup the environment for the first time."
-msgstr ""
+msgstr "Lancez @command{direnv allow} pour mettre en place l'environnement pour la première fois."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2926
@@ -4962,7 +5280,7 @@ msgstr "GNU@tie{}Guix lui-même est un travail collectif avec des contributions 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2938
 msgid "This document includes adapted sections from articles that have previously been published on the Guix blog at @uref{https://guix.gnu.org/blog}."
-msgstr ""
+msgstr "Ce document contient des sections adaptées d'articles précédemment publiés sur le blog de Guix sur @uref{https://guix.gnu.org/blog}."
 
 #. type: cindex
 #: guix-git/doc/guix-cookbook.texi:2943

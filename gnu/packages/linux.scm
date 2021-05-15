@@ -356,7 +356,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 
 ;; The current "stable" kernels. That is, the most recently released major
 ;; versions that are still supported upstream.
-(define-public linux-libre-5.12-version "5.12.2")
+(define-public linux-libre-5.12-version "5.12.3")
 (define deblob-scripts-5.12
   (linux-libre-deblob-scripts
    linux-libre-5.12-version
@@ -364,12 +364,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1qp25fd4wgjyk7dzdq9yirm1z5w68sd1p3wv8lch8259i51gwjnf")))
 (define-public linux-libre-5.12-pristine-source
   (let ((version linux-libre-5.12-version)
-        (hash (base32 "03gp5vq8vkwvksjsa1birds37rmrr73s9ik6m1wvgz8mdncvk64c")))
+        (hash (base32 "13c7jbizf254rh4arvlgzk87vx7sz6psba47jnax23lbgal18dqk")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.12)))
 
-(define-public linux-libre-5.11-version "5.11.19")
+(define-public linux-libre-5.11-version "5.11.20")
 (define deblob-scripts-5.11
   (linux-libre-deblob-scripts
    linux-libre-5.11-version
@@ -377,7 +377,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0yvr80g200hdryz54gdnzj4fl38pf7g4qbgj475rhcfwixhp1j7n")))
 (define-public linux-libre-5.11-pristine-source
   (let ((version linux-libre-5.11-version)
-        (hash (base32 "0jrb8wbxj0dadyadggcn49hlxzxgz8mz8xr0ckgbnnvb8snikvjs")))
+        (hash (base32 "15q7pw1wvl6ndvb6154p6vjr4qa4fa6lpbqpxvwy2kywc2jyxykk")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.11)))
@@ -385,7 +385,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 ;; The "longterm" kernels — the older releases with long-term upstream support.
 ;; Here are the support timelines:
 ;; <https://www.kernel.org/category/releases.html>
-(define-public linux-libre-5.10-version "5.10.35")
+(define-public linux-libre-5.10-version "5.10.36")
 (define deblob-scripts-5.10
   (linux-libre-deblob-scripts
    linux-libre-5.10-version
@@ -393,12 +393,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0hh27ccqimagr3aij7ygwikxw66y63sqwd0xlf49bhpjd090r9a7")))
 (define-public linux-libre-5.10-pristine-source
   (let ((version linux-libre-5.10-version)
-        (hash (base32 "1zcqsjzqgcvlhkjwhzs6sxgbhzkfg898pbisivjqfymp8nfs2dxc")))
+        (hash (base32 "0s5jw7y17hnl66iybw6f4pbc5j5rilphqbv3iql22wq053vyg749")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.10)))
 
-(define-public linux-libre-5.4-version "5.4.117")
+(define-public linux-libre-5.4-version "5.4.118")
 (define deblob-scripts-5.4
   (linux-libre-deblob-scripts
    linux-libre-5.4-version
@@ -406,7 +406,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1xghbbnaisjd0k1klbyn1p7r6r4x5a1bpmkm56a3gh2zvw4s7mj8")))
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "0w679qymqh8dlb1mh2vxr382m1pzxdjwlp3bqzjr4043fmbrp62f")))
+        (hash (base32 "06w2vhw6pdy49n3dcnq12bn50glbg9pwaqvs4nlzbljg4yf50w6r")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
@@ -4416,14 +4416,14 @@ isolation or root privileges.")
 (define-public hdparm
   (package
     (name "hdparm")
-    (version "9.61")
+    (version "9.62")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/hdparm/hdparm/"
                                   "hdparm-" version ".tar.gz"))
               (sha256
                (base32
-                "0hskvzsg58hw8abkkmxh5kky0hhilv516870x2bq62zihww1q6ns"))))
+                "0zvppv8qw0y1shlhn34iq1g4883i1cywsa514n595nmyrmsrs3rc"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -5163,7 +5163,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "5.11.1")
+    (version "5.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -5171,7 +5171,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "1zpbpmq8qndwls40yg2c9xj9ca6mcxdziadj5i8fbi3ffp2crap3"))))
+                "0mgdcqyww20fvh0js717yvla1hkky12c6dfhascicmrfw5fdcfcf"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of the binaries in "out"
@@ -5216,6 +5216,9 @@ and copy/paste text in the console and in xterm.")
                      ("asciidoc" ,asciidoc)
                      ("python" ,python)
                      ("xmlto" ,xmlto)
+                     ;; Remove this input entirely when the default headers
+                     ;; version provides blk_zone.capacity (>= 5.9).
+                     ("linux-libre-headers" ,linux-libre-headers-5.10)
                      ;; For building documentation.
                      ("libxml2" ,libxml2)
                      ("docbook-xsl" ,docbook-xsl)

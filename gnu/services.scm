@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2021 raid5atemyhomework <raid5atemyhomework@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,6 +35,8 @@
   #:use-module (guix diagnostics)
   #:autoload   (guix openpgp) (openpgp-format-fingerprint)
   #:use-module (guix modules)
+  #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages hurd)
@@ -107,6 +110,12 @@
             profile-service-type
             firmware-service-type
             gc-root-service-type
+            linux-builder-service-type
+            linux-builder-configuration
+            linux-builder-configuration?
+            linux-builder-configuration-kernel
+            linux-builder-configuration-modules
+            linux-loadable-module-service-type
 
             %boot-service
             %activation-service
@@ -882,6 +891,87 @@ as Wifi cards.")))
                  "Register garbage-collector roots---i.e., store items that
 will not be reclaimed by the garbage collector.")
                 (default-value '())))
+
+;; Configuration for the Linux kernel builder.
+(define-record-type* <linux-builder-configuration>
+  linux-builder-configuration
+  make-linux-builder-configuration
+  linux-builder-configuration?
+  this-linux-builder-configuration
+
+  (kernel   linux-builder-configuration-kernel)                   ; package
+  (modules  linux-builder-configuration-modules  (default '())))  ; list of packages
+
+(define (package-for-kernel target-kernel module-package)
+  "Return a package like MODULE-PACKAGE, adapted for TARGET-KERNEL, if
+possible (that is if there's a LINUX keyword argument in the build system)."
+  (package
+    (inherit module-package)
+    (arguments
+     (substitute-keyword-arguments (package-arguments module-package)
+       ((#:linux kernel #f)
+        target-kernel)))))
+
+(define (linux-builder-configuration->system-entry config)
+  "Return the kernel entry of the 'system' directory."
+  (let* ((kernel  (linux-builder-configuration-kernel config))
+         (modules (linux-builder-configuration-modules config))
+         (kernel  (profile
+                    (content (packages->manifest
+                              (cons kernel
+                                    (map (lambda (module)
+                                           (cond
+                                             ((package? module)
+                                              (package-for-kernel kernel module))
+                                             ;; support (,package "kernel-module-output")
+                                             ((and (list? module) (package? (car module)))
+                                              (cons (package-for-kernel kernel
+                                                                        (car module))
+                                                    (cdr module)))
+                                             (else
+                                              module)))
+                                         modules))))
+                    (hooks (list linux-module-database)))))
+    (with-monad %store-monad
+      (return `(("kernel" ,kernel))))))
+
+(define linux-builder-service-type
+  (service-type (name 'linux-builder)
+                (extensions
+                  (list (service-extension system-service-type
+                                           linux-builder-configuration->system-entry)))
+                (default-value '())
+                (compose identity)
+                (extend (lambda (config modifiers)
+                          (if (null? modifiers)
+                              config
+                              ((apply compose modifiers) config))))
+                (description "Builds the linux-libre kernel profile, containing
+the kernel itself and any linux-loadable kernel modules.  This can be extended
+with a function that accepts the current configuration and returns a new
+configuration.")))
+
+(define (linux-loadable-module-builder-modifier modules)
+  "Extends linux-builder-service-type by appending the given MODULES to the
+configuration of linux-builder-service-type."
+  (lambda (config)
+    (linux-builder-configuration
+      (inherit config)
+      (modules (append (linux-builder-configuration-modules config)
+                       modules)))))
+
+(define linux-loadable-module-service-type
+  (service-type (name 'linux-loadable-modules)
+                (extensions
+                  (list (service-extension linux-builder-service-type
+                                           linux-loadable-module-builder-modifier)))
+                (default-value '())
+                (compose concatenate)
+                (extend append)
+                (description "Adds packages and package outputs as modules
+included in the booted linux-libre profile.  Other services can extend this
+service type to add particular modules to the set of linux-loadable modules.")))
+
 
 
 ;;;

@@ -17,6 +17,7 @@
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
 ;;; Copyright © 2021 Franck Pérignon <franck.perignon@univ-grenoble-alpes.fr>
+;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -68,7 +69,7 @@
     (version "1.75.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://dl.bintray.com/boostorg/release/"
+              (uri (string-append "https://boostorg.jfrog.io/artifactory/main/release/"
                                   version "/source/boost_"
                                   (version-with-underscores version) ".tar.bz2"))
               ; Should be included in next Boost update

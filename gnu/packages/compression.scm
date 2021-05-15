@@ -67,6 +67,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages benchmark)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages curl)
@@ -1001,7 +1002,7 @@ tarballs.")
 (define-public libjcat
   (package
     (name "libjcat")
-    (version "0.1.6")
+    (version "0.1.7")
     (source
      (origin
        (method git-fetch)
@@ -1011,7 +1012,7 @@ tarballs.")
          (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1a2z34m8611xvna9kwch8ralxx7c9mk4rm9vrxx7p9hr8sbqbsaz"))))
+        (base32 "110c8h3p7m4ibrfvgja592z7j5h88qqanllxsvmxkjz3b129i02r"))))
     (build-system meson-build-system)
     (native-inputs
      `(("gobject-introspection" ,gobject-introspection)
@@ -1109,7 +1110,7 @@ well as bzip2.")
 (define-public snappy
   (package
     (name "snappy")
-    (version "1.1.8")
+    (version "1.1.9")
     (source
      (origin
        (method git-fetch)
@@ -1118,11 +1119,35 @@ well as bzip2.")
               (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1j0kslq2dvxgkcxl1gakhvsa731yrcvcaipcp5k8k7ayicvkv9jv"))
-       (patches (search-patches "snappy-add-O2-flag-in-CmakeLists.txt.patch"))))
+        (base32 "03zz56h79z0sgvi5sangjqn9dahhzvf645v26n1y0gwmfbmsax95"))
+       (patches
+        (search-patches "snappy-add-O2-flag-in-CmakeLists.txt.patch"
+                        "snappy-add-inline-for-GCC.patch"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")))
+     `(#:configure-flags
+       (list "-DBUILD_SHARED_LIBS=ON"
+             ;; These would be installed alongside Snappy otherwise.
+             "-DBENCHMARK_ENABLE_INSTALL=OFF"
+             "-DINSTALL_GTEST=OFF")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'unpack-third_party-subprojects
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "third_party"
+               (for-each (lambda (subproject)
+                           (let* ((input (string-append subproject "-source"))
+                                  (source (assoc-ref inputs input)))
+                             (with-directory-excursion subproject
+                               ;; Take advantage of the coincidence that both
+                               ;; use GIT-FETCH, which creates a directory.
+                               (copy-recursively source "."))))
+                         (list "benchmark"
+                               "googletest"))
+               #;punt))))))
+    (native-inputs
+     `(("benchmark-source" ,(package-source benchmark))
+       ("googletest-source" ,(package-source googletest))))
     (home-page "https://github.com/google/snappy")
     (synopsis "Fast compressor/decompressor")
     (description "Snappy is a compression/decompression library.  It does not

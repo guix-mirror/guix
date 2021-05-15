@@ -320,7 +320,7 @@
                   (string-append "ungoogled-chromium-" category "-" name))))
     (sha256 (base32 hash))))
 
-(define %chromium-version "90.0.4430.93")
+(define %chromium-version "90.0.4430.212")
 (define %debian-revision "debian/90.0.4430.85-1")
 (define %ungoogled-revision "90.0.4430.85-1-11-g3184907")
 
@@ -481,7 +481,7 @@
                                   %chromium-version ".tar.xz"))
               (sha256
                (base32
-                "0zimr975vp0v12zz1nqjwag3f0q147wrmdhpzgi4yf089rgwfbjk"))
+                "17nmhrkl81qqvzbh861k2mmifncx4wg1mv1fmn52f8gzn461vqdb"))
               (modules '((guix build utils)))
               (snippet (force ungoogled-chromium-snippet))))
     (build-system gnu-build-system)

@@ -97,6 +97,7 @@
 ;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2021 Eugene Klimov <lipklim@mailbox.org>
+;;; Copyright © 2021 Zheng Junjie <873216071@qq.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1881,14 +1882,14 @@ incrementally confined in Isearch manner.")
 (define emacs-emms-print-metadata
   (package
     (name "emacs-emms-print-metadata")
-    (version "7.1")
+    (version "7.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "emms-" version ".tar"))
        (sha256
-        (base32 "1dng8dy0w0wsdvvnjnrllwv5a8wq3kj20jik994b7prdx5dn6y52"))))
+        (base32 "11vqqh9rnzibsfw7wx62rgzl8i8ldpf0hv1sj43nhl5c6dlc8d5z"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags '("emms-print-metadata")
@@ -12779,13 +12780,13 @@ containing words from the Rime project.")
 (define-public emacs-pyim
   (package
     (name "emacs-pyim")
-    (version "3.7.3")
+    (version "3.7.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/pyim-" version ".tar"))
        (sha256
-        (base32 "0h6cp48hjdfnwbi799hrar5hlcag2339ygdq8qfds2iawrzk6y74"))))
+        (base32 "1crimmvyppjmds9shfvxy9j5zi3mk133bv5av0fgicm7ddkivksr"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-async" ,emacs-async)
@@ -25720,7 +25721,8 @@ REPL appropriate to the current major mode.")
         (base32 "1a50cziwg7lpgh26yvwxs46jfyfq1m0l6igbg5g5m288mz4d3an9"))))
     (build-system emacs-build-system)
     (arguments
-     '(#:phases
+     '(#:include (cons "\\.so$" %default-include)
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-rime-data-path
            (lambda* (#:key inputs #:allow-other-keys)
@@ -25732,13 +25734,7 @@ REPL appropriate to the current major mode.")
              #t))
          (add-before 'install 'build-emacs-module
            (lambda _
-             (invoke "make" "lib")))
-         (add-after 'install 'install-emacs-module
-           (lambda* (#:key outputs #:allow-other-keys)
-             (install-file "librime-emacs.so"
-                           (string-append (assoc-ref outputs "out")
-                                          "/share/emacs/site-lisp"))
-             #t)))))
+             (invoke "make" "lib"))))))
     (inputs
      `(("librime" ,librime)
        ("rime-data" ,rime-data)))

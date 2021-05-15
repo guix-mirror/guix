@@ -66,14 +66,14 @@
 (define-public racket-minimal
   (package
     (name "racket-minimal")
-    (version "8.0")            ; note: remember to also update racket!
+    (version "8.1")            ; note: remember to also update racket!
     (source
      (origin
        (method url-fetch)
        (uri (map (lambda (base)
                    (string-append base version "/racket-minimal-src.tgz"))
                  %installer-mirrors))
-       (sha256 "0mwyffw4gcci8wmzxa3j28h03h0gsz55aard8qrk3lri8r2xyg21")
+       (sha256 "04zzqybpxss50n1jrwwq98539gw0y0ygpw9civl2sq3s4ww7m8l3")
        (patches (search-patches
                  "racket-sh-via-rktio.patch"))))
     (home-page "https://racket-lang.org")
@@ -100,36 +100,6 @@
         (srfi srfi-1))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-chez-configure
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (substitute* "src/cs/c/Makefile.in"
-               (("/bin/sh") (which "sh")))
-             ;; TODO: Racket CS uses a fork of Chez Scheme.
-             ;; Most of this is copy-pasted from the "chez.scm",
-             ;; but maybe there's a way to reuse more directly.
-             (with-directory-excursion "src/ChezScheme"
-               (substitute* (find-files "mats" "Mf-.*")
-                 (("^[[:space:]]+(cc ) *") "\tgcc "))
-               (substitute*
-                   (find-files "." (string-append
-                                    "("
-                                    "Mf-[a-zA-Z0-9.]+"
-                                    "|Makefile[a-zA-Z0-9.]*"
-                                    "|checkin"
-                                    "|stex\\.stex"
-                                    "|newrelease"
-                                    "|workarea"
-                                    "|unix\\.ms"
-                                    "|^6\\.ms"
-                                    ;;"|[a-zA-Z0-9.]+\\.ms" ; guile can't read
-                                    ")"))
-                 (("/bin/rm") (which "rm"))
-                 (("/bin/ln") (which "ln"))
-                 (("/bin/cp") (which "cp"))
-                 (("/bin/echo") (which "echo")))
-               (substitute* "makefiles/installsh"
-                 (("/bin/true") (which "true"))))
-             #t))
          (add-before 'configure 'pre-configure-minimal
            (lambda* (#:key inputs #:allow-other-keys)
              (chdir "src")
@@ -215,7 +185,7 @@ DrRacket IDE, are not included.")
                  %installer-mirrors))
        (sha256
         (base32
-         "047wpjblfzmf1msz7snrp2c2h0zxyzlmbsqr9bwsyvz3frcg0888"))))
+         "0xdqwrwm604bbnr97h75dps2ixxz2svlw0fn0f674bn04dcfd60f"))))
     (inputs
      `(;; sqlite and libraries for `racket/draw' are needed to build the doc.
        ("cairo" ,cairo)

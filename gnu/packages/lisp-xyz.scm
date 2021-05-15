@@ -67,6 +67,7 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
@@ -16434,3 +16435,145 @@ operations in 3D space.")
 
 (define-public cl-3d-matrices
   (sbcl-package->cl-source-package sbcl-3d-matrices))
+
+(define-public sbcl-messagebox
+  (let ((commit "ea3688d9a9954bee7079c0173bc7b3f327021e9f")
+        (revision "1"))
+    (package
+      (name "sbcl-messagebox")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shinmera/messagebox")
+               (commit commit)))
+         (file-name (git-file-name "messagebox" version))
+         (sha256
+          (base32 "0jkbzlca0wvspgsfj0b0hjwlyyy8jlywsldsbkp79q48fc3aa8jd"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-zenity-path
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "zenity.lisp"
+                 (("\"zenity\"")
+                  (string-append "\"" (assoc-ref inputs "zenity")
+                                 "/bin/zenity\""))))))))
+      (inputs
+       `(("documentation-utils" ,sbcl-documentation-utils)
+         ("trivial-features" ,sbcl-trivial-features)
+         ("zenity" ,zenity)))
+      (home-page "https://shinmera.github.io/messagebox/")
+      (synopsis "Display a native GUI message box")
+      (description
+       "This is a small library to display a native GUI message box.  This can be
+useful to show error messages and other informational pieces should the
+application fail and be unable to do so using its standard UI.")
+      (license license:zlib))))
+
+(define-public ecl-messagebox
+  (sbcl-package->ecl-package sbcl-messagebox))
+
+(define-public cl-messagebox
+  (sbcl-package->cl-source-package sbcl-messagebox))
+
+(define-public sbcl-glsl-toolkit
+  (let ((commit "d00ba1906e3b5eb08ea346ac300a1e77bb999d04")
+        (revision "1"))
+    (package
+      (name "sbcl-glsl-toolkit")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shirakumo/glsl-toolkit")
+               (commit commit)))
+         (file-name (git-file-name "glsl-toolkit" version))
+         (sha256
+          (base32 "0as5796yazchq1qkna3srxlz5v7cf7ffny9cbqi41wsa2s20vbh9"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("cl-ppcre" ,sbcl-cl-ppcre)
+         ("documentation-utils" ,sbcl-documentation-utils)
+         ("parse-float" ,sbcl-parse-float)
+         ("trivial-indent" ,sbcl-trivial-indent)))
+      (home-page "https://shirakumo.github.io/glsl-toolkit/")
+      (synopsis "Parser for OpenGL Shader Language source files")
+      (description
+       "This package provides a Common Lisp system collecting tools written to
+allow to wrangle OpenGL Shader Language (GLSL) source files.")
+      (license license:zlib))))
+
+(define-public ecl-glsl-toolkit
+  (sbcl-package->ecl-package sbcl-glsl-toolkit))
+
+(define-public cl-glsl-toolkit
+  (sbcl-package->cl-source-package sbcl-glsl-toolkit))
+
+(define-public sbcl-simple-tasks
+  (let ((commit "745d4b54eac9bf5d6909792e63ecd2ef8d303cf2")
+        (revision "1"))
+    (package
+      (name "sbcl-simple-tasks")
+      (version (git-version "1.3.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shinmera/simple-tasks")
+               (commit commit)))
+         (file-name (git-file-name "simple-tasks" version))
+         (sha256
+          (base32 "1ls1pij7dvb65g4nam7nvik1218jvfk5iplr48vy290fw3lq7v98"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("array-utils" ,sbcl-array-utils)
+         ("bordeaux-threads" ,sbcl-bordeaux-threads)
+         ("dissect" ,sbcl-dissect)))
+      (home-page "https://shinmera.github.io/simple-tasks/")
+      (synopsis "Simple task scheduling framework")
+      (description "This is a task scheduling framework for Common Lisp.")
+      (license license:zlib))))
+
+(define-public ecl-simple-tasks
+  (sbcl-package->ecl-package sbcl-simple-tasks))
+
+(define-public cl-simple-tasks
+  (sbcl-package->cl-source-package sbcl-simple-tasks))
+
+(define-public sbcl-trivial-main-thread
+  (let ((commit "25f114973bb69eb63e01d0bbfead31f8e682846a")
+        (revision "1"))
+    (package
+      (name "sbcl-trivial-main-thread")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shinmera/trivial-main-thread")
+               (commit commit)))
+         (file-name (git-file-name "trivial-main-thread" version))
+         (sha256
+          (base32 "0bw1887i7396lqg75qvmgjfzz4xbiq9w5dp8wxdgrcsm0qwlraw7"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("bordeaux-threads" ,sbcl-bordeaux-threads)
+         ("simple-tasks" ,sbcl-simple-tasks)
+         ("trivial-features" ,sbcl-trivial-features)))
+      (home-page "https://shinmera.github.io/trivial-main-thread/")
+      (synopsis "Compatibility library to run things in the main thread")
+      (description
+       "This package provides a Common Lisp system which wraps the
+BORDEAUX-THREADS system to be able to run things in the main thread of the
+implementation, for example drawing calls of GUI applications.")
+      (license license:zlib))))
+
+(define-public ecl-trivial-main-thread
+  (sbcl-package->ecl-package sbcl-trivial-main-thread))
+
+(define-public cl-trivial-main-thread
+  (sbcl-package->cl-source-package sbcl-trivial-main-thread))

@@ -99,6 +99,7 @@
 ;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;; Copyright © 2021 Ellis Kenyő <me@elken.dev>
 ;;; Copyright © 2021 LibreMiami <packaging-guix@libremiami.org>
+;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -181,6 +182,7 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages rdf)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages regex)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages search)
   #:use-module (gnu packages scanner)
@@ -1286,6 +1288,30 @@ conventions and aliases in the same expression.")
      "The lockfile package exports a LockFile class which provides a simple
 API for locking files.")
     (license license:expat)))
+
+(define-public python-fb-re2
+  (package
+    (name "python-fb-re2")
+    (version "1.0.7")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/facebook/pyre2")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0snprxdnh3m45r3b0az4v0l28h90ycmfbybzla6xg1qviwv9w1ak"))))
+    (build-system python-build-system)
+    (inputs
+     `(("re2" ,re2)))
+    (home-page "https://github.com/facebook/pyre2")
+    (synopsis "Python wrapper for RE2")
+    (description "This package provides a Python extension that wraps Google's
+RE2 regular expression library.  It implements many of the features of
+Python's built-in @code{re} module with compatible interfaces.")
+    (license license:bsd-3)))
 
 (define-public python-filelock
   (package
@@ -6089,13 +6115,13 @@ the OleFileIO module from PIL, the Python Image Library.")
 (define-public python-pikepdf
   (package
     (name "python-pikepdf")
-    (version "2.11.4")
+    (version "2.12.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pikepdf" version))
        (sha256
-        (base32 "0kd5ydnsmlikkg69r255wvq4vy7plh7dx077s2saly5s5vdcqlkk"))))
+        (base32 "1fgk93v5zac38ak00nw94mi44z9701kn20dkdfpwqr3588vnxfzw"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #false))                ;require python-xmp-toolkit
@@ -7557,7 +7583,18 @@ without using the configuration machinery.")
                 "env = {'PATH': '', 'PYTHONPATH': os.environ['PYTHONPATH']}")
                (("env = \\{'PATH':  str\\(b\\)\\}")
                 "env = {'PATH': str(b), 'PYTHONPATH': os.environ['PYTHONPATH']}"))
-             #t)))))
+             #t))
+         ;; Migration is running whenever etc/jupyter exists, but the
+         ;; Guix-managed directory will never contain any migratable IPython
+         ;; config files and cannot be written to anyway, so just pretend we
+         ;; already did that.
+         (add-after 'install 'disable-migration
+           (lambda* (#:key outputs #:allow-other-keys)
+             (mkdir-p (string-append (assoc-ref outputs "out") "/etc/jupyter"))
+             (invoke "touch"
+               (string-append
+                 (assoc-ref outputs "out")
+                 "/etc/jupyter/migrated")))))))
     (propagated-inputs
      `(("python-traitlets" ,python-traitlets)))
     (native-inputs
@@ -8342,13 +8379,13 @@ interfaces in an easy and portable manner.")
 (define-public python-networkx
   (package
     (name "python-networkx")
-    (version "2.5")
+    (version "2.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "networkx" version))
        (sha256
-        (base32 "00hnii2lplig2s324k1hvi29pyfab6z7i22922f67jgv4da9ay3r"))))
+        (base32 "0ni3pdisdr8vfp5m9sw8jzr7jwzgqqmc9hq327vrf4n4ra2xb70h"))))
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases

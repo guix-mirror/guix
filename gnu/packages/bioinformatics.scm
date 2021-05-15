@@ -7554,14 +7554,18 @@ experience substantial biological insertions and deletions.")
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (bin (string-append out "/bin")))
+                    (bin (string-append out "/bin"))
+                    (scripts (find-files "." "prinseq.*.pl")))
+               (substitute* scripts
+                 (("\"perl -pe")
+                  (string-append "\"" (which "perl") " -pe")))
                (for-each (lambda (file)
                            (chmod file #o555)
                            (install-file file bin)
                            (wrap-script (string-append bin "/" (basename file))
                                         `("PERL5LIB" ":" prefix
                                           (,(getenv "PERL5LIB")))))
-                         (find-files "." "prinseq.*.pl"))))))))
+                         scripts)))))))
     (inputs
      `(("guile" ,guile-3.0)             ; for wrapper scripts
        ("perl" ,perl)

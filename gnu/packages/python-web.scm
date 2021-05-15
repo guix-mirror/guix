@@ -41,6 +41,7 @@
 ;;; Copyright © 2020 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2021 Ekaitz Zarraga <ekaitz@elenq.tech>
+;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1189,8 +1190,7 @@ Amazon S3 compatible object storage server.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://dl.bintray.com/pycurl/pycurl/pycurl-"
-                           version ".tar.gz"))
+       (uri (pypi-uri "pycurl" version))
        (sha256
         (base32 "1cwlb76vddqp2mxqvjbhf367caddzy82rhangddjjhjqaj8x4zgc"))))
     (build-system python-build-system)

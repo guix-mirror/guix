@@ -4,7 +4,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -43,14 +43,14 @@
 (define-public chrony
   (package
     (name "chrony")
-    (version "4.0")
+    (version "4.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.tuxfamily.org/chrony/"
                            "chrony-" version ".tar.gz"))
        (sha256
-        (base32 "09f6w2x5h5kamb4rhcbaz911q1f730qdalgsn8s48yjyqlafl9xy"))))
+        (base32 "0k0nf5qqzl01106lkmwc32n6a1fxagalpbci38iccyilz79z4xpd"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((srfi srfi-26)

@@ -3,7 +3,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
-;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017, 2018 Nikita <nikita@n0.is>
@@ -948,12 +948,6 @@ from forcing GEXP-PROMISE."
      `(#:tests? #f          ; no check target
        #:out-of-source? #t  ; must be built outside of the source directory
 
-       ;; XXX: There are RUNPATH issues such as
-       ;; $prefix/lib/icecat-31.6.0/plugin-container NEEDing libmozalloc.so,
-       ;; which is not in its RUNPATH, but they appear to be harmless in
-       ;; practice somehow.  See <http://hydra.gnu.org/build/378133>.
-       #:validate-runpath? #f
-
        #:configure-flags `("--enable-default-toolkit=cairo-gtk3-wayland"
 
                            "--with-distribution-id=org.gnu"
@@ -1201,6 +1195,9 @@ from forcing GEXP-PROMISE."
                (setenv "AUTOCONF" (which "autoconf")) ; must be autoconf-2.13
                (setenv "CC" "gcc")  ; apparently needed when Stylo is enabled
                (setenv "MOZ_BUILD_DATE" ,%icecat-build-id) ; avoid timestamp
+               (setenv "LDFLAGS" (string-append "-Wl,-rpath="
+                                                (assoc-ref outputs "out")
+                                                "/lib/icecat"))
                (mkdir "../build")
                (chdir "../build")
                (format #t "build directory: ~s~%" (getcwd))

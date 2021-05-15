@@ -13,6 +13,7 @@
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <jannek@gnu.org>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
+;;; Copyright © 2021 raid5atemyhomework <raid5atemyhomework@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -62,6 +63,7 @@
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages pciutils)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages wget)
   #:use-module (gnu packages zile)
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
@@ -601,16 +603,6 @@ OS."
       (file-append (operating-system-kernel os)
                       "/" (system-linux-image-file-name))))
 
-(define (package-for-kernel target-kernel module-package)
-  "Return a package like MODULE-PACKAGE, adapted for TARGET-KERNEL, if
-possible (that is if there's a LINUX keyword argument in the build system)."
-  (package
-    (inherit module-package)
-    (arguments
-     (substitute-keyword-arguments (package-arguments module-package)
-       ((#:linux kernel #f)
-        target-kernel)))))
-
 (define %default-modprobe-blacklist
   ;; List of kernel modules to blacklist by default.
   '("usbmouse" ;races with bcm5974, see <https://bugs.gnu.org/35574>
@@ -628,23 +620,12 @@ value of the SYSTEM-SERVICE-TYPE service."
   (let* ((locale  (operating-system-locale-directory os))
          (kernel  (operating-system-kernel os))
          (hurd    (operating-system-hurd os))
-         (modules (operating-system-kernel-loadable-modules os))
-         (kernel  (if hurd
-                      kernel
-                      (profile
-                       (content (packages->manifest
-                                 (cons kernel
-                                       (map (lambda (module)
-                                              (if (package? module)
-                                                  (package-for-kernel kernel
-                                                                      module)
-                                                  module))
-                                            modules))))
-                       (hooks (list linux-module-database)))))
          (initrd  (and (not hurd) (operating-system-initrd-file os)))
          (params  (operating-system-boot-parameters-file os)))
-    `(("kernel" ,kernel)
-      ,@(if hurd `(("hurd" ,hurd)) '())
+    `(,@(if hurd
+          `(("hurd" ,hurd)
+            ("kernel" ,kernel))
+          '())
       ("parameters" ,params)
       ,@(if initrd `(("initrd" ,initrd)) '())
       ("locale" ,locale))))   ;used by libc
@@ -664,6 +645,10 @@ bookkeeping."
          (host-name (host-name-service (operating-system-host-name os)))
          (entries   (operating-system-directory-base-entries os)))
     (cons* (service system-service-type entries)
+           (service linux-builder-service-type
+                    (linux-builder-configuration
+                      (kernel   (operating-system-kernel os))
+                      (modules  (operating-system-kernel-loadable-modules os))))
            %boot-service
 
            ;; %SHEPHERD-ROOT-SERVICE must come last so that the gexp that
@@ -806,6 +791,7 @@ of PROVENANCE-SERVICE-TYPE to its services."
   ;; Default set of networking packages.
   (list inetutils isc-dhcp
         iproute
+        wget
         ;; wireless-tools is deprecated in favor of iw, but it's still what
         ;; many people are familiar with, so keep it around.
         iw wireless-tools))

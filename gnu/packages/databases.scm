@@ -50,6 +50,7 @@
 ;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
 ;;; Copyright © 2021 David Larsson <david.larsson@selfhosted.xyz>
 ;;; Copyright © 2021 Pjotr Prins <pjotr.guix@thebird.nl>
+;;; Copyright © 2021 Bonface Munyoki Kilyungi <me@bonfacemunyoki.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -114,6 +115,7 @@
   #:use-module (gnu packages popt)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-science)
   #:use-module (gnu packages python-web)
@@ -2906,6 +2908,28 @@ simple and Pythonic domain language.")
 
 (define-public python2-sqlalchemy
   (package-with-python2 python-sqlalchemy))
+
+(define-public python-sqlalchemy-stubs
+  (package
+    (name "python-sqlalchemy-stubs")
+    (version "0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "sqlalchemy-stubs" version))
+       (sha256
+        (base32
+         "1bppjmv7v7m0q8gwg791pgxbx4ay7mna0zq204pn9vw28kfxcrf6"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-mypy" ,python-mypy)
+       ("python-typing-extensions" ,python-typing-extensions)))
+    (home-page "https://github.com/dropbox/sqlalchemy-stubs")
+    (synopsis "SQLAlchemy stubs and mypy plugin")
+    (description "This package contains type stubs and a mypy plugin to
+provide more precise static types and type inference for SQLAlchemy
+framework.")
+    (license license:asl2.0)))
 
 (define-public python-sqlalchemy-utils
   (package

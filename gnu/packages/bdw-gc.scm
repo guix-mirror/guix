@@ -89,6 +89,17 @@ C or C++ programs, though that is not its primary goal.")
 
    (license (x11-style (string-append home-page "license.txt")))))
 
+(define-public libgc/disable-munmap
+  ;; TODO: Use '--disable-munmap' by default on next rebuild cycle.
+  (package/inherit libgc
+    (arguments
+     ;; Work around <https://github.com/ivmai/bdwgc/issues/353>.
+     (substitute-keyword-arguments (package-arguments libgc)
+       ((#:configure-flags flags ''())
+        `(cons "--disable-munmap" ,flags))))
+    (properties `((hidden? . #t)
+                  ,@(package-properties libgc)))))
+
 ;; TODO: Add a static output in libgc in the next rebuild cycle.
 (define-public libgc/static-libs
   (package/inherit
