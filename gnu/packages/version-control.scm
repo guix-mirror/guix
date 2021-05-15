@@ -1614,6 +1614,7 @@ execution of any hook written in any language before every commit.")
              (method url-fetch)
              (uri (string-append "https://www.mercurial-scm.org/"
                                  "release/mercurial-" version ".tar.gz"))
+             (patches (search-patches "mercurial-hg-extension-path.patch"))
              (sha256
               (base32
                "17rhlmmkqz5ll3k68jfzpcifg3nndbcbc2nx7kw8xn3qcj7nlpgw"))))
@@ -1684,6 +1685,11 @@ execution of any hook written in any language before every commit.")
        ("which" ,which)))
     (inputs
      `(("python" ,python)))
+    ;; Find third-party extensions.
+    (native-search-paths
+     (list (search-path-specification
+            (variable "HGEXTENSIONPATH")
+            (files '("lib/python3.8/site-packages/hgext3rd")))))
     (home-page "https://www.mercurial-scm.org/")
     (synopsis "Decentralized version control system")
     (description
