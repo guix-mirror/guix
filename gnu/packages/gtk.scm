@@ -1408,10 +1408,10 @@ guile-gnome-platform (GNOME developer libraries), and guile-gtksourceview.")
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("xsltproc" ,libxslt)))
+    (inputs
+     `(("fontconfig" ,fontconfig)))
     (propagated-inputs
      `(("libsigc++" ,libsigc++)
-       ("freetype" ,freetype)
-       ("fontconfig" ,fontconfig)
        ("cairo" ,cairo)))
     (home-page "https://cairographics.org/")
     (synopsis "C++ bindings to the Cairo 2D graphics library")
