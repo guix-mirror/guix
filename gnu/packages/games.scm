@@ -60,6 +60,7 @@
 ;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
 ;;; Copyright © 2021 David Pflug <david@pflug.io>
+;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -12472,3 +12473,38 @@ game FPS.")
 implemented using ncurses user interface.  An SDL graphical version is also
 available.")
     (license license:gpl3+)))
+
+(define-public schiffbruch
+  ;; There haven't been any releases for several years, so I've taken the most
+  ;; recent commit from the master branch that didn't fail to build (the last
+  ;; commit gave me a compile error).
+  (let ((commit "e41916d15d87749c82c5005cbb42d1bb079b43d9"))
+    (package
+      (name "schiffbruch")
+      (version (git-version "1.2.1" "0" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/sandsmark/Schiffbruch")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0lg3rqacrapf6c4sxi12cm9bmg43mlbclway1zxcm848pi1xkzwv"))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:tests? #f                              ; no tests
+         #:build-type "Release"))
+      (native-inputs
+       `(("gcc" ,gcc-11)))                    ; need C++20-compatible compiler
+      (inputs
+       `(("sfml" ,sfml)))
+      (home-page "https://github.com/sandsmark/Schiffbruch/")
+      (synopsis "Pixelart survival game")
+      (description
+       "Schiffbruch is a mix of building, strategy and adventure and gets played
+with a two-dimensional view.  The game deals with the consequences of a ship
+wreckage.  You're stranded on a desert island and have to survive.  In order to
+do so you need to explore the island, find food, build a shelter and try to
+get attention, so you get found.")
+      (license license:cc-by4.0))))
