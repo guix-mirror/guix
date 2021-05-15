@@ -35,6 +35,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:export (%mirrors
+            %disarchive-mirrors
             (url-fetch* . url-fetch)
             url-fetch/executable
             url-fetch/tarbomb

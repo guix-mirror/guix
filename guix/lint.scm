@@ -30,6 +30,7 @@
 
 (define-module (guix lint)
   #:use-module (guix store)
+  #:autoload   (guix base16) (bytevector->base16-string)
   #:use-module (guix base32)
   #:use-module (guix diagnostics)
   #:use-module (guix download)
@@ -1227,6 +1228,43 @@ upstream releases")
                             #:field 'source)))))))
 
 
+(define (lookup-disarchive-spec hash)
+  "If Disarchive mirrors have a spec for HASH, return the list of SWH
+directory identifiers the spec refers to.  Otherwise return #f."
+  (define (extract-swh-id spec)
+    ;; Return the list of SWH directory identifiers SPEC refers to, where SPEC
+    ;; is a Disarchive sexp.  Instead of attempting to parse it, traverse it
+    ;; in a pretty unintelligent fashion.
+    (let loop ((sexp spec)
+               (ids '()))
+      (match sexp
+        ((? string? str)
+         (let ((prefix "swh:1:dir:"))
+           (if (string-prefix? prefix str)
+               (cons (string-drop str (string-length prefix)) ids)
+               ids)))
+        ((head tail ...)
+         (loop tail (loop head ids)))
+        (_ ids))))
+
+  (any (lambda (mirror)
+         (with-networking-fail-safe
+          (format #f (G_ "failed to access Disarchive database at ~a")
+                  mirror)
+          #f
+          (guard (c ((http-get-error? c) #f))
+            (let* ((url (string-append mirror
+                                       (symbol->string
+                                        (content-hash-algorithm hash))
+                                       "/"
+                                       (bytevector->base16-string
+                                        (content-hash-value hash))))
+                   (port (http-fetch (string->uri url) #:text? #t))
+                   (spec (read port)))
+              (close-port port)
+              (extract-swh-id spec)))))
+       %disarchive-mirrors))
+
 (define (check-archival package)
   "Check whether PACKAGE's source code is archived on Software Heritage.  If
 it's not, and if its source code is a VCS snapshot, then send a \"save\"
@@ -1302,10 +1340,26 @@ try again later")
                                         (symbol->string
                                          (content-hash-algorithm hash)))
                    (#f
-                    (list (make-warning package
-                                        (G_ "source not archived on Software \
-Heritage")
-                                        #:field 'source)))
+                    ;; If SWH doesn't have HASH as is, it may be because it's
+                    ;; a hand-crafted tarball.  In that case, check whether
+                    ;; the Disarchive database has an entry for that tarball.
+                    (match (lookup-disarchive-spec hash)
+                      (#f
+                       (list (make-warning package
+                                           (G_ "source not archived on Software \
+Heritage and missing from the Disarchive database")
+                                           #:field 'source)))
+                      (directory-ids
+                       (match (find (lambda (id)
+                                      (not (lookup-directory id)))
+                                    directory-ids)
+                         (#f '())
+                         (id
+                          (list (make-warning package
+                                              (G_ "
+Disarchive entry refers to non-existent SWH directory '~a'")
+                                              (list id)
+                                              #:field 'source)))))))
                    ((? content?)
                     '())))
                '()))))

@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2015, 2016 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Alex Kost <alezost@gmail.com>
@@ -1008,10 +1008,13 @@
                      (method url-fetch)
                      (uri "http://example.org/foo.tgz")
                      (sha256 (make-bytevector 32))))
-         (warnings (with-http-server '((404 "Not archived."))
+         (warnings (with-http-server '((404 "Not archived.")
+                                       (404 "Not in Disarchive database."))
                      (parameterize ((%swh-base-url (%local-url)))
-                       (check-archival (dummy-package "x"
-                                                      (source origin)))))))
+                       (mock ((guix download) %disarchive-mirrors
+                              (list (%local-url)))
+                             (check-archival (dummy-package "x"
+                                                            (source origin))))))))
     (warning-contains? "not archived" warnings)))
 
 (test-equal "archival: content available"
@@ -1026,6 +1029,29 @@
     (with-http-server `((200 ,content))
       (parameterize ((%swh-base-url (%local-url)))
         (check-archival (dummy-package "x" (source origin)))))))
+
+(test-equal "archival: content unavailable but disarchive available"
+  '()
+  (let* ((origin   (origin
+                     (method url-fetch)
+                     (uri "http://example.org/foo.tgz")
+                     (sha256 (make-bytevector 32))))
+         (disarchive (object->string
+                      '(disarchive (version 0)
+                                   ...
+                                   "swh:1:dir:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")))
+         ;; https://archive.softwareheritage.org/api/1/directory/
+         (directory "[ { \"checksums\": {},
+                         \"dir_id\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",
+                         \"type\": \"file\",
+                         \"name\": \"README\"
+                         \"length\": 42 } ]"))
+    (with-http-server `((404 "")                  ;lookup-content
+                        (200 ,disarchive)         ;Disarchive database lookup
+                        (200 ,directory))         ;lookup-directory
+      (mock ((guix download) %disarchive-mirrors (list (%local-url)))
+            (parameterize ((%swh-base-url (%local-url)))
+              (check-archival (dummy-package "x" (source origin))))))))
 
 (test-assert "archival: missing revision"
   (let* ((origin   (origin
