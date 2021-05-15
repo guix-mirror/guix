@@ -1,0 +1,50 @@
+Fix build with GLib 2.68 and later.
+
+Taken from upstream pull request:
+https://github.com/autotrace/autotrace/pull/41
+
+diff --git a/src/autotrace.h b/src/autotrace.h
+--- a/src/autotrace.h
++++ b/src/autotrace.h
+@@ -23,6 +23,9 @@
+ 
+ #include <stdio.h>
+ 
++#include "types.h"
++#include "color.h"
++
+ #ifdef __cplusplus
+ extern "C" {
+ #endif                          /* __cplusplus */
+@@ -35,9 +38,6 @@ extern "C" {
+  * Typedefs
+  * ===================================================================== */
+ 
+-#include "types.h"
+-#include "color.h"
+-
+ /* Third degree is the highest we deal with.  */
+   enum _at_polynomial_degree {
+     AT_LINEARTYPE = 1,
+diff --git a/src/color.h b/src/color.h
+--- a/src/color.h
++++ b/src/color.h
+@@ -24,6 +24,10 @@
+ #include <glib.h>
+ #include <glib-object.h>
+ 
++#ifdef __cplusplus
++extern "C" {
++#endif                          /* __cplusplus */
++
+ typedef struct _at_color at_color;
+ struct _at_color {
+   guint8 r;
+@@ -43,4 +47,7 @@ void at_color_free(at_color * color);
+ GType at_color_get_type(void);
+ #define AT_TYPE_COLOR (at_color_get_type ())
+ 
++#ifdef __cplusplus
++}
++#endif                          /* __cplusplus */
+ #endif /* not AT_COLOR_H */

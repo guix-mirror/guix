@@ -394,6 +394,7 @@ objects!")
                       (url "https://github.com/autotrace/autotrace")
                       (commit commit)))
                 (file-name (git-file-name name version))
+                (patches (search-patches "autotrace-glib-compat.patch"))
                 (sha256
                  (base32
                   "0mk4yavy42dj0pszr1ggnggpvmzs4ds46caa9wr55cqsypn7bq6s"))))
