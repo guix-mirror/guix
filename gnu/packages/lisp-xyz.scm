@@ -10332,25 +10332,24 @@ database files (dbf and db3 files).")
   (sbcl-package->cl-source-package sbcl-db3))
 
 (define-public sbcl-dbi
-  ;; Master includes a breaking change which other packages depend on since
-  ;; Quicklisp decided to follow it:
-  ;; https://github.com/fukamachi/cl-dbi/commit/31c46869722f77fd5292a81b5b101f1347d7fce1
-  (let ((commit "31c46869722f77fd5292a81b5b101f1347d7fce1"))
+  (let ((commit "7ba050dea8d137c1f85b7e704d4fc945104bf283")
+        (revision "1"))
     (package
       (name "sbcl-dbi")
-      (version (git-version "0.9.4" "1" commit))
+      (version (git-version "0.9.5" revision commit))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
                (url "https://github.com/fukamachi/cl-dbi")
                (commit commit)))
-         (file-name (git-file-name name version))
+         (file-name (git-file-name "cl-dbi" version))
          (sha256
-          (base32 "0r3n4rw12qqxad0cryym2ibm4ddl49gbq4ra227afibsr43nw5k3"))))
+          (base32 "0qkpsf8w7ig6chbf4r7j1j7fwa6kpi58ij4hbcxpa4irqdan8s9f"))))
       (build-system asdf-build-system/sbcl)
       (native-inputs
-       `(("rove" ,sbcl-rove)
+       `(("alexandria" ,sbcl-alexandria)
+         ("rove" ,sbcl-rove)
          ("trivial-types" ,sbcl-trivial-types)))
       (inputs
        `(("bordeaux-threads" ,sbcl-bordeaux-threads)
