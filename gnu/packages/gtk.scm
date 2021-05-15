@@ -1613,6 +1613,7 @@ library.")
     (native-inputs
      `(("dot" ,graphviz)
        ("doxygen" ,doxygen)
+       ("glib:bin" ,glib "bin")
        ("m4" ,m4)
        ("mm-common" ,mm-common)
        ("perl" ,perl)
@@ -1620,11 +1621,11 @@ library.")
        ("xsltproc" ,libxslt)
        ("xorg-server" ,xorg-server-for-tests)))
     (propagated-inputs
-     `(("atkmm" ,atkmm)
+     `(("atkmm" ,atkmm-2.28)
        ("cairomm" ,cairomm-1.14)
        ("glibmm" ,glibmm)
        ("gtk+" ,gtk+)
-       ("pangomm" ,pangomm)))
+       ("pangomm" ,pangomm-2.46)))
     (synopsis "C++ Interfaces for GTK+ and GNOME")
     (description "GTKmm is the official C++ interface for the popular GUI
 library GTK+.  Highlights include typesafe callbacks, and a comprehensive set of
@@ -1664,6 +1665,15 @@ tutorial.")
         `(fold delete
                ,flags
                '("-Dbuild-documentation=true")))))
+    (native-inputs
+     `(("dot" ,graphviz)
+       ("doxygen" ,doxygen)
+       ("m4" ,m4)
+       ("mm-common" ,mm-common)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("xsltproc" ,libxslt)
+       ("xorg-server" ,xorg-server-for-tests)))
     (propagated-inputs
      `(("atkmm" ,atkmm-2.28)
        ("cairomm" ,cairomm-1.14)
