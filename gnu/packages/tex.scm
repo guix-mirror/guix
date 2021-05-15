@@ -460,6 +460,39 @@ This package contains the binaries.")
    (license (license:fsf-free "https://www.tug.org/texlive/copying.html"))
    (home-page "https://www.tug.org/texlive/")))
 
+(define-public texlive-libkpathsea
+  (package/inherit texlive-bin
+    (name "texlive-libkpathsea")
+    (source
+     (origin
+       (inherit (package-source texlive-bin))
+       (snippet
+        `(begin
+           ,(origin-snippet (package-source texlive-bin))
+           (with-directory-excursion "texk"
+             (let ((preserved-directories '("." ".." "kpathsea")))
+               (for-each
+                delete-file-recursively
+                (scandir "."
+                         (lambda (file)
+                           (and (not (member file preserved-directories))
+                                (eq? 'directory (stat:type (stat file)))))))))))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments texlive-bin)
+       ((#:configure-flags flags)
+        `(cons* "--disable-all-pkgs" "--enable-kpathsea"
+                "--enable-shared" ,flags))
+       ((#:phases phases)
+        `(modify-phases %standard-phases
+           (add-after 'install 'post-install
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (with-directory-excursion "texk/kpathsea"
+                 (invoke "make" "install"))))))))
+    (inputs '())
+    (synopsis "Path searching library")
+    (description "kpathsea is a library, whose purpose is to return a filename
+from a list of user-specified directories similar to how shells look up
+executables.  It is maintained as a part of TeX Live.")))
 
 (define texlive-docstrip
   (package
