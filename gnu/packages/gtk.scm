@@ -1487,11 +1487,11 @@ library.")
 library.")
     (license license:lgpl2.1+)))
 
-(define-public pangomm-2.42
+(define-public pangomm-2.46
   (package
     (inherit pangomm)
     (name "pangomm")
-    (version "2.42.2")
+    (version "2.46.0")
     (source
      (origin
        (method url-fetch)
@@ -1500,7 +1500,7 @@ library.")
                        (version-major+minor version)  "/"
                        name "-" version ".tar.xz"))
        (sha256
-        (base32 "12nhs94rh38glr5hp31d6k9rmhzp6mfifn3pnp67a4mf4hkcj90v"))))
+        (base32 "06zczkaxf5p5kjgnzrfylzi40w9a8lxpndgs7rpn12qrsq27sy6k"))))
     (propagated-inputs
      `(("cairomm" ,cairomm-1.14)
        ("glibmm" ,glibmm-2.64)
@@ -1669,7 +1669,7 @@ tutorial.")
        ("cairomm" ,cairomm-1.14)
        ("glibmm" ,glibmm-2.64)
        ("gtk+" ,gtk+-2)
-       ("pangomm" ,pangomm-2.42)))))
+       ("pangomm" ,pangomm-2.46)))))
 
 (define-public gtksourceviewmm
   (package
