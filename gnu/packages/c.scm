@@ -7,7 +7,7 @@
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
-;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020 Katherine Cox-Buday <cox.katherine.e@gmail.com>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020, 2021 Greg Hogan <code@greghogan.com>
@@ -37,6 +37,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages bootstrap)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages check)
@@ -329,10 +330,8 @@ as dictionaries, skip lists, and memory pools.")
 (define-public packcc
   (package
     (name "packcc")
-    ;; We need a few fixes on top of the latest release to prevent test
-    ;; failures in Universal Ctags.
-    (version "1.2.5-19-g58d1b9d")
-    (home-page "https://github.com/enechaev/packcc")
+    (version "1.5.0")
+    (home-page "https://github.com/arithy/packcc")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -341,26 +340,34 @@ as dictionaries, skip lists, and memory pools.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0biyv835jlk43fvmmd3p8jafs7k2iw9qlaj37hvsl604ai6rd5aj"))))
+                "1n9ivsa6b9ps2jbh34bycjqjpbwbk85l4jjg46pfhqxzz96793wy"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f                      ;no tests
-       #:make-flags '("-DUSE_SYSTEM_STRNLEN=1")
-       #:phases (modify-phases %standard-phases
-                  ;; The project consists of a single source file and has
-                  ;; no actual build system, so we need to do it manually.
+     '(#:phases (modify-phases %standard-phases
                   (delete 'configure)
-                  (replace 'build
-                    (lambda* (#:key make-flags #:allow-other-keys)
-                      (apply invoke "gcc" "-o" "packcc" "packcc.c"
-                                      make-flags)))
+                  (add-before 'build 'chdir
+                    (lambda _
+                      (chdir "build/gcc")))
+                  (add-before 'check 'pre-check
+                    (lambda _
+                      (setenv "CC" "gcc")
+                      ;; The style tests are supposed to be skipped when
+                      ;; uncrustify is unavailable, but a stray version
+                      ;; check prevents it from working.  This can be
+                      ;; removed for future versions of PackCC.
+                      (substitute* "../../tests/style.d/style.bats"
+                        (("^[[:blank:]]+check_uncrustify_version")
+                         ""))))
                   (replace 'install
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let ((out (assoc-ref outputs "out")))
-                        (install-file "packcc" (string-append out "/bin"))
-                        (install-file "README.md"
+                        (install-file "release/bin/packcc"
+                                      (string-append out "/bin"))
+                        (install-file "../../README.md"
                                       (string-append out "/share/doc/packcc"))
                         #t))))))
+    (native-inputs
+     `(("bats" ,bats)))
     (synopsis "Packrat parser generator for C")
     (description
      "PackCC is a packrat parser generator for the C programming language.
