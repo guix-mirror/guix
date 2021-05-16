@@ -734,12 +734,7 @@ as the 'native-search-paths' field."
 
 (define-public gfortran
   (hidden-package
-   (custom-gcc (package
-                 (inherit gcc)
-                 ;; XXX: Remove LIBSTDC++-HEADERS from the inputs just to
-                 ;; avoid a rebuild of all the GFORTRAN dependents.
-                 ;; TODO: Remove this hack on the next rebuild cycle.
-                 (inputs (alist-delete "libstdc++" (package-inputs gcc))))
+   (custom-gcc gcc
                "gfortran" '("fortran")
                %generic-search-paths)))
 
