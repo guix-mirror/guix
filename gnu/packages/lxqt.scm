@@ -1329,7 +1329,7 @@ like @command{tar} and @command{zip}.")
 (define-public lxqt-connman-applet
   ;; since the main developers didn't release any version yet,  their 
   ;; latest commit on `master` branch at the moment used for this version.
-  (let ((commit "8a6cc14371a2f18f963e6a2996446082bb60f17d")
+  (let ((commit "db1618d58fd3439142c4e44b24cba0dbb68b7141")
         (revision "0"))
     (package
       (name "lxqt-connman-applet")
@@ -1341,7 +1341,8 @@ like @command{tar} and @command{zip}.")
             (url (string-append "https://github.com/lxqt/" name))
             (commit commit)))
           (file-name (git-file-name name version))
-          (sha256 (base32 "0br4bxfrl8k7lq84aq4grznlk8xzzjgkmd19bf9mwjr0a87gg72v"))))
+          (sha256
+           (base32 "087641idpg7n8yhh5biis4wv52ayw3rddirwqb34bf5fwj664pw9"))))
       (build-system cmake-build-system)
       (inputs
         `(("kwindowsystem" ,kwindowsystem)
@@ -1365,13 +1366,13 @@ like @command{tar} and @command{zip}.")
                                     "/share/lxqt/translations"))
                     (("\\$\\{LXQT_ETC_XDG_DIR\\}") "etc/xdg"))
                   #t))
-	      (add-after 'unpack 'remove-definitions
-		(lambda _
-		  (substitute* "CMakeLists.txt"
-		    (("include\\(LXQtCompilerSettings NO_POLICY_SCOPE\\)")
-		     "include(LXQtCompilerSettings NO_POLICY_SCOPE)
+              (add-after 'unpack 'remove-definitions
+                (lambda _
+                  (substitute* "CMakeLists.txt"
+                    (("include\\(LXQtCompilerSettings NO_POLICY_SCOPE\\)")
+                     "include(LXQtCompilerSettings NO_POLICY_SCOPE)
 remove_definitions(-DQT_NO_CAST_TO_ASCII -DQT_NO_CAST_FROM_ASCII)"))
-		  #t)))))
+                  #t)))))
       (home-page "https://github.com/lxqt/lxqt-connman-applet")
       (synopsis "System-tray applet for connman")
       (description "This package provides a Qt-based system-tray applet for
