@@ -103,21 +103,20 @@ limited support for fork events.")
 (define-public libuv
   (package
     (name "libuv")
-    (version "1.38.1")
+    (version "1.41.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://dist.libuv.org/dist/v" version
                                   "/libuv-v" version ".tar.gz"))
               (sha256
                (base32
-                "0iy6yp9nrxpj643w7la3kl3j59ni59b0l4v6n23a63s8kqkpvkhf"))))
+                "0vpbssrbkxzz0gizxxvz5262h9gyn2msac6d1nfavpg10wwm710i"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")
        ;; XXX: Some tests want /dev/tty, attempt to make connections, etc.
        #:tests? #f))
-    ;; TODO replace with autoconf on core-updates
-    (native-inputs `(("autoconf" ,autoconf-wrapper)
+    (native-inputs `(("autoconf" ,autoconf)
                      ("automake" ,automake)
                      ("libtool" ,libtool)
 
