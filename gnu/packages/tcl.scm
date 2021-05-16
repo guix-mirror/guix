@@ -44,20 +44,19 @@
 (define-public tcl
   (package
     (name "tcl")
-    (version "8.6.10")
+    (version "8.6.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/tcl/Tcl/"
                                   version "/tcl" version "-src.tar.gz"))
               (sha256
                (base32
-                "1vc7imilx6kcb5319r7hnrp4jn5pqb41an3vr3azhgcfcgvdp5ji"))
-              (patches (search-patches "tcl-fix-cross-compilation.patch"))))
+                "0n4211j80mxr6ql0xx52rig8r885rcbminfpjdb2qrw6hmk8c14c"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (add-before 'configure 'pre-configure
-                    (lambda _ (chdir "unix") #t))
+                    (lambda _ (chdir "unix")))
                  (add-after 'install 'install-private-headers
                    (lambda* (#:key outputs #:allow-other-keys)
                      ;; Private headers are needed by Expect.
@@ -68,8 +67,7 @@
                        ;; Programs such as Ghostscript rely on it.
                        (with-directory-excursion bin
                          (symlink (car (find-files "." "tclsh"))
-                                  "tclsh"))
-                       #t))))
+                                  "tclsh"))))))
 
        ;; By default, man pages are put in PREFIX/man, but we want them in
        ;; PREFIX/share/man.  The 'validate-documentation-location' phase is
@@ -197,7 +195,7 @@ X11 GUIs.")
 (define-public tk
   (package
     (name "tk")
-    (version "8.6.10")
+    (version "8.6.11.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/tcl/Tcl/"
@@ -205,38 +203,31 @@ X11 GUIs.")
                                  version "-src.tar.gz"))
              (sha256
               (base32
-               "11p3ycqbr5116vpaxv6fl6md6gcav1ffspgr8wrlc2lxhn543pv3"))
+               "1gh9k7l76qg9l0sb78ijw9xz4xl1af47aqbdifb6mjpf3cbsnv00"))
              (patches (search-patches "tk-find-library.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
-                  (add-before
-                   'configure 'pre-configure
-                   (lambda _
-                     (chdir "unix")
-                     #t))
-                  (add-after
-                   'install 'create-wish-symlink
-                   (lambda* (#:key outputs #:allow-other-keys)
-                     (let ((out (assoc-ref outputs "out")))
-                       (symlink (string-append out "/bin/wish"
-                                               ,(version-major+minor
+                  (add-before 'configure 'pre-configure
+                    (lambda _ (chdir "unix")))
+                  (add-after 'install 'create-wish-symlink
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (symlink (string-append out "/bin/wish"
+                                                ,(version-major+minor
                                                   (package-version tk)))
-                                (string-append out "/bin/wish")))
-                     #t))
-                  (add-after
-                   'install 'add-fontconfig-flag
-                   (lambda* (#:key inputs outputs #:allow-other-keys)
-                     ;; Add the missing -L flag for Fontconfig in 'tk.pc' and
-                     ;; 'tkConfig.sh'.
-                     (let ((out        (assoc-ref outputs "out"))
-                           (fontconfig (assoc-ref inputs "fontconfig")))
-                       (substitute* (find-files out
-                                                "^(tkConfig\\.sh|tk\\.pc)$")
-                         (("-lfontconfig")
-                          (string-append "-L" fontconfig
-                                         "/lib -lfontconfig")))
-                       #t))))
+                                 (string-append out "/bin/wish")))))
+                  (add-after 'install 'add-fontconfig-flag
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      ;; Add the missing -L flag for Fontconfig in 'tk.pc' and
+                      ;; 'tkConfig.sh'.
+                      (let ((out        (assoc-ref outputs "out"))
+                            (fontconfig (assoc-ref inputs "fontconfig")))
+                        (substitute* (find-files out
+                                                 "^(tkConfig\\.sh|tk\\.pc)$")
+                          (("-lfontconfig")
+                           (string-append "-L" fontconfig
+                                          "/lib -lfontconfig")))))))
 
        #:configure-flags
        (list (string-append "--with-tcl="

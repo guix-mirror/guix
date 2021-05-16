@@ -1686,7 +1686,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/tar-skip-unreliable-tests.patch		\
   %D%/packages/patches/tcc-boot-0.9.27.patch			\
   %D%/packages/patches/tclxml-3.2-install.patch			\
-  %D%/packages/patches/tcl-fix-cross-compilation.patch		\
   %D%/packages/patches/tcsh-fix-autotest.patch			\
   %D%/packages/patches/teensy-loader-cli-help.patch		\
   %D%/packages/patches/texinfo-5-perl-compat.patch		\
