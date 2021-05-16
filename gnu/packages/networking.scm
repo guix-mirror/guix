@@ -3463,7 +3463,7 @@ and targeted primarily for asynchronous processing of HTTP-requests.")
 (define-public opendht
   (package
     (name "opendht")
-    (version "2.2.0rc4")                ;jami requires >= 2.2.0
+    (version "2.2.0rc7")                ;jami requires >= 2.2.0
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3472,7 +3472,7 @@ and targeted primarily for asynchronous processing of HTTP-requests.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1wc0f6cnvnlmhxnx64nxqgsx93k4g7ljdaqjl40ml74jg3nqrzcl"))))
+                "0wkynjzwzl5q46hy1yb9npi5hvknnj17rjkax5v3acqjmd0y48h9"))))
     ;; Since 2.0, the gnu-build-system does not seem to work anymore, upstream bug?
     (build-system cmake-build-system)
     (inputs
