@@ -1267,14 +1267,14 @@ QTermWidget.")
 (define-public screengrab
   (package
     (name "screengrab")
-    (version "2.0.1")
+    (version "2.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/lxqt/screengrab/releases/download/"
                            version "/screengrab-" version ".tar.xz"))
        (sha256
-        (base32 "14znjw3d3gw02fsmhrjcj86l173m2ypl1x8hhba9ld23icr1gqwf"))))
+        (base32 "0cilzw7rz5m2klzpax7rrs5rr6whfda2svwzsn2jvmrirmh5by7r"))))
     (build-system cmake-build-system)
     (inputs
      `(("kwindowsystem" ,kwindowsystem)
@@ -1284,6 +1284,7 @@ QTermWidget.")
        ("qtx11extras" ,qtx11extras)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("perl" ,perl)
        ("qttools" ,qttools)))
     (arguments
      '(#:tests? #f))                    ; no tests
