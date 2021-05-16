@@ -66,17 +66,15 @@
 (define-public boost
   (package
     (name "boost")
-    (version "1.75.0")
+    (version "1.76.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://boostorg.jfrog.io/artifactory/main/release/"
                                   version "/source/boost_"
                                   (version-with-underscores version) ".tar.bz2"))
-              ; Should be included in next Boost update
-              (patches (search-patches "boost-fix-transitive-linking.patch"))
               (sha256
                (base32
-                "1js9zpij58l60kx46s3lxdp5207igppjnhqigwhbpdvd04gb6gcm"))))
+                "0hcc661savk32hx65997p0ss1awj6ala4cmz4w7lbi42x6k7nfgh"))))
     (build-system gnu-build-system)
     (inputs `(("icu4c" ,icu4c)
               ("zlib" ,zlib)))

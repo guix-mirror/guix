@@ -879,7 +879,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/blender-2.79-oiio2.patch			\
   %D%/packages/patches/blender-2.79-python-3.7-fix.patch	\
   %D%/packages/patches/blender-2.79-python-3.8-fix.patch	\
-  %D%/packages/patches/boost-fix-transitive-linking.patch	\
   %D%/packages/patches/bpftrace-disable-bfd-disasm.patch	\
   %D%/packages/patches/byobu-writable-status.patch		\
   %D%/packages/patches/cairo-CVE-2018-19876.patch		\
