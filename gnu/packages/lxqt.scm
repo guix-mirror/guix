@@ -10,6 +10,7 @@
 ;;; Copyright © 2019, 2020 Reza Alizadeh Majd <r.majd@pantherx.org>
 ;;; Copyright © 2020 Fakhri Sajadi <f.sajadi@pantherx.org>
 ;;; Copyright © 2020 André Batista <nandre@riseup.net>
+;;; Copyright © 2021 Brendan Tildesley <mail@brendan.scot>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -735,14 +736,14 @@ when laptop batteries are low on power.")
 (define-public lxqt-qtplugin
   (package
     (name "lxqt-qtplugin")
-    (version "0.15.1")
+    (version "0.17.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
                            version "/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "17kmpm3nn07xyxz21f86y3hqi6s0jvqyhsc703zy0463sc58vvys"))))
+        (base32 "14c6abxfg3vda333wrvb5lk45c45hnb66jclbs3vsmrjxdb13vv5"))))
     (build-system cmake-build-system)
     (inputs
      `(("libdbusmenu-qt" ,libdbusmenu-qt)
