@@ -59,12 +59,9 @@
         "113nlmidxy9kjr45kg9x3ngar4951mvag1js2a3j8nxcz34wxsv4"))))
     (build-system gnu-build-system)
     (inputs
-     ;; TODO: remove `if' in the next rebuild cycle.
-     (if (%current-target-system)
-         `(("bash" ,bash-minimal)
-           ("perl" ,perl)
-           ("m4" ,m4))
-         '()))
+     `(("bash" ,bash-minimal)
+       ("perl" ,perl)
+       ("m4" ,m4)))
     (native-inputs
      `(("perl" ,perl)
        ("m4" ,m4)))
