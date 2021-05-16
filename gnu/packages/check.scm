@@ -25,7 +25,7 @@
 ;;; Copyright © 2017, 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2015, 2017, 2018, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2017, 2018, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2019, 2021 Pierre Langlois <pierre.langlois@gmx.com>
@@ -2668,6 +2668,12 @@ portable to just about any platform.")
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'embed-date-reference
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let ((coreutils (assoc-ref inputs "coreutils")))
+                        (substitute* "src/faketime.c"
+                          (("\"date\"")
+                           (string-append "\"" coreutils "/bin/date\""))))))
                   (replace 'configure
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let ((out (assoc-ref outputs "out")))
@@ -2684,6 +2690,8 @@ portable to just about any platform.")
        #:test-target "test"))
     (native-inputs
      `(("perl" ,perl)))                           ;for tests
+    (inputs
+     `(("coreutils" ,coreutils)))
     (synopsis "Fake the system time for single applications")
     (description
      "The libfaketime library allows users to modify the system time that an
