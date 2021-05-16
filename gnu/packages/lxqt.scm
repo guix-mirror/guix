@@ -202,7 +202,7 @@ in Qt.")
 (define-public liblxqt
   (package
     (name "liblxqt")
-    (version "0.15.1")
+    (version "0.17.0")
     (source
      (origin
        (method url-fetch)
@@ -210,7 +210,7 @@ in Qt.")
              "https://github.com/lxqt/" name "/releases/download/"
              version "/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "0mg62gypjpmpjd3lr7rrvzmkkhli1vf5pri47hg76byz84vng4a9"))))
+        (base32 "0ay3j6zdgffw3mzaq3wdq96la7fnn2dw52ij6987slv31563nknl"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
