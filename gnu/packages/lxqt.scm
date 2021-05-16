@@ -317,14 +317,14 @@ LXQt and the system it's running on.")
 (define-public lxqt-admin
   (package
     (name "lxqt-admin")
-    (version "0.15.0")
+    (version "0.17.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
                            version "/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "1zal37hyzqimwsymmi3w15n1iq78g53754s8abc9ylkzc236xpfc"))))
+        (base32 "07fkn3zmpfxjzzsv1hyv50sx0359n10lxjil35qn266nz165wj43"))))
     (build-system cmake-build-system)
     (inputs
      `(("kwindowsystem" ,kwindowsystem)
@@ -342,7 +342,8 @@ LXQt and the system it's running on.")
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-source
            (lambda _
-             (substitute* "lxqt-admin-user/CMakeLists.txt"
+             (substitute* '("lxqt-admin-user/CMakeLists.txt"
+                            "lxqt-admin-time/CMakeLists.txt")
                (("DESTINATION \"\\$\\{POLKITQT-1_POLICY_FILES_INSTALL_DIR\\}")
                 "DESTINATION \"share/polkit-1/actions"))
              #t))
