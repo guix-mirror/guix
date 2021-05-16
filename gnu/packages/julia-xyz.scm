@@ -1019,6 +1019,26 @@ TLS} and cryptography C library for Julia.")
 wrappers.")
     (license license:expat)))
 
+(define-public julia-msgpack
+  (package
+    (name "julia-msgpack")
+    (version "1.1.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaIO/MsgPack.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1layiqjf9si38pfdcszppgcy4zbfqgld7jlw8x645sm9b17b19fg"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/JuliaIO/MsgPack.jl")
+    (synopsis "Julia MsgPack implementation")
+    (description "@code{MsgPack.jl} is a MessagePack implementation in pure
+Julia, with type-driven, overloadable packing/unpacking functionality.")
+    (license license:expat)))
+
 (define-public julia-nanmath
   (package
     (name "julia-nanmath")
