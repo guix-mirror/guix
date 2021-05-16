@@ -248,14 +248,14 @@ components of the LXQt desktop environment.")
 (define-public libsysstat
   (package
     (name "libsysstat")
-    (version "0.4.3")
+    (version "0.4.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
                            version "/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "1s5s7skzy3sh4rlnfy7r0cg3r1scvp35ldd28bhnqjya99m7ip37"))))
+        (base32 "1ljy5ggvqvpm3k6kfy03dn47ygr9lzi8hmqws4dcqfc9sx86b6zi"))))
     (build-system cmake-build-system)
     (arguments '(#:tests? #f))          ; no tests
     (inputs
