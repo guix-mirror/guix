@@ -843,8 +843,6 @@ maintain the Noto Fonts project.")
                (base32
                 "0314r038jl17hrhc9nrbx30jk0pz8ckbdnizws4r46b1rf4h0b1f"))))
     (build-system meson-build-system)
-    (arguments
-     `(#:meson ,meson-0.55))
     (native-inputs
      `(("check" ,check)
        ("gcc" ,gcc-10)    ;TODO: Remove when the default compiler is > GCC 7.

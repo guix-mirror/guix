@@ -1127,8 +1127,7 @@ shell command executions.")
               "124fj73722c03znwdyqp1i0jygwv3s11f6s1j9rzym513qrf7fnd"))))
    (build-system meson-build-system)
    (arguments
-    `(#:meson ,meson-0.55
-      ;; Tests are disabled for now due to an issue that affecs guix:
+    `(;; Tests are disabled for now due to an issue that affecs guix:
       ;; <https://gitlab.com/emilua/emilua/-/issues/22>
       #:configure-flags
       (list "-Denable_http=true"

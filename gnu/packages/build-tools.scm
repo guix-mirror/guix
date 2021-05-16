@@ -264,7 +264,7 @@ files and generates build instructions for the Ninja build system.")
 (define-public meson
   (package
     (name "meson")
-    (version "0.56.2")
+    (version "0.57.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/mesonbuild/meson/"
@@ -272,7 +272,7 @@ files and generates build instructions for the Ninja build system.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1x47vc7023w8w90r6jda5hk2jsh68i66x49gckdgixw32fwvvf1w"))))
+                "1iac7p99zfgkznq4qlnkk7b8xwwlilcrnkf33sczm56yqnqyg0rs"))))
     (build-system python-build-system)
     (arguments
      `(;; FIXME: Tests require many additional inputs and patching many
@@ -294,34 +294,6 @@ Autoconf/Automake/make combo.  Build specifications, also known as @dfn{Meson
 files}, are written in a custom domain-specific language (@dfn{DSL}) that
 resembles Python.")
     (license license:asl2.0)))
-
-;; Added temporarily for packages that need it.
-;; TODO: Remove when core-updates is merged.
-(define-public meson-0.55
-  (package
-    (inherit meson)
-    (version "0.55.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/mesonbuild/meson/"
-                                  "releases/download/" version  "/meson-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "19cjy24mfaswxyvqmns6rd7hx05ybqb663zlgklspfr8l4jjmvbb"))))))
-
-(define-public meson-next
-  (package
-    (inherit meson)
-    (version "0.57.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/mesonbuild/meson/"
-                                  "releases/download/" version  "/meson-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "1iac7p99zfgkznq4qlnkk7b8xwwlilcrnkf33sczm56yqnqyg0rs"))))))
 
 (define-public premake4
   (package

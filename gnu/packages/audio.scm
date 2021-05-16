@@ -4225,8 +4225,7 @@ the following features:
           (base32 "189l6lz8sz5vr6bjyzgcsrvksl1w6crqsg0q65r94b5yjsmjnpr4"))))
       (build-system meson-build-system)
       (arguments
-       `(#:meson ,meson-0.55
-         ;; Using a "release" build is recommended for performance
+       `(;; Using a "release" build is recommended for performance
          #:build-type "release"
          #:phases
          (modify-phases %standard-phases
@@ -4809,8 +4808,7 @@ in the package.")
             "1570m2dfia17dbkhd2qhx8jjihrpm7g8nnyg6n4wif4vv229s7dz"))))
    (build-system meson-build-system)
    (arguments
-    `(#:meson ,meson-0.55
-      #:configure-flags
+    `(#:configure-flags
       ;; Build the tests.
       `("-Dtests=true")))
    (inputs

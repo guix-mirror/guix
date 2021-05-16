@@ -357,8 +357,7 @@ exec smbd $@")))
                      ("perl" ,perl)
                      ("flex" ,flex)
                      ("bison" ,bison)
-                     ;; Using meson 0.57.1 enables reproducible QEMU builds.
-                     ("meson" ,meson-next)
+                     ("meson" ,meson)
                      ("ninja" ,ninja)
                      ("pkg-config" ,pkg-config)
                      ("python-wrapper" ,python-wrapper)
@@ -1057,7 +1056,6 @@ manage system or application containers.")
              (string-append "-Dinstall_prefix=" (assoc-ref %outputs "out"))
              "--sysconfdir=/etc"
              "--localstatedir=/var")
-       #:meson ,meson-0.55
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'disable-broken-tests

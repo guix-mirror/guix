@@ -185,8 +185,7 @@ of a larger interface.")
                 "1w68h81kqkqnziixrx21qs0gfv2z79651h19sxn226xdb58mjgqb"))))
     (build-system meson-build-system)
     (arguments
-     `(#:meson ,meson-0.55
-       #:configure-flags
+     `(#:configure-flags
        (list "-Denable-gir=false")))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -225,8 +224,7 @@ provided, as well as a framework to add new color models and data types.")
                 "1pd8xkx70k0fsi1hrzrmaify7112wjmxzk0p6bi6js89yhn7h4n1"))))
     (build-system meson-build-system)
     (arguments
-     `(#:meson ,meson-0.55
-       #:configure-flags
+     `(#:configure-flags
        (list "-Dintrospection=false")
        #:phases
        (modify-phases %standard-phases

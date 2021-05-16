@@ -714,8 +714,7 @@ eye-candy, customizable, and reasonably lightweight.")
                 "0rm7w29wf3gipf69qf7s42qw8857z74gsigrpz9g6vvd1x58f03m"))))
     (build-system meson-build-system)
     (arguments
-     `(#:meson ,meson-0.55
-       ;; Using a "release" build is recommended both for performance, and
+     `(;; Using a "release" build is recommended both for performance, and
        ;; also to address a GCC 10 issue when doing PGO builds.
        #:build-type "release"
        ;; Enable LTO as recommended by INSTALL.md.

@@ -1404,7 +1404,6 @@ functionality to display information about the most commonly used services.")
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags '("-Dlogind-provider=elogind")
-       #:meson ,meson-next
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'hardcode-paths
@@ -1451,8 +1450,7 @@ modules for building a Wayland compositor.")
         (base32 "0vnplva11yafhbijrk68wy7pw0psn9jm0caaymswq1s951xsn1c8"))))
     (build-system meson-build-system)
     (arguments
-     `(#:meson ,meson-next
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-before 'configure 'hardcode-paths
            (lambda* (#:key inputs #:allow-other-keys)

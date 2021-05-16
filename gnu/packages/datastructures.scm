@@ -296,8 +296,6 @@ equivalent succinct data structure are (most of the time) identical.")
                (base32
                 "061mkg6hc9x89zya3bw18ymxlzd8fbhjipxpva8x01lh2vp1d4f0"))))
     (build-system meson-build-system)
-    (arguments
-     `(#:meson ,meson-0.55))
     (synopsis "Typed link list for C")
     (description
      "@code{tllist} is a @dfn{typed linked list} C header file only library

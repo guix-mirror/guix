@@ -602,8 +602,7 @@ highlighting and other features typical of a source code editor.")
                 "0k9f9177qxaryaxprwrhqnv5p2gdq4a8i6y05gm98qa8izc5v77y"))))
     (build-system meson-build-system)
     (arguments
-     `(#:meson ,meson-0.55
-       #:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
+     `(#:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
        #:configure-flags '("-Dinstalled_tests=false" "-Djasper=true")
        #:phases
        (modify-phases %standard-phases

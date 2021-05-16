@@ -6181,7 +6181,6 @@ and as an LV2 plugin.")
    (build-system meson-build-system)
    (arguments
     `(#:glib-or-gtk? #t
-      #:meson ,meson-0.55
       #:configure-flags
       `("-Dtests=true"
         "-Dmanpage=true"
