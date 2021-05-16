@@ -1469,7 +1469,7 @@ treat it as part of their software base when porting.")
 (define-public libxres
   (package
     (name "libxres")
-    (version "1.2.0")
+    (version "1.2.1")
     (source
       (origin
         (method url-fetch)
@@ -1479,7 +1479,7 @@ treat it as part of their software base when porting.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1m0jr0lbz9ixpp9ihk68349q0i7ry2379lnfzdy4mrl86ijc2xgz"))))
+            "049b7dk6hx47161hg47ryjrm6pwsp27r5pby05b0wqb1pcggprmn"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
