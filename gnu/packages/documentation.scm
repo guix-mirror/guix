@@ -203,8 +203,8 @@ markup) can be customized and extended by the user.")
 (define-public doxygen
   (package
     (name "doxygen")
-    (version "1.8.17")
-    (home-page "http://www.doxygen.nl/")
+    (version "1.9.1")
+    (home-page "https://www.doxygen.nl/")
     (source (origin
              (method url-fetch)
              (uri (list (string-append home-page "files/doxygen-"
@@ -214,9 +214,7 @@ markup) can be customized and extended by the user.")
                                        ".src.tar.gz")))
              (sha256
               (base32
-               "16dmv0gm1x8rvbm82fmjvi213q8fxqxinm75pcf595flya59ific"))
-             (patches (search-patches "doxygen-test.patch"
-                                      "doxygen-1.8.17-runtests.patch"))))
+               "1lcif1qi20gf04qyjrx7x367669g17vz2ilgi4cmamp1whdsxbk7"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("bison" ,bison)
@@ -236,6 +234,12 @@ markup) can be customized and extended by the user.")
              '())
        #:test-target "tests"
        #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'disable-bibtex-test
+                    (lambda _
+                      ;; Disable test that requires bibtex to avoid a
+                      ;; circular dependency.
+                      (for-each delete-file-recursively
+                                '("testing/012" "testing/012_cite.dox"))))
                   (add-before 'configure 'patch-sh
                               (lambda* (#:key inputs #:allow-other-keys)
                                 (substitute* "src/portable.cpp"

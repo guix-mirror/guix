@@ -953,8 +953,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/doc++-segfault-fix.patch			\
   %D%/packages/patches/docker-fix-tests.patch			\
   %D%/packages/patches/dovecot-trees-support-dovecot-2.3.patch	\
-  %D%/packages/patches/doxygen-test.patch			\
-  %D%/packages/patches/doxygen-1.8.17-runtests.patch		\
   %D%/packages/patches/dstat-fix-crash-when-specifying-delay.patch	\
   %D%/packages/patches/dstat-skip-devices-without-io.patch	\
   %D%/packages/patches/dune-istl-2.7-fix-non-mpi-tests.patch	\
