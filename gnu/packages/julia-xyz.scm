@@ -446,6 +446,29 @@ including, @code{CircularBuffer}, @code{Queue}, @code{Stack},
 @code{Accumulators}, @code{LinkedLists}, @code{SortedDicts} and many others.")
     (license license:expat)))
 
+(define-public julia-docstringextensions
+  (package
+    (name "julia-docstringextensions")
+    (version "0.8.4")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaDocs/DocStringExtensions.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1fazv87f0j6hw03frx0gqgq9qpjbddqgccm9998a3329wrrs6gwd"))))
+    (build-system julia-build-system)
+    (home-page "https://juliadocs.github.io/DocStringExtensions.jl/latest/")
+    (synopsis "Extensions for Julia's docsystem")
+    (description "This package provides a collection of useful extensions for
+Julia's built-in docsystem.  These are features that are not yet mature enough
+to be considered for inclusion in Base, or that have sufficiently niche use
+cases that including them with the default Julia installation is not seen as
+valuable enough at this time.")
+    (license license:expat)))
+
 (define-public julia-diffresults
   (package
     (name "julia-diffresults")
