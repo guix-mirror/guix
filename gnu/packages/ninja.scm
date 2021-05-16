@@ -31,7 +31,7 @@
 (define-public ninja
   (package
     (name "ninja")
-    (version "1.10.0")
+    (version "1.10.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -40,7 +40,7 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1fbzl7mrcrwp527sgkc1npfl3k6bbpydpiq98xcf1a1hkrx0z5x4"))))
+                "0mspq4mvx41qri2v2zlg2y3znx5gfw6d8s3czbcfpr2218qbpz55"))))
     (build-system gnu-build-system)
     (inputs `(("python" ,python-wrapper)))
     (arguments
@@ -51,8 +51,7 @@
              (substitute* "src/subprocess-posix.cc"
                (("/bin/sh") (which "sh")))
              (substitute* "src/subprocess_test.cc"
-               (("/bin/echo") (which "echo")))
-             #t))
+               (("/bin/echo") (which "echo")))))
          (replace 'build
            (lambda _
              (invoke "./configure.py" "--bootstrap")))
@@ -67,8 +66,7 @@
                     (bin (string-append out "/bin"))
                     (doc (string-append out "/share/doc/ninja")))
                (install-file "ninja" bin)
-               (install-file "doc/manual.asciidoc" doc)
-               #t))))))
+               (install-file "doc/manual.asciidoc" doc)))))))
     (home-page "https://ninja-build.org/")
     (synopsis "Small build system")
     (description
