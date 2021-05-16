@@ -1276,6 +1276,26 @@ statically sized arrays in Julia, using the abstract type
 linear algebra operations.")
     (license license:expat)))
 
+(define-public julia-suppressor
+  (package
+    (name "julia-suppressor")
+    (version "0.2.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaIO/Suppressor.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0v6pxvf8lzrqjc676snvlszh14ridl442g2h6syfjiy75pk7mdyc"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/JuliaIO/Suppressor.jl")
+    (synopsis "Capture stdout and sterr")
+    (description "Julia macros for suppressing and/or capturing output (stdout),
+warnings (stderr) or both streams at the same time.")
+    (license license:expat)))
+
 (define-public julia-uris
   (package
     (name "julia-uris")
