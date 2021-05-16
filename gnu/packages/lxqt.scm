@@ -1055,14 +1055,14 @@ LXDE.")
 (define-public compton-conf
   (package
     (name "compton-conf")
-    (version "0.15.0")
+    (version "0.16.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
                            version "/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "1ii1bans7wdafm9rmxvsdqp3ad4cj0pa8kf92plbmbm3nycpf1q9"))))
+        (base32 "0haarzhndjp0wndfhcdy6zl2whpdn3w0qzr3rr137kfqibc58lvx"))))
     (build-system cmake-build-system)
     (inputs
      `(("libconfig" ,libconfig)
