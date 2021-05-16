@@ -1215,14 +1215,14 @@ processes currently in existence, much like code{top} or code{ps}.")
 (define-public qtermwidget
   (package
     (name "qtermwidget")
-    (version "0.15.0")
+    (version "0.17.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
                            version "/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "1vn3bbc99py0ak7z9s6p71n9cacpckz57a1p97iwb0p23g4zgjkf"))))
+        (base32 "10lv475qj0x3c3vl4yhjyr6y10qj5pq8n5pal5k24f6pf7xv412f"))))
     (build-system cmake-build-system)
     (inputs
      `(("qtbase" ,qtbase)
