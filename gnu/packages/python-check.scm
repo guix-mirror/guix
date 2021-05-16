@@ -48,6 +48,25 @@
   #:use-module (guix download)
   #:use-module (guix build-system python))
 
+(define-public python-tappy
+  (package
+    (name "python-tappy")
+    (version "3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "tap.py" version))
+       (sha256
+        (base32
+         "0w4w6pqjkv54j7rv6vdrpfxa72c5516bnlhpcqr3vrb4zpmyxvpm"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/python-tap/tappy")
+    (synopsis "Tools for Test Anything Protocol")
+    (description "Tappy is a set of tools for working with the Test Anything
+Protocol (TAP) in Python.  TAP is a line based test protocol for recording test
+data in a standard way.")
+    (license license:bsd-3)))
+
 (define-public python-pytest-click
   (package
     (name "python-pytest-click")
