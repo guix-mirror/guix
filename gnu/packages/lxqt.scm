@@ -158,7 +158,7 @@ to statistics about the system on which it's run.")
     (description
      "Lxqt-build-tools is providing several tools needed to build LXQt
 itself as well as other components maintained by the LXQt project.")
-    (home-page "https://lxqt.github.io")
+    (home-page "https://lxqt-project.org")
     (license license:lgpl2.1+)))
 
 (define-public libqtxdg
@@ -239,7 +239,7 @@ in Qt.")
     (native-inputs
      `(("lxqt-build-tools" ,lxqt-build-tools)
        ("qttools" ,qttools)))
-    (home-page "https://lxqt.github.io")
+    (home-page "https://lxqt-project.org")
     (synopsis "Core utility library for all LXQt components")
     (description "liblxqt provides the basic libraries shared by the
 components of the LXQt desktop environment.")
@@ -262,7 +262,7 @@ components of the LXQt desktop environment.")
      `(("qtbase" ,qtbase)))
     (native-inputs
      `(("lxqt-build-tools" ,lxqt-build-tools)))
-    (home-page "https://lxqt.github.io")
+    (home-page "https://lxqt-project.org")
     (synopsis "Library used to query system info and statistics")
     (description "libsysstat is a library to query system information like CPU
 and memory usage or network traffic.")
@@ -308,7 +308,7 @@ and memory usage or network traffic.")
                 (string-append (assoc-ref outputs "out")
                                "/share/lxqt/translations")))
              #t)))))
-    (home-page "https://lxqt.github.io")
+    (home-page "https://lxqt-project.org")
     (synopsis "Provides information about LXQt and the system")
     (description "lxqt-about is a dialogue window providing information about
 LXQt and the system it's running on.")
@@ -355,7 +355,7 @@ LXQt and the system it's running on.")
                 (string-append (assoc-ref outputs "out")
                                "/share/lxqt/translations")))
              #t)))))
-    (home-page "https://lxqt.github.io")
+    (home-page "https://lxqt-project.org")
     (synopsis "LXQt system administration tool")
     (description "lxqt-admin is providing two GUI tools to adjust settings of
 the operating system LXQt is running on.")
@@ -427,7 +427,7 @@ the operating system LXQt is running on.")
                 (string-append (assoc-ref outputs "out")
                                "/share/lxqt/translations")))
              #t)))))
-    (home-page "https://lxqt.github.io")
+    (home-page "https://lxqt-project.org")
     (synopsis "Tools to configure LXQt and the underlying operating system")
     (description "lxqt-config is providing several tools involved in the
 configuration of both LXQt and the underlying operating system.")
@@ -475,7 +475,7 @@ configuration of both LXQt and the underlying operating system.")
                 (string-append (assoc-ref outputs "out")
                                "/share/lxqt/translations")))
              #t)))))
-    (home-page "https://lxqt.github.io")
+    (home-page "https://lxqt-project.org")
     (synopsis "Daemon used to register global keyboard shortcuts")
     (description "lxqt-globalkeys is providing tools to set global keyboard
 shortcuts in LXQt sessions, that is shortcuts which apply to the LXQt session
@@ -522,7 +522,7 @@ as a whole and are not limited to distinct applications.")
                 (string-append (assoc-ref outputs "out")
                                "/share/lxqt/translations")))
              #t)))))
-    (home-page "https://lxqt.github.io")
+    (home-page "https://lxqt-project.org")
     (synopsis "The LXQt notification daemon")
     (description "lxqt-notificationd is LXQt's implementation of a daemon
 according to the Desktop Notifications Specification.")
@@ -561,7 +561,7 @@ according to the Desktop Notifications Specification.")
                 (string-append (assoc-ref outputs "out")
                                "/share/lxqt/translations")))
              #t)))))
-    (home-page "https://lxqt.github.io")
+    (home-page "https://lxqt-project.org")
     (synopsis "GUI to query passwords on behalf of SSH agents")
     (description "lxqt-openssh-askpass is a GUI to query credentials on behalf
 of other programs.")
@@ -637,7 +637,7 @@ of other programs.")
                       (("/usr/share/X11/xkb/rules/evdev.xml")
                        (string-append xkb "/share/X11/xkb/rules/evdev.xml")))
                   #t))))))
-    (home-page "https://lxqt.github.io")
+    (home-page "https://lxqt-project.org")
     (synopsis "The LXQt desktop panel")
     (description "lxqt-panel represents the taskbar of LXQt.")
     (license license:lgpl2.1+)))
@@ -685,7 +685,7 @@ of other programs.")
                 (string-append (assoc-ref outputs "out")
                                "/share/lxqt/translations")))
              #t)))))
-    (home-page "https://lxqt.github.io")
+    (home-page "https://lxqt-project.org")
     (synopsis "The LXQt PolicyKit agent")
     (description "lxqt-policykit is the polkit authentication agent of
 LXQt.")
@@ -734,7 +734,7 @@ LXQt.")
                 (string-append (assoc-ref outputs "out")
                                "/share/lxqt/translations")))
              #t)))))
-    (home-page "https://lxqt.github.io")
+    (home-page "https://lxqt-project.org")
     (synopsis "Power management module for LXQt")
     (description "lxqt-powermanagement is providing tools to monitor power
 management events and optionally trigger actions like e. g. shut down a system
@@ -773,7 +773,7 @@ when laptop batteries are low on power.")
                (("DESTINATION \"\\$\\{QT_PLUGINS_DIR\\}")
                 "DESTINATION \"lib/qt5/plugins"))
              #t)))))
-    (home-page "https://lxqt.github.io")
+    (home-page "https://lxqt-project.org")
     (synopsis "LXQt Qt platform integration plugin")
     (description "lxqt-qtplugin is providing a library libqtlxqt to integrate
 Qt with LXQt.")
@@ -822,7 +822,7 @@ Qt with LXQt.")
                 (string-append (assoc-ref outputs "out")
                                "/share/lxqt/translations")))
              #t)))))
-    (home-page "https://lxqt.github.io")
+    (home-page "https://lxqt-project.org")
     (synopsis "Tool used to launch programs quickly by typing their names")
     (description "lxqt-runner provides a GUI that comes up on the desktop and
 allows for launching applications or shutting down the system.")
@@ -894,7 +894,7 @@ allows for launching applications or shutting down the system.")
                  `("XDG_CONFIG_DIRS" ":" suffix ("/run/current-system/profile/share"
                                                  "/run/current-system/profile/share/pcmanfm-qt")))
                #t))))))
-    (home-page "https://lxqt.github.io")
+    (home-page "https://lxqt-project.org")
     (synopsis "Session manager for LXQt")
     (description "lxqt-session provides the standard session manager
 for the LXQt desktop environment.")
@@ -935,7 +935,7 @@ for the LXQt desktop environment.")
                 (string-append (assoc-ref outputs "out")
                                "/share/lxqt/translations")))
              #t)))))
-    (home-page "https://lxqt.github.io")
+    (home-page "https://lxqt-project.org")
     (synopsis "GUI frontend for sudo/su")
     (description "lxqt-sudo is a graphical front-end of commands sudo and su
 respectively.  As such it enables regular users to launch applications with
@@ -969,7 +969,7 @@ permissions of other users including root.")
                (("DESTINATION \"\\$\\{LXQT_SHARE_DIR\\}")
                 "DESTINATION \"share/lxqt"))
              #t)))))
-    (home-page "https://lxqt.github.io")
+    (home-page "https://lxqt-project.org")
     (synopsis "Themes, graphics and icons for LXQt")
     (description "This package comprises a number of graphic files and themes
 for LXQt.")
@@ -1007,7 +1007,7 @@ for LXQt.")
      `(("pkg-config" ,pkg-config)
        ("lxqt-build-tools" ,lxqt-build-tools)
        ("qttools" ,qttools)))
-    (home-page "https://lxqt.github.io")
+    (home-page "https://lxqt-project.org")
     (synopsis "Qt binding for libfm")
     (description "libfm-qt is the Qt port of libfm, a library providing
 components to build desktop file managers which belongs to LXDE.")
@@ -1046,7 +1046,7 @@ components to build desktop file managers which belongs to LXDE.")
                (("@LXQT_SHARE_DIR@")
                 "/run/current-system/profile/share/lxqt" ))
              #t)))))
-    (home-page "https://lxqt.github.io")
+    (home-page "https://lxqt-project.org")
     (synopsis "File manager and desktop icon manager")
     (description "PCManFM-Qt is the Qt port of PCManFM, the file manager of
 LXDE.")
@@ -1084,7 +1084,7 @@ LXDE.")
                (("DESTINATION \"\\$\\{LXQT_ETC_XDG_DIR\\}")
                 "DESTINATION \"etc/xdg"))
              #t)))))
-    (home-page "https://lxqt.github.io")
+    (home-page "https://lxqt-project.org")
     (synopsis "GUI configuration tool for compton X composite manager")
     (description "@code{compton-conf} is a configuration tool for X composite
 manager Compton.")
@@ -1114,7 +1114,7 @@ manager Compton.")
        ("qttools" ,qttools)))
     (arguments
      '(#:tests? #f))                    ; no tests
-    (home-page "https://lxqt.github.io")
+    (home-page "https://lxqt-project.org")
     (synopsis "The image viewer and screenshot tool for lxqt")
     (description "LXImage-Qt is the Qt port of LXImage, a simple and fast
 image viewer.")
@@ -1149,7 +1149,7 @@ image viewer.")
        ("qttools" ,qttools)))
     (arguments
      '(#:tests? #f))                    ; no tests
-    (home-page "https://lxqt.github.io")
+    (home-page "https://lxqt-project.org")
     (synopsis "Openbox configuration tool")
     (description "ObConf-Qt is a Qt port of ObConf, a configuration editor for
 window manager OpenBox.")
@@ -1179,7 +1179,7 @@ window manager OpenBox.")
        ("qttools" ,qttools)))
     (arguments
      '(#:tests? #f))                    ; no tests
-    (home-page "https://lxqt.github.io")
+    (home-page "https://lxqt-project.org")
     (synopsis "Pulseaudio mixer in Qt")
     (description "@code{pavucontrol-qt} is the Qt port of volume control
 @code{pavucontrol} of sound server @code{PulseAudio}.")
@@ -1209,7 +1209,7 @@ window manager OpenBox.")
        ("qttools" ,qttools)))
     (arguments
      '(#:tests? #f))                    ; no tests
-    (home-page "https://lxqt.github.io")
+    (home-page "https://lxqt-project.org")
     (synopsis "Qt-based visual process status monitor")
     (description "@code{qps} is a monitor that displays the status of the
 processes currently in existence, much like code{top} or code{ps}.")
@@ -1235,7 +1235,7 @@ processes currently in existence, much like code{top} or code{ps}.")
        ("qttools" ,qttools)))
     (arguments
      '(#:tests? #f))                    ; no tests
-    (home-page "https://lxqt.github.io")
+    (home-page "https://lxqt-project.org")
     (synopsis "The terminal widget for QTerminal")
     (description "QTermWidget is a terminal emulator widget for Qt 5.")
     (license license:gpl2+)))
@@ -1261,7 +1261,7 @@ processes currently in existence, much like code{top} or code{ps}.")
        ("qttools" ,qttools)))
     (arguments
      '(#:tests? #f))                      ; no tests
-    (home-page "https://lxqt.github.io")
+    (home-page "https://lxqt-project.org")
     (synopsis "Lightweight Qt-based terminal emulator")
     (description "QTerminal is a lightweight Qt terminal emulator based on
 QTermWidget.")
@@ -1291,7 +1291,7 @@ QTermWidget.")
        ("qttools" ,qttools)))
     (arguments
      '(#:tests? #f))                    ; no tests
-    (home-page "https://lxqt.github.io")
+    (home-page "https://lxqt-project.org")
     (synopsis "Crossplatform tool for fast making screenshots")
     (description "ScreenGrab is a program for fast creating screenshots, and
 easily publishing them on internet image hosting services.")
@@ -1322,7 +1322,7 @@ easily publishing them on internet image hosting services.")
         ("qttools" ,qttools)))
     (arguments
       '(#:tests? #f))
-    (home-page "https://lxqt.github.io")
+    (home-page "https://lxqt-project.org")
     (synopsis "Simple & lightweight desktop-agnostic Qt file archiver")
     (description
      "This package provides a Qt graphical interface to archiving programs
@@ -1430,5 +1430,5 @@ desktop.")
        ("qterminal" ,qterminal)))
     (synopsis "The Lightweight Qt Desktop Environment")
     (description "LXQt is a lightweight Qt desktop environment.")
-    (home-page "https://lxqt.github.io")
+    (home-page "https://lxqt-project.org")
     (license license:gpl2+)))
