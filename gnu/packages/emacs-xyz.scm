@@ -7570,7 +7570,7 @@ interface.")
 (define-public emacs-orderless
   (package
     (name "emacs-orderless")
-    (version "0.5")
+    (version "0.6")
     (source
      (origin
        (method git-fetch)
@@ -7578,9 +7578,20 @@ interface.")
              (url "https://github.com/oantolin/orderless")
              (commit version)))
        (sha256
-        (base32 "032lfwflkpaxbcxl4jf438vapswsdagipjczcn30sc4dfdh3p42c"))
+        (base32 "1javw5n3h3iv7f433b2ack49aka1jdpp8yxnaahzg5qbvr80hnay"))
        (file-name (git-file-name name version))))
     (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'makeinfo
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "makeinfo" "orderless.texi")
+             (install-file "orderless.info"
+                           (string-append (assoc-ref outputs "out")
+                                          "/share/info")))))))
+    (native-inputs
+     `(("texinfo" ,texinfo)))
     (home-page "https://github.com/oantolin/orderless")
     (synopsis "Emacs completion style that matches multiple regexps in any order")
     (description "This package provides an orderless completion style that
