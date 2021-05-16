@@ -1090,14 +1090,14 @@ manager Compton.")
 (define-public lximage-qt
   (package
     (name "lximage-qt")
-    (version "0.15.0")
+    (version "0.17.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
                            version "/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "02iyymb8ywlzvv69lga5a86b7kh4v78zw6qzq5kcnjp1rpj2rjrk"))))
+        (base32 "0g6hs41xfw2ghhwpj0rqr2ciri0x9v984689yrnmnvah88zlya1f"))))
     (build-system cmake-build-system)
     (inputs
      `(("libexif" ,libexif)
