@@ -274,14 +274,14 @@ and memory usage or network traffic.")
 (define-public lxqt-about
   (package
     (name "lxqt-about")
-    (version "0.15.0")
+    (version "0.17.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
                            version "/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "0p24z1vykyp8dkhwaxxi4hw5150yv9a2ncc55vbwx4c6bmmibmsh"))))
+        (base32 "04riqf2xgbcnq67l5zb0dfnnmc4a2zljx8zfn3jlvxirnd73l0zm"))))
     (build-system cmake-build-system)
     (inputs
      `(("kwindowsystem" ,kwindowsystem)
