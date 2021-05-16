@@ -376,7 +376,6 @@ the operating system LXQt is running on.")
     (inputs
      `(("eudev" ,eudev)
        ("kwindowsystem" ,kwindowsystem)
-       ("libkscreen" ,libkscreen)
        ("liblxqt" ,liblxqt)
        ("libqtxdg" ,libqtxdg)
        ("libxcursor" ,libxcursor)
@@ -392,6 +391,10 @@ the operating system LXQt is running on.")
      `(("pkg-config" ,pkg-config)
        ("lxqt-build-tools" ,lxqt-build-tools)
        ("qttools" ,qttools)))
+    ;; XXX: This is a workaround so libkscreen can find the backends as we
+    ;; dont have a way specify them. We may want to  patch like Nix does.
+    (propagated-inputs
+     `(("libkscreen" ,libkscreen)))
     (arguments
      '(#:tests? #f                      ; no tests
        #:phases
