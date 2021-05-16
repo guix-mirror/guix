@@ -1298,14 +1298,14 @@ easily publishing them on internet image hosting services.")
 (define-public lxqt-archiver
   (package
     (name "lxqt-archiver")
-    (version "0.2.0")
+    (version "0.4.0")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
                            version "/" name "-" version ".tar.xz"))
         (sha256
-          (base32 "1i725zaah0wv18j5fchg6isbh4b601filx549cq2hkzf2sylh9ff"))))
+          (base32 "0fzgq7cyr7hx8qmq84xfgbsdx04mc1r7vzq5mz79j7bp2ysh134z"))))
     (build-system cmake-build-system)
     (inputs
       `(("glib" ,glib)
