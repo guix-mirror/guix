@@ -264,15 +264,27 @@ files and generates build instructions for the Ninja build system.")
 (define-public meson
   (package
     (name "meson")
-    (version "0.57.2")
+    (version "0.58.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/mesonbuild/meson/"
                                   "releases/download/" version  "/meson-"
                                   version ".tar.gz"))
+              (patches
+               (list (origin
+                       ;; Take a patch slated for 0.58.1 that fixes gtk-doc
+                       ;; generation: <https://github.com/mesonbuild/meson/pull/8757>.
+                       (method url-fetch)
+                       (uri (string-append
+                             "https://github.com/mesonbuild/meson/commit/"
+                             "4e312c19e693a69b0650ce6c8a8903163c959996.patch"))
+                       (file-name "meson-gtkdoc-generation.patch")
+                       (sha256
+                        (base32
+                         "1nrwcxmzq1x9609yzhmhzgbq77yrkkd90vwiydilahwzwwrp68xi")))))
               (sha256
                (base32
-                "1iac7p99zfgkznq4qlnkk7b8xwwlilcrnkf33sczm56yqnqyg0rs"))))
+                "1p9g334xnfxpgrzdcnla7p399viny6jqrbylkw0rk74npkq0v0pl"))))
     (build-system python-build-system)
     (arguments
      `(;; FIXME: Tests require many additional inputs and patching many
