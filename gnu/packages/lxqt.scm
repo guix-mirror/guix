@@ -164,7 +164,7 @@ itself as well as other components maintained by the LXQt project.")
 (define-public libqtxdg
   (package
     (name "libqtxdg")
-    (version "3.5.0")
+    (version "3.7.1")
     (source
      (origin
        (method url-fetch)
@@ -172,7 +172,7 @@ itself as well as other components maintained by the LXQt project.")
              "https://github.com/lxqt/libqtxdg/releases/download/"
              version "/libqtxdg-" version ".tar.xz"))
        (sha256
-        (base32 "0g2mwipgl8737jhgqymjixvk745svh2rlini3qr92lrg60v9paa1"))))
+        (base32 "16wav2b948c837cpbvdr6hs1zifwrpdk3yjvbzzp2l1hndvbwz27"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
