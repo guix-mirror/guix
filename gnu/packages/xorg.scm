@@ -5068,7 +5068,7 @@ an X Window System display.")
 (define-public libxfixes
   (package
     (name "libxfixes")
-    (version "5.0.3")
+    (version "6.0.0")
     (source
       (origin
         (method url-fetch)
@@ -5078,7 +5078,7 @@ an X Window System display.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1miana3y4hwdqdparsccmygqr3ic3hs5jrqfzp70hvi2zwxd676y"))))
+            "0k2v4i4r24y3kdr5ici1qqhp69djnja919xfqp54c2rylm6s5hd7"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
