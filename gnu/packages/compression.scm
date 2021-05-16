@@ -1427,14 +1427,14 @@ or junctions, and always follows hard links.")
 (define-public zstd
   (package
     (name "zstd")
-    (version "1.4.9")
+    (version "1.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/facebook/zstd/releases/download/"
                            "v" version "/zstd-" version ".tar.gz"))
        (sha256
-        (base32 "14yj7309gsvg39rki4xqnd6w5idmqi0655v1fc0mk1m2kvhp9b19"))))
+        (base32 "150y541303vnvfhd8wkbih00lfvvm98rd12yijwlbkqzg3xgp52i"))))
     (build-system gnu-build-system)
     (outputs '("out"                    ;1.2MiB executables and documentation
                "lib"                    ;1.2MiB shared library and headers
@@ -1442,12 +1442,6 @@ or junctions, and always follows hard links.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'fix-tests-32bit
-           ;; Remove when https://github.com/facebook/zstd/issues/2528 is fixed.
-           (lambda _
-             (substitute* "tests/playTests.sh"
-               (("roundTripTest -g8M \"19 -T0 --long\"")
-                "roundTripTest -g8M \"16 -T0 --long\""))))
          (add-after 'unpack 'remove-bogus-check
            (lambda _
              ;; lib/Makefile falsely claims that no .pc file can be created.
