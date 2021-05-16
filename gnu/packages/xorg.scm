@@ -1901,7 +1901,7 @@ management to participate in an X11R6 session.")
 (define-public util-macros
   (package
     (name "util-macros")
-    (version "1.19.2")
+    (version "1.19.3")
     (source
       (origin
         (method url-fetch)
@@ -1911,7 +1911,7 @@ management to participate in an X11R6 session.")
                ".tar.bz2"))
         (sha256
           (base32
-            "04p7ydqxgq37jklnfj18b70zsifiz4h50wvrk94i2112mmv37r6p"))))
+            "0w8ryfqylprz37zj9grl4jzdsqq67ibfwq5raj7vm1i7kmp2x08g"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (arguments
