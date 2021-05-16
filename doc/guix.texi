@@ -19213,7 +19213,7 @@ The MATE package to use.
 @end deftp
 
 @deffn {Scheme Variable} lxqt-desktop-service-type
-This is the type of the service that runs the @uref{https://lxqt.github.io,
+This is the type of the service that runs the @uref{https://lxqt-project.org,
 LXQt desktop environment}.  Its value is a @code{lxqt-desktop-configuration}
 object (see below).
 
