@@ -329,12 +329,9 @@ output is indexed in many ways to simplify browsing.")
               (search-patches "automake-skip-amhello-tests.patch"))))
     (build-system gnu-build-system)
     (inputs
-     ;; TODO: remove `if' in the next rebuild cycle.
-     (if (%current-target-system)
-         `(("autoconf" ,autoconf-wrapper)
-           ("bash" ,bash-minimal)
-           ("perl" ,perl))
-         '()))
+     `(("autoconf" ,autoconf-wrapper)
+       ("bash" ,bash-minimal)
+       ("perl" ,perl)))
     (native-inputs
      `(("autoconf" ,autoconf-wrapper)
        ("perl" ,perl)))
