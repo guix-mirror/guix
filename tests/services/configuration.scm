@@ -16,7 +16,7 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (tests services linux)
+(define-module (tests services configuration)
   #:use-module (gnu services configuration)
   #:use-module (guix gexp)
   #:use-module (srfi srfi-34)
@@ -61,7 +61,7 @@
     (port-configuration-ndv-port (port-configuration-ndv))))
 
 (define (custom-number-serializer name value)
-  (format #t "~a = ~a;" name value))
+  (format #f "~a = ~a;" name value))
 
 (define-configuration serializable-configuration
   (port (number 80) "The port number." custom-number-serializer))
@@ -81,3 +81,28 @@
   (not (false-if-exception
         (let ((config (serializable-configuration)))
           (serialize-configuration config serializable-configuration-fields)))))
+
+
+;;;
+;;; define-maybe macro.
+;;;
+(define-maybe number)
+
+(define-configuration config-with-maybe-number
+  (port (maybe-number 80) "The port number."))
+
+(define (serialize-number field value)
+  (format #f "~a=~a" field value))
+
+(test-equal "maybe value serialization"
+  "port=80"
+  (serialize-maybe-number "port" 80))
+
+(define-maybe/no-serialization string)
+
+(define-configuration config-with-maybe-string/no-serialization
+  (name (maybe-string) "The name of the item.")
+  (no-serialization))
+
+(test-assert "maybe value without serialization no procedure bound"
+  (not (defined? 'serialize-maybe-string)))

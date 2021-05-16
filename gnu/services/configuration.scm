@@ -48,6 +48,7 @@
 
             serialize-configuration
             define-maybe
+            define-maybe/no-serialization
             validate-configuration
             generate-documentation
             configuration->documentation
@@ -107,20 +108,34 @@ does not have a default value" field kind)))
   "Assemble PARTS into a raw (unhygienic) identifier."
   (datum->syntax ctx (symbol-append (syntax->datum parts) ...)))
 
+(define (define-maybe-helper serialize? syn)
+  (syntax-case syn ()
+    ((_ stem)
+     (with-syntax
+         ((stem?            (id #'stem #'stem #'?))
+          (maybe-stem?      (id #'stem #'maybe- #'stem #'?))
+          (serialize-stem   (id #'stem #'serialize- #'stem))
+          (serialize-maybe-stem (id #'stem #'serialize-maybe- #'stem)))
+       #`(begin
+           (define (maybe-stem? val)
+             (or (eq? val 'disabled) (stem? val)))
+           #,@(if serialize?
+                  (list #'(define (serialize-maybe-stem field-name val)
+                            (if (stem? val)
+                                (serialize-stem field-name val)
+                                "")))
+                  '()))))))
+
 (define-syntax define-maybe
   (lambda (x)
-    (syntax-case x ()
+    (syntax-case x (no-serialization)
+      ((_ stem (no-serialization))
+       (define-maybe-helper #f #'(_ stem)))
       ((_ stem)
-       (with-syntax
-           ((stem?                (id #'stem #'stem #'?))
-            (maybe-stem?          (id #'stem #'maybe- #'stem #'?))
-            (serialize-stem       (id #'stem #'serialize- #'stem))
-            (serialize-maybe-stem (id #'stem #'serialize-maybe- #'stem)))
-         #'(begin
-             (define (maybe-stem? val)
-               (or (eq? val 'disabled) (stem? val)))
-             (define (serialize-maybe-stem field-name val)
-               (if (stem? val) (serialize-stem field-name val) ""))))))))
+       (define-maybe-helper #t #'(_ stem))))))
+
+(define-syntax-rule (define-maybe/no-serialization stem)
+  (define-maybe stem (no-serialization)))
 
 (define (define-configuration-helper serialize? syn)
   (syntax-case syn ()
