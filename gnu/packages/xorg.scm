@@ -5621,7 +5621,7 @@ draggable titlebars and borders.")
 (define-public libxaw
   (package
     (name "libxaw")
-    (version "1.0.13")
+    (version "1.0.14")
     (source
       (origin
         (method url-fetch)
@@ -5631,7 +5631,7 @@ draggable titlebars and borders.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1kdhxplwrn43d9jp3v54llp05kwx210lrsdvqb6944jp29rhdy4f"))))
+            "13kg59r3086383g1dyhnwxanhp2frssh9062mrgn34nzlf7gkbkn"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
