@@ -128,7 +128,7 @@ to statistics about the system on which it's run.")
 (define-public lxqt-build-tools
   (package
     (name "lxqt-build-tools")
-    (version "0.7.0")
+    (version "0.9.0")
     (source
      (origin
        (method url-fetch)
@@ -136,7 +136,7 @@ to statistics about the system on which it's run.")
                            "/download/" version
                            "/lxqt-build-tools-" version ".tar.xz"))
        (sha256
-        (base32 "147vdkc25mrlr0fy785yzwhm4gwjxa5xl3n3hljz4c97m531kzl5"))))
+        (base32 "0kayad5l72h8n90zkf3hy8fxy72n4b1mrkjglpa9dj0cdj6qg0lp"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
@@ -151,6 +151,9 @@ to statistics about the system on which it's run.")
        ("glib" ,glib)))
     (inputs
      `(("qtbase" ,qtbase)))
+    (propagated-inputs
+     ;; Dependent projects require Perl via the CMake files.
+     `(("perl" ,perl)))
     (synopsis "LXQt Build tools")
     (description
      "Lxqt-build-tools is providing several tools needed to build LXQt
