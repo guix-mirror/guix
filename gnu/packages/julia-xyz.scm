@@ -1288,6 +1288,29 @@ working with @acronym{URIs,Uniform Resource Identifiers}, as defined in RFC
 system.")
     (license license:expat)))
 
+(define-public julia-zipfile
+  (package
+    (name "julia-zipfile")
+    (version "0.9.3")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/fhs/ZipFile.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "15bm3ki5mb9nvqs2byznrryq0bilnjcvsfy3k05hxhk9vapilw7k"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-zlib-jll" ,julia-zlib-jll)))
+    (home-page "https://github.com/fhs/ZipFile.jl")
+    (synopsis "Read/Write ZIP archives in Julia")
+    (description "This module provides support for reading and writing ZIP
+archives in Julia.")
+    (license license:expat)))
+
 (define-public julia-zlib-jll
   (package
     (name "julia-zlib-jll")
