@@ -1663,16 +1663,14 @@ providing the system administrator with some help in common tasks.")
                         ;; libraries below $exec_prefix when $libdir does not
                         ;; match any of the "usual" locations.  Fix that.
                         (("usrlib_execdir='\\$\\{exec_prefix\\}'\\$libdir")
-                         "usrlib_execdir=$libdir"))
-                      #t))
+                         "usrlib_execdir=$libdir"))))
                   (add-before 'build 'set-umount-file-name
                     (lambda* (#:key outputs #:allow-other-keys)
                       ;; Tell 'eject' the right file name of 'umount'.
                       (let ((out (assoc-ref outputs "out")))
                         (substitute* "sys-utils/eject.c"
                           (("\"/bin/umount\"")
-                           (string-append "\"" out "/bin/umount\"")))
-                        #t)))
+                           (string-append "\"" out "/bin/umount\""))))))
                   (add-before 'check 'pre-check
                     (lambda* (#:key inputs outputs #:allow-other-keys)
                       (let ((out (assoc-ref outputs "out"))
@@ -1684,23 +1682,18 @@ providing the system administrator with some help in common tasks.")
 
                         ;; The C.UTF-8 locale does not exist in our libc.
                         (substitute* "tests/ts/column/invalid-multibyte"
-                          (("C\\.UTF-8") "en_US.utf8"))
-                        #t)))
-                  ;; TODO: Remove the conditional on the next rebuild cycle.
-                  ,@(if (string-prefix? "arm" (%current-system))
-                        '((add-before 'check 'disable-setarch-test
-                            (lambda _
-                              ;; The setarch tests are unreliable in QEMU's
-                              ;; user-mode emulation, which is our primary
-                              ;; method of building ARMv7 packages.
-                              ;; <https://github.com/karelzak/util-linux/issues/601>
-                              (substitute* "tests/ts/misc/setarch"
-                                (("ts_init_subtest.*" all)
-                                 (string-append
-                                  all "\n"
-                                  "ts_skip \"setarch tests are unreliable under QEMU\"")))
-                              #t)))
-                        '())
+                          (("C\\.UTF-8") "en_US.utf8")))))
+                  (add-before 'check 'disable-setarch-test
+                    (lambda _
+                      ;; The setarch tests are unreliable in QEMU's user-mode
+                      ;; emulation, which is our primary method of building
+                      ;; ARMv7 packages.  See
+                      ;; <https://github.com/karelzak/util-linux/issues/601>.
+                      (substitute* "tests/ts/misc/setarch"
+                        (("ts_init_subtest.*" all)
+                         (string-append
+                          all "\n"
+                          "ts_skip \"setarch tests are unreliable under QEMU\"")))))
                   (add-after 'install 'move-static-libraries
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let ((lib    (assoc-ref outputs "lib"))
@@ -1719,9 +1712,7 @@ providing the system administrator with some help in common tasks.")
                           ;; files so that Libtool does the right thing when both
                           ;; the shared and static library is available.
                           (substitute* (find-files "lib" "\\.la$")
-                            (("old_library=.*") "old_library=''\n")))
-
-                        #t)))
+                            (("old_library=.*") "old_library=''\n"))))))
                   (add-after 'install 'adjust-pkg-config-files
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let ((lib (assoc-ref outputs "lib")))
@@ -1729,8 +1720,7 @@ providing the system administrator with some help in common tasks.")
                         ;; the pkg-config files to avoid a cyclic reference on "out".
                         (substitute* (find-files (string-append lib "/lib/pkgconfig")
                                                  "\\.pc$")
-                          (("^(exec_)?prefix=.*") "")))
-                        #t)))))
+                          (("^(exec_)?prefix=.*") ""))))))))
     (inputs `(("zlib" ,zlib)
               ("ncurses" ,ncurses)
 
