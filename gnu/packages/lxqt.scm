@@ -900,14 +900,14 @@ for the LXQt desktop environment.")
 (define-public lxqt-sudo
   (package
     (name "lxqt-sudo")
-    (version "0.15.0")
+    (version "0.17.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
                            version "/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "1v4gzmld3zqi3y9pdy3hb8lq81jwbgi4ia00lbzccg8cm0m8n55w"))))
+        (base32 "02s38m0ywp0gjkjczvrc4r1ignshbajlj084xd61d3rcm7vahhic"))))
     (build-system cmake-build-system)
     (inputs
      `(("kwindowsystem" ,kwindowsystem)
