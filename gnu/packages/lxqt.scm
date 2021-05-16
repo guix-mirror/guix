@@ -691,20 +691,21 @@ LXQt.")
 (define-public lxqt-powermanagement
   (package
     (name "lxqt-powermanagement")
-    (version "0.15.0")
+    (version "0.17.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
                            version "/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "1kal7w6ngs9yrg309p4wacmabpynsrysmbpfkpphg158z548wwl0"))))
+        (base32 "00njx8a8cs0zzpz798qc9j16k7i4y0ydy1xmmcq9yv0wawh4gqck"))))
     (build-system cmake-build-system)
     (inputs
      `(("kidletime" ,kidletime)
        ("kwindowsystem" ,kwindowsystem)
        ("liblxqt" ,liblxqt)
        ("libqtxdg" ,libqtxdg)
+       ("lxqt-globalkeys" ,lxqt-globalkeys)
        ("qtbase" ,qtbase)
        ("qtsvg" ,qtsvg)
        ("qtx11extras" ,qtx11extras)
