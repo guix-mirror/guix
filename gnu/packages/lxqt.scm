@@ -1155,14 +1155,14 @@ window manager OpenBox.")
 (define-public pavucontrol-qt
   (package
     (name "pavucontrol-qt")
-    (version "0.15.0")
+    (version "0.17.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
                            version "/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "15wknwmb4640r5fm4wiq6xa70qa2djay2806wyvajh11xjmqy566"))))
+        (base32 "0w51dpjayav78lmhw966fz3gvypkmv64xgsd7x5rqs8am39lq9vc"))))
     (build-system cmake-build-system)
     (inputs
      `(("glib" ,glib)
