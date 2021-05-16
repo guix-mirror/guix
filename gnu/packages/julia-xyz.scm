@@ -790,6 +790,27 @@ implementing both a client and a server.")
 interfaces with @file{.ini} files.")
     (license license:expat)))
 
+(define-public julia-iocapture
+  (package
+    (name "julia-iocapture")
+    (version "0.2.1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaDocs/IOCapture.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0ajlfh8f1g23bx5f8h70nrgr0zfwxaqnpxlka8l4qhjmnfqxl43a"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/JuliaDocs/IOCapture.jl")
+    (synopsis "Capture standard output and error streams")
+    (description "This package provides the @code{IOCapture.capture(f)}
+function, which captures the standard output and standard error, and returns it
+as a string together with the return value.")
+    (license license:expat)))
+
 (define-public julia-irtools
   (package
     (name "julia-irtools")
