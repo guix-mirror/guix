@@ -828,20 +828,21 @@ allows for launching applications or shutting down the system.")
 (define-public lxqt-session
   (package
     (name "lxqt-session")
-    (version "0.15.0")
+    (version "0.17.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
                            version "/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "17y6l1l2m2hzxlzvr7wbixnldbr7waky97vj6lx72r81l45wqkz4"))))
+        (base32 "0iwwfyngpbhs2dwvbw0cci0bf3qbqcpjjw7h5vm46nimvgp8q1fr"))))
     (build-system cmake-build-system)
     (inputs
      `(("eudev" ,eudev)
        ("kwindowsystem" ,kwindowsystem)
        ("liblxqt" ,liblxqt)
        ("libqtxdg" ,libqtxdg)
+       ("procps" ,procps)
        ("qtbase" ,qtbase)
        ("qtsvg" ,qtsvg)
        ("qtx11extras" ,qtx11extras)
