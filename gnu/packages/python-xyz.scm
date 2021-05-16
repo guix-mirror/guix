@@ -4105,14 +4105,14 @@ structure for Python.")
 (define-public python-docutils
   (package
     (name "python-docutils")
-    (version "0.16")
+    (version "0.17.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "docutils" version))
        (sha256
         (base32
-         "1z3qliszqca9m719q3qhdkh0ghh90g500avzdgi7pl77x5h3mpn2"))))
+         "09gii36lp1bs26cpxqyfd20xahnpbrbjzcnba2xq08y3wk97frb8"))))
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
