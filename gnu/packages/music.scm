@@ -2118,7 +2118,7 @@ effects.")
 (define-public padthv1
   (package
     (name "padthv1")
-    (version "0.9.21")
+    (version "0.9.22")
     (source (origin
               (method url-fetch)
               (uri
@@ -2126,7 +2126,7 @@ effects.")
                               "/padthv1-" version ".tar.gz"))
               (sha256
                (base32
-                "0s28l8vp9b85s4bdm18qm57dh8dx8rx7659r05p44828g4053ipl"))))
+                "1wky9v91qc3j866di8mcjz0pf3n8ah888lxg8dpvp6ryh1cm6i6x"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
