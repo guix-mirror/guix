@@ -714,14 +714,14 @@ text documents, vector drawings, presentations and spreadsheets.")
 (define-public libmwaw
   (package
     (name "libmwaw")
-    (version "0.3.18")
+    (version "0.3.19")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://sourceforge/libmwaw/libmwaw/libmwaw-"
                           version "/libmwaw-" version ".tar.xz"))
       (sha256
-       (base32 "03qyxp8hkcc7jcwyq0v0y2diqsvib060pg7y9zk0n07qh0b0apgw"))))
+       (base32 "1bx5xnw8sk5h26x2z7hfac7hfbm68zqg0jilp15qr0pwxqsf4wmj"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
