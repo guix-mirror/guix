@@ -35,8 +35,7 @@
   #:use-module (guix base32)
   #:use-module ((guix self) #:select (make-config.scm))
 
-  #:use-module ((gnu build vm)
-                #:select (qemu-command))
+  #:autoload   (gnu build vm) (qemu-command)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bootloaders)
   #:use-module (gnu packages cdrom)
