@@ -394,7 +394,8 @@ without requiring the source code to be rewritten.")
     (source (package-source guile))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags '("--disable-silent-rules")
+     '(#:configure-flags '("--disable-silent-rules"
+                           "--enable-mini-gmp")   ;for Guile >= 3.0.6
        #:phases (modify-phases %standard-phases
                   (add-before 'build 'chdir
                     (lambda* (#:key outputs #:allow-other-keys)
