@@ -3835,6 +3835,7 @@ part of the LaTeX required set of packages.")
                 texlive-fonts-latex
                 texlive-metafont
                 texlive-latex-base
+                texlive-kpathsea       ;for mktex.opt
                 ;; LaTeX packages from the "required" set.
                 texlive-latex-amsmath
                 texlive-amscls
