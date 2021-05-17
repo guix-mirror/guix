@@ -184,7 +184,7 @@ markup) can be customized and extended by the user.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/asciidoc/asciidoc-py3/")
+                    (url "https://github.com/asciidoc/asciidoc-py")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
