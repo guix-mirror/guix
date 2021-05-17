@@ -12927,7 +12927,13 @@ XML to Lisp structures or s-expressions and back.")
   (sbcl-package->cl-source-package sbcl-xmls))
 
 (define-public ecl-xmls
-  (sbcl-package->ecl-package sbcl-xmls))
+  (let ((pkg (sbcl-package->ecl-package sbcl-xmls)))
+    (package
+      (inherit pkg)
+      (arguments
+       (substitute-keyword-arguments (package-arguments pkg)
+         ;; Upstream doesn't have a test suite adapted for ECL.
+         ((#:tests? _ #f) #f))))))
 
 (define-public sbcl-geco
   (package
