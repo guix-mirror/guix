@@ -180,7 +180,7 @@ markup) can be customized and extended by the user.")
 (define-public asciidoc-py3
   (package (inherit asciidoc)
     (name "asciidoc-py3")
-    (version "9.0.1")
+    (version "9.1.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -189,7 +189,7 @@ markup) can be customized and extended by the user.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1xpws5lgzaqwgbc7sq6bp8adjxy8qb4qb9nj4vvpxamjgx3pny54"))))
+                "1clf1axkns23wfmh48xfspzsnw04pjh4mq1pshpzvj0cwxhz0yaq"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)))
