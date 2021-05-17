@@ -16644,3 +16644,37 @@ all kind of typesetting applications.")
 
 (define-public cl-typesetting
   (sbcl-package->cl-source-package sbcl-cl-typesetting))
+
+(define-public sbcl-shasht
+  (let ((commit "4055327ef8e2aaa8627892ab256350ff3cb15e3c")
+        (revision "1"))
+    (package
+      (name "sbcl-shasht")
+      (version (git-version "0.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/yitzchak/shasht")
+               (commit commit)))
+         (file-name (git-file-name "shasht" version))
+         (sha256
+          (base32 "01mh20s5gj0lajq45anxji77ykq1wcg72mn1y9a1k8i7q1ainjlr"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("parachute" ,sbcl-parachute)))
+      (inputs
+       `(("trivial-do" ,sbcl-trivial-do)))
+      (home-page "https://yitzchak.github.io/shasht/")
+      (synopsis "Common Lisp JSON reading and writing library")
+      (description
+       "This package provides a Common Lisp library to work with the JSON file
+format.")
+      (license license:expat))))
+
+(define-public ecl-shasht
+  (sbcl-package->ecl-package sbcl-shasht))
+
+(define-public cl-shasht
+  (sbcl-package->cl-source-package sbcl-shasht))
