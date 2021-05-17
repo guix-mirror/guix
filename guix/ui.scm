@@ -196,6 +196,18 @@ information, or #f if it could not be found."
                            (stack-ref stack 1)    ;skip the 'throw' frame
                            last))))
 
+(cond-expand
+  (guile-3
+   (define-syntax-rule (without-compiler-optimizations exp)
+     ;; Compile with the baseline compiler (-O1), which is much less expensive
+     ;; than -O2.
+     (parameterize (((@ (system base compile) default-optimization-level) 1))
+       exp)))
+  (else
+   (define-syntax-rule (without-compiler-optimizations exp)
+     ;; No easy way to turn off optimizations on Guile 2.2.
+     exp)))
+
 (define* (load* file user-module
                 #:key (on-error 'nothing-special))
   "Load the user provided Scheme source code FILE."
@@ -225,7 +237,8 @@ information, or #f if it could not be found."
                ;; search for FILE in %LOAD-PATH.  Note: use 'load', not
                ;; 'primitive-load', so that FILE is compiled, which then allows
                ;; us to provide better error reporting with source line numbers.
-               (load (canonicalize-path file)))
+               (without-compiler-optimizations
+                (load (canonicalize-path file))))
              (const #f))))))
     (lambda _
       ;; XXX: Errors are reported from the pre-unwind handler below, but
