@@ -14878,19 +14878,20 @@ and @code{doseq*}.")
   (sbcl-package->cl-source-package sbcl-trivial-do))
 
 (define-public sbcl-common-lisp-jupyter
-  (let ((commit "011f60b69a3b8c70eefeafe7acb724cd00dd3e62"))
+  (let ((commit "ba9f0e746b9200d6fd6db647d7274448119ed01b")
+        (revision "3"))
     (package
       (name "sbcl-common-lisp-jupyter")
-      (version (git-version "0.1" "2" commit))
+      (version (git-version "0.1.0" revision commit))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
                (url "https://github.com/yitzchak/common-lisp-jupyter")
                (commit commit)))
-         (file-name (git-file-name name commit))
+         (file-name (git-file-name "common-lisp-jupyter" commit))
          (sha256
-          (base32 "10jdghlcmp9p6ygrvw7g49i8f9jy71ybzn29n544fzb6g47siqhw"))))
+          (base32 "0si69xfzi769dprwfy7gp1x3bl7lxz6d4n98sa26w9r41wvay5ja"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("alexandria" ,sbcl-alexandria)
@@ -14899,13 +14900,14 @@ and @code{doseq*}.")
          ("cl-base64" ,sbcl-cl-base64)
          ("cl-indentify" ,sbcl-cl-indentify)
          ("closer-mop" ,sbcl-closer-mop)
+         ("dissect" ,sbcl-dissect)
          ("eclector" ,sbcl-eclector)
          ("ironclad" ,sbcl-ironclad)
          ("iterate" ,sbcl-iterate)
-         ("jsown" ,sbcl-jsown)
          ("multilang-documentation" ,sbcl-multilang-documentation)
-         ("pzmq" ,sbcl-pzmq)
          ("puri" ,sbcl-puri)
+         ("pzmq" ,sbcl-pzmq)
+         ("shasht" ,sbcl-shasht)
          ("static-vectors" ,sbcl-static-vectors)
          ("trivial-do" ,sbcl-trivial-do)
          ("trivial-garbage" ,sbcl-trivial-garbage)
@@ -14917,7 +14919,7 @@ and @code{doseq*}.")
        "This is a Common Lisp kernel for Jupyter along with a library for
 building Jupyter kernels, based on Maxima-Jupyter which was based on
 @code{cl-jupyter}.")
-      (license license:zlib))))
+      (license license:expat))))
 
 (define-public ecl-common-lisp-jupyter
   (sbcl-package->ecl-package sbcl-common-lisp-jupyter))
