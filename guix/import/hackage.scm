@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 Nikita <nikita@n0.is>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Robert Vollmert <rob@vllmrt.net>
+;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -163,22 +164,22 @@ version."
   ;; https://www.haskell.org
   ;; /cabal/release/cabal-latest/doc/API/Cabal/Distribution-License.html.
   (match-lambda
-   ("GPL-2" 'gpl2)
-   ("GPL-3" 'gpl3)
+   ("GPL-2" 'license:gpl2)
+   ("GPL-3" 'license:gpl3)
    ("GPL" "'gpl??")
-   ("AGPL-3" 'agpl3)
+   ("AGPL-3" 'license:agpl3)
    ("AGPL" "'agpl??")
-   ("LGPL-2.1" 'lgpl2.1)
-   ("LGPL-3" 'lgpl3)
+   ("LGPL-2.1" 'license:lgpl2.1)
+   ("LGPL-3" 'license:lgpl3)
    ("LGPL" "'lgpl??")
-   ("BSD2" 'bsd-2)
-   ("BSD3" 'bsd-3)
-   ("BSD-3-Clause" 'bsd-3)
-   ("MIT" 'expat)
-   ("ISC" 'isc)
-   ("MPL" 'mpl2.0)
-   ("Apache-2.0" 'asl2.0)
-   ("PublicDomain" 'public-domain)
+   ("BSD2" 'license:bsd-2)
+   ("BSD3" 'license:bsd-3)
+   ("BSD-3-Clause" 'license:bsd-3)
+   ("MIT" 'license:expat)
+   ("ISC" 'license:isc)
+   ("MPL" 'license:mpl2.0)
+   ("Apache-2.0" 'license:asl2.0)
+   ("PublicDomain" 'license:public-domain)
    ((x) (string->license x))
    ((lst ...) `(list ,@(map string->license lst)))
    (_ #f)))
