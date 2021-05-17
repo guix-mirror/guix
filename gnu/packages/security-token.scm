@@ -370,7 +370,14 @@ and other operations.  It includes a library and a command-line tool.")
                     "/Releases/ykpers-" version ".tar.gz"))
               (sha256
                (base32
-                "14wvlwqnwj0gllkpvfqiy8ns938bwvjsz8x1hmymmx32m074vj0f"))))
+                "14wvlwqnwj0gllkpvfqiy8ns938bwvjsz8x1hmymmx32m074vj0f"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Fix build with GCC 10, remove for versions > 1.20.0.
+               '(begin
+                  (substitute* "ykpers-args.h"
+                    (("^const char")
+                     "extern const char"))))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags (list (string-append "--with-udevrulesdir="
