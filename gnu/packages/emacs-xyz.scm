@@ -22557,7 +22557,7 @@ utilities.")
                              (guix build gnu-build-system))
          #:phases
          (modify-phases %standard-phases
-           (add-before 'add-source-to-load-path 'substitute-libyaml-core-path
+           (add-after 'unpack 'substitute-libyaml-core-path
              (lambda* (#:key outputs #:allow-other-keys)
                (chmod "libyaml.el" #o644)
                (substitute* "libyaml.el"
