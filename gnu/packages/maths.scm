@@ -1170,7 +1170,7 @@ incompatible with HDF5.")
              ;; libhdf5.so.  We truncate the hashes to avoid
              ;; unnecessary store references to those compilers:
              (substitute* "src/libhdf5.settings"
-              (("(/gnu/store/)([a-Z0-9]*)" all prefix hash)
+              (("(/gnu/store/)([a-zA-Z0-9]*)" all prefix hash)
                (string-append prefix (string-take hash 10) "..."))
               ;; Don't record the build-time kernel version to make the
               ;; settings file reproducible.
