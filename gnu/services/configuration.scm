@@ -44,6 +44,7 @@
             configuration-error?
 
             define-configuration
+            define-configuration/no-serialization
             no-serialization
 
             serialize-configuration
@@ -221,6 +222,13 @@ does not have a default value" field kind)))
        (define-configuration-helper
          #t #'(_ stem (field (field-type def ...) doc custom-serializer ...)
                  ...))))))
+
+(define-syntax-rule (define-configuration/no-serialization
+                      stem (field (field-type def ...)
+                                  doc custom-serializer ...) ...)
+  (define-configuration stem (field (field-type def ...)
+                                    doc custom-serializer ...) ...
+    (no-serialization)))
 
 (define (empty-serializer field-name val) "")
 (define serialize-package empty-serializer)
