@@ -41,6 +41,7 @@
   #:use-module (guix svn-download)
   #:use-module ((guix build utils) #:select (alist-replace))
   #:use-module (guix utils)
+  #:use-module (guix gexp)
   #:use-module (guix build-system ant)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
@@ -1752,7 +1753,7 @@ IcedTea build harness.")
           (guix build syscalls)
           ,@%gnu-build-system-modules)
 
-         #:disallowed-references ((,icedtea-7 "jdk"))
+         #:disallowed-references ,(list (gexp-input icedtea-7 "jdk"))
 
          ,@(substitute-keyword-arguments (package-arguments icedtea-7)
              ((#:modules modules)
@@ -1908,7 +1909,8 @@ new Date();"))
        ((guix build syscalls)
         ,@%gnu-build-system-modules)
 
-       #:disallowed-references (,icedtea-8 (,icedtea-8 "jdk"))
+       #:disallowed-references ,(list (gexp-input icedtea-8)
+                                      (gexp-input icedtea-8 "jdk"))
 
        #:phases
        (modify-phases %standard-phases
@@ -2107,7 +2109,8 @@ new Date();"))
                        (string-append "--prefix=" (assoc-ref outputs "out")))
                #t))))
        ((#:disallowed-references _ '())
-        `(,openjdk9 (,openjdk9 "jdk")))))
+        `(,(gexp-input openjdk9)
+          ,(gexp-input openjdk9 "jdk")))))
     (native-inputs
      `(("openjdk9" ,openjdk9)
        ("openjdk9:jdk" ,openjdk9 "jdk")
@@ -2138,7 +2141,8 @@ new Date();"))
      `(#:imported-modules ((guix build syscalls)
                            ,@%gnu-build-system-modules)
 
-       #:disallowed-references (,openjdk10 (,openjdk10 "jdk"))
+       #:disallowed-references ,(list (gexp-input openjdk10)
+                                      (gexp-input openjdk10 "jdk"))
 
        #:tests? #f; requires jtreg
        ;; TODO package jtreg
