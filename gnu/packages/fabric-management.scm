@@ -181,7 +181,7 @@ testing InfiniBand networks.")
 (define-public ucx
   (package
     (name "ucx")
-    (version "1.6.1")
+    (version "1.9.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -190,8 +190,7 @@ testing InfiniBand networks.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0x3clvy716i7va4m4adgx6ihjsfnzrkdizhxz5v52944dkglpc8n"))
-              (patches (search-patches "ucx-tcp-iface-ioctl.patch"))))
+                "0i0ji5ivzxjqh3ys1m517ghw3am7cw1hvf40ma7hsq3wznsyx5s1"))))
     (build-system gnu-build-system)
     (arguments
      '( ;; These are some of the flags found in 'contrib/configure-release'.
