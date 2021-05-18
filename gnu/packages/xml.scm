@@ -5,7 +5,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Raimon Grau <raimonster@gmail.com>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
@@ -522,14 +522,14 @@ the @code{Graph} class and write it out in a specific file format.")
 (define-public perl-xml-atom
   (package
     (name "perl-xml-atom")
-    (version "0.42")
+    (version "0.43")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/MI/MIYAGAWA/"
                                   "XML-Atom-" version ".tar.gz"))
               (sha256
                (base32
-                "1wa8kfy1w4mg7kzxim4whyprkn48a2il6fap0b947zywknw4c6y6"))))
+                "0b8bpdnvz9sqwjhjkydbzy4karb7nn6i15b8g4mczrznlsb3hnaf"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
