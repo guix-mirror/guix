@@ -1154,7 +1154,7 @@ build tree Yggdrasil.")
 (define-public julia-parsers
   (package
     (name "julia-parsers")
-    (version "1.0.15")
+    (version "1.1.0")
     (source
      (origin
        (method git-fetch)
@@ -1163,7 +1163,7 @@ build tree Yggdrasil.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "16iffl6l28kspgqch48mhi1s8qhspr3cpqcwsph3rqi72lbfqygx"))))
+        (base32 "1gz3drd5334xrbx2ms33hiifkd0q1in4ywc92xvrkq3xgzdjqjdk"))))
     (build-system julia-build-system)
     (home-page "https://github.com/JuliaData/Parsers.jl")
     (synopsis "Fast parsing machinery for basic types in Julia")
