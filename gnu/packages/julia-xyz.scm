@@ -1318,7 +1318,7 @@ warnings (stderr) or both streams at the same time.")
 (define-public julia-uris
   (package
     (name "julia-uris")
-    (version "1.2.0")
+    (version "1.3.0")
     (source
      (origin
        (method git-fetch)
@@ -1327,7 +1327,7 @@ warnings (stderr) or both streams at the same time.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0fqyagsqks5za7m0czafr34m2xh5501f689k9cn5x3npajdnh2r3"))))
+        (base32 "0kp4hg3kknkm2smlcizqfd33l9x4vkahc2714gnbjp39fj285b92"))))
     (build-system julia-build-system)
     (arguments
      '(#:julia-package-name "URIs"      ;required to run tests
