@@ -6,6 +6,7 @@
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -122,6 +123,16 @@ time-stamping or reference clock, sub-microsecond accuracy is possible.")
                    "/ntp-" version ".tar.gz")))
        (sha256
         (base32 "06cwhimm71safmwvp6nhxp6hvxsg62whnbgbgiflsqb8mgg40n7n"))
+       ;; Add an upstream patch to fix build with GCC 10.  Taken from
+       ;; <https://bugs.ntp.org/show_bug.cgi?id=3688>.
+       (patches (list (origin
+                        (method url-fetch)
+                        (uri "https://bugs.ntp.org/attachment.cgi?id=1760\
+&action=diff&context=patch&collapsed=&headers=1&format=raw")
+                        (file-name "ntp-gcc-compat.patch")
+                        (sha256
+                         (base32
+                          "13d28sg45rflc7kqiv30asrhna8n69wlpwx16l65rravgpvp90h2")))))
        (modules '((guix build utils)))
        (snippet
         '(begin
