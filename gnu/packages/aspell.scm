@@ -397,6 +397,10 @@ dictionaries, including personal ones.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'make-reproducible
+           (lambda _
+             (substitute* "speller/README_en.txt.sh"
+               (("\\bdate\\b") ""))))
          (delete 'configure)
          (delete 'check)
          (replace 'build
