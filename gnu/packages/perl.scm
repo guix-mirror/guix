@@ -715,14 +715,14 @@ compiling the surrounding scope.")
 (define-public perl-b-keywords
   (package
     (name "perl-b-keywords")
-    (version "1.20")
+    (version "1.22")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/R/RU/RURBAN/B-Keywords-"
                            version ".tar.gz"))
        (sha256
-        (base32 "12jvx5gnypqxal4valkf9lidba9nz7kjk2wvm07q3hkmdqxw1zk0"))))
+        (base32 "0i2ksp0w9wv1qc22hrdl3k48cww64syhmv8zf6x0kgyd4081hr56"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/B-Keywords")
     (synopsis "Lists of reserved barewords and symbol names")
