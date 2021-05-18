@@ -962,8 +962,7 @@ This module provide functions which simplify writing tests for
                 "0psr5pwsk2biz2bfkigmx04v2rfhs6ybwcfmcrrg7gvh9bpp222b"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-carp" ,perl-carp)
-       ("perl-log-report" ,perl-log-report)
+     `(("perl-log-report" ,perl-log-report)
        ("perl-xml-compile-tester" ,perl-xml-compile-tester)
        ("perl-xml-libxml" ,perl-xml-libxml)
        ("perl-scalar-list-utils" ,perl-scalar-list-utils)
