@@ -2585,6 +2585,39 @@ Its features are:
     ;; Software is dual-licensed.
     (license (list license:unlicense license:wtfpl2))))
 
+(define-public emacs-citeproc-el
+  ;; XXX: This commit includes a fix for an API change in libxml.
+  (let ((commit "893bcb8dcb48ac9850841b58c7b64c1969e6f3de")
+        (revision "0"))
+    (package
+      (name "emacs-citeproc-el")
+      (version (git-version "0.1.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/andras-simonyi/citeproc-el")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0xfkp8dccflas5ps30g3fw1vifn8pp9h9cyvxr1pcmyqr9rivy8f"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:emacs ,emacs))               ;need libxml support
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)
+         ("emacs-f" ,emacs-f)
+         ("emacs-queue" ,emacs-queue)
+         ("emacs-s" ,emacs-s)))
+      (home-page "https://github.com/andras-simonyi/citeproc-el")
+      (synopsis "Citation Style Language (CSL) processor for Emacs")
+      (description
+       "Citeproc-el is an Emacs Lisp library for rendering citations
+and bibliographies in styles described in the Citation Style
+Language (CSL), an XML-based, open format to describe the formatting
+of bibliographic references.")
+      (license license:gpl3+))))
+
 (define-public emacs-corfu
   (package
     (name "emacs-corfu")
