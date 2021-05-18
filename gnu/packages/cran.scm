@@ -28778,3 +28778,27 @@ importance.")
 Jacobi forms.  Also includes various tools for manipulating and visualizing
 complex functions.")
     (license license:gpl2)))
+
+(define-public r-hypergeo
+  (package
+    (name "r-hypergeo")
+    (version "1.2-13")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "hypergeo" version))
+        (sha256
+          (base32
+            "13jdiy216znwhr91iqnh03mvkmyscw439syb3h4i67dd78sphnvd"))))
+    (properties `((upstream-name . "hypergeo")))
+    (build-system r-build-system)
+    (propagated-inputs
+      `(("r-contfrac" ,r-contfrac)
+        ("r-desolve" ,r-desolve)
+        ("r-elliptic" ,r-elliptic)))
+    (home-page
+      "https://cran.r-project.org/web/packages/hypergeo/")
+    (synopsis "The Gauss Hypergeometric Function")
+    (description
+      "The Gaussian hypergeometric function for complex numbers.")
+    (license license:gpl2)))
