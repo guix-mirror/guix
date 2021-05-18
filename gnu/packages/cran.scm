@@ -28753,3 +28753,28 @@ importance.")
     (description
       "Various utilities for evaluating continued fractions.")
     (license license:gpl2)))
+
+(define-public r-elliptic
+  (package
+    (name "r-elliptic")
+    (version "1.4-0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "elliptic" version))
+        (sha256
+          (base32
+            "1dhba0yfxjd5rlqsxp5a7s2hclfkla9wigsr39dlma67l6qjjmxn"))))
+    (properties `((upstream-name . "elliptic")))
+    (build-system r-build-system)
+    (inputs `(("pari-gp" ,pari-gp)))
+    (propagated-inputs `(("r-mass" ,r-mass)))
+    (home-page
+      "https://github.com/RobinHankin/elliptic")
+    (synopsis
+      "Weierstrass and Jacobi Elliptic Functions")
+    (description
+      "A suite of elliptic and related functions including Weierstrass and
+Jacobi forms.  Also includes various tools for manipulating and visualizing
+complex functions.")
+    (license license:gpl2)))
