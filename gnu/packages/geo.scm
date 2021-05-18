@@ -15,6 +15,7 @@
 ;;; Copyright © 2020 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2020, 2021 Felix Gruber <felgru@posteo.net>
 ;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
+;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -880,6 +881,37 @@ utilities for data translation and processing.")
     (inputs
      `(("gdal" ,gdal)))
     (synopsis "GDAL (Geospatial Data Abstraction Library) python bindings")))
+
+(define-public python-pyshp
+  (package
+    (name "python-pyshp")
+    (version "2.1.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/GeospatialPython/pyshp")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0jsraqzq82pw19wvx84x7w5cs8agr44a9b5y0jjw540wim4xa73r"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               ;; This is the only test file.
+               (invoke "python" "-m" "pytest" "test_shapefile.py")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (home-page "https://github.com/GeospatialPython/pyshp")
+    (synopsis "Read/write support for ESRI Shapefile format")
+    (description
+      "The Python Shapefile Library (PyShp) reads and writes ESRI Shapefiles.")
+    (license license:expat)))
 
 (define-public postgis
   (package
