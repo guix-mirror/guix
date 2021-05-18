@@ -1061,7 +1061,7 @@ Julia, with type-driven, overloadable packing/unpacking functionality.")
 (define-public julia-orderedcollections
   (package
     (name "julia-orderedcollections")
-    (version "1.3.2")
+    (version "1.4.1")
     (source
      (origin
        (method git-fetch)
@@ -1070,7 +1070,7 @@ Julia, with type-driven, overloadable packing/unpacking functionality.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0sfip1ixghsz91q2s7d62rgzw3gppg42fg6bccxlplqa3hfmbycf"))))
+        (base32 "0jaxcmvkp8zpqrz101yikdigz90s70i7in5wn8kybwzf0na3lhwf"))))
     (build-system julia-build-system)
     (home-page "https://github.com/JuliaCollections/OrderedCollections.jl")
     (synopsis "Associative containers that preserve insertion order")
