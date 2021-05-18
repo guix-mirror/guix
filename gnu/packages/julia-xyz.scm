@@ -402,25 +402,24 @@ build tree Yggdrasil.")
     (license license:expat)))
 
 (define-public julia-constructionbase
-  (let ((commit "de77e2865b554f9b078fd8c35b593cce0554ae02"))
-    (package
-      (name "julia-constructionbase")
-      (version "1.1.0")                 ;tag not created upstream
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/JuliaObjects/ConstructionBase.jl")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "1y79sfj0rds1skl9j16p9161hwa9khm0xc2m4hgjcbh5zzvyr57v"))))
-      (build-system julia-build-system)
-      (home-page "https://juliaobjects.github.io/ConstructionBase.jl/dev/")
-      (synopsis "Primitive functions for construction of objects")
-      (description "This very lightweight package provides primitive functions
+  (package
+    (name "julia-constructionbase")
+    (version "1.2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaObjects/ConstructionBase.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1bmx5c5z9jxmyf2xjwwl5lhs9czmwq4isl0bkr78fak4j8brqr4n"))))
+    (build-system julia-build-system)
+    (home-page "https://juliaobjects.github.io/ConstructionBase.jl/dev/")
+    (synopsis "Primitive functions for construction of objects")
+    (description "This very lightweight package provides primitive functions
 for construction of objects.")
-      (license license:expat))))
+    (license license:expat)))
 
 (define-public julia-datastructures
   (package
