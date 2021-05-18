@@ -576,14 +576,12 @@ on stdout instead of using a socket as the Emacsclient does.")
                  (make-file-writable "libgit.el")
                  (emacs-substitute-variables "libgit.el"
                    ("libgit--module-file"
-                    (string-append (emacs:elpa-directory out) "/libegit2.so")))
-                 #t)))
+                    (string-append (emacs:elpa-directory out) "/libegit2.so"))))))
            (add-before 'install 'prepare-for-install
              (lambda _
-               (let ((s (string-append "../" ,name "-" ,version "-checkout")))
+               (let ((s "../source"))
                  (copy-file "libegit2.so" (string-append s "/libegit2.so"))
-                 (chdir s)
-                 #t)))
+                 (chdir s))))
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
                (let ((install (assoc-ref emacs:%standard-phases 'install)))
