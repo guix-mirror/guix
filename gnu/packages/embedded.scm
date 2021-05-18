@@ -1237,21 +1237,9 @@ SPI, I2C, JTAG.")
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-installation-paths
            (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* '("Makefile"
-                            "rvinterf/etmsync/fsiomain.c"
-                            "rvinterf/etmsync/fsnew.c"
-                            "rvinterf/asyncshell/help.c"
-                            "rvinterf/libinterf/launchrvif.c"
-                            "loadtools/bpmain.c"
-                            "loadtools/defpath.c"
-                            "loadtools/romdump.c"
-                            "loadtools/lthelp.c"
-                            "loadtools/simmain.c"
-                            "loadtools/Makefile"
-                            "miscutil/c139explore"
-                            "miscutil/pirexplore"
-                            "ffstools/tiffs-wrappers/installpath.c"
-                            "uptools/atcmd/atinterf.c")
+             (substitute* (cons* "miscutil/c139explore"
+                                 "miscutil/pirexplore"
+                                 (find-files "." "^(.*\\.[ch]|Makefile)$"))
                (("/opt/freecalypso/bin/fc-simtool")
                 "fc-simtool")
                (("/opt/freecalypso/bin/fc-uicc-tool")
