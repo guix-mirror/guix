@@ -2069,6 +2069,32 @@ letter to each link using avy.")
 @command{sudo} if it cannot write to it.")
     (license license:expat)))
 
+(define-public emacs-read-only-cfg
+  ;; XXX: Upstream has no tagged release.  Version is extracted from keyword
+  ;; in main file.
+  (let ((commit "c128c9412f768adf89ff5c4ad433cf0beab6656a")
+        (revision "0"))
+    (package
+      (name "emacs-read-only-cfg")
+      (version (git-version "0.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/pfchen/read-only-cfg")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "11zj4ysmacvz82j1siqlcp30i05my20lscls8wkdjl75g9d2b12l"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/pfchen/read-only-cfg")
+      (synopsis "Make files read-only based on user configuration")
+      (description
+       "Read-only-cfg is an Emacs minor mode that can automatically make files
+read-only based on user configuration.  User configuration may be prefix
+directories or regex patterns.")
+      (license license:gpl3+))))
+
 (define-public emacs-bbdb
   (package
     (name "emacs-bbdb")
