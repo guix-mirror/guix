@@ -264,7 +264,7 @@ dependencies, while keeping @code{ChainRulesCore.jl} as light-weight as possible
 (define-public julia-colors
   (package
     (name "julia-colors")
-    (version "0.12.6")
+    (version "0.12.8")
     (source
      (origin
        (method git-fetch)
@@ -273,7 +273,7 @@ dependencies, while keeping @code{ChainRulesCore.jl} as light-weight as possible
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "156zsszgwh6bmznsan0zyha6yvcxw3c5mvc5vr2qfsgxbyh36ln6"))))
+        (base32 "0kx3hq7rf8p5zx6ly9k5j90zijmc7yrwmy96cgkl2ibdfbnhmya3"))))
     (build-system julia-build-system)
     (propagated-inputs
      `(("julia-colortypes" ,julia-colortypes)
