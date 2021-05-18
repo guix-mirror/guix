@@ -526,13 +526,13 @@ with Python's logging module that outputs records using terminal colors.")
 (define-public python-pyprind
   (package
     (name "python-pyprind")
-    (version "2.11.2")
+    (version "2.11.3")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "PyPrind" version))
               (sha256
                (base32
-                "0xg6m5hr33h9bdlrr42kc58jm2m87a9zsagy7n2m4n407d2snv64"))))
+                "1gscnlvj37m421ch3akm3kddxqkrgbg5zrpwy2ky1j59w6vclzg3"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-psutil" ,python-psutil)))
