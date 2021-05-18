@@ -702,7 +702,8 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
           ;; When `configure' checks for ltdl availability, it
           ;; doesn't try to link using libtool, and thus fails
           ;; because of a missing -ldl.  Work around that.
-          ''("LDFLAGS=-ldl"))
+          ''("LDFLAGS=-ldl"
+             "--enable-mini-gmp"))
          ((#:phases phases '%standard-phases)
           `(modify-phases ,phases
 
