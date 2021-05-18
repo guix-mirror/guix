@@ -1142,7 +1142,6 @@ compact configuration syntax.")
                #t))))))
     (inputs
      `(("libXft" ,libxft)
-       ("libX11" ,libx11)
        ("libXt" ,libxt)))
     (native-inputs
      `(("ncurses" ,ncurses)         ;trigger the installation of terminfo data
