@@ -1585,7 +1585,7 @@ little other than manage the instantiation of a single object.")
 (define-public perl-class-tiny
   (package
     (name "perl-class-tiny")
-    (version "1.006")
+    (version "1.008")
     (source
      (origin
        (method url-fetch)
@@ -1593,7 +1593,7 @@ little other than manage the instantiation of a single object.")
                            "Class-Tiny-" version ".tar.gz"))
        (sha256
         (base32
-         "0knbi1agcfc9d7fca0szvxr6335pb22pc5n648q1vrcba8qvvz1f"))))
+         "05anh4hn8va46xwbdx7rqxnhb8i1lingb614lywzr89gj5iql1gf"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Class-Tiny")
     (synopsis "Minimalist class construction")
