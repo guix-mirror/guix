@@ -28733,3 +28733,23 @@ quantile regression and solutions for class imbalanced data.  It provides a
 fast interface using subsampling and confidence regions for variable
 importance.")
     (license license:gpl3+)))
+
+(define-public r-contfrac
+  (package
+    (name "r-contfrac")
+    (version "1.1-12")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "contfrac" version))
+        (sha256
+          (base32
+            "0sq5c7ny235yrkv2xc4insgxby6rvzc1qsj8h301cd2if3lwbgwm"))))
+    (properties `((upstream-name . "contfrac")))
+    (build-system r-build-system)
+    (home-page
+      "https://github.com/RobinHankin/contfrac")
+    (synopsis "Continued Fractions")
+    (description
+      "Various utilities for evaluating continued fractions.")
+    (license license:gpl2)))
