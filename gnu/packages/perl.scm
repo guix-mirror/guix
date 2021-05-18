@@ -10982,7 +10982,7 @@ on the YAML 1.0 specification.")
 (define-public perl-yaml-libyaml
   (package
     (name "perl-yaml-libyaml")
-    (version "0.82")
+    (version "0.83")
     (source
      (origin
        (method url-fetch)
@@ -10990,7 +10990,7 @@ on the YAML 1.0 specification.")
              "mirror://cpan/authors/id/T/TI/TINITA/YAML-LibYAML-"
              version ".tar.gz"))
        (sha256
-        (base32 "0j7yhxkaasccynl5iq1cqpf4x253p4bi5wsq6qbwwv2wjsiwgd02"))))
+        (base32 "1464pradi2dkydm35bhbzyk7sqq87kcd70bp9xddfyirzys7awdl"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/YAML-LibYAML")
     (synopsis "Perl YAML Serialization using XS and libyaml")
