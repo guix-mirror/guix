@@ -6214,3 +6214,38 @@ interface).  The recommended routine @code{logspline()} uses an algorithm from
       "Graphical and tabular effect displays, e.g., of interactions, for
 various statistical models with linear predictors.")
     (license license:gpl2+)))
+
+(define-public r-bayesfactor
+  (package
+    (name "r-bayesfactor")
+    (version "0.9.12-4.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "BayesFactor" version))
+        (sha256
+          (base32
+            "1z083v7is21gm0a458jm5ph3xfdm7mh29a6sg2r1njq82f8x3s3g"))))
+    (properties `((upstream-name . "BayesFactor")))
+    (build-system r-build-system)
+    (propagated-inputs
+      `(("r-coda" ,r-coda)
+        ("r-gtools" ,r-gtools)
+        ("r-hypergeo" ,r-hypergeo)
+        ("r-matrix" ,r-matrix)
+        ("r-matrixmodels" ,r-matrixmodels)
+        ("r-mvtnorm" ,r-mvtnorm)
+        ("r-pbapply" ,r-pbapply)
+        ("r-rcpp" ,r-rcpp)
+        ("r-rcppeigen" ,r-rcppeigen)
+        ("r-stringr" ,r-stringr)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page
+      "https://richarddmorey.github.io/BayesFactor/")
+    (synopsis
+      "Computation of Bayes Factors for Common Designs")
+    (description
+      "This package provides a suite of functions for computing various Bayes
+factors for simple designs, including contingency tables, one- and two-sample
+designs, one-way designs, general ANOVA designs, and linear regression.")
+    (license license:gpl2)))
