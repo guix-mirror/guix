@@ -620,14 +620,14 @@ out) and returning a package that uses that as its 'source'."
 (define-public nix
   (package
     (name "nix")
-    (version "2.3.10")
+    (version "2.3.11")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://nixos.org/releases/nix/nix-"
                                  version "/nix-" version ".tar.xz"))
              (sha256
               (base32
-               "1axphwkx270c10bjyn4icq9wlx46npgnw0qkpymigl23vramxa58"))))
+               "0a61c5d7g07iqi5hksq497y93ivr32zhnrz6c4aqp9q5afcxga49"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--sysconfdir=/etc" "--enable-gc")
