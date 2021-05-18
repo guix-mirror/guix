@@ -862,7 +862,7 @@ Cassette.")
 (define-public julia-jllwrappers
   (package
     (name "julia-jllwrappers")
-    (version "1.2.0")
+    (version "1.3.0")
     (source
      (origin
        (method git-fetch)
@@ -871,7 +871,7 @@ Cassette.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1sj3mi2dcc13apqfpy401wic5n0pgbck1p98b2g3zw0mln9s83m4"))))
+        (base32 "0v7xhsv9z16d657yp47vgc86ggc01i1wigqh3n0d7i1s84z7xa0h"))))
     (arguments
      ;; Wants to download stuff
      '(#:tests? #f
