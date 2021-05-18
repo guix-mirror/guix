@@ -6155,3 +6155,29 @@ or eta squared effect size.")
     (description
       "Weighted k-Nearest Neighbors for Classification, Regression and Clustering.")
     (license license:gpl2+)))
+
+(define-public r-logspline
+  (package
+    (name "r-logspline")
+    (version "2.1.16")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "logspline" version))
+        (sha256
+          (base32
+            "12hkdi77vkic05p2vhap025xdcg1n53ywm239v18713pihdlj63l"))))
+    (properties `((upstream-name . "logspline")))
+    (build-system r-build-system)
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page
+      "https://cran.r-project.org/web/packages/logspline/")
+    (synopsis
+      "Routines for Logspline Density Estimation")
+    (description
+      "Contains routines for logspline density estimation.  The function
+@code{oldlogspline()} uses the same algorithm as the logspline package version
+1.0.x; i.e.  the Kooperberg and Stone (1992) algorithm (with an improved
+interface).  The recommended routine @code{logspline()} uses an algorithm from
+@url{doi:10.1214/aos/1031594728,Stone et al (1997)}.")
+    (license license:asl2.0)))
