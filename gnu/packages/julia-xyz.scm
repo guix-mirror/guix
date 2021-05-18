@@ -643,7 +643,7 @@ digits (bits) after the decimal (radix) point.")
 (define-public julia-forwarddiff
   (package
     (name "julia-forwarddiff")
-    (version "0.10.17")
+    (version "0.10.18")
     (source
      (origin
        (method git-fetch)
@@ -652,7 +652,7 @@ digits (bits) after the decimal (radix) point.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "17xaz4v0zr46p7w873w1fwf31phdnhr0vbdym9yr4flmpzi528jw"))))
+        (base32 "1vb46x8mcn61g1l14qrk22c043khg2ml4q1ci7h4k2v34f2ak5fs"))))
     (build-system julia-build-system)
     (inputs                             ;required for tests
      `(("julia-calculus" ,julia-calculus)
