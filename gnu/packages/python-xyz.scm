@@ -5280,14 +5280,13 @@ humans, and implementation simplicity.")
 (define-public python-pdftotext
   (package
     (name "python-pdftotext")
-    (version "2.1.5")
+    (version "2.1.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pdftotext" version))
        (sha256
-        (base32
-         "19la1cw1hmkcr8big04gm2dd5fw0y0z97g930aiy29s1gaqbiblq"))))
+        (base32 "1555wbgr5spj8xflrs4mwsrdmba2f9s72nk50xzqk9ghxaxdvy6a"))))
     (build-system python-build-system)
     (inputs
      `(("poppler" ,poppler)))
