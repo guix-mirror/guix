@@ -1458,7 +1458,7 @@ Zygote, without depending on Zygote itself.")
 (define-public julia-zygote
   (package
     (name "julia-zygote")
-    (version "0.6.4")
+    (version "0.6.10")
     (source
      (origin
        (method git-fetch)
@@ -1467,7 +1467,7 @@ Zygote, without depending on Zygote itself.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1h2ph0lsisbkh8y4xgwzgw9p5zi243q8zzp5gfh3zw9pzkx6a1rf"))))
+        (base32 "0qqjzhiqghj07mab24b0n0h4xfzq8r1s9hccrmx1lwjkkskhc5f9"))))
     (build-system julia-build-system)
     (arguments
      `(#:tests? #f))                    ;require CUDA, not packaged yet
