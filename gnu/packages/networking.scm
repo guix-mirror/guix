@@ -23,7 +23,7 @@
 ;;; Copyright © 2018 Tonton <tonton@riseup.net>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Theodoros Foradis <theodoros@foradis.org>
-;;; Copyright © 2018, 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018, 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2018, 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019, 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
@@ -3599,28 +3599,26 @@ protocol daemons for BGP, IS-IS, LDP, OSPF, PIM, and RIP. ")
 (define-public iwd
   (package
     (name "iwd")
-    (version "0.21")
+    (version "1.14")
     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://git.kernel.org/pub/scm/network/wireless/iwd.git")
-                    (commit version)))
-              (file-name (git-file-name name version))
+              ;; FIXME: We're using the bootstrapped sources because
+              ;; otherwise using an external ell library is impossible.
+              ;; How to bootstrap with Guix?
+              (method url-fetch)
+              (uri (string-append "https://www.kernel.org/pub/linux/network"
+                                  "/wireless/iwd-" version ".tar.xz"))
               (sha256
                (base32
-                "001dikinsa6kshwscjbvwipavzwpqnpvx9fpshcn63gbvbhyd393"))))
+                "02vz4lyd6vq3vcii357ljqprnas78zb8j670a0gblrm6kganmgi1"))))
     (build-system gnu-build-system)
     (inputs
      `(("dbus" ,dbus)
        ("ell" ,ell)
        ("readline" ,readline)))
     (native-inputs
-     `(("asciidoc" ,asciidoc)
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkgconfig" ,pkg-config)
+     `(("pkgconfig" ,pkg-config)
        ("python" ,python)
+       ("rst2man" ,python-docutils)
        ("openssl" ,openssl)))
     (arguments
      `(#:configure-flags
@@ -3630,22 +3628,17 @@ protocol daemons for BGP, IS-IS, LDP, OSPF, PIM, and RIP. ")
                "--enable-hwsim"
                "--enable-tools"
                "--enable-wired"
-               "--enable-docs"
                "--localstatedir=/var"
                (string-append "--with-dbus-datadir=" dbus "/share/")
                (string-append "--with-dbus-busdir="
                               dbus "/share/dbus-1/system-services")))
        #:phases
        (modify-phases %standard-phases
-         (add-before 'bootstrap 'pre-bootstrap
+         (add-after 'configure 'patch-Makefile
            (lambda _
-             (substitute* "Makefile.am"
-               ;; Test disabled because it needs the kernel module
-               ;; 'pkcs8_key_parser' loaded.
-               (("unit\\/test-eapol.*? ") "")
+             (substitute* "Makefile"
                ;; Don't try to 'mkdir /var'.
-               (("\\$\\(MKDIR_P\\) -m 700") "true"))
-             #t)))))
+               (("\\$\\(MKDIR_P\\) -m 700") "true")))))))
     (home-page "https://git.kernel.org/pub/scm/network/wireless/iwd.git/")
     (synopsis "Internet Wireless Daemon")
     (description "iwd is a wireless daemon for Linux that aims to replace WPA
