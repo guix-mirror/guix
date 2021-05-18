@@ -2505,15 +2505,15 @@ code that, when \"eval\"ed, produces a deep copy of the original arguments.")
 (define-public perl-data-dumper
   (package
     (name "perl-data-dumper")
-    (version "2.173")
+    (version "2.180")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/X/XS/XSAWYERX/"
+       (uri (string-append "mirror://cpan/authors/id/N/NW/NWCLARK/"
                            "Data-Dumper-" version ".tar.gz"))
        (sha256
         (base32
-         "1yknbp86md6mjlhbs1lzz6mals3iyizndgiij58qx61hjfrhhxk9"))))
+         "029vfvj81dhyv01zrd94lak8qnkbik2h5d1mvj19hxdp67jnwqc6"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Data-Dumper")
     (synopsis "Convert data structures to strings")
