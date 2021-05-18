@@ -19,7 +19,7 @@
 # Copyright © 2018 Amirouche Boubekki <amirouche@hypermove.net>
 # Copyright © 2018, 2019, 2020, 2021 Oleg Pykhalov <go.wigust@gmail.com>
 # Copyright © 2018 Stefan Stefanović <stefanx2ovic@gmail.com>
-# Copyright © 2018, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+# Copyright © 2018, 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 # Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
 # Copyright © 2019, 2020 John Soo <jsoo1@asu.edu>
 # Copyright © 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
@@ -944,6 +944,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/desmume-gcc7-fixes.patch			\
   %D%/packages/patches/dfu-programmer-fix-libusb.patch		\
   %D%/packages/patches/diffutils-gets-undeclared.patch		\
+  %D%/packages/patches/disarchive-cross-compilation.patch	\
   %D%/packages/patches/dkimproxy-add-ipv6-support.patch		\
   %D%/packages/patches/docbook-xsl-nonrecursive-string-subst.patch	\
   %D%/packages/patches/doc++-include-directives.patch		\
