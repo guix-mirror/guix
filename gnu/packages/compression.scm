@@ -690,7 +690,7 @@ decompressors when faced with corrupted input.")
             (("char const \\* const program_name" all)
              (string-append "extern " all)))))))
     (build-system gnu-build-system)
-    (inputs
+    (native-inputs
      `(("which" ,which)))
     (arguments
      `(#:phases
