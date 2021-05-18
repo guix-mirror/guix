@@ -290,7 +290,7 @@ color scales for graphics.")
 (define-public julia-colortypes
   (package
     (name "julia-colortypes")
-    (version "0.10.12")
+    (version "0.11.0")
     (source
      (origin
        (method git-fetch)
@@ -299,7 +299,7 @@ color scales for graphics.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "176hr3qbz7lncmykks2qaj3cqisnzim7wi5jwsca9ld26wwyvyqq"))))
+        (base32 "0n7h70caqv7yd0khjhn90iax62r73mcif8qzkwj5b4q46li1r8ih"))))
     (arguments
      '(#:tests? #f))                    ;require Documenter, not packaged yet
     (build-system julia-build-system)
