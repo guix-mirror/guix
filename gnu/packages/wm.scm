@@ -163,14 +163,14 @@ the leaves of a full binary tree.")
 (define-public herbstluftwm
   (package
     (name "herbstluftwm")
-    (version "0.9.2")
+    (version "0.9.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://herbstluftwm.org/tarballs/herbstluftwm-"
                            version ".tar.gz"))
        (sha256
-        (base32 "0avfhr68f6fjnafjdcyxcx7dkg38f2nadmhpj971qyqzfq2f6i38"))
+        (base32 "01f1bv9axjhw1l2gwhdwahljssj0h8q7a1bqwbpnwvln0ayv39qb"))
        (file-name (string-append "herbstluftwm-" version ".tar.gz"))))
     (build-system cmake-build-system)
     (inputs
