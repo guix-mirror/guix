@@ -1565,7 +1565,7 @@ a mixin in order to become instantiable.")
 (define-public perl-class-singleton
   (package
     (name "perl-class-singleton")
-    (version "1.5")
+    (version "1.6")
     (source
      (origin
        (method url-fetch)
@@ -1573,7 +1573,7 @@ a mixin in order to become instantiable.")
                            "Class-Singleton-" version ".tar.gz"))
        (sha256
         (base32
-         "0y7ngrjf551bjgmijp5rsidbkq6c8hb5lmy2jcqq0fify020s8iq"))))
+         "1942j9g0b4c88nvs3jghh3y31mlhbpwrx35xdcb2jaaiv7q17fi7"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Class-Singleton")
     (synopsis "Implementation of a singleton class for Perl")
