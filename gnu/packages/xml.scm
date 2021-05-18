@@ -1056,14 +1056,14 @@ server, collect the answer, and finally decoding the XML to Perl.")
 (define-public perl-xml-feed
   (package
     (name "perl-xml-feed")
-    (version "0.59")
+    (version "0.61")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/D/DA/DAVECROSS/"
                                   "XML-Feed-" version ".tar.gz"))
               (sha256
                (base32
-                "1z1a88bpy64j42bbyl8acbfl3dn9iaz47gx6clkgy5sbn4kr0kgk"))))
+                "1zrslg7wz15sm1k28i3gp108cszh062ac24m3ydvr59pwfqs9br6"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
