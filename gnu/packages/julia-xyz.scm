@@ -102,7 +102,7 @@ be GPU compatible without throwing away the wrapper.")
 (define-public julia-benchmarktools
   (package
     (name "julia-benchmarktools")
-    (version "0.5.0")
+    (version "0.7.0")
     (source
      (origin
        (method git-fetch)
@@ -111,7 +111,7 @@ be GPU compatible without throwing away the wrapper.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0nsx21m3i5h22lkgyrmfj6r085va6ag40khwssqs8y7l0wz98lvp"))))
+        (base32 "000izw9pj7cbh9r35nnwg2ijkb9dpfd5nkl2889b8b2dpsh4fi63"))))
     (build-system julia-build-system)
     (propagated-inputs `(("julia-json" ,julia-json)))
     (home-page "https://github.com/JuliaCI/BenchmarkTools.jl")
