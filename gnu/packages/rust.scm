@@ -1464,5 +1464,15 @@ move around."
   (rust-bootstrapped-package rust-1.50 "1.51.0"
     "0ixqkqglv3isxbvl4ldr4byrkx692wghsz3fasy1pn5kr2prnsvs"))
 
+(define-public rust-1.52
+  (let ((base-rust
+         (rust-bootstrapped-package rust-1.51 "1.52.1"
+           "165zs3xzp9dravybwslqs1qhn35agp6wacmzpymqg3qfdni26vrs")))
+    (package
+      (inherit base-rust)
+      (inputs
+        (alist-replace "llvm" (list llvm-12)
+                       (package-inputs base-rust))))))
+
 ;; TODO(staging): Bump this variable to the latest packaged rust.
 (define-public rust rust-1.45)
