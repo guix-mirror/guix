@@ -7674,7 +7674,7 @@ of Linux application development.")
 (define-public ell
   (package
     (name "ell")
-    (version "0.23")
+    (version "0.40")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -7683,7 +7683,7 @@ of Linux application development.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1qhlcwhn0gj877yss2ymx1aczghlddzb5v9mm1dgp2zliii3jy10"))))
+                "1zzpbfdpmfldd7w0h7mwbq0mfqgqwz54nqbq0rmbqlqqpwlkrgb2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
