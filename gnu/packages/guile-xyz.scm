@@ -4742,3 +4742,37 @@ in a large number of randomly generated test cases.")
      "This package contains helper functions for working with file system
 locations.")
     (license license:agpl3+)))
+
+(define-public guile-netlink
+  (package
+    (name "guile-netlink")
+    (version "1.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://git.lepiller.eu/git/guile-netlink")
+              (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "03zmsha2d7whlwb52gna83jdas9bqi18rq3sss7kkicv814qb35g"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f)); no tests
+    (inputs
+     `(("guile" ,guile-3.0)))
+    (native-inputs
+     `(("automake" ,automake)
+       ("autoconf" ,autoconf)
+       ("pkg-config" ,pkg-config)
+       ("texinfo" ,texinfo)))
+    (home-page "https://git.lepiller.eu/guile-netlink")
+    (synopsis "Netlink protocol implementation for Guile")
+    (description "Guile Netlink is a GNU Guile library providing an implementation
+of the netlink protocol.
+
+It provides a generic library for writing implementations of a netlink
+protocol, a low-level rtnetlink implementation that uses that library and a
+high-level API for network management that uses rtnetlink.")
+    (license license:gpl3+)))
