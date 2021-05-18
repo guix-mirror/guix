@@ -582,7 +582,7 @@ following types: @code{Eye}, @code{Fill}, @code{Ones}, @code{Zeros},
 (define-public julia-finitedifferences
   (package
     (name "julia-finitedifferences")
-    (version "0.12.2")
+    (version "0.12.6")
     (source
      (origin
        (method git-fetch)
@@ -591,7 +591,7 @@ following types: @code{Eye}, @code{Fill}, @code{Ones}, @code{Zeros},
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0dcx34026xdpfmbjls3mrknl8ww62kxxfr77kfihbazsfg2gp5b4"))))
+        (base32 "0kg8snnspn48i2rr99mwy0an3hzlgrnic7xnh3whj2ws2znw46hr"))))
     (build-system julia-build-system)
     (inputs
      `(("julia-benchmarktools" ,julia-benchmarktools)))
