@@ -1197,33 +1197,34 @@ three libraries:
 (define-public python-libvirt
   (package
     (name "python-libvirt")
-    (version "7.2.0")
+    (version "7.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://libvirt.org/sources/python/libvirt-python-"
                            version ".tar.gz"))
        (sha256
-        (base32 "1ryfimhf47s9k4n0gys233bh15l68fccs2bvj8bjwqjm9k2vmhy0"))))
+        (base32 "15pn8610ybf03xff3vbz3apz2ph42k2kh6k19r020l9nvc6jcv37"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-nosetests-path
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "setup.py"
-               (("\"/usr/bin/nosetests\"")
-                (string-append "\"" (which "nosetests") "\""))
-               (("self\\.spawn\\(\\[sys\\.executable, nose\\]\\)")
-                (format #f "self.spawn([\"~a\", nose])" (which "bash"))))
-             #t)))))
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               ;; No reason to explicity invoke Python on a wrapped pytest.
+               (substitute* "setup.py"
+                 (("sys\\.executable, pytest") "pytest"))
+               (add-installed-pythonpath inputs outputs)
+               (setenv "LIBVIRT_API_COVERAGE" "whynot")
+               (invoke "python" "setup.py" "test")))))))
     (inputs
      `(("libvirt" ,libvirt)))
     (propagated-inputs
      `(("python-lxml" ,python-lxml)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("python-nose" ,python-nose)))
+       ("python-pytest" ,python-pytest)))
     (home-page "https://libvirt.org")
     (synopsis "Python bindings to libvirt")
     (description "This package provides Python bindings to the libvirt
