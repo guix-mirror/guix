@@ -6134,3 +6134,24 @@ input, the effect size can be returned as standardized mean difference, Cohen's
 f, Hedges' g, Pearson's r or Fisher's transformation z, odds ratio or log odds,
 or eta squared effect size.")
     (license license:gpl3)))
+
+(define-public r-kknn
+  (package
+    (name "r-kknn")
+    (version "1.3.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "kknn" version))
+        (sha256
+          (base32
+            "1nzkg3dxaiqp87p56wm895qx5xn86hv5hjr73qvl1yiaxiq0x112"))))
+    (properties `((upstream-name . "kknn")))
+    (build-system r-build-system)
+    (propagated-inputs
+      `(("r-igraph" ,r-igraph) ("r-matrix" ,r-matrix)))
+    (home-page "https://github.com/KlausVigo/kknn")
+    (synopsis "Weighted k-Nearest Neighbors")
+    (description
+      "Weighted k-Nearest Neighbors for Classification, Regression and Clustering.")
+    (license license:gpl2+)))
