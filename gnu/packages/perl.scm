@@ -621,7 +621,7 @@ error when it would have happened.")
 (define-public perl-bareword-filehandles
   (package
     (name "perl-bareword-filehandles")
-    (version "0.006")
+    (version "0.007")
     (source
      (origin
        (method url-fetch)
@@ -630,7 +630,7 @@ error when it would have happened.")
              version ".tar.gz"))
        (sha256
         (base32
-         "1yxz6likpfshpyfrgwyi7dw6ig1wjhh0vnvbcs6ypr62pv00fv5d"))))
+         "0zy1v746pzv3vvvpr3plpykz0vfhi940q9bfypzzhynq2qvm6d21"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-b-hooks-op-check" ,perl-b-hooks-op-check)
