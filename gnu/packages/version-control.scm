@@ -204,7 +204,7 @@ as well as the classic centralized workflow.")
            (base32
             "00n7vbfmd3ywgjksgwrszwj0l2niba64qkaq07ra4p8mawy483ax"))))
       ;; For subtree documentation.
-      ("asciidoc" ,asciidoc-py3)
+      ("asciidoc" ,asciidoc)
       ("docbook-xsl" ,docbook-xsl)
       ("xmlto" ,xmlto)
       ("pkg-config" ,pkg-config)))

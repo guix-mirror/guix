@@ -334,7 +334,7 @@ commands would.")
      `(("which" ,which)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
-       ("asciidoc-py3" ,asciidoc-py3)
+       ("asciidoc" ,asciidoc)
        ;; For building the documentation.
        ("libxml2" ,libxml2)
        ("docbook-xsl" ,docbook-xsl)))
