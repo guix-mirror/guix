@@ -2,7 +2,7 @@
 ;;; Copyright © 2014, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015, 2016, 2017 Stefan Reichör <stefan@xsteve.at>
+;;; Copyright © 2015, 2016, 2017, 2021 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2016 Raimon Grau <raimonster@gmail.com>
 ;;; Copyright © 2016–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
@@ -908,6 +908,38 @@ line, to logically connect serial lines on different computers, or to
 establish a relatively secure environment (su and chroot) for running client
 or server shell scripts with network connections.")
     (license license:gpl2)))
+
+(define-public mbuffer
+  (package
+    (name "mbuffer")
+    (version "20210328")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://www.maier-komor.de/software/mbuffer/mbuffer-"
+                    version ".tgz"))
+              (sha256
+               (base32
+                "0pfw9xw4ph18yss07fl6w8fbqiwy1w9r1knzw5gsb4c993cbidai"))))
+    (build-system gnu-build-system)
+    (inputs `(("openssl" ,openssl)))
+    (home-page "http://www.maier-komor.de/mbuffer.html")
+    (synopsis
+     "Swiss army knife for data stream buffering (network aware)")
+    (description
+     "mbuffer is a tool for buffering data streams with a large set of features:
+
+@itemize
+@item direct support for TCP based network targets (IPv4 and IPv6)
+@item ability to send to multiple targets in parallel (distribution mode)
+@item support for multiple volumes
+@item I/O rate limitation
+@item high/low watermark based restart criteria
+@item configurable buffer size
+@item on the fly MD5 hash calculation
+@item highly efficient, multi-threaded implementation
+@end itemize")
+    (license license:gpl3+)))
 
 (define-public tcp-wrappers
   (package
