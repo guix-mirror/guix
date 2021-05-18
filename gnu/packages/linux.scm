@@ -15,7 +15,7 @@
 ;;; Copyright © 2016, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2016, 2018 Rene Saavedra <pacoon@protonmail.com>
 ;;; Copyright © 2016 Carlos Sánchez de La Lama <csanchezdll@gmail.com>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
@@ -3227,40 +3227,36 @@ NUMA performance on your system.")
 (define-public kbd
   (package
     (name "kbd")
-    (version "2.0.4")
+    (version "2.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/utils/kbd/kbd-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "124swm93dm4ca0pifgkrand3r9gvj3019d4zkfxsj9djpvv0mnaz"))
+                "17wvrqz2kk0w87idinhyvd31ih1dp7ldfl2yfx7ailygb0279w2m"))
               (modules '((guix build utils)))
               (snippet
                '(begin
-                  (substitute* "tests/Makefile.in"
-                    ;; The '%: %.in' rule incorrectly uses @VERSION@.
-                    (("@VERSION@")
-                     "[@]VERSION[@]"))
                   (substitute* '("src/unicode_start" "src/unicode_stop")
                     ;; Assume the Coreutils are in $PATH.
                     (("/usr/bin/tty")
-                     "tty"))
-                  #t))))
+                     "tty"))))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
          (add-before 'build 'pre-build
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((gzip  (assoc-ref %build-inputs "gzip"))
-                   (bzip2 (assoc-ref %build-inputs "bzip2")))
-               (substitute* "src/libkeymap/findfile.c"
-                 (("gzip")
-                  (string-append gzip "/bin/gzip"))
-                 (("bzip2")
-                  (string-append bzip2 "/bin/bzip2")))
-               #t)))
+             (let ((bzip2 (assoc-ref inputs "bzip2"))
+                   (gzip  (assoc-ref inputs "gzip"))
+                   (xz    (assoc-ref inputs "xz"))
+                   (zstd  (assoc-ref inputs "zstd")))
+               (substitute* "src/libkbdfile/kbdfile.c"
+                 (("bzip2") (string-append bzip2 "/bin/bzip2"))
+                 (("gzip") (string-append gzip "/bin/gzip"))
+                 (("xz -d") (string-append xz "/bin/xz -d"))
+                 (("zstd") (string-append zstd "/bin/zstd"))))))
          (add-after 'install 'post-install
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Make sure these programs find their comrades.
@@ -3269,12 +3265,16 @@ NUMA performance on your system.")
                (for-each (lambda (prog)
                            (wrap-program (string-append bin "/" prog)
                              `("PATH" ":" prefix (,bin))))
-                         '("unicode_start" "unicode_stop"))
-               #t))))))
-    (inputs `(("check" ,check)
-              ("gzip" ,gzip)
-              ("bzip2" ,bzip2)
-              ("pam" ,linux-pam)))
+                         '("unicode_start" "unicode_stop"))))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("bzip2" ,bzip2)
+       ("gzip" ,gzip)
+       ("pam" ,linux-pam)
+       ("xz" ,xz)
+       ("zstd" ,zstd)))
     (native-search-paths
      (list (search-path-specification
             (variable "LOADKEYS_KEYMAP_PATH")
@@ -3282,7 +3282,6 @@ NUMA performance on your system.")
             ;; run (for example) ‘loadkeys en-latin9’ instead of having to find
             ;; and type ‘i386/colemak/en-latin9’ on a mislabelled keyboard.
             (files (list "share/keymaps/**")))))
-    (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://kbd-project.org/")
     (synopsis "Linux keyboard utilities and keyboard maps")
     (description
@@ -3303,7 +3302,7 @@ for systems using the Linux kernel.  This includes commands such as
                    "--disable-libkeymap")
                  ,flags))
        ((#:make-flags flags ''())
-        `(cons "LDFLAGS=-all-static" ,flags))
+        `(cons "LDFLAGS=-all-static -lrt -lpthread" ,flags))
        ((#:phases phases '%standard-phases)
         `(modify-phases ,phases
            (replace 'install
@@ -3314,8 +3313,7 @@ for systems using the Linux kernel.  This includes commands such as
                  (remove-store-references "src/loadkeys")
 
                  (install-file "src/loadkeys"
-                               (string-append out "/bin"))
-                 #t)))
+                               (string-append out "/bin")))))
            (delete 'post-install)))
        ((#:strip-flags _ '())
         ''("--strip-all"))
