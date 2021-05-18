@@ -231,7 +231,7 @@ features including, tables, builtin image display, bookmarks, SSL and more.")
 (define-public luakit
   (package
     (name "luakit")
-    (version "2.2")
+    (version "2.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -240,7 +240,7 @@ features including, tables, builtin image display, bookmarks, SSL and more.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0km5nxn6innzn8pfsvlkxvfj2z5g46fp6dy5bnmaklbn13mqlcrn"))))
+                "1khbn7dpizkznnwkw7rcfhf72dnd1nazk7dwb4rkh9i97b53mf1y"))))
     (inputs
      `(("lua-5.1" ,lua-5.1)
        ("gtk+" ,gtk+)
@@ -254,7 +254,7 @@ features including, tables, builtin image display, bookmarks, SSL and more.")
      `(("pkg-config" ,pkg-config)))
     (build-system glib-or-gtk-build-system)
     (arguments
-     '(#:make-flags
+     `(#:make-flags
        (let ((out (assoc-ref %outputs "out")))
          (list
           "CC=gcc"
@@ -270,6 +270,10 @@ features including, tables, builtin image display, bookmarks, SSL and more.")
                      (string-append
                       (assoc-ref %build-inputs "lua5.1-filesystem")
                       "/lib/lua/5.1/?.so;;"))
+             #t))
+         (add-before 'build 'set-version
+           (lambda _
+             (setenv "VERSION_FROM_GIT" ,(package-version this-package))
              #t))
          (delete 'configure)
          (delete 'check)
