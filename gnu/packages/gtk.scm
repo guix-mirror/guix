@@ -2026,12 +2026,6 @@ information.")
                                                 "^catalog.xml$"))
                                " \"http://docbook.sourceforge.net/release/xsl/")))
              #t))
-         (add-before 'build 'set-HOME
-           (lambda _
-             ;; FIXME: dblatex with texlive-union does not find the built
-             ;; metafonts, so it tries to generate them in HOME.
-             (setenv "HOME" "/tmp")
-             #t))
          (add-after 'install 'wrap-executables
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
