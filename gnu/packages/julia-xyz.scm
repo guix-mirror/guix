@@ -1273,7 +1273,7 @@ polygamma functions.")
 (define-public julia-staticarrays
   (package
     (name "julia-staticarrays")
-    (version "1.0.1")
+    (version "1.2.0")
     (source
      (origin
        (method git-fetch)
@@ -1282,7 +1282,7 @@ polygamma functions.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "01z8bcqwpfkp8p1h1r36pr5cc3798y76zkas7g3206pcsdhvlkz1"))))
+        (base32 "0z4g1kk6gy514dyafb559gcp4264ffx6h28ffczdvkyk8gm9j0m7"))))
     (build-system julia-build-system)
     (inputs
      `(("julia-benchmarktools" ,julia-benchmarktools)))
