@@ -762,14 +762,14 @@ checks.")
 (define-public perl-xml-rss
   (package
     (name "perl-xml-rss")
-    (version "1.61")
+    (version "1.62")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/S/SH/SHLOMIF/"
                                   "XML-RSS-" version ".tar.gz"))
               (sha256
                (base32
-                "03f983l2dnkvcw6iyg1s0xmv5wn793d3kvqlshmhm01ibp7ffvzs"))))
+                "0klb8ghd405pdkmn25lp3i4j2lfydz8w581sk51p3zy788s0c9yk"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
