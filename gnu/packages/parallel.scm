@@ -41,6 +41,7 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages freeipmi)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages mpi)
@@ -134,6 +135,32 @@ combining some of the best features of xargs(1) and apply(1).  Parallel
 execution is also possible.")
     (home-page "https://github.com/leahneukirchen/xe")
     (license license:public-domain)))
+
+(define-public xjobs
+  (package
+    (name "xjobs")
+    (version "20200726")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://www.maier-komor.de/xjobs/xjobs-"
+                    version ".tgz"))
+              (sha256
+               (base32
+                "0ay6gn43pnm7r1jamwgpycl67bjg5n87ncl27jb01w2x6x70z0i3"))))
+    (build-system gnu-build-system)
+    (arguments `(#:tests? #f)) ;; No tests
+    (native-inputs
+     `(("flex" ,flex)
+       ("which" ,which)))
+    (home-page "http://www.maier-komor.de/xjobs.html")
+    (synopsis
+     "Parallel execution of jobs with several useful options")
+    (description
+     "xjobs reads job descriptions line by line and executes them in
+parallel.  It limits the number of parallel executing jobs and starts new jobs
+when jobs finish.")
+    (license license:gpl2+)))
 
 (define-public slurm
   (package
