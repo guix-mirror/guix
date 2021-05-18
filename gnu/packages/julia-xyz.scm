@@ -176,7 +176,7 @@ methods.")
 (define-public julia-chainrules
   (package
     (name "julia-chainrules")
-    (version "0.7.54")
+    (version "0.7.65")
     (source
      (origin
        (method git-fetch)
@@ -185,7 +185,7 @@ methods.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1x4w71v8cw0vpba47h8f5xq4gyjfxbcvayzf7m41yg8gf49s9pkf"))))
+        (base32 "0697m5y5ryqnhw6cbk90rlydrxan2b308pzbl86qz4mzhypyk7yi"))))
     (build-system julia-build-system)
     (inputs                             ;required for test
      `(("julia-chainrulestestutils" ,julia-chainrulestestutils)
