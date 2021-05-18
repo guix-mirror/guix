@@ -1068,14 +1068,14 @@ manage system or application containers.")
 (define-public libvirt
   (package
     (name "libvirt")
-    (version "7.2.0")
+    (version "7.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://libvirt.org/sources/libvirt-"
                            version ".tar.xz"))
        (sha256
-        (base32 "1l6i1rz1v9rnp61sgzlrlbsfh03208dbm3b259i0jl5sqz85kx01"))
+        (base32 "1gn13mfwbdhp31pkzvrba7avz84yc9f1ik9f3ympa51hq22vpg97"))
        (patches (search-patches "libvirt-add-install-prefix.patch"))))
     (build-system meson-build-system)
     (arguments
