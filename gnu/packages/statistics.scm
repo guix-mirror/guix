@@ -6181,3 +6181,36 @@ or eta squared effect size.")
 interface).  The recommended routine @code{logspline()} uses an algorithm from
 @url{doi:10.1214/aos/1031594728,Stone et al (1997)}.")
     (license license:asl2.0)))
+
+(define-public r-effects
+  (package
+    (name "r-effects")
+    (version "4.2-0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "effects" version))
+        (sha256
+          (base32
+            "0iks79rd4knrd81x4kvcpgpclr69l0m0v6sfla8k3wzkcnydycv8"))))
+    (properties `((upstream-name . "effects")))
+    (build-system r-build-system)
+    (propagated-inputs
+      `(("r-cardata" ,r-cardata)
+        ("r-colorspace" ,r-colorspace)
+        ("r-estimability" ,r-estimability)
+        ("r-insight" ,r-insight)
+        ("r-lattice" ,r-lattice)
+        ("r-lme4" ,r-lme4)
+        ("r-nnet" ,r-nnet)
+        ("r-survey" ,r-survey)))
+    (native-inputs
+      `(("r-knitr" ,r-knitr)
+        ("r-car", r-car)))
+    (home-page "https://www.r-project.org")
+    (synopsis
+      "Effect Displays for Linear, Generalized Linear, and Other Models")
+    (description
+      "Graphical and tabular effect displays, e.g., of interactions, for
+various statistical models with linear predictors.")
+    (license license:gpl2+)))
