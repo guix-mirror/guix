@@ -2915,14 +2915,14 @@ Date::Calc.")
 (define-public perl-date-manip
   (package
     (name "perl-date-manip")
-    (version "6.82")
+    (version "6.85")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/S/SB/SBECK/"
                            "Date-Manip-" version ".tar.gz"))
        (sha256
-        (base32 "0ak72kpydwhq2z03mhdfwm3ganddzb8gawzh6crpsjvb9kwvr5ps"))))
+        (base32 "1p6clpx9r0kzpzr9d6gy4q6m0pw21lh7bnd9ir3qiidp8cwkjqhn"))))
     (build-system perl-build-system)
     (arguments
      ;; Tests would require tzdata for timezone information, but tzdata is in
