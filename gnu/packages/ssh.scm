@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
@@ -317,7 +317,8 @@ Additionally, various channel-specific options can be negotiated.")
               (sha256
                (base32
                 "1xpxkvgj7wgcl450djkcrmrf957mcy2f36hfs5g6kpla1gax2d1g"))
-              (patches (search-patches "guile-ssh-fix-test-suite.patch"))))
+              (patches (search-patches "guile-ssh-fix-test-suite.patch"
+                                       "guile-ssh-read-error.patch"))))
     (build-system gnu-build-system)
     (outputs '("out" "debug"))
     (arguments
@@ -383,6 +384,9 @@ libssh library.")
   (package
     (inherit guile-ssh)
     (name "guile2.0-ssh")
+    (source (origin
+              (inherit (package-source guile-ssh))
+              (patches (search-patches "guile-ssh-fix-test-suite.patch"))))
     (native-inputs
      `(("guile" ,guile-2.0) ;needed when cross-compiling.
        ,@(alist-delete "guile" (package-native-inputs guile-ssh))))
@@ -393,6 +397,9 @@ libssh library.")
   (package
     (inherit guile-ssh)
     (name "guile2.2-ssh")
+    (source (origin
+              (inherit (package-source guile-ssh))
+              (patches (search-patches "guile-ssh-fix-test-suite.patch"))))
     (native-inputs
      `(("guile" ,guile-2.2) ;needed when cross-compiling.
        ,@(alist-delete "guile" (package-native-inputs guile-ssh))))
