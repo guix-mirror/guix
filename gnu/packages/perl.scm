@@ -10464,7 +10464,7 @@ the system epoch.")
 (define-public perl-time-piece
   (package
     (name "perl-time-piece")
-    (version "1.3203")
+    (version "1.3401")
     (source
      (origin
        (method url-fetch)
@@ -10472,7 +10472,7 @@ the system epoch.")
              "mirror://cpan/authors/id/E/ES/ESAYM/Time-Piece-"
              version ".tar.gz"))
        (sha256
-        (base32 "0hbg99v8xqy3nx6nrjpwh1w6xwqpfflz0djkbdd72kvf8zvglwb9"))))
+        (base32 "09scn3yyqfl5w3yb6qrylhhn386zfz9fmpslk8iwyidb1sxvfmab"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Time-Piece")
     (synopsis "Object-Oriented time objects")
