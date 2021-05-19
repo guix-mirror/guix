@@ -10746,14 +10746,14 @@ common serialisation formats such as JSON or CBOR.")
 (define-public perl-unicode-collate
   (package
     (name "perl-unicode-collate")
-    (version "1.27")
+    (version "1.29")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/S/SA/SADAHIRO/"
                            "Unicode-Collate-" version ".tar.gz"))
        (sha256
-        (base32 "12df4n46yri6via4x9jb918v1hk6yrlzqk9srq6fnz5kviylnxbf"))))
+        (base32 "0dr4k10fgbsczh4sz7w8d0nnba38r6jrg87cm3gw4xxgn55fzj7l"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
