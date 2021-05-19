@@ -10867,7 +10867,7 @@ UNIVERSAL::isa as a function.")
 (define-public perl-universal-require
   (package
     (name "perl-universal-require")
-    (version "0.18")
+    (version "0.19")
     (source
      (origin
        (method url-fetch)
@@ -10876,7 +10876,7 @@ UNIVERSAL::isa as a function.")
              version ".tar.gz"))
        (sha256
         (base32
-         "1v9qdg80ng6dzyzs7cn8sb6mn8ym042i32lcnpd478b7g6l3d9xj"))))
+         "00qs1y2xzxbz4s13q28hwg2pm0vcmsb0gg6k7wh3p33cw0kcsryl"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/UNIVERSAL-require")
     (synopsis "Require modules from a variable")
