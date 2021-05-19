@@ -2628,7 +2628,7 @@ root's login shell, you'll need to @command{guix pull} separately.
 @end quotation
 
 Now, @pxref{Getting Started}, and
-join us on @code{#guix} on the Freenode IRC network or on
+join us on @code{#guix} on the Libera Chat IRC network or on
 @email{guix-devel@@gnu.org} to share your experience!
 
 
