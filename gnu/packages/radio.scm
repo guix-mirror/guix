@@ -82,6 +82,7 @@
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
@@ -1145,7 +1146,7 @@ their position, altitude, speed, etc.")
 (define-public rtl-433
   (package
     (name "rtl-433")
-    (version "20.11")
+    (version "21.05")
     (source
      (origin
        (method git-fetch)
@@ -1154,12 +1155,13 @@ their position, altitude, speed, etc.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "093bxjxkg7yf78wqj5gpijbfa2p05ny09qqsj84kzi1svnzsa369"))))
+        (base32 "1f60nvahsplv1yszacc49mlbcnacgs1nwhdf8y9srmzg08xrfnfk"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("libusb" ,libusb)
+       ("openssl" ,openssl)
        ("rtl-sdr" ,rtl-sdr)))
     (synopsis "Decoder for radio transmissions in ISM bands")
     (description
