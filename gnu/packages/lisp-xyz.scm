@@ -9989,8 +9989,8 @@ type correctness in Common Lisp.  It is based on CLtL2 extensions.")
          ((#:tests? _ #f) #f))))))
 
 (define-public sbcl-numcl
-  (let ((commit "d19f36356be900c600ef08560c9e1af441a166cb")
-        (revision "1"))
+  (let ((commit "3dcdb0e24a33943d6c3a188ecbb0c78003bf975c")
+        (revision "2"))
     (package
       (name "sbcl-numcl")
       (version (git-version "0.2.0" revision commit))
@@ -10002,7 +10002,7 @@ type correctness in Common Lisp.  It is based on CLtL2 extensions.")
                (commit commit)))
          (file-name (git-file-name "numcl" version))
          (sha256
-          (base32 "0q4ylfr7hl0gz2ynr0c15h09dmnli2x6ndnm5wr58wfplf1wfj31"))))
+          (base32 "17m1rx1gfjbbmgjsf33b8s4bygfsj1hb6kvmypkql21qzjvx60nl"))))
       (build-system asdf-build-system/sbcl)
       (arguments
        `(#:test-asd-file "numcl.test.asd"
