@@ -9660,7 +9660,7 @@ future, or if you want the retain the familiarity of TT-style templates.")
 (define-public perl-term-encoding
   (package
     (name "perl-term-encoding")
-    (version "0.02")
+    (version "0.03")
     (source
      (origin
        (method url-fetch)
@@ -9668,7 +9668,7 @@ future, or if you want the retain the familiarity of TT-style templates.")
                            "Term-Encoding-" version ".tar.gz"))
        (sha256
         (base32
-         "1k6g4q7snxggv5fdqnzw29al4mwbwg0hl0skzfnczh508qiyfx7j"))))
+         "02qx4ni1vqp9hvkw69hp5bxcf2ghjiw8sl34pqy5mlimsy3rdflm"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-install" ,perl-module-install)))
