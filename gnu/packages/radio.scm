@@ -1830,6 +1830,33 @@ voice formats.")
 various hardware.")
     (license license:gpl3+)))
 
+(define-public inspectrum
+  (package
+    (name "inspectrum")
+    (version "0.2.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/miek/inspectrum")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1x6nyn429pk0f7lqzskrgsbq09mq5787xd4piic95add6n1cc355"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("fftwf" ,fftwf)
+       ("liquid-dsp" ,liquid-dsp)
+       ("qtbase" ,qtbase)))
+    (home-page "https://github.com/miek/inspectrum")
+    (synopsis "Radio signal analyser")
+    (description
+     "Inspectrum is a tool for analysing captured signals, primarily from
+software-defined radio receivers.")
+    (license license:gpl3+)))
+
 (define-public wfview
   ;; No tagged release, use commit directly.
   (let ((commit "274e905d214a7360e8cf2dd0421dbe3712a0ddcc")
