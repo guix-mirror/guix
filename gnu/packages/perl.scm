@@ -10620,14 +10620,14 @@ variable conform.")
 (define-public perl-type-tiny
   (package
     (name "perl-type-tiny")
-    (version "1.008003")
+    (version "1.012003")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/T/TO/TOBYINK/"
                            "Type-Tiny-" version ".tar.gz"))
        (sha256
-        (base32 "1x80rlnh7kl4xgm4qvyfbgahcyla4wbyh3b759nm21czn8x6wkm4"))))
+        (base32 "0s11rlkkjjys8x6ihm5mrhzbbf341g5ckqbalph4g7l98kcy26yl"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-warnings" ,perl-test-warnings)))
