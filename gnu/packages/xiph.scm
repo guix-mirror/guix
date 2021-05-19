@@ -10,6 +10,7 @@
 ;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2021 Brendan Tildesley <mail@brendan.scot>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -44,21 +45,9 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
-  #:use-module (guix build-system gnu)
-  #:export (libogg
-            libvorbis
-            libtheora
-            speex
-            speexdsp
-            ao
-            flac
-            libkate
-            vorbis-tools
-            opus
-            opusfile
-            opus-tools))
+  #:use-module (guix build-system gnu))
 
-(define libogg
+(define-public libogg
   (package
    (name "libogg")
    (version "1.3.4")
@@ -83,7 +72,7 @@ periodic timestamps for seeking.")
                                "See COPYING in the distribution."))
    (home-page "https://xiph.org/ogg/")))
 
-(define libvorbis
+(define-public libvorbis
   (package
    (name "libvorbis")
    (version "1.3.7")
@@ -110,7 +99,7 @@ polyphonic) audio and music at fixed and variable bitrates from 16 to
                                "See COPYING in the distribution."))
    (home-page "https://xiph.org/vorbis/")))
 
-(define libtheora
+(define-public libtheora
   (package
     (name "libtheora")
     (version "1.1.1")
@@ -136,7 +125,7 @@ compressed video format.")
     (license license:bsd-3)
     (home-page "https://xiph.org/theora/")))
 
-(define speex
+(define-public speex
   (package
     (name "speex")
     (version "1.2.0")
@@ -167,7 +156,7 @@ stereo encoding, and voice activity detection.")
     (license (license:non-copyleft "file://COPYING"
                                 "See COPYING in the distribution."))))
 
-(define speexdsp
+(define-public speexdsp
   (package
     (name "speexdsp")
     (version "1.2.0")
@@ -193,7 +182,7 @@ work from the @code{speex} codec.")
     (license (license:non-copyleft "file://COPYING"
                                    "See COPYING in the distribution."))))
 
-(define ao
+(define-public ao
   (package
     (name "ao")
     ;; We need a few commits on top of 1.2.2 to fix CVE-2017-11548.
@@ -249,7 +238,7 @@ It currently supports:
     (properties '((cpe-name . "libao")))
     (home-page "https://www.xiph.org/ao/")))
 
-(define flac
+(define-public flac
   (package
    (name "flac")
    (version "1.3.3")
@@ -273,7 +262,7 @@ meaning that audio is compressed in FLAC without any loss in quality.")
                                "See COPYING in the distribution.")) ; and LGPL and GPL
    (home-page "https://xiph.org/flac/")))
 
-(define libkate
+(define-public libkate
   (package
    (name "libkate")
    (version "0.4.1")
@@ -309,7 +298,7 @@ Kate stream.")
    (license license:bsd-3)
    (home-page "https://wiki.xiph.org/OggKate")))
 
-(define vorbis-tools
+(define-public vorbis-tools
   (package
    (name "vorbis-tools")
    (version "1.4.2")
@@ -343,7 +332,7 @@ ogginfo, to obtain information (tags, bitrate, length, etc.) about
    (license license:gpl2)
    (home-page "https://xiph.org/vorbis/")))
 
-(define opus
+(define-public opus
   (package
     (name "opus")
     (version "1.3.1")
@@ -367,7 +356,7 @@ incorporated technology from Skype's SILK codec and Xiph.Org's CELT codec.")
     (license license:bsd-3)
     (home-page "https://www.opus-codec.org")))
 
-(define opus-tools
+(define-public opus-tools
   (package
     (name "opus-tools")
     (version "0.2")
@@ -403,7 +392,7 @@ decoding .opus files.")
     (license license:bsd-3)
     (home-page "https://www.opus-codec.org")))
 
-(define opusfile
+(define-public opusfile
   (package
     (name "opusfile")
     (version "0.12")
