@@ -1040,14 +1040,14 @@ library assert.h.")
 (define-public perl-carp-assert-more
   (package
     (name "perl-carp-assert-more")
-    (version "1.20")
+    (version "1.26")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/P/PE/PETDANCE/"
                            "Carp-Assert-More-" version ".tar.gz"))
        (sha256
-        (base32 "16jnhdjgfwymrc5fki4xlf1rlziszf9k6q0245g976124k708ac5"))))
+        (base32 "14x4m4dlj7pwq2r2fsmww3q3xb61cdgnrlmjh5mms3ikaln6rmmk"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-exception" ,perl-test-exception)))
