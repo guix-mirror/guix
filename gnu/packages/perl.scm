@@ -5229,16 +5229,16 @@ inc directory within a distribution and are used by Makefile.PL or Build.PL.")
 (define-public perl-inline
   (package
    (name "perl-inline")
-   (version "0.81")
+   (version "0.86")
    (source
     (origin
      (method url-fetch)
      (uri (string-append
-           "mirror://cpan/authors/id/T/TI/TINITA/Inline-"
+           "mirror://cpan/authors/id/I/IN/INGY/Inline-"
            version ".tar.gz"))
      (sha256
       (base32
-       "1qxi0xvn8rqj4sca9gwb1xkm6bdz33x57li5kfls6mnavil3i5qz"))))
+       "0fhyspkg2ka7yz7kbq8a028hj0chfc7qqkl7n20dpc0is3i7s2ji"))))
    (build-system perl-build-system)
    (native-inputs
     `(("perl-test-warn" ,perl-test-warn)))
