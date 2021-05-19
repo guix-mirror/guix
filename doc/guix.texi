@@ -5913,7 +5913,7 @@ For example, to create a bundle containing Guile, Emacs, Geiser, and all
 their dependencies, you can run:
 
 @example
-$ guix pack guile emacs geiser
+$ guix pack guile emacs emacs-geiser
 @dots{}
 /gnu/store/@dots{}-pack.tar.gz
 @end example
@@ -5931,7 +5931,7 @@ find inconvenient.  To work around it, you can create, say, a
 @file{/opt/gnu/bin} symlink to the profile:
 
 @example
-guix pack -S /opt/gnu/bin=bin guile emacs geiser
+guix pack -S /opt/gnu/bin=bin guile emacs emacs-geiser
 @end example
 
 @noindent
@@ -5975,7 +5975,7 @@ Yet another option is to produce a SquashFS image with the following
 command:
 
 @example
-guix pack -f squashfs bash guile emacs geiser
+guix pack -f squashfs bash guile emacs emacs-geiser
 @end example
 
 @noindent
@@ -11835,7 +11835,7 @@ an upgrade.  More rebuilds might be required under some circumstances.
 @example
 $ guix refresh --list-dependent flex
 Building the following 120 packages would ensure 213 dependent packages are rebuilt:
-hop@@2.4.0 geiser@@0.4 notmuch@@0.18 mu@@0.9.9.5 cflow@@1.4 idutils@@4.6 @dots{}
+hop@@2.4.0 emacs-geiser@@0.13 notmuch@@0.18 mu@@0.9.9.5 cflow@@1.4 idutils@@4.6 @dots{}
 @end example
 
 The command above lists a set of packages that could be built to check
