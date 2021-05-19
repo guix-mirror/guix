@@ -5253,7 +5253,7 @@ for immediate access from Perl.")
 (define-public perl-inline-c
   (package
     (name "perl-inline-c")
-    (version "0.78")
+    (version "0.81")
     (source
      (origin
        (method url-fetch)
@@ -5262,7 +5262,7 @@ for immediate access from Perl.")
              version ".tar.gz"))
        (sha256
         (base32
-         "1izv7vswd17glffh8h83bi63gdk208mmhxi17l3qd8q1bkc08y4s"))))
+         "1b3sr39813di3j1kwbgn1xq2z726rhjjdw809ydzgmshj26jb1gi"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-file-copy-recursive" ,perl-file-copy-recursive)
