@@ -3,7 +3,7 @@
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2021 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
@@ -1092,7 +1092,7 @@ metadata.")
 (define perl-net-dbus
   (package
     (name "perl-net-dbus")
-    (version "1.1.0")
+    (version "1.2.0")
     (source
      (origin
        (method url-fetch)
@@ -1100,7 +1100,7 @@ metadata.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0sg2w147b9r9ykfzjs7y9qxry73xkjnhnk4qf95kfv79p5nnk4c3"))))
+         "1g0w8i5scmh7kfy9mmvv8q326627qf38z26mvczmn8x1yjgar8g7"))))
     (build-system perl-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
