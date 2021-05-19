@@ -7615,7 +7615,7 @@ of data.")
 (define-public perl-mozilla-ca
   (package
     (name "perl-mozilla-ca")
-    (version "20180117")
+    (version "20200520")
     (source
      (origin
        (method url-fetch)
@@ -7623,7 +7623,7 @@ of data.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "01p4ykyilk1639dxgjaa2n7rz1f0zbqxkq11yc9n6xcz26z9zk7j"))))
+         "09n7hwrh63c5gqvygqvvgvklcbvsm7g0p4nmq0b4mwhb64101jmk"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Mozilla-CA")
     (synopsis "Mozilla's CA cert bundle in PEM format")
