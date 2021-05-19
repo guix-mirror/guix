@@ -6282,7 +6282,7 @@ messages.")
 (define-public perl-mime-types
   (package
     (name "perl-mime-types")
-    (version "2.17")
+    (version "2.20")
     (source
      (origin
        (method url-fetch)
@@ -6290,7 +6290,7 @@ messages.")
                            "MIME-Types-" version ".tar.gz"))
        (sha256
         (base32
-         "1xlg7q6h8zyb8534sy0iqn90py18kilg419q6051bwqz5zadfkp0"))))
+         "1wgqm5777xac0xzcysr7adh1gi0108bdfhq6kzpxinxzjadhjw9y"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/MIME-Types")
     (synopsis "Definition of MIME types")
