@@ -195,8 +195,8 @@ implementation with no external dependencies.")
   (sbcl-package->ecl-package sbcl-bodge-queue))
 
 (define-public sbcl-golden-utils
-  (let ((commit "62a5cb948a011eb26e7a89f56d5839a3334b4100")
-        (revision "2"))
+  (let ((commit "fe1898f9abbd302b0359f017637c063173cf73e1")
+        (revision "3"))
     (package
       (name "sbcl-golden-utils")
       (version (git-version "0.0.0" revision commit))
@@ -208,7 +208,7 @@ implementation with no external dependencies.")
                (commit commit)))
          (file-name (git-file-name "golden-utils" version))
          (sha256
-          (base32 "13mvxqwd1nmpq8h5hb1s60wyqdj7ji4haxrqr0sy3csyqa8aq2j8"))))
+          (base32 "1ljc8yj32lmd1d60446rzl9m0r1ar15gdzacsf6blw1kny8xlrsr"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("alexandria" ,sbcl-alexandria)))
