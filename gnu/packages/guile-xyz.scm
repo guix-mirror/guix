@@ -2526,7 +2526,7 @@ interface for reading articles in any format.")
 (define-public guile-redis
   (package
     (name "guile-redis")
-    (version "2.1.0")
+    (version "2.1.1")
     (home-page "https://github.com/aconchillo/guile-redis")
     (source (origin
               (method git-fetch)
@@ -2536,7 +2536,7 @@ interface for reading articles in any format.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0jh166m385d14r3w9z28d7m3izggphcw41cb7djfspx52myn93dl"))))
+                "0pvk4yadgx64wk81cpisdc7zqhk6ww58xi5fs5fs6s28wb6l5bfj"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags '("GUILE_AUTO_COMPILE=0")))
