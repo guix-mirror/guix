@@ -10268,7 +10268,7 @@ approximately follow the suggestions in the Perl Style Guide.")
 (define-public perl-tie-cycle
   (package
     (name "perl-tie-cycle")
-    (version "1.225")
+    (version "1.226")
     (source
      (origin
        (method url-fetch)
@@ -10276,7 +10276,7 @@ approximately follow the suggestions in the Perl Style Guide.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0i9xq2qm50p2ih24265jndp2x8hfq7ap0d88nrlv5yaad4hxhc7k"))))
+         "0cvnykkr5z57xwl6i9qdws2gpdhsm0rrf3kia8q0q25vag0f31q9"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Tie-Cycle")
     (synopsis "Cycle through a list of values")
