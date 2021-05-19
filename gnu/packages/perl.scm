@@ -5765,17 +5765,17 @@ logging mechanism.")
 (define-public perl-log-log4perl
   (package
     (name "perl-log-log4perl")
-    (version "1.49")
+    (version "1.54")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "mirror://cpan/authors/id/M/MS/MSCHILLI/Log-Log4perl-"
+             "mirror://cpan/authors/id/E/ET/ETJ/Log-Log4perl-"
              version
              ".tar.gz"))
        (sha256
         (base32
-         "05ifhx1lmv91dbs9ck2zbjrkhh8z9g32gi6gxdmwnilia5zihfdp"))))
+         "1gpa08vd71lm24mzzkgzphfbsnymh6z5gfb6fsja7njc7cny9axv"))))
     (build-system perl-build-system)
     (home-page
      "https://metacpan.org/release/Log-Log4perl")
