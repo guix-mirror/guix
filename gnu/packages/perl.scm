@@ -6327,7 +6327,7 @@ file names are added for you.")
 (define-public perl-modern-perl
   (package
     (name "perl-modern-perl")
-    (version "1.20181021")
+    (version "1.20200211")
     (source
      (origin
        (method url-fetch)
@@ -6335,7 +6335,7 @@ file names are added for you.")
              "mirror://cpan/authors/id/C/CH/CHROMATIC/Modern-Perl-"
              version ".tar.gz"))
        (sha256
-        (base32 "1if9jbh66z2vm4wwnky41ljnhdlwrh7vzl6pd3w60v3wix92nj0x"))))
+        (base32 "1064k29aavabxj8m20b65rxk7qa3mjmzgmrikvdrxasgx378676s"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)))
