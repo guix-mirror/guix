@@ -5262,7 +5262,7 @@ MusicBrainz lookup capabilities to their applications.")
 (define-public perl-musicbrainz-discid
   (package
     (name "perl-musicbrainz-discid")
-    (version "0.04")
+    (version "0.06")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -5270,7 +5270,7 @@ MusicBrainz lookup capabilities to their applications.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1i4qk1qfcmxdibqkyfjrrjdq2zk42vjcz590qgiyc47fi9p6xx1j"))))
+                "1azc91jnwa3gdmy9pc8mflakgvsvf69ywwlqllxmdzwpk386w2xs"))))
     (build-system perl-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("which" ,which)))
