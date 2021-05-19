@@ -10527,14 +10527,14 @@ and time() calls.")
 (define-public perl-tree-simple
   (package
     (name "perl-tree-simple")
-    (version "1.33")
+    (version "1.34")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/R/RS/RSAVAGE/"
                            "Tree-Simple-" version ".tgz"))
        (sha256
-        (base32 "1alnwb6c7n4al91m9cyknvcyvdz521lh22dz1hyk4v7c50adffnv"))))
+        (base32 "176j8zgsndfnxb5mxaiarnva3ghck1jxgxwkz77r9fr2sadpksdp"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
