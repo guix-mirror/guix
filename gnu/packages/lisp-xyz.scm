@@ -10037,8 +10037,8 @@ type correctness in Common Lisp.  It is based on CLtL2 extensions.")
   (sbcl-package->ecl-package sbcl-numcl))
 
 (define-public sbcl-pzmq
-  (let ((commit "7c7390eedc469d033c72dc497984d1536ee75826")
-        (revision "1"))
+  (let ((commit "6f7b2ca02c23ea53510a9b0e0f181d5364ce9d32")
+        (revision "2"))
     (package
       (name "sbcl-pzmq")
       (version (git-version "0.0.0" revision commit))
@@ -10050,7 +10050,7 @@ type correctness in Common Lisp.  It is based on CLtL2 extensions.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0gmwzf7h90wa7v4wnk49g0hv2mdalljpwhyigxcb967wzv8lqci9"))))
+          (base32 "19mdhxhzzghlmff1fic4chg5iz0psglkim09z6dgpijm26biny05"))))
       (build-system asdf-build-system/sbcl)
       (native-inputs
        `(("bordeaux-threads" ,sbcl-bordeaux-threads)
