@@ -329,7 +329,7 @@ or cl-launch for portable processing of command-line arguments.")
 (define-public sbcl-fiveam
   (package
     (name "sbcl-fiveam")
-    (version "1.4.1")
+    (version "1.4.2")
     (source
      (origin
        (method git-fetch)
@@ -338,7 +338,7 @@ or cl-launch for portable processing of command-line arguments.")
              (commit (string-append "v" version))))
        (file-name (git-file-name "fiveam" version))
        (sha256
-        (base32 "1q3d38pwafnwnw42clq0f8g5xw7pbzr287jl9jsqmb1vb0n1vrli"))))
+        (base32 "04mh5plmlb15jbq3dkd8b9jl1dmbbg4hnd3k7859vpf6s12k5p4j"))))
     (inputs
      `(("alexandria" ,sbcl-alexandria)
        ("net.didierverna.asdf-flv" ,sbcl-net.didierverna.asdf-flv)
