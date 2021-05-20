@@ -25263,14 +25263,14 @@ aggregation for comparing different implementations in order to provide a
 (define-public r-rfast
   (package
     (name "r-rfast")
-    (version "2.0.1")
+    (version "2.0.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Rfast" version))
        (sha256
         (base32
-         "1cq3mcg49hsvqhwn6f4dgsx7f8ma4qnwr5n6s7m22qy57rg31958"))))
+         "1bmhmli6q4kg8321595k0yy91w9cblk14s6qbc9wf8f05108rg15"))))
     (properties `((upstream-name . "Rfast")))
     (build-system r-build-system)
     (propagated-inputs
