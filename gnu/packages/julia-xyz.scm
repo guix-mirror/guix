@@ -1553,6 +1553,29 @@ cosine) integrals, eta, zeta, digamma, inverse digamma, trigamma, and
 polygamma functions.")
     (license license:expat)))
 
+(define-public julia-stablerngs
+  (package
+    (name "julia-stablerngs")
+    (version "1.0.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaRandom/StableRNGs.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1cw4wc38qbgmrrx0jjwjhynnarrzjkh0yyz242zj272brbci7p1r"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/JuliaRandom/StableRNGs.jl")
+    (synopsis "Julia RNG with stable streams")
+    (description "This package intends to provide a simple RNG with stable
+streams, suitable for tests in packages which need reproducible streams of
+random numbers across Julia versions.  Indeed, the Julia RNGs provided by
+default are documented to have non-stable streams (which for example enables
+some performance improvements).")
+    (license license:expat)))
+
 (define-public julia-staticarrays
   (package
     (name "julia-staticarrays")
