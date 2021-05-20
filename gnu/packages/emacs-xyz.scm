@@ -11343,26 +11343,17 @@ passive voice.")
     (name "emacs-org")
     ;; emacs-org-contrib inherits from this package.  Please update it as
     ;; well.
-    (version "9.4.5")
+    (version "9.4.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/org-" version ".tar"))
        (sha256
-        (base32 "0h5qhrd984vf17qc227wz68191xfgbpq32dyhw0lcz2d9i0pl3xk"))))
+        (base32 "1k49ymsi77366as2wi4kzv2f1xnbwpb47iw7iw07yxwlhmm7vskq"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         ;; FIXME: The elpa tarball upstream does not include the version
-         ;; number, remove this phase when this is fixed.
-         ;; https://lists.gnu.org/archive/html/emacs-orgmode/2020-12/msg00729.html
-         (add-after 'unpack 'fix-org-version
-           (lambda _
-             (substitute* "org-version.el"
-               (("org-release \"\"")
-                (string-append "org-release \"" ,version "\"")))
-             #t))
          (add-after 'install 'install-documentation
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((share (string-append (assoc-ref outputs "out") "/share"))
@@ -11370,10 +11361,9 @@ passive voice.")
                     (doc-dir (string-append share "/doc/" ,name "-" ,version)))
                (install-file "org.info" info-dir)
                (install-file "orgguide.info" info-dir)
-               ;; XXX: "orgcard.pdf" is not built in Org 9.4.5.
+               ;; XXX: "orgcard.pdf" is not built in Org 9.4.6.
                ;; (install-file "orgcard.pdf" doc-dir)
-               )
-             #t)))))
+               ))))))
     (home-page "https://orgmode.org/")
     (synopsis "Outline-based notes management and organizer")
     (description "Org is an Emacs mode for keeping notes, maintaining TODO
@@ -11386,14 +11376,14 @@ programming and reproducible research.")
   (package
     (inherit emacs-org)
     (name "emacs-org-contrib")
-    (version "20210329")
+    (version "20210519")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://orgmode.org/elpa/"
                            "org-plus-contrib-" version ".tar"))
        (sha256
-        (base32 "1l0ycz77hwmjb4sffhabb0d0hg1c9ypxbpbyv8xj5ib4nbi87f2h"))
+        (base32 "0g765fsc7ssn779xnhjzrxy1sz5b019h7dk1q26yk2w6i540ybfl"))
        ;; ob-sclang.el is packaged separately to avoid the dependency on
        ;; SuperCollider and qtwebengine.
        (modules '((guix build utils)))
