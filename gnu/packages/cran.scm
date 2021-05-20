@@ -16309,6 +16309,37 @@ The extrafont package makes both of these things easier.")
 the XKCD web comic.")
     (license license:gpl3)))
 
+(define-public r-babelgene
+  (package
+    (name "r-babelgene")
+    (version "21.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "babelgene" version))
+       (sha256
+        (base32
+         "1gk5pm3b3shr1id66a11ywc1b823gbj8yckg24szzfhj8g4ixyf0"))))
+    (properties `((upstream-name . "babelgene")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dplyr" ,r-dplyr)
+       ("r-rlang" ,r-rlang)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page
+     "https://igordot.github.io/babelgene/")
+    (synopsis "Gene orthologs for model organisms in a Tidy data format")
+    (description
+     "Genomic analysis of model organisms often requires the use of databases
+based on human data or making comparisons to patient-derived resources.  This
+requires converting genes between human and non-human analogues.  The
+babelgene R package provides predicted gene orthologs/homologs for frequently
+studied model organisms in an R-friendly tidy/long format.  The package
+integrates orthology assertion predictions sourced from multiple databases as
+compiled by the HGNC Comparison of Orthology Predictions (HCOP).")
+    (license license:expat)))
+
 (define-public r-msigdbr
   (package
     (name "r-msigdbr")
