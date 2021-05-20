@@ -8576,14 +8576,14 @@ of gene-level counts.")
 (define-public r-rhdf5filters
   (package
     (name "r-rhdf5filters")
-    (version "1.2.0")
+    (version "1.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "rhdf5filters" version))
        (sha256
         (base32
-         "1jvnss44liapbc6hk93yg1gknv0ahd5x86dydqiwq9l65jd03psq"))))
+         "1bjlgc76vx0z81s8vci9ln1d2s3b157qnm32xs36mnyjk31ivasz"))))
     (properties `((upstream-name . "rhdf5filters")))
     (build-system r-build-system)
     (propagated-inputs
