@@ -1423,6 +1423,33 @@ high-order accuracy, assuming that @code{f(x0+h)} has a Taylor series or some
 other power series in @code{h}.")
     (license license:expat)))
 
+(define-public julia-safetestsets
+  ;; The only release tag is the first commit in the repository.
+  (let ((commit "e553edc4c753344d38349304b9ff5483c3b8ff21")
+        (revision "1"))
+    (package
+      (name "julia-safetestsets")
+      (version (git-version "0.0.1" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/YingboMa/SafeTestsets.jl")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+           (base32 "1fb1dfdmiw2ggx60hf70954xlps0r48fcb3k3dvxynlz7ylphp96"))))
+      (build-system julia-build-system)
+      (arguments
+       `(#:julia-package-name "SafeTestsets"))
+      (native-inputs
+       `(("julia-staticarrays" ,julia-staticarrays)))
+      (home-page "https://github.com/YingboMa/SafeTestsets.jl")
+      (synopsis "Julia's testset in a module")
+      (description "This package contains the testset from Julia, packaged into
+a loadable module.")
+      (license license:expat))))
+
 (define-public julia-sortingalgorithms
   (package
     (name "julia-sortingalgorithms")
