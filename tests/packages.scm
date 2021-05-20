@@ -137,7 +137,7 @@
   ;; inputs.  See <https://bugs.gnu.org/35872>.
   (let* ((dep (dummy-package "dep" (version "2")))
          (old (dummy-package "foo" (version "1")
-                             (propagated-inputs `(("dep" ,dep)))))
+                             (propagated-inputs (list dep))))
          (drv (package-derivation %store old))
          (tx  (mock ((gnu packages) find-best-packages-by-name
                      (const (list old)))
@@ -225,7 +225,7 @@
              (bar (dummy-package "bar" (version "0")
                                  (replacement old)))
              (new (dummy-package "foo" (version "1")
-                                 (inputs `(("bar" ,bar)))))
+                                 (inputs (list bar))))
              (tx  (mock ((gnu packages) find-best-packages-by-name
                          (const (list new)))
                         (transaction-upgrade-entry
@@ -275,13 +275,13 @@
 (test-assert "package-transitive-inputs"
   (let* ((a (dummy-package "a"))
          (b (dummy-package "b"
-              (propagated-inputs `(("a" ,a)))))
+              (propagated-inputs (list a))))
          (c (dummy-package "c"
-              (inputs `(("a" ,a)))))
+              (inputs (list a))))
          (d (dummy-package "d"
               (propagated-inputs `(("x" "something.drv")))))
          (e (dummy-package "e"
-              (inputs `(("b" ,b) ("c" ,c) ("d" ,d))))))
+              (inputs (list b c d)))))
     (and (null? (package-transitive-inputs a))
          (equal? `(("a" ,a)) (package-transitive-inputs b))
          (equal? `(("a" ,a)) (package-transitive-inputs c))
@@ -327,19 +327,19 @@
          (b (dummy-package "b"
               (build-system trivial-build-system)
               (supported-systems '("x" "y"))
-              (inputs `(("a" ,a)))))
+              (inputs (list a))))
          (c (dummy-package "c"
               (build-system trivial-build-system)
               (supported-systems '("y" "z"))
-              (inputs `(("b" ,b)))))
+              (inputs (list b))))
          (d (dummy-package "d"
               (build-system trivial-build-system)
               (supported-systems '("x" "y" "z"))
-              (inputs `(("b" ,b) ("c" ,c)))))
+              (inputs (list b c))))
          (e (dummy-package "e"
               (build-system trivial-build-system)
               (supported-systems '("x" "y" "z"))
-              (inputs `(("d" ,d))))))
+              (inputs (list d)))))
     (list (package-transitive-supported-systems a)
           (package-transitive-supported-systems b)
           (package-transitive-supported-systems c)
@@ -355,13 +355,13 @@
                      (build-system trivial-build-system))))))
     (let* ((a (dummy-package/no-implicit "a"))
            (b (dummy-package/no-implicit "b"
-                (propagated-inputs `(("a" ,a)))))
+                (propagated-inputs (list a))))
            (c (dummy-package/no-implicit "c"
-                (inputs `(("a" ,a)))))
+                (inputs (list a))))
            (d (dummy-package/no-implicit "d"
-                (native-inputs `(("b" ,b)))))
+                (native-inputs (list b))))
            (e (dummy-package/no-implicit "e"
-                (inputs `(("c" ,c) ("d" ,d))))))
+                (inputs (list c d)))))
       (lset= eq?
              (list a b c d e)
              (package-closure (list e))
@@ -384,12 +384,11 @@
        (u (dummy-origin))
        (i (dummy-origin))
        (a (dummy-package "a"))
-       (b (dummy-package "b"
-            (inputs `(("a" ,a) ("i" ,i)))))
+       (b (dummy-package "b" (inputs (list a i))))
        (c (package (inherit b) (source o)))
        (d (dummy-package "d"
             (build-system trivial-build-system)
-            (source u) (inputs `(("c" ,c))))))
+            (source u) (inputs (list c)))))
   (test-assert "package-direct-sources, no source"
     (null? (package-direct-sources a)))
   (test-equal "package-direct-sources, #f source"
@@ -457,7 +456,7 @@
               (supported-systems '("x86_64-linux"))))
          (p (dummy-package "foo"
               (build-system gnu-build-system)
-              (inputs `(("d" ,d)))
+              (inputs (list d))
               (supported-systems '("x86_64-linux" "armhf-linux")))))
     (and (supported-package? p "x86_64-linux")
          (not (supported-package? p "i686-linux"))
@@ -706,7 +705,7 @@
 
 (test-assert "package-derivation, inputs deduplicated"
   (let* ((dep (dummy-package "dep"))
-         (p0  (dummy-package "p" (inputs `(("dep" ,dep)))))
+         (p0  (dummy-package "p" (inputs (list dep))))
          (p1  (package (inherit p0)
                        (inputs `(("dep" ,(package (inherit dep)))
                                  ,@(package-inputs p0))))))
@@ -770,7 +769,7 @@
   (parameterize ((%graft? #f))
     (let* ((dep (dummy-package "dep"))
            (p   (dummy-package "p"
-                  (inputs `(("dep" ,dep "non-existent"))))))
+                  (inputs (list `(,dep "non-existent"))))))
       (guard (c ((derivation-missing-output-error? c)
                  (and (string=? (derivation-missing-output c) "non-existent")
                       (equal? (package-derivation %store dep)
@@ -928,12 +927,12 @@
          (p1 (dummy-package "p1" (native-search-paths (sp "PATH1"))))
          (p2 (dummy-package "p2"
                (native-search-paths (sp "PATH2"))
-               (inputs `(("p0" ,p0)))
-               (propagated-inputs `(("p1" ,p1)))))
+               (inputs (list p0))
+               (propagated-inputs (list p1))))
          (p3 (dummy-package "p3"
                (native-search-paths (sp "PATH3"))
-               (native-inputs `(("p0" ,p0)))
-               (propagated-inputs `(("p2" ,p2))))))
+               (native-inputs (list p0))
+               (propagated-inputs (list p2)))))
     (lset= string=?
            '("PATH1" "PATH2" "PATH3")
            (map search-path-specification-variable
@@ -987,7 +986,7 @@
          (dep*  (package (inherit dep) (replacement new)))
          (dummy (dummy-package "dummy"
                   (arguments '(#:implicit-inputs? #f))
-                  (inputs `(("dep" ,dep*))))))
+                  (inputs (list dep*)))))
     (equal? (package-grafts %store dummy)
             (list (graft
                     (origin (package-derivation %store dep))
@@ -1019,11 +1018,11 @@
          (dep   (package (inherit new) (version "0.0")))
          (dep*  (package (inherit dep) (replacement new)))
          (prop  (dummy-package "propagated"
-                  (propagated-inputs `(("dep" ,dep*)))
+                  (propagated-inputs (list dep*))
                   (arguments '(#:implicit-inputs? #f))))
          (dummy (dummy-package "dummy"
                   (arguments '(#:implicit-inputs? #f))
-                  (inputs `(("prop" ,prop))))))
+                  (inputs (list prop)))))
     (equal? (package-grafts %store dummy)
             (list (graft
                     (origin (package-derivation %store dep))
@@ -1036,16 +1035,16 @@
          (dep  (package (inherit new) (version "0") (replacement new)))
          (p1   (dummy-package "intermediate1"
                  (arguments '(#:implicit-inputs? #f))
-                 (inputs `(("dep" ,dep)))))
+                 (inputs (list dep))))
          (p2   (dummy-package "intermediate2"
                  (arguments '(#:implicit-inputs? #f))
                  ;; Here we copy DEP to have an equivalent package that is not
                  ;; 'eq?' to DEP.  This is similar to what happens with
                  ;; 'package-with-explicit-inputs' & co.
-                 (inputs `(("dep" ,(package (inherit dep)))))))
+                 (inputs (list (package (inherit dep))))))
          (p3   (dummy-package "final"
                  (arguments '(#:implicit-inputs? #f))
-                 (inputs `(("p1" ,p1) ("p2" ,p2))))))
+                 (inputs (list p1 p2)))))
     (equal? (package-grafts %store p3)
             (list (graft
                     (origin (package-derivation %store
@@ -1063,8 +1062,7 @@
             (p0* (package (inherit p0) (version "1.1")))
             (p1  (dummy-package "p1"
                    (arguments '(#:implicit-inputs? #f))
-                   (inputs `(("p0" ,p0)
-                             ("p0:lib" ,p0 "lib"))))))
+                   (inputs (list p0 `(,p0 "lib"))))))
     (lset= equal? (pk (package-grafts %store p1))
            (list (graft
                    (origin (package-derivation %store p0))
@@ -1112,7 +1110,7 @@
                                #t)))))
          (p2r (dummy-package "P2"
                 (build-system trivial-build-system)
-                (inputs `(("p1" ,p1)))
+                (inputs (list p1))
                 (arguments
                  `(#:guile ,%bootstrap-guile
                    #:builder (let ((out (assoc-ref %outputs "out")))
@@ -1133,7 +1131,7 @@
                                #t)))))
          (p3  (dummy-package "p3"
                 (build-system trivial-build-system)
-                (inputs `(("p2" ,p2)))
+                (inputs (list p2))
                 (arguments
                  `(#:guile ,%bootstrap-guile
                    #:builder (let ((out (assoc-ref %outputs "out")))
@@ -1202,7 +1200,7 @@
                   (lower lower)))
          (dep   (dummy-package "dep" (build-system bs)))
          (pkg   (dummy-package "example"
-                  (native-inputs `(("dep" ,dep)))))
+                  (native-inputs (list dep))))
          (do-not-build (lambda (continue store lst . _) lst)))
     (equal? (with-build-handler do-not-build
               (parameterize ((%current-target-system "powerpc64le-linux-gnu")
@@ -1229,9 +1227,9 @@
 (test-assert "package->bag, propagated inputs"
   (let* ((dep    (dummy-package "dep"))
          (prop   (dummy-package "prop"
-                   (propagated-inputs `(("dep" ,dep)))))
+                   (propagated-inputs (list dep))))
          (dummy  (dummy-package "dummy"
-                   (inputs `(("prop" ,prop)))))
+                   (inputs (list prop))))
          (inputs (bag-transitive-inputs (package->bag dummy #:graft? #f))))
     (match (assoc "dep" inputs)
       (("dep" package)
@@ -1244,7 +1242,7 @@
                                        `(("libxml2" ,libxml2))
                                        '()))))
          (pkg (dummy-package "foo"
-                (native-inputs `(("dep" ,dep)))))
+                (native-inputs (list dep))))
          (bag (package->bag pkg (%current-system) "i586-gnu")))
     (equal? (parameterize ((%current-system "x86_64-linux"))
               (bag-transitive-inputs bag))
@@ -1257,7 +1255,7 @@
                                        `(("libxml2" ,libxml2))
                                        '()))))
          (pkg (dummy-package "foo"
-                (native-inputs `(("dep" ,dep)))))
+                (native-inputs (list dep))))
          (bag (package->bag pkg (%current-system) "foo86-hurd")))
     (equal? (parameterize ((%current-target-system "foo64-gnu"))
               (bag-transitive-inputs bag))
@@ -1563,11 +1561,11 @@
                     (build-system trivial-build-system)))
          (glib    (dummy-package "glib"
                     (build-system trivial-build-system)
-                    (propagated-inputs `(("libffi" ,libffi)))))
+                    (propagated-inputs (list libffi))))
          (gobject (dummy-package "gobject-introspection"
                     (build-system trivial-build-system)
-                    (inputs `(("glib" ,glib)))
-                    (propagated-inputs `(("libffi" ,libffi)))))
+                    (inputs (list glib))
+                    (propagated-inputs (list libffi))))
          (rewrite (package-input-rewriting/spec
                    `(("glib" . ,identity)))))
     (and (= (length (package-transitive-inputs gobject))
@@ -1584,11 +1582,11 @@
                     (build-system trivial-build-system)))
          (glib    (dummy-package "glib"
                     (build-system trivial-build-system)
-                    (propagated-inputs `(("libffi" ,libffi)))))
+                    (propagated-inputs (list libffi))))
          (gobject (dummy-package "gobject-introspection"
                     (build-system trivial-build-system)
-                    (inputs `(("glib" ,glib)))
-                    (propagated-inputs `(("libffi" ,libffi)))))
+                    (inputs (list glib))
+                    (propagated-inputs (list libffi))))
          (rewrite (package-input-rewriting `((,glib . ,glib)))))
     (and (= (length (package-transitive-inputs gobject))
             (length (package-transitive-inputs (rewrite gobject))))

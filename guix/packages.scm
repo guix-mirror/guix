@@ -366,6 +366,14 @@ name of its URI."
   ;; <https://lists.gnu.org/archive/html/guix-devel/2017-03/msg00790.html>.
   (fold delete %supported-systems '("mips64el-linux" "powerpc-linux")))
 
+(define-inlinable (sanitize-inputs inputs)
+  "Sanitize INPUTS by turning it into a list of name/package tuples if it's
+not already the case."
+  (cond ((null? inputs) inputs)
+        ((and (pair? (car inputs))
+              (string? (caar inputs)))
+         inputs)
+        (else (map add-input-label inputs))))
 
 ;; A package.
 (define-record-type* <package>
@@ -380,11 +388,14 @@ name of its URI."
              (default '()) (thunked))
 
   (inputs package-inputs                  ; input packages or derivations
-          (default '()) (thunked))
+          (default '()) (thunked)
+          (sanitize sanitize-inputs))
   (propagated-inputs package-propagated-inputs    ; same, but propagated
-                     (default '()) (thunked))
+                     (default '()) (thunked)
+                     (sanitize sanitize-inputs))
   (native-inputs package-native-inputs    ; native input packages/derivations
-                 (default '()) (thunked))
+                 (default '()) (thunked)
+                 (sanitize sanitize-inputs))
 
   (outputs package-outputs                ; list of strings
            (default '("out")))
@@ -414,6 +425,24 @@ name of its URI."
             (default (and=> (current-source-location)
                             source-properties->location))
             (innate)))
+
+(define (add-input-label input)
+  "Add an input label to INPUT."
+  (match input
+    ((? package? package)
+     (list (package-name package) package))
+    (((? package? package) output)                ;XXX: ugly?
+     (list (package-name package) package output))
+    ((? gexp-input?)       ;XXX: misplaced because 'native?' field is ignored?
+     (let ((obj    (gexp-input-thing input))
+           (output (gexp-input-output input)))
+       `(,(if (package? obj)
+              (package-name obj)
+              "_")
+         ,obj
+         ,@(if (string=? output "out") '() (list output)))))
+    (x
+     `("_" ,x))))
 
 (set-record-type-printer! <package>
                           (lambda (package port)

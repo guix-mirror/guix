@@ -6476,7 +6476,7 @@ package looks like this:
                 "0ssi1wpaf7plaswqqjwigppsg5fyh99vdlb9kzl7c9lng89ndq1i"))))
     (build-system gnu-build-system)
     (arguments '(#:configure-flags '("--enable-silent-rules")))
-    (inputs `(("gawk" ,gawk)))
+    (inputs (list gawk))
     (synopsis "Hello, GNU world: An example GNU package")
     (description "Guess what GNU Hello prints!")
     (home-page "https://www.gnu.org/software/hello/")
@@ -6564,8 +6564,8 @@ Reference Manual}).
 
 @item
 The @code{inputs} field specifies inputs to the build process---i.e.,
-build-time or run-time dependencies of the package.  Here, we define an
-input called @code{"gawk"} whose value is that of the @code{gawk}
+build-time or run-time dependencies of the package.  Here, we add
+an input, a reference to the @code{gawk}
 variable; @code{gawk} is itself bound to a @code{<package>} object.
 
 @cindex backquote (quasiquote)
@@ -6690,19 +6690,40 @@ list, typically containing sequential keyword-value pairs.
 @itemx @code{native-inputs} (default: @code{'()})
 @itemx @code{propagated-inputs} (default: @code{'()})
 @cindex inputs, of packages
-These fields list dependencies of the package.  Each one is a list of
-tuples, where each tuple has a label for the input (a string) as its
-first element, a package, origin, or derivation as its second element,
-and optionally the name of the output thereof that should be used, which
-defaults to @code{"out"} (@pxref{Packages with Multiple Outputs}, for
-more on package outputs).  For example, the list below specifies three
-inputs:
+These fields list dependencies of the package.  Each element of these
+lists is either a package, origin, or other ``file-like object''
+(@pxref{G-Expressions}); to specify the output of that file-like object
+that should be used, pass a two-element list where the second element is
+the output (@pxref{Packages with Multiple Outputs}, for more on package
+outputs).  For example, the list below specifies three inputs:
 
 @lisp
+(list libffi libunistring
+      `(,glib "bin"))      ;the "bin" output of GLib
+@end lisp
+
+In the example above, the @code{"out"} output of @code{libffi} and
+@code{libunistring} is used.
+
+@quotation Compatibility Note
+Until version 1.3.0, input lists were a list of tuples,
+where each tuple has a label for the input (a string) as its
+first element, a package, origin, or derivation as its second element,
+and optionally the name of the output thereof that should be used, which
+defaults to @code{"out"}.  For example, the list below is equivalent to
+the one above, but using the @dfn{old input style}:
+
+@lisp
+;; Old input style (deprecated).
 `(("libffi" ,libffi)
   ("libunistring" ,libunistring)
-  ("glib:bin" ,glib "bin"))  ;the "bin" output of Glib
+  ("glib:bin" ,glib "bin"))  ;the "bin" output of GLib
 @end lisp
+
+This style is now deprecated; it is still supported but support will be
+removed in a future version.  It should not be used for new package
+definitions.
+@end quotation
 
 @cindex cross compilation, package dependencies
 The distinction between @code{native-inputs} and @code{inputs} is
@@ -6789,7 +6810,7 @@ cross-compiling:
   ;; When cross-compiled, Guile, for example, depends on
   ;; a native version of itself.  Add it here.
   (native-inputs (if (%current-target-system)
-                     `(("self" ,this-package))
+                     (list this-package)
                      '())))
 @end lisp
 
@@ -7105,8 +7126,7 @@ depends on it:
     (name name)
     (version "3.0")
     ;; several fields omitted
-    (inputs
-     `(("lua" ,lua)))
+    (inputs (list lua))
     (synopsis "Socket library for Lua")))
 
 (define-public lua5.1-socket
