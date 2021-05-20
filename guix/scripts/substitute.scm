@@ -518,8 +518,11 @@ PORT."
                                          (current-error-port)
                                          #:abbreviation nar-uri-abbreviation))))
                      ;; Keep RAW open upon completion so we can later reuse
-                     ;; the underlying connection.
-                     (progress-report-port reporter raw #:close? #f)))
+                     ;; the underlying connection.  Pass the download size so
+                     ;; that this procedure won't block reading from RAW.
+                     (progress-report-port reporter raw
+                                           #:close? #f
+                                           #:download-size dl-size)))
                   ((input pids)
                    ;; NOTE: This 'progress' port of current process will be
                    ;; closed here, while the child process doing the

@@ -25,6 +25,7 @@
   #:use-module (ice-9 binary-ports)
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 poll)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 threads)
@@ -870,60 +871,115 @@ example: \"/foo/bar\" yields '(\"foo\" \"bar\")."
       exp ...)
     (const #f)))
 
-(define (nar-response-port response compression)
-  "Return a port on which to write the body of RESPONSE, the response of a
-/nar request, according to COMPRESSION."
+(define (nar-compressed-port port compression)
+  "Return a port on which to write the body of the response of a /nar request,
+according to COMPRESSION."
   (match compression
     (($ <compression> 'gzip level)
      ;; Note: We cannot used chunked encoding here because
      ;; 'make-gzip-output-port' wants a file port.
-     (make-gzip-output-port (response-port response)
+     (make-gzip-output-port port
                             #:level level
                             #:buffer-size %default-buffer-size))
     (($ <compression> 'lzip level)
-     (make-lzip-output-port (response-port response)
+     (make-lzip-output-port port
                             #:level level))
     (($ <compression> 'zstd level)
-     (make-zstd-output-port (response-port response)
+     (make-zstd-output-port port
                             #:level level))
     (($ <compression> 'none)
-     (response-port response))
+     port)
     (#f
-     (response-port response))))
+     port)))
 
 (define (http-write server client response body)
   "Write RESPONSE and BODY to CLIENT, possibly in a separate thread to avoid
 blocking."
+  ;; XXX: The default Guile web server implementation supports the keep-alive
+  ;; mechanism.  However, as we run our own modified version of the http-write
+  ;; procedure, we need to access a few server implementation details to keep
+  ;; it functional.
+  (define *error-events*
+    (logior POLLHUP POLLERR))
+
+  (define *read-events*
+    POLLIN)
+
+  (define *events*
+    (logior *error-events* *read-events*))
+
+  ;; Access the server poll set variable.
+  (define http-poll-set
+    (@@ (web server http) http-poll-set))
+
+  ;; Copied from (web server http).
+  (define (keep-alive? response)
+    (let ((v (response-version response)))
+      (and (or (< (response-code response) 400)
+               (= (response-code response) 404))
+           (case (car v)
+             ((1)
+              (case (cdr v)
+                ((1) (not (memq 'close (response-connection response))))
+                ((0) (memq 'keep-alive (response-connection response)))))
+             (else #f)))))
+
+  (define (keep-alive port)
+    "Add the given PORT the server poll set."
+    (force-output port)
+    (poll-set-add! (http-poll-set server) port *events*))
+
+  (define compression
+    (assoc-ref (response-headers response) 'x-nar-compression))
+
   (match (response-content-type response)
     (('application/x-nix-archive . _)
-     ;; Sending the the whole archive can take time so do it in a separate
-     ;; thread so that the main thread can keep working in the meantime.
-     (call-with-new-thread
-      (lambda ()
-        (set-thread-name "publish nar")
-        (let* ((compression (assoc-ref (response-headers response)
-                                       'x-nar-compression))
-               (response    (write-response (sans-content-length response)
-                                            client))
-               (port        (begin
-                              (force-output client)
-                              (configure-socket client)
-                              (nar-response-port response compression))))
-          ;; XXX: Given our ugly workaround for <http://bugs.gnu.org/21093> in
-          ;; 'render-nar', BODY here is just the file name of the store item.
-          ;; We call 'write-file' from here because we know that's the only
-          ;; way to avoid building the whole nar in memory, which could
-          ;; quickly become a real problem.  As a bonus, we even do
-          ;; sendfile(2) directly from the store files to the socket.
-          (swallow-zlib-error
-           (swallow-EPIPE
-            (write-file (utf8->string body) port)))
-          (swallow-zlib-error
-           (close-port port))
-          (values)))))
+     ;; When compressing the NAR on the go, we cannot announce its size
+     ;; beforehand to the client. Hence, the keep-alive mechanism cannot work
+     ;; here.
+     (let ((keep-alive? (and (eq? (compression-type compression) 'none)
+                             (keep-alive? response))))
+       ;; Add the client to the server poll set, so that we can receive
+       ;; further requests without closing the connection.
+       (when keep-alive?
+         (keep-alive client))
+       ;; Sending the the whole archive can take time so do it in a separate
+       ;; thread so that the main thread can keep working in the meantime.
+       (call-with-new-thread
+        (lambda ()
+          (set-thread-name "publish nar")
+          (let* ((response    (write-response (sans-content-length response)
+                                              client))
+                 (port        (begin
+                                (force-output client)
+                                (configure-socket client)
+                                ;; Duplicate the response port, so that it is
+                                ;; not automatically closed when closing the
+                                ;; returned port.  This is needed for the
+                                ;; keep-alive mechanism.
+                                (nar-compressed-port
+                                 (duplicate-port
+                                  (response-port response) "w+0b")
+                                 compression))))
+            ;; XXX: Given our ugly workaround for <http://bugs.gnu.org/21093>
+            ;; in 'render-nar', BODY here is just the file name of the store
+            ;; item.  We call 'write-file' from here because we know that's
+            ;; the only way to avoid building the whole nar in memory, which
+            ;; could quickly become a real problem.  As a bonus, we even do
+            ;; sendfile(2) directly from the store files to the socket.
+            (swallow-zlib-error
+             (swallow-EPIPE
+              (write-file (utf8->string body) port)))
+            (swallow-zlib-error
+             (close-port port)
+             (unless keep-alive?
+               (close-port client)))
+            (values))))))
     (_
      (match (assoc-ref (response-headers response) 'x-raw-file)
        ((? string? file)
+        (when (keep-alive? response)
+          (keep-alive client))
         ;; Send a raw file in a separate thread.
         (call-with-new-thread
          (lambda ()
@@ -933,19 +989,20 @@ blocking."
                (call-with-input-file file
                  (lambda (input)
                    (let* ((size     (stat:size (stat input)))
-                          (response (write-response (with-content-length response
-                                                                         size)
-                                                    client))
+                          (response (write-response
+                                     (with-content-length response size)
+                                     client))
                           (output   (response-port response)))
                      (configure-socket client)
                      (if (file-port? output)
                          (sendfile output input size)
                          (dump-port input output))
-                     (close-port output)
+                     (unless (keep-alive? response)
+                       (close-port output))
                      (values)))))
              (lambda args
-               ;; If the file was GC'd behind our back, that's fine.  Likewise if
-               ;; the client closes the connection.
+               ;; If the file was GC'd behind our back, that's fine.  Likewise
+               ;; if the client closes the connection.
                (unless (memv (system-error-errno args)
                              (list ENOENT EPIPE ECONNRESET))
                  (apply throw args))
