@@ -1704,13 +1704,13 @@ and printing capabilities than traditional data frames.")
 (define-public r-dplyr
   (package
     (name "r-dplyr")
-    (version "1.0.5")
+    (version "1.0.6")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "dplyr" version))
               (sha256
                (base32
-                "0w3fr6sn0mw5mjs27669czpc8vpjj6ayrjavw8v0gd7ccsfa0hbm"))))
+                "01zsc9hn2wfvgphn8wcy7j4nvyq2qdl32008alnj0nsr34d3i308"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ellipsis" ,r-ellipsis)
@@ -1718,6 +1718,7 @@ and printing capabilities than traditional data frames.")
        ("r-glue" ,r-glue)
        ("r-lifecycle" ,r-lifecycle)
        ("r-magrittr" ,r-magrittr)
+       ("r-pillar" ,r-pillar)
        ("r-r6" ,r-r6)
        ("r-rlang" ,r-rlang)
        ("r-tibble" ,r-tibble)
