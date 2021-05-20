@@ -11688,14 +11688,14 @@ for evolution along a phylogenetic tree.")
 (define-public r-fmsb
   (package
     (name "r-fmsb")
-    (version "0.7.0")
+    (version "0.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "fmsb" version))
        (sha256
         (base32
-         "0x1wkzfdvv4s5xmr0whcwjz4aac71gacwymj2c3mzj2bbswwlw45"))))
+         "09pq7p7i6vkq9av7l7x9hicl9sqh7xn96f9pac117hy6z852jvi2"))))
     (build-system r-build-system)
     (home-page "http://minato.sip21c.org/msb/")
     (synopsis "Functions for medical statistics book with demographic data")
