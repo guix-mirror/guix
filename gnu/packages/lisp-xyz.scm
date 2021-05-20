@@ -16812,3 +16812,35 @@ is built on top of the @code{libev} event library.")
 
 (define-public ecl-woo
   (sbcl-package->ecl-package sbcl-woo))
+
+(define-public sbcl-json-streams
+  (let ((commit "5da012e8133affbf75024e7500feb37394690752")
+        (revision "1"))
+    (package
+      (name "sbcl-json-streams")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/rotatef/json-streams")
+               (commit commit)))
+         (file-name (git-file-name "json-streams" version))
+         (sha256
+          (base32 "0cia3721im04q73dfkd688d8splgpz03qa4h8s3r39kar4w3xll2"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("cl-quickcheck" ,sbcl-cl-quickcheck)
+         ("flexi-streams" ,sbcl-flexi-streams)))
+      (home-page "https://github.com/rotatef/json-streams")
+      (synopsis "Common Lisp library for reading and writing JSON")
+      (description
+       "This package provides a stream based JSON parser/writer, well suited as
+building block for higher level libraries.")
+      (license license:gpl3+))))
+
+(define-public cl-json-streams
+  (sbcl-package->cl-source-package sbcl-json-streams))
+
+(define-public ecl-json-streams
+  (sbcl-package->ecl-package sbcl-json-streams))
