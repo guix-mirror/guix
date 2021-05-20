@@ -5888,6 +5888,8 @@ formats.")
                        "iolib.common-lisp.asd"
                        "iolib.base.asd"
                        "iolib.asd")
+         #:asd-systems '("iolib"
+                         "iolib/os")
          #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'fix-paths
