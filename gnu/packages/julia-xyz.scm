@@ -1423,6 +1423,35 @@ high-order accuracy, assuming that @code{f(x0+h)} has a Taylor series or some
 other power series in @code{h}.")
     (license license:expat)))
 
+(define-public julia-sortingalgorithms
+  (package
+    (name "julia-sortingalgorithms")
+    (version "1.0.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaCollections/SortingAlgorithms.jl")
+               ;; Tagging releases is hard:
+               ;; https://github.com/JuliaCollections/SortingAlgorithms.jl/issues/41#issuecomment-840587380
+               (commit "aa2b98d384ddd132aae0219e68fb63b92513cb35")))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "13zbx18psxrg4fvkqgp0m7g484vrama2xm6902bbls30801hgljg"))))
+    (build-system julia-build-system)
+    (arguments
+     `(#:tests? #f))    ; cycle with StatsBase.jl
+    (propagated-inputs
+     `(("julia-datastructures" ,julia-datastructures)))
+    ;(native-inputs
+    ; `(("julia-statsbase" ,julia-statsbase)))
+    (home-page "https://github.com/JuliaCollections/SortingAlgorithms.jl")
+    (synopsis "Extra sorting algorithms extending Julia's sorting API")
+    (description "The SortingAlgorithms package provides three sorting
+algorithms that can be used with Julia's standard sorting API: heapsort,
+timsort and radixsort.")
+    (license license:expat)))
+
 (define-public julia-specialfunctions
   (package
     (name "julia-specialfunctions")
