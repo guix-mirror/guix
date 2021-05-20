@@ -28148,14 +28148,14 @@ data you need the @code{pdftools} package.")
 (define-public r-pdftools
   (package
     (name "r-pdftools")
-    (version "2.3.1")
+    (version "3.0.1")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "pdftools" version))
         (sha256
           (base32
-            "01i5g2mjkshis0zlm7lrvi7kkzl4dn3if1hzwkgzf9n2mi33ndsx"))))
+            "1dcbs5n5y8zi7bbyx491m9ik8kkmjr301x8ms85fmwdfb5a97m8k"))))
     (properties `((upstream-name . "pdftools")))
     (build-system r-build-system)
     (inputs
