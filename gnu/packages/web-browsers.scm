@@ -599,9 +599,7 @@ driven and does not detract you from your daily work.")
 (define-public nyxt
   (package
     (name "nyxt")
-    ;; Package the pre-release because latest stable 1.5.0 does not build
-    ;; anymore.
-    (version "2-pre-release-7")
+    (version "2.0.0")
     (source
      (origin
        (method git-fetch)
@@ -612,7 +610,7 @@ driven and does not detract you from your daily work.")
              (commit version)))
        (sha256
         (base32
-         "0d5mawka26gwi9nb45x1n33vgskwyn46jrvfz7nzmm2jfaq4ipn6"))
+         "0y91hnanf1bj378zsxhjh33qnhj09f6ixpdqmkl69k0075zls93r"))
        (file-name (git-file-name "nyxt" version))))
     (build-system gnu-build-system)
     (arguments
@@ -626,10 +624,6 @@ driven and does not detract you from your daily work.")
          (add-before 'build 'fix-common-lisp-cache-folder
            (lambda _
              (setenv "HOME" "/tmp")
-             #t))
-         (add-before 'build 'set-version
-           (lambda _
-             (setenv "NYXT_VERSION" ,version)
              #t))
          (add-before 'check 'configure-tests
            (lambda _
@@ -678,7 +672,6 @@ driven and does not detract you from your daily work.")
        ("cluffer" ,sbcl-cluffer)
        ("dexador" ,sbcl-dexador)
        ("enchant" ,sbcl-enchant)
-       ("file-attributes" ,sbcl-file-attributes)
        ("fset" ,sbcl-fset)
        ("hu.dwim.defclass-star" ,sbcl-hu.dwim.defclass-star)
        ("iolib" ,sbcl-iolib)
@@ -711,9 +704,9 @@ driven and does not detract you from your daily work.")
        ("gobject-introspection" ,gobject-introspection)))
     (synopsis "Extensible web-browser in Common Lisp")
     (home-page "https://nyxt.atlas.engineer")
-    (description "Nyxt is a keyboard-oriented, extensible web-browser
-designed for power users.  The application has familiar Emacs and VI
-key-bindings and is fully configurable and extensible in Common Lisp.")
+    (description "Nyxt is a keyboard-oriented, extensible web browser designed
+for power users.  Conceptually inspired by Emacs and Vim, it has familiar
+key-bindings (Emacs, vi, CUA), and is fully configurable in Common Lisp.")
     (license license:bsd-3)))
 
 (define-public next
