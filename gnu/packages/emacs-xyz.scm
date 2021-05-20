@@ -221,7 +221,7 @@
 (define-public emacs-geiser
   (package
     (name "emacs-geiser")
-    (version "0.13")
+    (version "0.16")
     (source
      (origin
        (method git-fetch)
@@ -230,9 +230,7 @@
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0bwjcfmcyv6z0i5ivqirgcibxdkrlf5vyxcbj7k8dk7flwg1fpd9"))
-       (patches
-        (search-patches "emacs-geiser-autoload-activate-implementation.patch"))))
+        (base32 "18gx7ak2ldpmqbimnq221dn2qg7qwm5n1mj6ajymwkgvqwcrsl2r"))))
     (build-system emacs-build-system)
     (arguments
      '(#:phases
