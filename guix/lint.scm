@@ -79,6 +79,7 @@
   #:export (check-description-style
             check-inputs-should-be-native
             check-inputs-should-not-be-an-input-at-all
+            check-input-labels
             check-patch-file-names
             check-patch-headers
             check-synopsis-style
@@ -415,6 +416,37 @@ of a package, and INPUT-NAMES, a list of package specifications such as
             #:field 'inputs))
          (package-input-intersection (package-direct-inputs package)
                                      input-names))))
+
+(define (check-input-labels package)
+  "Emit a warning for labels that differ from the corresponding package name."
+  (define (check input-kind package-inputs)
+    (define (warning label name)
+      (make-warning package
+                    (G_ "label '~a' does not match package name '~a'")
+                    (list label name)
+                    #:field input-kind))
+
+    (append-map (match-lambda
+                  (((? string? label) (? package? dependency))
+                   (if (string=? label (package-name dependency))
+                       '()
+                       (list (warning label (package-name dependency)))))
+                  (((? string? label) (? package? dependency) output)
+                   (let ((expected (string-append (package-name dependency)
+                                                  ":" output)))
+                     (if (string=? label expected)
+                         '()
+                         (list (warning label expected)))))
+                  (_
+                   '()))
+                (package-inputs package)))
+
+  (append-map (match-lambda
+                ((kind proc)
+                 (check kind proc)))
+              `((native-inputs ,package-native-inputs)
+                (inputs ,package-inputs)
+                (propagated-inputs ,package-propagated-inputs))))
 
 (define (package-name-regexp package)
   "Return a regexp that matches PACKAGE's name as a word at the beginning of a
@@ -1583,6 +1615,10 @@ them for PACKAGE."
      (name        'inputs-should-not-be-input)
      (description "Identify inputs that shouldn't be inputs at all")
      (check       check-inputs-should-not-be-an-input-at-all))
+   (lint-checker
+     (name        'input-labels)
+     (description "Identify input labels that do not match package names")
+     (check       check-input-labels))
    (lint-checker
      (name        'license)
      ;; TRANSLATORS: <license> is the name of a data type and must not be

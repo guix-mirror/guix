@@ -356,6 +356,20 @@
                               `(("python-setuptools" ,python-setuptools))))))
      (check-inputs-should-not-be-an-input-at-all pkg))))
 
+(test-assert "input labels: no warnings"
+  (let ((pkg (dummy-package "x"
+               (inputs `(("glib" ,glib)
+                         ("pkg-config" ,pkg-config))))))
+    (null? (check-input-labels pkg))))
+
+(test-equal "input labels: one warning"
+  "label 'pkgkonfig' does not match package name 'pkg-config'"
+  (single-lint-warning-message
+   (let ((pkg (dummy-package "x"
+                (inputs `(("glib" ,glib)
+                          ("pkgkonfig" ,pkg-config))))))
+     (check-input-labels pkg))))
+
 (test-equal "file patches: different file name -> warning"
   "file names of patches should start with the package name"
   (single-lint-warning-message

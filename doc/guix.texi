@@ -12158,6 +12158,12 @@ declare them as in this example:
 @item formatting
 Warn about obvious source code formatting issues: trailing white space,
 use of tabulations, etc.
+
+@item input-labels
+Report old-style input labels that do not match the name of the
+corresponding package.  This aims to help migrate from the ``old input
+style''.  @xref{package Reference}, for more information on package
+inputs and input styles.
 @end table
 
 The general syntax is:
