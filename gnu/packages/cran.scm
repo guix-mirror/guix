@@ -4551,15 +4551,17 @@ from the data points.")
 (define-public r-corrplot
   (package
     (name "r-corrplot")
-    (version "0.84")
+    (version "0.88")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "corrplot" version))
        (sha256
         (base32
-         "1k03qd8db7pwg1v318xapx5mpiypiz2n07qr19c4b45diri5xkhd"))))
+         "1s09isdpx2i4p6jny50lck37bsqd5dfxdi3yn8xq8280x8l4vldz"))))
     (build-system r-build-system)
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/taiyun/corrplot")
     (synopsis "Visualization of a correlation matrix")
     (description
