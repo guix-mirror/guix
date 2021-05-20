@@ -367,10 +367,6 @@ AUX_FILES =						\
   gnu/packages/aux-files/linux-libre/5.12-arm64.conf	\
   gnu/packages/aux-files/linux-libre/5.12-i686.conf	\
   gnu/packages/aux-files/linux-libre/5.12-x86_64.conf	\
-  gnu/packages/aux-files/linux-libre/5.11-arm.conf	\
-  gnu/packages/aux-files/linux-libre/5.11-arm64.conf	\
-  gnu/packages/aux-files/linux-libre/5.11-i686.conf	\
-  gnu/packages/aux-files/linux-libre/5.11-x86_64.conf	\
   gnu/packages/aux-files/linux-libre/5.10-arm.conf	\
   gnu/packages/aux-files/linux-libre/5.10-arm64.conf	\
   gnu/packages/aux-files/linux-libre/5.10-i686.conf	\
