@@ -101,6 +101,26 @@ acts like @code{convert(T, x)}, but without the restriction of returning a
 be GPU compatible without throwing away the wrapper.")
     (license license:expat)))
 
+(define-public julia-aqua
+  (package
+    (name "julia-aqua")
+    (version "0.5.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaTesting/Aqua.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0zcvrwnyhh2kr4d2xv7ps8dh7byw78dx6yb1m9m4dblgscn5kypb"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/JuliaTesting/Aqua.jl")
+    (synopsis "Automated quality assurance for Julia packages")
+    (description "@acronym{Aqua.jl, Auto QUality Assurance for Julia packages},
+provides functions to run a few automatable checks for Julia packages.")
+    (license license:expat)))
+
 (define-public julia-benchmarktools
   (package
     (name "julia-benchmarktools")
