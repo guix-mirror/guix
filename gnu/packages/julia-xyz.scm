@@ -1331,6 +1331,31 @@ originating @code{build_tarballs.jl} script can be found on the community
 build tree Yggdrasil.")
     (license license:expat))))
 
+(define-public julia-parameters
+  (package
+    (name "julia-parameters")
+    (version "0.12.2")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/mauro3/Parameters.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0b8lawi7kcws4axfsdf023gyxca15irl648ciyi1kw3wghz3pfi2"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-orderedcollections" ,julia-orderedcollections)
+       ("julia-unpack" ,julia-unpack)))
+    (home-page "https://github.com/mauro3/Parameters.jl")
+    (synopsis "Numerical-model parameter helpers")
+    (description "This package contains types with default field values, keyword
+constructors and (un-)pack macros.  Keyword functions can be slow in Julia,
+however, the normal positional constructor is also provided and could be used in
+performance critical code.")
+    (license license:expat)))
+
 (define-public julia-parsers
   (package
     (name "julia-parsers")
