@@ -18308,14 +18308,14 @@ both R code and compiled C/C++/FORTRAN code.")
 (define-public r-systemfonts
   (package
     (name "r-systemfonts")
-    (version "1.0.1")
+    (version "1.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "systemfonts" version))
        (sha256
         (base32
-         "15x7qx8iigkybgz6b6s66i3mh75vgynzpd50nw05wflfwzcv87a0"))))
+         "1a9nzd4nqawr6ni3mw7xc2yq77fb2f91aarnc906mq26510rdb11"))))
     (properties `((upstream-name . "systemfonts")))
     (build-system r-build-system)
     (propagated-inputs
