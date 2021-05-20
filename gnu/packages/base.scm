@@ -109,8 +109,8 @@ command-line arguments, multiple languages, and so on.")
               "0gipv6bzkm1aihj0ncqpyh164xrzgcxcv9r1kwzyk2g1mzl1azk6"))
             (patches (search-patches "grep-timing-sensitive-test.patch"))))
    (build-system gnu-build-system)
-   (native-inputs `(("perl" ,perl)))             ;some of the tests require it
-   (inputs `(("pcre" ,pcre)))
+   (native-inputs (list perl))                   ;some of the tests require it
+   (inputs (list pcre))
    (arguments
     `(#:phases
       (modify-phases %standard-phases
@@ -161,8 +161,7 @@ including, for example, recursive directory searching.")
             (modules '((guix build utils)))))
    (build-system gnu-build-system)
    (synopsis "Stream editor")
-   (native-inputs
-    `(("perl" ,perl)))                            ;for tests
+   (native-inputs (list perl))                    ;for tests
    (description
     "Sed is a non-interactive, text stream editor.  It receives a text
 input from a file or from standard input and it then applies a series of text
@@ -215,7 +214,7 @@ implementation offers several extensions over the standard utility.")
    ;; When cross-compiling, the 'set-shell-file-name' phase needs to be able
    ;; to refer to the target Bash.
    (inputs (if (%current-target-system)
-               `(("bash" ,bash))
+               (list bash)
                '()))
 
    (synopsis "Managing tar archives")
@@ -248,7 +247,7 @@ standard utility.")
     (if (%current-target-system)
         `(#:configure-flags '("gl_cv_func_working_mktime=yes"))
         '()))
-   (native-inputs `(("ed" ,ed)))
+   (native-inputs (list ed))
    (synopsis "Apply differences to originals, with optional backups")
    (description
     "Patch is a program that applies changes to files based on differences
@@ -271,7 +270,7 @@ differences.")
              (base32
               "09isrg0isjinv8c535nxsi1s86wfdfzml80dbw41dj9x3hiad9xk"))))
    (build-system gnu-build-system)
-   (native-inputs `(("perl" ,perl)))
+   (native-inputs (list perl))
    (synopsis "Comparing and merging files")
    (description
     "GNU Diffutils is a package containing tools for finding the
@@ -331,16 +330,16 @@ used to apply commands with arbitrarily long arguments.")
             (patches (search-patches "coreutils-ls.patch"
                                      "coreutils-gnulib-tests.patch"))))
    (build-system gnu-build-system)
-   (inputs `(("acl"  ,acl)                        ; TODO: add SELinux
-             ("attr" ,attr)                       ;for xattrs in ls, mv, etc
-             ("gmp"  ,gmp)                        ;bignums in 'expr', yay!
+   (inputs `(,acl                                 ;TODO: add SELinux
+             ,attr                                ;for xattrs in ls, mv, etc
+             ,gmp                                 ;bignums in 'expr', yay!
 
              ;; Do not use libcap when cross-compiling since it's not quite
              ;; cross-compilable; and use it only for supported systems.
              ,@(if (and (not (%current-target-system))
                         (member (%current-system)
                                 (package-supported-systems libcap)))
-                   `(("libcap" ,libcap)) ;capability support in 'ls', etc.
+                   `(,libcap)                ;capability support in 'ls', etc.
                    '())))
    (native-inputs
     ;; Perl is needed to run tests in native builds, and to run the bundled
@@ -349,7 +348,7 @@ used to apply commands with arbitrarily long arguments.")
     ;; for help2man.
     (if (%current-target-system)
         '()
-        `(("perl" ,perl))))
+        (list perl)))
    (outputs '("out" "debug"))
    (arguments
     `(#:parallel-build? #f            ; help2man may be called too early
@@ -448,8 +447,8 @@ standard.")
               "06cfqzpqsvdnsxbysl5p2fgdgxgl9y4p7scpnrfa8z2zgkjdspz0"))
             (patches (search-patches "make-impure-dirs.patch"))))
    (build-system gnu-build-system)
-   (native-inputs `(("pkg-config" ,pkg-config)))  ; to detect Guile
-   (inputs `(("guile" ,guile-3.0)))
+   (native-inputs (list pkg-config))              ;to detect Guile
+   (inputs (list guile-3.0))
    (outputs '("out" "debug"))
    (arguments
     `(,@(if (hurd-target?)
@@ -1155,8 +1154,7 @@ to the @code{share/locale} sub-directory of this package.")
                                                          locale ".UTF-8")))
                                ',locales)
                      #t))))
-    (native-inputs `(("glibc" ,glibc)
-                     ("gzip" ,gzip)))
+    (native-inputs (list glibc gzip))
     (synopsis (if default-locales?
                   (P_ "Small sample of UTF-8 locales")
                   (P_ "Customized sample of UTF-8 locales")))
@@ -1209,17 +1207,15 @@ command.")
   (package (inherit glibc)
     (name "glibc-hurd-headers")
     (outputs '("out"))
-    (propagated-inputs `(("gnumach-headers" ,gnumach-headers)
-                         ("hurd-headers" ,hurd-headers)))
+    (propagated-inputs (list gnumach-headers hurd-headers))
     (native-inputs
-     `(("mig" ,(if (%current-target-system)
-                   ;; XXX: When targeting i586-pc-gnu, we need a 32-bit MiG,
-                   ;; hence this hack.
-                   (package
-                     (inherit mig)
-                     (arguments `(#:system "i686-linux")))
-                   mig))
-       ,@(package-native-inputs glibc)))
+     (modify-inputs (package-native-inputs glibc)
+       (prepend (if (%current-target-system)
+                    ;; XXX: When targeting i586-pc-gnu, we need a 32-bit MiG,
+                    ;; hence this hack.
+                    (package (inherit mig)
+                             (arguments `(#:system "i686-linux")))
+                    mig))))
     (arguments
      (substitute-keyword-arguments (package-arguments glibc)
        ;; We just pass the flags really needed to build the headers.

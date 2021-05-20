@@ -56,8 +56,7 @@
                (base32
                 "0lkd9lyspvhxlfs0496gsllwinh62jk9wij6gpadvx9gwz6yavd9"))))
     (build-system gnu-build-system)
-    (native-inputs
-     `(("guile" ,guile-2.2)))
+    (native-inputs (list guile-2.2))
     (synopsis "LALR(1) Parser Generator in Guile")
     (description
      "NYACC is an LALR(1) parser generator implemented in Guile.
@@ -92,10 +91,8 @@ extensive examples, including parsers for the Javascript and C99 languages.")
                     (("^DOCDIR =.*")
                      "DOCDIR = @prefix@/share/doc/$(PACKAGE_TARNAME)\n"))
                   #t))))
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (inputs
-     `(("guile" ,guile-2.2)))))
+    (native-inputs (list pkg-config))
+    (inputs (list guile-2.2))))
 
 (define-public nyacc
   (package
@@ -116,8 +113,7 @@ extensive examples, including parsers for the Javascript and C99 languages.")
                      "GUILE_GLOBAL_SITE=\
 $prefix/share/guile/site/$GUILE_EFFECTIVE_VERSION\n"))
                   #t))))
-    (inputs
-     `(("guile" ,guile-3.0)))))
+    (inputs (list guile-3.0))))
 
 (define-public nyacc-1.00.2
   (package
@@ -145,8 +141,7 @@ $prefix/share/guile/site/$GUILE_EFFECTIVE_VERSION\n"))
               (sha256
                (base32
                 "065ksalfllbdrzl12dz9d9dcxrv97wqxblslngsc6kajvnvlyvpk"))))
-    (inputs
-     `(("guile" ,guile-2.2)))))
+    (inputs (list guile-2.2))))
 
 (define-public mes-0.19
   ;; Mes used for bootstrap.
@@ -162,9 +157,7 @@ $prefix/share/guile/site/$GUILE_EFFECTIVE_VERSION\n"))
                 "15h4yhaywdc0djpjlin2jz1kzahpqxfki0r0aav1qm9nxxmnp1l0"))))
     (build-system gnu-build-system)
     (supported-systems '("i686-linux" "x86_64-linux"))
-    (propagated-inputs
-     `(("mescc-tools" ,mescc-tools-0.5.2)
-       ("nyacc" ,nyacc-0.86)))
+    (propagated-inputs (list mescc-tools-0.5.2 nyacc-0.86))
     (native-inputs
      `(("guile" ,guile-2.2)
        ,@(let ((target-system (or (%current-target-system)
@@ -205,9 +198,7 @@ Guile.")
                (base32
                 "0mnryfkl0dwbr5gxp16j5s95gw7z1vm1fqa1pxabp0aiar1hw53s"))))
     (supported-systems '("armhf-linux" "i686-linux" "x86_64-linux"))
-    (propagated-inputs
-     `(("mescc-tools" ,mescc-tools)
-       ("nyacc" ,nyacc-1.00.2)))
+    (propagated-inputs (list mescc-tools nyacc-1.00.2))
     (native-search-paths
      (list (search-path-specification
             (variable "C_INCLUDE_PATH")
@@ -377,7 +368,7 @@ get_machine.")
                  (base32
                   "0yyc0fcbbxi9jqa1n76x0rwspdrwmc8g09jlmsw9c35nflrhmz8q"))))
       (native-inputs
-       `(("mescc-tools" ,mescc-tools)))
+       (list mescc-tools))
       (build-system gnu-build-system)
       (arguments
        `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))

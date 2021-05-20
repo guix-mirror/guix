@@ -112,13 +112,11 @@
                       `(("self" ,this-package))
                       '()))
 
-   (inputs `(("gawk" ,gawk)
-             ("readline" ,readline)))
+   (inputs (list gawk readline))
 
    ;; Since `guile-1.8.pc' has "Libs: ... -lgmp -lltdl", these must be
    ;; propagated.
-   (propagated-inputs `(("gmp" ,gmp)
-                        ("libltdl" ,libltdl)))
+   (propagated-inputs (list gmp libltdl))
 
    (native-search-paths
     (list (search-path-specification
@@ -411,14 +409,14 @@ without requiring the source code to be rewritten.")
                  (delete-file "test-suite/tests/version.test")
                  #t))))))
       (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("libtool" ,libtool)
-         ("flex" ,flex)
-         ("gettext" ,gnu-gettext)
-         ("texinfo" ,texinfo)
-         ("gperf" ,gperf)
-         ,@(package-native-inputs guile-3.0)))
+       (modify-inputs (package-native-inputs guile-3.0)
+         (prepend autoconf
+                  automake
+                  libtool
+                  flex
+                  gnu-gettext
+                  texinfo
+                  gperf)))
       (synopsis "Development version of GNU Guile"))))
 
 (define* (make-guile-readline guile #:optional (name "guile-readline"))
@@ -604,9 +602,8 @@ GNU@tie{}Guile.  Use the @code{(ice-9 readline)} module and call its
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags '("GUILE_AUTO_COMPILE=0")))   ;to prevent guild warnings
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("guile" ,guile-2.2)))
-    (inputs `(("guile" ,guile-2.2)))
+    (native-inputs (list pkg-config guile-2.2))
+    (inputs (list guile-2.2))
     (synopsis "JSON module for Guile")
     (description
      "Guile-JSON supports parsing and building JSON documents according to the
@@ -644,9 +641,8 @@ specification.  These are the main features:
               (sha256
                (base32
                 "0nj0684qgh6ppkbdyxqfyjwsv2qbyairxpi8fzrhsi3xnc7jn4im"))))
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("guile" ,guile-3.0)))
-    (inputs `(("guile" ,guile-3.0)))))
+    (native-inputs (list pkg-config guile-3.0))
+    (inputs (list guile-3.0))))
 
 (define-public guile3.0-json
   (deprecated-package "guile3.0-json" guile-json-3))
@@ -705,10 +701,8 @@ specification.  These are the main features:
                          (format #f "(dynamic-link \"~a/lib/libgdbm.so\")"
                                  (assoc-ref inputs "gdbm"))))
                       #t)))))
-    (native-inputs
-     `(("guile" ,guile-3.0)))
-    (inputs
-     `(("gdbm" ,gdbm)))
+    (native-inputs (list guile-3.0))
+    (inputs (list gdbm))
     (home-page "https://github.com/ijp/guile-gdbm")
     (synopsis "Guile bindings to the GDBM library via Guile's FFI")
     (description
@@ -739,14 +733,8 @@ Guile's foreign function interface.")
                 "1nryy9j3bk34i0alkmc9bmqsm0ayz92k1cdf752mvhyjjn8nr928"))
               (file-name (string-append name "-" version "-checkout"))))
     (build-system gnu-build-system)
-    (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("guile" ,guile-3.0)
-       ("pkg-config" ,pkg-config)))
-    (inputs
-     `(("guile" ,guile-3.0)
-       ("sqlite" ,sqlite)))
+    (native-inputs (list autoconf automake guile-3.0 pkg-config))
+    (inputs (list guile-3.0 sqlite))
     (synopsis "Access SQLite databases from Guile")
     (description
      "This package provides Guile bindings to the SQLite database system.")
@@ -786,13 +774,8 @@ Guile's foreign function interface.")
                              (doc (string-append out "/share/doc/" package)))
                         (install-file "README.md" doc)
                         #t))))))
-    (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("pkg-config" ,pkg-config)
-       ("guile" ,guile-3.0)))
-    (inputs
-     `(("guile" ,guile-3.0)))
+    (native-inputs (list autoconf automake pkg-config guile-3.0))
+    (inputs (list guile-3.0))
     (synopsis "Structured access to bytevector contents for Guile")
     (description
      "Guile bytestructures offers a system imitating the type system
@@ -829,17 +812,11 @@ type system, elevating types to first-class status.")
     (arguments
      `(#:make-flags '("GUILE_AUTO_COMPILE=0")))     ; to prevent guild warnings
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("texinfo" ,texinfo)
-       ("guile" ,guile-3.0)
-       ("guile-bytestructures" ,guile-bytestructures)))
+     (list pkg-config autoconf automake texinfo guile-3.0 guile-bytestructures))
     (inputs
-     `(("guile" ,guile-3.0)
-       ("libgit2" ,libgit2)))
+     (list guile-3.0 libgit2))
     (propagated-inputs
-     `(("guile-bytestructures" ,guile-bytestructures)))
+     (list guile-bytestructures))
     (synopsis "Guile bindings for libgit2")
     (description
      "This package provides Guile bindings to libgit2, a library to
@@ -876,16 +853,8 @@ manipulate repositories of the Git version control system.")
     (arguments
      '(#:make-flags
        '("GUILE_AUTO_COMPILE=0"))) ;to prevent guild warnings
-    (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("pkg-config" ,pkg-config)
-       ,@(if (%current-target-system)
-             `(("guile" ,guile-3.0))   ;for 'guild compile' and 'guile-3.0.pc'
-             '())))
-    (inputs
-     `(("guile" ,guile-3.0)
-       ("zlib" ,zlib)))
+    (native-inputs (list autoconf automake pkg-config guile-3.0))
+    (inputs (list guile-3.0 zlib))
     (synopsis "Guile bindings to zlib")
     (description
      "This package provides Guile bindings for zlib, a lossless
@@ -915,16 +884,8 @@ Guile's foreign function interface.")
     (arguments
      '(#:make-flags
        '("GUILE_AUTO_COMPILE=0"))) ;to prevent guild warnings
-    (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("pkg-config" ,pkg-config)
-       ,@(if (%current-target-system)
-             `(("guile" ,guile-3.0))   ;for 'guild compile' and 'guile-3.0.pc'
-             '())))
-    (inputs
-     `(("guile" ,guile-3.0)
-       ("lzlib" ,lzlib)))
+    (native-inputs (list autoconf automake pkg-config guile-3.0))
+    (inputs (list guile-3.0 lzlib))
     (synopsis "Guile bindings to lzlib")
     (description
      "This package provides Guile bindings for lzlib, a C library for
@@ -950,14 +911,8 @@ pure Scheme by using Guile's foreign function interface.")
                (base32
                 "1c8l7829b5yx8wdc0mrhzjfwb6h9hb7cd8dfxcr71a7vlsi86310"))))
     (build-system gnu-build-system)
-    (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("pkg-config" ,pkg-config)
-       ("guile" ,guile-3.0)))
-    (inputs
-     `(("zstd" ,zstd "lib")
-       ("guile" ,guile-3.0)))
+    (native-inputs (list autoconf automake pkg-config guile-3.0))
+    (inputs (list `(,zstd "lib") guile-3.0))
     (synopsis "GNU Guile bindings to the zstd compression library")
     (description
      "This package provides a GNU Guile interface to the zstd (``zstandard'')
