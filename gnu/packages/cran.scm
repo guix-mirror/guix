@@ -18745,18 +18745,20 @@ as a boxplot function.")
 (define-public r-bio3d
   (package
     (name "r-bio3d")
-    (version "2.4-1")
+    (version "2.4-2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "bio3d" version))
        (sha256
         (base32
-         "07rw6c2d95gb5myxh31727j0jrchd0xisa3x89jjmf4zzs3vv7v7"))))
+         "1jvcmpzi9knhxq5jsbhg8slm8hnlx2y8smmwwrbnbyd0rmk5fhci"))))
     (properties `((upstream-name . "bio3d")))
     (build-system r-build-system)
     (inputs `(("zlib" ,zlib)))
     (propagated-inputs `(("r-rcpp" ,r-rcpp)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "http://thegrantlab.org/bio3d/")
     (synopsis "Biological structure analysis")
     (description
