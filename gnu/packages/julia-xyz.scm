@@ -1398,6 +1398,30 @@ performance critical code.")
 utilities for Julia.")
     (license license:expat)))
 
+(define-public julia-pdmats
+  (package
+    (name "julia-pdmats")
+    (version "0.11.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaStats/PDMats.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1gyhfjmb0qlqgx2398b356cph25bnpjagcslckv41bzyf8pg3ybl"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/JuliaStats/PDMats.jl")
+    (synopsis
+     "Uniform Interface for positive definite matrices of various structures")
+    (description "PDMats.jl supports efficient computation on positive definite
+matrices of various structures.  In particular, it provides uniform interfaces
+to use positive definite matrices of various structures for writing generic
+algorithms, while ensuring that the most efficient implementation is used in
+actual computation.")
+    (license license:expat)))
+
 (define-public julia-reexport
   (package
     (name "julia-reexport")
