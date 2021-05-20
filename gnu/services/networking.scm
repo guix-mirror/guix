@@ -839,17 +839,23 @@ CONFIG, an <opendht-configuration> object."
 
 (define (opendht-shepherd-service config)
   "Return a <shepherd-service> running OpenDHT."
-  (shepherd-service
-   (documentation "Run an OpenDHT node.")
-   (provision '(opendht dhtnode dhtproxy))
-   (requirement '(user-processes syslogd))
-   (start #~(make-forkexec-constructor/container
-             (list #$@(opendht-configuration->command-line-arguments config))
-             #:mappings (list (file-system-mapping
-                               (source "/dev/log") ;for syslog
-                               (target source)))
-             #:user "opendht"))
-   (stop #~(make-kill-destructor))))
+  (with-imported-modules (source-module-closure
+                          '((gnu build shepherd)
+                            (gnu system file-systems)))
+    (shepherd-service
+     (documentation "Run an OpenDHT node.")
+     (provision '(opendht dhtnode dhtproxy))
+     (requirement '(networking syslogd))
+     (modules '((gnu build shepherd)
+                (gnu system file-systems)))
+     (start #~(make-forkexec-constructor/container
+               (list #$@(opendht-configuration->command-line-arguments config))
+               #:mappings (list (file-system-mapping
+                                 (source "/dev/log") ;for syslog
+                                 (target source)))
+               #:user "opendht"
+               #:group "opendht"))
+     (stop #~(make-kill-destructor)))))
 
 (define opendht-service-type
   (service-type
