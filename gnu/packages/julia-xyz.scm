@@ -1442,6 +1442,30 @@ algorithms, while ensuring that the most efficient implementation is used in
 actual computation.")
     (license license:expat)))
 
+(define-public julia-recipesbase
+  (package
+    (name "julia-recipesbase")
+    (version "1.1.1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaPlots/RecipesBase.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1b6m5rz6wprj30rwvlxz4r1jv5gl0ay0f52kfmy2w7lqly7zhap5"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/JuliaPlots/RecipesBase.jl")
+    (synopsis "Define transformation recipes on user types")
+    (description "This package implements handy macros @code{@@recipe} and
+@code{@@series} which will define a custom transformation and attach attributes
+for user types.  Its design is an attempt to simplify and generalize the summary
+and display of types and data from external packages.  With this package it is
+possible to describe visualization routines that can be used as components in
+more complex visualizations.")
+    (license license:expat)))
+
 (define-public julia-reexport
   (package
     (name "julia-reexport")
