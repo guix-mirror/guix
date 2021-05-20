@@ -1551,6 +1551,26 @@ linear algebra operations.")
 warnings (stderr) or both streams at the same time.")
     (license license:expat)))
 
+(define-public julia-unpack
+  (package
+    (name "julia-unpack")
+    (version "1.0.2")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/mauro3/UnPack.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "066v1px72zidnvhl0rczhh07rcfwvli0jx5nprrgyi1dvj3mps2a"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/mauro3/UnPack.jl")
+    (synopsis "Pack and Unpack macros for Julia")
+    (description "The @code{@@unpack} and @code{@@pack!} macros work to unpack
+types, modules, and dictionaries.")
+    (license license:expat)))
+
 (define-public julia-uris
   (package
     (name "julia-uris")
