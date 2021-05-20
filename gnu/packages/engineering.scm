@@ -23,6 +23,7 @@
 ;;; Copyright © 2020, 2021 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;; Copyright © 2021 qblade <qblade@protonmail.com>
 ;;; Copyright © 2021 Gerd Heber <gerd.heber@gmail.com>
+;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -923,6 +924,13 @@ Emacs).")
              "-DCMAKE_BUILD_WITH_INSTALL_RPATH=TRUE")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-ngspice-detection
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "eeschema/CMakeLists.txt"
+               (("NGSPICE_DLL_FILE=\"\\$\\{NGSPICE_DLL_FILE\\}\"")
+                (string-append "NGSPICE_DLL_FILE=\""
+                               (assoc-ref inputs "libngspice")
+                               "/lib/libngspice.so\"")))))
          (add-after 'install 'install-translations
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (copy-recursively (assoc-ref inputs "kicad-i18n")
