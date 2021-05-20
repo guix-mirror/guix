@@ -1745,16 +1745,15 @@ MANIFEST."
                                        maproot "updmap/pdftex/")))))
           #t)))
 
-    (with-monad %store-monad
-      (if (any (cut string-prefix? "texlive-" <>)
-               (map manifest-entry-name (manifest-entries manifest)))
-          (gexp->derivation "texlive-configuration" build
-                            #:substitutable? #f
-                            #:local-build? #t
-                            #:properties
-                            `((type . profile-hook)
-                              (hook . texlive-configuration)))
-          (return #f))))
+  (mlet %store-monad ((texlive-base (manifest-lookup-package manifest "texlive-base")))
+    (if texlive-base
+        (gexp->derivation "texlive-configuration" build
+                          #:substitutable? #f
+                          #:local-build? #t
+                          #:properties
+                          `((type . profile-hook)
+                            (hook . texlive-configuration)))
+        (return #f))))
 
 (define %default-profile-hooks
   ;; This is the list of derivation-returning procedures that are called by
