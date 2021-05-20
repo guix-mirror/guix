@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -120,7 +120,8 @@ context of the definition of a thunked field."
     "Make the syntactic constructor NAME for TYPE, that calls CTOR, and
 expects all of EXPECTED fields to be initialized.  DEFAULTS is the list of
 FIELD/DEFAULT-VALUE tuples, THUNKED is the list of identifiers of thunked
-fields, and DELAYED is the list of identifiers of delayed fields.
+fields, DELAYED is the list of identifiers of delayed fields, and SANITIZERS
+is the list of FIELD/SANITIZER tuples.
 
 ABI-COOKIE is the cookie (an integer) against which to check the run-time ABI
 of TYPE matches the expansion-time ABI."
@@ -130,6 +131,7 @@ of TYPE matches the expansion-time ABI."
         #:this-identifier this-identifier
         #:delayed delayed
         #:innate innate
+        #:sanitizers sanitizers
         #:defaults defaults)
      (define-syntax name
        (lambda (s)
@@ -169,19 +171,30 @@ of TYPE matches the expansion-time ABI."
          (define (innate-field? f)
            (memq (syntax->datum f) 'innate))
 
+         (define field-sanitizer
+           (let ((lst (map (match-lambda
+                             ((f p)
+                              (list (syntax->datum f) p)))
+                           #'sanitizers)))
+             (lambda (f)
+               (or (and=> (assoc-ref lst (syntax->datum f)) car)
+                   #'(lambda (x) x)))))
+
          (define (wrap-field-value f value)
-           (cond ((thunked-field? f)
-                  #`(lambda (x)
-                      (syntax-parameterize ((#,this-identifier
-                                             (lambda (s)
-                                               (syntax-case s ()
-                                                 (id
-                                                  (identifier? #'id)
-                                                  #'x)))))
-                        #,value)))
-                 ((delayed-field? f)
-                  #`(delay #,value))
-                 (else value)))
+           (let* ((sanitizer (field-sanitizer f))
+                  (value     #`(#,sanitizer #,value)))
+             (cond ((thunked-field? f)
+                    #`(lambda (x)
+                        (syntax-parameterize ((#,this-identifier
+                                               (lambda (s)
+                                                 (syntax-case s ()
+                                                   (id
+                                                    (identifier? #'id)
+                                                    #'x)))))
+                          #,value)))
+                   ((delayed-field? f)
+                    #`(delay #,value))
+                   (else value))))
 
          (define default-values
            ;; List of symbol/value tuples.
@@ -291,6 +304,19 @@ can access the record it belongs to via the 'this-thing' identifier.
 A field can also be marked as \"delayed\" instead of \"thunked\", in which
 case its value is effectively wrapped in a (delay …) form.
 
+A field can also have an associated \"sanitizer\", which is a procedure that
+takes a user-supplied field value and returns a \"sanitized\" value for the
+field:
+
+  (define-record-type* <thing> thing make-thing
+    thing?
+    this-thing
+    (name  thing-name
+           (sanitize (lambda (value)
+                       (cond ((string? value) value)
+                             ((symbol? value) (symbol->string value))
+                             (else (throw 'bad! value)))))))
+
 It is possible to copy an object 'x' created with 'thing' like this:
 
   (thing (inherit x) (name \"bar\"))
@@ -305,6 +331,14 @@ inherited."
          (list #'field #'val))
         ((field _ properties ...)
          (field-default-value #'(field properties ...)))
+        (_ #f)))
+
+    (define (field-sanitizer s)
+      (syntax-case s (sanitize)
+        ((field (sanitize proc) _ ...)
+         (list #'field #'proc))
+        ((field _ properties ...)
+         (field-sanitizer #'(field properties ...)))
         (_ #f)))
 
     (define-field-property-predicate delayed-field? delayed)
@@ -376,6 +410,8 @@ inherited."
               (innate     (filter-map innate-field? field-spec))
               (defaults   (filter-map field-default-value
                                       #'((field properties ...) ...)))
+              (sanitizers (filter-map field-sanitizer
+                                        #'((field properties ...) ...)))
               (cookie     (compute-abi-cookie field-spec)))
          (with-syntax (((field-spec* ...)
                         (map field-spec->srfi-9 field-spec))
@@ -421,6 +457,7 @@ of a record instantiation"
                                            #:this-identifier #'this-identifier
                                            #:delayed #,delayed
                                            #:innate #,innate
+                                           #:sanitizers #,sanitizers
                                            #:defaults #,defaults)))))
       ((_ type syntactic-ctor ctor pred
           (field get properties ...) ...)

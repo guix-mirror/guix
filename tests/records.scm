@@ -283,6 +283,44 @@
              (equal? (foo-bar y) 1))              ;promise was already forced
            (eq? (foo-baz y) 'b)))))
 
+(test-assert "define-record-type* & sanitize"
+  (begin
+    (define-record-type* <foo> foo make-foo
+      foo?
+      (bar foo-bar
+           (default "bar")
+           (sanitize (lambda (x) (string-append x "!")))))
+
+    (let* ((p (foo))
+           (q (foo (inherit p)))
+           (r (foo (inherit p) (bar "baz")))
+           (s (foo (bar "baz"))))
+      (and (string=? (foo-bar p) "bar!")
+           (equal? q p)
+           (string=? (foo-bar r) "baz!")
+           (equal? s r)))))
+
+(test-assert "define-record-type* & sanitize & thunked"
+  (let ((sanitized 0))
+    (define-record-type* <foo> foo make-foo
+      foo?
+      (bar foo-bar
+           (default "bar")
+           (sanitize (lambda (x)
+                       (set! sanitized (+ 1 sanitized))
+                       (string-append x "!")))))
+
+    (let ((p (foo)))
+      (and (string=? (foo-bar p) "bar!")
+           (string=? (foo-bar p) "bar!")          ;twice
+           (= sanitized 1)             ;sanitizer was called at init time only
+           (let ((q (foo (bar "baz"))))
+             (and (string=? (foo-bar q) "baz!")
+                  (string=? (foo-bar q) "baz!")   ;twice
+                  (= sanitized 2)
+                  (let ((r (foo (inherit q))))
+                    (and (string=? (foo-bar r) "baz!")
+                         (= sanitized 2)))))))))  ;no re-sanitization
 (test-assert "define-record-type* & wrong field specifier"
   (let ((exp '(begin
                 (define-record-type* <foo> foo make-foo
