@@ -4668,10 +4668,10 @@ your cursor steps onto them, and re-enabled when the cursor leaves.")
 
 (define-public emacs-ob-erlang
   (let ((revision "1")
-        (commit "f1a8c665b8f7d0ab32267a9961de8eed872e6333"))
+        (commit "a029c23902b4ad73b84f262a7fc5b98d87b63dfd"))
     (package
       (name "emacs-ob-erlang")
-      (version (git-version "20180827" revision commit))
+      (version (git-version "20210321" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -4680,7 +4680,7 @@ your cursor steps onto them, and re-enabled when the cursor leaves.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0b5zajqiy6955yvlqwy92prrqy89lqchsv4ss2ylws3p4s14rhij"))))
+                  "1dlb9qgmijff4giglwb358g5zzyjbnay0wkr5spks1bawvyxpiyl"))))
       (build-system emacs-build-system)
       (home-page "https://github.com/xfwduke/ob-erlang/")
       (synopsis "Org-babel support for Erlang")
