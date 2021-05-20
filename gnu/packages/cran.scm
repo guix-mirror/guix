@@ -25289,14 +25289,14 @@ Poisson), are some of the many fast functions.")
 (define-public r-clusterr
   (package
     (name "r-clusterr")
-    (version "1.2.3")
+    (version "1.2.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ClusterR" version))
        (sha256
         (base32
-         "19xphxcpia7pdshn09yd328q3rbr6frz5574688ja1z7g5hsa2p7"))))
+         "01vgr1mpm7l1lyhril5hm1l72aicqc4iwb0b15ypijb6hwkv7g47"))))
     (properties `((upstream-name . "ClusterR")))
     (build-system r-build-system)
     (propagated-inputs
