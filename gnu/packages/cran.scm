@@ -11799,20 +11799,21 @@ after it was discovered that the NSA had backdoored Dual EC DRBG.")
 (define-public r-softimpute
   (package
     (name "r-softimpute")
-    (version "1.4")
+    (version "1.4-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "softImpute" version))
        (sha256
         (base32
-         "07cxbzkl08q58m1455i139952rmryjlic4s2f2hscl5zxxmfdxcq"))))
+         "1v2a4d688ij5zcvkzpra9yx40xckdfnllnfnyq2450zf3n1kjk7a"))))
     (properties `((upstream-name . "softImpute")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-matrix" ,r-matrix)))
     (native-inputs
-     `(("gfortran" ,gfortran)))
+     `(("gfortran" ,gfortran)
+       ("r-knitr" ,r-knitr)))
     (home-page "https://cran.r-project.org/web/packages/softImpute")
     (synopsis "Matrix completion via iterative soft-thresholded SVD")
     (description
