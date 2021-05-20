@@ -16166,10 +16166,10 @@ as well as functions for navigating between these headings.")
              (emacs-substitute-variables "test/test.el"
                ("org-super-agenda-test-results-file"
                 (string-append (getcwd) "/test/results.el")))
-             ;; The following test fail (see:
+             ;; The following tests fail (see:
              ;; https://github.com/alphapapa/org-super-agenda/issues/183).
              (substitute* "test/test.el"
-               ((".*org-super-agenda-test--:auto-map.*" all)
+               ((".*org-super-agenda-test--:auto-(map|tags).*" all)
                 (string-append all "  (skip-unless nil)\n")))
              #t)))))
     (native-inputs
