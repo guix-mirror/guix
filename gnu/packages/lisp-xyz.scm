@@ -16711,3 +16711,44 @@ Common Lisp.")
 
 (define-public ecl-cl-speedy-queue
   (sbcl-package->ecl-package sbcl-cl-speedy-queue))
+
+(define-public sbcl-lev
+  (let ((commit "7d03c68dad44f1cc4ac2aeeab2d24eb525ad941a")
+        (revision "1"))
+    (package
+      (name "sbcl-lev")
+      (version (git-version "0.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/fukamachi/lev")
+               (commit commit)))
+         (file-name (git-file-name "lev" version))
+         (sha256
+          (base32 "14lfnrvfyg2nnvlwck896p6vgarzc6g4kijmvhi2d8wra7gxzifh"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       ;; NOTE: (Sharlatan-20210520T163300+0100): No tests in upstream
+       `(#:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-libev-lib-path
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "src/lev.lisp"
+                 (("libev.so" all)
+                  (string-append (assoc-ref inputs "libev")
+                                        "/lib/" all))))))))
+      (inputs
+       `(("cffi" ,sbcl-cffi)
+         ("libev" ,libev)))
+      (home-page "https://github.com/fukamachi/lev")
+      (synopsis "Common Lisp bindings for libev")
+      (description "This package provides Common Lisp bindings for libev.")
+      (license license:bsd-2))))
+
+(define-public cl-lev
+  (sbcl-package->cl-source-package sbcl-lev))
+
+(define-public ecl-lev
+  (sbcl-package->ecl-package sbcl-lev))
