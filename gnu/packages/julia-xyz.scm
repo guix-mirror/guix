@@ -794,6 +794,26 @@ library for parsing HTML.")
 implementing both a client and a server.")
     (license license:expat)))
 
+(define-public julia-ifelse
+  (package
+    (name "julia-ifelse")
+    (version "0.1.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/sciml/ifelse.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1wrw842r8708fryf2ihp9mkmdrg27saa9nix2c31vs995k2fgr9w"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/sciml/ifelse.jl")
+    (synopsis "Function form of the if-else conditional statement")
+    (description "This package provides a convenient function form of the
+conditional ifelse.  It is similar to @code{Core.ifelse} but it is extendable.")
+    (license license:expat)))
+
 (define-public julia-imagemagick-jll
   (package
     (name "julia-imagemagick-jll")
