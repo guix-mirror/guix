@@ -3028,14 +3028,14 @@ on (non-orthogonal) variable vectors in scatterplots and biplots.")
 (define-public r-shape
   (package
     (name "r-shape")
-    (version "1.4.5")
+    (version "1.4.6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "shape" version))
        (sha256
         (base32
-         "17qqhjyfhxv9la07ykaslb50c8g4d0cgfypx4y91h9i2yjw7jjh9"))))
+         "0yqbrrx2ywmfl99s6d1n6jblc63k1mxbiqyv8y0kq8jws1g3w45r"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/shape")
     (synopsis "Functions for plotting graphical shapes")
