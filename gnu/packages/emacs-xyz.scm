@@ -19988,8 +19988,8 @@ file.")
       (license license:gpl3+))))
 
 (define-public emacs-picpocket
-  (let ((version "40")
-        (commit "6fd88b8711c4370662c0f9c462170187d092a046"))
+  (let ((version "41")
+        (commit "fa3a49f011b5ae139728548fec7375743f61c7c7"))
     (package
       (name "emacs-picpocket")
       (version version)
@@ -20001,7 +20001,7 @@ file.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "1mdzzxf7xm7zwrpnqqxa27d1cr31pd72d7ilbwljv13qp177a3yw"))))
+          (base32 "1vb358jyfs3px70ah60dmlz5azdfkva9xrw3mgrr4060vcy7w4q1"))))
       (build-system emacs-build-system)
       (arguments ; needed for running tests
        `(#:tests? #t
@@ -20013,7 +20013,6 @@ file.")
       (synopsis "Image viewer for Emacs")
       (description
        "Picpocket is an image viewer for GNU Emacs.  It has commands for:
-
 @itemize
 @item File operations on the picture files (delete, move, copy, hardlink).
 @item Scale and rotate the picture.
