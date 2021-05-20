@@ -423,6 +423,28 @@ build tree Yggdrasil.")
 for construction of objects.")
     (license license:expat)))
 
+(define-public julia-crayons
+  (package
+    (name "julia-crayons")
+    (version "4.0.4")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/KristofferC/Crayons.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0v3zhjlnb2914bxcj4myl8pgb7m31p77aj2k1bckmqs96jdph10z"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/KristofferC/Crayons.jl")
+    (synopsis "Colored and styled strings for terminals")
+    (description "Crayons is a package that makes it simple to write strings in
+different colors and styles to terminals.  It supports the 16 system colors,
+both the 256 color and 24 bit true color extensions, and the different text
+styles available to terminals.")
+    (license license:expat)))
+
 (define-public julia-datastructures
   (package
     (name "julia-datastructures")
