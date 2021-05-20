@@ -347,15 +347,25 @@ should be a <progress-reporter> object."
               (report total)
               (loop total (get-bytevector-n! in buffer 0 buffer-size))))))))
 
-(define* (progress-report-port reporter port #:key (close? #t))
+(define* (progress-report-port reporter port
+                               #:key
+                               (close? #t)
+                               download-size)
   "Return a port that continuously reports the bytes read from PORT using
 REPORTER, which should be a <progress-reporter> object.  When CLOSE? is true,
-PORT is closed when the returned port is closed."
+PORT is closed when the returned port is closed.
+
+When DOWNLOAD-SIZE is passed, do not read more than DOWNLOAD-SIZE bytes from
+PORT.  This is important to avoid blocking when the remote side won't close
+the underlying connection."
   (match reporter
     (($ <progress-reporter> start report stop)
      (let* ((total 0)
             (read! (lambda (bv start count)
-                     (let ((n (match (get-bytevector-n! port bv start count)
+                     (let* ((count (if download-size
+                                       (min count (- download-size total))
+                                       count))
+                            (n (match (get-bytevector-n! port bv start count)
                                 ((? eof-object?) 0)
                                 (x x))))
                        (set! total (+ total n))
