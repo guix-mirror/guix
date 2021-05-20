@@ -1620,6 +1620,30 @@ default are documented to have non-stable streams (which for example enables
 some performance improvements).")
     (license license:expat)))
 
+(define-public julia-static
+  (package
+    (name "julia-static")
+    (version "0.2.4")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/SciML/Static.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "01rbiysrkaca03gh55rc5zykkp63bhzaqgrxxj88lnisrbzmf0d2"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-ifelse" ,julia-ifelse)))
+    (native-inputs
+     `(("julia-aqua" ,julia-aqua)))
+    (home-page "https://github.com/SciML/Static.jl")
+    (synopsis "Static types useful for dispatch and generated functions")
+    (description "Static.jl defines a limited set of statically parameterized
+types and a common interface that is shared between them.")
+    (license license:expat)))
+
 (define-public julia-staticarrays
   (package
     (name "julia-staticarrays")
