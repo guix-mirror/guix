@@ -16682,3 +16682,32 @@ format.")
 
 (define-public cl-shasht
   (sbcl-package->cl-source-package sbcl-shasht))
+
+(define-public sbcl-cl-speedy-queue
+  (let ((commit "0425c7c62ad3b898a5ec58cd1b3e74f7d91eec4b")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-speedy-queue")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/zkat/cl-speedy-queue")
+               (commit commit)))
+         (file-name (git-file-name "cl-speedy-queue" version))
+         (sha256
+          (base32 "0czhnvxn9lvbjz9h1lb7y18nqrsq3drq5icd3lqdaa07362alriq"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/zkat/cl-speedy-queue")
+      (synopsis "Lightweight optimized queue for Common Lisp")
+      (description
+       "This is a lightweight, non-consing, optimized queue implementation for
+Common Lisp.")
+      (license license:expat))))
+
+(define-public cl-speedy-queue
+  (sbcl-package->cl-source-package sbcl-cl-speedy-queue))
+
+(define-public ecl-cl-speedy-queue
+  (sbcl-package->ecl-package sbcl-cl-speedy-queue))
