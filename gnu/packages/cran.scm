@@ -23754,13 +23754,13 @@ rendered as text, axis labels, etc. throughout R's plotting system.")
 (define-public r-oai
   (package
     (name "r-oai")
-    (version "0.3.0")
+    (version "0.3.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "oai" version))
               (sha256
                (base32
-                "1ipw9bq3ra66d1ddj1rylyyd20mlcb2i7phzhywra53s1fdifq1g"))))
+                "1zcbcxhw692s0y6izvwazyzhgx0iwsxsbcan2nk0mb7n11p7bypb"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-xml2" ,r-xml2)
@@ -23768,6 +23768,8 @@ rendered as text, axis labels, etc. throughout R's plotting system.")
        ("r-plyr" ,r-plyr)
        ("r-stringr" ,r-stringr)
        ("r-tibble" ,r-tibble)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/ropensci/oai/")
     (synopsis "General purpose OAI-PMH services client")
     (description "@code{oai} provides a general purpose client to work with
