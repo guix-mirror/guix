@@ -16752,3 +16752,63 @@ Common Lisp.")
 
 (define-public ecl-lev
   (sbcl-package->ecl-package sbcl-lev))
+
+(define-public sbcl-woo
+  (let ((commit "fba3567be95ed6e782d98a4c1477d3a74b8ad124")
+        (revision "1"))
+    (package
+      (name "sbcl-woo")
+      (version (git-version "0.12.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/fukamachi/woo")
+               (commit commit)))
+         (file-name (git-file-name "woo" version))
+         (sha256
+          (base32 "06f95x8s8v523gxmrkn9wwgw2pvc3bc66znbgrzhqb30y4aar5v5"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       ;; FIXME: Tests fail because they try to compile clack-test:
+       ;;
+       ;;   Error opening #P"/gnu/store/...-sbcl-clack-2.0.0-1.e3e0328/
+       ;;   lib/common-lisp/sbcl/clack/src/test-tmpGHU3ALSV.fasl":
+       ;;
+       ;;   Permission denied
+       ;;
+       ;; clack-test should be compiled when building the sbcl-clack package,
+       ;; but it isn't right now because of the circular dependency between
+       ;; clack-test and dexador.
+       `(#:tests? #f))
+      (native-inputs
+       `(("clack" ,sbcl-clack)
+         ("rove" ,sbcl-rove)))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("bordeaux-threads" ,sbcl-bordeaux-threads)
+         ("cffi" ,sbcl-cffi)
+         ("cl-speedy-queue" ,sbcl-cl-speedy-queue) ;; Required for ecl build
+         ("clack-socket" ,sbcl-clack)
+         ("fast-http" ,sbcl-fast-http)
+         ("fast-io" ,sbcl-fast-io)
+         ("lev" ,sbcl-lev)
+         ("quri" ,sbcl-quri)
+         ("rove" ,sbcl-rove)
+         ("smart-buffer" ,sbcl-smart-buffer)
+         ("static-vectors" ,sbcl-static-vectors)
+         ("swap-bytes" ,sbcl-swap-bytes)
+         ("trivial-utf-8" ,sbcl-trivial-utf-8)
+         ("vom" ,sbcl-vom)))
+      (home-page "https://github.com/fukamachi/woo")
+      (synopsis "Non-blocking HTTP server based on libev")
+      (description
+       "This package provides the Common Lisp HTTP server @code{WOO}, which
+is built on top of the @code{libev} event library.")
+      (license license:expat))))
+
+(define-public cl-woo
+  (sbcl-package->cl-source-package sbcl-woo))
+
+(define-public ecl-woo
+  (sbcl-package->ecl-package sbcl-woo))
