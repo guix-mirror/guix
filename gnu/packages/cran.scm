@@ -8249,14 +8249,14 @@ and tests them.")
 (define-public r-overlap
   (package
     (name "r-overlap")
-    (version "0.3.3")
+    (version "0.3.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "overlap" version))
        (sha256
         (base32
-         "17cnr4qin1qy0df4k491267acna12gpbbps6w3gi8nccqxfrb1pd"))))
+         "1arxprhz035ab78ks88n6scwnlwmnb97mlac5gsx90ipb6gkgcyk"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/overlap/")
     (synopsis "Estimates of coefficient of overlapping for animal activity patterns")
