@@ -5189,14 +5189,14 @@ algorithms.")
 (define-public r-lme4
   (package
     (name "r-lme4")
-    (version "1.1-26")
+    (version "1.1-27")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "lme4" version))
        (sha256
         (base32
-         "0ls2krph4pfjn45vf9fn3ln3x98s85wxrkvm5pnxyx55n1pnsjrn"))))
+         "0px1wppmb6wibac4sismkf82q8870r6h267vxv0ql63qdk3r20zy"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-boot" ,r-boot)
@@ -5207,8 +5207,7 @@ algorithms.")
        ("r-nloptr" ,r-nloptr)
        ("r-nlme" ,r-nlme)
        ("r-rcpp" ,r-rcpp)
-       ("r-rcppeigen" ,r-rcppeigen)
-       ("r-statmod" ,r-statmod)))
+       ("r-rcppeigen" ,r-rcppeigen)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (home-page "https://cran.r-project.org/web/packages/lme4")
