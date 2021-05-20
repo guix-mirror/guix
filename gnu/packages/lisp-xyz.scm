@@ -15384,9 +15384,10 @@ Lisp.")
          (sha256
           (base32 "04if61wigylsmn996rbfl8ylsd0d9hzdmg7p2wiglncibjzcl5k9"))))
       (build-system asdf-build-system/sbcl)
-      (arguments
-       '(#:tests? #f
-         #:asd-systems '("cl-html5-parser")))
+      (native-inputs
+       `(("json-streams" ,sbcl-json-streams)
+         ("split-sequence" ,sbcl-split-sequence)
+         ("stefil" ,sbcl-stefil)))
       (inputs
        `(("cl-ppcre" ,sbcl-cl-ppcre)
          ("flexi-stream" ,sbcl-flexi-streams)
