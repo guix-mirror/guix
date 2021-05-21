@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2015, 2016, 2018, 2019, 2020 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2020 Eric Bavier <bavier@posteo.net>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2020, 2021 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2015, 2016 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Alex Sassmannshausen <alex.sassmannshausen@gmail.com>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
@@ -2137,7 +2137,7 @@ system is under heavy load.")
 (define-public detox
   (package
     (name "detox")
-    (version "1.3.3")
+    (version "1.4.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2146,21 +2146,23 @@ system is under heavy load.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "13mhs62m7bpff45liy65pajq5jg3i12jj90vwdkra94z9mlr2rlz"))))
+                "0q16dvjbry573j4ayh9dwskdh1dxx8dk4rj94w6f2dcv4ww37is1"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("flex" ,flex)))
     (arguments
-     `(#:tests? #f                    ;no 'check' target
-       #:phases (modify-phases %standard-phases
+     `(#:phases (modify-phases %standard-phases
                   (add-after 'unpack 'delete-configure
                     ;; The "configure" script is present, but otherwise the
                     ;; project is not bootstrapped: missing install-sh and
                     ;; Makefile.in, so delete it so the bootstrap phase will
                     ;; take over.
-                    (lambda _ (delete-file "configure") #t)))))
+                    (lambda _ (delete-file "configure") #t))
+                  (replace 'check
+                    (lambda _
+                      (invoke "./tests/test.sh" "src/detox"))))))
     (home-page "https://github.com/dharple/detox")
     (synopsis "Clean up file names")
     (description
