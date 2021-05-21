@@ -7976,37 +7976,6 @@ including VCF header and contents in RDF and JSON.")
 information about the latest version of the Gene Ontologies.")
     (license license:artistic2.0)))
 
-(define-public r-bsgenome
-  (package
-    (name "r-bsgenome")
-    (version "1.58.0")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "BSgenome" version))
-              (sha256
-               (base32
-                "1gbvmxr6r57smgvhqgwspbcnwyk4hsfkxkpzzcs6470q03zfb4wq"))))
-    (properties
-     `((upstream-name . "BSgenome")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-biocgenerics" ,r-biocgenerics)
-       ("r-biostrings" ,r-biostrings)
-       ("r-genomeinfodb" ,r-genomeinfodb)
-       ("r-genomicranges" ,r-genomicranges)
-       ("r-iranges" ,r-iranges)
-       ("r-matrixstats" ,r-matrixstats)
-       ("r-rsamtools" ,r-rsamtools)
-       ("r-rtracklayer" ,r-rtracklayer)
-       ("r-s4vectors" ,r-s4vectors)
-       ("r-xvector" ,r-xvector)))
-    (home-page "https://bioconductor.org/packages/BSgenome")
-    (synopsis "Infrastructure for Biostrings-based genome data packages")
-    (description
-     "This package provides infrastructure shared by all Biostrings-based
-genome data packages and support for efficient SNP representation.")
-    (license license:artistic2.0)))
-
 (define-public r-impute
   (package
     (name "r-impute")
