@@ -7976,33 +7976,6 @@ including VCF header and contents in RDF and JSON.")
 information about the latest version of the Gene Ontologies.")
     (license license:artistic2.0)))
 
-(define-public r-seqpattern
-  (package
-    (name "r-seqpattern")
-    (version "1.22.0")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "seqPattern" version))
-              (sha256
-               (base32
-                "0j68n6fwycxjpl2va5fw7ajb123n758s2pq997d76dysxghmrlzq"))))
-    (properties
-     `((upstream-name . "seqPattern")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-biostrings" ,r-biostrings)
-       ("r-genomicranges" ,r-genomicranges)
-       ("r-iranges" ,r-iranges)
-       ("r-kernsmooth" ,r-kernsmooth)
-       ("r-plotrix" ,r-plotrix)))
-    (home-page "https://bioconductor.org/packages/seqPattern")
-    (synopsis "Visualising oligonucleotide patterns and motif occurrences")
-    (description
-     "This package provides tools to visualize oligonucleotide patterns and
-sequence motif occurrences across a large set of sequences centred at a common
-reference point and sorted by a user defined feature.")
-    (license license:gpl3+)))
-
 (define-public r-spp
   (package
     (name "r-spp")
