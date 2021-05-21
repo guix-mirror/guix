@@ -3652,6 +3652,29 @@ differential expression analysis, RNAseq data and related problems.")
     ;; Any version of the LGPL
     (license license:lgpl3+)))
 
+(define-public r-seqlogo
+  (package
+    (name "r-seqlogo")
+    (version "1.56.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "seqLogo" version))
+       (sha256
+        (base32
+         "02rpzjjfg5chlwwfbvv72cm78cg2vfmdwzars0cin9hz1hd7rnq1"))))
+    (properties `((upstream-name . "seqLogo")))
+    (build-system r-build-system)
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://bioconductor.org/packages/seqLogo")
+    (synopsis "Sequence logos for DNA sequence alignments")
+    (description
+     "seqLogo takes the position weight matrix of a DNA sequence motif and
+plots the corresponding sequence logo as introduced by Schneider and
+Stephens (1990).")
+    (license license:lgpl2.0+)))
+
 (define-public r-seqpattern
   (package
     (name "r-seqpattern")

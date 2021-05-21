@@ -8023,29 +8023,6 @@ used to obtain robust estimates of the predominant fragment length or
 characteristic tag shift values in these assays.")
     (license license:bsd-3)))
 
-(define-public r-seqlogo
-  (package
-    (name "r-seqlogo")
-    (version "1.56.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (bioconductor-uri "seqLogo" version))
-       (sha256
-        (base32
-         "02rpzjjfg5chlwwfbvv72cm78cg2vfmdwzars0cin9hz1hd7rnq1"))))
-    (properties `((upstream-name . "seqLogo")))
-    (build-system r-build-system)
-    (native-inputs
-     `(("r-knitr" ,r-knitr)))
-    (home-page "https://bioconductor.org/packages/seqLogo")
-    (synopsis "Sequence logos for DNA sequence alignments")
-    (description
-     "seqLogo takes the position weight matrix of a DNA sequence motif and
-plots the corresponding sequence logo as introduced by Schneider and
-Stephens (1990).")
-    (license license:lgpl2.0+)))
-
 (define-public r-zlibbioc
   (package
     (name "r-zlibbioc")
