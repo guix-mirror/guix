@@ -1170,6 +1170,32 @@ genomes and gene ID formats, largely based on the UCSC table browser.")
 and visualize the results.")
     (license license:gpl3)))
 
+(define-public r-genomationdata
+  (package
+    (name "r-genomationdata")
+    (version "1.22.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "genomationData" version 'experiment))
+              (sha256
+               (base32
+                "0igjsvfnws3498j65ifniw0kbxfqpfr59rcjddqvq4zsj453fx1g"))))
+    (properties
+     `((upstream-name . "genomationData")))
+    (build-system r-build-system)
+    ;; As this package provides little more than large data files, it doesn't
+    ;; make sense to build substitutes.
+    (arguments `(#:substitutable? #f))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://bioinformatics.mdc-berlin.de/genomation/")
+    (synopsis "Experimental data for use with the genomation package")
+    (description
+     "This package contains experimental genetic data for use with the
+genomation package.  Included are Chip Seq, Methylation and Cage data,
+downloaded from Encode.")
+    (license license:gpl3+)))
+
 (define-public r-pasilla
   (package
     (name "r-pasilla")
