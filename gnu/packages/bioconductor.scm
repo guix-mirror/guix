@@ -3307,6 +3307,53 @@ and the assessment of differential expression.  The analysis methods apply to
 different technologies, including microarrays, RNA-seq, and quantitative PCR.")
     (license license:gpl2+)))
 
+(define-public r-methylkit
+  (package
+    (name "r-methylkit")
+    (version "1.16.1")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "methylKit" version))
+              (sha256
+               (base32
+                "1c9b11gfh3cc37iwym9rgsba3mh2xkp78a1gvnjqhzlkiz667mn3"))))
+    (properties `((upstream-name . "methylKit")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-data-table" ,r-data-table)
+       ("r-emdbook" ,r-emdbook)
+       ("r-fastseg" ,r-fastseg)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-gtools" ,r-gtools)
+       ("r-iranges" ,r-iranges)
+       ("r-kernsmooth" ,r-kernsmooth)
+       ("r-limma" ,r-limma)
+       ("r-mclust" ,r-mclust)
+       ("r-mgcv" ,r-mgcv)
+       ("r-qvalue" ,r-qvalue)
+       ("r-r-utils" ,r-r-utils)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rhtslib" ,r-rhtslib)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-zlibbioc" ,r-zlibbioc)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr))) ; for vignettes
+    (home-page "https://github.com/al2na/methylKit")
+    (synopsis
+     "DNA methylation analysis from high-throughput bisulfite sequencing results")
+    (description
+     "MethylKit is an R package for DNA methylation analysis and annotation
+from high-throughput bisulfite sequencing.  The package is designed to deal
+with sequencing data from @dfn{Reduced representation bisulfite
+sequencing} (RRBS) and its variants, but also target-capture methods and whole
+genome bisulfite sequencing.  It also has functions to analyze base-pair
+resolution 5hmC data from experimental protocols such as oxBS-Seq and
+TAB-Seq.")
+    (license license:artistic2.0)))
+
 (define-public r-motifrg
   (package
     (name "r-motifrg")
