@@ -1971,6 +1971,26 @@ always uses Farsi digits, and does not include Latin glyphs from Roboto.
             "file://LICENSE" "Bitstream Vera License")
            license:asl2.0))))           ; Latin glyphs from Roboto
 
+(define-public font-victor-mono
+  (package
+   (name "font-victor-mono")
+   (version "1.4.2")
+   (source (origin
+            (method url-fetch/zipbomb)
+            (uri (string-append
+                       "https://github.com/rubjo/victor-mono/raw/v"
+                       version
+                       "/public/VictorMonoAll.zip"))
+            (sha256 "01260vja0d22mcvkzspf0xnl7b851r0265arqkm12q1vagzyxvkm")))
+   (build-system font-build-system)
+   (synopsis "Font with support for italics and ligatures")
+   (description "Victor Mono is an open-source monospaced font with
+optional semi-connected cursive italics and programming symbol ligatures.
+This package provides only TrueType files (TTF).
+It comes in seven weights and Roman, Italic and Oblique styles.")
+   (home-page "https://rubjo.github.io/victor-mono/")
+   (license license:expat)))
+
 (define-public font-meera-inimai
   (package
     (name "font-meera-inimai")
