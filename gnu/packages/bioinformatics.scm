@@ -9132,34 +9132,6 @@ upon file format information.  The primary focus is on accessing the CEL and
 CDF file formats.")
     (license license:lgpl2.0+)))
 
-(define-public r-affy
-  (package
-    (name "r-affy")
-    (version "1.68.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (bioconductor-uri "affy" version))
-       (sha256
-        (base32
-         "0ywz548cbzk2k1njnxhlk5ydzvz2dk78ka8kx53gwrmdc4sc2b06"))))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-affyio" ,r-affyio)
-       ("r-biobase" ,r-biobase)
-       ("r-biocgenerics" ,r-biocgenerics)
-       ("r-biocmanager" ,r-biocmanager)
-       ("r-preprocesscore" ,r-preprocesscore)
-       ("r-zlibbioc" ,r-zlibbioc)))
-    (inputs
-     `(("zlib" ,zlib)))
-    (home-page "https://bioconductor.org/packages/affy")
-    (synopsis "Methods for affymetrix oligonucleotide arrays")
-    (description
-     "This package contains functions for exploratory oligonucleotide array
-analysis.")
-    (license license:lgpl2.0+)))
-
 (define-public r-vsn
   (package
     (name "r-vsn")
