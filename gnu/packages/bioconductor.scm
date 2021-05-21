@@ -2441,6 +2441,36 @@ other types of genomic data that produce counts, including ChIP-seq, SAGE and
 CAGE.")
     (license license:gpl2+)))
 
+(define-public r-fastseg
+  (package
+    (name "r-fastseg")
+    (version "1.36.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "fastseg" version))
+       (sha256
+        (base32
+         "1ln6w93ag4wanp0nrm0pqngbfc88w95zq2kcj583hbxy885dkg4f"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-s4vectors" ,r-s4vectors)))
+    (home-page "https://www.bioinf.jku.at/software/fastseg/index.html")
+    (synopsis "Fast segmentation algorithm for genetic sequencing data")
+    (description
+     "Fastseg implements a very fast and efficient segmentation algorithm.
+It can segment data from DNA microarrays and data from next generation
+sequencing for example to detect copy number segments.  Further it can segment
+data from RNA microarrays like tiling arrays to identify transcripts.  Most
+generally, it can segment data given as a matrix or as a vector.  Various data
+formats can be used as input to fastseg like expression set objects for
+microarrays or GRanges for sequencing data.")
+    (license license:lgpl2.0+)))
+
 (define-public r-genefilter
   (package
     (name "r-genefilter")
