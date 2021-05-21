@@ -8097,51 +8097,6 @@ secondary structure and comparative analysis in R.")
 @dfn{RNA-centric annotation system} (RCAS).")
     (license license:agpl3+)))
 
-(define-public r-mutationalpatterns
-  (package
-    (name "r-mutationalpatterns")
-    (version "3.0.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (bioconductor-uri "MutationalPatterns" version))
-       (sha256
-        (base32
-         "1988kjjgq8af0hj7chhpxi88717wwmzs9qgrwapjh0hm2hjwhn35"))))
-    (build-system r-build-system)
-    (native-inputs
-     `(("r-knitr" ,r-knitr)))
-    (propagated-inputs
-     `(("r-biocgenerics" ,r-biocgenerics)
-       ("r-biostrings" ,r-biostrings)
-       ("r-bsgenome" ,r-bsgenome)
-       ;; These two packages are suggested packages
-       ("r-bsgenome-hsapiens-1000g" ,r-bsgenome-hsapiens-1000genomes-hs37d5)
-       ("r-bsgenome-hsapiens-ucsc-hg19" ,r-bsgenome-hsapiens-ucsc-hg19)
-       ("r-cowplot" ,r-cowplot)
-       ("r-dplyr" ,r-dplyr)
-       ("r-genomeinfodb" ,r-genomeinfodb)
-       ("r-genomicranges" ,r-genomicranges)
-       ("r-ggalluvial" ,r-ggalluvial)
-       ("r-ggdendro" ,r-ggdendro)
-       ("r-ggplot2" ,r-ggplot2)
-       ("r-iranges" ,r-iranges)
-       ("r-magrittr" ,r-magrittr)
-       ("r-nmf" ,r-nmf)
-       ("r-pracma" ,r-pracma)
-       ("r-purrr" ,r-purrr)
-       ("r-s4vectors" ,r-s4vectors)
-       ("r-stringr" ,r-stringr)
-       ("r-tibble" ,r-tibble)
-       ("r-tidyr" ,r-tidyr)
-       ("r-variantannotation" ,r-variantannotation)))
-    (home-page "https://bioconductor.org/packages/MutationalPatterns/")
-    (synopsis "Extract and visualize mutational patterns in genomic data")
-    (description "This package provides an extensive toolset for the
-characterization and visualization of a wide range of mutational patterns
-in SNV base substitution data.")
-    (license license:expat)))
-
 (define-public r-chipkernels
   (let ((commit "c9cfcacb626b1221094fb3490ea7bac0fd625372")
         (revision "1"))
