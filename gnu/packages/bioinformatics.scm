@@ -9449,58 +9449,6 @@ structure (pcaRes) to provide a common interface to the PCA results.")
 of mass spectrometry based proteomics data.")
     (license license:artistic2.0)))
 
-(define-public r-msnid
-  (package
-    (name "r-msnid")
-    (version "1.24.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (bioconductor-uri "MSnID" version))
-       (sha256
-        (base32
-         "05bncy7lw2a3h8xgnavjiz56pc6mk8q7l6qdd81197nawxs3j02d"))))
-    (properties `((upstream-name . "MSnID")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-annotationdbi" ,r-annotationdbi)
-       ("r-annotationhub" ,r-annotationhub)
-       ("r-biobase" ,r-biobase)
-       ("r-biocgenerics" ,r-biocgenerics)
-       ("r-biocstyle" ,r-biocstyle)
-       ("r-biostrings" ,r-biostrings)
-       ("r-data-table" ,r-data-table)
-       ("r-doparallel" ,r-doparallel)
-       ("r-dplyr" ,r-dplyr)
-       ("r-foreach" ,r-foreach)
-       ("r-ggplot2" ,r-ggplot2)
-       ("r-iterators" ,r-iterators)
-       ("r-msnbase" ,r-msnbase)
-       ("r-msmstests" ,r-msmstests)
-       ("r-mzid" ,r-mzid)
-       ("r-mzr" ,r-mzr)
-       ("r-protgenerics" ,r-protgenerics)
-       ("r-purrr" ,r-purrr)
-       ("r-r-cache" ,r-r-cache)
-       ("r-rcpp" ,r-rcpp)
-       ("r-reshape2" ,r-reshape2)
-       ("r-rlang" ,r-rlang)
-       ("r-runit" ,r-runit)
-       ("r-stringr" ,r-stringr)
-       ("r-tibble" ,r-tibble)
-       ("r-xtable" ,r-xtable)))
-    (home-page "https://bioconductor.org/packages/MSnID")
-    (synopsis "Utilities for LC-MSn proteomics identifications")
-    (description
-     "This package extracts @dfn{tandem mass spectrometry} (MS/MS) ID data
-from mzIdentML (leveraging the mzID package) or text files.  After collating
-the search results from multiple datasets it assesses their identification
-quality and optimize filtering criteria to achieve the maximum number of
-identifications while not exceeding a specified false discovery rate.  It also
-contains a number of utilities to explore the MS/MS results and assess missed
-and irregular enzymatic cleavages, mass measurement accuracy, etc.")
-    (license license:artistic2.0)))
-
 (define-public r-aroma-light
   (package
     (name "r-aroma-light")
