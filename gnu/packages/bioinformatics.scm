@@ -8046,55 +8046,6 @@ characteristic tag shift values in these assays.")
 secondary structure and comparative analysis in R.")
     (license license:gpl3+)))
 
-(define-public r-rcas
-  (package
-    (name "r-rcas")
-    (version "1.16.0")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "RCAS" version))
-              (sha256
-               (base32
-                "0vdxml618vqvf8xyh0zxs307p9zby0cj9dqyiiz625ilyq1hkw2m"))))
-    (properties `((upstream-name . "RCAS")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-biocgenerics" ,r-biocgenerics)
-       ("r-biostrings" ,r-biostrings)
-       ("r-bsgenome" ,r-bsgenome)
-       ("r-bsgenome-hsapiens-ucsc-hg19" ,r-bsgenome-hsapiens-ucsc-hg19)
-       ("r-cowplot" ,r-cowplot)
-       ("r-data-table" ,r-data-table)
-       ("r-dt" ,r-dt)
-       ("r-genomation" ,r-genomation)
-       ("r-genomeinfodb" ,r-genomeinfodb)
-       ("r-genomicfeatures" ,r-genomicfeatures)
-       ("r-genomicranges" ,r-genomicranges)
-       ("r-ggplot2" ,r-ggplot2)
-       ("r-ggseqlogo" ,r-ggseqlogo)
-       ("r-gprofiler2" ,r-gprofiler2)
-       ("r-iranges" ,r-iranges)
-       ("r-pbapply" ,r-pbapply)
-       ("r-pheatmap" ,r-pheatmap)
-       ("r-plotly" ,r-plotly)
-       ("r-plotrix" ,r-plotrix)
-       ("r-proxy" ,r-proxy)
-       ("r-ranger" ,r-ranger)
-       ("r-rsqlite" ,r-rsqlite)
-       ("r-rtracklayer" ,r-rtracklayer)
-       ("r-rmarkdown" ,r-rmarkdown)
-       ("r-s4vectors" ,r-s4vectors)
-       ("pandoc" ,pandoc)))
-    (native-inputs
-     `(("r-knitr" ,r-knitr)))
-    (synopsis "RNA-centric annotation system")
-    (description
-     "RCAS aims to be a standalone RNA-centric annotation system that provides
-intuitive reports and publication-ready graphics.  This package provides the R
-library implementing most of the pipeline's features.")
-    (home-page "https://github.com/BIMSBbioinfo/RCAS")
-    (license license:artistic2.0)))
-
 (define-public rcas-web
   (package
     (name "rcas-web")
