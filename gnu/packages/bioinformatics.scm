@@ -9027,26 +9027,6 @@ for analyzing gene-level association tests in meta-analyses for binary
 trait.")
     (license license:gpl3)))
 
-(define-public r-protgenerics
-  (package
-    (name "r-protgenerics")
-    (version "1.22.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (bioconductor-uri "ProtGenerics" version))
-       (sha256
-        (base32
-         "0yihxphgkshvfv1sn67wc4zvr2zlzws2j7ki3zabm6vyfkfdkfiz"))))
-    (properties `((upstream-name . "ProtGenerics")))
-    (build-system r-build-system)
-    (home-page "https://github.com/lgatto/ProtGenerics")
-    (synopsis "S4 generic functions for proteomics infrastructure")
-    (description
-     "This package provides S4 generic functions needed by Bioconductor
-proteomics packages.")
-    (license license:artistic2.0)))
-
 (define-public r-dropbead
   (let ((commit "d746c6f3b32110428ea56d6a0001ce52a251c247")
         (revision "2"))

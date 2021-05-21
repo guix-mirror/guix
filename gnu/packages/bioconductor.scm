@@ -3380,6 +3380,26 @@ the results is also provided.  All PCA methods make use of the same data
 structure (pcaRes) to provide a common interface to the PCA results.")
     (license license:gpl3+)))
 
+(define-public r-protgenerics
+  (package
+    (name "r-protgenerics")
+    (version "1.22.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "ProtGenerics" version))
+       (sha256
+        (base32
+         "0yihxphgkshvfv1sn67wc4zvr2zlzws2j7ki3zabm6vyfkfdkfiz"))))
+    (properties `((upstream-name . "ProtGenerics")))
+    (build-system r-build-system)
+    (home-page "https://github.com/lgatto/ProtGenerics")
+    (synopsis "S4 generic functions for proteomics infrastructure")
+    (description
+     "This package provides S4 generic functions needed by Bioconductor
+proteomics packages.")
+    (license license:artistic2.0)))
+
 (define-public r-rbgl
   (package
     (name "r-rbgl")
