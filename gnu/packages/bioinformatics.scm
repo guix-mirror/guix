@@ -8164,32 +8164,6 @@ bound and non bound genomic regions to accurately identify transcription
 factors bound at the specific regions.")
     (license license:gpl2+)))
 
-(define-public r-rhdf5filters
-  (package
-    (name "r-rhdf5filters")
-    (version "1.2.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (bioconductor-uri "rhdf5filters" version))
-       (sha256
-        (base32
-         "1bjlgc76vx0z81s8vci9ln1d2s3b157qnm32xs36mnyjk31ivasz"))))
-    (properties `((upstream-name . "rhdf5filters")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-rhdf5lib" ,r-rhdf5lib)))
-    (inputs
-     `(("zlib" ,zlib)))
-    (native-inputs
-     `(("r-knitr" ,r-knitr)))
-    (home-page "https://github.com/grimbough/rhdf5filters")
-    (synopsis "HDF5 compression filters")
-    (description
-     "This package provides a collection of compression filters for use with
-HDF5 datasets.")
-    (license license:bsd-2)))
-
 (define-public r-rhdf5
   (package
     (name "r-rhdf5")
