@@ -45,6 +45,7 @@
 ;;; Copyright © 2021 Gerd Heber <gerd.heber@gmail.com>
 ;;; Copyright © 2021 Franck Pérignon <franck.perignon@univ-grenoble-alpes.fr>
 ;;; Copyright © 2021 Philip McGrath <philip@philipmcgrath.com>
+;;; Copyright © 2021 Paul A. Patience <paul@apatience.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6229,3 +6230,32 @@ and conversions, physical constants, symbolic calculations (including
 integrals and equations), arbitrary precision, uncertainty propagation,
 interval arithmetic, plotting.")
     (license license:gpl2+)))
+
+(define-public numdiff
+  (package
+    (name "numdiff")
+    (version "5.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://savannah/numdiff/numdiff-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1vzmjh8mhwwysn4x4m2vif7q2k8i19x8azq7pzmkwwj4g48lla47"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; There are no tests.
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'compress-documentation 'delete-precompressed-info-file
+           (lambda _
+             (delete-file (string-append (assoc-ref %outputs "out")
+                                         "/share/info/numdiff.info.gz"))
+             #t)))))
+    (home-page "https://nongnu.org/numdiff/")
+    (synopsis "Compare files with numeric fields")
+    (description
+     "Numdiff compares files line by line and field by field, ignoring small
+numeric differences and differences in numeric formats.")
+    (license license:gpl3+)))
