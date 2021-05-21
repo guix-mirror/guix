@@ -2873,6 +2873,39 @@ experimental designs is facilitated by a consistently implemented sample
 annotation infrastructure.")
     (license license:artistic2.0)))
 
+(define-public r-topgo
+  (package
+    (name "r-topgo")
+    (version "2.42.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "topGO" version))
+              (sha256
+               (base32
+                "0vr3l9gvd3dhy446k3fkj6rm7z1abxi56rbnrs64297yzxaz1ngl"))))
+    (properties
+     `((upstream-name . "topGO")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-dbi" ,r-dbi)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-go-db" ,r-go-db)
+       ("r-graph" ,r-graph)
+       ("r-lattice" ,r-lattice)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-sparsem" ,r-sparsem)))
+    (home-page "https://bioconductor.org/packages/topGO")
+    (synopsis "Enrichment analysis for gene ontology")
+    (description
+     "The topGO package provides tools for testing @dfn{gene ontology} (GO)
+terms while accounting for the topology of the GO graph.  Different test
+statistics and different methods for eliminating local similarities and
+dependencies between GO terms can be implemented and applied.")
+    ;; Any version of the LGPL applies.
+    (license license:lgpl2.1+)))
+
 (define-public r-variantannotation
   (package
     (name "r-variantannotation")
