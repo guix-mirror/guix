@@ -2517,6 +2517,51 @@ and the assessment of differential expression.  The analysis methods apply to
 different technologies, including microarrays, RNA-seq, and quantitative PCR.")
     (license license:gpl2+)))
 
+(define-public r-msnbase
+  (package
+    (name "r-msnbase")
+    (version "2.16.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "MSnbase" version))
+       (sha256
+        (base32
+         "0hxzs9zzljywqxr7q388hshpy1pdryhl0zkwffqbxpf5pcf92d3h"))))
+    (properties `((upstream-name . "MSnbase")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-affy" ,r-affy)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-digest" ,r-digest)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-impute" ,r-impute)
+       ("r-iranges" ,r-iranges)
+       ("r-lattice" ,r-lattice)
+       ("r-maldiquant" ,r-maldiquant)
+       ("r-mass" ,r-mass)
+       ("r-mzid" ,r-mzid)
+       ("r-mzr" ,r-mzr)
+       ("r-pcamethods" ,r-pcamethods)
+       ("r-plyr" ,r-plyr)
+       ("r-preprocesscore" ,r-preprocesscore)
+       ("r-protgenerics" ,r-protgenerics)
+       ("r-rcpp" ,r-rcpp)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-scales" ,r-scales)
+       ("r-vsn" ,r-vsn)
+       ("r-xml" ,r-xml)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/lgatto/MSnbase")
+    (synopsis "Base functions and classes for MS-based proteomics")
+    (description
+     "This package provides basic plotting, data manipulation and processing
+of mass spectrometry based proteomics data.")
+    (license license:artistic2.0)))
+
 (define-public r-msnid
   (package
     (name "r-msnid")
