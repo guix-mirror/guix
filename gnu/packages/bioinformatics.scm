@@ -7952,30 +7952,6 @@ including VCF header and contents in RDF and JSON.")
     (home-page "https://github.com/vcflib/bio-vcf")
     (license license:expat)))
 
-(define-public r-go-db
-  (package
-    (name "r-go-db")
-    (version "3.7.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://www.bioconductor.org/packages/"
-                                  "release/data/annotation/src/contrib/GO.db_"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "0i3wcf5h3n0dawzc1hy0kv74f06j80c47n4p3g3fmrcxlhi3jpa5"))))
-    (properties
-     `((upstream-name . "GO.db")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-annotationdbi" ,r-annotationdbi)))
-    (home-page "https://bioconductor.org/packages/GO.db")
-    (synopsis "Annotation maps describing the entire Gene Ontology")
-    (description
-     "The purpose of this GO.db annotation package is to provide detailed
-information about the latest version of the Gene Ontologies.")
-    (license license:artistic2.0)))
-
 (define-public r-spp
   (package
     (name "r-spp")
