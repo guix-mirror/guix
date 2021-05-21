@@ -976,7 +976,9 @@ SHA256, SHA512, SHA3, AICH, ED2K, Tiger, DC++ TTH, BitTorrent BTIH, GOST R
          (add-before 'check 'library-path-for-tests
            (lambda _ (setenv "LD_LIBRARY_PATH" (getcwd))))
          (replace 'check
-           (lambda _ (invoke "./botan-test"))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (if tests?
+                 (invoke "./botan-test")))))))
     (native-inputs
      `(("python" ,python-wrapper)
        ("python-docutils" ,python-docutils)))
