@@ -9108,51 +9108,6 @@ proteowizard library for mzML and mzIdentML.  The netCDF reading code has
 previously been used in XCMS.")
     (license license:artistic2.0)))
 
-(define-public r-ensembldb
-  (package
-    (name "r-ensembldb")
-    (version "2.14.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (bioconductor-uri "ensembldb" version))
-       (sha256
-        (base32
-         "1hxwfh19qafpdhzprvw4nr8ks3gz7f0y8gyfhk8yqmmvvnvgqv40"))))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-annotationdbi" ,r-annotationdbi)
-       ("r-annotationfilter" ,r-annotationfilter)
-       ("r-biobase" ,r-biobase)
-       ("r-biocgenerics" ,r-biocgenerics)
-       ("r-biostrings" ,r-biostrings)
-       ("r-curl" ,r-curl)
-       ("r-dbi" ,r-dbi)
-       ("r-genomeinfodb" ,r-genomeinfodb)
-       ("r-genomicfeatures" ,r-genomicfeatures)
-       ("r-genomicranges" ,r-genomicranges)
-       ("r-iranges" ,r-iranges)
-       ("r-protgenerics" ,r-protgenerics)
-       ("r-rsamtools" ,r-rsamtools)
-       ("r-rsqlite" ,r-rsqlite)
-       ("r-rtracklayer" ,r-rtracklayer)
-       ("r-s4vectors" ,r-s4vectors)))
-    (native-inputs
-     `(("r-knitr" ,r-knitr)))
-    (home-page "https://github.com/jotsetung/ensembldb")
-    (synopsis "Utilities to create and use Ensembl-based annotation databases")
-    (description
-     "The package provides functions to create and use transcript-centric
-annotation databases/packages.  The annotation for the databases are directly
-fetched from Ensembl using their Perl API.  The functionality and data is
-similar to that of the TxDb packages from the @code{GenomicFeatures} package,
-but, in addition to retrieve all gene/transcript models and annotations from
-the database, the @code{ensembldb} package also provides a filter framework
-allowing to retrieve annotations for specific entries like genes encoded on a
-chromosome region or transcript models of lincRNA genes.")
-    ;; No version specified
-    (license license:lgpl3+)))
-
 (define-public r-dropbead
   (let ((commit "d746c6f3b32110428ea56d6a0001ce52a251c247")
         (revision "2"))
