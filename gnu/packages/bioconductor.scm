@@ -3746,6 +3746,42 @@ dependencies between GO terms can be implemented and applied.")
 coding changes and predict coding outcomes.")
     (license license:artistic2.0)))
 
+(define-public r-vsn
+  (package
+    (name "r-vsn")
+    (version "3.58.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "vsn" version))
+       (sha256
+        (base32
+         "0dfrfflidpnphwyqzmmfiz9blfqv6qa09xlwgfabhpfsf3ml2rlb"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-affy" ,r-affy)
+       ("r-biobase" ,r-biobase)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-lattice" ,r-lattice)
+       ("r-limma" ,r-limma)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr))) ; for vignettes
+    (home-page "https://bioconductor.org/packages/release/bioc/html/vsn.html")
+    (synopsis "Variance stabilization and calibration for microarray data")
+    (description
+     "The package implements a method for normalising microarray intensities,
+and works for single- and multiple-color arrays.  It can also be used for data
+from other technologies, as long as they have similar format.  The method uses
+a robust variant of the maximum-likelihood estimator for an
+additive-multiplicative error model and affine calibration.  The model
+incorporates data calibration step (a.k.a.  normalization), a model for the
+dependence of the variance on the mean intensity and a variance stabilizing
+data transformation.  Differences between transformed intensities are
+analogous to \"normalized log-ratios\".  However, in contrast to the latter,
+their variance is independent of the mean, and they are usually more sensitive
+and specific in detecting differential transcription.")
+    (license license:artistic2.0)))
+
 (define-public r-xvector
   (package
     (name "r-xvector")
