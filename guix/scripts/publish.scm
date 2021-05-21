@@ -33,6 +33,7 @@
   #:use-module (srfi srfi-2)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-9 gnu)
+  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
@@ -980,6 +981,18 @@ methods, return the applicable compression."
             compressions)
       (default-compression requested-type)))
 
+(define (preserve-connection-headers request response)
+  "Add REQUEST's 'connection' header, if any, to HEADERS, a list of response
+headers."
+  (if (pair? response)
+      (let ((connection
+             (assq 'connection (request-headers request))))
+        (append response
+                (if connection
+                    (list connection)
+                    '())))
+      response))
+
 (define* (make-request-handler store
                                #:key
                                cache pool
@@ -993,7 +1006,7 @@ methods, return the applicable compression."
     (let ((expected (split-and-decode-uri-path nar-path)))
       (cut equal? expected <>)))
 
-  (lambda (request body)
+  (define (handle request body)
     (format #t "~a ~a~%"
             (request-method request)
             (uri-path (request-uri request)))
@@ -1065,7 +1078,15 @@ methods, return the applicable compression."
                (not-found request)))
 
           (x (not-found request)))
-        (not-found request))))
+        (not-found request)))
+
+  ;; Preserve the request's 'connection' header in the response, so that the
+  ;; server can close the connection if this is requested by the client.
+  (lambda (request body)
+    (let-values (((response response-body)
+                  (handle request body)))
+      (values (preserve-connection-headers request response)
+              response-body))))
 
 (define (service-name)
   "Return the Avahi service name of the server."
