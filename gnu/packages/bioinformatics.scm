@@ -8023,25 +8023,6 @@ used to obtain robust estimates of the predominant fragment length or
 characteristic tag shift values in these assays.")
     (license license:bsd-3)))
 
-(define-public r-zlibbioc
-  (package
-    (name "r-zlibbioc")
-    (version "1.36.0")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "zlibbioc" version))
-              (sha256
-               (base32
-                "0m36ddss0znvm19dhnxcclxjhgjplw8ajk8v419h20ab8an6khxg"))))
-    (properties
-     `((upstream-name . "zlibbioc")))
-    (build-system r-build-system)
-    (home-page "https://bioconductor.org/packages/zlibbioc")
-    (synopsis "Provider for zlib-1.2.5 to R packages")
-    (description "This package uses the source code of zlib-1.2.5 to create
-libraries for systems that do not have these available via other means.")
-    (license license:artistic2.0)))
-
 (define-public r-r4rna
   (package
     (name "r-r4rna")
