@@ -9196,33 +9196,6 @@ their variance is independent of the mean, and they are usually more sensitive
 and specific in detecting differential transcription.")
     (license license:artistic2.0)))
 
-(define-public r-interactivedisplaybase
-  (package
-    (name "r-interactivedisplaybase")
-    (version "1.28.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (bioconductor-uri "interactiveDisplayBase" version))
-       (sha256
-        (base32
-         "08id2hkx4ssxj34dildx00a4j3z0nv171b7b0wl6xjks7wk6lv01"))))
-    (properties
-     `((upstream-name . "interactiveDisplayBase")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-biocgenerics" ,r-biocgenerics)
-       ("r-dt" ,r-dt)
-       ("r-shiny" ,r-shiny)))
-    (native-inputs
-     `(("r-knitr" ,r-knitr)))
-    (home-page "https://bioconductor.org/packages/interactiveDisplayBase")
-    (synopsis "Base package for web displays of Bioconductor objects")
-    (description
-     "This package contains the basic methods needed to generate interactive
-Shiny-based display methods for Bioconductor objects.")
-    (license license:artistic2.0)))
-
 (define-public r-annotationhub
   (package
     (name "r-annotationhub")
