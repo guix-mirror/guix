@@ -2731,6 +2731,36 @@ contains a number of utilities to explore the MS/MS results and assess missed
 and irregular enzymatic cleavages, mass measurement accuracy, etc.")
     (license license:artistic2.0)))
 
+(define-public r-pcamethods
+  (package
+    (name "r-pcamethods")
+    (version "1.82.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "pcaMethods" version))
+       (sha256
+        (base32
+         "04xb4vjky6hq58l30i1iq9rv5gzjdxnidjxpnzg7pvg67vz8pgf0"))))
+    (properties `((upstream-name . "pcaMethods")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-mass" ,r-mass)
+       ("r-rcpp" ,r-rcpp)))
+    (home-page "https://github.com/hredestig/pcamethods")
+    (synopsis "Collection of PCA methods")
+    (description
+     "This package provides Bayesian PCA, Probabilistic PCA, Nipals PCA,
+Inverse Non-Linear PCA and the conventional SVD PCA.  A cluster based method
+for missing value estimation is included for comparison.  BPCA, PPCA and
+NipalsPCA may be used to perform PCA on incomplete data as well as for
+accurate missing value estimation.  A set of methods for printing and plotting
+the results is also provided.  All PCA methods make use of the same data
+structure (pcaRes) to provide a common interface to the PCA results.")
+    (license license:gpl3+)))
+
 (define-public r-rbgl
   (package
     (name "r-rbgl")
