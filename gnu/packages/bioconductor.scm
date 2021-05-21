@@ -39,6 +39,7 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages cran)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages graph)
   #:use-module (gnu packages graphviz)
@@ -3036,6 +3037,37 @@ Enrichment Analysis} (GSEA).")
     (description "This package provides a simple interface to and data from
 the Human Protein Atlas project.")
     (license license:artistic2.0)))
+
+(define-public r-rhtslib
+  (package
+    (name "r-rhtslib")
+    (version "1.22.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "Rhtslib" version))
+       (sha256
+        (base32
+         "18wag2jnpda6078xjkpfdvar1gkb2myhw83gg03l39sabh35qya4"))))
+    (properties `((upstream-name . "Rhtslib")))
+    (build-system r-build-system)
+    ;; Without this a temporary directory ends up in the Rhtslib.so binary,
+    ;; which makes R abort the build.
+    (arguments '(#:configure-flags '("--no-staged-install")))
+    (propagated-inputs
+     `(("curl" ,curl)
+       ("zlib" ,zlib) ; packages using rhtslib need to link with zlib
+       ("r-zlibbioc" ,r-zlibbioc)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/nhayden/Rhtslib")
+    (synopsis "High-throughput sequencing library as an R package")
+    (description
+     "This package provides the HTSlib C library for high-throughput
+nucleotide sequence analysis.  The package is primarily useful to developers
+of other R packages who wish to make use of HTSlib.")
+    (license license:lgpl2.0+)))
 
 (define-public r-impute
   (package
