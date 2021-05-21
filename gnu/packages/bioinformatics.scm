@@ -7952,49 +7952,6 @@ including VCF header and contents in RDF and JSON.")
     (home-page "https://github.com/vcflib/bio-vcf")
     (license license:expat)))
 
-(define-public r-genomicfeatures
-  (package
-    (name "r-genomicfeatures")
-    (version "1.42.3")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "GenomicFeatures" version))
-              (sha256
-               (base32
-                "168cf261vmcqffbzassavkjyz9a2af0l6zbv9cagkx6b1qrk3siz"))))
-    (properties
-     `((upstream-name . "GenomicFeatures")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-annotationdbi" ,r-annotationdbi)
-       ("r-biobase" ,r-biobase)
-       ("r-biocgenerics" ,r-biocgenerics)
-       ("r-biomart" ,r-biomart)
-       ("r-biostrings" ,r-biostrings)
-       ("r-dbi" ,r-dbi)
-       ("r-genomeinfodb" ,r-genomeinfodb)
-       ("r-genomicranges" ,r-genomicranges)
-       ("r-iranges" ,r-iranges)
-       ("r-rcurl" ,r-rcurl)
-       ("r-rsqlite" ,r-rsqlite)
-       ("r-rtracklayer" ,r-rtracklayer)
-       ("r-s4vectors" ,r-s4vectors)
-       ("r-xvector" ,r-xvector)))
-    (native-inputs
-     `(("r-knitr" ,r-knitr)))
-    (home-page "https://bioconductor.org/packages/GenomicFeatures")
-    (synopsis "Tools for working with transcript centric annotations")
-    (description
-     "This package provides a set of tools and methods for making and
-manipulating transcript centric annotations.  With these tools the user can
-easily download the genomic locations of the transcripts, exons and cds of a
-given organism, from either the UCSC Genome Browser or a BioMart
-database (more sources will be supported in the future).  This information is
-then stored in a local database that keeps track of the relationship between
-transcripts, exons, cds and genes.  Flexible methods are provided for
-extracting the desired features in a convenient format.")
-    (license license:artistic2.0)))
-
 (define-public r-go-db
   (package
     (name "r-go-db")
