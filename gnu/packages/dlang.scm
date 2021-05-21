@@ -240,6 +240,17 @@ bootstrapping more recent compilers written in D.")
                (delete-file "tests/compilable/ctfe_math.d")
                (delete-file "tests/debuginfo/nested_gdb.d")
                (delete-file "tests/debuginfo/classtypes_gdb.d")
+               ;; for the following tests ptrace fails with EPERM
+               ;; (see <https://issues.guix.gnu.org/48541>):
+               (delete-file "tests/d2/dmd-testsuite/runnable/b18504.d")
+               (delete-file "tests/d2/dmd-testsuite/runnable/gdb14225.d")
+               (delete-file "tests/d2/dmd-testsuite/runnable/gdb14276.d")
+               (delete-file "tests/d2/dmd-testsuite/runnable/gdb14313.d")
+               (delete-file "tests/d2/dmd-testsuite/runnable/gdb14330.d")
+               (delete-file "tests/d2/dmd-testsuite/runnable/gdb1.d")
+               (delete-file "tests/d2/dmd-testsuite/runnable/gdb4149.d")
+               (delete-file "tests/d2/dmd-testsuite/runnable/gdb4181.d")
+               (delete-file "tests/d2/dmd-testsuite/runnable/gdb15729.sh")
                ;; the following tests plugins we don't have.
                (delete-file "tests/plugins/addFuncEntryCall/testPlugin.d")
                ;; the following tests requires AVX instruction set in the CPU.
