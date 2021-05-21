@@ -1128,6 +1128,30 @@ average profile and heatmap of peaks binding to TSS regions, genomic
 annotation, distance to TSS, and overlap of peaks or genes.")
     (license license:artistic2.0)))
 
+(define-public r-copyhelper
+  (package
+    (name "r-copyhelper")
+    (version "1.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "CopyhelpeR" version 'experiment))
+       (sha256
+        (base32
+         "0x7cyynjmxls9as2gg0iyp9x5fpalxmdjq914ss7i84i9zyk5bhq"))))
+    (properties `((upstream-name . "CopyhelpeR")))
+    (build-system r-build-system)
+    (home-page "https://bioconductor.org/packages/CopyhelpeR/")
+    (synopsis "Helper files for CopywriteR")
+    (description
+     "This package contains the helper files that are required to run the
+Bioconductor package CopywriteR.  It contains pre-assembled 1kb bin GC-content
+and mappability files for the reference genomes hg18, hg19, hg38, mm9 and
+mm10.  In addition, it contains a blacklist filter to remove regions that
+display copy number variation.  Files are stored as GRanges objects from the
+GenomicRanges Bioconductor package.")
+    (license license:gpl2)))
+
 (define-public r-genelendatabase
   (package
     (name "r-genelendatabase")
