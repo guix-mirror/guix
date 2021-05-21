@@ -6708,6 +6708,38 @@ linting of manifests and integration with Puppet Debugger.")
       ;; Also incorporates work covered by the Apache License, Version 2.0
       (license license:gpl3+))))
 
+(define-public emacs-purescript-mode
+  ;; Retrieved on 2021-05-18.
+  (let ((revision "0")
+        (commit "0acd1af446424ba855153161fe07a20f67dc0a89"))
+    (package
+      (name "emacs-purescript-mode")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/purescript-emacs/purescript-mode")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0rxdsmx8826az4blhnnvqrx7bjky9hwph6gkyrh33sck26xhh3g5"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-before 'install 'make-info
+             (lambda _
+               (invoke "makeinfo" "--no-split"
+                       "-o" "purescript-mode.info" "purescript-mode.texi")))))) 
+      (native-inputs
+       `(("texinfo" ,texinfo)))
+      (home-page "https://github.com/purescript-emacs/purescript-mode")
+      (synopsis "Emacs major mode and related tools for Purescript")
+      (description "This package provides an Emacs major mode for writing Purescript.")
+      (license license:gpl3+))))
+
 (define-public emacs-god-mode
   (package
     (name "emacs-god-mode")
