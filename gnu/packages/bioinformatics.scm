@@ -8486,32 +8486,6 @@ analysis, variant tools is project based and provides a whole set of tools to
 manipulate and analyze genetic variants.")
     (license license:gpl3+)))
 
-(define-public r-chipseq
-  (package
-    (name "r-chipseq")
-    (version "1.40.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (bioconductor-uri "chipseq" version))
-       (sha256
-        (base32
-         "12pzq24aarvgxfmhcad0l5g951xqdvvi7bspgbsvlvmfkqd74j2v"))))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-biocgenerics" ,r-biocgenerics)
-       ("r-genomicranges" ,r-genomicranges)
-       ("r-iranges" ,r-iranges)
-       ("r-lattice" ,r-lattice)
-       ("r-s4vectors" ,r-s4vectors)
-       ("r-shortread" ,r-shortread)))
-    (home-page "https://bioconductor.org/packages/chipseq")
-    (synopsis "Package for analyzing ChIPseq data")
-    (description
-     "This package provides tools for processing short read data from ChIPseq
-experiments.")
-    (license license:artistic2.0)))
-
 (define-public r-copyhelper
   (package
     (name "r-copyhelper")
