@@ -9168,32 +9168,6 @@ their variance is independent of the mean, and they are usually more sensitive
 and specific in detecting differential transcription.")
     (license license:artistic2.0)))
 
-(define-public r-keggrest
-  (package
-    (name "r-keggrest")
-    (version "1.30.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (bioconductor-uri "KEGGREST" version))
-       (sha256
-        (base32
-         "0k9z85xf9la2y98xqmdmjb8mci9fh2fdybkl77x1yl26hyalip0s"))))
-    (properties `((upstream-name . "KEGGREST")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-biostrings" ,r-biostrings)
-       ("r-httr" ,r-httr)
-       ("r-png" ,r-png)))
-    (native-inputs
-     `(("r-knitr" ,r-knitr)))
-    (home-page "https://bioconductor.org/packages/KEGGREST")
-    (synopsis "Client-side REST access to KEGG")
-    (description
-     "This package provides a package that provides a client interface to the
-@dfn{Kyoto Encyclopedia of Genes and Genomes} (KEGG) REST server.")
-    (license license:artistic2.0)))
-
 (define-public r-gage
   (package
     (name "r-gage")
