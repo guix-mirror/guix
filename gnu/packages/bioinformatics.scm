@@ -9168,37 +9168,6 @@ their variance is independent of the mean, and they are usually more sensitive
 and specific in detecting differential transcription.")
     (license license:artistic2.0)))
 
-(define-public r-gage
-  (package
-    (name "r-gage")
-    (version "2.40.2")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (bioconductor-uri "gage" version))
-       (sha256
-        (base32
-         "1bs0hx8sqiyl08dqn2zx31kbv5aci4xvrs71pplx2yxal3jf5178"))))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-annotationdbi" ,r-annotationdbi)
-       ("r-go-db" ,r-go-db)
-       ("r-graph" ,r-graph)
-       ("r-keggrest" ,r-keggrest)))
-    (home-page (string-append "https://bmcbioinformatics.biomedcentral.com/"
-                              "articles/10.1186/1471-2105-10-161"))
-    (synopsis "Generally applicable gene-set enrichment for pathway analysis")
-    (description
-     "GAGE is a published method for gene set (enrichment or GSEA) or pathway
-analysis.  GAGE is generally applicable independent of microarray or RNA-Seq
-data attributes including sample sizes, experimental designs, assay platforms,
-and other types of heterogeneity.  The gage package provides functions for
-basic GAGE analysis, result processing and presentation.  In addition, it
-provides demo microarray data and commonly used gene set data based on KEGG
-pathways and GO terms.  These functions and data are also useful for gene set
-analysis using other methods.")
-    (license license:gpl2+)))
-
 (define-public r-genomicfiles
   (package
     (name "r-genomicfiles")

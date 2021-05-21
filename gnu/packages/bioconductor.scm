@@ -4,7 +4,7 @@
 ;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019, 2020, 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2020 Peter Lo <peterloleungyau@gmail.com>
 ;;; Copyright © 2020, 2021 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
@@ -2498,6 +2498,37 @@ generally, it can segment data given as a matrix or as a vector.  Various data
 formats can be used as input to fastseg like expression set objects for
 microarrays or GRanges for sequencing data.")
     (license license:lgpl2.0+)))
+
+(define-public r-gage
+  (package
+    (name "r-gage")
+    (version "2.40.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "gage" version))
+       (sha256
+        (base32
+         "1bs0hx8sqiyl08dqn2zx31kbv5aci4xvrs71pplx2yxal3jf5178"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-go-db" ,r-go-db)
+       ("r-graph" ,r-graph)
+       ("r-keggrest" ,r-keggrest)))
+    (home-page (string-append "https://bmcbioinformatics.biomedcentral.com/"
+                              "articles/10.1186/1471-2105-10-161"))
+    (synopsis "Generally applicable gene-set enrichment for pathway analysis")
+    (description
+     "GAGE is a published method for gene set (enrichment or GSEA) or pathway
+analysis.  GAGE is generally applicable independent of microarray or RNA-Seq
+data attributes including sample sizes, experimental designs, assay platforms,
+and other types of heterogeneity.  The gage package provides functions for
+basic GAGE analysis, result processing and presentation.  In addition, it
+provides demo microarray data and commonly used gene set data based on KEGG
+pathways and GO terms.  These functions and data are also useful for gene set
+analysis using other methods.")
+    (license license:gpl2+)))
 
 (define-public r-genefilter
   (package
