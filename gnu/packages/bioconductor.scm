@@ -36,6 +36,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bioinformatics)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages cran)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gcc)
@@ -3255,6 +3256,67 @@ XML package.  The parser tries to be general and able to handle all types of
 mzIdentML files with the drawback of having less pretty output than a vendor
 specific parser.")
     (license license:gpl2+)))
+
+(define-public r-mzr
+  (package
+    (name "r-mzr")
+    (version "2.24.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "mzR" version))
+       (sha256
+        (base32
+         "0ik0yrjhvk8r5pm990chn2aadp0gqzzkkm0027682ky34xp142sg"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (delete-file-recursively "src/boost")
+           #t))))
+    (properties `((upstream-name . "mzR")))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'use-system-boost
+           (lambda _
+             (substitute* "src/Makevars"
+               (("\\./boost/libs.*") "")
+               ;; This is to avoid having a plain directory on the list of
+               ;; libraries to link.
+               (("\\(RHDF5_LIBS\\)" match)
+                (string-append match "/libhdf5.a"))
+               (("PKG_LIBS=") "PKG_LIBS=$(BOOST_LIBS) ")
+               (("\\ARCH_OBJS=" line)
+                (string-append line
+                               "\nBOOST_LIBS=-lboost_system -lboost_regex \
+-lboost_iostreams -lboost_thread -lboost_filesystem -lboost_chrono\n")))
+             #t)))))
+    (inputs
+     `(;; Our default boost package won't work here, unfortunately, even with
+       ;; mzR version 2.24.1.
+       ("boost" ,boost-for-mysql) ; use this instead of the bundled boost sources
+       ("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-ncdf4" ,r-ncdf4)
+       ("r-protgenerics" ,r-protgenerics)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rhdf5lib" ,r-rhdf5lib)
+       ("r-zlibbioc" ,r-zlibbioc)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/sneumann/mzR/")
+    (synopsis "Parser for mass spectrometry data files")
+    (description
+     "The mzR package provides a unified API to the common file formats and
+parsers available for mass spectrometry data.  It comes with a wrapper for the
+ISB random access parser for mass spectrometry mzXML, mzData and mzML files.
+The package contains the original code written by the ISB, and a subset of the
+proteowizard library for mzML and mzIdentML.  The netCDF reading code has
+previously been used in XCMS.")
+    (license license:artistic2.0)))
 
 (define-public r-organismdbi
   (package
