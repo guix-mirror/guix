@@ -7976,26 +7976,6 @@ including VCF header and contents in RDF and JSON.")
 information about the latest version of the Gene Ontologies.")
     (license license:artistic2.0)))
 
-(define-public r-impute
-  (package
-    (name "r-impute")
-    (version "1.64.0")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "impute" version))
-              (sha256
-               (base32
-                "1pnjasw9i19nmxwjzrd9jbln31yc5jilfvwk414ya5zbqfsazvxa"))))
-    (native-inputs
-     `(("gfortran" ,gfortran)))
-    (build-system r-build-system)
-    (home-page "https://bioconductor.org/packages/impute")
-    (synopsis "Imputation for microarray data")
-    (description
-     "This package provides a function to impute missing gene expression
-microarray data, using nearest neighbor averaging.")
-    (license license:gpl2+)))
-
 (define-public r-seqpattern
   (package
     (name "r-seqpattern")
