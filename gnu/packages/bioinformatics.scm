@@ -9202,45 +9202,6 @@ distributed by file or by range.  User defined mapper and reducer functions
 provide added flexibility for data combination and manipulation.")
     (license license:artistic2.0)))
 
-(define-public r-complexheatmap
-  (package
-    (name "r-complexheatmap")
-    (version "2.6.2")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (bioconductor-uri "ComplexHeatmap" version))
-       (sha256
-        (base32
-         "1nx1xxpq8zrvi990v9fmvx3msl85pdz5dp1gp6m78q6i4s2alg5x"))))
-    (properties
-     `((upstream-name . "ComplexHeatmap")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-cairo" ,r-cairo)
-       ("r-circlize" ,r-circlize)
-       ("r-clue" ,r-clue)
-       ("r-colorspace" ,r-colorspace)
-       ("r-digest" ,r-digest)
-       ("r-getoptlong" ,r-getoptlong)
-       ("r-globaloptions" ,r-globaloptions)
-       ("r-iranges" ,r-iranges)
-       ("r-matrixstats" ,r-matrixstats)
-       ("r-png" ,r-png)
-       ("r-rcolorbrewer" ,r-rcolorbrewer)
-       ("r-s4vectors" ,r-s4vectors)))
-    (native-inputs
-     `(("r-knitr" ,r-knitr)))
-    (home-page
-     "https://github.com/jokergoo/ComplexHeatmap")
-    (synopsis "Making Complex Heatmaps")
-    (description
-     "Complex heatmaps are efficient to visualize associations between
-different sources of data sets and reveal potential structures.  This package
-provides a highly flexible way to arrange multiple heatmaps and supports
-self-defined annotation graphics.")
-    (license license:gpl2+)))
-
 (define-public r-dirichletmultinomial
   (package
     (name "r-dirichletmultinomial")
