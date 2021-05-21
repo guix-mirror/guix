@@ -1987,6 +1987,47 @@ annotation data packages using SQLite data storage.")
 databases.  Packages produced are intended to be used with AnnotationDbi.")
     (license license:artistic2.0)))
 
+(define-public r-annotationhub
+  (package
+    (name "r-annotationhub")
+    (version "2.22.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "AnnotationHub" version))
+       (sha256
+        (base32
+         "08d7m0n4jkpajsj0bvi5xd4vi1zqczl6lnrh8kqi2fbjkrvwdqp5"))))
+    (properties `((upstream-name . "AnnotationHub")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-biocfilecache" ,r-biocfilecache)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocmanager" ,r-biocmanager)
+       ("r-biocversion" ,r-biocversion)
+       ("r-curl" ,r-curl)
+       ("r-dplyr" ,r-dplyr)
+       ("r-httr" ,r-httr)
+       ("r-interactivedisplaybase" ,r-interactivedisplaybase)
+       ("r-rappdirs" ,r-rappdirs)
+       ("r-rsqlite" ,r-rsqlite)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-yaml" ,r-yaml)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://bioconductor.org/packages/AnnotationHub")
+    (synopsis "Client to access AnnotationHub resources")
+    (description
+     "This package provides a client for the Bioconductor AnnotationHub web
+resource.  The AnnotationHub web resource provides a central location where
+genomic files (e.g. VCF, bed, wig) and other resources from standard
+locations (e.g. UCSC, Ensembl) can be discovered.  The resource includes
+metadata about each resource, e.g., a textual description, tags, and date of
+modification.  The client creates and manages a local cache of files retrieved
+by the user, helping with quick and reproducible access.")
+    (license license:artistic2.0)))
+
 (define-public r-aroma-light
   (package
     (name "r-aroma-light")
