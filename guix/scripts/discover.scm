@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2020 Mathieu Othacehe <othacehe@gnu.org>
+;;; Copyright © 2020, 2021 Mathieu Othacehe <othacehe@gnu.org>
 ;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -26,6 +26,7 @@
   #:use-module (guix build syscalls)
   #:use-module (guix build utils)
   #:use-module (guix scripts publish)
+  #:use-module (avahi)
   #:use-module (ice-9 rdelim)
   #:use-module (srfi srfi-37)
   #:export (read-substitute-urls
@@ -138,5 +139,16 @@ to synchronize with the writer."
       (parameterize ((%publish-file publish-file))
         (mkdir-p (dirname publish-file))
         (false-if-exception (delete-file publish-file))
-        (avahi-browse-service-thread service-proc
-                                     #:types %services)))))
+        (catch 'avahi-error
+          (lambda ()
+            (avahi-browse-service-thread service-proc
+                                         #:types %services))
+          (lambda (key err function . _)
+            (cond
+             ((eq? err error/no-daemon)
+              (warning (G_ "Avahi daemon is not running, \
+cannot auto-discover substitutes servers.~%")))
+             (else
+              (report-error (G_ "an Avahi error was raised by `~a': ~a~%")
+                            function (error->string err))))
+            (exit 1)))))))
