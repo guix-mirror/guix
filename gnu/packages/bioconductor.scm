@@ -2440,6 +2440,35 @@ testing.  The package also provides functions for the visualization and
 exploration of the results.")
     (license license:gpl3+)))
 
+(define-public r-dirichletmultinomial
+  (package
+    (name "r-dirichletmultinomial")
+    (version "1.32.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "DirichletMultinomial" version))
+       (sha256
+        (base32
+         "098zql6ryd1b0gkq4cjybblyh0x8xidxxfygqq5a5x9asl8y4vsk"))))
+    (properties
+     `((upstream-name . "DirichletMultinomial")))
+    (build-system r-build-system)
+    (inputs
+     `(("gsl" ,gsl)))
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-iranges" ,r-iranges)
+       ("r-s4vectors" ,r-s4vectors)))
+    (home-page "https://bioconductor.org/packages/DirichletMultinomial")
+    (synopsis "Dirichlet-Multinomial mixture models for microbiome data")
+    (description
+     "Dirichlet-multinomial mixture models can be used to describe variability
+in microbial metagenomic data.  This package is an interface to code
+originally made available by Holmes, Harris, and Quince, 2012, PLoS ONE 7(2):
+1-15.")
+    (license license:lgpl3)))
+
 (define-public r-edaseq
   (package
     (name "r-edaseq")
