@@ -8164,45 +8164,6 @@ bound and non bound genomic regions to accurately identify transcription
 factors bound at the specific regions.")
     (license license:gpl2+)))
 
-(define-public r-rhdf5
-  (package
-    (name "r-rhdf5")
-    (version "2.34.0")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "rhdf5" version))
-              (sha256
-               (base32
-                "0almr1vscrgj5g4dyrags131wia2pmdbdidlpskbgm44ha6hpmqi"))))
-    (build-system r-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-linking
-           (lambda _
-             (substitute* "src/Makevars"
-               ;; This is to avoid having a plain directory on the list of
-               ;; libraries to link.
-               (("\\(RHDF5_LIBS\\)" match)
-                (string-append match "/libhdf5.a")))
-             #t)))))
-    (propagated-inputs
-     `(("r-rhdf5filters" ,r-rhdf5filters)
-       ("r-rhdf5lib" ,r-rhdf5lib)))
-    (native-inputs
-     `(("r-knitr" ,r-knitr)))
-    (home-page "https://bioconductor.org/packages/rhdf5")
-    (synopsis "HDF5 interface to R")
-    (description
-     "This R/Bioconductor package provides an interface between HDF5 and R.
-HDF5's main features are the ability to store and access very large and/or
-complex datasets and a wide variety of metadata on mass storage (disk) through
-a completely portable file format.  The rhdf5 package is thus suited for the
-exchange of large and/or complex datasets between R and other software
-package, and for letting R applications work on datasets that are larger than
-the available RAM.")
-    (license license:artistic2.0)))
-
 (define-public emboss
   (package
     (name "emboss")
