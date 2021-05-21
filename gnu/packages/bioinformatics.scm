@@ -8046,36 +8046,6 @@ characteristic tag shift values in these assays.")
 secondary structure and comparative analysis in R.")
     (license license:gpl3+)))
 
-(define-public r-bamsignals
-  (package
-    (name "r-bamsignals")
-    (version "1.22.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (bioconductor-uri "bamsignals" version))
-       (sha256
-        (base32
-         "0p3r9z9z5sfkd0b951cgr751k4z0yviyn1jfw9d4fcnyld7g1jxv"))))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-biocgenerics" ,r-biocgenerics)
-       ("r-genomicranges" ,r-genomicranges)
-       ("r-iranges" ,r-iranges)
-       ("r-rcpp" ,r-rcpp)
-       ("r-rhtslib" ,r-rhtslib)
-       ("r-zlibbioc" ,r-zlibbioc)))
-    (native-inputs
-     `(("r-knitr" ,r-knitr)))
-    (home-page "https://bioconductor.org/packages/bamsignals")
-    (synopsis "Extract read count signals from bam files")
-    (description
-     "This package efficiently obtains count vectors from indexed bam
-files.  It counts the number of nucleotide sequence reads in given genomic
-ranges and it computes reads profiles and coverage profiles.  It also handles
-paired-end data.")
-    (license license:gpl2+)))
-
 (define-public r-rcas
   (package
     (name "r-rcas")
