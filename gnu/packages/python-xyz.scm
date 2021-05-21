@@ -2222,7 +2222,7 @@ human-friendly syntax.")
 (define-public python-scour
   (package
     (name "python-scour")
-    (version "038.1")
+    (version "0.38.1")
     (source
      (origin
        (method git-fetch)
