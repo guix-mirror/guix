@@ -10,6 +10,7 @@
 ;;; Copyright © 2020, 2021 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2021 Hong Li <hli@mdc-berlin.de>
+;;; Copyright © 2021 Tim Howes <timhowes@lavabit.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2808,6 +2809,36 @@ in various formats (currently GFF, BED, bedGraph, BED15, WIG, BigWig and 2bit
 built-in).  The user may export/import tracks to/from the supported browsers,
 as well as query and modify the browser state, such as the current viewport.")
     (license license:artistic2.0)))
+
+;; This is a CRAN package, but it depends on a Bioconductor package.
+(define-public r-samr
+  (package
+    (name "r-samr")
+    (version "3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "samr" version))
+       (sha256
+        (base32
+         "01km0f7qgm73x19vbvsxl083hs1dq4dj8qm5h64cxbf20b08my15"))))
+    (properties `((upstream-name . "samr")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-gsa" ,r-gsa)
+       ("r-impute" ,r-impute)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-openxlsx" ,r-openxlsx)
+       ("r-shiny" ,r-shiny)
+       ("r-shinyfiles" ,r-shinyfiles)))
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "https://statweb.stanford.edu/~tibs/SAM/")
+    (synopsis "Significance analysis of Microarrays")
+    (description
+     "This is a package for significance analysis of Microarrays for
+differential expression analysis, RNAseq data and related problems.")
+    ;; Any version of the LGPL
+    (license license:lgpl3+)))
 
 (define-public r-shortread
   (package

@@ -33,7 +33,6 @@
 ;;; Copyright © 2020 Magali Lemes <magalilemes00@gmail.com>
 ;;; Copyright © 2020 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2020 Aniket Patil <aniket112.patil@gmail.com>
-;;; Copyright © 2021 Tim Howes <timhowes@lavabit.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29150,35 +29149,6 @@ join the effort of providing interesting text visualisations.")
     (description "This package lets you determine the significance of
 pre-defined sets of genes with respect to an outcome variable, such as a group
 indicator, a quantitative variable or a survival time.")
-    ;; Any version of the LGPL
-    (license license:lgpl3+)))
-
-(define-public r-samr
-  (package
-    (name "r-samr")
-    (version "3.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "samr" version))
-       (sha256
-        (base32
-         "01km0f7qgm73x19vbvsxl083hs1dq4dj8qm5h64cxbf20b08my15"))))
-    (properties `((upstream-name . "samr")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-gsa" ,r-gsa)
-       ("r-impute" ,r-impute)
-       ("r-matrixstats" ,r-matrixstats)
-       ("r-openxlsx" ,r-openxlsx)
-       ("r-shiny" ,r-shiny)
-       ("r-shinyfiles" ,r-shinyfiles)))
-    (native-inputs `(("gfortran" ,gfortran)))
-    (home-page "https://statweb.stanford.edu/~tibs/SAM/")
-    (synopsis "Significance analysis of Microarrays")
-    (description
-     "This is a package for significance analysis of Microarrays for
-differential expression analysis, RNAseq data and related problems.")
     ;; Any version of the LGPL
     (license license:lgpl3+)))
 
