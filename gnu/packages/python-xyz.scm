@@ -2222,7 +2222,7 @@ human-friendly syntax.")
 (define-public python-scour
   (package
     (name "python-scour")
-    (version "0.38.1")
+    (version "0.38.2")
     (source
      (origin
        (method git-fetch)
@@ -2233,7 +2233,7 @@ human-friendly syntax.")
           (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0rgiypb9ig8x4rl3hfzpy7kwnx1q3064nvlrv4fk0dnp84girn0v"))))
+        (base32 "0mmfvx4wqp8gkpv0kbih89zfs9njvmd3v4dxfqii62xddpxq0f1k"))))
     (propagated-inputs
      `(("python-six" ,python-six)))
     (build-system python-build-system)
