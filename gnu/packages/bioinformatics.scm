@@ -8023,54 +8023,6 @@ used to obtain robust estimates of the predominant fragment length or
 characteristic tag shift values in these assays.")
     (license license:bsd-3)))
 
-(define-public r-genomation
-  (package
-    (name "r-genomation")
-    (version "1.22.0")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "genomation" version))
-              (sha256
-               (base32
-                "1ana06irlpdgnmk8mb329nws9sm8n6max4qargf1xdcdf3rnk45g"))))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-biostrings" ,r-biostrings)
-       ("r-bsgenome" ,r-bsgenome)
-       ("r-data-table" ,r-data-table)
-       ("r-genomeinfodb" ,r-genomeinfodb)
-       ("r-genomicalignments" ,r-genomicalignments)
-       ("r-genomicranges" ,r-genomicranges)
-       ("r-ggplot2" ,r-ggplot2)
-       ("r-gridbase" ,r-gridbase)
-       ("r-impute" ,r-impute)
-       ("r-iranges" ,r-iranges)
-       ("r-matrixstats" ,r-matrixstats)
-       ("r-plotrix" ,r-plotrix)
-       ("r-plyr" ,r-plyr)
-       ("r-rcpp" ,r-rcpp)
-       ("r-readr" ,r-readr)
-       ("r-reshape2" ,r-reshape2)
-       ("r-rsamtools" ,r-rsamtools)
-       ("r-rtracklayer" ,r-rtracklayer)
-       ("r-runit" ,r-runit)
-       ("r-s4vectors" ,r-s4vectors)
-       ("r-seqpattern" ,r-seqpattern)))
-    (native-inputs
-     `(("r-knitr" ,r-knitr)))
-    (home-page "https://bioinformatics.mdc-berlin.de/genomation/")
-    (synopsis "Summary, annotation and visualization of genomic data")
-    (description
-     "This package provides a package for summary and annotation of genomic
-intervals.  Users can visualize and quantify genomic intervals over
-pre-defined functional regions, such as promoters, exons, introns, etc.  The
-genomic intervals represent regions with a defined chromosome position, which
-may be associated with a score, such as aligned reads from HT-seq experiments,
-TF binding sites, methylation scores, etc.  The package can use any tabular
-genomic feature data as long as it has minimal information on the locations of
-genomic intervals.  In addition, it can use BAM or BigWig files as input.")
-    (license license:artistic2.0)))
-
 (define-public r-genomationdata
   (package
     (name "r-genomationdata")
