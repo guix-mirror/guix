@@ -8486,46 +8486,6 @@ analysis, variant tools is project based and provides a whole set of tools to
 manipulate and analyze genetic variants.")
     (license license:gpl3+)))
 
-(define-public r-copywriter
-  (package
-    (name "r-copywriter")
-    (version "2.22.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (bioconductor-uri "CopywriteR" version))
-       (sha256
-        (base32
-         "060p6l6l8i6b15hyyz5v5kkxih3h4wcciixii51m9mn82z23xr2f"))))
-    (properties `((upstream-name . "CopywriteR")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-biocparallel" ,r-biocparallel)
-       ("r-chipseq" ,r-chipseq)
-       ("r-copyhelper" ,r-copyhelper)
-       ("r-data-table" ,r-data-table)
-       ("r-dnacopy" ,r-dnacopy)
-       ("r-futile-logger" ,r-futile-logger)
-       ("r-genomeinfodb" ,r-genomeinfodb)
-       ("r-genomicalignments" ,r-genomicalignments)
-       ("r-genomicranges" ,r-genomicranges)
-       ("r-gtools" ,r-gtools)
-       ("r-iranges" ,r-iranges)
-       ("r-matrixstats" ,r-matrixstats)
-       ("r-rsamtools" ,r-rsamtools)
-       ("r-s4vectors" ,r-s4vectors)))
-    (home-page "https://github.com/PeeperLab/CopywriteR")
-    (synopsis "Copy number information from targeted sequencing")
-    (description
-     "CopywriteR extracts DNA copy number information from targeted sequencing
-by utilizing off-target reads.  It allows for extracting uniformly distributed
-copy number information, can be used without reference, and can be applied to
-sequencing data obtained from various techniques including chromatin
-immunoprecipitation and target enrichment on small gene panels.  Thereby,
-CopywriteR constitutes a widely applicable alternative to available copy
-number detection tools.")
-    (license license:gpl2)))
-
 (define-public r-methylkit
   (package
     (name "r-methylkit")
