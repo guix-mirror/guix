@@ -7952,39 +7952,6 @@ including VCF header and contents in RDF and JSON.")
     (home-page "https://github.com/vcflib/bio-vcf")
     (license license:expat)))
 
-(define-public r-genomicalignments
-  (package
-    (name "r-genomicalignments")
-    (version "1.26.0")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "GenomicAlignments" version))
-              (sha256
-               (base32
-                "1q95px6s6snsax4ax955zzpdlrwp5liwf70wqq0lrk9mp6lq0hbr"))))
-    (properties
-     `((upstream-name . "GenomicAlignments")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-biocgenerics" ,r-biocgenerics)
-       ("r-biocparallel" ,r-biocparallel)
-       ("r-biostrings" ,r-biostrings)
-       ("r-genomeinfodb" ,r-genomeinfodb)
-       ("r-genomicranges" ,r-genomicranges)
-       ("r-iranges" ,r-iranges)
-       ("r-rsamtools" ,r-rsamtools)
-       ("r-s4vectors" ,r-s4vectors)
-       ("r-summarizedexperiment" ,r-summarizedexperiment)))
-    (home-page "https://bioconductor.org/packages/GenomicAlignments")
-    (synopsis "Representation and manipulation of short genomic alignments")
-    (description
-     "This package provides efficient containers for storing and manipulating
-short genomic alignments (typically obtained by aligning short reads to a
-reference genome).  This includes read counting, computing the coverage,
-junction detection, and working with the nucleotide content of the
-alignments.")
-    (license license:artistic2.0)))
-
 (define-public r-rtracklayer
   (package
     (name "r-rtracklayer")
