@@ -2218,6 +2218,37 @@ genome data packages and support for efficient SNP representation.")
 analysis.")
     (license license:artistic2.0)))
 
+(define-public r-deseq
+  (package
+    (name "r-deseq")
+    (version "1.39.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "DESeq" version))
+       (sha256
+        (base32
+         "047hph5aqmjnz1aqprziw0smdn5lf96hmwpnvqrxv1j2yfvcf3h1"))))
+    (properties `((upstream-name . "DESeq")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-genefilter" ,r-genefilter)
+       ("r-geneplotter" ,r-geneplotter)
+       ("r-lattice" ,r-lattice)
+       ("r-locfit" ,r-locfit)
+       ("r-mass" ,r-mass)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)))
+    (home-page "https://www-huber.embl.de/users/anders/DESeq/")
+    (synopsis "Differential gene expression analysis")
+    (description
+     "This package provides tools for estimating variance-mean dependence in
+count data from high-throughput genetic sequencing assays and for testing for
+differential expression based on a model using the negative binomial
+distribution.")
+    (license license:gpl3+)))
+
 (define-public r-deseq2
   (package
     (name "r-deseq2")
