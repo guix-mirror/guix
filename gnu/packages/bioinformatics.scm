@@ -7952,54 +7952,6 @@ including VCF header and contents in RDF and JSON.")
     (home-page "https://github.com/vcflib/bio-vcf")
     (license license:expat)))
 
-(define-public r-rtracklayer
-  (package
-    (name "r-rtracklayer")
-    (version "1.50.0")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "rtracklayer" version))
-              (sha256
-               (base32
-                "12zimhpdzjyzd81wrzz5hdbzvlgzcs22x1nnaf2jq4cba3ch5px8"))))
-    (build-system r-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'use-system-zlib
-           (lambda _
-             (substitute* "DESCRIPTION"
-               ((" zlibbioc,") ""))
-             (substitute* "NAMESPACE"
-               (("import\\(zlibbioc\\)") ""))
-             #t)))))
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (inputs
-     `(("zlib" ,zlib)))
-    (propagated-inputs
-     `(("r-biocgenerics" ,r-biocgenerics)
-       ("r-biostrings" ,r-biostrings)
-       ("r-genomeinfodb" ,r-genomeinfodb)
-       ("r-genomicalignments" ,r-genomicalignments)
-       ("r-genomicranges" ,r-genomicranges)
-       ("r-iranges" ,r-iranges)
-       ("r-rcurl" ,r-rcurl)
-       ("r-rsamtools" ,r-rsamtools)
-       ("r-s4vectors" ,r-s4vectors)
-       ("r-xml" ,r-xml)
-       ("r-xvector" ,r-xvector)
-       ("r-zlibbioc" ,r-zlibbioc)))
-    (home-page "https://bioconductor.org/packages/rtracklayer")
-    (synopsis "R interface to genome browsers and their annotation tracks")
-    (description
-     "rtracklayer is an extensible framework for interacting with multiple
-genome browsers (currently UCSC built-in) and manipulating annotation tracks
-in various formats (currently GFF, BED, bedGraph, BED15, WIG, BigWig and 2bit
-built-in).  The user may export/import tracks to/from the supported browsers,
-as well as query and modify the browser state, such as the current viewport.")
-    (license license:artistic2.0)))
-
 (define-public r-genomicfeatures
   (package
     (name "r-genomicfeatures")
