@@ -3790,6 +3790,37 @@ typically represent genomic ranges of interest and the columns represent
 samples.")
     (license license:artistic2.0)))
 
+(define-public r-sva
+  (package
+    (name "r-sva")
+    (version "3.38.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "sva" version))
+       (sha256
+        (base32
+         "1hpzzg3qrgkd8kwg1m5gq94cikjgk9j4l1wk58fxl49s6fmd13zy"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-edger" ,r-edger)
+       ("r-genefilter" ,r-genefilter)
+       ("r-mgcv" ,r-mgcv)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-limma" ,r-limma)))
+    (home-page "https://bioconductor.org/packages/sva")
+    (synopsis "Surrogate variable analysis")
+    (description
+     "This package contains functions for removing batch effects and other
+unwanted variation in high-throughput experiment.  It also contains functions
+for identifying and building surrogate variables for high-dimensional data
+sets.  Surrogate variables are covariates constructed directly from
+high-dimensional data like gene expression/RNA sequencing/methylation/brain
+imaging data that can be used in subsequent analyses to adjust for unknown,
+unmodeled, or latent sources of noise.")
+    (license license:artistic2.0)))
+
 (define-public r-systempiper
   (package
     (name "r-systempiper")
