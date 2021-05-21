@@ -9196,37 +9196,6 @@ their variance is independent of the mean, and they are usually more sensitive
 and specific in detecting differential transcription.")
     (license license:artistic2.0)))
 
-(define-public r-mzid
-  (package
-    (name "r-mzid")
-    (version "1.28.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (bioconductor-uri "mzID" version))
-       (sha256
-        (base32
-         "0s7d6cz1li7v3ni6n6hrdspl93yiyr283kmbbd3hhkfgzgx6kpq2"))))
-    (properties `((upstream-name . "mzID")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-doparallel" ,r-doparallel)
-       ("r-foreach" ,r-foreach)
-       ("r-iterators" ,r-iterators)
-       ("r-plyr" ,r-plyr)
-       ("r-protgenerics" ,r-protgenerics)
-       ("r-xml" ,r-xml)))
-    (native-inputs
-     `(("r-knitr" ,r-knitr)))
-    (home-page "https://bioconductor.org/packages/mzID")
-    (synopsis "Parser for mzIdentML files")
-    (description
-     "This package provides a parser for mzIdentML files implemented using the
-XML package.  The parser tries to be general and able to handle all types of
-mzIdentML files with the drawback of having less pretty output than a vendor
-specific parser.")
-    (license license:gpl2+)))
-
 (define-public r-aroma-light
   (package
     (name "r-aroma-light")
