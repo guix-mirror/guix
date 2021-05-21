@@ -9196,33 +9196,6 @@ their variance is independent of the mean, and they are usually more sensitive
 and specific in detecting differential transcription.")
     (license license:artistic2.0)))
 
-(define-public r-aroma-light
-  (package
-    (name "r-aroma-light")
-    (version "3.20.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (bioconductor-uri "aroma.light" version))
-       (sha256
-        (base32
-         "0pi37rlfqh24p9wd7l1xb3f7c7938xdscgcc5agp8c9qhajq25a0"))))
-    (properties `((upstream-name . "aroma.light")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-matrixstats" ,r-matrixstats)
-       ("r-r-methodss3" ,r-r-methodss3)
-       ("r-r-oo" ,r-r-oo)
-       ("r-r-utils" ,r-r-utils)))
-    (home-page "https://github.com/HenrikBengtsson/aroma.light")
-    (synopsis "Methods for normalization and visualization of microarray data")
-    (description
-     "This package provides methods for microarray analysis that take basic
-data types such as matrices and lists of vectors.  These methods can be used
-standalone, be utilized in other packages, or be wrapped up in higher-level
-classes.")
-    (license license:gpl2+)))
-
 (define-public r-deseq
   (package
     (name "r-deseq")
