@@ -2751,6 +2751,40 @@ transcripts, exons, cds and genes.  Flexible methods are provided for
 extracting the desired features in a convenient format.")
     (license license:artistic2.0)))
 
+(define-public r-genomicfiles
+  (package
+    (name "r-genomicfiles")
+    (version "1.26.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "GenomicFiles" version))
+       (sha256
+        (base32
+         "0awnf0m1pz7cw9wvh9cfxz9k7xm6wnvjm7xbxf139lrhd4nlyqjz"))))
+    (properties `((upstream-name . "GenomicFiles")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicalignments" ,r-genomicalignments)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-matrixgenerics" ,r-matrixgenerics)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)
+       ("r-variantannotation" ,r-variantannotation)))
+    (home-page "https://bioconductor.org/packages/GenomicFiles")
+    (synopsis "Distributed computing by file or by range")
+    (description
+     "This package provides infrastructure for parallel computations
+distributed by file or by range.  User defined mapper and reducer functions
+provide added flexibility for data combination and manipulation.")
+    (license license:artistic2.0)))
+
 (define-public r-genomicranges
   (package
     (name "r-genomicranges")
