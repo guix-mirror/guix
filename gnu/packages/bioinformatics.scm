@@ -8046,33 +8046,6 @@ plots the corresponding sequence logo as introduced by Schneider and
 Stephens (1990).")
     (license license:lgpl2.0+)))
 
-(define-public r-motifrg
-  (package
-    (name "r-motifrg")
-    (version "1.31.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (bioconductor-uri "motifRG" version))
-       (sha256
-        (base32
-         "1ml6zyzlk8yjbnfhga2qnw8nl43rankvka0kc1yljxr2b66aqbhn"))))
-    (properties `((upstream-name . "motifRG")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-biostrings" ,r-biostrings)
-       ("r-bsgenome" ,r-bsgenome)
-       ("r-bsgenome-hsapiens-ucsc-hg19" ,r-bsgenome-hsapiens-ucsc-hg19)
-       ("r-iranges" ,r-iranges)
-       ("r-seqlogo" ,r-seqlogo)
-       ("r-xvector" ,r-xvector)))
-    (home-page "https://bioconductor.org/packages/motifRG")
-    (synopsis "Discover motifs in high throughput sequencing data")
-    (description
-     "This package provides tools for discriminative motif discovery in high
-throughput genetic sequencing data sets using regression methods.")
-    (license license:artistic2.0)))
-
 (define-public r-zlibbioc
   (package
     (name "r-zlibbioc")
