@@ -7360,6 +7360,23 @@ adding a prefix to e-TeX’s commands.  For example, ε-TeX’s
 @code{\\unexpanded} is provided as @code{\\etex@unexpanded}.")
     (license license:lppl1.3c+)))
 
+(define-public texlive-generic-gettitlestring
+  (package
+    (inherit (simple-texlive-package
+              "texlive-generic-gettitlestring"
+              '("/doc/latex/gettitlestring/"
+                "/tex/generic/gettitlestring/")
+              (base32
+               "1p4hg9mac03rzvj9dw0ws3zdh55fy1ns954f912algw9f2aq4xgp")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/gettitlestring")
+    (synopsis "Clean up title references")
+    (description
+     "This package provides commands for cleaning up the title string
+(such as removing @code{\\label} commands) for packages that typeset such
+strings.")
+    (license license:lppl1.3c+)))
+
 (define-public texlive-generic-infwarerr
   (package
     (inherit (simple-texlive-package
