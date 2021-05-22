@@ -7318,6 +7318,27 @@ be used either with LaTeX or with plain TeX.")
 integers that can exceed TeX's number limits.")
     (license license:lppl1.3c+)))
 
+(define-public texlive-generic-bitset
+  (package
+    (inherit (simple-texlive-package
+              "texlive-generic-bitset"
+              '("/doc/latex/bitset/README.md"
+                "/tex/generic/bitset/")
+              (base32
+               "0inj6qpzizvsbxdfsaijnl4iq976kyrnchnm3gc1kc2w389zrn1l")
+              #:trivial? #t))
+    (propagated-inputs
+     `(("texlive-generic-infwarerr" ,texlive-generic-infwarerr)
+       ("texlive-generic-intcalc" ,texlive-generic-intcalc)
+       ("texlive-generic-bigintcalc" ,texlive-generic-bigintcalc)))
+    (home-page "https://www.ctan.org/pkg/bitset")
+    (synopsis "Handle bit-vector datatype")
+    (description
+     "This package defines and implements the data type bit set, a vector
+of bits.  The size of the vector may grow dynamically.  Individual bits
+can be manipulated.")
+    (license license:lppl1.3c+)))
+
 (define-public texlive-generic-infwarerr
   (package
     (inherit (simple-texlive-package
