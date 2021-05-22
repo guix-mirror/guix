@@ -36,6 +36,7 @@
   #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system ant)
+  #:use-module (guix build-system emacs)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system r)
   #:use-module (guix build-system python)
@@ -5926,6 +5927,33 @@ Java package that provides routines for various statistical distributions.")
 is designed to support editing of scripts and interaction with various
 statistical analysis programs such as R, Julia, and JAGS.")
       (license license:gpl3+))))
+
+(define-public emacs-poly-r
+  (package
+    (name "emacs-poly-r")
+    (version "0.2.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/polymode/poly-R")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0a4wx73jkngw5nbq1fa4jfhba6bsmyn6vnsf887x3xhb5v3ykhsg"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-ess" ,emacs-ess)
+       ("emacs-poly-noweb" ,emacs-poly-noweb)
+       ("emacs-polymode-markdown" ,emacs-polymode-markdown)
+       ("emacs-polymode" ,emacs-polymode)))
+    (properties '((upstream-name . "poly-R")))
+    (home-page "https://github.com/polymode/poly-markdown")
+    (synopsis "Polymodes for the R language")
+    (description
+     "This package provides a number of polymodes for working with mixed R
+files, including Rmarkdown files.")
+    (license license:gpl3+)))
 
 (define-public readstat
   (package
