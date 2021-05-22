@@ -9076,8 +9076,7 @@ PEP 8.")
         (uri (pypi-uri "pyflakes" version))
         (sha256
          (base32
-          "1ny10364ciqh4ripasj4zzv4145l21l3s85m3qlrvfq5pk58xg7m"))
-        (patches (search-patches "python-pyflakes-fix-tests.patch"))))
+          "1ny10364ciqh4ripasj4zzv4145l21l3s85m3qlrvfq5pk58xg7m"))))
     (build-system python-build-system)
     (home-page "https://github.com/PyCQA/pyflakes")
     (synopsis "Passive checker of Python programs")
