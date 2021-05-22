@@ -423,39 +423,25 @@ a multi-paradigm automated test framework for C++ and Objective-C.")
 (define-public cmdtest
   (package
     (name "cmdtest")
-    (version "0.32")
+    ;; Use the latest commit (from 2019) in order to get Python 3 support.
+    (version "0.32-14-gcdfe14e")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "http://git.liw.fi/cmdtest/snapshot/"
-                                  name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "git://git.liw.fi/cmdtest/")
+                    (commit version)))
               (sha256
                (base32
-                "1jmfiyrrqmpvwdb273bkb8hjaf4rwx9njblx29pmr7giyahskwi5"))))
+                "1yhcwsqcpckkq5kw3h07k0xg6infyiyzq9ni3nqphrzxis7hxjf1"))))
     (build-system python-build-system)
-    (arguments
-     `(#:python ,python-2
-       #:phases
-       (modify-phases %standard-phases
-         ;; check phase needs to be run before the build phase. If not, the
-         ;; coverage test runner looks for tests for the built source files,
-         ;; and fails.
-         (delete 'check)
-         (add-before 'build 'check
-           (lambda _
-             (substitute* "yarn"
-               (("/bin/sh") (which "sh")))
-             ;; yarn uses python2-ttystatus to print messages.
-             ;; python2-ttystatus requires /dev/tty which is not present in
-             ;; the build environment. Hence assuming-failure test fails.
-             (delete-file "yarn.tests/assuming-failure.script")
-             (delete-file "yarn.tests/assuming-failure.stdout")
-             (invoke "python" "setup.py" "check"))))))
+    (arguments `(#:tests? #f))          ;requires Python 2!
     (native-inputs
-     `(("python2-coverage-test-runner" ,python2-coverage-test-runner)))
+     `(("python-coverage-test-runner" ,python-coverage-test-runner)
+       ("python" ,python)))
     (propagated-inputs
-     `(("python2-cliapp" ,python2-cliapp)
-       ("python2-markdown" ,python2-markdown)
-       ("python2-ttystatus" ,python2-ttystatus)))
+     `(("python-cliapp" ,python-cliapp)
+       ("python-markdown" ,python-markdown)
+       ("python-ttystatus" ,python-ttystatus)))
     (home-page "https://liw.fi/cmdtest/")
     (synopsis "Black box Unix program tester")
     (description
