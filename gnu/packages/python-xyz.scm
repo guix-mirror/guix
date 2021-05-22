@@ -13690,31 +13690,19 @@ is made as zipfile like as possible.")
 (define-public python-magic
   (package
     (name "python-magic")
-    (version "0.4.15")
+    (version "0.4.22")
+    (home-page "https://github.com/ahupp/python-magic")
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri "python-magic" version))
+       (method git-fetch)
+       (uri (git-reference (url home-page) (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1mgwig9pnzgkf86q9ji9pnc99bngms15lfszq5rgqb9db07mqxpk"))
-       (file-name (string-append name "-" version "-checkout"))))
+         "0zbdjr5shijs0jayz7gycpx0kn6v2bh83dpanyajk2vmy47jvbd6"))))
     (build-system python-build-system)
     (arguments
-     ;; The tests are unreliable, so don't run them.  The tests fail
-     ;; under Python3 because they were written for Python2 and
-     ;; contain import statements that do not work in Python3.  One of
-     ;; the tests fails under Python2 because its assertions are
-     ;; overly stringent; it relies on comparing output strings which
-     ;; are brittle and can change depending on the version of
-     ;; libmagic being used and the system on which the test is
-     ;; running.  In my case, under GuixSD 0.10.0, only one test
-     ;; failed, and it seems to have failed only because the version
-     ;; of libmagic that is packaged in Guix outputs a slightly
-     ;; different (but not wrong) string than the one that the test
-     ;; expected.
-     '(#:tests? #f
-       #:phases (modify-phases %standard-phases
+     '(#:phases (modify-phases %standard-phases
                   ;; Replace a specific method call with a hard-coded
                   ;; path to the necessary libmagic.so file in the
                   ;; store.  If we don't do this, then the method call
@@ -13724,24 +13712,22 @@ is made as zipfile like as possible.")
                   (add-before 'build 'hard-code-path-to-libmagic
                     (lambda* (#:key inputs #:allow-other-keys)
                       (let ((file (assoc-ref inputs "file")))
-                        (substitute* "magic.py"
-                          (("ctypes.util.find_library\\('magic'\\)")
-                           (string-append "'" file "/lib/libmagic.so'")))
-                        #t)))
-                  (add-before 'install 'disable-egg-compression
-                    (lambda _
-                      (let ((port (open-file "setup.cfg" "a")))
-                        (display "\n[easy_install]\nzip_ok = 0\n"
-                                 port)
-                        (close-port port)
-                        #t))))))
+                        (substitute* "magic/loader.py"
+                          (("ctypes\\.util\\.find_library\\('magic'\\)")
+                           (string-append "'" file "/lib/libmagic.so'"))))))
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      ;; The test suite mandates this variable.
+                      (setenv "LC_ALL" "en_US.UTF-8")
+                      (if tests?
+                          (invoke "python" "./test/test.py")
+                          (format #t "test suite not run~%")))))))
+    (native-inputs
+     `(("which" ,which)))
     (inputs
      ;; python-magic needs to be able to find libmagic.so.
      `(("file" ,file)))
-    (home-page
-     "https://github.com/ahupp/python-magic")
-    (synopsis
-     "File type identification using libmagic")
+    (synopsis "File type identification using libmagic")
     (description
      "This module uses ctypes to access the libmagic file type
 identification library.  It makes use of the local magic database and
