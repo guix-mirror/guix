@@ -4688,34 +4688,48 @@ images, etc.)")
 (define-public pinball
   (package
     (name "pinball")
-    (version "0.3.1")
+    (version "0.3.20201218")
     (source
-     (origin (method url-fetch)
-             (uri (string-append "mirror://sourceforge/pinball/pinball/"
-                                 "pinball-" version "/"
-                                 "pinball-" version ".tar.gz"))
+     (origin (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/adoptware/pinball")
+                   (commit version)))
+             (file-name (git-file-name name version))
              (sha256
               (base32
-               "1f2whlrfidwfh8lvr8cspcyirc6840r5d1ajm7x99qmngygrhixs"))
-             (patches (search-patches "pinball-const-fix.patch"
-                                      "pinball-cstddef.patch"
-                                      "pinball-missing-separators.patch"
-                                      "pinball-src-deps.patch"
-                                      "pinball-system-ltdl.patch"))))
+               "056jk98v6zlkrj9vjm06p0pmpnav1x658n6qw10v5klg5gr6ldf7"))
+             (patches (search-patches "pinball-system-ltdl.patch"))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)
+       ("libtool" ,libtool)))
     (inputs
      `(("glu" ,glu)
+       ("libltdl" ,libltdl)
        ("mesa" ,mesa)
        ("sdl" ,sdl)
        ("sdl-image" ,sdl-image)
        ("sdl-mixer" ,sdl-mixer)))
     (arguments
      '(#:configure-flags
+       ;; Configure tries to use pkg-config, but falls short, so:
        (list (string-append "CPPFLAGS=-I"
                             (assoc-ref %build-inputs "sdl-image")
                             "/include/SDL -I"
                             (assoc-ref %build-inputs "sdl-mixer")
-                            "/include/SDL"))))
+                            "/include/SDL"))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'bootstrap
+           ;; The `bootstrap` script tries to call a script with
+           ;; `/usr/bin/make` in the shebang, but ultimately does the same as
+           ;; autoreconf would do, so just use that.
+           (lambda _
+             (symlink "README.md" "README")
+             (display (which "autoreconf")) (newline)
+             (invoke "autoreconf" "-vif"))))))
     (home-page "http://pinball.sourceforge.net")
     (synopsis "Pinball simulator")
     (description "The Emilia Pinball Project is a pinball simulator.  There

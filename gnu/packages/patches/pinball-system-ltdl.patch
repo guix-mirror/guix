@@ -1,18 +1,10 @@
---- pinball-0.3.1/configure.ac	2010-01-14 17:26:25.000000000 +0100
-+++ pinball-0.3.1/configure.ac	2010-01-14 17:26:25.000000000 +0100
-@@ -22,14 +22,12 @@
- [  --with-cxxflags=CXXFLAGS        use CXXFLAGS as compile time arguments.],
-     [CXXFLAGS=$with_cxxflags; export CXXFLAGS])
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -1,6 +1,6 @@
+ AUTOMAKE_OPTIONS = gnu
  
--AC_CONFIG_SUBDIRS(libltdl)
--
- dnl Checks for programs.
- AC_PROG_CC
- AC_PROG_CXX
- AC_PROG_INSTALL
- AC_LIBTOOL_DLOPEN
--AC_LIBLTDL_CONVENIENCE
-+LTDL_INIT
- AC_PROG_LIBTOOL
+-SUBDIRS = libltdl addon base data src test
++SUBDIRS = addon base data src test
  
- AC_SUBST(INCLTDL)
+ EXTRA_DIST = bootstrap pinball.spec clean pinball.desktop
+ 
