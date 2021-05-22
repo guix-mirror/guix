@@ -7295,6 +7295,22 @@ the parsing character has been selected by the user, and to access any of
 these items with a simple syntax.")
     (license license:lppl1.3c+)))
 
+(define-public texlive-generic-ltxcmds
+  (package
+    (inherit (simple-texlive-package
+              "texlive-generic-ltxcmds"
+              '("/tex/generic/ltxcmds/")
+              (base32
+               "0mdzy76sbc3pmas5zqxn35w9xcg4v7j4p31jcjm9f4hzm27y974a")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/ltxcmds")
+    (synopsis "LaTeX kernel commands extracted for general use")
+    (description
+     "This package exports some utility macros from the LaTeX kernel into
+a separate namespace and also makes them available for other formats such
+as plain TeX.")
+    (license license:lppl1.3c+)))
+
 (define-public texlive-latex-readarray
   (package
     (name "texlive-latex-readarray")
