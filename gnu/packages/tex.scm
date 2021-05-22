@@ -2828,6 +2828,24 @@ of the @file{.aux} file.")
 @file{.aux} files.")
     (license license:lppl1.3c+)))
 
+(define-public texlive-latex-epstopdf-pkg
+  (package
+    (inherit (simple-texlive-package
+              "texlive-latex-epstopdf-pkg"
+              '("/doc/latex/epstopdf-pkg/"
+                "/tex/latex/epstopdf-pkg/")
+              (base32
+               "0zl6jiyp2cvvyqx3lwxdkcvvnkqgbwj4issq07cagf61gljq6fns")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/epstopdf-pkg")
+    (synopsis "Call @command{epstopdf} \"on the fly\"")
+    (description
+     "The package adds support for EPS files in the @code{graphicx} package
+when running under pdfTeX.  If an EPS graphic is detected, the package
+spawns a process to convert the EPS to PDF, using the script
+@command{epstopdf}.")
+    (license license:lppl1.3c+)))
+
 (define-public texlive-latex-filecontents
   (package
     (name "texlive-latex-filecontents")
