@@ -5145,6 +5145,25 @@ transliterate semitic languages; patches to make (La)TeX formulae embeddable
 in SGML; use maths minus in text as appropriate; simple Young tableaux.")
     (license license:gpl2)))
 
+(define-public texlive-latex-kvoptions
+  (package
+    (inherit (simple-texlive-package
+              "texlive-latex-kvoptions"
+              (list "/doc/latex/kvoptions/"
+                    "/tex/latex/kvoptions/")
+              (base32
+               "04v733njj6ynf1prj5rxljqbjq925jyycdprc78n7g01knn13wgr")
+              #:trivial? #t))
+    (propagated-inputs
+     `(("texlive-generic-kvsetkeys" ,texlive-generic-kvsetkeys)
+       ("texlive-generic-ltxcmds" ,texlive-generic-ltxcmds)))
+    (home-page "https://www.ctan.org/pkg/kvoptions")
+    (synopsis "Key/value format for package options")
+    (description
+     "This package provides facilities for using key-value format in
+package options.")
+    (license license:lppl1.3c+)))
+
 (define-public texlive-fonts-ec
   (package
     (name "texlive-fonts-ec")
