@@ -7339,6 +7339,27 @@ of bits.  The size of the vector may grow dynamically.  Individual bits
 can be manipulated.")
     (license license:lppl1.3c+)))
 
+(define-public texlive-generic-etexcmds
+  (package
+    (inherit (simple-texlive-package
+              "texlive-generic-etexcmds"
+              '("/doc/latex/etexcmds/README.md"
+                "/tex/generic/etexcmds/")
+              (base32
+               "11y6pnlq13bp0ybi7c82g8ds8085zv1zaslgqv3dzhgi3dklpc0c")
+              #:trivial? #t))
+    (propagated-inputs
+     `(("texlive-generic-infwarerr" ,texlive-generic-infwarerr)
+       ("texlive-generic-iftex" ,texlive-generic-iftex)))
+    (home-page "https://www.ctan.org/pkg/etexcmds")
+    (synopsis "Avoid name clashes with e-TeX commands")
+    (description
+     "New primitive commands are introduced in e-TeX; sometimes the names
+collide with existing macros.  This package solves the name clashes by
+adding a prefix to e-TeX’s commands.  For example, ε-TeX’s
+@code{\\unexpanded} is provided as @code{\\etex@unexpanded}.")
+    (license license:lppl1.3c+)))
+
 (define-public texlive-generic-infwarerr
   (package
     (inherit (simple-texlive-package
