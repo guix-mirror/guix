@@ -188,6 +188,7 @@ testing InfiniBand networks.")
                     (url "https://github.com/openucx/ucx")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
+              (patches (search-patches "ucx-tcp-iface-ioctl.patch"))
               (sha256
                (base32
                 "0i0ji5ivzxjqh3ys1m517ghw3am7cw1hvf40ma7hsq3wznsyx5s1"))))
