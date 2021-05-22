@@ -7300,6 +7300,24 @@ It makes use of e-TeX’s facilities if they are available.  The package may
 be used either with LaTeX or with plain TeX.")
     (license license:lppl1.3c+)))
 
+(define-public texlive-generic-bigintcalc
+  (package
+    (inherit (simple-texlive-package
+              "texlive-generic-bigintcalc"
+              '("/doc/latex/bigintcalc/README.md"
+                "/tex/generic/bigintcalc/")
+              (base32
+               "19grk4p1dh566hgpzhnjyjnrw57hpjijcpr7ci401n9jszcc1xkz")
+              #:trivial? #t))
+    (propagated-inputs
+     `(("texlive-latex-pdftexcmds" ,texlive-latex-pdftexcmds)))
+    (home-page "https://www.ctan.org/pkg/bigintcalc")
+    (synopsis "Integer calculations on very large numbers")
+    (description
+     "This package provides expandable arithmetic operations with big
+integers that can exceed TeX's number limits.")
+    (license license:lppl1.3c+)))
+
 (define-public texlive-generic-infwarerr
   (package
     (inherit (simple-texlive-package
