@@ -2792,6 +2792,26 @@ with the required packages, constitutes what every LaTeX distribution should
 contain.")
       (license license:lppl1.3c+))))
 
+(define-public texlive-latex-atveryend
+  (package
+    (inherit (simple-texlive-package
+              "texlive-latex-atveryend"
+              '("/doc/latex/atveryend/README.md"
+                "/tex/latex/atveryend/")
+              (base32
+               "1gz5ssxjlqa53a8blsmdk2qjahzc910ldh26xjxfxgqnqb03rqx7")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/atveryend")
+    (synopsis "Hooks at the very end of a document")
+    (description
+     "This LaTeX packages provides two hooks for @code{\\end@{document@}
+that are executed after the hook of @code{\\AtEndDocument}:
+@code{\\AfterLastShipout} can be used for code that is to be executed right
+after the last @code{\\clearpage} before the @file{.aux} file is closed.
+@code{\\AtVeryEndDocument} is used for code after closing and final reading
+of the @file{.aux} file.")
+    (license license:lppl1.3c+)))
+
 (define-public texlive-latex-filecontents
   (package
     (name "texlive-latex-filecontents")
