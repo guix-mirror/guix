@@ -366,7 +366,7 @@ exec smbd $@")))
                      ("texinfo" ,texinfo)
                      ;; The following static libraries are required to build
                      ;; the static output of QEMU.
-                     ("glib-static" ,glib-static)
+                     ("glib:static" ,glib "static")
                      ("pcre:static" ,pcre "static")
                      ("zlib:static" ,zlib "static")))
     (home-page "https://www.qemu.org")

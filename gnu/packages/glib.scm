@@ -11,7 +11,7 @@
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2019, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
-;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2019, 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2020 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
@@ -194,13 +194,14 @@ shared NFS home directories.")
            (substitute* "tests/spawn-test.c"
              (("/bin/sh") "sh"))
            #t))))
-    ;; (properties '((hidden? . #t)))
     (build-system meson-build-system)
-    (outputs '("out"   ; everything
-               "bin")) ; glib-mkenums, gtester, etc.; depends on Python
+    (outputs '("out"                    ;libraries, locales, etc
+               "static"                 ;static libraries
+               "bin"))                  ;executables; depends on Python
     (arguments
      `(#:disallowed-references (,tzdata-for-tests)
-       #:configure-flags '("-Dman=true"
+       #:configure-flags '("--default-library=both"
+                           "-Dman=true"
                            "-Dselinux=disabled")
        #:phases
        (modify-phases %standard-phases
@@ -244,6 +245,16 @@ shared NFS home directories.")
              (setenv "HOME" (getcwd))
              (setenv "XDG_CACHE_HOME" (getcwd))
              #t))
+         (add-after 'install 'move-static-libraries
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (static (assoc-ref outputs "static")))
+               (mkdir-p (string-append static "/lib"))
+               (for-each (lambda (file)
+                           (link file (string-append static "/lib/"
+                                                     (basename file)))
+                           (delete-file file))
+                         (find-files (string-append out "/lib") "\\.a$")))))
          ;; Meson does not permit the bindir to be outside of prefix.
          (add-after 'install 'move-bin
            (lambda* (#:key outputs #:allow-other-keys)
@@ -351,34 +362,6 @@ functions for strings and common data structures.")
                   (string-append out html)
                   (string-append doc html))
                  #t)))))))))
-
-;;; TODO: Merge into glib as a 'static' output on core-updates.
-(define-public glib-static
-  (hidden-package
-   (package
-     (inherit glib)
-     (name "glib-static")
-     (outputs '("out"))
-     (arguments
-      (substitute-keyword-arguments (package-arguments glib)
-        ((#:configure-flags flags ''())
-         `(cons* "--default-library=static"
-                 "-Dselinux=disabled"
-                 "-Dman=false"
-                 "-Dgtk_doc=false"
-                 "-Dinternal_pcre=false"
-                 ,flags))
-        ((#:phases phases)
-         `(modify-phases ,phases
-            (delete 'move-executables)
-            (replace 'install
-              ;; Only install the static libraries.
-              (lambda* (#:key outputs #:allow-other-keys)
-                (let* ((out (assoc-ref outputs "out"))
-                       (lib (string-append out "/lib")))
-                  (for-each (lambda (f)
-                              (install-file f lib))
-                            (find-files "." "\\.a$"))))))))))))
 
 (define gobject-introspection
   (package
