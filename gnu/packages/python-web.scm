@@ -2784,7 +2784,8 @@ supports url redirection and retries, and also gzip and deflate decoding.")
     (license license:expat)))
 
 (define python-urllib3/fixed
-  (package/inherit python-urllib3
+  (package
+    (inherit python-urllib3)
     (version "1.26.4")
     (source
      (origin
