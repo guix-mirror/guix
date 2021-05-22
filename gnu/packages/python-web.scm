@@ -1749,14 +1749,14 @@ web framework, either via the basic or digest authentication schemes.")
 (define-public python-terminado
   (package
     (name "python-terminado")
-    (version "0.9.4")
+    (version "0.10.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "terminado" version))
        (sha256
         (base32
-         "1glqyw97rddyzvisz8rihsn3x2nrm5xbyq82nzp3123pqbxvqzcs"))))
+         "1smvra3sc9sg64w49kfn5yhagshq3x55839748ck5dvxvk4hgza6"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-tornado" ,python-tornado-6)
