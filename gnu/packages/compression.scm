@@ -863,7 +863,15 @@ time for compression ratio.")
                                   "squashfs" version ".tar.gz"))
               (sha256
                (base32
-                "0zmhvczscqz0mzh4b9m8m42asq14db0a6lc8clp5ljq5ybrv70d9"))))
+                "0zmhvczscqz0mzh4b9m8m42asq14db0a6lc8clp5ljq5ybrv70d9"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Fix build with -fno-common (default in GCC 10).
+                  ;; Remove for squashfs-tools > 4.4.
+                  (substitute* "squashfs-tools/mksquashfs.h"
+                    (("struct cache \\*bwriter_buffer" all)
+                     (string-append "extern " all)))))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no check target
