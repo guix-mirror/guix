@@ -92,6 +92,9 @@ MAX-SILENT-TIME and TIMEOUT are build options passed to the daemon when
 building the derivation."
   `((#:job-name . ,name)
     (#:derivation . ,(derivation-file-name drv))
+    (#:inputs . ,(map (compose derivation-file-name
+                               derivation-input-derivation)
+                      (derivation-inputs drv)))
     (#:outputs . ,(filter-map
                    (lambda (res)
                      (match res
