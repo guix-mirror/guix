@@ -2812,6 +2812,22 @@ after the last @code{\\clearpage} before the @file{.aux} file is closed.
 of the @file{.aux} file.")
     (license license:lppl1.3c+)))
 
+(define-public texlive-latex-auxhook
+  (package
+    (inherit (simple-texlive-package
+              "texlive-latex-auxhook"
+              '("/doc/latex/auxhook/README.md"
+                "/tex/latex/auxhook/")
+              (base32
+               "1xh445shr00rh43nnz03xh8k2mdrxgsr03lllqpgvwhm6yzsydkf")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/auxhook")
+    (synopsis "Hooks for auxiliary files")
+    (description
+     "This package provides hooks for adding code at the beginning of
+@file{.aux} files.")
+    (license license:lppl1.3c+)))
+
 (define-public texlive-latex-filecontents
   (package
     (name "texlive-latex-filecontents")
