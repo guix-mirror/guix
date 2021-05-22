@@ -3173,6 +3173,28 @@ arrows; record information about document class(es) used; and many more.")
 (define-public texlive-latex-oberdiek
   (deprecated-package "texlive-latex-oberdiek" texlive-oberdiek))
 
+(define-public texlive-latex-rerunfilecheck
+  (package
+    (inherit (simple-texlive-package
+              "texlive-latex-rerunfilecheck"
+              '("/doc/latex/rerunfilecheck/"
+                "/tex/latex/rerunfilecheck/")
+              (base32
+               "1myz0d5bxhxvl4220ikywh921qld8n324kk9kscqbc5iw4063g56")
+              #:trivial? #t))
+    (propagated-inputs
+     `(("texlive-generic-infwarerr" ,texlive-generic-infwarerr)
+       ("texlive-generic-uniquecounter" ,texlive-generic-uniquecounter)
+       ("texlive-latex-atveryend" ,texlive-latex-atveryend)
+       ("texlive-latex-kvoptions" ,texlive-latex-kvoptions)
+       ("texlive-latex-pdftexcmds" ,texlive-latex-pdftexcmds)))
+    (home-page "https://www.ctan.org/pkg/rerunfilecheck")
+    (synopsis "Checksum based rerun checks on auxiliary files")
+    (description
+     "This package provides additional rerun warnings if some auxiliary
+files have changed.  It is based on MD5 checksum, provided by pdfTeX.")
+    (license license:lppl1.3c+)))
+
 (define-public texlive-latex-tools
   (package
     (name "texlive-latex-tools")
