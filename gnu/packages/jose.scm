@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
+;;; Copyright © 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,7 +22,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
-  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system meson)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages web)
   #:use-module (gnu packages compression)
@@ -30,20 +31,20 @@
 (define-public jose
   (package
     (name "jose")
-    (version "10")
+    (version "11")
     (source (origin
               (method url-fetch)
               (uri
-               (string-append "https://github.com/latchset/jose/releases/download/v10/jose-"
-                              version ".tar.bz2"))
+               (string-append "https://github.com/latchset/jose/releases/"
+                              "download/v" version "/jose-" version ".tar.xz"))
               (sha256
                (base32
-                "0wndxz3jqxfxnv5396da3kc1say7442m7mwk2dw9ykawagxxr72w"))))
+                "09c2kn9cjqkgx4g0rf6c2k3ng9970r468c9z7067j8kyf7ksywp2"))))
+    (build-system meson-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("jansson" ,jansson)
               ("zlib" ,zlib)
               ("libcrypto" ,openssl)))
-    (build-system gnu-build-system)
     (home-page "https://github.com/latchset/jose")
     (synopsis "Object Signing and Encryption")
     (description "C-language implementation of Javascript Object Signing and

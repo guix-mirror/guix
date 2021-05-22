@@ -82,6 +82,7 @@
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
@@ -476,12 +477,12 @@ environment.")
     (home-page "https://www.gnuradio.org")
     (license license:gpl3+)))
 
-(define-public gnuradio-osmosdr
+(define-public gr-osmosdr
   ;; No tag for version supporting Gnuradio 3.9; use commit.
   (let ((commit "a100eb024c0210b95e4738b6efd836d48225bd03")
         (revision "0"))
     (package
-      (name "gnuradio-osmosdr")
+      (name "gr-osmosdr")
       (version (git-version "0.2.3" revision commit))
       (source
        (origin
@@ -528,6 +529,7 @@ environment.")
 to access different radio hardware.")
       (home-page "https://osmocom.org/projects/gr-osmosdr/wiki/GrOsmoSDR")
       (license license:gpl3+))))
+(deprecated-package "gnuradio-osmosdr" gr-osmosdr)
 
 (define-public libosmo-dsp
   (package
@@ -573,12 +575,12 @@ primitives for SDR (Software Defined Radio).")
     (home-page "https://osmocom.org/projects/libosmo-dsp")
     (license license:gpl2+)))
 
-(define-public gnuradio-iqbalance
+(define-public gr-iqbal
   ;; No tag for version supporting Gnuradio 3.9; use commit.
   (let ((commit "fbee239a6fb36dd2fb564f6e6a0d393c4bc844db")
         (revision "0"))
     (package
-      (name "gnuradio-iqbalance")
+      (name "gr-iqbal")
       (version (git-version "0.38.2" revision commit))
       (source
        (origin
@@ -616,6 +618,7 @@ to the fix block above.
 @end itemize")
       (home-page "https://git.osmocom.org/gr-iqbal/")
       (license license:gpl3+))))
+(deprecated-package "gnuradio-iqbalance" gr-iqbal)
 
 (define-public gqrx
   (package
@@ -639,8 +642,8 @@ to the fix block above.
        ("fftwf" ,fftwf)
        ("gmp" ,gmp)
        ("gnuradio" ,gnuradio)
-       ("gnuradio-iqbalance" ,gnuradio-iqbalance)
-       ("gnuradio-osmosdr" ,gnuradio-osmosdr)
+       ("gr-iqbal" ,gr-iqbal)
+       ("gr-osmosdr" ,gr-osmosdr)
        ("jack" ,jack-1)
        ("libsndfile" ,libsndfile)
        ("log4cpp" ,log4cpp)
@@ -1143,7 +1146,7 @@ their position, altitude, speed, etc.")
 (define-public rtl-433
   (package
     (name "rtl-433")
-    (version "20.11")
+    (version "21.05")
     (source
      (origin
        (method git-fetch)
@@ -1152,12 +1155,13 @@ their position, altitude, speed, etc.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "093bxjxkg7yf78wqj5gpijbfa2p05ny09qqsj84kzi1svnzsa369"))))
+        (base32 "1f60nvahsplv1yszacc49mlbcnacgs1nwhdf8y9srmzg08xrfnfk"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("libusb" ,libusb)
+       ("openssl" ,openssl)
        ("rtl-sdr" ,rtl-sdr)))
     (synopsis "Decoder for radio transmissions in ISM bands")
     (description
@@ -1827,3 +1831,99 @@ voice formats.")
      "SDRangel is a Qt software defined radio and signal analyzer frontend for
 various hardware.")
     (license license:gpl3+)))
+
+(define-public inspectrum
+  (package
+    (name "inspectrum")
+    (version "0.2.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/miek/inspectrum")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1x6nyn429pk0f7lqzskrgsbq09mq5787xd4piic95add6n1cc355"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("fftwf" ,fftwf)
+       ("liquid-dsp" ,liquid-dsp)
+       ("qtbase" ,qtbase)))
+    (home-page "https://github.com/miek/inspectrum")
+    (synopsis "Radio signal analyser")
+    (description
+     "Inspectrum is a tool for analysing captured signals, primarily from
+software-defined radio receivers.")
+    (license license:gpl3+)))
+
+(define-public wfview
+  ;; No tagged release, use commit directly.
+  (let ((commit "274e905d214a7360e8cf2dd0421dbe3712a0ddcc")
+        (revision "1"))
+    (package
+      (name "wfview")
+      (version (git-version "20210511" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.com/eliggett/wfview")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1dmxn15xs63wx1y4mh1mlv8qc1xz32vgbyl3rk82gf6knw518svp"))))
+      (build-system qt-build-system)
+      (inputs
+       `(("qcustomplot" ,qcustomplot)
+         ("qtbase" ,qtbase)
+         ("qtmultimedia" ,qtmultimedia)
+         ("qtserialport" ,qtserialport)))
+      (arguments
+       `(#:tests? #f  ; No test suite.
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key outputs #:allow-other-keys)
+               (substitute* "wfview.pro"
+                 (("\\.\\./wfview/")
+                  "../"))
+               (substitute* '("wfmain.cpp")
+                 (("/usr/share")
+                  (string-append (assoc-ref outputs "out") "/share")))))
+           (replace 'configure
+             (lambda _
+               (mkdir-p "build")
+               (chdir "build")
+               (invoke "qmake" "../wfview.pro")))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out")))
+                 (install-file "wfview"
+                               (string-append out "/bin"))
+                 (install-file "wfview.png"
+                               (string-append out "/share/pixmaps"))
+                 (install-file "wfview.desktop"
+                               (string-append out "/share/applications"))
+                 (let ((dir (string-append
+                             out "/share/wfview/stylesheets/qdarkstyle")))
+                   (mkdir-p dir)
+                   (copy-recursively "qdarkstyle" dir))))))))
+      (home-page "https://wfview.org/")
+      (synopsis "Software to control Icom radios")
+      (description
+       "@code{wfview} is a program to control modern Icom radios and view the
+spectrum waterfall.  It supports at least the following models:
+
+@itemize
+@item IC-705
+@item IC-7300
+@item IC-7610
+@item IC-7850
+@item IC-7851
+@item IC-9700
+@end itemize\n")
+      (license (list license:expat
+                     license:gpl3)))))

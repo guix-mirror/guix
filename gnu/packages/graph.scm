@@ -7,6 +7,7 @@
 ;;; Copyright © 2020 Alexander Krotov <krotov@iitp.ru>
 ;;; Copyright © 2020 Pierre Langlois <pierre.langlos@gmx.com>
 ;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2021 Alexandre Hannud Abdo <abdo@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,13 +39,18 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages bioconductor)
   #:use-module (gnu packages bioinformatics)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cran)
+  #:use-module (gnu packages datastructures)
   #:use-module (gnu packages gd)
+  #:use-module (gnu packages graphics)
   #:use-module (gnu packages graphviz)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-science)
@@ -532,3 +538,58 @@ MSCs need not be complicated to create or use.  Mscgen aims to provide a simple
 text language that is clear to create, edit and understand, which can also be
 transformed into common image formats for display or printing.")
     (license license:gpl2+)))
+
+(define-public python-graph-tool
+  (package
+    (name "python-graph-tool")
+    (version "2.37")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://downloads.skewed.de/graph-tool/graph-tool-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "0w2i4d4zyk051zkykcg0ksngspajznwmp523hbsx50xnxc6jliyz"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-boost="
+                            (assoc-ref %build-inputs "boost"))
+             (string-append "--with-python-module-path="
+                            (assoc-ref %outputs "out")
+                            "/lib/python"
+                            ,(version-major+minor
+                              (package-version
+                               (car (assoc-ref
+                                     (package-inputs this-package)
+                                     "python"))))
+                            "/site-packages/"))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("gcc-10" ,gcc-10)
+       ("ncurses" ,ncurses)))
+    (inputs
+     `(("python" ,python-wrapper)
+       ("boost" ,boost)
+       ("expat" ,expat)
+       ("gmp" ,gmp)
+       ("cgal" ,cgal)
+       ("sparsehash" ,sparsehash)
+       ("gtk+" ,gtk+)
+       ("cairomm" ,cairomm)))
+    (propagated-inputs
+     `(("python-scipy" ,python-scipy)
+       ("python-numpy" ,python-numpy)
+       ("python-pycairo" ,python-pycairo)
+       ("python-matplotlib" ,python-matplotlib)))
+    (synopsis "Manipulate and analyze graphs with Python efficiently")
+    (description "Graph-tool is an efficient Python module for manipulation
+and statistical analysis of graphs (a.k.a. networks).  Contrary to most other
+Python modules with similar functionality, the core data structures and
+algorithms are implemented in C++, making extensive use of template
+metaprogramming, based heavily on the Boost Graph Library.  This confers it a
+level of performance that is comparable (both in memory usage and computation
+time) to that of a pure C/C++ library.")
+    (home-page "https://graph-tool.skewed.de/")
+    (license license:lgpl3+)))

@@ -773,6 +773,89 @@ All of this is accomplished without a centralized metadata server.")
      "This is a file system client based on the FTP File Transfer Protocol.")
     (license license:gpl2+)))
 
+(define-public libeatmydata
+  (package
+    (name "libeatmydata")
+    (version "129")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.flamingspork.com/projects/libeatmydata/"
+                           "libeatmydata-" version ".tar.gz"))
+       (sha256
+        (base32 "1qycv1cvy6fr3v5rxilnsqxllwyfbqlcairlh31x2dnjsx28jnqf"))))
+    (build-system gnu-build-system)
+    (arguments
+     ;; All tests pass---but only if the host kernel allows PTRACE_TRACEME.
+     `(#:tests? #f
+       #:configure-flags
+       (list "--disable-static")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-file-names
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* (list "eatmydata.in" "eatmydata.sh.in")
+               (("basename|readlink|uname" command)
+                (string-append (assoc-ref inputs "coreutils") "/bin/" command)))))
+         (add-before 'patch-file-names 'tighten-symlink-mode
+           ;; When the ‘eatmydata’ helper detects that it's a symlink, it will
+           ;; transparently invoke the command of the same name.  However, it's
+           ;; *always* a link in Guix profiles and doesn't handle that well.
+           ;; Patch it to treat its own $name specially.
+           (lambda _
+             (substitute* "eatmydata.in"
+               (("-L \"\\$0\"" match)
+                (string-append match " ] && [ "
+                               "\"x$(basename \"$0\")\" != \"x$name\"")))))
+         (add-after 'install 'install-debian-files
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((debian (assoc-ref inputs "debian-files"))
+                    (out    (assoc-ref outputs "out"))
+                    (share  (string-append out "/share")))
+               (invoke "tar" "xvf" debian)
+               (with-directory-excursion "debian"
+                 (install-file "eatmydata.1" (string-append share "/man/man1"))
+                 (install-file "eatmydata.bash-completion"
+                               (string-append share "/bash-completion"
+                                              "/completions")))))))))
+    (native-inputs
+     `(("debian-files"                  ; for the man page
+        ,(origin
+           (method url-fetch)
+           (uri (string-append "https://deb.debian.org/debian/pool/main/"
+                               "libe/libeatmydata/libeatmydata_" version
+                               "-1.debian.tar.xz"))
+           (sha256
+            (base32 "0q6kx1bf870jj52a2vm5p5xlrr89g2zs8wyhlpn80pys9p28nikx"))))
+       ;; For the test suite.
+       ("strace" ,strace)
+       ("which" ,which)))
+    (inputs
+     `(("coreutils" ,coreutils)))
+    (home-page "https://www.flamingspork.com/projects/libeatmydata/")
+    (synopsis "Transparently ignore calls to synchronize data safely to disk")
+    (description
+     "Libeatmydata transparently disables most ways a program might force data
+to be written to the file system, such as @code{fsync()} or @code{open(O_SYNC)}.
+
+Such synchronisation calls provide important data integrity guarantees but are
+expensive to perform and can significantly slow down software that (over)uses
+them.
+
+This price is worth paying if you care about the files being modified---which is
+typically the case---or when manipulating important components of your system.
+Please, @emph{do not} use something called ``eat my data'' in such cases!
+
+However, it does not make sense to accept this performance hit if the data is
+unimportant and you can afford to lose all of it in the event of a crash, for
+example when running a software test suite.  Adding @code{}libeatmydata.so} to
+the @env{LD_PRELOAD} environment of such tasks will override all C library data
+synchronisation functions with custom @i{no-op} ones that do nothing and
+immediately return success.
+
+A simple @command{eatmydata} script is included that does this for you.")
+    (license license:gpl3+)))
+
 (define-public libnfs
   (package
     (name "libnfs")

@@ -776,7 +776,7 @@ television and DVD.  It is also known as AC-3.")
 (define-public libaom
   (package
     (name "libaom")
-    (version "3.0.0")
+    (version "3.1.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -785,7 +785,7 @@ television and DVD.  It is also known as AC-3.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "178rq1d7i9q4lg40bipkyhdrk18j9wi5k5avpa5bls0zm7g5ifsx"))))
+                "1v3i34jmbz1p3x8msj3vx46nl6jdzxbkr2lfbh06vard8adb16il"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("perl" ,perl)
@@ -2183,14 +2183,14 @@ To load this plugin, specify the following option when starting mpv:
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2021.04.26")
+    (version "2021.05.16")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://youtube-dl.org/downloads/latest/"
                                   "youtube-dl-" version ".tar.gz"))
               (sha256
                (base32
-                "0jpa65jr5djn9175p6a8j9i1zgarshfwfsgmprc0vvnsl3s23ksc"))
+                "1z8sdzvkxhscnzy7cnjag308glif0k8jylr11biqwzypm1f2l0fl"))
               (snippet
                '(begin
                   ;; Delete the pre-generated files, except for the man page
@@ -4574,7 +4574,7 @@ transitions, and effects and then export your film to many common formats.")
 (define-public dav1d
   (package
     (name "dav1d")
-    (version "0.8.2")
+    (version "0.9.0")
     (source
       (origin
         (method git-fetch)
@@ -4583,7 +4583,7 @@ transitions, and effects and then export your film to many common formats.")
                (commit version)))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "0plmnxpz66yv3nqv1kgbyyfnwfqi9dqs0zbsdj488i6464a1m6si"))))
+         (base32 "0ki3wlyaqr80gl1srbbd18dd5bs1sl9icxym8ar62abpvgzxl5yk"))))
     (build-system meson-build-system)
     (native-inputs `(("nasm" ,nasm)))
     (home-page "https://code.videolan.org/videolan/dav1d")

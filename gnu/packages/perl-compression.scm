@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
-;;; Copyright © 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2019, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
@@ -170,14 +170,14 @@ in the format used by the @command{gzip} program.")
 (define-public perl-archive-extract
   (package
     (name "perl-archive-extract")
-    (version "0.86")
+    (version "0.88")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/B/BI/BINGOS/Archive-Extract-"
                            version ".tar.gz"))
        (sha256
-        (base32 "11xnmb21835hysdk2mcq6ndch0136j03n2i111nhpkz8p36hkkcs"))))
+        (base32 "0hpplmgf4j0rc9k3kl5fzi4m8j8ncxyly5827dyjh8h6rlsz3z6g"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Archive-Extract")
     (synopsis "Generic archive extracting mechanism")

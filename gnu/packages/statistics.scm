@@ -37,6 +37,7 @@
   #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system ant)
+  #:use-module (guix build-system emacs)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system r)
   #:use-module (guix build-system python)
@@ -586,14 +587,14 @@ also flexible enough to handle most nonstandard requirements.")
 (define-public r-matrix
   (package
     (name "r-matrix")
-    (version "1.3-2")
+    (version "1.3-3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Matrix" version))
        (sha256
         (base32
-         "0ccmmfd0lbvrhzjzr28k4yfawiywa1m4ics34zyi3rqq23csa2wm"))))
+         "0fvayd6b8w6yzhil85xw7lib68dvxyzpcznwvwczlyxf8ggchzpp"))))
     (properties `((upstream-name . "Matrix")))
     (build-system r-build-system)
     (propagated-inputs
@@ -1039,14 +1040,14 @@ solution for sending email, including attachments, from within R.")
 (define-public r-stringi
   (package
     (name "r-stringi")
-    (version "1.5.3")
+    (version "1.6.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "stringi" version))
        (sha256
         (base32
-         "0420f7zn5knyyvd3a3xa7059l4kadw0m67rfpivacqn9xn6iwkr2"))))
+         "1bidc1xzsv5nz2glf6z4sjxqlbs6zq595wwdmiq66sc2p7cis59s"))))
     (build-system r-build-system)
     (inputs `(("icu4c" ,icu4c)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -1675,14 +1676,14 @@ like tidy evaluation.")
 (define-public r-tibble
   (package
     (name "r-tibble")
-    (version "3.1.1")
+    (version "3.1.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tibble" version))
        (sha256
         (base32
-         "0qqfiwy7i2zjxwmz0xp1j1p88yycdg3lh377jkzz6zs6gsbd89ln"))))
+         "1vmwz1a756lar0jsigx6dhmj9mwk5mhywhq0prifwih3abhvszmn"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ellipsis" ,r-ellipsis)
@@ -1705,13 +1706,13 @@ and printing capabilities than traditional data frames.")
 (define-public r-dplyr
   (package
     (name "r-dplyr")
-    (version "1.0.5")
+    (version "1.0.6")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "dplyr" version))
               (sha256
                (base32
-                "0w3fr6sn0mw5mjs27669czpc8vpjj6ayrjavw8v0gd7ccsfa0hbm"))))
+                "01zsc9hn2wfvgphn8wcy7j4nvyq2qdl32008alnj0nsr34d3i308"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ellipsis" ,r-ellipsis)
@@ -1719,6 +1720,7 @@ and printing capabilities than traditional data frames.")
        ("r-glue" ,r-glue)
        ("r-lifecycle" ,r-lifecycle)
        ("r-magrittr" ,r-magrittr)
+       ("r-pillar" ,r-pillar)
        ("r-r6" ,r-r6)
        ("r-rlang" ,r-rlang)
        ("r-tibble" ,r-tibble)
@@ -2464,13 +2466,13 @@ informative error messages when it's not available.")
 (define-public r-devtools
   (package
     (name "r-devtools")
-    (version "2.4.0")
+    (version "2.4.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "devtools" version))
               (sha256
                (base32
-                "094kl4d07kvmn1dcvq73mn4r30c4vpshrqj4998azh7garjlz3kj"))))
+                "0jd4ph3z7shqyy8lw34i10qmhqr6z8ihqix96kkayjql315ccah6"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-callr" ,r-callr)
@@ -2479,7 +2481,6 @@ informative error messages when it's not available.")
        ("r-ellipsis" ,r-ellipsis)
        ("r-fs" ,r-fs)
        ("r-httr" ,r-httr)
-       ("r-jsonlite" ,r-jsonlite)
        ("r-lifecycle" ,r-lifecycle)
        ("r-memoise" ,r-memoise)
        ("r-pkgbuild" ,r-pkgbuild)
@@ -2526,14 +2527,14 @@ were originally a part of the r-devtools package.")
 (define-public r-hms
   (package
     (name "r-hms")
-    (version "1.0.0")
+    (version "1.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "hms" version))
        (sha256
         (base32
-         "0qn9lvpkqrpxck88nf0zbff43vd7d6s1ibg58qfr3w14sw1yj14p"))))
+         "1kmlw5hs2c69qgkkipjxb6j05wdk6jiqrac3y4z9ds63c3r9lng8"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ellipsis" ,r-ellipsis)
@@ -2735,13 +2736,13 @@ certain criterion, e.g., it contains a certain regular file.")
 (define-public r-rmarkdown
   (package
     (name "r-rmarkdown")
-    (version "2.7")
+    (version "2.8")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "rmarkdown" version))
         (sha256
-          (base32 "0shj637qhpcf30il3lhl3k5bxi5l3x3gf612hbqlakp1qrgrf8lm"))))
+          (base32 "0qk558n9fxvl0465384mbvkip9jqymjccdvwpxzm54jr0v56gprz"))))
     (properties `((upstream-name . "rmarkdown")))
     (build-system r-build-system)
     (propagated-inputs
@@ -3686,13 +3687,13 @@ memory usage.")
 (define-public r-viridis
   (package
     (name "r-viridis")
-    (version "0.6.0")
+    (version "0.6.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "viridis" version))
               (sha256
                (base32
-                "1vr5s86h39r86pfxyh3pylpwhf2chdy047ny63v04f576w4hxarp"))))
+                "1fyax36ycjiypcnxhrv58pq67qv03vfg4lx822d38jpjly54q128"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ggplot2" ,r-ggplot2)
@@ -4465,13 +4466,13 @@ Wall Street Journal, among others.  This package also provides
 (define-public r-statmod
   (package
     (name "r-statmod")
-    (version "1.4.35")
+    (version "1.4.36")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "statmod" version))
               (sha256
                (base32
-                "1zpqnfslq5gi6hvqjqnsn5kf2m986s1yb6kvyjd881n3h67l4pny"))))
+                "1hkvklcav6gj4zib4g3b4xwsdsbsmnzdblr0v6jaqv227p49gs0l"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/statmod")
     (native-inputs
@@ -4680,14 +4681,14 @@ forest of trees using random inputs, for classification and regression.")
 (define-public r-diptest
   (package
     (name "r-diptest")
-    (version "0.75-7")
+    (version "0.76-0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "diptest" version))
        (sha256
         (base32
-         "06xnc5gv1284ll0addxnxb6ljz6fn8dbyrp5vchyz6551h800aa6"))))
+         "10629vwn6r2949jjrmj5slbb5v0vnm3w0v8mrl7ws68m2sxmx2jh"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/diptest")
     (synopsis "Hartigan's dip test statistic for unimodality")
@@ -5190,14 +5191,14 @@ algorithms.")
 (define-public r-lme4
   (package
     (name "r-lme4")
-    (version "1.1-26")
+    (version "1.1-27")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "lme4" version))
        (sha256
         (base32
-         "0ls2krph4pfjn45vf9fn3ln3x98s85wxrkvm5pnxyx55n1pnsjrn"))))
+         "0px1wppmb6wibac4sismkf82q8870r6h267vxv0ql63qdk3r20zy"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-boot" ,r-boot)
@@ -5208,8 +5209,7 @@ algorithms.")
        ("r-nloptr" ,r-nloptr)
        ("r-nlme" ,r-nlme)
        ("r-rcpp" ,r-rcpp)
-       ("r-rcppeigen" ,r-rcppeigen)
-       ("r-statmod" ,r-statmod)))
+       ("r-rcppeigen" ,r-rcppeigen)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (home-page "https://cran.r-project.org/web/packages/lme4")
@@ -5918,6 +5918,33 @@ Java package that provides routines for various statistical distributions.")
 is designed to support editing of scripts and interaction with various
 statistical analysis programs such as R, Julia, and JAGS.")
       (license license:gpl3+))))
+
+(define-public emacs-poly-r
+  (package
+    (name "emacs-poly-r")
+    (version "0.2.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/polymode/poly-R")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0a4wx73jkngw5nbq1fa4jfhba6bsmyn6vnsf887x3xhb5v3ykhsg"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-ess" ,emacs-ess)
+       ("emacs-poly-noweb" ,emacs-poly-noweb)
+       ("emacs-polymode-markdown" ,emacs-polymode-markdown)
+       ("emacs-polymode" ,emacs-polymode)))
+    (properties '((upstream-name . "poly-R")))
+    (home-page "https://github.com/polymode/poly-markdown")
+    (synopsis "Polymodes for the R language")
+    (description
+     "This package provides a number of polymodes for working with mixed R
+files, including Rmarkdown files.")
+    (license license:gpl3+)))
 
 (define-public readstat
   (package

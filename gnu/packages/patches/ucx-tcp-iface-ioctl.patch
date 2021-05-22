@@ -4,29 +4,29 @@ provides alternative code that uses the SIOCGIFCONF ioctl to get the
 names of the available TCP network interfaces.
 
 diff --git a/src/uct/tcp/tcp_iface.c b/src/uct/tcp/tcp_iface.c
-index 81ad459..10024a6 100644
+index cad4a2709..7c1d2c9de 100644
 --- a/src/uct/tcp/tcp_iface.c
 +++ b/src/uct/tcp/tcp_iface.c
-@@ -12,6 +12,8 @@
+@@ -17,6 +17,8 @@
  #include <sys/poll.h>
  #include <netinet/tcp.h>
  #include <dirent.h>
 +#include <net/if.h>
 +#include <sys/ioctl.h>
  
- static ucs_config_field_t uct_tcp_iface_config_table[] = {
-   {"", "MAX_SHORT=8k", NULL,
-@@ -483,6 +485,70 @@ static UCS_CLASS_DEFINE_NEW_FUNC(uct_tcp_iface_t, uct_iface_t, uct_md_h,
+ 
+ extern ucs_class_t UCS_CLASS_DECL_NAME(uct_tcp_iface_t);
+@@ -586,6 +588,68 @@ static UCS_CLASS_DEFINE_NEW_FUNC(uct_tcp_iface_t, uct_iface_t, uct_md_h,
                                   uct_worker_h, const uct_iface_params_t*,
                                   const uct_iface_config_t*);
  
 +/* Fetch information about available network devices through an ioctl.  */
 +static ucs_status_t query_devices_ioctl(uct_md_h md,
-+					uct_tl_resource_desc_t **resource_p,
-+					unsigned *num_resources_p)
++					uct_tl_device_resource_t **tl_devices_p,
++					unsigned *num_tl_devices_p)
 +{
 +    int sock, err, i;
-+    uct_tl_resource_desc_t *resources, *tmp;
++    uct_tl_device_resource_t *resources, *tmp;
 +    unsigned num_resources;
 +    ucs_status_t status;
 +    struct ifconf conf;
@@ -67,27 +67,25 @@ index 81ad459..10024a6 100644
 +        }
 +        resources = tmp;
 +
-+        ucs_snprintf_zero(resources[i].tl_name, sizeof(resources[i].tl_name),
-+                          "%s", UCT_TCP_NAME);
-+        ucs_snprintf_zero(resources[i].dev_name, sizeof(resources[i].dev_name),
++        ucs_snprintf_zero(resources[i].name, sizeof(resources[i].name),
 +                          "%s", name);
-+        resources[i].dev_type = UCT_DEVICE_TYPE_NET;
++        resources[i].type = UCT_DEVICE_TYPE_NET;
 +        ++num_resources;
 +    }
 +
-+    *num_resources_p = num_resources;
-+    *resource_p      = resources;
-+    status           = UCS_OK;
++    *num_tl_devices_p = num_resources;
++    *tl_devices_p     = resources;
++    status            = UCS_OK;
 +
 +out:
 +    if (sock >= 0) close(sock);
 +    return status;
 +}
 +
- static ucs_status_t uct_tcp_query_tl_resources(uct_md_h md,
-                                                uct_tl_resource_desc_t **resource_p,
-                                                unsigned *num_resources_p)
-@@ -496,9 +562,9 @@ static ucs_status_t uct_tcp_query_tl_resources(uct_md_h md,
+ ucs_status_t uct_tcp_query_devices(uct_md_h md,
+                                    uct_tl_device_resource_t **devices_p,
+                                    unsigned *num_devices_p)
+@@ -599,9 +663,9 @@ ucs_status_t uct_tcp_query_devices(uct_md_h md,
  
      dir = opendir(netdev_dir);
      if (dir == NULL) {
@@ -96,14 +94,15 @@ index 81ad459..10024a6 100644
 -        goto out;
 +	/* When /sys is unavailable, as can be the case in a container,
 +	 * resort to a good old 'ioctl'.  */
-+	return query_devices_ioctl(md, resource_p, num_resources_p);
++	return query_devices_ioctl(md, devices_p, num_devices_p);
      }
  
-     resources     = NULL;
-@@ -543,6 +609,5 @@ static ucs_status_t uct_tcp_query_tl_resources(uct_md_h md,
+     devices     = NULL;
+@@ -655,7 +719,6 @@ ucs_status_t uct_tcp_query_devices(uct_md_h md,
  
  out_closedir:
      closedir(dir);
 -out:
      return status;
  }
+ 

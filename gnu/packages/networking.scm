@@ -23,7 +23,7 @@
 ;;; Copyright © 2018 Tonton <tonton@riseup.net>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Theodoros Foradis <theodoros@foradis.org>
-;;; Copyright © 2018, 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018, 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2018, 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019, 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
@@ -3463,7 +3463,7 @@ and targeted primarily for asynchronous processing of HTTP-requests.")
 (define-public opendht
   (package
     (name "opendht")
-    (version "2.2.0rc4")                ;jami requires >= 2.2.0
+    (version "2.2.0rc7")                ;jami requires >= 2.2.0
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3472,8 +3472,9 @@ and targeted primarily for asynchronous processing of HTTP-requests.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1wc0f6cnvnlmhxnx64nxqgsx93k4g7ljdaqjl40ml74jg3nqrzcl"))))
+                "0wkynjzwzl5q46hy1yb9npi5hvknnj17rjkax5v3acqjmd0y48h9"))))
     ;; Since 2.0, the gnu-build-system does not seem to work anymore, upstream bug?
+    (outputs '("out" "tools" "debug"))
     (build-system cmake-build-system)
     (inputs
      `(("argon2" ,argon2)
@@ -3490,23 +3491,79 @@ and targeted primarily for asynchronous processing of HTTP-requests.")
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("pkg-config" ,pkg-config)
+       ("python" ,python)
+       ("python-cython" ,python-cython)
        ("libtool" ,libtool)
        ("cppunit" ,cppunit)))
     (arguments
-     `(#:tests? #f                      ; Tests require network connection.
+     `(#:imported-modules ((guix build python-build-system) ;for site-packages
+                           ,@%cmake-build-system-modules)
+       #:modules (((guix build python-build-system) #:prefix python:)
+                  (guix build cmake-build-system)
+                  (guix build utils))
+       #:tests? #f                      ; Tests require network connection.
        #:configure-flags
-       '(;;"-DOPENDHT_TESTS=on"
-         "-DOPENDHT_TOOLS=off"
-         "-DOPENDHT_PYTHON=off"
+       '( ;;"-DOPENDHT_TESTS=on"
+         "-DOPENDHT_STATIC=off"
+         "-DOPENDHT_TOOLS=on"
+         "-DOPENDHT_PYTHON=on"
          "-DOPENDHT_PROXY_SERVER=on"
          "-DOPENDHT_PUSH_NOTIFICATIONS=on"
          "-DOPENDHT_PROXY_SERVER_IDENTITY=on"
-         "-DOPENDHT_PROXY_CLIENT=on")))
+         "-DOPENDHT_PROXY_CLIENT=on")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-python-installation-prefix
+           ;; Specify the installation prefix for the compiled Python module
+           ;; that would otherwise attempt to installs itself to Python's own
+           ;; site-packages directory.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* "python/CMakeLists.txt"
+               (("--root=\\\\\\$ENV\\{DESTDIR\\}")
+                (string-append "--root=/ --single-version-externally-managed "
+                               "--prefix=${CMAKE_INSTALL_PREFIX}")))))
+         (add-after 'unpack 'specify-runpath-for-python-module
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "python/setup.py.in"
+                 (("extra_link_args=\\[(.*)\\]" _ args)
+                  (string-append "extra_link_args=[" args
+                                 ", '-Wl,-rpath=" out "/lib']"))))))
+         (add-after 'install 'move-and-wrap-tools
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (tools (assoc-ref outputs "tools"))
+                   (site-packages (python:site-packages inputs outputs)))
+               (mkdir tools)
+               (rename-file (string-append out "/bin")
+                            (string-append tools "/bin"))
+               (wrap-program (string-append tools "/bin/dhtcluster")
+                 `("PYTHONPATH" prefix (,site-packages)))))))))
     (home-page "https://github.com/savoirfairelinux/opendht/")
-    (synopsis "Distributed Hash Table (DHT) library")
-    (description "OpenDHT is a Distributed Hash Table (DHT) library.  It may
-be used to manage peer-to-peer network connections as needed for real time
-communication.")
+    (synopsis "Lightweight Distributed Hash Table (DHT) library")
+    (description "OpenDHT provides an easy to use distributed in-memory data
+store.  Every node in the network can read and write values to the store.
+Values are distributed over the network, with redundancy.  It includes the
+following features:
+@itemize
+@item Lightweight and scalable, designed for large networks and small devices;
+@item High resilience to network disruption;
+@item Public key cryptography layer providing optional data signature and
+encryption (using GnuTLS);
+@item IPv4 and IPv6 support;
+@item Clean and powerful C++14 map API;
+@item Bindings for C, Rust & Python 3;
+@item REST API with an optional HTTP client and server with push notification
+support.
+@end itemize
+The following tools are also included:
+@table @command
+@item dhtnode
+A command line tool to run a DHT node and perform operations supported by the
+library (get, put, etc.) with text values.
+@item dhtchat
+A very simple IM client working over the DHT.
+@end table")
     (license license:gpl3+)))
 
 (define-public frrouting
@@ -3542,28 +3599,26 @@ protocol daemons for BGP, IS-IS, LDP, OSPF, PIM, and RIP. ")
 (define-public iwd
   (package
     (name "iwd")
-    (version "0.21")
+    (version "1.14")
     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://git.kernel.org/pub/scm/network/wireless/iwd.git")
-                    (commit version)))
-              (file-name (git-file-name name version))
+              ;; FIXME: We're using the bootstrapped sources because
+              ;; otherwise using an external ell library is impossible.
+              ;; How to bootstrap with Guix?
+              (method url-fetch)
+              (uri (string-append "https://www.kernel.org/pub/linux/network"
+                                  "/wireless/iwd-" version ".tar.xz"))
               (sha256
                (base32
-                "001dikinsa6kshwscjbvwipavzwpqnpvx9fpshcn63gbvbhyd393"))))
+                "02vz4lyd6vq3vcii357ljqprnas78zb8j670a0gblrm6kganmgi1"))))
     (build-system gnu-build-system)
     (inputs
      `(("dbus" ,dbus)
        ("ell" ,ell)
        ("readline" ,readline)))
     (native-inputs
-     `(("asciidoc" ,asciidoc)
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkgconfig" ,pkg-config)
+     `(("pkgconfig" ,pkg-config)
        ("python" ,python)
+       ("rst2man" ,python-docutils)
        ("openssl" ,openssl)))
     (arguments
      `(#:configure-flags
@@ -3573,22 +3628,17 @@ protocol daemons for BGP, IS-IS, LDP, OSPF, PIM, and RIP. ")
                "--enable-hwsim"
                "--enable-tools"
                "--enable-wired"
-               "--enable-docs"
                "--localstatedir=/var"
                (string-append "--with-dbus-datadir=" dbus "/share/")
                (string-append "--with-dbus-busdir="
                               dbus "/share/dbus-1/system-services")))
        #:phases
        (modify-phases %standard-phases
-         (add-before 'bootstrap 'pre-bootstrap
+         (add-after 'configure 'patch-Makefile
            (lambda _
-             (substitute* "Makefile.am"
-               ;; Test disabled because it needs the kernel module
-               ;; 'pkcs8_key_parser' loaded.
-               (("unit\\/test-eapol.*? ") "")
+             (substitute* "Makefile"
                ;; Don't try to 'mkdir /var'.
-               (("\\$\\(MKDIR_P\\) -m 700") "true"))
-             #t)))))
+               (("\\$\\(MKDIR_P\\) -m 700") "true")))))))
     (home-page "https://git.kernel.org/pub/scm/network/wireless/iwd.git/")
     (synopsis "Internet Wireless Daemon")
     (description "iwd is a wireless daemon for Linux that aims to replace WPA

@@ -9,7 +9,7 @@
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Patrick Hetu <patrick.hetu@auf.org>
@@ -1828,7 +1828,7 @@ write GNOME applications.")
 (define-public perl-cairo
   (package
     (name "perl-cairo")
-    (version "1.108")
+    (version "1.109")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1836,7 +1836,7 @@ write GNOME applications.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1nh5iya63q6j2w0cdi24x2ygpi8k8wwccnbh8cisnx8nqmywnhk0"))))
+                "0zq78dv22arg35ma6kah9cwfd1zx8gg7amsibzd128qw81p766c2"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-extutils-depends" ,perl-extutils-depends)

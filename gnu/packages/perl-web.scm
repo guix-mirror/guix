@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,7 +31,7 @@
 (define-public perl-mojolicious
   (package
     (name "perl-mojolicious")
-    (version "7.59")
+    (version "9.17")
     (source
      (origin
        (method url-fetch)
@@ -38,7 +39,7 @@
                            version ".tar.gz"))
        (sha256
         (base32
-         "11whfrbafj191ahbhlhadws0vkg9kmvqswzkvswgwajhr1x678rh"))))
+         "13dxjhr03dhh1f5bbxbb3jiwdv7jby96qqb97l3arf5x043yd9hd"))))
     (build-system perl-build-system)
     (home-page "https://mojolicious.org/")
     (synopsis "Real-time web framework")

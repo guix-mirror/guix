@@ -15,7 +15,7 @@
 ;;; Copyright © 2016, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2016, 2018 Rene Saavedra <pacoon@protonmail.com>
 ;;; Copyright © 2016 Carlos Sánchez de La Lama <csanchezdll@gmail.com>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
@@ -356,7 +356,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 
 ;; The current "stable" kernels. That is, the most recently released major
 ;; versions that are still supported upstream.
-(define-public linux-libre-5.12-version "5.12.3")
+(define-public linux-libre-5.12-version "5.12.5")
 (define deblob-scripts-5.12
   (linux-libre-deblob-scripts
    linux-libre-5.12-version
@@ -364,28 +364,15 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1qp25fd4wgjyk7dzdq9yirm1z5w68sd1p3wv8lch8259i51gwjnf")))
 (define-public linux-libre-5.12-pristine-source
   (let ((version linux-libre-5.12-version)
-        (hash (base32 "13c7jbizf254rh4arvlgzk87vx7sz6psba47jnax23lbgal18dqk")))
+        (hash (base32 "1x39sdswww4j8zr54wpjzy9dia52kihs11xwljxcnz8pck0vwja0")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.12)))
 
-(define-public linux-libre-5.11-version "5.11.20")
-(define deblob-scripts-5.11
-  (linux-libre-deblob-scripts
-   linux-libre-5.11-version
-   (base32 "02mn6bd69sr3i3xapg146w7nxln15mffm2zh3qc7k5am92y049h4")
-   (base32 "0yvr80g200hdryz54gdnzj4fl38pf7g4qbgj475rhcfwixhp1j7n")))
-(define-public linux-libre-5.11-pristine-source
-  (let ((version linux-libre-5.11-version)
-        (hash (base32 "15q7pw1wvl6ndvb6154p6vjr4qa4fa6lpbqpxvwy2kywc2jyxykk")))
-   (make-linux-libre-source version
-                            (%upstream-linux-source version hash)
-                            deblob-scripts-5.11)))
-
 ;; The "longterm" kernels — the older releases with long-term upstream support.
 ;; Here are the support timelines:
 ;; <https://www.kernel.org/category/releases.html>
-(define-public linux-libre-5.10-version "5.10.36")
+(define-public linux-libre-5.10-version "5.10.38")
 (define deblob-scripts-5.10
   (linux-libre-deblob-scripts
    linux-libre-5.10-version
@@ -393,12 +380,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0hh27ccqimagr3aij7ygwikxw66y63sqwd0xlf49bhpjd090r9a7")))
 (define-public linux-libre-5.10-pristine-source
   (let ((version linux-libre-5.10-version)
-        (hash (base32 "0s5jw7y17hnl66iybw6f4pbc5j5rilphqbv3iql22wq053vyg749")))
+        (hash (base32 "0bzipgnfvd5w70rv1x6g81iwknn2qskw92p2bpyiks7r52qmmwij")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.10)))
 
-(define-public linux-libre-5.4-version "5.4.118")
+(define-public linux-libre-5.4-version "5.4.120")
 (define deblob-scripts-5.4
   (linux-libre-deblob-scripts
    linux-libre-5.4-version
@@ -406,7 +393,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1xghbbnaisjd0k1klbyn1p7r6r4x5a1bpmkm56a3gh2zvw4s7mj8")))
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "06w2vhw6pdy49n3dcnq12bn50glbg9pwaqvs4nlzbljg4yf50w6r")))
+        (hash (base32 "0q08q6q2l9k04p8a0vvbnhwfp4yiags8s6wc9dnac0fhd4y3gl1q")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
@@ -495,14 +482,6 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
   (source-with-patches linux-libre-5.12-pristine-source
                        (list %boot-logo-patch
                              %linux-libre-arm-export-__sync_icache_dcache-patch)))
-
-(define-public linux-libre-5.11-source
-  (source-with-patches linux-libre-5.11-pristine-source
-                       (list %boot-logo-patch
-                             %linux-libre-arm-export-__sync_icache_dcache-patch
-                             ;; Pinebook Pro patch to fix LCD display
-                             (search-patch
-                              "linux-libre-arm64-generic-pinebook-lcd.patch"))))
 
 (define-public linux-libre-5.10-source
   (source-with-patches linux-libre-5.10-pristine-source
@@ -616,10 +595,6 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 (define-public linux-libre-headers-5.12
   (make-linux-libre-headers* linux-libre-5.12-version
                              linux-libre-5.12-source))
-
-(define-public linux-libre-headers-5.11
-  (make-linux-libre-headers* linux-libre-5.11-version
-                             linux-libre-5.11-source))
 
 (define-public linux-libre-headers-5.10
   (make-linux-libre-headers* linux-libre-5.10-version
@@ -921,16 +896,10 @@ It has been modified to remove all non-free binary blobs.")
                      '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux" "riscv64-linux")
                      #:configuration-file kernel-config))
 
-(define-public linux-libre-5.11
-  (make-linux-libre* linux-libre-5.11-version
-                     linux-libre-5.11-source
-                     '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux" "riscv64-linux")
-                     #:configuration-file kernel-config))
-
-(define-public linux-libre-version         linux-libre-5.11-version)
-(define-public linux-libre-pristine-source linux-libre-5.11-pristine-source)
-(define-public linux-libre-source          linux-libre-5.11-source)
-(define-public linux-libre                 linux-libre-5.11)
+(define-public linux-libre-version         linux-libre-5.12-version)
+(define-public linux-libre-pristine-source linux-libre-5.12-pristine-source)
+(define-public linux-libre-source          linux-libre-5.12-source)
+(define-public linux-libre                 linux-libre-5.12)
 
 (define-public linux-libre-5.10
   (make-linux-libre* linux-libre-5.10-version
@@ -1144,8 +1113,8 @@ It has been modified to remove all non-free binary blobs.")
 (define-public linux-libre-with-bpf
   (let ((base-linux-libre
          (make-linux-libre*
-          linux-libre-5.11-version
-          linux-libre-5.11-source
+          linux-libre-5.12-version
+          linux-libre-5.12-source
           '("x86_64-linux" "i686-linux" "armhf-linux"
             "aarch64-linux" "riscv64-linux")
           #:extra-version "bpf"
@@ -3263,40 +3232,36 @@ NUMA performance on your system.")
 (define-public kbd
   (package
     (name "kbd")
-    (version "2.0.4")
+    (version "2.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/utils/kbd/kbd-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "124swm93dm4ca0pifgkrand3r9gvj3019d4zkfxsj9djpvv0mnaz"))
+                "17wvrqz2kk0w87idinhyvd31ih1dp7ldfl2yfx7ailygb0279w2m"))
               (modules '((guix build utils)))
               (snippet
                '(begin
-                  (substitute* "tests/Makefile.in"
-                    ;; The '%: %.in' rule incorrectly uses @VERSION@.
-                    (("@VERSION@")
-                     "[@]VERSION[@]"))
                   (substitute* '("src/unicode_start" "src/unicode_stop")
                     ;; Assume the Coreutils are in $PATH.
                     (("/usr/bin/tty")
-                     "tty"))
-                  #t))))
+                     "tty"))))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
          (add-before 'build 'pre-build
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((gzip  (assoc-ref %build-inputs "gzip"))
-                   (bzip2 (assoc-ref %build-inputs "bzip2")))
-               (substitute* "src/libkeymap/findfile.c"
-                 (("gzip")
-                  (string-append gzip "/bin/gzip"))
-                 (("bzip2")
-                  (string-append bzip2 "/bin/bzip2")))
-               #t)))
+             (let ((bzip2 (assoc-ref inputs "bzip2"))
+                   (gzip  (assoc-ref inputs "gzip"))
+                   (xz    (assoc-ref inputs "xz"))
+                   (zstd  (assoc-ref inputs "zstd")))
+               (substitute* "src/libkbdfile/kbdfile.c"
+                 (("bzip2") (string-append bzip2 "/bin/bzip2"))
+                 (("gzip") (string-append gzip "/bin/gzip"))
+                 (("xz -d") (string-append xz "/bin/xz -d"))
+                 (("zstd") (string-append zstd "/bin/zstd"))))))
          (add-after 'install 'post-install
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Make sure these programs find their comrades.
@@ -3305,12 +3270,16 @@ NUMA performance on your system.")
                (for-each (lambda (prog)
                            (wrap-program (string-append bin "/" prog)
                              `("PATH" ":" prefix (,bin))))
-                         '("unicode_start" "unicode_stop"))
-               #t))))))
-    (inputs `(("check" ,check)
-              ("gzip" ,gzip)
-              ("bzip2" ,bzip2)
-              ("pam" ,linux-pam)))
+                         '("unicode_start" "unicode_stop"))))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("bzip2" ,bzip2)
+       ("gzip" ,gzip)
+       ("pam" ,linux-pam)
+       ("xz" ,xz)
+       ("zstd" ,zstd)))
     (native-search-paths
      (list (search-path-specification
             (variable "LOADKEYS_KEYMAP_PATH")
@@ -3318,7 +3287,6 @@ NUMA performance on your system.")
             ;; run (for example) ‘loadkeys en-latin9’ instead of having to find
             ;; and type ‘i386/colemak/en-latin9’ on a mislabelled keyboard.
             (files (list "share/keymaps/**")))))
-    (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://kbd-project.org/")
     (synopsis "Linux keyboard utilities and keyboard maps")
     (description
@@ -3339,7 +3307,7 @@ for systems using the Linux kernel.  This includes commands such as
                    "--disable-libkeymap")
                  ,flags))
        ((#:make-flags flags ''())
-        `(cons "LDFLAGS=-all-static" ,flags))
+        `(cons "LDFLAGS=-all-static -lrt -lpthread" ,flags))
        ((#:phases phases '%standard-phases)
         `(modify-phases ,phases
            (replace 'install
@@ -3350,8 +3318,7 @@ for systems using the Linux kernel.  This includes commands such as
                  (remove-store-references "src/loadkeys")
 
                  (install-file "src/loadkeys"
-                               (string-append out "/bin"))
-                 #t)))
+                               (string-append out "/bin")))))
            (delete 'post-install)))
        ((#:strip-flags _ '())
         ''("--strip-all"))
@@ -5153,7 +5120,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "5.12")
+    (version "5.12.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -5161,7 +5128,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "0mgdcqyww20fvh0js717yvla1hkky12c6dfhascicmrfw5fdcfcf"))))
+                "0n9p8zaz4nrkgc20cp6zj7gp4ib4hd4lbyph74f4pysllkz4c24m"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of the binaries in "out"
@@ -7712,7 +7679,7 @@ of Linux application development.")
 (define-public ell
   (package
     (name "ell")
-    (version "0.23")
+    (version "0.40")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -7721,7 +7688,7 @@ of Linux application development.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1qhlcwhn0gj877yss2ymx1aczghlddzb5v9mm1dgp2zliii3jy10"))))
+                "1zzpbfdpmfldd7w0h7mwbq0mfqgqwz54nqbq0rmbqlqqpwlkrgb2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

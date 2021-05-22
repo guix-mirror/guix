@@ -31,6 +31,7 @@
 ;;; Copyright © 2021 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2021 David Larsson <david.larsson@selfhosted.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -223,6 +224,19 @@ hierarchical form with variable field lengths.")
      "Libxml2 is the XML C parser and toolkit developed for the Gnome
 project (but it is usable outside of the Gnome platform).")
     (license license:x11)))
+
+(define-public libxml2-xpath0
+  (package/inherit libxml2
+    (name "libxml2-xpath0")
+    (source (origin
+              (inherit (package-source libxml2))
+              (patches (append (search-patches
+                                "libxml2-xpath0-Add-option-xpath0.patch")
+                               (origin-patches (package-source libxml2))))))
+    (description
+     "Libxml2-xpath0 is like libxml2 but with a patch applied that
+provides an @code{--xpath0} option to @command{xmllint} that enables it
+to output XPath results with a null delimiter.")))
 
 (define-public libxlsxwriter
   (package
@@ -530,14 +544,14 @@ the @code{Graph} class and write it out in a specific file format.")
 (define-public perl-xml-atom
   (package
     (name "perl-xml-atom")
-    (version "0.42")
+    (version "0.43")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/MI/MIYAGAWA/"
                                   "XML-Atom-" version ".tar.gz"))
               (sha256
                (base32
-                "1wa8kfy1w4mg7kzxim4whyprkn48a2il6fap0b947zywknw4c6y6"))))
+                "0b8bpdnvz9sqwjhjkydbzy4karb7nn6i15b8g4mczrznlsb3hnaf"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
@@ -704,14 +718,14 @@ XML parser and the high performance DOM implementation.")
 (define-public perl-xml-libxml-simple
   (package
     (name "perl-xml-libxml-simple")
-    (version "0.99")
+    (version "1.01")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/MA/MARKOV/"
                                   "XML-LibXML-Simple-" version ".tar.gz"))
               (sha256
                (base32
-                "0i4ybiqdnvnbfxqslw2y392kvy7i752dl8n99bqiqv5kzk4lbzhl"))))
+                "19k50d80i9dipsl6ln0f4awv9wmdg0xm3d16z8mngmvh9c8ci66d"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-file-slurp-tiny" ,perl-file-slurp-tiny)
@@ -770,14 +784,14 @@ checks.")
 (define-public perl-xml-rss
   (package
     (name "perl-xml-rss")
-    (version "1.61")
+    (version "1.62")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/S/SH/SHLOMIF/"
                                   "XML-RSS-" version ".tar.gz"))
               (sha256
                (base32
-                "03f983l2dnkvcw6iyg1s0xmv5wn793d3kvqlshmhm01ibp7ffvzs"))))
+                "0klb8ghd405pdkmn25lp3i4j2lfydz8w581sk51p3zy788s0c9yk"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
@@ -970,8 +984,7 @@ This module provide functions which simplify writing tests for
                 "0psr5pwsk2biz2bfkigmx04v2rfhs6ybwcfmcrrg7gvh9bpp222b"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-carp" ,perl-carp)
-       ("perl-log-report" ,perl-log-report)
+     `(("perl-log-report" ,perl-log-report)
        ("perl-xml-compile-tester" ,perl-xml-compile-tester)
        ("perl-xml-libxml" ,perl-xml-libxml)
        ("perl-scalar-list-utils" ,perl-scalar-list-utils)
@@ -1065,14 +1078,14 @@ server, collect the answer, and finally decoding the XML to Perl.")
 (define-public perl-xml-feed
   (package
     (name "perl-xml-feed")
-    (version "0.59")
+    (version "0.61")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/D/DA/DAVECROSS/"
                                   "XML-Feed-" version ".tar.gz"))
               (sha256
                (base32
-                "1z1a88bpy64j42bbyl8acbfl3dn9iaz47gx6clkgy5sbn4kr0kgk"))))
+                "1zrslg7wz15sm1k28i3gp108cszh062ac24m3ydvr59pwfqs9br6"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)

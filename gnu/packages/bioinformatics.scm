@@ -8513,14 +8513,14 @@ of gene-level counts.")
 (define-public r-rhdf5filters
   (package
     (name "r-rhdf5filters")
-    (version "1.2.0")
+    (version "1.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "rhdf5filters" version))
        (sha256
         (base32
-         "1jvnss44liapbc6hk93yg1gknv0ahd5x86dydqiwq9l65jd03psq"))))
+         "1bjlgc76vx0z81s8vci9ln1d2s3b157qnm32xs36mnyjk31ivasz"))))
     (properties `((upstream-name . "rhdf5filters")))
     (build-system r-build-system)
     (propagated-inputs
@@ -11817,7 +11817,7 @@ expression report comparing samples in an easily configurable manner.")
 (define-public pigx-chipseq
   (package
     (name "pigx-chipseq")
-    (version "0.0.51")
+    (version "0.0.52")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_chipseq/"
@@ -11825,7 +11825,7 @@ expression report comparing samples in an easily configurable manner.")
                                   "/pigx_chipseq-" version ".tar.gz"))
               (sha256
                (base32
-                "0bb6hzpl0qq0jd57pgd1m5ns547rfipr6071a4m12vxlm4nlpi5q"))))
+                "097cvc8kr3r1nq0sgjpirzmixwjl074qp4qq3sx4ngfqi06af6r9"))))
     (build-system gnu-build-system)
     ;; parts of the tests rely on access to the network
     (arguments '(#:tests? #f))

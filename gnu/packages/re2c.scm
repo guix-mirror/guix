@@ -26,7 +26,7 @@
 (define-public re2c
   (package
     (name "re2c")
-    (version "2.0.3")
+    (version "2.1.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/skvadrik/" name
@@ -34,7 +34,7 @@
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "0y22fiyv2pqmq8asb2p5hzcf7ibjdrz7nl16rlpzy8damaw1xg5j"))))
+               "1y0iwxpkdmw5fcqacs209ix49aasfy88hqmx3qa26m7xz9jf4vh3"))))
     (build-system gnu-build-system)
     (home-page "https://re2c.org/")
     (synopsis "Lexer generator for C/C++")

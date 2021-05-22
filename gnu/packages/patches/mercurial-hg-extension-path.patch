@@ -1,0 +1,29 @@
+This is needed to make Mercurial read the HGEXTENSIONPATH to detect
+third-party extensions.  It is called HGEXTENSIONPATH and not
+HG_EXTENSION_PATH to keep it consistent with other environment variables for
+Mercurial, e.g. HGENCODINGAMBIGUOUS, HGEDITOR ...  Hopefully I or someone else
+will get this into Mercurial proper.
+
+diff --git a/mercurial/extensions.py b/mercurial/extensions.py
+--- a/mercurial/extensions.py
++++ b/mercurial/extensions.py
+@@ -13,6 +13,7 @@
+ import imp
+ import inspect
+ import os
++import sys
+ 
+ from .i18n import (
+     _,
+@@ -108,6 +109,11 @@
+ 
+ def _importh(name):
+     """import and return the <name> module"""
++    # Read HGEXTENSIONSPATH environment variable when import extensions.
++    extension_path = os.getenv("HGEXTENSIONSPATH")
++    if extension_path is not None:
++        for path in extension_path:
++            sys.path.append(path)
+     mod = __import__(pycompat.sysstr(name))
+     components = name.split(b'.')
+     for comp in components[1:]:

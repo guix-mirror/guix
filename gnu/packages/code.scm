@@ -13,7 +13,7 @@
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@goebel-consult.de>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
-;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2021 lu hui <luhuins@163.com>
 ;;;
@@ -349,7 +349,7 @@ features that are not supported by the standard @code{stdio} implementation.")
 (define-public universal-ctags
   (package
     (name "universal-ctags")
-    (version "5.9.20201018.0")
+    (version "5.9.20210509.0")
     (source
      (origin
        (method git-fetch)
@@ -359,64 +359,44 @@ features that are not supported by the standard @code{stdio} implementation.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "174p1w20pl25k996hfw61inw4mqhskmmic1lyw2m65firmkyvs7x"))
+         "1sq94bnbzr40zwihfnsna759bbak0lw27j0yn12iwpg4xgb4hhwp"))
        (modules '((guix build utils)))
        (snippet
         '(begin
            ;; Remove the bundled PackCC and associated build rules.
            (substitute* "Makefile.am"
-             (("\\$\\(packcc_verbose\\)\\$\\(PACKCC\\)")
-              "packcc")
-             (("\\$\\(PEG_SRCS\\) \\$\\(PEG_HEADS\\): packcc\\$\\(EXEEXT\\)")
-              "$(PEG_SRCS) $(PEG_HEADS):")
-             (("noinst_PROGRAMS \\+= packcc")
-              ""))
-           (delete-file-recursively "misc/packcc")
-           #t))))
+             (("^PACKCC = .*")
+              "PACKCC = packcc")
+             (("\\$\\(PACKCC_FILES\\)")
+              "")
+             (("\\$\\(PEG_SRCS\\) \\$\\(PEG_HEADS\\): \\$\\(PACKCC\\)")
+              "$(PEG_SRCS) $(PEG_HEADS):"))
+           (delete-file-recursively "misc/packcc")))))
     (build-system gnu-build-system)
     (arguments
      '(;; Don't use the build-time TMPDIR (/tmp/guix-build-...) at runtime.
        #:configure-flags '("--enable-tmpdir=/tmp")
+       #:test-target "units"
        #:phases (modify-phases %standard-phases
                   (add-after 'unpack 'make-files-writable
                     (lambda _
-                      (for-each make-file-writable (find-files "."))
-                      #t))
-                  (add-before 'bootstrap 'patch-optlib2c
+                      (for-each make-file-writable (find-files "."))))
+                  (add-before 'bootstrap 'patch-misc
                     (lambda _
-                      ;; The autogen.sh script calls out to optlib2c to
-                      ;; generate translations, so we can not wait for the
-                      ;; patch-source-shebangs phase.
-                      (patch-shebang "misc/optlib2c")
-                      #t))
+                      ;; The autogen.sh script calls out to these scripts, so
+                      ;; we cannot wait for the patch-source-shebangs phase.
+                      (for-each patch-shebang (find-files "misc"))))
                   (add-before 'check 'patch-tests
                     (lambda _
                       (substitute* "misc/units"
                         (("SHELL=/bin/sh")
                          (string-append "SHELL=" (which "sh"))))
                       (substitute* "Tmain/utils.sh"
-                        (("/bin/echo") (which "echo")))
-                      #t)))))
+                        (("/bin/echo") (which "echo"))))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
-       ;; XXX: Use ctags' own packcc fork even though we meticolously unbundle
-       ;; it above.  Mainly for historical reasons, and perhaps their changes
-       ;; get upstreamed in the future.
-       ("packcc"
-        ,(let ((commit "03402b79505dc0024f90d5bebfd7e5d3fb62da9a"))
-           (package
-             (inherit packcc)
-             (source (origin
-                       (method git-fetch)
-                       (uri (git-reference
-                             (url "https://github.com/universal-ctags/packcc")
-                             (commit commit)))
-                       (file-name (git-file-name "packcc-for-ctags"
-                                                 (string-take commit 7)))
-                       (sha256
-                        (base32
-                         "0vxpdk9l2lf7f32nx1p3b3xmw2kw2wp95vnf9bc4lyqrg69pblm0")))))))
+       ("packcc" ,packcc)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)))
     (inputs

@@ -131,6 +131,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages aspell)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages cmake)
@@ -2066,6 +2067,32 @@ letter to each link using avy.")
 @command{sudo} if it cannot write to it.")
     (license license:expat)))
 
+(define-public emacs-read-only-cfg
+  ;; XXX: Upstream has no tagged release.  Version is extracted from keyword
+  ;; in main file.
+  (let ((commit "c128c9412f768adf89ff5c4ad433cf0beab6656a")
+        (revision "0"))
+    (package
+      (name "emacs-read-only-cfg")
+      (version (git-version "0.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/pfchen/read-only-cfg")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "11zj4ysmacvz82j1siqlcp30i05my20lscls8wkdjl75g9d2b12l"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/pfchen/read-only-cfg")
+      (synopsis "Make files read-only based on user configuration")
+      (description
+       "Read-only-cfg is an Emacs minor mode that can automatically make files
+read-only based on user configuration.  User configuration may be prefix
+directories or regex patterns.")
+      (license license:gpl3+))))
+
 (define-public emacs-bbdb
   (package
     (name "emacs-bbdb")
@@ -2582,10 +2609,43 @@ Its features are:
     ;; Software is dual-licensed.
     (license (list license:unlicense license:wtfpl2))))
 
+(define-public emacs-citeproc-el
+  ;; XXX: This commit includes a fix for an API change in libxml.
+  (let ((commit "893bcb8dcb48ac9850841b58c7b64c1969e6f3de")
+        (revision "0"))
+    (package
+      (name "emacs-citeproc-el")
+      (version (git-version "0.1.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/andras-simonyi/citeproc-el")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0xfkp8dccflas5ps30g3fw1vifn8pp9h9cyvxr1pcmyqr9rivy8f"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:emacs ,emacs))               ;need libxml support
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)
+         ("emacs-f" ,emacs-f)
+         ("emacs-queue" ,emacs-queue)
+         ("emacs-s" ,emacs-s)))
+      (home-page "https://github.com/andras-simonyi/citeproc-el")
+      (synopsis "Citation Style Language (CSL) processor for Emacs")
+      (description
+       "Citeproc-el is an Emacs Lisp library for rendering citations
+and bibliographies in styles described in the Citation Style
+Language (CSL), an XML-based, open format to describe the formatting
+of bibliographic references.")
+      (license license:gpl3+))))
+
 (define-public emacs-corfu
   (package
     (name "emacs-corfu")
-    (version "0.6")
+    (version "0.8")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2594,7 +2654,7 @@ Its features are:
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "03x1yxbq7aha9j1blhl3nb3s5dapsavymg9ydjqdbq9py26qavf0"))))
+                "007r1l3ian2bfj4h2xkd2qwh1d1m7kda1p6pj51dikbzaphglh1r"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/minad/corfu")
     (synopsis "Completion overlay region function")
@@ -4606,10 +4666,10 @@ your cursor steps onto them, and re-enabled when the cursor leaves.")
 
 (define-public emacs-ob-erlang
   (let ((revision "1")
-        (commit "f1a8c665b8f7d0ab32267a9961de8eed872e6333"))
+        (commit "a029c23902b4ad73b84f262a7fc5b98d87b63dfd"))
     (package
       (name "emacs-ob-erlang")
-      (version (git-version "20180827" revision commit))
+      (version (git-version "20210321" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -4618,7 +4678,7 @@ your cursor steps onto them, and re-enabled when the cursor leaves.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0b5zajqiy6955yvlqwy92prrqy89lqchsv4ss2ylws3p4s14rhij"))))
+                  "1dlb9qgmijff4giglwb358g5zzyjbnay0wkr5spks1bawvyxpiyl"))))
       (build-system emacs-build-system)
       (home-page "https://github.com/xfwduke/ob-erlang/")
       (synopsis "Org-babel support for Erlang")
@@ -6646,6 +6706,38 @@ linting of manifests and integration with Puppet Debugger.")
       ;; Also incorporates work covered by the Apache License, Version 2.0
       (license license:gpl3+))))
 
+(define-public emacs-purescript-mode
+  ;; Retrieved on 2021-05-18.
+  (let ((revision "0")
+        (commit "0acd1af446424ba855153161fe07a20f67dc0a89"))
+    (package
+      (name "emacs-purescript-mode")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/purescript-emacs/purescript-mode")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0rxdsmx8826az4blhnnvqrx7bjky9hwph6gkyrh33sck26xhh3g5"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-before 'install 'make-info
+             (lambda _
+               (invoke "makeinfo" "--no-split"
+                       "-o" "purescript-mode.info" "purescript-mode.texi")))))) 
+      (native-inputs
+       `(("texinfo" ,texinfo)))
+      (home-page "https://github.com/purescript-emacs/purescript-mode")
+      (synopsis "Emacs major mode and related tools for Purescript")
+      (description "This package provides an Emacs major mode for writing Purescript.")
+      (license license:gpl3+))))
+
 (define-public emacs-god-mode
   (package
     (name "emacs-god-mode")
@@ -7567,7 +7659,7 @@ interface.")
 (define-public emacs-orderless
   (package
     (name "emacs-orderless")
-    (version "0.5")
+    (version "0.6")
     (source
      (origin
        (method git-fetch)
@@ -7575,9 +7667,20 @@ interface.")
              (url "https://github.com/oantolin/orderless")
              (commit version)))
        (sha256
-        (base32 "032lfwflkpaxbcxl4jf438vapswsdagipjczcn30sc4dfdh3p42c"))
+        (base32 "1javw5n3h3iv7f433b2ack49aka1jdpp8yxnaahzg5qbvr80hnay"))
        (file-name (git-file-name name version))))
     (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'makeinfo
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "makeinfo" "orderless.texi")
+             (install-file "orderless.info"
+                           (string-append (assoc-ref outputs "out")
+                                          "/share/info")))))))
+    (native-inputs
+     `(("texinfo" ,texinfo)))
     (home-page "https://github.com/oantolin/orderless")
     (synopsis "Emacs completion style that matches multiple regexps in any order")
     (description "This package provides an orderless completion style that
@@ -9841,6 +9944,39 @@ current frame, disabling the mode line, and adding margins to the buffer that
 restrict the text width to 80 characters.")
     (license license:bsd-3)))
 
+(define-public emacs-wucuo
+  (package
+    (name "emacs-wucuo")
+    (version "0.2.9")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/redguardtoo/wucuo")
+             (commit "89b99166768afb811c48a7db7c93c02d51a32b09")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "03a6jlbv9axrd9yr0xscq3ni7fipm20ppc51kxy0sn241rplv0pg"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:tests? #t
+       #:test-command '("make" "test")
+       #:phases (modify-phases %standard-phases
+                  ;; Set HOME, otherwise tests fail on loading aspell dict.
+                  (add-before 'check 'set-home
+                    (lambda _ (setenv "HOME" (getcwd)))))))
+    (native-inputs
+     ;; For tests.
+     `(("aspell" ,aspell)
+       ("aspell-dict-en" ,aspell-dict-en)))
+    (home-page "https://github.com/redguardtoo/wucuo")
+    (synopsis "Fast spell checker for camel case code or plain text")
+    (description
+     "Wucuo provides a spell checker on top of either Aspell or Hunspell, and
+relies on Flyspell internally.  It operates on the current region or buffer,
+a file, or a complete directory.")
+    (license license:gpl3+)))
+
 (define-public emacs-ido-completing-read+
   (package
     (name "emacs-ido-completing-read+")
@@ -11237,26 +11373,17 @@ passive voice.")
     (name "emacs-org")
     ;; emacs-org-contrib inherits from this package.  Please update it as
     ;; well.
-    (version "9.4.5")
+    (version "9.4.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/org-" version ".tar"))
        (sha256
-        (base32 "0h5qhrd984vf17qc227wz68191xfgbpq32dyhw0lcz2d9i0pl3xk"))))
+        (base32 "1k49ymsi77366as2wi4kzv2f1xnbwpb47iw7iw07yxwlhmm7vskq"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         ;; FIXME: The elpa tarball upstream does not include the version
-         ;; number, remove this phase when this is fixed.
-         ;; https://lists.gnu.org/archive/html/emacs-orgmode/2020-12/msg00729.html
-         (add-after 'unpack 'fix-org-version
-           (lambda _
-             (substitute* "org-version.el"
-               (("org-release \"\"")
-                (string-append "org-release \"" ,version "\"")))
-             #t))
          (add-after 'install 'install-documentation
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((share (string-append (assoc-ref outputs "out") "/share"))
@@ -11264,10 +11391,9 @@ passive voice.")
                     (doc-dir (string-append share "/doc/" ,name "-" ,version)))
                (install-file "org.info" info-dir)
                (install-file "orgguide.info" info-dir)
-               ;; XXX: "orgcard.pdf" is not built in Org 9.4.5.
+               ;; XXX: "orgcard.pdf" is not built in Org 9.4.6.
                ;; (install-file "orgcard.pdf" doc-dir)
-               )
-             #t)))))
+               ))))))
     (home-page "https://orgmode.org/")
     (synopsis "Outline-based notes management and organizer")
     (description "Org is an Emacs mode for keeping notes, maintaining TODO
@@ -11280,14 +11406,14 @@ programming and reproducible research.")
   (package
     (inherit emacs-org)
     (name "emacs-org-contrib")
-    (version "20210329")
+    (version "20210519")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://orgmode.org/elpa/"
                            "org-plus-contrib-" version ".tar"))
        (sha256
-        (base32 "1l0ycz77hwmjb4sffhabb0d0hg1c9ypxbpbyv8xj5ib4nbi87f2h"))
+        (base32 "0g765fsc7ssn779xnhjzrxy1sz5b019h7dk1q26yk2w6i540ybfl"))
        ;; ob-sclang.el is packaged separately to avoid the dependency on
        ;; SuperCollider and qtwebengine.
        (modules '((guix build utils)))
@@ -14723,6 +14849,29 @@ literate programming tools for exporting, weaving and tangling.")
 files using the major mode corresponding to each block.")
     (license license:gpl3+)))
 
+(define-public emacs-poly-noweb
+  (package
+    (name "emacs-poly-noweb")
+    (version "0.2.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/polymode/poly-noweb")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1jl5h4nf10xd2gdlsxi6h2n3z5zh26ffcixn68xfp5q4zl34zk8p"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-polymode" ,emacs-polymode)))
+    (home-page "https://github.com/polymode/poly-noweb")
+    (synopsis "Polymode for noweb")
+    (description
+     "This package provides @code{poly-noweb-mode}, a polymode for noweb
+files.")
+    (license license:gpl3+)))
+
 (define-public emacs-powershell
   ;; Tagged branch 0.1 is outdated (2015).
   (let ((revision "0")
@@ -16070,10 +16219,10 @@ as well as functions for navigating between these headings.")
              (emacs-substitute-variables "test/test.el"
                ("org-super-agenda-test-results-file"
                 (string-append (getcwd) "/test/results.el")))
-             ;; The following test fail (see:
+             ;; The following tests fail (see:
              ;; https://github.com/alphapapa/org-super-agenda/issues/183).
              (substitute* "test/test.el"
-               ((".*org-super-agenda-test--:auto-map.*" all)
+               ((".*org-super-agenda-test--:auto-(map|tags).*" all)
                 (string-append all "  (skip-unless nil)\n")))
              #t)))))
     (native-inputs
@@ -19892,8 +20041,8 @@ file.")
       (license license:gpl3+))))
 
 (define-public emacs-picpocket
-  (let ((version "40")
-        (commit "6fd88b8711c4370662c0f9c462170187d092a046"))
+  (let ((version "41")
+        (commit "fa3a49f011b5ae139728548fec7375743f61c7c7"))
     (package
       (name "emacs-picpocket")
       (version version)
@@ -19905,7 +20054,7 @@ file.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "1mdzzxf7xm7zwrpnqqxa27d1cr31pd72d7ilbwljv13qp177a3yw"))))
+          (base32 "1vb358jyfs3px70ah60dmlz5azdfkva9xrw3mgrr4060vcy7w4q1"))))
       (build-system emacs-build-system)
       (arguments ; needed for running tests
        `(#:tests? #t
@@ -19917,7 +20066,6 @@ file.")
       (synopsis "Image viewer for Emacs")
       (description
        "Picpocket is an image viewer for GNU Emacs.  It has commands for:
-
 @itemize
 @item File operations on the picture files (delete, move, copy, hardlink).
 @item Scale and rotate the picture.
@@ -22510,7 +22658,7 @@ utilities.")
                              (guix build gnu-build-system))
          #:phases
          (modify-phases %standard-phases
-           (add-before 'add-source-to-load-path 'substitute-libyaml-core-path
+           (add-after 'unpack 'substitute-libyaml-core-path
              (lambda* (#:key outputs #:allow-other-keys)
                (chmod "libyaml.el" #o644)
                (substitute* "libyaml.el"
@@ -27202,6 +27350,33 @@ easily.  Four pre-set options are: @samp{shell}, @samp{terminal},
 you use some other configuration.")
       (license license:gpl3+))))
 
+(define-public emacs-tshell
+  ;; XXX: Upstream has no tagged release.  Version is extracted from keyword
+  ;; in main file.
+  (let ((commit "47ef3a6c537b06eb422d9a124e1c44062223e323")
+        (revision "0"))
+    (package
+      (name "emacs-tshell")
+      (version (git-version "0.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/TatriX/tshell")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0yv38bqdp6b614lbj4v408vv5mlic3vs1v7266xrfxm1cm903apj"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-transient" ,emacs-transient)))
+      (home-page "https://github.com/TatriX/tshell")
+      (synopsis "Experimental buffer-oriented Emacs shell")
+      (description
+       "Tshell is an experimental buffer-oriented shell.  It supports shell
+and Emacs lisp commands.")
+      (license license:gpl3+))))
+
 (define-public emacs-extmap
   (package
     (name "emacs-extmap")
@@ -27822,7 +27997,7 @@ and preferred services can easily be configured.")
 (define-public emacs-vertico
   (package
     (name "emacs-vertico")
-    (version "0.8")
+    (version "0.10")
     (source
      (origin
        (method git-fetch)
@@ -27831,7 +28006,7 @@ and preferred services can easily be configured.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "11yaq9p5406m88l0di0g9q782gj5g3b2kc555440fwqcpjhdshqg"))))
+        (base32 "0am7d29gni7irbwsv3zc9cpk12f6pyys06zlpj506wj2d21v36la"))))
     (build-system emacs-build-system)
     (native-inputs
      `(("texinfo" ,texinfo)))

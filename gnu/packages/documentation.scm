@@ -10,6 +10,7 @@
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020, 2021 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2021 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,6 +35,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system qt)
+  #:use-module (guix deprecation)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages backup)
@@ -101,16 +103,16 @@ pages in HTML.")
 (define-public asciidoc
   (package
     (name "asciidoc")
-    (version "8.6.10")
+    (version "9.1.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/asciidoc-py/asciidoc-py2")
-                     (commit version)))
+                    (url "https://github.com/asciidoc/asciidoc-py")
+                    (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1hrqkgjmp1gq3f9rkbr8l0y62fzvwb9n8ys35s25bg2ld04y4g4y"))))
+                "1clf1axkns23wfmh48xfspzsnw04pjh4mq1pshpzvj0cwxhz0yaq"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                     ; no 'check' target
@@ -159,11 +161,12 @@ release/xsl/current")
                        #t)))))
     (native-inputs
      `(("autoconf" ,autoconf)))
-    (inputs `(("python" ,python-2)
-              ("docbook-xml" ,docbook-xml)
-              ("docbook-xsl" ,docbook-xsl)
-              ("libxml2" ,libxml2)
-              ("libxslt" ,libxslt)))
+    (inputs
+     `(("python" ,python)
+       ("docbook-xml" ,docbook-xml)
+       ("docbook-xsl" ,docbook-xsl)
+       ("libxml2" ,libxml2)
+       ("libxslt" ,libxslt)))
     (home-page "https://asciidoc.org/")
     (synopsis "Text-based document generation system")
     (description
@@ -177,28 +180,7 @@ the backend output markups (which can be almost any type of SGML/XML
 markup) can be customized and extended by the user.")
     (license gpl2+)))
 
-(define-public asciidoc-py3
-  (package (inherit asciidoc)
-    (name "asciidoc-py3")
-    (version "9.0.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/asciidoc/asciidoc-py3/")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1xpws5lgzaqwgbc7sq6bp8adjxy8qb4qb9nj4vvpxamjgx3pny54"))))
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("autoconf" ,autoconf)))
-    (inputs
-     `(("python" ,python)
-       ("docbook-xml" ,docbook-xml)
-       ("docbook-xsl" ,docbook-xsl)
-       ("libxml2" ,libxml2)
-       ("libxslt" ,libxslt)))))
+(define-deprecated asciidoc-py3 asciidoc)
 
 (define-public doxygen
   (package

@@ -21,6 +21,7 @@
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Brendan Tildesley <mail@brendan.scot>
+;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2603,6 +2604,56 @@ user-friendly than the default @code{QColorDialog} and several other
 color-related widgets.")
       ;; Includes a license exception for combining with GPL2 code.
       (license license:lgpl3+))))
+
+(define-public qcustomplot
+  (package
+    (name "qcustomplot")
+    (version "2.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.qcustomplot.com/release/"
+                           version "fixed" "/QCustomPlot.tar.gz"))
+       (sha256
+        (base32 "1324kqyj1v1f8k8d7b15gc3apwz9qxx52p86hvchg33hjdlqhskx"))))
+    (native-inputs
+     `(("qcustomplot-sharedlib"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append "https://www.qcustomplot.com/release/"
+                               version "fixed" "/QCustomPlot-sharedlib.tar.gz"))
+           (sha256
+            (base32 "0vp8lpxvd1nlp4liqrlvslpqrgfn0wpiwizzdsjbj22zzb8vxikc"))))))
+    (inputs
+     `(("qtbase" ,qtbase)))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'unpack-extra-files
+           (lambda* (#:key inputs #:allow-other-keys)
+             (invoke "tar" "-xvf" (assoc-ref inputs "qcustomplot-sharedlib"))))
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (chdir "qcustomplot-sharedlib/sharedlib-compilation")
+             (substitute* "sharedlib-compilation.pro"
+               ;; Don't build debug library.
+               (("debug_and_release")
+                "release"))
+             (invoke "qmake"
+                     (string-append "DESTDIR="
+                                    (assoc-ref outputs "out")
+                                    "/lib"))))
+         (add-after 'install 'install-header
+           (lambda* (#:key outputs #:allow-other-keys)
+             (install-file "../../qcustomplot.h"
+                           (string-append (assoc-ref outputs "out")
+                                          "/include")))))))
+    (home-page "https://www.qcustomplot.com/")
+    (synopsis "Qt widget for plotting and data visualization")
+    (description
+     "QCustomPlot is a Qt C++ widget providing 2D plots, graphs and charts.")
+    (license license:gpl3+)))
 
 (define-public python-shiboken-2
   (package

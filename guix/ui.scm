@@ -73,7 +73,6 @@
   #:use-module (ice-9 format)
   #:use-module (ice-9 regex)
   #:autoload   (ice-9 popen) (open-pipe* close-pipe)
-  #:autoload   (system base compile) (compile-file)
   #:autoload   (system repl repl)  (start-repl)
   #:autoload   (system repl debug) (make-debug stack->vector)
   #:autoload   (web uri) (encode-and-join-uri-path)
@@ -197,6 +196,18 @@ information, or #f if it could not be found."
                            (stack-ref stack 1)    ;skip the 'throw' frame
                            last))))
 
+(cond-expand
+  (guile-3
+   (define-syntax-rule (without-compiler-optimizations exp)
+     ;; Compile with the baseline compiler (-O1), which is much less expensive
+     ;; than -O2.
+     (parameterize (((@ (system base compile) default-optimization-level) 1))
+       exp)))
+  (else
+   (define-syntax-rule (without-compiler-optimizations exp)
+     ;; No easy way to turn off optimizations on Guile 2.2.
+     exp)))
+
 (define* (load* file user-module
                 #:key (on-error 'nothing-special))
   "Load the user provided Scheme source code FILE."
@@ -211,17 +222,7 @@ information, or #f if it could not be found."
   (catch #t
     (lambda ()
       ;; XXX: Force a recompilation to avoid ABI issues.
-      ;;
-      ;; In 2.2.3, the bogus answer to <https://bugs.gnu.org/29226> was to
-      ;; ignore all available .go, not just those from ~/.cache, which in turn
-      ;; meant that we had to rebuild *everything*.  Since this is too costly,
-      ;; we have to turn off '%fresh-auto-compile' with that version, so to
-      ;; avoid ABI breakage in the user's config file, we explicitly compile
-      ;; it (the problem remains if the user's config is spread on several
-      ;; modules.)  See <https://bugs.gnu.org/29881>.
-      (unless (string=? (version) "2.2.3")
-        (set! %fresh-auto-compile #t))
-
+      (set! %fresh-auto-compile #t)
       (set! %load-should-auto-compile #t)
 
       (save-module-excursion
@@ -232,17 +233,12 @@ information, or #f if it could not be found."
          (parameterize ((current-warning-port (%make-void-port "w")))
            (call-with-prompt tag
              (lambda ()
-               (when (string=? (version) "2.2.3")
-                 (catch 'system-error
-                   (lambda ()
-                     (compile-file file #:env user-module))
-                   (const #f)))              ;EACCES maybe, let's interpret it
-
                ;; Give 'load' an absolute file name so that it doesn't try to
                ;; search for FILE in %LOAD-PATH.  Note: use 'load', not
                ;; 'primitive-load', so that FILE is compiled, which then allows
                ;; us to provide better error reporting with source line numbers.
-               (load (canonicalize-path file)))
+               (without-compiler-optimizations
+                (load (canonicalize-path file))))
              (const #f))))))
     (lambda _
       ;; XXX: Errors are reported from the pre-unwind handler below, but

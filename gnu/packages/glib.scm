@@ -1081,7 +1081,7 @@ metadata.")
 (define perl-net-dbus
   (package
     (name "perl-net-dbus")
-    (version "1.1.0")
+    (version "1.2.0")
     (source
      (origin
        (method url-fetch)
@@ -1089,7 +1089,7 @@ metadata.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0sg2w147b9r9ykfzjs7y9qxry73xkjnhnk4qf95kfv79p5nnk4c3"))))
+         "1g0w8i5scmh7kfy9mmvv8q326627qf38z26mvczmn8x1yjgar8g7"))))
     (build-system perl-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)

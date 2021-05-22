@@ -257,7 +257,8 @@ NARINFO."
                  (http-fetch uri)))
     (define reporter
       (progress-reporter/file (narinfo-path narinfo)
-                              (max size (or actual-size 0)) ;defensive
+                              (and size
+                                   (max size (or actual-size 0))) ;defensive
                               #:abbreviation (const (uri-host uri))))
 
     (define result

@@ -620,7 +620,7 @@ error when it would have happened.")
 (define-public perl-bareword-filehandles
   (package
     (name "perl-bareword-filehandles")
-    (version "0.006")
+    (version "0.007")
     (source
      (origin
        (method url-fetch)
@@ -629,7 +629,7 @@ error when it would have happened.")
              version ".tar.gz"))
        (sha256
         (base32
-         "1yxz6likpfshpyfrgwyi7dw6ig1wjhh0vnvbcs6ypr62pv00fv5d"))))
+         "0zy1v746pzv3vvvpr3plpykz0vfhi940q9bfypzzhynq2qvm6d21"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-b-hooks-op-check" ,perl-b-hooks-op-check)
@@ -714,14 +714,14 @@ compiling the surrounding scope.")
 (define-public perl-b-keywords
   (package
     (name "perl-b-keywords")
-    (version "1.20")
+    (version "1.22")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/R/RU/RURBAN/B-Keywords-"
                            version ".tar.gz"))
        (sha256
-        (base32 "12jvx5gnypqxal4valkf9lidba9nz7kjk2wvm07q3hkmdqxw1zk0"))))
+        (base32 "0i2ksp0w9wv1qc22hrdl3k48cww64syhmv8zf6x0kgyd4081hr56"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/B-Keywords")
     (synopsis "Lists of reserved barewords and symbol names")
@@ -1039,14 +1039,14 @@ library assert.h.")
 (define-public perl-carp-assert-more
   (package
     (name "perl-carp-assert-more")
-    (version "1.20")
+    (version "1.26")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/P/PE/PETDANCE/"
                            "Carp-Assert-More-" version ".tar.gz"))
        (sha256
-        (base32 "16jnhdjgfwymrc5fki4xlf1rlziszf9k6q0245g976124k708ac5"))))
+        (base32 "14x4m4dlj7pwq2r2fsmww3q3xb61cdgnrlmjh5mms3ikaln6rmmk"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-exception" ,perl-test-exception)))
@@ -1564,7 +1564,7 @@ a mixin in order to become instantiable.")
 (define-public perl-class-singleton
   (package
     (name "perl-class-singleton")
-    (version "1.5")
+    (version "1.6")
     (source
      (origin
        (method url-fetch)
@@ -1572,7 +1572,7 @@ a mixin in order to become instantiable.")
                            "Class-Singleton-" version ".tar.gz"))
        (sha256
         (base32
-         "0y7ngrjf551bjgmijp5rsidbkq6c8hb5lmy2jcqq0fify020s8iq"))))
+         "1942j9g0b4c88nvs3jghh3y31mlhbpwrx35xdcb2jaaiv7q17fi7"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Class-Singleton")
     (synopsis "Implementation of a singleton class for Perl")
@@ -1584,7 +1584,7 @@ little other than manage the instantiation of a single object.")
 (define-public perl-class-tiny
   (package
     (name "perl-class-tiny")
-    (version "1.006")
+    (version "1.008")
     (source
      (origin
        (method url-fetch)
@@ -1592,7 +1592,7 @@ little other than manage the instantiation of a single object.")
                            "Class-Tiny-" version ".tar.gz"))
        (sha256
         (base32
-         "0knbi1agcfc9d7fca0szvxr6335pb22pc5n648q1vrcba8qvvz1f"))))
+         "05anh4hn8va46xwbdx7rqxnhb8i1lingb614lywzr89gj5iql1gf"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Class-Tiny")
     (synopsis "Minimalist class construction")
@@ -2504,15 +2504,15 @@ code that, when \"eval\"ed, produces a deep copy of the original arguments.")
 (define-public perl-data-dumper
   (package
     (name "perl-data-dumper")
-    (version "2.173")
+    (version "2.180")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/X/XS/XSAWYERX/"
+       (uri (string-append "mirror://cpan/authors/id/N/NW/NWCLARK/"
                            "Data-Dumper-" version ".tar.gz"))
        (sha256
         (base32
-         "1yknbp86md6mjlhbs1lzz6mals3iyizndgiij58qx61hjfrhhxk9"))))
+         "029vfvj81dhyv01zrd94lak8qnkbik2h5d1mvj19hxdp67jnwqc6"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Data-Dumper")
     (synopsis "Convert data structures to strings")
@@ -2914,14 +2914,14 @@ Date::Calc.")
 (define-public perl-date-manip
   (package
     (name "perl-date-manip")
-    (version "6.82")
+    (version "6.85")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/S/SB/SBECK/"
                            "Date-Manip-" version ".tar.gz"))
        (sha256
-        (base32 "0ak72kpydwhq2z03mhdfwm3ganddzb8gawzh6crpsjvb9kwvr5ps"))))
+        (base32 "1p6clpx9r0kzpzr9d6gy4q6m0pw21lh7bnd9ir3qiidp8cwkjqhn"))))
     (build-system perl-build-system)
     (arguments
      ;; Tests would require tzdata for timezone information, but tzdata is in
@@ -2960,14 +2960,14 @@ hours, minutes, seconds, and time zones.")
 (define-public perl-datetime
   (package
     (name "perl-datetime")
-    (version "1.52")
+    (version "1.54")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/D/DR/DROLSKY/"
                            "DateTime-" version ".tar.gz"))
        (sha256
-        (base32 "1z1xpifh2kpyw7rlc8ivg9rl0qmabjq979gjp0s9agdjf9hqp0k7"))))
+        (base32 "1rxjagwmkdlmksz1cbxwx2ad51pv5q7dri2djqkz44q7j1nxlbmi"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-cpan-meta-check" ,perl-cpan-meta-check)
@@ -3196,14 +3196,14 @@ extension that parses almost all ISO8601 date and time formats.")
 (define-public perl-datetime-format-natural
   (package
     (name "perl-datetime-format-natural")
-    (version "1.06")
+    (version "1.12")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/S/SC/SCHUBIGER/"
                            "DateTime-Format-Natural-" version ".tar.gz"))
        (sha256
-        (base32 "1n68b5hnw4n55q554v7y4ffwiypz6rk40mh0r550fxwv69bvyky0"))))
+        (base32 "0mqjsjyfymzp7lx7czx17bsdshzsh6l8r6hcadv81zvga326zprw"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
@@ -3288,7 +3288,7 @@ the DateTime.pm class.")
 (define-public perl-datetime-timezone
   (package
     (name "perl-datetime-timezone")
-    (version "2.23")
+    (version "2.47")
     (source
      (origin
        (method url-fetch)
@@ -3296,7 +3296,7 @@ the DateTime.pm class.")
                            "DateTime-TimeZone-" version ".tar.gz"))
        (sha256
         (base32
-         "0kz5kz47awf2bhb85xx5rbajkr093ipm2d2vkhqs8lqq0f305r3a"))))
+         "1fgj3si94w87sy66p44mphsgj2cfrkqvdjn3bbz5bqmmvcw72qa1"))))
     (build-system perl-build-system)
     (arguments
      '(#:phases
@@ -5247,16 +5247,16 @@ inc directory within a distribution and are used by Makefile.PL or Build.PL.")
 (define-public perl-inline
   (package
    (name "perl-inline")
-   (version "0.81")
+   (version "0.86")
    (source
     (origin
      (method url-fetch)
      (uri (string-append
-           "mirror://cpan/authors/id/T/TI/TINITA/Inline-"
+           "mirror://cpan/authors/id/I/IN/INGY/Inline-"
            version ".tar.gz"))
      (sha256
       (base32
-       "1qxi0xvn8rqj4sca9gwb1xkm6bdz33x57li5kfls6mnavil3i5qz"))))
+       "0fhyspkg2ka7yz7kbq8a028hj0chfc7qqkl7n20dpc0is3i7s2ji"))))
    (build-system perl-build-system)
    (native-inputs
     `(("perl-test-warn" ,perl-test-warn)))
@@ -5271,7 +5271,7 @@ for immediate access from Perl.")
 (define-public perl-inline-c
   (package
     (name "perl-inline-c")
-    (version "0.78")
+    (version "0.81")
     (source
      (origin
        (method url-fetch)
@@ -5280,7 +5280,7 @@ for immediate access from Perl.")
              version ".tar.gz"))
        (sha256
         (base32
-         "1izv7vswd17glffh8h83bi63gdk208mmhxi17l3qd8q1bkc08y4s"))))
+         "1b3sr39813di3j1kwbgn1xq2z726rhjjdw809ydzgmshj26jb1gi"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-file-copy-recursive" ,perl-file-copy-recursive)
@@ -5783,17 +5783,17 @@ logging mechanism.")
 (define-public perl-log-log4perl
   (package
     (name "perl-log-log4perl")
-    (version "1.49")
+    (version "1.54")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "mirror://cpan/authors/id/M/MS/MSCHILLI/Log-Log4perl-"
+             "mirror://cpan/authors/id/E/ET/ETJ/Log-Log4perl-"
              version
              ".tar.gz"))
        (sha256
         (base32
-         "05ifhx1lmv91dbs9ck2zbjrkhh8z9g32gi6gxdmwnilia5zihfdp"))))
+         "1gpa08vd71lm24mzzkgzphfbsnymh6z5gfb6fsja7njc7cny9axv"))))
     (build-system perl-build-system)
     (home-page
      "https://metacpan.org/release/Log-Log4perl")
@@ -6300,7 +6300,7 @@ messages.")
 (define-public perl-mime-types
   (package
     (name "perl-mime-types")
-    (version "2.17")
+    (version "2.20")
     (source
      (origin
        (method url-fetch)
@@ -6308,7 +6308,7 @@ messages.")
                            "MIME-Types-" version ".tar.gz"))
        (sha256
         (base32
-         "1xlg7q6h8zyb8534sy0iqn90py18kilg419q6051bwqz5zadfkp0"))))
+         "1wgqm5777xac0xzcysr7adh1gi0108bdfhq6kzpxinxzjadhjw9y"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/MIME-Types")
     (synopsis "Definition of MIME types")
@@ -6345,7 +6345,7 @@ file names are added for you.")
 (define-public perl-modern-perl
   (package
     (name "perl-modern-perl")
-    (version "1.20181021")
+    (version "1.20200211")
     (source
      (origin
        (method url-fetch)
@@ -6353,7 +6353,7 @@ file names are added for you.")
              "mirror://cpan/authors/id/C/CH/CHROMATIC/Modern-Perl-"
              version ".tar.gz"))
        (sha256
-        (base32 "1if9jbh66z2vm4wwnky41ljnhdlwrh7vzl6pd3w60v3wix92nj0x"))))
+        (base32 "1064k29aavabxj8m20b65rxk7qa3mjmzgmrikvdrxasgx378676s"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)))
@@ -7576,7 +7576,7 @@ fields in Moo-based classes.")
 (define-public perl-mouse
   (package
   (name "perl-mouse")
-  (version "2.5.6")
+  (version "2.5.10")
   (source (origin
             (method url-fetch)
             (uri (string-append
@@ -7585,7 +7585,7 @@ fields in Moo-based classes.")
                   ".tar.gz"))
             (sha256
              (base32
-              "1j3048ip691j91rdig6wrlg6i4jdzhszxmz5pi2g7n355rl2w00l"))))
+              "1vijm8wkyws1jhnqmx104585q3srw9z1crcpy1zlcfhm8qww53ff"))))
   (build-system perl-build-system)
   (native-inputs
    `(("perl-module-build" ,perl-module-build)
@@ -7633,7 +7633,7 @@ of data.")
 (define-public perl-mozilla-ca
   (package
     (name "perl-mozilla-ca")
-    (version "20180117")
+    (version "20200520")
     (source
      (origin
        (method url-fetch)
@@ -7641,7 +7641,7 @@ of data.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "01p4ykyilk1639dxgjaa2n7rz1f0zbqxkq11yc9n6xcz26z9zk7j"))))
+         "09n7hwrh63c5gqvygqvvgvklcbvsm7g0p4nmq0b4mwhb64101jmk"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Mozilla-CA")
     (synopsis "Mozilla's CA cert bundle in PEM format")
@@ -9704,7 +9704,7 @@ future, or if you want the retain the familiarity of TT-style templates.")
 (define-public perl-term-encoding
   (package
     (name "perl-term-encoding")
-    (version "0.02")
+    (version "0.03")
     (source
      (origin
        (method url-fetch)
@@ -9712,7 +9712,7 @@ future, or if you want the retain the familiarity of TT-style templates.")
                            "Term-Encoding-" version ".tar.gz"))
        (sha256
         (base32
-         "1k6g4q7snxggv5fdqnzw29al4mwbwg0hl0skzfnczh508qiyfx7j"))))
+         "02qx4ni1vqp9hvkw69hp5bxcf2ghjiw8sl34pqy5mlimsy3rdflm"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-install" ,perl-module-install)))
@@ -10312,7 +10312,7 @@ approximately follow the suggestions in the Perl Style Guide.")
 (define-public perl-tie-cycle
   (package
     (name "perl-tie-cycle")
-    (version "1.225")
+    (version "1.226")
     (source
      (origin
        (method url-fetch)
@@ -10320,7 +10320,7 @@ approximately follow the suggestions in the Perl Style Guide.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0i9xq2qm50p2ih24265jndp2x8hfq7ap0d88nrlv5yaad4hxhc7k"))))
+         "0cvnykkr5z57xwl6i9qdws2gpdhsm0rrf3kia8q0q25vag0f31q9"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Tie-Cycle")
     (synopsis "Cycle through a list of values")
@@ -10508,7 +10508,7 @@ the system epoch.")
 (define-public perl-time-piece
   (package
     (name "perl-time-piece")
-    (version "1.3203")
+    (version "1.3401")
     (source
      (origin
        (method url-fetch)
@@ -10516,7 +10516,7 @@ the system epoch.")
              "mirror://cpan/authors/id/E/ES/ESAYM/Time-Piece-"
              version ".tar.gz"))
        (sha256
-        (base32 "0hbg99v8xqy3nx6nrjpwh1w6xwqpfflz0djkbdd72kvf8zvglwb9"))))
+        (base32 "09scn3yyqfl5w3yb6qrylhhn386zfz9fmpslk8iwyidb1sxvfmab"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Time-Piece")
     (synopsis "Object-Oriented time objects")
@@ -10571,14 +10571,14 @@ and time() calls.")
 (define-public perl-tree-simple
   (package
     (name "perl-tree-simple")
-    (version "1.33")
+    (version "1.34")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/R/RS/RSAVAGE/"
                            "Tree-Simple-" version ".tgz"))
        (sha256
-        (base32 "1alnwb6c7n4al91m9cyknvcyvdz521lh22dz1hyk4v7c50adffnv"))))
+        (base32 "176j8zgsndfnxb5mxaiarnva3ghck1jxgxwkz77r9fr2sadpksdp"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
@@ -10594,14 +10594,14 @@ simple n-ary tree.")
 (define-public perl-tree-simple-visitorfactory
   (package
     (name "perl-tree-simple-visitorfactory")
-    (version "0.15")
+    (version "0.16")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/R/RS/RSAVAGE/"
                            "Tree-Simple-VisitorFactory-" version ".tgz"))
        (sha256
-        (base32 "06y2vazkl307k59hnkp9h5bp3p7711kgmp1qdhb2lgnfwzn84zin"))))
+        (base32 "19hdi00rw492m5r51b495gv5c64g91g98f8lm6sgym1cl7x3ixcw"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
@@ -10637,14 +10637,14 @@ else.")
 (define-public perl-type-tie
   (package
     (name "perl-type-tie")
-    (version "0.014")
+    (version "0.015")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/T/TO/TOBYINK/"
                            "Type-Tie-" version ".tar.gz"))
        (sha256
-        (base32 "1ri23xb3rdb59lk984hnjqi4pb97zqnv4ppn0zpd70pfp0a9addm"))))
+        (base32 "0d2ldn6pi8dj7shk4gkjm9bzqr7509fzkwjs7579pmgg6xkkynjf"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-fatal" ,perl-test-fatal)
@@ -10664,14 +10664,14 @@ variable conform.")
 (define-public perl-type-tiny
   (package
     (name "perl-type-tiny")
-    (version "1.008003")
+    (version "1.012003")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/T/TO/TOBYINK/"
                            "Type-Tiny-" version ".tar.gz"))
        (sha256
-        (base32 "1x80rlnh7kl4xgm4qvyfbgahcyla4wbyh3b759nm21czn8x6wkm4"))))
+        (base32 "0s11rlkkjjys8x6ihm5mrhzbbf341g5ckqbalph4g7l98kcy26yl"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-warnings" ,perl-test-warnings)))
@@ -10697,14 +10697,14 @@ be used with Moose, Mouse and Moo (or none of the above).")
 (define-public perl-type-tiny-xs
   (package
     (name "perl-type-tiny-xs")
-    (version "0.014")
+    (version "0.022")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/T/TO/TOBYINK/Type-Tiny-XS-"
                            version ".tar.gz"))
        (sha256
-        (base32 "1bbvghd2wmm9z1jx9qs9yz4l3r4izs8sz87z87sis7n3ydjdx2w2"))))
+        (base32 "007z49zbwnhghsrvvv2v7fvp6iqfz74bb29qh36307fwywqlmhxw"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Type-Tiny-XS")
     (synopsis "Provides an XS boost for some of Type::Tiny's built-in type constraints")
@@ -10790,14 +10790,14 @@ common serialisation formats such as JSON or CBOR.")
 (define-public perl-unicode-collate
   (package
     (name "perl-unicode-collate")
-    (version "1.27")
+    (version "1.29")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/S/SA/SADAHIRO/"
                            "Unicode-Collate-" version ".tar.gz"))
        (sha256
-        (base32 "12df4n46yri6via4x9jb918v1hk6yrlzqk9srq6fnz5kviylnxbf"))))
+        (base32 "0dr4k10fgbsczh4sz7w8d0nnba38r6jrg87cm3gw4xxgn55fzj7l"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
@@ -10911,7 +10911,7 @@ UNIVERSAL::isa as a function.")
 (define-public perl-universal-require
   (package
     (name "perl-universal-require")
-    (version "0.18")
+    (version "0.19")
     (source
      (origin
        (method url-fetch)
@@ -10920,7 +10920,7 @@ UNIVERSAL::isa as a function.")
              version ".tar.gz"))
        (sha256
         (base32
-         "1v9qdg80ng6dzyzs7cn8sb6mn8ym042i32lcnpd478b7g6l3d9xj"))))
+         "00qs1y2xzxbz4s13q28hwg2pm0vcmsb0gg6k7wh3p33cw0kcsryl"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/UNIVERSAL-require")
     (synopsis "Require modules from a variable")
@@ -11026,7 +11026,7 @@ on the YAML 1.0 specification.")
 (define-public perl-yaml-libyaml
   (package
     (name "perl-yaml-libyaml")
-    (version "0.82")
+    (version "0.83")
     (source
      (origin
        (method url-fetch)
@@ -11034,7 +11034,7 @@ on the YAML 1.0 specification.")
              "mirror://cpan/authors/id/T/TI/TINITA/YAML-LibYAML-"
              version ".tar.gz"))
        (sha256
-        (base32 "0j7yhxkaasccynl5iq1cqpf4x253p4bi5wsq6qbwwv2wjsiwgd02"))))
+        (base32 "1464pradi2dkydm35bhbzyk7sqq87kcd70bp9xddfyirzys7awdl"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/YAML-LibYAML")
     (synopsis "Perl YAML Serialization using XS and libyaml")

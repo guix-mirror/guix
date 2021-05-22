@@ -366,10 +366,6 @@ AUX_FILES =						\
   gnu/packages/aux-files/linux-libre/5.12-arm64.conf	\
   gnu/packages/aux-files/linux-libre/5.12-i686.conf	\
   gnu/packages/aux-files/linux-libre/5.12-x86_64.conf	\
-  gnu/packages/aux-files/linux-libre/5.11-arm.conf	\
-  gnu/packages/aux-files/linux-libre/5.11-arm64.conf	\
-  gnu/packages/aux-files/linux-libre/5.11-i686.conf	\
-  gnu/packages/aux-files/linux-libre/5.11-x86_64.conf	\
   gnu/packages/aux-files/linux-libre/5.10-arm.conf	\
   gnu/packages/aux-files/linux-libre/5.10-arm64.conf	\
   gnu/packages/aux-files/linux-libre/5.10-i686.conf	\
@@ -462,7 +458,6 @@ SCM_TESTS =					\
   tests/git-authenticate.scm			\
   tests/glob.scm				\
   tests/gnu-maintenance.scm			\
-  tests/go.scm					\
   tests/grafts.scm				\
   tests/graph.scm				\
   tests/gremlin.scm				\
@@ -510,6 +505,10 @@ SCM_TESTS =					\
   tests/utils.scm				\
   tests/uuid.scm				\
   tests/workers.scm
+
+if HAVE_GUILE_LIB
+SCM_TESTS += tests/go.scm
+endif
 
 if BUILD_DAEMON_OFFLOAD
 SCM_TESTS  += tests/offload.scm

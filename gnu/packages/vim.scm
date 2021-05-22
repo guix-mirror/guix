@@ -10,6 +10,7 @@
 ;;; Copyright © 2019, 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
+;;; Copyright © 2021 Tissevert <tissevert+guix@marvid.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -578,6 +579,43 @@ can be done on demand, or automatically as files are saved.  If syntax errors
 are detected, the user is notified.")
     (home-page "https://github.com/vim-syntastic/syntastic")
     (license license:wtfpl2)))
+
+(define-public vim-solarized
+  (let ((commit "62f656a02f93c5190a8753159e34b385588d5ff3")
+        (revision "1"))
+    (package
+      (name "vim-solarized")
+      (version (git-version "1.0.0beta1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/altercation/solarized")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0001mz5v3a8zvi3gzmxhi3yrsb6hs7qf6i497arsngnvj2cwn61d"))))
+      (build-system copy-build-system)
+      (arguments
+       '(#:install-plan
+         '(("vim-colors-solarized/colors" "share/vim/vimfiles/")
+           ("vim-colors-solarized/doc" "share/vim/vimfiles/"))))
+      (home-page "https://github.com/altercation/vim-colors-solarized")
+      (synopsis "Solarized color scheme for Vim")
+      (description
+       "This package provides the Solarized theme as a Vim color scheme.
+
+Solarized is a 16-color palette comprising 8 monotones and 8 accent
+colors.  It was designed for use with both terminal and GUI applications, and
+has a dark and a light mode.
+
+Based on CIELAB lightness relationships between colors, this theme reduces
+brightness contrast but retains contrasting hues based on colorwheel relations
+for syntax highlighting readability.
+
+It keeps the same selective contrast relationships and overall feel when
+switching between the light and dark background modes.")
+      (license license:expat))))
 
 (define-public editorconfig-vim
   (package

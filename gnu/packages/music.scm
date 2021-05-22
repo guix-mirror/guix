@@ -37,6 +37,7 @@
 ;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2021 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2021 Bonface Munyoki Kilyungi <me@bonfacemunyoki.com>
+;;; Copyright © 2021 Frank Pursel <frank.pursel@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2010,7 +2011,7 @@ users to select LV2 plugins and run them with jalv.")
 (define-public synthv1
   (package
     (name "synthv1")
-    (version "0.9.21")
+    (version "0.9.22")
     (source (origin
               (method url-fetch)
               (uri
@@ -2018,7 +2019,7 @@ users to select LV2 plugins and run them with jalv.")
                               "/synthv1-" version ".tar.gz"))
               (sha256
                (base32
-                "0wg4ywkqf307vln0y923p083xacb5ahr2ghzvb9gmqyszd7k2v15"))))
+                "0cmxbsfhkkyqn97rc47cb7d3bv6bd9r71xp4z85mi2kl3q4k569i"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
@@ -2042,7 +2043,7 @@ oscillators and stereo effects.")
 (define-public drumkv1
   (package
     (name "drumkv1")
-    (version "0.9.21")
+    (version "0.9.22")
     (source (origin
               (method url-fetch)
               (uri
@@ -2050,7 +2051,7 @@ oscillators and stereo effects.")
                               "/drumkv1-" version ".tar.gz"))
               (sha256
                (base32
-                "1ym7kns7hfgxdwm2nzvpdm5vjxpkwb9dssjiic6rrpicv1p2v59m"))))
+                "0c13l814f5rhbmpmd4w0a07j1ki5wc092xcgy6p6zj5s03zvcrzy"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
@@ -2075,7 +2076,7 @@ effects.")
 (define-public samplv1
   (package
     (name "samplv1")
-    (version "0.9.21")
+    (version "0.9.22")
     (source (origin
               (method url-fetch)
               (uri
@@ -2083,7 +2084,7 @@ effects.")
                               "/samplv1-" version ".tar.gz"))
               (sha256
                (base32
-                "1kz8hcpzhrkvxpah6irz5gbah4m7knjhi4rk5hs1kwiikn7p6vgk"))))
+                "19ajnwzd5w2jlazflh5r9qm4sflkn2s2zc5zh0vlqywxzvb9dp9g"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
@@ -2108,7 +2109,7 @@ effects.")
 (define-public padthv1
   (package
     (name "padthv1")
-    (version "0.9.21")
+    (version "0.9.22")
     (source (origin
               (method url-fetch)
               (uri
@@ -2116,7 +2117,7 @@ effects.")
                               "/padthv1-" version ".tar.gz"))
               (sha256
                (base32
-                "0s28l8vp9b85s4bdm18qm57dh8dx8rx7659r05p44828g4053ipl"))))
+                "1wky9v91qc3j866di8mcjz0pf3n8ah888lxg8dpvp6ryh1cm6i6x"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
@@ -3083,14 +3084,14 @@ from the command line.")
 (define-public qtractor
   (package
     (name "qtractor")
-    (version "0.9.21")
+    (version "0.9.22")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://downloads.sourceforge.net/qtractor/"
                                   "qtractor-" version ".tar.gz"))
               (sha256
                (base32
-                "12hn17hqs3jndv6238wj8yhw07n99s0zachab4kfvhwa0qfflsbl"))))
+                "0n73xn3205afi9vsy6ianixq36ddp8qv6iaq03ldc6mkkfvn0nc5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; no "check" target
@@ -5091,7 +5092,7 @@ the electronic or dubstep genre.")
 (define-public sonivox-eas
   (package
     (name "sonivox-eas")
-    (version "1.1.0")
+    (version "1.3.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -5100,7 +5101,7 @@ the electronic or dubstep genre.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0l9gs00p5g4k4qy6i7nv1mfi2n2wnsycwjrgrh9hxzam4irf2mw2"))))
+                "1ygmlrsdzxii2dvj6id2ai3xv3klw2x67ip5rcp823jzczl0wpjd"))))
     (build-system cmake-build-system)
     (arguments '(#:tests? #f)) ; there are no tests
     (inputs
@@ -5252,7 +5253,7 @@ MusicBrainz lookup capabilities to their applications.")
 (define-public perl-musicbrainz-discid
   (package
     (name "perl-musicbrainz-discid")
-    (version "0.04")
+    (version "0.06")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -5260,7 +5261,7 @@ MusicBrainz lookup capabilities to their applications.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1i4qk1qfcmxdibqkyfjrrjdq2zk42vjcz590qgiyc47fi9p6xx1j"))))
+                "1azc91jnwa3gdmy9pc8mflakgvsvf69ywwlqllxmdzwpk386w2xs"))))
     (build-system perl-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("which" ,which)))

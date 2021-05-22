@@ -1103,12 +1103,20 @@ backup.")
                                   "disarchive-" version ".tar.gz"))
               (sha256
                (base32
-                "1jypk0gdwxqbqxiblww863nzq0kwnc676q68j32sprqd7ilnq02s"))))
+                "1jypk0gdwxqbqxiblww863nzq0kwnc676q68j32sprqd7ilnq02s"))
+              (patches (search-patches "disarchive-cross-compilation.patch"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'delete-configure
+                    (lambda _
+                      (delete-file "configure"))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("pkg-config" ,pkg-config)
+       ("guile" ,guile-3.0)             ;for cross-compilation
+       ("guile-gcrypt" ,guile-gcrypt)
        ("guile-quickcheck" ,guile-quickcheck)))
     (inputs
      `(("guile" ,guile-3.0)

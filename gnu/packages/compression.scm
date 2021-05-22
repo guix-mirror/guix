@@ -13,7 +13,7 @@
 ;;; Copyright © 2016–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2019, 2020 Kei Kebreau <kkebreau@posteo.net>
-;;; Copyright © 2016, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2018, 2019, 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
@@ -673,6 +673,7 @@ decompressors when faced with corrupted input.")
       (modules '((guix build utils)))
       (snippet
        '(begin
+          ;; Adjust for newer libc versions.
           (substitute* (find-files "lib" "\\.c$")
             (("#if defined _IO_ftrylockfile")
              "#if defined _IO_EOF_SEEN"))
@@ -682,9 +683,15 @@ decompressors when faced with corrupted input.")
                             "# define _IO_IN_BACKUP 0x100\n"
                             "#endif\n\n"
                             "/* BSD stdio derived implementations")))
-          #t))))
+          ;; ... and for newer GCC with -fno-common.
+          (substitute* '("src/shar-opts.h"
+                         "src/unshar-opts.h"
+                         "src/uudecode-opts.h"
+                         "src/uuencode-opts.h")
+            (("char const \\* const program_name" all)
+             (string-append "extern " all)))))))
     (build-system gnu-build-system)
-    (inputs
+    (native-inputs
      `(("which" ,which)))
     (arguments
      `(#:phases
@@ -694,8 +701,7 @@ decompressors when faced with corrupted input.")
            ;; in fact test data
            (lambda _
              (substitute* "tests/shar-1.ok"
-               (((which "sh")) "/bin/sh"))
-             #t)))))
+               (((which "sh")) "/bin/sh")))))))
     (home-page "https://www.gnu.org/software/sharutils/")
     (synopsis "Archives in shell scripts, uuencode/uudecode")
     (description

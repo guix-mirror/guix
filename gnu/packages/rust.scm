@@ -845,6 +845,16 @@ safety and thread safety guarantees.")
   (rust-bootstrapped-package rust-1.50 "1.51.0"
     "0ixqkqglv3isxbvl4ldr4byrkx692wghsz3fasy1pn5kr2prnsvs"))
 
+(define-public rust-1.52
+  (let ((base-rust
+         (rust-bootstrapped-package rust-1.51 "1.52.1"
+           "165zs3xzp9dravybwslqs1qhn35agp6wacmzpymqg3qfdni26vrs")))
+    (package
+      (inherit base-rust)
+      (inputs
+        (alist-replace "llvm" (list llvm-12)
+                       (package-inputs base-rust))))))
+
 ;;; Note: Only the latest versions of Rust are supported and tested.  The
 ;;; intermediate rusts are built for bootstrapping purposes and should not
 ;;; be relied upon.  This is to ease maintenance and reduce the time

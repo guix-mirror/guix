@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2020, 2021 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
+;;; Copyright © 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,7 +23,10 @@
   #:use-module (guix packages)
   #:use-module (guix git-download)
   #:use-module (guix build-system julia)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages image)
+  #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web))
@@ -78,7 +82,7 @@ in this package.")
 (define-public julia-adapt
   (package
     (name "julia-adapt")
-    (version "3.1.1")
+    (version "3.3.0")
     (source
      (origin
        (method git-fetch)
@@ -87,7 +91,7 @@ in this package.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1lks6k3a1gvwlplld47nh6xfy3nnlpc0vhkzg6zg0qn33qdmavrg"))))
+        (base32 "0zs5mjnql77jvrsm8lrlfkq5524wnrfxqxyqyjk8ka2xpxf9lp7n"))))
     (build-system julia-build-system)
     (home-page "https://github.com/JuliaGPU/Adapt.jl")
     (synopsis "Package providing the @code{adapt} function, similar to @code{convert}")
@@ -97,10 +101,30 @@ acts like @code{convert(T, x)}, but without the restriction of returning a
 be GPU compatible without throwing away the wrapper.")
     (license license:expat)))
 
+(define-public julia-aqua
+  (package
+    (name "julia-aqua")
+    (version "0.5.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaTesting/Aqua.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0zcvrwnyhh2kr4d2xv7ps8dh7byw78dx6yb1m9m4dblgscn5kypb"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/JuliaTesting/Aqua.jl")
+    (synopsis "Automated quality assurance for Julia packages")
+    (description "@acronym{Aqua.jl, Auto QUality Assurance for Julia packages},
+provides functions to run a few automatable checks for Julia packages.")
+    (license license:expat)))
+
 (define-public julia-benchmarktools
   (package
     (name "julia-benchmarktools")
-    (version "0.5.0")
+    (version "0.7.0")
     (source
      (origin
        (method git-fetch)
@@ -109,7 +133,7 @@ be GPU compatible without throwing away the wrapper.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0nsx21m3i5h22lkgyrmfj6r085va6ag40khwssqs8y7l0wz98lvp"))))
+        (base32 "000izw9pj7cbh9r35nnwg2ijkb9dpfd5nkl2889b8b2dpsh4fi63"))))
     (build-system julia-build-system)
     (propagated-inputs `(("julia-json" ,julia-json)))
     (home-page "https://github.com/JuliaCI/BenchmarkTools.jl")
@@ -174,7 +198,7 @@ methods.")
 (define-public julia-chainrules
   (package
     (name "julia-chainrules")
-    (version "0.7.54")
+    (version "0.7.65")
     (source
      (origin
        (method git-fetch)
@@ -183,7 +207,7 @@ methods.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1x4w71v8cw0vpba47h8f5xq4gyjfxbcvayzf7m41yg8gf49s9pkf"))))
+        (base32 "0697m5y5ryqnhw6cbk90rlydrxan2b308pzbl86qz4mzhypyk7yi"))))
     (build-system julia-build-system)
     (inputs                             ;required for test
      `(("julia-chainrulestestutils" ,julia-chainrulestestutils)
@@ -205,7 +229,7 @@ execute forward-, reverse-, and mixed-mode primitives.")
 (define-public julia-chainrulescore
   (package
     (name "julia-chainrulescore")
-    (version "0.9.29")
+    (version "0.9.43")
     (source
      (origin
        (method git-fetch)
@@ -214,7 +238,7 @@ execute forward-, reverse-, and mixed-mode primitives.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1k0iayw39n1ikkkhvyi4498vsnzc94skqs41gnd15632gxjfvki4"))))
+        (base32 "12by6zcxv0ivpf0f22gc9i067360syda9m2lxk0rhypxq4smj8w4"))))
     (build-system julia-build-system)
     (inputs                             ;required for tests
      `(("julia-benchmarktools" ,julia-benchmarktools)
@@ -230,7 +254,7 @@ sensitivities for functions without the need to depend on ChainRules itself.")
 (define-public julia-chainrulestestutils
   (package
     (name "julia-chainrulestestutils")
-    (version "0.6.4")
+    (version "0.6.11")
     (source
      (origin
        (method git-fetch)
@@ -239,7 +263,7 @@ sensitivities for functions without the need to depend on ChainRules itself.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1pzs947adnb3cx1qd0cxp2fidk9szz0zsqbas90z1lhydykkvkil"))))
+        (base32 "1nx2fzxhh3q8znnjfjbgf7776scszixmigwna3hvmdfixsk58x0i"))))
     (build-system julia-build-system)
     (propagated-inputs
      `(("julia-chainrulescore" ,julia-chainrulescore)
@@ -262,7 +286,7 @@ dependencies, while keeping @code{ChainRulesCore.jl} as light-weight as possible
 (define-public julia-colors
   (package
     (name "julia-colors")
-    (version "0.12.6")
+    (version "0.12.8")
     (source
      (origin
        (method git-fetch)
@@ -271,7 +295,7 @@ dependencies, while keeping @code{ChainRulesCore.jl} as light-weight as possible
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "156zsszgwh6bmznsan0zyha6yvcxw3c5mvc5vr2qfsgxbyh36ln6"))))
+        (base32 "0kx3hq7rf8p5zx6ly9k5j90zijmc7yrwmy96cgkl2ibdfbnhmya3"))))
     (build-system julia-build-system)
     (propagated-inputs
      `(("julia-colortypes" ,julia-colortypes)
@@ -288,7 +312,7 @@ color scales for graphics.")
 (define-public julia-colortypes
   (package
     (name "julia-colortypes")
-    (version "0.10.12")
+    (version "0.11.0")
     (source
      (origin
        (method git-fetch)
@@ -297,7 +321,7 @@ color scales for graphics.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "176hr3qbz7lncmykks2qaj3cqisnzim7wi5jwsca9ld26wwyvyqq"))))
+        (base32 "0n7h70caqv7yd0khjhn90iax62r73mcif8qzkwj5b4q46li1r8ih"))))
     (arguments
      '(#:tests? #f))                    ;require Documenter, not packaged yet
     (build-system julia-build-system)
@@ -336,7 +360,7 @@ common subexpression elimination.")
 (define-public julia-compat
   (package
     (name "julia-compat")
-    (version "3.25.0")
+    (version "3.29.0")
     (source
      (origin
        (method git-fetch)
@@ -345,7 +369,7 @@ common subexpression elimination.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1m4r5i8mq29xjp3mllh6047n5a78sdyld57m15anrnsjgaapcgby"))))
+        (base32 "00wn28kmzn61fpj3i8f6p987927h9315j9pzzvjpfk5c0ppd1p6q"))))
     (build-system julia-build-system)
     (home-page "https://github.com/JuliaLang/Compat.jl")
     (synopsis "Compatibility across Julia versions")
@@ -400,25 +424,46 @@ build tree Yggdrasil.")
     (license license:expat)))
 
 (define-public julia-constructionbase
-  (let ((commit "de77e2865b554f9b078fd8c35b593cce0554ae02"))
-    (package
-      (name "julia-constructionbase")
-      (version "1.1.0")                 ;tag not created upstream
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/JuliaObjects/ConstructionBase.jl")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "1y79sfj0rds1skl9j16p9161hwa9khm0xc2m4hgjcbh5zzvyr57v"))))
-      (build-system julia-build-system)
-      (home-page "https://juliaobjects.github.io/ConstructionBase.jl/dev/")
-      (synopsis "Primitive functions for construction of objects")
-      (description "This very lightweight package provides primitive functions
+  (package
+    (name "julia-constructionbase")
+    (version "1.2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaObjects/ConstructionBase.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1bmx5c5z9jxmyf2xjwwl5lhs9czmwq4isl0bkr78fak4j8brqr4n"))))
+    (build-system julia-build-system)
+    (home-page "https://juliaobjects.github.io/ConstructionBase.jl/dev/")
+    (synopsis "Primitive functions for construction of objects")
+    (description "This very lightweight package provides primitive functions
 for construction of objects.")
-      (license license:expat))))
+    (license license:expat)))
+
+(define-public julia-crayons
+  (package
+    (name "julia-crayons")
+    (version "4.0.4")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/KristofferC/Crayons.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0v3zhjlnb2914bxcj4myl8pgb7m31p77aj2k1bckmqs96jdph10z"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/KristofferC/Crayons.jl")
+    (synopsis "Colored and styled strings for terminals")
+    (description "Crayons is a package that makes it simple to write strings in
+different colors and styles to terminals.  It supports the 16 system colors,
+both the 256 color and 24 bit true color extensions, and the different text
+styles available to terminals.")
+    (license license:expat)))
 
 (define-public julia-datastructures
   (package
@@ -442,6 +487,29 @@ for construction of objects.")
     (description "This package implements a variety of data structures,
 including, @code{CircularBuffer}, @code{Queue}, @code{Stack},
 @code{Accumulators}, @code{LinkedLists}, @code{SortedDicts} and many others.")
+    (license license:expat)))
+
+(define-public julia-docstringextensions
+  (package
+    (name "julia-docstringextensions")
+    (version "0.8.4")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaDocs/DocStringExtensions.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1fazv87f0j6hw03frx0gqgq9qpjbddqgccm9998a3329wrrs6gwd"))))
+    (build-system julia-build-system)
+    (home-page "https://juliadocs.github.io/DocStringExtensions.jl/latest/")
+    (synopsis "Extensions for Julia's docsystem")
+    (description "This package provides a collection of useful extensions for
+Julia's built-in docsystem.  These are features that are not yet mature enough
+to be considered for inclusion in Base, or that have sufficiently niche use
+cases that including them with the default Julia installation is not seen as
+valuable enough at this time.")
     (license license:expat)))
 
 (define-public julia-diffresults
@@ -558,7 +626,7 @@ following types: @code{Eye}, @code{Fill}, @code{Ones}, @code{Zeros},
 (define-public julia-finitedifferences
   (package
     (name "julia-finitedifferences")
-    (version "0.12.2")
+    (version "0.12.6")
     (source
      (origin
        (method git-fetch)
@@ -567,7 +635,7 @@ following types: @code{Eye}, @code{Fill}, @code{Ones}, @code{Zeros},
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0dcx34026xdpfmbjls3mrknl8ww62kxxfr77kfihbazsfg2gp5b4"))))
+        (base32 "0kg8snnspn48i2rr99mwy0an3hzlgrnic7xnh3whj2ws2znw46hr"))))
     (build-system julia-build-system)
     (inputs
      `(("julia-benchmarktools" ,julia-benchmarktools)))
@@ -619,7 +687,7 @@ digits (bits) after the decimal (radix) point.")
 (define-public julia-forwarddiff
   (package
     (name "julia-forwarddiff")
-    (version "0.10.17")
+    (version "0.10.18")
     (source
      (origin
        (method git-fetch)
@@ -628,7 +696,7 @@ digits (bits) after the decimal (radix) point.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "17xaz4v0zr46p7w873w1fwf31phdnhr0vbdym9yr4flmpzi528jw"))))
+        (base32 "1vb46x8mcn61g1l14qrk22c043khg2ml4q1ci7h4k2v34f2ak5fs"))))
     (build-system julia-build-system)
     (inputs                             ;required for tests
      `(("julia-calculus" ,julia-calculus)
@@ -768,6 +836,69 @@ library for parsing HTML.")
 implementing both a client and a server.")
     (license license:expat)))
 
+(define-public julia-ifelse
+  (package
+    (name "julia-ifelse")
+    (version "0.1.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/sciml/ifelse.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1wrw842r8708fryf2ihp9mkmdrg27saa9nix2c31vs995k2fgr9w"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/sciml/ifelse.jl")
+    (synopsis "Function form of the if-else conditional statement")
+    (description "This package provides a convenient function form of the
+conditional ifelse.  It is similar to @code{Core.ifelse} but it is extendable.")
+    (license license:expat)))
+
+(define-public julia-imagemagick-jll
+  (package
+    (name "julia-imagemagick-jll")
+    (version "6.9.10-12+3")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaBinaryWrappers/ImageMagick_jll.jl")
+               (commit (string-append "ImageMagick-v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "1a0vnnjl52yqi7jgpr0dmx5ah5nlpylv5hc8aw2l89b9f36ff8jg"))))
+    (build-system julia-build-system)
+    (arguments
+     '(#:tests? #f ; no runtests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'override-binary-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (map
+               (lambda (wrapper)
+                 (substitute* wrapper
+                   ;; Make sure we match the current library.
+                   (("libMagickWand-6.Q16.so.6") "libMagickWand-6.Q16.so.7")
+                   (("artifact\"ImageMagick\"")
+                    (string-append "\"" (assoc-ref inputs "imagemagick") "\""))))
+               ;; There's a Julia file for each platform, override them all
+               (find-files "src/wrappers/" "\\.jl$")))))))
+    (propagated-inputs
+     `(("julia-jllwrappers" ,julia-jllwrappers)
+       ("julia-jpegturbo-jll" ,julia-jpegturbo-jll)
+       ("julia-libpng-jll" ,julia-libpng-jll)
+       ("julia-libtiff-jll" ,julia-libtiff-jll)
+       ("julia-zlib-jll" ,julia-zlib-jll)))
+    (inputs
+     `(("imagemagick" ,imagemagick)))
+    (home-page "https://github.com/JuliaBinaryWrappers/ImageMagick_jll.jl")
+    (synopsis "Imagemagick library wrappers")
+    (description "This package provides a wrapper for Imagemagick.")
+    (license license:expat)))
+
 (define-public julia-inifile
   (package
     (name "julia-inifile")
@@ -786,6 +917,27 @@ implementing both a client and a server.")
     (synopsis "Reading Windows-style INI files")
     (description "This is a Julia package that defines an IniFile type that
 interfaces with @file{.ini} files.")
+    (license license:expat)))
+
+(define-public julia-iocapture
+  (package
+    (name "julia-iocapture")
+    (version "0.2.1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaDocs/IOCapture.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0ajlfh8f1g23bx5f8h70nrgr0zfwxaqnpxlka8l4qhjmnfqxl43a"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/JuliaDocs/IOCapture.jl")
+    (synopsis "Capture standard output and error streams")
+    (description "This package provides the @code{IOCapture.capture(f)}
+function, which captures the standard output and standard error, and returns it
+as a string together with the return value.")
     (license license:expat)))
 
 (define-public julia-irtools
@@ -817,7 +969,7 @@ Cassette.")
 (define-public julia-jllwrappers
   (package
     (name "julia-jllwrappers")
-    (version "1.2.0")
+    (version "1.3.0")
     (source
      (origin
        (method git-fetch)
@@ -826,7 +978,7 @@ Cassette.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1sj3mi2dcc13apqfpy401wic5n0pgbck1p98b2g3zw0mln9s83m4"))))
+        (base32 "0v7xhsv9z16d657yp47vgc86ggc01i1wigqh3n0d7i1s84z7xa0h"))))
     (arguments
      ;; Wants to download stuff
      '(#:tests? #f
@@ -857,6 +1009,43 @@ to generate themselves.  It is not intended to be used by users, but rather is
 used in autogenerated packages via @code{BinaryBuilder.jl}.")
     (license license:expat)))
 
+(define-public julia-jpegturbo-jll
+  (package
+    (name "julia-jpegturbo-jll")
+    (version "2.0.1+2")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaBinaryWrappers/JpegTurbo_jll.jl")
+               (commit (string-append "JpegTurbo-v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "1xp1x0hrj337bgwwffwpyq7xg031j2a38fim29lixqa0a0y80x6y"))))
+    (build-system julia-build-system)
+    (arguments
+     '(#:tests? #f  ; no runtests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'override-binary-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (map
+               (lambda (wrapper)
+                 (substitute* wrapper
+                   (("artifact\"JpegTurbo\"")
+                    (string-append "\"" (assoc-ref inputs "libjpeg-turbo") "\""))))
+               ;; There's a Julia file for each platform, override them all
+               (find-files "src/wrappers/" "\\.jl$")))))))
+    (inputs
+     `(("libjpeg-turbo" ,libjpeg-turbo)))
+    (propagated-inputs
+     `(("julia-jllwrappers" ,julia-jllwrappers)))
+    (home-page "https://github.com/JuliaBinaryWrappers/JpegTurbo_jll.jl")
+    (synopsis "Libjpeg-turbo library wrappers")
+    (description "This package provides a wrapper for the libjpeg-turbo library.")
+    (license license:expat)))
+
 (define-public julia-json
   (package
     (name "julia-json")
@@ -880,6 +1069,84 @@ used in autogenerated packages via @code{BinaryBuilder.jl}.")
     (synopsis "JSON parsing and printing library for Julia")
     (description "@code{JSON.jl} is a pure Julia module which supports parsing
 and printing JSON documents.")
+    (license license:expat)))
+
+(define-public julia-libpng-jll
+  (package
+    (name "julia-libpng-jll")
+    (version "1.6.37+5")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaBinaryWrappers/LibPNG_jll.jl")
+               (commit (string-append "libpng-v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "10azxv26j8r193dg9i9x7ajm3frhwbhj8zzi40fj59fxm81xz6dx"))))
+    (build-system julia-build-system)
+    (arguments
+     '(#:tests? #f  ; no runtests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'override-binary-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (map
+               (lambda (wrapper)
+                 (substitute* wrapper
+                   (("artifact\"libpng\"")
+                    (string-append "\"" (assoc-ref inputs "libpng") "\""))))
+               ;; There's a Julia file for each platform, override them all
+               (find-files "src/wrappers/" "\\.jl$")))))))
+    (inputs
+     `(("libpng" ,libpng)))
+    (propagated-inputs
+     `(("julia-jllwrappers" ,julia-jllwrappers)
+       ("julia-zlib-jll" ,julia-zlib-jll)))
+    (home-page "https://github.com/JuliaBinaryWrappers/LibPNG_jll.jl")
+    (synopsis "Libpng library wrappers")
+    (description "This package provides a wrapper for the libpng library.")
+    (license license:expat)))
+
+(define-public julia-libtiff-jll
+  (package
+    (name "julia-libtiff-jll")
+    (version "4.1.0+1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaBinaryWrappers/Libtiff_jll.jl")
+               (commit (string-append "Libtiff-v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "07zzhmwmh2g4645ghv76z40hza2ghlb7sw15b1pii7f9kfcsgf45"))))
+    (build-system julia-build-system)
+    (arguments
+     '(#:tests? #f  ; no runtests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'override-binary-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (map
+               (lambda (wrapper)
+                 (substitute* wrapper
+                   (("artifact\"Libtiff\"")
+                    (string-append "\"" (assoc-ref inputs "libtiff") "\""))))
+               ;; There's a Julia file for each platform, override them all
+               (find-files "src/wrappers/" "\\.jl$")))))))
+    (inputs
+     `(("libtiff" ,libtiff)))
+    (propagated-inputs
+     `(("julia-jllwrappers" ,julia-jllwrappers)
+       ("julia-jpegturbo-jll" ,julia-jpegturbo-jll)
+       ("julia-zlib-jll" ,julia-zlib-jll)
+       ("julia-zstd-jll" ,julia-zstd-jll)))
+    (home-page "https://github.com/JuliaBinaryWrappers/Libtiff_jll.jl")
+    (synopsis "Libtiff library wrappers")
+    (description "This package provides a wrapper for libtiff")
     (license license:expat)))
 
 (define-public julia-macrotools
@@ -973,6 +1240,26 @@ TLS} and cryptography C library for Julia.")
 wrappers.")
     (license license:expat)))
 
+(define-public julia-msgpack
+  (package
+    (name "julia-msgpack")
+    (version "1.1.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaIO/MsgPack.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1layiqjf9si38pfdcszppgcy4zbfqgld7jlw8x645sm9b17b19fg"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/JuliaIO/MsgPack.jl")
+    (synopsis "Julia MsgPack implementation")
+    (description "@code{MsgPack.jl} is a MessagePack implementation in pure
+Julia, with type-driven, overloadable packing/unpacking functionality.")
+    (license license:expat)))
+
 (define-public julia-nanmath
   (package
     (name "julia-nanmath")
@@ -996,7 +1283,7 @@ wrappers.")
 (define-public julia-orderedcollections
   (package
     (name "julia-orderedcollections")
-    (version "1.3.2")
+    (version "1.4.1")
     (source
      (origin
        (method git-fetch)
@@ -1005,7 +1292,7 @@ wrappers.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0sfip1ixghsz91q2s7d62rgzw3gppg42fg6bccxlplqa3hfmbycf"))))
+        (base32 "0jaxcmvkp8zpqrz101yikdigz90s70i7in5wn8kybwzf0na3lhwf"))))
     (build-system julia-build-system)
     (home-page "https://github.com/JuliaCollections/OrderedCollections.jl")
     (synopsis "Associative containers that preserve insertion order")
@@ -1018,7 +1305,7 @@ which they were added to the collection.")
 (define-public julia-offsetarrays
   (package
     (name "julia-offsetarrays")
-    (version "1.5.2")
+    (version "1.8.0")
     (source
      (origin
        (method git-fetch)
@@ -1027,7 +1314,7 @@ which they were added to the collection.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1y3fnssw2hzyghrk6jfcxslab0f8sjkjszh482snfq4k6mkrhy77"))))
+        (base32 "0s02175pb2pkwg87g7vva2hsrh2ksj9ariw9ccd7axbdm2vd2zcs"))))
     (build-system julia-build-system)
     (propagated-inputs
      `(("julia-adapt" ,julia-adapt)))
@@ -1086,10 +1373,35 @@ originating @code{build_tarballs.jl} script can be found on the community
 build tree Yggdrasil.")
     (license license:expat))))
 
+(define-public julia-parameters
+  (package
+    (name "julia-parameters")
+    (version "0.12.2")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/mauro3/Parameters.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0b8lawi7kcws4axfsdf023gyxca15irl648ciyi1kw3wghz3pfi2"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-orderedcollections" ,julia-orderedcollections)
+       ("julia-unpack" ,julia-unpack)))
+    (home-page "https://github.com/mauro3/Parameters.jl")
+    (synopsis "Numerical-model parameter helpers")
+    (description "This package contains types with default field values, keyword
+constructors and (un-)pack macros.  Keyword functions can be slow in Julia,
+however, the normal positional constructor is also provided and could be used in
+performance critical code.")
+    (license license:expat)))
+
 (define-public julia-parsers
   (package
     (name "julia-parsers")
-    (version "1.0.15")
+    (version "1.1.0")
     (source
      (origin
        (method git-fetch)
@@ -1098,12 +1410,60 @@ build tree Yggdrasil.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "16iffl6l28kspgqch48mhi1s8qhspr3cpqcwsph3rqi72lbfqygx"))))
+        (base32 "1gz3drd5334xrbx2ms33hiifkd0q1in4ywc92xvrkq3xgzdjqjdk"))))
     (build-system julia-build-system)
     (home-page "https://github.com/JuliaData/Parsers.jl")
     (synopsis "Fast parsing machinery for basic types in Julia")
     (description "@code{Parsers.jl} is a collection of type parsers and
 utilities for Julia.")
+    (license license:expat)))
+
+(define-public julia-pdmats
+  (package
+    (name "julia-pdmats")
+    (version "0.11.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaStats/PDMats.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1gyhfjmb0qlqgx2398b356cph25bnpjagcslckv41bzyf8pg3ybl"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/JuliaStats/PDMats.jl")
+    (synopsis
+     "Uniform Interface for positive definite matrices of various structures")
+    (description "PDMats.jl supports efficient computation on positive definite
+matrices of various structures.  In particular, it provides uniform interfaces
+to use positive definite matrices of various structures for writing generic
+algorithms, while ensuring that the most efficient implementation is used in
+actual computation.")
+    (license license:expat)))
+
+(define-public julia-recipesbase
+  (package
+    (name "julia-recipesbase")
+    (version "1.1.1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaPlots/RecipesBase.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1b6m5rz6wprj30rwvlxz4r1jv5gl0ay0f52kfmy2w7lqly7zhap5"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/JuliaPlots/RecipesBase.jl")
+    (synopsis "Define transformation recipes on user types")
+    (description "This package implements handy macros @code{@@recipe} and
+@code{@@series} which will define a custom transformation and attach attributes
+for user types.  Its design is an attempt to simplify and generalize the summary
+and display of types and data from external packages.  With this package it is
+possible to describe visualization routines that can be used as components in
+more complex visualizations.")
     (license license:expat)))
 
 (define-public julia-reexport
@@ -1178,6 +1538,62 @@ high-order accuracy, assuming that @code{f(x0+h)} has a Taylor series or some
 other power series in @code{h}.")
     (license license:expat)))
 
+(define-public julia-safetestsets
+  ;; The only release tag is the first commit in the repository.
+  (let ((commit "e553edc4c753344d38349304b9ff5483c3b8ff21")
+        (revision "1"))
+    (package
+      (name "julia-safetestsets")
+      (version (git-version "0.0.1" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/YingboMa/SafeTestsets.jl")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+           (base32 "1fb1dfdmiw2ggx60hf70954xlps0r48fcb3k3dvxynlz7ylphp96"))))
+      (build-system julia-build-system)
+      (arguments
+       `(#:julia-package-name "SafeTestsets"))
+      (native-inputs
+       `(("julia-staticarrays" ,julia-staticarrays)))
+      (home-page "https://github.com/YingboMa/SafeTestsets.jl")
+      (synopsis "Julia's testset in a module")
+      (description "This package contains the testset from Julia, packaged into
+a loadable module.")
+      (license license:expat))))
+
+(define-public julia-sortingalgorithms
+  (package
+    (name "julia-sortingalgorithms")
+    (version "1.0.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaCollections/SortingAlgorithms.jl")
+               ;; Tagging releases is hard:
+               ;; https://github.com/JuliaCollections/SortingAlgorithms.jl/issues/41#issuecomment-840587380
+               (commit "aa2b98d384ddd132aae0219e68fb63b92513cb35")))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "13zbx18psxrg4fvkqgp0m7g484vrama2xm6902bbls30801hgljg"))))
+    (build-system julia-build-system)
+    (arguments
+     `(#:tests? #f))    ; cycle with StatsBase.jl
+    (propagated-inputs
+     `(("julia-datastructures" ,julia-datastructures)))
+    ;(native-inputs
+    ; `(("julia-statsbase" ,julia-statsbase)))
+    (home-page "https://github.com/JuliaCollections/SortingAlgorithms.jl")
+    (synopsis "Extra sorting algorithms extending Julia's sorting API")
+    (description "The SortingAlgorithms package provides three sorting
+algorithms that can be used with Julia's standard sorting API: heapsort,
+timsort and radixsort.")
+    (license license:expat)))
+
 (define-public julia-specialfunctions
   (package
     (name "julia-specialfunctions")
@@ -1205,10 +1621,57 @@ cosine) integrals, eta, zeta, digamma, inverse digamma, trigamma, and
 polygamma functions.")
     (license license:expat)))
 
+(define-public julia-stablerngs
+  (package
+    (name "julia-stablerngs")
+    (version "1.0.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaRandom/StableRNGs.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1cw4wc38qbgmrrx0jjwjhynnarrzjkh0yyz242zj272brbci7p1r"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/JuliaRandom/StableRNGs.jl")
+    (synopsis "Julia RNG with stable streams")
+    (description "This package intends to provide a simple RNG with stable
+streams, suitable for tests in packages which need reproducible streams of
+random numbers across Julia versions.  Indeed, the Julia RNGs provided by
+default are documented to have non-stable streams (which for example enables
+some performance improvements).")
+    (license license:expat)))
+
+(define-public julia-static
+  (package
+    (name "julia-static")
+    (version "0.2.4")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/SciML/Static.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "01rbiysrkaca03gh55rc5zykkp63bhzaqgrxxj88lnisrbzmf0d2"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-ifelse" ,julia-ifelse)))
+    (native-inputs
+     `(("julia-aqua" ,julia-aqua)))
+    (home-page "https://github.com/SciML/Static.jl")
+    (synopsis "Static types useful for dispatch and generated functions")
+    (description "Static.jl defines a limited set of statically parameterized
+types and a common interface that is shared between them.")
+    (license license:expat)))
+
 (define-public julia-staticarrays
   (package
     (name "julia-staticarrays")
-    (version "1.0.1")
+    (version "1.2.0")
     (source
      (origin
        (method git-fetch)
@@ -1217,7 +1680,7 @@ polygamma functions.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "01z8bcqwpfkp8p1h1r36pr5cc3798y76zkas7g3206pcsdhvlkz1"))))
+        (base32 "0z4g1kk6gy514dyafb559gcp4264ffx6h28ffczdvkyk8gm9j0m7"))))
     (build-system julia-build-system)
     (inputs
      `(("julia-benchmarktools" ,julia-benchmarktools)))
@@ -1230,10 +1693,50 @@ statically sized arrays in Julia, using the abstract type
 linear algebra operations.")
     (license license:expat)))
 
+(define-public julia-suppressor
+  (package
+    (name "julia-suppressor")
+    (version "0.2.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaIO/Suppressor.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0v6pxvf8lzrqjc676snvlszh14ridl442g2h6syfjiy75pk7mdyc"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/JuliaIO/Suppressor.jl")
+    (synopsis "Capture stdout and sterr")
+    (description "Julia macros for suppressing and/or capturing output (stdout),
+warnings (stderr) or both streams at the same time.")
+    (license license:expat)))
+
+(define-public julia-unpack
+  (package
+    (name "julia-unpack")
+    (version "1.0.2")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/mauro3/UnPack.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "066v1px72zidnvhl0rczhh07rcfwvli0jx5nprrgyi1dvj3mps2a"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/mauro3/UnPack.jl")
+    (synopsis "Pack and Unpack macros for Julia")
+    (description "The @code{@@unpack} and @code{@@pack!} macros work to unpack
+types, modules, and dictionaries.")
+    (license license:expat)))
+
 (define-public julia-uris
   (package
     (name "julia-uris")
-    (version "1.2.0")
+    (version "1.3.0")
     (source
      (origin
        (method git-fetch)
@@ -1242,7 +1745,7 @@ linear algebra operations.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0fqyagsqks5za7m0czafr34m2xh5501f689k9cn5x3npajdnh2r3"))))
+        (base32 "0kp4hg3kknkm2smlcizqfd33l9x4vkahc2714gnbjp39fj285b92"))))
     (build-system julia-build-system)
     (arguments
      '(#:julia-package-name "URIs"      ;required to run tests
@@ -1267,7 +1770,7 @@ working with @acronym{URIs,Uniform Resource Identifiers}, as defined in RFC
 (define-public julia-unitful
   (package
     (name "julia-unitful")
-    (version "1.6.0")
+    (version "1.7.0")
     (source
      (origin
        (method git-fetch)
@@ -1276,7 +1779,7 @@ working with @acronym{URIs,Uniform Resource Identifiers}, as defined in RFC
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0g5bhlvay9yk11c5dqwbzmb3q7lzj0cq5zchyk39d59fkvvmxvq3"))))
+        (base32 "03nq2nc2mwiqg3z1gksfsnyd7dmsjsya5c2v1n5h0ab22vm59f0m"))))
     (build-system julia-build-system)
     (propagated-inputs
      `(("julia-constructionbase" ,julia-constructionbase)))
@@ -1284,6 +1787,107 @@ working with @acronym{URIs,Uniform Resource Identifiers}, as defined in RFC
     (synopsis "Physical units in Julia")
     (description "This package supports SI units and also many other unit
 system.")
+    (license license:expat)))
+
+(define-public julia-zipfile
+  (package
+    (name "julia-zipfile")
+    (version "0.9.3")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/fhs/ZipFile.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "15bm3ki5mb9nvqs2byznrryq0bilnjcvsfy3k05hxhk9vapilw7k"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-zlib-jll" ,julia-zlib-jll)))
+    (home-page "https://github.com/fhs/ZipFile.jl")
+    (synopsis "Read/Write ZIP archives in Julia")
+    (description "This module provides support for reading and writing ZIP
+archives in Julia.")
+    (license license:expat)))
+
+(define-public julia-zlib-jll
+  (package
+    (name "julia-zlib-jll")
+    (version "1.2.12+1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaBinaryWrappers/Zlib_jll.jl")
+               (commit (string-append "Zlib-v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "05ih0haqapkzr40swvq63cafnqlc4yp6yfa1wvdyq8v3n4kxhfqa"))))
+    (build-system julia-build-system)
+    (arguments
+     '(#:tests? #f  ; no runtests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'override-binary-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (map
+               (lambda (wrapper)
+                 (substitute* wrapper
+                   (("generate_wrapper_header.*")
+                    (string-append
+                      "generate_wrapper_header(\"Zlib\", \""
+                      (assoc-ref inputs "zlib") "\")\n"))))
+               ;; There's a Julia file for each platform, override them all
+               (find-files "src/wrappers/" "\\.jl$")))))))
+    (inputs
+     `(("zlib" ,zlib)))
+    (propagated-inputs
+     `(("julia-jllwrappers" ,julia-jllwrappers)))
+    (home-page "https://github.com/JuliaBinaryWrappers/Zlib_jll.jl")
+    (synopsis "Zlib library wrappers")
+    (description "This package provides a wrapper for Zlib.")
+    (license license:expat)))
+
+(define-public julia-zstd-jll
+  (package
+    (name "julia-zstd-jll")
+    (version "1.5.0+0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaBinaryWrappers/Zstd_jll.jl")
+               (commit (string-append "Zstd-v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "15g5wsvga4p9bjmx97xqwqdnfzfbwfl6c4a9iaphcncwgcrnw6y6"))))
+    (build-system julia-build-system)
+    (arguments
+     '(#:tests? #f  ; no runtests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'override-binary-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (map
+               (lambda (wrapper)
+                 (substitute* wrapper
+                   (("generate_wrapper_header.*")
+                    (string-append
+                      "generate_wrapper_header(\"Zstd\", \""
+                      (assoc-ref inputs "zstd:lib") "\")\n"))))
+               ;; There's a Julia file for each platform, override them all
+               (find-files "src/wrappers/" "\\.jl$")))))))
+    (inputs
+     `(("zstd:lib" ,zstd "lib")))
+    (propagated-inputs
+     `(("julia-jllwrappers" ,julia-jllwrappers)))
+    (home-page "https://github.com/JuliaBinaryWrappers/Zstd_jll.jl")
+    (synopsis "Zstd library wrappers")
+    (description "This package provides a wrapper for the zstd library.")
     (license license:expat)))
 
 (define-public julia-zygoterules
@@ -1311,7 +1915,7 @@ Zygote, without depending on Zygote itself.")
 (define-public julia-zygote
   (package
     (name "julia-zygote")
-    (version "0.6.4")
+    (version "0.6.10")
     (source
      (origin
        (method git-fetch)
@@ -1320,7 +1924,7 @@ Zygote, without depending on Zygote itself.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1h2ph0lsisbkh8y4xgwzgw9p5zi243q8zzp5gfh3zw9pzkx6a1rf"))))
+        (base32 "0qqjzhiqghj07mab24b0n0h4xfzq8r1s9hccrmx1lwjkkskhc5f9"))))
     (build-system julia-build-system)
     (arguments
      `(#:tests? #f))                    ;require CUDA, not packaged yet

@@ -1090,15 +1090,14 @@ compact configuration syntax.")
 (define-public rxvt-unicode
   (package
     (name "rxvt-unicode")
-    (version "9.22")
+    (version "9.26")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://dist.schmorp.de/rxvt-unicode/Attic/"
                                   name "-" version ".tar.bz2"))
-              (patches (search-patches "rxvt-unicode-escape-sequences.patch"))
               (sha256
                (base32
-                "1pddjn5ynblwfrdmskylrsxb9vfnk3w4jdnq2l8xn2pspkljhip9"))))
+                "12y9p32q0v7n7rhjla0j2g9d5rj2dmwk20c9yhlssaaxlawiccb4"))))
     (build-system gnu-build-system)
     (arguments
      ;; This sets the destination when installing the necessary terminal
@@ -1148,7 +1147,8 @@ compact configuration syntax.")
                #t))))))
     (inputs
      `(("libXft" ,libxft)
-       ("libX11" ,libx11)))
+       ("libX11" ,libx11)
+       ("libXt" ,libxt)))
     (native-inputs
      `(("ncurses" ,ncurses)         ;trigger the installation of terminfo data
        ("perl" ,perl)
@@ -2237,11 +2237,25 @@ binary to setuid-binaries:
        (sha256
         (base32 "0c4w87ipsw09aii34szj9p0xfy0m00wyjpll0gb0aqmwa60p0c5d"))))
     (build-system meson-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-file-names
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* (find-files "src" "\\.c$")
+               (("\"(cat|rm)\"" _ command)
+                (string-append "\"" (assoc-ref inputs "coreutils")
+                               "/bin/" command "\""))
+               (("\"xdg-mime\"")
+                (string-append "\"" (assoc-ref inputs "xdg-utils")
+                               "/bin/xdg-mime\""))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("wayland" ,wayland)
-       ("wayland-protocols" ,wayland-protocols)))
+     `(("coreutils" ,coreutils)
+       ("wayland" ,wayland)
+       ("wayland-protocols" ,wayland-protocols)
+       ("xdg-utils" ,xdg-utils)))
     (home-page "https://github.com/bugaevc/wl-clipboard")
     (synopsis "Command-line copy/paste utilities for Wayland")
     (description "Wl-clipboard is a set of command-line copy/paste utilities for

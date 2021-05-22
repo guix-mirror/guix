@@ -2628,7 +2628,7 @@ root's login shell, you'll need to @command{guix pull} separately.
 @end quotation
 
 Now, @pxref{Getting Started}, and
-join us on @code{#guix} on the Freenode IRC network or on
+join us on @code{#guix} on the Libera Chat IRC network or on
 @email{guix-devel@@gnu.org} to share your experience!
 
 
@@ -5915,7 +5915,7 @@ For example, to create a bundle containing Guile, Emacs, Geiser, and all
 their dependencies, you can run:
 
 @example
-$ guix pack guile emacs geiser
+$ guix pack guile emacs emacs-geiser
 @dots{}
 /gnu/store/@dots{}-pack.tar.gz
 @end example
@@ -5933,7 +5933,7 @@ find inconvenient.  To work around it, you can create, say, a
 @file{/opt/gnu/bin} symlink to the profile:
 
 @example
-guix pack -S /opt/gnu/bin=bin guile emacs geiser
+guix pack -S /opt/gnu/bin=bin guile emacs emacs-geiser
 @end example
 
 @noindent
@@ -5977,7 +5977,7 @@ Yet another option is to produce a SquashFS image with the following
 command:
 
 @example
-guix pack -f squashfs bash guile emacs geiser
+guix pack -f squashfs bash guile emacs emacs-geiser
 @end example
 
 @noindent
@@ -11845,7 +11845,7 @@ an upgrade.  More rebuilds might be required under some circumstances.
 @example
 $ guix refresh --list-dependent flex
 Building the following 120 packages would ensure 213 dependent packages are rebuilt:
-hop@@2.4.0 geiser@@0.4 notmuch@@0.18 mu@@0.9.9.5 cflow@@1.4 idutils@@4.6 @dots{}
+hop@@2.4.0 emacs-geiser@@0.13 notmuch@@0.18 mu@@0.9.9.5 cflow@@1.4 idutils@@4.6 @dots{}
 @end example
 
 The command above lists a set of packages that could be built to check
@@ -12712,6 +12712,16 @@ for as long as @var{ttl}.
 Additionally, when @option{--cache} is used, cached entries that have
 not been accessed for @var{ttl} and that no longer have a corresponding
 item in the store, may be deleted.
+
+@item --negative-ttl=@var{ttl}
+Similarly produce @code{Cache-Control} HTTP headers to advertise the
+time-to-live (TTL) of @emph{negative} lookups---missing store items, for
+which the HTTP 404 code is returned.  By default, no negative TTL is
+advertised.
+
+This parameter can help adjust server load and substitute latency by
+instructing cooperating clients to be more or less patient when a store
+item is missing.
 
 @item --cache-bypass-threshold=@var{size}
 When used in conjunction with @option{--cache}, store items smaller than
@@ -16686,6 +16696,99 @@ must be @code{'()} or @code{'("internal")}.
 
 @xref{Configuration file,,, inetutils, GNU Inetutils} for a more
 detailed discussion of each configuration field.
+@end deftp
+
+@cindex opendht, distributed hash table network service
+@cindex dhtproxy, for use with jami
+@defvr {Scheme Variable} opendht-service-type
+This is the type of the service running a @uref{https://opendht.net,
+OpenDHT} node, @command{dhtnode}.  The daemon can be used to host your
+own proxy service to the distributed hash table (DHT), for example to
+connect to with Jami, among other applications.
+
+@quotation Important
+When using the OpenDHT proxy server, the IP addresses it ``sees'' from
+the clients should be addresses reachable from other peers.  In practice
+this means that a publicly reachable address is best suited for a proxy
+server, outside of your private network.  For example, hosting the proxy
+server on a IPv4 private local network and exposing it via port
+forwarding could work for external peers, but peers local to the proxy
+would have their private addresses shared with the external peers,
+leading to connectivity problems.
+@end quotation
+
+The value of this service is a @code{opendht-configuration} object, as
+described below.
+@end defvr
+
+@deftp {Data Type} opendht-configuration
+This is the data type for the OpenDHT service configuration.
+
+@c The fields documentation has been auto-generated using the
+@c configuration->documentation procedure from
+@c (gnu services configuration).
+Available @code{opendht-configuration} fields are:
+
+@deftypevr {@code{opendht-configuration} parameter} package opendht
+The @code{opendht} package to use.
+
+@end deftypevr
+
+@deftypevr {@code{opendht-configuration} parameter} boolean peer-discovery?
+Whether to enable the multicast local peer discovery mechanism.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{opendht-configuration} parameter} boolean enable-logging?
+Whether to enable logging messages to syslog.  It is disabled by default
+as it is rather verbose.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{opendht-configuration} parameter} boolean debug?
+Whether to enable debug-level logging messages.  This has no effect if
+logging is disabled.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{opendht-configuration} parameter} maybe-string bootstrap-host
+The node host name that is used to make the first connection to the
+network.  A specific port value can be provided by appending the
+@code{:PORT} suffix.  By default, it uses the Jami bootstrap nodes, but
+any host can be specified here.  It's also possible to disable
+bootsrapping by setting this to the @code{'disabled} symbol.
+
+Defaults to @samp{"bootstrap.jami.net:4222"}.
+
+@end deftypevr
+
+@deftypevr {@code{opendht-configuration} parameter} maybe-number port
+The UDP port to bind to.  When set to @code{'disabled}, an available
+port is automatically selected.
+
+Defaults to @samp{4222}.
+
+@end deftypevr
+
+@deftypevr {@code{opendht-configuration} parameter} maybe-number proxy-server-port
+Spawn a proxy server listening on the specified port.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{opendht-configuration} parameter} maybe-number proxy-server-port-tls
+Spawn a proxy server listening to TLS connections on the specified port.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
 @end deftp
 
 @cindex Tor

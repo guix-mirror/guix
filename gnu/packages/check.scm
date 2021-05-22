@@ -424,39 +424,25 @@ a multi-paradigm automated test framework for C++ and Objective-C.")
 (define-public cmdtest
   (package
     (name "cmdtest")
-    (version "0.32")
+    ;; Use the latest commit (from 2019) in order to get Python 3 support.
+    (version "0.32-14-gcdfe14e")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "http://git.liw.fi/cmdtest/snapshot/"
-                                  name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "git://git.liw.fi/cmdtest/")
+                    (commit version)))
               (sha256
                (base32
-                "1jmfiyrrqmpvwdb273bkb8hjaf4rwx9njblx29pmr7giyahskwi5"))))
+                "1yhcwsqcpckkq5kw3h07k0xg6infyiyzq9ni3nqphrzxis7hxjf1"))))
     (build-system python-build-system)
-    (arguments
-     `(#:python ,python-2
-       #:phases
-       (modify-phases %standard-phases
-         ;; check phase needs to be run before the build phase. If not, the
-         ;; coverage test runner looks for tests for the built source files,
-         ;; and fails.
-         (delete 'check)
-         (add-before 'build 'check
-           (lambda _
-             (substitute* "yarn"
-               (("/bin/sh") (which "sh")))
-             ;; yarn uses python2-ttystatus to print messages.
-             ;; python2-ttystatus requires /dev/tty which is not present in
-             ;; the build environment. Hence assuming-failure test fails.
-             (delete-file "yarn.tests/assuming-failure.script")
-             (delete-file "yarn.tests/assuming-failure.stdout")
-             (invoke "python" "setup.py" "check"))))))
+    (arguments `(#:tests? #f))          ;requires Python 2!
     (native-inputs
-     `(("python2-coverage-test-runner" ,python2-coverage-test-runner)))
-    (propagated-inputs
-     `(("python2-cliapp" ,python2-cliapp)
-       ("python2-markdown" ,python2-markdown)
-       ("python2-ttystatus" ,python2-ttystatus)))
+     `(("python-coverage-test-runner" ,python-coverage-test-runner)
+       ("python" ,python)))
+    (inputs
+     `(("python-cliapp" ,python-cliapp)
+       ("python-markdown" ,python-markdown)
+       ("python-ttystatus" ,python-ttystatus)))
     (home-page "https://liw.fi/cmdtest/")
     (synopsis "Black box Unix program tester")
     (description
@@ -2096,9 +2082,9 @@ failures.")
 (define-public python2-pytest-flakes
   (package-with-python2 python-pytest-flakes))
 
-(define-public python2-coverage-test-runner
+(define-public python-coverage-test-runner
   (package
-    (name "python2-coverage-test-runner")
+    (name "python-coverage-test-runner")
     (version "1.15")
     (source
      (origin
@@ -2112,20 +2098,22 @@ failures.")
          "1kjjb9llckycnfxag8zcvqsn4z1s3dwyw6b1n0avxydihgf30rny"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
              (invoke "./testrun"))))))
     (propagated-inputs
-     `(("python2-coverage" ,python2-coverage)))
+     `(("python-coverage" ,python-coverage)))
     (home-page "https://liw.fi/coverage-test-runner/")
     (synopsis "Python module for running unit tests")
     (description "@code{CoverageTestRunner} is a python module for running
 unit tests and failing them if the unit test module does not exercise all
 statements in the module it tests.")
     (license license:gpl3+)))
+
+(define-public python2-coverage-test-runner
+  (package-with-python2 python-coverage-test-runner))
 
 (define-public python-pylint
   (package

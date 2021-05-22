@@ -3,7 +3,7 @@
 
 This project is a cooperative effort, and we need your help to make it
 grow!  Please get in touch with us on @email{guix-devel@@gnu.org} and
-@code{#guix} on the Freenode IRC network.  We welcome ideas, bug
+@code{#guix} on the Libera Chat IRC network.  We welcome ideas, bug
 reports, patches, and anything that may be helpful to the project.  We
 particularly welcome help on packaging (@pxref{Packaging Guidelines}).
 

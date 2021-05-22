@@ -45,6 +45,7 @@
 ;;; Copyright © 2021 Gerd Heber <gerd.heber@gmail.com>
 ;;; Copyright © 2021 Franck Pérignon <franck.perignon@univ-grenoble-alpes.fr>
 ;;; Copyright © 2021 Philip McGrath <philip@philipmcgrath.com>
+;;; Copyright © 2021 Paul A. Patience <paul@apatience.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -236,15 +237,15 @@ programming languages.")
 (define-public qhull
   (package
     (name "qhull")
-    (version "2019.1")
+    (version "2020.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.qhull.org/download/qhull-"
                                   (car (string-split version #\.))
-                                  "-src-7.3.2.tgz"))
+                                  "-src-8.0.2.tgz"))
               (sha256
                (base32
-                "1ys3vh3qq0v9lh452xb932vp63advds1pxk42lk7cc1niiar0y9b"))))
+                "0zlbhg0lb6j60188c2xhcrvviskr079552icjldqhy1jhgmxghmm"))))
     (build-system cmake-build-system)
     (synopsis "Calculate convex hulls and related structures")
     (description
@@ -773,7 +774,7 @@ halfspaces) or by their double description with both representations.")
 (define-public arpack-ng
   (package
     (name "arpack-ng")
-    (version "3.6.3")
+    (version "3.8.0")
     (home-page "https://github.com/opencollab/arpack-ng")
     (source (origin
               (method git-fetch)
@@ -781,14 +782,16 @@ halfspaces) or by their double description with both representations.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1wljl96yqxc9v8r49c37lscwkdp58kaacfb9p6s6nvpm31haax4y"))))
+                "0l7as5z6xvbxly8alam9s4kws70952qq35a6vkljzayi4b9gbklx"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
-       ("libtool" ,libtool)))
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
     (inputs
-     `(("lapack" ,lapack)
+     `(("eigen" ,eigen)
+       ("lapack" ,lapack)
        ("fortran" ,gfortran)))
     (synopsis "Fortran subroutines for solving eigenvalue problems")
     (description
@@ -801,16 +804,15 @@ large scale eigenvalue problems.")
   (package
     (inherit arpack-ng)
     (version "3.3.0")
-    (name (package-name arpack-ng))
-    (home-page (package-home-page arpack-ng))
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append home-page "/archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference (url (package-home-page arpack-ng))
+                           (commit version)))
+       (file-name (git-file-name (package-name arpack-ng) version))
        (sha256
         (base32
-         "1cz53wqzcf6czmcpfb3vb61xi0rn5bwhinczl65hpmbrglg82ndd"))))))
+         "00h6bjvxjq7bv0b8pwnc0gw33ns6brlqv00xx2rh3w9b5n205918"))))))
 
 (define-public arpack-ng-openmpi
   (package (inherit arpack-ng)
@@ -1172,7 +1174,7 @@ incompatible with HDF5.")
              ;; libhdf5.so.  We truncate the hashes to avoid
              ;; unnecessary store references to those compilers:
              (substitute* "src/libhdf5.settings"
-              (("(/gnu/store/)([a-Z0-9]*)" all prefix hash)
+              (("(/gnu/store/)([a-zA-Z0-9]*)" all prefix hash)
                (string-append prefix (string-take hash 10) "..."))
               ;; Don't record the build-time kernel version to make the
               ;; settings file reproducible.
@@ -6227,3 +6229,32 @@ and conversions, physical constants, symbolic calculations (including
 integrals and equations), arbitrary precision, uncertainty propagation,
 interval arithmetic, plotting.")
     (license license:gpl2+)))
+
+(define-public numdiff
+  (package
+    (name "numdiff")
+    (version "5.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://savannah/numdiff/numdiff-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1vzmjh8mhwwysn4x4m2vif7q2k8i19x8azq7pzmkwwj4g48lla47"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; There are no tests.
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'compress-documentation 'delete-precompressed-info-file
+           (lambda _
+             (delete-file (string-append (assoc-ref %outputs "out")
+                                         "/share/info/numdiff.info.gz"))
+             #t)))))
+    (home-page "https://nongnu.org/numdiff/")
+    (synopsis "Compare files with numeric fields")
+    (description
+     "Numdiff compares files line by line and field by field, ignoring small
+numeric differences and differences in numeric formats.")
+    (license license:gpl3+)))
