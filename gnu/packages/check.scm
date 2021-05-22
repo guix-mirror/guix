@@ -430,6 +430,7 @@ a multi-paradigm automated test framework for C++ and Objective-C.")
               (uri (git-reference
                     (url "git://git.liw.fi/cmdtest/")
                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "1yhcwsqcpckkq5kw3h07k0xg6infyiyzq9ni3nqphrzxis7hxjf1"))))
