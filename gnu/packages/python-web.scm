@@ -3926,7 +3926,7 @@ for Flask programs that are using @code{python-alembic}.")
 (define-public python-genshi
   (package
     (name "python-genshi")
-    (version "0.7.3")
+    (version "0.7.5")
     (source
      (origin
        (method git-fetch)
@@ -3935,7 +3935,9 @@ for Flask programs that are using @code{python-alembic}.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "04bw7nd4wyn8ixnhik57hny2xpjjpn80k5hp6691inix5gc6rxaf"))))
+        (base32 "04i0caywiwrgw09grz988n15qr9lr31d9n6a529p8v80cy1fv23c"))))
+    (propagated-inputs
+     `(("python-six" ,python-six)))
     (build-system python-build-system)
     (home-page "https://genshi.edgewall.org/")
     (synopsis "Toolkit for generation of output for the web")
