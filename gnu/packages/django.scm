@@ -961,7 +961,7 @@ name is purely coincidental.")
 (define-public python-django-statici18n
   (package
     (name "python-django-statici18n")
-    (version "1.9.0")
+    (version "2.1.0")
     (home-page "https://github.com/zyegfryed/django-statici18n")
     (source (origin
               (method git-fetch)
@@ -971,7 +971,7 @@ name is purely coincidental.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1p3myp2im6c87yc05alh91jyahqws5lcw3zzdsj4dh8lx9s9cgpf"))))
+                "0x0xvfqd40is2ks43d65awgqkx3wk10lvdim15scvbjhkh301b6v"))))
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
