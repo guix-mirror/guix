@@ -7244,6 +7244,23 @@ refers to the version of scrbook, scrreprt, scrartcl, scrlttr2 and
 typearea (which are the main parts of the bundle).")
     (license license:lppl1.3+)))
 
+(define-public texlive-generic-infwarerr
+  (package
+    (inherit (simple-texlive-package
+              "texlive-generic-infwarerr"
+              '("/tex/generic/infwarerr/")
+              (base32
+               "19nlrbfmqbkjrrx9x75s9nd6crg1lzimb2fr3hfblaivj6lx8p4r")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/infwarerr")
+    (synopsis "Information/warning/error macros")
+    (description
+     "This package provides a complete set of macros for information,
+warning and error messages.  Under LaTeX, the commands are wrappers for
+the corresponding LaTeX commands; under Plain TeX they are available as
+complete implementations.")
+    (license license:lppl1.3c+)))
+
 (define-public texlive-generic-listofitems
   (package
     (name "texlive-generic-listofitems")
