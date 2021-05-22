@@ -7317,6 +7317,21 @@ the corresponding LaTeX commands; under Plain TeX they are available as
 complete implementations.")
     (license license:lppl1.3c+)))
 
+(define-public texlive-generic-intcalc
+  (package
+    (inherit (simple-texlive-package
+              "texlive-generic-intcalc"
+              '("/tex/generic/intcalc/")
+              (base32
+               "0llrnayqwdqxi91yh7panbbiljina3bynv2hxhi6sssaw3pyd92l")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/intcalc")
+    (synopsis "Expandable arithmetic operations with integers")
+    (description
+     "This package provides expandable arithmetic operations with integers,
+using the e-TeX extension @code{\\numexpr} if it is available.")
+    (license license:lppl1.3c+)))
+
 (define-public texlive-generic-listofitems
   (package
     (name "texlive-generic-listofitems")
