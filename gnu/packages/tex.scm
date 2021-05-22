@@ -7409,6 +7409,21 @@ complete implementations.")
 using the e-TeX extension @code{\\numexpr} if it is available.")
     (license license:lppl1.3c+)))
 
+(define-public texlive-generic-kvdefinekeys
+  (package
+    (inherit (simple-texlive-package
+              "texlive-generic-kvdefinekeys"
+              '("/tex/generic/kvdefinekeys/")
+              (base32
+               "12nn74skhwiszbdhawqds31caz6d59a5pjmwar0r8lmk4f1jr3xh")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/kvdefinekeys")
+    (synopsis "Define keys for use in the @code{kvsetkeys} package")
+    (description
+     "This package provides the @code{\\kv@define@key} (analogous to
+keyval’s @code{\\define@key}, to define keys for use by @code{kvsetkeys}.")
+    (license license:lppl1.3c+)))
+
 (define-public texlive-generic-listofitems
   (package
     (name "texlive-generic-listofitems")
