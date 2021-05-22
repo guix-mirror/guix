@@ -438,7 +438,7 @@ a multi-paradigm automated test framework for C++ and Objective-C.")
     (native-inputs
      `(("python-coverage-test-runner" ,python-coverage-test-runner)
        ("python" ,python)))
-    (propagated-inputs
+    (inputs
      `(("python-cliapp" ,python-cliapp)
        ("python-markdown" ,python-markdown)
        ("python-ttystatus" ,python-ttystatus)))
