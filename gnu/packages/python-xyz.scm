@@ -16892,9 +16892,9 @@ as parsing the command line for options, and iterating over input files.")
 (define-public python2-cliapp
   (package-with-python2 python-cliapp))
 
-(define-public python2-ttystatus
+(define-public python-ttystatus
   (package
-    (name "python2-ttystatus")
+    (name "python-ttystatus")
     (version "0.38")
     (source
      (origin
@@ -16908,11 +16908,10 @@ as parsing the command line for options, and iterating over input files.")
        (file-name (git-file-name name version))))
     (build-system python-build-system)
     (native-inputs
-     `(("python2-coverage-test-runner" ,python2-coverage-test-runner)
-       ("python2-pep8" ,python2-pep8)))
+     `(("python-coverage-test-runner" ,python-coverage-test-runner)
+       ("python-pep8" ,python-pep8)))
     (arguments
-     `(#:python ,python-2
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          ;; check phase needs to be run before the build phase. If not,
          ;; coverage-test-runner looks for tests for the built source files,
@@ -16923,12 +16922,14 @@ as parsing the command line for options, and iterating over input files.")
     (home-page "https://liw.fi/ttystatus/")
     (synopsis "Python library for showing progress reporting and
 status updates on terminals")
-    (description "@code{python2-ttystatus} is a python library for
-showing progress reporting and status updates on terminals, for
-command line programs.  Output is automatically adapted to the width
-of the terminal: truncated if it does not fit, and resized if the
-terminal size changes.")
+    (description "@code{ttystatus} is a Python library for showing progress
+reporting and status updates on terminals, for command line programs.
+Output is automatically adapted to the width of the terminal: truncated
+if it does not fit, and resized if the terminal size changes.")
     (license license:gpl3+)))
+
+(define-public python2-ttystatus
+  (package-with-python2 python-ttystatus))
 
 (define-public python2-tracing
   (package
