@@ -53,8 +53,7 @@
 
 ;; These are the default inclusion/exclusion regexps for the install phase.
 (define %default-include '("^[^/]*\\.el$" "^[^/]*\\.info$" "^doc/.*\\.info$"))
-(define %default-exclude '("^\\.dir-locals\\.el$" "-pkg\\.el$"
-                           "^[^/]*tests?\\.el$"))
+(define %default-exclude '("^\\.dir-locals\\.el$" "^[^/]*tests?\\.el$"))
 
 (define gnu:unpack (assoc-ref gnu:%standard-phases 'unpack))
 
