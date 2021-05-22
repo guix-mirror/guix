@@ -27,6 +27,8 @@
 ;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@mgail.com>
 ;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
+;;; Copyright © 2021 Raghav Gururajan <rg@raghavgururajan.name>
+;;; Copyright © 2021 jgart <jgart@dismail.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -71,6 +73,29 @@
   #:use-module (gnu packages web)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
+
+(define-public go-github-com-rakyll-statik
+  (package
+    (name "go-github-com-rakyll-statik")
+    (version "0.1.7")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/rakyll/statik")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0y0kbzma55vmyqhyrw9ssgvxn6nw7d0zg72a7nz8vp1zly4hs6va"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/rakyll/statik"))
+    (home-page "https://github.com/rakyll/statik/")
+    (synopsis "Embed files into a Go executable")
+    (description "Statik allows you to embed a directory of static files into
+your Go binary to be later served from an http.FileSystem.")
+    (license license:asl2.0)))
 
 ;; According to https://golang.org/doc/install/gccgo, gccgo-4.8.2 includes a
 ;; complete go-1.1.2 implementation, gccgo-4.9 includes a complete go-1.2
