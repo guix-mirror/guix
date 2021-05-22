@@ -25,7 +25,7 @@
 ;;; Copyright © 2017, 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2015, 2017, 2018, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2019, 2021 Pierre Langlois <pierre.langlois@gmx.com>
@@ -2131,9 +2131,9 @@ failures.")
 (define-public python2-pytest-flakes
   (package-with-python2 python-pytest-flakes))
 
-(define-public python2-coverage-test-runner
+(define-public python-coverage-test-runner
   (package
-    (name "python2-coverage-test-runner")
+    (name "python-coverage-test-runner")
     (version "1.15")
     (source
      (origin
@@ -2147,20 +2147,22 @@ failures.")
          "1kjjb9llckycnfxag8zcvqsn4z1s3dwyw6b1n0avxydihgf30rny"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
              (invoke "./testrun"))))))
     (propagated-inputs
-     `(("python2-coverage" ,python2-coverage)))
+     `(("python-coverage" ,python-coverage)))
     (home-page "https://liw.fi/coverage-test-runner/")
     (synopsis "Python module for running unit tests")
     (description "@code{CoverageTestRunner} is a python module for running
 unit tests and failing them if the unit test module does not exercise all
 statements in the module it tests.")
     (license license:gpl3+)))
+
+(define-public python2-coverage-test-runner
+  (package-with-python2 python-coverage-test-runner))
 
 (define-public python-pylint
   (package
