@@ -7424,6 +7424,23 @@ using the e-TeX extension @code{\\numexpr} if it is available.")
 keyval’s @code{\\define@key}, to define keys for use by @code{kvsetkeys}.")
     (license license:lppl1.3c+)))
 
+(define-public texlive-generic-kvsetkeys
+  (package
+    (inherit (simple-texlive-package
+              "texlive-generic-kvsetkeys"
+              '("/tex/generic/kvsetkeys/")
+              (base32
+               "149vpmv4vms269dzq4sghlngg380sasvxnb3sx9rfs7d9j0finvi")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/kvsetkeys")
+    (synopsis "Key value parser with default handler support")
+    (description
+     "This package provides @code{\\kvsetkeys}, a variant of @code{\\setkeys}
+from the @code{keyval} package.  Users can specify a handler that deals with
+unknown options.  Active commas and equal signs may be used, and only one
+level of curly braces are removed from the values.")
+    (license license:lppl1.3c+)))
+
 (define-public texlive-generic-listofitems
   (package
     (name "texlive-generic-listofitems")
