@@ -925,6 +925,7 @@ to create devices with respective mappings for the ATARAID sets discovered.")
               (uri (string-append "https://github.com/storaged-project/"
                                   "libblockdev/releases/download/"
                                   version "-1/libblockdev-" version ".tar.gz"))
+              (patches (search-patches "libblockdev-glib-compat.patch"))
               (sha256
                (base32
                 "0s0nazkpzpn4an00qghjkk9n7gdm5a8dqfr5hfnlk5mk5lma8njm"))))
