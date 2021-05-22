@@ -7510,6 +7510,22 @@ a separate namespace and also makes them available for other formats such
 as plain TeX.")
     (license license:lppl1.3c+)))
 
+(define-public texlive-generic-pdfescape
+  (package
+    (inherit (simple-texlive-package
+              "texlive-generic-pdfescape"
+              '("/tex/generic/pdfescape/")
+              (base32
+               "1vbdjmm9bi9ngzz2z1b8jnf6nzf9xsaj5pvyswg13y4dr00mnz6n")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/pdfescape")
+    (synopsis "pdfTeX's escape features for plain TeX")
+    (description
+     "This package implements pdfTeX's escape features (@code{\\pdfescapehex},
+@code{\\pdfunescapehex}, @code{\\pdfescapename}, @code{\\pdfescapestring})
+using TeX or e-TeX.")
+    (license license:lppl1.3c+)))
+
 (define-public texlive-latex-readarray
   (package
     (name "texlive-latex-readarray")
