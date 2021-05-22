@@ -4257,6 +4257,26 @@ that are compatible with @code{natbib}: @code{plainnat}, @code{unsrtnat},
 designed from the start to be compatible with @code{natbib}.")
     (license license:lppl)))
 
+(define-public texlive-latex-pdftexcmds
+  (package
+    (inherit (simple-texlive-package
+              "texlive-latex-pdftexcmds"
+              '("/doc/latex/pdftexcmds/"
+                "/tex/latex/pdftexcmds/")
+              (base32
+               "0kqav8jri789698wxwr2ww8ssn74fvw3agrv677nz5qyq5zmix8h")
+              #:trivial? #t))
+    (propagated-inputs
+     `(("texlive-generic-iftex" ,texlive-generic-iftex)
+       ("texlive-generic-infwarerr" ,texlive-generic-infwarerr)
+       ("texlive-generic-ltxcmds" ,texlive-generic-ltxcmds)))
+    (home-page "https://www.ctan.org/pkg/pdftexcmds")
+    (synopsis "LuaTeX support for pdfTeX utility functions")
+    (description
+     "This package makes a number of utility functions from pdfTeX
+available for luaTeX by reimplementing them using Lua.")
+    (license license:lppl1.3c+)))
+
 (define-public texlive-latex-psfrag
   (package
     (name "texlive-latex-psfrag")
