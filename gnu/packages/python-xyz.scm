@@ -7554,9 +7554,6 @@ profile, launches a cluster and returns a view.  On program exit it shuts the
 cluster down and deletes the throwaway profile.")
     (license license:expat)))
 
-(define-public python2-ipython-cluster-helper
-  (package-with-python2 python-ipython-cluster-helper))
-
 (define-public python-traitlets
   (package
     (name "python-traitlets")
