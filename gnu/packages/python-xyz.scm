@@ -18605,25 +18605,26 @@ ignoring formatting changes.")
 (define-public python-tqdm
   (package
     (name "python-tqdm")
-    (version "4.43.0")
+    (version "4.60.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "tqdm" version))
          (sha256
            (base32
-             "093v4c2x5hpigv47zvyxl8wh10y2yd2gvz3l9vchn0zsp8hv2pzk"))))
+             "1bjpy4mjg6ryp0ijvqi77vgs76l5hh3zrv3x4vmcwxrlbswvvppb"))))
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
                   (replace 'check
-                    (lambda* (#:key inputs outputs #:allow-other-keys)
-                      (add-installed-pythonpath inputs outputs)
-                      ;; This invokation is taken from tox.ini.
-                      (invoke "nosetests" "--ignore-files=\"test_perf.py\""
-                              "-d" "-v" "tqdm/"))))))
+                    (lambda _
+                      (invoke "pytest" "-vv" "-k" "not perf"))))))
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-asyncio" ,python-pytest-asyncio)
+       ("python-pytest-timeout" ,python-pytest-timeout)
+       ("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-toml" ,python-toml)))
     (home-page "https://github.com/tqdm/tqdm")
     (synopsis "Fast, extensible progress meter")
     (description
