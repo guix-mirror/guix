@@ -5064,6 +5064,24 @@ the same place.  The package also has a range of techniques for labelling
 footnotes with symbols rather than numbers.")
     (license license:lppl1.3+)))
 
+(define-public texlive-latex-letltxmacro
+  (package
+    (inherit (simple-texlive-package
+              "texlive-latex-letltxmacro"
+              (list "/doc/latex/letltxmacro/"
+                    "/tex/latex/letltxmacro/")
+              (base32
+               "0yy1m1jiyxq2pssp0pidaa2swx6lyxw3zwpm2r8m0v2r3lvsyyxx")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/letltxmacro")
+    (synopsis "Let assignment for macros")
+    (description
+     "TeX’s @code{\\let} assignment does not work for LaTeX macros with
+optional arguments, or for macros that are defined as robust macros by
+@code{\\DeclareRobustCommand}.  This package defines @code{\\LetLtxMacro}
+that also takes care of the involved internal macros.")
+    (license license:lppl1.3c+)))
+
 (define-public texlive-latex-listings
   (package
     (name "texlive-latex-listings")
