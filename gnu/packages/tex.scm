@@ -2973,6 +2973,22 @@ documents.  It comprises the packages color, graphics, graphicx, trig, epsfig,
 keyval, and lscape.")
     (license license:lppl1.3c+)))
 
+(define-public texlive-latex-hycolor
+  (package
+    (inherit (simple-texlive-package
+              "texlive-latex-hycolor"
+              (list "/doc/latex/hycolor/README.md"
+                    "/tex/latex/hycolor/")
+              (base32
+               "026lfb4l7b3q8g6zc68siqandhb1x98cbycn7njknqva6s99aiqn")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/latex-graphics")
+    (synopsis "Color for hyperref and bookmark")
+    (description
+     "This package provides the code for the @code{color} option that is
+used by @code{hyperref} and @code{bookmark}.")
+    (license license:lppl1.3c+)))
+
 (define-public texlive-xcolor
   (let ((template (simple-texlive-package
                    "texlive-xcolor"
