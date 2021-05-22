@@ -7282,6 +7282,24 @@ refers to the version of scrbook, scrreprt, scrartcl, scrlttr2 and
 typearea (which are the main parts of the bundle).")
     (license license:lppl1.3+)))
 
+(define-public texlive-generic-atbegshi
+  (package
+    (inherit (simple-texlive-package
+              "texlive-generic-atbegshi"
+              '("/doc/latex/atbegshi/"
+                "/tex/generic/atbegshi/")
+              (base32
+               "184fr5kd3wl44ix63lwb3ll7dhiikkyw1czbnzrl4am4rx0zh4d8")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/atbegshi")
+    (synopsis "Execute commands at @code{\\shipout} time")
+    (description
+     "This package is a modern reimplementation of package @code{everyshi},
+providing various commands to be executed before a @code{\\shipout} command.
+It makes use of e-TeX’s facilities if they are available.  The package may
+be used either with LaTeX or with plain TeX.")
+    (license license:lppl1.3c+)))
+
 (define-public texlive-generic-infwarerr
   (package
     (inherit (simple-texlive-package
