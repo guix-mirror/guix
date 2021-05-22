@@ -26,6 +26,7 @@
 
 ;;; Code:
 (require 'seq)
+(declare-function package-load-descriptor "package" (pkg-dir))
 
 (defvar guix-emacs-autoloads-regexp
   (rx (* any) "-autoloads.el" (zero-or-one "c") string-end)
@@ -39,6 +40,12 @@ The files in the list do not have extensions (.el, .elc)."
                        (directory-files directory 'full-name
                                         guix-emacs-autoloads-regexp))))
 
+(defun guix-emacs--non-core-load-path ()
+  ;; Filter out core Elisp directories, which are already handled by Emacs.
+  (seq-filter (lambda (dir)
+                (string-match-p "/share/emacs/site-lisp" dir))
+              load-path))
+
 ;;;###autoload
 (defun guix-emacs-autoload-packages ()
   "Autoload Emacs packages found in EMACSLOADPATH.
@@ -46,17 +53,28 @@ The files in the list do not have extensions (.el, .elc)."
 'Autoload' means to load the 'autoloads' files matching
 `guix-emacs-autoloads-regexp'."
   (interactive)
-  (let* ((emacs-non-core-load-path-directories
-          ;; Filter out core Elisp directories, which are already autoloaded
-          ;; by Emacs.
-          (seq-filter (lambda (dir)
-                        (string-match-p "/share/emacs/site-lisp" dir))
-                      load-path))
-         (autoloads (mapcan #'guix-emacs-find-autoloads
-                            emacs-non-core-load-path-directories)))
+  (let ((autoloads (mapcan #'guix-emacs-find-autoloads
+                           (guix-emacs--non-core-load-path))))
     (mapc (lambda (f)
             (load f 'noerror))
           autoloads)))
+
+;;;###autoload
+(defun guix-emacs-load-package-descriptors ()
+  "Load descriptors for packages found in EMACSLOADPATH via subdirs.el."
+  (dolist (dir (guix-emacs--non-core-load-path))
+    (let ((subdirs-file (expand-file-name "subdirs.el" dir)))
+     (when (file-exists-p subdirs-file)
+      (with-temp-buffer
+        (insert-file-contents subdirs-file)
+        (goto-char (point-min))
+        (let ((subdirs (read (current-buffer))))
+          (and (equal (car-safe subdirs) 'normal-top-level-add-to-load-path)
+               (equal (car-safe (cadr subdirs)) 'list)
+               (dolist (subdir (cdadr subdirs))
+                 (let ((pkg-dir (expand-file-name subdir dir)))
+                   (when (file-directory-p pkg-dir)
+                     (package-load-descriptor pkg-dir)))))))))))
 
 (provide 'guix-emacs)
 

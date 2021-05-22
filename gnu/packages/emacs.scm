@@ -185,8 +185,11 @@
                (with-output-to-file (string-append lisp-dir "/site-start.el")
                  (lambda ()
                    (display
-                    (string-append "(when (require 'guix-emacs nil t)\n"
-                                   "  (guix-emacs-autoload-packages))\n"))))
+                    (string-append
+                     "(when (require 'guix-emacs nil t)\n"
+                     "  (guix-emacs-autoload-packages)\n"
+                     "  (advice-add 'package-load-all-descriptors"
+                     " :after #'guix-emacs-load-package-descriptors))"))))
                ;; Remove the extraneous subdirs.el file, as it causes Emacs to
                ;; add recursively all the the sub-directories of a profile's
                ;; share/emacs/site-lisp union when added to EMACSLOADPATH,
