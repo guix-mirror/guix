@@ -7526,6 +7526,26 @@ as plain TeX.")
 using TeX or e-TeX.")
     (license license:lppl1.3c+)))
 
+(define-public texlive-generic-uniquecounter
+  (package
+    (inherit (simple-texlive-package
+              "texlive-generic-uniquecounter"
+              '("/doc/latex/uniquecounter/"
+                "/tex/generic/uniquecounter/")
+              (base32
+               "1bjh8vwiqlkmjqndnh4xp116524x4m3hdcyq2s231jiqy8il8dcc")
+              #:trivial? #t))
+    (propagated-inputs
+     `(("texlive-generic-bigintcalc" ,texlive-generic-bigintcalc)
+       ("texlive-generic-infwarerr" ,texlive-generic-infwarerr)))
+    (home-page "https://www.ctan.org/pkg/uniquecounter")
+    (synopsis "Unlimited unique counter")
+    (description
+     "This package provides a kind of counter that provides unique number
+values.  Several counters can be created with different names.  The numeric
+values are not limited.")
+    (license license:lppl1.3c+)))
+
 (define-public texlive-latex-readarray
   (package
     (name "texlive-latex-readarray")
