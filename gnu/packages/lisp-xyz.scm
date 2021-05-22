@@ -1360,29 +1360,31 @@ utilities that make it even easier to manipulate text in Common Lisp.  It has
   (sbcl-package->ecl-package sbcl-cl-strings))
 
 (define-public sbcl-trivial-features
-  ;; No release since 2014.
-  (let ((commit "870d03de0ed44067963350936856e17ee725153e"))
-    (package
-      (name "sbcl-trivial-features")
-      (version (git-version "0.8" "1" commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/trivial-features/trivial-features")
-               (commit commit)))
-         (file-name (git-file-name "trivial-features" version))
-         (sha256
-          (base32 "14pcahr8r2j3idhyy216zyw8jnj1dnrx0qbkkbdqkvwzign1ah4j"))))
-      (build-system asdf-build-system/sbcl)
-      (arguments
-       '(#:asd-files '("trivial-features.asd")
-         #:tests? #f))
-      (home-page "https://cliki.net/trivial-features")
-      (synopsis "Ensures consistency of @code{*FEATURES*} in Common Lisp")
-      (description "Trivial-features ensures that @code{*FEATURES*} is
+  (package
+    (name "sbcl-trivial-features")
+    (version "1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/trivial-features/trivial-features")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name "trivial-features" version))
+       (sha256
+        (base32 "0jsqah1znzqilxnw5vannb083ayk0d7phkackqzwwqkyg5hpn6pq"))))
+    (build-system asdf-build-system/sbcl)
+    (arguments
+     '(#:asd-files '("trivial-features.asd")
+       ;; FIXME: Tests disabled because of a circular dependency between
+       ;; trivial-features and cffi.
+       #:tests? #f))
+    ;; (native-inputs
+    ;;  `(("cffi" ,sbcl-cffi)))
+    (home-page "https://cliki.net/trivial-features")
+    (synopsis "Ensures consistency of @code{*FEATURES*} in Common Lisp")
+    (description "Trivial-features ensures that @code{*FEATURES*} is
 consistent across multiple Common Lisp implementations.")
-      (license license:expat))))
+    (license license:expat)))
 
 (define-public cl-trivial-features
   (sbcl-package->cl-source-package sbcl-trivial-features))
