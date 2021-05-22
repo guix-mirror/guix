@@ -14851,6 +14851,29 @@ literate programming tools for exporting, weaving and tangling.")
 files using the major mode corresponding to each block.")
     (license license:gpl3+)))
 
+(define-public emacs-poly-noweb
+  (package
+    (name "emacs-poly-noweb")
+    (version "0.2.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/polymode/poly-noweb")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1jl5h4nf10xd2gdlsxi6h2n3z5zh26ffcixn68xfp5q4zl34zk8p"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-polymode" ,emacs-polymode)))
+    (home-page "https://github.com/polymode/poly-noweb")
+    (synopsis "Polymode for noweb")
+    (description
+     "This package provides @code{poly-noweb-mode}, a polymode for noweb
+files.")
+    (license license:gpl3+)))
+
 (define-public emacs-powershell
   ;; Tagged branch 0.1 is outdated (2015).
   (let ((revision "0")
