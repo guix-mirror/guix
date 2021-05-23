@@ -3,6 +3,7 @@
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2021 Solene Rapenne <solene@perso.pw>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -48,6 +49,8 @@
             wireguard-peer-name
             wireguard-peer-endpoint
             wireguard-peer-allowed-ips
+            wireguard-peer-public-key
+            wireguard-peer-keep-alive
 
             wireguard-configuration
             wireguard-configuration?
@@ -526,7 +529,6 @@ is truncated and rewritten every minute.")
      (openvpn-remote-configuration ,openvpn-remote-configuration-fields))
    'openvpn-client-configuration))
 
-
 ;;;
 ;;; Wireguard.
 ;;;
