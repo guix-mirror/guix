@@ -74,6 +74,30 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
+(define-public go-github-com-sevlyar-go-daemon
+  (package
+    (name "go-github-com-sevlyar-go-daemon")
+    (version "0.1.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/sevlyar/go-daemon")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1y3gnxaifykcjcbzx91lz9bc93b95w3xj4rjxjbii26pm3j7gqyk"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/sevlyar/go-daemon"))
+    (propagated-inputs
+     `(("go-golang-org-x-sys" ,go-golang-org-x-sys)))
+    (home-page "https://github.com/sevlyar/go-daemon")
+    (synopsis "Library for writing system daemons")
+    (description "Go-Daemon is a library for writing system daemons in Go.")
+    (license license:expat)))
+
 (define-public go-github-com-keybase-go-ps
   (let ((commit "91aafc93ba19d1988cff338c1929d35b6c6f5b50")
         (revision "0"))
