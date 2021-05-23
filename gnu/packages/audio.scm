@@ -5173,7 +5173,11 @@ while still staying in time.")
                                   version "/butt-" version ".tar.gz"))
               (sha256
                (base32
-                "1dfspdh3f18lpp7asxpj63b9zfpvazi7shgrdacg17gd42ycayq5"))))
+                "1dfspdh3f18lpp7asxpj63b9zfpvazi7shgrdacg17gd42ycayq5"))
+              (modules '((guix build utils)))
+              (snippet
+               '(substitute* "src/butt.cpp"
+                  ((".*zica.*") "")))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
