@@ -4314,7 +4314,7 @@ representations.")
 (define-public cava
   (package
     (name "cava")
-    (version "0.7.3")
+    (version "0.7.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4323,7 +4323,7 @@ representations.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "04j5hb29hivcbk542sfsx9m57dbnj2s6qpvy9fs488zvgjbgxrai"))))
+                "1mziklmqifhnb4kg9ia2r56r8wjn6xp40bkpf484hsgqvnrccl86"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
