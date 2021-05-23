@@ -4613,7 +4613,7 @@ set.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/LLNL/hypre")
+             (url "https://github.com/hypre-space/hypre")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -4699,7 +4699,8 @@ set.")
                            '("HYPRE_usr_manual"
                              "HYPRE_ref_manual")))
                #t))))))
-    (home-page "http://www.llnl.gov/casc/hypre/")
+    (home-page "https://computing.llnl.gov/projects\
+/hypre-scalable-linear-solvers-multigrid-methods")
     (synopsis "Library of solvers and preconditioners for linear equations")
     (description
      "HYPRE is a software library of high performance preconditioners and
