@@ -74,6 +74,29 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
+(define-public go-github-com-dchest-siphash
+  (package
+    (name "go-github-com-dchest-siphash")
+    (version "1.2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/dchest/siphash")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "08s076y7vmjqnq7jz0762hkm896r6r31v8b31a3gy0n8rfa01k8k"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/dchest/siphash"))
+    (home-page "https://github.com/dchest/siphash")
+    (synopsis "Go library for pseudorandom functions")
+    (description "SipHash is a family of pseudorandom functions (PRFs) optimized
+for speed on short messages.")
+    (license license:cc0)))
+
 (define-public go-github-com-rakyll-statik
   (package
     (name "go-github-com-rakyll-statik")
