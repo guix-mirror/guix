@@ -16976,3 +16976,52 @@ combinators in Common Lisp, similar in concept to Haskell Parsec system.")
 
 (define-public cl-parser-combinators
   (sbcl-package->cl-source-package sbcl-parser-combinators))
+
+(define-public sbcl-cl-locale
+  (let ((commit "0a36cc0dcf5e0a8c8bf97869cd6199980ca25eec")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-locale")
+      (version (git-version "0.1.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/fukamachi/cl-locale")
+               (commit commit)))
+         (file-name (git-file-name "cl-locale" version))
+         (sha256
+          (base32 "1rhannhpsw1yg1fpflam483a3w9qb1izgyvmnmiddv3dn4qsmn9p"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       ;; FIXME: (Sharlatan-20210523T190658+0100): All tests passed ok but
+       ;; successfully failed in the end:
+       ;;
+       ;; Summary:
+       ;;   All 1 file passed.
+       ;; Unhandled ASDF/FIND-COMPONENT:MISSING-DEPENDENCY
+       ;; in thread #<SB-THREAD:THREAD "main thread" RUNNING {100B6C8253}>:
+       ;;   Component CL-LOCALE-ASD::CL-LOCALE-TEST not found, required by
+       ;;   #<SYSTEM "cl-locale">
+       ;;
+       `(#:tests? #f))
+      (native-inputs
+       `(("prove" ,sbcl-prove)
+         ("flexi-streams" ,sbcl-flexi-streams)))
+      (inputs
+       `(("anaphora" ,sbcl-anaphora)
+         ("arnesi" ,sbcl-arnesi)
+         ("cl-annot" ,sbcl-cl-annot)
+         ("cl-syntax" ,sbcl-cl-syntax)))
+      (home-page "https://github.com/fukamachi/cl-locale")
+      (synopsis "Internalization library for Common Lisp")
+      (description
+       "This package provides a Common Lisp translation library similar to
+CL-I18N and CL-L10N.")
+      (license license:llgpl))))
+
+(define-public ecl-cl-locale
+  (sbcl-package->ecl-package sbcl-cl-locale))
+
+(define-public cl-locale
+  (sbcl-package->cl-source-package sbcl-cl-locale))
