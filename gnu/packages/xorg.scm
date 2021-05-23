@@ -11,7 +11,7 @@
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2017 John Darrington <jmd@gnu.org>
-;;; Copyright © 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018, 2019, 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -5523,17 +5523,14 @@ draggable titlebars and borders.")
 (define-public libx11/fixed
   (package
     (inherit libx11)
-    (version "1.6.12")
+    (version "1.7.1A")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/lib/libX11-"
-               version
-               ".tar.bz2"))
+        (uri "mirror://xorg/individual/lib/libX11-1.7.1.tar.bz2")
         (sha256
           (base32
-            "1ivfzl1qwk8zh7gc0m5vb58gdxz11jwg7w3d356w16j1d5s2427i"))))))
+            "0isxad59hvdwggbxqqjjjg3zmih9xiq4d9mdsnqbyb2nmbg46kp6"))))))
 
 ;; packages of height 5 in the propagated-inputs tree
 
