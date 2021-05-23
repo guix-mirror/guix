@@ -74,6 +74,61 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
+(define-public go-github-com-apparentlymart-go-openvpn-mgmt
+  (let ((commit "4d2ce95ae600ee04eeb020ee0997aabb82752210")
+        (revision "0"))
+    (package
+      (name "go-github-com-apparentlymart-go-openvpn-mgmt")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/apparentlymart/go-openvpn-mgmt")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1dn431jnswg5ns1ah10wswnw6wiv48zq21zr5xp1178l4waswj7k"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:unpack-path "github.com/apparentlymart/go-openvpn-mgmt"
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'build
+             (lambda arguments
+               (for-each
+                (lambda (directory)
+                  (apply (assoc-ref %standard-phases 'build)
+                         `(,@arguments #:import-path ,directory)))
+                (list
+                 "github.com/apparentlymart/go-openvpn-mgmt/demux"
+                 "github.com/apparentlymart/go-openvpn-mgmt/openvpn"))))
+           (replace 'check
+             (lambda arguments
+               (for-each
+                (lambda (directory)
+                  (apply (assoc-ref %standard-phases 'check)
+                         `(,@arguments #:import-path ,directory)))
+                (list
+                 "github.com/apparentlymart/go-openvpn-mgmt/demux"
+                 "github.com/apparentlymart/go-openvpn-mgmt/openvpn"))))
+           (replace 'install
+             (lambda arguments
+               (for-each
+                (lambda (directory)
+                  (apply (assoc-ref %standard-phases 'install)
+                         `(,@arguments #:import-path ,directory)))
+                (list
+                 "github.com/apparentlymart/go-openvpn-mgmt/demux"
+                 "github.com/apparentlymart/go-openvpn-mgmt/openvpn")))))))
+      (home-page "https://github.com/apparentlymart/go-openvpn-mgmt")
+      (synopsis "Go client library for OpenVPN's management protocol")
+      (description "Go-OpenVPN-Mgmt implements a client for the OpenVPN
+management interface.  It can be used to monitor and control an OpenVPN process
+running with its management port enabled.")
+      (license license:expat))))
+
 (define-public go-github-com-emersion-go-autostart
   (let ((commit "00ed301c8e9ae79e82878c6361c709983ac5dd2c")
         (revision "0"))
