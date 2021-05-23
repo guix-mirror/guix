@@ -17025,3 +17025,37 @@ CL-I18N and CL-L10N.")
 
 (define-public cl-locale
   (sbcl-package->cl-source-package sbcl-cl-locale))
+
+(define-public sbcl-cl-slice
+  (let ((commit "c531683f287216aebbb0affbe090611fa1b5d697")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-slice")
+      (version (git-version "0.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/tpapp/cl-slice")
+               (commit commit)))
+         (file-name (git-file-name "cl-slice" version))
+         (sha256
+          (base32 "1ybznf4y5lda6bn163jcvj281qzhm24dfcwhbgxmm5n6f27gdccl"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("clunit" ,sbcl-clunit)))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("anaphora" ,sbcl-anaphora)
+         ("let-plus" ,sbcl-let-plus)))
+      (home-page "https://github.com/tpapp/cl-slice")
+      (synopsis "Array slices for Common Lisp")
+      (description
+       "This package provides a DSL for array slices in Common Lisp.")
+      (license license:expat))))
+
+(define-public ecl-cl-slice
+  (sbcl-package->ecl-package sbcl-cl-slice))
+
+(define-public cl-slice
+  (sbcl-package->cl-source-package sbcl-cl-slice))
