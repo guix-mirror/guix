@@ -1120,14 +1120,13 @@ forms using your favorite CSS framework, without writing template code.")
 (define-public python-django-compressor
   (package
     (name "python-django-compressor")
-    (version "2.4")
+    (version "2.4.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "django_compressor" version))
         (sha256
-         (base32
-          "0kx7bclfa0sxlsz6ka70zr9ra00lks0hmv1kc99wbanx6xhirvfj"))))
+         (base32 "1q0m0hfg7sqmj5km924g4dgy3nx51aszzsprlp6gsin10mv0fn1k"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
