@@ -3980,7 +3980,8 @@ text styles of documentation.")
     (properties `((python2-variant . ,(delay python2-pygments))))))
 
 (define python-pygments/fixed
-  (package/inherit python-pygments
+  (package
+    (inherit python-pygments)
     (version "2.7.4")
     (source
      (origin
@@ -4969,8 +4970,8 @@ capabilities.")
 (define-public python2-numpy
   (let ((numpy (package-with-python2
                 (strip-python2-variant python-numpy))))
-    (package/inherit
-     numpy
+    (package
+      (inherit numpy)
       (version "1.16.5")
       (source (origin
                 (method url-fetch)
@@ -8087,7 +8088,8 @@ features useful for text console applications.")
 (define-public python2-urwid
   (let ((base (package-with-python2
                (strip-python2-variant python-urwid))))
-    (package/inherit base
+    (package
+      (inherit base)
       (version "2.1.0")
       (source
        (origin
@@ -9528,8 +9530,8 @@ markdown_py is also provided to convert Markdown files to HTML.")
 ;; Markdown 3.2 dropped support for Python 2.
 (define-public python2-markdown
   (let ((base (package-with-python2 (strip-python2-variant python-markdown))))
-    (package/inherit
-     base
+    (package
+      (inherit base)
      (version "3.1.1")
      (source (origin
                (method url-fetch)
@@ -9697,8 +9699,8 @@ from an XML-based format.")
 ;; Fonttools 4.x dropped support for Python 2, so stick with 3.x here.
 (define-public python2-fonttools
   (let ((base (package-with-python2 (strip-python2-variant python-fonttools))))
-    (package/inherit
-     base
+    (package
+      (inherit base)
      (version "3.44.0")
      (source (origin
                (method url-fetch)

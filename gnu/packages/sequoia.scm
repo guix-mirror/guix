@@ -221,7 +221,8 @@ with OpenPGP data.")
 
 (define-public sequoia4pEp
   ;; Currently pEp Engine requires sequoia in not-so-current version
-  (package/inherit sequoia
+  (package
+    (inherit sequoia)
     (name "sequoia")
     (version "0.15.0-pEp")
     (source

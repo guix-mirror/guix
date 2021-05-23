@@ -707,7 +707,8 @@ Swartz.")
 
 (define-public python2-html2text
   (let ((base (package-with-python2 python-html2text)))
-    (package/inherit base
+    (package
+      (inherit base)
       ;; This is the last version with support for Python 2.
       (version "2019.8.11")
       (source (origin

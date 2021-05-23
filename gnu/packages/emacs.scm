@@ -305,7 +305,8 @@ languages.")
 (define-public emacs-next
   (let ((commit "2ea34662c20f71d35dd52a5ed996542c7386b9cb")
         (revision "0"))
-    (package/inherit emacs
+    (package
+      (inherit emacs)
       (name "emacs-next")
       (version (git-version "28.0.50" revision commit))
       (source
@@ -326,7 +327,8 @@ languages.")
 (define-public emacs-next-pgtk
   (let ((commit "ae18c8ec4f0ef37c8c9cda473770ff47e41291e2")
         (revision "1"))
-    (package/inherit emacs-next
+    (package
+      (inherit emacs-next)
       (name "emacs-next-pgtk")
       (version (git-version "28.0.50" revision commit))
       (source
@@ -450,7 +452,8 @@ editor (with wide ints)" )
 (define-public guile-emacs
   (let ((commit "41120e0f595b16387eebfbf731fff70481de1b4b")
         (revision "0"))
-    (package/inherit emacs
+    (package
+      (inherit emacs)
       (name "guile-emacs")
       (version (git-version "0.0.0" revision commit))
       (source (origin

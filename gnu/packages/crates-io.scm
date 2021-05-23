@@ -4416,7 +4416,8 @@ bindings to C and C++ libraries.")
         ("rust-shlex" ,rust-shlex-0.1))))))
 
 (define-public rust-bindgen-0.49
-  (package/inherit rust-bindgen-0.50
+  (package
+    (inherit rust-bindgen-0.50)
     (name "rust-bindgen")
     (version "0.49.4")
     (source
@@ -5949,7 +5950,8 @@ little-endian.")
        (("rust-serde" ,rust-serde-1))))))
 
 (define-public rust-bytes-0.4
-  (package/inherit rust-bytes-0.5
+  (package
+    (inherit rust-bytes-0.5)
     (name "rust-bytes")
     (version "0.4.12")
     (source
@@ -7660,7 +7662,8 @@ colors.")
     (license license:mpl2.0)))
 
 (define-public rust-colored-1.9.1
-  (package/inherit rust-colored-1
+  (package
+    (inherit rust-colored-1)
     (name "rust-colored")
     (version "1.9.1")
     (source
@@ -11575,7 +11578,8 @@ Diesel.")
     (license license:expat)))
 
 (define-public rust-difference-1
-  (package/inherit rust-difference-2
+  (package
+    (inherit rust-difference-2)
     (name "rust-difference")
     (version "1.0.0")
     (source
@@ -12123,7 +12127,8 @@ from macros.")
     (license (list license:expat license:unlicense))))
 
 (define-public rust-docopt-0.8
-  (package/inherit rust-docopt-1
+  (package
+    (inherit rust-docopt-1)
     (name "rust-docopt")
     (version "0.8.3")
     (source
@@ -18312,7 +18317,8 @@ Hash-based Message Authentication Code algorithm} for SHA1.")
         ("rust-typed-arena" ,rust-typed-arena-1))))))
 
 (define-public rust-html5ever-0.23
-  (package/inherit rust-html5ever-0.24
+  (package
+    (inherit rust-html5ever-0.24)
     (name "rust-html5ever")
     (version "0.23.0")
     (source
@@ -18387,7 +18393,8 @@ requests and responses.")
     (license (list license:asl2.0 license:expat))))
 
 (define-public rust-http-0.1
-  (package/inherit rust-http-0.2
+  (package
+    (inherit rust-http-0.2)
     (name "rust-http")
     (version "0.1.17")
     (source
@@ -18454,7 +18461,8 @@ HTTP request or response body.")
         ("rust-http" ,rust-http-0.2))))))
 
 (define-public rust-http-body-0.1
-  (package/inherit rust-http-body-0.3
+  (package
+    (inherit rust-http-body-0.3)
     (name "rust-http-body")
     (version "0.1.0")
     (source
@@ -22410,7 +22418,8 @@ explosion.")
         ("rust-serde-json" ,rust-serde-json-1))))))
 
 (define-public rust-loom-0.2
-  (package/inherit rust-loom-0.3
+  (package
+    (inherit rust-loom-0.3)
     (name "rust-loom")
     (version "0.2.13")
     (source
@@ -22432,7 +22441,8 @@ explosion.")
         ("rust-serde-json" ,rust-serde-json-1))))))
 
 (define-public rust-loom-0.1
-  (package/inherit rust-loom-0.3
+  (package
+    (inherit rust-loom-0.3)
     (name "rust-loom")
     (version "0.1.1")
     (source
@@ -30534,7 +30544,8 @@ compliant email address validation.")
         ("rust-getopts" ,rust-getopts-0.2))))))
 
 (define-public rust-pulldown-cmark-0.0.8
-  (package/inherit rust-pulldown-cmark-0.4
+  (package
+    (inherit rust-pulldown-cmark-0.4)
     (name "rust-pulldown-cmark")
     (version "0.0.8")
     (source
@@ -33150,7 +33161,8 @@ functionality as retain but gives mutable borrow to the predicate.")
         ("rust-cc" ,rust-cc-1))))))
 
 (define-public rust-ring-0.13
-  (package/inherit rust-ring-0.16
+  (package
+    (inherit rust-ring-0.16)
     (name "rust-ring")
     (version "0.13.5")
     (source
@@ -35111,7 +35123,8 @@ rustc compiler.")
         ("rust-webpki" ,rust-webpki-0.18))))))
 
 (define-public rust-rustls-0.12
-  (package/inherit rust-rustls-0.16
+  (package
+    (inherit rust-rustls-0.16)
     (name "rust-rustls")
     (version "0.12.0")
     (source
@@ -36158,7 +36171,8 @@ Pwrite traits from the scroll crate.")
         ("rust-untrusted" ,rust-untrusted-0.6))))))
 
 (define-public rust-sct-0.3
-  (package/inherit rust-sct-0.6
+  (package
+    (inherit rust-sct-0.6)
     (name "rust-sct")
     (version "0.3.0")
     (source
@@ -41958,7 +41972,8 @@ template language.")
         ("rust-winapi" ,rust-winapi-0.2))))))
 
 (define-public rust-term-0.2
-  (package/inherit rust-term-0.4
+  (package
+    (inherit rust-term-0.4)
     (name "rust-term")
     (version "0.2.14")
     (source
@@ -47060,7 +47075,8 @@ untrusted inputs in Rust.")
     (license license:isc)))
 
 (define-public rust-untrusted-0.6
-  (package/inherit rust-untrusted-0.7
+  (package
+    (inherit rust-untrusted-0.7)
     (name "rust-untrusted")
     (version "0.6.2")
     (source
@@ -48681,7 +48697,8 @@ Verification.")
        (("rust-base64" ,rust-base64-0.9))))))
 
 (define-public rust-webpki-0.18
-  (package/inherit rust-webpki-0.21
+  (package
+    (inherit rust-webpki-0.21)
     (name "rust-webpki")
     (version "0.18.1")
     (source
@@ -48767,7 +48784,8 @@ with webpki.")
         (base32 "1d4ss607rgi9pj01zzqa13c1p3m35z314yh6lmjaj4kzvwv5gkci"))))))
 
 (define-public rust-webpki-roots-0.17
-  (package/inherit rust-webpki-roots-0.18
+  (package
+    (inherit rust-webpki-roots-0.18)
     (name "rust-webpki-roots")
     (version "0.17.0")
     (source
@@ -48818,7 +48836,8 @@ with webpki.")
         ("rust-webpki" ,rust-webpki-0.18))))))
 
 (define-public rust-webpki-roots-0.14
-  (package/inherit rust-webpki-roots-0.18
+  (package
+    (inherit rust-webpki-roots-0.18)
     (name "rust-webpki-roots")
     (version "0.14.0")
     (source

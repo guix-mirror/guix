@@ -1230,7 +1230,8 @@ extremely large and complex data collections.")
               "https://www.hdfgroup.org/ftp/HDF5/current/src/unpacked/COPYING"))))
 
 (define-public hdf5-1.10
-  (package/inherit hdf5-1.8
+  (package
+    (inherit hdf5-1.8)
     (version "1.10.7")
     (source
      (origin
@@ -1249,7 +1250,8 @@ extremely large and complex data collections.")
        (patches (search-patches "hdf5-config-date.patch"))))))
 
 (define-public hdf5-1.12
-  (package/inherit hdf5-1.8
+  (package
+    (inherit hdf5-1.8)
     (version "1.12.0")
     (source
      (origin

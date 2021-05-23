@@ -173,8 +173,8 @@ DrRacket IDE, are not included.")
 
 
 (define-public racket
-  (package/inherit
-      racket-minimal
+  (package
+    (inherit racket-minimal)
     (name "racket")
     (version (package-version racket-minimal)) ; needed for origin uri to work
     (source
