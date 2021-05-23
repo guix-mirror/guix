@@ -432,7 +432,7 @@ a hardware description and verification language. ")
 (define-public nvc
   (package
     (name "nvc")
-    (version "1.5.0")
+    (version "1.5.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -441,11 +441,10 @@ a hardware description and verification language. ")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0dd1xany6qhh2qsfw8ba0ky7y86h19yr4hlk0r5i2bvwsg4355v9"))))
+                "0m1zhcqhgz5fajz98ky5zdv8g8gvk9caghqfpbv8q3mzdzahcsx5"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:parallel-build? #f ; https://github.com/nickg/nvc/issues/409
-       #:configure-flags
+     `(#:configure-flags
        '("--enable-vhpi")
        #:phases
        (modify-phases %standard-phases
