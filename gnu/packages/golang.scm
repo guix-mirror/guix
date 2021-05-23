@@ -74,6 +74,30 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
+(define-public go-github-com-emersion-go-autostart
+  (let ((commit "00ed301c8e9ae79e82878c6361c709983ac5dd2c")
+        (revision "0"))
+    (package
+      (name "go-github-com-emersion-go-autostart")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/emersion/go-autostart")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0cqqvbzn32xv5lknfygrx01rx2sc6pi833k7008nlk9lsfgry06v"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/emersion/go-autostart"))
+      (home-page "https://github.com/emersion/go-autostart")
+      (synopsis "Autostart library in Go")
+      (description "Go-Autostart is a Go library to run a command after login.")
+      (license license:expat))))
+
 (define-public go-github-com-dchest-siphash
   (package
     (name "go-github-com-dchest-siphash")
