@@ -17059,3 +17059,49 @@ CL-I18N and CL-L10N.")
 
 (define-public cl-slice
   (sbcl-package->cl-source-package sbcl-cl-slice))
+
+(define-public sbcl-djula
+  (let ((commit "5df7af35a21503d468a878fc6029caa527a7d204")
+        (revision "1"))
+    (package
+      (name "sbcl-djula")
+      (version (git-version "0.2.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/mmontone/djula")
+               (commit commit)))
+         (file-name (git-file-name "djula" version))
+         (sha256
+          (base32 "1lk2ypm3sacf60h96a7hv9jwjlxkl4k40yzdalmqdg548vrd1jjm"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (inputs
+       `(("access" ,sbcl-access)
+         ("alexandria" ,sbcl-alexandria)
+         ("anaphora" ,sbcl-anaphora)
+         ("babel" ,sbcl-babel)
+         ("cl-locale" ,sbcl-cl-locale)
+         ("cl-ppcre" ,sbcl-cl-ppcre)
+         ("cl-slice" ,sbcl-cl-slice)
+         ("closer-mop" ,sbcl-closer-mop)
+         ("gettext" ,sbcl-gettext)
+         ("iterate" ,sbcl-iterate)
+         ("local-time" ,sbcl-local-time)
+         ("parser-combinators" ,sbcl-parser-combinators)
+         ("split-sequence" ,sbcl-split-sequence)
+         ("trivial-backtrace" ,sbcl-trivial-backtrace)))
+      (home-page "https://mmontone.github.io/djula/")
+      (synopsis "Common Lisp port of the Django templating language")
+      (description
+       "This package provides a Common Lisp templating system based on Python
+Django with a syntax similar to Python Jinja2.")
+      (license license:expat))))
+
+(define-public ecl-djula
+  (sbcl-package->ecl-package sbcl-djula))
+
+(define-public cl-djula
+  (sbcl-package->cl-source-package sbcl-djula))
