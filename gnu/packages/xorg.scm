@@ -5500,8 +5500,7 @@ draggable titlebars and borders.")
 (define-public libx11
   (package
     (name "libx11")
-    (replacement libx11/fixed)
-    (version "1.7.0")
+    (version "1.7.1")
     (source
       (origin
         (method url-fetch)
@@ -5511,7 +5510,7 @@ draggable titlebars and borders.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0m6bfwllr3pq2c00l51y62yiq15kphc8dw69zf67qhwmclxzkj1n"))))
+            "0isxad59hvdwggbxqqjjjg3zmih9xiq4d9mdsnqbyb2nmbg46kp6"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                            ;8 MiB of man pages + XML
@@ -5538,18 +5537,6 @@ draggable titlebars and borders.")
     (synopsis "Xorg Core X11 protocol client library")
     (description "Xorg Core X11 protocol client library.")
     (license license:x11)))
-
-(define-public libx11/fixed
-  (package
-    (inherit libx11)
-    (version "1.7.A")
-    (source
-      (origin
-        (method url-fetch)
-        (uri "mirror://xorg/individual/lib/libX11-1.7.1.tar.bz2")
-        (sha256
-          (base32
-            "0isxad59hvdwggbxqqjjjg3zmih9xiq4d9mdsnqbyb2nmbg46kp6"))))))
 
 ;; packages of height 5 in the propagated-inputs tree
 
