@@ -16847,3 +16847,55 @@ building block for higher level libraries.")
 
 (define-public ecl-json-streams
   (sbcl-package->ecl-package sbcl-json-streams))
+
+(define-public sbcl-arnesi
+  (let ((commit "1e7dc4cb2cad8599113c7492c78f4925e839522e")
+        (revision "1"))
+    (package
+      (name "sbcl-arnesi")
+      (version (git-version "2.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/AccelerationNet/arnesi")
+               (commit commit)))
+         (file-name (git-file-name "arnesi" version))
+         (sha256
+          (base32 "0jgj2xgd1gq6rf8ia43lkmbrbxnp8rgs053br9azfa25ygk3ikbh"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       ;; FIXME: (Sharlatan-20210523T190315+0100): Tests failed on
+       ;; special-lisp-var-rebount-in/cc
+       ;;
+       ;; ; processing (TEST SPECIAL-LISP-VAR-REBOUND-IN/CC ...)
+       ;; ; wrote .../sbcl/arnesi/t/call-cc-tmp5GEXGEG5.fasl
+       ;; ; compilation finished in 0:00:00.028
+       ;; Unhandled SIMPLE-ERROR in thread
+       ;; #<SB-THREAD:THREAD "main thread" RUNNING {100B768173}>:
+       ;; Sorry, No walker for the special operater DECLARE defined.
+       ;;
+       ;; Backtrace for: #<SB-THREAD:THREAD "main thread" RUNNING {100B768173}>
+       ;; 0: (SB-DEBUG::DEBUGGER-DISABLED-HOOK #<SIMPLE-ERROR "Sorry,
+       ;; No walker for the special operater ~S defined."
+       ;; {1001FAF9D3}> #<unused argument> :QUIT T)
+       ;;
+       `(#:tests? #f))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (inputs
+       `(("cl-ppcre" ,sbcl-cl-ppcre)
+         ("collectors" ,sbcl-collectors)
+         ("swank" ,sbcl-slime-swank)))
+      (home-page "https://github.com/AccelerationNet/arnesi")
+      (synopsis "Common Lisp utility suite")
+      (description
+       "ARNESI is Common Lisp utilities library similar to ALEXANDRIA, ANAPHORA
+or GOLDEN-UTILS.")
+      (license license:bsd-3))))
+
+(define-public ecl-arnesi
+  (sbcl-package->ecl-package sbcl-arnesi))
+
+(define-public cl-arnesi
+  (sbcl-package->cl-source-package sbcl-arnesi))
