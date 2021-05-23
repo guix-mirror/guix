@@ -541,21 +541,36 @@ upon error."
       (mount-essential-file-systems)
       (let* ((args    (linux-command-line))
              (to-load (find-long-option "--load" args))
-             (root-fs (find root-mount-point? mounts))
-             (root-fs-type (or (and=> root-fs file-system-type)
-                               "ext4"))
-             (root-fs-device (and=> root-fs file-system-device))
-             (root-fs-flags (mount-flags->bit-mask
-                             (or (and=> root-fs file-system-flags)
-                                 '())))
-             (root-options (if root-fs
-                               (file-system-options root-fs)
-                               #f))
-             ;; --root takes precedence over the 'device' field of the root
-             ;; <file-system> record.
-             (root-device (or (and=> (find-long-option "--root" args)
-                                     device-string->file-system-device)
-                              root-fs-device)))
+             ;; If present, ‘--root’ on the kernel command line takes precedence
+             ;; over the ‘device’ field of the root <file-system> record.
+             (root-device (and=> (find-long-option "--root" args)
+                                 device-string->file-system-device))
+             (root-fs (or (find root-mount-point? mounts)
+                          ;; Fall back to fictitious defaults.
+                          (file-system (device (or root-device "/dev/root"))
+                                       (mount-point "/")
+                                       (type "ext4"))))
+             (fsck.mode (find-long-option "fsck.mode" args)))
+
+        (define (check? fs)
+          (match fsck.mode
+            ("skip"  #f)
+            ("force" #t)
+            (_ (file-system-check? fs)))) ; assume "auto"
+
+        (define (skip-check-if-clean? fs)
+          (match fsck.mode
+            ("force" #f)
+            (_ (file-system-skip-check-if-clean? fs))))
+
+        (define (repair fs)
+          (let ((arg (find-long-option "fsck.repair" args)))
+            (if arg
+                (match arg
+                  ("no"  #f)
+                  ("yes" #t)
+                  (_ 'preen))
+                (file-system-repair fs))))
 
         (when (member "--repl" args)
           (start-repl))
@@ -611,23 +626,24 @@ upon error."
 
         (if root-device
             (mount-root-file-system (canonicalize-device-spec root-device)
-                                    root-fs-type
+                                    (file-system-type root-fs)
                                     #:volatile-root? volatile-root?
-                                    #:flags root-fs-flags
-                                    #:options root-options
-                                    #:check? (if root-fs
-                                                 (file-system-check? root-fs)
-                                                 #t)
+                                    #:flags (mount-flags->bit-mask
+                                             (file-system-flags root-fs))
+                                    #:options (file-system-options root-fs)
+                                    #:check? (check? root-fs)
                                     #:skip-check-if-clean?
-                                    (and=> root-fs
-                                           file-system-skip-check-if-clean?)
-                                    #:repair (if root-fs
-                                                 (file-system-repair root-fs)
-                                                 'preen))
+                                    (skip-check-if-clean? root-fs)
+                                    #:repair (repair root-fs))
             (mount "none" "/root" "tmpfs"))
 
-        ;; Mount the specified file systems.
-        (for-each mount-file-system
+        ;; Mount the specified non-root file systems.
+        (for-each (lambda (fs)
+                    (mount-file-system fs
+                                       #:check? (check? fs)
+                                       #:skip-check-if-clean?
+                                       (skip-check-if-clean? fs)
+                                       #:repair (repair fs)))
                   (remove root-mount-point? mounts))
 
         (setenv "EXT2FS_NO_MTAB_OK" #f)

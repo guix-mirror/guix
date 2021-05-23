@@ -33285,6 +33285,25 @@ name like @code{/dev/sda1}, a file system label, or a file system UUID.
 When unspecified, the device name from the root file system of the
 operating system declaration is used.
 
+@item fsck.mode=@var{mode}
+Whether to check the @var{root} file system for errors before mounting
+it.  @var{mode} is one of @code{skip} (never check), @code{force} (always
+check), or @code{auto} to respect the root file-system object's 'check?'
+setting (@pxref{File Systems}) and run a full scan only if the file system
+was not cleanly shut down.
+
+@code{auto} is the default if this option is not present or if @var{mode}
+is not one of the above.
+
+@item fsck.repair=@var{level}
+The level of repairs to perform automatically if errors are found in the
+@var{root} file system.  @var{level} is one of @code{no} (do not write to
+@var{root} at all if possible), @code{yes} (repair as much as possible),
+or @code{preen} to repair problems considered safe to repair automatically.
+
+@code{preen} is the default if this option is not present or if @var{level}
+is not one of the above.
+
 @item --system=@var{system}
 Have @file{/run/booted-system} and @file{/run/current-system} point to
 @var{system}.
