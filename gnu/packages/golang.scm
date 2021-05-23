@@ -74,6 +74,44 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
+(define-public go-github-com-keybase-go-ps
+  (let ((commit "91aafc93ba19d1988cff338c1929d35b6c6f5b50")
+        (revision "0"))
+    (package
+      (name "go-github-com-keybase-go-ps")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/keybase/go-ps")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1la7m9pd1rrij727g34k9d2iapqwrkwdkqwpkbsbcq8ig0fg634h"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/keybase/go-ps"
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-tests
+             (lambda* (#:key native-inputs inputs #:allow-other-keys)
+               (substitute* (find-files "." "test\\.go")
+                 (("/bin/sleep" command)
+                  (string-append
+                   (assoc-ref (or native-inputs inputs) "coreutils")
+                   command))))))))
+      (native-inputs
+       `(("coreutils" ,coreutils)
+         ("go-github-com-stretchr-testify"
+          ,go-github-com-stretchr-testify)))
+      (home-page "https://github.com/keybase/go-ps")
+      (synopsis "Process list library for Go")
+      (description "Go-Ps is a library for Go that implements OS-specific APIs
+to list and manipulate processes in a safe way.")
+      (license license:expat))))
+
 (define-public go-github-com-apparentlymart-go-openvpn-mgmt
   (let ((commit "4d2ce95ae600ee04eeb020ee0997aabb82752210")
         (revision "0"))
