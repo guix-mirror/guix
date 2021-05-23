@@ -1108,7 +1108,7 @@ freedesktop.org desktop notification specification.")
 (define-public mm-common
   (package
     (name "mm-common")
-    (version "1.0.2")
+    (version "1.0.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/mm-common/"
@@ -1116,10 +1116,11 @@ freedesktop.org desktop notification specification.")
                                   "mm-common-" version ".tar.xz"))
               (sha256
                (base32
-                "07b4s5ckcz9q5gwx8vchim19mhfgl8wysqwi30pndks3m4zrzad2"))))
+                "1x8yvjy0yg17qyhmqws8xh2k8dvzrhpwqz7j1cfwzalrb1i9c5g8"))))
     (build-system meson-build-system)
     (arguments
-     `(#:phases
+     `(#:meson ,meson-0.55
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch
            (lambda* (#:key inputs #:allow-other-keys)
