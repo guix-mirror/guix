@@ -207,10 +207,10 @@
      `(("ncurses" ,ncurses)
        ("readline" ,readline)))
     (home-page "https://abook.sourceforge.io/")
-    (synopsis "Text-based addressbook")
+    (synopsis "Text-based address book")
     (description
-     "Abook is a text-based addressbook program designed to use with Mutt mail
-client.")
+     "Abook is a text-based address book program designed to use with the Mutt
+mail client.")
     (license license:gpl2)))
 
 (define-public anubis
