@@ -16899,3 +16899,38 @@ or GOLDEN-UTILS.")
 
 (define-public cl-arnesi
   (sbcl-package->cl-source-package sbcl-arnesi))
+
+(define-public sbcl-gettext
+  (let ((commit "a432020cbad99fc22cbe6bb9aa8a83a35000d7aa")
+        (revision "1"))
+    (package
+      (name "sbcl-gettext")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/rotatef/gettext")
+               (commit commit)))
+         (file-name (git-file-name "gettext" version))
+         (sha256
+          (base32 "1pzhamgni6k5hi6bbvlb3dm659pcllrrr3vhhn3rpjn238zxg5ar"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("stefil" ,sbcl-stefil)))
+      (inputs
+       `(("flexi-streams" ,sbcl-flexi-streams)
+         ("split-sequence" ,sbcl-split-sequence)
+         ("yacc" ,sbcl-cl-yacc)))
+      (home-page "https://github.com/rotatef/gettext")
+      (synopsis "Common Lisp implementation of Gettext")
+      (description
+       "This package provides GNU @code{gettext} completely implemented in
+Common Lisp without any C library bindings.")
+      (license license:lgpl3+))))
+
+(define-public ecl-gettext
+  (sbcl-package->ecl-package sbcl-gettext))
+
+(define-public cl-gettext
+  (sbcl-package->cl-source-package sbcl-gettext))
