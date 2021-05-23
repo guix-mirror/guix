@@ -138,7 +138,7 @@ execution is also possible.")
 (define-public slurm
   (package
    (name "slurm")
-   (version "20.11.3")
+   (version "20.11.7")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -146,7 +146,7 @@ execution is also possible.")
                   version ".tar.bz2"))
             (sha256
              (base32
-              "1s70x6yh60sx63dgmp5rlhq8jcz7kxv9pk8gbs9v1jg8zps5h5bk"))
+              "1fdjihg1x7ks5l77yjv14a4mg6r0v8c3zk1dcxkhrhq3n4dc9nbs"))
             (modules '((guix build utils)))
             (snippet
              '(begin
