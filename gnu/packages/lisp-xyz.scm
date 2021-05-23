@@ -16934,3 +16934,45 @@ Common Lisp without any C library bindings.")
 
 (define-public cl-gettext
   (sbcl-package->cl-source-package sbcl-gettext))
+
+(define-public sbcl-parser-combinators
+  (let ((commit "9c7569a4f6af5e60c0d3a51d9c15c16d1714c845")
+        (revision "1"))
+    (package
+      (name "sbcl-parser-combinators")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Ramarren/cl-parser-combinators")
+               (commit commit)))
+         (file-name (git-file-name "parser-combinators" version))
+         (sha256
+          (base32 "1k49vha5xm2cklayzpqwg73n4v93xwsbs5in6342pkkiimnidhs8"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       ;; FIXME: (Sharlatan-20210523T184237+0100): Tests require `femlisp', which
+       ;; is quite chunky not packaged system yet, enable them when it's packed.
+       `(#:tests? #f
+         #:test-asd-file "parser-combinators-tests.asd"))
+      ;; (native-inputs
+      ;;  `(("hu.dwim.stefil" ,sbcl-hu.dwim.stefil)
+      ;;    ("infix" ,sbcl-femlisp)))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cl-containers" ,sbcl-cl-containers)
+         ("cl-ppcre" ,sbcl-cl-ppcre)
+         ("iterate" ,sbcl-iterate)))
+      (home-page "https://github.com/Ramarren/cl-parser-combinators")
+      (synopsis "Parser combinators in Common Lisp")
+      (description
+       "PARSER-COMBINATORS is a library implementing monadic parser
+combinators in Common Lisp, similar in concept to Haskell Parsec system.")
+      (license license:bsd-3))))
+
+(define-public ecl-parser-combinators
+  (sbcl-package->ecl-package sbcl-parser-combinators))
+
+(define-public cl-parser-combinators
+  (sbcl-package->cl-source-package sbcl-parser-combinators))
