@@ -1836,19 +1836,17 @@ Chess).  It is similar to standard chess but this variant is far more complicate
 (define-public ltris
   (package
     (name "ltris")
-    (version "1.2.1")
+    (version "1.2.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/lgames/ltris/"
                            "ltris-" version ".tar.gz"))
        (sha256
-        (base32 "0959vvxh5xnxzpdv7i67lpd2b6ghx69z65ldnclj1z6llyfzfs7q"))))
+        (base32 "1a2m17jwkyar8gj07bn5jk01j2ps4vvc48z955jjjsh67q2svi0f"))))
     (build-system gnu-build-system)
     (arguments
-     '(;; The code in LTris uses traditional GNU semantics for inline functions
-       #:configure-flags '("CFLAGS=-fgnu89-inline")
-       #:phases
+     '(#:phases
        (modify-phases %standard-phases
          (add-after 'set-paths 'set-sdl-paths
            (lambda* (#:key inputs #:allow-other-keys)
