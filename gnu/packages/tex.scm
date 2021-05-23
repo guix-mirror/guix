@@ -2923,6 +2923,8 @@ verbatim source).")
               (base32
                "125lm2m9813p29yl7am21kgqdpigyqvrjarg73jpaczifbbbqklf")
               #:trivial? #t))
+    (propagated-inputs
+     `(("texlive-latex-epstopdf-pkg" ,texlive-latex-epstopdf-pkg)))
     (home-page "https://www.ctan.org/pkg/latex-graphics")
     (synopsis "Color and graphics option files")
     (description
