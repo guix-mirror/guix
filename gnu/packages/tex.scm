@@ -942,6 +942,45 @@ font from Adobe's basic set.")
     ;; No license version specified.
     (license license:gpl3+)))
 
+(define-public texlive-tex-gyre
+  (package
+    (inherit (simple-texlive-package
+              "texlive-tex-gyre"
+              '("/doc/fonts/tex-gyre/GUST-FONT-LICENSE.txt"
+                "/fonts/afm/public/tex-gyre/"
+                "/fonts/enc/dvips/tex-gyre/"
+                "/fonts/map/dvips/tex-gyre/"
+                "/fonts/opentype/public/tex-gyre/"
+                "/fonts/tfm/public/tex-gyre/"
+                "/fonts/type1/public/tex-gyre/"
+                "/tex/latex/tex-gyre/")
+              (base32
+               "1ldnlmclghm3gnyv02r8a6cqybygz2ifq07mhykhf43h1pw3aq7k")
+              #:trivial? #t))
+    (home-page "https://ctan.org/pkg/tex-gyre")
+    (synopsis "TeX fonts extending URW fonts")
+    (description
+     "The TeX-GYRE bundle consist of multiple font families:
+@itemize @bullet
+@item Adventor, based on the URW Gothic L family of fonts;
+@item Bonum, based on the URW Bookman L family;
+@item Chorus, based on URW Chancery L Medium Italic;
+@item Cursor, based on URW Nimbus Mono L;
+@item Heros, based on URW Nimbus Sans L;
+@item Pagella, based on URW Palladio L;
+@item Schola, based on the URW Century Schoolbook L family;
+@item Termes, based on the URW Nimbus Roman No9 L family of fonts.
+@end itemize
+
+The constituent standard faces of each family have been greatly extended
+(though Chorus omits Greek support and has no small-caps family).  Each
+family is available in Adobe Type 1 and Open Type formats, and LaTeX
+support (for use with a variety of encodings) is provided.")
+    ;; The GUST font license (GFL) is legally identical to the LaTeX Project
+    ;; Public License (LPPL), version 1.3c or later, but comes with an
+    ;; additional but not legally binding clause.
+    (license license:lppl1.3c+)))
+
 (define-public texlive-lm
   (package
     (inherit (simple-texlive-package
