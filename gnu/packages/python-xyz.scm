@@ -15463,6 +15463,11 @@ extracting firmware images")
      '(;; The tests require some extra resources to be downloaded.
        ;; TODO Try packaging these resources.
        #:tests? #f))
+    (propagated-inputs
+     `(("python-click" ,python-click)
+       ("python-joblib" ,python-joblib)
+       ("python-regex" ,python-regex)
+       ("python-tqdm" ,python-tqdm)))
     (native-inputs
      `(("unzip" ,unzip)))
     (home-page "http://nltk.org/")
