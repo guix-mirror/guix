@@ -5563,8 +5563,11 @@ convert between colorspaces like sRGB, XYZ, CIEL*a*b*, CIECAM02, CAM02-UCS, etc.
              #t))
          (add-before 'install 'install-jquery-ui
            (lambda* (#:key outputs inputs #:allow-other-keys)
-             (let ((dir (string-append (assoc-ref outputs "out")
-                                       "/lib/python3.7/site-packages/matplotlib/backends/web_backend/")))
+             (let* ((python-version (python-version
+                                      (assoc-ref inputs "python")))
+                    (dir (string-append (assoc-ref outputs "out")
+                                       "/lib/python" python-version "/site-packages"
+                                       "/matplotlib/backends/web_backend/")))
                (mkdir-p dir)
                (invoke "unzip"
                        (assoc-ref inputs "jquery-ui")
