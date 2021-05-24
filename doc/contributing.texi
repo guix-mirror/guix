@@ -1275,8 +1275,19 @@ this nifty tool!
 @section Commit Access
 
 @cindex commit access, for developers
-For frequent contributors, having write access to the repository is
-convenient.  When you deem it necessary, consider applying for commit
+Everyone can contribute to Guix without having commit access
+(@pxref{Submitting Patches}).  However, for frequent contributors,
+having write access to the repository can be convenient.  Commit access
+should not be thought of as a ``badge of honor'' but rather as a
+responsibility a contributor is willing to take to help the project.
+
+The following sections explain how to get commit access, how to be ready
+to push commits, and the policies and community expectations for commits
+pushed upstream.
+
+@subsection Applying for Commit Access
+
+When you deem it necessary, consider applying for commit
 access by following these steps:
 
 @enumerate
@@ -1348,24 +1359,6 @@ review and merging system, which, as a consequence, may lead us to have
 fewer people with commit access to the main repository.  Stay tuned!
 @end quotation
 
-If you get commit access, please make sure to follow
-the policy below (discussions of the policy can take place on
-@email{guix-devel@@gnu.org}).
-
-Non-trivial patches should always be posted to
-@email{guix-patches@@gnu.org} (trivial patches include fixing typos,
-etc.).  This mailing list fills the patch-tracking database
-(@pxref{Tracking Bugs and Patches}).
-
-For patches that just add a new package, and a simple one, it's OK to
-commit, if you're confident (which means you successfully built it in a
-chroot setup, and have done a reasonable copyright and license
-auditing).  Likewise for package upgrades, except upgrades that trigger
-a lot of rebuilds (for example, upgrading GnuTLS or GLib).  We have a
-mailing list for commit notifications (@email{guix-commits@@gnu.org}),
-so people can notice.  Before pushing your changes, make sure to run
-@code{git pull --rebase}.
-
 All commits that are pushed to the central repository on Savannah must
 be signed with an OpenPGP key, and the public key should be uploaded to
 your user account on Savannah and to public key servers, such as
@@ -1384,6 +1377,26 @@ Savannah by using the pre-push Git hook called located at
 @example
 cp etc/git/pre-push .git/hooks/pre-push
 @end example
+
+@subsection Commit Policy
+
+If you get commit access, please make sure to follow
+the policy below (discussions of the policy can take place on
+@email{guix-devel@@gnu.org}).
+
+Non-trivial patches should always be posted to
+@email{guix-patches@@gnu.org} (trivial patches include fixing typos,
+etc.).  This mailing list fills the patch-tracking database
+(@pxref{Tracking Bugs and Patches}).
+
+For patches that just add a new package, and a simple one, it's OK to
+commit, if you're confident (which means you successfully built it in a
+chroot setup, and have done a reasonable copyright and license
+auditing).  Likewise for package upgrades, except upgrades that trigger
+a lot of rebuilds (for example, upgrading GnuTLS or GLib).  We have a
+mailing list for commit notifications (@email{guix-commits@@gnu.org}),
+so people can notice.  Before pushing your changes, make sure to run
+@code{git pull --rebase}.
 
 When pushing a commit on behalf of somebody else, please add a
 @code{Signed-off-by} line at the end of the commit log message---e.g.,
@@ -1406,11 +1419,15 @@ you're confident, it's OK to commit.
 That last part is subject to being adjusted, allowing individuals to commit
 directly on non-controversial changes on parts they’re familiar with.
 
+@subsection Commit Revocation
+
 In order to reduce the possibility of mistakes, committers will have
 their Savannah account removed from the Guix Savannah project and their
 key removed from @file{.guix-authorizations} after 12 months of
 inactivity; they can ask to regain commit access by emailing the
 maintainers, without going through the vouching process.
+
+@subsection Helping Out
 
 One last thing: the project keeps moving forward because committers not
 only push their own awesome changes, but also offer some of their time
