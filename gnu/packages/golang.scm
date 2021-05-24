@@ -74,6 +74,31 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
+(define-public go-github-com-opentracing-opentracing-go
+  (package
+    (name "go-github-com-opentracing-opentracing-go")
+    (version "1.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/opentracing/opentracing-go")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "04rgdwl29kimp2wnm4dycnzp7941hvpj6wym85x23c6fclacm94h"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/opentracing/opentracing-go"))
+    (native-inputs
+     `(("go-github-com-stretchr-testify"
+        ,go-github-com-stretchr-testify)))
+    (home-page "https://github.com/opentracing/opentracing-go")
+    (synopsis "OpenTracing API for Go")
+    (description "OpenTracing-Go is a Go implementation of the OpenTracing API.")
+    (license license:asl2.0)))
+
 (define-public go-github-com-operatorfoundation-monolith-go
   (package
     (name "go-github-com-operatorfoundation-monolith-go")
