@@ -2404,13 +2404,13 @@ QMatrixClient project.")
 (define-public hangups
   (package
     (name "hangups")
-    (version "0.4.13")
+    (version "0.4.14")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "hangups" version))
        (sha256
-        (base32 "015g635vnrxk5lf9n80rdcmh6chv8kmla1k2j7m1iijijs519ngn"))))
+        (base32 "15qbbafcrdkx73xz9y30qa3d8nj6mgrp2m41749i5nn1qywmikk8"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
