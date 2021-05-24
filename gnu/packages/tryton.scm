@@ -150,15 +150,16 @@ and security.")
 If present, pass EXTRA-ARGUMENTS to runtest as well."
   `(modify-phases %standard-phases
      (replace 'check
-       (lambda* (#:key inputs outputs #:allow-other-keys)
+       (lambda* (#:key inputs outputs tests? #:allow-other-keys)
          (let ((runtest
                 (string-append
                  (assoc-ref inputs "trytond")
                  "/lib/python"
                  ,(version-major+minor (package-version python))
                  "/site-packages/trytond/tests/run-tests.py")))
-           (add-installed-pythonpath inputs outputs)
-           (invoke "python" runtest "-m" ,module ,@extra-arguments))))))
+           (when tests?
+             (add-installed-pythonpath inputs outputs)
+             (invoke "python" runtest "-m" ,module ,@extra-arguments)))))))
 
 (define (tryton-arguments module . extra-arguments)
   "Like ’tryton-phases’, but directly return all arguments for
