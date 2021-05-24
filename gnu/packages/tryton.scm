@@ -150,13 +150,13 @@ and security.")
 If present, pass EXTRA-ARGUMENTS to runtest as well."
   `(modify-phases %standard-phases
      (replace 'check
-       (let ((runtest
-              (string-append
-               (assoc-ref %build-inputs "trytond")
-               "/lib/python"
-               ,(version-major+minor (package-version python))
-               "/site-packages/trytond/tests/run-tests.py")))
-         (lambda* (#:key inputs outputs #:allow-other-keys)
+       (lambda* (#:key inputs outputs #:allow-other-keys)
+         (let ((runtest
+                (string-append
+                 (assoc-ref inputs "trytond")
+                 "/lib/python"
+                 ,(version-major+minor (package-version python))
+                 "/site-packages/trytond/tests/run-tests.py")))
            (add-installed-pythonpath inputs outputs)
            (invoke "python" runtest "-m" ,module ,@extra-arguments))))))
 
