@@ -61,6 +61,7 @@
 ;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
 ;;; Copyright © 2021 David Pflug <david@pflug.io>
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
+;;; Copyright © 2021 Solene Rapenne <solene@perso.pw>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4315,35 +4316,15 @@ world}, @uref{http://evolonline.org, Evol Online} and
 (define openttd-engine
   (package
     (name "openttd-engine")
-    (version "1.10.3")
+    (version "1.11.2")
     (source
      (origin (method url-fetch)
              (uri (string-append "https://cdn.openttd.org/openttd-releases/"
                                  version "/openttd-" version "-source.tar.xz"))
              (sha256
               (base32
-               "0fxmfz1mm95a2x0rnzfff9wb8q57w0cvsdd0z7agdcbyakph25n1"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:tests? #f              ; no "check" target
-       #:phases
-       (modify-phases %standard-phases
-         ;; The build process fails if the configure script is passed the
-         ;; option "--enable-fast-install".
-         (replace 'configure
-           (lambda* (#:key inputs outputs (configure-flags '())
-                     #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out"))
-                   (lzo (assoc-ref inputs "lzo")))
-               (apply invoke "./configure"
-                      (string-append "--prefix=" out)
-                      ;; Provide the "lzo" path.
-                      (string-append "--with-liblzo2="
-                                     lzo "/lib/liblzo2.a")
-                      ;; Put the binary in 'bin' instead of 'games'.
-                      "--binary-dir=bin"
-                      configure-flags)))))))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+               "0v9f93lsdcv3ia28y8iihx9nj9zp6fpf5hkdrpl4ypw159d97fhg"))))
+    (build-system cmake-build-system)
     (inputs
      `(("allegro" ,allegro)
        ("fontconfig" ,fontconfig)
@@ -4510,19 +4491,17 @@ Transport Tycoon Deluxe.")
     (name "openttd")
     (arguments
      `(#:configure-flags
-       (list (string-append "--with-midi=" (assoc-ref %build-inputs "timidity++")
-                            "/bin/timidity"))
-       ,@(substitute-keyword-arguments (package-arguments openttd-engine)
-           ((#:phases phases)
-            `(modify-phases ,phases
-               (add-after 'install 'install-data
-                 (lambda* (#:key inputs outputs #:allow-other-keys)
-                   (for-each
-                    (lambda (input)
-                      (copy-recursively (assoc-ref inputs input)
-                                        (assoc-ref outputs "out")))
-                    (list "opengfx" "openmsx" "opensfx"))
-                   #t)))))))
+       (let* ((out (assoc-ref %outputs "out")))
+         (list (string-append "-DCMAKE_INSTALL_BINDIR=" out "/bin")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'install-data
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (for-each
+              (lambda (input)
+                (copy-recursively (assoc-ref inputs input)
+                                  (assoc-ref outputs "out")))
+              (list "opengfx" "openmsx" "opensfx")))))))
     (inputs
      `(("timidity++" ,timidity++)
        ,@(package-inputs openttd-engine)))
