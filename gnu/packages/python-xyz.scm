@@ -16870,13 +16870,13 @@ and bit flag values.")
 (define-public python-attrs
   (package
     (name "python-attrs")
-    (version "20.3.0")
+    (version "21.2.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "attrs" version))
               (sha256
                (base32
-                "007pchhxk2nh6m2rgflkkij9xjwysq3fl7xr72cy8i4pw76s6al3"))))
+                "1yzmwi5d197p0qhl7rl4xi9q1w8mk9i3zn6hrl22knbcrb1slspg"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -16888,9 +16888,7 @@ and bit flag values.")
        ("python-hypothesis" ,python-hypothesis)
        ("python-pympler" ,python-pympler)
        ("python-pytest" ,python-pytest)
-       ("python-six" ,python-six)
-       ("python-sphinx" ,python-sphinx)
-       ("python-zope-interface" ,python-zope-interface)))
+       ("python-six" ,python-six)))
     (home-page "https://github.com/python-attrs/attrs/")
     (synopsis "Attributes without boilerplate")
     (description "@code{attrs} is a Python package with class decorators that
