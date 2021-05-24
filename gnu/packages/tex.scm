@@ -4538,6 +4538,23 @@ variety of customizable ways.  A number of useful macros are provided, all
 of which make use of the @code{stackengine} core.")
     (license license:lppl1.3+)))
 
+(define-public texlive-latex-tocloft
+  (package
+    (inherit (simple-texlive-package
+              "texlive-latex-tocloft"
+              '("/doc/latex/tocloft/" "/tex/latex/tocloft/")
+              (base32
+               "0mg3hpzq7wpm6mnnvb0rp3wby56zyxkyai8d2h3f4vk93zrc6awk")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/tocloft")
+    (synopsis "Control table of contents")
+    (description
+     "This package provides control over the typography of the
+@dfn{Table of Contents}, @dfn{List of Figures} and @dfn{List of Tables},
+and the ability to create new ‘List of ...’. The ToC @code{\\parskip} may
+be changed. ")
+    (license license:lppl1.3c+)))
+
 (define-public texlive-latex-trimspaces
   (package
     (name "texlive-latex-trimspaces")
