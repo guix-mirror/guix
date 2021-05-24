@@ -1466,6 +1466,27 @@ key removed from @file{.guix-authorizations} after 12 months of
 inactivity; they can ask to regain commit access by emailing the
 maintainers, without going through the vouching process.
 
+Maintainers@footnote{See @uref{https://guix.gnu.org/en/about} for the
+current list of maintainers.  You can email them privately at
+@email{guix-maintainers@@gnu.org}.} may also revoke an individual's
+commit rights, as a last resort, if cooperation with the rest of the
+community has caused too much friction---even within the bounds of the
+project's code of conduct (@pxref{Contributing}).  They would only do so
+after public or private discussion with the individual and a clear
+notice.  Examples of behavior that hinders cooperation and could lead to
+such a decision include:
+
+@itemize
+@item repeated violation of the commit policy stated above;
+@item repeated failure to take peer criticism into account;
+@item breaching trust through a series of grave incidents.
+@end itemize
+
+When maintainers resort to such a decision, they notify developers on
+@email{guix-devel@@gnu.org}; inquiries may be sent to
+@email{guix-maintainers@@gnu.org}.  Depending on the situation, the
+individual may still be welcome to contribute.
+
 @subsection Helping Out
 
 One last thing: the project keeps moving forward because committers not
