@@ -2008,7 +2008,7 @@ stylesheets, you'll need to use another program that uses this library,
 (define-public sassc
   (package
     (name "sassc")
-    (version "3.6.1")
+    (version "3.6.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2017,7 +2017,7 @@ stylesheets, you'll need to use another program that uses this library,
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1sxm54mkhs9m4vnl7vn11y17mhzamc403hv3966j1c7p2rbzg5pv"))))
+                "0m7flrs0hz3ivib8kvsgn3d0fgkabqviadkp1dyspa6iibx3gjwd"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -2036,9 +2036,9 @@ stylesheets, you'll need to use another program that uses this library,
                (("install: libsass-install-\\$\\(BUILD\\) \\\\")
                 "install: \\"))
              #t))
-         ;; This phase fails for some reason.
+         ;; This phase fails because…
          (delete 'bootstrap)
-         ;; There is no configure script.
+         ;; …there is no configure script to be generated.
          (delete 'configure)
          (add-before 'build 'setup-environment
            (lambda _
