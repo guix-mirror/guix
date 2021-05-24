@@ -408,8 +408,6 @@ the in DocBook SGML DTDs.")
                                         texlive-latex-bookmark
                                         texlive-latex-changebar
                                         texlive-latex-colortbl
-                                        texlive-latex-eepic
-                                        texlive-latex-eso-pic
                                         texlive-latex-fancybox
                                         texlive-latex-fancyhdr
                                         texlive-latex-fancyvrb
@@ -419,16 +417,13 @@ the in DocBook SGML DTDs.")
                                         texlive-latex-jknapltx
                                         texlive-latex-listings
                                         texlive-latex-multirow
-                                        texlive-latex-oberdiek
                                         texlive-latex-overpic
                                         texlive-latex-pdfpages
                                         texlive-latex-refcount
                                         texlive-latex-subfigure
                                         texlive-latex-titlesec
-                                        texlive-latex-url
                                         texlive-latex-wasysym
 
-                                        texlive-fonts-ec
                                         texlive-fonts-rsfs
                                         texlive-fonts-stmaryrd
 
