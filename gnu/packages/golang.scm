@@ -74,6 +74,134 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
+(define-public go-github-com-operatorfoundation-obfs4
+  (package
+    (name "go-github-com-operatorfoundation-obfs4")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/OperatorFoundation/obfs4")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0s730xagdxs66wfh65hb5v9a5h01q5ncic3pyij0a043scagizgr"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:unpack-path "github.com/OperatorFoundation/obfs4"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           (lambda _
+             (substitute* (find-files "." "\\.go$")
+               ;; To drop '.git' suffix in import path of goptlib.
+               (("goptlib\\.git") "goptlib"))))
+         (replace 'build
+           (lambda arguments
+             (for-each
+              (lambda (directory)
+                (apply (assoc-ref %standard-phases 'build)
+                       `(,@arguments #:import-path ,directory)))
+              (list
+               "github.com/OperatorFoundation/obfs4/common/csrand"
+               "github.com/OperatorFoundation/obfs4/common/drbg"
+               "github.com/OperatorFoundation/obfs4/common/log"
+               "github.com/OperatorFoundation/obfs4/common/ntor"
+               "github.com/OperatorFoundation/obfs4/common/probdist"
+               "github.com/OperatorFoundation/obfs4/common/pt_extras"
+               "github.com/OperatorFoundation/obfs4/common/replayfilter"
+               "github.com/OperatorFoundation/obfs4/common/socks5"
+               "github.com/OperatorFoundation/obfs4/common/termmon"
+               "github.com/OperatorFoundation/obfs4/common/uniformdh"
+               "github.com/OperatorFoundation/obfs4/modes/pt_socks5"
+               "github.com/OperatorFoundation/obfs4/modes/stun_udp"
+               "github.com/OperatorFoundation/obfs4/modes/transparent_tcp"
+               "github.com/OperatorFoundation/obfs4/modes/transparent_udp"
+               "github.com/OperatorFoundation/obfs4/obfs4proxy"
+               "github.com/OperatorFoundation/obfs4/proxy_dialers/proxy_http"
+               "github.com/OperatorFoundation/obfs4/proxy_dialers/proxy_socks4"
+               "github.com/OperatorFoundation/obfs4/transports"))))
+         (replace 'check
+           (lambda arguments
+             (for-each
+              (lambda (directory)
+                (apply (assoc-ref %standard-phases 'check)
+                       `(,@arguments #:import-path ,directory)))
+              (list
+               "github.com/OperatorFoundation/obfs4/common/csrand"
+               "github.com/OperatorFoundation/obfs4/common/drbg"
+               "github.com/OperatorFoundation/obfs4/common/log"
+               "github.com/OperatorFoundation/obfs4/common/ntor"
+               "github.com/OperatorFoundation/obfs4/common/probdist"
+               "github.com/OperatorFoundation/obfs4/common/pt_extras"
+               "github.com/OperatorFoundation/obfs4/common/replayfilter"
+               "github.com/OperatorFoundation/obfs4/common/socks5"
+               "github.com/OperatorFoundation/obfs4/common/termmon"
+               "github.com/OperatorFoundation/obfs4/common/uniformdh"
+               ;; ERROR: Println arg dialFn is a func value, not called.
+               ;;"github.com/OperatorFoundation/obfs4/modes/pt_socks5"
+               ;; ERROR: Infof format %s has arg ln of wrong type *net.UDPConn.
+               ;;"github.com/OperatorFoundation/obfs4/modes/stun_udp"
+               "github.com/OperatorFoundation/obfs4/modes/transparent_tcp"
+               ;; ERROR: Infof format %s has arg ln of wrong type *net.UDPConn
+               ;;"github.com/OperatorFoundation/obfs4/modes/transparent_udp"
+               ;; ERROR: Println call has possible formatting directive %s.
+               ;;"github.com/OperatorFoundation/obfs4/obfs4proxy"
+               "github.com/OperatorFoundation/obfs4/proxy_dialers/proxy_http"
+               "github.com/OperatorFoundation/obfs4/proxy_dialers/proxy_socks4"
+               "github.com/OperatorFoundation/obfs4/transports"))))
+         (replace 'install
+           (lambda arguments
+             (for-each
+              (lambda (directory)
+                (apply (assoc-ref %standard-phases 'install)
+                       `(,@arguments #:import-path ,directory)))
+              (list
+               "github.com/OperatorFoundation/obfs4/common/csrand"
+               "github.com/OperatorFoundation/obfs4/common/drbg"
+               "github.com/OperatorFoundation/obfs4/common/log"
+               "github.com/OperatorFoundation/obfs4/common/ntor"
+               "github.com/OperatorFoundation/obfs4/common/probdist"
+               "github.com/OperatorFoundation/obfs4/common/pt_extras"
+               "github.com/OperatorFoundation/obfs4/common/replayfilter"
+               "github.com/OperatorFoundation/obfs4/common/socks5"
+               "github.com/OperatorFoundation/obfs4/common/termmon"
+               "github.com/OperatorFoundation/obfs4/common/uniformdh"
+               "github.com/OperatorFoundation/obfs4/modes/pt_socks5"
+               "github.com/OperatorFoundation/obfs4/modes/stun_udp"
+               "github.com/OperatorFoundation/obfs4/modes/transparent_tcp"
+               "github.com/OperatorFoundation/obfs4/modes/transparent_udp"
+               "github.com/OperatorFoundation/obfs4/obfs4proxy"
+               "github.com/OperatorFoundation/obfs4/proxy_dialers/proxy_http"
+               "github.com/OperatorFoundation/obfs4/proxy_dialers/proxy_socks4"
+               "github.com/OperatorFoundation/obfs4/transports")))))))
+    (propagated-inputs
+     `(("go-github-com-dchest-siphash"
+        ,go-github-com-dchest-siphash)
+       ("go-github-com-operatorfoundation-ed25519"
+        ,go-github-com-operatorfoundation-ed25519)
+       ("go-github-com-willscott-goturn"
+        ,go-github-com-willscott-goturn)
+       ("go-golang-org-x-crypto" ,go-golang-org-x-crypto)
+       ("go-golang-org-x-net" ,go-golang-org-x-net)
+       ("go-torproject-org-pluggable-transports-goptlib"
+        ,go-torproject-org-pluggable-transports-goptlib)))
+    (home-page "https://github.com/OperatorFoundation/obfs4")
+    (synopsis "Network obfourscator to scramble network traffic")
+    (description "Obfs4 is a look-like nothing obfuscation protocol that
+incorporates ideas and concepts from Philipp Winter's ScrambleSuit protocol.
+The notable differences between ScrambleSuit and obfs4 are:
+@itemize
+@item The handshake always does a full key exchange (no such thing as a Session
+Ticket Handshake).
+@item The handshake uses the Tor Project's ntor handshake with public keys
+obfuscated via the Elligator 2 mapping.
+@item The link layer encryption uses NaCl secret boxes (Poly1305/XSalsa20).
+@end itemize")
+    (license license:bsd-2)))
+
 (define-public go-github-com-willscott-goturn
   (let ((commit "19f41278d0c9251d64e0ee29f37d51e87a24a97b")
         (revision "0"))
