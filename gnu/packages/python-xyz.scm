@@ -861,9 +861,6 @@ module and then similar looking characters are removed.")
 and function call return values in a human-readable way.")
     (license license:asl2.0)))
 
-(define-public python2-shapely
-  (package-with-python2 python-shapely))
-
 (define-public python-clyent
   (package
     (name "python-clyent")
