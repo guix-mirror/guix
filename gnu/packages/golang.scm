@@ -74,6 +74,32 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
+(define-public go-github-com-op-go-logging
+  (package
+    (name "go-github-com-op-go-logging")
+    (version "1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/op/go-logging")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "01a6lkpj5p82gplddh55az194s9y3014p4j8x4zc8yv886z9c8gn"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:tests? #f ; ERROR: incorrect callpath: String.rec...a.b.c.Info.
+       #:import-path "github.com/op/go-logging"))
+    (home-page "https://github.com/op/go-logging")
+    (synopsis "Go logging library")
+    (description "Go-Logging implements a logging infrastructure for Go.  Its
+output format is customizable and supports different logging backends like
+syslog, file and memory.  Multiple backends can be utilized with different log
+levels per backend and logger.")
+    (license license:bsd-3)))
+
 (define-public go-github-com-operatorfoundation-shapeshifter-ipc
   (package
     (name "go-github-com-operatorfoundation-shapeshifter-ipc")
