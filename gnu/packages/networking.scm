@@ -3569,7 +3569,7 @@ A very simple IM client working over the DHT.
 (define-public frrouting
   (package
     (name "frrouting")
-    (version "7.5")
+    (version "7.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/FRRouting/frr/releases/"
@@ -3577,7 +3577,7 @@ A very simple IM client working over the DHT.
                                   ".tar.xz"))
               (sha256
                (base32
-                "1a27wvxmc51sr0kchy0hjfpv19imlgrr3s9k48lik9k01g71yrdr"))))
+                "1r7gh5h27ii7d1d0z0x48wx7hs8vvympv3gqvy3cwzg05q5vk9xs"))))
     (build-system gnu-build-system)
     (inputs
      `(("c-ares" ,c-ares)
