@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Jakob L. Kreuze <zerodaysfordays@sdf.org>
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2021 Solene Rapenne <solene@perso.pw>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,7 +31,7 @@
 (define-public i2pd
   (package
     (name "i2pd")
-    (version "2.36.0")
+    (version "2.38.0")
     (source
      (origin
        (method git-fetch)
@@ -39,7 +40,7 @@
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0gx7y0vrg9lsl7m1r6c8xyyqmaqn900kms4g0941g0gd5zdb0mvz"))))
+        (base32 "1a35grcfw5a9dsj0rnm2i86fjf4px96xbnjj3hkril7hv5jvl37k"))))
     (build-system cmake-build-system)
     (inputs `(("boost" ,boost)
               ("miniupnpc" ,miniupnpc)
