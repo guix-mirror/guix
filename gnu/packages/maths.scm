@@ -26,7 +26,7 @@
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018 Nadya Voronova <voronovank@gmail.com>
 ;;; Copyright © 2018 Adam Massmann <massmannak@gmail.com>
-;;; Copyright © 2018, 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018, 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2018 Eric Brown <brown@fastmail.com>
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Amin Bandali <bandali@gnu.org>
@@ -135,6 +135,7 @@
   #:use-module (gnu packages tbb)
   #:use-module (gnu packages scheme)
   #:use-module (gnu packages shells)
+  #:use-module (gnu packages sphinx)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tex)
@@ -4611,7 +4612,7 @@ set.")
 (define-public hypre
   (package
     (name "hypre")
-    (version "2.15.1")
+    (version "2.20.0")
     (source
      (origin
        (method git-fetch)
@@ -4620,28 +4621,55 @@ set.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1lvh4ybqkriyqfg2zmic6mrg1981qv1i9vry1fdgsabn81hb71g4"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           ;; Remove use of __DATE__ and __TIME__ for reproducibility;
-           ;; substitute the release date.
-           (substitute* "src/utilities/HYPRE_utilities.h"
-             (("Date Compiled: .*$")
-              "Date Compiled: Oct 19 2018 15:23:00 +0000\"\n"))
-           #t))))
+        (base32 "14iqjwg5sv1qjn7c2cfv0xxmn9rwamjrhh9hgs8fjbywcbvrkjdi"))))
     (build-system gnu-build-system)
-    (outputs '("out"                    ; 6.1 MiB of headers and libraries
-               "doc"))                  ; 4.8 MiB of documentation
+    (outputs '("out"                    ;5.3 MiB of headers and libraries
+               "doc"))                  ;12 MiB of documentation
     (native-inputs
      `(("doc++" ,doc++)
-       ("netpbm" ,netpbm)
-       ("perl" ,perl)                   ; needed to run 'ppmquant' during tests
-       ("texlive" ,(texlive-updmap.cfg (list texlive-xypic
-                                        texlive-cm
-                                        texlive-latex-hyperref
-                                        texlive-bibtex)))
-       ("ghostscript" ,ghostscript)))
+       ("doxygen" ,doxygen)
+       ("python" ,python)
+       ("python-breathe" ,python-breathe)
+       ("python-sphinx" ,python-sphinx)
+       ("texlive" ,(texlive-updmap.cfg (list texlive-adjustbox
+                                             texlive-amsfonts
+                                             texlive-bibtex
+                                             texlive-caption
+                                             texlive-cm
+                                             texlive-etoolbox
+                                             texlive-jknappen
+                                             texlive-sectsty
+                                             texlive-tex-gyre
+                                             texlive-wasy
+                                             texlive-xcolor
+                                             texlive-xypic
+                                             texlive-generic-listofitems
+                                             texlive-generic-ulem
+                                             texlive-latex-capt-of
+                                             texlive-latex-cmap
+                                             texlive-latex-colortbl
+                                             texlive-latex-etoc
+                                             texlive-latex-fancyhdr
+                                             texlive-latex-fancyvrb
+                                             texlive-latex-float
+                                             texlive-latex-fncychap
+                                             texlive-latex-framed
+                                             texlive-latex-geometry
+                                             texlive-latex-hanging
+                                             texlive-latex-hyperref
+                                             texlive-latex-multirow
+                                             texlive-latex-natbib
+                                             texlive-latex-needspace
+                                             texlive-latex-newunicodechar
+                                             texlive-latex-parskip
+                                             texlive-latex-stackengine
+                                             texlive-latex-tabulary
+                                             texlive-latex-titlesec
+                                             texlive-latex-tocloft
+                                             texlive-latex-upquote
+                                             texlive-latex-varwidth
+                                             texlive-latex-wasysym
+                                             texlive-latex-wrapfig)))))
     (inputs
      `(("blas" ,openblas)
        ("lapack" ,lapack)))
@@ -4671,7 +4699,7 @@ set.")
                                           configure-flags)))))))
          (add-after 'build 'build-docs
            (lambda _
-             (invoke "make" "-Cdocs" "pdf" "html")))
+             (invoke "make" "-C" "docs")))
          (replace 'check
            (lambda _
              (setenv "LD_LIBRARY_PATH" (string-append (getcwd) "/hypre/lib"))
@@ -4682,8 +4710,7 @@ set.")
                            (when (positive? size)
                              (error (format #f "~a size ~d; error indication~%"
                                             filename size)))))
-                       (find-files "test" ".*\\.err$"))
-             #t))
+                       (find-files "test" ".*\\.err$"))))
          (add-after 'install 'install-docs
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Custom install because docs/Makefile doesn't honor ${docdir}.
@@ -4692,10 +4719,9 @@ set.")
                (with-directory-excursion "docs"
                  (for-each (lambda (base)
                              (install-file (string-append base ".pdf") docdir)
-                             (copy-recursively base docdir)) ; html docs
-                           '("HYPRE_usr_manual"
-                             "HYPRE_ref_manual")))
-               #t))))))
+                             (copy-recursively (string-append base "-html")
+                                               (string-append docdir "/" base)))
+                           '("usr-manual" "ref-manual")))))))))
     (home-page "http://www.llnl.gov/casc/hypre/")
     (synopsis "Library of solvers and preconditioners for linear equations")
     (description
