@@ -360,41 +360,33 @@ also known as DXTn or DXTC) for Mesa.")
                   (guix build meson-build-system))
        #:phases
        (modify-phases %standard-phases
-         ,@(if (string-prefix? "powerpc64le" (or (%current-target-system)
-                                                 (%current-system)))
-               ;; Disable some of the llvmpipe tests.
-               `((add-after 'unpack 'disable-failing-test
-                   (lambda _
-                     (substitute* "src/gallium/drivers/llvmpipe/lp_test_arit.c"
-                       (("0\\.5, ") "")))))
-               '())
-         ,@(if (string-prefix? "powerpc-" (or (%current-target-system)
-                                              (%current-system)))
-               ;; There are some tests which fail specifically on powerpc.
-               `((add-after 'unpack 'disable-failing-test
-                   (lambda _
-                     (substitute* '(;; LLVM ERROR: Relocation type not implemented yet!
-                                    "src/gallium/drivers/llvmpipe/meson.build"
-                                    ;; This is probably a big-endian test failure.
-                                    "src/gallium/targets/osmesa/meson.build")
-                       (("if with_tests") "if not with_tests"))
-                     (substitute* "src/util/tests/format/meson.build"
-                       ;; This is definately an endian-ness test failure.
-                       (("'u_format_test', ") ""))
-                     ;; It is only this portion of the test which fails.
-                     (substitute* "src/mesa/main/tests/meson.build"
-                       ((".*mesa_formats.*") "")))))
-               '())
-         ,@(if (string-prefix? "i686" (or (%current-target-system)
-                                          (%current-system)))
-               ;; Disable new test from Mesa 19 that fails on i686.  Upstream
-               ;; report: <https://bugs.freedesktop.org/show_bug.cgi?id=110612>.
-               `((add-after 'unpack 'disable-failing-test
-                   (lambda _
-                     (substitute* "src/util/tests/format/meson.build"
-                       (("'u_format_test',") ""))
-                     #t)))
-               '())
+         (add-after 'unpack 'disable-failing-test
+           (lambda _
+             ,@(match (%current-system)
+                 ("powerpc64le"
+                  ;; Disable some of the llvmpipe tests.
+                  `((substitute* "src/gallium/drivers/llvmpipe/lp_test_arit.c"
+                      (("0\\.5, ") ""))))
+                 ("powerpc"
+                  ;; There are some tests which fail specifically on powerpc.
+                  `((substitute* '(;; LLVM ERROR: Relocation type not implemented yet!
+                                   "src/gallium/drivers/llvmpipe/meson.build"
+                                   ;; This is probably a big-endian test failure.
+                                   "src/gallium/targets/osmesa/meson.build")
+                      (("if with_tests") "if not with_tests"))
+                    (substitute* "src/util/tests/format/meson.build"
+                      ;; This is definately an endian-ness test failure.
+                      (("'u_format_test', ") ""))
+                    ;; It is only this portion of the test which fails.
+                    (substitute* "src/mesa/main/tests/meson.build"
+                      ((".*mesa_formats.*") ""))))
+                 ("i686-linux"
+                  ;; Disable new test from Mesa 19 that fails on i686.  Upstream
+                  ;; report: <https://bugs.freedesktop.org/show_bug.cgi?id=110612>.
+                  `((substitute* "src/util/tests/format/meson.build"
+                      (("'u_format_test',") ""))))
+                 (_
+                  '((display "No tests to disable on this architecture.\n"))))))
          (add-after 'unpack 'fix-tests
            (lambda _
              ;; See <https://gitlab.freedesktop.org/mesa/mesa/-/issues/3181>.
@@ -424,22 +416,13 @@ also known as DXTn or DXTC) for Mesa.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
                    (bin (assoc-ref outputs "bin")))
-               ,@(match (%current-system)
-                   ((or "i686-linux" "x86_64-linux" "powerpc64le-linux" "aarch64-linux" "powerpc-linux")
-                    ;; Install the Vulkan overlay control script to a separate
-                    ;; output to prevent a reference on Python, saving ~70 MiB
-                    ;; on the closure size.
-                    '((copy-recursively (string-append out "/bin")
-                                        (string-append bin "/bin"))
-                      (delete-file-recursively (string-append out "/bin"))))
-                   (_
-                    ;; XXX: On architectures without the Vulkan overlay layer
-                    ;; just create an empty file because outputs can not be
-                    ;; added conditionally.
-                    '((mkdir-p (string-append bin "/bin"))
-                      (call-with-output-file (string-append bin "/bin/.empty")
-                        (const #t)))))
-               #t)))
+               ;; Not all architectures have the Vulkan overlay control script.
+               (mkdir-p (string-append bin "/bin"))
+               (call-with-output-file (string-append bin "/bin/.empty")
+                 (const #t))
+               (copy-recursively (string-append out "/bin")
+                                 (string-append bin "/bin"))
+               (delete-file-recursively (string-append out "/bin")))))
          (add-after 'install 'symlinks-instead-of-hard-links
            (lambda* (#:key outputs #:allow-other-keys)
              ;; All the drivers and gallium targets create hard links upon
