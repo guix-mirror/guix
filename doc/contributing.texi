@@ -1419,6 +1419,45 @@ you're confident, it's OK to commit.
 That last part is subject to being adjusted, allowing individuals to commit
 directly on non-controversial changes on parts they’re familiar with.
 
+@subsection Addressing Issues
+
+Peer review (@pxref{Submitting Patches}) and tools such as
+@command{guix lint} (@pxref{Invoking guix lint}) and the test suite
+(@pxref{Running the Test Suite}) should catch issues before they are
+pushed.  Yet, commits that ``break'' functionality might occasionally
+go through.  When that happens, there are two priorities: mitigating
+the impact, and understanding what happened to reduce the chance of
+similar incidents in the future.  The responsibility for both these
+things primarily lies with those involved, but like everything this is
+a group effort.
+
+Some issues can directly affect all users---for instance because they
+make @command{guix pull} fail or break core functionality, because they
+break major packages (at build time or run time), or because they
+introduce known security vulnerabilities.
+
+@cindex reverting commits
+The people involved in authoring, reviewing, and pushing such
+commit(s) should be at the forefront to mitigate their impact in a
+timely fashion: by pushing a followup commit to fix it (if possible),
+or by reverting it to leave time to come up with a proper fix, and by
+communicating with other developers about the problem.
+
+If these persons are unavailable to address the issue in time, other
+committers are entitled to revert the commit(s), explaining in the
+commit log and on the mailing list what the problem was, with the goal
+of leaving time to the original committer, reviewer(s), and author(s)
+to propose a way forward.
+
+Once the problem has been dealt with, it is the responsibility of
+those involved to make sure the situation is understood.  If you are
+working to understand what happened, focus on gathering information
+and avoid assigning any blame.  Do ask those involved to describe what
+happened, do not ask them to explain the situation---this would
+implicitly blame them, which is unhelpful.  Accountability comes from
+a consensus about the problem, learning from it and improving
+processes so that it's less likely to reoccur.
+
 @subsection Commit Revocation
 
 In order to reduce the possibility of mistakes, committers will have
