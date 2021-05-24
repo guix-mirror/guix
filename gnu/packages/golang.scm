@@ -74,6 +74,105 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
+(define-public go-github-com-blanu-dust
+  (package
+    (name "go-github-com-blanu-dust")
+    (version "1.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/blanu/Dust")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1lya21w06ramq37af5hdiafbrv5k1csjm7k7m00v0bfxg3ni01bs"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:unpack-path "github.com/blanu/Dust"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'build
+           (lambda arguments
+             (for-each
+              (lambda (directory)
+                (apply (assoc-ref %standard-phases 'build)
+                       `(,@arguments #:import-path ,directory)))
+              (list
+               "github.com/blanu/Dust/go/buf"
+               "github.com/blanu/Dust/go/dist"
+               "github.com/blanu/Dust/go/huffman"
+               "github.com/blanu/Dust/go/model1"
+               "github.com/blanu/Dust/go/prim1"
+               "github.com/blanu/Dust/go/proc"
+               "github.com/blanu/Dust/go/sillyHex"
+               "github.com/blanu/Dust/go/skein"
+               "github.com/blanu/Dust/go/v2/Dust2_proxy"
+               "github.com/blanu/Dust/go/v2/Dust2_tool"
+               "github.com/blanu/Dust/go/v2/crypting"
+               "github.com/blanu/Dust/go/v2/interface"
+               "github.com/blanu/Dust/go/v2/shaping"))))
+         (replace 'check
+           (lambda arguments
+             (for-each
+              (lambda (directory)
+                (apply (assoc-ref %standard-phases 'check)
+                       `(,@arguments #:import-path ,directory)))
+              (list
+               "github.com/blanu/Dust/go/buf"
+               "github.com/blanu/Dust/go/dist"
+               ;; Repository is missing test files directory.
+               ;;"github.com/blanu/Dust/go/huffman"
+               "github.com/blanu/Dust/go/model1"
+               "github.com/blanu/Dust/go/prim1"
+               "github.com/blanu/Dust/go/proc"
+               "github.com/blanu/Dust/go/sillyHex"
+               "github.com/blanu/Dust/go/skein"
+               "github.com/blanu/Dust/go/v2/Dust2_proxy"
+               "github.com/blanu/Dust/go/v2/Dust2_tool"
+               "github.com/blanu/Dust/go/v2/crypting"
+               "github.com/blanu/Dust/go/v2/interface"
+               "github.com/blanu/Dust/go/v2/shaping"))))
+         (replace 'install
+           (lambda arguments
+             (for-each
+              (lambda (directory)
+                (apply (assoc-ref %standard-phases 'install)
+                       `(,@arguments #:import-path ,directory)))
+              (list
+               "github.com/blanu/Dust/go/buf"
+               "github.com/blanu/Dust/go/dist"
+               "github.com/blanu/Dust/go/huffman"
+               "github.com/blanu/Dust/go/model1"
+               "github.com/blanu/Dust/go/prim1"
+               "github.com/blanu/Dust/go/proc"
+               "github.com/blanu/Dust/go/sillyHex"
+               "github.com/blanu/Dust/go/skein"
+               "github.com/blanu/Dust/go/v2/Dust2_proxy"
+               "github.com/blanu/Dust/go/v2/Dust2_tool"
+               "github.com/blanu/Dust/go/v2/crypting"
+               "github.com/blanu/Dust/go/v2/interface"
+               "github.com/blanu/Dust/go/v2/shaping")))))))
+    (propagated-inputs
+     `(("go-github-com-operatorfoundation-ed25519"
+        ,go-github-com-operatorfoundation-ed25519)
+       ("go-github-com-op-go-logging"
+        ,go-github-com-op-go-logging)
+       ("go-golang-org-x-crypto" ,go-golang-org-x-crypto)))
+    (home-page "https://github.com/blanu/Dust")
+    (synopsis "Censorship-resistant internet transport protocol")
+    (description "Dust is an Internet protocol designed to resist a number of
+attacks currently in active use to censor Internet communication.  While
+adherence to the theoretical maxims of cryptographic security is observed where
+possible, the focus of Dust is on real solutions to real attacks.")
+    (license
+     (list
+      ;; Skein.
+      license:bsd-2
+      ;; Others.
+      license:expat))))
+
 (define-public go-github-com-op-go-logging
   (package
     (name "go-github-com-op-go-logging")
