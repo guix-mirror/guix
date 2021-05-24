@@ -478,7 +478,7 @@ your private keys, no previous conversation is compromised.")
 (define-public libsignal-protocol-c
   (package
   (name "libsignal-protocol-c")
-  (version "2.3.2")
+  (version "2.3.3")
   (source (origin
            (method git-fetch)
            (uri (git-reference
@@ -487,7 +487,7 @@ your private keys, no previous conversation is compromised.")
            (file-name (git-file-name name version))
            (sha256
             (base32
-             "1qj2w4csy6j9jg1jy66n1qwysx7hgjywk4n35hlqcnh1kpa14k3p"))))
+             "0z5p03vk15i6h870azfjgyfgxhv31q2vq6rfhnybrnkxq2wqzwhk"))))
   (arguments
    `(;; Required for proper linking and for tests to run.
      #:configure-flags '("-DBUILD_SHARED_LIBS=on" "-DBUILD_TESTING=1")))
