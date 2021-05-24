@@ -74,6 +74,59 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
+(define-public go-github-com-operatorfoundation-shapeshifter-ipc
+  (package
+    (name "go-github-com-operatorfoundation-shapeshifter-ipc")
+    (version "2.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/OperatorFoundation/shapeshifter-ipc")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1q1fcnllg462nfca16s5mr0n2jh92x3hj946qnaqc682phjz04lg"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:tests? #f                      ; ERROR: undefined: Args.
+       #:unpack-path "github.com/OperatorFoundation/shapeshifter-ipc"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'build
+           (lambda arguments
+             (for-each
+              (lambda (directory)
+                (apply (assoc-ref %standard-phases 'build)
+                       `(,@arguments #:import-path ,directory)))
+              (list
+               "github.com/OperatorFoundation/shapeshifter-ipc/v2"
+               "github.com/OperatorFoundation/shapeshifter-ipc/v3"))))
+         (replace 'check
+           (lambda arguments
+             (for-each
+              (lambda (directory)
+                (apply (assoc-ref %standard-phases 'check)
+                       `(,@arguments #:import-path ,directory)))
+              (list
+               "github.com/OperatorFoundation/shapeshifter-ipc/v2"
+               "github.com/OperatorFoundation/shapeshifter-ipc/v3"))))
+         (replace 'install
+           (lambda arguments
+             (for-each
+              (lambda (directory)
+                (apply (assoc-ref %standard-phases 'install)
+                       `(,@arguments #:import-path ,directory)))
+              (list
+               "github.com/OperatorFoundation/shapeshifter-ipc/v2"
+               "github.com/OperatorFoundation/shapeshifter-ipc/v3")))))))
+    (home-page "https://github.com/OperatorFoundation/shapeshifter-ipc")
+    (synopsis "Go implementation of the Pluggable Transports IPC protocol")
+    (description "Shapeshifter-IPC is a library for Go implementing the IPC
+protocol from the Pluggable Transports 2.0 specification.")
+    (license license:expat)))
+
 (define-public go-github-com-operatorfoundation-obfs4
   (package
     (name "go-github-com-operatorfoundation-obfs4")
