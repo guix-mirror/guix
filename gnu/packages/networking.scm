@@ -2881,16 +2881,65 @@ displays the results in real time.")
              #t)))
        #:configure-flags
        (list
-        ;; Disable bsd-4 licensed plugins.
+        "--disable-ldap"
+        "--disable-mysql"
+        "--disable-systemd"
+
+        ;; Disable BSD-4 licensed plugins.
+        "--disable-blowfish"
         "--disable-des"
-        "--disable-blowfish")))
+
+        ;; Make it usable.  The default configuration is far too minimal to be
+        ;; used with most common VPN set-ups.
+        ;; See <https://wiki.strongswan.org/projects/strongswan/wiki/Autoconf>.
+        "--enable-aesni"
+        "--enable-attr-sql"
+        "--enable-chapoly"
+        "--enable-curl"
+        "--enable-dhcp"
+        "--enable-eap-aka"
+        "--enable-eap-aka-3gpp"
+        "--enable-eap-dynamic"
+        "--enable-eap-identity"
+        "--enable-eap-md5"
+        "--enable-eap-mschapv2"
+        "--enable-eap-peap"
+        "--enable-eap-radius"
+        "--enable-eap-sim"
+        "--enable-eap-sim-file"
+        "--enable-eap-simaka-pseudonym"
+        "--enable-eap-simaka-reauth"
+        "--enable-eap-simaka-sql"
+        "--enable-eap-tls"
+        "--enable-eap-tnc"
+        "--enable-eap-ttls"
+        "--enable-ext-auth"
+        "--enable-farp"
+        "--enable-ha"
+        "--enable-led"
+        "--enable-md4"
+        "--enable-mediation"
+        "--enable-openssl"
+        "--enable-soup"
+        "--enable-sql"
+        "--enable-sqlite"
+        "--enable-xauth-eap"
+        "--enable-xauth-noauth"
+        "--enable-xauth-pam"
+
+        ;; Use libcap by default.
+        "--with-capabilities=libcap")))
     (inputs
      `(("curl" ,curl)
        ("gmp" ,gmp)
+       ("libcap" ,libcap)
        ("libgcrypt" ,libgcrypt)
+       ("libsoup" ,libsoup)
+       ("linux-pam" ,linux-pam)
        ("openssl" ,openssl)))
     (native-inputs
      `(("coreutils" ,coreutils)
+       ("pkg-config" ,pkg-config)
        ("tzdata" ,tzdata-for-tests)))
     (synopsis "IKEv1/v2 keying daemon")
     (description "StrongSwan is an IPsec implementation originally based upon
