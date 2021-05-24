@@ -186,6 +186,7 @@
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pdf)
+  #:use-module (gnu packages racket)
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages rust-apps)
   #:use-module (gnu packages scheme)
@@ -356,6 +357,49 @@ using geiser.")
      "This package adds support for the Gauche Scheme implementation to Geiser,
 a generic Scheme interaction mode for the GNU Emacs editor.")
     (license license:expat)))
+
+(define-public emacs-geiser-racket
+  (package
+    (name "emacs-geiser-racket")
+    (version "0.16")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/emacs-geiser/racket.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1aqsvmk1hi7kc3j4h8xlza7c6rwm71v98fv5wpw8kmyj9vsp49wx"))))
+    (build-system emacs-build-system)
+    (arguments
+     '(#:include (cons "^src/" %default-include)
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'make-autoloads 'patch-autoloads
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* (string-append
+                           (elpa-directory (assoc-ref outputs "out"))
+                           "/geiser-racket-autoloads.el")
+               ;; Activating implementations fails when Geiser is not yet
+               ;; loaded, so let's defer that until it is.
+               (("\\(geiser-activate-implementation .*\\)" all)
+                (string-append
+                 "(eval-after-load 'geiser-impl '" all ")"))
+	       (("\\(geiser-implementation-extension .*\\)" all)
+                (string-append
+                 "(eval-after-load 'geiser-impl '" all ")")))
+             #t)))))
+    (inputs
+     `(("racket" ,racket)))
+    (propagated-inputs
+     `(("geiser" ,emacs-geiser)))
+    (home-page "https://nongnu.org/geiser/")
+    (synopsis "Racket support for Geiser")
+    (description
+     "This package adds support for the Racket implementation to Geiser,
+a generic Scheme interaction mode for the GNU Emacs editor.")
+    (license license:bsd-3)))
 
 (define-public emacs-vc-hgcmd
   (package
