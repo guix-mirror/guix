@@ -74,6 +74,28 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
+(define-public go-github-com-deckarep-golang-set
+  (package
+    (name "go-github-com-deckarep-golang-set")
+    (version "1.7.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/deckarep/golang-set")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0y64c0p6a7ww5jp6adm6fm97vsni86njw8wkwxfmciy466vhl0lf"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/deckarep/golang-set"))
+    (home-page "https://github.com/deckarep/golang-set")
+    (synopsis "Set type for Go")
+    (description "Set is the set collection for the Go language.")
+    (license license:expat)))
+
 (define-public go-github-com-blanu-dust
   (package
     (name "go-github-com-blanu-dust")
