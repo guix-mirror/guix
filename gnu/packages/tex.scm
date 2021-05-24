@@ -4321,6 +4321,22 @@ but non-expandable ones.")
 (define-public texlive-latex-filemod
   (deprecated-package "texlive-latex-filemod" texlive-filemod))
 
+(define-public texlive-latex-hanging
+  (package
+    (inherit (simple-texlive-package
+              "texlive-latex-hanging"
+              '("/tex/latex/hanging/")
+              (base32
+               "0s86yaxyfv9zxf4svwg9s13by9vrw38apfg0hsfchsimsdd6gsbb")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/hanging")
+    (synopsis "Typeset hanging paragraphs")
+    (description
+     "The @code{hanging} package facilitates the typesetting of hanging
+paragraphs.  The package also enables typesetting with hanging punctuation,
+by making punctuation characters active.")
+    (license license:lppl1.3c+)))
+
 (define-public texlive-latex-ifplatform
   (package
     (name "texlive-latex-ifplatform")
