@@ -499,7 +499,7 @@ export INFOPATH="$_GUIX_PROFILE/share/info:$INFOPATH"
 GUIX_PROFILE="$HOME/.guix-profile"
 [ -L $GUIX_PROFILE ] || return
 GUIX_LOCPATH="$GUIX_PROFILE/lib/locale"
-export GUIX_PROFILE GUIX_LOCPATH
+export GUIX_LOCPATH
 
 [ -f "$GUIX_PROFILE/etc/profile" ] && . "$GUIX_PROFILE/etc/profile"
 
