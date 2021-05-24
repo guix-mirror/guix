@@ -606,18 +606,17 @@ and several other projects.")
 (define-public python-breathe
   (package
     (name "python-breathe")
-    (version "4.22.1")
+    (version "4.30.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "breathe" version))
        (sha256
         (base32
-         "0snk538xv60z4vfhl3f7v5g658za7257hddkg07cknkn33k6cjvf"))))
+         "055h95fkdld7s49878fqjx1nri1drj1czc184vrb7i60mf2yqg9n"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-docutils" ,python-docutils)
-       ("python-six" ,python-six)
        ("python-sphinx" ,python-sphinx)))
     (home-page "https://github.com/michaeljones/breathe")
     (synopsis "ReStructuredText and Sphinx bridge to Doxygen")
