@@ -4521,6 +4521,23 @@ recent classes such as powerdot or beamer, both of which are tuned to
 (define-public texlive-latex-seminar
   (deprecated-package "texlive-latex-seminar" texlive-seminar))
 
+(define-public texlive-latex-stackengine
+  (package
+    (inherit (simple-texlive-package
+              "texlive-latex-stackengine"
+              (list "/doc/latex/stackengine/"
+                    "/tex/latex/stackengine/")
+              (base32
+               "1rbw3dmb6kl3wlnpxacr8cmp2ivac1kpnb33k7r5s3lp1q59ck38")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/stackengine")
+    (synopsis "Customised stacking of objects")
+    (description
+     "The package provides a versatile way to stack objects vertically in a
+variety of customizable ways.  A number of useful macros are provided, all
+of which make use of the @code{stackengine} core.")
+    (license license:lppl1.3+)))
+
 (define-public texlive-latex-trimspaces
   (package
     (name "texlive-latex-trimspaces")
