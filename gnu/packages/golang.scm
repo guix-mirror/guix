@@ -74,6 +74,32 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
+(define-public go-github-com-willscott-goturn
+  (let ((commit "19f41278d0c9251d64e0ee29f37d51e87a24a97b")
+        (revision "0"))
+    (package
+      (name "go-github-com-willscott-goturn")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/willscott/goturn")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0zwvhfznr84ayzknn9flh65nvqjsixisgy9fkhz2jlahl1ldqcq7"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/willscott/goturn"))
+      (home-page "https://github.com/willscott/goturn")
+      (synopsis "Go TURN dialer")
+      (description "GoTURN is a library providing a Go interface compatible with
+the golang proxy package which connects through a TURN relay.  It provides
+parsing and encoding support for STUN and TURN protocols.")
+      (license license:bsd-3))))
+
 (define-public go-torproject-org-pluggable-transports-goptlib
   (package
     (name "go-torproject-org-pluggable-transports-goptlib")
