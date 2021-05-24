@@ -74,6 +74,29 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
+(define-public go-torproject-org-pluggable-transports-goptlib
+  (package
+    (name "go-torproject-org-pluggable-transports-goptlib")
+    (version "1.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://git.torproject.org/pluggable-transports/goptlib")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1lh938194hvkf8pqgnxwf6hvjv9rv0j3kasi07r2ckrj8sxzk4jc"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "git.torproject.org/pluggable-transports/goptlib"))
+    (home-page "https://gitweb.torproject.org/pluggable-transports/goptlib.git/")
+    (synopsis "Go pluggable transports library")
+    (description "GoPtLib is a library for writing Tor pluggable transports in
+Go.")
+    (license license:cc0)))
+
 (define-public go-github-com-sevlyar-go-daemon
   (package
     (name "go-github-com-sevlyar-go-daemon")
