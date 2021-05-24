@@ -3268,7 +3268,19 @@ files have changed.  It is based on MD5 checksum, provided by pdfTeX.")
     (build-system texlive-build-system)
     (arguments
      '(#:tex-directory "latex/tools"
-       #:build-targets '("tools.ins")))
+       #:build-targets '("tools.ins")
+       #:phases (modify-phases %standard-phases
+                  (add-after 'install 'provide-array-2016-10-06.sty
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; XXX: array.sty does:
+                      ;;  "DeclareRelease{}{2016-10-06}{array-2016-10-06.sty}"
+                      ;; ...which causes some users (hypre) to look for that
+                      ;; file specifically.  Provide it.
+                      (with-directory-excursion (string-append
+                                                 (assoc-ref outputs "out")
+                                                 "/share/texmf-dist/tex"
+                                                 "/latex/tools")
+                        (symlink "array.sty" "array-2016-10-06.sty")))))))
     (home-page "https://www.ctan.org/pkg/latex-tools")
     (synopsis "LaTeX standard tools bundle")
     (description
