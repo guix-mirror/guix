@@ -4233,6 +4233,37 @@ for a variety of alignment purposes, as is evidenced by the examples in
 also provided.")
     (license license:lppl1.3+)))
 
+(define-public texlive-latex-etoc
+  (package
+    (inherit (simple-texlive-package
+              "texlive-latex-etoc"
+              '("/doc/latex/etoc/README.md"
+                "/doc/latex/etoc/etoc.pdf"
+                "/tex/latex/etoc/")
+              (base32
+               "0i4fgqzqajirjyih6gbx890l17y648mdfqm09v3iz4af0dz4mbdy")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/etoc")
+    (synopsis "Completely customisable TOCs")
+    (description
+     "This package gives the user complete control of how the entries of
+the table of contents should be constituted from the name, number, and page
+number of each sectioning unit.  The layout is controlled by the definition
+of ‘line styles’ for each sectioning level used in the document.
+
+The package provides its own custom line styles (which may be used as
+examples), and continues to support the standard formatting inherited from
+the LaTeX document classes, but the package can also allow the user to
+delegate the details to packages dealing with list making environments (such
+as enumitem).  The package’s default global style typesets tables of contents
+in a multi-column format, with either a standard heading, or a ruled title
+(optionally with a frame around the table).
+
+The @code{\\tableofcontents} command may be used arbitrarily many times in
+the same document, while @code{\\localtableofcontents} provides a ‘local’
+table of contents.")
+    (license license:lppl1.3c+)))
+
 (define-public texlive-latex-expdlist
   (package
     (name "texlive-latex-expdlist")
