@@ -4386,6 +4386,22 @@ that are compatible with @code{natbib}: @code{plainnat}, @code{unsrtnat},
 designed from the start to be compatible with @code{natbib}.")
     (license license:lppl)))
 
+(define-public texlive-latex-newunicodechar
+  (package
+    (inherit (simple-texlive-package
+              "texlive-latex-newunicodechar"
+              '("/doc/latex/newunicodechar/" "/tex/latex/newunicodechar/")
+              (base32
+               "0pwx3ylhvk5hxjnalas00grrbwla79j424i27hrm0zgflq7wsbrj")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/newunicodechar")
+    (synopsis "Definitions of the meaning of Unicode characters")
+    (description
+     "This package provides a friendly interface for defining the meaning of
+Unicode characters.  The document should be processed by (pdf)LaTeX with the
+Unicode option of @code{inputenc} or @code{inputenx}, or by XeLaTeX/LuaLaTeX.")
+    (license license:lppl1.3c+)))
+
 (define-public texlive-latex-pdftexcmds
   (package
     (inherit (simple-texlive-package
