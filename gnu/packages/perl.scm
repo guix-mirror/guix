@@ -4226,6 +4226,27 @@ and alternative installers with the `installler` option.  But it's written in
 only about 40% as many lines of code and with zero non-core dependencies.")
     (license (package-license perl))))
 
+(define-public perl-extutils-manifest
+  (package
+    (name "perl-extutils-manifest")
+    (version "1.73")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://cpan.metacpan.org/authors/id/E/ET/ETHER/"
+                    "ExtUtils-Manifest-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1y5siyw9sbxq6kdmsjfsx0mrbqb6xr8kmniwli7xc6hbmhyhcp6w"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/release/ExtUtils-Manifest")
+    (synopsis "Utilities to write and check a MANIFEST file")
+    (description "This package contains functions to manipulate a MANIFEST
+file.  The package exports no functions by default.  The following are exported
+on request: mkmanifest, manifind, manicheck, filecheck, fullcheck, skipcheck,
+maniread, maniskip, manicopy, maniadd.")
+    (license (package-license perl))))
+
 (define-public perl-extutils-installpaths
   (package
     (name "perl-extutils-installpaths")
