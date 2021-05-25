@@ -27351,13 +27351,13 @@ Features:
 (define-public emacs-shell-command+
   (package
     (name "emacs-shell-command+")
-    (version "2.1.0")
+    (version "2.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://elpa.gnu.org/packages/"
                                   "shell-command+-" version ".tar"))
               (sha256
-               (base32 "1jyrnv89989bi03m5h8dj0cllsw3rvyxkiyfrh9v6gpxjwfy8lmq"))))
+               (base32 "1ms2xk7xfgd3ngwm90hnmlxwpvyb167bislc2wr3ilfrirbbw476"))))
     (build-system emacs-build-system)
     (home-page "http://elpa.gnu.org/packages/shell-command+.html")
     (synopsis "Extended Emacs @code{shell-command}")
