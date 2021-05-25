@@ -1752,21 +1752,16 @@ online as well as original implementations of various other algorithms.")
 (define-public ipopt
   (package
     (name "ipopt")
-    (version "3.12.12")
+    (version "3.13.4")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://www.coin-or.org/download/source/Ipopt/Ipopt-"
-                    version".tgz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/coin-or/Ipopt")
+                    (commit (string-append "releases/" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "07yn9rzdswjk8n246qq6ci9ssf2bcplkifcpsfz9j6cdxw9vgbkv"))
-              (modules '((guix build utils)))
-              (snippet
-               ;; Make sure we don't use the bundled software.
-               '(begin
-                  (delete-file-recursively "ThirdParty")
-                  #t))))
+                "08gznhwhqv1x4baksz350ih8q16r5rd0k8vals6078m3h94khr4b"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -1786,7 +1781,8 @@ online as well as original implementations of various other algorithms.")
                                           after "\n")))
                         #t))))))
     (native-inputs
-     `(("gfortran" ,gfortran)))
+     `(("gfortran" ,gfortran)
+       ("pkg-config" ,pkg-config)))
     (inputs
      ;; TODO: Maybe add dependency on COIN-MUMPS, ASL, and HSL.
      `(("lapack" ,lapack)))                    ;for both libblas and liblapack
@@ -1796,7 +1792,7 @@ online as well as original implementations of various other algorithms.")
      "The Interior Point Optimizer (IPOPT) is a software package for
 large-scale nonlinear optimization.  It provides C++, C, and Fortran
 interfaces.")
-    (license license:epl1.0)))
+    (license license:epl2.0)))
 
 (define-public cbc
   (package
