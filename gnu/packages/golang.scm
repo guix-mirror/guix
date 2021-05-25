@@ -74,6 +74,34 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
+(define-public go-github-com-aead-chacha20
+  (let ((commit "8b13a72661dae6e9e5dea04f344f0dc95ea29547")
+        (revision "0"))
+    (package
+      (name "go-github-com-aead-chacha20")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/aead/chacha20")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0gbmgq5kbqmbyrsav57ql4jzbvqvp1q7yvcd5fl3wf5g94iyv56r"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/aead/chacha20"))
+      (propagated-inputs
+       `(("go-golang-org-x-sys" ,go-golang-org-x-sys)))
+      (home-page "https://github.com/aead/chacha20")
+      (synopsis "ChaCha20 and XChaCha20 stream ciphers")
+      (description "ChaCha is a stream cipher family created by Daniel Bernstein.
+The most common ChaCha variant is ChaCha20 (20 rounds).  ChaCha20 is
+standardized in RFC 7539.")
+      (license license:expat))))
+
 (define-public go-github-com-mufti1-interconv
   (let ((commit "d7c72925c6568d60d361757bb9f2d252dcca745c")
         (revision "0"))
