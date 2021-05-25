@@ -695,7 +695,7 @@ are detected, the user is notified.")))
                      (lambda (prefix)
                        (let ((path (string-append prefix "/share/lua/" lua-version)))
                          (string-append path "/?.lua;" path "/?/?.lua"))))
-                    (lua-inputs (map (cute assoc-ref %build-inputs <>)
+                    (lua-inputs (map (cute assoc-ref inputs <>)
                                      '("lua"
                                        "lua-luv"
                                        "lua-lpeg"
