@@ -524,13 +524,14 @@ OpenBSD team.")
                #t)))
          (add-after 'install 'install-extra-documentation
            ;; Install sample configuration file, Info, and HTML manual.
-           (lambda* (#:key outputs #:allow-other-keys)
+           (lambda* (#:key native-inputs inputs outputs #:allow-other-keys)
              (let* ((share (string-append (assoc-ref outputs "out") "/share"))
                     (doc (string-append share "/doc/" ,name "-" ,version))
                     (html (string-append share "/html"))
                     (info (string-append share "/info"))
-                    (makeinfo (string-append (assoc-ref %build-inputs "texinfo")
-                                             "/bin/makeinfo")))
+                    (makeinfo (string-append
+                               (assoc-ref (or native-inputs inputs) "texinfo")
+                               "/bin/makeinfo")))
                ;; First fix Texinfo documentation, create appropriate
                ;; directories, then generate Info and HTML files there.
                (substitute* "qe-doc.texi"
