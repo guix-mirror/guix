@@ -27371,11 +27371,12 @@ Features:
     (name "emacs-shell-command+")
     (version "2.2.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://elpa.gnu.org/packages/"
-                                  "shell-command+-" version ".tar"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://git.sr.ht/~zge/bang")
+                    (commit version)))
               (sha256
-               (base32 "1ms2xk7xfgd3ngwm90hnmlxwpvyb167bislc2wr3ilfrirbbw476"))))
+               (base32 "1micvz6smhjma7qbka8h3w0crb3sgrxf9lz2548iqfgww50gb0lj"))))
     (build-system emacs-build-system)
     (home-page "http://elpa.gnu.org/packages/shell-command+.html")
     (synopsis "Extended Emacs @code{shell-command}")
