@@ -22921,7 +22921,7 @@ as Emacs Lisp.")
 (define-public emacs-transient
   (package
     (name "emacs-transient")
-    (version "0.3.2")
+    (version "0.3.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -22930,7 +22930,7 @@ as Emacs Lisp.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1766hdqzg95k62nqhadfv502mpnjlx1l59ppqmc6r0las82dc6a8"))))
+                "16z0j69sk7k51sd1vri3y2v0xjj0w7wpf5mmwnsxp8y6d3m0yjbv"))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #f                      ;no test suite
@@ -22941,12 +22941,10 @@ as Emacs Lisp.")
              (invoke "make" "info")
              ;; Move the info file to lisp so that it gets installed by the
              ;; emacs-build-system.
-             (rename-file "docs/transient.info" "lisp/transient.info")
-             #t))
+             (rename-file "docs/transient.info" "lisp/transient.info")))
          (add-after 'build-info-manual 'enter-lisp-directory
            (lambda _
-             (chdir "lisp")
-             #t)))))
+             (chdir "lisp"))))))
     (native-inputs
      `(("texinfo" ,texinfo)))
     (propagated-inputs
