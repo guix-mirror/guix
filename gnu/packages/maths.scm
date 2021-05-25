@@ -248,7 +248,8 @@ programming languages.")
                 "0zlbhg0lb6j60188c2xhcrvviskr079552icjldqhy1jhgmxghmm"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:configure-flags '("-DLINK_APPS_SHARED=ON")))
+     `(#:configure-flags '("-DLINK_APPS_SHARED=ON"
+                           "-DCMAKE_POSITION_INDEPENDENT_CODE=ON")))
     (synopsis "Calculate convex hulls and related structures")
     (description
      "@code{Qhull} computes the convex hull, Delaunay triangulation, Voronoi
