@@ -8895,6 +8895,27 @@ collector.")
     (description "Set::Infinite is a set theory module for infinite sets.")
     (license (package-license perl))))
 
+(define-public perl-set-intervaltree
+  (package
+   (name "perl-set-intervaltree")
+   (version "0.12")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append
+           "mirror://cpan/authors/id/S/SL/SLOYD/Set-IntervalTree-"
+           version ".tar.gz"))
+     (sha256
+      (base32 "0jf3vdmdgxx6a9xrfwnbbs9g37i1i6qhfg5qwln8x5i280701m3g"))))
+   (build-system perl-build-system)
+   (native-inputs
+    `(("perl-extutils-cppguess" ,perl-extutils-cppguess)))
+   (home-page "https://metacpan.org/release/Set-IntervalTree")
+   (synopsis "Perform range-based lookups on sets of ranges")
+   (description "This package provides an efficient mechanism to look up
+ranges in Interval Trees.")
+   (license (package-license perl))))
+
 (define-public perl-set-intspan
   (package
     (name "perl-set-intspan")
