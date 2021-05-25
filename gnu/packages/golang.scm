@@ -74,6 +74,141 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
+(define-public go-github-com-operatorfoundation-shapeshifter-transports
+  (package
+    (name "go-github-com-operatorfoundation-shapeshifter-transports")
+    (version "3.0.12")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/OperatorFoundation/shapeshifter-transports")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0f1hzhk3q2fgqdg14zlg3z0s0ib1y9xwj89qnjk95b37zbgqjgsb"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:unpack-path "github.com/OperatorFoundation/shapeshifter-transports"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           (lambda _
+             (substitute* (find-files "." "\\.go$")
+               ;; To drop '.git' suffix in import path of goptlib.
+               (("goptlib\\.git") "goptlib"))))
+         (replace 'build
+           (lambda arguments
+             (for-each
+              (lambda (directory)
+                (apply (assoc-ref %standard-phases 'build)
+                       `(,@arguments #:import-path ,directory)))
+              (list
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/Dust/v2"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/Dust/v3"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/Optimizer/v2"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/Optimizer/v3"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/Replicant/v2"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/Replicant/v3"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/meeklite/v2"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/meeklite/v3"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/meekserver/v2"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/meekserver/v3"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/obfs2/v2"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/obfs2/v3"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/obfs4/v2"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/obfs4/v3"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/shadow/v2"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/shadow/v3"))))
+         (replace 'check
+           (lambda arguments
+             (for-each
+              (lambda (directory)
+                (apply (assoc-ref %standard-phases 'check)
+                       `(,@arguments #:import-path ,directory)))
+              (list
+               ;;; ERROR: invalid memory address or nil pointer dereference.
+               ;;"github.com/OperatorFoundation/shapeshifter-transports/transports/Dust/v2"
+               ;;"github.com/OperatorFoundation/shapeshifter-transports/transports/Dust/v3"
+               ;;; ERROR: failed with status 1.
+               ;;"github.com/OperatorFoundation/shapeshifter-transports/transports/Optimizer/v2"
+               ;;"github.com/OperatorFoundation/shapeshifter-transports/transports/Optimizer/v3"
+               ;;"github.com/OperatorFoundation/shapeshifter-transports/transports/Replicant/v2"
+               ;;"github.com/OperatorFoundation/shapeshifter-transports/transports/Replicant/v3"
+               ;;"github.com/OperatorFoundation/shapeshifter-transports/transports/meeklite/v2"
+               ;;"github.com/OperatorFoundation/shapeshifter-transports/transports/meeklite/v3"
+               ;;; ERROR: bind: permission denied.
+               ;;"github.com/OperatorFoundation/shapeshifter-transports/transports/meekserver/v2"
+               ;;"github.com/OperatorFoundation/shapeshifter-transports/transports/meekserver/v3"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/obfs2/v2"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/obfs2/v3"))))
+               ;;; ERROR: failed with status 1.
+               ;;"github.com/OperatorFoundation/shapeshifter-transports/transports/obfs4/v2"
+               ;;"github.com/OperatorFoundation/shapeshifter-transports/transports/obfs4/v3"
+               ;;"github.com/OperatorFoundation/shapeshifter-transports/transports/shadow/v2"
+               ;;"github.com/OperatorFoundation/shapeshifter-transports/transports/shadow/v3"))))
+         (replace 'install
+           (lambda arguments
+             (for-each
+              (lambda (directory)
+                (apply (assoc-ref %standard-phases 'install)
+                       `(,@arguments #:import-path ,directory)))
+              (list
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/Dust/v2"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/Dust/v3"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/Optimizer/v2"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/Optimizer/v3"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/Replicant/v2"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/Replicant/v3"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/meeklite/v2"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/meeklite/v3"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/meekserver/v2"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/meekserver/v3"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/obfs2/v2"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/obfs2/v3"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/obfs4/v2"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/obfs4/v3"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/shadow/v2"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/shadow/v3")))))))
+    (native-inputs
+     `(("go-github-com-stretchr-testify"
+        ,go-github-com-stretchr-testify)))
+    (propagated-inputs
+     `(("go-github-com-aead-chacha20"
+        ,go-github-com-aead-chacha20)
+       ("go-github-com-blanu-dust"
+        ,go-github-com-blanu-dust)
+       ("go-github-com-deckarep-golang-set"
+        ,go-github-com-deckarep-golang-set)
+       ("go-github-com-kataras-golog"
+        ,go-github-com-kataras-golog)
+       ("go-github-com-mufti1-interconv"
+        ,go-github-com-mufti1-interconv)
+       ("go-github-com-opentracing-opentracing-go"
+        ,go-github-com-opentracing-opentracing-go)
+       ("go-github-com-operatorfoundation-monolith-go"
+        ,go-github-com-operatorfoundation-monolith-go)
+       ("go-github-com-operatorfoundation-obfs4"
+        ,go-github-com-operatorfoundation-obfs4)
+       ("go-github-com-operatorfoundation-shapeshifter-ipc"
+        ,go-github-com-operatorfoundation-shapeshifter-ipc)
+       ("go-github-com-shadowsocks-go-shadowsocks2"
+        ,go-github-com-shadowsocks-go-shadowsocks2)
+       ("go-golang-org-x-crypto" ,go-golang-org-x-crypto)
+       ("go-golang-org-x-net" ,go-golang-org-x-net)
+       ("go-torproject-org-pluggable-transports-goptlib"
+        ,go-torproject-org-pluggable-transports-goptlib)))
+    (home-page "https://github.com/OperatorFoundation/shapeshifter-transports")
+    (synopsis "Go implementation of Pluggable Transports")
+    (description "Shapeshifter-Transports is a set of Pluggable Transports
+implementing the Go API from the Pluggable Transports 2.0 specification.
+Each transport implements a different method of shapeshifting network traffic.
+The goal is for application traffic to be sent over the network in a shapeshifted
+form that bypasses network filtering, allowing the application to work on
+networks where it would otherwise be blocked or heavily throttled.")
+    (license license:expat)))
+
 (define-public go-github-com-kataras-golog
   (package
     (name "go-github-com-kataras-golog")
