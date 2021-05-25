@@ -74,6 +74,39 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
+(define-public go-0xacab-org-leap-shapeshifter
+  (let ((commit "0aa6226582efb8e563540ec1d3c5cfcd19200474")
+        (revision "12"))
+    (package
+      (name "go-0xacab-org-leap-shapeshifter")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://0xacab.org/leap/shapeshifter")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0m4fla9ppl53k9syms4dsad92wakr74cdvids3xxv3amdh4d1w4i"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "0xacab.org/leap/shapeshifter"))
+      (propagated-inputs
+       `(("go-github-com-operatorfoundation-obfs4"
+          ,go-github-com-operatorfoundation-obfs4)
+         ("go-github-com-operatorfoundation-shapeshifter-transports"
+          ,go-github-com-operatorfoundation-shapeshifter-transports)
+         ("go-golang-org-x-net" ,go-golang-org-x-net)))
+      (home-page "https://0xacab.org/leap/shapeshifter")
+      (synopsis "Shapeshifter Dispatcher Library")
+      (description "Shapeshifter provides network protocol shapeshifting
+technology.  The purpose of this technology is to change the characteristics of
+network traffic so that it is not identified and subsequently blocked by network
+filtering devices.")
+      (license license:bsd-2))))
+
 (define-public go-github-com-operatorfoundation-shapeshifter-transports
   (package
     (name "go-github-com-operatorfoundation-shapeshifter-transports")
