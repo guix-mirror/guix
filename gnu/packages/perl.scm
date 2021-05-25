@@ -2508,6 +2508,27 @@ generating unique ids.  These ids are coded with a Base62 system to make them
 short and handy (e.g. to use it as part of a URL).")
     (license (package-license perl))))
 
+(define-public perl-data-uuid
+  (package
+    (name "perl-data-uuid")
+    (version "1.226")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/R/RJ/RJBS/"
+                    "Data-UUID-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0lv4k4ibxwkw7zz9hw97s34za9nvjxb4kbmgmx5sj4fll3zmfg89"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/release/Data-UUID")
+    (synopsis "Universally Unique Identifiers generator")
+    (description "@code{Data::UUID} provides a framework for generating
+Universally Unique Identifiers (UUIDs), also known as Globally Unique
+Identifiers (GUIDs).  A UUID is 128 bits long, and is guaranteed to be
+different from all other UUIDs/GUIDs generated until 3400 CE.")
+    (license (package-license perl))))
+
 (define-public perl-data-dump
   (package
     (name "perl-data-dump")
