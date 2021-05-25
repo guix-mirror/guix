@@ -74,6 +74,30 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
+(define-public go-github-com-riobard-go-bloom
+  (let ((commit "cdc8013cb5b3eb0efebec85f0e904efccac42df9")
+        (revision "0"))
+    (package
+      (name "go-github-com-riobard-go-bloom")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/riobard/go-bloom")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "10a8ixh6zw52df2imxrzgxi82zc1j5hqnv5smjp818qwdn1a1rhj"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/riobard/go-bloom"))
+      (home-page "https://github.com/riobard/go-bloom")
+      (synopsis "Bloom filter in Go")
+      (description "Go-Bloom implements bloom filter using double hashing.")
+      (license license:asl2.0))))
+
 (define-public go-github-com-aead-chacha20
   (let ((commit "8b13a72661dae6e9e5dea04f344f0dc95ea29547")
         (revision "0"))
