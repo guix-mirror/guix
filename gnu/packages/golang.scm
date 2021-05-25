@@ -74,6 +74,30 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
+(define-public go-github-com-kataras-pio
+  (package
+    (name "go-github-com-kataras-pio")
+    (version "0.0.10")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/kataras/pio")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "11d2jy9xz4airicgmjcy4nb80kwv22jp140wzn2l5412jdr4jmkp"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/kataras/pio"))
+    (home-page "https://github.com/kataras/pio")
+    (synopsis "Pill for Input/Output")
+    (description "PIO is a low-level package that provides a way to centralize
+different output targets.  Supports colors and text decoration to all popular
+terminals.")
+    (license license:bsd-3)))
+
 (define-public go-github-com-shadowsocks-go-shadowsocks2
   (package
     (name "go-github-com-shadowsocks-go-shadowsocks2")
