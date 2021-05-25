@@ -42,38 +42,40 @@
        (sha256
         (base32 "1a35grcfw5a9dsj0rnm2i86fjf4px96xbnjj3hkril7hv5jvl37k"))))
     (build-system cmake-build-system)
-    (inputs `(("boost" ,boost)
-              ("miniupnpc" ,miniupnpc)
-              ("openssl" ,openssl)
-              ("zlib" ,zlib)))
-    (arguments '(#:configure-flags
-                 (let ((source (assoc-ref %build-inputs "source")))
-                   (list (string-append "-S" source "/build")
-                         "-DWITH_PCH=OFF"
-                         "-DWITH_STATIC=OFF"
-                         "-DWITH_UPNP=ON"
-                         "-DWITH_LIBRARY=ON"
-                         "-DBUILD_SHARED_LIBS=ON"
-                         "-DWITH_BINARY=ON"))
-                 #:phases
-                 (modify-phases %standard-phases
-                   (replace 'check
-                     (lambda* (#:key
-                               (make-flags '())
-                               (parallel-tests? #t)
-                               #:allow-other-keys)
-                       (let ((source (assoc-ref %build-inputs "source")))
-                         (copy-recursively (string-append source "/tests")
-                                           "./tests")
-                         (with-directory-excursion "tests"
-                           (substitute* "Makefile"
-                             (("../libi2pd/") (string-append source "/libi2pd/")))
-                           (apply invoke "make" "all"
-                                  `(,@(if parallel-tests?
-                                          `("-j" ,(number->string
-                                                    (parallel-job-count)))
-                                          '())
-                                    ,@make-flags)))))))))
+    (inputs
+     `(("boost" ,boost)
+       ("miniupnpc" ,miniupnpc)
+       ("openssl" ,openssl)
+       ("zlib" ,zlib)))
+    (arguments
+     '(#:configure-flags
+       (let ((source (assoc-ref %build-inputs "source")))
+         (list (string-append "-S" source "/build")
+               "-DWITH_PCH=OFF"
+               "-DWITH_STATIC=OFF"
+               "-DWITH_UPNP=ON"
+               "-DWITH_LIBRARY=ON"
+               "-DBUILD_SHARED_LIBS=ON"
+               "-DWITH_BINARY=ON"))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key
+                     (make-flags '())
+                     (parallel-tests? #t)
+                     #:allow-other-keys)
+             (let ((source (assoc-ref %build-inputs "source")))
+               (copy-recursively (string-append source "/tests")
+                                 "./tests")
+               (with-directory-excursion "tests"
+                 (substitute* "Makefile"
+                   (("../libi2pd/") (string-append source "/libi2pd/")))
+                 (apply invoke "make" "all"
+                        `(,@(if parallel-tests?
+                              `("-j" ,(number->string
+                                        (parallel-job-count)))
+                              '())
+                           ,@make-flags)))))))))
     (home-page "https://i2pd.website/")
     (synopsis "Router for an end-to-end encrypted and anonymous internet")
     (description "i2pd is a client for the anonymous I2P network, upon which
