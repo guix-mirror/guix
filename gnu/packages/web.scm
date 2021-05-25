@@ -368,14 +368,14 @@ the same, being completely separated from the Internet.")
     ;; ’stable’ and recommends that “in general you deploy the NGINX mainline
     ;; branch at all times” (https://www.nginx.com/blog/nginx-1-6-1-7-released/)
     ;; Consider updating the nginx-documentation package together with this one.
-    (version "1.19.10")
+    (version "1.21.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "121d11693d6dbim3lh64hrqi66z129z30cvcrpbnm631yl7jkl78"))))
+                "0w87zhm5nfx88x9hj6drrvm5f3m02kzbjp39x1lsglrbmi5jl6gy"))))
     (build-system gnu-build-system)
     (inputs `(("libxml2" ,libxml2)
               ("libxslt" ,libxslt)
@@ -466,9 +466,9 @@ and as a proxy to reduce the load on back-end HTTP or mail servers.")
 
 (define-public nginx-documentation
   ;; This documentation should be relevant for the current nginx package.
-  (let ((version "1.19.10")
-        (revision 2708)
-        (changeset "f8686d85df53"))
+  (let ((version "1.21.0")
+        (revision 2726)
+        (changeset "a7a36efd10af"))
     (package
       (name "nginx-documentation")
       (version (simple-format #f "~A-~A-~A" version revision changeset))
@@ -480,7 +480,7 @@ and as a proxy to reduce the load on back-end HTTP or mail servers.")
                (file-name (string-append name "-" version))
                (sha256
                 (base32
-                 "00b0dkpblw3m2cwbbzv3miw47c0m3s0dvh1xy0hihkggy7mqv2r2"))))
+                 "1fl7rkbfdd26c78h85x4w3kas16rpj4pxzjhc071qvx7znwgm2pn"))))
       (build-system gnu-build-system)
       (arguments
        '(#:tests? #f                    ; no test suite
