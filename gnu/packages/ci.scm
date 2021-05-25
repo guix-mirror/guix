@@ -141,7 +141,7 @@
                       (guix   (assoc-ref inputs "guix"))
                       (deps   (list avahi gcrypt json zmq squee git bytes
                                     fibers zlib matd tls mail guix))
-                      (guile  (assoc-ref %build-inputs "guile"))
+                      (guile  (assoc-ref inputs "guile"))
                       (effective
                        (read-line
                         (open-pipe* OPEN_READ
