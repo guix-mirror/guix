@@ -74,6 +74,31 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
+(define-public go-github-com-mufti1-interconv
+  (let ((commit "d7c72925c6568d60d361757bb9f2d252dcca745c")
+        (revision "0"))
+    (package
+      (name "go-github-com-mufti1-interconv")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/mufti1/interconv")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "13f5pvr74afa28pbpmgvjzjx68vv5zmrwlvxp7hr5bl5625zlxmy"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:unpack-path "github.com/mufti1/interconv"
+         #:import-path "github.com/mufti1/interconv/package"))
+      (home-page "https://github.com/mufti1/interconv")
+      (synopsis "Data type converter")
+      (description "InterConv converts interfaces into any data type.")
+      (license license:expat))))
+
 (define-public go-github-com-opentracing-opentracing-go
   (package
     (name "go-github-com-opentracing-opentracing-go")
