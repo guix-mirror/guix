@@ -74,6 +74,37 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
+(define-public go-github-com-shadowsocks-go-shadowsocks2
+  (package
+    (name "go-github-com-shadowsocks-go-shadowsocks2")
+    ;; Version > 0.1.3 requires go-toolchain v1.16.
+    (version "0.1.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/shadowsocks/go-shadowsocks2")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1wzy3ml4ld83iawcl6p313bskzs6zjhz8vlg8kpwgn71cnbv4pvi"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/shadowsocks/go-shadowsocks2"))
+    (propagated-inputs
+     `(("go-github-com-riobard-go-bloom"
+        ,go-github-com-riobard-go-bloom)
+       ("go-golang-org-x-crypto" ,go-golang-org-x-crypto)
+       ("go-golang-org-x-net" ,go-golang-org-x-net)
+       ("go-golang-org-x-sys" ,go-golang-org-x-sys)
+       ("go-golang-org-x-text" ,go-golang-org-x-text)))
+    (home-page "https://github.com/shadowsocks/go-shadowsocks2")
+    (synopsis "Shadowsocks tunnel proxy")
+    (description "Go-ShadowSocks is a Go implementation of the Shadowsocks tunnel
+proxy protocol.")
+    (license license:asl2.0)))
+
 (define-public go-github-com-riobard-go-bloom
   (let ((commit "cdc8013cb5b3eb0efebec85f0e904efccac42df9")
         (revision "0"))
