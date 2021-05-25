@@ -1041,6 +1041,12 @@ generators of mostly elementary and occasionally exotic nature.")
            (lambda _
              (substitute* (find-files "." "CMakeLists.txt")
                (("-msse2 -mfpmath=sse") ""))
+             #t))
+         (add-after 'unpack 'fix-build-with-newer-lv2
+           (lambda _
+             ;; https://github.com/ssj71/infamousPlugins/commit/4c7275b1fa8ea3296446421cbd29ec2df66588c0
+             (substitute* (find-files "src" ".*\\.cxx")
+               (("_LV2UI_Descriptor") "LV2UI_Descriptor"))
              #t)))))
     (inputs
      `(("cairo" ,cairo)
