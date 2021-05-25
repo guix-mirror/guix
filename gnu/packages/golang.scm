@@ -74,6 +74,31 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
+(define-public go-github-com-kataras-golog
+  (package
+    (name "go-github-com-kataras-golog")
+    (version "0.1.7")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/kataras/golog")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1ll24g50j48wqikzf67cyaq0m0f57v1ap24nbz3cmv3yzqi6wdl9"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/kataras/golog"))
+    (propagated-inputs
+     `(("go-github-com-kataras-pio"
+        ,go-github-com-kataras-pio)))
+    (home-page "https://github.com/kataras/golog")
+    (synopsis "Logging foundation for Go applications")
+    (description "GoLog is a level-based logger written in Go.")
+    (license license:bsd-3)))
+
 (define-public go-github-com-kataras-pio
   (package
     (name "go-github-com-kataras-pio")
