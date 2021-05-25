@@ -27,6 +27,7 @@
 ;;; Copyright © 2021 Raphaël Mélotte <raphael.melotte@mind.be>
 ;;; Copyright © 2021 ikasero <ahmed@ikasero.com>
 ;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2021 Solene Rapenne <solene@perso.pw>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -895,11 +896,16 @@ usable with any list--including files, command history, processes and more.")
             (lambda* (#:key outputs #:allow-other-keys)
               (let* ((out (assoc-ref outputs "out"))
                      (bash-completion (string-append out "/etc/bash_completion.d"))
+                     (fish-completion
+                       (string-append out "/share/fish/vendor_completions.d"))
                      (zsh-completion (string-append out "/share/zsh/site-functions")))
                 (with-directory-excursion "src/github.com/junegunn/fzf"
                   (mkdir-p bash-completion)
                   (copy-file "shell/completion.bash"
                              (string-append bash-completion "/fzf"))
+                  (mkdir-p fish-completion)
+                  (copy-file "shell/key-bindings.fish"
+                             (string-append fish-completion "/fzf.fish"))
                   (mkdir-p zsh-completion)
                   (copy-file "shell/completion.zsh"
                              (string-append zsh-completion "/_fzf"))))))))))
