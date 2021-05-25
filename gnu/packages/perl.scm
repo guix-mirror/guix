@@ -9,7 +9,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
-;;; Copyright © 2016, 2018, 2020 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2016, 2018, 2020, 2021 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Raoul J.P. Bonnal <ilpuccio.febo@gmail.com>
@@ -1916,6 +1916,32 @@ of the style used by the Git version control system.")
     (synopsis "Simple .ini-file format reader and writer")
     (description "@code{Config::INI} is a module that facilates the reading
 and writing of @code{.ini}-style configuration files.")
+    (license (package-license perl))))
+
+(define-public perl-const-fast
+  (package
+    (name "perl-const-fast")
+    (version "0.014")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/L/LE/LEONT/"
+             "Const-Fast-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1nwlldgrx86yn7y6a53cqgvzm2ircsvxg1addahlcy6510x9a1gq"))))
+    (inputs
+     `(("perl-module-build-tiny" ,perl-module-build-tiny)
+       ("perl-test-fatal" ,perl-test-fatal)))
+    ;; Needed for tests.
+    (native-inputs
+     `(("perl-sub-exporter-progressive" ,perl-sub-exporter-progressive)))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/release/Const-Fast")
+    (synopsis "Facility for creating read-only scalars, arrays, and hashes")
+    (description "This package provides prodecures to create read-only
+scalars, arrays, and hashes.")
     (license (package-license perl))))
 
 (define-public perl-context-preserve
