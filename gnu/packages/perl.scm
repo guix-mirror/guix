@@ -5853,6 +5853,29 @@ is highly configurable and let's you even provide your own handlers
 for dealing with messages.")
    (license (package-license perl))))
 
+(define-public perl-log-message-simple
+  (package
+   (name "perl-log-message-simple")
+   (version "0.10")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append
+           "mirror://cpan/authors/id/B/BI/BINGOS/Log-Message-Simple-"
+           version ".tar.gz"))
+     (sha256
+      (base32
+       "15nxi935nfrf8dkdrgvcrf2qlai4pbz03yj8sja0n9mcq2jd24ma"))))
+   (build-system perl-build-system)
+   (inputs
+    `(("perl-log-message" ,perl-log-message)))
+   (home-page "https://metacpan.org/release/Log-Message-Simple")
+   (synopsis "Simplified interface to @code{Log::Message}")
+   (description "This package provides a simplified frontend to
+@code{Log::Message}, offering most common use for logging, and easy access to
+the stack (in both raw and pretty-printable form).")
+   (license (package-license perl))))
+
 (define-public perl-log-log4perl
   (package
     (name "perl-log-log4perl")
