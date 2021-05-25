@@ -19,7 +19,7 @@
 ;;; Copyright © 2015, 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
-;;; Copyright © 2016, 2018, 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2016, 2018, 2019, 2021 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016 Daniel Pimentel <d4n1@d4n1.org>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016, 2017 Troy Sankey <sankeytms@gmail.com>
@@ -10470,6 +10470,30 @@ implementations of ASN.1-based codecs and protocols.")
  IPv6 addresses and networks.  This is a port of the Python 3.3 ipaddress
  module to older versions of Python.")
     (license license:psfl)))
+
+(define-public python-asn1tools
+  (package
+    (name "python-asn1tools")
+    (version "0.158.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "asn1tools" version))
+       (sha256
+        (base32 "1k88a1azmyvp2ab6qcf2i40dig5abhyn7cmlyhmwwh8kr3syvma0"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-bitstruct" ,python-bitstruct)
+       ("python-diskcache" ,python-diskcache)
+       ("python-prompt-toolkit" ,python-prompt-toolkit)
+       ("python-pyparsing" ,python-pyparsing)))
+    (home-page "https://github.com/eerimoq/asn1tools")
+    (synopsis  "ASN.1 parsing, encoding and decoding")
+    (description "This package provides ASN.1 parsing, encoding and decoding
+for Python, including constraints checking.  It supports several
+codecs (e.g. BER, PER, UPER, XER) as well as limited C source code generating
+for OER and UPER.")
+    (license license:expat)))
 
 (define-public python2-ipaddr
   (package
