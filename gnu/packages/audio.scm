@@ -1022,7 +1022,7 @@ generators of mostly elementary and occasionally exotic nature.")
 (define-public infamous-plugins
   (package
     (name "infamous-plugins")
-    (version "0.2.04")
+    (version "0.3.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1031,7 +1031,7 @@ generators of mostly elementary and occasionally exotic nature.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0hmqk80w4qxq09iag7b7srf2g0wigkyhzq0ywxvhz2iz0hq9k0dh"))))
+                "1r72agk5nxf5k0mghcc2j90z43j5d9i7rqjmf49jfyqnd443isip"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; there are no tests
