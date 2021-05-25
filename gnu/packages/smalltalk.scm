@@ -102,8 +102,8 @@
                        (find-files "doc" "\\.info"))
              #t))
          (add-before 'configure 'fix-libc
-           (lambda _
-             (let ((libc (assoc-ref %build-inputs "libc")))
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((libc (assoc-ref inputs "libc")))
                (substitute* "libc.la.in"
                  (("@LIBC_SO_NAME@") "libc.so")
                  (("@LIBC_SO_DIR@")  (string-append libc "/lib"))))
