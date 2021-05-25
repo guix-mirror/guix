@@ -5895,6 +5895,28 @@ operators such as union, intersection, and difference.")
 (define-public python2-pysnptools
   (package-with-python2 python-pysnptools))
 
+(define-public python-pykdtree
+  (package
+    (name "python-pykdtree")
+    (version "1.3.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pykdtree" version))
+       (sha256
+        (base32 "0p8n2ljdacfixkiw092974dmhy4s1c0h032ii1z9kwi9h5h5rgmy"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)))
+    (home-page "https://github.com/storpipfugl/pykdtree")
+    (synopsis "Fast kd-tree implementation with OpenMP-enabled queries")
+    (description
+     "@code{pykdtree} is a kd-tree implementation for fast nearest neighbour
+search in Python.")
+    (license license:lgpl3+)))
+
 (define-public python-wurlitzer
   (package
     (name "python-wurlitzer")
