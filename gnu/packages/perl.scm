@@ -5830,6 +5830,29 @@ logging mechanism.")
 @code{Log::Any} adapter using @code{Log::Log4perl} for logging.")
     (license (package-license perl))))
 
+(define-public perl-log-message
+  (package
+   (name "perl-log-message")
+   (version "0.08")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append
+                  "mirror://cpan/authors/id/B/BI/BINGOS/Log-Message-"
+                  version ".tar.gz"))
+            (sha256
+             (base32
+              "0ipyk7zbvz31kf3mj5ahwi2cbcfy54s8387hx4cd29mg5bb7ssdx"))))
+   (build-system perl-build-system)
+   (home-page "https://metacpan.org/release/Log-Message")
+   (synopsis "Powerful and flexible message logging mechanism")
+   (description "This package enables you to do generic message logging
+throughout programs and projects.  Every message will be logged with
+stacktraces, timestamps and so on.  You can use built-in handlers
+immediately, or after the fact when you inspect the error stack.  It
+is highly configurable and let's you even provide your own handlers
+for dealing with messages.")
+   (license (package-license perl))))
+
 (define-public perl-log-log4perl
   (package
     (name "perl-log-log4perl")
