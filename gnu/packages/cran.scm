@@ -25594,6 +25594,35 @@ so that natural sort function arranges a character vector by their numbers,
 not digit characters.")
    (license license:bsd-3)))
 
+(define-public r-visdat
+  (package
+    (name "r-visdat")
+    (version "0.5.3")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "visdat" version))
+              (sha256
+               (base32
+                "1ikqp29nncbw1xlwyb9dqqgcdk9q0bs3wxhnhnjpb11vcjv7cz2j"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dplyr" ,r-dplyr)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-glue" ,r-glue)
+       ("r-magrittr" ,r-magrittr)
+       ("r-purrr" ,r-purrr)
+       ("r-readr" ,r-readr)
+       ("r-tibble" ,r-tibble)
+       ("r-tidyr" ,r-tidyr)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://visdat.njtierney.com/")
+    (synopsis "Preliminary Visualisation of Data")
+    (description "This package provides procedures to create preliminary exploratory
+data visualisations of an entire dataset to identify problems or unexpected features
+using @code{ggplot2}.")
+    (license license:expat)))
+
 (define-public r-muhaz
   (package
     (name "r-muhaz")
