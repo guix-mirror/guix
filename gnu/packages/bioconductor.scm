@@ -3075,6 +3075,38 @@ package comprehensively addressing issues ranging from post-alignments
 processing to visualization and annotation.")
     (license license:gpl2)))
 
+(define-public r-mbkmeans
+  (package
+    (name "r-mbkmeans")
+    (version "1.6.1")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "mbkmeans" version))
+              (sha256
+               (base32
+                "0rc83mh9xzwczfn88j0xah86ldzi1kdfqgd938nj57ifx3zci4xh"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (propagated-inputs
+     `(("r-delayedarray" ,r-delayedarray)
+       ("r-rcpp" ,r-rcpp)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-singlecellexperiment" ,r-singlecellexperiment)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)
+       ("r-clusterr" ,r-clusterr)
+       ("r-benchmarkme" ,r-benchmarkme)
+       ("r-matrix" ,r-matrix)
+       ("r-bluster" ,r-bluster)
+       ("r-beachmat" ,r-beachmat)
+       ("r-rhdf5lib" ,r-rhdf5lib)
+       ("r-biocparallel" ,r-biocparallel)))
+    (home-page "https://bioconductor.org/packages/mbkmeans")
+    (synopsis "Mini-batch k-means clustering for single-cell RNA-seq")
+    (description "This package implements the mini-batch k-means algorithm for
+large datasets, including support for on-disk data representation.")
+    (license license:expat)))
+
 (define-public r-multtest
   (package
     (name "r-multtest")
