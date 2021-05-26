@@ -1234,6 +1234,28 @@ and make inference with discrete time and discrete space hidden Markov
 models.")
     (license license:gpl2+)))
 
+(define-public r-hiddenmarkov
+  (package
+   (name "r-hiddenmarkov")
+   (version "1.8-13")
+   (source (origin
+            (method url-fetch)
+            (uri (cran-uri "HiddenMarkov" version))
+            (sha256
+             (base32
+              "05dm3nl0ffsz2ziw3bz5bivyxk7r5bxs8xhky3hz660qaqzd51ki"))))
+   (build-system r-build-system)
+   (native-inputs
+    `(("gfortran" ,gfortran)))
+   (home-page "https://cran.r-project.org/web/packages/HiddenMarkov/")
+   (synopsis "Hidden markov models for R")
+   (description "This package contains functions for the analysis of Discrete
+Time Hidden Markov Models, Markov Modulated GLMs and the Markov Modulated
+Poisson Process.  It includes functions for simulation, parameter estimation,
+and the Viterbi algorithm.  The algorithms are based of those of Walter
+Zucchini.")
+   (license license:gpl2+)))
+
 (define-public r-httpuv
   (package
     (name "r-httpuv")
