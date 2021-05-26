@@ -8132,6 +8132,53 @@ reference point and sorted by a user defined feature.")
 other functional sequencing data.")
     (license license:gpl2)))
 
+(define-public r-phantompeakqualtools
+  (package
+    (name "r-phantompeakqualtools")
+    (version "1.2.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/kundajelab/phantompeakqualtools")
+             (commit "8d2b2d18c686d894ef5908b37da7adf72a07ef42")))
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32
+         "00anrvcwsp02d98qhj1xpj85644h2pp4kfzq6dgbmwmdr6jvy7p4"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; There are no tests.
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((script (string-append (assoc-ref outputs "out")
+                                          "/share/scripts")))
+               (install-file "run_spp.R" script)))))))
+    (inputs
+     `(("r" ,r-minimal)))
+    (propagated-inputs
+     `(("r-catools" ,r-catools)
+       ("r-snow" ,r-snow)
+       ("r-snowfall" ,r-snowfall)
+       ("r-bitops" ,r-bitops)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-spp" ,r-spp)
+       ("gawk" ,gawk)
+       ("samtools" ,samtools)
+       ("boost" ,boost)
+       ("gzip" ,gzip)))
+    (home-page "https://github.com/kundajelab/phantompeakqualtools")
+    (synopsis "Informative enrichment for ChIP-seq data")
+    (description "This package computes informative enrichment and quality
+measures for ChIP-seq/DNase-seq/FAIRE-seq/MNase-seq data.  It can also be
+used to obtain robust estimates of the predominant fragment length or
+characteristic tag shift values in these assays.")
+    (license license:bsd-3)))
+
 (define-public r-genomation
   (package
     (name "r-genomation")
