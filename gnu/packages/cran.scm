@@ -12572,6 +12572,31 @@ library which allows parsing of NEXUS, Newick and other phylogenetic tree
 @code{read_newick_phylo()} and @code{read_nexus_phylo()}.")
     (license license:bsd-2)))
 
+(define-public r-phylobase
+  (package
+    (name "r-phylobase")
+    (version "0.8.10")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "phylobase" version))
+              (sha256
+               (base32
+                "0jzr1gdvmi4l640hwwzh9bxqmpja69bn3ygnaqx37awvyh7khi2s"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ade4" ,r-ade4)
+       ("r-ape" ,r-ape)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rncl" ,r-rncl)
+       ("r-rnexml" ,r-rnexml)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/fmichonneau/phylobase")
+    (synopsis "Base package for phylogenetic structures and comparative data")
+    (description "This package provides a base @code{S4} class for comparative
+methods, incorporating one or more trees and trait data.")
+    (license license:gpl2+)))
+
 (define-public r-rnexml
   (package
     (name "r-rnexml")
