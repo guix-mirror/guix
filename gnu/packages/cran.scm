@@ -2989,6 +2989,27 @@ and Francois (2011, JSS), and the book by Eddelbuettel (2013, Springer); see
 safely be interrupted from R.")
     (license license:expat)))
 
+(define-public r-rcppnumerical
+  (package
+    (name "r-rcppnumerical")
+    (version "0.4-0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "RcppNumerical" version))
+              (sha256
+               (base32
+                "1a92fql6mijhnr1kxkcxwivf95pk9lhgmhzkshs51h0ybfv5krik"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)
+       ("r-rcppeigen" ,r-rcppeigen)))
+    (home-page "https://github.com/yixuan/RcppNumerical")
+    (synopsis"Numerical computing libraries integration with @code{Rcpp}")
+    (description "This package provides a collection of libraries for numerical
+computing (numerical integration, optimization, etc.) and their integration
+with @code{Rcpp}.")
+    (license license:gpl2+)))
+
 (define-public r-bindr
   (package
     (name "r-bindr")
