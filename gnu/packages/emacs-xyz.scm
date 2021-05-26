@@ -4627,6 +4627,36 @@ strike through completed TODO headings, changes Org blocks, changes Org check
 boxes, and more.")
       (license license:gpl3+))))
 
+(define-public emacs-org-inline-pdf
+  (package
+    (name "emacs-org-inline-pdf")
+    (version "0.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/shg/org-inline-pdf.el")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1qc92xvgxmnwjixk8bxwbc1l1jj0qk9dg73jyaip6lk4g0wjk6xf"))))
+    (build-system emacs-build-system)
+    (inputs
+     `(("pdf2svg" ,pdf2svg)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-exec-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((pdf2svg (assoc-ref inputs "pdf2svg")))
+               (substitute* "org-inline-pdf.el"
+                 (("\"pdf2svg\"") (string-append "\"" pdf2svg "/bin/pdf2svg\"")))))))))
+    (home-page "https://github.com/shg/org-inline-pdf.el")
+    (synopsis "Inline PDF previewing for Org")
+    (description "This package provides a minor mode that enables
+inline PDF preview in Org buffers by using pdf2svg.")
+    (license license:gpl3+)))
+
 (define-public emacs-org-rich-yank
   (package
     (name "emacs-org-rich-yank")
