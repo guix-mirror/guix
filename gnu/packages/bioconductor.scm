@@ -2600,6 +2600,36 @@ purposes.  The package also contains legacy support for early single-end,
 ungapped alignment formats.")
     (license license:artistic2.0)))
 
+(define-public r-structuralvariantannotation
+  (package
+    (name "r-structuralvariantannotation")
+    (version "1.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "StructuralVariantAnnotation" version))
+       (sha256
+        (base32
+         "0ff40703iyf5wk77hbqhphfxnzc2wcshnjhvh66c5l0jvj9z8xvc"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-biostrings" ,r-biostrings)
+       ("r-dplyr" ,r-dplyr)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-stringr" ,r-stringr)
+       ("r-assertthat" ,r-assertthat)
+       ("r-variantannotation" ,r-variantannotation)))
+    (home-page "https://bioconductor.org/packages/StructuralVariantAnnotation/")
+    (synopsis "R package designed to simplify structural variant analysis")
+    (description
+     "This package contains useful helper functions for dealing with structural
+variants in VCF format.  The packages contains functions for parsing VCFs from
+a number of popular callers as well as functions for dealing with breakpoints
+involving two separate genomic loci encoded as GRanges objects.")
+    (license license:gpl3)))
+
 (define-public r-summarizedexperiment
   (package
     (name "r-summarizedexperiment")
