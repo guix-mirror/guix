@@ -1003,14 +1003,9 @@ descriptions maintained upstream."
          (origin-uris origin))
         '())))
 
-(cond-expand
-  (guile-3
-   ;; Guile 3.0.0 does not export this predicate.
-   (define exception-with-kind-and-args?
-     (exception-predicate &exception-with-kind-and-args)))
-  (else                                           ;Guile 2
-   (define exception-with-kind-and-args?
-     (const #f))))
+;; Guile 3.0.0 does not export this predicate.
+(define exception-with-kind-and-args?
+  (exception-predicate &exception-with-kind-and-args))
 
 (define* (check-derivation package #:key store)
   "Emit a warning if we fail to compile PACKAGE to a derivation."

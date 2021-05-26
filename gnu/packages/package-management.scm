@@ -518,40 +518,6 @@ the Nix package manager.")
                (invoke "make" "install-binPROGRAMS")))
            (delete 'wrap-program)))))))
 
-
-(define-public guile2.2-guix
-  (package
-    (inherit guix)
-    (name "guile2.2-guix")
-    (native-inputs
-     `(("guile" ,guile-2.2)
-       ("gnutls" ,guile2.2-gnutls)
-       ("guile-gcrypt" ,guile2.2-gcrypt)
-       ("guile-json" ,guile2.2-json)
-       ("guile-lib" ,guile2.2-lib)
-       ("guile-sqlite3" ,guile2.2-sqlite3)
-       ("guile-ssh" ,guile2.2-ssh)
-       ("guile-git" ,guile2.2-git)
-       ("guile-zlib" ,guile2.2-zlib)
-       ("guile-lzlib" ,guile2.2-lzlib)
-       ,@(fold alist-delete (package-native-inputs guix)
-               '("guile" "gnutls" "guile-gcrypt" "guile-json"
-                 "guile-lib" "guile-sqlite3" "guile-ssh" "guile-git"
-                 "guile-zlib" "guile-lzlib"))))
-    (inputs
-     `(("guile" ,guile-2.2)
-       ,@(alist-delete "guile" (package-inputs guix))))
-    (propagated-inputs
-     `(("gnutls" ,gnutls)
-       ("guile-gcrypt" ,guile2.2-gcrypt)
-       ("guile-json" ,guile2.2-json)
-       ("guile-lib" ,guile2.2-lib)
-       ("guile-sqlite3" ,guile2.2-sqlite3)
-       ("guile-ssh" ,guile2.2-ssh)
-       ("guile-git" ,guile2.2-git)
-       ("guile-zlib" ,guile2.2-zlib)
-       ("guile-lzlib" ,guile2.2-lzlib)))))
-
 (define-public guile3.0-guix
   (deprecated-package "guile3.0-guix" guix))
 

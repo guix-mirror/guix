@@ -196,17 +196,11 @@ information, or #f if it could not be found."
                            (stack-ref stack 1)    ;skip the 'throw' frame
                            last))))
 
-(cond-expand
-  (guile-3
-   (define-syntax-rule (without-compiler-optimizations exp)
-     ;; Compile with the baseline compiler (-O1), which is much less expensive
-     ;; than -O2.
-     (parameterize (((@ (system base compile) default-optimization-level) 1))
-       exp)))
-  (else
-   (define-syntax-rule (without-compiler-optimizations exp)
-     ;; No easy way to turn off optimizations on Guile 2.2.
-     exp)))
+(define-syntax-rule (without-compiler-optimizations exp)
+  ;; Compile with the baseline compiler (-O1), which is much less expensive
+  ;; than -O2.
+  (parameterize (((@ (system base compile) default-optimization-level) 1))
+    exp))
 
 (define* (load* file user-module
                 #:key (on-error 'nothing-special))
@@ -674,22 +668,17 @@ or variants of @code{~a} in the same profile.")
 or remove one of them from the profile.")
                               name1 name2)))))
 
-(cond-expand
-  (guile-3
-   ;; On Guile 3.0, in 'call-with-error-handling' we need to re-raise.  To
-   ;; preserve useful backtraces in case of unhandled errors, we want that to
-   ;; happen before the stack has been unwound, hence 'guard*'.
-   (define-syntax-rule (guard* (var clauses ...) exp ...)
-     "This variant of SRFI-34 'guard' does not unwind the stack before
+;; On Guile 3.0, in 'call-with-error-handling' we need to re-raise.  To
+;; preserve useful backtraces in case of unhandled errors, we want that to
+;; happen before the stack has been unwound, hence 'guard*'.
+(define-syntax-rule (guard* (var clauses ...) exp ...)
+  "This variant of SRFI-34 'guard' does not unwind the stack before
 evaluating the tests and bodies of CLAUSES."
-     (with-exception-handler
-         (lambda (var)
-           (cond clauses ... (else (raise var))))
-       (lambda () exp ...)
-       #:unwind? #f)))
-  (else
-   (define-syntax-rule (guard* (var clauses ...) exp ...)
-     (guard (var clauses ...) exp ...))))
+  (with-exception-handler
+      (lambda (var)
+        (cond clauses ... (else (raise var))))
+    (lambda () exp ...)
+    #:unwind? #f))
 
 (define (call-with-error-handling thunk)
   "Call THUNK within a user-friendly error handler."
@@ -822,10 +811,7 @@ directories:~{ ~a~}~%")
              ;; Furthermore, use of 'guard*' ensures that the stack has not
              ;; been unwound when we re-raise, since that would otherwise show
              ;; useless backtraces.
-             ((cond-expand
-                (guile-3
-                 ((exception-predicate &exception-with-kind-and-args) c))
-                (else #f))
+             (((exception-predicate &exception-with-kind-and-args) c)
               (raise c))
 
              ((message-condition? c)

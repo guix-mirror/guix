@@ -125,10 +125,7 @@ Perform the deployment specified by FILE.\n"))
            ;; and include a '&message'.  However, that message only contains
            ;; the format string.  Thus, special-case it here to avoid
            ;; displaying a bare format string.
-           ((cond-expand
-              (guile-3
-               ((exception-predicate &exception-with-kind-and-args) c))
-              (else #f))
+           (((exception-predicate &exception-with-kind-and-args) c)
             (raise c))
 
            ((message-condition? c)
