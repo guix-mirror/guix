@@ -17105,3 +17105,38 @@ Django with a syntax similar to Python Jinja2.")
 
 (define-public cl-djula
   (sbcl-package->cl-source-package sbcl-djula))
+
+(define-public sbcl-for
+  (let ((commit "2e4fcfa0f9c1d2f4559c58cef20ccefa50ba180d")
+        (revision "1"))
+    (package
+      (name "sbcl-for")
+      (version (git-version "1.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shinmera/for")
+               (commit commit)))
+         (file-name (git-file-name "for" version))
+         (sha256
+          (base32 "1akz9ggh33x2cq3h0f1cd0p632v1mbagv3dzsb0r10bwg9lh3nmv"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("documentation-utils" ,sbcl-documentation-utils)
+         ("form-fiddle" ,sbcl-form-fiddle)
+         ("lambda-fiddle" ,sbcl-lambda-fiddle)))
+      (home-page "https://shinmera.github.io/for/")
+      (synopsis "Extensible iteration macro library")
+      (description
+       "For is a library for an extensible iteration macro.  It allows you to write
+concise looping constructs similar to @code{loop} and @code{iterate}.  Unlike
+loop however it is extensible and sensible, and unlike iterate it does not
+require code-walking and is easier to extend.")
+      (license license:zlib))))
+
+(define-public ecl-for
+  (sbcl-package->ecl-package sbcl-for))
+
+(define-public cl-for
+  (sbcl-package->cl-source-package sbcl-for))
