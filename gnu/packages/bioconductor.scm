@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017, 2018, 2020 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2016, 2017, 2018, 2020, 2021 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
@@ -933,6 +933,22 @@ datasets which are derived from the Allen Brain Atlas:
 
 All datasets are restricted to protein coding genes.")
     (license license:gpl2+)))
+
+(define-public r-aneufinderdata
+  (package
+   (name "r-aneufinderdata")
+   (version "1.18.0")
+   (source (origin
+            (method url-fetch)
+            (uri (bioconductor-uri "AneuFinderData" version 'experiment))
+            (sha256
+             (base32
+              "02vb3kmza5hv8bc424fdmfif608xvpdb759w8882kac8izpv29ks"))))
+   (build-system r-build-system)
+   (home-page "https://bioconductor.org/packages/AneuFinderData/")
+   (synopsis "Data package for @code{AneuFinder}")
+   (description "This package contains data used by @code{AneuFinder}.")
+   (license license:artistic2.0)))
 
 (define-public r-arrmdata
   (package
