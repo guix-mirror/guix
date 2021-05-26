@@ -1408,6 +1408,42 @@ data.  In addition, provides numerous plotting functions for commonly
 used visualizations.")
    (license license:artistic2.0)))
 
+(define-public r-deepsnv
+  (package
+    (name "r-deepsnv")
+    (version "1.36.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "deepSNV" version))
+              (sha256
+               (base32
+                "1lbvx9liql8fkb4y020kwpgp61vzg67cy640dc4kybglcw9dx6j0"))))
+    (properties `((upstream-name . "deepSNV")))
+    (build-system r-build-system)
+    (inputs
+     `(("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-biostrings" ,r-biostrings)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-rhtslib" ,r-rhtslib)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)
+       ("r-variantannotation" ,r-variantannotation)
+       ("r-vgam" ,r-vgam)))
+    (home-page "https://github.com/gerstung-lab/deepSNV/")
+    (synopsis "Detection of subclonal SNVs in deep sequencing data")
+    (description
+     "This package provides quantitative variant callers for detecting
+subclonal mutations in ultra-deep (>=100x coverage) sequencing experiments.
+The deepSNV algorithm is used for a comparative setup with a control experiment
+of the same loci and uses a beta-binomial model and a likelihood ratio test to
+discriminate sequencing errors and subclonal SNVs.  The shearwater algorithm
+computes a Bayes classifier based on a beta-binomial model for variant calling
+with multiple samples for precisely estimating model parameters - such as local
+error rates and dispersion - and prior knowledge, e.g.  from variation data
+bases such as COSMIC.")
+    (license license:gpl3)))
+
 (define-public r-delayedarray
   (package
     (name "r-delayedarray")
