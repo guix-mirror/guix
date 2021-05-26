@@ -29798,3 +29798,27 @@ asynchronously from formatting.")
     (description "The Rmisc library contains functions for data analysis and
 utility operations.")
     (license license:gpl3)))
+
+(define-public r-webutils
+  (package
+    (name "r-webutils")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "webutils" version))
+       (sha256
+        (base32 "16a6ds0fnb6y8i1r9ba1hf1ydb53am57s070b3hi5jmrs84b9qik"))))
+    (properties `((upstream-name . "webutils")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-curl" ,r-curl)
+       ("r-jsonlite" ,r-jsonlite)))
+    (home-page "https://github.com/jeroen/webutils")
+    (synopsis "Utility functions for developing web applications")
+    (description
+     "This package parses HTTP request data in @code{application/json},
+@code{multipart/form-data}, or @code{application/x-www-form-urlencoded}
+format.  It includes an example of hosting and parsing HTML form data in R
+using either @code{httpuv} or @code{Rhttpd}.")
+    (license license:expat)))
