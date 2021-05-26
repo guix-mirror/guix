@@ -17140,3 +17140,41 @@ require code-walking and is easier to extend.")
 
 (define-public cl-for
   (sbcl-package->cl-source-package sbcl-for))
+
+(define-public sbcl-flare
+  (let ((commit "4f9f17a4fc5b368c2a1988b9a20288695b8d8c48")
+        (revision "1"))
+    (package
+      (name "sbcl-flare")
+      (version (git-version "1.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shinmera/flare")
+               (commit commit)))
+         (file-name (git-file-name "flare" version))
+         (sha256
+          (base32 "00nm3sjngbflj2gd5q0xs2m136w4kix6krww23nk64pkkyq2fs86"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("3d-vectors" ,sbcl-3d-vectors)
+         ("array-utils" ,sbcl-array-utils)
+         ("documentation-utils" ,sbcl-documentation-utils)
+         ("for" ,sbcl-for)
+         ("lambda-fiddle" ,sbcl-lambda-fiddle)
+         ("trivial-garbage" ,sbcl-trivial-garbage)))
+      (home-page "https://shinmera.github.io/flare/")
+      (synopsis "Easy particle systems with fine grained control")
+      (description
+       "FLARE is a library designed to allow quick and precise particle effect
+creations.  It does not concern itself with displaying and only with the
+management and movement of particles.  As such, it can easily be integrated into
+any existing or future application.")
+      (license license:zlib))))
+
+(define-public ecl-flare
+  (sbcl-package->ecl-package sbcl-flare))
+
+(define-public cl-flare
+  (sbcl-package->cl-source-package sbcl-flare))
