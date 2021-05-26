@@ -950,6 +950,48 @@ All datasets are restricted to protein coding genes.")
    (description "This package contains data used by @code{AneuFinder}.")
    (license license:artistic2.0)))
 
+(define-public r-aneufinder
+  (package
+    (name "r-aneufinder")
+    (version "1.18.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "AneuFinder" version))
+              (sha256
+               (base32
+                "1j2n6i3ja63i98y1mbb8ndn6cn2a0pw97zz6al4myycnv55w49j3"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (propagated-inputs
+     `(("r-genomicranges" ,r-genomicranges)
+       ("r-aneufinderdata" ,r-aneufinderdata)
+       ("r-ecp" ,r-ecp)
+       ("r-foreach" ,r-foreach)
+       ("r-doparallel" ,r-doparallel)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-iranges" ,r-iranges)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-bamsignals" ,r-bamsignals)
+       ("r-dnacopy" ,r-dnacopy)
+       ("r-biostrings" ,r-biostrings)
+       ("r-genomicalignments" ,r-genomicalignments)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-reshape2" ,r-reshape2)
+       ("r-ggdendro" ,r-ggdendro)
+       ("r-ggrepel" ,r-ggrepel)
+       ("r-reordercluster" ,r-reordercluster)
+       ("r-mclust" ,r-mclust)
+       ("r-cowplot" ,r-cowplot)))
+    (home-page "https://bioconductor.org/packages/AneuFinder/")
+    (synopsis "Copy number variation analysis in single-cell-sequencing data")
+    (description "This package implements functions for copy number variant
+calling, plotting, export and analysis from whole-genome single cell
+sequencing data.")
+    (license license:artistic2.0)))
+
 (define-public r-arrmdata
   (package
     (name "r-arrmdata")
