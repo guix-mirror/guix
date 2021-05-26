@@ -1408,6 +1408,26 @@ data.  In addition, provides numerous plotting functions for commonly
 used visualizations.")
    (license license:artistic2.0)))
 
+(define-public r-decipher
+  (package
+    (name "r-decipher")
+    (version "2.18.1")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "DECIPHER" version))
+              (sha256
+               (base32
+                "0jz2lffks9rrk5wzbvnr8yal91kf8rg2xn0fmg9ywk45ql657sm9"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biostrings" ,r-biostrings)
+       ("r-rsqlite" ,r-rsqlite)))
+    (home-page "https://www.bioconductor.org/packages/DECIPHER/")
+    (synopsis "Tools for deciphering and managing biological sequences")
+    (description "This package provides a toolset for deciphering and managing
+biological sequences.")
+    (license license:gpl3)))
+
 (define-public r-deepsnv
   (package
     (name "r-deepsnv")
