@@ -186,7 +186,7 @@ independently or together to provide resilient infrastructures.")
 (define-public libraft
   (package
     (name "libraft")
-    (version "0.9.11")
+    (version "0.10.1")
     (home-page "https://github.com/canonical/raft")
     (source (origin
               (method git-fetch)
@@ -195,7 +195,7 @@ independently or together to provide resilient infrastructures.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "00rsq4z9nykmf7r5rlpv1y6bvckcmg3zv57vh1h681y5pij6cch1"))))
+                "18idj53vnl5fx1ja1zlp8kiwmdxgwjxsi88rdql0pbh0484b92a3"))))
     (arguments '(#:configure-flags '("--enable-uv")
                  #:phases
                  (modify-phases %standard-phases
