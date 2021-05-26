@@ -1382,6 +1382,29 @@ documents that can be converted to HTML files (e.g., R Markdown) under a given
 directory.")
     (license license:expat)))
 
+(define-public r-howmany
+  (package
+    (name "r-howmany")
+    (version "0.3-1")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "howmany" version))
+              (sha256
+               (base32
+                "045ck8qahfg2swbgyf7dpl32ryq1m4sbalhr7m5qdgpm62vz8h7f"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/howmany/")
+    (synopsis "Lower bound for the number of correct rejections")
+    (description "When testing multiple hypotheses simultaneously, this package
+provides functionality to calculate a lower bound for the number of correct
+rejections (as a function of the number of rejected hypotheses), which holds
+simultaneously -with high probability- for all possible number of rejections.
+As a special case, a lower bound for the total number of false null hypotheses
+can be inferred.  Dependent test statistics can be handled for multiple tests
+of associations.  For independent test statistics, it is sufficient to provide
+a list of p-values.")
+    (license license:gpl2+)))
+
 (define-public r-htmltools
   (package
     (name "r-htmltools")
