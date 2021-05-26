@@ -1130,6 +1130,29 @@ without affecting the current R process at all.  This package does exactly
 that.")
     (license license:expat)))
 
+(define-public r-depmixs4
+  (package
+    (name "r-depmixs4")
+    (version "1.5-0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "depmixS4" version))
+              (sha256
+               (base32
+                "1pacvhw5m4fsk3ysbal50fdqbvlaz8ywyqp6bn1wh42wipqbb2i8"))))
+    (propagated-inputs
+     `(("r-nnet" ,r-nnet)
+       ("r-nlme" ,r-nlme)
+       ("r-mass" ,r-mass)
+       ("r-rsolnp" ,r-rsolnp)))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/depmixS4/")
+    (synopsis "Dependent Mixture Models")
+    (description "This package fits latent (hidden) Markov models on mixed
+categorical and continuous (time series) data, otherwise known as dependent
+mixture models.")
+    (license license:gpl2+)))
+
 (define-public r-readxl
   (package
     (name "r-readxl")
