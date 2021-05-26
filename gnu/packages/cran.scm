@@ -1157,6 +1157,36 @@ the embedded @code{RapidXML} C++ library.")
     ;; 'rapidxml' which is Boost.
     (license (list license:gpl3 license:bsd-2 license:boost1.0))))
 
+(define-public r-model4you
+  (package
+    (name "r-model4you")
+    (version "0.9-7")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "model4you" version))
+              (sha256
+               (base32
+                "0pni9v3nradvy8sp2m07903vc7z610xrh426lf19dxss12kgrfi8"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-formula" ,r-formula)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gridextra" ,r-gridextra)
+       ("r-partykit" ,r-partykit)
+       ("r-sandwich" ,r-sandwich)
+       ("r-survival" ,r-survival)))
+    (home-page "https://cran.r-project.org/web/packages/model4you/")
+    (synopsis "Stratified and personalised models based on trees and forests")
+    (description
+     "This package provides procedures for model-based trees for subgroup
+analyses in clinical trials and model-based forests for the estimation and
+prediction of personalised treatment effects.  Currently partitioning of linear
+models, @code{lm()}, generalised linear models, @code{glm()}, and
+Weibull models, @code{survreg()}, are supported.  Advanced plotting functionality is
+supported for the trees and a test for parameter heterogeneity is provided for
+the personalised models.")
+    (license license:gpl2+)))
+
 (define-public r-modelr
   (package
     (name "r-modelr")
