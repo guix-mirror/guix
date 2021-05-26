@@ -100,7 +100,7 @@
   json->evaluation
   (id          evaluation-id)                     ;integer
   (spec        evaluation-spec "specification")   ;string
-  (complete?   evaluation-complete? "in-progress"
+  (complete?   evaluation-complete? "status"
                (match-lambda
                  (0 #t)
                  (_ #f)))                         ;Boolean
