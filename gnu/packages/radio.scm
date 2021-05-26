@@ -1927,3 +1927,32 @@ spectrum waterfall.  It supports at least the following models:
 @end itemize\n")
       (license (list license:expat
                      license:gpl3)))))
+
+(define-public minimodem
+  (package
+    (name "minimodem")
+    (version "0.24")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.whence.com/minimodem/minimodem-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "13ipyh39l7p420j1j9kvwyskv2nqnimls1a3z1klsa1zivds9k7q"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("fftwf" ,fftwf)
+       ("libsndfile" ,libsndfile)
+       ("pulseaudio" ,pulseaudio)))
+    (home-page "http://www.whence.com/minimodem/")
+    (synopsis "Software audio FSK modem")
+    (description
+     "Minimodem is a command-line program which decodes (or generates) audio
+modem tones at any specified baud rate, using various framing protocols.  It
+acts a general-purpose software FSK modem, and includes support for various
+standard FSK protocols such as Bell103, Bell202, RTTY, TTY/TDD, NOAA SAME, and
+Caller-ID.")
+    (license license:gpl3+)))
