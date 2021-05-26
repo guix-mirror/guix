@@ -7147,6 +7147,43 @@ It also prettifies Org plain list bullets by:
 Features degrade gracefully when viewed from terminal.")
     (license license:gpl3+)))
 
+(define-public emacs-org-pandoc-import
+  (package
+    (name "emacs-org-pandoc-import")
+    (version "1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tecosaur/org-pandoc-import/")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "00z9bpm975mlyqlxbyib3j547br6kvcam04b70qkmq22vh8yf341"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:include
+       (cons* "^filters\\/" "^preprocessors" %default-include)
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-exec-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((pandoc (assoc-ref inputs "pandoc")))
+               (substitute* "org-pandoc-import.el"
+                 (("\"pandoc\"") (string-append "\"" pandoc "/bin/pandoc\"")))))))))
+    (inputs
+     `(("pandoc" ,pandoc)))
+    (home-page "https://github.com/tecosaur/org-pandoc-import/")
+    (synopsis "Read and edit non-Org file types in Org")
+    (description
+     "This package uses Pandoc to convert selected file types to Org.  It can
+convert supported non-Org files to an Org file with Pandoc.
+
+It can also intercept requests for non-Org files it knows it can convert,
+convert the file to a temporary Org file, and open this file instead.  On
+save, it exports back to the original non-Org file.")
+    (license license:gpl3+)))
+
 (define-public emacs-org-pomodoro
   ;; Last release version was from 2016.
   (let ((commit "aa07c11318f91219336197e62c47bc7a3d090479")
