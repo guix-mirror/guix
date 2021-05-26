@@ -29856,3 +29856,46 @@ is optimized at compile time.  The @code{RProtoBuf} package on the other hand
 uses the protobuf runtime library to provide a general-purpose toolkit for
 reading and writing arbitrary protocol-buffer data in R.")
     (license license:expat)))
+
+(define-public r-opencpu
+  (package
+    (name "r-opencpu")
+    (version "2.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "opencpu" version))
+       (sha256
+        (base32 "0dr3ga8vw10vllqjq6n53dwivvgvzrgrjcn17kmabp620533bj1k"))))
+    (properties `((upstream-name . "opencpu")))
+    (build-system r-build-system)
+    (inputs
+     `(("pandoc" ,pandoc)))
+    (propagated-inputs
+     `(("r-brew" ,r-brew)
+       ("r-curl" ,r-curl)
+       ("r-evaluate" ,r-evaluate)
+       ("r-httpuv" ,r-httpuv)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-knitr" ,r-knitr)
+       ("r-mime" ,r-mime)
+       ("r-openssl" ,r-openssl)
+       ("r-protolite" ,r-protolite)
+       ("r-rappdirs" ,r-rappdirs)
+       ("r-remotes" ,r-remotes)
+       ("r-sys" ,r-sys)
+       ("r-webutils" ,r-webutils)
+       ("r-zip" ,r-zip)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://www.opencpu.org")
+    (synopsis "API for embedded scientific computing")
+    (description
+     "This package provides a system for embedded scientific computing and
+reproducible research with R.  The OpenCPU server exposes a simple but
+powerful HTTP API for RPC and data interchange with R.  This provides a
+reliable and scalable foundation for statistical services or building R web
+applications.  The OpenCPU server runs either as a single-user development
+server within the interactive R session, or as a multi-user stack based on
+Apache2.")
+    (license license:asl2.0)))
