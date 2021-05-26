@@ -351,6 +351,26 @@ easier.")
 for authoring journal articles and conference submissions.")
     (license license:gpl3)))
 
+(define-public r-benchmarkmedata
+  (package
+    (name "r-benchmarkmedata")
+    (version "1.0.4")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "benchmarkmeData" version))
+              (sha256
+               (base32
+                "1n4vjkagqlm6kw2hilf4gjfcdjad0bcg652j9nl2ygbq3kdnh1vf"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dplyr" ,r-dplyr)
+       ("r-tibble" ,r-tibble)))
+    (home-page "https://github.com/csgillespie/benchmarkme-data")
+    (synopsis "Data set for the @code{benchmarkme} package")
+    (description "This pacakge contains the data set for the crowd sourced
+benchmarks from running the @code{benchmarkme} package.")
+    (license license:gpl2+)))
+
 (define-public r-bezier
   (package
     (name "r-bezier")
