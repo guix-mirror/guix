@@ -6629,6 +6629,39 @@ deployed as a centralized bioinformatics resource for use by many users.
 Currently only Affymetrix oligonucleotide analysis is supported.")
     (license license:gpl2+)))
 
+(define-public r-zinbwave
+  (package
+    (name "r-zinbwave")
+    (version "1.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "zinbwave" version))
+       (sha256
+        (base32
+         "0m5f0wrk6kg88m41cchjwi4ssi7kr3196m8h9hrhygak964nsd4q"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocparallel" ,r-biocparallel)
+       ("r-edger" ,r-edger)
+       ("r-genefilter" ,r-genefilter)
+       ("r-matrix" ,r-matrix)
+       ("r-singlecellexperiment" ,r-singlecellexperiment)
+       ("r-softimpute" ,r-softimpute)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://bioconductor.org/packages/zinbwave")
+    (synopsis "Zero-inflated negative binomial model for RNA-seq data")
+    (description "This package implements a general and flexible zero-inflated
+negative binomial model that can be used to provide a low-dimensional
+representations of single-cell RNA-seq data.  The model accounts for zero
+inflation (dropouts), over-dispersion, and the count nature of the data.
+The model also accounts for the difference in library sizes and optionally
+for batch effects and/or other covariates, avoiding the need for pre-normalize
+the data.")
+    (license license:artistic2.0)))
+
 (define-public r-zfpkm
   (package
     (name "r-zfpkm")
