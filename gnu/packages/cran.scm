@@ -6396,6 +6396,30 @@ fixed values.  Other functions include a custom @code{geom}, and helper
 functions to enforce symmetric scales or add tags to facetted plots.")
     (license license:gpl3)))
 
+(define-public r-heatmap3
+  (package
+    (name "r-heatmap3")
+    (version "1.1.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "heatmap3" version))
+       (sha256
+        (base32
+         "0sfvizmmwfk1bjhn6zfx5a4qqfgj1ldg8x90b65crqibgfa36k2r"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-fastcluster" ,r-fastcluster)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://cran.r-project.org/web/packages/heatmap3/")
+    (synopsis "Improved heatmap package")
+    (description
+     "This package provides an improved heatmap package.  It is completely
+compatible with the original R function @code{heatmap}, and provides more
+powerful and convenient features.")
+    (license license:gpl2+)))
+
 (define-public r-heatmaply
   (package
     (name "r-heatmaply")
