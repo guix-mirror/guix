@@ -12336,6 +12336,9 @@ version does count multisplits.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; there are none
+       #:modules ((guix build utils)
+                  (guix build gnu-build-system)
+                  (srfi srfi-26))
        #:make-flags
        (list (string-append "CC=" ,(cc-for-target))
              (let ((system ,(or (%current-target-system)
@@ -12358,10 +12361,30 @@ version does count multisplits.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin"))
+                    (lib (string-append out "/lib"))
+                    (inc (string-append out "/include"))
                     (man (string-append out "/share/man/man1")))
                (install-file "minimap2" bin)
-               (mkdir-p man)
-               (install-file "minimap2.1" man))
+               (install-file "libminimap2.a" lib)
+               (install-file "minimap2.1" man)
+               (map (cut install-file <> inc)
+                    (find-files "." "\\.h$"))
+               ;; Not this file.
+               (delete-file (string-append inc "/emmintrin.h"))
+               (mkdir-p (string-append lib "/pkgconfig"))
+               (with-output-to-file (string-append lib "/pkgconfig/minimap2.pc")
+                (lambda _
+                  (format #t "prefix=~a~@
+                          exec_prefix=${prefix}~@
+                          libdir=${exec_prefix}/lib~@
+                          includedir=${prefix}/include~@
+                          ~@
+                          Name: libminimap2~@
+                          Version: ~a~@
+                          Description: A versatile pairwise aligner for genomic and spliced nucleotide sequence~@
+                          Libs: -L${libdir} -lminimap2~@
+                          Cflags: -I${includedir}~%"
+                          out ,version))))
              #t)))))
     (inputs
      `(("zlib" ,zlib)))
