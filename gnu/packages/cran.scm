@@ -12525,6 +12525,40 @@ Helene Touzet and Jean-Stephane Varre, 2007, Algorithms Mol Biol:2, 15.
 Touzet and Varre (2007).")
     (license license:gpl2)))
 
+(define-public r-rnexml
+  (package
+    (name "r-rnexml")
+    (version "2.4.5")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "RNeXML" version))
+              (sha256
+               (base32
+                "1wsl4xq9w5bp3wk69dw57bg0qcw1vs6ajwya4p0w1r00ck5pwrib"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ape" ,r-ape)
+       ("r-dplyr" ,r-dplyr)
+       ("r-httr" ,r-httr)
+       ("r-lazyeval" ,r-lazyeval)
+       ("r-plyr" ,r-plyr)
+       ("r-reshape2" ,r-reshape2)
+       ("r-stringi" ,r-stringi)
+       ("r-stringr" ,r-stringr)
+       ("r-tidyr" ,r-tidyr)
+       ("r-uuid" ,r-uuid)
+       ("r-xml" ,r-xml)
+       ("r-xml2" ,r-xml2)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://docs.ropensci.org/RNeXML/")
+    (synopsis "Semantically rich I/O for the NeXML Format")
+    (description "This package provides access to phyloinformatic data in
+NeXML format.  The package should add new functionality to R such as the
+possibility to manipulate NeXML objects in more various and refined way
+and compatibility with @code{ape} objects.")
+    (license license:bsd-3)))
+
 (define-public r-rnifti
   (package
     (name "r-rnifti")
