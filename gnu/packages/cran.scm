@@ -13701,6 +13701,23 @@ Kaplan-Meier (KM) or Nearest Neighbor Estimation (NNE) method of Heagerty,
 Lumley & Pepe (Biometrics, Vol 56 No 2, 2000, PP 337-344)")
     (license license:gpl2+)))
 
+(define-public r-locfdr
+  (package
+    (name "r-locfdr")
+    (version "1.1-8")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "locfdr" version))
+              (sha256
+               (base32
+                "1falkbp2xz07am8jlhwlvyqvxnli4nwl188kd0g58vdfjcjy3mj2"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/locfdr/")
+    (synopsis "Computes local false discovery rates")
+    (description "This package can be used to compute local false
+discovery rates.")
+    (license license:gpl2)))
+
 (define-public r-longitudinal
   (package
     (name "r-longitudinal")
