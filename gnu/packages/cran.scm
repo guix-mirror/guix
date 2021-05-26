@@ -2894,6 +2894,26 @@ attaching it.  This is a key part of the @code{devtools} package as it allows
 you to rapidly iterate while developing a package.")
     (license license:gpl3)))
 
+(define-public r-pvclust
+  (package
+   (name "r-pvclust")
+   (version "2.2-0")
+   (source (origin
+            (method url-fetch)
+            (uri (cran-uri "pvclust" version))
+            (sha256
+             (base32
+              "0082icm54k2yq60k06qpr92a626k39j2jr0046lva4ylmhxqb4kq"))))
+   (build-system r-build-system)
+   (home-page "https://github.com/shimo-lab/pvclust")
+   (synopsis
+    "Hierarchical clustering with P-values via multiscale bootstrap resampling")
+   (description "This package provides an implementation of multiscale bootstrap
+resampling for assessing the uncertainty in hierarchical cluster analysis.  It
+provides an AU (approximately unbiased) P-value as well as a BP (bootstrap probability)
+value for each cluster in a dendrogram.")
+   (license license:gpl2+)))
+
 (define-public r-rcpp
   (package
     (name "r-rcpp")
