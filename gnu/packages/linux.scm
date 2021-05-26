@@ -58,6 +58,7 @@
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;; Copyright © 2021 Josselin Poiret <josselin.poiret@protonmail.ch>
 ;;; Copyright © 2021 Olivier Dion <olivier.dion@polymtl.ca>
+;;; Copyright © 2021 Solene Rapenne <solene@perso.pw>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2184,7 +2185,7 @@ module.")
 (define-public e2fsprogs
   (package
     (name "e2fsprogs")
-    (version "1.45.6")
+    (version "1.46.2")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -2193,7 +2194,7 @@ module.")
                    "e2fsprogs-" version ".tar.xz"))
              (sha256
               (base32
-               "0mj2yizwygs7xww8jfy5mxjn8ww4pvc0b1hg1p2vsnirailsx9zz"))))
+               "0s216nn0lv7s278v933a44fv1ibi900c94743gpp2kn9jlr0kai3"))))
     (build-system gnu-build-system)
     (inputs `(("util-linux" ,util-linux "lib")))
     (native-inputs `(("pkg-config" ,pkg-config)
