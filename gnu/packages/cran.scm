@@ -371,6 +371,34 @@ for authoring journal articles and conference submissions.")
 benchmarks from running the @code{benchmarkme} package.")
     (license license:gpl2+)))
 
+(define-public r-benchmarkme
+  (package
+    (name "r-benchmarkme")
+    (version "1.0.7")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "benchmarkme" version))
+              (sha256
+               (base32
+                "0ymgsxzrvnpyvs0cff09d3lrkl12qyqx5bwammsc4vgl5ng9p69p"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (propagated-inputs
+     `(("r-benchmarkmedata" ,r-benchmarkmedata)
+       ("r-doparallel" ,r-doparallel)
+       ("r-dplyr" ,r-dplyr)
+       ("r-foreach" ,r-foreach)
+       ("r-httr" ,r-httr)
+       ("r-matrix" ,r-matrix)
+       ("r-tibble" ,r-tibble)))
+    (home-page "https://csgillespie.github.io/benchmarkme/")
+    (synopsis "Crowd-sourced system benchmarks")
+    (description "This package provides functionality to benchmark your CPU
+and compare against other CPUs.  Also provides functions for obtaining system
+specifications, such as RAM, CPU type, and R version.")
+    (license license:gpl2+)))
+
 (define-public r-bezier
   (package
     (name "r-bezier")
