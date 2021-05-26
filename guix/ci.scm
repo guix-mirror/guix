@@ -154,14 +154,21 @@ string such as \"x86_64-linux\"), restrict to builds for SYSTEM."
                                     (number->string evaluation)))))
     (json->evaluation evaluation)))
 
-(define* (latest-evaluations url #:optional (limit %query-limit))
-  "Return the latest evaluations performed by the CI server at URL."
-  (map json->evaluation
-       (vector->list
-        (json->scm
-         (http-fetch (string-append url "/api/evaluations?nr="
-                                    (number->string limit)))))))
-
+(define* (latest-evaluations url
+                             #:optional (limit %query-limit)
+                             #:key spec)
+  "Return the latest evaluations performed by the CI server at URL.  If SPEC
+is passed, only consider the evaluations for the given SPEC specification."
+  (let ((spec (if spec
+                  (format #f "&spec=~a" spec)
+                  "")))
+    (map json->evaluation
+         (vector->list
+          (json->scm
+           (http-fetch
+            (string-append url "/api/evaluations?nr="
+                           (number->string limit)
+                           spec)))))))
 
 (define* (evaluations-for-commit url commit #:optional (limit %query-limit))
   "Return the evaluations among the latest LIMIT evaluations that have COMMIT
