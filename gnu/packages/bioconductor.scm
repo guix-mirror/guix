@@ -5293,6 +5293,52 @@ All the visualization methods are developed based on ggplot2 graphics.")
 profiles (GO and KEGG) of gene and gene clusters.")
     (license license:artistic2.0)))
 
+(define-public r-clusterexperiment
+  (package
+    (name "r-clusterexperiment")
+    (version "2.10.1")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "clusterExperiment" version))
+              (sha256
+               (base32
+                "04n3lcm7dh07sjkzyv83m55mx3lz0lkcy8yq9hi0zywqyrhyzz7z"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (propagated-inputs
+     `(("r-ape" ,r-ape)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-cluster" ,r-cluster)
+       ("r-delayedarray" ,r-delayedarray)
+       ("r-edger" ,r-edger)
+       ("r-hdf5array" ,r-hdf5array)
+       ("r-howmany" ,r-howmany)
+       ("r-kernlab" ,r-kernlab)
+       ("r-limma" ,r-limma)
+       ("r-locfdr" ,r-locfdr)
+       ("r-matrix" ,r-matrix)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-mbkmeans" ,r-mbkmeans)
+       ("r-nmf" ,r-nmf)
+       ("r-phylobase" ,r-phylobase)
+       ("r-pracma" ,r-pracma)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rspectra" ,r-rspectra)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-scales" ,r-scales)
+       ("r-singlecellexperiment" ,r-singlecellexperiment)
+       ("r-stringr" ,r-stringr)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)
+       ("r-zinbwave" ,r-zinbwave)))
+    (home-page "https://bioconductor.org/packages/clusterExperiment/")
+    (synopsis "Compare clusterings for single-cell sequencing")
+    (description "This package provides functionality for running and comparing
+many different clusterings of single-cell sequencing data or other large mRNA
+expression data sets.")
+    (license license:artistic2.0)))
+
 (define-public r-mlinterfaces
   (package
     (name "r-mlinterfaces")
