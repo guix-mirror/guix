@@ -20494,6 +20494,23 @@ modeling often used in @dfn{analytical customer relationship
 management} (aCRM).")
     (license license:gpl2+)))
 
+(define-public r-tree
+  (package
+   (name "r-tree")
+   (version "1.0-40")
+   (source (origin
+            (method url-fetch)
+            (uri (cran-uri "tree" version))
+            (sha256
+             (base32
+              "1rr6ws62j9h36f3nl713f8h3ndkh95mv46l055jvgmby5lw1dazz"))))
+   (build-system r-build-system)
+   (home-page "https://cran.r-project.org/web/packages/tree/")
+   (synopsis "Classification and regression trees")
+   (description "This package provides procedures to work with classification
+and regression trees.")
+   (license license:gpl2+)))
+
 (define-public r-treeclust
   (package
     (name "r-treeclust")
