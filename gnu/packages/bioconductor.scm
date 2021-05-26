@@ -103,6 +103,29 @@ analysis.")
 database, assembled using data from REACTOME.")
     (license license:cc-by4.0)))
 
+(define-public r-bsgenome-btaurus-ucsc-bostau8
+  (package
+    (name "r-bsgenome-btaurus-ucsc-bostau8")
+    (version "1.4.2")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "BSgenome.Btaurus.UCSC.bosTau8"
+                                     version 'annotation))
+              (sha256
+               (base32
+                "16wjy1aw9nvx03r7w8yh5w7sw3pn8i9nczd0n0728l6nnyqxlsz6"))))
+    (properties
+     `((upstream-name . "BSgenome.Btaurus.UCSC.bosTau8")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bsgenome" ,r-bsgenome)))
+    (home-page
+     "https://www.bioconductor.org/packages/BSgenome.Btaurus.UCSC.bosTau8/")
+    (synopsis "Full genome sequences for Bos taurus (UCSC version bosTau8)")
+    (description "This package provides the full genome sequences for Bos
+taurus (UCSC version bosTau8).")
+    (license license:artistic2.0)))
+
 (define-public r-bsgenome-celegans-ucsc-ce6
   (package
     (name "r-bsgenome-celegans-ucsc-ce6")
