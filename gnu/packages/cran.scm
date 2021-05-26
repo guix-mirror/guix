@@ -12548,6 +12548,30 @@ Helene Touzet and Jean-Stephane Varre, 2007, Algorithms Mol Biol:2, 15.
 Touzet and Varre (2007).")
     (license license:gpl2)))
 
+(define-public r-rncl
+  (package
+    (name "r-rncl")
+    (version "0.8.4")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "rncl" version))
+              (sha256
+               (base32
+                "0ss9jqrvv7bhvl5j74cjrp8r866d9dlavrbbfscwz3mhkgfx06bb"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-progress" ,r-progress)
+       ("r-rcpp" ,r-rcpp)))
+    (home-page "https://github.com/fmichonneau/rncl")
+    (synopsis "Interface to the Nexus class library")
+    (description "This package provides an interface to the Nexus class
+library which allows parsing of NEXUS, Newick and other phylogenetic tree
+ file formats.  It provides elements of the file that can be used to build
+ phylogenetic objects such as @code{ape}'s @code{phylo} or @code{phylobase}'s
+@code{phylo4(d)}.  This functionality is demonstrated with
+@code{read_newick_phylo()} and @code{read_nexus_phylo()}.")
+    (license license:bsd-2)))
+
 (define-public r-rnexml
   (package
     (name "r-rnexml")
