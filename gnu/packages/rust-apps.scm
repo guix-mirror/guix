@@ -835,7 +835,7 @@ C-compatible) software.")
     (home-page "https://github.com/ajeetdsouza/zoxide/")
     (synopsis "Fast way to navigate your filesystem")
     (description
-     "Zoxide is a fast replacement for your @command{cd} command. It keeps
+     "Zoxide is a fast replacement for your @command{cd} command.  It keeps
 track of the directories you use most frequently, and uses a ranking algorithm
 to navigate to the best match.")
     (license license:expat)))
