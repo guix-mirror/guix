@@ -1010,45 +1010,39 @@ descriptions maintained upstream."
 (define* (check-derivation package #:key store)
   "Emit a warning if we fail to compile PACKAGE to a derivation."
   (define (try store system)
-    (catch #t     ;TODO: Remove 'catch' when Guile 2.x is no longer supported.
-      (lambda ()
-        (guard (c ((store-protocol-error? c)
-                   (make-warning package
-                                 (G_ "failed to create ~a derivation: ~a")
-                                 (list system
-                                       (store-protocol-error-message c))))
-                  ((exception-with-kind-and-args? c)
-                   (make-warning package
-                                 (G_ "failed to create ~a derivation: ~s")
-                                 (list system
-                                       (cons (exception-kind c)
-                                             (exception-args c)))))
-                  ((message-condition? c)
-                   (make-warning package
-                                 (G_ "failed to create ~a derivation: ~a")
-                                 (list system
-                                       (condition-message c))))
-                  ((formatted-message? c)
-                   (let ((str (apply format #f
-                                     (formatted-message-string c)
-                                     (formatted-message-arguments c))))
-                     (make-warning package
-                                   (G_ "failed to create ~a derivation: ~a")
-                                   (list system str)))))
-          (parameterize ((%graft? #f))
-            (package-derivation store package system #:graft? #f)
+    (guard (c ((store-protocol-error? c)
+               (make-warning package
+                             (G_ "failed to create ~a derivation: ~a")
+                             (list system
+                                   (store-protocol-error-message c))))
+              ((exception-with-kind-and-args? c)
+               (make-warning package
+                             (G_ "failed to create ~a derivation: ~s")
+                             (list system
+                                   (cons (exception-kind c)
+                                         (exception-args c)))))
+              ((message-condition? c)
+               (make-warning package
+                             (G_ "failed to create ~a derivation: ~a")
+                             (list system
+                                   (condition-message c))))
+              ((formatted-message? c)
+               (let ((str (apply format #f
+                                 (formatted-message-string c)
+                                 (formatted-message-arguments c))))
+                 (make-warning package
+                               (G_ "failed to create ~a derivation: ~a")
+                               (list system str)))))
+      (parameterize ((%graft? #f))
+        (package-derivation store package system #:graft? #f)
 
-            ;; If there's a replacement, make sure we can compute its
-            ;; derivation.
-            (match (package-replacement package)
-              (#f #t)
-              (replacement
-               (package-derivation store replacement system
-                                   #:graft? #f))))))
-      (lambda args
-        (make-warning package
-                      (G_ "failed to create ~a derivation: ~s")
-                      (list system args)))))
+        ;; If there's a replacement, make sure we can compute its
+        ;; derivation.
+        (match (package-replacement package)
+          (#f #t)
+          (replacement
+           (package-derivation store replacement system
+                               #:graft? #f))))))
 
   (define (check-with-store store)
     (filter lint-warning?

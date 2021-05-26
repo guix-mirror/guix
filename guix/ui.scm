@@ -812,7 +812,12 @@ directories:~{ ~a~}~%")
              ;; been unwound when we re-raise, since that would otherwise show
              ;; useless backtraces.
              (((exception-predicate &exception-with-kind-and-args) c)
-              (raise c))
+              (if (eq? 'system-error (exception-kind c)) ;EPIPE & co.
+                  (match (exception-args c)
+                    ((proc format-string format-args . _)
+                     (leave (G_ "~a: ~a~%") proc
+                            (apply format #f format-string format-args))))
+                  (raise c)))
 
              ((message-condition? c)
               ;; Normally '&message' error conditions have an i18n'd message.
@@ -822,12 +827,7 @@ directories:~{ ~a~}~%")
               (when (fix-hint? c)
                 (display-hint (condition-fix-hint c)))
               (exit 1)))
-      ;; Catch EPIPE and the likes.
-      (catch 'system-error
-        thunk
-        (lambda (key proc format-string format-args . rest)
-          (leave (G_ "~a: ~a~%") proc
-                 (apply format #f format-string format-args))))))
+      (thunk)))
 
 (define-syntax-rule (leave-on-EPIPE exp ...)
   "Run EXP... in a context where EPIPE errors are caught and lead to 'exit'
