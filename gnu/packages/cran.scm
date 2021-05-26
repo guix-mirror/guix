@@ -96,6 +96,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)  ;libsndfile
+  #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages sqlite)
@@ -29821,4 +29822,37 @@ utility operations.")
 @code{multipart/form-data}, or @code{application/x-www-form-urlencoded}
 format.  It includes an example of hosting and parsing HTML form data in R
 using either @code{httpuv} or @code{Rhttpd}.")
+    (license license:expat)))
+
+(define-public r-protolite
+  (package
+    (name "r-protolite")
+    (version "2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "protolite" version))
+       (sha256
+        (base32 "0mwpdlpxsxbj4s2s30d0w1h4dsg0j1jzzldh8kvxii9lpfkiv2gz"))))
+    (properties `((upstream-name . "protolite")))
+    (build-system r-build-system)
+    (inputs
+     `(("protobuf" ,protobuf)))
+    (propagated-inputs
+     `(("r-jsonlite" ,r-jsonlite)
+       ("r-rcpp" ,r-rcpp)))
+    (native-inputs
+     `(("protobuf" ,protobuf)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/jeroen/protolite")
+    (synopsis "Highly optimized protocol buffer serializers")
+    (description
+     "This package provides pure C++ implementations for reading and writing
+several common data formats based on Google protocol-buffers.  It currently
+supports @code{rexp.proto} for serialized R objects, @code{geobuf.proto} for
+binary geojson, and @code{mvt.proto} for vector tiles.  This package uses the
+auto-generated C++ code by protobuf-compiler, hence the entire serialization
+is optimized at compile time.  The @code{RProtoBuf} package on the other hand
+uses the protobuf runtime library to provide a general-purpose toolkit for
+reading and writing arbitrary protocol-buffer data in R.")
     (license license:expat)))
