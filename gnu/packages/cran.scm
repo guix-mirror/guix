@@ -719,6 +719,28 @@ provides methods for automatically determining breaks and labels for axes and
 legends.")
     (license license:expat)))
 
+(define-public r-pacman
+  (package
+    (name "r-pacman")
+    (version "0.5.1")
+    (source (origin
+             (method url-fetch)
+             (uri (cran-uri "pacman" version))
+             (sha256
+              (base32
+               "0z7gngd6h83cpjhq1vg75wvzhdjbgjh7gj5d4zvvi9gd2lmagjcy"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-remotes" ,r-remotes)))
+    (home-page "https://github.com/trinker/pacman")
+    (synopsis "Package Management Tool")
+    (description "This package provides tools to more conveniently perform
+tasks associated with add-on packages.  @code{pacman} conveniently wraps
+library and package related functions and names them in an intuitive and
+consistent fashion.  It seeks to combine functionality from lower level
+functions which can speed up workflow.")
+    (license license:gpl2)))
+
 (define-public r-pheatmap
   (package
     (name "r-pheatmap")
