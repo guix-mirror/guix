@@ -1756,6 +1756,27 @@ linear algebra operations.")
 warnings (stderr) or both streams at the same time.")
     (license license:expat)))
 
+(define-public julia-tableiointerface
+  (package
+    (name "julia-tableiointerface")
+    (version "0.1.6")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/lungben/TableIOInterface.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0p2fi9jbyfg2j6rysv4if7dx8qw2mssb04i75j1zq607j8707kvn"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/lungben/TableIOInterface.jl")
+    (synopsis "File formats based on file extensions")
+    (description "This package determines tabular file formats based on file
+extensions.  It is intended to be the base both for @code{TableIO.jl} and for
+the @code{Pluto.jl} tabular data import functionality.")
+    (license license:expat)))
+
 (define-public julia-unpack
   (package
     (name "julia-unpack")
