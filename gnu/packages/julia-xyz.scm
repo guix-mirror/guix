@@ -716,6 +716,26 @@ functions (or any callable object, really) using forward mode automatic
 differentiation (AD).")
     (license license:expat)))
 
+(define-public julia-fuzzycompletions
+  (package
+    (name "julia-fuzzycompletions")
+    (version "0.4.1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JunoLab/FuzzyCompletions.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "07sv88c472n6w4x7diy952igbcfm1s104ysnnvprld83312siw06"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/JunoLab/FuzzyCompletions.jl")
+    (synopsis "Fuzzy completion provider for Julia")
+    (description
+     "FuzzyCompletions provides fuzzy completions for a Julia runtime session.")
+    (license license:expat)))
+
 (define-public julia-gumbo
   (package
     (name "julia-gumbo")
