@@ -598,7 +598,9 @@ statistical profiler, a code coverage tool, and many other extensions.")
   ;;     it, as is the case for SBCL, but I know of no attempt to do so."
   (package
     (name "ccl")
-    (version "1.12")
+    ;; XXX When updating this package, check whether we can simply append
+    ;; VERSION to the ccl-bootstrap URL again, instead of per architecture.
+    (version "1.12.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -607,7 +609,7 @@ statistical profiler, a code coverage tool, and many other extensions.")
               (file-name (git-file-name "ccl" version))
               (sha256
                (base32
-                "0kxr24d2fzsmpsilijpwwfl6g89y7fcrwb80kai5nx9pwgxmjbp3"))))
+                "1zz291lvsrr7pps8wfl2kdxsnzjngqi4v3mil14pga4r5zanmsi7"))))
     (build-system gnu-build-system)
     ;; CCL consists of a "lisp kernel" and "heap image", both of which are
     ;; shipped in precompiled form in source tarballs.  The former is a C
@@ -619,20 +621,20 @@ statistical profiler, a code coverage tool, and many other extensions.")
         ,(origin
            (method url-fetch)
            (uri (string-append
-                 "https://github.com/Clozure/ccl/releases/download/v" version "/"
+                 "https://github.com/Clozure/ccl/releases/download/v"
                  (match (%current-system)
-                   ("armhf-linux" "linuxarm")
+                   ("armhf-linux" "1.12/linuxarm")
                    ;; XXX: This source only works on x86, but provide it as a
                    ;; catch-all to prevent errors when querying this package
                    ;; on unsupported platforms.
-                   (_ "linuxx86"))
+                   (_ "1.12.1/linuxx86"))
                  ".tar.gz"))
            (sha256
             (base32
              (match (%current-system)
                ("armhf-linux"
                 "0x4bjx6cxsjvxyagijhlvmc7jkyxifdvz5q5zvz37028va65243c")
-               (_ "15l7cfa4a7jkfwdzsfm4q3n22jnb57imxahpql3h77xin57v1gbz"))))))))
+               (_ "0ll017ajcfsyx8f7zsy4394y8xxvz40iz0gcsmznp0n3mf0xi67c"))))))))
     (native-inputs
      `(("cl-asdf" ,cl-asdf)
        ("m4" ,m4)))
