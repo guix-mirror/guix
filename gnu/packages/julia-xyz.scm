@@ -1703,6 +1703,34 @@ other power series in @code{h}.")
 a loadable module.")
       (license license:expat))))
 
+(define-public julia-scratch
+  (package
+    (name "julia-scratch")
+    (version "1.0.3")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaPackaging/Scratch.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "06n0rc7grlg9igkdlrql83q0zpc97bh2hfzj5mw4spfik8ahw2aa"))))
+    (build-system julia-build-system)
+    (arguments
+     `(#:tests? #f))    ; Test suite tries to access the Julia package registry.
+    (home-page "https://github.com/JuliaPackaging/Scratch.jl")
+    (synopsis "Scratch spaces for all your persistent mutable data needs")
+    (description "This repository implements the scratch spaces API for
+package-specific mutable containers of data.  These spaces can contain datasets,
+text, binaries, or any other kind of data that would be convenient to store in
+a location specific to your package.  As compared to Artifacts, these containers
+of data are mutable.  Because the scratch space location on disk is not very
+user-friendly, scratch spaces should, in general, not be used for a storing
+files that the user must interact with through a file browser.")
+    (license license:expat)))
+
 (define-public julia-sortingalgorithms
   (package
     (name "julia-sortingalgorithms")
