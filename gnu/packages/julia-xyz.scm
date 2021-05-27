@@ -1553,6 +1553,33 @@ algorithms, while ensuring that the most efficient implementation is used in
 actual computation.")
     (license license:expat)))
 
+(define-public julia-plotutils
+  (package
+    (name "julia-plotutils")
+    (version "1.0.10")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaPlots/PlotUtils.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "1jimdkp590g7s33w7i431nn7mp1phjy9gdjs88zyqsmq5hxldacg"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-colors" ,julia-colors)
+       ("julia-colorschemes" ,julia-colorschemes)
+       ("julia-reexport" ,julia-reexport)))
+    (native-inputs
+     `(("julia-stablerngs" ,julia-stablerngs)))
+    (home-page "https://github.com/JuliaPlots/PlotUtils.jl")
+    (synopsis "Helper algorithms for building plotting components")
+    (description "This package containts generic helper algorithms for building
+plotting components.")
+    (license license:expat)))
+
 (define-public julia-recipesbase
   (package
     (name "julia-recipesbase")
