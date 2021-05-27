@@ -309,6 +309,31 @@ between colors, simulating color blindness, parsing colors, and generating
 color scales for graphics.")
     (license license:expat)))
 
+(define-public julia-colorschemes
+  (package
+    (name "julia-colorschemes")
+    (version "3.12.1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaGraphics/ColorSchemes.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "08k39hbdf3jn0001f7qxa99xvagrnh9764911hs6cmxkvp061sa4"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-colors" ,julia-colors)
+       ("julia-colortypes" ,julia-colortypes)
+       ("julia-fixedpointnumbers" ,julia-fixedpointnumbers)
+       ("julia-staticarrays" ,julia-staticarrays)))
+    (home-page "https://github.com/JuliaGraphics/ColorSchemes.jl")
+    (synopsis "Colorschemes, colormaps, gradients, and palettes")
+    (description "This package provides a collection of colorschemes.")
+    (license license:expat)))
+
 (define-public julia-colortypes
   (package
     (name "julia-colortypes")
