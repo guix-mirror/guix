@@ -5013,6 +5013,51 @@ Fisher, Stouffer, Tippett, and Wilkinson; a number of data-sets to replicate
 published results; and a routine for graphical display.")
     (license license:gpl2)))
 
+(define-public r-tradeseq
+  (package
+   (name "r-tradeseq")
+   (version "1.4.0")
+   (source (origin
+            (method url-fetch)
+            (uri (bioconductor-uri "tradeSeq" version))
+            (sha256
+             (base32
+              "1ncmvn9kaksismvsjs042xsp8bfq1xnm0ds87dwpk95bnpj96a89"))))
+   (build-system r-build-system)
+   (propagated-inputs
+    `(("r-biobase" ,r-biobase)
+      ("r-biocparallel" ,r-biocparallel)
+      ("r-clusterexperiment" ,r-clusterexperiment)
+      ("r-dplyr" ,r-dplyr)
+      ("r-edger" ,r-edger)
+      ("r-ggplot2" ,r-ggplot2)
+      ("r-igraph" ,r-igraph)
+      ("r-magrittr" ,r-magrittr)
+      ("r-mgcv" ,r-mgcv)
+      ("r-monocle" ,r-monocle)
+      ("r-pbapply" ,r-pbapply)
+      ("r-princurve" ,r-princurve)
+      ("r-rcolorbrewer" ,r-rcolorbrewer)
+      ("r-s4vectors" ,r-s4vectors)
+      ("r-singlecellexperiment" ,r-singlecellexperiment)
+      ("r-slingshot" ,r-slingshot)
+      ("r-summarizedexperiment" ,r-summarizedexperiment)
+      ("r-tibble" ,r-tibble)))
+   (native-inputs
+    `(("r-knitr" ,r-knitr)))
+   (home-page "https://statomics.github.io/tradeSeq/index.html")
+   (synopsis "Trajectory-based differential expression analysis")
+   (description
+    "This package provides a flexible method for fitting regression models that
+can be used to find genes that are differentially expressed along one or
+multiple lineages in a trajectory.  Based on the fitted models, it uses a
+variety of tests suited to answer different questions of interest, e.g.  the
+discovery of genes for which expression is associated with pseudotime, or which
+are differentially expressed (in a specific region) along the trajectory.  It
+fits a negative binomial generalized additive model (GAM) for each gene, and
+performs inference on the parameters of the GAM.")
+   (license license:expat)))
+
 (define-public r-triform
   (package
     (name "r-triform")
