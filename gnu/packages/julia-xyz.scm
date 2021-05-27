@@ -919,6 +919,29 @@ conditional ifelse.  It is similar to @code{Core.ifelse} but it is extendable.")
 interfaces with @file{.ini} files.")
     (license license:expat)))
 
+(define-public julia-invertedindices
+  (package
+    (name "julia-invertedindices")
+    (version "1.0.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/mbauman/InvertedIndices.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1179z20yxnkyziip7gn26wr1g3k3ssl1ci7pig3khc900f62di46"))))
+    (build-system julia-build-system)
+    (native-inputs
+     `(("julia-offsetarrays" ,julia-offsetarrays)))
+    (home-page "https://github.com/mbauman/InvertedIndices.jl")
+    (synopsis "Index type that allows for inverted selections")
+    (description "This package just exports one type: the @code{InvertedIndex},
+or @code{Not} for short.  It can wrap any supported index type and may be used
+as an index into any @code{AbstractArray} subtype, including OffsetArrays.")
+    (license license:expat)))
+
 (define-public julia-iocapture
   (package
     (name "julia-iocapture")
