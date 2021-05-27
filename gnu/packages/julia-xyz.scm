@@ -1789,6 +1789,31 @@ working with @acronym{URIs,Uniform Resource Identifiers}, as defined in RFC
 system.")
     (license license:expat)))
 
+(define-public julia-versionparsing
+  (package
+    (name "julia-versionparsing")
+    (version "1.2.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaInterop/VersionParsing.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "060s72dsnpavgilf7f7315lw2sn4npk8lkndmj6bg7i23hppiwva"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/JuliaInterop/VersionParsing.jl")
+    (synopsis "Flexible VersionNumber parsing in Julia")
+    (description "The @code{VersionParsing} package implements flexible parsing
+of version-number strings into Julia's built-in @code{VersionNumber} type, via
+the @code{vparse(string)} function.  Unlike the @code{VersionNumber(string)}
+constructor, @code{vparse(string)} can handle version-number strings in a much
+wider range of formats than are encompassed by the semver standard.  This is
+useful in order to support @code{VersionNumber} comparisons applied to
+\"foreign\" version numbers from external packages.")
+    (license license:expat)))
+
 (define-public julia-zipfile
   (package
     (name "julia-zipfile")
