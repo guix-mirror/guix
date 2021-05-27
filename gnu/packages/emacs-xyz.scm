@@ -25207,7 +25207,7 @@ Emacs that integrate with major modes like Org-mode.")
 (define-public emacs-modus-themes
   (package
     (name "emacs-modus-themes")
-    (version "1.3.0")
+    (version "1.4.0")
     (source
      (origin
        (method git-fetch)
@@ -25216,7 +25216,7 @@ Emacs that integrate with major modes like Org-mode.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0dw33kvs6k1a933d64fnrckzhs12d8m03a31cwblm39vmirgmf6y"))))
+        (base32 "1lw3spg7r7ga8sl2pnr1snviqgbvhxayl1mm7dny720a8mgv49f0"))))
     (build-system emacs-build-system)
     (home-page "https://protesilaos.com/modus-themes/")
     (synopsis "Accessible themes (WCAG AAA)")
