@@ -1154,14 +1154,14 @@ containing both Producer and Consumer support.")
 (define-public libndp
   (package
     (name "libndp")
-    (version "1.7")
+    (version "1.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://libndp.org/files/"
                                   "libndp-" version ".tar.gz"))
               (sha256
                (base32
-                "1dlinhl39va00v55qygjc9ap77yqf7xvn4rwmvdr49xhzzxhlj1c"))))
+                "0ay0n0d85254zdmv8znmn399gfiqpk6ga0jwdwa7ylpbw9pbdzw8"))))
     (build-system gnu-build-system)
     (home-page "https://libndp.org/")
     (synopsis "Library for Neighbor Discovery Protocol")
