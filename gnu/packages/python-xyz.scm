@@ -25215,6 +25215,29 @@ versions which have appeared in recent Python releases, but are usable with
 older versions of Python and so are packaged here.")
     (license license:bsd-3)))
 
+(define-public python-helper
+  (package
+    (name "python-helper")
+    (version "2.5.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "helper" version))
+              (sha256
+               (base32
+                "1d2j64wgbggzv5rhvil10zndp2w78wa5np5w0psj122ws9qr9wsa"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-mock" ,python-mock)))
+    (propagated-inputs
+     `(("python-logutils" ,python-logutils)
+       ("python-pyyaml" ,python-pyyaml)))
+    (home-page "https://github.com/gmr/helper")
+    (synopsis "Library for writing configurable applications and daemons")
+    (description
+     "This package provides procedures for quickly writing configurable
+applications and daemons.")
+    (license license:bsd-3)))
+
 (define-public python-qtsass
   (package
     (name "python-qtsass")
