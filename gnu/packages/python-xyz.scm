@@ -24900,6 +24900,41 @@ module patches @code{asyncio} to allow nested use of @code{asyncio.run} and
 @code{loop.run_until_complete}.")
     (license license:bsd-3)))
 
+(define-public python-simpervisor
+  (package
+    (name "python-simpervisor")
+    (version "0.4")
+    (source
+      (origin
+        ;; Tests not included in release.
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/yuvipanda/simpervisor")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1brsisx7saf4ic0dih1n5y7rbdbwn1ywv9pl32bch3061r46prvv"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f  ; Test suite can't find aiohttp.
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "--maxfail" "3" "--verbose"))
+             #t)))))
+    (native-inputs
+     `(("python-aiohttp" ,python-aiohttp)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-asyncio" ,python-pytest-asyncio)))
+    (home-page "https://github.com/yuvipanda/simpervisor")
+    (synopsis "Simple async process supervisor")
+    (description
+     "This package provides a simple async process supervisor in Python.")
+    (license license:bsd-3)))
+
 (define-public python-parallel
   (package
     (name "python-parallel")
