@@ -2358,6 +2358,9 @@ that block port 22.")
        (sha256
         (base32 "102wcyl4j7c7lj7z87b5xlhj1ark88v4f3q9pmmljw8ksn2w1m2g"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--disable-static")))
     (synopsis "TCP, UDP and SCTP bandwidth measurement tool")
     (description
      "iPerf is a tool to measure achievable bandwidth on IP networks.  It
