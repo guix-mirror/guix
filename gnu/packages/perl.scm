@@ -667,6 +667,25 @@ presence, and the first one found is executed.  With an optional parameter,
 all known commands are checked.")
     (license (package-license perl))))
 
+(define-public perl-bsd-resource
+  (package
+   (name "perl-bsd-resource")
+   (version "1.2911")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append
+           "https://cpan.metacpan.org/authors/id/J/JH/JHI/BSD-Resource-"
+           version ".tar.gz"))
+     (sha256
+      (base32 "0g8c7825ng2m0yz5sy6838rvfdl8j3vm29524wjgf66ccfhgn74x"))))
+   (build-system perl-build-system)
+   (home-page "https://metacpan.org/release/BSD-Resource")
+   (synopsis "BSD process resource limit and priority functions")
+   (description "This package provides procedures to get and set resource
+limits like @code{getrlimit} and @code{setpriority}.")
+   (license license:artistic2.0)))
+
 (define-public perl-b-hooks-endofscope
   (package
     (name "perl-b-hooks-endofscope")
