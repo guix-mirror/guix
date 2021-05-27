@@ -1701,7 +1701,7 @@ interface.")
 (define-public python-hg-evolve
   (package
     (name "python-hg-evolve")
-    (version "10.0.1")
+    (version "10.3.1")
     (source
       (origin
         (method hg-fetch)
@@ -1711,7 +1711,7 @@ interface.")
         (file-name (string-append name "-" version "-checkout"))
         (sha256
           (base32
-            "1lz407373lfam9n02gq0l0rc2sjvn0m96kbzy93ipia3ika8fa68"))))
+            "0msnp5fp8sz4q2r5xpcmm60h82kwkyg23y212v1xfp7ixkq9f4qa"))))
     (build-system python-build-system)
     (arguments
      ;; Tests need mercurial source code.
