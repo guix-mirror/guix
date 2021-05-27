@@ -919,6 +919,27 @@ conditional ifelse.  It is similar to @code{Core.ifelse} but it is extendable.")
     (description "This package provides a wrapper for Imagemagick.")
     (license license:expat)))
 
+(define-public julia-indexing
+  (package
+    (name "julia-indexing")
+    (version "1.1.1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/andyferris/Indexing.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1s7bz5aaj9sx753pcaixq83jgbk33adxgybpinjgzb9lzdv1ddgx"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/andyferris/Indexing.jl")
+    (synopsis "Generalized indexing for Julia")
+    (description "This package defines functions for getting multiple indices
+out of dictionaries, tuples, etc, extending this ability beyond
+@code{AbstractArray}.")
+    (license license:expat)))
+
 (define-public julia-inifile
   (package
     (name "julia-inifile")
