@@ -25658,6 +25658,30 @@ maximums, many t, F and G-square tests, many regressions (normal, logistic,
 Poisson), are some of the many fast functions.")
     (license license:gpl2+)))
 
+(define-public r-rffc
+  (package
+   (name "r-rffc")
+   (version "1.0")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append
+                  "https://download.r-forge.r-project.org/src/contrib/"
+                  "rfFC_" version ".tar.gz"))
+            (sha256
+             (base32
+              "05x9wgzsmx4vb12lmcspymgmpb2xw8bwryb8ysg7vzg2nkh0ma3g"))))
+   (build-system r-build-system)
+   (propagated-inputs
+    `(("r-randomforest",r-randomforest)))
+   (home-page "https://r-forge.r-project.org/projects/rffc/")
+   (synopsis "Random Forest Feature Contributions")
+   (description "This package provides functions for extracting feature
+contributions from a random forest model from package @code{randomForest}.
+Feature contributions provide detailed information about the relationship
+between data variables and the predicted value returned by random forest
+model.")
+   (license license:gpl2)))
+
 (define-public r-clusterr
   (package
     (name "r-clusterr")
