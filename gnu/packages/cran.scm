@@ -5286,6 +5286,44 @@ Friendly and is now the main support package for a new book, \"Discrete Data
 Analysis with R\" by Michael Friendly and David Meyer (2015).")
     (license license:gpl2)))
 
+(define-public r-vcfr
+  (package
+   (name "r-vcfr")
+   (version "1.12.0")
+   (source (origin
+            (method url-fetch)
+            (uri (cran-uri "vcfR" version))
+            (sha256
+             (base32
+              "0lhxb3ac4fafwik9q3cds46svzf0hyca8k54chw3dpk50c0zz1yx"))))
+   (build-system r-build-system)
+   (native-inputs
+    `(("r-knitr" ,r-knitr)))
+   (inputs
+    `(("zlib" ,zlib)))
+   (propagated-inputs
+    `(("r-ape" ,r-ape)
+      ("r-dplyr" ,r-dplyr)
+      ("r-magrittr" ,r-magrittr)
+      ("r-memuse" ,r-memuse)
+      ("r-pinfsc50" ,r-pinfsc50)
+      ("r-rcpp" ,r-rcpp)
+      ("r-stringr" ,r-stringr)
+      ("r-tibble" ,r-tibble)
+      ("r-vegan" ,r-vegan)
+      ("r-viridislite" ,r-viridislite)))
+   (home-page "https://github.com/knausb/vcfR")
+   (synopsis "Manipulate and visualize VCF data")
+   (description "This package facilitates easy manipulation of variant call
+format (VCF) data.  Functions are provided to rapidly read from and write to
+VCF files.  Once VCF data is read into R, a parser function extracts matrices
+of data.  This information can then be used for quality control or other
+purposes.  Additional functions provide visualization of genomic data.  Once
+processing is complete data may be written to a VCF file.  It also may be
+converted into other popular R objects.  This package provides a link between
+VCF data and familiar R software.")
+   (license license:gpl3)))
+
 (define-public r-ica
   (package
     (name "r-ica")
