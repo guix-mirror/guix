@@ -2600,6 +2600,37 @@ purposes.  The package also contains legacy support for early single-end,
 ungapped alignment formats.")
     (license license:artistic2.0)))
 
+(define-public r-slingshot
+  (package
+   (name "r-slingshot")
+   (version "1.8.0")
+   (source (origin
+            (method url-fetch)
+            (uri (bioconductor-uri "slingshot" version))
+            (sha256
+             (base32
+              "0sz4frlk7c1g8adyfcgi1mf1xsf9n5zib4bw7j9kl711dbhvkqwl"))))
+   (build-system r-build-system)
+   (propagated-inputs
+    `(("r-ape" ,r-ape)
+      ("r-igraph" ,r-igraph)
+      ("r-matrixstats" ,r-matrixstats)
+      ("r-princurve" ,r-princurve)
+      ("r-singlecellexperiment" ,r-singlecellexperiment)
+      ("r-summarizedexperiment" ,r-summarizedexperiment)))
+   (native-inputs
+    `(("r-knitr" ,r-knitr)))
+   (home-page "https://bioconductor.org/packages/slingshot")
+   (synopsis "Tools for ordering single-cell sequencing")
+   (description "This package provides functions for inferring continuous,
+branching lineage structures in low-dimensional data.  Slingshot was designed
+to model developmental trajectories in single-cell RNA sequencing data and
+serve as a component in an analysis pipeline after dimensionality reduction
+and clustering.  It is flexible enough to handle arbitrarily many branching
+events and allows for the incorporation of prior knowledge through supervised
+graph construction.")
+   (license license:artistic2.0)))
+
 (define-public r-structuralvariantannotation
   (package
     (name "r-structuralvariantannotation")
