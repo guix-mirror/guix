@@ -5763,6 +5763,25 @@ columns of data using the full range of colours provided by modern
 terminals.")
     (license license:gpl3)))
 
+(define-public r-pinfsc50
+  (package
+   (name "r-pinfsc50")
+   (version "1.2.0")
+   (source (origin
+            (method url-fetch)
+            (uri (cran-uri "pinfsc50" version))
+            (sha256
+             (base32
+              "1547xyxmfb7zi8h9bsm6k67dcw4hpp129xzvmgwfw7r6p4af47zd"))))
+   (build-system r-build-system)
+   (home-page "https://cran.r-project.org/web/packages/pinfsc50/")
+   (synopsis "Genomic data for the plant pathogen Phytophthora infestans")
+   (description "This package contains genomic data for the plant pathogen
+Phytophthora infestans.  It includes a variant file, a sequence file and an
+annotation file.  This package is intended to be used as example data for
+packages that work with genomic data.")
+   (license license:gpl2+)))
+
 (define-public r-uuid
   (package
     (name "r-uuid")
