@@ -461,11 +461,14 @@ performance across unpredictable networks, such as the Internet.")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("linux-headers" ,linux-libre-headers)))
-    (synopsis "Linux SCTP helper library")
-    (description "Lksctp-tools project provides a user space library for SCTP
-(libsctp) including C language header files (netinet/sctp.h) for accessing SCTP
-specific application programming interfaces not provided by the standard
-sockets, and also some helper utilities around SCTP.")
+    (synopsis
+     "@acronym{SCTP, Stream Control Transmission Protocol} helpers for Linux")
+    (description
+     "The lksctp-tools project provides a user-space library for @acronym{SCTP,
+the Stream Control Transmission Protocol} (@file{libsctp}) and C language header
+files (@file{netinet/sctp.h}) for accessing SCTP-specific @acronym{APIs,
+application programming interfaces} not provided by the standard sockets.
+It also includes some SCTP-related helper utilities.")
     (home-page "http://lksctp.sourceforge.net/")
     (license
      (list
