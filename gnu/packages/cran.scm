@@ -25274,6 +25274,26 @@ theory; see @url{Strumbel and Kononenko (2014),
 doi.org/10.1007/s10115-013-0679-x} for details.")
     (license license:gpl2+)))
 
+(define-public r-memuse
+  (package
+    (name "r-memuse")
+    (version "4.1-0")
+    (source (origin
+             (method url-fetch)
+             (uri (cran-uri "memuse" version))
+             (sha256
+              (base32
+               "1bbjp8y0ji71956fbaxiil7ynq2nkmmgz7i9xps83m3bbp5d3mjq"))))
+    (properties `((upstream-name . "memuse")))
+    (build-system r-build-system)
+    (home-page "https://github.com/shinra-dev/memuse")
+    (synopsis "Memory Estimation Utilities")
+    (description
+      "This package provides procedures to answer the following questions:
+How much ram do you need to store a 100,000 by 100,000 matrix? How much ram is
+your current R session using? How much ram do you even have?")
+    (license license:bsd-2)))
+
 (define-public r-metrics
   (package
     (name "r-metrics")
