@@ -846,6 +846,30 @@ input/output delimiter.  When the new functionality is not used, bioawk is
 intended to behave exactly the same as the original BWK awk.")
     (license license:x11)))
 
+(define-public python-htsget
+  (package
+   (name "python-htsget")
+   (version "0.2.5")
+   (source (origin
+            (method url-fetch)
+            (uri (pypi-uri "htsget" version))
+            (sha256
+             (base32
+              "0ic07q85vhw9djf23k57b21my7i5xp400m8gfqgr5gcryqvdr0yk"))))
+   (build-system python-build-system)
+   (native-inputs
+    `(("python-setuptools-scm" ,python-setuptools-scm)))
+   (propagated-inputs
+    `(("python-humanize" ,python-humanize)
+      ("python-requests" ,python-requests)
+      ("python-six" ,python-six)))
+   (home-page "https://pypi.org/project/htsget/")
+   (synopsis "Python API and command line interface for the GA4GH htsget API")
+   (description "This package is a client implementation of the GA4GH htsget
+protocol.  It provides a simple and reliable way to retrieve genomic data from
+servers supporting the protocol.")
+   (license license:asl2.0)))
+
 (define-public python-pybedtools
   (package
     (name "python-pybedtools")
