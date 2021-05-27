@@ -489,6 +489,28 @@ including, @code{CircularBuffer}, @code{Queue}, @code{Stack},
 @code{Accumulators}, @code{LinkedLists}, @code{SortedDicts} and many others.")
     (license license:expat)))
 
+(define-public julia-dictionaries
+  (package
+    (name "julia-dictionaries")
+    (version "0.3.8")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/andyferris/Dictionaries.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1j88f6qa5hqm64n5q3jy08a02gwp7by401s03n5x7575p58iqqh2"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-indexing" ,julia-indexing)))
+    (home-page "https://github.com/andyferris/Dictionaries.jl")
+    (synopsis "Alternative interface for dictionaries in Julia")
+    (description "This package provides an alternative interface for
+dictionaries in Julia, for improved productivity and performance.")
+    (license license:expat)))
+
 (define-public julia-docstringextensions
   (package
     (name "julia-docstringextensions")
