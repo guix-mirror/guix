@@ -3475,6 +3475,25 @@ statistical functions and other utilities to ease their usage.")
 quantities.")
     (license license:expat)))
 
+(define-public r-princurve
+  (package
+   (name "r-princurve")
+   (version "2.1.6")
+   (source (origin
+            (method url-fetch)
+            (uri (cran-uri "princurve" version))
+            (sha256
+             (base32
+              "0wzk329bxljkzz57y220lsfckpsn45w348m6dcxh29zbj0ik65h2"))))
+   (build-system r-build-system)
+   (propagated-inputs
+    `(("r-rcpp" ,r-rcpp)))
+   (home-page "https://github.com/rcannood/princurve")
+   (synopsis "Fit a principal curve in arbitrary dimension")
+   (description "This package provides procedures for fitting a principal
+curve to a data matrix in arbitrary dimensions.")
+   (license license:gpl2)))
+
 (define-public r-reshape
   (package
     (name "r-reshape")
