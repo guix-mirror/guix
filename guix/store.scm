@@ -36,6 +36,7 @@
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 binary-ports)
   #:use-module ((ice-9 control) #:select (let/ec))
+  #:use-module (ice-9 atomic)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-9 gnu)
@@ -47,7 +48,7 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 popen)
-  #:use-module (ice-9 threads)
+  #:autoload   (ice-9 threads) (current-processor-count)
   #:use-module (ice-9 format)
   #:use-module (web uri)
   #:export (%daemon-socket-uri
@@ -86,6 +87,11 @@
             &nix-protocol-error nix-protocol-error?
             nix-protocol-error-message
             nix-protocol-error-status
+
+            allocate-store-connection-cache
+            store-connection-cache
+            set-store-connection-cache
+            set-store-connection-cache!
 
             hash-algo
             build-mode
@@ -383,8 +389,8 @@
   ;; the session.
   (ats-cache    store-connection-add-to-store-cache)
   (atts-cache   store-connection-add-text-to-store-cache)
-  (object-cache store-connection-object-cache
-                (default vlist-null))             ;vhash
+  (caches       store-connection-caches
+                (default '#()))                   ;vector
   (built-in-builders store-connection-built-in-builders
                      (default (delay '()))))      ;promise
 
@@ -586,6 +592,10 @@ for this connection will be pinned.  Return a server object."
             (write-int (if reserve-space? 1 0) port))
           (letrec* ((built-in-builders
                      (delay (%built-in-builders conn)))
+                    (caches
+                     (make-vector
+                      (atomic-box-ref %store-connection-caches)
+                      vlist-null))
                     (conn
                      (%make-store-connection port
                                              (protocol-major v)
@@ -593,7 +603,7 @@ for this connection will be pinned.  Return a server object."
                                              output flush
                                              (make-hash-table 100)
                                              (make-hash-table 100)
-                                             vlist-null
+                                             caches
                                              built-in-builders)))
             (let loop ((done? (process-stderr conn)))
               (or done? (process-stderr conn)))
@@ -616,7 +626,9 @@ connection.  Use with care."
                               output flush
                               (make-hash-table 100)
                               (make-hash-table 100)
-                              vlist-null
+                              (make-vector
+                               (atomic-box-ref %store-connection-caches)
+                               vlist-null)
                               (delay (%built-in-builders connection))))
 
     connection))
@@ -1801,6 +1813,57 @@ This makes sense only when the daemon was started with '--cache-failures'."
 
 
 ;;;
+;;; Per-connection caches.
+;;;
+
+;; Number of currently allocated store connection caches--things that go in
+;; the 'caches' vector of <store-connection>.
+(define %store-connection-caches (make-atomic-box 0))
+
+(define (allocate-store-connection-cache name)
+  "Allocate a new cache for store connections and return its identifier.  Said
+identifier can be passed as an argument to "
+  (let loop ((current (atomic-box-ref %store-connection-caches)))
+    (let ((previous (atomic-box-compare-and-swap! %store-connection-caches
+                                                  current (+ current 1))))
+      (if (= previous current)
+          current
+          (loop current)))))
+
+(define %object-cache-id
+  ;; The "object cache", mapping lowerable objects such as <package> records
+  ;; to derivations.
+  (allocate-store-connection-cache 'object-cache))
+
+(define (vector-set vector index value)
+  (let ((new (vector-copy vector)))
+    (vector-set! new index value)
+    new))
+
+(define (store-connection-cache store cache)
+  "Return the cache of STORE identified by CACHE, an identifier as returned by
+'allocate-store-connection-cache'."
+  (vector-ref (store-connection-caches store) cache))
+
+(define (set-store-connection-cache store cache value)
+  "Return a copy of STORE where CACHE has the given VALUE.  CACHE must be a
+value returned by 'allocate-store-connection-cache'."
+  (store-connection
+   (inherit store)
+   (caches (vector-set (store-connection-caches store) cache value))))
+
+(define set-store-connection-caches!              ;private
+  (record-modifier <store-connection> 'caches))
+
+(define (set-store-connection-cache! store cache value)
+  "Set STORE's CACHE to VALUE.
+
+This is a mutating version that should be avoided.  Prefer the functional
+'set-store-connection-cache' instead, together with using %STORE-MONAD."
+  (vector-set! (store-connection-caches store) cache value))
+
+
+;;;
 ;;; Store monad.
 ;;;
 
@@ -1819,7 +1882,9 @@ This makes sense only when the daemon was started with '--cache-failures'."
 (template-directory instantiations %store-monad)
 
 (define* (cache-object-mapping object keys result
-                               #:key (vhash-cons vhash-consq))
+                               #:key
+                               (cache %object-cache-id)
+                               (vhash-cons vhash-consq))
   "Augment the store's object cache with a mapping from OBJECT/KEYS to RESULT.
 KEYS is a list of additional keys to match against, for instance a (SYSTEM
 TARGET) tuple.  Use VHASH-CONS to insert OBJECT into the cache.
@@ -1828,10 +1893,10 @@ OBJECT is typically a high-level object such as a <package> or an <origin>,
 and RESULT is typically its derivation."
   (lambda (store)
     (values result
-            (store-connection
-             (inherit store)
-             (object-cache (vhash-cons object (cons result keys)
-                                       (store-connection-object-cache store)))))))
+            (set-store-connection-cache
+             store cache
+             (vhash-cons object (cons result keys)
+                         (store-connection-cache store cache))))))
 
 (define record-cache-lookup!
   (if (profiled? "object-cache")
@@ -1871,7 +1936,7 @@ and KEYS; use VHASH-FOLD* to look for OBJECT in the cache.  KEYS is a list of
 additional keys to match against, and which are compared with 'equal?'.
 Return #f on failure and the cached result otherwise."
   (lambda (store)
-    (let* ((cache (store-connection-object-cache store))
+    (let* ((cache (store-connection-cache store %object-cache-id))
 
            ;; Escape as soon as we find the result.  This avoids traversing
            ;; the whole vlist chain and significantly reduces the number of
@@ -2048,9 +2113,6 @@ the store."
   ;; when using 'gexp->derivation' and co.
   (make-parameter #f))
 
-(define set-store-connection-object-cache!
-  (record-modifier <store-connection> 'object-cache))
-
 (define* (run-with-store store mval
                          #:key
                          (guile-for-build (%guile-for-build))
@@ -2070,8 +2132,8 @@ connection, and return the result."
         (when (and store new-store)
           ;; Copy the object cache from NEW-STORE so we don't fully discard
           ;; the state.
-          (let ((cache (store-connection-object-cache new-store)))
-            (set-store-connection-object-cache! store cache)))
+          (let ((caches (store-connection-caches new-store)))
+            (set-store-connection-caches! store caches)))
         result))))
 
 
