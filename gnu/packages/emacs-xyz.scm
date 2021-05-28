@@ -28128,7 +28128,7 @@ shorter than usual, using mostly unprefixed keys.")
 (define-public emacs-cwl-mode
   (package
     (name "emacs-cwl-mode")
-    (version "0.2.5")
+    (version "0.2.6")
     (source
      (origin
        (method git-fetch)
@@ -28138,7 +28138,7 @@ shorter than usual, using mostly unprefixed keys.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0x9rvyhgy7ijq2r9pin94jz7nisrw6z91jch7d27lkhrmyb1rwk3"))))
+         "0507acyr9h4646scx316niq27vir6hl2gsgz7wdbiw0cb2drfkd1"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-yaml-mode" ,emacs-yaml-mode)))
