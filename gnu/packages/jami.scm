@@ -546,12 +546,21 @@ decentralized calling using P2P-DHT.")
                             ; automatically started by DBus.
        ("adwaita-icon-theme" ,adwaita-icon-theme)))
     (arguments
-     `(#:tests? #f                      ; There is no testsuite.
+     `(#:tests? #f                      ;no test suite
+       #:imported-modules (,@%cmake-build-system-modules
+                           (guix build glib-or-gtk-build-system))
+       #:modules ((guix build cmake-build-system)
+                  ((guix build glib-or-gtk-build-system) #:prefix gtk:)
+                  (guix build utils))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'change-directory
            (lambda _
-             (chdir "client-gnome"))))))
+             (chdir "client-gnome")))
+         (add-after 'install 'glib-or-gtk-compile-schemas
+           (assoc-ref gtk:%standard-phases 'glib-or-gtk-compile-schemas))
+         (add-after 'glib-or-gtk-compile-schemas 'glib-or-gtk-wrap
+           (assoc-ref gtk:%standard-phases 'glib-or-gtk-wrap)))))
     (synopsis "Jami client for GNOME")
     (description "This package provides a Jami client for the GNOME desktop.
 Jami is a secure and distributed voice, video and chat communication platform
