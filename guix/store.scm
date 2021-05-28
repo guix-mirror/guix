@@ -69,6 +69,7 @@
             nix-server-socket
 
             current-store-protocol-version        ;for internal use
+            cache-lookup-recorder                 ;for internal use
             mcached
 
             &store-error store-error?
@@ -1898,21 +1899,24 @@ and RESULT is typically its derivation."
              (vhash-cons object (cons result keys)
                          (store-connection-cache store cache))))))
 
-(define record-cache-lookup!
-  (if (profiled? "object-cache")
+(define (cache-lookup-recorder component title)
+  "Return a procedure of two arguments to record cache lookups, hits, and
+misses for COMPONENT.  The procedure must be passed a Boolean indicating
+whether the cache lookup was a hit, and the actual cache (a vhash)."
+  (if (profiled? component)
       (let ((fresh    0)
             (lookups  0)
             (hits     0)
             (size     0))
         (register-profiling-hook!
-         "object-cache"
+         component
          (lambda ()
-           (format (current-error-port) "Store object cache:
+           (format (current-error-port) "~a:
   fresh caches: ~5@a
   lookups:      ~5@a
   hits:         ~5@a (~,1f%)
   cache size:   ~5@a entries~%"
-                   fresh lookups hits
+                   title fresh lookups hits
                    (if (zero? lookups)
                        100.
                        (* 100. (/ hits lookups)))
@@ -1920,15 +1924,18 @@ and RESULT is typically its derivation."
 
         (lambda (hit? cache)
           (set! fresh
-            (if (eq? cache vlist-null)
-                (+ 1 fresh)
-                fresh))
+                (if (eq? cache vlist-null)
+                    (+ 1 fresh)
+                    fresh))
           (set! lookups (+ 1 lookups))
           (set! hits (if hit? (+ hits 1) hits))
           (set! size (+ (if hit? 0 1)
                         (vlist-length cache)))))
       (lambda (x y)
         #t)))
+
+(define record-cache-lookup!
+  (cache-lookup-recorder "object-cache" "Store object cache"))
 
 (define-inlinable (lookup-cached-object object keys vhash-fold*)
   "Return the cached object in the store connection corresponding to OBJECT
