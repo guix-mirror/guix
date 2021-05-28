@@ -231,11 +231,13 @@ absolute file name and STAT is the result of 'lstat'."
     (lambda ()
       (let* ((files  (git-file-list directory))
              (inodes (fold (lambda (file result)
-                             (let ((stat
-                                    (lstat (string-append directory "/"
-                                                          file))))
-                               (vhash-consv (stat:ino stat) (stat:dev stat)
-                                            result)))
+                             (let* ((file (string-append directory "/" file))
+                                    (stat (false-if-exception (lstat file))))
+                               ;; Ignore FILE if it has been deleted.
+                               (if stat
+                                   (vhash-consv (stat:ino stat) (stat:dev stat)
+                                                result)
+                                   result)))
                            vlist-null
                            files)))
         (lambda (file stat)
