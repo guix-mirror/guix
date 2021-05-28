@@ -496,9 +496,23 @@ are unavailable."
 
     (define (url->release url)
       (let* ((base (basename url))
-             (url  (if (string=? base url)
-                       (string-append base-url directory "/" url)
-                       url)))
+             (base-url (string-append base-url directory))
+             (url  (cond ((and=> (string->uri url) uri-scheme) ;full URL?
+                          url)
+                         ((string-prefix? "/" url) ;absolute path?
+                          (let ((uri (string->uri base-url)))
+                            (uri->string
+                             (build-uri (uri-scheme uri)
+                                        #:host (uri-host uri)
+                                        #:port (uri-port uri)
+                                        #:path url))))
+
+                         ;; URL is relative path and BASE-URL may or may not
+                         ;; end in slash.
+                         ((string-suffix? "/" base-url)
+                          (string-append base-url url))
+                         (else
+                          (string-append (dirname base-url) "/" url)))))
         (and (release-file? package base)
              (let ((version (tarball->version base)))
                (upstream-source
