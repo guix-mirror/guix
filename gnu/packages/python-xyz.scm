@@ -244,6 +244,24 @@
 from a docstring rather than the other way around.")
    (license license:mpl2.0)))
 
+(define-public python-cachetools
+  (package
+    (name "python-cachetools")
+    (version "4.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "cachetools" version))
+              (sha256
+               (base32
+                "1zqc098gk6y614lxwqd9z2gm8lldgvrpid133pnlm4m048gfvdb1"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/tkem/cachetools/")
+    (synopsis "Extensible memoizing collections and decorators")
+    (description "This module provides various memoizing collections and
+decorators, including variants of the Python standard library's
+@code{lru_cache} function decorator.")
+    (license license:expat)))
+
 (define-public python-colorful
   (package
     (name "python-colorful")
