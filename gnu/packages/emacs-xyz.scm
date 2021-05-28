@@ -22341,7 +22341,7 @@ Later you can insert it into an Org buffer using the command
 (define-public emacs-amx
   (package
     (name "emacs-amx")
-    (version "3.3")
+    (version "3.4")
     (source
      (origin
        (method git-fetch)
@@ -22350,7 +22350,7 @@ Later you can insert it into an Org buffer using the command
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0ikjzs119g57cwh2v3jmy63lggqc0ib99q5gsl93slkk4y2ihavw"))))
+        (base32 "0h1cxqqf0hixh25j679r57bq9dv0b20icf268wbnsim5xp88ngf8"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-s" ,emacs-s)))
