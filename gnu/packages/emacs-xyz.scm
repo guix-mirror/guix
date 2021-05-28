@@ -12863,7 +12863,7 @@ reached with the right hand.")
 (define-public emacs-csharp-mode
   (package
     (name "emacs-csharp-mode")
-    (version "0.10.0")
+    (version "0.11.0")
     (source
      (origin
        (method git-fetch)
@@ -12872,7 +12872,7 @@ reached with the right hand.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0vwkbla2gkfa9dzxfvrvr7hd2z16769iwbycl7k6l701dnwli1fw"))))
+        (base32 "0aq6ln92jr3hcrd1592n4s5cb079fly7qaj2hm510p9zckyfx230"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/josteink/csharp-mode")
     (synopsis "Major mode for C# code")
