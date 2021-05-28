@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 David Thompson <davet@gnu.org>
 ;;; Copyright © 2019 Jakob L. Kreuze <zerodaysfordays@sdf.org>
-;;; Copyright © 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -156,7 +156,10 @@ Perform the deployment specified by FILE.\n"))
     (let* ((opts (parse-command-line args %options (list %default-options)
                                      #:argument-handler handle-argument))
            (file (assq-ref opts 'file))
-           (machines (or (and file (load-source-file file)) '())))
+           (machines (and file (load-source-file file))))
+      (unless file
+        (leave (G_ "missing deployment file argument~%")))
+
       (show-what-to-deploy machines)
 
       (with-status-verbosity (assoc-ref opts 'verbosity)
