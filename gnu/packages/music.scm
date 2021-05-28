@@ -38,6 +38,7 @@
 ;;; Copyright © 2021 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2021 Bonface Munyoki Kilyungi <me@bonfacemunyoki.com>
 ;;; Copyright © 2021 Frank Pursel <frank.pursel@gmail.com>
+;;; Copyright © 2021 Rovanion Luckey <rovanion.luckey@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1339,6 +1340,47 @@ Sega Master System/Mark III, Sega Genesis/Mega Drive, BBC Micro
     (license (list license:lgpl2.1+
                    ;; demo and player directories are under the Expat license
                    license:expat))))
+
+(define-public lingot
+  (package
+    (name "lingot")
+    (version "1.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ibancg/lingot")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "04lcjzfhddbyskxr2068z609y6x0s2gjx1wl78w0dkxdi459zrn9"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("cunit" ,cunit)
+       ("glib" ,glib "bin")             ; for glib-compile-resources
+       ("intltool" ,intltool)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("fftw" ,fftw)
+       ("gtk+" ,gtk+)
+       ("jack" ,jack-2)
+       ("json-c" ,json-c)
+       ("pulseaudio" ,pulseaudio)))
+    (home-page "http://lingot.nongnu.org/")
+    (synopsis "Accurate & configurable musical instrument tuner")
+    (description
+     "LINGOT is a musical instrument tuner.  It's accurate, easy to use, and
+highly configurable.  Originally conceived to tune electric guitars, it can now
+be used to tune other instruments.
+
+It looks like an analogue tuner, with a gauge indicating the relative shift to a
+certain note, determined automatically as the closest note to the estimated
+frequency.")
+    (license license:gpl2+)))
 
 (define-public ninjas2
   (package
