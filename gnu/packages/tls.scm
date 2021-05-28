@@ -15,6 +15,7 @@
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2021 Solene Rapenne <solene@perso.pw>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -165,6 +166,7 @@ living in the same process.")
   (package
     (name "gnutls")
     (version "3.6.15")
+    (replacement gnutls-3.6.16)
     (source (origin
               (method url-fetch)
               ;; Note: Releases are no longer on ftp.gnu.org since the
@@ -257,6 +259,22 @@ required structures.")
     (license license:lgpl2.1+)
     (properties '((ftp-server . "ftp.gnutls.org")
                   (ftp-directory . "/gcrypt/gnutls")))))
+
+;; Replacement package to fix CVE-2021-20305.
+(define gnutls-3.6.16
+  (package
+    (inherit gnutls)
+    (version "3.6.16")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnupg/gnutls/v"
+                                  (version-major+minor version)
+                                  "/gnutls-" version ".tar.xz"))
+              (patches (search-patches "gnutls-skip-trust-store-test.patch"
+                                       "gnutls-cross.patch"))
+              (sha256
+               (base32
+                "1czk511pslz367shf32f2jvvkp7y1323bcv88c2qng98mj0v6y8v"))))))
 
 (define-public gnutls/guile-2.0
   ;; GnuTLS for Guile 2.0.
