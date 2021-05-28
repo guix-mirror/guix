@@ -172,10 +172,16 @@ references."
                  items))))
     (remove (cut member <> self) refs)))
 
+(define record-cache-lookup!
+  (cache-lookup-recorder "derivation-graft-cache"
+                         "Derivation graft cache"))
+
 (define-syntax-rule (with-cache key exp ...)
   "Cache the value of monadic expression EXP under KEY."
-  (mlet %state-monad ((cache (current-state)))
-    (match (vhash-assoc key cache)
+  (mlet* %state-monad ((cache (current-state))
+                       (result -> (vhash-assoc key cache)))
+    (record-cache-lookup! result cache)
+    (match result
       ((_ . result)                               ;cache hit
        (return result))
       (#f                                         ;cache miss
