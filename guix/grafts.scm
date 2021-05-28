@@ -25,10 +25,10 @@
   #:use-module ((guix utils) #:select (%current-system))
   #:use-module (guix sets)
   #:use-module (srfi srfi-1)
-  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-9 gnu)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-71)
   #:use-module (ice-9 match)
   #:use-module (ice-9 vlist)
   #:export (graft?
@@ -223,10 +223,10 @@ have no corresponding element in the resulting list."
              ((set-contains? visited drv)
               (loop rest items result visited))
              (else
-              (let*-values (((inputs)
-                             (map derivation-input-derivation
-                                  (derivation-inputs drv)))
-                            ((result items)
+              (let* ((inputs
+                      (map derivation-input-derivation
+                           (derivation-inputs drv)))
+                     (result items
                              (fold2 lookup-derivers
                                     result items inputs)))
                 (loop (append rest inputs)
