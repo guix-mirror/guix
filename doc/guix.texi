@@ -787,6 +787,13 @@ To use substitutes from @code{@value{SUBSTITUTE-SERVER}} or one of its mirrors
      ~root/.config/guix/current/share/guix/@value{SUBSTITUTE-SERVER}.pub
 @end example
 
+@quotation Note
+If you do not enable substitutes, Guix will end up building
+@emph{everything} from source on your machine, making each installation
+and upgrade very expensive.  @xref{On Trusting Binaries}, for a
+discussion of reasons why one might want do disable substitutes.
+@end quotation
+
 @item
 Each user may need to perform a few additional steps to make their Guix
 environment ready for use, @pxref{Application Setup}.
