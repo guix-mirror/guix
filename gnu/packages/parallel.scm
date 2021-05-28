@@ -154,6 +154,7 @@ execution is also possible.")
      `(("flex" ,flex)
        ("which" ,which)))
     (home-page "http://www.maier-komor.de/xjobs.html")
+    (properties `((release-monitoring-url . ,home-page)))
     (synopsis
      "Parallel execution of jobs with several useful options")
     (description
