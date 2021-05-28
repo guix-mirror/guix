@@ -2082,7 +2082,7 @@ letter to each link using avy.")
 (define-public emacs-auto-sudoedit
   (package
     (name "emacs-auto-sudoedit")
-    (version "1.0.0")
+    (version "1.1.0")
     (source
      (origin
        (method git-fetch)
@@ -2091,7 +2091,7 @@ letter to each link using avy.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "10p0hc95j382km8655pqld9wxg10j1f36czzppkdd6a55cxarv9f"))))
+        (base32 "1rhdvrj2rjbvl7vkb0wcp6krqxcaigl7jk9z8yvhx6s4cm2qli6q"))))
     (propagated-inputs
      `(("emacs-f" ,emacs-f)))
     (build-system emacs-build-system)
