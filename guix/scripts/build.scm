@@ -679,8 +679,8 @@ needed."
                                         (_ #f))
                                       opts)))
 
-              (when (null? items)
-                (warning (G_ "no arguments specified, nothing to build~%")))
+              (when (and (null? drv) (null? items))
+                (warning (G_ "no arguments specified, nothing to do~%")))
 
               (cond ((assoc-ref opts 'log-file?)
                      ;; Pass 'show-build-log' the output file names, not the
