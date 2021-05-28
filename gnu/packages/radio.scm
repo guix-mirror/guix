@@ -799,61 +799,56 @@ for correctness.")
     (license license:gpl3+)))
 
 (define-public hackrf
-  ;; Using a git commit because there have been many many commits
-  ;; since the relase two years ago, but no sign of a promised
-  ;; release for many months now.
-  (let ((commit "43e6f99fe8543094d18ff3a6550ed2066c398862")
-        (revision "0"))
-    (package
-     (name "hackrf")
-     (version (git-version "2018.01.1" revision commit))
-     (source
-      (origin
+  (package
+    (name "hackrf")
+    (version "2021.03.1")
+    (source
+     (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/mossmann/hackrf")
-             (commit commit)))
+             (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0avnv693xi0zsnrvkbfn0ln1r3s1iyj0bz7sc3gxay909av0pvbc"))))
-     (build-system cmake-build-system)
-     (arguments
-      '(#:configure-flags
-        (list "-DUDEV_RULES_GROUP=dialout"
-              (string-append "-DUDEV_RULES_PATH="
-                             (assoc-ref %outputs "out")
-                             "/lib/udev/rules.d"))
-        #:phases
-        (modify-phases %standard-phases
-          (add-before 'configure 'enter-source-directory
-            (lambda _
-              (chdir "host")
-              #t))
-          (add-after 'install 'delete-static-library
-            (lambda* (#:key outputs #:allow-other-keys)
-              (delete-file (string-append (assoc-ref outputs "out")
-                                          "/lib/libhackrf.a"))
-              #t))
-          (add-before 'install-license-files 'leave-source-directory
-            (lambda _
-              (chdir "..")
-              #t)))
-        #:tests? #f)) ; no test suite
-     (native-inputs
-      `(("pkg-config" ,pkg-config)))
-     (inputs
-      `(("fftw" ,fftw)
-        ("fftwf" ,fftwf)
-        ("libusb" ,libusb)))
-     (home-page "https://greatscottgadgets.com/hackrf/")
-     (synopsis "User-space library and utilities for HackRF SDR")
-     (description
-      "Command line utilities and a C library for controlling the HackRF
+        (base32 "12fkgimjy5ia291c1rn4y59pn9r5wdvz5x9z5xc8zr1xr96iyhfs"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags
+       (list "-DUDEV_RULES_GROUP=dialout"
+             (string-append "-DUDEV_RULES_PATH="
+                            (assoc-ref %outputs "out")
+                            "/lib/udev/rules.d"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'enter-source-directory
+           (lambda _
+             (chdir "host")
+             #t))
+         (add-after 'install 'delete-static-library
+           (lambda* (#:key outputs #:allow-other-keys)
+             (delete-file (string-append (assoc-ref outputs "out")
+                                         "/lib/libhackrf.a"))
+             #t))
+         (add-before 'install-license-files 'leave-source-directory
+           (lambda _
+             (chdir "..")
+             #t)))
+       #:tests? #f)) ; no test suite
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("fftw" ,fftw)
+       ("fftwf" ,fftwf)
+       ("libusb" ,libusb)))
+    (home-page "https://greatscottgadgets.com/hackrf/")
+    (synopsis "User-space library and utilities for HackRF SDR")
+    (description
+     "Command line utilities and a C library for controlling the HackRF
 Software Defined Radio (SDR) over USB.  Installing this package installs the
 userspace hackrf utilities and C library.  To install the hackrf udev rules,
 you must extend 'udev-service-type' with this package.  E.g.:
 @code{(udev-rules-service 'hackrf hackrf #:groups '(\"dialout\"))}.")
-     (license license:gpl2))))
+    (license license:gpl2)))
 
 (define-public hamlib
   (package
