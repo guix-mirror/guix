@@ -563,7 +563,8 @@ It also includes runtime support libraries for these languages.")))
                (base32
                 "0l7d4m9jx124xsk6xardchgy2k5j5l2b15q322k31f0va4d8826k"))
               (patches (search-patches "gcc-8-strmov-store-file-names.patch"
-                                       "gcc-5.0-libvtv-runpath.patch"))))))
+                                       "gcc-5.0-libvtv-runpath.patch"
+                                       "gcc-8-sort-libtool-find-output.patch"))))))
 
 (define-public gcc-9
   (package

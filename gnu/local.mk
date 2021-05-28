@@ -1067,6 +1067,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gcc-7-cross-environment-variables.patch	\
   %D%/packages/patches/gcc-7-cross-toolexeclibdir.patch		\
   %D%/packages/patches/gcc-8-cross-environment-variables.patch	\
+  %D%/packages/patches/gcc-8-sort-libtool-find-output.patch	\
   %D%/packages/patches/gcc-8-strmov-store-file-names.patch	\
   %D%/packages/patches/gcc-9-asan-fix-limits-include.patch	\
   %D%/packages/patches/gcc-9-strmov-store-file-names.patch	\
