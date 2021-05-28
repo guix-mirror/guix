@@ -219,6 +219,31 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26))
 
+(define-public python-argopt
+  (package
+   (name "python-argopt")
+   (version "0.7.0")
+   (source (origin
+            (method url-fetch)
+            (uri (pypi-uri "argopt" version))
+            (sha256
+             (base32
+              "0ybs7kkp0cpl8zn1lvf7481xhssg1bbhh5la2cjzdm5yibashyxa"))))
+   (build-system python-build-system)
+   (native-inputs
+    `(("python-coverage" ,python-coverage)
+      ("python-nose" ,python-nose)
+      ("python-setuptools" ,python-setuptools) ; Won't build without this.
+      ("python-setuptools-scm" ,python-setuptools-scm)))
+   (propagated-inputs
+    `(("python-toml" ,python-toml)
+      ("python-flake8" ,python-flake8)))
+   (home-page "https://github.com/casperdcl/argopt")
+   (synopsis "Generate a command-line interface from a docstring")
+   (description "This package provides tools to define a command line interface
+from a docstring rather than the other way around.")
+   (license license:mpl2.0)))
+
 (define-public python-colorful
   (package
     (name "python-colorful")
