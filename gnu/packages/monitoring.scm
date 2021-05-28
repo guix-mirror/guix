@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2021, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018, 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -639,6 +639,7 @@ future system load (i.e., capacity planning).")
     (inputs `(("ncurses" ,ncurses)))
     (arguments '(#:tests? #f)) ;; No included tests.
     (home-page "http://www.maier-komor.de/hostscope.html")
+    (properties `((release-monitoring-url . ,home-page)))
     (synopsis
      "System monitoring tool for multiple hosts")
     (description
