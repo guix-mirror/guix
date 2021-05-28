@@ -172,6 +172,10 @@ references."
                  items))))
     (remove (cut member <> self) refs)))
 
+(define %graft-cache
+  ;; Cache that maps derivation/outputs/grafts tuples to lists of grafts.
+  (allocate-store-connection-cache 'grafts))
+
 (define record-cache-lookup!
   (cache-lookup-recorder "derivation-graft-cache"
                          "Derivation graft cache"))
@@ -271,7 +275,7 @@ derivations to the corresponding set of grafts."
                                       #:system system)))))
           (reference-origins drv items)))
 
-  (with-cache (cons (derivation-file-name drv) outputs)
+  (with-cache (list (derivation-file-name drv) outputs grafts)
     (match (non-self-references store drv outputs)
       (()                                         ;no dependencies
        (return grafts))
@@ -309,17 +313,25 @@ derivations to the corresponding set of grafts."
   "Apply GRAFTS to the OUTPUTS of DRV and all their dependencies, recursively.
 That is, if GRAFTS apply only indirectly to DRV, graft the dependencies of
 DRV, and graft DRV itself to refer to those grafted dependencies."
-  (match (run-with-state
-             (cumulative-grafts store drv grafts
-                                #:outputs outputs
-                                #:guile guile #:system system)
-           vlist-null)                            ;the initial cache
-    ((first . rest)
-     ;; If FIRST is not a graft for DRV, it means that GRAFTS are not
-     ;; applicable to DRV and nothing needs to be done.
-     (if (equal? drv (graft-origin first))
-         (graft-replacement first)
-         drv))))
+  (let ((grafts cache
+                (run-with-state
+                    (cumulative-grafts store drv grafts
+                                       #:outputs outputs
+                                       #:guile guile #:system system)
+                  (store-connection-cache store %graft-cache))))
+
+    ;; Save CACHE in STORE to benefit from it on the next call.
+    ;; XXX: Ideally we'd use %STORE-MONAD and 'mcached' and avoid mutating
+    ;; STORE.
+    (set-store-connection-cache! store %graft-cache cache)
+
+    (match grafts
+      ((first . rest)
+       ;; If FIRST is not a graft for DRV, it means that GRAFTS are not
+       ;; applicable to DRV and nothing needs to be done.
+       (if (equal? drv (graft-origin first))
+           (graft-replacement first)
+           drv)))))
 
 
 ;; The following might feel more at home in (guix packages) but since (guix
