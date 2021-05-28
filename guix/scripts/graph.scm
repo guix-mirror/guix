@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2019 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -593,6 +593,9 @@ Emit a representation of the dependency graph of PACKAGE...\n"))
                                         (read/eval-package-expression exp)))
                                       (_ #f))
                                     opts)))
+        (when (null? items)
+          (warning (G_ "no arguments specified; creating an empty graph~%")))
+
         (run-with-store store
           ;; XXX: Since grafting can trigger unsolicited builds, disable it.
           (mlet %store-monad ((_     (set-grafting #f))

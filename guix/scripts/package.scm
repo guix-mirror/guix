@@ -1044,6 +1044,9 @@ processed, #f otherwise."
 
       (warn-about-old-distro)
 
+      (when (and (null? files) (manifest-transaction-null? trans))
+        (warning (G_ "missing arguments, nothing to do~%")))
+
       (unless (manifest-transaction-null? trans)
         ;; When '--manifest' is used, display information about TRANS as if we
         ;; were starting from an empty profile.
