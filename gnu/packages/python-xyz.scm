@@ -16549,6 +16549,30 @@ converting text with ANSI color codes to HTML or LaTeX.")
 (define-public python2-ansi2html
   (package-with-python2 python-ansi2html))
 
+(define-public python-easy-ansi
+  (package
+    (name "python-easy-ansi")
+    (version "0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/joeysbytes/easy-ansi")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0albh55ynzs98qy9pln4qaxw5qhhh3lk09jy9bx19gycrp1c3lc3"))))
+    (build-system python-build-system)
+    (home-page "https://gitlab.com/joeysbytes/easy-ansi")
+    (synopsis "Terminal framework API")
+    (description
+     "Easy ANSI is a terminal framework API to give you an easy way to use
+colors, cursor control movements, and line/box drawing.  It is not meant as a
+replacement to more full-featured frameworks (such as curses or urwid), but as
+a tool to quickly create nice-looking screens in your terminal window.  You
+can even create animations with the cursor controls.")
+    (license license:expat)))
+
 (define-public python-ddt
   (package
     (name "python-ddt")
