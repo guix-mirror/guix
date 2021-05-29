@@ -736,30 +736,29 @@ rebasing, and other common Git operations.")
     (license license:gpl3+)))
 
 (define-public emacs-magit-svn
-  (let ((commit "9e33ceee32f665db59909e1c00a667ccdd04178f"))
-    (package
-      (name "emacs-magit-svn")
-      (version (git-version "2.2.1" "2" commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/magit/magit-svn")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "1mlqz8dh6jy5rv72lgkxv253dgh73fmbaidskicypapvbl3lr6xy"))))
-      (build-system emacs-build-system)
-      (propagated-inputs `(("dash" ,emacs-dash)
-                           ("with-editor" ,emacs-with-editor)
-                           ("magit" ,emacs-magit)
-                           ("transient" ,emacs-transient)))
-      (home-page "https://github.com/magit/magit-svn")
-      (synopsis "Git-SVN extension to Magit")
-      (description
-       "This package is an extension to Magit, the Git Emacs mode, providing
+  (package
+    (name "emacs-magit-svn")
+    (version "2.2.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/magit/magit-svn")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1v1y4fir1plz4kj0cvkcd29wibli4dw7vp4fmbxq4df76d8iy8yd"))))
+    (build-system emacs-build-system)
+    (propagated-inputs `(("dash" ,emacs-dash)
+                         ("with-editor" ,emacs-with-editor)
+                         ("magit" ,emacs-magit)
+                         ("transient" ,emacs-transient)))
+    (home-page "https://github.com/magit/magit-svn")
+    (synopsis "Git-SVN extension to Magit")
+    (description
+     "This package is an extension to Magit, the Git Emacs mode, providing
 support for Git-SVN.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-magit-popup
   (package
