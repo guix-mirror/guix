@@ -16724,39 +16724,38 @@ arXiv, Google Scholar, Library of Congress, etc.
       (license license:gpl3+))))
 
 (define-public emacs-ewmctrl
-  (let ((commit "3d0217c4d6cdb5c308b6cb4293574f470d4faacf"))
-    (package
-      (name "emacs-ewmctrl")
-      (version (git-version "0.0.1" "1" commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/flexibeast/ewmctrl")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "0ilwvx0qryv3v6xf0gxqwnfm6pf96gxap8h9g3f6z6lk9ff4n1wi"))))
-      (build-system emacs-build-system)
-      (arguments
-       '(#:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'patch-ewmctrl
-             ;; This build phase makes sure ‘ewmctrl’ looks
-             ;; for ‘wmctrl’ in the right place.
-             (lambda _
-               (let ((file "ewmctrl.el"))
-                 (chmod file #o644)
-                 (emacs-substitute-sexps file
-                   ("(defcustom ewmctrl-wmctrl-path" (which "wmctrl")))))))))
-      (inputs
-       `(("wmctrl" ,wmctrl)))
-      (home-page "https://github.com/flexibeast/ewmctrl")
-      (synopsis "Emacs interface to @code{wmctrl}")
-      (description "@code{ewmctrl} provides an Emacs interface to
+  (package
+    (name "emacs-ewmctrl")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/flexibeast/ewmctrl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0ilwvx0qryv3v6xf0gxqwnfm6pf96gxap8h9g3f6z6lk9ff4n1wi"))))
+    (build-system emacs-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-ewmctrl
+           ;; This build phase makes sure ‘ewmctrl’ looks
+           ;; for ‘wmctrl’ in the right place.
+           (lambda _
+             (let ((file "ewmctrl.el"))
+               (chmod file #o644)
+               (emacs-substitute-sexps file
+                 ("(defcustom ewmctrl-wmctrl-path" (which "wmctrl")))))))))
+    (inputs
+     `(("wmctrl" ,wmctrl)))
+    (home-page "https://github.com/flexibeast/ewmctrl")
+    (synopsis "Emacs interface to @code{wmctrl}")
+    (description "@code{ewmctrl} provides an Emacs interface to
 @code{wmctrl} command-line window-management program.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-erc-image
   (let ((commit "82fb3871f02e24b1e880770b9a3d187aab43d0f0")
