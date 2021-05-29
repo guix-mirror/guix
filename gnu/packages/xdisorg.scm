@@ -1235,7 +1235,7 @@ Escape key when Left Control is pressed and released on its own.")
 (define-public libwacom
   (package
     (name "libwacom")
-    (version "1.7")
+    (version "1.10")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1243,7 +1243,7 @@ Escape key when Left Control is pressed and released on its own.")
                     "libwacom-" version "/libwacom-" version ".tar.bz2"))
               (sha256
                (base32
-                "0797gc055dgg2jfqijy9823bd83jwr4wb2z9id992qlcr0xmz1rw"))))
+                "14aj4ss1chxxgaprs9sfriia2ch9wj9rqay0ndkzk1m7jx2qrjgn"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags '("--disable-static")))

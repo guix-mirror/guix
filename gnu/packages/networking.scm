@@ -3214,6 +3214,7 @@ Features:
        (list (string-append "LDFLAGS=-Wl,-rpath="
                             (assoc-ref %outputs "out")
                             "/lib")
+             "--disable-static"
              "--with-logfile=/var/log/snmpd.log"
              (string-append "--with-openssl="
                             (assoc-ref %build-inputs "openssl")))
