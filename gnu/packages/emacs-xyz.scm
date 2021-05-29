@@ -7979,6 +7979,35 @@ perspective only its buffers are available by default.")
 can be saved to and restored from a file.")
     (license license:gpl2+)))
 
+(define-public emacs-eyebrowse
+  ;; XXX: Upstream has no tagged release.  Version is extracted from keyword
+  ;; in main file.
+  (let ((commit "88c7b59aa7c5c93bc23812217213adfa238f977b")
+        (revision "0"))
+    (package
+      (name "emacs-eyebrowse")
+      (version (git-version "0.7.8" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://depp.brause.cc/eyebrowse.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "09s07mvg5bz3dm9sxgn40c7z6d6ry1sdjzsxwgmy825f3xm66avs"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)))
+    (home-page "https://depp.brause.cc/eyebrowse/")
+    (synopsis "Simple-minded way to manage window configs in Emacs")
+    (description
+     "Eyebrowse is a global minor mode for Emacs that allows you to manage
+your window configurations in a simple manner, just like tiling window
+managers like i3wm with their workspaces do.  It displays their current state
+in the modeline by default.")
+    (license license:gpl3+))))
+
 (define-public emacs-test-simple
   (package
     (name "emacs-test-simple")
