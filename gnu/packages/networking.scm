@@ -3190,14 +3190,14 @@ Features:
 (define-public net-snmp
   (package
     (name "net-snmp")
-    (version "5.9")
+    (version "5.9.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/net-snmp/net-snmp/"
                                   version "/net-snmp-" version ".tar.gz"))
               (sha256
                (base32
-                "0wb0vyafpspw3mcifkjjmf17r1r80kjvslycscb8nvaxz1k3lc04"))
+                "0gwcyi9qk707jgfsgmdr9w2w3r892fnqaam9v7zxpkg69njd8zzb"))
               (modules '((guix build utils)))
               (snippet
                '(begin
