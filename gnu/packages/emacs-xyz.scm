@@ -27196,11 +27196,14 @@ opening Org Ref's @code{cite:} links.")
                (base32
                 "0z2frp5mn3lp2xskwanw2rncrwa50x3aphy87vfxmhx4fqlqrzy8"))))
     (inputs
-     `(("emacs-cort" ,emacs-cort))) ;tests suite
+     `(("emacs-cort" ,emacs-cort)
+       ("emacs-with-simulated-input" ,emacs-with-simulated-input)))
     (propagated-inputs
      `(("emacs-mustache" ,emacs-mustache)))
     (arguments
-     `(#:tests? #t
+     ;; FIXME: Tests fail with "Wrong type argument: sequencep, :equal".  It
+     ;; seems to be an issue with Cort library.
+     `(#:tests? #f
        #:test-command '("emacs" "--batch" "--quick"
                         "--directory=." "--load=org-generate-tests.el"
                         "--funcall=cort-test-run")))
