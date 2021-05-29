@@ -59,7 +59,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages image)
-  #:use-module (gnu packages linux)     ; alsa-lib
+  #:use-module (gnu packages linux)     ; alsa-lib, gpm
   #:use-module (gnu packages mail)      ; for mailutils
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
@@ -247,6 +247,7 @@
        ("mailutils" ,mailutils)
 
        ;; TODO: Add the optional dependencies.
+       ("gpm" ,gpm)
        ("libx11" ,libx11)
        ("gtk+" ,gtk+)
        ("cairo" ,cairo)
