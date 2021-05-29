@@ -4489,6 +4489,27 @@ in Lisp modes.")
       (description "This package provides dynamic evaluation in Emacs.")
       (license license:gpl3+))))
 
+(define-public emacs-literate-elisp
+  (package
+    (name "emacs-literate-elisp")
+    (version "0.8")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/jingtaozf/literate-elisp")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32 "0i9468rh61l4xq918fgwk6li93lpm6zbn0lkpxr7pbvkgrl5xsr6"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/jingtaozf/literate-elisp/tags")
+    (synopsis "Load Emacs Lisp code blocks from Org files")
+    (description
+     "Literate-Elisp is an Emacs lisp library to provide an easy way to use
+literal programming in Emacs lisp.  It extends the Emacs load mechanism so
+Emacs can load Org files as Lisp source files directly.")
+    (license license:gpl3+)))
+
 (define-public emacs-literate-calc-mode
   (let ((commit "a50e897a816cb5580ad6ec867eeaae212e0e4798")
         (revision "1"))
