@@ -13930,27 +13930,27 @@ additions:
       (license license:gpl3+))))
 
 (define-public emacs-dired-sidebar
-  (let ((commit "da77919081d9a4e73c2df63542353319381e4f89")
-        (revision "2"))
-    (package
-      (name "emacs-dired-sidebar")
-      (home-page "https://github.com/jojojames/dired-sidebar")
-      (version (git-version "0.1.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference (url home-page) (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "05h56wdl2xvc8davnx83ypg20fl7wlks97cafa4r2yf141xjc05h"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-dired-subtree" ,emacs-dired-hacks)))
-      (synopsis "Sidebar for Emacs using Dired")
-      (description
-       "This package provides a sidebar for Emacs similar to @code{NeoTree}
+  (package
+    (name "emacs-dired-sidebar")
+    (home-page "https://github.com/jojojames/dired-sidebar")
+    (version "0.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "090dqaqyjmkzrz4szjpk1iip0bdvb0frp4l79393f8ki8w7c16c1"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dired-subtree" ,emacs-dired-hacks)))
+    (synopsis "Sidebar for Emacs using Dired")
+    (description
+     "This package provides a sidebar for Emacs similar to @code{NeoTree}
 or @code{treemacs}, but leveraging @code{Dired} to do the job of display.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-which-key
   (package
