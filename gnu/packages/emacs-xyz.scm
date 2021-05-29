@@ -9855,7 +9855,7 @@ completion, interactive development and more.")
 (define-public emacs-rainbow-delimiters
   (package
     (name "emacs-rainbow-delimiters")
-    (version "2.1.4")
+    (version "2.1.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -9864,7 +9864,7 @@ completion, interactive development and more.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1zr2669savnmkc68hiqsq9wccm6bs1j6jbmlac1xqh6nq7xgq36g"))))
+                "179mzsd8nvlr0ym9zf9fgdngsgxj3kdgbjblynliirsyk05ssrwc"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/Fanael/rainbow-delimiters")
     (arguments
