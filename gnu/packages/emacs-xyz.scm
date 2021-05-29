@@ -795,29 +795,27 @@ process, passing on the arguments as command line arguments.")
     (license license:gpl3+)))
 
 (define-public emacs-magit-annex
-  (let ((commit "ef5dce6267e9118a5eca82a22bcad0b67826c23a")
-        (revision "1"))
-    (package
-      (name "emacs-magit-annex")
-      (version (git-version "1.7.1" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/magit/magit-annex")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0vzkydgl889cq173zjl89g2vrddb9abc4a8gljiz3b4a7n5b1nrd"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("magit" ,emacs-magit)
-         ("transient" ,emacs-transient)))
-      (home-page "https://github.com/magit/magit-annex/")
-      (synopsis "Git-annex support for Magit")
-      (description
-       "Magit-annex adds a few git-annex operations to the Magit interface.")
-      (license license:gpl3+))))
+  (package
+    (name "emacs-magit-annex")
+    (version "1.8.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/magit/magit-annex")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0ak4chfn95p2vj3y0wiyimj609a4jfzrfpsc1kn0is1jv3dlkl6c"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("magit" ,emacs-magit)
+       ("transient" ,emacs-transient)))
+    (home-page "https://github.com/magit/magit-annex/")
+    (synopsis "Git-annex support for Magit")
+    (description
+     "Magit-annex adds a few git-annex operations to the Magit interface.")
+    (license license:gpl3+)))
 
 (define-public emacs-minions
   (package
@@ -3455,7 +3453,7 @@ kmonad's configuration files (@file{.kbd}).")
 (define-public emacs-keycast
   (package
     (name "emacs-keycast")
-    (version "1.0.4")
+    (version "1.1.0")
     (source
      (origin
        (method git-fetch)
@@ -3464,7 +3462,7 @@ kmonad's configuration files (@file{.kbd}).")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1g9arjdhdpvsw47ny9gi5k758ya37yza4mr0rhbf02yvrqyfsrgr"))))
+        (base32 "0093v1c5nl2bh1lvccqq6fzpgjald3yypp87dsim982aywl2vlv1"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/tarsius/keycast")
     (synopsis "Show current command and its key in the mode line")
