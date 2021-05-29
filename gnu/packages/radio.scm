@@ -1539,7 +1539,7 @@ receiver.")
 (define-public welle-io
   (package
     (name "welle-io")
-    (version "2.2")
+    (version "2.3")
     (source
      (origin
        (method git-fetch)
@@ -1548,7 +1548,7 @@ receiver.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "04fpm6sc431dl9i5h53xpd6k85j22sv8aawl7b6wv2fzpfsd9fwa"))))
+        (base32 "1xl1lanw0xgmgks67dbfb2h52jxnrd1i2zik56v0q8dwsr7f0daw"))))
     (build-system qt-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
