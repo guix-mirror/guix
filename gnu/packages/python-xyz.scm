@@ -10788,14 +10788,13 @@ JSON Reference and JSON Pointer.")
 (define-public python-fastjsonschema
   (package
     (name "python-fastjsonschema")
-    (version "2.15.0")
+    (version "2.15.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "fastjsonschema" version))
         (sha256
-          (base32
-            "0xknp399gpdjf08lrq2yvv66s7nsc51fgbm6vph7vyyg1ckbmv71"))))
+          (base32 "1ln2j60jzyn6p8i8ljygfgrji58hc23452g7nllkcjdk4p93c7v7"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ; Fail with a strange backtrace ending in importlib.
