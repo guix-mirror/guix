@@ -3311,8 +3311,7 @@ evaluations.  The entry point is @code{M-x build-farm} command.")
     (home-page "https://github.com/Emacs-D-Mode-Maintainers/Emacs-D-Mode")
     (synopsis "Emacs major mode for editing D code")
     (description "This package provides an Emacs major mode for highlighting
-code written in the D programming language.  This mode is currently known to
-work with Emacs 24 and 25.")
+code written in the D programming language.")
     (license license:gpl2+)))
 
 (define-public emacs-extempore-mode
