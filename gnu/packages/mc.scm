@@ -47,14 +47,14 @@
       (sha256
        (base32 "09vc2vf6k12a8k5gdss6hcskwfcbyalrkhn65nidkwlm0p2svpn6"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("perl" ,perl)))
+    (native-inputs `(("perl" ,perl)
+                     ("pkg-config" ,pkg-config)))
     (inputs `(("aspell" ,aspell)
-              ("gpm" ,gpm)
-              ("ncurses" ,ncurses)
-              ("libssh2" ,libssh2)
-              ("glib" ,glib)
               ("check" ,check)
+              ("glib" ,glib)
+              ("gpm" ,gpm)
+              ("libssh2" ,libssh2)
+              ("ncurses" ,ncurses)
               ("unzip" ,unzip)))
     (arguments
      `(#:configure-flags
