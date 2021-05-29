@@ -16832,32 +16832,29 @@ and @code{erc-send-modify-hook} to download and show images.")
     (license license:gpl3+)))
 
 (define-public emacs-parsec
-  ;; Last release is too old (2016).
-  (let ((revision "0")
-        (commit "2cbbbc2254aa7bcaa4fb5e07c8c1bf2f381dba26"))
-    (package
-      (name "emacs-parsec")
-      (version (git-version "0.1.3" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/cute-jumper/parsec.el")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "1g1s8s45g3kkbi3h7w0pmadmzdswb64mkdvdpg2lihg341kx37gm"))))
-      (build-system emacs-build-system)
-      (home-page "https://github.com/cute-jumper/parsec.el")
-      (synopsis "Parser combinator library for Emacs Lisp")
-      (description
-       "Parsec is a parser combinator library for Emacs Lisp, similar to
+  (package
+    (name "emacs-parsec")
+    (version "0.1.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cute-jumper/parsec.el")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1g1s8s45g3kkbi3h7w0pmadmzdswb64mkdvdpg2lihg341kx37gm"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/cute-jumper/parsec.el")
+    (synopsis "Parser combinator library for Emacs Lisp")
+    (description
+     "Parsec is a parser combinator library for Emacs Lisp, similar to
 Haskell's Parsec library.  It contains most of the parser combinators in
 Text.Parsec.Combinator, and more combinators can be added if necessary!  Most
 of the parser combinators have the same behavior as their Haskell
 counterparts.  Parsec also comes with a simple error handling mechanism so
 that it can display an error message showing how the parser fails.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-move-text
   (package
