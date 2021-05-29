@@ -10173,7 +10173,7 @@ Dust.js, React/JSX, Angularjs, ejs, etc.")
 (define-public emacs-templatel
   (package
     (name "emacs-templatel")
-    (version "0.1.4")
+    (version "0.1.6")
     (source
      (origin
        (method git-fetch)
@@ -10182,7 +10182,7 @@ Dust.js, React/JSX, Angularjs, ejs, etc.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1k33h503038l2bcr8gs020z2cjxfs94lamkdgv52cvd9i20d0kqq"))))
+        (base32 "03n7amd2mfr4jmc4s1ar5ckm86knr7qarxxlkdhbnw3svy5kbc57"))))
     (build-system emacs-build-system)
     (home-page "https://clarete.li/templatel")
     (synopsis "Jinja inspired template language for Emacs Lisp")
