@@ -13421,7 +13421,7 @@ addition of surrounding pairs, such as parentheses and quotes, in evil mode.")
 (define-public emacs-evil-commentary
   (package
     (name "emacs-evil-commentary")
-    (version "2.1.1")
+    (version "2.2.0")
     (source
      (origin
        (method git-fetch)
@@ -13430,7 +13430,7 @@ addition of surrounding pairs, such as parentheses and quotes, in evil mode.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0zjs9zyqfygnpxapvf0ymmiid40i06cxbhjzd81zw33nafgkf6r4"))))
+        (base32 "1l8zi9wlg1f7ffm8gh92qwk3q7h6cdl8b8zkd9hcda53mq6klpjr"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-evil" ,emacs-evil)))
