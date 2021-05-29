@@ -2744,11 +2744,11 @@ The picture values can directly be displayed in Geiser.")
                       guile-picture-language))
 
 (define-public guile-studio
-  (let ((commit "93622e788e727d3275291f999f7e570de6a5bb35")
+  (let ((commit "dd0ad42e51feafebda7cc29afe7c8bc7a182a842")
         (revision "1"))
     (package
       (name "guile-studio")
-      (version (git-version "0.1.0" revision commit))
+      (version (git-version "0.1.1" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -2757,7 +2757,7 @@ The picture values can directly be displayed in Geiser.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0n6y0bcmkx50m8rccz7a6h4yxmwq54pf2bfzpd5ndz2bsiwiq13l"))))
+                  "1cpqilly8dqmai1qsgjxy99zs34sfz95zwxhzx979wryqb69vi0q"))))
       (build-system gnu-build-system)
       (arguments
        `(#:modules
