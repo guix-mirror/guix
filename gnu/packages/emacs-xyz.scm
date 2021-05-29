@@ -20297,7 +20297,7 @@ text in neighboring sections.")
 (define-public emacs-pandoc-mode
   (package
     (name "emacs-pandoc-mode")
-    (version "2.30.1")
+    (version "2.31")
     (source
      (origin
        (method git-fetch)
@@ -20307,7 +20307,7 @@ text in neighboring sections.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1k31pkvd9m798i6phcr0y3wd34fgq6ii41hx3lszmikvxb1yvm2y"))))
+         "1c3gay9fkikg7h46djw1nf86fzckmv7w1zbz5fbar20klcr12pbm"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
