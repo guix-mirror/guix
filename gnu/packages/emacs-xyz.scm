@@ -15289,7 +15289,7 @@ Lisp.")
 (define-public emacs-esxml
   (package
     (name "emacs-esxml")
-    (version "0.3.5")
+    (version "0.3.7")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -15298,7 +15298,7 @@ Lisp.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "16jn404vfmsvm12wrf8iczqlgdf2iycbxrvalvzxnm2gr5dfzp7z"))))
+                "1xzxmgsg0j72sf1vjh9gjswz3c29js0kqhm7r3jrqrh3a5agdnml"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
