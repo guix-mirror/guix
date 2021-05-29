@@ -20063,36 +20063,31 @@ image, rotate it, save modified images, and more.")
       (license license:gpl3+))))
 
 (define-public emacs-package-lint
-  ;; The commit below includes a fix for a missing file, "stdlib-changes",
-  ;; preventing build.
-  (let ((commit "14c216f4889e71eec2a9da64e36ab8990337e82d")
-        (version "0.13")
-        (revision "0"))
-    (package
-      (name "emacs-package-lint")
-      (version (git-version version revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/purcell/package-lint")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "1zifiqmpj9j14fnrm3jxapady25m1nlm514nfry0jfrhhikvj6i8"))))
-      (arguments
-       '(#:include (cons "^data/" %default-include)))
-      (build-system emacs-build-system)
-      (home-page "https://github.com/purcell/package-lint")
-      (synopsis "Linting library for elisp package authors")
-      (description
-       "This provides a list of issues with the Emacs package metadata of a file,
+  (package
+    (name "emacs-package-lint")
+    (version "0.15")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/purcell/package-lint")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1cn713g90zyjfq225yvg14c1qshslpi4466m3w102l5g57p8xv44"))))
+    (arguments
+     '(#:include (cons "^data/" %default-include)))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/purcell/package-lint")
+    (synopsis "Linting library for elisp package authors")
+    (description
+     "This provides a list of issues with the Emacs package metadata of a file,
 e.g. the package dependencies it requires.  See function
 @code{package-lint-buffer}.  Checks will currently be enabled only if a
 \"Package-Requires:\" or \"Package-Version:\" header is present in the
 file.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-picpocket
   (let ((version "41")
