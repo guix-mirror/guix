@@ -4569,6 +4569,39 @@ including parsing and code generation.")
      "Guile Shapefile is a Guile library for reading shapefiles.")
     (license license:expat)))
 
+(define-public guile-drmaa
+  (package
+    (name "guile-drmaa")
+    (version "0.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.elephly.net/software/guile-drmaa.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1m2x62n3x5hi5vnsvv2zgqhgpzrfq7r5095fzzjd1aaybi9i9igg"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)
+       ("texinfo" ,texinfo)
+       ("sed" ,sed)))
+    (inputs
+     `(("guile" ,guile-3.0)))
+    (propagated-inputs
+     `(("guile-bytestructures" ,guile-bytestructures)
+       ("nyacc" ,nyacc)))
+    (home-page "https://git.elephly.net/software/guile-drmaa.git")
+    (synopsis "Guile bindings to DRMAA")
+    (description "This project provides Guile bindings to the DRMAA library
+version 1.  DRMAA is a resource management library implemented by HPC cluster
+schedulers.")
+    (license license:gpl3+)))
+
 (define-public guile-libyaml
   (let ((commit "f5d33a6880e96571d3cb079ed7755ffc156cac46")
         (revision "1"))
