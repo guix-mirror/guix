@@ -169,6 +169,6 @@ comfortable for anyone.")
 readline library to allow the editing of keyboard input for any command.  You
 should consider rlwrap especially when you need user-defined completion (by way
 of completion word lists) and persistent history, or if you want to program
-'special effects' using the filter mechanism.")
+`special effects' using the filter mechanism.")
     (home-page "https://github.com/hanslub42/rlwrap")
     (license gpl2+)))
