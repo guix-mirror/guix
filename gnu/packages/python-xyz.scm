@@ -12850,14 +12850,13 @@ designed to work across multiple versions of Python.")
 (define-public python-cookiecutter
   (package
     (name "python-cookiecutter")
-    (version "1.7.2")
+    (version "1.7.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cookiecutter" version))
        (sha256
-        (base32
-         "1b2xa5dypk1vf8aq599fd8zw4y0pwvq3hgl7ia8aiv8gg3ab5dpg"))))
+        (base32 "0mx49whhwcxmvcak27zr7p7ndzkn3w7psfd7fzh3n91fi1r4v6kb"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-freezegun" ,python-freezegun)
