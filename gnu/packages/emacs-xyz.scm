@@ -18721,7 +18721,7 @@ decrease the number at point.")
 (define-public emacs-highlight-defined
   (package
     (name "emacs-highlight-defined")
-    (version "0.1.5")
+    (version "0.1.6")
     (source
      (origin
        (method git-fetch)
@@ -18730,7 +18730,7 @@ decrease the number at point.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "08czwa165rnd5z0dwwdddn7zi5w63sdk31l47bj0598kbly01n7r"))))
+        (base32 "0a9nn1jnbgv93kz1iz5iay34d0p7lkpd8ic619ysk8qcksc0yn2i"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/Fanael/highlight-defined")
     (synopsis "Syntax highlighting of known Elisp symbols")
