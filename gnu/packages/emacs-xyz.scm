@@ -6616,7 +6616,7 @@ and popup menus.")
 (define-public emacs-python-black
   (package
     (name "emacs-python-black")
-    (version "1.0.0")
+    (version "1.1.0")
     (source
      (origin
        (method git-fetch)
@@ -6626,7 +6626,7 @@ and popup menus.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0fjnd85nlkck156dj6cahk8chhgkbgl2kwywqzi8bl4yj700m4dk"))))
+         "1cmzc0fa3jj7ajxbqhbsc8jx47k6g223sfd42c4lrqdnmh95760m"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
