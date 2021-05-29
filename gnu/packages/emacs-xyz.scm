@@ -2623,6 +2623,7 @@ Lock key.")
     (propagated-inputs
      `(("emacs-anaphora" ,emacs-anaphora)
        ("emacs-dash" ,emacs-dash)
+       ("emacs-literate-elisp" ,emacs-literate-elisp)
        ("emacs-s" ,emacs-s)
        ("emacs-ts" ,emacs-ts)))
     (home-page "https://github.com/contrapunctus-1/chronometrist")
