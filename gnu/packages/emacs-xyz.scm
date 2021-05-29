@@ -25673,7 +25673,7 @@ Telegram messaging platform.")
 (define-public emacs-doom-modeline
   (package
     (name "emacs-doom-modeline")
-    (version "3.0.0")
+    (version "3.1.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -25681,7 +25681,7 @@ Telegram messaging platform.")
                     (commit (string-append "v" version))))
               (sha256
                (base32
-                "08m75rl5i812pa87zcsjvb4mm3jjhpwzgx9mf2m7sxj807airz5d"))
+                "1dkgh87sv25mdlzdfihp6gp0asvwplx9yrn7nfsqzsfc3kpajkck"))
               (file-name (git-file-name name version))))
     (build-system emacs-build-system)
     (arguments
