@@ -1277,7 +1277,7 @@ connection alive.")
                 ("coreutils*" ,coreutils)
                 ("sed*" ,sed)))
 
-      (home-page "https://www.isc.org/products/DHCP/")
+      (home-page "https://www.isc.org/dhcp/")
       (synopsis "Dynamic Host Configuration Protocol (DHCP) tools")
       (description
        "ISC's Dynamic Host Configuration Protocol (DHCP) distribution provides a
