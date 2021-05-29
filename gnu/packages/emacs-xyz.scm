@@ -14516,7 +14516,7 @@ included by default, and more can be readily added.")
 (define-public emacs-pubmed
   (package
     (name "emacs-pubmed")
-    (version "0.2.1")
+    (version "0.5")
     (source
      (origin
        (method git-fetch)
@@ -14526,7 +14526,7 @@ included by default, and more can be readily added.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "15bwjxc7g43m5pi8z17anaqqkvi209r7kk1chmf175477gvrv7c0"))))
+         "17d2v7q6sfafk8j1ish053xsmihi4f1hbk53fkkmhwan6sw9c4sc"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-deferred" ,emacs-deferred)
