@@ -13238,7 +13238,7 @@ other operations.")
 (define-public emacs-exwm-x
   (package
     (name "emacs-exwm-x")
-    (version "1.9.0")
+    (version "2.0.2")
     (synopsis "Derivative window manager based on EXWM")
     (source
      (origin
@@ -13249,7 +13249,7 @@ other operations.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "03l3dl7s1qys1kkh40rm1sfx7axy1b8sf5f6nyksj9ps6d30p5i4"))))
+         "0h248mma7kky30jr9bbhmp95wchl2cx5p6kh0gxmzpbc247dn2cc"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-counsel" ,emacs-counsel)
