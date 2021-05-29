@@ -26988,7 +26988,7 @@ All entries in a specified TODO state will be carried over to the next day.")
 (define-public emacs-org-static-blog
   (package
     (name "emacs-org-static-blog")
-    (version "1.4.0")
+    (version "1.5.0")
     (source
      (origin
        (method git-fetch)
@@ -26997,7 +26997,7 @@ All entries in a specified TODO state will be carried over to the next day.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "00yhgxg87mfaflrkh0i905hr873yd03a7znw5hkrps43zxha9kb9"))))
+        (base32 "1p9v40mm8p25b9xgfahwqqx4c36aqnl9yyjjdhkp6x5xkhkdf7by"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/bastibe/org-static-blog")
     (synopsis
