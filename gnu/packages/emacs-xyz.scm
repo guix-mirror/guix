@@ -12216,7 +12216,7 @@ above over the network.")
 (define-public emacs-helm-org-rifle
   (package
     (name "emacs-helm-org-rifle")
-    (version "1.7.0")
+    (version "1.7.1")
     (source
      (origin
        (method git-fetch)
@@ -12226,7 +12226,7 @@ above over the network.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "058zvh7cdall7dl3xay9ibcjvs13fbqp8fli3lz980pinmsds3r2"))))
+         "0pm6va26kadjvbai4qsnjc2bk379w2nk6h3b5f0c2yv3q5na0p49"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
