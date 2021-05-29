@@ -6805,7 +6805,7 @@ linting of manifests and integration with Puppet Debugger.")
 (define-public emacs-god-mode
   (package
     (name "emacs-god-mode")
-    (version "2.17.0")
+    (version "2.17.3")
     (source
      (origin
        (method git-fetch)
@@ -6815,7 +6815,7 @@ linting of manifests and integration with Puppet Debugger.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1d2nrj35fzhnycchi0b7m5mbk5fyq7bgpbkkvc5xzqafclrsnapi"))))
+         "1wsc04l5j5a9y5439qx85pcchxjnjgcgwbffw3l30q9zlblvc58b"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/chrisdone/god-mode")
     (synopsis "Minor mode for entering commands without modifier keys")
