@@ -41,6 +41,7 @@
 # Copyright © 2020 Vinicius Monego <monego@posteo.net>
 # Copyright © 2021 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 # Copyright © 2021 Philip McGrath <philip@philipmcgrath.com>
+# Copyright © 2021 Arun Isaac <arunisaac@systemreboot.net>
 #
 # This file is part of GNU Guix.
 #
@@ -599,6 +600,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/base.scm				\
   %D%/services/certbot.scm			\
   %D%/services/cgit.scm			\
+  %D%/services/ci.scm				\
   %D%/services/configuration.scm		\
   %D%/services/cuirass.scm			\
   %D%/services/cups.scm				\
@@ -690,6 +692,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/tests.scm					\
   %D%/tests/audio.scm				\
   %D%/tests/base.scm				\
+  %D%/tests/ci.scm				\
   %D%/tests/cups.scm				\
   %D%/tests/databases.scm			\
   %D%/tests/desktop.scm				\
