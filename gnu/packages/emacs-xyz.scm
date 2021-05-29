@@ -10112,7 +10112,7 @@ behavior very similar to that of Python mode.")
 (define-public emacs-gitlab-ci-mode
   (package
     (name "emacs-gitlab-ci-mode")
-    (version "20190425.11.10")
+    (version "20190824.12.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -10121,7 +10121,7 @@ behavior very similar to that of Python mode.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1jkp9mnbiccqnha9zs646znqyqvy5jjb81kah7ghbkzdqqk2avm0"))))
+                "16fb4r3vq8xkzl911v7gaky95w1agfxjlpaxpjmidwx48rbcar59"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-yaml-mode" ,emacs-yaml-mode)))
