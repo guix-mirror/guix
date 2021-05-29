@@ -6170,46 +6170,6 @@ Roche 454, Ion Torrent and Pacific BioSciences SMRT.")
       ;; 2. MD5 implementation - RSA Data Security, RFC 1321
       (license (list license:gpl2+ license:public-domain)))))
 
-(define-public mosaicatcher
-  (package
-    (name "mosaicatcher")
-    (version "0.3.1")
-    (source (origin
-              ;; There are no release tarballs nor tags.
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/friendsofstrandseq/mosaicatcher")
-                    (commit (string-append version "-dev"))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1n2s5wvvj2y0vfgjkg1q11xahpbagxz7h2vf5q7qyy25s12kbzbd"))
-              (patches (search-patches "mosaicatcher-unbundle-htslib.patch"))))
-    (build-system cmake-build-system)
-    (arguments
-     `(#:tests? #false ; there are no tests
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'chdir
-           (lambda _ (chdir "src")))
-         (replace 'install
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((target (assoc-ref outputs "out"))
-                    (bin (string-append target "/bin"))
-                    (share (string-append target "/share/mosaicatcher")))
-               (install-file "mosaic" bin)
-               (mkdir-p share)
-               (copy-recursively "../R" share)))))))
-    (inputs
-     `(("boost" ,boost)
-       ("htslib" ,htslib)))
-    (home-page "https://github.com/friendsofstrandseq/mosaicatcher")
-    (synopsis "Count and classify Strand-seq reads")
-    (description
-     "Mosaicatcher counts Strand-seq reads and classifies strand states of
-each chromosome in each cell using a Hidden Markov Model.")
-    (license license:expat)))
-
 (define-public ngs-sdk
   (package
     (name "ngs-sdk")
