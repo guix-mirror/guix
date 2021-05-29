@@ -10116,7 +10116,7 @@ behavior very similar to that of Python mode.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://gitlab.com/joewreschnig/gitlab-ci-mode.git")
+                    (url "https://gitlab.com/joewreschnig/gitlab-ci-mode")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
