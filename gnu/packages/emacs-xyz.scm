@@ -9286,7 +9286,7 @@ indentation and filling of comments and C preprocessor fontification.")
 (define-public emacs-tide
   (package
     (name "emacs-tide")
-    (version "4.0.2")
+    (version "4.2.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -9295,7 +9295,7 @@ indentation and filling of comments and C preprocessor fontification.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1n2dihpl53a48jis3l4rry581wpr5lxjd433drlkaa4lqgx8cw67"))))
+                "1fj2fghiycnzds2zxfxgj1d9mdzsvs9rvl9bwy2f1vwawqk1m48w"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
