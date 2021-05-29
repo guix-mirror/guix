@@ -6739,31 +6739,28 @@ the locations of docstrings, arguments, and functions.")
     (license license:gpl3+)))
 
 (define-public emacs-puppet-mode
-  (let ((commit "b3ed5057166a4f49dfa9be638523a348b55a2fd2")
-        (revision "1"))
-    (package
-      (name "emacs-puppet-mode")
-      ;; The last release, 0.3 was several years ago, and there have been many
-      ;; commits since
-      (version (git-version "0.3" revision commit))
-      (source
-       (origin
-         (method url-fetch)
-         (uri (string-append
-               "https://raw.githubusercontent.com/voxpupuli/puppet-mode/"
-               commit "/puppet-mode.el"))
-         (sha256
-          (base32
-           "1indycxawsl0p2aqqg754f6735q3cmah9vd886rpn0ncc3ipi1xm"))))
-      (build-system emacs-build-system)
-      (home-page "https://github.com/voxpupuli/puppet-mode")
-      (synopsis "Emacs major mode for the Puppet configuration language")
-      (description
-       "This package provides support for the Puppet configuration language,
+  (package
+    (name "emacs-puppet-mode")
+    (version "0.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/voxpupuli/puppet-mode")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0c5q8qmbligzjsn05di4wh6ggpd3944j4yqb78vzd441b8ssq70i"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/voxpupuli/puppet-mode")
+    (synopsis "Emacs major mode for the Puppet configuration language")
+    (description
+     "This package provides support for the Puppet configuration language,
 including syntax highlighting, indentation of expressions and statements,
 linting of manifests and integration with Puppet Debugger.")
-      ;; Also incorporates work covered by the Apache License, Version 2.0
-      (license license:gpl3+))))
+    ;; Also incorporates work covered by the Apache License, Version 2.0
+    (license license:gpl3+)))
 
 (define-public emacs-purescript-mode
   ;; Retrieved on 2021-05-18.
