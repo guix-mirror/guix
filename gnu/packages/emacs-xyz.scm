@@ -10041,7 +10041,7 @@ a file, or a complete directory.")
 (define-public emacs-ido-completing-read+
   (package
     (name "emacs-ido-completing-read+")
-    (version "4.13")
+    (version "4.14")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://raw.githubusercontent.com"
@@ -10050,7 +10050,7 @@ a file, or a complete directory.")
               (file-name (string-append "ido-completing-read+-" version ".el"))
               (sha256
                (base32
-                "0g2ixvw2sxpvrgz78745zi6iql4501pqi85zi6j31dnc1hx1i0r6"))))
+                "1wn94nkfv6qyyj6clvms7m7ncqf09bgszv67may530y75kylivav"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-s" ,emacs-s)))
