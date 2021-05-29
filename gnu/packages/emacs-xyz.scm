@@ -27932,7 +27932,7 @@ rules about where space should be left to separate words and parentheses.")
 (define-public emacs-webpaste
   (package
     (name "emacs-webpaste")
-    (version "3.2.0")
+    (version "3.2.1")
     (source
      (origin
        (method git-fetch)
@@ -27942,7 +27942,7 @@ rules about where space should be left to separate words and parentheses.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "08545ihkzflw80rwklnxiswrpdrl8kr74xzxm5wsgrf36fkj9rn2"))))
+         "1d481pdnh7cnbyka7wn59czlci63zwfqms8n515svg92qm573ckd"))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #t
