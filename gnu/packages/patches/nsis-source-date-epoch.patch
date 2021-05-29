@@ -1,0 +1,23 @@
+Honour SOURCE_DATE_EPOCH for VERSION default
+
+Merged upstream as cd3f1024a37a332f1d4fa96a817ca80dfa2a478c, but not yet in a
+release. GitHub PR: https://github.com/kichik/nsis/pull/13
+
+Python snippet from: https://reproducible-builds.org/docs/source-date-epoch/#python
+
+
+diff --git a/SConstruct b/SConstruct
+index e8252c9..41786f2 100755
+--- a/SConstruct
++++ b/SConstruct
+@@ -95,8 +95,8 @@ default_doctype = 'html'
+ if defenv.WhereIs('hhc', os.environ['PATH']):
+ 	default_doctype = 'chm'
+ 
+-from time import strftime, gmtime
+-cvs_version = strftime('%d-%b-%Y.cvs', gmtime())
++import time
++cvs_version = time.strftime('%d-%b-%Y.cvs', time.gmtime(int(os.environ.get('SOURCE_DATE_EPOCH', time.time()))))
+ 
+ opts = Variables()
+ 

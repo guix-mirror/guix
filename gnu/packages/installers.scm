@@ -42,7 +42,8 @@
                 (sha256
                  (base32
                   "1sbwx5vzpddharkb7nj4q5z3i5fbg4lan63ng738cw4hmc4v7qdn"))
-                (patches (search-patches "nsis-env-passthru.patch"))))
+                (patches (search-patches "nsis-env-passthru.patch"
+                                         "nsis-source-date-epoch.patch"))))
       (build-system scons-build-system)
       (native-inputs `(("xgcc" ,xgcc)
                        ("xbinutils" ,xbinutils)
