@@ -11035,6 +11035,33 @@ end of a line and increment or decrement it.")
 a popup window for previewing candidates.")
       (license license:gpl3+))))
 
+(define-public emacs-evil-paredit
+  (let ((commit "e058fbdcf9dbf7ad6cc77f0172d7517ef233d55f"))
+    (package
+      (name "emacs-evil-paredit")
+      (version "0.0.2")                 ; says 0.0.2 in evil-paredit.el
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/roman/evil-paredit")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0b08y4spapl4g2292j3l4cr84gjlvm3rpma3gqld4yb1sxd7v78p"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-evil" ,emacs-evil)
+         ("emacs-paredit" ,emacs-paredit)))
+      (home-page "https://github.com/roman/evil-paredit")
+      (synopsis "Evil extension to integrate nicely with Paredit")
+      (description
+       "This package helps you to not screw up your Paredit setup when using
+Evil mode.  Whenever you try to use a modifier command like @kbd{d}, @kbd{c},
+@kbd{y} to modify the Paredit buffer, it will stop you to do so in the case
+you break the parity of parenthesis.")
+      (license license:expat))))
+
 (define-public emacs-evil-args
   (let ((commit "758ad5ae54ad34202064fec192c88151c08cb387")
         (revision "1"))
