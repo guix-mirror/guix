@@ -9946,7 +9946,7 @@ keybindings in Emacs, and does not come with any predefined bindings.")
 (define-public emacs-visual-fill-column
   (package
     (name "emacs-visual-fill-column")
-    (version "2.2")
+    (version "2.4")
     (source
      (origin
        (method git-fetch)
@@ -9955,7 +9955,7 @@ keybindings in Emacs, and does not come with any predefined bindings.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1wjb4zm9mx07v0qx2fxmclg4pg0ssgnf8lp89wc56kmc0s40jhii"))))
+        (base32 "1wfww6bqdphv871in80fc84ml8gkl04il6w51z2ycx99km8b723l"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/joostkremers/visual-fill-column")
     (synopsis "Fill-column for visual-line-mode")
