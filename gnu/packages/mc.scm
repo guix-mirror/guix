@@ -31,6 +31,7 @@
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages compression))
 
@@ -49,6 +50,7 @@
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("perl" ,perl)))
     (inputs `(("aspell" ,aspell)
+              ("gpm" ,gpm)
               ("ncurses" ,ncurses)
               ("libssh2" ,libssh2)
               ("glib" ,glib)
