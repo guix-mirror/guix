@@ -23550,7 +23550,7 @@ url-encoded parameters, as well as web sockets.")
 (define-public emacs-markdown-preview-mode
   (package
     (name "emacs-markdown-preview-mode")
-    (version "0.9.2")
+    (version "0.9.4")
     (source
      (origin
        (method git-fetch)
@@ -23560,7 +23560,7 @@ url-encoded parameters, as well as web sockets.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1d1id99gagymvzdfa1mwqh8y3szm8ii47rpijkfi1qnifjg5jaq9"))))
+         "0a0qskhy6jil583hq3mgbzdsi3m1schzyzrd46yfxdsvqiczg170"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-markdown-mode" ,emacs-markdown-mode)
