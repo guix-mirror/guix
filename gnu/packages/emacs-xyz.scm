@@ -367,7 +367,7 @@ a generic Scheme interaction mode for the GNU Emacs editor.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://gitlab.com/emacs-geiser/racket.git")
+             (url "https://gitlab.com/emacs-geiser/racket")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
