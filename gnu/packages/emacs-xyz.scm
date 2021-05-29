@@ -13752,7 +13752,7 @@ JSON objects.")
 (define-public emacs-jsonnet-mode
   (package
     (name "emacs-jsonnet-mode")
-    (version "0.1.2")
+    (version "0.1.3")
     (source
      (origin
        (method git-fetch)
@@ -13762,7 +13762,7 @@ JSON objects.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0vi7415n90d1z2ww1hld0gdp6v7z4rd6f70h476dp2x4hydk293i"))))
+         "14nxfa91yg2243v4d5kvynp2645x3811ispmhmpgil3x9qbl9jg9"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)))
