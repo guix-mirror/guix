@@ -16642,7 +16642,8 @@ files to be expanded upon opening them.")
         (base32 "1xgpdw0sxl2c9dn6x6fk0rqpqlqxsjlj0vyag611blj600br7dqr"))))
     (build-system emacs-build-system)
     (propagated-inputs
-     `(("emacs-parsebib" ,emacs-parsebib)))
+     `(("emacs-biblio" ,emacs-biblio)
+       ("emacs-parsebib" ,emacs-parsebib)))
     (home-page "https://joostkremers.github.io/ebib/")
     (synopsis "BibTeX database manager for Emacs")
     (description
