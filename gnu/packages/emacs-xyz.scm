@@ -15310,25 +15310,10 @@ Lisp.")
                 "1xzxmgsg0j72sf1vjh9gjswz3c29js0kqhm7r3jrqrh3a5agdnml"))))
     (build-system emacs-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-sources
-           (lambda _
-             ;; See: https://github.com/tali713/esxml/pull/28.
-             (substitute* "css-lite.el"
-               ((";;; main interface")
-                (string-append ";;; main interface\n"
-                               "(require 'cl-lib)"))
-               (("mapcan")
-                "cl-mapcan")
-               (("',\\(cl-mapcan #'process-css-rule rules\\)")
-                "(cl-mapcan #'process-css-rule ',rules)"))
-             (substitute* "esxml-form.el"
-               ((",esxml-form-field-defn")
-                "#'esxml-form-field-defn"))
-             ;; See: https://github.com/tali713/esxml/issues/25
-             (delete-file "esxpath.el")
-             #t)))))
+     `(#:emacs ,emacs                   ;need libxml
+       ;; XXX: Only the two following files are meant to be packaged.
+       ;; Byte-compiling the others Elisp files leads to build errors anyway.
+       #:include (list "esxml.el" "esxml-query.el")))
     (propagated-inputs
      `(("emacs-kv" ,emacs-kv)))
     (home-page "https://github.com/tali713/esxml/")
