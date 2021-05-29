@@ -16480,7 +16480,7 @@ parallel to Gradle — its configuration is a program on its own.")
 (define-public emacs-with-simulated-input
   (package
     (name "emacs-with-simulated-input")
-    (version "2.4")
+    (version "3.0")
     (source
      (origin
        (method git-fetch)
@@ -16490,7 +16490,7 @@ parallel to Gradle — its configuration is a program on its own.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "12d3mhvzj74qwc4rdcb236jbqnf5lam8pk78j92kwbwjk1jaz2cf"))))
+         "0n8h84whsh0aph8xhn9plprix9f6bysgvarz2anz7kwns19js6s4"))))
     (build-system emacs-build-system)
     (arguments
      ;; The test suite fails with error: "Spies can only be created in
