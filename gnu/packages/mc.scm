@@ -20,20 +20,20 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages mc)
-  #:use-module (guix packages)
-  #:use-module (guix licenses)
-  #:use-module (guix download)
-  #:use-module (guix build-system gnu)
-  #:use-module (gnu packages)
   #:use-module (gnu packages aspell)
-  #:use-module (gnu packages ncurses)
-  #:use-module (gnu packages glib)
-  #:use-module (gnu packages ssh)
-  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
-  #:use-module (gnu packages compression))
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages ssh)
+  #:use-module (gnu packages)
+  #:use-module (guix build-system gnu)
+  #:use-module (guix download)
+  #:use-module (guix licenses)
+  #:use-module (guix packages))
 
 (define-public mc
   (package
