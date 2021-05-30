@@ -1045,6 +1045,28 @@ that let you do deep transformations of code.")
 TLS} and cryptography C library for Julia.")
     (license license:expat)))
 
+(define-public julia-measures
+  (package
+    (name "julia-measures")
+    (version "0.3.1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaGraphics/Measures.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0j34psrdijnqqn9zv0r2sknr1p9q0mmbjvjhmjra37bb5fh2gk8l"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/JuliaGraphics/Measures.jl")
+    (synopsis "Unified measure and coordinates types")
+    (description "This library generalizes and unifies the notion of measures
+used in Compose, Compose3D, and Escher.  It allows building up and representing
+expressions involving differing types of units that are then evaluated,
+resolving them into absolute units.")
+    (license license:expat)))
+
 (define-public julia-msgpack
   (package
     (name "julia-msgpack")
