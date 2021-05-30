@@ -31,6 +31,7 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages fribidi)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages julia)
@@ -253,6 +254,47 @@ rendering library.")
     (home-page "https://github.com/JuliaBinaryWrappers/FriBidi_jll.jl")
     (synopsis "Fribidi library wrappers")
     (description "This package provides a wrapper for the fribidi library.")
+    (license license:expat)))
+
+(define-public julia-gettext-jll
+  (package
+    (name "julia-gettext-jll")
+    (version "0.21.0+0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaBinaryWrappers/Gettext_jll.jl")
+               (commit (string-append "Gettext-v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0ghwkwv970q6j9ggkl0zlyrflhx8rd39y5i2zkc6p26084kyrxmf"))))
+    (build-system julia-build-system)
+    (arguments
+     '(#:tests? #f  ; no runtests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'override-binary-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (map
+               (lambda (wrapper)
+                 (substitute* wrapper
+                   (("generate_wrapper_header.*")
+                    (string-append
+                      "generate_wrapper_header(\"Gettext\", \""
+                      (assoc-ref inputs "gettext") "\")\n"))))
+               ;; There's a Julia file for each platform, override them all
+               (find-files "src/wrappers/" "\\.jl$")))))))
+    (inputs
+     `(("gettext" ,gettext-minimal)))
+    (propagated-inputs
+     `(("julia-jllwrappers" ,julia-jllwrappers)
+       ("julia-compilersupportlibraries-jll" ,julia-compilersupportlibraries-jll)
+       ("julia-libiconv-jll" ,julia-libiconv-jll)
+       ("julia-xml2-jll" ,julia-xml2-jll)))
+    (home-page "https://github.com/JuliaBinaryWrappers/Gettext_jll.jl")
+    (synopsis "Gettext library wrappers")
+    (description "This package provides a wrapper for the gettext library.")
     (license license:expat)))
 
 (define-public julia-gumbo-jll
