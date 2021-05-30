@@ -2311,6 +2311,43 @@ build tree Yggdrasil.")
     (description "This package provides a wrapper for the xcb-util-keysyms library.")
     (license license:expat)))
 
+(define-public julia-xorg-xcb-util-renderutil-jll
+  (package
+    (name "julia-xorg-xcb-util-renderutil-jll")
+    (version "0.3.9+1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaBinaryWrappers/Xorg_xcb_util_renderutil_jll.jl")
+               (commit (string-append "Xorg_xcb_util_renderutil-v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1zxz459sxma7cv32x2y8fnvwdz1f37fq0xhkihdsnkfdl761gn1a"))))
+    (build-system julia-build-system)
+    (arguments
+     '(#:tests? #f  ; no runtests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'override-binary-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (map
+               (lambda (wrapper)
+                 (substitute* wrapper
+                   (("artifact\"Xorg_xcb_util_renderutil\"")
+                    (string-append "\"" (assoc-ref inputs "xcb-util-renderutil") "\""))))
+               ;; There's a Julia file for each platform, override them all
+               (find-files "src/wrappers/" "\\.jl$")))))))
+    (inputs
+     `(("xcb-util-renderutil" ,xcb-util-renderutil)))
+    (propagated-inputs
+     `(("julia-jllwrappers" ,julia-jllwrappers)
+       ("julia-xorg-xcb-util-jll" ,julia-xorg-xcb-util-jll)))
+    (home-page "https://github.com/JuliaBinaryWrappers/Xorg_xcb_util_renderutil_jll.jl")
+    (synopsis "Xcb-util-renderutil library wrappers")
+    (description "This package provides a wrapper for the xcb-util-renderutil library.")
+    (license license:expat)))
+
 (define-public julia-xorg-xcb-util-wm-jll
   (package
     (name "julia-xorg-xcb-util-wm-jll")
