@@ -1002,6 +1002,44 @@ from util-linux.")
      "This package provides a wrapper for the libvorbis audio library.")
     (license license:expat)))
 
+(define-public julia-lzo-jll
+  (package
+    (name "julia-lzo-jll")
+    (version "2.10.1+0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaBinaryWrappers/LZO_jll.jl")
+               (commit (string-append "LZO-v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1gy57znz3b6pk902vgdzlrwrxib0bcfl0zr1prinfbr9vfmiv1h0"))))
+    (build-system julia-build-system)
+    (arguments
+     '(#:tests? #f  ; no runtests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'override-binary-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (map
+               (lambda (wrapper)
+                 (substitute* wrapper
+                  (("generate_wrapper_header.*")
+                   (string-append
+                     "generate_wrapper_header(\"LZO\", \""
+                     (assoc-ref inputs "lzo") "\")\n"))))
+               ;; There's a Julia file for each platform, override them all
+               (find-files "src/wrappers/" "\\.jl$")))))))
+    (inputs
+     `(("lzo" ,lzo)))
+    (propagated-inputs
+     `(("julia-jllwrappers" ,julia-jllwrappers)))
+    (home-page "https://github.com/JuliaBinaryWrappers/LZO_jll.jl")
+    (synopsis "LZO library wrappers")
+    (description "This package provides a wrapper for the lzo library.")
+    (license license:expat)))
+
 (define-public julia-mbedtls-jll
   (package
     (name "julia-mbedtls-jll")
