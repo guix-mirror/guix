@@ -1018,13 +1018,14 @@ Make sure the package builds on your platform, using @code{guix build
 We recommend you also try building the package on other supported
 platforms.  As you may not have access to actual hardware platforms, we
 recommend using the @code{qemu-binfmt-service-type} to emulate them.  In
-order to enable it, add the following service to the list of services in
-your @code{operating-system} configuration:
+order to enable it, add the @code{virtualization} service module and the
+following service to the list of services in your @code{operating-system}
+configuration:
 
 @lisp
 (service qemu-binfmt-service-type
  (qemu-binfmt-configuration
-   (platforms (lookup-qemu-platforms "arm" "aarch64"))
+   (platforms (lookup-qemu-platforms "arm" "aarch64"))))
 @end lisp
 
 Then reconfigure your system.
