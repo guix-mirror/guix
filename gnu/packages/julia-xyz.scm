@@ -23,7 +23,6 @@
   #:use-module (guix packages)
   #:use-module (guix git-download)
   #:use-module (guix build-system julia)
-  #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages julia-jll))
 
@@ -1013,46 +1012,6 @@ Cassette.")
     (synopsis "JSON parsing and printing library for Julia")
     (description "@code{JSON.jl} is a pure Julia module which supports parsing
 and printing JSON documents.")
-    (license license:expat)))
-
-(define-public julia-libtiff-jll
-  (package
-    (name "julia-libtiff-jll")
-    (version "4.1.0+1")
-    (source
-      (origin
-        (method git-fetch)
-        (uri (git-reference
-               (url "https://github.com/JuliaBinaryWrappers/Libtiff_jll.jl")
-               (commit (string-append "Libtiff-v" version))))
-        (file-name (git-file-name name version))
-        (sha256
-         (base32
-          "07zzhmwmh2g4645ghv76z40hza2ghlb7sw15b1pii7f9kfcsgf45"))))
-    (build-system julia-build-system)
-    (arguments
-     '(#:tests? #f  ; no runtests
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
-           (lambda* (#:key inputs #:allow-other-keys)
-             (map
-               (lambda (wrapper)
-                 (substitute* wrapper
-                   (("artifact\"Libtiff\"")
-                    (string-append "\"" (assoc-ref inputs "libtiff") "\""))))
-               ;; There's a Julia file for each platform, override them all
-               (find-files "src/wrappers/" "\\.jl$")))))))
-    (inputs
-     `(("libtiff" ,libtiff)))
-    (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)
-       ("julia-jpegturbo-jll" ,julia-jpegturbo-jll)
-       ("julia-zlib-jll" ,julia-zlib-jll)
-       ("julia-zstd-jll" ,julia-zstd-jll)))
-    (home-page "https://github.com/JuliaBinaryWrappers/Libtiff_jll.jl")
-    (synopsis "Libtiff library wrappers")
-    (description "This package provides a wrapper for libtiff")
     (license license:expat)))
 
 (define-public julia-macrotools
