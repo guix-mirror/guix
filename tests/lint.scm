@@ -271,6 +271,13 @@
                             (description "Imagine this is Taylor UUCP."))))
     (check-synopsis-style pkg)))
 
+(test-equal "synopsis: contains trailing whitespace"
+  "synopsis contains trailing whitespace"
+  (single-lint-warning-message
+   (let ((pkg (dummy-package "x"
+                             (synopsis "Whitespace "))))
+     (check-synopsis-style pkg))))
+
 (test-equal "name: use underscore in package name"
   "name should use hyphens instead of underscores"
   (single-lint-warning-message

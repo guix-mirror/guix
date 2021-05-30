@@ -478,13 +478,23 @@ markup is valid return a plain-text version of SYNOPSIS, otherwise #f."
                        (G_ "Texinfo markup in synopsis is invalid")
                        #:field 'synopsis)))))
 
+  (define (check-no-trailing-whitespace synopsis)
+    "Check that SYNOPSIS doesn't have trailing whitespace."
+    (if (string-suffix? " " synopsis)
+        (list
+         (make-warning package
+                       (G_ "synopsis contains trailing whitespace")
+                       #:field 'synopsis))
+        '()))
+
   (define checks
     (list check-proper-start
           check-final-period
           check-start-article
           check-start-with-package-name
           check-synopsis-length
-          check-texinfo-markup))
+          check-texinfo-markup
+          check-no-trailing-whitespace))
 
   (match (package-synopsis package)
     (""
