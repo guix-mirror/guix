@@ -2274,6 +2274,43 @@ build tree Yggdrasil.")
     (description "This package provides a wrapper for the xcb-util-image library.")
     (license license:expat)))
 
+(define-public julia-xorg-xcb-util-keysyms-jll
+  (package
+    (name "julia-xorg-xcb-util-keysyms-jll")
+    (version "0.4.0+1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaBinaryWrappers/Xorg_xcb_util_keysyms_jll.jl")
+               (commit (string-append "Xorg_xcb_util_keysyms-v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "03i3fw9p16rpjnki80w4rhmaiqvjlfsr94bf9yizndqsw1lcq42l"))))
+    (build-system julia-build-system)
+    (arguments
+     '(#:tests? #f  ; no runtests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'override-binary-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (map
+               (lambda (wrapper)
+                 (substitute* wrapper
+                   (("artifact\"Xorg_xcb_util_keysyms\"")
+                    (string-append "\"" (assoc-ref inputs "xcb-util-keysyms") "\""))))
+               ;; There's a Julia file for each platform, override them all
+               (find-files "src/wrappers/" "\\.jl$")))))))
+    (inputs
+     `(("xcb-util-keysyms" ,xcb-util-keysyms)))
+    (propagated-inputs
+     `(("julia-jllwrappers" ,julia-jllwrappers)
+       ("julia-xorg-xcb-util-jll" ,julia-xorg-xcb-util-jll)))
+    (home-page "https://github.com/JuliaBinaryWrappers/Xorg_xcb_util_keysyms_jll.jl")
+    (synopsis "Xcb-util-keysyms library wrappers")
+    (description "This package provides a wrapper for the xcb-util-keysyms library.")
+    (license license:expat)))
+
 (define-public julia-xorg-xcb-util-wm-jll
   (package
     (name "julia-xorg-xcb-util-wm-jll")
