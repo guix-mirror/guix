@@ -1458,6 +1458,32 @@ cosine) integrals, eta, zeta, digamma, inverse digamma, trigamma, and
 polygamma functions.")
     (license license:expat)))
 
+(define-public julia-splitapplycombine
+  (package
+    (name "julia-splitapplycombine")
+    (version "1.1.4")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaData/SplitApplyCombine.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1qzaqvk57b0s5krzn8bxkzmr5kz6hi9dm3jbf2sl7z4vznsgbn9x"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-dictionaries" ,julia-dictionaries)
+       ("julia-indexing" ,julia-indexing)))
+    (home-page "https://github.com/JuliaData/SplitApplyCombine.jl")
+    (synopsis "Split-apply-combine strategies for Julia")
+    (description "@code{SplitApplyCombine.jl} provides high-level, generic tools
+for manipulating data - particularly focussing on data in nested containers.  An
+emphasis is placed on ensuring split-apply-combine strategies are easy to apply,
+and work reliably for arbitrary iterables and in an optimized way with the data
+structures included in Julia's standard library.")
+    (license license:expat)))
+
 (define-public julia-stablerngs
   (package
     (name "julia-stablerngs")
