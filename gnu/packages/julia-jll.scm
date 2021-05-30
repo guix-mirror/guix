@@ -1462,6 +1462,44 @@ build tree Yggdrasil.")
     (description "This package provides a wrapper for the libpthread-stubs library.")
     (license license:expat)))
 
+(define-public julia-xorg-libx11-jll
+  (package
+    (name "julia-xorg-libx11-jll")
+    (version "1.6.9+2")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaBinaryWrappers/Xorg_libX11_jll.jl")
+               (commit (string-append "Xorg_libX11-v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1fw2dmmw04jmyss43g66q80w3j7wshmxgjccir1hh4c5d8x2zs39"))))
+    (build-system julia-build-system)
+    (arguments
+     '(#:tests? #f  ; no runtests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'override-binary-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (map
+               (lambda (wrapper)
+                 (substitute* wrapper
+                   (("artifact\"Xorg_libX11\"")
+                    (string-append "\"" (assoc-ref inputs "libx11") "\""))))
+               ;; There's a Julia file for each platform, override them all
+               (find-files "src/wrappers/" "\\.jl$")))))))
+    (inputs
+     `(("libx11" ,libx11)))
+    (propagated-inputs
+     `(("julia-jllwrappers" ,julia-jllwrappers)
+       ("julia-xorg-libxcb-jll" ,julia-xorg-libxcb-jll)
+       ("julia-xorg-xtrans-jll" ,julia-xorg-xtrans-jll)))
+    (home-page "https://github.com/JuliaBinaryWrappers/Xorg_libX11_jll.jl")
+    (synopsis "LibX11 library wrappers")
+    (description "This package provides a wrapper for the libx11 library.")
+    (license license:expat)))
+
 (define-public julia-xorg-libxau-jll
   (package
     (name "julia-xorg-libxau-jll")
