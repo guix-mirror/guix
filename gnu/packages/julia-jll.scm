@@ -1533,6 +1533,49 @@ build tree Yggdrasil.")
     (description "This package provides a wrapper for the xtrans library.")
     (license license:expat)))
 
+(define-public julia-xslt-jll
+  (package
+    (name "julia-xslt-jll")
+    (version "1.1.34+0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaBinaryWrappers/XSLT_jll.jl")
+               (commit (string-append "XSLT-v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0wjkfnrgpd7c6i4ga5xzsqqmfrxcdkr1kjsxmd9bff8cqvyknnhq"))))
+    (build-system julia-build-system)
+    (arguments
+     '(#:tests? #f  ; no runtests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'override-binary-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (map
+               (lambda (wrapper)
+                 (substitute* wrapper
+                  (("generate_wrapper_header.*")
+                   (string-append
+                     "generate_wrapper_header(\"XSLT\", \""
+                     (assoc-ref inputs "libxslt") "\")\n"))))
+               ;; There's a Julia file for each platform, override them all
+               (find-files "src/wrappers/" "\\.jl$")))))))
+    (inputs
+     `(("libxslt" ,libxslt)))
+    (propagated-inputs
+     `(("julia-jllwrappers" ,julia-jllwrappers)
+       ("julia-libgcrypt-jll" ,julia-libgcrypt-jll)
+       ("julia-libgpg-error-jll" ,julia-libgpg-error-jll)
+       ("julia-libiconv-jll" ,julia-libiconv-jll)
+       ("julia-xml2-jll" ,julia-xml2-jll)
+       ("julia-zlib-jll" ,julia-zlib-jll)))
+    (home-page "https://github.com/JuliaBinaryWrappers/XSLT_jll.jl")
+    (synopsis "Xslt library wrappers")
+    (description "This package provides a wrapper for the libxslt library.")
+    (license license:expat)))
+
 (define-public julia-zlib-jll
   (package
     (name "julia-zlib-jll")
