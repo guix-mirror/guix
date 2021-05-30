@@ -23,7 +23,6 @@
   #:use-module (guix packages)
   #:use-module (guix git-download)
   #:use-module (guix build-system julia)
-  #:use-module (gnu packages compression)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages julia-jll))
@@ -1770,45 +1769,6 @@ useful in order to support @code{VersionNumber} comparisons applied to
     (synopsis "Read/Write ZIP archives in Julia")
     (description "This module provides support for reading and writing ZIP
 archives in Julia.")
-    (license license:expat)))
-
-(define-public julia-zstd-jll
-  (package
-    (name "julia-zstd-jll")
-    (version "1.5.0+0")
-    (source
-      (origin
-        (method git-fetch)
-        (uri (git-reference
-               (url "https://github.com/JuliaBinaryWrappers/Zstd_jll.jl")
-               (commit (string-append "Zstd-v" version))))
-        (file-name (git-file-name name version))
-        (sha256
-         (base32
-          "15g5wsvga4p9bjmx97xqwqdnfzfbwfl6c4a9iaphcncwgcrnw6y6"))))
-    (build-system julia-build-system)
-    (arguments
-     '(#:tests? #f  ; no runtests
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
-           (lambda* (#:key inputs #:allow-other-keys)
-             (map
-               (lambda (wrapper)
-                 (substitute* wrapper
-                   (("generate_wrapper_header.*")
-                    (string-append
-                      "generate_wrapper_header(\"Zstd\", \""
-                      (assoc-ref inputs "zstd:lib") "\")\n"))))
-               ;; There's a Julia file for each platform, override them all
-               (find-files "src/wrappers/" "\\.jl$")))))))
-    (inputs
-     `(("zstd:lib" ,zstd "lib")))
-    (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)))
-    (home-page "https://github.com/JuliaBinaryWrappers/Zstd_jll.jl")
-    (synopsis "Zstd library wrappers")
-    (description "This package provides a wrapper for the zstd library.")
     (license license:expat)))
 
 (define-public julia-zygoterules
