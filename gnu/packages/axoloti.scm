@@ -125,6 +125,11 @@
                (("arm-none-eabi-(gcc|g\\+\\+|objcopy|objdump)" tool)
                 (which tool)))
 
+             ;; XXX: for some reason the whitespace substitution does not
+             ;; work, so we disable it.
+             (substitute* "firmware/Makefile.patch"
+               (("^BDIR=.*") "BDIR=${axoloti_home}/build\n"))
+
              ;; Hardcode full path to compiler tools
              (substitute* '("firmware/Makefile"
                             "firmware/flasher/Makefile"
