@@ -1612,6 +1612,43 @@ build tree Yggdrasil.")
     (description "This package provides a wrapper for the libxdmcp library.")
     (license license:expat)))
 
+(define-public julia-xorg-libxext-jll
+  (package
+    (name "julia-xorg-libxext-jll")
+    (version "1.3.4+2")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaBinaryWrappers/Xorg_libXext_jll.jl")
+               (commit (string-append "Xorg_libXext-v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1xmx86l54apvqv0xwy0rha7knjl4x5crllqra56nhi0arhw8ywfc"))))
+    (build-system julia-build-system)
+    (arguments
+     '(#:tests? #f  ; no runtests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'override-binary-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (map
+               (lambda (wrapper)
+                 (substitute* wrapper
+                   (("artifact\"Xorg_libXext\"")
+                    (string-append "\"" (assoc-ref inputs "libxext") "\""))))
+               ;; There's a Julia file for each platform, override them all
+               (find-files "src/wrappers/" "\\.jl$")))))))
+    (inputs
+     `(("libxext" ,libxext)))
+    (propagated-inputs
+     `(("julia-jllwrappers" ,julia-jllwrappers)
+       ("julia-xorg-libx11-jll" ,julia-xorg-libx11-jll)))
+    (home-page "https://github.com/JuliaBinaryWrappers/Xorg_libXext_jll.jl")
+    (synopsis "LibXext library wrappers")
+    (description "This package provides a wrapper for the libxext library.")
+    (license license:expat)))
+
 (define-public julia-xorg-xtrans-jll
   (package
     (name "julia-xorg-xtrans-jll")
