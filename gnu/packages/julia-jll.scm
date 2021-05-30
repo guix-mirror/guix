@@ -29,6 +29,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages fribidi)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
@@ -1478,6 +1479,45 @@ build tree Yggdrasil.")
     (home-page "https://github.com/JuliaBinaryWrappers/Pixman_jll.jl")
     (synopsis "Pixman library wrappers")
     (description "This package provides a wrapper for the pixman library.")
+    (license license:expat)))
+
+(define-public julia-wayland-jll
+  (package
+    (name "julia-wayland-jll")
+    (version "1.17.0+3")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaBinaryWrappers/Wayland_jll.jl")
+               (commit (string-append "Wayland-v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1w53inz62va3f022pgw3rfw5z5vgiv8z9dg3lfzpjrdb0lcd6ab6"))))
+    (build-system julia-build-system)
+    (arguments
+     '(#:tests? #f  ; no runtests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'override-binary-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (map
+               (lambda (wrapper)
+                 (substitute* wrapper
+                   (("artifact\"Wayland\"")
+                    (string-append "\"" (assoc-ref inputs "wayland") "\""))))
+               ;; There's a Julia file for each platform, override them all
+               (find-files "src/wrappers/" "\\.jl$")))))))
+    (inputs
+     `(("wayland" ,wayland)))
+    (propagated-inputs
+     `(("julia-jllwrappers" ,julia-jllwrappers)
+       ("julia-expat-jll" ,julia-expat-jll)
+       ("julia-libffi-jll" ,julia-libffi-jll)
+       ("julia-xml2-jll" ,julia-xml2-jll)))
+    (home-page "https://github.com/JuliaBinaryWrappers/Wayland_jll.jl")
+    (synopsis "Wayland library wrappers")
+    (description "This package provides a wrapper for the wayland library.")
     (license license:expat)))
 
 (define-public julia-x264-jll
