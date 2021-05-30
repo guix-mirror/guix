@@ -2462,6 +2462,24 @@ included are the command line utilities @code{send_osc} and @code{dump_osc}.")
 CFFI and NumPy.")
     (license license:expat)))
 
+(define-public python-python3-midi
+  (package
+    (name "python-python3-midi")
+    (version "0.2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "python3_midi" version))
+       (sha256
+        (base32
+         "1z9j1w7mpn3xhkcpxmqm5rvmj6nffb5rf14bv7n3sdh07nf6n7sf"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/NFJones/python3-midi")
+    (synopsis "Python MIDI API")
+    (description "This package provides a python API to read and write MIDI
+files.")
+    (license license:expat)))
+
 (define-public lilv
   (package
     (name "lilv")
