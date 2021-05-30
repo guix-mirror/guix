@@ -833,7 +833,7 @@ C-compatible) software.")
        (("rust-assert-cmd" ,rust-assert-cmd-1)
         ("rust-seq-macro" ,rust-seq-macro-0.2))))
     (home-page "https://github.com/ajeetdsouza/zoxide/")
-    (synopsis "Fast way to navigate your filesystem")
+    (synopsis "Fast way to navigate your file system")
     (description
      "Zoxide is a fast replacement for your @command{cd} command.  It keeps
 track of the directories you use most frequently, and uses a ranking algorithm
