@@ -45,6 +45,7 @@
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages pcre)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
   #:use-module (gnu packages web)
@@ -1479,6 +1480,57 @@ build tree Yggdrasil.")
     (home-page "https://github.com/JuliaBinaryWrappers/Pixman_jll.jl")
     (synopsis "Pixman library wrappers")
     (description "This package provides a wrapper for the pixman library.")
+    (license license:expat)))
+
+(define-public julia-qt5base-jll
+  (package
+    (name "julia-qt5base-jll")
+    (version "5.15.2+0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaBinaryWrappers/Qt5Base_jll.jl")
+               (commit (string-append "Qt5Base-v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1hhs316dl2jy56y2j4809vwpfj6ffbjchl1a27x44mmh9bj7vxzy"))))
+    (build-system julia-build-system)
+    (arguments
+     '(#:tests? #f  ; no runtests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'override-binary-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (map
+               (lambda (wrapper)
+                 (substitute* wrapper
+                  (("generate_wrapper_header.*")
+                   (string-append
+                     "generate_wrapper_header(\"Qt5Base\", \""
+                     (assoc-ref inputs "qtbase") "\")\n"))))
+               ;; There's a Julia file for each platform, override them all
+               (find-files "src/wrappers/" "\\.jl$")))))))
+    (inputs
+     `(("qtbase" ,qtbase)))
+    (propagated-inputs
+     `(("julia-jllwrappers" ,julia-jllwrappers)
+       ("julia-libglvnd-jll" ,julia-libglvnd-jll)
+       ("julia-compilersupportlibraries-jll" ,julia-compilersupportlibraries-jll)
+       ("julia-fontconfig-jll" ,julia-fontconfig-jll)
+       ("julia-glib-jll" ,julia-glib-jll)
+       ("julia-openssl-jll" ,julia-openssl-jll)
+       ("julia-xkbcommon-jll" ,julia-xkbcommon-jll)
+       ("julia-xorg-libxcb-jll" ,julia-xorg-libxcb-jll)
+       ("julia-xorg-libxext-jll" ,julia-xorg-libxext-jll)
+       ("julia-xorg-xcb-util-image-jll" ,julia-xorg-xcb-util-image-jll)
+       ("julia-xorg-xcb-util-keysyms-jll" ,julia-xorg-xcb-util-keysyms-jll)
+       ("julia-xorg-xcb-util-renderutil-jll" ,julia-xorg-xcb-util-renderutil-jll)
+       ("julia-xorg-xcb-util-wm-jll" ,julia-xorg-xcb-util-wm-jll)
+       ("julia-zlib-jll" ,julia-zlib-jll)))
+    (home-page "https://github.com/JuliaBinaryWrappers/Qt5Base_jll.jl")
+    (synopsis "Qtbase library wrappers")
+    (description "This package provides a wrapper for the qtbase library.")
     (license license:expat)))
 
 (define-public julia-wayland-jll
