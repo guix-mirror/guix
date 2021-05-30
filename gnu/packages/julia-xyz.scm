@@ -1201,6 +1201,29 @@ algorithms, while ensuring that the most efficient implementation is used in
 actual computation.")
     (license license:expat)))
 
+(define-public julia-plotthemes
+  (package
+    (name "julia-plotthemes")
+    (version "2.0.1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaPlots/PlotThemes.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1fd27w9z1vhz0d1bzrs5vcavpb5r5jviyh27d9c4ka37phz4xvmh"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-plotutils" ,julia-plotutils)
+       ("julia-requires" ,julia-requires)))
+    (home-page "https://github.com/JuliaPlots/PlotThemes.jl")
+    (synopsis "Themes for the Julia plotting package Plots.jl")
+    (description
+     "PlotThemes is a package to spice up the plots made with @code{Plots.jl}.")
+    (license license:expat)))
+
 (define-public julia-plotutils
   (package
     (name "julia-plotutils")
