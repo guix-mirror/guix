@@ -63,14 +63,22 @@
       ("lvm2" ,lvm2)                    ; device-mapper
       ("popt" ,popt)
       ("util-linux" ,util-linux "lib"))) ;libuuid
-   (synopsis "Hard disk encryption tool")
+   (synopsis "Set up transparent encryption of block devices using dm-crypt")
    (description
-    "LUKS (Linux Unified Key Setup)/Cryptsetup provides a standard on-disk
-encryption format, which does not only facilitate compatibility among
-distributions, but which also provides secure management of multiple user
-passwords.  In contrast to existing solutions, LUKS stores all setup necessary
-setup information in the partition header, enabling the users to transport
-or migrate their data seamlessly.")
+    "Cryptsetup is a utility used to conveniently set up disk encryption based
+on the @code{dm-crypt} Linux kernel module.  It is most often used to manage
+LUKS volumes but also supports plain dm-crypt volumes and loop-AES, TrueCrypt
+(including VeraCrypt extension), and BitLocker formats.
+
+@acronym{LUKS, Linux Unified Key Setup} is the standard for hard disk encryption
+with the kernel Linux.  It provides a standard on-disk-format compatible amongst
+distributions as well as secure management of multiple user passwords.  LUKS
+stores all necessary setup information in the partition header to facilitate
+data transport and migration.
+
+The package also includes the @command{veritysetup} and @command{integritysetup}
+utilities to conveniently configure the @code{dm-verity} and @code{dm-integrity}
+block integrity kernel modules.")
    (license license:gpl2)
    (home-page "https://gitlab.com/cryptsetup/cryptsetup")))
 
