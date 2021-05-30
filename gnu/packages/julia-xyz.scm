@@ -23,7 +23,6 @@
   #:use-module (guix packages)
   #:use-module (guix git-download)
   #:use-module (guix build-system julia)
-  #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages julia-jll))
 
 (define-public julia-abstractffts
@@ -833,49 +832,6 @@ implementing both a client and a server.")
     (synopsis "Function form of the if-else conditional statement")
     (description "This package provides a convenient function form of the
 conditional ifelse.  It is similar to @code{Core.ifelse} but it is extendable.")
-    (license license:expat)))
-
-(define-public julia-imagemagick-jll
-  (package
-    (name "julia-imagemagick-jll")
-    (version "6.9.10-12+3")
-    (source
-      (origin
-        (method git-fetch)
-        (uri (git-reference
-               (url "https://github.com/JuliaBinaryWrappers/ImageMagick_jll.jl")
-               (commit (string-append "ImageMagick-v" version))))
-        (file-name (git-file-name name version))
-        (sha256
-         (base32
-          "1a0vnnjl52yqi7jgpr0dmx5ah5nlpylv5hc8aw2l89b9f36ff8jg"))))
-    (build-system julia-build-system)
-    (arguments
-     '(#:tests? #f ; no runtests
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
-           (lambda* (#:key inputs #:allow-other-keys)
-             (map
-               (lambda (wrapper)
-                 (substitute* wrapper
-                   ;; Make sure we match the current library.
-                   (("libMagickWand-6.Q16.so.6") "libMagickWand-6.Q16.so.7")
-                   (("artifact\"ImageMagick\"")
-                    (string-append "\"" (assoc-ref inputs "imagemagick") "\""))))
-               ;; There's a Julia file for each platform, override them all
-               (find-files "src/wrappers/" "\\.jl$")))))))
-    (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)
-       ("julia-jpegturbo-jll" ,julia-jpegturbo-jll)
-       ("julia-libpng-jll" ,julia-libpng-jll)
-       ("julia-libtiff-jll" ,julia-libtiff-jll)
-       ("julia-zlib-jll" ,julia-zlib-jll)))
-    (inputs
-     `(("imagemagick" ,imagemagick)))
-    (home-page "https://github.com/JuliaBinaryWrappers/ImageMagick_jll.jl")
-    (synopsis "Imagemagick library wrappers")
-    (description "This package provides a wrapper for Imagemagick.")
     (license license:expat)))
 
 (define-public julia-indexing
