@@ -2160,6 +2160,43 @@ build tree Yggdrasil.")
     (description "This package provides a wrapper for the libXrender library.")
     (license license:expat)))
 
+(define-public julia-xorg-xkbcomp-jll
+  (package
+    (name "julia-xorg-xkbcomp-jll")
+    (version "1.4.2+3")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaBinaryWrappers/Xorg_xkbcomp_jll.jl")
+               (commit (string-append "Xorg_xkbcomp-v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1rkb9525iq0jjpq8v333b728kfillgixxsim37mqdplad85l36wl"))))
+    (build-system julia-build-system)
+    (arguments
+     '(#:tests? #f  ; no runtests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'override-binary-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (map
+               (lambda (wrapper)
+                 (substitute* wrapper
+                   (("artifact\"Xorg_xkbcomp\"")
+                    (string-append "\"" (assoc-ref inputs "xkbcomp") "\""))))
+               ;; There's a Julia file for each platform, override them all
+               (find-files "src/wrappers/" "\\.jl$")))))))
+    (inputs
+     `(("xkbcomp" ,xkbcomp)))
+    (propagated-inputs
+     `(("julia-jllwrappers" ,julia-jllwrappers)
+       ("julia-xorg-libxkbfile-jll" ,julia-xorg-libxkbfile-jll)))
+    (home-page "https://github.com/JuliaBinaryWrappers/Xorg_xkbcomp_jll.jl")
+    (synopsis "xkbcomp library wrappers")
+    (description "This package provides a wrapper for the xkbcomp library.")
+    (license license:expat)))
+
 (define-public julia-xorg-xtrans-jll
   (package
     (name "julia-xorg-xtrans-jll")
