@@ -1459,6 +1459,42 @@ build tree Yggdrasil.")
     (description "This package provides a wrapper for the libxdmcp library.")
     (license license:expat)))
 
+(define-public julia-xorg-xtrans-jll
+  (package
+    (name "julia-xorg-xtrans-jll")
+    (version "1.4.0+2")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaBinaryWrappers/Xorg_xtrans_jll.jl")
+               (commit (string-append "Xorg_xtrans-v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "16rzkgc7l1j57l43v5ffrak164bdff7h1amm0y3mcnwjqmkig9dn"))))
+    (build-system julia-build-system)
+    (arguments
+     '(#:tests? #f  ; no runtests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'override-binary-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (map
+               (lambda (wrapper)
+                 (substitute* wrapper
+                   (("artifact\"Xorg_xtrans\"")
+                    (string-append "\"" (assoc-ref inputs "xtrans") "\""))))
+               ;; There's a Julia file for each platform, override them all
+               (find-files "src/wrappers/" "\\.jl$")))))))
+    (inputs
+     `(("xtrans" ,xtrans)))
+    (propagated-inputs
+     `(("julia-jllwrappers" ,julia-jllwrappers)))
+    (home-page "https://github.com/JuliaBinaryWrappers/Xorg_xtrans_jll.jl")
+    (synopsis "xtrans library wrappers")
+    (description "This package provides a wrapper for the xtrans library.")
+    (license license:expat)))
+
 (define-public julia-zlib-jll
   (package
     (name "julia-zlib-jll")
