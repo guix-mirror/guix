@@ -300,6 +300,15 @@ by two spaces; possible infraction~p at ~{~a~^, ~}")
                                infractions)
                          #:field 'description)))))
 
+  (define (check-no-trailing-whitespace description)
+    "Check that DESCRIPTION doesn't have trailing whitespace."
+    (if (string-suffix? " " description)
+        (list
+         (make-warning package
+                       (G_ "description contains trailing whitespace")
+                       #:field 'description))
+        '()))
+
   (let ((description (package-description package)))
     (if (string? description)
         (append
@@ -309,6 +318,7 @@ by two spaces; possible infraction~p at ~{~a~^, ~}")
          ;; Use raw description for this because Texinfo rendering
          ;; automatically fixes end of sentence space.
          (check-end-of-sentence-space description)
+         (check-no-trailing-whitespace description)
          (match (check-texinfo-markup description)
            ((and warning (? lint-warning?)) (list warning))
            (plain-description
