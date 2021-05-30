@@ -32,6 +32,7 @@
   #:use-module (gnu packages fribidi)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages julia)
@@ -297,6 +298,50 @@ rendering library.")
     (home-page "https://github.com/JuliaBinaryWrappers/Gettext_jll.jl")
     (synopsis "Gettext library wrappers")
     (description "This package provides a wrapper for the gettext library.")
+    (license license:expat)))
+
+(define-public julia-glib-jll
+  (package
+    (name "julia-glib-jll")
+    (version "2.68.1+0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaBinaryWrappers/Glib_jll.jl")
+               (commit (string-append "Glib-v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0l0fm5m4rznljkig7k4cxpi4skm7j4nc6lqx5xr0sb0wfzbr2llv"))))
+    (build-system julia-build-system)
+    (arguments
+     '(#:tests? #f  ; no runtests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'override-binary-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (map
+               (lambda (wrapper)
+                 (substitute* wrapper
+                   (("generate_wrapper_header.*")
+                    (string-append
+                      "generate_wrapper_header(\"Glib\", \""
+                      (assoc-ref inputs "glib") "\")\n"))))
+               ;; There's a Julia file for each platform, override them all
+               (find-files "src/wrappers/" "\\.jl$")))))))
+    (inputs
+     `(("glib" ,glib)))
+    (propagated-inputs
+     `(("julia-jllwrappers" ,julia-jllwrappers)
+       ("julia-gettext-jll" ,julia-gettext-jll)
+       ("julia-libffi-jll" ,julia-libffi-jll)
+       ("julia-libiconv-jll" ,julia-libiconv-jll)
+       ("julia-libmount-jll" ,julia-libmount-jll)
+       ("julia-pcre-jll" ,julia-pcre-jll)
+       ("julia-zlib-jll" ,julia-zlib-jll)))
+    (home-page "https://github.com/JuliaBinaryWrappers/Glib_jll.jl")
+    (synopsis "Glib library wrappers")
+    (description "This package provides a wrapper for the glib library.")
     (license license:expat)))
 
 (define-public julia-gumbo-jll
