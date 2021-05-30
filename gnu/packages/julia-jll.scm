@@ -1345,6 +1345,42 @@ build tree Yggdrasil.")
     (description "This package provides a wrapper for the libxau library.")
     (license license:expat)))
 
+(define-public julia-xorg-libxdmcp-jll
+  (package
+    (name "julia-xorg-libxdmcp-jll")
+    (version "1.1.3+3")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaBinaryWrappers/Xorg_libXdmcp_jll.jl")
+               (commit (string-append "Xorg_libXdmcp-v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1ghw8c7ibkm2hv4h38qyhbxfmyizxszqv6fv8qzlb5031dmshnap"))))
+    (build-system julia-build-system)
+    (arguments
+     '(#:tests? #f  ; no runtests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'override-binary-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (map
+               (lambda (wrapper)
+                 (substitute* wrapper
+                   (("artifact\"Xorg_libXdmcp\"")
+                    (string-append "\"" (assoc-ref inputs "libxdmcp") "\""))))
+               ;; There's a Julia file for each platform, override them all
+               (find-files "src/wrappers/" "\\.jl$")))))))
+    (inputs
+     `(("libxdmcp" ,libxdmcp)))
+    (propagated-inputs
+     `(("julia-jllwrappers" ,julia-jllwrappers)))
+    (home-page "https://github.com/JuliaBinaryWrappers/Xorg_libXdmcp_jll.jl")
+    (synopsis "Libxdmcp library wrappers")
+    (description "This package provides a wrapper for the libxdmcp library.")
+    (license license:expat)))
+
 (define-public julia-zlib-jll
   (package
     (name "julia-zlib-jll")
