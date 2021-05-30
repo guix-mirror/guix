@@ -1269,7 +1269,7 @@ actual computation.")
      `(("julia-stablerngs" ,julia-stablerngs)))
     (home-page "https://github.com/JuliaPlots/PlotUtils.jl")
     (synopsis "Helper algorithms for building plotting components")
-    (description "This package containts generic helper algorithms for building
+    (description "This package contains generic helper algorithms for building
 plotting components.")
     (license license:expat)))
 
