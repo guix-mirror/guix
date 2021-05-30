@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018, 2019, 2020, 2021 Christopher Baines <mail@cbaines.net>
+;;; Copyright © 2021 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -115,13 +116,25 @@
          (home-directory (laminar-configuration-home-directory config))
          (shell #~(string-append #$shadow "/sbin/nologin")))))
 
+(define (laminar-activation config)
+  (let ((bind-http (laminar-configuration-bind-http config)))
+    #~(begin
+        ;; If listen is a unix socket, create its parent directory.
+        (when (string-prefix? "unix:" #$bind-http)
+          (let ((run-directory
+                 (dirname (substring #$bind-http (string-length "unix:"))))
+                (user (getpw "laminar")))
+            (mkdir-p run-directory)
+            (chown run-directory (passwd:uid user) (passwd:gid user)))))))
+
 (define laminar-service-type
   (service-type
    (name 'laminar)
    (extensions
     (list
      (service-extension shepherd-root-service-type laminar-shepherd-service)
-     (service-extension account-service-type laminar-account)))
+     (service-extension account-service-type laminar-account)
+     (service-extension activation-service-type laminar-activation)))
    (default-value (laminar-configuration))
    (description
     "Run the Laminar continuous integration service.")))
