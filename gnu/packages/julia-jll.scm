@@ -432,6 +432,49 @@ rendering library.")
     (description "This package provides a wrapper for the gettext library.")
     (license license:expat)))
 
+(define-public julia-glfw-jll
+  (package
+    (name "julia-glfw-jll")
+    (version "3.3.4+0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaBinaryWrappers/GLFW_jll.jl")
+               (commit (string-append "GLFW-v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "12r4g8x1pgfrx53wq1a2q0rj4p08q352mmci2px1j4bd0pwi8rc4"))))
+    (build-system julia-build-system)
+    (arguments
+     '(#:tests? #f  ; no runtests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'override-binary-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (map
+               (lambda (wrapper)
+                 (substitute* wrapper
+                  (("generate_wrapper_header.*")
+                   (string-append
+                     "generate_wrapper_header(\"GLFW\", \""
+                     (assoc-ref inputs "glfw") "\")\n"))))
+               ;; There's a Julia file for each platform, override them all
+               (find-files "src/wrappers/" "\\.jl$")))))))
+    (inputs
+     `(("glfw" ,glfw)))
+    (propagated-inputs
+     `(("julia-jllwrappers" ,julia-jllwrappers)
+       ("julia-libglvnd-jll" ,julia-libglvnd-jll)
+       ("julia-xorg-libxcursor-jll" ,julia-xorg-libxcursor-jll)
+       ("julia-xorg-libxinerama-jll" ,julia-xorg-libxinerama-jll)
+       ("julia-xorg-libxrandr-jll" ,julia-xorg-libxrandr-jll)
+       ("julia-xorg-libxi-jll" ,julia-xorg-libxi-jll)))
+    (home-page "https://github.com/JuliaBinaryWrappers/GLFW_jll.jl")
+    (synopsis "Glfw library wrappers")
+    (description "This package provides a wrapper for the glfw library.")
+    (license license:expat)))
+
 (define-public julia-glib-jll
   (package
     (name "julia-glib-jll")
