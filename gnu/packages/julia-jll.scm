@@ -2237,6 +2237,43 @@ build tree Yggdrasil.")
     (description "This package provides a wrapper for the xcb-util library.")
     (license license:expat)))
 
+(define-public julia-xorg-xcb-util-image-jll
+  (package
+    (name "julia-xorg-xcb-util-image-jll")
+    (version "0.4.0+1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaBinaryWrappers/Xorg_xcb_util_image_jll.jl")
+               (commit (string-append "Xorg_xcb_util_image-v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1f9xx094nylg7dcfxm0qmph4xy492rd3yxa8arijqyi6rs8zrgxz"))))
+    (build-system julia-build-system)
+    (arguments
+     '(#:tests? #f  ; no runtests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'override-binary-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (map
+               (lambda (wrapper)
+                 (substitute* wrapper
+                   (("artifact\"Xorg_xcb_util_image\"")
+                    (string-append "\"" (assoc-ref inputs "xcb-util-image") "\""))))
+               ;; There's a Julia file for each platform, override them all
+               (find-files "src/wrappers/" "\\.jl$")))))))
+    (inputs
+     `(("xcb-util-image" ,xcb-util-image)))
+    (propagated-inputs
+     `(("julia-jllwrappers" ,julia-jllwrappers)
+       ("julia-xorg-xcb-util-jll" ,julia-xorg-xcb-util-jll)))
+    (home-page "https://github.com/JuliaBinaryWrappers/Xorg_xcb_util_image_jll.jl")
+    (synopsis "Xcb-util-image library wrappers")
+    (description "This package provides a wrapper for the xcb-util-image library.")
+    (license license:expat)))
+
 (define-public julia-xorg-xcb-util-wm-jll
   (package
     (name "julia-xorg-xcb-util-wm-jll")
