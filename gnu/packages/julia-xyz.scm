@@ -1772,45 +1772,6 @@ useful in order to support @code{VersionNumber} comparisons applied to
 archives in Julia.")
     (license license:expat)))
 
-(define-public julia-zlib-jll
-  (package
-    (name "julia-zlib-jll")
-    (version "1.2.12+1")
-    (source
-      (origin
-        (method git-fetch)
-        (uri (git-reference
-               (url "https://github.com/JuliaBinaryWrappers/Zlib_jll.jl")
-               (commit (string-append "Zlib-v" version))))
-        (file-name (git-file-name name version))
-        (sha256
-         (base32
-          "05ih0haqapkzr40swvq63cafnqlc4yp6yfa1wvdyq8v3n4kxhfqa"))))
-    (build-system julia-build-system)
-    (arguments
-     '(#:tests? #f  ; no runtests
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
-           (lambda* (#:key inputs #:allow-other-keys)
-             (map
-               (lambda (wrapper)
-                 (substitute* wrapper
-                   (("generate_wrapper_header.*")
-                    (string-append
-                      "generate_wrapper_header(\"Zlib\", \""
-                      (assoc-ref inputs "zlib") "\")\n"))))
-               ;; There's a Julia file for each platform, override them all
-               (find-files "src/wrappers/" "\\.jl$")))))))
-    (inputs
-     `(("zlib" ,zlib)))
-    (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)))
-    (home-page "https://github.com/JuliaBinaryWrappers/Zlib_jll.jl")
-    (synopsis "Zlib library wrappers")
-    (description "This package provides a wrapper for Zlib.")
-    (license license:expat)))
-
 (define-public julia-zstd-jll
   (package
     (name "julia-zstd-jll")
