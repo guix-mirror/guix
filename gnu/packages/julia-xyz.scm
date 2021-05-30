@@ -27,8 +27,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages julia-jll)
-  #:use-module (gnu packages maths)
-  #:use-module (gnu packages tls))
+  #:use-module (gnu packages maths))
 
 (define-public julia-abstractffts
   (package
@@ -1145,46 +1144,6 @@ that let you do deep transformations of code.")
     (synopsis "Apache's mbed TLS library wrapper")
     (description "@code{MbedTLS.jl} provides a wrapper around the @code{mbed
 TLS} and cryptography C library for Julia.")
-    (license license:expat)))
-
-(define-public julia-mbedtls-jll
-  (package
-    (name "julia-mbedtls-jll")
-    ;; version 2.25.0+0 is not compatible with current mbedtls 2.23.0,
-    ;; upgrade this when mbedtls is updated in guix
-    (version "2.24.0+1")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/JuliaBinaryWrappers/MbedTLS_jll.jl")
-             (commit (string-append "MbedTLS-v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "0kk9dlxdh7yms21npgrdfmjbj8q8ng6kdhrzw3jr2d7rp696kp99"))))
-    (build-system julia-build-system)
-    (arguments
-     '(#:tests? #f                      ; No runtests.jl
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
-           (lambda* (#:key inputs #:allow-other-keys)
-             (map
-              (lambda (wrapper)
-                (substitute* wrapper
-                  (("generate_wrapper_header.*")
-                   (string-append
-                    "generate_wrapper_header(\"MbedTLS\", \""
-                    (assoc-ref inputs "mbedtls-apache") "\")\n"))))
-              ;; There's a Julia file for each platform, override them all
-              (find-files "src/wrappers/" "\\.jl$"))
-             #t)))))
-    (inputs `(("mbedtls-apache" ,mbedtls-apache)))
-    (propagated-inputs `(("julia-jllwrappers" ,julia-jllwrappers)))
-    (home-page "https://github.com/JuliaBinaryWrappers/MbedTLS_jll.jl")
-    (synopsis "Apache's mbed TLS binary wrappers")
-    (description "This Julia module provides @code{mbed TLS} libraries and
-wrappers.")
     (license license:expat)))
 
 (define-public julia-msgpack
