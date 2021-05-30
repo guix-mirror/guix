@@ -125,6 +125,55 @@ originating @code{build_tarballs.jl} script can be found on the community
 build tree Yggdrasil.")
     (license license:expat)))
 
+(define-public julia-ffmpeg-jll
+  (package
+    (name "julia-ffmpeg-jll")
+    (version "4.3.1+2")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaBinaryWrappers/FFMPEG_jll.jl")
+               (commit (string-append "FFMPEG-v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1f8pq9nxiiqay9qcsly1wkfpyz9nbxakf78ryi2c7g8p5v80k6d3"))))
+    (build-system julia-build-system)
+    (arguments
+     '(#:tests? #f ; no runtests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'override-binary-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (map
+               (lambda (wrapper)
+                 (substitute* wrapper
+                   (("artifact\"FFMPEG\"")
+                    (string-append "\"" (assoc-ref inputs "ffmpeg") "\""))))
+               ;; There's a Julia file for each platform, override them all
+               (find-files "src/wrappers/" "\\.jl$")))))))
+    (inputs
+     `(("ffmpeg" ,ffmpeg)))
+    (propagated-inputs
+     `(("julia-jllwrappers" ,julia-jllwrappers)
+       ("julia-bzip2-jll" ,julia-bzip2-jll)
+       ("julia-freetype2-jll" ,julia-freetype2-jll)
+       ("julia-fribidi-jll" ,julia-fribidi-jll)
+       ("julia-lame-jll" ,julia-lame-jll)
+       ("julia-libass-jll" ,julia-libass-jll)
+       ("julia-libfdk-aac-jll" ,julia-libfdk-aac-jll)
+       ("julia-libvorbis-jll" ,julia-libvorbis-jll)
+       ("julia-openssl-jll" ,julia-openssl-jll)
+       ("julia-opus-jll" ,julia-opus-jll)
+       ("julia-ogg-jll" ,julia-ogg-jll)
+       ("julia-x264-jll" ,julia-x264-jll)
+       ("julia-x265-jll" ,julia-x265-jll)
+       ("julia-zlib-jll" ,julia-zlib-jll)))
+    (home-page "https://github.com/JuliaBinaryWrappers/FFMPEG_jll.jl")
+    (synopsis "ffmpeg library wrappers")
+    (description "This package provides a wrapper for ffmpeg.")
+    (license license:expat)))
+
 (define-public julia-freetype2-jll
   (package
     (name "julia-freetype2-jll")
