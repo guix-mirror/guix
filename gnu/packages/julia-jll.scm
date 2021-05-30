@@ -1425,6 +1425,43 @@ build tree Yggdrasil.")
     (description "This package provides a wrapper for the libxml2 library.")
     (license license:expat)))
 
+(define-public julia-xorg-libpthread-stubs-jll
+  (package
+    (name "julia-xorg-libpthread-stubs-jll")
+    (version "0.1.0+2")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaBinaryWrappers/Xorg_libpthread_stubs_jll.jl")
+               (commit (string-append "Xorg_libpthread_stubs-v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "161f4111xsb8xq4zs59jw95s94xfn1yxpii0p0dhn3yqgligggvx"))))
+    (build-system julia-build-system)
+    (arguments
+     '(#:tests? #f  ; no runtests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'override-binary-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (map
+               (lambda (wrapper)
+                 (substitute* wrapper
+                   (("artifact\"Xorg_libpthread_stubs\"")
+                    (string-append "\"" (assoc-ref inputs "libpthread-stubs") "\""))))
+               ;; There's a Julia file for each platform, override them all
+               (find-files "src/wrappers/" "\\.jl$")))))))
+    (inputs
+     `(("libpthread-stubs" ,libpthread-stubs)))
+    (propagated-inputs
+     `(("julia-jllwrappers" ,julia-jllwrappers)
+       ("julia-xslt-jll" ,julia-xslt-jll)))
+    (home-page "https://github.com/JuliaBinaryWrappers/Xorg_libpthread_stubs_jll.jl")
+    (synopsis "Libpthread-stubs library wrappers")
+    (description "This package provides a wrapper for the libpthread-stubs library.")
+    (license license:expat)))
+
 (define-public julia-xorg-libxau-jll
   (package
     (name "julia-xorg-libxau-jll")
