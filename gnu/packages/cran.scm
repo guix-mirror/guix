@@ -367,7 +367,7 @@ for authoring journal articles and conference submissions.")
        ("r-tibble" ,r-tibble)))
     (home-page "https://github.com/csgillespie/benchmarkme-data")
     (synopsis "Data set for the @code{benchmarkme} package")
-    (description "This pacakge contains the data set for the crowd sourced
+    (description "This package contains the data set for the crowd-sourced
 benchmarks from running the @code{benchmarkme} package.")
     (license license:gpl2+)))
 
