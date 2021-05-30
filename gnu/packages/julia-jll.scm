@@ -1692,6 +1692,43 @@ build tree Yggdrasil.")
     (description "This package provides a wrapper for the libxext library.")
     (license license:expat)))
 
+(define-public julia-xorg-libxrender-jll
+  (package
+    (name "julia-xorg-libxrender-jll")
+    (version "0.9.10+3")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaBinaryWrappers/Xorg_libXrender_jll.jl")
+               (commit (string-append "Xorg_libXrender-v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "041kjqpkgcjf72msg4zm4wja623wfsy9gmkqjvsj46lj885qizz7"))))
+    (build-system julia-build-system)
+    (arguments
+     '(#:tests? #f  ; no runtests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'override-binary-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (map
+               (lambda (wrapper)
+                 (substitute* wrapper
+                   (("artifact\"Xorg_libXrender\"")
+                    (string-append "\"" (assoc-ref inputs "libxrender") "\""))))
+               ;; There's a Julia file for each platform, override them all
+               (find-files "src/wrappers/" "\\.jl$")))))))
+    (inputs
+     `(("libxrender" ,libxrender)))
+    (propagated-inputs
+     `(("julia-jllwrappers" ,julia-jllwrappers)
+       ("julia-xorg-libx11-jll" ,julia-xorg-libx11-jll)))
+    (home-page "https://github.com/JuliaBinaryWrappers/Xorg_libXrender_jll.jl")
+    (synopsis "libXrender library wrappers")
+    (description "This package provides a wrapper for the libXrender library.")
+    (license license:expat)))
+
 (define-public julia-xorg-xtrans-jll
   (package
     (name "julia-xorg-xtrans-jll")
