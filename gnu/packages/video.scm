@@ -2817,6 +2817,18 @@ capabilities.")
                (base32
                 "1krfdzc2x2vxv4nq9kiv1c09hgj525qn120ah91fw2ikq8ldvmx4"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out    (assoc-ref outputs "out"))
+                    (site   (string-append out "/lib/python"
+                                           ,(version-major+minor
+                                             (package-version python))
+                                           "/site-packages")))
+               (wrap-program (string-append out "/bin/vspipe")
+                 `("PYTHONPATH" ":" = (,site)))))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
