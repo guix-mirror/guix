@@ -38,6 +38,7 @@
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mp3)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
   #:use-module (gnu packages web)
@@ -950,6 +951,44 @@ build tree Yggdrasil.")
     (home-page "https://github.com/JuliaBinaryWrappers/Opus_jll.jl")
     (synopsis "Opus library wrappers")
     (description "This package provides a wrapper for the opus audio library.")
+    (license license:expat)))
+
+(define-public julia-pcre-jll
+  (package
+    (name "julia-pcre-jll")
+    (version "8.44.0+0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaBinaryWrappers/PCRE_jll.jl")
+               (commit (string-append "PCRE-v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0fcn8m16vy92v9dj437hzlknq9zl6sw6rckmr5gmh07sf0n3wszs"))))
+    (build-system julia-build-system)
+    (arguments
+     '(#:tests? #f  ; no runtests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'override-binary-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (map
+               (lambda (wrapper)
+                 (substitute* wrapper
+                   (("generate_wrapper_header.*")
+                    (string-append
+                      "generate_wrapper_header(\"PCRE\", \""
+                      (assoc-ref inputs "pcre") "\")\n"))))
+               ;; There's a Julia file for each platform, override them all
+               (find-files "src/wrappers/" "\\.jl$")))))))
+    (inputs
+     `(("pcre" ,pcre)))
+    (propagated-inputs
+     `(("julia-jllwrappers" ,julia-jllwrappers)))
+    (home-page "https://github.com/JuliaBinaryWrappers/PCRE_jll.jl")
+    (synopsis "PCRE library wrappers")
+    (description "This package provides a wrapper for the pcre library.")
     (license license:expat)))
 
 (define-public julia-x264-jll
