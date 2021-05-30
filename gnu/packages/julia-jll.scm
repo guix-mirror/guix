@@ -1520,6 +1520,43 @@ build tree Yggdrasil.")
     (description "This package provides a wrapper for the wayland library.")
     (license license:expat)))
 
+(define-public julia-wayland-protocols-jll
+  (package
+    (name "julia-wayland-protocols-jll")
+    (version "1.18.0+3")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaBinaryWrappers/Wayland_protocols_jll.jl")
+               (commit (string-append "Wayland_protocols-v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1dc9d2wzgybqjlg8l7f4ridkv2d66dg3lb3zihnl0k64psibn4x9"))))
+    (build-system julia-build-system)
+    (arguments
+     '(#:tests? #f  ; no runtests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'override-binary-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (map
+               (lambda (wrapper)
+                 (substitute* wrapper
+                   (("artifact\"Wayland_protocols\"")
+                    (string-append "\"" (assoc-ref inputs "wayland-protocols") "\""))))
+               ;; There's a Julia file for each platform, override them all
+               (find-files "src/wrappers/" "\\.jl$")))))))
+    (inputs
+     `(("wayland-protocols" ,wayland-protocols)))
+    (propagated-inputs
+     `(("julia-jllwrappers" ,julia-jllwrappers)
+       ("julia-wayland-jll" ,julia-wayland-jll)))
+    (home-page "https://github.com/JuliaBinaryWrappers/Wayland_protocols_jll.jl")
+    (synopsis "Wayland-protocols library wrappers")
+    (description "This package provides a wrapper for the wayland-protocols library.")
+    (license license:expat)))
+
 (define-public julia-x264-jll
   (package
     (name "julia-x264-jll")
