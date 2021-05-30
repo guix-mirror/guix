@@ -809,6 +809,44 @@ from util-linux.")
     (description "This package provides a wrapper for libtiff")
     (license license:expat)))
 
+(define-public julia-libuuid-jll
+  (package
+    (name "julia-libuuid-jll")
+    (version "2.36.0+0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaBinaryWrappers/Libuuid_jll.jl")
+               (commit (string-append "Libuuid-v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0iz1qrrpl8sp336m1f884sdgwbdlkp9sm371cwcfq4iriaihbmbs"))))
+    (build-system julia-build-system)
+    (arguments
+     '(#:tests? #f  ; no runtests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'override-binary-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (map
+               (lambda (wrapper)
+                 (substitute* wrapper
+                   (("generate_wrapper_header.*")
+                    (string-append
+                      "generate_wrapper_header(\"Libuuid\", \""
+                      (assoc-ref inputs "util-linux") "\")\n"))))
+               ;; There's a Julia file for each platform, override them all
+               (find-files "src/wrappers/" "\\.jl$")))))))
+    (inputs
+     `(("util-linux" ,util-linux "lib")))
+    (propagated-inputs
+     `(("julia-jllwrappers" ,julia-jllwrappers)))
+    (home-page "https://github.com/JuliaBinaryWrappers/Libmount_jll.jl")
+    (synopsis "Libuuid library wrappers")
+    (description "This package provides a wrapper for the libuuid library from util-linux.")
+    (license license:expat)))
+
 (define-public julia-libvorbis-jll
   (package
     (name "julia-libvorbis-jll")
