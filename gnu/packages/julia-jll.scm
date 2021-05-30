@@ -1891,6 +1891,43 @@ build tree Yggdrasil.")
     (description "This package provides a wrapper for the libxi library.")
     (license license:expat)))
 
+(define-public julia-xorg-libxinerama-jll
+  (package
+    (name "julia-xorg-libxinerama-jll")
+    (version "1.1.4+3")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaBinaryWrappers/Xorg_libXinerama_jll.jl")
+               (commit (string-append "Xorg_libXinerama-v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0jybxbqxd4jc9ka3rk3v5yh8ps2fapdibldr7bymllzw1w2i25rn"))))
+    (build-system julia-build-system)
+    (arguments
+     '(#:tests? #f  ; no runtests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'override-binary-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (map
+               (lambda (wrapper)
+                 (substitute* wrapper
+                   (("artifact\"Xorg_libXinerama\"")
+                    (string-append "\"" (assoc-ref inputs "libxinerama") "\""))))
+               ;; There's a Julia file for each platform, override them all
+               (find-files "src/wrappers/" "\\.jl$")))))))
+    (inputs
+     `(("libxinerama" ,libxinerama)))
+    (propagated-inputs
+     `(("julia-jllwrappers" ,julia-jllwrappers)
+       ("julia-xorg-libxext-jll" ,julia-xorg-libxext-jll)))
+    (home-page "https://github.com/JuliaBinaryWrappers/Xorg_libXinerama_jll.jl")
+    (synopsis "Libxinerama library wrappers")
+    (description "This package provides a wrapper for the libxinerama library.")
+    (license license:expat)))
+
 (define-public julia-xorg-libxrender-jll
   (package
     (name "julia-xorg-libxrender-jll")
