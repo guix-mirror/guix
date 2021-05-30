@@ -707,6 +707,42 @@ build tree Yggdrasil.")
     (description "This package provides a wrapper for the openssl library.")
     (license license:expat)))
 
+(define-public julia-opus-jll
+  (package
+    (name "julia-opus-jll")
+    (version "1.3.1+1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaBinaryWrappers/Opus_jll.jl")
+               (commit (string-append "Opus-v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1zm0rnr3pi83bzza1azlrv8l7l0mjpykc3qz4b5p9zcdzf7aw4vn"))))
+    (build-system julia-build-system)
+    (arguments
+     '(#:tests? #f ; no runtests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'override-binary-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (map
+               (lambda (wrapper)
+                 (substitute* wrapper
+                   (("artifact\"Opus\"")
+                    (string-append "\"" (assoc-ref inputs "opus") "\""))))
+               ;; There's a Julia file for each platform, override them all
+               (find-files "src/wrappers/" "\\.jl$")))))))
+    (inputs
+     `(("opus" ,opus)))
+    (propagated-inputs
+     `(("julia-jllwrappers" ,julia-jllwrappers)))
+    (home-page "https://github.com/JuliaBinaryWrappers/Opus_jll.jl")
+    (synopsis "Opus library wrappers")
+    (description "This package provides a wrapper for the opus audio library.")
+    (license license:expat)))
+
 (define-public julia-x264-jll
   (package
     (name "julia-x264-jll")
