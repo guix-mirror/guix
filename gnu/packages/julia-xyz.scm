@@ -596,6 +596,30 @@ stressing the robustness of differentiation tools.")
       (description "This package provides various examples.")
       (license license:expat))))
 
+(define-public julia-ffmpeg
+  (package
+    (name "julia-ffmpeg")
+    (version "0.4.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaIO/FFMPEG.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1kwqixwhnnxs59xsw2k44xxnkx5fn4y49g58l5snfbszycxq7lls"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-ffmpeg-jll" ,julia-ffmpeg-jll)
+       ("julia-x264-jll" ,julia-x264-jll)))
+    (home-page "https://github.com/JuliaIO/FFMPEG.jl")
+    (synopsis "Julia Package for ffmpeg")
+    (description "This package is made to be included into packages that just
+need the ffmpeg binaries + executables, and don't want the overhead of
+@code{VideoIO.jl}.")
+    (license license:expat)))
+
 (define-public julia-fillarrays
   (package
     (name "julia-fillarrays")
