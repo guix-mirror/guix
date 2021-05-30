@@ -34,6 +34,7 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages julia)
@@ -91,6 +92,52 @@
     (synopsis "Bzip2 binary wrappers")
     (description "This Julia module provides a wrapper for the @code{Bzip2}
 compression program.")
+    (license license:expat)))
+
+(define-public julia-cairo-jll
+  (package
+    (name "julia-cairo-jll")
+    (version "1.16.0+5")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaBinaryWrappers/Cairo_jll.jl")
+               (commit (string-append "Cairo-v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1766k8f63qb4bgyl4g29qrcddwypqx0c4kdg3lji8bsimw3f1bay"))))
+    (build-system julia-build-system)
+    (arguments
+     '(#:tests? #f  ; no runtests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'override-binary-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (map
+               (lambda (wrapper)
+                 (substitute* wrapper
+                   (("artifact\"Cairo\"")
+                    (string-append "\"" (assoc-ref inputs "cairo") "\""))))
+               ;; There's a Julia file for each platform, override them all
+               (find-files "src/wrappers/" "\\.jl$")))))))
+    (inputs
+     `(("cairo" ,cairo)))
+    (propagated-inputs
+     `(("julia-jllwrappers" ,julia-jllwrappers)
+       ("julia-bzip2-jll" ,julia-bzip2-jll)
+       ("julia-fontconfig-jll" ,julia-fontconfig-jll)
+       ("julia-freetype2-jll" ,julia-freetype2-jll)
+       ("julia-glib-jll" ,julia-glib-jll)
+       ("julia-libpng-jll" ,julia-libpng-jll)
+       ("julia-lzo-jll" ,julia-lzo-jll)
+       ("julia-pixman-jll" ,julia-pixman-jll)
+       ("julia-xorg-libxext-jll" ,julia-xorg-libxext-jll)
+       ("julia-xorg-libxrender-jll" ,julia-xorg-libxrender-jll)
+       ("julia-zlib-jll" ,julia-zlib-jll)))
+    (home-page "https://github.com/JuliaBinaryWrappers/Cairo_jll.jl")
+    (synopsis "Cairo library wrappers")
+    (description "This package provides a wrapper for the cairo library.")
     (license license:expat)))
 
 (define-public julia-compilersupportlibraries-jll
