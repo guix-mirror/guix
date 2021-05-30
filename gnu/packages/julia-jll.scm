@@ -1498,6 +1498,46 @@ build tree Yggdrasil.")
     (description "This package provides a wrapper for the libxau library.")
     (license license:expat)))
 
+(define-public julia-xorg-libxcb-jll
+  (package
+    (name "julia-xorg-libxcb-jll")
+    (version "1.13.0+2")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaBinaryWrappers/Xorg_libxcb_jll.jl")
+               (commit (string-append "Xorg_libxcb-v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "109m4r4v6ww31rq0klyqd3rf3j1yiycvld82d514d040w5027ssk"))))
+    (build-system julia-build-system)
+    (arguments
+     '(#:tests? #f  ; no runtests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'override-binary-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (map
+               (lambda (wrapper)
+                 (substitute* wrapper
+                   (("artifact\"Xorg_libxcb\"")
+                    (string-append "\"" (assoc-ref inputs "libxcb") "\""))))
+               ;; There's a Julia file for each platform, override them all
+               (find-files "src/wrappers/" "\\.jl$")))))))
+    (inputs
+     `(("libxcb" ,libxcb)))
+    (propagated-inputs
+     `(("julia-jllwrappers" ,julia-jllwrappers)
+       ("julia-xorg-libxau-jll" ,julia-xorg-libxau-jll)
+       ("julia-xorg-libpthread-stubs-jll" ,julia-xorg-libpthread-stubs-jll)
+       ("julia-xorg-libxdmcp-jll" ,julia-xorg-libxdmcp-jll)
+       ("julia-xslt-jll" ,julia-xslt-jll)))
+    (home-page "https://github.com/JuliaBinaryWrappers/Xorg_libxcb_jll.jl")
+    (synopsis "Libxcb library wrappers")
+    (description "This package provides a wrapper for the libxcb library.")
+    (license license:expat)))
+
 (define-public julia-xorg-libxdmcp-jll
   (package
     (name "julia-xorg-libxdmcp-jll")
