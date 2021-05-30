@@ -993,43 +993,6 @@ external IRs.  It can be used with Julia metaprogramming tools such as
 Cassette.")
     (license license:expat)))
 
-(define-public julia-jpegturbo-jll
-  (package
-    (name "julia-jpegturbo-jll")
-    (version "2.0.1+2")
-    (source
-      (origin
-        (method git-fetch)
-        (uri (git-reference
-               (url "https://github.com/JuliaBinaryWrappers/JpegTurbo_jll.jl")
-               (commit (string-append "JpegTurbo-v" version))))
-        (file-name (git-file-name name version))
-        (sha256
-         (base32
-          "1xp1x0hrj337bgwwffwpyq7xg031j2a38fim29lixqa0a0y80x6y"))))
-    (build-system julia-build-system)
-    (arguments
-     '(#:tests? #f  ; no runtests
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
-           (lambda* (#:key inputs #:allow-other-keys)
-             (map
-               (lambda (wrapper)
-                 (substitute* wrapper
-                   (("artifact\"JpegTurbo\"")
-                    (string-append "\"" (assoc-ref inputs "libjpeg-turbo") "\""))))
-               ;; There's a Julia file for each platform, override them all
-               (find-files "src/wrappers/" "\\.jl$")))))))
-    (inputs
-     `(("libjpeg-turbo" ,libjpeg-turbo)))
-    (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)))
-    (home-page "https://github.com/JuliaBinaryWrappers/JpegTurbo_jll.jl")
-    (synopsis "Libjpeg-turbo library wrappers")
-    (description "This package provides a wrapper for the libjpeg-turbo library.")
-    (license license:expat)))
-
 (define-public julia-json
   (package
     (name "julia-json")
