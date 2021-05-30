@@ -1634,6 +1634,46 @@ build tree Yggdrasil.")
     (description "This package provides a wrapper for the x265 video library.")
     (license license:expat)))
 
+(define-public julia-xkbcommon-jll
+  (package
+    (name "julia-xkbcommon-jll")
+    (version "0.9.1+3")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaBinaryWrappers/xkbcommon_jll.jl")
+               (commit (string-append "xkbcommon-v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1g2gmd3mj1p369kzvrd02ldgr9s712vs9774v1phb59jxlshc0zc"))))
+    (build-system julia-build-system)
+    (arguments
+     '(#:tests? #f  ; no runtests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'override-binary-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (map
+               (lambda (wrapper)
+                 (substitute* wrapper
+                   (("artifact\"xkbcommon\"")
+                    (string-append "\"" (assoc-ref inputs "libxkbcommon") "\""))))
+               ;; There's a Julia file for each platform, override them all
+               (find-files "src/wrappers/" "\\.jl$")))))))
+    (inputs
+     `(("libxkbcommon" ,libxkbcommon)))
+    (propagated-inputs
+     `(("julia-jllwrappers" ,julia-jllwrappers)
+       ("julia-xorg-libxcb-jll" ,julia-xorg-libxcb-jll)
+       ("julia-xorg-xkeyboard-config-jll" ,julia-xorg-xkeyboard-config-jll)
+       ("julia-wayland-jll" ,julia-wayland-jll)
+       ("julia-wayland-protocols-jll" ,julia-wayland-protocols-jll)))
+    (home-page "https://github.com/JuliaBinaryWrappers/xkbcommon_jll.jl")
+    (synopsis "Libxkbcommon library wrappers")
+    (description "This package provides a wrapper for the libxkbcommon library.")
+    (license license:expat)))
+
 (define-public julia-xml2-jll
   (package
     (name "julia-xml2-jll")
