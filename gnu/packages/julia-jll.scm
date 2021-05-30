@@ -712,6 +712,42 @@ build tree Yggdrasil.")
     (description "This package provides a wrapper for the x264 video library.")
     (license license:expat)))
 
+(define-public julia-x265-jll
+  (package
+    (name "julia-x265-jll")
+    (version "3.0.0+1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaBinaryWrappers/x265_jll.jl")
+               (commit (string-append "x265-v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "082jgjlc2zm9rzg8p7l9nd4hlg17ziwp2b8rrcpicpb6fxb7sjh4"))))
+    (build-system julia-build-system)
+    (arguments
+     '(#:tests? #f ; no runtests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'override-binary-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (map
+               (lambda (wrapper)
+                 (substitute* wrapper
+                   (("artifact\"x265\"")
+                    (string-append "\"" (assoc-ref inputs "x265") "\""))))
+               ;; There's a Julia file for each platform, override them all
+               (find-files "src/wrappers/" "\\.jl$")))))))
+    (inputs
+     `(("x265" ,x265)))
+    (propagated-inputs
+     `(("julia-jllwrappers" ,julia-jllwrappers)))
+    (home-page "https://github.com/JuliaBinaryWrappers/x265_jll.jl")
+    (synopsis "x265 library wrappers")
+    (description "This package provides a wrapper for the x265 video library.")
+    (license license:expat)))
+
 (define-public julia-zlib-jll
   (package
     (name "julia-zlib-jll")
