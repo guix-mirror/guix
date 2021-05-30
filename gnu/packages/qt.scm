@@ -1547,6 +1547,7 @@ using the Enchant spell-checking library.")
                     "third_party/modp_b64"
                     "third_party/nasm"
                     "third_party/one_euro_filter"
+                    "third_party/openh264/src/codec/api/svc"
                     "third_party/opus"
                     "third_party/ots"
                     "third_party/pdfium"
@@ -1724,6 +1725,7 @@ using the Enchant spell-checking library.")
        ;; libxml2 configure summary still states "Checking for compatible
        ;; system libxml2... no"
        ("libxml2" ,libxml2)
+       ("openh264" ,openh264)
        ("libxrandr" ,libxrandr)
        ("libxrender" ,libxrender)
        ("libxslt" ,libxslt)
@@ -1747,6 +1749,10 @@ using the Enchant spell-checking library.")
        ("xcb-util" ,xcb-util)))
     (arguments
      (substitute-keyword-arguments (package-arguments qtsvg)
+       ((#:modules modules '())
+        `((guix build gnu-build-system)
+          (guix build utils)
+          (ice-9 textual-ports)))
        ((#:phases phases)
         `(modify-phases ,phases
            (add-before 'configure 'substitute-source
@@ -1754,6 +1760,10 @@ using the Enchant spell-checking library.")
                (let ((out (assoc-ref outputs "out"))
                      (nss (assoc-ref inputs "nss"))
                      (udev (assoc-ref inputs "udev")))
+                 (with-atomic-file-replacement "src/buildtools/config/linux.pri"
+                   (lambda (in out)
+                     (display (get-string-all in) out)
+                     (display "\ngn_args += use_system_openh264=true\n" out)))
                  ;; Qtwebengine is not installed into the same prefix as
                  ;; qtbase.  Some qtbase QTLibraryInfo constants will not
                  ;; work.  Replace with the full path to the qtwebengine
@@ -1789,7 +1799,8 @@ using the Enchant spell-checking library.")
                        "--webengine-printing-and-pdf=no"
                        "--webengine-ffmpeg=system"
                        "--webengine-icu=system"
-                       "--webengine-pepper-plugins=no")))))
+                       "--webengine-pepper-plugins=no"
+                       "-webengine-proprietary-codecs")))))
        ;; Tests are disabled due to "Could not find QtWebEngineProcess error"
        ;; It's possible this can be fixed by setting QTWEBENGINEPROCESS_PATH
        ;; before running tests.
