@@ -2197,6 +2197,43 @@ build tree Yggdrasil.")
     (description "This package provides a wrapper for the xkbcomp library.")
     (license license:expat)))
 
+(define-public julia-xorg-xkeyboard-config-jll
+  (package
+    (name "julia-xorg-xkeyboard-config-jll")
+    (version "2.27.0+3")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaBinaryWrappers/Xorg_xkeyboard_config_jll.jl")
+               (commit (string-append "Xorg_xkeyboard_config-v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1lgynzxd0mn64zbf0njqkd1hz1illqnl3p7hi9abwh5vbdf4pwhw"))))
+    (build-system julia-build-system)
+    (arguments
+     '(#:tests? #f  ; no runtests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'override-binary-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (map
+               (lambda (wrapper)
+                 (substitute* wrapper
+                   (("artifact\"Xorg_xkeyboard_config\"")
+                    (string-append "\"" (assoc-ref inputs "xkeyboard-config") "\""))))
+               ;; There's a Julia file for each platform, override them all
+               (find-files "src/wrappers/" "\\.jl$")))))))
+    (inputs
+     `(("xkeyboard-config" ,xkeyboard-config)))
+    (propagated-inputs
+     `(("julia-jllwrappers" ,julia-jllwrappers)
+       ("julia-xorg-xkbcomp-jll" ,julia-xorg-xkbcomp-jll)))
+    (home-page "https://github.com/JuliaBinaryWrappers/Xorg_xkeyboard_config_jll.jl")
+    (synopsis "Xkeyboard-config library wrappers")
+    (description "This package provides a wrapper for the xkeyboard-config library.")
+    (license license:expat)))
+
 (define-public julia-xorg-xtrans-jll
   (package
     (name "julia-xorg-xtrans-jll")
