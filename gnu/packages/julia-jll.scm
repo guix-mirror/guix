@@ -2048,6 +2048,43 @@ build tree Yggdrasil.")
     (description "This package provides a wrapper for the libxinerama library.")
     (license license:expat)))
 
+(define-public julia-xorg-libxkbfile-jll
+  (package
+    (name "julia-xorg-libxkbfile-jll")
+    (version "1.1.0+3")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaBinaryWrappers/Xorg_libxkbfile_jll.jl")
+               (commit (string-append "Xorg_libxkbfile-v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0zrnrixz34h54n0c06ziaxcajvndydzgxxh5jbvqx1xrij5rw5gy"))))
+    (build-system julia-build-system)
+    (arguments
+     '(#:tests? #f  ; no runtests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'override-binary-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (map
+               (lambda (wrapper)
+                 (substitute* wrapper
+                   (("artifact\"Xorg_libxkbfile\"")
+                    (string-append "\"" (assoc-ref inputs "libxkbfile") "\""))))
+               ;; There's a Julia file for each platform, override them all
+               (find-files "src/wrappers/" "\\.jl$")))))))
+    (inputs
+     `(("libxkbfile" ,libxkbfile)))
+    (propagated-inputs
+     `(("julia-jllwrappers" ,julia-jllwrappers)
+       ("julia-xorg-libx11-jll" ,julia-xorg-libx11-jll)))
+    (home-page "https://github.com/JuliaBinaryWrappers/Xorg_libxkbfile_jll.jl")
+    (synopsis "Libxkbfile library wrappers")
+    (description "This package provides a wrapper for the libxkbfile library.")
+    (license license:expat)))
+
 (define-public julia-xorg-libxrandr-jll
   (package
     (name "julia-xorg-libxrandr-jll")
