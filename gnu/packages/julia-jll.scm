@@ -671,6 +671,42 @@ originating @code{build_tarballs.jl} script can be found on the community
 build tree Yggdrasil.")
       (license license:expat))))
 
+(define-public julia-openssl-jll
+  (package
+    (name "julia-openssl-jll")
+    (version "1.1.1+2")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaBinaryWrappers/OpenSSL_jll.jl")
+               (commit (string-append "OpenSSL-v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0qly9pjhah95jdgvckkj615yfbsavvsygpfq9sqz4716q4zv0d5z"))))
+    (build-system julia-build-system)
+    (arguments
+     '(#:tests? #f ; no runtests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'override-binary-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (map
+               (lambda (wrapper)
+                 (substitute* wrapper
+                   (("artifact\"OpenSSL\"")
+                    (string-append "\"" (assoc-ref inputs "openssl") "\""))))
+               ;; There's a Julia file for each platform, override them all
+               (find-files "src/wrappers/" "\\.jl$")))))))
+    (inputs
+     `(("openssl" ,openssl)))
+    (propagated-inputs
+     `(("julia-jllwrappers" ,julia-jllwrappers)))
+    (home-page "https://github.com/JuliaBinaryWrappers/OpenSSL_jll.jl")
+    (synopsis "Openssl library wrappers")
+    (description "This package provides a wrapper for the openssl library.")
+    (license license:expat)))
+
 (define-public julia-x264-jll
   (package
     (name "julia-x264-jll")
