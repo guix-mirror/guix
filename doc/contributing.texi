@@ -1522,20 +1522,20 @@ doubt, please contact us, we will be happy to help!
 @table @asis
 @item guix
 Guix is written in the Guile programming language, and some strings contain
-special formating that is interpreted by Guile.  These special formating
+special formatting that is interpreted by Guile.  These special formatting
 should be highlighted by Weblate.  They start with @code{~} followed by one
 or more characters.
 
-When printing the string, Guile replaces the special formating symbols with
+When printing the string, Guile replaces the special formatting symbols with
 actual values.  For instance, the string @samp{ambiguous package specification
 `~a'} would be substituted to contain said package specification instead of
-@code{~a}.  To properly translate this string, you must keep the formating
+@code{~a}.  To properly translate this string, you must keep the formatting
 code in your translation, although you can place it where it makes sense in
 your language.  For instance, the French translation says @samp{spécification
 du paquet « ~a » ambiguë} because the adjective needs to be placed in the
 end of the sentence.
 
-If there are multiple formating symbols, make sure to respect the order.
+If there are multiple formatting symbols, make sure to respect the order.
 Guile does not know in which order you intended the string to be read, so it
 will substitute the symbols in the same order as the English sentence.
 
@@ -1543,9 +1543,9 @@ As an example, you cannot translate @samp{package '~a' has been superseded by
 '~a'} by @samp{'~a' superseeds package '~a'}, because the meaning would be
 reversed.  If @var{foo} is superseded by @var{bar}, the translation would read
 @samp{'foo' superseeds package 'bar'}.  To work around this problem, it
-is possible to use more advanced formating to select a given piece of data,
+is possible to use more advanced formatting to select a given piece of data,
 instead of following the default English order.  @xref{Formatted Output,,,
-guile, GNU Guile Reference Manual}, for more information on formating in Guile.
+guile, GNU Guile Reference Manual}, for more information on formatting in Guile.
 
 @item packages
 
@@ -1556,7 +1556,7 @@ and Descriptions}).   Texinfo markup looks like @samp{@@code@{rm -rf@}},
 The characters after ``@@'' form the name of the markup, and the text between
 ``@{'' and ``@}'' is its content.  In general, you should not translate the
 content of markup like @code{@@code}, as it contains literal code that do not
-change with language.  You can translate the content of formating markup such
+change with language.  You can translate the content of formatting markup such
 as @code{@@emph}, @code{@@i}, @code{@@itemize}, @code{@@item}.  However, do
 not translate the name of the markup, or it will not be recognized.  Do
 not translate the word after @code{@@end}, it is the name of the markup that
@@ -1586,10 +1586,10 @@ The manual and the cookbook both use Texinfo.  As for @code{packages}, please
 keep Texinfo markup as is.  There are more possible markup types in the manual
 than in the package descriptions.  In general, do not translate the content
 of @code{@@code}, @code{@@file}, @code{@@var}, @code{@@value}, etc.  You
-should translate the content of formating markup such as @code{@@emph},
+should translate the content of formatting markup such as @code{@@emph},
 @code{@@i}, etc.
 
-The manual contains sections that can be refered to by name by @code{@@ref},
+The manual contains sections that can be referred to by name by @code{@@ref},
 @code{@@xref} and @code{@@pxref}.  We have a mechanism in place so you do
 not have to translate their content.  If you keep the English title, we will
 automatically replace it with your translation of that title.  This ensures
@@ -1669,7 +1669,7 @@ synchronize it with our guix and artworks repositories after checking no issue
 was introduced in the translation.
 
 Developers can download the latest PO files from weblate in the Guix
-repository by runnig the @command{make download-po} target.  It will
+repository by running the @command{make download-po} command.  It will
 automatically download the latest files from weblate, reformat them to a
 canonical form, and check they do not contain issues.  The manual needs to be
 built again to check for additional issues that might crash Texinfo.
