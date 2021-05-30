@@ -1853,6 +1853,44 @@ build tree Yggdrasil.")
     (description "This package provides a wrapper for the libxfixes library.")
     (license license:expat)))
 
+(define-public julia-xorg-libxi-jll
+  (package
+    (name "julia-xorg-libxi-jll")
+    (version "1.7.10+3")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaBinaryWrappers/Xorg_libXi_jll.jl")
+               (commit (string-append "Xorg_libXi-v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1jhrng5sf44880x3pnw1gpb88z21c7nznfyzhs4a5z910ndrynd7"))))
+    (build-system julia-build-system)
+    (arguments
+     '(#:tests? #f  ; no runtests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'override-binary-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (map
+               (lambda (wrapper)
+                 (substitute* wrapper
+                   (("artifact\"Xorg_libXi\"")
+                    (string-append "\"" (assoc-ref inputs "libxi") "\""))))
+               ;; There's a Julia file for each platform, override them all
+               (find-files "src/wrappers/" "\\.jl$")))))))
+    (inputs
+     `(("libxi" ,libxi)))
+    (propagated-inputs
+     `(("julia-jllwrappers" ,julia-jllwrappers)
+       ("julia-xorg-libxext-jll" ,julia-xorg-libxext-jll)
+       ("julia-xorg-libxfixes-jll" ,julia-xorg-libxfixes-jll)))
+    (home-page "https://github.com/JuliaBinaryWrappers/Xorg_libXi_jll.jl")
+    (synopsis "Libxi library wrappers")
+    (description "This package provides a wrapper for the libxi library.")
+    (license license:expat)))
+
 (define-public julia-xorg-libxrender-jll
   (package
     (name "julia-xorg-libxrender-jll")
