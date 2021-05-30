@@ -133,6 +133,44 @@ originating @code{build_tarballs.jl} script can be found on the community
 build tree Yggdrasil.")
     (license license:expat)))
 
+(define-public julia-expat-jll
+  (package
+    (name "julia-expat-jll")
+    (version "2.2.10+0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaBinaryWrappers/Expat_jll.jl")
+               (commit (string-append "Expat-v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0lkhkh0067lns35njpc1bqbx6653r99lrjcbgrihlln9a7k9qj1s"))))
+    (build-system julia-build-system)
+    (arguments
+     '(#:tests? #f  ; no runtests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'override-binary-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (map
+               (lambda (wrapper)
+                 (substitute* wrapper
+                   (("generate_wrapper_header.*")
+                    (string-append
+                      "generate_wrapper_header(\"Expat\", \""
+                      (assoc-ref inputs "expat") "\")\n"))))
+               ;; There's a Julia file for each platform, override them all
+               (find-files "src/wrappers/" "\\.jl$")))))))
+    (inputs
+     `(("expat" ,expat)))
+    (propagated-inputs
+     `(("julia-jllwrappers" ,julia-jllwrappers)))
+    (home-page "https://github.com/JuliaBinaryWrappers/Expat_jll.jl")
+    (synopsis "Expat library wrappers")
+    (description "This package provides a wrapper for the expat library.")
+    (license license:expat)))
+
 (define-public julia-ffmpeg-jll
   (package
     (name "julia-ffmpeg-jll")
