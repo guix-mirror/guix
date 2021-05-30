@@ -222,6 +222,49 @@ build tree Yggdrasil.")
     (description "This package provides a wrapper for ffmpeg.")
     (license license:expat)))
 
+(define-public julia-fontconfig-jll
+  (package
+    (name "julia-fontconfig-jll")
+    (version "2.13.93+0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaBinaryWrappers/Fontconfig_jll.jl")
+               (commit (string-append "Fontconfig-v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1p6mfci77bp31w3xzlwhjccln40g6g2rdpfp38v5xf8sz2aybpw2"))))
+    (build-system julia-build-system)
+    (arguments
+     '(#:tests? #f  ; no runtests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'override-binary-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (map
+               (lambda (wrapper)
+                 (substitute* wrapper
+                   (("generate_wrapper_header.*")
+                    (string-append
+                      "generate_wrapper_header(\"Fontconfig\", \""
+                      (assoc-ref inputs "fontconfig") "\")\n"))))
+               ;; There's a Julia file for each platform, override them all
+               (find-files "src/wrappers/" "\\.jl$")))))))
+    (inputs
+     `(("fontconfig" ,fontconfig)))
+    (propagated-inputs
+     `(("julia-jllwrappers" ,julia-jllwrappers)
+       ("julia-bzip2-jll" ,julia-bzip2-jll)
+       ("julia-expat-jll" ,julia-expat-jll)
+       ("julia-freetype2-jll" ,julia-freetype2-jll)
+       ("julia-libuuid-jll" ,julia-libuuid-jll)
+       ("julia-zlib-jll" ,julia-zlib-jll)))
+    (home-page "https://github.com/JuliaBinaryWrappers/Fontconfig_jll.jl")
+    (synopsis "Fontconfig library wrappers")
+    (description "This package provides a wrapper for the fontconfig library.")
+    (license license:expat)))
+
 (define-public julia-freetype2-jll
   (package
     (name "julia-freetype2-jll")
