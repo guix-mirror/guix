@@ -16450,6 +16450,7 @@ configuration rejecting all incoming connections except those to the ssh port
 :INPUT ACCEPT
 :FORWARD ACCEPT
 :OUTPUT ACCEPT
+-A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 -A INPUT -p tcp --dport 22 -j ACCEPT
 -A INPUT -j REJECT --reject-with icmp-port-unreachable
 COMMIT
@@ -16458,6 +16459,7 @@ COMMIT
 :INPUT ACCEPT
 :FORWARD ACCEPT
 :OUTPUT ACCEPT
+-A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 -A INPUT -p tcp --dport 22 -j ACCEPT
 -A INPUT -j REJECT --reject-with icmp6-port-unreachable
 COMMIT
