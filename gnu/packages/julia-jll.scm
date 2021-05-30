@@ -44,6 +44,7 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml))
 
@@ -1074,6 +1075,44 @@ build tree Yggdrasil.")
     (home-page "https://github.com/JuliaBinaryWrappers/PCRE_jll.jl")
     (synopsis "PCRE library wrappers")
     (description "This package provides a wrapper for the pcre library.")
+    (license license:expat)))
+
+(define-public julia-pixman-jll
+  (package
+    (name "julia-pixman-jll")
+    (version "0.40.1+0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaBinaryWrappers/Pixman_jll.jl")
+               (commit (string-append "Pixman-v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0ahawpgsiccmpa7gyxny7hq058igqvpza7ybqa44vl2nynnry2g7"))))
+    (build-system julia-build-system)
+    (arguments
+     '(#:tests? #f  ; no runtests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'override-binary-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (map
+               (lambda (wrapper)
+                 (substitute* wrapper
+                   (("generate_wrapper_header.*")
+                    (string-append
+                      "generate_wrapper_header(\"Pixman\", \""
+                      (assoc-ref inputs "pixman") "\")\n"))))
+               ;; There's a Julia file for each platform, override them all
+               (find-files "src/wrappers/" "\\.jl$")))))))
+    (inputs
+     `(("pixman" ,pixman)))
+    (propagated-inputs
+     `(("julia-jllwrappers" ,julia-jllwrappers)))
+    (home-page "https://github.com/JuliaBinaryWrappers/Pixman_jll.jl")
+    (synopsis "Pixman library wrappers")
+    (description "This package provides a wrapper for the pixman library.")
     (license license:expat)))
 
 (define-public julia-x264-jll
