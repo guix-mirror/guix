@@ -1013,6 +1013,26 @@ external IRs.  It can be used with Julia metaprogramming tools such as
 Cassette.")
     (license license:expat)))
 
+(define-public julia-iteratorinterfaceextensions
+  (package
+    (name "julia-iteratorinterfaceextensions")
+    (version "1.0.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/queryverse/IteratorInterfaceExtensions.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1slpay1dhja8f9gy6z7b3psgvgcknn963dvfqqakvg1grk9ppa09"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/queryverse/IteratorInterfaceExtensions.jl")
+    (synopsis "Traits for Julia iterators")
+    (description "IteratorInterfaceExtensions defines a small number of
+extensions to the iterator interface.")
+    (license license:expat)))
+
 (define-public julia-json
   (package
     (name "julia-json")
