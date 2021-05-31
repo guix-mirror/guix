@@ -1683,6 +1683,27 @@ extensions.  It is intended to be the base both for @code{TableIO.jl} and for
 the @code{Pluto.jl} tabular data import functionality.")
     (license license:expat)))
 
+(define-public julia-tabletraits
+  (package
+    (name "julia-tabletraits")
+    (version "1.0.1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/queryverse/TableTraits.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "08ssb2630wm6j8f2qa985mn2vfibfm5kjcn4ayl2qkhfcyp8daw4"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-iteratorinterfaceextensions" ,julia-iteratorinterfaceextensions)))
+    (home-page "https://github.com/queryverse/TableTraits.jl")
+    (synopsis "Traits for Julia tables")
+    (description "TableTraits defines a generic interface for tabular data.")
+    (license license:expat)))
+
 (define-public julia-unpack
   (package
     (name "julia-unpack")
