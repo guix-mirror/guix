@@ -1285,6 +1285,28 @@ Julia, with type-driven, overloadable packing/unpacking functionality.")
 @code{NaN} instead of throwing a @code{DomainError}.")
     (license license:expat)))
 
+(define-public julia-optimtestproblems
+  (package
+    (name "julia-optimtestproblems")
+    (version "2.0.2")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaNLSolvers/OptimTestProblems.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "10h47x5ws42pkqjccimaz0yxfvz41w0yazq6inamfk4lg5g2g3d9"))))
+    (build-system julia-build-system)
+    (arguments
+     `(#:julia-package-name "OptimTestProblems"))
+    (home-page "https://github.com/JuliaNLSolvers/OptimTestProblems.jl")
+    (synopsis "Collection of optimization test problems")
+    (description "The purpose of this package is to provide test problems for
+JuliaNLSolvers packages.")
+    (license license:expat)))
+
 (define-public julia-orderedcollections
   (package
     (name "julia-orderedcollections")
