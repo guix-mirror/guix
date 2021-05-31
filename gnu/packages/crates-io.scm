@@ -40794,31 +40794,31 @@ and Jaro-Winkler.")
 
 (define-public rust-structopt-derive-0.4
   (package
-    (name "rust-structopt-derive")
-    (version "0.4.5")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "structopt-derive" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "0c04bbzc5bmr2ns6qy35yz55nn3xvlq4dpwxdynnljb9ikhvi21z"))))
-    (build-system cargo-build-system)
-    (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-heck" ,rust-heck-0.3)
-        ("rust-proc-macro-error" ,rust-proc-macro-error-0.4)
-        ("rust-proc-macro2" ,rust-proc-macro2-1)
-        ("rust-syn" ,rust-syn-1)
-        ("rust-quote" ,rust-quote-1))))
-    (home-page "https://github.com/TeXitoi/structopt")
-    (synopsis "Parse command line argument by defining a struct, derive crate")
-    (description
-     "Parse command line argument by defining a struct, derive crate.")
-    (license (list license:asl2.0 license:expat))))
+   (name "rust-structopt-derive")
+   (version "0.4.14")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (crate-uri "structopt-derive" version))
+     (file-name
+      (string-append name "-" version ".tar.gz"))
+     (sha256
+      (base32
+       "143gjwvz3s86hwp070km83y25n8kqp5f01kb1dr19f4ilkywvaav"))))
+   (build-system cargo-build-system)
+   (arguments
+    `(#:skip-build? #t
+      #:cargo-inputs
+      (("rust-heck" ,rust-heck-0.3)
+       ("rust-proc-macro-error" ,rust-proc-macro-error-1)
+       ("rust-proc-macro2" ,rust-proc-macro2-1)
+       ("rust-syn" ,rust-syn-1)
+       ("rust-quote" ,rust-quote-1))))
+   (home-page "https://github.com/TeXitoi/structopt")
+   (synopsis "Parse command line argument by defining a struct, derive crate")
+   (description
+    "This package provides the derive Rust crate for the structopt crate.")
+   (license license:asl2.0)))
 
 (define-public rust-structopt-derive-0.2
   (package
