@@ -326,6 +326,7 @@ and probably others.")
                                        (assoc-ref inputs "qtwebengine")
                                        "/lib/qt5/libexec/QtWebEngineProcess")))
                (wrap-program bin
+                 #:sh (search-input-file inputs "bin/bash")
                  `("QTWEBENGINEPROCESS_PATH" = (,qt-process-path)))
                #t))))))
     (inputs
