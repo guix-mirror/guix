@@ -3,6 +3,7 @@
 ;;; Copyright © 2014, 2015, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2019, 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -126,6 +127,12 @@ add a dependency of that output on Qt."
            (((_ . dir) ...)
             dir)))
 
+  ;; Do not require bash to be present in the package inputs
+  ;; even when there is nothing to wrap.
+  ;; Also, calculate (sh) only once to prevent some I/O.
+  (define %sh (delay (search-input-file inputs "bin/bash")))
+  (define (sh) (force %sh))
+
   (define handle-output
     (match-lambda
      ((output . directory)
@@ -135,7 +142,7 @@ add a dependency of that output on Qt."
                              (append (list directory)
                                      input-directories))))
           (when (not (null? vars-to-wrap))
-            (for-each (cut apply wrap-program <> vars-to-wrap)
+            (for-each (cut apply wrap-program <> #:sh (sh) vars-to-wrap)
                       bin-list)))))))
 
   (for-each handle-output outputs)
