@@ -13163,6 +13163,32 @@ network models for a given data set, where these models are used to identify
 statistical dependencies in messy, complex data.")
     (license license:gpl2+)))
 
+;; This is a CRAN package, but it depends on r-rsamtools, which is a
+;; Bioconductor package.
+(define-public r-spp
+  (package
+    (name "r-spp")
+    (version "1.16.0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "spp" version))
+              (sha256
+               (base32
+                "08zxxgyp0h6733b08jmml7k4rhfd3mi5dda3jrzid0s184y0z29w"))))
+    (build-system r-build-system)
+    (inputs
+     `(("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-bh" ,r-bh)
+       ("r-catools" ,r-catools)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rsamtools" ,r-rsamtools)))
+    (home-page "https://cran.r-project.org/web/packages/spp/")
+    (synopsis "ChIP-Seq processing pipeline")
+    (description "This package provides tools for analysis of ChIP-seq and
+other functional sequencing data.")
+    (license license:gpl2)))
+
 (define-public r-pathview
   (package
     (name "r-pathview")
