@@ -4711,9 +4711,10 @@ as is the case with audio plugins.")
                (chmod (string-append out "/share/carla/carla") #o555)
                #t)))
          (add-after 'install 'wrap-executables
-           (lambda* (#:key outputs #:allow-other-keys)
+           (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (wrap-script (string-append out "/bin/carla")
+                            #:guile (search-input-file inputs "bin/guile")
                             `("GUIX_PYTHONPATH" ":" prefix (,(getenv "GUIX_PYTHONPATH"))))
                #t))))))
     (inputs
