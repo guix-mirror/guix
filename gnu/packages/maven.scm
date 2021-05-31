@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2018-2021 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
@@ -1541,7 +1541,9 @@ process."))))
             (add-before 'build 'modify-metainf
               (lambda _
                 (substitute* "build.xml"
-                  (("message=\"\"") "message=\"Implementation-Version: 3.5.4\n\""))
+                  (("message=\"\"")
+                   (string-append "message=\"Implementation-Version: "
+                                  (package-version maven) "\n\"")))
                 #t))
             (add-before 'build 'add-maven-files
               (lambda _
@@ -1590,7 +1592,28 @@ artifactId=maven-core" ,(package-version maven-core-bootstrap))))
                                        default-bindings-xml
                                        artifact-handlers-xml)))))))
                 #t))
-            (add-after 'generate-metadata 'rebuild
+            (add-after 'generate-metadata 'fix-plugin-versions
+              (lambda _
+                ;; This file controls the default plugins used by Maven.  Ensure
+                ;; we use the versions we have packaged by default
+                (substitute* '("build/classes/META-INF/plexus/default-bindings.xml"
+                               "build/classes/META-INF/plexus/components.xml")
+                  (("maven-install-plugin:[0-9.]+")
+                   (string-append "maven-install-plugin:"
+                                  ,(package-version maven-install-plugin)))
+                  (("maven-resources-plugin:[0-9.]+")
+                   (string-append "maven-resources-plugin:"
+                                  ,(package-version maven-resources-plugin)))
+                  (("maven-compiler-plugin:[0-9.]+")
+                   (string-append "maven-compiler-plugin:"
+                                  ,(package-version maven-compiler-plugin)))
+                  (("maven-surefire-plugin:[0-9.]+")
+                   (string-append "maven-surefire-plugin:"
+                                  ,(package-version maven-surefire-plugin)))
+                  (("maven-jar-plugin:[0-9.]+")
+                   (string-append "maven-jar-plugin:"
+                                  ,(package-version maven-jar-plugin))))))
+            (add-after 'fix-plugin-versions 'rebuild
               (lambda _
                 (invoke "ant" "jar")
                 #t))))))
