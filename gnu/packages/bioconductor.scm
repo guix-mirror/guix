@@ -1176,26 +1176,6 @@ GenomicRanges Bioconductor package.")
 genomes and gene ID formats, largely based on the UCSC table browser.")
     (license license:lgpl2.0+)))
 
-(define-public r-geneoverlap
-  (package
-    (name "r-geneoverlap")
-    (version "1.26.0")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "GeneOverlap" version))
-              (sha256
-               (base32
-                "0bvh00n4fx0h1m83bypib3jvln1ihcv77ywrrn9xm20y73gymhkh"))))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-rcolorbrewer" ,r-rcolorbrewer)
-       ("r-gplots" ,r-gplots)))
-    (home-page "https://www.bioconductor.org/packages/GeneOverlap/")
-    (synopsis "Test and visualize gene overlaps")
-    (description "This package can be used to test two sets of gene lists
-and visualize the results.")
-    (license license:gpl3)))
-
 (define-public r-genomationdata
   (package
     (name "r-genomationdata")
@@ -2884,6 +2864,26 @@ analysis using other methods.")
      "This package provides basic functions for filtering genes from
 high-throughput sequencing experiments.")
     (license license:artistic2.0)))
+
+(define-public r-geneoverlap
+  (package
+    (name "r-geneoverlap")
+    (version "1.26.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "GeneOverlap" version))
+              (sha256
+               (base32
+                "0bvh00n4fx0h1m83bypib3jvln1ihcv77ywrrn9xm20y73gymhkh"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-gplots" ,r-gplots)))
+    (home-page "https://www.bioconductor.org/packages/GeneOverlap/")
+    (synopsis "Test and visualize gene overlaps")
+    (description "This package can be used to test two sets of gene lists
+and visualize the results.")
+    (license license:gpl3)))
 
 (define-public r-genomation
   (package
