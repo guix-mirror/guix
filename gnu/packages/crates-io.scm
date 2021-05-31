@@ -30515,6 +30515,29 @@ macro use case.")
 @code{proc_macro_derive} pretend to be @code{proc_macro}.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-progressing-3
+  (package
+    (name "rust-progressing")
+    (version "3.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "progressing" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "06sb1cxpkc8lx56s76c95cfljs0513nsnn35wd6w79sblwcxpdwp"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("log" ,rust-log-0.4))))
+    (home-page "https://github.com/dominicparga/progressing")
+    (synopsis "Counting progress-bar for Rust")
+    (description
+     "This package provides a set of text-based, counting
+progress-bars for Rust.")
+    (license license:asl2.0)))
+
 (define-public rust-progrs-0.1
   (package
     (name "rust-progrs")
