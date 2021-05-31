@@ -60,47 +60,22 @@
   (invoke "mvn" "-v")
   #t)
 
-(define (add-local-package local-packages group artifact version)
-  (define (alist-set lst key val)
-    (match lst
-      ('() (list (cons key val)))
-      (((k . v) lst ...)
-       (if (equal? k key)
-         (cons (cons key val) lst)
-         (cons (cons k v) (alist-set lst key val))))))
-  (alist-set local-packages group
-    (alist-set (or (assoc-ref local-packages group) '()) artifact
-      version)))
-
 (define (fix-pom pom-file inputs local-packages excludes)
   (chmod pom-file #o644)
   (format #t "fixing ~a~%" pom-file)
   (fix-pom-dependencies pom-file (map cdr inputs)
                         #:with-plugins? #t #:with-build-dependencies? #t
                         #:local-packages local-packages
-                        #:excludes excludes)
-  (let* ((pom (get-pom pom-file))
-         (java-inputs (map cdr inputs))
-         (artifact (pom-artifactid pom))
-         (group (pom-groupid pom))
-         (version (pom-version pom)))
-    (let loop ((modules (pom-ref pom "modules"))
-               (local-packages
-                 (add-local-package local-packages group artifact version)))
-      (pk 'local-packages local-packages)
-      (match modules
-        (#f local-packages)
-        ('() local-packages)
-        (((? string? _) modules ...)
-         (loop modules local-packages))
-        (((_ module) modules ...)
-         (loop
-           modules
-           (fix-pom (string-append (dirname pom-file) "/" module "/pom.xml")
-                    inputs local-packages excludes)))))))
+                        #:excludes excludes))
 
 (define* (fix-pom-files #:key inputs local-packages exclude #:allow-other-keys)
-  (fix-pom "pom.xml" inputs local-packages exclude)
+  (let ((local-packages (pom-local-packages "pom.xml" #:local-packages local-packages)))
+    (format (current-error-port) "Fix pom files with local packages: ~a~%" local-packages)
+    (for-each
+      (lambda (pom)
+        (when (file-exists? pom)
+          (fix-pom pom inputs local-packages exclude)))
+      (pom-and-submodules "pom.xml")))
   #t)
 
 (define* (build #:key outputs #:allow-other-keys)

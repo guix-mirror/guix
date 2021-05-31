@@ -21,7 +21,8 @@
   #:use-module (system foreign)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
-  #:export (get-pom
+  #:export (add-local-package
+            get-pom
             pom-ref
             pom-description
             pom-name
@@ -30,7 +31,23 @@
             pom-groupid
             pom-dependencies
             group->dir
+            pom-and-submodules
+            pom-local-packages
             fix-pom-dependencies))
+
+(define (add-local-package local-packages group artifact version)
+  "Takes @var{local-packages}, a list of local packages, and adds a new one
+for @var{group}:@var{artifact} at @var{version}."
+  (define (alist-set lst key val)
+    (match lst
+      ('() (list (cons key val)))
+      (((k . v) lst ...)
+       (if (equal? k key)
+         (cons (cons key val) lst)
+         (cons (cons k v) (alist-set lst key val))))))
+  (alist-set local-packages group
+    (alist-set (or (assoc-ref local-packages group) '()) artifact
+      version)))
 
 (define (get-pom file)
   "Return the content of a @file{.pom} file."
@@ -233,6 +250,40 @@ to re-declare the namespaces in the top-level element."
                  (xmlns:schemaLocation "http://maven.apache.org/POM/4.0.0
                    http://maven.apache.org/xsd/maven-4.0.0.xsd"))
        ,(map fix-xml sxml)))))
+
+(define (pom-and-submodules pom-file)
+  "Given @var{pom-file}, the file name of a pom, return the list of pom file
+names that correspond to itself and its submodules, recursively."
+  (define (get-modules modules)
+    (match modules
+      (#f '())
+      ('() '())
+      (((? string? _) rest ...) (get-modules rest))
+      ((('http://maven.apache.org/POM/4.0.0:module mod) rest ...)
+       (let ((pom (string-append (dirname pom-file) "/" mod "/pom.xml")))
+         (if (file-exists? pom)
+             (cons pom (get-modules rest))
+             (get-modules rest))))))
+
+  (let* ((pom (get-pom pom-file))
+         (modules (get-modules (pom-ref pom "modules"))))
+    (cons pom-file
+          (apply append (map pom-and-submodules modules)))))
+
+(define* (pom-local-packages pom-file #:key (local-packages '()))
+  "Given @var{pom-file}, a pom file name, return a list of local packages that
+this repository contains."
+  (let loop ((modules (pom-and-submodules pom-file))
+             (local-packages local-packages))
+    (match modules
+      (() local-packages)
+      ((module modules ...)
+       (let* ((pom (get-pom module))
+              (version (pom-version pom))
+              (artifactid (pom-artifactid pom))
+              (groupid (pom-groupid pom)))
+         (loop modules
+               (add-local-package local-packages groupid artifactid version)))))))
 
 (define (group->dir group)
   "Convert a group ID to a directory path."
