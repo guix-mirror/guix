@@ -2169,6 +2169,32 @@ product preserves all dimensions}, and @acronym{boxdot, contracts neighboring
 dimensions}.")
     (license license:expat)))
 
+(define-public julia-typedtables
+  (package
+    (name "julia-typedtables")
+    (version "1.2.4")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaData/TypedTables.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "06k5h7ybsh29b6kiy0p62rp9b2q3xi9jk8p9wf0kq907p5kvfnfy"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-adapt" ,julia-adapt)
+       ("julia-splitapplycombine" ,julia-splitapplycombine)
+       ("julia-tables" ,julia-tables)))
+    (home-page "https://github.com/JuliaData/TypedTables.jl")
+    (synopsis "Column-based storage for data analysis in Julia")
+    (description "@code{TypedTables.jl} provides two column-based storage
+containers: @code{Table} and @code{FlexTable}, both of which represent an array
+of @code{NamedTuples}.  This package is designed to be lightweight, easy-to-use
+and fast, and presents a very minimal new interface to learn.")
+    (license license:expat)))
+
 (define-public julia-unpack
   (package
     (name "julia-unpack")
