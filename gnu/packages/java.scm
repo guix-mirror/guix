@@ -5869,16 +5869,16 @@ available in the Java programming language or Commons Lang.")
 (define-public java-jmh
   (package
     (name "java-jmh")
-    (version "1.17.5")
+    (version "1.32")
     (source (origin
-              (method hg-fetch)
-              (uri (hg-reference
-                    (url "http://hg.openjdk.java.net/code-tools/jmh/")
-                    (changeset version)))
-              (file-name (string-append name "-" version "-checkout"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/openjdk/jmh")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1fxyxhg9famwcg1prc4cgwb5wzyxqavn3cjm5vz8605xz7x5k084"))))
+                "0i7fa7l3gdqkkgz5ddayp6m46dgbj9rqlz35xffrcbyiz3gpljy0"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "jmh-core.jar"
