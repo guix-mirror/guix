@@ -5447,9 +5447,11 @@ predicts the locations of structural units in the sequences.")
          (add-after 'install 'wrap-programs
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((path (getenv "PATH"))
-                   (out (assoc-ref outputs "out")))
+                   (out (assoc-ref outputs "out"))
+                   (guile (search-input-file inputs "bin/guile")))
                (for-each (lambda (script)
-                           (wrap-script script `("PATH" ":" prefix (,path))))
+                           (wrap-script script #:guile guile
+                                        `("PATH" ":" prefix (,path))))
                          (cons (string-append out "/bin/proteinortho")
                                (find-files out "\\.(pl|py)$"))))
              #t)))))
