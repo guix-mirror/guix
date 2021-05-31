@@ -11,6 +11,7 @@
 ;;; Copyright © 2020 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
+;;; Copyright © 2021 Roel Janssen <roel@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -438,6 +439,27 @@ doing practical, real world data analysis in Python.")
                       (("if 'NULL byte' in msg:")
                        "if 'NULL byte' in msg or 'line contains NUL' in msg:"))
                     #t)))))))
+
+(define-public python-pyflow
+  (package
+    (name "python-pyflow")
+    (version "1.1.20")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/Illumina/pyflow/releases/download/v"
+                    version "/pyflow-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1bvfvviw58cndyn862qnv9nj3d9cd3a0dm4vc4sd9vwq8a6z1riv"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)) ; There is no test suite.
+    (home-page "https://illumina.github.io/pyflow/")
+    (synopsis "Tool to manage tasks in a task dependency graph")
+    (description "This package is a Python module to manage tasks in the
+context of a task dependency graph.  It has some similarities to make.")
+    (license license:bsd-2)))
 
 (define-public python-bottleneck
   (package
