@@ -1639,6 +1639,39 @@ plotting components.")
 purposes of compression when there are few unique elements.")
     (license license:expat)))
 
+(define-public julia-prettytables
+  (package
+    (name "julia-prettytables")
+    (version "1.0.1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/ronisbr/PrettyTables.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1d1sd87kkwbar3l608h0adzws42cwdrmp1idxx7an6mfqcsdrijw"))))
+    (build-system julia-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-color-tests
+           (lambda _
+             (substitute* "test/text_backend.jl"
+               ((".*colors\\.jl.*") ""))
+             #t)))))
+    (propagated-inputs
+     `(("julia-crayons" ,julia-crayons)
+       ("julia-formatting" ,julia-formatting)
+       ("julia-reexport" ,julia-reexport)
+       ("julia-tables" ,julia-tables)))
+    (home-page "https://github.com/ronisbr/PrettyTables.jl")
+    (synopsis "Print data in formatted tables")
+    (description "This package has the purpose to print data in matrices in a
+human-readable format.")
+    (license license:expat)))
+
 (define-public julia-quadmath
   (package
     (name "julia-quadmath")
