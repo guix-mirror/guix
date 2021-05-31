@@ -726,6 +726,7 @@ WireGuard was added to Linux 5.6.")
                    (coreutils (string-append (assoc-ref inputs "coreutils")
                                              "/bin")))
                (wrap-program (string-append out "/bin/wg-quick")
+                 #:sh (search-input-file inputs "bin/bash")
                  `("PATH" ":" prefix ,(append inputs-sbin
                                               (list coreutils))))
                #t))))))
