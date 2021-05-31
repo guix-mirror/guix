@@ -8080,14 +8080,14 @@ secondary structure and comparative analysis in R.")
         (revision "1"))
     (package
       (name "r-chipkernels")
-      (version (string-append "1.1-" revision "." (string-take commit 9)))
+      (version (git-version "1.1" revision commit))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
                (url "https://github.com/ManuSetty/ChIPKernels")
                (commit commit)))
-         (file-name (string-append name "-" version))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "14bj5qhjm1hsm9ay561nfbqi9wxsa7y487df2idsaaf6z10nw4v0"))))
