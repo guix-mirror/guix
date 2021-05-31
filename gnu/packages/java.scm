@@ -3,7 +3,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2019, 2021 Carlo Zancanaro <carlo@zancanaro.id.au>
-;;; Copyright © 2017-2020 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2017-2021 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2016, 2017, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017, 2019, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -5781,7 +5781,13 @@ The jMock library
     (build-system ant-build-system)
     (arguments
      `(#:tests? #f ; there are no tests
-       #:jar-name "jopt-simple.jar"))
+       #:jar-name "jopt-simple.jar"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'create-pom
+           (generate-pom.xml "pom.xml" "net.sf.jopt-simple" "jopt-simple" ,version))
+         (replace 'install
+           (install-from-pom "pom.xml")))))
     (home-page "https://pholser.github.io/jopt-simple/")
     (synopsis "Java library for parsing command line options")
     (description "JOpt Simple is a Java library for parsing command line
@@ -5792,6 +5798,28 @@ GNU @code{getopt_long}.  It also aims to make option parser configuration and
 retrieval of options and their arguments simple and expressive, without being
 overly clever.")
     (license license:expat)))
+
+;; Required by jmh
+(define-public java-jopt-simple-4
+  (package
+    (inherit java-jopt-simple)
+    (version "4.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://repo1.maven.org/maven2/"
+                                  "net/sf/jopt-simple/jopt-simple/"
+                                  version "/jopt-simple-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "0ny82zczxkn201ld0b7rps0ifzjhfs8m1ncdmy1f50145ciszkpd"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments java-jopt-simple)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'create-pom
+             (generate-pom.xml "pom.xml" "net.sf.jopt-simple" "jopt-simple"
+                               ,version))))))))
 
 (define-public java-commons-math3
   (package
