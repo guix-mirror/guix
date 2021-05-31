@@ -828,6 +828,26 @@ scaled by a constant factor.  Consequently, they have a fixed number of
 digits (bits) after the decimal (radix) point.")
     (license license:expat)))
 
+(define-public julia-formatting
+  (package
+    (name "julia-formatting")
+    (version "0.4.2")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaIO/Formatting.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0ma3q9my51rr38bb5712xkc4h3rq0wsfjb4ac6mdh9ywn8rqvrmh"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/JuliaIO/Formatting.jl")
+    (synopsis "Julia package to provide Python-like formatting support")
+    (description "This package offers Python-style general formatting and
+c-style numerical formatting.")
+    (license license:expat)))
+
 (define-public julia-forwarddiff
   (package
     (name "julia-forwarddiff")
