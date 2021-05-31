@@ -125,7 +125,7 @@ the phase fails."
                                                              version ".jar"))))
            ;; Otherwise, we try to find any jar file.
            (jars (if (null? jars)
-                     (find-files "." ".*.jar")
+                     (find-files "." "\\.jar$")
                      jars))
            (jar-name (string-append repository artifact "-" version ".jar"))
            (pom-name (string-append repository artifact "-" version ".pom")))
