@@ -1164,6 +1164,28 @@ expressions involving differing types of units that are then evaluated,
 resolving them into absolute units.")
     (license license:expat)))
 
+(define-public julia-missings
+  (package
+    (name "julia-missings")
+    (version "1.0.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaData/Missings.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "131ma44yvswvj85jdjhm37frzfz46cc60lwj65a9jcmgc77dshsm"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-dataapi" ,julia-dataapi)))
+    (home-page "https://github.com/JuliaData/Missings.jl")
+    (synopsis "Additional missing value support for Julia")
+    (description "This package provides additional functionality for working
+with @code{missing} values in Julia.")
+    (license license:expat)))
+
 (define-public julia-msgpack
   (package
     (name "julia-msgpack")
