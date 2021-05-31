@@ -291,7 +291,8 @@ this repository contains."
 
 (define* (fix-pom-dependencies pom-file inputs
                                #:key with-plugins? with-build-dependencies?
-                                     (excludes '()) (local-packages '()))
+                                     with-modules? (excludes '())
+                                     (local-packages '()))
   "Open @var{pom-file}, and override its content, rewritting its dependencies
 to set their version to the latest version available in the @var{inputs}.
 
@@ -339,7 +340,23 @@ Returns nothing, but overrides the @var{pom-file} as a side-effect."
               `((http://maven.apache.org/POM/4.0.0:build ,(fix-build build))
                 ,@(fix-pom rest))
               (cons tag (fix-pom rest))))
+         (('http://maven.apache.org/POM/4.0.0:modules modules ...)
+          (if with-modules?
+              `((http://maven.apache.org/POM/4.0.0:modules ,(fix-modules modules))
+                ,@(fix-pom rest))
+              (cons tag (fix-pom rest))))
          (tag (cons tag (fix-pom rest)))))))
+
+  (define fix-modules
+    (match-lambda
+      ('() '())
+      ((tag rest ...)
+       (match tag
+        (('http://maven.apache.org/POM/4.0.0:module module)
+         (if (file-exists? (string-append (dirname pom-file) "/" module "/pom.xml"))
+             `((http://maven.apache.org/POM/4.0.0:module ,module) ,@(fix-modules rest))
+             (fix-modules rest)))
+        (tag (cons tag (fix-modules rest)))))))
 
   (define fix-dep-management
     (match-lambda

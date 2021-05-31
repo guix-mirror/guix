@@ -65,6 +65,7 @@
   (format #t "fixing ~a~%" pom-file)
   (fix-pom-dependencies pom-file (map cdr inputs)
                         #:with-plugins? #t #:with-build-dependencies? #t
+                        #:with-modules? #t
                         #:local-packages local-packages
                         #:excludes excludes))
 
