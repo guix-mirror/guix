@@ -7,6 +7,7 @@
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1234,7 +1235,7 @@ known as `nuke-refs' in Nixpkgs."
          (and (string-prefix? "." base)
               (string-suffix? "-real" base)))))
 
-(define* (wrap-program prog #:rest vars)
+(define* (wrap-program prog #:key (sh (which "bash")) #:rest vars)
   "Make a wrapper for PROG.  VARS should look like this:
 
   '(VARIABLE DELIMITER POSITION LIST-OF-DIRECTORIES)
@@ -1261,7 +1262,12 @@ programs that expect particular shared libraries to be in $LD_LIBRARY_PATH, or
 modules in $GUILE_LOAD_PATH, etc.
 
 If PROG has previously been wrapped by 'wrap-program', the wrapper is extended
-with definitions for VARS."
+with definitions for VARS. If it is not, SH will be used as interpreter."
+  (define vars/filtered
+    (match vars
+      ((#:sh _ . vars) vars)
+      (vars vars)))
+
   (define wrapped-file
     (string-append (dirname prog) "/." (basename prog) "-real"))
 
@@ -1315,7 +1321,7 @@ with definitions for VARS."
         (for-each (lambda (var)
                     (display (export-variable var) port)
                     (newline port))
-                  vars)
+                  vars/filtered)
         (display last port)
         (close-port port))
 
@@ -1327,8 +1333,8 @@ with definitions for VARS."
           (lambda (port)
             (format port
                     "#!~a~%~a~%exec -a \"$0\" \"~a\" \"$@\"~%"
-                    (which "bash")
-                    (string-join (map export-variable vars) "\n")
+                    sh
+                    (string-join (map export-variable vars/filtered) "\n")
                     (canonicalize-path wrapped-file))))
 
         (chmod prog-tmp #o755)
