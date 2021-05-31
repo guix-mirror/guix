@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2015, 2018, 2021 Mark H Weaver <mhw@netris.org>
@@ -80,6 +80,10 @@
             search-path-as-string->list
             list->search-path-as-string
             which
+            search-input-file
+            search-error?
+            search-error-path
+            search-error-file
 
             every*
             alist-cons-before
@@ -613,6 +617,21 @@ denoting file names to look for under the directories designated by FILES:
 PROGRAM could not be found."
   (search-path (search-path-as-string->list (getenv "PATH"))
                program))
+
+(define-condition-type &search-error &error
+  search-error?
+  (path         search-error-path)
+  (file         search-error-file))
+
+(define (search-input-file inputs file)
+  "Find a file named FILE among the INPUTS and return its absolute file name.
+
+FILE must be a string like \"bin/sh\". If FILE is not found, an exception is
+raised."
+  (match inputs
+    (((_ . directories) ...)
+     (or (search-path directories file)
+         (raise (condition (&search-error (path directories) (file file))))))))
 
 
 ;;;

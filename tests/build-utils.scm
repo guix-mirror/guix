@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2015, 2016, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -262,5 +263,29 @@ print('hello world')"))
        (with-input-from-file file
          (lambda _
            (get-string-all (current-input-port))))))))
+
+(test-equal "search-input-file: exception if not found"
+  `((path)
+    (file . "does-not-exist"))
+  (guard (e ((search-error? e)
+             `((path . ,(search-error-path e))
+               (file . ,(search-error-file e)))))
+    (search-input-file '() "does-not-exist")))
+
+(test-equal "search-input-file: can find if existent"
+  (which "guile")
+  (search-input-file
+    `(("guile/bin" . ,(dirname (which "guile"))))
+    "guile"))
+
+(test-equal "search-input-file: can search in multiple directories"
+  (which "guile")
+  (call-with-temporary-directory
+    (lambda (directory)
+      (search-input-file
+        `(("irrelevant" . ,directory)
+          ("guile/bin" . ,(dirname (which "guile"))))
+        "guile"))))
+
 
 (test-end)

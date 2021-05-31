@@ -8661,6 +8661,26 @@ Return the complete file name for @var{program} as found in
 @code{$PATH}, or @code{#f} if @var{program} could not be found.
 @end deffn
 
+@deffn {Scheme Procedure} search-input-file @var{inputs} @var{name}
+Return the complete file name for @var{name} as found in @var{inputs}.
+If @var{name} could not be found, an exception is raised instead.
+Here, @var{inputs} is an association list like @var{inputs} and
+@var{native-inputs} as available to build phases.
+@end deffn
+
+Here is a (simplified) example of how @code{search-input-file} is used
+in a build phase of the @code{wireguard-tools} package:
+
+@lisp
+(add-after 'install 'wrap-wg-quick
+  (lambda* (#:key inputs outputs #:allow-other-keys)
+    (let ((coreutils (string-append (assoc-ref inputs "coreutils")
+                                    "/bin")))
+      (wrap-program (search-input-file outputs "bin/wg-quick")
+        #:sh (search-input-file inputs "bin/bash")
+        `("PATH" ":" prefix ,(list coreutils))))))
+@end lisp
+
 @subsection Build Phases
 
 @cindex build phases
