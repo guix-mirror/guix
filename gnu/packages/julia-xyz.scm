@@ -697,6 +697,27 @@ stressing the robustness of differentiation tools.")
       (description "This package provides various examples.")
       (license license:expat))))
 
+(define-public julia-exprtools
+  (package
+    (name "julia-exprtools")
+    (version "0.1.3")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/invenia/ExprTools.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1lwxi9fx9farf1jdv42gv43xs3f3i3js2xnvr5gf6d0xfx0g6b6a"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/invenia/ExprTools.jl")
+    (synopsis "Light-weight expression manipulation tools")
+    (description "@code{ExprTools} provides tooling for working with Julia
+expressions during metaprogramming.  This package aims to provide light-weight
+performant tooling without requiring additional package dependencies.")
+    (license license:expat)))
+
 (define-public julia-ffmpeg
   (package
     (name "julia-ffmpeg")
