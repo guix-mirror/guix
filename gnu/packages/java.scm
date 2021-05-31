@@ -44,6 +44,7 @@
   #:use-module (guix utils)
   #:use-module (guix build-system ant)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system maven)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages attr)
@@ -5879,26 +5880,27 @@ available in the Java programming language or Commons Lang.")
               (sha256
                (base32
                 "0i7fa7l3gdqkkgz5ddayp6m46dgbj9rqlz35xffrcbyiz3gpljy0"))))
-    (build-system ant-build-system)
+    (build-system maven-build-system)
     (arguments
-     `(#:jar-name "jmh-core.jar"
-       #:source-dir "jmh-core/src/main"
-       #:test-dir "jmh-core/src/test"
+     `(#:exclude
+       (("org.apache.maven.plugins" .
+         ("maven-source-plugin" "maven-archetype-plugin" "maven-shade-plugin"
+          "maven-site-plugin" "maven-javadoc-plugin" "maven-eclipse-plugin"))
+        ("com.mycila.maven-license-plugin" . ("maven-license-plugin"))
+        ("org.apache.maven.wagon" . ("wagon-ssh")))
+       #:maven-plugins
+       (("maven-enforcer-plugin" ,maven-enforcer-plugin)
+        ,@(default-maven-plugins))
        #:phases
        (modify-phases %standard-phases
-         ;; This seems to be a bug in the JDK.  It may not be necessary in
-         ;; future versions of the JDK.
-         (add-after 'unpack 'fix-bug
+         (add-after 'unpack 'remove-unnecessary
            (lambda _
-             (with-directory-excursion
-                 "jmh-core/src/main/java/org/openjdk/jmh/runner/options"
-               (substitute* '("IntegerValueConverter.java"
-                              "ThreadsValueConverter.java")
-                 (("public Class<Integer> valueType")
-                  "public Class<? extends Integer> valueType")))
-             #t)))))
-    (inputs
-     `(("java-jopt-simple" ,java-jopt-simple)
+             ;; requires org.apache.maven.archetype:archetype-packaging.
+             ;; Its subprojects also require groovy, kotlin and scala,
+             ;; respectively.
+             (delete-file-recursively "jmh-archetypes"))))))
+    (propagated-inputs
+     `(("java-jopt-simple" ,java-jopt-simple-4)
        ("java-commons-math3" ,java-commons-math3)))
     (native-inputs
      `(("java-junit" ,java-junit)
