@@ -5855,7 +5855,7 @@ overly clever.")
              #t))
          ;; There is no install target.
          (replace 'install
-           (install-jars "target")))))
+           (install-from-pom "pom.xml")))))
     (native-inputs
      `(("java-junit" ,java-junit)
        ("java-hamcrest-core" ,java-hamcrest-core)))
