@@ -440,6 +440,7 @@ traversing network address translators (@dfn{NAT}s) and firewalls.")
              (let ((entrypoint (string-append (assoc-ref outputs "out")
                                               "/bin/.protonvpn-real")))
                (wrap-program entrypoint
+                            #:sh (search-input-file inputs "bin/bash")
                             `("PATH" ":" prefix
                               ,(map (lambda (name)
                                       (let ((input (assoc-ref inputs name)))
