@@ -487,6 +487,27 @@ including, @code{CircularBuffer}, @code{Queue}, @code{Stack},
 @code{Accumulators}, @code{LinkedLists}, @code{SortedDicts} and many others.")
     (license license:expat)))
 
+(define-public julia-datavalueinterfaces
+  (package
+    (name "julia-datavalueinterfaces")
+    (version "1.0.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/queryverse/DataValueInterfaces.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0g2wj6q7jj956nx6g7dk8x7w1c4l2xcmnr1kq5x8s8fild9kslg8"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/queryverse/DataValueInterfaces.jl")
+    (synopsis "Interface for DataValues.jl")
+    (description "This package allows a few \"forward\" definitions for the
+@code{DataValues.jl} package that other packages can utilize for integration
+without having to take direct dependencies.")
+    (license license:expat)))
+
 (define-public julia-dictionaries
   (package
     (name "julia-dictionaries")
