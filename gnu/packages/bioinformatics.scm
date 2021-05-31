@@ -13583,16 +13583,18 @@ choosing which reads pass the filter.")
                            (find-files "scripts" ".*"))
                  #t)))
            (add-after 'install 'wrap-programs
-             (lambda* (#:key outputs #:allow-other-keys)
+             (lambda* (#:key inputs outputs #:allow-other-keys)
                (let ((pythonpath (getenv "GUIX_PYTHONPATH"))
                      (perl5lib (getenv "PERL5LIB"))
                      (scripts (string-append (assoc-ref outputs "out")
-                                             "/share/nanopolish/scripts")))
+                                             "/share/nanopolish/scripts"))
+                     (guile (search-input-file inputs "bin/guile")))
                  (for-each (lambda (file)
                              (wrap-program file `("GUIX_PYTHONPATH" ":" prefix (,pythonpath))))
                            (find-files scripts "\\.py"))
                  (for-each (lambda (file)
-                             (wrap-script file `("PERL5LIB" ":" prefix (,perl5lib))))
+                             (wrap-script file #:guile guile
+                                          `("PERL5LIB" ":" prefix (,perl5lib))))
                            (find-files scripts "\\.pl"))))))))
       (inputs
        `(("guile" ,guile-3.0) ; for wrappers
