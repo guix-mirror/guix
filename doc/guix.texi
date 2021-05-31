@@ -33845,6 +33845,13 @@ every time you modify your @command{config.scm} file and the
 @command{-o StrictHostKeyChecking=no} prevents you from having to allow a
 connection to an unknown host every time you connect.
 
+@quotation Note
+If you find the above @samp{hostfwd} example not to be working (e.g.,
+your SSH client hangs attempting to connect to the mapped port of your
+VM), make sure that your Guix System VM has networking support, such as
+by using the @code{dhcp-client-service-type} service type.
+@end quotation
+
 @subsection Using @command{virt-viewer} with Spice
 
 As an alternative to the default @command{qemu} graphical client you can
