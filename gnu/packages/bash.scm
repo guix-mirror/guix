@@ -402,6 +402,7 @@ capturing.")
          ;; Install phase
          (invoke "./install.sh" %output)
          (wrap-script (string-append %output "/bin/bats")
+                      #:guile (search-input-file %build-inputs "bin/guile")
                       (list "PATH" 'prefix (string-split (getenv "PATH")
                                                          #\:))))))
     (build-system trivial-build-system)
