@@ -1370,6 +1370,30 @@ actual computation.")
 plotting components.")
     (license license:expat)))
 
+(define-public julia-queryoperators
+  (package
+    (name "julia-queryoperators")
+    (version "0.9.3")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/queryverse/QueryOperators.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "06zm4cbn3x49lbpgshhdfvvmgz066qkc8q0d57igm5p8bcp6js22"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-datastructures" ,julia-datastructures)
+       ("julia-iteratorinterfaceextensions" ,julia-iteratorinterfaceextensions)
+       ("julia-tableshowutils" ,julia-tableshowutils)))
+    (home-page "https://github.com/queryverse/QueryOperators.jl")
+    (synopsis "Query operators for Julia")
+    (description "This package contains the underlying query operators that are
+exposed to users in @code{Query.jl}.")
+    (license license:expat)))
+
 (define-public julia-recipesbase
   (package
     (name "julia-recipesbase")
