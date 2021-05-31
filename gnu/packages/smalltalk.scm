@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -103,7 +104,11 @@
              #t))
          (add-before 'configure 'fix-libc
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((libc (assoc-ref inputs "libc")))
+             (let ((libc (or (assoc-ref inputs "libc")
+                             ;; When cross-compiling, the input
+                             ;; is named "cross-libc" instead of
+                             ;; simply "libc".
+                             (assoc-ref inputs "cross-libc"))))
                (substitute* "libc.la.in"
                  (("@LIBC_SO_NAME@") "libc.so")
                  (("@LIBC_SO_DIR@")  (string-append libc "/lib"))))
