@@ -13511,6 +13511,30 @@ variables.")
      "Environment variables utility functions.")
     (license license:asl2.0)))
 
+(define-public rust-envy-0.4
+  (package
+    (name "rust-envy")
+    (version "0.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "envy" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0rar459p7pl19v6pbx98q3hi2hxfl8q1ndxxw5d4zd9cgway0irz"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-serde" ,rust-serde-1))))
+    (home-page "https://github.com/softprops/envy")
+    (synopsis "Deserialize environment variables into Rust structs")
+    (description
+     "This package provides access to typesafe config structs
+deserialized from environment variables.")
+     (license license:expat)))
+
 (define-public rust-erased-serde-0.3
   (package
     (name "rust-erased-serde")
