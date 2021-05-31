@@ -3424,23 +3424,17 @@ starting from JUnit 4.")))
        #:phases
        (modify-phases %standard-phases
          (add-before 'install 'regenerate-own-pom
-           (lambda _
-             ;; Surefire struggles resolving artifacts because of this pom
-             ;; file, resulting in a NullPointerException when collecting
-             ;; Artifacts (and a "Failure detected." message from
-             ;; DefaultArtifactResolver).  Replace the pom file with a much
-             ;; simpler one.  Everything is shaded anyway (as used to be the
-             ;; case in 2.22), so there will not be missing dependencies.
-             (with-output-to-file "surefire-providers/surefire-junit4/pom.xml"
-               (lambda _
-                 (sxml->xml
-                   `((project
-                       (modelVersion "4.0.0")
-                       (name "Surefire JUnit4")
-                       (groupId "org.apache.maven.surefire")
-                       (artifactId "surefire-junit4")
-                       (version ,,(package-version java-surefire-common-java5)))))))
-             #t))
+           ;; Surefire struggles resolving artifacts because of this pom
+           ;; file, resulting in a NullPointerException when collecting
+           ;; Artifacts (and a "Failure detected." message from
+           ;; DefaultArtifactResolver).  Replace the pom file with a much
+           ;; simpler one.  Everything is shaded anyway (as used to be the
+           ;; case in 2.22), so there will not be missing dependencies.
+           (generate-pom.xml
+             "surefire-providers/surefire-junit4/pom.xml"
+             "org.apache.maven.surefire" "surefire-junit4"
+             ,(package-version java-surefire-common-java5)
+             #:name "Surefire JUnit4"))
          (add-before 'build 'copy-resources
            (lambda _
              (mkdir-p "build/classes")

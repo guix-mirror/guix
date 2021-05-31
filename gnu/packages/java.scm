@@ -3847,25 +3847,11 @@ documentation tools.")
     (arguments
      `(#:jar-name "qdox.jar"
        #:tests? #f; no tests
-       #:modules
-       ((guix build ant-build-system)
-        (guix build java-utils)
-        (guix build utils)
-        (sxml simple))
        #:phases
        (modify-phases %standard-phases
          (add-before 'install 'create-pom
-           (lambda _
-             (with-output-to-file "pom.xml"
-               (lambda _
-                 (sxml->xml
-                   `((project
-                       (modelVersion "4.0.0")
-                       (name "QDox")
-                       (groupId "com.thoughtworks.qdox")
-                       (artifactId "qdox")
-                       (version ,,version))))))
-             #t))
+           (generate-pom.xml "pom.xml" "com.thoughtworks.qdox" "qdox" ,version
+                             #:name "QDox"))
          (replace 'install
            (install-from-pom "pom.xml")))))
     (home-page "https://github.com/codehaus/qdox")
@@ -3891,7 +3877,14 @@ documentation tools.")
                                   "/qdox-" version "-sources.jar"))
               (sha256
                (base32
-                "1s2jnmx2dkwnaha12lcj26aynywgwa8sslc47z82wx8xai13y4fg"))))))
+                "1s2jnmx2dkwnaha12lcj26aynywgwa8sslc47z82wx8xai13y4fg"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments java-qdox)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'create-pom
+             (generate-pom.xml "pom.xml" "com.thoughtworks.qdox" "qdox" ,version
+                               #:name "QDox"))))))))
 
 (define-public java-jarjar
   (package
@@ -6463,25 +6456,11 @@ bottlenecks move away from the database in an effectively cached system.")
      `(#:tests? #f ; no tests included
        #:jdk ,icedtea-8
        #:jar-name "jsr250.jar"
-       #:modules ((guix build ant-build-system)
-                  (guix build utils)
-                  (guix build maven pom)
-                  (guix build java-utils)
-                  (sxml simple))
        #:phases
        (modify-phases %standard-phases
          (add-before 'install 'create-pom
-           (lambda _
-             (with-output-to-file "pom.xml"
-               (lambda _
-                 (sxml->xml
-                   `((project
-                       (modelVersion "4.0.0")
-                       (name "jsr250")
-                       (groupId "javax.annotation")
-                       (artifactId "jsr250-api")
-                       (version ,,version))))))
-             #t))
+           (generate-pom.xml "pom.xml" "javax.annotation" "jsr250-api" ,version
+                             #:name "jsr250"))
          (replace 'install
            (install-from-pom "pom.xml")))))
     (home-page "https://jcp.org/en/jsr/detail?id=250")
@@ -6510,25 +6489,10 @@ namespaces.")
     (arguments
      `(#:tests? #f ; no tests included
        #:jar-name "jsr305.jar"
-       #:modules ((guix build ant-build-system)
-                  (guix build java-utils)
-                  (guix build maven pom)
-                  (guix build utils)
-                  (sxml simple))
        #:phases
        (modify-phases %standard-phases
          (add-before 'install 'create-pom
-           (lambda _
-             (with-output-to-file "pom.xml"
-               (lambda _
-                 (sxml->xml
-                   `((project
-                       (modelVersion "4.0.0")
-                       (name "jsr305")
-                       (groupId "com.google.code.findbugs")
-                       (artifactId "jsr305")
-                       (version ,,version))))))
-             #t))
+           (generate-pom.xml "pom.xml" "com.google.code.findbugs" "jsr305" ,version))
          (replace 'install
            (install-from-pom "pom.xml")))))
     (home-page "http://findbugs.sourceforge.net/")
@@ -10559,25 +10523,10 @@ this is not a static analysis tool.)")
        #:jdk ,icedtea-8
        #:tests? #f; no tests
        #:source-dir "aopalliance/src/main"
-       #:modules ((guix build ant-build-system)
-                  (guix build utils)
-                  (guix build maven pom)
-                  (guix build java-utils)
-                  (sxml simple))
        #:phases
        (modify-phases %standard-phases
          (add-before 'install 'create-pom
-           (lambda _
-             (with-output-to-file "pom.xml"
-               (lambda _
-                 (sxml->xml
-                   `((project
-                       (modelVersion "4.0.0")
-                       (name "aopalliance")
-                       (groupId "aopalliance")
-                       (artifactId "aopalliance")
-                       (version "1.0"))))))
-             #t))
+           (generate-pom.xml "pom.xml" "aopalliance" "aopalliance" ,version))
          (replace 'install
            (install-from-pom "pom.xml")))))
     (home-page "http://aopalliance.sourceforge.net")
@@ -12176,29 +12125,14 @@ sequences to format your console output which works on every platform.")
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "java-jboss-el-api_spec.jar"
-       #:modules ((guix build ant-build-system)
-                  (guix build utils)
-                  (guix build maven pom)
-                  (guix build java-utils)
-                  (sxml simple))
        #:phases
        (modify-phases %standard-phases
          ;; the origin of javax.el:javax.el-api is unknown, so we use this package
          ;; instead, which implements the same thing.  We override the pom file
          ;; to "rename" the package so it can be found by maven.
          (add-before 'install 'override-pom
-           (lambda _
-             (delete-file "pom.xml")
-             (with-output-to-file "pom.xml"
-               (lambda _
-                 (sxml->xml
-                   `(project
-                      (modelVersion "4.0.0")
-                      (name "el-api")
-                      (groupId "javax.el")
-                      (artifactId "javax.el-api")
-                      (version "3.0")))))
-             #t))
+           (generate-pom.xml "pom.xml" "javax.el" "javax.el-api" "3.0"
+                             #:name "el-api"))
          (replace 'install
            (install-from-pom "pom.xml")))))
     (inputs
@@ -12230,11 +12164,6 @@ JavaServer Pages (JSP).")
        #:jdk ,icedtea-8
        #:source-dir "."
        #:tests? #f; no tests
-       #:modules ((guix build ant-build-system)
-                  (guix build utils)
-                  (guix build maven pom)
-                  (guix build java-utils)
-                  (sxml simple))
        #:phases
        (modify-phases %standard-phases
          ;; the origin of javax.interceptor:javax.interceptor-api is unknown,
@@ -12242,18 +12171,8 @@ JavaServer Pages (JSP).")
          ;; We override the pom file to "rename" the package so it can be found
          ;; by maven.
          (add-before 'install 'override-pom
-           (lambda _
-             (delete-file "pom.xml")
-             (with-output-to-file "pom.xml"
-               (lambda _
-                 (sxml->xml
-                   `(project
-                      (modelVersion "4.0.0")
-                      (name "interceptor-api")
-                      (groupId "javax.interceptor")
-                      (artifactId "javax.interceptor-api")
-                      (version "3.0")))))
-             #t))
+           (generate-pom.xml "pom.xml" "javax.interceptor" "javax.interceptor-api"
+                             "3.0" #:name "interceptor-api"))
          (replace 'install
            (install-from-pom "pom.xml")))))
     (home-page "https://github.com/jboss/jboss-interceptors-api_spec")

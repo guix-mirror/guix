@@ -28,6 +28,7 @@
   #:use-module (sxml simple)
   #:export (ant-build-javadoc
             generate-plugin.xml
+            generate-pom.xml
             install-jars
             install-javadoc
             install-pom-file
@@ -206,3 +207,31 @@ recognize the package as a plugin, and find the entry points in the plugin."
                  ,mojos
                  (dependencies
                   ,@dependencies)))))))))
+
+(define* (generate-pom.xml pom-file groupid artifactid version
+                           #:key (dependencies '())
+                                 (name artifactid))
+  "Generates the @file{pom.xml} for a project. It is required by Maven to find
+a package, and by the java build system to know where to install a package, when
+a pom.xml doesn't already exist and installing to the maven repository."
+  (lambda _
+    (mkdir-p (dirname pom-file))
+    (with-output-to-file pom-file
+      (lambda _
+        (sxml->xml
+          (sxml-indent
+            `(project
+               (modelVersion "4.0.0")
+               (name ,name)
+               (groupId ,groupid)
+               (artifactId ,artifactid)
+               (version ,version)
+               (dependencies
+                ,@(map
+                    (match-lambda
+                      ((groupid artifactid version)
+                      `(dependency
+                         (groupId ,groupid)
+                         (artifactId ,artifactid)
+                         (version ,version))))
+                    dependencies)))))))))
