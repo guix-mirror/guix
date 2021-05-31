@@ -23,6 +23,7 @@
   #:use-module (guix packages)
   #:use-module (guix git-download)
   #:use-module (guix build-system julia)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages julia-jll))
 
 (define-public julia-abstractffts
@@ -1514,6 +1515,43 @@ actual computation.")
     (synopsis "Helper algorithms for building plotting components")
     (description "This package contains generic helper algorithms for building
 plotting components.")
+    (license license:expat)))
+
+(define-public julia-quadmath
+  (package
+    (name "julia-quadmath")
+    (version "0.5.5")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaMath/Quadmath.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "051biw4b9zni7cmh2f1yzifp1v8wazlfxrdz4p44lyd1wba6379w"))))
+    (build-system julia-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'hardcode-libmath-location
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((gcclib (assoc-ref inputs "gcc:lib")))
+               (substitute* "src/Quadmath.jl"
+                 (("libgcc_s.so.1" lib) (string-append gcclib "/lib/" lib))
+                 (("libquadmath.so.0" lib) (string-append gcclib "/lib/" lib)))
+               #t))))))
+    (propagated-inputs
+     `(("julia-requires" ,julia-requires)))
+    (inputs
+     `(("gcc:lib" ,gcc "lib")))
+    (native-inputs
+     `(("julia-specialfunctions" ,julia-specialfunctions)))
+    (home-page "https://github.com/JuliaMath/Quadmath.jl")
+    (synopsis "Float128 and libquadmath for the Julia language")
+    (description "This is a Julia interface to @code{libquadmath}, providing a
+@code{Float128} type corresponding to the IEEE754 binary128 floating point
+format.")
     (license license:expat)))
 
 (define-public julia-queryoperators
