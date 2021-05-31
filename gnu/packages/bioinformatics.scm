@@ -8347,10 +8347,11 @@ group or two ChIP groups run under different conditions.")
     (license license:gpl3+)))
 
 (define-public filevercmp
-  (let ((commit "1a9b779b93d0b244040274794d402106907b71b7"))
+  (let ((commit "1a9b779b93d0b244040274794d402106907b71b7")
+        (revision "1"))
     (package
       (name "filevercmp")
-      (version (string-append "0-1." (string-take commit 7)))
+      (version (git-version "0" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
