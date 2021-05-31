@@ -1597,6 +1597,28 @@ actual computation.")
 plotting components.")
     (license license:expat)))
 
+(define-public julia-pooledarrays
+  (package
+    (name "julia-pooledarrays")
+    (version "1.2.1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaData/PooledArrays.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0ihvhzkxdw4qf0i6sbrickhdcwkmlin9zyixxn9xvgzm8nc0iwqy"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-dataapi" ,julia-dataapi)))
+    (home-page "https://github.com/JuliaData/PooledArrays.jl")
+    (synopsis "Pooled representation of arrays in Julia")
+    (description "This package provides a pooled representation of arrays for
+purposes of compression when there are few unique elements.")
+    (license license:expat)))
+
 (define-public julia-quadmath
   (package
     (name "julia-quadmath")
