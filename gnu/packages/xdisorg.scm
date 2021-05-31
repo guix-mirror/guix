@@ -2555,10 +2555,12 @@ tools to complement clipnotify.")
                       (gawk              (assoc-ref inputs "gawk"))
                       (util-linux        (assoc-ref inputs "util-linux"))
                       (xdotool           (assoc-ref inputs "xdotool"))
-                      (xsel              (assoc-ref inputs "xsel")))
+                      (xsel              (assoc-ref inputs "xsel"))
+                      (guile             (search-input-file inputs "bin/guile")))
                  (for-each
                   (lambda (prog)
                     (wrap-script (string-append out "/bin/" prog)
+                      #:guile guile
                       `("PATH" ":" prefix
                         ,(map (lambda (dir)
                                 (string-append dir "/bin"))
