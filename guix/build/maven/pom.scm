@@ -374,7 +374,26 @@ Returns nothing, but overrides the @var{pom-file} as a side-effect."
           `((http://maven.apache.org/POM/4.0.0:plugins
               ,(fix-plugins plugins))
             ,@(fix-build rest)))
+         (('http://maven.apache.org/POM/4.0.0:extensions extensions ...)
+          `((http://maven.apache.org/POM/4.0.0:extensions
+              ,(fix-extensions extensions))
+            ,@(fix-build rest)))
          (tag (cons tag (fix-build rest)))))))
+
+  (define* (fix-extensions extensions #:optional optional?)
+    (match extensions
+      ('() '())
+      ((tag rest ...)
+       (match tag
+         (('http://maven.apache.org/POM/4.0.0:extension extension ...)
+          (let ((group (or (pom-groupid extension) "org.apache.maven.plugins"))
+                (artifact (pom-artifactid extension)))
+            (if (member artifact (or (assoc-ref excludes group) '()))
+              (fix-extensions rest optional?)
+              `((http://maven.apache.org/POM/4.0.0:extension
+                  ,(fix-plugin extension optional?)); extensions are similar to plugins
+                ,@(fix-extensions rest optional?)))))
+         (tag (cons tag (fix-extensions rest optional?)))))))
 
   (define fix-management
     (match-lambda
