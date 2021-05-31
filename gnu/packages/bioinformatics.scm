@@ -8212,13 +8212,13 @@ tools for sequence analysis into a seamless whole.")
       (name "bits")
       ;; The version is 2.13.0 even though no release archives have been
       ;; published as yet.
-      (version (string-append "2.13.0-" revision "." (string-take commit 9)))
+      (version (git-version "2.13.0" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
                       (url "https://github.com/arq5x/bits")
                       (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "17n2kffk4kmhivd8c98g2vr6y1s23vbg4sxlxs689wni66797hbs"))))
