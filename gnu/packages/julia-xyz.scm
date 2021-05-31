@@ -880,6 +880,29 @@ differentiation (AD).")
      "FuzzyCompletions provides fuzzy completions for a Julia runtime session.")
     (license license:expat)))
 
+(define-public julia-graphics
+  (package
+    (name "julia-graphics")
+    (version "1.1.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaGraphics/Graphics.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "10h1s09v7qkvrjr6l678zamb1p248n8jv4rrwkf8g7d2bpfz9amn"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-colors" ,julia-colors)
+       ("julia-nanmath" ,julia-nanmath)))
+    (home-page "https://github.com/JuliaGraphics/Graphics.jl")
+    (synopsis "Base graphics in Julia")
+    (description "@code{Graphics.jl} is an abstraction layer for graphical
+operations in Julia.")
+    (license license:expat)))
+
 (define-public julia-gumbo
   (package
     (name "julia-gumbo")
