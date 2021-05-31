@@ -508,6 +508,39 @@ including, @code{CircularBuffer}, @code{Queue}, @code{Stack},
 without having to take direct dependencies.")
     (license license:expat)))
 
+(define-public julia-datavalues
+  (package
+    (name "julia-datavalues")
+    (version "0.4.13")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/queryverse/DataValues.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "15j3hrqq6nazn533bfsvg32xznacbzsl303j1qs48av59ppnvhhv"))))
+    (build-system julia-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-known-failing-tests
+           (lambda _
+             ;; See upstream report:
+             ;; https://github.com/queryverse/DataValues.jl/issues/83
+             (substitute* "test/array/test_reduce.jl"
+               ((".*DataValue\\(mapreduce.*") "")
+               ((".*DataValue\\(method\\(f.*") ""))
+             #t)))))
+    (propagated-inputs
+     `(("julia-datavalueinterfaces" ,julia-datavalueinterfaces)))
+    (home-page "https://github.com/queryverse/DataValues.jl")
+    (synopsis "Missing values for Julia")
+    (description "This package provides the type @code{DataValue} that is used
+to represent missing data.")
+    (license license:expat)))
+
 (define-public julia-dictionaries
   (package
     (name "julia-dictionaries")
