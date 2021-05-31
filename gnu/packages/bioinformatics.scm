@@ -9179,7 +9179,7 @@ Browser.")
        (uri (git-reference
              (url "https://github.com/FelixKrueger/Bismark")
              (commit version)))
-       (file-name (string-append name "-" version "-checkout"))
+       (file-name (git-file-name name version))
        (sha256
         (base32
          "0xchm3rgilj6vfjnyzfzzymfd7djr64sbrmrvs3njbwi66jqbzw9"))))
