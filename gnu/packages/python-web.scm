@@ -6,7 +6,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016, 2020 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016, 2017, 2019, 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2017, 2021 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016, 2017, 2020 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2014, 2017, 2021 Eric Bavier <bavier@posteo.net>
@@ -4297,6 +4297,25 @@ name resolutions asynchronously.")
     (description "@code{yarl} module provides handy @code{URL} class
 for URL parsing and changing.")
     (license license:asl2.0)))
+
+(define-public python-google
+  (package
+    (name "python-google")
+    (version "3.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "google" version))
+              (sha256
+               (base32
+                "1gncv3l11za0mpxvmpaf5n5j3jzp282rz62yml4ha4z55q930d8l"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)) ; There are no tests.
+    (home-page "https://breakingcode.wordpress.com/")
+    (synopsis "Python bindings to the Google search engine")
+    (description "This package provides Python bindings for using the
+Google search engine.  Its module is called @code{googlesearch}.")
+    (license license:bsd-3)))
 
 (define-public python-google-api-client
   (package
