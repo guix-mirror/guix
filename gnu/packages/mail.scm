@@ -2924,6 +2924,7 @@ transfer protocols.")
              (let ((out (assoc-ref outputs "out"))
                    (path (getenv "PERL5LIB")))
                (wrap-script (string-append out "/bin/sieve-connect")
+                 #:guile (search-input-file inputs "bin/guile")
                  `("PERL5LIB" ":" = (,path)))
                #t))))))
     (inputs
