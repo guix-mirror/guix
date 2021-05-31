@@ -1716,6 +1716,33 @@ extensions.  It is intended to be the base both for @code{TableIO.jl} and for
 the @code{Pluto.jl} tabular data import functionality.")
     (license license:expat)))
 
+(define-public julia-tableshowutils
+  ;; The 0.2.5 release is not fully compatable with newer versions of Julia.
+  (let ((commit "c4e02d8b9bbb31fc81ed6618955e9b1c7cb04460")
+        (revision "1"))
+    (package
+      (name "julia-tableshowutils")
+      (version "0.2.5")
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/queryverse/TableShowUtils.jl")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+           (base32 "0gp3hpj3jvzfhkp9r345vfic2j2n2s60729wv38hwn75csp74cg5"))))
+      (build-system julia-build-system)
+      (propagated-inputs
+       `(("julia-datavalues" ,julia-datavalues)
+         ("julia-json" ,julia-json)))
+      (home-page "https://github.com/queryverse/TableShowUtils.jl")
+      (synopsis "Implement show for TableTraits.jl types")
+      (description "This package provides some common helper functions that make
+it easier to implement various @code{Base.show} functions for types that
+participate in the @code{TableTraits.jl} ecosystem.")
+      (license license:expat))))
+
 (define-public julia-tabletraits
   (package
     (name "julia-tabletraits")
