@@ -64,7 +64,8 @@
        ;; XXX: To be removed with the next release of Smalltalk.
        ("autoconf" ,autoconf)
        ("automake" ,automake)
-       ("libtool" ,libtool)))
+       ("libtool" ,libtool)
+       ("zip" ,zip)))
     ;; TODO: These optional dependencies raise the closure size to ~1 GiB
     ;; from the current ~100 MiB, although some of them might be very
     ;; useful for end users:
@@ -81,8 +82,7 @@
        ("libffi" ,libffi)
        ("libltdl" ,libltdl)
        ("libsigsegv" ,libsigsegv)
-       ("lightning" ,lightning)
-       ("zip" ,zip)))
+       ("lightning" ,lightning)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
