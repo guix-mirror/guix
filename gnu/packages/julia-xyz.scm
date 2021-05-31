@@ -1266,6 +1266,28 @@ resolving them into absolute units.")
 with @code{missing} values in Julia.")
     (license license:expat)))
 
+(define-public julia-mocking
+  (package
+    (name "julia-mocking")
+    (version "0.7.1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/invenia/Mocking.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "10jz716v6i3gpd403rmcrip6cncjl9lqr12cdl321x1994a5g8ck"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-exprtools" ,julia-exprtools)))
+    (home-page "https://github.com/invenia/Mocking.jl")
+    (synopsis "Overload Julia function calls")
+    (description "The purpose of this package is to allow Julia function calls
+to be temporarily overloaded for the purpose of testing.")
+    (license license:expat)))
+
 (define-public julia-msgpack
   (package
     (name "julia-msgpack")
