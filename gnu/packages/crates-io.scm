@@ -15,6 +15,7 @@
 ;;; Copyright © 2021 aecepoglu <aecepoglu@fastmail.fm>
 ;;; Copyright © 2021 Zheng Junjie <873216071@qq.com>
 ;;; Copyright © 2021 Alexandru-Sergiu Marton <brown121407@posteo.ro>
+;;; Copyright © 2021 Antero Mejr <antero@kodmin.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3815,6 +3816,25 @@ trace (backtrace) at runtime in a Rust program.")
      "This package provides bindings to the libbacktrace gcc library.")
     (license (list license:asl2.0
                    license:expat))))
+
+(define-public rust-base32-0.4
+  (package
+    (name "rust-base32")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "base32" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1ykwx8jhksqxghfgyw2pzikzjf4n9wqm1x2ww5wqyn68ssf6dki3"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/andreasots/base32")
+    (synopsis "Base32 encoder/decoder for Rust")
+    (description "This library lets you encode and decode in either
+RFC4648 Base32 or in Crockford Base32.")
+    (license (list license:asl2.0 license:expat))))
 
 (define-public rust-base58-0.1
   (package
