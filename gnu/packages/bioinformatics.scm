@@ -8258,7 +8258,7 @@ intervals (e.g. genes, sequence alignments).")
         (commit   "0466d364b71117d01e4471b74c514436cc281233"))
     (package
       (name "piranha")
-      (version (string-append "1.2.1-" revision "." (string-take commit 9)))
+      (version (git-version "1.2.1" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
