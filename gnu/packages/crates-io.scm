@@ -40745,16 +40745,16 @@ and Jaro-Winkler.")
 (define-public rust-structopt-0.3
   (package
     (name "rust-structopt")
-    (version "0.3.12")
+    (version "0.3.21")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "structopt" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "178m7wxnjyy9a8a961z74nazjsg79rfv3gv9g3bykfrrjmqs5yn8"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "structopt" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "136j0lvjmpv5syi751vxg8vb30gfyv4k81x8d18kxrj6xvbsqxsj"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -40765,7 +40765,8 @@ and Jaro-Winkler.")
     (home-page "https://github.com/TeXitoi/structopt")
     (synopsis "Parse command line argument by defining a struct")
     (description
-     "Parse command line argument by defining a struct.")
+     "This package parses command lines arguments by defining a Rust
+struct.")
     (license (list license:asl2.0 license:expat))))
 
 (define-public rust-structopt-0.2
