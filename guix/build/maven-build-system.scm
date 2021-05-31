@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2020, 2021 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -82,8 +82,8 @@
   (let* ((pom (get-pom pom-file))
          (java-inputs (map cdr inputs))
          (artifact (pom-artifactid pom))
-         (group (pom-groupid pom java-inputs local-packages))
-         (version (pom-version pom java-inputs local-packages)))
+         (group (pom-groupid pom))
+         (version (pom-version pom)))
     (let loop ((modules (pom-ref pom "modules"))
                (local-packages
                  (add-local-package local-packages group artifact version)))

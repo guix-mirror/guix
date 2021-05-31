@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2019, 2020 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2019-2021 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -93,13 +93,12 @@ If no result is found, the result is @code{#f}."
               (get-pom (car java-inputs))))
         #f)))
 
-(define* (pom-groupid content inputs #:optional local-packages)
+(define* (pom-groupid content)
   "Find the groupID of a pom file, potentially looking at its parent pom file.
 See @code{find-parent} for the meaning of the arguments."
   (if content
     (let ((res (or (pom-ref content "groupId")
-                   (pom-groupid (find-parent content inputs local-packages)
-                                inputs))))
+                   (pom-ref (pom-ref content "parent") "groupId"))))
       (cond
         ((string? res) res)
         ((null? res) #f)
@@ -114,13 +113,12 @@ See @code{find-parent} for the meaning of the arguments."
       (car res)
       #f)))
 
-(define* (pom-version content inputs #:optional local-packages)
+(define* (pom-version content)
   "Find the version of a pom file, potentially looking at its parent pom file.
 See @code{find-parent} for the meaning of the arguments."
   (if content
     (let ((res (or (pom-ref content "version")
-                   (pom-version (find-parent content inputs local-packages)
-                                inputs))))
+                   (pom-ref (pom-ref content "parent") "version"))))
       (cond
         ((string? res) res)
         ((null? res) #f)
@@ -344,7 +342,7 @@ Returns nothing, but overrides the @var{pom-file} as a side-effect."
       ((tag rest ...)
        (match tag
          (('http://maven.apache.org/POM/4.0.0:plugin plugin ...)
-          (let ((group (or (pom-groupid plugin inputs) "org.apache.maven.plugins"))
+          (let ((group (or (pom-groupid plugin) "org.apache.maven.plugins"))
                 (artifact (pom-artifactid plugin)))
             (if (member artifact (or (assoc-ref excludes group) '()))
               (fix-plugins rest optional?)
@@ -355,11 +353,11 @@ Returns nothing, but overrides the @var{pom-file} as a side-effect."
 
   (define* (fix-plugin plugin #:optional optional?)
     (let* ((artifact (pom-artifactid plugin))
-           (group (or (pom-groupid plugin inputs) "org.apache.maven.plugins"))
+           (group (or (pom-groupid plugin) "org.apache.maven.plugins"))
            (version (or (assoc-ref (assoc-ref local-packages group) artifact)
                         (find-version inputs group artifact optional?)
-                        (pom-version plugin inputs))))
-      (if (pom-version plugin inputs)
+                        (pom-version plugin))))
+      (if (pom-version plugin)
         (map
           (lambda (tag)
             (match tag
@@ -373,7 +371,7 @@ Returns nothing, but overrides the @var{pom-file} as a side-effect."
 
   (define* (fix-dep dep #:optional optional?)
     (let* ((artifact (pom-artifactid dep))
-           (group (or (pom-groupid dep inputs) (pom-groupid pom inputs)))
+           (group (or (pom-groupid dep) (pom-groupid pom)))
            (scope (pom-ref dep "scope"))
            (is-optional? (equal? (pom-ref dep "optional") '("true"))))
       (format (current-error-port) "maven: ~a:~a :: ~a (optional: ~a)~%"
@@ -382,8 +380,8 @@ Returns nothing, but overrides the @var{pom-file} as a side-effect."
               with-build-dependencies?)
           (let ((version (or (assoc-ref (assoc-ref local-packages group) artifact)
                              (find-version inputs group artifact optional?)
-                             (pom-version dep inputs))))
-            (if (pom-version dep inputs)
+                             (pom-version dep))))
+            (if (pom-version dep)
               (map
                 (lambda (tag)
                   (match tag
