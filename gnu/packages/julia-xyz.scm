@@ -440,6 +440,29 @@ both the 256 color and 24 bit true color extensions, and the different text
 styles available to terminals.")
     (license license:expat)))
 
+(define-public julia-dataapi
+  (package
+    (name "julia-dataapi")
+    (version "1.6.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaData/DataAPI.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "14sfvkz169zcbap3gdwpj16qsap783h86fd07flfxk822abam11w"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/JuliaData/DataAPI.jl")
+    (synopsis "Data-focused namespace for packages to share functions")
+    (description "This package provides a namespace for data-related generic
+function definitions to solve the optional dependency problem; packages wishing
+to share and/or extend functions can avoid depending directly on each other by
+moving the function definition to DataAPI.jl and each package taking a
+dependency on it.")
+    (license license:expat)))
+
 (define-public julia-datastructures
   (package
     (name "julia-datastructures")
