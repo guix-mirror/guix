@@ -1476,21 +1476,6 @@ error if there is no such root."
              "Return the list of references of PATH."
              store-path-list))
 
-(define %reference-cache
-  ;; Brute-force cache mapping store items to their list of references.
-  ;; Caching matters because when building a profile in the presence of
-  ;; grafts, we keep calling 'graft-derivation', which in turn calls
-  ;; 'references/cached' many times with the same arguments.  Ideally we
-  ;; would use a cache associated with the daemon connection instead (XXX).
-  (make-hash-table 100))
-
-(define (references/cached store item)
-  "Like 'references', but cache results."
-  (or (hash-ref %reference-cache item)
-      (let ((references (references store item)))
-        (hash-set! %reference-cache item references)
-        references)))
-
 (define* (fold-path store proc seed paths
                     #:optional (relatives (cut references store <>)))
   "Call PROC for each of the RELATIVES of PATHS, exactly once, and return the
@@ -1809,6 +1794,26 @@ value returned by 'allocate-store-connection-cache'."
 This is a mutating version that should be avoided.  Prefer the functional
 'set-store-connection-cache' instead, together with using %STORE-MONAD."
   (vector-set! (store-connection-caches store) cache value))
+
+
+(define %reference-cache-id
+  ;; Cache mapping store items to their list of references.  Caching matters
+  ;; because when building a profile in the presence of grafts, we keep
+  ;; calling 'graft-derivation', which in turn calls 'references/cached' many
+  ;; times with the same arguments.
+  (allocate-store-connection-cache 'reference-cache))
+
+(define (references/cached store item)
+  "Like 'references', but cache results."
+  (let ((cache (store-connection-cache store %reference-cache-id)))
+    (match (vhash-assoc item cache)
+      ((_ . references)
+       references)
+      (#f
+       (let* ((references (references store item))
+              (cache      (vhash-cons item references cache)))
+         (set-store-connection-cache! store %reference-cache-id cache)
+         references)))))
 
 
 ;;;
