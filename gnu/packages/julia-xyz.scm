@@ -1762,6 +1762,34 @@ extensions.  It is intended to be the base both for @code{TableIO.jl} and for
 the @code{Pluto.jl} tabular data import functionality.")
     (license license:expat)))
 
+(define-public julia-tables
+  (package
+    (name "julia-tables")
+    (version "1.4.3")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaData/Tables.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0yfjl4v1vglsk9wr7gbqgya4kk3a0q0i6zhi9xdgvnqsqzqrsc7c"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-dataapi" ,julia-dataapi)
+       ("julia-datavalueinterfaces" ,julia-datavalueinterfaces)
+       ("julia-iteratorinterfaceextensions" ,julia-iteratorinterfaceextensions)
+       ("julia-tabletraits" ,julia-tabletraits)))
+    (native-inputs
+     `(("julia-datavalues" ,julia-datavalues)
+       ("julia-queryoperators" ,julia-queryoperators)))
+    (home-page "https://github.com/JuliaData/Tables.jl")
+    (synopsis "Interface for tables in Julia")
+    (description "The @code{Tables.jl} package provides simple, yet powerful
+interface functions for working with all kinds tabular data.")
+    (license license:expat)))
+
 (define-public julia-tableshowutils
   ;; The 0.2.5 release is not fully compatable with newer versions of Julia.
   (let ((commit "c4e02d8b9bbb31fc81ed6618955e9b1c7cb04460")
