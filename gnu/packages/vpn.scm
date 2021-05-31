@@ -192,10 +192,12 @@ Only \"Universal TUN/TAP device driver support\" is needed in the kernel.")
              ;; Wrap scripts with paths to their common hard dependencies.
              ;; Optional dependencies will need to be installed by the user.
              (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let ((out (assoc-ref outputs "out")))
+               (let ((out (assoc-ref outputs "out"))
+                     (guile (search-input-file inputs "bin/guile")))
                  (for-each
                   (lambda (script)
                     (wrap-script (string-append out "/etc/vpnc/" script)
+                      #:guile guile
                       `("PATH" ":" prefix
                         ,(map (lambda (name)
                                 (let ((input (assoc-ref inputs name)))
