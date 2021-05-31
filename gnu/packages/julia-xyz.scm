@@ -1721,6 +1721,29 @@ statically sized arrays in Julia, using the abstract type
 linear algebra operations.")
     (license license:expat)))
 
+(define-public julia-statsapi
+  (package
+    (name "julia-statsapi")
+    (version "1.0.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaStats/StatsAPI.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1k1c3s7i5wzkz4r9fyy4gd7wb97p0qgbc7bmaajm16zqipfmy2bv"))))
+    (build-system julia-build-system)
+    (home-page "https://juliastats.org/")
+    (synopsis "Statistics-focused namespace for packages to share functions")
+    (description "This package provides a namespace for data-related generic
+function definitions to solve the optional dependency problem; packages wishing
+to share and/or extend functions can avoid depending directly on each other by
+moving the function definition to @code{StatsAPI.jl} and each package taking a
+dependency on it.")
+    (license license:expat)))
+
 (define-public julia-suppressor
   (package
     (name "julia-suppressor")
