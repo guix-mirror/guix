@@ -2713,6 +2713,15 @@ Maven project dependencies.")
        (modify-phases %standard-phases
          (delete 'configure)
          (delete 'build)
+         (add-before 'install 'fix-pom-versions
+           (lambda _
+             (substitute* "pom.xml"
+               (("3.8.1") ,(package-version java-commons-lang3))
+               (("1.4.1") ,(package-version maven-resolver-util))
+               (("1.12") ,(package-version java-commons-codec))
+               (("<version>2.2</version>")
+                ,(string-append "<version>" (package-version maven-dependency-tree)
+                                "</version>")))))
          (replace 'install
            (install-pom-file "pom.xml")))))
     (propagated-inputs
