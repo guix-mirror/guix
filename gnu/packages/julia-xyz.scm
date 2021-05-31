@@ -2270,6 +2270,28 @@ useful in order to support @code{VersionNumber} comparisons applied to
 \"foreign\" version numbers from external packages.")
     (license license:expat)))
 
+(define-public julia-weakrefstrings
+  (package
+    (name "julia-weakrefstrings")
+    (version "0.6.2")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaData/WeakRefStrings.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0129mf1axxycb1ans3idlvw8ch0hmdrl80q98jw63f99zz3ddipr"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-dataapi" ,julia-dataapi)))
+    (home-page "https://github.com/JuliaData/WeakRefStrings.jl")
+    (synopsis "Efficient string representation and transfer in Julia")
+    (description "This package provides a minimal String type for Julia that
+allows for efficient string representation and transfer")
+    (license license:expat)))
+
 (define-public julia-zipfile
   (package
     (name "julia-zipfile")
