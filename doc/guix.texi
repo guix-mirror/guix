@@ -76,7 +76,7 @@ Copyright @copyright{} 2020 Damien Cassou@*
 Copyright @copyright{} 2020 Jakub Kądziołka@*
 Copyright @copyright{} 2020 Jack Hill@*
 Copyright @copyright{} 2020 Naga Malleswari@*
-Copyright @copyright{} 2020 Brice Waegeneire@*
+Copyright @copyright{} 2020, 2021 Brice Waegeneire@*
 Copyright @copyright{} 2020 R Veera Kumar@*
 Copyright @copyright{} 2020 Pierre Langlois@*
 Copyright @copyright{} 2020 pinoaffe@*
@@ -34379,13 +34379,10 @@ This service type is intended to be extended by other service types,
 such as below:
 
 @lisp
-(define module-installing-service-type
-  (service-type
-    (name 'module-installing-service)
-    (extensions (list (service-extension linux-loadable-module-service-type
-                                         (const (list module-to-install-1
-                                                      module-to-install-2)))))
-    (default-value #f)))
+(simple-service 'installing-module
+                linux-loadable-module-service-type
+                (list module-to-install-1
+                      module-to-install-2))
 @end lisp
 
 This does not actually load modules at bootup, only adds it to the

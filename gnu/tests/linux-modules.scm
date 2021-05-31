@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Jakob L. Kreuze <zerodaysfordays@sdf.org>
 ;;; Copyright © 2020 Danny Milosavljevic <dannym@scratchpost.org>
-;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2020, 2021 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2021 raid5atemyhomework <raid5atemyhomework@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -112,16 +112,13 @@ are loaded in memory."
   "Run a test of an OS having MODULE-PACKAGES, which are loaded by creating a
 service that extends LINUXL-LOADABLE-MODULE-SERVICE-TYPE. Then verify that
 MODULE-NAMES are loaded in memory."
-  (define module-installing-service-type
-    (service-type
-      (name 'module-installing-service)
-      (extensions (list (service-extension linux-loadable-module-service-type
-                                           (const module-packages))))
-      (default-value #f)))
   (run-loadable-kernel-modules-test-base
     (operating-system
       (inherit (simple-operating-system))
-      (services (cons* (service module-installing-service-type)
+      (services (cons* (simple-service 'installing-module
+                                       linux-loadable-module-service-type
+                                       module-packages)
+                       (service kernel-module-loader-service-type module-names)
                        (operating-system-user-services
                         (simple-operating-system)))))
     module-names))
