@@ -25378,6 +25378,96 @@ selectors.  You can use the jQuery-like syntax to query and manipulate an HTML
 document quickly.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-nitrokey-0.9
+  (package
+    (name "rust-nitrokey")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nitrokey" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0c8mj52ckvy1311vwxs6jpw16b2bihp5cc811isb96j9slcjvsyx"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-lazy_static" ,rust-lazy-static-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-nitrokey-sys" ,rust-nitrokey-sys-3)
+        ("rust-rand_core" ,rust-rand-core-0.5))))
+    (home-page "https://git.sr.ht/~ireas/nitrokey-rs")
+    (synopsis "Rust bindings to libnitrokey")
+    (description
+     "This package provides bindings to libnitrokey for communication
+with Nitrokey devices.")
+    (license license:expat)))
+
+(define-public rust-nitrokey-sys-3
+  (package
+    (name "rust-nitrokey-sys")
+    (version "3.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nitrokey-sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "08c3lnb8iqx000jd5rzvrdvv4ihjyw3x3s8q11dw56is0nmjyvws"))))
+    (build-system cargo-build-system)
+    (home-page "https://git.sr.ht/~ireas/nitrokey-sys-rs")
+    (synopsis "Low-level Rust bindings for libnitrokey")
+    (description
+     "This package provides low-level bindings to libnitrokey for
+communication with Nitrokey devices.")
+    (license license:lgpl3)))
+
+(define-public rust-nitrokey-test-0.5
+  (package
+    (name "rust-nitrokey-test")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nitrokey-test" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "197j9r2s4ydzbqfydza6v31mgcsgd29jpidz4psqawjdm49f8lg6"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("quote" ,rust-quote-1)
+        ("syn" ,rust-syn-1))))
+    (home-page "https://github.com/d-e-s-o/nitrokey-test")
+    (synopsis "Supporting test infrastructure for the nitrokey crate")
+    (description
+     "This package provides supporting test infrastructure for the
+nitrokey crate and others using it.")
+    (license license:gpl3+)))
+
+(define-public rust-nitrokey-test-state-0.1
+  (package
+    (name "rust-nitrokey-test-state")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nitrokey-test-state" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "00w817kl8q3sna924pzl72ybqljny14rdv1ixlj288fmsqp776x5"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/d-e-s-o/nitrokey-test")
+    (synopsis "State required and used by the nitrokey-test crate")
+    (description "This package provides state required and used by the
+nitrokey-test crate.")
+    (license license:gpl3+)))
+
 (define-public rust-nix-0.20
   (package
     (name "rust-nix")
