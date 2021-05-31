@@ -115,6 +115,30 @@ be GPU compatible without throwing away the wrapper.")
 provides functions to run a few automatable checks for Julia packages.")
     (license license:expat)))
 
+(define-public julia-arraylayouts
+  (package
+    (name "julia-arraylayouts")
+    (version "0.7.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaMatrices/ArrayLayouts.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "01725v4jp8h8zwn85splw907r206h1hnp205pchmzjin7h4659xz"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-fillarrays" ,julia-fillarrays)))
+    (home-page "https://github.com/JuliaMatrices/ArrayLayouts.jl")
+    (synopsis "Array layouts and general fast linear algebra")
+    (description "This package implements a trait-based framework for describing
+array layouts such as column major, row major, etc. that can be dispatched to
+appropriate BLAS or optimised Julia linear algebra routines.  This supports a
+much wider class of matrix types than Julia's in-built @code{StridedArray}.")
+    (license license:expat)))
+
 (define-public julia-benchmarktools
   (package
     (name "julia-benchmarktools")
