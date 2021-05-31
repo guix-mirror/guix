@@ -2023,6 +2023,29 @@ participate in the @code{TableTraits.jl} ecosystem.")
     (description "TableTraits defines a generic interface for tabular data.")
     (license license:expat)))
 
+(define-public julia-tensorcore
+  (package
+    (name "julia-tensorcore")
+    (version "0.1.1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaMath/TensorCore.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1sy3in4a1rl3l2vk0cm9mzg2nkva7syhr7i35si0kbzhkdwpbqjy"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/JuliaMath/TensorCore.jl")
+    (synopsis "Tensor-algebra definitions")
+    (description "This package is intended as a lightweight foundation for
+tensor operations across the Julia ecosystem.  Currently it exports three
+operations: @acronym{hadamard, elementwise multiplication}, @acronym{tensor,
+product preserves all dimensions}, and @acronym{boxdot, contracts neighboring
+dimensions}.")
+    (license license:expat)))
+
 (define-public julia-unpack
   (package
     (name "julia-unpack")
