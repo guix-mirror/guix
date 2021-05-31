@@ -508,6 +508,7 @@ Returns nothing, but overrides the @var{pom-file} as a side-effect."
               (throw 'no-such-input group artifact))))))
 
   (let ((tmpfile (string-append pom-file ".tmp")))
-    (with-output-to-file pom-file
+    (with-output-to-file tmpfile
       (lambda _
-        (sxml->xml (fix-maven-xml (fix-pom pom)))))))
+        (sxml->xml (fix-maven-xml (fix-pom pom)))))
+    (rename-file tmpfile pom-file)))
