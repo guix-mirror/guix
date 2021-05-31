@@ -1080,54 +1080,6 @@ from Illumina 450k methylation arrays.")
 chromstaR package.")
     (license license:gpl3)))
 
-(define-public r-chipseeker
-  (package
-    (name "r-chipseeker")
-    (version "1.26.2")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "ChIPseeker" version))
-              (sha256
-               (base32
-                "1r197qwsriap6s6nb2p9j3521pjs2f0lgyzvppvlxj1531sa6g6z"))))
-    (build-system r-build-system)
-    (inputs
-     `(("r-knitr" ,r-knitr)))
-    (propagated-inputs
-     `(("r-annotationdbi" ,r-annotationdbi)
-       ("r-biocgenerics" ,r-biocgenerics)
-       ("r-boot" ,r-boot)
-       ("r-enrichplot" ,r-enrichplot)
-       ("r-iranges" ,r-iranges)
-       ("r-genomeinfodb" ,r-genomeinfodb)
-       ("r-genomicranges" ,r-genomicranges)
-       ("r-genomicfeatures" ,r-genomicfeatures)
-       ("r-ggplot2" ,r-ggplot2)
-       ("r-gplots" ,r-gplots)
-       ("r-gtools" ,r-gtools)
-       ("r-dplyr" ,r-dplyr)
-       ("r-plotrix" ,r-plotrix)
-       ("r-dplyr" ,r-dplyr)
-       ("r-magrittr" ,r-magrittr)
-       ("r-rcolorbrewer" ,r-rcolorbrewer)
-       ("r-rtracklayer" ,r-rtracklayer)
-       ("r-s4vectors" ,r-s4vectors)
-       ("r-txdb-hsapiens-ucsc-hg19-knowngene"
-        ,r-txdb-hsapiens-ucsc-hg19-knowngene)))
-    (home-page "https://www.bioconductor.org/packages/ChIPseeker/")
-    (synopsis
-     "ChIPseeker for ChIP peak Annotation, Comparison, and Visualization")
-    (description "This package implements functions to retrieve the nearest
-genes around the peak, annotate genomic region of the peak, statstical methods
-for estimate the significance of overlap among ChIP peak data sets, and
-incorporate GEO database for user to compare the own dataset with those
-deposited in database.  The comparison can be used to infer cooperative
-regulation and thus can be used to generate hypotheses.  Several visualization
-functions are implemented to summarize the coverage of the peak experiment,
-average profile and heatmap of peaks binding to TSS regions, genomic
-annotation, distance to TSS, and overlap of peaks or genes.")
-    (license license:artistic2.0)))
-
 (define-public r-copyhelper
   (package
     (name "r-copyhelper")
@@ -2413,6 +2365,53 @@ genome data packages and support for efficient SNP representation.")
     (description
      "This package provides a collection of tools for performing category
 analysis.")
+    (license license:artistic2.0)))
+
+(define-public r-chipseeker
+  (package
+    (name "r-chipseeker")
+    (version "1.26.2")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "ChIPseeker" version))
+              (sha256
+               (base32
+                "1r197qwsriap6s6nb2p9j3521pjs2f0lgyzvppvlxj1531sa6g6z"))))
+    (build-system r-build-system)
+    (inputs
+     `(("r-knitr" ,r-knitr)))
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-boot" ,r-boot)
+       ("r-enrichplot" ,r-enrichplot)
+       ("r-iranges" ,r-iranges)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gplots" ,r-gplots)
+       ("r-gtools" ,r-gtools)
+       ("r-dplyr" ,r-dplyr)
+       ("r-plotrix" ,r-plotrix)
+       ("r-dplyr" ,r-dplyr)
+       ("r-magrittr" ,r-magrittr)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-txdb-hsapiens-ucsc-hg19-knowngene"
+        ,r-txdb-hsapiens-ucsc-hg19-knowngene)))
+    (home-page "https://www.bioconductor.org/packages/ChIPseeker/")
+    (synopsis "ChIPseeker for ChIP peak annotation, comparison, and visualization")
+    (description "This package implements functions to retrieve the nearest
+genes around the peak, annotate genomic region of the peak, statstical methods
+for estimate the significance of overlap among ChIP peak data sets, and
+incorporate GEO database for user to compare the own dataset with those
+deposited in database.  The comparison can be used to infer cooperative
+regulation and thus can be used to generate hypotheses.  Several visualization
+functions are implemented to summarize the coverage of the peak experiment,
+average profile and heatmap of peaks binding to TSS regions, genomic
+annotation, distance to TSS, and overlap of peaks or genes.")
     (license license:artistic2.0)))
 
 (define-public r-chipseq
