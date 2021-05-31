@@ -1025,6 +1025,33 @@ out of dictionaries, tuples, etc, extending this ability beyond
 @code{AbstractArray}.")
     (license license:expat)))
 
+(define-public julia-indirectarrays
+  (package
+    (name "julia-indirectarrays")
+    (version "0.5.1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaArrays/IndirectArrays.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0l0jq0jnr9z3k431ni82xycq7mqapgxrbrx4yyk6lycvi41ipm4s"))))
+    (build-system julia-build-system)
+    (native-inputs
+     `(("julia-colors" ,julia-colors)
+       ("julia-fixedpointnumbers" ,julia-fixedpointnumbers)
+       ("julia-mappedarrays" ,julia-mappedarrays)))
+    (home-page "https://github.com/JuliaArrays/IndirectArrays.jl")
+    (synopsis "Julia implementation of indexed arrays")
+    (description "An @code{IndirectArray} is one that encodes data using a
+combination of an @code{index} and a @code{value} table.  Each element is
+assigned its own index, which is used to retrieve the value from the
+@code{value} table.  Among other uses, @code{IndirectArrays} can represent
+indexed images, sometimes called \"colormap images\" or \"paletted images.\"")
+    (license license:expat)))
+
 (define-public julia-inifile
   (package
     (name "julia-inifile")
