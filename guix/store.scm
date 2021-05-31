@@ -148,7 +148,6 @@
             built-in-builders
             references
             references/cached
-            references/substitutes
             references*
             query-path-info*
             requisites
@@ -1481,7 +1480,7 @@ error if there is no such root."
   ;; Brute-force cache mapping store items to their list of references.
   ;; Caching matters because when building a profile in the presence of
   ;; grafts, we keep calling 'graft-derivation', which in turn calls
-  ;; 'references/substitutes' many times with the same arguments.  Ideally we
+  ;; 'references/cached' many times with the same arguments.  Ideally we
   ;; would use a cache associated with the daemon connection instead (XXX).
   (make-hash-table 100))
 
@@ -1491,58 +1490,6 @@ error if there is no such root."
       (let ((references (references store item)))
         (hash-set! %reference-cache item references)
         references)))
-
-(define (references/substitutes store items)
-  "Return the list of list of references of ITEMS; the result has the same
-length as ITEMS.  Query substitute information for any item missing from the
-store at once.  Raise a '&store-protocol-error' exception if reference
-information for one of ITEMS is missing."
-  (let* ((requested  items)
-         (local-refs (map (lambda (item)
-                            (or (hash-ref %reference-cache item)
-                                (guard (c ((store-protocol-error? c) #f))
-                                  (references store item))))
-                          items))
-         (missing    (fold-right (lambda (item local-ref result)
-                                   (if local-ref
-                                       result
-                                       (cons item result)))
-                                 '()
-                                 items local-refs))
-
-         ;; Query all the substitutes at once to minimize the cost of
-         ;; launching 'guix substitute' and making HTTP requests.
-         (substs     (if (null? missing)
-                         '()
-                         (substitutable-path-info store missing))))
-    (when (< (length substs) (length missing))
-      (raise (condition (&store-protocol-error
-                         (message "cannot determine \
-the list of references")
-                         (status 1)))))
-
-    ;; Intersperse SUBSTS and LOCAL-REFS.
-    (let loop ((items       items)
-               (local-refs  local-refs)
-               (result      '()))
-      (match items
-        (()
-         (let ((result (reverse result)))
-           (for-each (cut hash-set! %reference-cache <> <>)
-                     requested result)
-           result))
-        ((item items ...)
-         (match local-refs
-           ((#f tail ...)
-            (loop items tail
-                  (cons (any (lambda (subst)
-                               (and (string=? (substitutable-path subst) item)
-                                    (substitutable-references subst)))
-                             substs)
-                        result)))
-           ((head tail ...)
-            (loop items tail
-                  (cons head result)))))))))
 
 (define* (fold-path store proc seed paths
                     #:optional (relatives (cut references store <>)))
