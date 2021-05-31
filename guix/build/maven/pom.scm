@@ -481,7 +481,7 @@ Returns nothing, but overrides the @var{pom-file} as a side-effect."
               (cons `(http://maven.apache.org/POM/4.0.0:version ,version) dep)))
           dep)))
 
-  (define* (find-version inputs group artifact #:optional optional?)
+  (define (find-packaged-version inputs group artifact)
     (let* ((directory (string-append "lib/m2/" (group->dir group)
                                      "/" artifact))
            (java-inputs (filter
@@ -493,13 +493,19 @@ Returns nothing, but overrides the @var{pom-file} as a side-effect."
            (versions (append-map ls java-inputs))
            (versions (sort versions version>?)))
       (if (null? versions)
-        (if optional?
           #f
-          (begin
-            (format (current-error-port) "maven: ~a:~a is missing from inputs~%"
-                    group artifact)
-            (throw 'no-such-input group artifact)))
-        (car versions))))
+          (car versions))))
+
+  (define* (find-version inputs group artifact #:optional optional?)
+    (let ((packaged-version (find-packaged-version inputs group artifact))
+          (local-version (assoc-ref (assoc-ref local-packages group) artifact)))
+      (or local-version packaged-version
+          (if optional?
+            #f
+            (begin
+              (format (current-error-port) "maven: ~a:~a is missing from inputs~%"
+                      group artifact)
+              (throw 'no-such-input group artifact))))))
 
   (let ((tmpfile (string-append pom-file ".tmp")))
     (with-output-to-file pom-file
