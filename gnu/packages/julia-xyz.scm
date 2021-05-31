@@ -1158,6 +1158,36 @@ expressions.  This includes a template-matching system and code-walking tools
 that let you do deep transformations of code.")
     (license license:expat)))
 
+(define-public julia-mappedarrays
+  (package
+    (name "julia-mappedarrays")
+    (version "0.4.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaArrays/MappedArrays.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0l5adird8m1cmnsxwhzi5hcr7q9bm1rf7a6018zc7kcn2yxdshy3"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-fixedpointnumbers" ,julia-fixedpointnumbers)))
+    (native-inputs
+     `(("julia-colortypes" ,julia-colortypes)
+       ("julia-fixedpointnumbers" ,julia-fixedpointnumbers)
+       ("julia-offsetarrays" ,julia-offsetarrays)))
+    (home-page "https://github.com/JuliaArrays/MappedArrays.jl")
+    (synopsis "Lazy in-place transformations of arrays")
+    (description "This package implements \"lazy\" in-place elementwise
+transformations of arrays for the Julia programming language.  Explicitly, it
+provides a \"view\" M of an array A so that @code{M[i] = f(A[i])} for a
+specified (but arbitrary) function f, without ever having to compute M
+explicitly (in the sense of allocating storage for M).  The name of the package
+comes from the fact that @code{M == map(f, A)}.")
+    (license license:expat)))
+
 (define-public julia-matrixfactorizations
   (package
     (name "julia-matrixfactorizations")
