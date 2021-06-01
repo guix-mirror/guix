@@ -19,6 +19,7 @@
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2021 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2021 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2021 Dion Mendel <guix@dm9.info>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1063,6 +1064,35 @@ all common programming languages.  Vala bindings are also provided.")
      "LXC is a userspace interface for the Linux kernel containment features.
 Through a powerful API and simple tools, it lets Linux users easily create and
 manage system or application containers.")
+    (license license:lgpl2.1+)))
+
+(define-public lxcfs
+  (package
+    (name "lxcfs")
+    (version "4.0.8")
+    (home-page "https://github.com/lxc/lxcfs")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page)
+                                  (commit (string-append "lxcfs-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1f74wy88si2ia035pcvciq5821kc8jcb75w1f8vhbp0cd29rqdpi"))))
+    (arguments
+     '(#:configure-flags '("--localstatedir=/var")))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("fuse" ,fuse)))
+    (build-system gnu-build-system)
+    (synopsis "FUSE based filesystem for LXC")
+    (description "LXCFS is a small FUSE filesystem written with the intention
+of making Linux containers feel more like a virtual machine.
+It started as a side-project of LXC but is useable by any runtime.")
     (license license:lgpl2.1+)))
 
 (define-public libvirt
