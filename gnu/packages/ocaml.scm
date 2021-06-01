@@ -4083,7 +4083,7 @@ syntax checking on dedukti files.")
      `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
        ("ocaml-migrate-parsetree"
         ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
-       ("ocaml-compiler-libs" ,ocaml4.07-compiler-libs)
+       ("ocaml-compiler-libs" ,(package-with-ocaml4.07 ocaml-compiler-libs))
        ("ocaml-sexplib0" ,(package-with-ocaml4.07 ocaml-sexplib0))
        ("ocaml-stdio" ,(package-with-ocaml4.07 ocaml-stdio))
        ("ocaml-ppxlib" ,ocaml4.07-ppxlib)))
@@ -4685,33 +4685,49 @@ provided by companion libraries such as
         #:dune ,ocaml4.07-dune))
      (properties '()))))
 
-(define-public ocaml4.07-compiler-libs
+(define-public ocaml-compiler-libs
   (package
-    (name "ocaml4.07-compiler-libs")
-    (version "0.11.0")
+    (name "ocaml-compiler-libs")
+    (version "0.12.3")
     (home-page "https://github.com/janestreet/ocaml-compiler-libs")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url (string-append home-page ".git"))
+             (url home-page)
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "03jds7bszh8wwpfwxb3dg0gyr1j1872wxwx1xqhry5ir0i84bg0s"))))
+         "00nrar7h2pyflbdiq6wwwrb4k5jh9iff0jllihzm6ms8d5pspsg5"))))
     (build-system dune-build-system)
-    (arguments
-     `(#:tests? #f ;no tests
-       #:ocaml ,ocaml-4.07
-       #:findlib ,ocaml4.07-findlib
-       #:dune ,ocaml4.07-dune))
-    (properties `((upstream-name . "ocaml-compiler-libs")))
+    (arguments `(#:tests? #f)) ;no tests
+    (properties `((upstream-name . "ocaml-compiler-libs")
+                  (ocaml4.07-variant . ,(delay ocaml4.07-compiler-libs))))
     (synopsis "Compiler libraries repackaged")
     (description "This package simply repackages the OCaml compiler libraries
 so they don't expose everything at toplevel.  For instance, @code{Ast_helper}
 is now @code{Ocaml_common.Ast_helper}.")
     (license license:expat)))
+
+(define-public ocaml4.07-compiler-libs
+  (package-with-ocaml4.07
+   (package
+     (inherit ocaml-compiler-libs)
+     (name "ocaml-compiler-libs")
+     (version "0.11.0")
+     (home-page "https://github.com/janestreet/ocaml-compiler-libs")
+     (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url home-page)
+              (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "03jds7bszh8wwpfwxb3dg0gyr1j1872wxwx1xqhry5ir0i84bg0s"))))
+     (properties `((upstream-name . "ocaml-compiler-libs"))))))
 
 (define-public ocaml-stdio
   (package
@@ -4789,7 +4805,7 @@ as part of the same ocaml-migrate-parsetree driver.")
     (build-system dune-build-system)
     (propagated-inputs
      `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
-       ("ocaml-compiler-libs" ,ocaml4.07-compiler-libs)
+       ("ocaml-compiler-libs" ,(package-with-ocaml4.07 ocaml-compiler-libs))
        ("ocaml-migrate-parsetree"
         ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
        ("ocaml-ppx-derivers" ,(package-with-ocaml4.07 ocaml-ppx-derivers))
