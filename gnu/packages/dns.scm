@@ -625,12 +625,15 @@ to result in system-wide compromise.")
     (inputs
      `(("expat" ,expat)
        ("libevent" ,libevent)
+       ("nghttp2" ,nghttp2 "lib")
        ("protobuf" ,protobuf)
        ("python-wrapper" ,python-wrapper)
        ("openssl" ,openssl)))
     (arguments
      `(#:configure-flags
        (list "--disable-static" ; save space and non-determinism in libunbound.a
+             (string-append
+              "--with-libnghttp2=" (assoc-ref %build-inputs "nghttp2"))
              (string-append
               "--with-ssl=" (assoc-ref %build-inputs "openssl"))
              (string-append
