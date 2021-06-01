@@ -3442,7 +3442,7 @@ JSON.")
        #:dune ,ocaml4.07-dune))
     (native-inputs
      `(("ocaml-ounit" ,(package-with-ocaml4.07 ocaml-ounit))
-       ("ocaml-ppx-sexp-conv" ,ocaml4.07-ppx-sexp-conv)))
+       ("ocaml-ppx-sexp-conv" ,(package-with-ocaml4.07 ocaml-ppx-sexp-conv))))
     (propagated-inputs
      `(("ocaml-re" ,(package-with-ocaml4.07 ocaml-re))
        ("ocaml-sexplib0" ,(package-with-ocaml4.07 ocaml-sexplib0))
@@ -5082,35 +5082,49 @@ and set record fields, iterate and fold over all fields of a record and create
 new record values.")
     (license license:asl2.0)))
 
-(define-public ocaml4.07-ppx-sexp-conv
+(define-public ocaml-ppx-sexp-conv
   (package
-    (name "ocaml4.07-ppx-sexp-conv")
-    (version "0.11.2")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                     (url "https://github.com/janestreet/ppx_sexp_conv")
-                     (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0pqwnqy1xp309wvdcaax4lg02yk64lq2w03mbgfvf6ps5ry4gis9"))))
+    (name "ocaml-ppx-sexp-conv")
+    (version "0.14.3")
+    (home-page "https://github.com/janestreet/ppx_sexp_conv")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0dbri9d00ydi0dw1cavswnqdmhjaaz80vap29ns2lr6mhhlvyjmj"))))
     (build-system dune-build-system)
     (propagated-inputs
-      `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
-        ("ocaml-migrate-parsetree"
-         ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
-        ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
-    (arguments
-     `(#:ocaml ,ocaml-4.07
-       #:findlib ,ocaml4.07-findlib
-       #:dune ,ocaml4.07-dune))
-    (properties `((upstream-name . "ppx_sexp_conv")))
-    (home-page "https://github.com/janestreet/ppx_sexp_conv")
+     `(("ocaml-base" ,ocaml-base)
+       ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+       ("ocaml-ppxlib" ,ocaml-ppxlib)))
+    (properties `((upstream-name . "ppx_sexp_conv")
+                  (ocaml4.07-variant . ,(delay ocaml4.07-ppx-sexp-conv))))
     (synopsis "Generation of S-expression conversion functions from type definitions")
     (description "This package generates S-expression conversion functions from type
 definitions.")
     (license license:asl2.0)))
+
+(define-public ocaml4.07-ppx-sexp-conv
+  (package-with-ocaml4.07
+   (package
+     (inherit ocaml-ppx-sexp-conv)
+     (name "ocaml-ppx-sexp-conv")
+     (version "0.11.2")
+     (source (origin
+               (method git-fetch)
+               (uri (git-reference
+                     (url "https://github.com/janestreet/ppx_sexp_conv")
+                     (commit (string-append "v" version))))
+               (file-name (git-file-name name version))
+               (sha256
+                (base32
+                 "0pqwnqy1xp309wvdcaax4lg02yk64lq2w03mbgfvf6ps5ry4gis9"))))
+     (properties `((upstream-name . "ppx_sexp_conv"))))))
 
 (define-public ocaml4.07-ppx-variants-conv
   (package
@@ -5119,30 +5133,30 @@ definitions.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/janestreet/ppx_variants_conv")
-                     (commit (string-append "v" version))))
+                    (url "https://github.com/janestreet/ppx_variants_conv")
+                    (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
                (base32
                 "1yc0gsds5m2nv39zga8nnrca2n75rkqy5dz4xj1635ybz20hhbjd"))))
     (build-system dune-build-system)
     (propagated-inputs
-      `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
-        ("ocaml-variantslib" ,ocaml4.07-variantslib)
-        ("ocaml-migrate-parsetree"
-         ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
-        ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
+     `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
+       ("ocaml-variantslib" ,ocaml4.07-variantslib)
+       ("ocaml-migrate-parsetree"
+        ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
+       ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
     (arguments
      `(#:ocaml ,ocaml-4.07
        #:findlib ,ocaml4.07-findlib
        #:dune ,ocaml4.07-dune))
     (properties
-      `((upstream-name . "ppx_variants_conv")))
+     `((upstream-name . "ppx_variants_conv")))
     (home-page
-      "https://github.com/janestreet/ppx_variants_conv")
+     "https://github.com/janestreet/ppx_variants_conv")
     (synopsis "Generation of accessor and iteration functions for OCaml variant types")
     (description
-      "This package generates accessors and iteration functions for OCaml
+     "This package generates accessors and iteration functions for OCaml
 variant types.")
     (license license:asl2.0)))
 
@@ -5161,7 +5175,7 @@ variant types.")
     (build-system dune-build-system)
     (propagated-inputs
       `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
-        ("ocaml-ppx-sexp-conv" ,ocaml4.07-ppx-sexp-conv)
+        ("ocaml-ppx-sexp-conv" ,(package-with-ocaml4.07 ocaml-ppx-sexp-conv))
         ("ocaml-migrate-parsetree"
          ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
         ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
@@ -5194,7 +5208,7 @@ string conversion.")
         ("ocaml-ppx-compare" ,ocaml4.07-ppx-compare)
         ("ocaml-ppx-custom-printf" ,ocaml4.07-ppx-custom-printf)
         ("ocaml-ppx-fields-conv" ,ocaml4.07-ppx-fields-conv)
-        ("ocaml-ppx-sexp-conv" ,ocaml4.07-ppx-sexp-conv)
+        ("ocaml-ppx-sexp-conv" ,(package-with-ocaml4.07 ocaml-ppx-sexp-conv))
         ("ocaml-ppx-variants-conv" ,ocaml4.07-ppx-variants-conv)
         ("ocaml-migrate-parsetree"
          ,(package-with-ocaml4.07 ocaml-migrate-parsetree))))
@@ -5261,7 +5275,7 @@ storage of large amounts of data.")
     (propagated-inputs
       `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
         ("ocaml-ppx-compare" ,ocaml4.07-ppx-compare)
-        ("ocaml-ppx-sexp-conv" ,ocaml4.07-ppx-sexp-conv)
+        ("ocaml-ppx-sexp-conv" ,(package-with-ocaml4.07 ocaml-ppx-sexp-conv))
         ("ocaml-migrate-parsetree"
          ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
         ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
@@ -5413,7 +5427,7 @@ many values).")
     (propagated-inputs
       `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
         ("ocaml-ppx-here" ,ocaml4.07-ppx-here)
-        ("ocaml-ppx-sexp-conv" ,ocaml4.07-ppx-sexp-conv)
+        ("ocaml-ppx-sexp-conv" ,(package-with-ocaml4.07 ocaml-ppx-sexp-conv))
         ("ocaml-migrate-parsetree"
          ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
         ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
@@ -5444,7 +5458,7 @@ ocaml values.")
     (propagated-inputs
       `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
         ("ocaml-ppx-here" ,ocaml4.07-ppx-here)
-        ("ocaml-ppx-sexp-conv" ,ocaml4.07-ppx-sexp-conv)
+        ("ocaml-ppx-sexp-conv" ,(package-with-ocaml4.07 ocaml-ppx-sexp-conv))
         ("ocaml-migrate-parsetree"
          ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
         ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
@@ -5628,7 +5642,7 @@ position.")
       `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
         ("ocaml-ppx-compare" ,ocaml4.07-ppx-compare)
         ("ocaml-ppx-here" ,ocaml4.07-ppx-here)
-        ("ocaml-ppx-sexp-conv" ,ocaml4.07-ppx-sexp-conv)
+        ("ocaml-ppx-sexp-conv" ,(package-with-ocaml4.07 ocaml-ppx-sexp-conv))
         ("ocaml-migrate-parsetree"
          ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
         ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
@@ -5665,7 +5679,7 @@ useful errors on failure.")
         ("ocaml-ppx-fields-conv" ,ocaml4.07-ppx-fields-conv)
         ("ocaml-ppx-here" ,ocaml4.07-ppx-here)
         ("ocaml-ppx-inline-test" ,ocaml4.07-ppx-inline-test)
-        ("ocaml-ppx-sexp-conv" ,ocaml4.07-ppx-sexp-conv)
+        ("ocaml-ppx-sexp-conv" ,(package-with-ocaml4.07 ocaml-ppx-sexp-conv))
         ("ocaml-ppx-variants-conv" ,ocaml4.07-ppx-variants-conv)
         ("ocaml-stdio" ,(package-with-ocaml4.07 ocaml-stdio))
         ("ocaml-migrate-parsetree"
@@ -5770,7 +5784,7 @@ from type definitions.")
         ("ocaml-ppx-enumerate" ,ocaml4.07-ppx-enumerate)
         ("ocaml-ppx-hash" ,ocaml4.07-ppx-hash)
         ("ocaml-ppx-js-style" ,ocaml4.07-ppx-js-style)
-        ("ocaml-ppx-sexp-conv" ,ocaml4.07-ppx-sexp-conv)
+        ("ocaml-ppx-sexp-conv" ,(package-with-ocaml4.07 ocaml-ppx-sexp-conv))
         ("ocaml-migrate-parsetree"
          ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
         ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
@@ -6079,7 +6093,7 @@ standard library that was developed by Jane Street.")
         ("ocaml-ppx-hash" ,ocaml4.07-ppx-hash)
         ("ocaml-ppx-inline-test" ,ocaml4.07-ppx-inline-test)
         ("ocaml-ppx-jane" ,ocaml4.07-ppx-jane)
-        ("ocaml-ppx-sexp-conv" ,ocaml4.07-ppx-sexp-conv)
+        ("ocaml-ppx-sexp-conv" ,(package-with-ocaml4.07 ocaml-ppx-sexp-conv))
         ("ocaml-ppx-sexp-message" ,ocaml4.07-ppx-sexp-message)
         ("ocaml-sexplib" ,(package-with-ocaml4.07 ocaml-sexplib))
         ("ocaml-splittable-random" ,ocaml4.07-splittable-random)
