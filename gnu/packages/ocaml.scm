@@ -5364,36 +5364,38 @@ many values).")
     (description "Syntax extension for writing in-line benchmarks in ocaml code.")
     (license license:asl2.0)))
 
-(define-public ocaml4.07-ppx-here
+(define-public ocaml-ppx-here
   (package
-    (name "ocaml4.07-ppx-here")
-    (version "0.11.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://ocaml.janestreet.com/ocaml-core/v"
-                                  (version-major+minor version)
-                                  "/files/ppx_here-v" version ".tar.gz"))
-              (sha256
-               (base32
-                "0wxcak3ay4jpigm3pfdcpr65qw4hxfa8whhkryhcd8gy71x056z5"))))
+    (name "ocaml-ppx-here")
+    (version "0.14.0")
+    (source
+     (janestreet-origin "ppx_here" version
+                        "0b444djy68v6ji0ypwv5l02pkl151qzrgg96lyhl8dxfrzvj1zkj"))
     (build-system dune-build-system)
     (arguments
      ;; broken tests
-     `(#:tests? #f
-       #:ocaml ,ocaml-4.07
-       #:findlib ,ocaml4.07-findlib
-       #:dune ,ocaml4.07-dune))
+     `(#:tests? #f))
     (propagated-inputs
-      `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
-        ("ocaml-migrate-parsetree"
-         ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
-        ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
-    (properties `((upstream-name . "ppx_here")))
+     `(("ocaml-base" ,ocaml-base)
+        ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+        ("ocaml-ppxlib" ,ocaml-ppxlib)))
+    (properties `((upstream-name . "ppx_here")
+                  (ocaml4.07-variant . ,(delay ocaml4.07-ppx-here))))
     (home-page "https://github.com/janestreet/ppx_here")
     (synopsis "Expands [%here] into its location")
     (description
       "Part of the Jane Street's PPX rewriters collection.")
     (license license:asl2.0)))
+
+(define-public ocaml4.07-ppx-here
+  (package-with-ocaml4.07
+   (package
+     (inherit ocaml-ppx-here)
+     (version "0.11.0")
+     (source
+      (janestreet-origin "ppx_here" version
+                         "0wxcak3ay4jpigm3pfdcpr65qw4hxfa8whhkryhcd8gy71x056z5"))
+     (properties `((upstream-name . "ppx_here"))))))
 
 (define-public ocaml4.07-typerep
   (package
@@ -5438,7 +5440,7 @@ many values).")
        #:dune ,ocaml4.07-dune))
     (propagated-inputs
       `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
-        ("ocaml-ppx-here" ,ocaml4.07-ppx-here)
+        ("ocaml-ppx-here" ,(package-with-ocaml4.07 ocaml-ppx-here))
         ("ocaml-ppx-sexp-conv" ,(package-with-ocaml4.07 ocaml-ppx-sexp-conv))
         ("ocaml-migrate-parsetree"
          ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
@@ -5469,7 +5471,7 @@ ocaml values.")
        #:dune ,ocaml4.07-dune))
     (propagated-inputs
       `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
-        ("ocaml-ppx-here" ,ocaml4.07-ppx-here)
+        ("ocaml-ppx-here" ,(package-with-ocaml4.07 ocaml-ppx-here))
         ("ocaml-ppx-sexp-conv" ,(package-with-ocaml4.07 ocaml-ppx-sexp-conv))
         ("ocaml-migrate-parsetree"
          ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
@@ -5624,7 +5626,7 @@ match expressions, and if expressions.")
        #:dune ,ocaml4.07-dune))
     (propagated-inputs
       `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
-        ("ocaml-ppx-here" ,ocaml4.07-ppx-here)
+        ("ocaml-ppx-here" ,(package-with-ocaml4.07 ocaml-ppx-here))
         ("ocaml-migrate-parsetree"
          ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
         ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
@@ -5655,7 +5657,7 @@ position.")
     (propagated-inputs
       `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
         ("ocaml-ppx-compare" ,(package-with-ocaml4.07 ocaml-ppx-compare))
-        ("ocaml-ppx-here" ,ocaml4.07-ppx-here)
+        ("ocaml-ppx-here" ,(package-with-ocaml4.07 ocaml-ppx-here))
         ("ocaml-ppx-sexp-conv" ,(package-with-ocaml4.07 ocaml-ppx-sexp-conv))
         ("ocaml-migrate-parsetree"
          ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
@@ -5691,7 +5693,7 @@ useful errors on failure.")
         ("ocaml-ppx-compare" ,(package-with-ocaml4.07 ocaml-ppx-compare))
         ("ocaml-ppx-custom-printf" ,ocaml4.07-ppx-custom-printf)
         ("ocaml-ppx-fields-conv" ,ocaml4.07-ppx-fields-conv)
-        ("ocaml-ppx-here" ,ocaml4.07-ppx-here)
+        ("ocaml-ppx-here" ,(package-with-ocaml4.07 ocaml-ppx-here))
         ("ocaml-ppx-inline-test" ,ocaml4.07-ppx-inline-test)
         ("ocaml-ppx-sexp-conv" ,(package-with-ocaml4.07 ocaml-ppx-sexp-conv))
         ("ocaml-ppx-variants-conv" ,ocaml4.07-ppx-variants-conv)
@@ -5834,7 +5836,7 @@ verification tool.")
     (propagated-inputs
       `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
         ("ocaml-bin-prot" ,ocaml4.07-bin-prot)
-        ("ocaml-ppx-here" ,ocaml4.07-ppx-here)
+        ("ocaml-ppx-here" ,(package-with-ocaml4.07 ocaml-ppx-here))
         ("ocaml-migrate-parsetree"
          ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
         ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
@@ -5872,7 +5874,7 @@ functions from type definitions.")
         ("ocaml-ppx-expect" ,ocaml4.07-ppx-expect)
         ("ocaml-ppx-fail" ,ocaml4.07-ppx-fail)
         ("ocaml-ppx-fields-conv" ,ocaml4.07-ppx-fields-conv)
-        ("ocaml-ppx-here" ,ocaml4.07-ppx-here)
+        ("ocaml-ppx-here" ,(package-with-ocaml4.07 ocaml-ppx-here))
         ("ocaml-ppx-inline-test" ,ocaml4.07-ppx-inline-test)
         ("ocaml-ppx-let" ,(package-with-ocaml4.07 ocaml-ppx-let))
         ("ocaml-ppx-optcomp" ,ocaml4.07-ppx-optcomp)
