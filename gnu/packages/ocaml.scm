@@ -6591,3 +6591,37 @@ provides support to program with time varying values: declarative events and
  signals.  React doesn't define any primitive event or signal, it lets the
 client chooses the concrete timeline.")
     (license license:lgpl2.1+)))
+
+(define-public ocaml-bigstringaf
+  (package
+    (name "ocaml-bigstringaf")
+    (version "0.7.0")
+    (home-page "https://github.com/inhabitedtype/bigstringaf")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1q1sqxzdnlrpl95ccrhl7lwy3zswgd9rbn19ildclh0lyi2vazbj"))))
+    (build-system dune-build-system)
+    (arguments
+     '(#:test-target "."))
+    (propagated-inputs
+     `(("ocaml-bigarray-compat" ,ocaml-bigarray-compat)))
+    (native-inputs
+     `(("ocaml-alcotest" ,ocaml-alcotest)
+       ("pkg-config" ,pkg-config)))
+    (synopsis
+     "Bigstring intrinsics and fast blits based on memcpy/memmove")
+    (description
+     "The OCaml compiler has a bunch of intrinsics for Bigstrings, but they're
+not widely-known, sometimes misused, and so programs that use Bigstrings are
+slower than they have to be.  And even if a library got that part right and
+exposed the intrinsics properly, the compiler doesn't have any fast blits
+between Bigstrings and other string-like types.  @code{bigstringaf} provides
+these missing pieces.")
+    (license license:bsd-3)))
