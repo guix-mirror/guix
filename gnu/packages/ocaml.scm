@@ -5659,37 +5659,46 @@ instruction cache on the hot path.  See also
 https://github.com/ocaml/ocaml/issues/8563.")
     (license license:expat)))
 
-(define-public ocaml4.07-ppx-assert
+(define-public ocaml-ppx-assert
   (package
-    (name "ocaml4.07-ppx-assert")
-    (version "0.11.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://ocaml.janestreet.com/ocaml-core/v"
-                                  (version-major+minor version)
-                                  "/files/ppx_assert-v" version ".tar.gz"))
-              (sha256
-               (base32
-                "17kd311n0l9f72gblf9kv8i5rghr106w37x4f0m5qwh6nlgl0j9k"))))
+    (name "ocaml-ppx-assert")
+    (version "0.14.0")
+    (source
+     (janestreet-origin "ppx_assert" version
+                        "1l2rr4jz2q5b35ryn2z146z7m9v6k8krp5gpn8ilib66mnz5zx15"))
     (build-system dune-build-system)
-    (arguments
-     `(#:ocaml ,ocaml-4.07
-       #:findlib ,ocaml4.07-findlib
-       #:dune ,ocaml4.07-dune))
     (propagated-inputs
-      `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
-        ("ocaml-ppx-compare" ,(package-with-ocaml4.07 ocaml-ppx-compare))
-        ("ocaml-ppx-here" ,(package-with-ocaml4.07 ocaml-ppx-here))
-        ("ocaml-ppx-sexp-conv" ,(package-with-ocaml4.07 ocaml-ppx-sexp-conv))
-        ("ocaml-migrate-parsetree"
-         ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
-        ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
-    (properties `((upstream-name . "ppx_assert")))
+     `(("ocaml-base" ,ocaml-base)
+       ("ocaml-ppx-cold" ,ocaml-ppx-cold)
+       ("ocaml-ppx-compare" ,ocaml-ppx-compare)
+       ("ocaml-ppx-here" ,ocaml-ppx-here)
+       ("ocaml-ppx-sexp-conv" ,ocaml-ppx-sexp-conv)
+       ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+       ("ocaml-ppxlib" ,ocaml-ppxlib)))
+    (properties `((upstream-name . "ppx_assert")
+                  (ocaml4.07-variant . ,(delay ocaml4.07-ppx-assert))))
     (home-page "https://github.com/janestreet/ppx_assert")
     (synopsis "Assert-like extension nodes that raise useful errors on failure")
     (description "This package contains assert-like extension nodes that raise
 useful errors on failure.")
     (license license:asl2.0)))
+
+(define-public ocaml4.07-ppx-assert
+  (package-with-ocaml4.07
+   (package
+     (inherit ocaml-ppx-assert)
+     (version "0.11.0")
+     (source
+      (janestreet-origin "ppx_assert" version
+                         "17kd311n0l9f72gblf9kv8i5rghr106w37x4f0m5qwh6nlgl0j9k"))
+     (propagated-inputs
+      `(("ocaml-base" ,ocaml-base)
+        ("ocaml-ppx-compare" ,ocaml-ppx-compare)
+        ("ocaml-ppx-here" ,ocaml-ppx-here)
+        ("ocaml-ppx-sexp-conv" ,ocaml-ppx-sexp-conv)
+        ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+        ("ocaml-ppxlib" ,ocaml-ppxlib)))
+     (properties `((upstream-name . "ppx_assert"))))))
 
 (define-public ocaml4.07-ppx-expect
   (package
@@ -5711,7 +5720,7 @@ useful errors on failure.")
        #:dune ,ocaml4.07-dune))
     (propagated-inputs
       `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
-        ("ocaml-ppx-assert" ,ocaml4.07-ppx-assert)
+        ("ocaml-ppx-assert" ,(package-with-ocaml4.07 ocaml4.07-ppx-assert))
         ("ocaml-ppx-compare" ,(package-with-ocaml4.07 ocaml-ppx-compare))
         ("ocaml-ppx-custom-printf" ,ocaml4.07-ppx-custom-printf)
         ("ocaml-ppx-fields-conv" ,ocaml4.07-ppx-fields-conv)
@@ -5888,7 +5897,7 @@ functions from type definitions.")
        #:findlib ,ocaml4.07-findlib
        #:dune ,ocaml4.07-dune))
     (propagated-inputs
-      `(("ocaml-ppx-assert" ,ocaml4.07-ppx-assert)
+     `(("ocaml-ppx-assert" ,(package-with-ocaml4.07 ocaml-ppx-assert))
         ("ocaml-ppx-base" ,ocaml4.07-ppx-base)
         ("ocaml-ppx-bench" ,ocaml4.07-ppx-bench)
         ("ocaml-ppx-bin-prot" ,ocaml4.07-ppx-bin-prot)
@@ -6084,7 +6093,7 @@ thousands of times faster than fork.
       `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
         ("ocaml-configurator" ,ocaml4.07-configurator)
         ("ocaml-core-kernel" ,ocaml4.07-core-kernel)
-        ("ocaml-ppx-assert" ,ocaml4.07-ppx-assert)
+        ("ocaml-ppx-assert" ,(package-with-ocaml4.07 ocaml-ppx-assert))
         ("ocaml-ppx-jane" ,ocaml4.07-ppx-jane)
         ("ocaml-sexplib" ,(package-with-ocaml4.07 ocaml-sexplib))
         ("ocaml-spawn" ,ocaml4.07-spawn)
@@ -6126,7 +6135,7 @@ standard library that was developed by Jane Street.")
         ("ocaml-configurator" ,ocaml4.07-configurator)
         ("ocaml-fieldslib" ,ocaml4.07-fieldslib)
         ("ocaml-jane-street-headers" ,ocaml4.07-jane-street-headers)
-        ("ocaml-ppx-assert" ,ocaml4.07-ppx-assert)
+        ("ocaml-ppx-assert" ,(package-with-ocaml4.07 ocaml-ppx-assert))
         ("ocaml-ppx-base" ,ocaml4.07-ppx-base)
         ("ocaml-ppx-hash" ,ocaml4.07-ppx-hash)
         ("ocaml-ppx-inline-test" ,ocaml4.07-ppx-inline-test)
