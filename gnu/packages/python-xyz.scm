@@ -9692,6 +9692,26 @@ output.")
      "Python library that makes exceptions handling and inspection easier.")
     (license license:expat)))
 
+(define-public python-stdlib-list
+  (package
+    (name "python-stdlib-list")
+    (version "0.8.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "stdlib-list" version))
+              (sha256
+               (base32
+                "17vdn4q0sdlndc2fr9svapxx6366hnrhkn0fswp1xmr0jxqh7rd1"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)) ; Tests require more dependencies.
+    (native-inputs
+     `(("python-sphinx" ,python-sphinx)))
+    (home-page "https://github.com/jackmaney/python-stdlib-list")
+    (synopsis "Python Standard Libraries")
+    (description "This package contains a list of Python Standard Libraries.")
+    (license license:expat)))
+
 (define-public python-straight-plugin
   (package
     (name "python-straight-plugin")
