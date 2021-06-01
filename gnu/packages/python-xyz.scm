@@ -2189,6 +2189,25 @@ The event dispatch is implicit, which means you can easily use @code{Eventlet}
 from the Python interpreter, or as a small part of a larger application.")
   (license license:expat)))
 
+(define-public python-sinfo
+  (package
+    (name "python-sinfo")
+    (version "0.3.4")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "sinfo" version))
+              (sha256
+               (base32
+                "0kdsp883mx0lfyykv0p12bvs203kdm3skb8bw5wf2pc7kb393sl1"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-stdlib-list" ,python-stdlib-list)))
+    (home-page "https://gitlab.com/joelostblom/session_info")
+    (synopsis "Output module version information loaded in a Python session")
+    (description "This package outputs version information for modules loaded
+in the current session, Python, and the OS.")
+    (license license:bsd-3)))
+
 (define-public python-six
   (package
     (name "python-six")
