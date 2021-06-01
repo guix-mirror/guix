@@ -5279,37 +5279,45 @@ storage of large amounts of data.")
     (description "Octavius is a library to parse the `ocamldoc` comment syntax.")
     (license license:isc)))
 
-(define-public ocaml4.07-ppx-hash
+(define-public ocaml-ppx-hash
   (package
-    (name "ocaml4.07-ppx-hash")
-    (version "0.11.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                     (url "https://github.com/janestreet/ppx_hash")
-                     (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1p0ic6aijxlrdggpmycj12q3cy9xksbq2vq727215maz4snvlf5p"))))
+    (name "ocaml-ppx-hash")
+    (version "0.14.0")
+    (source
+     (janestreet-origin "ppx_hash" version
+                "0x4wgdvhgd8a49bzari52jpkykxpv6ncgp5ncda3xgg0a9r49s8n"))
     (build-system dune-build-system)
     (propagated-inputs
-      `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
-        ("ocaml-ppx-compare" ,(package-with-ocaml4.07 ocaml-ppx-compare))
-        ("ocaml-ppx-sexp-conv" ,(package-with-ocaml4.07 ocaml-ppx-sexp-conv))
-        ("ocaml-migrate-parsetree"
-         ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
-        ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
-    (arguments
-     `(#:ocaml ,ocaml-4.07
-       #:findlib ,ocaml4.07-findlib
-       #:dune ,ocaml4.07-dune))
-    (properties `((upstream-name . "ppx_hash")))
+     `(("ocaml-base" ,ocaml-base)
+       ("ocaml-ppx-compare" ,ocaml-ppx-compare)
+       ("ocaml-ppx-sexp-conv" ,ocaml-ppx-sexp-conv)
+        ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+        ("ocaml-ppxlib" ,ocaml-ppxlib)))
+    (properties `((upstream-name . "ppx_hash")
+                  (ocaml4.07-variant . ,(delay ocaml4.07-ppx-hash))))
     (home-page "https://github.com/janestreet/ppx_hash")
     (synopsis "Generation of hash functions from type expressions and definitions")
     (description "This package is a collection of ppx rewriters that generate
 hash functions from type exrpessions and definitions.")
     (license license:asl2.0)))
+
+(define-public ocaml4.07-ppx-hash
+  (package-with-ocaml4.07
+   (package
+     (inherit ocaml-ppx-hash)
+     (name "ocaml-ppx-hash")
+     (home-page "https://github.com/janestreet/ppx_hash")
+     (version "0.11.1")
+     (source (origin
+               (method git-fetch)
+               (uri (git-reference
+                     (url home-page)
+                     (commit (string-append "v" version))))
+               (file-name (git-file-name name version))
+               (sha256
+                (base32
+                 "1p0ic6aijxlrdggpmycj12q3cy9xksbq2vq727215maz4snvlf5p"))))
+     (properties `((upstream-name . "ppx_hash"))))))
 
 (define-public ocaml4.07-ppx-enumerate
   (package
@@ -5318,23 +5326,23 @@ hash functions from type exrpessions and definitions.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/janestreet/ppx_enumerate")
-                     (commit (string-append "v" version))))
+                    (url "https://github.com/janestreet/ppx_enumerate")
+                    (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
                (base32
                 "0spx9k1v7vjjb6sigbfs69yndgq76v114jhxvzjmffw7q989cyhr"))))
     (build-system dune-build-system)
     (arguments
-     `(#:tests? #f; no test suite
+     `(#:tests? #f                      ; no test suite
        #:ocaml ,ocaml-4.07
        #:findlib ,ocaml4.07-findlib
        #:dune ,ocaml4.07-dune))
     (propagated-inputs
-      `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
-        ("ocaml-migrate-parsetree"
-         ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
-        ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
+     `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
+       ("ocaml-migrate-parsetree"
+        ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
+       ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
     (properties `((upstream-name . "ppx_enumerate")))
     (home-page "https://github.com/janestreet/ppx_enumerate")
     (synopsis "Generate a list containing all values of a finite type")
@@ -5838,7 +5846,7 @@ from type definitions.")
     (propagated-inputs
      `(("ocaml-ppx-compare" ,(package-with-ocaml4.07 ocaml-ppx-compare))
         ("ocaml-ppx-enumerate" ,ocaml4.07-ppx-enumerate)
-        ("ocaml-ppx-hash" ,ocaml4.07-ppx-hash)
+        ("ocaml-ppx-hash" ,(package-with-ocaml4.07 ocaml-ppx-hash))
         ("ocaml-ppx-js-style" ,ocaml4.07-ppx-js-style)
         ("ocaml-ppx-sexp-conv" ,(package-with-ocaml4.07 ocaml-ppx-sexp-conv))
         ("ocaml-migrate-parsetree"
@@ -6146,7 +6154,7 @@ standard library that was developed by Jane Street.")
         ("ocaml-jane-street-headers" ,ocaml4.07-jane-street-headers)
         ("ocaml-ppx-assert" ,(package-with-ocaml4.07 ocaml-ppx-assert))
         ("ocaml-ppx-base" ,ocaml4.07-ppx-base)
-        ("ocaml-ppx-hash" ,ocaml4.07-ppx-hash)
+        ("ocaml-ppx-hash" ,(package-with-ocaml4.07 ocaml-ppx-hash))
         ("ocaml-ppx-inline-test" ,ocaml4.07-ppx-inline-test)
         ("ocaml-ppx-jane" ,ocaml4.07-ppx-jane)
         ("ocaml-ppx-sexp-conv" ,(package-with-ocaml4.07 ocaml-ppx-sexp-conv))
