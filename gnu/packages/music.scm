@@ -69,6 +69,7 @@
   #:use-module (guix build-system python)
   #:use-module (guix build-system scons)
   #:use-module (guix build-system glib-or-gtk)
+  #:use-module (guix build-system qt)
   #:use-module (guix build-system waf)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system go)
@@ -4756,7 +4757,7 @@ standalone JACK client and an LV2 plugin is also available.")
                        "thirdparty/portmidi"
                        "thirdparty/qt-google-analytics"))
            #t))))
-    (build-system cmake-build-system)
+    (build-system qt-build-system)
     (arguments
      `(#:configure-flags
        `("-DBUILD_TELEMETRY_MODULE=OFF" ;don't phone home
@@ -4787,6 +4788,7 @@ standalone JACK client and an LV2 plugin is also available.")
        ("pulseaudio" ,pulseaudio)
        ("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)
+       ("qtgraphicaleffects" ,qtgraphicaleffects)
        ("qtquickcontrols2" ,qtquickcontrols2)
        ("qtscript" ,qtscript)
        ("qtsvg" ,qtsvg)
