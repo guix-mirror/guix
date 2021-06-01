@@ -2507,9 +2507,9 @@ format.  It can process XML documents without a complete in-memory
 representation of the data.")
     (license license:isc)))
 
-(define-public ocaml4.07-gen
+(define-public ocaml-gen
   (package
-    (name "ocaml4.07-gen")
+    (name "ocaml-gen")
     (version "0.5.3")
     (source (origin
               (method git-fetch)
@@ -2522,16 +2522,13 @@ representation of the data.")
                 "1jzrs0nsdk55annkd2zrk5svi61i3b1nk6qyqdc2y26vnzqvzfg8"))))
     (build-system dune-build-system)
     (arguments
-     `(#:tests? #f; no tests
-       #:package "gen"
-       #:ocaml ,ocaml-4.07
-       #:findlib ,ocaml4.07-findlib
-       #:dune ,ocaml4.07-dune))
+     `(#:package "gen"
+       #:test-target "."))
     (propagated-inputs
-     `(("ocaml-odoc" ,(package-with-ocaml4.07 ocaml4.07-odoc))))
+     `(("ocaml-odoc" ,ocaml-odoc)))
     (native-inputs
-     `(("ocaml-qtest" ,(package-with-ocaml4.07 ocaml-qtest))
-       ("ocaml-qcheck" ,(package-with-ocaml4.07 ocaml-qcheck))))
+     `(("ocaml-qtest" ,ocaml-qtest)
+       ("ocaml-qcheck" ,ocaml-qcheck)))
     (home-page "https://github.com/c-cube/gen/")
     (synopsis "Iterators for OCaml, both restartable and consumable")
     (description "Gen implements iterators of OCaml, that are both restartable
@@ -2576,7 +2573,7 @@ and consumable.")
     (native-inputs
      `(("ocamlbuild" ,(package-with-ocaml4.07 ocamlbuild))))
     (propagated-inputs
-     `(("ocaml-gen" ,ocaml4.07-gen)
+     `(("ocaml-gen" ,(package-with-ocaml4.07 ocaml-gen))
        ("ocaml-ppx-tools-versioned"
         ,(package-with-ocaml4.07 ocaml-ppx-tools-versioned))
        ("ocaml-uchar" ,(package-with-ocaml4.07 ocaml-uchar))))
