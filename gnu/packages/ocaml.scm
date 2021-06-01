@@ -5637,6 +5637,28 @@ match expressions, and if expressions.")
 position.")
     (license license:asl2.0)))
 
+(define-public ocaml-ppx-cold
+  (package
+    (name "ocaml-ppx-cold")
+    (version "0.14.0")
+    (home-page "https://github.com/janestreet/ppx_cold")
+    (source
+     (janestreet-origin "ppx_cold" version
+                        "1madfzhpir9amnxmg530n70vll0jrl59vyp71miji73i6b9sy6n2"))
+    (build-system dune-build-system)
+    (arguments `(#:test-target "tests"))
+    (propagated-inputs
+     `(("ocaml-base" ,ocaml-base)
+       ("ocaml-ppxlib" ,ocaml-ppxlib)))
+    (properties `((upstream-name . "ppx_cold")))
+    (synopsis "Syntax extension for indicating cold path")
+    (description
+     "This package contains an syntax extension to indicate that the code is
+on the cold path and should be kept out of the way to avoid polluting the
+instruction cache on the hot path.  See also
+https://github.com/ocaml/ocaml/issues/8563.")
+    (license license:expat)))
+
 (define-public ocaml4.07-ppx-assert
   (package
     (name "ocaml4.07-ppx-assert")
