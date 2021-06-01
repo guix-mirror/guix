@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
-;;; Copyright © 2017, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -21,6 +21,7 @@
 (define-module (gnu packages jemalloc)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
+  #:use-module (ice-9 match)
   #:use-module ((guix licenses) #:select (bsd-2))
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -52,12 +53,14 @@
              (substitute* "Makefile.in"
                (("\\$\\(srcroot\\)test/unit/pages.c \\\\") "\\"))
              #t)))
-       ,@(if (any (cute string-prefix? <> (or (%current-target-system)
-                                              (%current-system)))
-                 '("x86_64" "i686"))
-           ;; Transparent huge pages are only enabled by default on Intel processors
-           '()
-           '(#:configure-flags (list "--disable-thp")))))
+       #:configure-flags
+       '(,@(match (%current-system)
+             ((or "i686-linux" "x86_64-linux")
+              '())
+             ("powerpc-linux"
+              (list "--disable-thp" "CPPFLAGS=-maltivec"))
+             (_
+              (list "--disable-thp"))))))
     (inputs `(("perl" ,perl)))
     ;; Install the scripts to a separate output to avoid referencing Perl and
     ;; Bash in the default output, saving ~75 MiB on the closure.
