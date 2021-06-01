@@ -5562,34 +5562,36 @@ used to handle optional compilations of pieces of code depending of the word
 size, the version of the compiler, ...")
     (license license:asl2.0)))
 
-(define-public ocaml4.07-ppx-let
+(define-public ocaml-ppx-let
   (package
-    (name "ocaml4.07-ppx-let")
-    (version "0.11.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://ocaml.janestreet.com/ocaml-core/v"
-                                  (version-major+minor version)
-                                  "/files/ppx_let-v" version ".tar.gz"))
-              (sha256
-               (base32
-                "1wdfw6w4xbg97a35yg6bif9gggxniy9ddnrjfw1a0inkl2yamxkj"))))
+    (name "ocaml-ppx-let")
+    (version "0.14.0")
+    (source
+     (janestreet-origin "ppx_let" version
+                        "1qcrnd86pbr1di5m6z4ps4p15qawwa02jxwz3xfd82hdbjmdwf1s"))
     (build-system dune-build-system)
-    (arguments
-     `(#:ocaml ,ocaml-4.07
-       #:findlib ,ocaml4.07-findlib
-       #:dune ,ocaml4.07-dune))
     (propagated-inputs
-      `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
-        ("ocaml-migrate-parsetree"
-         ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
-        ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
-    (properties `((upstream-name . "ppx_let")))
+     `(("ocaml-base" ,ocaml-base)
+       ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+       ("ocaml-ppxlib" ,ocaml-ppxlib)))
+    (properties `((upstream-name . "ppx_let")
+                  (ocaml4.07-variant . ,(delay ocaml4.07-ppx-let))))
     (home-page "https://github.com/janestreet/ppx_let")
     (synopsis "Monadic let-bindings")
     (description "A ppx rewriter for monadic and applicative let bindings,
 match expressions, and if expressions.")
     (license license:asl2.0)))
+
+(define-public ocaml4.07-ppx-let
+  (package-with-ocaml4.07
+   (package
+     (inherit ocaml-ppx-let)
+     (version "0.11.0")
+     (source
+      (janestreet-origin "ppx_let" version
+                         "1wdfw6w4xbg97a35yg6bif9gggxniy9ddnrjfw1a0inkl2yamxkj"))
+
+     (properties `(upstream-name . "ppx_let")))))
 
 (define-public ocaml4.07-ppx-fail
   (package
@@ -5860,7 +5862,7 @@ functions from type definitions.")
         ("ocaml-ppx-fields-conv" ,ocaml4.07-ppx-fields-conv)
         ("ocaml-ppx-here" ,ocaml4.07-ppx-here)
         ("ocaml-ppx-inline-test" ,ocaml4.07-ppx-inline-test)
-        ("ocaml-ppx-let" ,ocaml4.07-ppx-let)
+        ("ocaml-ppx-let" ,(package-with-ocaml4.07 ocaml-ppx-let))
         ("ocaml-ppx-optcomp" ,ocaml4.07-ppx-optcomp)
         ("ocaml-ppx-optional" ,ocaml4.07-ppx-optional)
         ("ocaml-ppx-pipebang" ,ocaml4.07-ppx-pipebang)
