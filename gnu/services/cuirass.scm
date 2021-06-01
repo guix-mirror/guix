@@ -38,16 +38,13 @@
   #:use-module (gnu system shadow)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match)
-  #:export (<cuirass-remote-server-configuration>
-            cuirass-remote-server-configuration
+  #:export (cuirass-remote-server-configuration
             cuirass-remote-server-configuration?
 
-            <cuirass-configuration>
             cuirass-configuration
             cuirass-configuration?
             cuirass-service-type
 
-            <cuirass-remote-worker-configuration>
             cuirass-remote-worker-configuration
             cuirass-remote-worker-configuration?
             cuirass-remote-worker-service-type))
