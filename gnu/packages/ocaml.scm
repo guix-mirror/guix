@@ -3832,7 +3832,7 @@ long and size_t whose sizes depend on the host platform.")
 (define-public ocaml-ctypes
   (package
    (name "ocaml-ctypes")
-   (version "0.14.0")
+   (version "0.18.0")
    (home-page "https://github.com/ocamllabs/ocaml-ctypes")
    (source (origin
              (method git-fetch)
@@ -3842,7 +3842,7 @@ long and size_t whose sizes depend on the host platform.")
              (file-name (git-file-name name version))
              (sha256
               (base32
-               "1b2q3h63ngf4x9qp65qwapf2dg9q0mcdah6qjm2q0c7v2p5vysv9"))))
+               "03zrbnl16m67ls0yfhq7a4k4238x6x6b3m456g4dw2yqwc153vks"))))
    (build-system ocaml-build-system)
    (arguments
     `(#:tests? #f; require an old lwt
@@ -3861,6 +3861,8 @@ long and size_t whose sizes depend on the host platform.")
         (delete 'configure))))
    (native-inputs
     `(("pkg-config" ,pkg-config)))
+   (propagated-inputs
+    `(("bigarray-compat" ,ocaml-bigarray-compat)))
    (inputs
     `(("libffi" ,libffi)
       ("ounit" ,ocaml-ounit)
