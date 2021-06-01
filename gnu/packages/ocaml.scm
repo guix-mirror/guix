@@ -1977,7 +1977,7 @@ library.")
        #:dune ,ocaml4.07-dune))
     (native-inputs
      `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
-       ("ocaml-stdio" ,ocaml4.07-stdio)
+       ("ocaml-stdio" ,(package-with-ocaml4.07 ocaml-stdio))
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("sqlite" ,sqlite)))
@@ -4085,7 +4085,7 @@ syntax checking on dedukti files.")
         ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
        ("ocaml-compiler-libs" ,ocaml4.07-compiler-libs)
        ("ocaml-sexplib0" ,(package-with-ocaml4.07 ocaml-sexplib0))
-       ("ocaml-stdio" ,ocaml4.07-stdio)
+       ("ocaml-stdio" ,(package-with-ocaml4.07 ocaml-stdio))
        ("ocaml-ppxlib" ,ocaml4.07-ppxlib)))
     (properties `((upstream-name . "ppx_inline_test")))
     (synopsis "Syntax extension for writing in-line tests in ocaml code")
@@ -4428,7 +4428,7 @@ Atom.")
      `(("gsl" ,gsl)))
     (propagated-inputs
      `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
-       ("ocaml-stdio" ,ocaml4.07-stdio)))
+       ("ocaml-stdio" ,(package-with-ocaml4.07 ocaml-stdio))))
     (home-page "https://mmottl.github.io/gsl-ocaml")
     (synopsis "Bindings to the GNU Scientific Library")
     (description
@@ -4713,36 +4713,36 @@ so they don't expose everything at toplevel.  For instance, @code{Ast_helper}
 is now @code{Ocaml_common.Ast_helper}.")
     (license license:expat)))
 
-(define-public ocaml4.07-stdio
+(define-public ocaml-stdio
   (package
-    (name "ocaml4.07-stdio")
-    (version "0.11.0")
+    (name "ocaml-stdio")
+    (version "0.14.0")
     (home-page "https://github.com/janestreet/stdio")
     (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url (string-append home-page ".git"))
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "1facajqhvq34g2wrg368y0ajxd6lrj5b3lyzyj0jhdmraxajjcwn"))))
+     (janestreet-origin "stdio" version
+                        "1hj5hraprqy2i90a690l11yjszvb99j818q3d684ryx6p2lddk0l"))
     (build-system dune-build-system)
     (propagated-inputs
-     `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
-       ("ocaml-sexplib0" ,(package-with-ocaml4.07 ocaml-sexplib0))))
-    (arguments
-     `(#:tests? #f ;no tests
-       #:ocaml ,ocaml-4.07
-       #:findlib ,ocaml4.07-findlib
-       #:dune ,ocaml4.07-dune))
+     `(("ocaml-base" ,ocaml-base)
+       ("ocaml-sexplib0" ,ocaml-sexplib0)))
+    (arguments `(#:tests? #f)) ;no tests
+    (properties `((ocaml4.07-variant . ,(delay ocaml4.07-stdio))))
     (synopsis "Standard IO library for OCaml")
     (description
      "Stdio implements simple input/output functionalities for OCaml.  It
 re-exports the input/output functions of the OCaml standard libraries using
 a more consistent API.")
     (license license:expat)))
+
+(define-public ocaml4.07-stdio
+  (package-with-ocaml4.07
+   (package
+     (inherit ocaml-stdio)
+     (version "0.11.0")
+     (source
+      (janestreet-origin "stdio" version
+                         "0pqbp2wy5fgmc38irwvmj9nlcvclb1ix1mp4y7l39bgvvlz303h9"))
+     (properties '()))))
 
 (define-public ocaml-ppx-derivers
   (package
@@ -4793,7 +4793,7 @@ as part of the same ocaml-migrate-parsetree driver.")
        ("ocaml-migrate-parsetree"
         ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
        ("ocaml-ppx-derivers" ,(package-with-ocaml4.07 ocaml-ppx-derivers))
-       ("ocaml-stdio" ,ocaml4.07-stdio)
+       ("ocaml-stdio" ,(package-with-ocaml4.07 ocaml-stdio))
        ("ocaml-result" ,(package-with-ocaml4.07 ocaml-result))
        ("ocaml-sexplib0" ,(package-with-ocaml4.07 ocaml-sexplib0))))
     (arguments
@@ -5421,7 +5421,7 @@ else expression.")
        #:dune ,ocaml4.07-dune))
     (propagated-inputs
       `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
-        ("ocaml-stdio" ,ocaml4.07-stdio)
+        ("ocaml-stdio" ,(package-with-ocaml4.07 ocaml-stdio))
         ("ocaml-ppxlib" ,ocaml4.07-ppxlib)))
     (properties `((upstream-name . "ppx_optcomp")))
     (home-page "https://github.com/janestreet/ppx_optcomp")
@@ -5550,7 +5550,7 @@ useful errors on failure.")
         ("ocaml-ppx-inline-test" ,ocaml4.07-ppx-inline-test)
         ("ocaml-ppx-sexp-conv" ,ocaml4.07-ppx-sexp-conv)
         ("ocaml-ppx-variants-conv" ,ocaml4.07-ppx-variants-conv)
-        ("ocaml-stdio" ,ocaml4.07-stdio)
+        ("ocaml-stdio" ,(package-with-ocaml4.07 ocaml-stdio))
         ("ocaml-migrate-parsetree"
          ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
         ("ocaml-ppxlib" ,ocaml4.07-ppxlib)
@@ -5826,7 +5826,7 @@ various Jane Street packages.")
        #:dune ,ocaml4.07-dune))
     (propagated-inputs
       `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
-        ("ocaml-stdio" ,ocaml4.07-stdio)))
+        ("ocaml-stdio" ,(package-with-ocaml4.07 ocaml-stdio))))
     (home-page "https://github.com/janestreet/configurator")
     (synopsis "Helper library for gathering system configuration")
     (description "Configurator is a small library that helps writing OCaml
@@ -5919,7 +5919,7 @@ thousands of times faster than fork.
         ("ocaml-ppx-jane" ,ocaml4.07-ppx-jane)
         ("ocaml-sexplib" ,(package-with-ocaml4.07 ocaml-sexplib))
         ("ocaml-spawn" ,ocaml4.07-spawn)
-        ("ocaml-stdio" ,ocaml4.07-stdio)
+        ("ocaml-stdio" ,(package-with-ocaml4.07 ocaml-stdio))
         ("ocaml-migrate-parsetree"
          ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
         ("ocaml-ppxlib" ,ocaml4.07-ppxlib)))
@@ -5966,7 +5966,7 @@ standard library that was developed by Jane Street.")
         ("ocaml-ppx-sexp-message" ,ocaml4.07-ppx-sexp-message)
         ("ocaml-sexplib" ,(package-with-ocaml4.07 ocaml-sexplib))
         ("ocaml-splittable-random" ,ocaml4.07-splittable-random)
-        ("ocaml-stdio" ,ocaml4.07-stdio)
+        ("ocaml-stdio" ,(package-with-ocaml4.07 ocaml-stdio))
         ("ocaml-typerep" ,ocaml4.07-typerep)
         ("ocaml-variantslib" ,ocaml4.07-variantslib)
         ("ocaml-migrate-parsetree"
@@ -6250,7 +6250,7 @@ library FFTW.")
      `(("openblas" ,openblas)
        ("lapack" ,lapack)
        ("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
-       ("ocaml-stdio" ,ocaml4.07-stdio)))
+       ("ocaml-stdio" ,(package-with-ocaml4.07 ocaml-stdio))))
     (home-page "https://mmottl.github.io/lacaml/")
     (synopsis
      "OCaml-bindings to BLAS and LAPACK")
