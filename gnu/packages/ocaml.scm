@@ -5149,36 +5149,44 @@ of a record and create new record values.")
               "12948pzxrl360lybm9fzyvplgcl87zjbn4m3sk1aw75zk85p1388"))
      (properties `((upstream-name . "fieldslib"))))))
 
-(define-public ocaml4.07-variantslib
+(define-public ocaml-variantslib
   (package
-    (name "ocaml4.07-variantslib")
-    (version "0.11.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://ocaml.janestreet.com/ocaml-core/v"
-                                  (version-major+minor version)
-                                  "/files/variantslib-v" version ".tar.gz"))
-              (sha256
-               (base32
-                "1hsdwmkslvk4cznqr4lyyiy7vvk5spil226k0z2in26fxq6y0hf3"))))
+    (name "ocaml-variantslib")
+    (version "0.14.0")
+    (source
+     (janestreet-origin "variantslib" version
+              "11zp27gh282dx9ifbhcp6i7fkc97fvk8amaj58mf1g1hwklc0lm3"))
     (build-system dune-build-system)
     (arguments
      ;; No tests
-     `(#:tests? #f
-       #:ocaml ,ocaml-4.07
-       #:findlib ,ocaml4.07-findlib
-       #:dune ,ocaml4.07-dune))
+     `(#:tests? #f))
     (propagated-inputs
-      `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
-        ("ocaml-migrate-parsetree"
-         ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
-        ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
-    (properties `((upstream-name . "variantslib")))
+     `(("ocaml-base" ,ocaml-base)
+       ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+       ("ocaml-ppxlib" ,ocaml-ppxlib)))
+    (properties `((upstream-name . "variantslib")
+                  (ocaml4.07-variant . ,(delay ocaml4.07-variantslib))))
     (home-page "https://github.com/janestreet/variantslib")
     (synopsis "OCaml variants as first class values")
     (description "The Core suite of libraries is an alternative to OCaml's
 standard library.")
     (license license:asl2.0)))
+
+(define-public ocaml4.07-variantslib
+  (package-with-ocaml4.07
+   (package
+     (inherit ocaml-variantslib)
+     (name "ocaml-variantslib")
+     (version "0.11.0")
+     (source (origin
+               (method url-fetch)
+               (uri (string-append "https://ocaml.janestreet.com/ocaml-core/v"
+                                   (version-major+minor version)
+                                   "/files/variantslib-v" version ".tar.gz"))
+               (sha256
+                (base32
+                 "1hsdwmkslvk4cznqr4lyyiy7vvk5spil226k0z2in26fxq6y0hf3"))))
+     (properties `((upstream-name . "variantslib"))))))
 
 (define-public ocaml-ppx-fields-conv
   (package
@@ -5280,7 +5288,7 @@ definitions.")
     (build-system dune-build-system)
     (propagated-inputs
      `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
-       ("ocaml-variantslib" ,ocaml4.07-variantslib)
+       ("ocaml-variantslib" ,(package-with-ocaml4.07 ocaml-variantslib))
        ("ocaml-migrate-parsetree"
         ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
        ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
@@ -6324,7 +6332,7 @@ standard library that was developed by Jane Street.")
         ("ocaml-splittable-random" ,ocaml4.07-splittable-random)
         ("ocaml-stdio" ,(package-with-ocaml4.07 ocaml-stdio))
         ("ocaml-typerep" ,ocaml4.07-typerep)
-        ("ocaml-variantslib" ,ocaml4.07-variantslib)
+        ("ocaml-variantslib" ,(package-with-ocaml4.07 ocaml-variantslib))
         ("ocaml-migrate-parsetree"
          ,(package-with-ocaml4.07 ocaml-migrate-parsetree))))
     (properties `((upstream-name . "core_kernel")))
