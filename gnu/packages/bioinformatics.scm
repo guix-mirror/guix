@@ -326,6 +326,37 @@ instance, it implements several methods to assess contig-wise read coverage.")
 BAM files.")
     (license license:expat)))
 
+(define-public bamutils
+  (package
+    (name "bamutils")
+    (version "1.0.13")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append
+                "https://genome.sph.umich.edu/w/images/7/70/"
+                "BamUtilLibStatGen." version ".tgz"))
+              (sha256
+               (base32
+                "0asr1kmjbr3cyf4hkg865y8c2s30v87xvws4q6c8pyfi6wfd1h8n"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; There are no tests.
+       #:make-flags `("USER_WARNINGS=-std=gnu++98"
+                      ,(string-append "INSTALLDIR="
+                                      (assoc-ref %outputs "out") "/bin"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (inputs
+     `(("zlib" ,zlib)))
+    (home-page "https://genome.sph.umich.edu/wiki/BamUtil")
+    (synopsis "Programs for working on SAM/BAM files")
+    (description "This package provides several programs that perform
+operations on SAM/BAM files.  All of these programs are built into a
+single executable called @code{bam}.")
+    (license license:gpl3+)))
+
 (define-public bcftools
   (package
     (name "bcftools")
