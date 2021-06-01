@@ -5582,34 +5582,44 @@ context such as function arguments.")
 else expression.")
     (license license:asl2.0)))
 
-(define-public ocaml4.07-ppx-optcomp
+(define-public ocaml-ppx-optcomp
   (package
-    (name "ocaml4.07-ppx-optcomp")
-    (version "0.11.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://ocaml.janestreet.com/ocaml-core/v"
-                                  (version-major+minor version)
-                                  "/files/ppx_optcomp-v" version ".tar.gz"))
-              (sha256
-               (base32
-                "1bb52p2j2h4s9f06vrcpla80rj93jinnzq6jzilapyx9q068929i"))))
-    (build-system dune-build-system)
-    (arguments
-     `(#:ocaml ,ocaml-4.07
-       #:findlib ,ocaml4.07-findlib
-       #:dune ,ocaml4.07-dune))
-    (propagated-inputs
-      `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
-        ("ocaml-stdio" ,(package-with-ocaml4.07 ocaml-stdio))
-        ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
-    (properties `((upstream-name . "ppx_optcomp")))
+    (name "ocaml-ppx-optcomp")
+    (version "0.14.1")
     (home-page "https://github.com/janestreet/ppx_optcomp")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0j5smqa0hig1yn8wfrb4mv0y59kkwsalmqkm5asbd7kcc6589ap4"))))
+    (build-system dune-build-system)
+    (propagated-inputs
+     `(("ocaml-base" ,ocaml-base)
+       ("ocaml-stdio" ,ocaml-stdio)
+       ("ocaml-ppxlib" ,ocaml-ppxlib)))
+    (properties `((upstream-name . "ppx_optcomp")
+                  (ocaml4.07-variant . ,(delay ocaml4.07-ppx-optcomp))))
     (synopsis "Optional compilation for OCaml")
     (description "Ppx_optcomp stands for Optional Compilation.  It is a tool
 used to handle optional compilations of pieces of code depending of the word
 size, the version of the compiler, ...")
     (license license:asl2.0)))
+
+(define-public ocaml4.07-ppx-optcomp
+  (package-with-ocaml4.07
+   (package
+     (inherit ocaml-ppx-optcomp)
+     (version "0.11.0")
+     (source
+      (janestreet-origin
+       "ppx_optcomp" version
+       "1bb52p2j2h4s9f06vrcpla80rj93jinnzq6jzilapyx9q068929i"))
+     (properties `((upstream-name . "ppx_optcomp"))))))
 
 (define-public ocaml-ppx-let
   (package
@@ -5956,7 +5966,7 @@ functions from type definitions.")
         ("ocaml-ppx-here" ,(package-with-ocaml4.07 ocaml-ppx-here))
         ("ocaml-ppx-inline-test" ,ocaml4.07-ppx-inline-test)
         ("ocaml-ppx-let" ,(package-with-ocaml4.07 ocaml-ppx-let))
-        ("ocaml-ppx-optcomp" ,ocaml4.07-ppx-optcomp)
+        ("ocaml-ppx-optcomp" ,(package-with-ocaml4.07 ocaml-ppx-optcomp))
         ("ocaml-ppx-optional" ,ocaml4.07-ppx-optional)
         ("ocaml-ppx-pipebang" ,ocaml4.07-ppx-pipebang)
         ("ocaml-ppx-sexp-message" ,ocaml4.07-ppx-sexp-message)
