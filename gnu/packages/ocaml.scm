@@ -957,7 +957,7 @@ written in Objective Caml.")
 (define-public ocaml-num
   (package
     (name "ocaml-num")
-    (version "1.1")
+    (version "1.4")
     (source
      (origin
        (method git-fetch)
@@ -966,33 +966,8 @@ written in Objective Caml.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0a4mhxgs5hi81d227aygjx35696314swas0vzy3ig809jb7zq4h0"))))
-    (build-system ocaml-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (add-before 'build 'fix-makefile
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; This package supposes we install to the same directory as
-             ;; the ocaml package.
-             (substitute* "src/META"
-               (("\"\\^\"") (string-append "\"" (assoc-ref outputs "out")
-                                           "/lib/ocaml/site-lib\"")))
-             (substitute* "src/Makefile"
-               (("\\) \\$\\(STDLIBDIR\\)")
-                (string-append ") " (assoc-ref outputs "out")
-                               "/lib/ocaml/site-lib")))
-             #t))
-         (add-after 'install 'fix-stubslib
-           (lambda* (#:key outputs #:allow-other-keys)
-             (format #t "~a~%" (find-files "." ".*.so"))
-             (let ((stubdir (string-append (assoc-ref outputs "out")
-                                           "/lib/ocaml/site-lib/stublibs")))
-               (delete-file stubdir)
-               (mkdir-p stubdir)
-               (install-file "src/dllnums.so" stubdir))
-             #t)))))
+        (base32 "1vzdnvpj5dbj3ifx03v25pj2jj1ccav072v4d29pk1czdba2lzfc"))))
+    (build-system dune-build-system)
     (home-page "https://github.com/ocaml/num")
     (synopsis "Arbitrary-precision integer and rational arithmetic")
     (description "OCaml-Num contains the legacy Num library for
