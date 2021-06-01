@@ -4105,7 +4105,7 @@ syntax checking on dedukti files.")
        ("ocaml-compiler-libs" ,(package-with-ocaml4.07 ocaml-compiler-libs))
        ("ocaml-sexplib0" ,(package-with-ocaml4.07 ocaml-sexplib0))
        ("ocaml-stdio" ,(package-with-ocaml4.07 ocaml-stdio))
-       ("ocaml-ppxlib" ,ocaml4.07-ppxlib)))
+       ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
     (properties `((upstream-name . "ppx_inline_test")))
     (synopsis "Syntax extension for writing in-line tests in ocaml code")
     (description "This package contains a syntax extension for writing
@@ -4806,54 +4806,32 @@ ppx_deriving and ppx_type_conv to inter-operate gracefully when linked
 as part of the same ocaml-migrate-parsetree driver.")
     (license license:bsd-3)))
 
-(define-public ocaml4.07-ppxlib
+(define-public ocaml-ppxlib
   (package
-    (name "ocaml4.07-ppxlib")
-    (version "0.6.0")
+    (name "ocaml-ppxlib")
+    (version "0.22.0")
     (home-page "https://github.com/ocaml-ppx/ppxlib")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url (string-append home-page ".git"))
+             (url home-page)
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0my9x7sxb329h0lzshppdaawiyfbaw6g5f41yiy7bhl071rnlvbv"))))
+         "0kf7lgcwygf6zlx7rwddqpqvasa6v7xiq0bqal8vxlib6lpg074q"))))
     (build-system dune-build-system)
     (propagated-inputs
-     `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
-       ("ocaml-compiler-libs" ,(package-with-ocaml4.07 ocaml-compiler-libs))
-       ("ocaml-migrate-parsetree"
-        ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
-       ("ocaml-ppx-derivers" ,(package-with-ocaml4.07 ocaml-ppx-derivers))
-       ("ocaml-stdio" ,(package-with-ocaml4.07 ocaml-stdio))
-       ("ocaml-result" ,(package-with-ocaml4.07 ocaml-result))
-       ("ocaml-sexplib0" ,(package-with-ocaml4.07 ocaml-sexplib0))))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'set-topfind
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; add the line #directory ".." at the top of each file
-             ;; using #use "topfind";; to be able to find topfind
-             (let* ((findlib-path (assoc-ref inputs "findlib"))
-                    (findlib-libdir
-                     (string-append findlib-path "/lib/ocaml/site-lib")))
-               (substitute* '("test/base/test.ml"
-                              "test/code_path/test.ml"
-                              "test/deriving/test.ml"
-                              "test/driver/attributes/test.ml"
-                              "test/driver/non-compressible-suffix/test.ml"
-                              "test/driver/transformations/test.ml")
-                 (("#use \"topfind\";;" all)
-                  (string-append "#directory \"" findlib-libdir "\"\n"
-                                 all))))
-             #t)))
-       #:ocaml ,ocaml-4.07
-       #:findlib ,ocaml4.07-findlib
-       #:dune ,ocaml4.07-dune))
+     `(("ocaml-base" ,ocaml-base)
+       ("ocaml-compiler-libs" ,ocaml-compiler-libs)
+       ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+       ("ocaml-stdlib-shims" ,ocaml-stdlib-shims)
+       ("ocaml-ppx-derivers" ,ocaml-ppx-derivers)
+       ("ocaml-stdio" ,ocaml-stdio)
+       ("ocaml-result" ,ocaml-result)
+       ("ocaml-sexplib0" ,ocaml-sexplib0)))
+    (properties `((ocaml4.07-variant . ,(delay ocaml4.07-ppxlib))))
     (synopsis
      "Base library and tools for ppx rewriters")
     (description
@@ -4870,6 +4848,46 @@ OCaml AST in the OCaml syntax;
 @item a generator of open recursion classes from type definitions.
 @end itemize")
     (license license:expat)))
+
+(define-public ocaml4.07-ppxlib
+  (package-with-ocaml4.07
+   (package
+     (inherit ocaml-ppxlib)
+     (name "ocaml-ppxlib")
+     (version "0.6.0")
+     (home-page "https://github.com/ocaml-ppx/ppxlib")
+     (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url home-page)
+              (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "0my9x7sxb329h0lzshppdaawiyfbaw6g5f41yiy7bhl071rnlvbv"))))
+     (build-system dune-build-system)
+     (arguments
+      `(#:phases
+        (modify-phases %standard-phases
+          (add-before 'check 'set-topfind
+            (lambda* (#:key inputs #:allow-other-keys)
+              ;; add the line #directory ".." at the top of each file
+              ;; using #use "topfind";; to be able to find topfind
+              (let* ((findlib-path (assoc-ref inputs "findlib"))
+                     (findlib-libdir
+                      (string-append findlib-path "/lib/ocaml/site-lib")))
+                (substitute* '("test/base/test.ml"
+                               "test/code_path/test.ml"
+                               "test/deriving/test.ml"
+                               "test/driver/attributes/test.ml"
+                               "test/driver/non-compressible-suffix/test.ml"
+                               "test/driver/transformations/test.ml")
+                  (("#use \"topfind\";;" all)
+                   (string-append "#directory \"" findlib-libdir "\"\n"
+                                  all))))
+              #t)))))
+     (properties '()))))
 
 (define-public ocaml4.07-ppx-compare
   (package
@@ -4889,7 +4907,7 @@ OCaml AST in the OCaml syntax;
       `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
         ("ocaml-migrate-parsetree"
          ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
-        ("ocaml-ppxlib" ,ocaml4.07-ppxlib)))
+        ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
     (arguments
      `(#:ocaml ,ocaml-4.07
        #:findlib ,ocaml4.07-findlib
@@ -4928,7 +4946,7 @@ by making sure that you only compare comparable values.")
       `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
         ("ocaml-migrate-parsetree"
          ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
-        ("ocaml-ppxlib" ,ocaml4.07-ppxlib)))
+        ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
     (properties `((upstream-name . "fieldslib")))
     (home-page "https://github.com/janestreet/fieldslib")
     (synopsis "Syntax extension to record fields")
@@ -4960,7 +4978,7 @@ of a record and create new record values.")
       `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
         ("ocaml-migrate-parsetree"
          ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
-        ("ocaml-ppxlib" ,ocaml4.07-ppxlib)))
+        ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
     (properties `((upstream-name . "variantslib")))
     (home-page "https://github.com/janestreet/variantslib")
     (synopsis "OCaml variants as first class values")
@@ -4986,7 +5004,7 @@ standard library.")
         ("ocaml-fieldslib" ,ocaml4.07-fieldslib)
         ("ocaml-migrate-parsetree"
          ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
-        ("ocaml-ppxlib" ,ocaml4.07-ppxlib)))
+        ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
     (arguments
      `(#:ocaml ,ocaml-4.07
        #:findlib ,ocaml4.07-findlib
@@ -5018,7 +5036,7 @@ new record values.")
       `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
         ("ocaml-migrate-parsetree"
          ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
-        ("ocaml-ppxlib" ,ocaml4.07-ppxlib)))
+        ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
     (arguments
      `(#:ocaml ,ocaml-4.07
        #:findlib ,ocaml4.07-findlib
@@ -5049,7 +5067,7 @@ definitions.")
         ("ocaml-variantslib" ,ocaml4.07-variantslib)
         ("ocaml-migrate-parsetree"
          ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
-        ("ocaml-ppxlib" ,ocaml4.07-ppxlib)))
+        ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
     (arguments
      `(#:ocaml ,ocaml-4.07
        #:findlib ,ocaml4.07-findlib
@@ -5082,7 +5100,7 @@ variant types.")
         ("ocaml-ppx-sexp-conv" ,ocaml4.07-ppx-sexp-conv)
         ("ocaml-migrate-parsetree"
          ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
-        ("ocaml-ppxlib" ,ocaml4.07-ppxlib)))
+        ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
     (arguments
      `(#:ocaml ,ocaml-4.07
        #:findlib ,ocaml4.07-findlib
@@ -5182,7 +5200,7 @@ storage of large amounts of data.")
         ("ocaml-ppx-sexp-conv" ,ocaml4.07-ppx-sexp-conv)
         ("ocaml-migrate-parsetree"
          ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
-        ("ocaml-ppxlib" ,ocaml4.07-ppxlib)))
+        ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
     (arguments
      `(#:ocaml ,ocaml-4.07
        #:findlib ,ocaml4.07-findlib
@@ -5217,7 +5235,7 @@ hash functions from type exrpessions and definitions.")
       `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
         ("ocaml-migrate-parsetree"
          ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
-        ("ocaml-ppxlib" ,ocaml4.07-ppxlib)))
+        ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
     (properties `((upstream-name . "ppx_enumerate")))
     (home-page "https://github.com/janestreet/ppx_enumerate")
     (synopsis "Generate a list containing all values of a finite type")
@@ -5249,7 +5267,7 @@ many values).")
       `(("ocaml-ppx-inline-test" ,ocaml4.07-ppx-inline-test)
         ("ocaml-migrate-parsetree"
          ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
-        ("ocaml-ppxlib" ,ocaml4.07-ppxlib)))
+        ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
     (properties `((upstream-name . "ppx_bench")))
     (home-page "https://github.com/janestreet/ppx_bench")
     (synopsis "Syntax extension for writing in-line benchmarks in ocaml code")
@@ -5279,7 +5297,7 @@ many values).")
       `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
         ("ocaml-migrate-parsetree"
          ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
-        ("ocaml-ppxlib" ,ocaml4.07-ppxlib)))
+        ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
     (properties `((upstream-name . "ppx_here")))
     (home-page "https://github.com/janestreet/ppx_here")
     (synopsis "Expands [%here] into its location")
@@ -5334,7 +5352,7 @@ many values).")
         ("ocaml-ppx-sexp-conv" ,ocaml4.07-ppx-sexp-conv)
         ("ocaml-migrate-parsetree"
          ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
-        ("ocaml-ppxlib" ,ocaml4.07-ppxlib)))
+        ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
     (properties `((upstream-name . "ppx_sexp_value")))
     (home-page "https://github.com/janestreet/ppx_sexp_value")
     (synopsis "Simplify building s-expressions from ocaml values")
@@ -5365,7 +5383,7 @@ ocaml values.")
         ("ocaml-ppx-sexp-conv" ,ocaml4.07-ppx-sexp-conv)
         ("ocaml-migrate-parsetree"
          ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
-        ("ocaml-ppxlib" ,ocaml4.07-ppxlib)))
+        ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
     (properties `((upstream-name . "ppx_sexp_message")))
     (home-page "https://github.com/janestreet/ppx_sexp_message")
     (synopsis "A ppx rewriter for easy construction of s-expressions")
@@ -5397,7 +5415,7 @@ context such as function arguments.")
     (propagated-inputs
       `(("ocaml-migrate-parsetree"
          ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
-        ("ocaml-ppxlib" ,ocaml4.07-ppxlib)))
+        ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
     (properties `((upstream-name . "ppx_pipebang")))
     (home-page "https://github.com/janestreet/ppx_pipebang")
     (synopsis "Inline reverse application operators `|>` and `|!`")
@@ -5428,7 +5446,7 @@ context such as function arguments.")
       `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
         ("ocaml-migrate-parsetree"
          ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
-        ("ocaml-ppxlib" ,ocaml4.07-ppxlib)))
+        ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
     (properties `((upstream-name . "ppx_optional")))
     (home-page "https://github.com/janestreet/ppx_optional")
     (synopsis "Pattern matching on flat options")
@@ -5457,7 +5475,7 @@ else expression.")
     (propagated-inputs
       `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
         ("ocaml-stdio" ,(package-with-ocaml4.07 ocaml-stdio))
-        ("ocaml-ppxlib" ,ocaml4.07-ppxlib)))
+        ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
     (properties `((upstream-name . "ppx_optcomp")))
     (home-page "https://github.com/janestreet/ppx_optcomp")
     (synopsis "Optional compilation for OCaml")
@@ -5487,7 +5505,7 @@ size, the version of the compiler, ...")
       `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
         ("ocaml-migrate-parsetree"
          ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
-        ("ocaml-ppxlib" ,ocaml4.07-ppxlib)))
+        ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
     (properties `((upstream-name . "ppx_let")))
     (home-page "https://github.com/janestreet/ppx_let")
     (synopsis "Monadic let-bindings")
@@ -5517,7 +5535,7 @@ match expressions, and if expressions.")
         ("ocaml-ppx-here" ,ocaml4.07-ppx-here)
         ("ocaml-migrate-parsetree"
          ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
-        ("ocaml-ppxlib" ,ocaml4.07-ppxlib)))
+        ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
     (properties `((upstream-name . "ppx_fail")))
     (home-page "https://github.com/janestreet/ppx_fail")
     (synopsis "Add location to calls to failwiths")
@@ -5549,7 +5567,7 @@ position.")
         ("ocaml-ppx-sexp-conv" ,ocaml4.07-ppx-sexp-conv)
         ("ocaml-migrate-parsetree"
          ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
-        ("ocaml-ppxlib" ,ocaml4.07-ppxlib)))
+        ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
     (properties `((upstream-name . "ppx_assert")))
     (home-page "https://github.com/janestreet/ppx_assert")
     (synopsis "Assert-like extension nodes that raise useful errors on failure")
@@ -5588,7 +5606,7 @@ useful errors on failure.")
         ("ocaml-stdio" ,(package-with-ocaml4.07 ocaml-stdio))
         ("ocaml-migrate-parsetree"
          ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
-        ("ocaml-ppxlib" ,ocaml4.07-ppxlib)
+        ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))
         ("ocaml-re" ,(package-with-ocaml4.07 ocaml-re))))
     (properties `((upstream-name . "ppx_expect")))
     (home-page "https://github.com/janestreet/ppx_expect")
@@ -5624,7 +5642,7 @@ to denote the expected output.")
         ("ocaml-migrate-parsetree"
          ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
         ("ocaml-octavius" ,(package-with-ocaml4.07 ocaml-octavius))
-        ("ocaml-ppxlib" ,ocaml4.07-ppxlib)))
+        ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
     (properties `((upstream-name . "ppx_js_style")))
     (home-page "https://github.com/janestreet/ppx_js_style")
     (synopsis "Code style checker for Jane Street Packages")
@@ -5657,7 +5675,7 @@ packages.")
         ("ocaml-typerep" ,ocaml4.07-typerep)
         ("ocaml-migrate-parsetree"
          ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
-        ("ocaml-ppxlib" ,ocaml4.07-ppxlib)))
+        ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
     (properties `((upstream-name . "ppx_typerep_conv")))
     (home-page "https://github.com/janestreet/ppx_typerep_conv")
     (synopsis "Generation of runtime types from type declarations")
@@ -5691,7 +5709,7 @@ from type definitions.")
         ("ocaml-ppx-sexp-conv" ,ocaml4.07-ppx-sexp-conv)
         ("ocaml-migrate-parsetree"
          ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
-        ("ocaml-ppxlib" ,ocaml4.07-ppxlib)))
+        ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
     (properties `((upstream-name . "ppx_base")))
     (home-page "https://github.com/janestreet/ppx_base")
     (synopsis "Base set of ppx rewriters")
@@ -5727,7 +5745,7 @@ verification tool.")
         ("ocaml-ppx-here" ,ocaml4.07-ppx-here)
         ("ocaml-migrate-parsetree"
          ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
-        ("ocaml-ppxlib" ,ocaml4.07-ppxlib)))
+        ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
     (properties `((upstream-name . "ppx_bin_prot")))
     (home-page "https://github.com/janestreet/ppx_bin_prot")
     (synopsis "Generation of bin_prot readers and writers from types")
@@ -5774,7 +5792,7 @@ functions from type definitions.")
         ("ocaml-ppx-variants-conv" ,ocaml4.07-ppx-variants-conv)
         ("ocaml-migrate-parsetree"
          ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
-        ("ocaml-ppxlib" ,ocaml4.07-ppxlib)))
+        ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
     (properties `((upstream-name . "ppx_jane")))
     (home-page "https://github.com/janestreet/ppx_jane")
     (synopsis "Standard Jane Street ppx rewriters")
@@ -5957,7 +5975,7 @@ thousands of times faster than fork.
         ("ocaml-stdio" ,(package-with-ocaml4.07 ocaml-stdio))
         ("ocaml-migrate-parsetree"
          ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
-        ("ocaml-ppxlib" ,ocaml4.07-ppxlib)))
+        ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
     (home-page "https://github.com/janestreet/core")
     (synopsis "Alternative to OCaml's standard library")
     (description "The Core suite of libraries is an alternative to OCaml's
