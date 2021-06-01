@@ -4953,30 +4953,24 @@ OCaml AST in the OCaml syntax;
               #t)))))
      (properties '()))))
 
-(define-public ocaml4.07-ppx-compare
+(define-public ocaml-ppx-compare
   (package
-    (name "ocaml4.07-ppx-compare")
-    (version "0.11.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                     (url "https://github.com/janestreet/ppx_compare")
-                     (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "06bq4m1bsm4jlx4g7wh5m99qky7xm4c2g52kaz6pv25hdn5agi2m"))))
+    (name "ocaml-ppx-compare")
+    (version "0.14.0")
+    (source
+     (janestreet-origin "ppx_compare" version
+                        "0mqxa2s194nif7x4fjn1p5gd9i3bakr8nv27gf8x1g5nmi8q9pmp"))
     (build-system dune-build-system)
-    (propagated-inputs
-      `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
-        ("ocaml-migrate-parsetree"
-         ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
-        ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
     (arguments
-     `(#:ocaml ,ocaml-4.07
-       #:findlib ,ocaml4.07-findlib
-       #:dune ,ocaml4.07-dune))
-    (properties `((upstream-name . "ppx_compare")))
+     ;; Tests are currenlty failing
+     ;; (see https://github.com/janestreet/ppx_compare/issues/10)
+     '(#:tests? #f))
+    (propagated-inputs
+     `(("ocaml-base" ,ocaml-base)
+        ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+        ("ocaml-ppxlib" ,ocaml-ppxlib)))
+    (properties `((upstream-name . "ppx_compare")
+                  (ocaml4.07-variant . ,(delay ocaml4.07-ppx-compare))))
     (home-page "https://github.com/janestreet/ppx_compare")
     (synopsis "Generation of comparison functions from types")
     (description "Generation of fast comparison functions from type expressions
@@ -4986,6 +4980,24 @@ than ocaml's Pervasives.compare.  Scaffolding functions also gives you more
 flexibility by allowing you to override them for a specific type and more safety
 by making sure that you only compare comparable values.")
     (license license:asl2.0)))
+
+(define-public ocaml4.07-ppx-compare
+  (package-with-ocaml4.07
+   (package
+     (inherit ocaml-ppx-compare)
+     (name "ocaml-ppx-compare")
+     (version "0.11.1")
+     (home-page "https://github.com/janestreet/ppx_compare")
+     (source (origin
+               (method git-fetch)
+               (uri (git-reference
+                     (url home-page)
+                     (commit (string-append "v" version))))
+               (file-name (git-file-name name version))
+               (sha256
+                (base32
+                 "06bq4m1bsm4jlx4g7wh5m99qky7xm4c2g52kaz6pv25hdn5agi2m"))))
+     (properties `((upstream-name . "ppx_compare"))))))
 
 (define-public ocaml4.07-fieldslib
   (package
@@ -5205,7 +5217,7 @@ string conversion.")
     (build-system dune-build-system)
     (inputs
       `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
-        ("ocaml-ppx-compare" ,ocaml4.07-ppx-compare)
+        ("ocaml-ppx-compare" ,(package-with-ocaml4.07 ocaml-ppx-compare))
         ("ocaml-ppx-custom-printf" ,ocaml4.07-ppx-custom-printf)
         ("ocaml-ppx-fields-conv" ,ocaml4.07-ppx-fields-conv)
         ("ocaml-ppx-sexp-conv" ,(package-with-ocaml4.07 ocaml-ppx-sexp-conv))
@@ -5274,7 +5286,7 @@ storage of large amounts of data.")
     (build-system dune-build-system)
     (propagated-inputs
       `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
-        ("ocaml-ppx-compare" ,ocaml4.07-ppx-compare)
+        ("ocaml-ppx-compare" ,(package-with-ocaml4.07 ocaml-ppx-compare))
         ("ocaml-ppx-sexp-conv" ,(package-with-ocaml4.07 ocaml-ppx-sexp-conv))
         ("ocaml-migrate-parsetree"
          ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
@@ -5642,7 +5654,7 @@ position.")
        #:dune ,ocaml4.07-dune))
     (propagated-inputs
       `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
-        ("ocaml-ppx-compare" ,ocaml4.07-ppx-compare)
+        ("ocaml-ppx-compare" ,(package-with-ocaml4.07 ocaml-ppx-compare))
         ("ocaml-ppx-here" ,ocaml4.07-ppx-here)
         ("ocaml-ppx-sexp-conv" ,(package-with-ocaml4.07 ocaml-ppx-sexp-conv))
         ("ocaml-migrate-parsetree"
@@ -5676,7 +5688,7 @@ useful errors on failure.")
     (propagated-inputs
       `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
         ("ocaml-ppx-assert" ,ocaml4.07-ppx-assert)
-        ("ocaml-ppx-compare" ,ocaml4.07-ppx-compare)
+        ("ocaml-ppx-compare" ,(package-with-ocaml4.07 ocaml-ppx-compare))
         ("ocaml-ppx-custom-printf" ,ocaml4.07-ppx-custom-printf)
         ("ocaml-ppx-fields-conv" ,ocaml4.07-ppx-fields-conv)
         ("ocaml-ppx-here" ,ocaml4.07-ppx-here)
@@ -5782,7 +5794,7 @@ from type definitions.")
        #:findlib ,ocaml4.07-findlib
        #:dune ,ocaml4.07-dune))
     (propagated-inputs
-      `(("ocaml-ppx-compare" ,ocaml4.07-ppx-compare)
+     `(("ocaml-ppx-compare" ,(package-with-ocaml4.07 ocaml-ppx-compare))
         ("ocaml-ppx-enumerate" ,ocaml4.07-ppx-enumerate)
         ("ocaml-ppx-hash" ,ocaml4.07-ppx-hash)
         ("ocaml-ppx-js-style" ,ocaml4.07-ppx-js-style)
