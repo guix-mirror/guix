@@ -5835,34 +5835,28 @@ packages.")
 from type definitions.")
     (license license:asl2.0)))
 
-(define-public ocaml4.07-ppx-base
+(define-public ocaml-ppx-base
   (package
-    (name "ocaml4.07-ppx-base")
-    (version "0.11.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://ocaml.janestreet.com/ocaml-core/v"
-                                  (version-major+minor version)
-                                  "/files/ppx_base-v" version ".tar.gz"))
-              (sha256
-               (base32
-                "0aq206pg330jmj7lhcagiiwm3a0b3gsqm801m8ajd4ysyw7idkym"))))
+    (name "ocaml-ppx-base")
+    (version "0.14.0")
+    (source
+     (janestreet-origin
+      "ppx_base" version
+      "0b7a3fmi90jk8paz0g36yzaq670fbnrbi1j8r5ibh9wbcfli7ji6"))
     (build-system dune-build-system)
     (arguments
-     `(#:test-target "."
-       #:ocaml ,ocaml-4.07
-       #:findlib ,ocaml4.07-findlib
-       #:dune ,ocaml4.07-dune))
+     `(#:test-target "."))
     (propagated-inputs
-     `(("ocaml-ppx-compare" ,(package-with-ocaml4.07 ocaml-ppx-compare))
-       ("ocaml-ppx-enumerate" ,(package-with-ocaml4.07 ocaml-ppx-enumerate))
-        ("ocaml-ppx-hash" ,(package-with-ocaml4.07 ocaml-ppx-hash))
-        ("ocaml-ppx-js-style" ,(package-with-ocaml4.07 ocaml4.07-ppx-js-style))
-        ("ocaml-ppx-sexp-conv" ,(package-with-ocaml4.07 ocaml-ppx-sexp-conv))
-        ("ocaml-migrate-parsetree"
-         ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
-        ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
-    (properties `((upstream-name . "ppx_base")))
+     `(("ocaml-ppx-compare" ,ocaml-ppx-compare)
+       ("ocaml-ppx-cold" ,ocaml-ppx-cold)
+       ("ocaml-ppx-enumerate" ,ocaml-ppx-enumerate)
+       ("ocaml-ppx-hash" ,ocaml-ppx-hash)
+       ("ocaml-ppx-js-style" ,ocaml-ppx-js-style)
+       ("ocaml-ppx-sexp-conv" ,ocaml-ppx-sexp-conv)
+       ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+       ("ocaml-ppxlib" ,ocaml-ppxlib)))
+    (properties `((upstream-name . "ppx_base")
+                  (ocaml4.07-variant . ,(delay ocaml4.07-ppx-base))))
     (home-page "https://github.com/janestreet/ppx_base")
     (synopsis "Base set of ppx rewriters")
     (description "Ppx_base is the set of ppx rewriters used for Base.
@@ -5870,6 +5864,25 @@ from type definitions.")
 Note that Base doesn't need ppx to build, it is only used as a
 verification tool.")
     (license license:asl2.0)))
+
+(define-public ocaml4.07-ppx-base
+  (package-with-ocaml4.07
+   (package
+     (inherit ocaml-ppx-base)
+     (version "0.11.0")
+     (source
+      (janestreet-origin
+       "ppx_base" version
+       "0aq206pg330jmj7lhcagiiwm3a0b3gsqm801m8ajd4ysyw7idkym"))
+    (propagated-inputs
+     `(("ocaml-ppx-compare" ,ocaml-ppx-compare)
+       ("ocaml-ppx-enumerate" ,ocaml-ppx-enumerate)
+       ("ocaml-ppx-hash" ,ocaml-ppx-hash)
+       ("ocaml-ppx-js-style" ,ocaml-ppx-js-style)
+       ("ocaml-ppx-sexp-conv" ,ocaml-ppx-sexp-conv)
+       ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+       ("ocaml-ppxlib" ,ocaml-ppxlib)))
+    (properties `((upstream-name . "ppx_base"))))))
 
 (define-public ocaml4.07-ppx-bin-prot
   (package
@@ -5925,7 +5938,7 @@ functions from type definitions.")
        #:dune ,ocaml4.07-dune))
     (propagated-inputs
      `(("ocaml-ppx-assert" ,(package-with-ocaml4.07 ocaml-ppx-assert))
-        ("ocaml-ppx-base" ,ocaml4.07-ppx-base)
+       ("ocaml-ppx-base" ,(package-with-ocaml4.07 ocaml-ppx-base))
         ("ocaml-ppx-bench" ,ocaml4.07-ppx-bench)
         ("ocaml-ppx-bin-prot" ,ocaml4.07-ppx-bin-prot)
         ("ocaml-ppx-custom-printf" ,(package-with-ocaml4.07 ocaml-ppx-custom-printf))
@@ -6163,7 +6176,7 @@ standard library that was developed by Jane Street.")
         ("ocaml-fieldslib" ,ocaml4.07-fieldslib)
         ("ocaml-jane-street-headers" ,ocaml4.07-jane-street-headers)
         ("ocaml-ppx-assert" ,(package-with-ocaml4.07 ocaml-ppx-assert))
-        ("ocaml-ppx-base" ,ocaml4.07-ppx-base)
+        ("ocaml-ppx-base" ,(package-with-ocaml4.07 ocaml-ppx-base))
         ("ocaml-ppx-hash" ,(package-with-ocaml4.07 ocaml-ppx-hash))
         ("ocaml-ppx-inline-test" ,ocaml4.07-ppx-inline-test)
         ("ocaml-ppx-jane" ,ocaml4.07-ppx-jane)
