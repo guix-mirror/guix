@@ -6912,3 +6912,29 @@ Both interfaces give the user total control over the blocking behavior of
 their application, with the unbuffered interface enabling zero-copy IO.
 Parsers are backtracking by default and support unbounded lookahead.")
     (license license:bsd-3)))
+
+(define-public ocaml-graphics
+  (package
+    (name "ocaml-graphics")
+    (version "5.1.1")
+    (home-page "https://github.com/ocaml/graphics")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "14w07ydji2nbdk366nfp2pzs9484xp9vqv63n345id13v48z8bfi"))))
+    (build-system dune-build-system)
+    (propagated-inputs
+     `(("libx11" ,libx11)))
+    (synopsis "The OCaml graphics library")
+    (description
+     "The graphics library provides a set of portable drawing primitives.
+Drawing takes place in a separate window that is created when
+Graphics.open_graph is called.  This library used to be distributed with OCaml
+up to OCaml 4.08.")
+    (license license:lgpl2.1+)))
