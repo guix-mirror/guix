@@ -1341,9 +1341,6 @@ compilers that can directly deal with packages.")
                (base32
                 "0gxjw1bhmjcjzri6x6psqrkbbyq678b69bqfl9i1zswp7cj2lryg"))))
     (build-system dune-build-system)
-    (inputs
-     ;; XXX Should libev be a propagated-input of ocaml-lwt?
-     `(("libev" ,libev)))
     (propagated-inputs
      `(("lwt" ,ocaml-lwt)
        ("ocaml-stdlib-shims" ,ocaml-stdlib-shims)))
@@ -2317,13 +2314,13 @@ for mapping files in memory.  This function is the same as the
        ("ocaml-cppo" ,ocaml-cppo)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("libev" ,libev)
-       ("glib" ,glib)))
+     `(("glib" ,glib)))
     (propagated-inputs
      `(("ocaml-mmap" ,ocaml-mmap)
        ("ocaml-ocplib-endian" ,ocaml-ocplib-endian)
        ("ocaml-result" ,ocaml-result)
-       ("ocaml-seq" ,ocaml-seq)))
+       ("ocaml-seq" ,ocaml-seq)
+       ("libev" ,libev)))
     (home-page "https://github.com/ocsigen/lwt")
     (synopsis "Cooperative threads and I/O in monadic style")
     (description "Lwt provides typed, composable cooperative threads.  These
@@ -3760,8 +3757,6 @@ connect an engine to your inputs and rendering functions to get an editor.")
        ("ocaml-lwt-log" ,(package-with-ocaml4.07 ocaml-lwt-log))
        ("ocaml-lwt-react" ,(package-with-ocaml4.07 ocaml-lwt-react))
        ("ocaml-zed" ,ocaml4.07-zed)))
-    (inputs
-     `(("libev" ,libev)))
     (home-page "https://github.com/diml/lambda-term")
     (synopsis "Terminal manipulation library for OCaml")
     (description "Lambda-Term is a cross-platform library for manipulating the
@@ -6010,8 +6005,6 @@ the full Core is not available, such as in Javascript.")
     (build-system dune-build-system)
     (arguments
      `(#:package "markup"))
-    (inputs
-     `(("libev" ,libev)))
     (propagated-inputs
      `(("ocaml-bisect-ppx" ,ocaml-bisect-ppx)
        ("ocaml-uchar" ,ocaml-uchar)
