@@ -5172,35 +5172,44 @@ definitions.")
 variant types.")
     (license license:asl2.0)))
 
-(define-public ocaml4.07-ppx-custom-printf
+(define-public ocaml-ppx-custom-printf
   (package
-    (name "ocaml4.07-ppx-custom-printf")
-    (version "0.11.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://ocaml.janestreet.com/ocaml-core/v"
-                                  (version-major+minor version)
-                                  "/files/ppx_custom_printf-v" version ".tar.gz"))
-              (sha256
-               (base32
-                "11b73smf3g3bpd9lg014pr4rx285nk9mnk6g6464ph51jv0sqzhj"))))
+    (name "ocaml-ppx-custom-printf")
+    (version "0.14.1")
+    (home-page "https://github.com/janestreet/ppx_custom_printf")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0c1m65kn27zvwmfwy7kk46ga76yw2a3ik9jygpy1b6nn6pi026w9"))))
     (build-system dune-build-system)
     (propagated-inputs
-      `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
-        ("ocaml-ppx-sexp-conv" ,(package-with-ocaml4.07 ocaml-ppx-sexp-conv))
-        ("ocaml-migrate-parsetree"
-         ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
-        ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
-    (arguments
-     `(#:ocaml ,ocaml-4.07
-       #:findlib ,ocaml4.07-findlib
-       #:dune ,ocaml4.07-dune))
-    (properties `((upstream-name . "ppx_custom_printf")))
-    (home-page "https://github.com/janestreet/ppx_custom_printf")
+     `(("ocaml-base" ,ocaml-base)
+       ("ocaml-ppx-sexp-conv" ,ocaml-ppx-sexp-conv)
+       ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+       ("ocaml-ppxlib" ,ocaml-ppxlib)))
+    (properties `((upstream-name . "ppx_custom_printf")
+                  (ocaml4.07-variant . ,(delay ocaml4.07-ppx-custom-printf))))
     (synopsis "Printf-style format-strings for user-defined string conversion")
     (description "Extensions to printf-style format-strings for user-defined
 string conversion.")
     (license license:asl2.0)))
+
+(define-public ocaml4.07-ppx-custom-printf
+  (package-with-ocaml4.07
+   (package
+     (inherit ocaml-ppx-custom-printf)
+     (version "0.11.0")
+     (source
+      (janestreet-origin
+       "ppx_custom_printf" version
+       "11b73smf3g3bpd9lg014pr4rx285nk9mnk6g6464ph51jv0sqzhj"))
+     (properties `((upstream-name . "ppx_custom_printf"))))))
 
 (define-public ocaml4.07-bin-prot
   (package
@@ -5218,7 +5227,7 @@ string conversion.")
     (inputs
       `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
         ("ocaml-ppx-compare" ,(package-with-ocaml4.07 ocaml-ppx-compare))
-        ("ocaml-ppx-custom-printf" ,ocaml4.07-ppx-custom-printf)
+        ("ocaml-ppx-custom-printf" ,(package-with-ocaml4.07 ocaml-ppx-custom-printf))
         ("ocaml-ppx-fields-conv" ,ocaml4.07-ppx-fields-conv)
         ("ocaml-ppx-sexp-conv" ,(package-with-ocaml4.07 ocaml-ppx-sexp-conv))
         ("ocaml-ppx-variants-conv" ,ocaml4.07-ppx-variants-conv)
@@ -5722,7 +5731,7 @@ useful errors on failure.")
       `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
         ("ocaml-ppx-assert" ,(package-with-ocaml4.07 ocaml4.07-ppx-assert))
         ("ocaml-ppx-compare" ,(package-with-ocaml4.07 ocaml-ppx-compare))
-        ("ocaml-ppx-custom-printf" ,ocaml4.07-ppx-custom-printf)
+        ("ocaml-ppx-custom-printf" ,(package-with-ocaml4.07 ocaml-ppx-custom-printf))
         ("ocaml-ppx-fields-conv" ,ocaml4.07-ppx-fields-conv)
         ("ocaml-ppx-here" ,(package-with-ocaml4.07 ocaml-ppx-here))
         ("ocaml-ppx-inline-test" ,ocaml4.07-ppx-inline-test)
@@ -5901,7 +5910,7 @@ functions from type definitions.")
         ("ocaml-ppx-base" ,ocaml4.07-ppx-base)
         ("ocaml-ppx-bench" ,ocaml4.07-ppx-bench)
         ("ocaml-ppx-bin-prot" ,ocaml4.07-ppx-bin-prot)
-        ("ocaml-ppx-custom-printf" ,ocaml4.07-ppx-custom-printf)
+        ("ocaml-ppx-custom-printf" ,(package-with-ocaml4.07 ocaml-ppx-custom-printf))
         ("ocaml-ppx-expect" ,ocaml4.07-ppx-expect)
         ("ocaml-ppx-fail" ,ocaml4.07-ppx-fail)
         ("ocaml-ppx-fields-conv" ,ocaml4.07-ppx-fields-conv)
