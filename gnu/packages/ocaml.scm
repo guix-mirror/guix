@@ -2554,10 +2554,10 @@ representation of the data.")
 and consumable.")
     (license license:bsd-2)))
 
-(define-public ocaml4.07-sedlex
+(define-public ocaml-sedlex
   (package
-    (name "ocaml4.07-sedlex")
-    (version "2.1")
+    (name "ocaml-sedlex")
+    (version "2.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2566,36 +2566,37 @@ and consumable.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "05f6qa8x3vhpdz1fcnpqk37fpnyyq13icqsk2gww5idjnh6kng26"))))
+                "0iw3phlaqr27jdf857hmj5v5hdl0vngbb2h37p2ll18sw991fxar"))))
     (build-system dune-build-system)
     (arguments
-     `(#:tests? #f; no tests
+     `(#:tests? #f                      ; no tests
        #:package "sedlex"
        #:phases
        (modify-phases %standard-phases
          (add-before 'build 'copy-resources
            (lambda* (#:key inputs #:allow-other-keys)
              (with-directory-excursion "src/generator/data"
+               ;; Newer versions of dune emit an error if files it wants to
+               ;; build already exist. Delete the dune file so dune doesn't
+               ;; complain.
+               (delete-file "dune")
                (for-each
-                 (lambda (file)
-                   (copy-file (assoc-ref inputs file) file))
-                 '("DerivedCoreProperties.txt" "DerivedGeneralCategory.txt"
-                   "PropList.txt")))
+                (lambda (file)
+                  (copy-file (assoc-ref inputs file) file))
+                '("DerivedCoreProperties.txt" "DerivedGeneralCategory.txt"
+                  "PropList.txt")))
              #t))
          (add-before 'build 'chmod
            (lambda _
              (for-each (lambda (file) (chmod file #o644)) (find-files "." ".*"))
-             #t)))
-       #:ocaml ,ocaml-4.07
-       #:findlib ,ocaml4.07-findlib
-       #:dune ,ocaml4.07-dune))
+             #t)))))
     (native-inputs
-     `(("ocamlbuild" ,(package-with-ocaml4.07 ocamlbuild))))
+     `(("ocamlbuild" ,ocamlbuild)))
     (propagated-inputs
-     `(("ocaml-gen" ,(package-with-ocaml4.07 ocaml-gen))
-       ("ocaml-ppx-tools-versioned"
-        ,(package-with-ocaml4.07 ocaml-ppx-tools-versioned))
-       ("ocaml-uchar" ,(package-with-ocaml4.07 ocaml-uchar))))
+     `(("ocaml-gen" ,ocaml-gen)
+       ("ocaml-ppxlib" ,ocaml-ppxlib)
+       ("ocaml-ppx-tools-versioned" ,ocaml-ppx-tools-versioned)
+       ("ocaml-uchar" ,ocaml-uchar)))
     ;; These three files are needed by src/generator/data/dune, but would be
     ;; downloaded using curl at build time.
     (inputs
@@ -2620,10 +2621,28 @@ and consumable.")
            (sha256
             (base32
              "0gsb1jpj3mnqbjgbavi4l95gl6g4agq58j82km22fdfg63j3w3fk"))))))
+    (properties `((ocaml4.07-variant . ,(delay ocaml4.07-sedlex))))
     (home-page "https://www.cduce.org/download.html#side")
     (synopsis "Lexer generator for Unicode and OCaml")
     (description "Lexer generator for Unicode and OCaml.")
     (license license:expat)))
+
+(define-public ocaml4.07-sedlex
+  (package-with-ocaml4.07
+   (package
+     (inherit ocaml-sedlex)
+     (name "ocaml-sedlex")
+     (version "2.1")
+     (source (origin
+               (method git-fetch)
+               (uri (git-reference
+                     (url "https://github.com/ocaml-community/sedlex")
+                     (commit (string-append "v" version))))
+               (file-name (git-file-name name version))
+               (sha256
+                (base32
+                 "05f6qa8x3vhpdz1fcnpqk37fpnyyq13icqsk2gww5idjnh6kng26"))))
+     (properties '()))))
 
 (define-public ocaml-uchar
   (package
@@ -3472,7 +3491,7 @@ Format module of the OCaml standard library.")
      `(("which" ,which)))
     (propagated-inputs
      `(("ocaml-xmlm" ,(package-with-ocaml4.07 ocaml-xmlm))
-       ("ocaml-sedlex" ,ocaml4.07-sedlex)
+       ("ocaml-sedlex" ,(package-with-ocaml4.07 ocaml-sedlex))
        ("ocaml-easy-format" ,(package-with-ocaml4.07 ocaml-easy-format))
        ("ocaml-base64" ,(package-with-ocaml4.07 ocaml-base64))))
     (home-page "http://piqi.org")
