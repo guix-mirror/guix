@@ -3862,11 +3862,11 @@ long and size_t whose sizes depend on the host platform.")
    (native-inputs
     `(("pkg-config" ,pkg-config)))
    (propagated-inputs
-    `(("bigarray-compat" ,ocaml-bigarray-compat)))
+    `(("bigarray-compat" ,ocaml-bigarray-compat)
+      ("integers" ,ocaml-integers)))
    (inputs
     `(("libffi" ,libffi)
       ("ounit" ,ocaml-ounit)
-      ("integers" ,ocaml-integers)
       ("lwt" ,ocaml-lwt)
       ("topkg" ,ocaml-topkg)
       ("opam" ,opam)))
