@@ -5319,37 +5319,47 @@ hash functions from type exrpessions and definitions.")
                  "1p0ic6aijxlrdggpmycj12q3cy9xksbq2vq727215maz4snvlf5p"))))
      (properties `((upstream-name . "ppx_hash"))))))
 
-(define-public ocaml4.07-ppx-enumerate
+(define-public ocaml-ppx-enumerate
   (package
-    (name "ocaml4.07-ppx-enumerate")
-    (version "0.11.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/janestreet/ppx_enumerate")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0spx9k1v7vjjb6sigbfs69yndgq76v114jhxvzjmffw7q989cyhr"))))
+    (name "ocaml-ppx-enumerate")
+    (version "0.14.0")
+    (source
+     (janestreet-origin
+      "ppx_enumerate" version
+      "1ij6sffgqhnjwnj9brhrrw1c6xgxlh0s6r17x1qkgnyrc73gfsz8"))
     (build-system dune-build-system)
     (arguments
-     `(#:tests? #f                      ; no test suite
-       #:ocaml ,ocaml-4.07
-       #:findlib ,ocaml4.07-findlib
-       #:dune ,ocaml4.07-dune))
+     `(#:tests? #f)) ; no test suite
     (propagated-inputs
-     `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
-       ("ocaml-migrate-parsetree"
-        ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
-       ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
-    (properties `((upstream-name . "ppx_enumerate")))
+     `(("ocaml-base" ,ocaml-base)
+       ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+       ("ocaml-ppxlib" ,ocaml-ppxlib)))
+    (properties `((upstream-name . "ppx_enumerate")
+                  (ocaml4.07-variant . ,(delay ocaml4.07-ppx-enumerate))))
     (home-page "https://github.com/janestreet/ppx_enumerate")
     (synopsis "Generate a list containing all values of a finite type")
     (description "Ppx_enumerate is a ppx rewriter which generates a definition
 for the list of all values of a type (for a type which only has finitely
 many values).")
     (license license:asl2.0)))
+
+(define-public ocaml4.07-ppx-enumerate
+  (package-with-ocaml4.07
+   (package
+     (inherit ocaml-ppx-enumerate)
+     (name "ocaml-ppx-enumerate")
+     (version "0.11.1")
+     (home-page "https://github.com/janestreet/ppx_enumerate")
+     (source (origin
+               (method git-fetch)
+               (uri (git-reference
+                     (url home-page)
+                     (commit (string-append "v" version))))
+               (file-name (git-file-name name version))
+               (sha256
+                (base32
+                 "0spx9k1v7vjjb6sigbfs69yndgq76v114jhxvzjmffw7q989cyhr"))))
+     (properties `((upstream-name . "ppx_enumerate"))))))
 
 (define-public ocaml4.07-ppx-bench
   (package
@@ -5845,7 +5855,7 @@ from type definitions.")
        #:dune ,ocaml4.07-dune))
     (propagated-inputs
      `(("ocaml-ppx-compare" ,(package-with-ocaml4.07 ocaml-ppx-compare))
-        ("ocaml-ppx-enumerate" ,ocaml4.07-ppx-enumerate)
+       ("ocaml-ppx-enumerate" ,(package-with-ocaml4.07 ocaml-ppx-enumerate))
         ("ocaml-ppx-hash" ,(package-with-ocaml4.07 ocaml-ppx-hash))
         ("ocaml-ppx-js-style" ,ocaml4.07-ppx-js-style)
         ("ocaml-ppx-sexp-conv" ,(package-with-ocaml4.07 ocaml-ppx-sexp-conv))
