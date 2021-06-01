@@ -2,6 +2,7 @@
 ;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -136,6 +137,11 @@ Wrapping is not applied to outputs whose name is listed in
 GLIB-OR-GTK-WRAP-EXCLUDED-OUTPUTS.  This is useful when an output is known not
 to contain any GLib or GTK+ binaries, and where wrapping would gratuitously
 add a dependency of that output on GLib and GTK+."
+  ;; Do not require bash to be present in the package inputs
+  ;; even when there is nothing to wrap.
+  ;; Also, calculate (sh) only once to prevent some I/O.
+  (define %sh (delay (search-input-file inputs "bin/bash")))
+  (define (sh) (force %sh))
   (define handle-output
     (match-lambda
      ((output . directory)
@@ -165,36 +171,36 @@ add a dependency of that output on GLib and GTK+."
                     #f)))
           (cond
            ((and data-env-var gtk-mod-env-var gio-mod-env-var)
-            (for-each (cut wrap-program <>
+            (for-each (cut wrap-program <> #:sh (sh)
                            data-env-var
                            gtk-mod-env-var
                            gio-mod-env-var)
                       bin-list))
            ((and data-env-var gtk-mod-env-var (not gio-mod-env-var))
-            (for-each (cut wrap-program <>
+            (for-each (cut wrap-program <> #:sh (sh)
                            data-env-var
                            gtk-mod-env-var)
                       bin-list))
            ((and data-env-var (not gtk-mod-env-var) gio-mod-env-var)
-            (for-each (cut wrap-program <>
+            (for-each (cut wrap-program <> #:sh (sh)
                            data-env-var
                            gio-mod-env-var)
                       bin-list))
            ((and (not data-env-var) gtk-mod-env-var gio-mod-env-var)
-            (for-each (cut wrap-program <>
+            (for-each (cut wrap-program <> #:sh (sh)
                            gio-mod-env-var
                            gtk-mod-env-var)
                       bin-list))
            ((and data-env-var (not gtk-mod-env-var) (not gio-mod-env-var))
-            (for-each (cut wrap-program <>
+            (for-each (cut wrap-program <> #:sh (sh)
                            data-env-var)
                       bin-list))
            ((and (not data-env-var) gtk-mod-env-var (not gio-mod-env-var))
-            (for-each (cut wrap-program <>
+            (for-each (cut wrap-program <> #:sh (sh)
                            gtk-mod-env-var)
                       bin-list))
            ((and (not data-env-var) (not gtk-mod-env-var) gio-mod-env-var)
-            (for-each (cut wrap-program <>
+            (for-each (cut wrap-program <> #:sh (sh)
                            gio-mod-env-var)
                       bin-list))))))))
 
