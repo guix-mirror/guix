@@ -3415,6 +3415,35 @@ the need to write signal code, which is useful for quick scripts that manipulate
 JSON.")
     (license license:isc)))
 
+(define-public ocaml-uri
+  (package
+    (name "ocaml-uri")
+    (version "4.1.0")
+    (home-page "https://github.com/mirage/ocaml-uri")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit (string-append "v" version))))
+       (sha256
+        (base32
+         "10bf28my1yhj8a2d7bkgbna9j20wq0ghp92k926y29bmjj2qh0l7"))))
+    (build-system dune-build-system)
+    (arguments '(#:package "uri"
+                 #:test-target "."))
+    (propagated-inputs
+     `(("ocaml-stringext" ,ocaml-stringext)
+       ("ocaml-angstrom" ,ocaml-angstrom)))
+    (native-inputs
+     `(("ocaml-ounit" ,ocaml-ounit)
+       ("ocaml-ppx-sexp-conv" ,ocaml-ppx-sexp-conv)))
+    (properties `((upstream-name . "uri")
+                  (ocaml4.07-variant ,(delay ocaml4.07-uri))))
+    (synopsis "RFC3986 URI/URL parsing library")
+    (description "OCaml-uri is a library for parsing URI/URL in the RFC3986 format.")
+    (license license:isc)))
+
 (define-public ocaml4.07-uri
   (package
     (name "ocaml4.07-uri")
@@ -3447,6 +3476,7 @@ JSON.")
      `(("ocaml-re" ,(package-with-ocaml4.07 ocaml-re))
        ("ocaml-sexplib0" ,(package-with-ocaml4.07 ocaml-sexplib0))
        ("ocaml-stringext" ,(package-with-ocaml4.07 ocaml-stringext))))
+    (properties `((upstream-name . "uri")))
     (home-page "https://github.com/mirage/ocaml-uri")
     (synopsis "RFC3986 URI/URL parsing library")
     (description "OCaml-uri is a library for parsing URI/URL in the RFC3986 format.")
