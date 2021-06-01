@@ -5550,37 +5550,39 @@ context such as function arguments.")
 @code{|>} and @code{|!}.")
     (license license:asl2.0)))
 
-(define-public ocaml4.07-ppx-optional
+(define-public ocaml-ppx-optional
   (package
-    (name "ocaml4.07-ppx-optional")
-    (version "0.11.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://ocaml.janestreet.com/ocaml-core/v"
-                                  (version-major+minor version)
-                                  "/files/ppx_optional-v" version ".tar.gz"))
-              (sha256
-               (base32
-                "1z8z2bga95k2vksljljfglg10vygkjd24kn1b37sk4z3nmp47x0h"))))
+    (name "ocaml-ppx-optional")
+    (version "0.14.0")
+    (source
+     (janestreet-origin
+      "ppx_optional" version
+      "1hh6ivlp1qpvyn8l0vhrahkkcp3scf7km254sgplprmk10wnyidz"))
     (build-system dune-build-system)
-    (arguments
-     ;; No tests
-     `(#:tests? #f
-       #:ocaml ,ocaml-4.07
-       #:findlib ,ocaml4.07-findlib
-       #:dune ,ocaml4.07-dune))
+    (arguments `(#:tests? #f)) ; No tests
     (propagated-inputs
-      `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
-        ("ocaml-migrate-parsetree"
-         ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
-        ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
-    (properties `((upstream-name . "ppx_optional")))
+     `(("ocaml-base" ,ocaml-base)
+       ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+       ("ocaml-ppxlib" ,ocaml-ppxlib)))
+    (properties `((upstream-name . "ppx_optional")
+                  (ocaml4.07-variant . ,(delay ocaml4.07-ppx-optional))))
     (home-page "https://github.com/janestreet/ppx_optional")
     (synopsis "Pattern matching on flat options")
     (description
       "A ppx rewriter that rewrites simple match statements with an if then
 else expression.")
     (license license:asl2.0)))
+
+(define-public ocaml4.07-ppx-optional
+  (package-with-ocaml4.07
+   (package
+     (inherit ocaml-ppx-optional)
+     (version "0.11.0")
+     (source
+      (janestreet-origin
+       "ppx_optional" version
+       "1z8z2bga95k2vksljljfglg10vygkjd24kn1b37sk4z3nmp47x0h"))
+     (properties `((upstream-name . "ppx_optional"))))))
 
 (define-public ocaml-ppx-optcomp
   (package
@@ -5967,7 +5969,7 @@ functions from type definitions.")
         ("ocaml-ppx-inline-test" ,ocaml4.07-ppx-inline-test)
         ("ocaml-ppx-let" ,(package-with-ocaml4.07 ocaml-ppx-let))
         ("ocaml-ppx-optcomp" ,(package-with-ocaml4.07 ocaml-ppx-optcomp))
-        ("ocaml-ppx-optional" ,ocaml4.07-ppx-optional)
+        ("ocaml-ppx-optional" ,(package-with-ocaml4.07 ocaml-ppx-optional))
         ("ocaml-ppx-pipebang" ,ocaml4.07-ppx-pipebang)
         ("ocaml-ppx-sexp-message" ,ocaml4.07-ppx-sexp-message)
         ("ocaml-ppx-sexp-value" ,ocaml4.07-ppx-sexp-value)
