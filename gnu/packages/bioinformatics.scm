@@ -122,6 +122,7 @@
   #:use-module (gnu packages popt)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-compression)
   #:use-module (gnu packages python-science)
@@ -11328,14 +11329,14 @@ implementation differs in these ways:
 (define-public python-scanpy
   (package
     (name "python-scanpy")
-    (version "1.4.6")
+    (version "1.7.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "scanpy" version))
        (sha256
         (base32
-         "0s2b6cvaigx4wzw3850qb93sjwwxbzh22kpbp498zklc5rjpbz4l"))))
+         "0c66adnfizsyk0h8bv2yhmay876z0klpxwpn4z6m71wly7yplpmd"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -11346,11 +11347,24 @@ implementation differs in these ways:
              (delete-file-recursively "scanpy/tests/notebooks")
              (delete-file "scanpy/tests/test_clustering.py")
              (delete-file "scanpy/tests/test_datasets.py")
+             (delete-file "scanpy/tests/test_highly_variable_genes.py")
 
              ;; TODO: I can't get the plotting tests to work, even with Xvfb.
              (delete-file "scanpy/tests/test_plotting.py")
              (delete-file "scanpy/tests/test_preprocessing.py")
              (delete-file "scanpy/tests/test_read_10x.py")
+
+             ;; The following tests need anndata.tests, which aren't included
+             ;; in the final python-anndata package.
+             (delete-file "scanpy/tests/test_combat.py")
+             (delete-file "scanpy/tests/test_embedding_plots.py")
+             (delete-file "scanpy/tests/test_normalization.py")
+             (delete-file "scanpy/tests/test_pca.py")
+             (delete-file "scanpy/tests/external/test_scrublet.py")
+
+             ;; The following tests requires 'scanorama', which isn't
+             ;; packaged yet.
+             (delete-file "scanpy/tests/external/test_scanorama_integrate.py")
 
              (setenv "PYTHONPATH"
                      (string-append (getcwd) ":"
@@ -11376,11 +11390,14 @@ implementation differs in these ways:
        ("python-seaborn" ,python-seaborn)
        ("python-statsmodels" ,python-statsmodels)
        ("python-tables" ,python-tables)
+       ("python-pytoml" ,python-pytoml)
        ("python-tqdm" ,python-tqdm)
        ("python-umap-learn" ,python-umap-learn)))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-setuptools-scm" ,python-setuptools-scm)))
+     `(("python-leidenalg" ,python-leidenalg)
+       ("python-pytest" ,python-pytest)
+       ("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-sinfo" ,python-sinfo)))
     (home-page "https://github.com/theislab/scanpy")
     (synopsis "Single-Cell Analysis in Python.")
     (description "Scanpy is a scalable toolkit for analyzing single-cell gene
