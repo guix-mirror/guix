@@ -4164,6 +4164,22 @@ Street.  Future updates may not be backward-compatible, and we do not
 recommend using this package directly.")
     (license license:expat)))
 
+(define-public ocaml-jane-street-headers
+  (package
+    (name "ocaml-jane-street-headers")
+    (version "0.14.0")
+    (source
+     (janestreet-origin
+      "jane-street-headers" version
+      "028yxb4h3iy025iy89v8653m5brh7flrjshghs4x99pd690pmfs7"))
+    (build-system dune-build-system)
+    (arguments '(#:tests? #f))           ; no tests
+    (home-page "https://github.com/janestreet/jane-street-headers")
+    (synopsis "Jane Street C header files")
+    (description "C header files shared between the various Jane Street
+packages.")
+    (license license:expat)))
+
 (define-public ocaml4.07-ppx-inline-test
   (package
     (name "ocaml4.07-ppx-inline-test")
