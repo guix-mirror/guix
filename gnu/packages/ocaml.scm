@@ -4140,6 +4140,30 @@ Dedukti files.")
 syntax checking on dedukti files.")
       (license license:cecill-b))))
 
+(define-public ocaml-jst-config
+  (package
+    (name "ocaml-jst-config")
+    (version "0.14.0")
+    (source
+     (janestreet-origin
+      "jst-config" version
+      "1fppr29vn91zpqda8jlnp8bcssd4bf3rn36ig8fnd1yhjrsvz8f6"))
+    (build-system dune-build-system)
+    (arguments '(#:tests? #f))           ; no tests
+    (propagated-inputs
+      `(("ocaml-base" ,ocaml-base)
+        ("ocaml-ppx-assert" ,ocaml-ppx-assert)
+        ("ocaml-stdio" ,ocaml-stdio)
+        ("dune-configurator" ,dune-configurator)))
+    (home-page "https://github.com/janestreet/jst-config")
+    (synopsis "Compile-time configuration for Jane Street libraries")
+    (description "Defines compile-time constants used in Jane Street libraries
+such as Base, Core, and Async.  This package has an unstable interface; it is
+intended only to share configuration between different packages from Jane
+Street.  Future updates may not be backward-compatible, and we do not
+recommend using this package directly.")
+    (license license:expat)))
+
 (define-public ocaml4.07-ppx-inline-test
   (package
     (name "ocaml4.07-ppx-inline-test")
@@ -4157,7 +4181,7 @@ syntax checking on dedukti files.")
          "0nyz411zim94pzbxm2l2v2l9jishcxwvxhh142792g2s18r4vn50"))))
     (build-system dune-build-system)
     (arguments
-     ;see home page README for further information
+                                        ;see home page README for further information
      `(#:tests? #f
        #:ocaml ,ocaml-4.07
        #:findlib ,ocaml4.07-findlib
