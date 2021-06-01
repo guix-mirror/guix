@@ -61,6 +61,7 @@
   #:use-module (gnu packages maths)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages node)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -6950,4 +6951,44 @@ Parsers are backtracking by default and support unbounded lookahead.")
 Drawing takes place in a separate window that is created when
 Graphics.open_graph is called.  This library used to be distributed with OCaml
 up to OCaml 4.08.")
+    (license license:lgpl2.1+)))
+
+(define-public js-of-ocaml
+  (package
+    (name "js-of-ocaml")
+    (version "3.9.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ocsigen/js_of_ocaml")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "00hdjaj94j3nc6f6wbbpx59h4yc79siphs34i1hry11r56paaqyk"))))
+    (build-system dune-build-system)
+    (arguments `(#:test-target "."))
+    (propagated-inputs
+     `(("ocaml-ppxlib" ,ocaml-ppxlib)
+       ("ocaml-uchar" ,ocaml-uchar)
+       ("ocaml-menhir" ,ocaml-menhir)
+       ("ocaml-reactivedata" ,ocaml-reactivedata)
+       ("ocaml-cmdliner" ,ocaml-cmdliner)
+       ("ocaml-lwt" ,ocaml-lwt)
+       ("ocaml-tyxml" ,ocaml-tyxml)
+       ("ocaml-re" ,ocaml-re)
+       ("ocaml-uutf" ,ocaml-uutf)
+       ("ocaml-graphics" ,ocaml-graphics)
+       ("ocaml-yojson" ,ocaml-yojson)))
+    (native-inputs
+     ;; for tests
+     `(("node" ,node)
+       ("ocaml-ppx-expect" ,ocaml-ppx-expect)
+       ("ocaml-num" ,ocaml-num)))
+    (properties `((upstream-name . "js_of_ocaml")))
+    (home-page "https://ocsigen.org/js_of_ocaml/")
+    (synopsis "Compiler from OCaml bytecode to Javascript")
+    (description "Js_of_ocaml is a compiler from OCaml bytecode to JavaScript.
+It makes it possible to run pure OCaml programs in JavaScript environment like
+browsers and Node.js.")
     (license license:lgpl2.1+)))
