@@ -6627,3 +6627,28 @@ exposed the intrinsics properly, the compiler doesn't have any fast blits
 between Bigstrings and other string-like types.  @code{bigstringaf} provides
 these missing pieces.")
     (license license:bsd-3)))
+
+(define-public ocaml-syntax-shims
+  (package
+    (name "ocaml-syntax-shims")
+    (version "1.0.0")
+    (home-page "https://github.com/ocaml-ppx/ocaml-syntax-shims")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0l1i8z95qgb0lxlrv3yb5nkp391hqsiyi4r91p12k3xmggqixagf"))))
+    (build-system dune-build-system)
+    (properties
+     `((upstream-name . "ocaml-syntax-shims")))
+    (synopsis
+     "Backport new syntax to older OCaml versions")
+    (description
+     "This packages backports new features of the language to older
+compilers, such as let+.")
+    (license license:expat)))
