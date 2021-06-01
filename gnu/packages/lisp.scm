@@ -400,14 +400,14 @@ an interpreter, a compiler, a debugger, and much more.")
 (define-public sbcl
   (package
     (name "sbcl")
-    (version "2.1.4")
+    (version "2.1.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/sbcl/sbcl/" version "/sbcl-"
                            version "-source.tar.bz2"))
        (sha256
-        (base32 "04dxxycqhds9r1ycqx3cbavv7p4r13svl5bfakjjmlpw8qihw9lr"))))
+        (base32 "1id8r2y8hiz34lmvszikdqgrmr778jshim0fibb915assvn0fn4n"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (native-inputs
