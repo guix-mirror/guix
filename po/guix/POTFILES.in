@@ -44,6 +44,7 @@ gnu/packages/bootstrap.scm
 guix/build/utils.scm
 guix/scripts.scm
 guix/scripts/build.scm
+guix/diagnostics.scm
 guix/discovery.scm
 guix/lint.scm
 guix/scripts/download.scm
