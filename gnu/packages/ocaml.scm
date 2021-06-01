@@ -1770,32 +1770,51 @@ module of this library is parameterised by the type of S-expressions.")
 (define-public ocaml-migrate-parsetree
   (package
     (name "ocaml-migrate-parsetree")
-    (version "1.7.3")
+    (version "2.1.0")
     (home-page "https://github.com/ocaml-ppx/ocaml-migrate-parsetree")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url (string-append home-page ".git"))
+             (url home-page)
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0336vz0galjnsazbmkxjwdv1qvdqsx2rgrvp778xgq2fzasz45cx"))))
+         "1cpgdqcs624nd1p271ddakgyibl0ia4f6dzivnz9qdwszsinwr89"))))
     (build-system dune-build-system)
-    (arguments
-     `(#:tests? #f))
+    (arguments `(#:tests? #f))
     (propagated-inputs
      `(("ocaml-ppx-derivers" ,ocaml-ppx-derivers)
        ("ocamlbuild" ,ocamlbuild)
        ("ocaml-result" ,ocaml-result)))
-    (properties `((upstream-name . "ocaml-migrate-parsetree")))
+    (properties `((upstream-name . "ocaml-migrate-parsetree")
+                  ;; OCaml 4.07 packages require version 1.*
+                  (ocaml4.07-variant . ,(delay (package-with-ocaml4.07 ocaml-migrate-parsetree-1)))))
     (synopsis "OCaml parsetree converter")
     (description "This library converts between parsetrees of different OCaml
 versions.  For each version, there is a snapshot of the parsetree and conversion
 functions to the next and/or previous version.")
     (license license:lgpl2.1+)))
- 
+
+(define-public ocaml-migrate-parsetree-1
+  (package
+    (inherit ocaml-migrate-parsetree)
+    (name "ocaml-migrate-parsetree-1")
+    (version "1.8.0")
+    (home-page "https://github.com/ocaml-ppx/ocaml-migrate-parsetree")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "16x8sxc4ygxrr1868qpzfqyrvjf3hfxvjzmxmf6ibgglq7ixa2nq"))))
+    (properties '((upstream-name . "ocaml-migrate-parsetree")))))
+
 (define-public ocaml-ppx-tools-versioned
   (package
     (name "ocaml-ppx-tools-versioned")
@@ -1814,7 +1833,7 @@ functions to the next and/or previous version.")
      `(#:test-target "."
        #:package "ppx_tools_versioned"))
     (propagated-inputs
-     `(("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)))
+     `(("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree-1)))
     (properties `((upstream-name . "ppx_tools_versioned")))
     (home-page "https://github.com/let-def/ppx_tools_versioned")
     (synopsis "Variant of ppx_tools")
@@ -6120,7 +6139,7 @@ combinators.")
          "0900vli5kw7s5kdam0n4cqsfsfqb7mdb3azn3i55595gilg1vyn8"))))
     (build-system dune-build-system)
     (propagated-inputs
-     `(("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+     `(("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree-1)
        ("ocaml-ppx-tools-versioned" ,ocaml-ppx-tools-versioned)
        ("ocaml-ounit" ,ocaml-ounit)))
     (arguments
@@ -6359,7 +6378,7 @@ variants.")
        ("ocaml-cmdliner" ,ocaml-cmdliner)
        ("ocaml-re" ,ocaml-re)
        ("ocaml-result" ,ocaml-result)
-       ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+       ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree-1)
        ("ocaml-odoc" ,ocaml-odoc)
        ("ocaml-version" ,ocaml-version)))
     (native-inputs
