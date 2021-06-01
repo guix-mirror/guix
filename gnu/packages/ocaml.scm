@@ -4999,37 +4999,37 @@ by making sure that you only compare comparable values.")
                  "06bq4m1bsm4jlx4g7wh5m99qky7xm4c2g52kaz6pv25hdn5agi2m"))))
      (properties `((upstream-name . "ppx_compare"))))))
 
-(define-public ocaml4.07-fieldslib
+(define-public ocaml-fieldslib
   (package
-    (name "ocaml4.07-fieldslib")
-    (version "0.11.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://ocaml.janestreet.com/ocaml-core/v"
-                                  (version-major+minor version) "/files/"
-                                  "fieldslib-v" version ".tar.gz"))
-              (sha256
-               (base32
-                "12948pzxrl360lybm9fzyvplgcl87zjbn4m3sk1aw75zk85p1388"))))
+    (name "ocaml-fieldslib")
+    (version "0.14.0")
+    (source (janestreet-origin
+             "fieldslib" version
+             "10n5y376fb5jgqk9h8vq158rm1b36h9lzh6p11q33h6xgvb1v6n3"))
     (build-system dune-build-system)
-    (arguments
-     ;; No tests
-     `(#:tests? #f
-       #:ocaml ,ocaml-4.07
-       #:findlib ,ocaml4.07-findlib
-       #:dune ,ocaml4.07-dune))
+    (arguments `(#:tests? #f)) ; No tests
     (propagated-inputs
-      `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
-        ("ocaml-migrate-parsetree"
-         ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
-        ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
-    (properties `((upstream-name . "fieldslib")))
+     `(("ocaml-base" ,ocaml-base)
+       ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+       ("ocaml-ppxlib" ,ocaml-ppxlib)))
+    (properties `((upstream-name . "fieldslib")
+                  (ocaml4.07-variant . ,(delay ocaml4.07-fieldslib))))
     (home-page "https://github.com/janestreet/fieldslib")
     (synopsis "Syntax extension to record fields")
     (description "Syntax extension to define first class values representing
 record fields, to get and set record fields, iterate and fold over all fields
 of a record and create new record values.")
     (license license:asl2.0)))
+
+(define-public ocaml4.07-fieldslib
+  (package-with-ocaml4.07
+   (package
+     (inherit ocaml-fieldslib)
+     (version "0.11.0")
+     (source (janestreet-origin
+              "fieldslib" version
+              "12948pzxrl360lybm9fzyvplgcl87zjbn4m3sk1aw75zk85p1388"))
+     (properties `((upstream-name . "fieldslib"))))))
 
 (define-public ocaml4.07-variantslib
   (package
@@ -5077,7 +5077,7 @@ standard library.")
     (build-system dune-build-system)
     (propagated-inputs
       `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
-        ("ocaml-fieldslib" ,ocaml4.07-fieldslib)
+        ("ocaml-fieldslib" ,(package-with-ocaml4.07 ocaml-fieldslib))
         ("ocaml-migrate-parsetree"
          ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
         ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
@@ -6173,7 +6173,7 @@ standard library that was developed by Jane Street.")
       `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
         ("ocaml-bin-prot" ,ocaml4.07-bin-prot)
         ("ocaml-configurator" ,ocaml4.07-configurator)
-        ("ocaml-fieldslib" ,ocaml4.07-fieldslib)
+        ("ocaml-fieldslib" ,(package-with-ocaml4.07 ocaml-fieldslib))
         ("ocaml-jane-street-headers" ,ocaml4.07-jane-street-headers)
         ("ocaml-ppx-assert" ,(package-with-ocaml4.07 ocaml-ppx-assert))
         ("ocaml-ppx-base" ,(package-with-ocaml4.07 ocaml-ppx-base))
