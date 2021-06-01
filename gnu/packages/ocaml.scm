@@ -6845,3 +6845,40 @@ these missing pieces.")
      "This packages backports new features of the language to older
 compilers, such as let+.")
     (license license:expat)))
+
+(define-public ocaml-angstrom
+  (package
+    (name "ocaml-angstrom")
+    (version "0.15.0")
+    (home-page "https://github.com/inhabitedtype/angstrom")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1hmrkdcdlkwy7rxhngf3cv3sa61cznnd9p5lmqhx20664gx2ibrh"))))
+    (build-system dune-build-system)
+    (arguments
+     ;; Only build the base angstrom package.
+     '(#:package "angstrom"
+       #:test-target "."))
+    (propagated-inputs
+     `(("ocaml-bigstringaf" ,ocaml-bigstringaf)))
+    (native-inputs
+     `(("ocaml-alcotest" ,ocaml-alcotest)
+       ("ocaml-ppx-let" ,ocaml-ppx-let)
+       ("ocaml-syntax-shims" ,ocaml-syntax-shims)))
+    (synopsis "Parser combinators built for speed and memory-efficiency")
+    (description
+     "Angstrom is a parser-combinator library that makes it easy to write
+efficient, expressive, and reusable parsers suitable for high-performance
+applications.  It exposes monadic and applicative interfaces for composition,
+and supports incremental input through buffered and unbuffered interfaces.
+Both interfaces give the user total control over the blocking behavior of
+their application, with the unbuffered interface enabling zero-copy IO.
+Parsers are backtracking by default and support unbounded lookahead.")
+    (license license:bsd-3)))
