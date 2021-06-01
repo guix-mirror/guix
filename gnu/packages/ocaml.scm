@@ -3803,7 +3803,7 @@ library is currently designed for Unicode Standard 3.2.")
      `(("ocaml-result" ,(package-with-ocaml4.07 ocaml-result))
        ("ocaml-camomile" ,(package-with-ocaml4.07 ocaml-camomile))))
     (native-inputs
-     `(("ocaml-ppx-expect" ,ocaml4.07-ppx-expect)))
+     `(("ocaml-ppx-expect" ,(package-with-ocaml4.07 ocaml-ppx-expect))))
     (properties
      `((upstream-name . "charInfo_width")))
     (home-page "https://bitbucket.org/zandoye/charinfo_width/")
@@ -5888,40 +5888,31 @@ useful errors on failure.")
         ("ocaml-ppxlib" ,ocaml-ppxlib)))
      (properties `((upstream-name . "ppx_assert"))))))
 
-(define-public ocaml4.07-ppx-expect
+(define-public ocaml-ppx-expect
   (package
-    (name "ocaml4.07-ppx-expect")
-    (version "0.12.0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                     (url "https://github.com/janestreet/ppx_expect")
-                     (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1wawsbjfkri4sw52n8xqrzihxc3xfpdicv3ahz83a1rsn4lb8j5q"))))
+    (name "ocaml-ppx-expect")
+    (version "0.14.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/janestreet/ppx_expect")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0vbbnjrzpyk5p0js21lafr6fcp2wqka89p1876rdf472cmg0l7fv"))))
     (build-system dune-build-system)
-    (arguments
-     `(#:ocaml ,ocaml-4.07
-       #:findlib ,ocaml4.07-findlib
-       #:dune ,ocaml4.07-dune))
     (propagated-inputs
-      `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
-        ("ocaml-ppx-assert" ,(package-with-ocaml4.07 ocaml4.07-ppx-assert))
-        ("ocaml-ppx-compare" ,(package-with-ocaml4.07 ocaml-ppx-compare))
-        ("ocaml-ppx-custom-printf" ,(package-with-ocaml4.07 ocaml-ppx-custom-printf))
-        ("ocaml-ppx-fields-conv" ,(package-with-ocaml4.07 ocaml-ppx-fields-conv))
-        ("ocaml-ppx-here" ,(package-with-ocaml4.07 ocaml-ppx-here))
-        ("ocaml-ppx-inline-test" ,(package-with-ocaml4.07 ocaml-ppx-inline-test))
-        ("ocaml-ppx-sexp-conv" ,(package-with-ocaml4.07 ocaml-ppx-sexp-conv))
-        ("ocaml-ppx-variants-conv" ,(package-with-ocaml4.07 ocaml-ppx-variants-conv))
-        ("ocaml-stdio" ,(package-with-ocaml4.07 ocaml-stdio))
-        ("ocaml-migrate-parsetree"
-         ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
-        ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))
-        ("ocaml-re" ,(package-with-ocaml4.07 ocaml-re))))
-    (properties `((upstream-name . "ppx_expect")))
+     `(("ocaml-base" ,ocaml-base)
+       ("ocaml-ppx-here" ,ocaml-ppx-here)
+       ("ocaml-ppx-inline-test" ,ocaml-ppx-inline-test)
+       ("ocaml-stdio" ,ocaml-stdio)
+       ("ocaml-ppxlib" ,ocaml-ppxlib)
+       ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+       ("ocaml-re" ,ocaml-re)))
+    (properties `((upstream-name . "ppx_expect")
+                  (ocaml4.07-variant . ,(delay ocaml4.07-ppx-expect))))
     (home-page "https://github.com/janestreet/ppx_expect")
     (synopsis "Cram like framework for OCaml")
     (description "Expect-test is a framework for writing tests in OCaml, similar
@@ -5930,6 +5921,30 @@ to Cram.  Expect-tests mimics the existing inline tests framework with the
 output-generating code, interleaved with @code{%expect} extension expressions
 to denote the expected output.")
     (license license:asl2.0)))
+
+(define-public ocaml4.07-ppx-expect
+  (package-with-ocaml4.07
+   (package
+     (inherit ocaml-ppx-expect)
+     (version "0.12.0")
+     (source
+      (janestreet-origin "ppx_expect" version
+                         "1zpci8c49yn2ixchmwjx1kf9pwybv3dnn4l2dgnd6m36qnkralfk"))
+     (propagated-inputs
+      `(("ocaml-base" ,ocaml-base)
+        ("ocaml-ppx-assert" ,ocaml-ppx-assert)
+        ("ocaml-ppx-compare" ,ocaml-ppx-compare)
+        ("ocaml-ppx-custom-printf" ,ocaml-ppx-custom-printf)
+        ("ocaml-ppx-fields-conv" ,ocaml-ppx-fields-conv)
+        ("ocaml-ppx-here" ,ocaml-ppx-here)
+        ("ocaml-ppx-inline-test" ,ocaml-ppx-inline-test)
+        ("ocaml-ppx-sexp-conv" ,ocaml-ppx-sexp-conv)
+        ("ocaml-ppx-variants-conv" ,ocaml-ppx-variants-conv)
+        ("ocaml-stdio" ,ocaml-stdio)
+        ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+        ("ocaml-ppxlib" ,ocaml-ppxlib)
+        ("ocaml-re" ,ocaml-re)))
+     (properties `((upstream-name . "ppx_expect"))))))
 
 (define-public ocaml-ppx-js-style
   (package
@@ -6103,7 +6118,7 @@ functions from type definitions.")
         ("ocaml-ppx-bench" ,ocaml4.07-ppx-bench)
         ("ocaml-ppx-bin-prot" ,ocaml4.07-ppx-bin-prot)
         ("ocaml-ppx-custom-printf" ,(package-with-ocaml4.07 ocaml-ppx-custom-printf))
-        ("ocaml-ppx-expect" ,ocaml4.07-ppx-expect)
+        ("ocaml-ppx-expect" ,(package-with-ocaml4.07 ocaml-ppx-expect))
         ("ocaml-ppx-fail" ,ocaml4.07-ppx-fail)
         ("ocaml-ppx-fields-conv" ,(package-with-ocaml4.07 ocaml-ppx-fields-conv))
         ("ocaml-ppx-here" ,(package-with-ocaml4.07 ocaml-ppx-here))
@@ -6248,7 +6263,7 @@ Configurator allows one to:
        #:findlib ,ocaml4.07-findlib
        #:dune ,ocaml4.07-dune))
     (native-inputs
-     `(("ocaml-ppx-expect" ,ocaml4.07-ppx-expect)))
+     `(("ocaml-ppx-expect" ,(package-with-ocaml4.07 ocaml-ppx-expect))))
     (home-page "https://github.com/janestreet/spawn")
     (synopsis "Spawning sub-processes")
     (description
