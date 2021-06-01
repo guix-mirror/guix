@@ -464,11 +464,11 @@ gitignore rules.")
      "This package provides a tool for generating C/C++ bindings to Rust code.")
     (license license:mpl2.0)))
 
-(define-public rust-cbindgen-0.17
+(define-public rust-cbindgen-0.19
   (package
     (inherit rust-cbindgen)
     (name "rust-cbindgen")
-    (version "0.17.0")
+    (version "0.19.0")
     (source
      (origin
        (method url-fetch)
@@ -477,7 +477,7 @@ gitignore rules.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1f40hxj6h7wqmsj8dzxjm3m421hjqpz2m5zxasbn8kgnr6scykvl"))))
+         "1yld9fni9g9mzg4r42zfk79aq9mzm2sfzzjrrx4vir4lp4qqqwiq"))))
     (arguments
      `(#:cargo-inputs
        (("rust-clap" ,rust-clap-2)
