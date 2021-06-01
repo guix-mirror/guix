@@ -2510,7 +2510,7 @@ representation of the data.")
 (define-public ocaml4.07-gen
   (package
     (name "ocaml4.07-gen")
-    (version "0.5.2")
+    (version "0.5.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2519,7 +2519,7 @@ representation of the data.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1h9g508rnj2j8va5nvhamzscp954vrkh0hdf4pn3d10pcfyslfg2"))))
+                "1jzrs0nsdk55annkd2zrk5svi61i3b1nk6qyqdc2y26vnzqvzfg8"))))
     (build-system dune-build-system)
     (arguments
      `(#:tests? #f; no tests
