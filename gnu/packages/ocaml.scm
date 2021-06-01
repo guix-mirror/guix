@@ -2707,6 +2707,51 @@ Functions are also provided to fold over the characters of UTF encoded OCaml
 string values and to directly encode characters in OCaml Buffer.t values.")
     (license license:isc)))
 
+(define-public ocaml-uunf
+  (package
+    (name "ocaml-uunf")
+    (version "13.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri "https://erratique.ch/software/uunf/releases/uunf-13.0.0.tbz")
+       (sha256
+        (base32
+         "1qci04nkp24kdls1z4s8kz5dzgky4nwd5r8345nwdrgwmxhw7ksm"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:build-flags (list "build" "--tests" "true")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'check 'check-data
+           (lambda* (#:key inputs #:allow-other-keys)
+             (copy-file (assoc-ref inputs "NormalizationTest.txt")
+                        "test/NormalizationTest.txt")
+             #t)))))
+    (native-inputs
+     `(("ocamlbuild" ,ocamlbuild)
+       ("opam" ,opam)
+       ("topkg" ,ocaml-topkg)
+       ;; Test data is otherwise downloaded wit curl
+       ("NormalizationTest.txt"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append "https://www.unicode.org/Public/"
+                               version
+                               "/ucd/NormalizationTest.txt"))
+           (sha256
+              (base32 "07g0ya4f6zfzvpp24ccxkb2yq568kh83gls85rjl950nv5fya3nn"))))))
+    (propagated-inputs `(("ocaml-uutf" ,ocaml-uutf)))
+    (home-page "https://erratique.ch/software/uunf")
+    (synopsis "Unicode text normalization for OCaml")
+    (description
+     "Uunf is an OCaml library for normalizing Unicode text.  It supports all
+Unicode normalization forms.  The library is independent from any
+IO mechanism or Unicode text data structure and it can process text
+without a complete in-memory representation.")
+    (license license:isc)))
+
 (define-public ocaml-jsonm
   (package
     (name "ocaml-jsonm")
