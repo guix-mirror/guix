@@ -5770,38 +5770,38 @@ output-generating code, interleaved with @code{%expect} extension expressions
 to denote the expected output.")
     (license license:asl2.0)))
 
-(define-public ocaml4.07-ppx-js-style
+(define-public ocaml-ppx-js-style
   (package
-    (name "ocaml4.07-ppx-js-style")
-    (version "0.11.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://ocaml.janestreet.com/ocaml-core/v"
-                                  (version-major+minor version)
-                                  "/files/ppx_js_style-v" version ".tar.gz"))
-              (sha256
-               (base32
-                "0z3fc55jdjhhsblla6z4fqc13kljpcz29q79rvs5h2vsraqrldr2"))))
+    (name "ocaml-ppx-js-style")
+    (version "0.14.0")
+    (source
+     (janestreet-origin "ppx_js_style" version
+      "141fgxfipfn5jdaxc946dmp5y4fcnbhxms9maji9ddywgx82ya7l"))
     (build-system dune-build-system)
-    (arguments
-     ;; No tests
-     `(#:tests? #f
-       #:ocaml ,ocaml-4.07
-       #:findlib ,ocaml4.07-findlib
-       #:dune ,ocaml4.07-dune))
+    (arguments `(#:tests? #f)) ; No tests
     (propagated-inputs
-      `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
-        ("ocaml-migrate-parsetree"
-         ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
-        ("ocaml-octavius" ,(package-with-ocaml4.07 ocaml-octavius))
-        ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
-    (properties `((upstream-name . "ppx_js_style")))
+     `(("ocaml-base" ,ocaml-base)
+       ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+       ("ocaml-octavius" ,ocaml-octavius)
+       ("ocaml-ppxlib" ,ocaml-ppxlib)))
+    (properties `((upstream-name . "ppx_js_style")
+                  (ocaml4.07-variant . ,(delay ocaml4.07-ppx-js-style))))
     (home-page "https://github.com/janestreet/ppx_js_style")
     (synopsis "Code style checker for Jane Street Packages")
     (description "This package is a no-op ppx rewriter.  It is used as a
 @code{lint} tool to enforce some coding conventions across all Jane Street
 packages.")
     (license license:asl2.0)))
+
+(define-public ocaml4.07-ppx-js-style
+  (package-with-ocaml4.07
+   (package
+     (inherit ocaml-ppx-js-style)
+     (version "0.11.0")
+     (source
+      (janestreet-origin "ppx_js_style" version
+                         "0z3fc55jdjhhsblla6z4fqc13kljpcz29q79rvs5h2vsraqrldr2"))
+     (properties `((upstream-name . "ppx_js_style"))))))
 
 (define-public ocaml4.07-ppx-typerep-conv
   (package
@@ -5857,7 +5857,7 @@ from type definitions.")
      `(("ocaml-ppx-compare" ,(package-with-ocaml4.07 ocaml-ppx-compare))
        ("ocaml-ppx-enumerate" ,(package-with-ocaml4.07 ocaml-ppx-enumerate))
         ("ocaml-ppx-hash" ,(package-with-ocaml4.07 ocaml-ppx-hash))
-        ("ocaml-ppx-js-style" ,ocaml4.07-ppx-js-style)
+        ("ocaml-ppx-js-style" ,(package-with-ocaml4.07 ocaml4.07-ppx-js-style))
         ("ocaml-ppx-sexp-conv" ,(package-with-ocaml4.07 ocaml-ppx-sexp-conv))
         ("ocaml-migrate-parsetree"
          ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
