@@ -4180,6 +4180,31 @@ recommend using this package directly.")
 packages.")
     (license license:expat)))
 
+(define-public ocaml-time-now
+  (package
+    (name "ocaml-time-now")
+    (version "0.14.0")
+    (source
+     (janestreet-origin
+      "time_now" version
+      "0hkn2jw4dz5gflnsblskl5wp6z7zbrahwjmaxmsskfviwjg82cqh"))
+    (build-system dune-build-system)
+    (arguments '(#:tests? #f))           ; no tests
+    (propagated-inputs
+     `(("ocaml-base" ,ocaml-base)
+       ("ocaml-jane-street-headers" ,ocaml-jane-street-headers)
+       ("ocaml-jst-config" ,ocaml-jst-config)
+       ("ocaml-ppx-base" ,ocaml-ppx-base)
+       ("ocaml-ppx-optcomp" ,ocaml-ppx-optcomp)))
+    (properties `((upstream-name . "time_now")))
+    (home-page
+     "https://github.com/janestreet/time_now")
+    (synopsis "Reports the current time")
+    (description
+     "Provides a single function to report the current time in nanoseconds
+since the start of the Unix epoch.")
+    (license license:expat)))
+
 (define-public ocaml4.07-ppx-inline-test
   (package
     (name "ocaml4.07-ppx-inline-test")
