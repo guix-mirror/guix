@@ -4205,10 +4205,10 @@ packages.")
 since the start of the Unix epoch.")
     (license license:expat)))
 
-(define-public ocaml4.07-ppx-inline-test
+(define-public ocaml-ppx-inline-test
   (package
-    (name "ocaml4.07-ppx-inline-test")
-    (version "0.12.0")
+    (name "ocaml-ppx-inline-test")
+    (version "0.14.1")
     (home-page "https://github.com/janestreet/ppx_inline_test")
     (source
      (origin
@@ -4219,28 +4219,51 @@ since the start of the Unix epoch.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0nyz411zim94pzbxm2l2v2l9jishcxwvxhh142792g2s18r4vn50"))))
+         "1ajdna1m9l1l3nfigyy33zkfa3yarfr6s086jdw2pcfwlq1fhhl4"))))
     (build-system dune-build-system)
     (arguments
-                                        ;see home page README for further information
-     `(#:tests? #f
-       #:ocaml ,ocaml-4.07
-       #:findlib ,ocaml4.07-findlib
-       #:dune ,ocaml4.07-dune))
-    (inputs
-     `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
-       ("ocaml-migrate-parsetree"
-        ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
-       ("ocaml-compiler-libs" ,(package-with-ocaml4.07 ocaml-compiler-libs))
-       ("ocaml-sexplib0" ,(package-with-ocaml4.07 ocaml-sexplib0))
-       ("ocaml-stdio" ,(package-with-ocaml4.07 ocaml-stdio))
-       ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
-    (properties `((upstream-name . "ppx_inline_test")))
+     `(#:tests? #f)) ;see home page README for further information
+    (propagated-inputs
+     `(("ocaml-base" ,ocaml-base)
+       ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+       ("ocaml-compiler-libs" ,ocaml-compiler-libs)
+       ("ocaml-sexplib0" ,ocaml-sexplib0)
+       ("ocaml-stdio" ,ocaml-stdio)
+       ("ocaml-ppxlib" ,ocaml-ppxlib)
+       ("ocaml-time-now" ,ocaml-time-now)))
+    (properties `((upstream-name . "ppx_inline_test")
+                  (ocaml4.07-variant . ,(delay ocaml4.07-ppx-inline-test))))
     (synopsis "Syntax extension for writing in-line tests in ocaml code")
     (description "This package contains a syntax extension for writing
 in-line tests in ocaml code.  It is part of Jane Street's PPX rewriters
 collection.")
     (license license:expat)))
+
+(define-public ocaml4.07-ppx-inline-test
+  (package-with-ocaml4.07
+   (package
+     (inherit ocaml-ppx-inline-test)
+     (name "ocaml-ppx-inline-test")
+     (version "0.12.0")
+     (home-page "https://github.com/janestreet/ppx_inline_test")
+     (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url (string-append home-page ".git"))
+              (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "0nyz411zim94pzbxm2l2v2l9jishcxwvxhh142792g2s18r4vn50"))))
+    (propagated-inputs
+     `(("ocaml-base" ,ocaml-base)
+       ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+       ("ocaml-compiler-libs" ,ocaml-compiler-libs)
+       ("ocaml-sexplib0" ,ocaml-sexplib0)
+       ("ocaml-stdio" ,ocaml-stdio)
+       ("ocaml-ppxlib" ,ocaml-ppxlib)))
+    (properties `((upstream-name . "ppx_inline_test"))))))
 
 (define-public ocaml-bindlib
   (package
@@ -4258,7 +4281,7 @@ collection.")
          "1f8kr81w8vsi4gv61xn1qbc6zrzkjp8l9ix0942vjh4gjxc74v75"))))
     (build-system ocaml-build-system)
     (arguments
-     `(#:tests? #f ;no tests
+     `(#:tests? #f                      ;no tests
        #:use-make? #t
        #:phases
        (modify-phases %standard-phases
@@ -5454,7 +5477,7 @@ many values).")
        #:findlib ,ocaml4.07-findlib
        #:dune ,ocaml4.07-dune))
     (propagated-inputs
-      `(("ocaml-ppx-inline-test" ,ocaml4.07-ppx-inline-test)
+     `(("ocaml-ppx-inline-test" ,(package-with-ocaml4.07 ocaml-ppx-inline-test))
         ("ocaml-migrate-parsetree"
          ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
         ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
@@ -5837,7 +5860,7 @@ useful errors on failure.")
         ("ocaml-ppx-custom-printf" ,(package-with-ocaml4.07 ocaml-ppx-custom-printf))
         ("ocaml-ppx-fields-conv" ,(package-with-ocaml4.07 ocaml-ppx-fields-conv))
         ("ocaml-ppx-here" ,(package-with-ocaml4.07 ocaml-ppx-here))
-        ("ocaml-ppx-inline-test" ,ocaml4.07-ppx-inline-test)
+        ("ocaml-ppx-inline-test" ,(package-with-ocaml4.07 ocaml-ppx-inline-test))
         ("ocaml-ppx-sexp-conv" ,(package-with-ocaml4.07 ocaml-ppx-sexp-conv))
         ("ocaml-ppx-variants-conv" ,ocaml4.07-ppx-variants-conv)
         ("ocaml-stdio" ,(package-with-ocaml4.07 ocaml-stdio))
@@ -6031,7 +6054,7 @@ functions from type definitions.")
         ("ocaml-ppx-fail" ,ocaml4.07-ppx-fail)
         ("ocaml-ppx-fields-conv" ,(package-with-ocaml4.07 ocaml-ppx-fields-conv))
         ("ocaml-ppx-here" ,(package-with-ocaml4.07 ocaml-ppx-here))
-        ("ocaml-ppx-inline-test" ,ocaml4.07-ppx-inline-test)
+        ("ocaml-ppx-inline-test" ,(package-with-ocaml4.07 ocaml-ppx-inline-test))
         ("ocaml-ppx-let" ,(package-with-ocaml4.07 ocaml-ppx-let))
         ("ocaml-ppx-optcomp" ,(package-with-ocaml4.07 ocaml-ppx-optcomp))
         ("ocaml-ppx-optional" ,(package-with-ocaml4.07 ocaml-ppx-optional))
@@ -6263,7 +6286,7 @@ standard library that was developed by Jane Street.")
         ("ocaml-ppx-assert" ,(package-with-ocaml4.07 ocaml-ppx-assert))
         ("ocaml-ppx-base" ,(package-with-ocaml4.07 ocaml-ppx-base))
         ("ocaml-ppx-hash" ,(package-with-ocaml4.07 ocaml-ppx-hash))
-        ("ocaml-ppx-inline-test" ,ocaml4.07-ppx-inline-test)
+        ("ocaml-ppx-inline-test" ,(package-with-ocaml4.07 ocaml-ppx-inline-test))
         ("ocaml-ppx-jane" ,ocaml4.07-ppx-jane)
         ("ocaml-ppx-sexp-conv" ,(package-with-ocaml4.07 ocaml-ppx-sexp-conv))
         ("ocaml-ppx-sexp-message" ,ocaml4.07-ppx-sexp-message)
