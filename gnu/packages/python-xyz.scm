@@ -21061,28 +21061,41 @@ N-dimensional arrays for Python.")
 (define-public python-anndata
   (package
     (name "python-anndata")
-    (version "0.7.1")
+    (version "0.7.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "anndata" version))
        (sha256
         (base32
-         "0rnfbpr55j1a1bi2kd4mz444741hrn74kz90h5rnjr59jmpfnh09"))))
+         "1ch8yp0xmag6z0kl01pljm35lbbwax7lrimfhiclpkd4m6xngk53"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
+     `(#:tests? #f ; The tarball from PyPi doesn't include tests.
+       #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'delete-inconvenient-tests
-           (lambda _
-             ;; This test depends on python-scikit-learn.
-             (delete-file "anndata/tests/test_inplace_subset.py")
-             #t))
          (delete 'check)
-         (add-after 'install 'check
+         (add-before 'build 'relax-dependency-requirements
+           (lambda _
+             ;; We need to upgrade python-pandas to avoid
+             ;; https://github.com/pandas-dev/pandas/issues/35446
+             (substitute* "pyproject.toml"
+               (("pandas>=1.1.1") "pandas>=1.0.5"))))
+         (replace 'build
+           (lambda _
+             ;; ZIP does not support timestamps before 1980.
+             (setenv "SOURCE_DATE_EPOCH" "315532800")
+             (invoke "flit" "build")))
+         (replace 'install
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (add-installed-pythonpath inputs outputs)
-             (invoke "pytest" "-vv"))))))
+             (let ((out (assoc-ref outputs "out")))
+               (for-each (lambda (wheel)
+                           (format #true wheel)
+                           (invoke "python" "-m" "pip" "install"
+                                   wheel (string-append "--prefix=" out)))
+                         (find-files "dist" "\\.whl$")))
+             #t)))))
     (propagated-inputs
      `(("python-h5py" ,python-h5py)
        ("python-importlib-metadata" ,python-importlib-metadata)
@@ -21095,6 +21108,8 @@ N-dimensional arrays for Python.")
     (native-inputs
      `(("python-joblib" ,python-joblib)
        ("python-pytest" ,python-pytest)
+       ("python-toml" ,python-toml)
+       ("python-flit" ,python-flit)
        ("python-setuptools-scm" ,python-setuptools-scm)))
     (home-page "https://github.com/theislab/anndata")
     (synopsis "Annotated data for data analysis pipelines")
