@@ -15905,14 +15905,26 @@ datum transformations.")
 (define-public r-spdep
   (package
     (name "r-spdep")
-    (version "1.1-7")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "spdep" version))
-       (sha256
-        (base32
-         "0sg417d95paww625663lgmk6jwhs88djqzc96gbs1hxazlf77qb1"))))
+    (version "1.1-8")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "spdep" version))
+              (sha256
+               (base32
+                "1k82vx58kpn0fwgcpxq2jc3qfffl8wzbgr4cdkxihrfk28kkqh7l"))
+              (snippet
+               '(for-each delete-file '("inst/doc/nb_igraph.html"
+                                        "inst/doc/nb_igraph.R"
+                                        "inst/doc/nb_igraph.Rmd"
+                                        "inst/doc/sids.html"
+                                        "inst/doc/sids.R"
+                                        "inst/doc/nb.html"
+                                        "inst/doc/nb.R"
+                                        "inst/doc/CO69.html"
+                                        "inst/doc/CO69.R"
+                                        "inst/doc/nb_sf.html"
+                                        "inst/doc/nb_sf.R"
+                                        "inst/doc/nb_sf.Rmd")))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-boot" ,r-boot)
