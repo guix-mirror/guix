@@ -2429,7 +2429,7 @@ standard library.")
 (define-public rust-assert-cmd-1
   (package
     (name "rust-assert-cmd")
-    (version "1.0.3")
+    (version "1.0.4")
     (source
       (origin
         (method url-fetch)
@@ -2438,7 +2438,7 @@ standard library.")
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "15h3wfxn1q7sfcrin4z35x9hgf539f2dhkwz2mq4zswlrmc5nizj"))))
+          "127mhhjbclg63rfhmy0jc382w5x7y6aig0b9rhnyfkbymk0zwmwg"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
