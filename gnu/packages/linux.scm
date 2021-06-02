@@ -8065,7 +8065,7 @@ provides user-space tools for creating EROFS file systems.")
 (define-public rasdaemon
   (package
     (name "rasdaemon")
-    (version "0.6.6")
+    (version "0.6.7")
     (source
      (origin
        (method git-fetch)
@@ -8074,14 +8074,17 @@ provides user-space tools for creating EROFS file systems.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "13g39x19lfjf9izdcb0nlyfjrgpliivhv4nw3ndgyzi59l3yqc0v"))))
+        (base32 "12ih96jwmr7imp9zyckf9zjqqm5ra1kv5fj6kbw71y6yl31069dz"))))
     (native-inputs `(("autoconf" ,autoconf)
                      ("automake" ,automake)
                      ("libtool" ,libtool)))
     (inputs `(("sqlite" ,sqlite)))
     (arguments
-     `(#:configure-flags '("--enable-all"
-                           "--localstatedir=/var")
+     `(#:configure-flags
+       (list "--enable-all"
+             ;; Don't install unused /etc/sysconfig/rasdaemon environment file.
+             "--with-sysconfdefdir=."
+             "--localstatedir=/var")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'munge-autotools
