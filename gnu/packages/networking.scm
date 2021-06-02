@@ -2992,7 +2992,7 @@ file for more details.")
        ("crypto++" ,crypto++)
        ("libpng" ,libpng)
        ("wxwidgets-gtk2" ,wxwidgets-gtk2)))
-    (home-page "http://amule.org/")
+    (home-page "https://amule.org/")
     (synopsis "Peer-to-peer client for the eD2K and Kademlia networks")
     (description
      "aMule is an eMule-like client for the eD2k and Kademlia peer-to-peer
