@@ -11612,21 +11612,21 @@ al. (2016)).")
 (define-public r-weights
   (package
     (name "r-weights")
-    (version "1.0.1")
+    (version "1.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "weights" version))
        (sha256
         (base32
-         "1ka2kvzg464vn80qziqy4mrciy9wwd3jfasgq0d33wbiblhmxkj5"))))
+         "1sq8ls5idspddn8m2c8n2107lgx53kbach8vgjrhqx1mc6xfvrvw"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-gdata" ,r-gdata)
        ("r-hmisc" ,r-hmisc)
+       ("r-lme4" ,r-lme4)
        ("r-mice" ,r-mice)))
-    (home-page
-     "https://cran.r-project.org/web/packages/weights/")
+    (home-page "https://cran.r-project.org/web/packages/weights/")
     (synopsis "Weighting and weighted statistics")
     (description "This package Provides a variety of functions for producing
 simple weighted statistics, such as weighted Pearson's correlations, partial
