@@ -425,6 +425,32 @@ repositories through the
 server}.  The main advantage compared to @code{vc-hg} is speed.")
     (license license:gpl3+)))
 
+(define-public emacs-hgignore-mode
+  ;; From 2021-03-14.
+  ;; No releases available.
+  (let ((commit "2c5aa4c238848f5b4f2955afcfb5f21ea513653b")
+        (revision "0"))
+    (package
+      (name "emacs-hgignore-mode")
+      ;; `Version:' header says 0.1.20150329
+      (version (git-version "0.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/omajid/hgignore-mode")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0jn9rzhrmmv4lf7rdapdjclk6623d1mir2lq3c46428skhzjlph7"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/omajid/hgignore-mode")
+      (synopsis "Major mode for editing @file{hgignore} files")
+      (description "This package provides a basic major mode for
+editing @file{.hgignore} files used by the Mercurial version control
+system.")
+      (license license:gpl3+))))
+
 (define-public emacs-hyperbole
   (package
     (name "emacs-hyperbole")
