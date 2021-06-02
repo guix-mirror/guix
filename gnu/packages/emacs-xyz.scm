@@ -506,6 +506,32 @@ outlines, manage all your contacts, your windows and frames, and search across
 buffers, directory trees, or the web.")
     (license license:gpl3+)))
 
+(define-public emacs-hg-histedit
+  ;; From 2021-03-02.
+  ;; No releases available.
+  (let ((commit "a05149483b9c5f7848ece0ba6028c900595a6a25")
+        (revision "0"))
+    (package
+      (name "emacs-hg-histedit")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/jojojames/hg-histedit")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "04zps0d4s99f5a8ahrpyf8b6qw0c1y7rd1bsaq9nc6m4qblsvwc8"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-with-editor" ,emacs-with-editor)))
+      (home-page "https://github.com/jojojames/hg-histedit")
+      (synopsis "Emacs interface to @command{hg histedit}")
+      (description "This package provides an Emacs interface to
+@command{hg histedit} for editing the commit history.")
+      (license license:gpl3+))))
+
 (define-public emacs-paredit
   (package
     (name "emacs-paredit")
