@@ -38369,7 +38369,7 @@ code is translated from C to Rust using c2rust.")
 (define-public rust-sha2-0.9
   (package
     (name "rust-sha2")
-    (version "0.9.3")
+    (version "0.9.5")
     (source
       (origin
         (method url-fetch)
@@ -38378,17 +38378,16 @@ code is translated from C to Rust using c2rust.")
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "1phjvjcvc33xa3xdpxw3a324ksbnrg9qhjnig13z9dwsn8a7m0ps"))))
+          "04lzf4swq6cijvxnc6facr3g72h5v7a5z8lz3xrkf8gxa9bswqmk"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-block-buffer" ,rust-block-buffer-0.9)
         ("rust-cfg-if" ,rust-cfg-if-1)
-        ("rust-cpuid-bool" ,rust-cpuid-bool-0.1)
+        ("rust-cpufeatures" ,rust-cpufeatures-0.1)
         ("rust-digest" ,rust-digest-0.9)
-        ("rust-libc" ,rust-libc-0.2)
         ("rust-opaque-debug" ,rust-opaque-debug-0.3)
-        ("rust-sha2-asm" ,rust-sha2-asm-0.5))
+        ("rust-sha2-asm" ,rust-sha2-asm-0.6))
        #:cargo-development-inputs
        (("rust-digest" ,rust-digest-0.9)
         ("rust-hex-literal" ,rust-hex-literal-0.2))))
