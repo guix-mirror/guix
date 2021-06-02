@@ -1618,18 +1618,20 @@ absolute GSEA.")
 (define-public r-bisquerna
   (package
    (name "r-bisquerna")
-   (version "1.0.4")
+   (version "1.0.5")
    (source (origin
             (method url-fetch)
             (uri (cran-uri "BisqueRNA" version))
             (sha256
              (base32
-              "01g34n87ml7n3pck77497ddgbv3rr5p4153ac8ninpgjijlm3jw2"))))
+              "0p3p5lp69gri7vs6qfpm7br4ksbs4l7clm4nj8ki99wpqiqni23n"))))
    (properties `((upstream-name . "BisqueRNA")))
    (build-system r-build-system)
    (propagated-inputs
     `(("r-biobase" ,r-biobase)
       ("r-limsolve" ,r-limsolve)))
+   (native-inputs
+     `(("r-knitr" ,r-knitr)))
    (home-page "https://www.biorxiv.org/content/10.1101/669911v1")
    (synopsis "Decomposition of bulk expression with single-cell sequencing")
    (description "This package provides tools to accurately estimate cell type
