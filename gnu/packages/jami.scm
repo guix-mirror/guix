@@ -62,7 +62,7 @@
   #:use-module (guix packages)
   #:use-module (guix utils))
 
-(define %jami-version "20210326.1.cfba013")
+(define %jami-version "20210606.1.e2f9490")
 
 (define %jami-sources
   ;; Return an origin object of the tarball release sources archive of the
@@ -87,7 +87,7 @@
                                             "client-uwp"))))
     (sha256
      (base32
-      "1h0avma8bdzyznkz39crjyv2888bii4f49md15jg7970dyp5pdyz"))))
+      "1vpxv2dk3l9cahv6mxd2754pxs9mzrid5bgwvl6k1byzpq8y4smr"))))
 
 ;; Jami maintains a set of patches for some key dependencies (currently
 ;; pjproject and ffmpeg) of Jami that haven't yet been integrated upstream.
@@ -158,7 +158,8 @@
                   "0015-update-local-preference-for-peer-reflexive-candidate"
                   "0016-use-addrinfo-instead-CFHOST"
                   "0017-CVE-2020-15260"
-                  "0018-CVE-2021-21375"))))))))))
+                  "0018-CVE-2021-21375"
+                  "0019-ignore-down-interfaces"))))))))))
 
 ;; The following variables are configure flags used by ffmpeg-jami.  They're
 ;; from the ring-project/daemon/contrib/src/ffmpeg/rules.mak file. We try to
@@ -567,28 +568,16 @@ decentralized calling using P2P-DHT.")
   (package
     (name "jami-qt")                    ;to be renamed 'jami' at some point
     (version %jami-version)
-    ;; The Qt client code is not yet part of the release tarball; fetch it
-    ;; from git for now.
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://git.jami.net/savoirfairelinux/jami-client-qt.git")
-                    (commit "ae21c17da5e8f730ae3895ccbc4da8047e3be1eb")))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1rf3lpk8c4qc12pi6pn4rdp7i8b83xv64yqr0q47rzv9s518qyjp"))))
+    (source %jami-sources)
     (build-system qt-build-system)
     (outputs '("out" "debug"))
     (arguments
      `(#:tests? #f                      ;no test suite
-       ;; TODO: Uncomment after switching back to the tarball source.
-       ;; #:phases
-       ;; (modify-phases %standard-phases
-       ;;     (add-after 'unpack 'change-directory
-       ;;       (lambda _
-       ;;         (chdir "client-qt"))))
-       ))
+       #:phases
+       (modify-phases %standard-phases
+           (add-after 'unpack 'change-directory
+             (lambda _
+               (chdir "client-qt"))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("qttools" ,qttools)
