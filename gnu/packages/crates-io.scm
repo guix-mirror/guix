@@ -32856,21 +32856,20 @@ functionality.")
 (define-public rust-regex-1
   (package
     (name "rust-regex")
-    (version "1.4.3")
+    (version "1.5.4")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "regex" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "12llbg82js69mdl50lav4yn1iqlx71ckb18dww467q99w4wi49fr"))))
+        (base32 "0qf479kjbmb582h4d1d6gfl75h0j8aq2nrdi5wg6zdcy6llqcynh"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-aho-corasick" ,rust-aho-corasick-0.7)
         ("rust-memchr" ,rust-memchr-2)
-        ("rust-regex-syntax" ,rust-regex-syntax-0.6)
-        ("rust-thread-local" ,rust-thread-local-1))
+        ("rust-regex-syntax" ,rust-regex-syntax-0.6))
        #:cargo-development-inputs
        (("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-quickcheck" ,rust-quickcheck-0.8)
