@@ -4140,14 +4140,14 @@ hierarchical clustering dendrograms.")
 (define-public r-fastcluster
   (package
     (name "r-fastcluster")
-    (version "1.1.25")
+    (version "1.2.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "fastcluster" version))
        (sha256
         (base32
-         "01a2xnhhvv1swd4g8p4lzyn7ww7kg49jlnzc7kfz60jqjzpisrpk"))))
+         "009amz7i5yndqw2008fgd3p11n4fsb291k2ypg3pip6dw4lr28hz"))))
     (build-system r-build-system)
     (home-page "http://danifold.net/fastcluster.html")
     (synopsis "Fast hierarchical clustering routines")
