@@ -317,7 +317,7 @@ Interface} specification.")
 (define-public monolith
   (package
     (name "monolith")
-    (version "2.4.1")
+    (version "2.5.0")
     (source
      (origin
        (method git-fetch)
@@ -326,7 +326,7 @@ Interface} specification.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1z0bcvk2cvx2cd0hs8addzcb070xvrkcxvg25691xw0ikiynpkwz"))))
+        (base32 "0s6jyhz51d39ccz0ghr7hy1fww84b0pzsyb8s63qgxbndp2c42l0"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
