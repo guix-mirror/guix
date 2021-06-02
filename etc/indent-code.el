@@ -99,6 +99,8 @@
                             nil t)
          (let ((indent-tabs-mode nil))
            (beginning-of-defun)
+           (mark-sexp)
+           (untabify (point) (mark))
            (indent-sexp)
            (save-buffer)
            (message "Done!"))
@@ -108,6 +110,7 @@
      ;; Indent all of FILE-NAME.
      (find-file file-name)
      (let ((indent-tabs-mode nil))
+       (untabify (point-min) (point-max))
        (indent-region (point-min) (point-max))
        (save-buffer)
        (message "Done!")))
