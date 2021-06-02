@@ -4377,13 +4377,13 @@ within a category based on their density using quasirandom noise.")
 (define-public r-beeswarm
   (package
     (name "r-beeswarm")
-    (version "0.3.1")
+    (version "0.4.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "beeswarm" version))
               (sha256
                (base32
-                "1jsggypyww77hkcic03kdb3fp8h938qs142xi0lapzh62bkn2pjj"))))
+                "016mqcbdksialkmap56rprzna9b6cd6896ml9gl2n2h8yjdk7x2i"))))
     (build-system r-build-system)
     (home-page "https://www.cbs.dtu.dk/~eklund/beeswarm/")
     (synopsis "Implementation of bee swarm plots")
