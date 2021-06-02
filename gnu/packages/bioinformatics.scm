@@ -11009,6 +11009,56 @@ and many lower level support classes.
     ;; license header.
     (license (list license:gpl2+ license:gpl3+))))
 
+(define-public biobambam2
+  (package
+    (name "biobambam2")
+    (version "2.0.182")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitlab.com/german.tischler/biobambam2")
+                    (commit (string-append version "-release-20210412001032"))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0b7w7a2a7hpkgrdn0n7hy4pilzrj82zqrh7q4bg1l0cd6bqr60m5"))))
+    (build-system gnu-build-system)
+    (arguments
+     ;; The test suite attempts to execute ../test-driver, which does not exist.
+     `(#:tests? #false
+       #:configure-flags
+       (list (string-append "--with-libmaus2="
+                            (assoc-ref %build-inputs "libmaus2")))))
+    (inputs
+     `(("libmaus2" ,libmaus2)
+       ("xerces-c" ,xerces-c)))
+    (native-inputs
+     `(("gcc" ,gcc-10)                  ;Code has C++17 requirements
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://gitlab.com/german.tischler/biobambam2")
+    (synopsis "Tools for processing BAM files")
+    (description "This package contains some tools for processing BAM files
+including:
+
+@itemize
+@item bamsormadup: parallel sorting and duplicate marking
+@item bamcollate2: reads BAM and writes BAM reordered such that alignment or
+  collated by query name
+@item bammarkduplicates: reads BAM and writes BAM with duplicate alignments
+  marked using the BAM flags field
+@item bammaskflags: reads BAM and writes BAM while masking (removing) bits
+  from the flags column
+@item bamrecompress: reads BAM and writes BAM with a defined compression
+  setting.  This tool is capable of multi-threading.
+@item bamsort: reads BAM and writes BAM resorted by coordinates or query name
+@item bamtofastq: reads BAM and writes FastQ; output can be collated or
+  uncollated by query name.
+@end itemize
+")
+    ;; The COPYING file states that the code is distributed under version 3 of
+    ;; the GPL, but the license headers include the "or later" clause.
+    (license license:gpl3+)))
+
 (define-public r-circus
   (package
     (name "r-circus")
