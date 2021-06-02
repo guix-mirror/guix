@@ -23420,7 +23420,7 @@ unstable -Z self-profile flag.")
 (define-public rust-memchr-2
   (package
     (name "rust-memchr")
-    (version "2.3.4")
+    (version "2.4.0")
     (source
       (origin
         (method url-fetch)
@@ -23429,7 +23429,7 @@ unstable -Z self-profile flag.")
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "098m9clfs495illlw00hv2gg67mhm7jflld3msyclvi5m9xc9q8f"))))
+          "1p478fqf4nia2ma0kv4npb8x1hli0zz6k16517ikb51jkryx8sxi"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
