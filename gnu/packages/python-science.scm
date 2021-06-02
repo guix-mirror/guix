@@ -676,11 +676,12 @@ readable.")
                              (invoke "./run_all.sh")))
                          '("common" "dolfin")))
              #t)))))
-    (inputs ; for the check phase
+    (inputs        ; for the check phase
      `(("dolfin" ,fenics)
        ("pkgconfig" ,python-pkgconfig)
-       ("pkg-config" ,pkg-config)
        ("matplotlib" ,python-matplotlib)))
+    (native-inputs ; for python-pkgconfig
+     `(("pkg-config" ,pkg-config)))
     (propagated-inputs
      `(("numpy" ,python-numpy)
        ("vtk" ,vtk)))
