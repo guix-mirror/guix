@@ -10969,6 +10969,46 @@ contigs alone.")
     (license (list license:gpl2+        ; bundled ogdf
                    license:gpl3+))))
 
+(define-public libmaus2
+  (package
+    (name "libmaus2")
+    (version "2.0.786")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitlab.com/german.tischler/libmaus2")
+                    (commit (string-append version "-release-20210531143054"))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1rxakmwjcx2yq5sjh3v849f7dfw4xzc2fyzf6s28s3p95z84w564"))))
+    (build-system gnu-build-system)
+    ;; The test suite attempts to execute ../test-driver, which does not exist.
+    (arguments '(#:tests? #false))
+    (propagated-inputs
+     `(("zlib" ,zlib)))
+    (native-inputs
+     `(("gcc" ,gcc-10)                   ;Code has C++17 requirements
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://gitlab.com/german.tischler/libmaus2")
+    (synopsis "Collection of data structures and algorithms useful for bioinformatics")
+    (description "libmaus2 is a collection of data structures and
+algorithms.  It contains:
+
+@itemize
+@item I/O classes (single byte and UTF-8);
+@item @code{bitio} classes (input, output and various forms of bit level
+  manipulation);
+@item text indexing classes (suffix and LCP array, fulltext and minute (FM),
+  etc.);
+@item BAM sequence alignment files input/output (simple and collating);
+and many lower level support classes.
+@end itemize\n")
+    ;; The code is explicitly available under the terms of either GPLv2 or
+    ;; GPLv3 according to the AUTHORS file, though most files have a GPLv3+
+    ;; license header.
+    (license (list license:gpl2+ license:gpl3+))))
+
 (define-public r-circus
   (package
     (name "r-circus")
