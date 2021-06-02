@@ -6869,14 +6869,14 @@ and within plot factors interact.")
 (define-public r-signal
   (package
     (name "r-signal")
-    (version "0.7-6")
+    (version "0.7-7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "signal" version))
        (sha256
         (base32
-         "1vsxramz5qd9q9s3vlqzmfdpmwl2rhlb2n904zw6f0fg0xxjfq3b"))))
+         "0qaf39vfmhn3d0bdjqd805ayfkaj48dkmf5dqd47bpk7dp21b837"))))
     (build-system r-build-system)
     (propagated-inputs `(("r-mass" ,r-mass)))
     (native-inputs `(("gfortran" ,gfortran)))
