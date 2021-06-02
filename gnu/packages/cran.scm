@@ -28377,14 +28377,14 @@ in same length matches).")
 (define-public r-textshape
   (package
     (name "r-textshape")
-    (version "1.7.1")
+    (version "1.7.3")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "textshape" version))
         (sha256
           (base32
-            "02111kj3kka84mpx7s19bjna9cas8diw5fxz51v5ggz0ldswa5pa"))))
+            "0k9injxykgj2qprc7dygd7gafvcbh3r9x84qzaa1al21pk0dz7ds"))))
     (properties `((upstream-name . "textshape")))
     (build-system r-build-system)
     (propagated-inputs
