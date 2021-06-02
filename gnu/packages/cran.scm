@@ -18527,14 +18527,14 @@ computed using the L1 (Manhattan, taxicab) metric.")
 (define-public r-leiden
   (package
     (name "r-leiden")
-    (version "0.3.7")
+    (version "0.3.8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "leiden" version))
        (sha256
         (base32
-         "14iqn5iqcya6bqbjvjivpd7q9gwc323sj29y7ssrbhb3sz9982bp"))))
+         "0sv0j4sgpz8z65vhbpmaglg878jhq52srzf5rpw4vbsbys2807w1"))))
     (properties `((upstream-name . "leiden")))
     (build-system r-build-system)
     (propagated-inputs
