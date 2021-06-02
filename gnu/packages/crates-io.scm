@@ -38444,8 +38444,30 @@ function family including SHA-224, SHA-256, SHA-384, and SHA-512.")
         ("rust-generic-array" ,rust-generic-array-0.8)
         ("rust-sha2-asm" ,rust-sha2-asm-0.3))))))
 
+(define-public rust-sha2-asm-0.6
+  (package
+    (name "rust-sha2-asm")
+    (version "0.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "sha2-asm" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "08rp21zv96n8cnwcix177xkdw43zx8dqgfjfwd0gly9hvrl7lfaw"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-cc" ,rust-cc-1))))       ;build dependency
+    (home-page "https://github.com/RustCrypto/asm-hashes")
+    (synopsis "Assembly implementation of SHA-2")
+    (description "This package provides an assembly implementations of hash
+functions core functionality.")
+    (license license:expat)))
+
 (define-public rust-sha2-asm-0.5
   (package
+    (inherit rust-sha2-asm-0.6)
     (name "rust-sha2-asm")
     (version "0.5.4")
     (source
@@ -38454,16 +38476,7 @@ function family including SHA-224, SHA-256, SHA-384, and SHA-512.")
        (uri (crate-uri "sha2-asm" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0y4n8r4362y2fa6p2j0dgny4zfi194gdf01l6j850n9vf8ha3kwj"))))
-    (build-system cargo-build-system)
-    (arguments
-     `(#:cargo-inputs
-       (("rust-cc" ,rust-cc-1)))) ;; build dependency
-    (home-page "https://github.com/RustCrypto/asm-hashes")
-    (synopsis "Assembly implementation of SHA-2")
-    (description "This package provides an assembly implementations of hash
-functions core functionality.")
-    (license license:expat)))
+        (base32 "0y4n8r4362y2fa6p2j0dgny4zfi194gdf01l6j850n9vf8ha3kwj"))))))
 
 (define-public rust-sha2-asm-0.3
   (package
