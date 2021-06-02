@@ -142,13 +142,13 @@ to the @dfn{don't repeat yourself} (DRY) principle.")
 (define-public python-django-2.2
   (package
     (inherit python-django)
-    (version "2.2.22")
+    (version "2.2.24")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "Django" version))
               (sha256
                (base32
-                "0q30zjcmnvwp1v1syn739wapahs2dx784n0yjyypq0cr3kdi88nv"))))
+                "1dvx3x85lggm91x7mpvaf9nmpxyz7r97pbpnmr2k1qfy0c7gyf9k"))))
     (native-inputs
      `(;; XXX: In 2.2 and 3.0, selenium is required for the test suite.
        ("python-selenium" ,python-selenium)
