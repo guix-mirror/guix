@@ -2947,7 +2947,7 @@ file for more details.")
 (define-public amule
   (package
     (name "amule")
-    (version "2.3.2")
+    (version "2.3.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2956,9 +2956,7 @@ file for more details.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "010wxm6g9f92x6fympj501zbnjka32rzbx0sk3a2y4zpih5d2nsn"))
-              ;; Patch for adopting crypto++ >= 6.0.
-              (patches (search-patches "amule-crypto-6.patch"))))
+                "1nm4vxgmisn1b6l3drmz0q04x067j2i8lw5rnf0acaapwlp8qwvi"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
