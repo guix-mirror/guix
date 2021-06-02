@@ -14,6 +14,7 @@
 ;; Copyright © 2021 Zhu Zihao <all_but_last@163.com>
 ;; Copyright © 2021 Chris Marusich <cmmarusich@gmail.com>
 ;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
+;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;
 ;; Copying and distribution of this file, with or without modification, are
 ;; permitted in any medium without royalty provided the copyright notice and

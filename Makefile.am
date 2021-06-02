@@ -248,6 +248,7 @@ MODULES =					\
   guix/import/cpan.scm				\
   guix/import/cran.scm				\
   guix/import/crate.scm				\
+  guix/import/egg.scm   			\
   guix/import/elpa.scm   			\
   guix/import/gem.scm				\
   guix/import/github.scm   			\
@@ -293,6 +294,7 @@ MODULES =					\
   guix/scripts/challenge.scm			\
   guix/scripts/import/crate.scm			\
   guix/scripts/import/cran.scm			\
+  guix/scripts/import/egg.scm   		\
   guix/scripts/import/elpa.scm  		\
   guix/scripts/import/gem.scm			\
   guix/scripts/import/gnu.scm			\
@@ -449,6 +451,7 @@ SCM_TESTS =					\
   tests/debug-link.scm				\
   tests/derivations.scm			\
   tests/discovery.scm				\
+  tests/egg.scm				\
   tests/elpa.scm				\
   tests/file-systems.scm			\
   tests/gem.scm				\

@@ -11600,6 +11600,28 @@ using this mode, the symbol of the package is made by appending the
 version to its name, so that multiple versions of the same package can
 coexist.
 @end table
+
+@item egg
+@cindex egg
+Import metadata for @uref{https://wiki.call-cc.org/eggs, CHICKEN eggs}.
+The information is taken from @file{PACKAGE.egg} files found in the
+@uref{git://code.call-cc.org/eggs-5-latest, eggs-5-latest} Git
+repository.  However, it does not provide all the information that we
+need, there is no ``description'' field, and the licenses used are not
+always precise (BSD is often used instead of BSD-N).
+
+@example
+guix import egg sourcehut
+@end example
+
+Additional options include:
+@table @code
+@item --recursive
+@itemx -r
+Traverse the dependency graph of the given upstream package recursively
+and generate package expressions for all those packages that are not yet
+in Guix.
+@end table
 @end table
 
 The structure of the @command{guix import} code is modular.  It would be
@@ -11754,6 +11776,8 @@ the updater for KDE packages;
 the updater for X.org packages;
 @item kernel.org
 the updater for packages hosted on kernel.org;
+@item egg
+the updater for @uref{https://wiki.call-cc.org/eggs/, Egg} packages;
 @item elpa
 the updater for @uref{https://elpa.gnu.org/, ELPA} packages;
 @item cran
