@@ -9221,13 +9221,13 @@ based on index arrays and simple triplet representations, respectively.")
 (define-public r-manipulatewidget
   (package
     (name "r-manipulatewidget")
-    (version "0.10.1")
+    (version "0.11.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "manipulateWidget" version))
        (sha256
-        (base32 "1vi71sjh7z1a880wffk8qqw7iysvk42q78giqxmm2sqz2a912qlx"))))
+        (base32 "0iysgl6ab8fvg1xxdx6hr3swqwbkfqzjkk4x5sbvmawbl2a395gj"))))
     (properties
      `((upstream-name . "manipulateWidget")))
     (build-system r-build-system)
@@ -9239,7 +9239,10 @@ based on index arrays and simple triplet representations, respectively.")
        ("r-knitr" ,r-knitr)
        ("r-miniui" ,r-miniui)
        ("r-shiny" ,r-shiny)
+       ("r-shinyjs" ,r-shinyjs)
        ("r-webshot" ,r-webshot)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/rte-antares-rpackage/manipulateWidget/")
     (synopsis "Add even more interactivity to interactive charts")
     (description
