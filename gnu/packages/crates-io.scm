@@ -33152,14 +33152,14 @@ uses finite automata and guarantees linear time matching on all inputs.")
 (define-public rust-reqwest-0.11
   (package
     (name "rust-reqwest")
-    (version "0.11.2")
+    (version "0.11.3")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "reqwest" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1m12j00if0gj0alhad4r7w0air4j0gqlpiwiqpsxna4l51zha4mz"))))
+        (base32 "097i9z42jq2sn3va3r6pksz3gzffbnr3c4aapk6fhy9rqpxg55i2"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
