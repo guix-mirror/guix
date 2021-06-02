@@ -48085,14 +48085,14 @@ first byte.")
 (define-public rust-v-frame-0.2
   (package
     (name "rust-v-frame")
-    (version "0.2.0")
+    (version "0.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "v_frame" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0xqf7dynsc6fm94jz3hknwi2n4ch1j7wrs0dd333r1ldniw49rf3"))))
+        (base32 "0ia1j0j1v5zp9bp91imbnbxnv937x3xfpc06nyj96yjfk8zbmxhp"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -48104,10 +48104,9 @@ first byte.")
         ("rust-serde" ,rust-serde-1)
         ("rust-wasm-bindgen" ,rust-wasm-bindgen-0.2))))
     (home-page "https://github.com/xiph/rav1e")
-    (synopsis "@code{Video Frame} data structures, part of rav1e")
-    (description
-     "This package provides @code{Video Frame} data structures, as a part of
-rav1e.")
+    (synopsis "Video Frame data structures, part of rav1e")
+    (description "This package provides @code{Video Frame} data structures, as
+a part of rav1e.")
     (license license:bsd-2)))
 
 (define-public rust-value-bag-1
