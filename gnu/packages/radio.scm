@@ -1952,3 +1952,59 @@ acts a general-purpose software FSK modem, and includes support for various
 standard FSK protocols such as Bell103, Bell202, RTTY, TTY/TDD, NOAA SAME, and
 Caller-ID.")
     (license license:gpl3+)))
+
+(define-public rfcat
+  ;; Use a commit for now because some fixes to make rfcat work with
+  ;; Python 3 instead of Python 2 are not in a release yet.
+  (let ((commit "725bf79af27d47cdec64107317c1c8fe3f7ad7b8")
+        (revision "1"))
+    (package
+      (name "rfcat")
+      (version (git-version "1.9.5" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/atlas0fd00m/rfcat")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0dbc6n4pxsa73wzxny773khc73r1dn3ma5hi7xv76vcykjvzkdi3"))))
+      (build-system python-build-system)
+      (inputs
+       `(("python-future" ,python-future)
+         ("python-ipython" ,python-ipython)
+         ("python-numpy" ,python-numpy)
+         ("python-pyserial" ,python-pyserial)
+         ("python-pyside-2" ,python-pyside-2)
+         ("python-pyusb" ,python-pyusb)))
+      (arguments
+       `(#:tests? #f  ; Tests want to use a serial port
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-permissions
+             (lambda _
+               (make-file-writable "rflib/rflib_version.py")))
+           (add-after 'install 'install-udev-rules
+             (lambda* (#:key outputs #:allow-other-keys)
+               (install-file "etc/udev/rules.d/20-rfcat.rules"
+                             (string-append (assoc-ref outputs "out")
+                                            "/lib/udev/rules.d")))))))
+      (home-page "https://github.com/atlas0fd00m/rfcat")
+      (synopsis "Program to control some radio dongles")
+      (description
+       "@code{rfcat} is a program to control some radio dongles operating in
+ISM bands.
+
+Supported dongles:
+@itemize
+@item YARD Stick One
+@item cc1111emk
+@item chronos watch dongle
+@item imme (limited support)
+@end itemize
+
+To install the rfcat udev rules, you must extend @code{udev-service-type} with
+this package.  E.g.: @code{(udev-rules-service 'rfcat rfcat)}")
+      (license (list license:bsd-3
+                     license:gpl2)))))
