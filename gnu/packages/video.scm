@@ -50,6 +50,7 @@
 ;;; Copyright © 2021 Alexey Abramov <levenson@mmer.org>
 ;;; Copyright © 2021 Andrew Tropin <andrew@trop.in>
 ;;; Copyright © 2021 David Wilson <david@daviwil.com>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4864,64 +4865,70 @@ result in several formats:
 (define-public rav1e
   (package
     (name "rav1e")
-    (version "0.3.5")
+    (version "0.4.1")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "rav1e" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "0c40gq4qid2apmlgzx98f6826jmn2n61prk0rn7sjxaw7yimw854"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rav1e" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "00rjil6qbrwfxhhlq9yvidxm0gp9qdbywhf5zvkj85lykbhyff09"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-aom-sys" ,rust-aom-sys-0.2)
-        ("rust-arbitrary" ,rust-arbitrary-0.2)
+        ("rust-arbitrary" ,rust-arbitrary-0.4)
         ("rust-arg-enum-proc-macro" ,rust-arg-enum-proc-macro-0.3)
         ("rust-arrayvec" ,rust-arrayvec-0.5)
+        ("rust-av-metrics" ,rust-av-metrics-0.6)
         ("rust-backtrace" ,rust-backtrace-0.3)
-        ("rust-bitstream-io" ,rust-bitstream-io-0.8)
+        ("rust-bitstream-io" ,rust-bitstream-io-1)
         ("rust-byteorder" ,rust-byteorder-1)
-        ("rust-cc" ,rust-cc-1)
-        ("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-cfg-if" ,rust-cfg-if-1)
         ("rust-clap" ,rust-clap-2)
-        ("rust-console" ,rust-console-0.11)
+        ("rust-console" ,rust-console-0.14)
+        ("rust-crossbeam" ,rust-crossbeam-0.8)
         ("rust-dav1d-sys" ,rust-dav1d-sys-0.3)
         ("rust-fern" ,rust-fern-0.6)
         ("rust-image" ,rust-image-0.23)
         ("rust-interpolate-name" ,rust-interpolate-name-0.2)
-        ("rust-itertools" ,rust-itertools-0.9)
+        ("rust-itertools" ,rust-itertools-0.10)
         ("rust-ivf" ,rust-ivf-0.1)
         ("rust-libc" ,rust-libc-0.2)
+        ("rust-libfuzzer-sys" ,rust-libfuzzer-sys-0.3)
         ("rust-log" ,rust-log-0.4)
         ("rust-nasm-rs" ,rust-nasm-rs-0.2)
-        ("rust-noop-proc-macro" ,rust-noop-proc-macro-0.2)
+        ("rust-noop-proc-macro" ,rust-noop-proc-macro-0.3)
         ("rust-num-derive" ,rust-num-derive-0.3)
         ("rust-num-traits" ,rust-num-traits-0.2)
-        ("rust-paste" ,rust-paste-0.1)
-        ("rust-rand" ,rust-rand-0.7)
-        ("rust-rand-chacha" ,rust-rand-chacha-0.2)
+        ("rust-paste" ,rust-paste-1)
+        ("rust-rand" ,rust-rand-0.8)
+        ("rust-rand-chacha" ,rust-rand-chacha-0.3)
         ("rust-rayon" ,rust-rayon-1)
+        ("rust-regex" ,rust-regex-1)
         ("rust-rust-hawktracer" ,rust-rust-hawktracer-0.7)
-        ("rust-rustc-version" ,rust-rustc-version-0.2)
+        ("rust-rustc-version" ,rust-rustc-version-0.3)
         ("rust-scan-fmt" ,rust-scan-fmt-0.2)
         ("rust-serde" ,rust-serde-1)
-        ("rust-signal-hook" ,rust-signal-hook-0.1)
+        ("rust-signal-hook" ,rust-signal-hook-0.3)
         ("rust-simd-helpers" ,rust-simd-helpers-0.1)
         ("rust-thiserror" ,rust-thiserror-1)
         ("rust-toml" ,rust-toml-0.5)
+        ("rust-v-frame" ,rust-v-frame-0.2)
         ("rust-vergen" ,rust-vergen-3)
-        ("rust-y4m" ,rust-y4m-0.5))
+        ("rust-wasm-bindgen" ,rust-wasm-bindgen-0.2)
+        ("rust-y4m" ,rust-y4m-0.7))
        #:cargo-development-inputs
        (("rust-assert-cmd" ,rust-assert-cmd-1)
+        ("rust-cc" ,rust-cc-1)
         ("rust-criterion" ,rust-criterion-0.3)
         ("rust-interpolate-name" ,rust-interpolate-name-0.2)
         ("rust-pretty-assertions" ,rust-pretty-assertions-0.6)
-        ("rust-rand" ,rust-rand-0.7)
-        ("rust-rand-chacha" ,rust-rand-chacha-0.2)
-        ("rust-semver" ,rust-semver-0.9))
+        ("rust-rand" ,rust-rand-0.8)
+        ("rust-rand-chacha" ,rust-rand-chacha-0.3)
+        ("rust-semver" ,rust-semver-0.11))
        #:phases
        (modify-phases %standard-phases
          (replace 'build
@@ -4930,13 +4937,13 @@ result in several formats:
                (invoke "cargo" "cinstall" "--release"
                        (string-append "--prefix=" out))))))))
     (native-inputs
-     `(("cargo-c" ,rust-cargo-c)))
-    (inputs
-     `(("nasm" ,nasm)))
+     `(("cargo-c" ,rust-cargo-c)
+       ("nasm" ,nasm)))
     (home-page "https://github.com/xiph/rav1e/")
-    (synopsis "The fastest and safest AV1 encoder")
-    (description
-     "The fastest and safest AV1 encoder.")
+    (synopsis "Fast and safe AV1 encoder")
+    (description "@code{rav1e} is an AV1 video encoder.  It is designed to
+eventually cover all use cases, though in its current form it is most suitable
+for cases where libaom (the reference encoder) is too slow.")
     (license license:bsd-2)))
 
 (define-public peek
