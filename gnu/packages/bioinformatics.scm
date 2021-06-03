@@ -11214,6 +11214,69 @@ spliced (back-spliced) sequencing reads, indicative of circular RNA (circRNA)
 in RNA-seq data.")
       (license license:gpl3))))
 
+(define-public fit-sne
+  (package
+    (name "fit-sne")
+    (version "1.2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/KlugerLab/FIt-SNE")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1imq4577awc226wvygf94kpz156qdfw8xl0w0f7ss4w10lhmpmf5"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #false ; there are none
+       #:phases
+       ;; There is no build system.
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda _
+             (invoke "g++" "-std=c++11" "-O3"
+                     "src/sptree.cpp"
+                     "src/tsne.cpp"
+                     "src/nbodyfft.cpp"
+                     "-o" "bin/fast_tsne"
+                     "-pthread" "-lfftw3" "-lm"
+                     "-Wno-address-of-packed-member")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (share (string-append out "/share/fit-sne")))
+               (for-each (lambda (file) (install-file file bin))
+                         (find-files "bin"))
+
+               (substitute* "fast_tsne.R"
+                 (("^FAST_TSNE_SCRIPT_DIR.*")
+                  (string-append "FAST_TSNE_SCRIPT_DIR = \"" out "\"\n")))
+               (install-file "fast_tsne.R" share)))))))
+    (inputs
+     `(("fftw" ,fftw)))
+    (home-page "https://github.com/KlugerLab/FIt-SNE")
+    (synopsis "Fast Fourier Transform-accelerated interpolation-based t-SNE")
+    (description "@dfn{t-Stochastic Neighborhood Embedding} (t-SNE) is a
+method for dimensionality reduction and visualization of high dimensional
+datasets.  A popular implementation of t-SNE uses the Barnes-Hut algorithm to
+approximate the gradient at each iteration of gradient descent.  This
+implementation differs in these ways:
+
+@itemize
+@item Instead of approximating the N-body simulation using Barnes-Hut, we
+  interpolate onto an equispaced grid and use FFT to perform the convolution.
+@item Instead of computing nearest neighbors using vantage-point trees, we
+  approximate nearest neighbors using the Annoy library.  The neighbor lookups
+  are multithreaded to take advantage of machines with multiple cores.
+@end itemize
+")
+    ;; See LICENSE.txt for details on what license applies to what files.
+    (license (list license:bsd-4 license:expat license:asl2.0))))
+
 (define-public python-scanpy
   (package
     (name "python-scanpy")
