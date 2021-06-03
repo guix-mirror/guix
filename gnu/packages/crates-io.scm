@@ -21845,17 +21845,16 @@ algorithm and related formats (ZLIB, GZIP).")
 (define-public rust-libgit2-sys-0.12
   (package
     (name "rust-libgit2-sys")
-    (version "0.12.17+1.1.0")
+    (version "0.12.21+1.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "libgit2-sys" version))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0hc89v7kp2b3rbc64cxq024shd85m8vqcs14i3gjclblr9jxzszl"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin (delete-file-recursively "libgit2") #t))))
+        (base32
+         "09b85x3gpvq0d7v1mhg4f3w1b3skzlpbikrx9j2rwarbsyn1n9w6"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
