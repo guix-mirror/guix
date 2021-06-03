@@ -1932,23 +1932,23 @@ on every platform.")
          "153awzwywmb61xg857b80l63b1x6hifx2pha7lxf6fck9qxwraq8"))))
     (arguments '())))
 
-(define-public rust-arbitrary-0.4
+(define-public rust-arbitrary-1
   (package
     (name "rust-arbitrary")
-    (version "0.4.7")
+    (version "1.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "arbitrary" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0sa55cynafwzvlhyhfpm3vmi2fydj3ipdj5yfbaif7l56cixfmfv"))))
+        (base32 "14a6r7q9b1kf1m7810p8bcl51q11mrwc5z7fjkz0lx6kdvyk0x13"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-derive-arbitrary" ,rust-derive-arbitrary-0.4))))
-    (home-page "https://github.com/nagisa/rust_arbitrary")
+       (("rust-derive-arbitrary" ,rust-derive-arbitrary-1))))
+    (home-page "https://github.com/rust-fuzz/arbitrary")
     (synopsis "Trait for generating structured data from unstructured data")
     (description
      "The @code{Arbitrary} crate lets you construct arbitrary instance of
@@ -1960,6 +1960,22 @@ untyped byte buffers that they produce into well-typed, valid, structured
 values.  This allows you to combine structure-aware test case generation with
 coverage-guided, mutation-based fuzzers.")
     (license (list license:expat license:asl2.0))))
+
+(define-public rust-arbitrary-0.4
+  (package/inherit rust-arbitrary-1
+    (name "rust-arbitrary")
+    (version "0.4.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "arbitrary" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0sa55cynafwzvlhyhfpm3vmi2fydj3ipdj5yfbaif7l56cixfmfv"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-derive-arbitrary" ,rust-derive-arbitrary-0.4))))))
 
 (define-public rust-arbitrary-0.2
   (package
