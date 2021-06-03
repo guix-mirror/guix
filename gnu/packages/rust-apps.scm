@@ -11,6 +11,7 @@
 ;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.ccom>
 ;;; Copyright © 2021 Zheng Junjie <873216071@qq.com>
 ;;; Copyright © 2021 Alexandru-Sergiu Marton <brown121407@posteo.ro>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,13 +36,16 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crates-io)
   #:use-module (gnu packages crates-graphics)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages jemalloc)
+  #:use-module (gnu packages ssh)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages rust)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control))
 
@@ -773,7 +777,7 @@ the details of how it was triggered.
 (define-public rust-cargo-c
   (package
     (name "rust-cargo-c")
-    (version "0.5.3")
+    (version "0.8.1+cargo-0.53")
     (source
       (origin
         (method url-fetch)
@@ -782,19 +786,31 @@ the details of how it was triggered.
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "0hsag5g4qngm8alfil2dyvl5sagpqi5nb40c7bhwng2z8mv9r41k"))))
+          "0fwdxhdj2963xr6xfqr56i7hikhsdv562vgxq2dj3h2mi3dil1k6"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs
-       (("rust-cbindgen" ,rust-cbindgen)
+     `(#:rust ,rust-1.52                ;inherited from rust-cargo
+       #:cargo-inputs
+       (("rust-cbindgen" ,rust-cbindgen-0.19)
+        ("rust-cargo" ,rust-cargo-0.53) ;
+        ("rust-anyhow" ,rust-anyhow-1)
         ("rust-pretty-env-logger" ,rust-pretty-env-logger-0.4)
         ("rust-structopt" ,rust-structopt-0.3)
         ("rust-log" ,rust-log-0.4)
         ("rust-toml" ,rust-toml-0.5)
         ("rust-cargo-metadata" ,rust-cargo-metadata-0.9)
+        ("rust-semver" ,rust-semver-0.10)
         ("rust-serde" ,rust-serde-1)
         ("rust-serde-derive" ,rust-serde-derive-1)
+        ("rust-serde-json" ,rust-serde-json-1)
         ("rust-regex" ,rust-regex-1))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("curl" ,curl)
+       ("libssh2" ,libssh2)
+       ("openssl" ,openssl)
+       ("zlib" ,zlib)))
     (home-page "https://github.com/lu-zero/cargo-c")
     (synopsis "Build and install C-compatible libraries")
     (description
