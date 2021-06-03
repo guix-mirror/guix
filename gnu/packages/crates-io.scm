@@ -33155,6 +33155,30 @@ functionality.")
         (base32
          "0av43xxjlinfqklb67rpj217cmaxfjsf8151gs0hbs4hnr5664ck"))))))
 
+(define-public rust-refpool-0.4
+  (package
+    (name "rust-refpool")
+    (version "0.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "refpool" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0n6b1qpq0fcyzm3nrmiw0z9x4nawy9dklqfr3mb8rp571yw8d7in"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3))))
+    (home-page "https://github.com/bodil/refpool")
+    (synopsis "Efficient memory pool with reference counting")
+    (description "@code{refpool} is a re-implementation of Rust's
+@code{std::boxed::Box} and @code{std::rc::Rc} which uses a pool of reusable
+memory to speed up reallocation.")
+    (license license:mpl2.0)))
+
 (define-public rust-regex-1
   (package
     (name "rust-regex")
