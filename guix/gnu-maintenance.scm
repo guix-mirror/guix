@@ -507,12 +507,19 @@ are unavailable."
                                         #:port (uri-port uri)
                                         #:path url))))
 
-                         ;; URL is relative path and BASE-URL may or may not
+                         ;; URL is a relative path and BASE-URL may or may not
                          ;; end in slash.
                          ((string-suffix? "/" base-url)
                           (string-append base-url url))
                          (else
-                          (string-append (dirname base-url) "/" url)))))
+                          ;; If DIRECTORY is non-empty, assume BASE-URL
+                          ;; denotes a directory; otherwise, assume BASE-URL
+                          ;; denotes a file within a directory, and that URL
+                          ;; is relative to that directory.
+                          (string-append (if (string-null? directory)
+                                             (dirname base-url)
+                                             base-url)
+                                         "/" url)))))
         (and (release-file? package base)
              (let ((version (tarball->version base)))
                (upstream-source
