@@ -150,7 +150,8 @@
                                 "python-2.7-source-date-epoch.patch"
                                 "python-2.7-adjust-tests.patch"
                                 "python-cross-compile.patch"
-                                "python-2.7-CVE-2021-3177.patch"))
+                                "python-2.7-CVE-2021-3177.patch"
+                                "python-2.7-no-static-lib.patch"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -421,7 +422,8 @@ data types.")
                         "python-3-deterministic-build-info.patch"
                         "python-3-fix-tests.patch"
                         "python-3-hurd-configure.patch"
-                        "python-3-search-paths.patch"))
+                        "python-3-search-paths.patch"
+                        "python-3-no-static-lib.patch"))
               (sha256
                (base32
                 "10vdf46q5ldnzkprm8pldvr5a9hrdpxjv7mpzgdw6vj3cl318nhc"))
