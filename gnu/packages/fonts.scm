@@ -119,30 +119,6 @@ well as other mediums.")
 in print.  With attention to detail for high resolution rendering.")
     (license license:silofl1.1)))
 
-(define-public font-ubuntu
-  (package
-    (name "font-ubuntu")
-    (version "0.83")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://salsa.debian.org/fonts-team/fonts-ubuntu")
-                    (commit (string-append "upstream/" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1d2xrjpxy70f3nsgqiggwv6pj06qglf5vj2847pqx60w3ygi903g"))))
-    (build-system font-build-system)
-    (home-page "http://font.ubuntu.com/")
-    (synopsis "The Ubuntu Font Family")
-    (description "The Ubuntu Font Family is a unique, custom designed font
-that has a very distinctive look and feel.  This package provides the
-TrueType (TTF) files.")
-    (license
-     (license:non-copyleft
-      "http://font.ubuntu.com/ufl/ubuntu-font-licence-1.0.txt"
-      "Ubuntu Font License v1.0"))))
-
 (define-public font-dejavu
   (package
     (name "font-dejavu")
