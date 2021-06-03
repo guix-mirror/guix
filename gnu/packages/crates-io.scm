@@ -10108,6 +10108,34 @@ Code (MAC) algorithms.")
 algorithms.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-crypto-hash-0.3
+  (package
+    (name "rust-crypto-hash")
+    (version "0.3.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "crypto-hash" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1jnxgpk0j29hzcv42viq5dckyfjnxdjsar55366j95zx80i1cxwa"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-commoncrypto" ,rust-commoncrypto-0.2)
+        ("rust-hex" ,rust-hex-0.3)
+        ("rust-openssl" ,rust-openssl-0.10)
+        ("rust-winapi" ,rust-winapi-0.3))))
+    (inputs
+     `(("openssl" ,openssl)))
+    (home-page "https://github.com/malept/crypto-hash")
+    (synopsis "Wrapper for OS-level cryptographic hash functions")
+    (description "This package provides a wrapper for OS-level cryptographic
+hash functions.")
+    (license license:expat)))
+
 (define-public rust-cryptovec-0.4
   (package
     (name "rust-cryptovec")
