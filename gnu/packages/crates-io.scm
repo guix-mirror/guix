@@ -37761,6 +37761,33 @@ TOML/JSON/MessagePack strings and serializable values.")
         ("rust-serde-codegen-internals" ,rust-serde-codegen-internals-0.14)
         ("rust-syn" ,rust-syn-0.11))))))
 
+(define-public rust-serde-ignored-0.1
+  (package
+    (name "rust-serde-ignored")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "serde_ignored" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0bzz3546g3p01hgwh6jh0gyqdwc28xcp3pir4al2wbsgs4wpsb0w"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-serde" ,rust-serde-1))
+       #:cargo-development-inputs
+       (("rust-serde-derive" ,rust-serde-derive-1)
+        ("rust-serde-json" ,rust-serde-json-1))))
+    (home-page "https://github.com/dtolnay/serde-ignored")
+    (synopsis "Find ignored keys when deserializing data")
+    (description "Find out about keys that are ignored when deserializing
+data.  This crate provides a wrapper that works with any existing Serde
+@code{Deserializer} and invokes a callback on every ignored field.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-serde-json-1
   (package
     (name "rust-serde-json")
