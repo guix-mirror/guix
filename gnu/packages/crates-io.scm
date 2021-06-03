@@ -51139,6 +51139,52 @@ configuration file and/or environment variables.")
     (description "This package provides a Rust XML XPath library.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-im-rc-15
+  (package
+    (name "rust-im-rc")
+    (version "15.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "im-rc" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0gsgcs1nn38r40973l6zr1v4d85f4s9qyl32n5f20jphf5z9ba1w"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:rust ,rust-1.52                ;for rust-sized-chunks
+       #:cargo-inputs
+       (("rust-arbitrary" ,rust-arbitrary-0.4)
+        ("rust-bitmaps" ,rust-bitmaps-2)
+        ("rust-proptest" ,rust-proptest-0.9)
+        ("rust-quickcheck" ,rust-quickcheck-0.9)
+        ("rust-rand-core" ,rust-rand-core-0.5)
+        ("rust-rand-xoshiro" ,rust-rand-xoshiro-0.4)
+        ("rust-rayon" ,rust-rayon-1)
+        ("rust-refpool" ,rust-refpool-0.4)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-sized-chunks" ,rust-sized-chunks-0.6)
+        ("rust-typenum" ,rust-typenum-1)
+        ("rust-version-check" ,rust-version-check-0.9))
+       #:cargo-development-inputs
+       (("rust-metrohash" ,rust-metrohash-1)
+        ("rust-pretty-assertions" ,rust-pretty-assertions-0.6)
+        ("rust-proptest" ,rust-proptest-0.9)
+        ("rust-proptest-derive" ,rust-proptest-derive-0.1)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-rayon" ,rust-rayon-1)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-version-check" ,rust-version-check-0.9))))
+    (home-page "https://docs.rs/crate/im")
+    (synopsis "Fast immutable collection datatypes for Rust")
+    (description "@code{im-rc} provides immutable collection datatypes for
+Rust that are very fast but not thread-safe.  A thread-safe (and slower)
+variant of this library is available separately as @code{im}.")
+    (license license:mpl2.0)))
+
 (define-public rust-inflections-1
   (package
     (name "rust-inflections")
