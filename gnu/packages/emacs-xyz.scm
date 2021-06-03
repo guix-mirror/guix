@@ -24038,7 +24038,7 @@ all of your projects, then override or add variables on a per-project basis.")
 (define-public emacs-calibredb
   (package
     (name "emacs-calibredb")
-    (version "2.8.0")
+    (version "2.10.0")
     (source
      (origin
        (method git-fetch)
@@ -24047,7 +24047,7 @@ all of your projects, then override or add variables on a per-project basis.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "19gc05k2p1l8wlkrqij9cw6d61hzknd6a9n64kzlpi87cpbav3lv"))))
+        (base32 "0s26a2fy1xldd0q57avds7zn0h7lkis2hjh9zmm1qhwn8409hys9"))))
     (build-system emacs-build-system)
     (arguments
      '(#:phases
@@ -24060,8 +24060,7 @@ all of your projects, then override or add variables on a per-project basis.")
                  ("calibredb-program"
                   (string-append calibre "/bin/calibredb"))
                  ("calibredb-fetch-metadata-program"
-                  (string-append calibre "/bin/fetch-ebook-metadata"))))
-             #t)))))
+                  (string-append calibre "/bin/fetch-ebook-metadata")))))))))
     (inputs
      `(("calibre" ,calibre)))
     (propagated-inputs
