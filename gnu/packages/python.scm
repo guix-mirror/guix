@@ -176,7 +176,8 @@
                        "Lib/test/test_subprocess.py"))
            #t))))
     (outputs '("out"
-               "tk"))                   ;tkinter; adds 50 MiB to the closure
+               "tk"                     ;tkinter; adds 50 MiB to the closure
+               "idle"))                 ;programming environment; weighs 5MB
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -360,6 +361,27 @@
                       (install-file tkinter.so target)
                       (delete-file tkinter.so)))))
                #t)))
+         (add-after 'install 'move-idle
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; when idle is built, move it to a separate output to save some
+             ;; space (5MB)
+             (let ((out (assoc-ref outputs "out"))
+                   (idle (assoc-ref outputs "idle")))
+               (when idle
+                 (for-each
+                  (lambda (file)
+                    (let ((target (string-append idle "/bin/" (basename file))))
+                      (install-file file (dirname target))
+                      (delete-file file)))
+                  (find-files (string-append out "/bin") "^idle"))
+                 (match (find-files out "^idlelib$" #:directories? #t)
+                   ((idlelib)
+                    (let* ((len (string-length out))
+                           (target (string-append idle "/"
+                                                  (string-drop idlelib len)
+                                                  "/site-packages")))
+                      (mkdir-p (dirname target))
+                      (rename-file idlelib target))))))))
          (add-after 'install 'install-sitecustomize.py
            ,(customize-site version)))))
     (inputs
@@ -623,8 +645,8 @@ for more information.")))
                   (lambda (old new)
                     (symlink (string-append python old)
                              (string-append bin "/" new)))
-                  `("python3" ,"pydoc3" ,"idle3" ,"pip3")
-                  `("python"  ,"pydoc"  ,"idle"  ,"pip"))
+                  `("python3" ,"pydoc3" ,"pip3")
+                  `("python"  ,"pydoc"  ,"pip"))
                 ;; python-config outputs search paths based upon its location,
                 ;; use a bash wrapper to avoid changing its outputs.
                 (let ((bash (string-append (assoc-ref %build-inputs "bash")
