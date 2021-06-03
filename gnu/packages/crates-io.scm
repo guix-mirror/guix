@@ -50950,6 +50950,26 @@ configuration file and/or environment variables.")
       "High performance inflection transformation library for changing properties of words like the case.")
     (license license:expat)))
 
+(define-public rust-rustc-workspace-hack-1
+  (package
+    (name "rust-rustc-workspace-hack")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rustc-workspace-hack" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1yx8l58n2vb2ldpi3z1jn4dmi5hnxvikbhpd5lilpdvkl7xd4wgw"))))
+    (build-system cargo-build-system)
+    (home-page "https://crates.io/crates/rustc-workspace-hack")
+    (synopsis "Hack for the compiler's own build system")
+    (description "Hack for the compiler's own build system.  It is used by
+@code{cargo}.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public skim
   (package
     (name "skim")
