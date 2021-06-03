@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,7 +43,7 @@
 (define-public fltk
   (package
     (name "fltk")
-    (version "1.3.5")
+    (version "1.3.6")
     (source
      (origin
       (method url-fetch)
@@ -50,8 +51,7 @@
                           (first (string-split version #\-))
                           "/fltk-" version "-source.tar.gz"))
       (sha256
-       (base32
-        "00jp24z1818k9n6nn6lx7qflqf2k13g4kxr0p8v1d37kanhb4ac7"))))
+       (base32 "1arp1niiz3qxm8iacpmilwpc5rinsm6hsk4a6fsxfywvkvppbb4s"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("pkg-config" ,pkg-config)))
