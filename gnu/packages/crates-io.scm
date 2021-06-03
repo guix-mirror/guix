@@ -16156,6 +16156,32 @@ futures-rs library.")
     (description "This package provides a fuzzy matching library in Rust.")
     (license license:expat)))
 
+(define-public rust-fwdansi-1
+  (package
+    (name "rust-fwdansi")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "fwdansi" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "027jz2x5fbi6rskic8sd6xx0mn03a7dnhwkpyz8hamg8gxwgbh88"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-memchr" ,rust-memchr-2)
+        ("rust-termcolor" ,rust-termcolor-1))
+       #:cargo-development-inputs
+       (("rust-proptest" ,rust-proptest-0.9))))
+    (home-page "https://github.com/kennytm/fwdansi")
+    (synopsis "ANSI escape codes to termcolor terminal library")
+    (description "This library can be used to forward a byte string with ANSI
+escape codes to a termcolor terminal.")
+    (license license:expat)))
+
 (define-public rust-fxhash-0.2
   (package
     (name "rust-fxhash")
