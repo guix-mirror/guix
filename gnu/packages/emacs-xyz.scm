@@ -3105,6 +3105,46 @@ filters, new key bindings and faces.  It can be enabled by
 DjVuLibre, see @url{http://djvu.sourceforge.net/}.")
     (license license:gpl3+)))
 
+(define-public emacs-djvu3
+  ;; Commit from 2021-06-03.
+  (let ((commit "37b675be1d4d436cdd0c3b5d3f13e88b59a7bf18")
+        (revision "0"))
+    (package
+      (name "emacs-djvu3")
+      ;; `Version:' header says 1.0
+      (version (git-version "1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/dalanicolai/djvu3")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0p0izjrgbayx5ybk1n6db5hbrjv9d4kpn57w4iyxdm3h96sp9cmr"))))
+      (propagated-inputs
+       `(("emacs-djvu" ,emacs-djvu)
+         ("emacs-tablist" ,emacs-tablist)))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/dalanicolai/djvu3")
+      (synopsis "Extend djvu.el to display annotations and more")
+      (description "This package extends @code{emacs-djvu} with annotation
+rendering features and a fast occur search feature using @code{svg.el}.
+
+Other features include:
+
+@itemize
+@item clickable links
+@item marker extension to @code{svg.el} for providing arrowheads (or other
+types of markers)
+@item a quite fancy keyboard annotation function
+@item an @code{imenu} index function to enable imenu navigation
+@item document restore function to open the document at the last location of
+the previous session
+@end itemize")
+      (license license:gpl3+))))
+
 (define-public emacs-pabbrev
   (package
     (name "emacs-pabbrev")
