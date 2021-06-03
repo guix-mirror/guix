@@ -459,7 +459,8 @@ have you run 'guix archive --generate-key?'")
           (lambda (store)
             (guard (condition ((inferior-exception? condition)
                                (values (begin handler ...) store)))
-              (run-with-store store (eval exp))))))
+              (values (run-with-store store (eval exp))
+                      store)))))
 
       (mbegin %store-monad
         (with-roll-back #f
