@@ -17212,3 +17212,38 @@ running into parallelism problems when having to change directory.")
 
 (define-public cl-simple-inferiors
   (sbcl-package->cl-source-package sbcl-simple-inferiors))
+
+(define-public sbcl-legit
+  (let ((commit "48d50a20d8dcbd941d119683463b7c8257ba6458"))
+    (package
+      (name "sbcl-legit")
+      (version (git-version "1.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shinmera/legit")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "181aqpj4zkfk1aavj5jw8rym6gw4ma3gd64z2h5fpryabgmwk236"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("simple-inferiors" ,sbcl-simple-inferiors)
+         ("lambda-fiddle" ,sbcl-lambda-fiddle)
+         ("cl-ppcre" ,sbcl-cl-ppcre)
+         ("documentation-utils" ,sbcl-documentation-utils)))
+      (home-page "https://shinmera.github.io/legit/")
+      (synopsis "Interface to the git binary")
+      (description
+       "This is an interface to the @code{git} binary to make controlling it
+from within Common Lisp much easier.  It might not ever reach full coverage of
+all features given git's immense size, but features will be added as they are
+needed.  The low-level command API is fully mapped however.")
+      (license license:zlib))))
+
+(define-public ecl-legit
+  (sbcl-package->ecl-package sbcl-legit))
+
+(define-public cl-legit
+  (sbcl-package->cl-source-package sbcl-legit))
