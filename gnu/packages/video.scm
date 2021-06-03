@@ -4535,7 +4535,7 @@ API.  It includes bindings for Python, Ruby, and other languages.")
     (build-system python-build-system)
     (inputs
      `(("ffmpeg" ,ffmpeg)
-       ("font-ubuntu" ,font-ubuntu)
+       ("font-dejavu" ,font-dejavu)
        ("libopenshot" ,libopenshot)
        ("python" ,python)
        ("python-pyqt" ,python-pyqt)
@@ -4556,10 +4556,11 @@ API.  It includes bindings for Python, Ruby, and other languages.")
                       (invoke "python" "src/tests/query_tests.py")))
                   (add-after 'unpack 'patch-font-location
                     (lambda* (#:key inputs #:allow-other-keys)
-                      (let ((font (assoc-ref inputs "font-ubuntu")))
+                      (let ((font (assoc-ref inputs "font-dejavu")))
                         (substitute* "src/classes/app.py"
                           (("info.IMAGES_PATH") (string-append "\"" font "\""))
-                          (("fonts") "share/fonts/truetype")))
+                          (("fonts") "share/fonts/truetype")
+                          (("[A-Za-z_-]+.ttf") "DejaVuSans.ttf")))
                       #t))
                   (add-before 'install 'set-tmp-home
                     (lambda _
