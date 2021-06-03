@@ -9146,6 +9146,39 @@ to @code{is_x86_feature_detected}.")
      "Library for retrieving and interacting with the crates.io index.")
     (license license:asl2.0)))
 
+(define-public rust-crates-io-0.33
+  (package
+    (name "rust-crates-io")
+    (version "0.33.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "crates-io" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "147mggf85fz77vsrzsvsxxwid4f4fg30zwfyirx7sl1k7y33hw91"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-anyhow" ,rust-anyhow-1)
+        ("rust-curl" ,rust-curl-0.4)
+        ("rust-percent-encoding" ,rust-percent-encoding-2)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-url" ,rust-url-2))))
+    (native-inputs
+     `(("curl" ,curl)
+       ("openssl" ,openssl)
+       ("pkg-config" ,pkg-config)
+       ("zlib" ,zlib)))
+    (home-page "https://github.com/rust-lang/cargo")
+    (synopsis "Helpers for interacting with @url{crates.io}")
+    (description "This package provides helpers for interacting with
+@url{crates.io}.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-crc-1
   (package
     (name "rust-crc")
