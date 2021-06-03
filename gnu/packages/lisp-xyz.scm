@@ -17178,3 +17178,37 @@ any existing or future application.")
 
 (define-public cl-flare
   (sbcl-package->cl-source-package sbcl-flare))
+
+(define-public sbcl-simple-inferiors
+  (let ((commit "deac886354e03f8a9502ce96f12a0459ce3be671"))
+    (package
+      (name "sbcl-simple-inferiors")
+      (version (git-version "1.1.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shinmera/simple-inferiors")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "08vsvqv3768bwb2y8mwxbw5wyqzzwqr7rd004r6gafdgf9p9mcx3"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("bordeaux-threads" ,sbcl-bordeaux-threads)
+         ("documentation-utils" ,sbcl-documentation-utils)))
+      (home-page "https://shinmera.github.io/simple-inferiors/")
+      (synopsis "Common Lisp library to use inferior processes")
+      (description
+       "This is a library to allow easy handling of external processes, and
+primarily to get their output.  It handles proper copying of the standard and
+error outputs of the process simultaneously, both in a sequential and parallel
+fashion.  It also features a lazy directory switching mechanism, to avoid
+running into parallelism problems when having to change directory.")
+      (license license:zlib))))
+
+(define-public ecl-simple-inferiors
+  (sbcl-package->ecl-package sbcl-simple-inferiors))
+
+(define-public cl-simple-inferiors
+  (sbcl-package->cl-source-package sbcl-simple-inferiors))
