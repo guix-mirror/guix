@@ -16885,14 +16885,16 @@ dirty state into your program.")
 (define-public rust-git2-0.13
   (package
     (name "rust-git2")
-    (version "0.13.15")
+    (version "0.13.20")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "git2" version))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0na3vsa44nn1sr6pzscn93w69wbmdih277mm2p3f6kcavb4ngwj4"))))
+        (base32
+         "1fkc2gzcnl4ci3rja9mc5jl2ygl3fkc1fgym3rcwby216ac1x0yr"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -16904,7 +16906,7 @@ dirty state into your program.")
         ("rust-openssl-sys" ,rust-openssl-sys-0.9)
         ("rust-url" ,rust-url-2))
        #:cargo-development-inputs
-       (("rust-paste" ,rust-paste-0.1)
+       (("rust-paste" ,rust-paste-1)
         ("rust-structopt" ,rust-structopt-0.3)
         ("rust-time" ,rust-time-0.1))))
     (native-inputs
