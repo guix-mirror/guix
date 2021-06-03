@@ -23,6 +23,29 @@
 (channel-news
  (version 0)
 
+ (entry (commit "bdc298ecee15283451d3aa20a849dd7bb22c8538")
+        (title
+         (en "New @command{guix import egg} command")
+         (zh "新的 @command{guix import egg} 命令"))
+        (body
+         (en "The new @command{guix import egg} command allows packagers to
+generate a package definition or a template thereof given the name of a
+CHICKEN egg package, like so:
+
+@example
+guix import egg sourcehut
+@end example
+
+Run @command{info \"(guix) Invoking guix import\"} for more info.")
+         (zh "新的 @command{guix import egg} 命令能让贡献者从一个CHICKEN egg生
+成一个包装或包装样板。
+
+@example
+guix import egg sourcehut
+@end example
+
+想了解更多可以运行 @command{info \"(guix) Invoking guix import\"}。")))
+
  (entry (commit "2161820ebbbab62a5ce76c9101ebaec54dc61586")
         (title
          (en "Risk of local privilege escalation during user account creation")
