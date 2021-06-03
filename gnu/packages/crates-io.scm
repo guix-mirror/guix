@@ -17665,6 +17665,30 @@ of gzip files based on the gzip header implementation in the @code{flate2} crate
 IEEE 754-2008 binary16 type.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-home-0.5
+  (package
+    (name "rust-home")
+    (version "0.5.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "home" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0m3nfcksrj784liji1c5j47dymxw2l7hqy5fj90piadnwvrawmi4"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-winapi" ,rust-winapi-0.3))))
+    (home-page "https://github.com/brson/home")
+    (synopsis "Shared definitions of home directories")
+    (description "This packages provides the definition of @code{home_dir}
+used by @command{cargo} and @command{rustup}, as well as functions to find the
+correct value of @samp{CARGO_HOME} and @samp{RUSTUP_HOME}.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-bat-0.17
   (package
     (name "rust-bat")
