@@ -28336,3 +28336,26 @@ shorter than usual, using mostly unprefixed keys.")
    (description "@code{emacs-multitran} is a zero-dependency Emacs interface
 to the https://multitran.com online dictionary.")
    (license license:gpl3+)))
+
+(define-public emacs-kibit-helper
+  (package
+    (name "emacs-kibit-helper")
+    (version "0.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/brunchboy/kibit-helper")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0ky167xh1hrmqsldybzjhyqjizgjzs1grn5mf8sm2j9qwcvjw2zv"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-s" ,emacs-s)))
+    (home-page "http://www.github.com/brunchboy/kibit-helper")
+    (synopsis "Use the Kibit Leiningen plugin from Emacs")
+    (description
+     "Kibit Helper provides functions to work with the Kibit Leiningen plugin
+for detecting and improve non-idiomatic Clojure source code.")
+    (license license:gpl3+)))
