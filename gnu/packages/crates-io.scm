@@ -2136,6 +2136,31 @@ coverage-guided, mutation-based fuzzers.")
 that runs on Argon2.")
     (license license:expat)))
 
+(define-public rust-array-ops-0.1
+  (package
+    (name "rust-array-ops")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "array-ops" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1jn7l9gppp6kr9kgsy22sw5p9cn1jazmqxy296gjwiwz5d11i4fc"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-rand-core" ,rust-rand-core-0.5)
+        ("rust-rand-xoshiro" ,rust-rand-xoshiro-0.4))))
+    (home-page "https://github.com/bodil/array-ops")
+    (synopsis "Automatic method implementations for array data types")
+    (description "This package provides a number of traits with default
+implementations for most of the standard library's methods on array like data
+structures.")
+    (license license:mpl2.0)))
+
 (define-public rust-arrayref-0.3
   (package
     (name "rust-arrayref")
