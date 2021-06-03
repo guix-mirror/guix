@@ -11282,17 +11282,17 @@ algorithm which serves to quantify the difference between two colors.")
 Rust.")
     (license (list license:expat license:asl2.0))))
 
-(define-public rust-derive-arbitrary-0.4
+(define-public rust-derive-arbitrary-1
   (package
     (name "rust-derive-arbitrary")
-    (version "0.4.7")
+    (version "1.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "derive_arbitrary" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1rp0z4k0j5ip0bx6dssg97l4q6bakhf6lm5h1lpr3p3kwjsi585i"))))
+        (base32 "0nig0iydva7a9h9i9qyi6an9w5qjafmn3qlzvdqqiw0x2kp824jz"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -11306,6 +11306,18 @@ Rust.")
 @code{Arbitrary} trait.  Don't depend on this crate directly, though.
 Instead, enable the @code{derive} feature of the @code{arbitrary} crate.")
     (license (list license:expat license:asl2.0))))
+
+(define-public rust-derive-arbitrary-0.4
+  (package/inherit rust-derive-arbitrary-1
+    (name "rust-derive-arbitrary")
+    (version "0.4.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "derive_arbitrary" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1rp0z4k0j5ip0bx6dssg97l4q6bakhf6lm5h1lpr3p3kwjsi585i"))))))
 
 (define-public rust-derive-builder-0.9
   (package
