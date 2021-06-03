@@ -57,6 +57,7 @@
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages rust)
   #:use-module (gnu packages rust-apps)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages sqlite)
@@ -39477,6 +39478,34 @@ variants in pure Rust.")
     (synopsis "Allow easier formatting of sizes")
     (description "This package allows for easier formatting of sizes.")
     (license (list license:expat license:asl2.0))))
+
+(define-public rust-sized-chunks-0.6
+  (package
+    (name "rust-sized-chunks")
+    (version "0.6.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "sized-chunks" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "07ix5fsdnpf2xsb0k5rbiwlmsicm2237fcx7blirp9p7pljr5mhn"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:rust ,rust-1.52                ;requires the "if in const fn" feature
+       #:cargo-inputs
+       (("rust-arbitrary" ,rust-arbitrary-1)
+        ("rust-array-ops" ,rust-array-ops-0.1)
+        ("rust-bitmaps" ,rust-bitmaps-2)
+        ("rust-refpool" ,rust-refpool-0.4)
+        ("rust-typenum" ,rust-typenum-1))))
+    (home-page "https://github.com/bodil/sized-chunks")
+    (synopsis "Efficient sized chunk datatypes")
+    (description "This package provides various fixed length array data types,
+designed for @code{immutable.rs}.")
+    (license license:mpl2.0)))
 
 (define-public rust-skeptic-0.9
   (package
