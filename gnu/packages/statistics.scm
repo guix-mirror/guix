@@ -340,7 +340,7 @@ as.POSIXct(if (\"\" != Sys.getenv(\"SOURCE_DATE_EPOCH\")) {\
        ("texlive" ,(texlive-union (list texlive-ae
                                         texlive-inconsolata
                                         texlive-fonts-ec
-                                        texlive-amsfonts
+                                        texlive-amsfonts/patched
                                         texlive-latex-base
                                         texlive-latex-fancyvrb
                                         texlive-latex-graphics
