@@ -5647,6 +5647,34 @@ to search for all neighbors within a given distance.  Parallelization is
 achieved for all methods using the BiocParallel framework.")
     (license license:gpl3)))
 
+(define-public r-scaledmatrix
+  (package
+    (name "r-scaledmatrix")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "ScaledMatrix" version))
+       (sha256
+        (base32
+         "1j96fvw1waqxbv5c8myfmhsidq370z03yz13yqmrs4nn1rpn1a06"))))
+    (properties `((upstream-name . "ScaledMatrix")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-delayedarray" ,r-delayedarray)
+       ("r-matrix" ,r-matrix)
+       ("r-s4vectors" ,r-s4vectors)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/LTLA/ScaledMatrix")
+    (synopsis "Create a DelayedMatrix of scaled and centered values")
+    (description
+     "This package provides delayed computation of a matrix of scaled and
+centered values.  The result is equivalent to using the @code{scale} function
+but avoids explicit realization of a dense matrix during block processing.
+This permits greater efficiency in common operations, most notably matrix
+multiplication.")
+    (license license:gpl3)))
+
 (define-public r-biocsingular
   (package
     (name "r-biocsingular")
