@@ -2081,8 +2081,8 @@ than the body of the lambda.")
 
 (define-public sbcl-nibbles
   ;; No tagged release since 2018.
-  (let ((commit "8e6b9b42d9f69000f55e5c45ad974d9e376ffdbd")
-        (revision "1"))
+  (let ((commit "dad25240928d5cf8f7df69c4398244e03570bb35")
+        (revision "2"))
     (package
       (name "sbcl-nibbles")
       (version (git-version "0.14" revision commit))
@@ -2093,7 +2093,7 @@ than the body of the lambda.")
                (url "https://github.com/sharplispers/nibbles/")
                (commit commit)))
          (sha256
-          (base32 "15qlsm82h36pjgvfnbzdg60l21qxbaii4d049jc5y0dn56y93amb"))
+          (base32 "0r6ljlpgjmkf87pmvdwzva8qj15bhznc3ylgcjjqyy4frbx9lygz"))
          (file-name (git-file-name "nibbles" version))))
       (build-system asdf-build-system/sbcl)
       (native-inputs
