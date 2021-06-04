@@ -17700,6 +17700,27 @@ main plot at different sides (left, right, top and bottom) with axes exactly
 matched.")
     (license license:artistic2.0)))
 
+(define-public r-ggnewscale
+  (package
+    (name "r-ggnewscale")
+    (version "0.4.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ggnewscale" version))
+       (sha256
+        (base32
+         "1hjysfagd2lqy8yivqq9q7l6hbvyq8kasw3zqh5fk9xn18ikc702"))))
+    (properties `((upstream-name . "ggnewscale")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)))
+    (home-page "https://cran.r-project.org/package=ggnewscale")
+    (synopsis "Multiple fill and color scales in ggplot2")
+    (description
+     "This package lets you use multiple fill and color scales in ggplot2.")
+    (license license:gpl3)))
+
 (define-public r-rex
   (package
     (name "r-rex")
