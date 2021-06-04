@@ -8074,6 +8074,32 @@ combinator.")
 and 1.0.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-commoncrypto-sys-0.2
+  (package
+    (name "rust-commoncrypto-sys")
+    (version "0.2.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "commoncrypto-sys" version))
+        (file-name
+          (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32
+            "1ql381ziqh594a7z6m9bvs583lkrhbynk02pmbgp7aj7czs39v8z"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:skip-build? #t                ;requires the Mac OS library
+        #:cargo-inputs
+        (("rust-clippy" ,rust-clippy-0.0)
+         ("rust-libc" ,rust-libc-0.2))))
+    (home-page "https://github.com/malept/rust-commoncrypto")
+    (synopsis "FFI bindings to Mac OS X's CommonCrypto library")
+    (description "This package is a component of the @code{commoncrypto}
+library which provides Rust FFI bindings and idiomatic wrappers for Mac OS X's
+CommonCrypto library.")
+    (license license:expat)))
+
 (define-public rust-common-path-1
   (package
     (name "rust-common-path")
