@@ -17673,6 +17673,33 @@ making it possible to download files over HTTPS across platforms.  The
 external dependencies.  This package has is implemented purely in R.")
     (license license:gpl2)))
 
+(define-public r-aplot
+  (package
+    (name "r-aplot")
+    (version "0.0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "aplot" version))
+       (sha256
+        (base32
+         "08kqrm9r57l8zgij897wpp428l4i50qfhp7y78r3pk5pjz37bsan"))))
+    (properties `((upstream-name . "aplot")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-magrittr" ,r-magrittr)
+       ("r-patchwork" ,r-patchwork)))
+    (home-page "https://github.com/YuLab-SMU/aplot")
+    (synopsis "Decorate a ggplot with associated information")
+    (description
+     "Users may want to align plots with associated information that requires
+axes to be exactly matched in subplots, e.g. hierarchical clustering with a
+heatmap.  This package provides utilities to align associated subplots to a
+main plot at different sides (left, right, top and bottom) with axes exactly
+matched.")
+    (license license:artistic2.0)))
+
 (define-public r-rex
   (package
     (name "r-rex")
