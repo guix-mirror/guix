@@ -12253,22 +12253,21 @@ block processing.")
 (define-public r-rhdf5lib
   (package
     (name "r-rhdf5lib")
-    (version "1.12.1")
+    (version "1.14.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Rhdf5lib" version))
        (sha256
         (base32
-         "14fnq4gijxp2l7985pksfk52i6klvy81r3892lnna73c6hh1dj28"))
+         "1ypqmd4nz4hxlb2qsay7f5784dqdjhc3b19pckzkhb65bfycdn87"))
        (modules '((guix build utils)))
        (snippet
         '(begin
            ;; Delete bundled binaries
            (delete-file-recursively "src/wininclude/")
-           (delete-file-recursively "src/winlib-4.9.3/")
            (delete-file-recursively "src/winlib-8.3.0/")
-           (delete-file "src/hdf5small_cxx_hl_1.10.6.tar.gz")
+           (delete-file "src/hdf5small_cxx_hl_1.10.7.tar.gz")
            #t))))
     (properties `((upstream-name . "Rhdf5lib")))
     (build-system r-build-system)
@@ -12280,7 +12279,9 @@ block processing.")
              (for-each delete-file '("configure" "configure.ac"))
              ;; Do not make other packages link with the proprietary libsz.
              (substitute* "R/zzz.R"
-               ((" \"%s/libsz.a\"") ""))
+               ((" \"%s/libsz.a\"") "")
+               (("patharch, .getDynamicLinks")
+                ".getDynamicLinks"))
              (with-directory-excursion "src"
                (invoke "tar" "xvf" (assoc-ref inputs "hdf5-source"))
                (rename-file (string-append "hdf5-" ,(package-version hdf5-1.10))
@@ -12319,12 +12320,10 @@ block processing.")
                                  (assoc-ref inputs "hdf5") "/lib/libhdf5_hl_cpp.a\n"))
                  ;; szip is non-free software
                  (("cp \"\\$\\{SZIP_LIB\\}.*") "")
-                 (("PKG_LIBS =.*") "PKG_LIBS = -lz -lhdf5\n")))
-             #t)))))
-    (inputs
-     `(("zlib" ,zlib)))
+                 (("PKG_LIBS =.*") "PKG_LIBS = -lz -lhdf5\n"))))))))
     (propagated-inputs
-     `(("hdf5" ,hdf5-1.10)))
+     `(("hdf5" ,hdf5-1.10)
+       ("zlib" ,zlib)))
     (native-inputs
      `(("hdf5-source" ,(package-source hdf5-1.10))
        ("r-knitr" ,r-knitr)))
