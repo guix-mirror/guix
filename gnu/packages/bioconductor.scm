@@ -5675,6 +5675,38 @@ This permits greater efficiency in common operations, most notably matrix
 multiplication.")
     (license license:gpl3)))
 
+(define-public r-treeio
+  (package
+    (name "r-treeio")
+    (version "1.16.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "treeio" version))
+       (sha256
+        (base32
+         "0ypl4h80m08sf7r4zfvqgvpsz46x15wvcl1idq5pd813bp1w2sws"))))
+    (properties `((upstream-name . "treeio")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ape" ,r-ape)
+       ("r-dplyr" ,r-dplyr)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-magrittr" ,r-magrittr)
+       ("r-rlang" ,r-rlang)
+       ("r-tibble" ,r-tibble)
+       ("r-tidytree" ,r-tidytree)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/YuLab-SMU/treeio")
+    (synopsis "Base classes and functions for Phylogenetic tree input and output")
+    (description
+     "This is an R package to make it easier to import and store phylogenetic
+trees with associated data; and to link external data from different sources
+to phylogeny.  It also supports exporting phylogenetic trees with
+heterogeneous associated data to a single tree file and can be served as a
+platform for merging tree with associated data and converting file formats.")
+    (license license:artistic2.0)))
+
 (define-public r-biocsingular
   (package
     (name "r-biocsingular")
