@@ -10633,6 +10633,54 @@ and interactive quality reports.  The pipeline is designed to work with UMI
 based methods.")
     (license license:gpl3+)))
 
+(define-public pigx-sars-cov2-ww
+  (package
+    (name "pigx-sars-cov2-ww")
+    (version "0.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/BIMSBbioinfo/pigx_sarscov2_ww/"
+                                  "releases/download/v" version
+                                  "/pigx_sars-cov2-ww-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1h1rfl3dyf7pid74xxgiyr4x1l5yj000wcz5crm1bdbaz8p7b7ic"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("bash-minimal" ,bash-minimal)
+       ("bwa" ,bwa)
+       ("ensembl-vep" ,ensembl-vep)
+       ("fastqc" ,fastqc)
+       ("kraken2" ,kraken2)
+       ("krona-tools" ,krona-tools)
+       ("lofreq" ,lofreq)
+       ("multiqc" ,multiqc)
+       ("prinseq" ,prinseq)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-wrapper" ,python-wrapper)
+       ("r-base64url" ,r-base64url)
+       ("r-dplyr" ,r-dplyr)
+       ("r-dt" ,r-dt)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-magrittr" ,r-magrittr)
+       ("r-minimal" ,r-minimal)
+       ("r-plotly" ,r-plotly)
+       ("r-qpcr" ,r-qpcr)
+       ("r-reshape2" ,r-reshape2)
+       ("r-rmarkdown" ,r-rmarkdown)
+       ("r-stringr" ,r-stringr)
+       ("r-tidyr" ,r-tidyr)
+       ("samtools" ,samtools)
+       ("snakemake" ,snakemake)))
+    (home-page "https://bioinformatics.mdc-berlin.de/pigx/")
+    (synopsis "Analysis pipeline for wastewater sequencing")
+    (description "PiGx SARS-CoV-2 is a pipeline for analysing data from
+sequenced wastewater samples and identifying given variants-of-concern of
+SARS-CoV-2.  The pipeline can be used for continuous sampling.  The output
+report will provide an intuitive visual overview about the development of
+variant abundance over time and location.")
+    (license license:gpl3+)))
+
 (define-public pigx
   (package
     (name "pigx")
