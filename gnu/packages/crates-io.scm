@@ -6253,6 +6253,29 @@ little-endian.")
 exposed as Reader/Writer streams.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-bytesize-1
+  (package
+    (name "rust-bytesize")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "bytesize" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1nl2j2bi9nk3q564jhyb77947wdv5ch54r14gjv4c59s563qd8c1"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-serde" ,rust-serde-1))))
+    (home-page "https://github.com/hyunsik/bytesize/")
+    (synopsis "Human-readable byte count representation library for Rust")
+    (description "ByteSize is an utility for human-readable byte count
+representation, with support for both SI and binary units.")
+    (license license:asl2.0)))
+
 (define-public rust-bzip2-0.3
   (package
     (inherit rust-bzip2-0.4)
