@@ -10355,7 +10355,7 @@ once.  This package provides tools to perform Drop-seq analyses.")
 (define-public pigx-rnaseq
   (package
     (name "pigx-rnaseq")
-    (version "0.0.10")
+    (version "0.0.13")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_rnaseq/"
@@ -10363,7 +10363,7 @@ once.  This package provides tools to perform Drop-seq analyses.")
                                   "/pigx_rnaseq-" version ".tar.gz"))
               (sha256
                (base32
-                "0z3hr120wk2vrlmlpz1vp3n9wy3rq4y2mnzh2vf08qgqn2xfdwcw"))))
+                "0z9zid2c8q16lfzlnjd63nparknhv31qgv4h79algmvhkakm2pgk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-tests? #f             ; not supported
@@ -10373,19 +10373,17 @@ once.  This package provides tools to perform Drop-seq analyses.")
          (add-after 'unpack 'disable-resource-intensive-test
            (lambda _
              (substitute* "Makefile.in"
-               (("(^  tests/test_trim_galore/test.sh).*" _ m) m)
                (("^  tests/test_multiqc/test.sh") "")
-               (("^  test.sh") ""))
-             #t)))))
+               (("^  test.sh") "")))))))
     (inputs
      `(("coreutils" ,coreutils)
        ("sed" ,sed)
        ("gzip" ,gzip)
        ("snakemake" ,snakemake)
-       ("fastqc" ,fastqc)
        ("multiqc" ,multiqc)
        ("star" ,star-for-pigx)
-       ("trim-galore" ,trim-galore)
+       ("hisat2" ,hisat2)
+       ("fastp" ,fastp)
        ("htseq" ,htseq)
        ("samtools" ,samtools)
        ("r-minimal" ,r-minimal)
