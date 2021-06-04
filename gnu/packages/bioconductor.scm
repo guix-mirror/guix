@@ -11350,35 +11350,16 @@ monograph.")
 (define-public r-bioccheck
   (package
     (name "r-bioccheck")
-    (version "1.26.0")
+    (version "1.28.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "BiocCheck" version))
               (sha256
                (base32
-                "1hyncn9zqj432da95k86rm5b28nbwrvzm52jbhisifkxj1j43cib"))))
+                "1h0l5w33c9jpc20pynq634qmx8jbfa802d7jslmf4haljmrxm4a1"))))
     (properties
      `((upstream-name . "BiocCheck")))
     (build-system r-build-system)
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         ;; This package can be used by calling BiocCheck(<package>) from
-         ;; within R, or by running R CMD BiocCheck <package>.  This phase
-         ;; makes sure the latter works.  For this to work, the BiocCheck
-         ;; script must be somewhere on the PATH (not the R bin directory).
-         (add-after 'install 'install-bioccheck-subcommand
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (dest-dir (string-append out "/bin"))
-                    (script-dir
-                     (string-append out "/site-library/BiocCheck/script/")))
-               (mkdir-p dest-dir)
-               (symlink (string-append script-dir "/checkBadDeps.R")
-                        (string-append dest-dir "/checkBadDeps.R"))
-               (symlink (string-append script-dir "/BiocCheck")
-                        (string-append dest-dir "/BiocCheck")))
-             #t)))))
     (propagated-inputs
      `(("r-codetools" ,r-codetools)
        ("r-graph" ,r-graph)
