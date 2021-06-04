@@ -1856,61 +1856,58 @@ software-defined radio receivers.")
     (license license:gpl3+)))
 
 (define-public wfview
-  ;; No tagged release, use commit directly.
-  (let ((commit "274e905d214a7360e8cf2dd0421dbe3712a0ddcc")
-        (revision "1"))
-    (package
-      (name "wfview")
-      (version (git-version "20210511" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://gitlab.com/eliggett/wfview")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "1dmxn15xs63wx1y4mh1mlv8qc1xz32vgbyl3rk82gf6knw518svp"))))
-      (build-system qt-build-system)
-      (inputs
-       `(("qcustomplot" ,qcustomplot)
-         ("qtbase" ,qtbase)
-         ("qtmultimedia" ,qtmultimedia)
-         ("qtserialport" ,qtserialport)))
-      (arguments
-       `(#:tests? #f  ; No test suite.
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'fix-paths
-             (lambda* (#:key outputs #:allow-other-keys)
-               (substitute* "wfview.pro"
-                 (("\\.\\./wfview/")
-                  "../"))
-               (substitute* '("wfmain.cpp")
-                 (("/usr/share")
-                  (string-append (assoc-ref outputs "out") "/share")))))
-           (replace 'configure
-             (lambda _
-               (mkdir-p "build")
-               (chdir "build")
-               (invoke "qmake" "../wfview.pro")))
-           (replace 'install
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out")))
-                 (install-file "wfview"
-                               (string-append out "/bin"))
-                 (install-file "wfview.png"
-                               (string-append out "/share/pixmaps"))
-                 (install-file "wfview.desktop"
-                               (string-append out "/share/applications"))
-                 (let ((dir (string-append
-                             out "/share/wfview/stylesheets/qdarkstyle")))
-                   (mkdir-p dir)
-                   (copy-recursively "qdarkstyle" dir))))))))
-      (home-page "https://wfview.org/")
-      (synopsis "Software to control Icom radios")
-      (description
-       "@code{wfview} is a program to control modern Icom radios and view the
+  (package
+    (name "wfview")
+    (version "1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/eliggett/wfview")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "16a9afm0nkqx4pzwfxisspybimhqdyr3yjpr7ac7wgpp3520ikzi"))))
+    (build-system qt-build-system)
+    (inputs
+     `(("qcustomplot" ,qcustomplot)
+       ("qtbase" ,qtbase)
+       ("qtmultimedia" ,qtmultimedia)
+       ("qtserialport" ,qtserialport)))
+    (arguments
+     `(#:tests? #f  ; No test suite.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "wfview.pro"
+               (("\\.\\./wfview/")
+                "../"))
+             (substitute* '("wfmain.cpp")
+               (("/usr/share")
+                (string-append (assoc-ref outputs "out") "/share")))))
+         (replace 'configure
+           (lambda _
+             (mkdir-p "build")
+             (chdir "build")
+             (invoke "qmake" "../wfview.pro")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out")))
+               (install-file "wfview"
+                             (string-append out "/bin"))
+               (install-file "wfview.png"
+                             (string-append out "/share/pixmaps"))
+               (install-file "wfview.desktop"
+                             (string-append out "/share/applications"))
+               (let ((dir (string-append
+                           out "/share/wfview/stylesheets/qdarkstyle")))
+                 (mkdir-p dir)
+                 (copy-recursively "qdarkstyle" dir))))))))
+    (home-page "https://wfview.org/")
+    (synopsis "Software to control Icom radios")
+    (description
+     "@code{wfview} is a program to control modern Icom radios and view the
 spectrum waterfall.  It supports at least the following models:
 
 @itemize
@@ -1921,8 +1918,8 @@ spectrum waterfall.  It supports at least the following models:
 @item IC-7851
 @item IC-9700
 @end itemize\n")
-      (license (list license:expat
-                     license:gpl3)))))
+    (license (list license:expat
+                   license:gpl3))))
 
 (define-public minimodem
   (package
