@@ -5707,6 +5707,42 @@ heterogeneous associated data to a single tree file and can be served as a
 platform for merging tree with associated data and converting file formats.")
     (license license:artistic2.0)))
 
+(define-public r-ggtree
+  (package
+    (name "r-ggtree")
+    (version "3.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "ggtree" version))
+       (sha256
+        (base32
+         "0i665b5jxgsv3ncxmczy7n0h911br44dw9f7m4jwv3pjmr5mm6vk"))))
+    (properties `((upstream-name . "ggtree")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ape" ,r-ape)
+       ("r-aplot" ,r-aplot)
+       ("r-dplyr" ,r-dplyr)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-magrittr" ,r-magrittr)
+       ("r-purrr" ,r-purrr)
+       ("r-rlang" ,r-rlang)
+       ("r-rvcheck" ,r-rvcheck)
+       ("r-scales" ,r-scales)
+       ("r-tidyr" ,r-tidyr)
+       ("r-tidytree" ,r-tidytree)
+       ("r-treeio" ,r-treeio)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://yulab-smu.top/treedata-book/")
+    (synopsis "R package for visualization of trees and annotation data")
+    (description
+     "This package extends the ggplot2 plotting system which implements a
+grammar of graphics.  ggtree is designed for visualization and annotation of
+phylogenetic trees and other tree-like structures with their annotation
+data.")
+    (license license:artistic2.0)))
+
 (define-public r-biocsingular
   (package
     (name "r-biocsingular")
