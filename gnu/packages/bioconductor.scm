@@ -3563,14 +3563,14 @@ specific parser.")
 (define-public r-mzr
   (package
     (name "r-mzr")
-    (version "2.24.1")
+    (version "2.26.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "mzR" version))
        (sha256
         (base32
-         "0ik0yrjhvk8r5pm990chn2aadp0gqzzkkm0027682ky34xp142sg"))
+         "1m5xvnv0rxyrfri4jwyyryr13d55nyhqvfc5xxg5mpskw2v029kp"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -3585,10 +3585,6 @@ specific parser.")
            (lambda _
              (substitute* "src/Makevars"
                (("\\./boost/libs.*") "")
-               ;; This is to avoid having a plain directory on the list of
-               ;; libraries to link.
-               (("\\(RHDF5_LIBS\\)" match)
-                (string-append match "/libhdf5.a"))
                (("PKG_LIBS=") "PKG_LIBS=$(BOOST_LIBS) ")
                (("\\ARCH_OBJS=" line)
                 (string-append line
@@ -3597,7 +3593,7 @@ specific parser.")
              #t)))))
     (inputs
      `(;; Our default boost package won't work here, unfortunately, even with
-       ;; mzR version 2.24.1.
+       ;; mzR version 2.26.0.
        ("boost" ,boost-for-mysql) ; use this instead of the bundled boost sources
        ("zlib" ,zlib)))
     (propagated-inputs
