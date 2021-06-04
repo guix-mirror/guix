@@ -9569,27 +9569,16 @@ for other R packages to compile and link against.")
 (define-public r-flowworkspace
   (package
     (name "r-flowworkspace")
-    (version "4.2.0")
+    (version "4.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "flowWorkspace" version))
        (sha256
         (base32
-         "19svh32jq1dpq3ayhpd5r8bw0iax8d9kdvpvc23gx2pf16g1j5ag"))))
+         "1a9qb2dcvwgb3z0vdbbzn1rzy77d3da72kirs272344hdx9b2cx9"))))
     (properties `((upstream-name . "flowWorkspace")))
     (build-system r-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-linking
-           (lambda _
-             (substitute* "src/Makevars"
-               ;; This is to avoid having a plain directory on the list of
-               ;; libraries to link.
-               (("\\{h5lib\\}" match)
-                (string-append match "/libhdf5.a")))
-             #t)))))
     (propagated-inputs
      `(("r-aws-s3" ,r-aws-s3)
        ("r-aws-signature" ,r-aws-signature)
@@ -9598,6 +9587,7 @@ for other R packages to compile and link against.")
        ("r-biocgenerics" ,r-biocgenerics)
        ("r-cytolib" ,r-cytolib)
        ("r-data-table" ,r-data-table)
+       ("r-delayedarray" ,r-delayedarray)
        ("r-digest" ,r-digest)
        ("r-dplyr" ,r-dplyr)
        ("r-flowcore" ,r-flowcore)
@@ -9614,6 +9604,7 @@ for other R packages to compile and link against.")
        ("r-rgraphviz" ,r-rgraphviz)
        ("r-rhdf5lib" ,r-rhdf5lib)
        ("r-rprotobuflib" ,r-rprotobuflib)
+       ("r-s4vectors" ,r-s4vectors)
        ("r-scales" ,r-scales)
        ("r-xml" ,r-xml)))
     (native-inputs
