@@ -163,7 +163,9 @@ if file doesn't exist, and the narinfo otherwise."
 (define (lookup-narinfo caches path authorized?)
   "Return the narinfo for PATH in CACHES, or #f when no substitute for PATH
 was found."
-  (match (lookup-narinfos/diverse caches (list path) authorized?)
+  (match (lookup-narinfos/diverse
+          caches (list path) authorized?
+          #:open-connection open-connection-for-uri/cached)
     ((answer) answer)
     (_        #f)))
 
