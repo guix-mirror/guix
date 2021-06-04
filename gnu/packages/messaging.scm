@@ -28,6 +28,7 @@
 ;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;; Copyright © 2020, 2021 Robert Karszniewicz <avoidr@posteo.de>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
+;;; Copyright © 2021 Denis 'GNUtoo' Carikli <GNUtoo@cyberdimension.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -123,6 +124,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system go)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
@@ -2965,6 +2967,33 @@ designed for experienced users.")
     (home-page "https://github.com/zulip/zulip-terminal")
     (synopsis "Zulip's official terminal client")
     (description "This package contains Zulip's official terminal client.")
+    (license license:asl2.0)))
+
+(define-public matterbridge
+  (package
+    (name "matterbridge")
+    (version "1.22.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/42wim/matterbridge")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "07rgdc4v043fhzsalmlhickqizk6xjlpjkzn6l5v9ryp5gmv580z"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/42wim/matterbridge"
+       #:unpack-path "github.com/42wim/matterbridge"))
+    (synopsis "Bridge together various messaging networks and protocols")
+    (description "Relays messages between different channels from various
+messaging networks and protocols.  So far it supports mattermost, IRC, gitter,
+xmpp, slack, discord, telegram, rocketchat, twitch, ssh-chat, zulip, whatsapp,
+keybase, matrix, microsoft teams, nextcloud, mumble, vk and more with REST
+API.  Mattermost is not required.")
+    (home-page "https://github.com/42wim/matterbridge")
     (license license:asl2.0)))
 
 ;;; messaging.scm ends here
