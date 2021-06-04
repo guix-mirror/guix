@@ -17746,6 +17746,43 @@ colored by the number of neighboring points.  This is useful to visualize the
 2D-distribution of points in case of overplotting.")
     (license license:gpl3)))
 
+(define-public r-arrow
+  (package
+    (name "r-arrow")
+    (version "4.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "arrow" version))
+       (sha256
+        (base32
+         "19kzfjxp90ybi1px3r93mfx59nqmnagxr4g73y7iby5blwl1bblc"))))
+    (properties `((upstream-name . "arrow")))
+    (build-system r-build-system)
+    (inputs
+     `(("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-assertthat" ,r-assertthat)
+       ("r-bit64" ,r-bit64)
+       ("r-cpp11" ,r-cpp11)
+       ("r-purrr" ,r-purrr)
+       ("r-r6" ,r-r6)
+       ("r-rlang" ,r-rlang)
+       ("r-tidyselect" ,r-tidyselect)
+       ("r-vctrs" ,r-vctrs)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/apache/arrow/")
+    (synopsis "R integration to Apache Arrow")
+    (description
+     "Apache Arrow is a cross-language development platform for in-memory
+data.  It specifies a standardized language-independent columnar memory format
+for flat and hierarchical data, organized for efficient analytic operations on
+modern hardware.  This package provides an R interface to the Arrow C++
+library.")
+    (license license:asl2.0)))
+
 (define-public r-rex
   (package
     (name "r-rex")
