@@ -9313,30 +9313,18 @@ cluster count and membership by stability evidence in unsupervised analysis.")
 (define-public r-cytolib
   (package
     (name "r-cytolib")
-    (version "2.2.1")
+    (version "2.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "cytolib" version))
        (sha256
         (base32
-         "0y8mxrg3jh9bahsf9rblgyja37m1x1ncxfnrli91xjyg0582kh7r"))))
+         "0wl7zqwv0i38dfzqfsz40n3mcbxi38ffn1rbd5pm9s7hq16zr4nv"))))
     (properties `((upstream-name . "cytolib")))
     (build-system r-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-linking
-           (lambda _
-             (substitute* "src/Makevars.in"
-               ;; This is to avoid having a plain directory on the list of
-               ;; libraries to link.
-               (("\\(RHDF5_LIBS\\)" match)
-                (string-append match "/libhdf5.a")))
-             #t)))))
     (native-inputs
-     `(("r-knitr" ,r-knitr)
-       ("pkg-config" ,pkg-config)))
+     `(("r-knitr" ,r-knitr)))
     (propagated-inputs
      `(("r-bh" ,r-bh)
        ("r-rcpp" ,r-rcpp)
