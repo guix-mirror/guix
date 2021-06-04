@@ -9400,27 +9400,16 @@ change point detection.")
 (define-public r-ncdfflow
   (package
     (name "r-ncdfflow")
-    (version "2.36.0")
+    (version "2.38.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ncdfFlow" version))
        (sha256
         (base32
-         "1knqc3ic2vpck7n7m7adxjz3ac70ra89d5gvlgp9r2q3kgaciwac"))))
+         "1lm88qnfv6rnnr7wmgbvwyj272imjjjn7h3agxqqzsbmn8vyrnf0"))))
     (properties `((upstream-name . "ncdfFlow")))
     (build-system r-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-linking
-           (lambda _
-             (substitute* "src/Makevars"
-               ;; This is to avoid having a plain directory on the list of
-               ;; libraries to link.
-               (("\\(RHDF5_LIBS\\)" match)
-                (string-append match "/libhdf5.a")))
-             #t)))))
     (propagated-inputs
      `(("r-bh" ,r-bh)
        ("r-biobase" ,r-biobase)
