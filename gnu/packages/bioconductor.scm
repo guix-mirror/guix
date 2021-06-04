@@ -5743,6 +5743,35 @@ phylogenetic trees and other tree-like structures with their annotation
 data.")
     (license license:artistic2.0)))
 
+(define-public r-metapod
+  (package
+    (name "r-metapod")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "metapod" version))
+       (sha256
+        (base32
+         "1hbcwr6d8gyrf4azh0gi588xkrg6gz7gsb5hbvzqkhplbsp6shlv"))))
+    (properties `((upstream-name . "metapod")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://bioconductor.org/packages/metapod")
+    (synopsis "Meta-analyses on p-values of differential analyses")
+    (description
+     "This package implements a variety of methods for combining p-values in
+differential analyses of genome-scale datasets.  Functions can combine
+p-values across different tests in the same analysis (e.g., genomic windows in
+ChIP-seq, exons in RNA-seq) or for corresponding tests across separate
+analyses (e.g., replicated comparisons, effect of different treatment
+conditions).  Support is provided for handling log-transformed input p-values,
+missing values and weighting where appropriate.")
+    (license license:gpl3)))
+
 (define-public r-biocsingular
   (package
     (name "r-biocsingular")
