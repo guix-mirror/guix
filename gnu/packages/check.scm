@@ -147,7 +147,27 @@ like Jasmine or Mocha.")
                           version "/check-" version ".tar.gz"))
       (sha256
        (base32
-        "02m25y9m46pb6n46s51av62kpd936lkfv3b13kfpckgvmh5lxpm8"))))
+        "02m25y9m46pb6n46s51av62kpd936lkfv3b13kfpckgvmh5lxpm8"))
+      (patches
+       (list
+        ;; This patch fixes some tests that would otherwise fail on
+        ;; powerpc64le-linux.  Without this patch, the tests make certain
+        ;; assumptions about floating point number precision that are not true
+        ;; on that platform.
+        ;;
+        ;; TODO: Remove this patch when updating to the next check release,
+        ;; since it will be included there.  See:
+        ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=47698
+        (origin
+          (method url-fetch)
+          (uri
+           (string-append "https://github.com/libcheck/check/commit/"
+                          "4fbe702fa4f35bee8a90512f9f59d1441c4ae82e.patch"))
+          (file-name (string-append name
+                                    "-fix-test-precision-for-ppc.patch"))
+          (sha256
+           (base32
+            "04qg1p9afdd6453k18qskazrvscysdcjz9j6w4i6p5x4xyma19v6")))))))
     (build-system gnu-build-system)
     (home-page "https://libcheck.github.io/check/")
     (synopsis "Unit test framework for C")
