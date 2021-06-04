@@ -3959,6 +3959,33 @@ Alignment / Map), FASTA, binary variant call (BCF) and compressed indexed
 tab-delimited (tabix) files.")
     (license license:expat)))
 
+;; This is a CRAN package, but it depends on a Bioconductor package:
+;; s4vectors.
+(define-public r-restfulr
+  (package
+    (name "r-restfulr")
+    (version "0.0.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "restfulr" version))
+       (sha256
+        (base32
+         "1dk45mzrr6ka92yjz7hfhkj12kpx1wg4szv1h1mg80mgga4ganbv"))))
+    (properties `((upstream-name . "restfulr")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcurl" ,r-rcurl)
+       ("r-rjson" ,r-rjson)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-xml" ,r-xml)
+       ("r-yaml" ,r-yaml)))
+    (home-page "https://cran.r-project.org/package=restfulr")
+    (synopsis "R interface to RESTful web services")
+    (description
+     "This package models a RESTful service as if it were a nested R list.")
+    (license license:artistic2.0)))
+
 (define-public r-rtracklayer
   (package
     (name "r-rtracklayer")
