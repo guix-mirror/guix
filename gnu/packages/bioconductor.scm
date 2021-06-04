@@ -4157,6 +4157,36 @@ purposes.  The package also contains legacy support for early single-end,
 ungapped alignment formats.")
     (license license:artistic2.0)))
 
+(define-public r-trajectoryutils
+  (package
+    (name "r-trajectoryutils")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "TrajectoryUtils" version))
+       (sha256
+        (base32
+         "1b7mg3ypp1ay98cav47h9vn692lx0n9b5b0hpansgnkr5prb823b"))))
+    (properties
+     `((upstream-name . "TrajectoryUtils")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-igraph" ,r-igraph)
+       ("r-matrix" ,r-matrix)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-singlecellexperiment" ,r-singlecellexperiment)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://bioconductor.org/packages/TrajectoryUtils")
+    (synopsis "Single-cell trajectory analysis utilities")
+    (description
+     "This package implements low-level utilities for single-cell trajectory
+analysis, primarily intended for re-use inside higher-level packages.  It
+includes a function to create a cluster-level minimum spanning tree and data
+structures to hold pseudotime inference results.")
+    (license license:gpl3)))
+
 (define-public r-slingshot
   (package
    (name "r-slingshot")
