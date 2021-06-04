@@ -36,14 +36,13 @@
 ;;; Copyright © 2019, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Stefan Stefanović <stefanx2ovic@gmail.com>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
-;;; Copyright © 2019, 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2019, 2020, 2021 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2020 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
-;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;; Copyright © 2020 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
@@ -6413,13 +6412,15 @@ set the screen to be pitch black at a value of 0 (or higher).
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0immxc7almmpg80n3bdn834p3nrrz7bspl2syhb04s3lawa5y2lq"))))
+                "0immxc7almmpg80n3bdn834p3nrrz7bspl2syhb04s3lawa5y2lq"))
+              (patches (search-patches "brightnessctl-elogind-support.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
        #:make-flags (list (string-append "CC=" ,(cc-for-target))
                           (string-append "PREFIX=" %output)
-                          (string-append "UDEVDIR=" %output "/lib/udev/rules.d/"))
+                          (string-append "UDEVDIR=" %output "/lib/udev/rules.d/")
+                          "ENABLE_SYSTEMD=1")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
@@ -6428,6 +6429,10 @@ set the screen to be pitch black at a value of 0 (or higher).
              (substitute* "90-brightnessctl.rules"
                (("/bin/") "/run/current-system/profile/bin/"))
              #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("elogind" ,elogind)))
     (synopsis "Backlight and LED brightness control")
     (description
      "This program allows you read and control device brightness.  Devices
