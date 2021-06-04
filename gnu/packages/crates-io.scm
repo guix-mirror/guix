@@ -8100,6 +8100,31 @@ library which provides Rust FFI bindings and idiomatic wrappers for Mac OS X's
 CommonCrypto library.")
     (license license:expat)))
 
+(define-public rust-commoncrypto-0.2
+  (package
+    (name "rust-commoncrypto")
+    (version "0.2.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "commoncrypto" version))
+        (file-name
+          (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32
+            "01whnqcziclsj1gwavvqhrw2r5cmwh00j2fbc56iwnm2ddcahmnh"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:skip-build? #t
+        #:cargo-inputs
+        (("rust-clippy" ,rust-clippy-0.0)
+         ("rust-commoncrypto-sys" ,rust-commoncrypto-sys-0.2))))
+    (home-page "https://github.com/malept/rust-commoncrypto")
+    (synopsis "Idiomatic Rust wrappers for Mac OS X's CommonCrypto library")
+    (description "The @{commoncrypto} library provides Rust FFI bindings and
+idiomatic wrappers for Mac OS X's CommonCrypto library.")
+    (license license:expat)))
+
 (define-public rust-common-path-1
   (package
     (name "rust-common-path")
