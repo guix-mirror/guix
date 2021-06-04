@@ -42,6 +42,7 @@
 # Copyright © 2021 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 # Copyright © 2021 Philip McGrath <philip@philipmcgrath.com>
 # Copyright © 2021 Arun Isaac <arunisaac@systemreboot.net>
+# Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
 #
 # This file is part of GNU Guix.
 #
@@ -351,6 +352,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/linux.scm			\
   %D%/packages/lirc.scm				\
   %D%/packages/lisp.scm				\
+  %D%/packages/lisp-check.scm			\
   %D%/packages/lisp-xyz.scm			\
   %D%/packages/llvm.scm				\
   %D%/packages/lout.scm				\
