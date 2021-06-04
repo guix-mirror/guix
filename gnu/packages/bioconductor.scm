@@ -9703,27 +9703,16 @@ sequential way to mimic the manual gating strategy.")
 (define-public r-cytoml
   (package
     (name "r-cytoml")
-    (version "2.2.2")
+    (version "2.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "CytoML" version))
        (sha256
         (base32
-         "0ckjb7bkz0cy46scrv4vl9w37g54c0yihvzmbkzilip1ikpvhxd1"))))
+         "0ixy7mmnipk8wy61wz6qy7jfbc5zhs6p5iqaii8hdprjnb841ri7"))))
     (properties `((upstream-name . "CytoML")))
     (build-system r-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-linking
-           (lambda _
-             (substitute* "src/Makevars.in"
-               ;; This is to avoid having a plain directory on the list of
-               ;; libraries to link.
-               (("\\{h5lib\\}" match)
-                (string-append match "/libhdf5.a")))
-             #t)))))
     (inputs
      `(("libxml2" ,libxml2)
        ("zlib" ,zlib)))
