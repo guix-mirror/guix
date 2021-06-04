@@ -17721,6 +17721,31 @@ matched.")
      "This package lets you use multiple fill and color scales in ggplot2.")
     (license license:gpl3)))
 
+(define-public r-ggpointdensity
+  (package
+    (name "r-ggpointdensity")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ggpointdensity" version))
+       (sha256
+        (base32
+         "0c9a14j3b0hvamqylhzldw2hjdxmfbllwahjkf3gg2rw337ld9iy"))))
+    (properties
+     `((upstream-name . "ggpointdensity")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)))
+    (home-page "https://github.com/LKremer/ggpointdensity")
+    (synopsis "Cross between a 2D density plot and a scatter plot")
+    (description
+     "This package provides a cross between a 2D density plot and a scatter
+plot, implemented as a ggplot2 @code{geom}.  Points in the scatter plot are
+colored by the number of neighboring points.  This is useful to visualize the
+2D-distribution of points in case of overplotting.")
+    (license license:gpl3)))
+
 (define-public r-rex
   (package
     (name "r-rex")
