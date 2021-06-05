@@ -14281,6 +14281,34 @@ traits but without the boilerplate.")
      "Crate for mimicking simd crate on stable Rust.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-fallible-collections-0.4
+  (package
+    (name "rust-fallible-collections")
+    (version "0.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "fallible_collections" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1sk6ckixvf0pax47qgs8lfd2zi2gmyg1xgk1k7z2qgalhaaidnaa"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-hashbrown" ,rust-hashbrown-0.9))))
+    (home-page "https://github.com/vcombey/fallible_collections")
+    (synopsis "Fallible collections implementation in Rust")
+    (description "This library extends the Rust standard collections to return
+a result when an allocation error occurs, ala
+@url{https://github.com/rust-lang/rfcs/blob/master/text/2116-alloc-me-maybe.md,RFC
+2116}.  The API currently proposes a fallible interface for @code{Vec},
+@code{Box}, @code{Arc}, @code{Btree} and @code{Rc}, as well as a
+@code{TryClone} trait wich is implemented for primitive Rust traits and a
+fallible format macro.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-failure-0.1
   (package
     (name "rust-failure")
