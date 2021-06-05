@@ -11256,14 +11256,14 @@ symbols).")
 (define-public r-reactomepa
   (package
     (name "r-reactomepa")
-    (version "1.34.0")
+    (version "1.36.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ReactomePA" version))
        (sha256
         (base32
-         "04b2ng9jp2bsfbg3wnbg6m6a5c3szcmbypk1lx34i63228g8z98m"))))
+         "1293z89ai766c559axgr7mz5x4564gyl9xqzf6s8s0aj1xb35gqf"))))
     (properties `((upstream-name . "ReactomePA")))
     (build-system r-build-system)
     (propagated-inputs
