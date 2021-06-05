@@ -2896,13 +2896,13 @@ and visualize the results.")
 (define-public r-genomation
   (package
     (name "r-genomation")
-    (version "1.22.0")
+    (version "1.24.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "genomation" version))
               (sha256
                (base32
-                "1ana06irlpdgnmk8mb329nws9sm8n6max4qargf1xdcdf3rnk45g"))))
+                "0qa3b4mfd7l1sy4pw64zr2d90y5apah900krxjl4x39acygg0i2r"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biostrings" ,r-biostrings)
@@ -2923,7 +2923,6 @@ and visualize the results.")
        ("r-reshape2" ,r-reshape2)
        ("r-rsamtools" ,r-rsamtools)
        ("r-rtracklayer" ,r-rtracklayer)
-       ("r-runit" ,r-runit)
        ("r-s4vectors" ,r-s4vectors)
        ("r-seqpattern" ,r-seqpattern)))
     (native-inputs
