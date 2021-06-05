@@ -12739,21 +12739,19 @@ within the R for Mass Spectrometry packages.")
 (define-public r-biocio
   (package
     (name "r-biocio")
-    (version "1.0.1")
+    (version "1.2.0")
     (source
       (origin
         (method url-fetch)
         (uri (bioconductor-uri "BiocIO" version))
         (sha256
           (base32
-            "06gg5ra3r7q4b6mz14c2s9d453cnh1lxh517ffl9f8dr8vwv5s18"))))
+            "0skwnpxl6fkqihidpqrfzzh7b05x11j6jwkiinmhggmv0ggjb5ph"))))
     (properties `((upstream-name . "BiocIO")))
     (build-system r-build-system)
     (propagated-inputs
-      `(("r-biocgenerics" ,r-biocgenerics)
-        ("r-genomicranges" ,r-genomicranges)
-        ("r-rcurl" ,r-rcurl)
-        ("r-s4vectors" ,r-s4vectors)))
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-s4vectors" ,r-s4vectors)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/BiocIO")
