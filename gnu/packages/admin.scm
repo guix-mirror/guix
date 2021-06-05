@@ -3623,11 +3623,11 @@ information tool.")
         (string-append "PKG_CONFIG=" ,(pkg-config-for-target)))))
     (home-page "https://github.com/jarun/nnn")
     (synopsis "Terminal file browser")
-    (description "@command{nnn} is a fork of @command{noice}, a blazing-fast
-lightweight terminal file browser with easy keyboard shortcuts for
-navigation, opening files and running tasks.  There is no config file and
-mime associations are hard-coded.  The incredible user-friendliness and speed
-make it a perfect utility on modern distros.")
+    (description
+     "@command{nnn} is a fork of @command{noice}, a fast and minimal text
+terminal file browser with keyboard shortcuts for navigation, opening files and
+running tasks.  There is no configuration file and MIME associations are
+hard-coded.")
     (license license:bsd-2)))
 
 (define-public thermald
