@@ -2246,19 +2246,20 @@ objects.")
 (define-public r-biostrings
   (package
     (name "r-biostrings")
-    (version "2.58.0")
+    (version "2.60.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "Biostrings" version))
               (sha256
                (base32
-                "1rbqhs73mhfr1gi0rx28jiyan7i3hb45ai3jpl1656fnrhgjfxq5"))))
+                "0xidh6wp0l47g1j9x8d4fs91ky6pi5nzf85ry801gqd2gqajh2zy"))))
     (properties
      `((upstream-name . "Biostrings")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)
        ("r-crayon" ,r-crayon)
+       ("r-genomeinfodb" ,r-genomeinfodb)
        ("r-iranges" ,r-iranges)
        ("r-s4vectors" ,r-s4vectors)
        ("r-xvector" ,r-xvector)))
