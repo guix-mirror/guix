@@ -2451,7 +2451,7 @@ gone wild and are suddenly taking up your bandwidth.")
 (define-public nzbget
   (package
     (name "nzbget")
-    (version "21.0")
+    (version "21.1")
     (source
      (origin
        (method url-fetch)
@@ -2459,16 +2459,7 @@ gone wild and are suddenly taking up your bandwidth.")
                            "/download/v" version
                            "/nzbget-" version "-src.tar.gz"))
        (sha256
-        (base32
-         "0lwd0pfrs4a5ms193hgz2qiyf7grrc925dw6y0nfc0gkp27db9b5"))
-       (modules '((guix build utils)))
-       (snippet
-        ;; Reported upstream as <https://github.com/nzbget/nzbget/pull/414>.
-        '(begin
-           (substitute* "daemon/connect/TlsSocket.cpp"
-             (("gnutls_certificate-verification_status_print")
-              "gnutls_certificate_verification_status_print"))
-           #t))))
+        (base32 "09900x1k0yf4yi2cc0k093advvadyhrkm8rnd8nszhhdp2zc33sf"))))
     (arguments
      `(#:configure-flags
        (list
