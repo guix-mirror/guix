@@ -1704,9 +1704,11 @@ receiver.")
        ("qtdeclarative" ,qtdeclarative)
        ("qtgraphicaleffects" ,qtgraphicaleffects)
        ("qtmultimedia" ,qtmultimedia)
-       ("qtquickcontrols2" ,qtquickcontrols2)))
+       ("qtquickcontrols2" ,qtquickcontrols2)
+       ("soapysdr" ,soapysdr)))
     (arguments
-     `(#:configure-flags '("-DRTLSDR=ON")
+     `(#:configure-flags '("-DRTLSDR=ON"
+                           "-DSOAPYSDR=ON")
        #:tests? #f))
     (home-page "https://www.welle.io/")
     (synopsis "DAB and DAB+ software radio")
