@@ -3383,9 +3383,10 @@ to use Linux' inotify mechanism, which allows file accesses to be monitored.")
        ("zstd" ,zstd)))
     (inputs
      `(("xz" ,xz)
-       ("zlib" ,zlib)))
+       ("zlib" ,zlib)
+       ("zstd-lib" ,zstd "lib")))
     (arguments
-     `(#:configure-flags '("--with-xz" "--with-zlib"
+     `(#:configure-flags '("--with-xz" "--with-zlib" "--with-zstd"
                            "--disable-test-modules")
        #:phases
        (modify-phases %standard-phases
