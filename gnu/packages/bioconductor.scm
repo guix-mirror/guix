@@ -12525,14 +12525,14 @@ libraries.")
 (define-public r-scuttle
   (package
     (name "r-scuttle")
-    (version "1.0.4")
+    (version "1.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "scuttle" version))
        (sha256
         (base32
-         "0vfhxyv81y525qgk0s3bxy1yypj16h1bl7sc1a1jdqx11fxxv2l8"))))
+         "1vxmgm52n5z2m1a7d4c5ajp5d35rdq7j3hln9qn7188zk9ijjsz5"))))
     (properties `((upstream-name . "scuttle")))
     (build-system r-build-system)
     (propagated-inputs
