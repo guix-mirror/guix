@@ -72,7 +72,7 @@ cryptographic toolkits for object-oriented languages or in applications
 themselves.")
     (license gpl2+)))
 
-(define-public nettle-3.5
+(define-public nettle
   ;; This version is not API-compatible with version 2.  In particular, lsh
   ;; cannot use it yet.  So keep it separate.
   (package (inherit nettle-2)
@@ -90,17 +90,3 @@ themselves.")
         ;; Build "fat" binaries where the right implementation is chosen
         ;; at run time based on CPU features (starting from 3.1.)
         `(cons "--enable-fat" ,flags))))))
-
-(define-public nettle-3.7
-  (package (inherit nettle-3.5)
-    (version "3.7.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/nettle/nettle-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "0qpi1qp3bcvqdsaxy2pzg530db95x8qjahkynxgwvr6dy5760ald"))))))
-
-;;; Upgrading Nettle on master would cause 10000+ packages to be rebuilt.
-(define-public nettle nettle-3.5)
