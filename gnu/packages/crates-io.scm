@@ -23679,6 +23679,29 @@ for Rust structs.")
 @code{merge::Merge} crate.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-merge-0.1
+  (package
+    (name "rust-merge")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "merge" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1sck0vhi9lk8a6mgky0rgn842fj7yspywidwbd963nmimf9yzfqh"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-merge-derive" ,rust-merge-derive-0.1)
+        ("rust-num-traits" ,rust-num-traits-0.2))))
+    (home-page "https://sr.ht/~ireas/merge-rs")
+    (synopsis "Rust trait for objects that can be merged")
+    (description "This package provides a merge trait that can be used
+to merge two objects of the same type into one.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-merlin-2
   (package
     (name "rust-merlin")
