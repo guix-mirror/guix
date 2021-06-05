@@ -6207,14 +6207,14 @@ interactive exploration of results.")
 (define-public r-mast
   (package
     (name "r-mast")
-    (version "1.16.0")
+    (version "1.18.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "MAST" version))
        (sha256
         (base32
-         "11qr7n9i4masqz0yzikddchyn223m8dy6zv461dly07fd43qi9mn"))))
+         "1gkpagam5rap36viyr3n4psa658x9vckrxap1h67jasiiyrcfz2d"))))
     (properties `((upstream-name . "MAST")))
     (build-system r-build-system)
     (propagated-inputs
