@@ -24013,6 +24013,31 @@ based on Rustls and Ring.")
 and XXH3 algorithms.")
     (license license:expat)))
 
+(define-public rust-metrohash-1
+  (package
+    (name "rust-metrohash")
+    (version "1.0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "metrohash" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0v2hn33ypx79naimfcz58pz46qhj2prawvx1p9abrb72375m799v"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-fnv" ,rust-fnv-1)
+        ("rust-twox-hash" ,rust-twox-hash-1))))
+    (home-page
+     "https://github.com/arthurprs/metrohash-rs")
+    (synopsis "Rust implementation of the MetroHash hash algorithm")
+    (description "This library is a Rust implementation of MetroHash, a high
+quality, high performance hash algorithm.")
+    (license license:expat)))
+
 (define-public rust-meval-0.2
   (package
     (name "rust-meval")
