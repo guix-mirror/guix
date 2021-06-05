@@ -5779,14 +5779,14 @@ missing values and weighting where appropriate.")
 (define-public r-biocsingular
   (package
     (name "r-biocsingular")
-    (version "1.6.0")
+    (version "1.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "BiocSingular" version))
        (sha256
         (base32
-         "1hczix1h14d19hzcsngqkqqnqkprs41phzlcird8haxnw9bs03ni"))))
+         "1l0xgc3z5ci5sid198nsgg0k5i40rh877jybzmy0ify7rzv8carp"))))
     (properties `((upstream-name . "BiocSingular")))
     (build-system r-build-system)
     (propagated-inputs
@@ -5798,7 +5798,8 @@ missing values and weighting where appropriate.")
        ("r-matrix" ,r-matrix)
        ("r-rcpp" ,r-rcpp)
        ("r-rsvd" ,r-rsvd)
-       ("r-s4vectors" ,r-s4vectors)))
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-scaledmatrix" ,r-scaledmatrix)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/LTLA/BiocSingular")
