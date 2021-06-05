@@ -4188,21 +4188,22 @@ structures to hold pseudotime inference results.")
 (define-public r-slingshot
   (package
    (name "r-slingshot")
-   (version "1.8.0")
+   (version "2.0.0")
    (source (origin
             (method url-fetch)
             (uri (bioconductor-uri "slingshot" version))
             (sha256
              (base32
-              "0sz4frlk7c1g8adyfcgi1mf1xsf9n5zib4bw7j9kl711dbhvkqwl"))))
+              "1aqsz2kxwax8d8d5iv3zk5hlyk5aya1wbxs1wky2rgccw4d35whx"))))
    (build-system r-build-system)
    (propagated-inputs
-    `(("r-ape" ,r-ape)
-      ("r-igraph" ,r-igraph)
+    `(("r-igraph" ,r-igraph)
       ("r-matrixstats" ,r-matrixstats)
       ("r-princurve" ,r-princurve)
+      ("r-s4vectors" ,r-s4vectors)
       ("r-singlecellexperiment" ,r-singlecellexperiment)
-      ("r-summarizedexperiment" ,r-summarizedexperiment)))
+      ("r-summarizedexperiment" ,r-summarizedexperiment)
+      ("r-trajectoryutils" ,r-trajectoryutils)))
    (native-inputs
     `(("r-knitr" ,r-knitr)))
    (home-page "https://bioconductor.org/packages/slingshot")
