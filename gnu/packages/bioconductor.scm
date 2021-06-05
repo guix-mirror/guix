@@ -11160,14 +11160,14 @@ structures.")
 (define-public r-bioassayr
   (package
     (name "r-bioassayr")
-    (version "1.28.3")
+    (version "1.30.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "bioassayR" version))
        (sha256
         (base32
-         "03pdb76j7c28b1h1flb40ahq7i9iha22kblq6mkl3x4xmrdgaw5y"))))
+         "1mlv80w8a7l8cii3dfqvanvh0qdqvcg8c1iiq4xlyvkjxfs64ka1"))))
     (properties `((upstream-name . "bioassayR")))
     (build-system r-build-system)
     (propagated-inputs
