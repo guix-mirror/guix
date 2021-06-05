@@ -1506,6 +1506,7 @@ of the same name.")
        ("lz4" ,lz4)
        ("lua" ,lua-5.2)                 ;Lua 5.3 unsupported
        ("krb5" ,mit-krb5)
+       ("nghttp2:lib" ,nghttp2 "lib")
        ("minizip" ,minizip)
        ("qtbase" ,qtbase)
        ("qtmultimedia" ,qtmultimedia)
