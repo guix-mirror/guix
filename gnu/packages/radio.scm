@@ -350,7 +350,7 @@ used by RDS Spy, and audio files containing @dfn{multiplex} signals (MPX).")
        ("python-pyzmq" ,python-pyzmq)
        ("python-scipy" ,python-scipy)
        ("python-sphinx" ,python-sphinx)
-       ("texlive" ,(texlive-union (list texlive-amsfonts
+       ("texlive" ,(texlive-union (list texlive-amsfonts/patched
                                         texlive-latex-amsmath
                                         ;; TODO: Add newunicodechar.
                                         texlive-latex-graphics)))
