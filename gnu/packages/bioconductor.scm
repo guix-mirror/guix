@@ -5010,14 +5010,14 @@ determining dependencies between variables, code improvement suggestions.")
 (define-public r-chippeakanno
   (package
     (name "r-chippeakanno")
-    (version "3.24.2")
+    (version "3.26.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ChIPpeakAnno" version))
        (sha256
         (base32
-         "0l417aygs89wf1j9fjpfjhahzskbpbgcrm8xpx3qm4s0307vfzkw"))))
+         "1wnmsdrb4wz2qprj5mnd3h0wx32y2mpy3xg7mjbgwlqn9bzpw3gk"))))
     (properties `((upstream-name . "ChIPpeakAnno")))
     (build-system r-build-system)
     (propagated-inputs
@@ -5034,6 +5034,7 @@ determining dependencies between variables, code improvement suggestions.")
        ("r-genomicranges" ,r-genomicranges)
        ("r-ggplot2" ,r-ggplot2)
        ("r-graph" ,r-graph)
+       ("r-interactionset" ,r-interactionset)
        ("r-iranges" ,r-iranges)
        ("r-keggrest" ,r-keggrest)
        ("r-matrixstats" ,r-matrixstats)
