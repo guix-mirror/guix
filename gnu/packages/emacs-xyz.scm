@@ -4512,7 +4512,7 @@ Emacs shell script.")
 (define-public emacs-undercover
   (package
     (name "emacs-undercover")
-    (version "0.8.0")
+    (version "0.8.1")
     (source
      (origin
        (method git-fetch)
@@ -4521,7 +4521,7 @@ Emacs shell script.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "19d3373fy635vbfwr1yhxirwqn68qzny9byv74smxws4ly04mr02"))))
+        (base32 "0qmvyy3xg5qi7ws8zcs934d6afsappr1a6pgfp796xpa9vdr4y6j"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
