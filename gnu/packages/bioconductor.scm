@@ -13333,13 +13333,13 @@ other functional sequencing data.")
 (define-public r-pathview
   (package
     (name "r-pathview")
-    (version "1.30.1")
+    (version "1.32.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "pathview" version))
        (sha256
-        (base32 "11fisiksw1y64ii9q8p2znyp9w8mlqzgiaacmycw59rngkjlmbs4"))))
+        (base32 "1fank0qavv9ikmzxvms8mky2wbzny02rfqkvsqzma26r3vl4r1g1"))))
     (properties `((upstream-name . "pathview")))
     (build-system r-build-system)
     (propagated-inputs
