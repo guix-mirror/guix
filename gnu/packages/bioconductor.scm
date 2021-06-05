@@ -1418,17 +1418,21 @@ used visualizations.")
 (define-public r-decipher
   (package
     (name "r-decipher")
-    (version "2.18.1")
+    (version "2.20.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "DECIPHER" version))
               (sha256
                (base32
-                "0jz2lffks9rrk5wzbvnr8yal91kf8rg2xn0fmg9ywk45ql657sm9"))))
+                "0mr7glkx2d37l9nszs52m0kycpm14vxl5gdp3z7i5j7yig1sw2nk"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biostrings" ,r-biostrings)
-       ("r-rsqlite" ,r-rsqlite)))
+       ("r-dbi" ,r-dbi)
+       ("r-iranges" ,r-iranges)
+       ("r-rsqlite" ,r-rsqlite)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-xvector" ,r-xvector)))
     (home-page "https://www.bioconductor.org/packages/DECIPHER/")
     (synopsis "Tools for deciphering and managing biological sequences")
     (description "This package provides a toolset for deciphering and managing
