@@ -3614,17 +3614,13 @@ information tool.")
      `(#:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)            ; no configure script
-         (add-after 'unpack 'patch-pkg-config
-           (lambda _
-             (substitute* "Makefile"
-               (("pkg-config")
-                ,(pkg-config-for-target))))))
+         (delete 'configure))           ; no configure script
        #:make-flags
        (list
         (string-append "PREFIX="
                        (assoc-ref %outputs "out"))
-        (string-append "CC=" ,(cc-for-target)))))
+        (string-append "CC=" ,(cc-for-target))
+        (string-append "PKG_CONFIG=" ,(pkg-config-for-target)))))
     (home-page "https://github.com/jarun/nnn")
     (synopsis "Terminal file browser")
     (description "@command{nnn} is a fork of @command{noice}, a blazing-fast
