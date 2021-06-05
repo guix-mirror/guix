@@ -968,6 +968,27 @@ theme and apply them to the rest of Linux with Pywal.  Pywal only applies your
 theme to the current session.")
       (license license:gpl3+))))
 
+(define-public emacs-vscode-dark-plus
+  (package
+    (name "emacs-vscode-dark-plus")
+    (version "2.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ianyepan/vscode-dark-plus-emacs-theme")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1vcaqvhdgr91pr7kqskbscs8awm8jp6dkh79h6w36i9ipmc4l4hl"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/ianyepan/vscode-dark-plus-emacs-theme")
+    (synopsis "Emacs port of the default VS Code Dark+ theme")
+    (description
+     "This theme aims to be as identical as possible to the default Dark+
+color scheme used by Visual Studio Code.")
+    (license license:gpl3+)))
+
 (define-public emacs-theme-sorcery
   (let ((revision "0")
         (commit "5a1c4445b9e6e09589a299a9962a6973272a0c2f"))
