@@ -1528,6 +1528,27 @@ provides an optional IDE-like error list.")
 boilerplate code from defining new Flymake backend functions.")
       (license license:gpl3+))))
 
+(define-public emacs-flymake-kondor
+  (package
+    (name "emacs-flymake-kondor")
+    (version "0.0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/turbo-cafe/flymake-kondor")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0h8dqk35r10pxx2w4swb3kij4y2vi17j9wfk978x8lf0wd3h3hsy"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-flymake-quickdef" ,emacs-flymake-quickdef)))
+    (home-page "https://github.com/turbo-cafe/flymake-kondor")
+    (synopsis "Linter with clj-kondo")
+    (description "This package adds Clojure syntax checker clj-kondo.")
+    (license license:gpl3+)))
+
 (define-public emacs-flymake-shellcheck
   ;; No tag, version grabbed from source .el file.
   (let ((commit "ac534e9ef15c82ac86ae65fe5004d29dbc8c92c7")
