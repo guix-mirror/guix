@@ -394,7 +394,7 @@ the in DocBook SGML DTDs.")
     (build-system python-build-system)
     ;; TODO: Add xfig/transfig for fig2dev utility
     (inputs
-     `(("texlive" ,(texlive-union (list texlive-amsfonts
+     `(("texlive" ,(texlive-union (list texlive-amsfonts/patched
                                         texlive-latex-anysize
                                         texlive-latex-appendix
                                         texlive-latex-changebar
