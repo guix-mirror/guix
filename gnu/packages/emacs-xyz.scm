@@ -2454,7 +2454,7 @@ as a library for other Emacs packages.")
      `(("perl" ,perl)))
     (inputs
      `(("ghostscript" ,ghostscript)
-       ("texlive" ,(texlive-union (list texlive-amsfonts)))))
+       ("texlive" ,(texlive-union (list texlive-amsfonts/patched)))))
     (home-page "https://www.gnu.org/software/auctex/")
     (synopsis "Integrated environment for TeX")
     (description
