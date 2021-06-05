@@ -4220,24 +4220,27 @@ graph construction.")
 (define-public r-structuralvariantannotation
   (package
     (name "r-structuralvariantannotation")
-    (version "1.6.0")
+    (version "1.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "StructuralVariantAnnotation" version))
        (sha256
         (base32
-         "0ff40703iyf5wk77hbqhphfxnzc2wcshnjhvh66c5l0jvj9z8xvc"))))
+         "10h63h1v87nvm3bfyr6dsjlbmzxf1vks30d0xz6q4hssqq9xlzgv"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-biocgenerics" ,r-biocgenerics)
+     `(("r-assertthat" ,r-assertthat)
+       ("r-biocgenerics" ,r-biocgenerics)
        ("r-biostrings" ,r-biostrings)
        ("r-dplyr" ,r-dplyr)
        ("r-genomicranges" ,r-genomicranges)
+       ("r-rlang" ,r-rlang)
        ("r-rtracklayer" ,r-rtracklayer)
        ("r-stringr" ,r-stringr)
-       ("r-assertthat" ,r-assertthat)
        ("r-variantannotation" ,r-variantannotation)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/StructuralVariantAnnotation/")
     (synopsis "R package designed to simplify structural variant analysis")
     (description
