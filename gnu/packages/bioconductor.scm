@@ -12707,18 +12707,19 @@ memory usage and processing time is minimized.")
 (define-public r-mscoreutils
   (package
     (name "r-mscoreutils")
-    (version "1.2.0")
+    (version "1.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "MsCoreUtils" version))
        (sha256
         (base32
-         "0fa3bcf2cmzf5y8wjs7pnzs26qwgqnrrl4hj4sa4fp9kv8z80630"))))
+         "13g8a726vsyjs6m1kd42vf8avdnmhykxhl6z3j2njzkp2jg17pd8"))))
     (properties `((upstream-name . "MsCoreUtils")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-mass" ,r-mass)
+     `(("r-clue" ,r-clue)
+       ("r-mass" ,r-mass)
        ("r-rcpp" ,r-rcpp)
        ("r-s4vectors" ,r-s4vectors)))
     (native-inputs
