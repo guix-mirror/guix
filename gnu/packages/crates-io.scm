@@ -4891,6 +4891,31 @@ behave like a set of bitflags.")
 declaring and working with fixed size bitmaps in Rust.")
     (license license:mpl2.0)))
 
+(define-public rust-bitreader-0.3
+  (package
+    (name "rust-bitreader")
+    (version "0.3.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "bitreader" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "06wlzf8ra7k8ya0m71dq0kxbaalaan48dymairn9q8s4gld1hy4i"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-1))))
+    (home-page "https://github.com/irauta/bitreader")
+    (synopsis "Individual bits reader from a slice of bytes")
+    (description "BitReader helps reading individual bits from a slice of
+bytes.  You can read an arbitrary numbers of bits from the byte slice, for
+example 13 bits at once.  The reader internally keeps track of position within
+the buffer.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-bitstream-io-1
   (package
     (name "rust-bitstream-io")
