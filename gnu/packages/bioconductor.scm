@@ -2034,14 +2034,14 @@ databases.  Packages produced are intended to be used with AnnotationDbi.")
 (define-public r-annotationhub
   (package
     (name "r-annotationhub")
-    (version "2.22.1")
+    (version "3.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "AnnotationHub" version))
        (sha256
         (base32
-         "08d7m0n4jkpajsj0bvi5xd4vi1zqczl6lnrh8kqi2fbjkrvwdqp5"))))
+         "1p9773fv7j7q4x1sjqqaw32qy9lqn2gf6gkynh1d8n1kd7v7sclp"))))
     (properties `((upstream-name . "AnnotationHub")))
     (build-system r-build-system)
     (propagated-inputs
