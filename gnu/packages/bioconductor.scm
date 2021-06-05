@@ -2645,14 +2645,14 @@ exploration of the results.")
 (define-public r-dirichletmultinomial
   (package
     (name "r-dirichletmultinomial")
-    (version "1.32.0")
+    (version "1.34.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "DirichletMultinomial" version))
        (sha256
         (base32
-         "098zql6ryd1b0gkq4cjybblyh0x8xidxxfygqq5a5x9asl8y4vsk"))))
+         "0ikmj0300lfzj6q1vyahfyx5kwi5h59mds7ym4f2j1bbxqzy6ssl"))))
     (properties
      `((upstream-name . "DirichletMultinomial")))
     (build-system r-build-system)
