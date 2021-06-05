@@ -287,6 +287,31 @@ with this package.  E.g.: @code{(udev-rules-service 'airspyhf airspyhf)}")
 defined radio hardware devices with a common API.")
     (license license:boost1.0)))
 
+(define-public soapyairspyhf
+  (package
+    (name "soapyairspyhf")
+    (version "0.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/pothosware/SoapyAirspyHF")
+             (commit (string-append "soapy-airspyhf-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "04krqinglgkjvx7klqik6yn8rb4mlpwzb6zvnmvm7szqci2agggz"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("airspyhf" ,airspyhf)
+       ("soapysdr" ,soapysdr)))
+    (arguments
+     `(#:tests? #f))  ; No test suite
+    (home-page "https://github.com/pothosware/SoapyAirspyHF/wiki")
+    (synopsis "SoapySDR Airspy HF+ module")
+    (description "This package provides Airspy HF+ devices support to the
+SoapySDR library.")
+    (license license:expat)))
+
 (define-public soapyhackrf
   (package
     (name "soapyhackrf")
