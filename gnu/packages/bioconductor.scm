@@ -3917,13 +3917,13 @@ HDF5 datasets.")
 (define-public r-rsamtools
   (package
     (name "r-rsamtools")
-    (version "2.6.0")
+    (version "2.8.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "Rsamtools" version))
               (sha256
                (base32
-                "040pggkwglc6wy90qnc7xcdnaj0v3iqlykvvsl74241409qly554"))))
+                "0arhh5bbx3pmxmkh5sjgczcswqy83d35r7cjhd2knpczdvrixaq5"))))
     (properties
      `((upstream-name . "Rsamtools")))
     (build-system r-build-system)
@@ -3935,8 +3935,7 @@ HDF5 datasets.")
              (substitute* "DESCRIPTION"
                (("zlibbioc, ") ""))
              (substitute* "NAMESPACE"
-               (("import\\(zlibbioc\\)") ""))
-             #t)))))
+               (("import\\(zlibbioc\\)") "")))))))
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)
        ("r-biocparallel" ,r-biocparallel)
