@@ -11965,7 +11965,7 @@ diff.")
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-blobby" ,rust-blobby-0.1)
-        ("rust-generic-array" ,rust-generic-array-0.13))))))
+        ("rust-generic-array" ,rust-generic-array-0.12))))))
 
 (define-public rust-digest-0.7
   (package
