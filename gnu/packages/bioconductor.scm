@@ -13180,18 +13180,19 @@ EMBL-EBI GWAS catalog.")
 (define-public r-kegggraph
   (package
     (name "r-kegggraph")
-    (version "1.50.0")
+    (version "1.52.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "KEGGgraph" version))
        (sha256
-        (base32 "1h293hn02ysm923bh9gxk87xv663xiqchqcvpaxpla9c3yrgkx2v"))))
+        (base32 "0zxdph5hzr3kzj2g1mjqpiviwa189a5sq4bw7wiry6r79fdnklqs"))))
     (properties `((upstream-name . "KEGGgraph")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-graph" ,r-graph)
        ("r-rcurl" ,r-rcurl)
+       ("r-rgraphviz" ,r-rgraphviz)
        ("r-xml" ,r-xml)))
     (home-page "https://bioconductor.org/packages/KEGGgraph")
     (synopsis "Graph approach to Kegg Pathway database in R and Bioconductor")
