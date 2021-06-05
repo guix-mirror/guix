@@ -312,6 +312,31 @@ defined radio hardware devices with a common API.")
      "This package provides HackRF devices support to the SoapySDR library.")
     (license license:expat)))
 
+(define-public soapyrtlsdr
+  (package
+    (name "soapyrtlsdr")
+    (version "0.3.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/pothosware/SoapyRTLSDR")
+             (commit (string-append "soapy-rtl-sdr-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1dlnryj6k20pk7w7v4v13y099r7ikhvlzbgzgphmi5cxkdv0shrd"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("rtl-sdr" ,rtl-sdr)
+       ("soapysdr" ,soapysdr)))
+    (arguments
+     `(#:tests? #f))  ; No test suite
+    (home-page "https://github.com/pothosware/SoapyRTLSDR/wiki")
+    (synopsis "SoapySDR RTL-SDR module")
+    (description
+     "This package provides RTL-SDR devices support to the SoapySDR library.")
+    (license license:expat)))
+
 (define-public chirp
   (package
     (name "chirp")
