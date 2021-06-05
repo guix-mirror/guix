@@ -12121,13 +12121,13 @@ objects from the @code{graph} package.")
 (define-public r-fithic
   (package
     (name "r-fithic")
-    (version "1.16.0")
+    (version "1.18.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "FitHiC" version))
               (sha256
                (base32
-                "1sdfkqc6s7m9whkzr0mllzzfjzhj2g54ncjwxj8q0azjgszrfwd2"))))
+                "1p8a6lis5yswaj647bjw89harlarnsxmvjzz63fn1l6gxrwhh8bx"))))
     (properties `((upstream-name . "FitHiC")))
     (build-system r-build-system)
     (propagated-inputs
