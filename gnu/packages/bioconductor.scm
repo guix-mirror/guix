@@ -11541,14 +11541,14 @@ rownames.")
 (define-public r-bioconcotk
   (package
     (name "r-bioconcotk")
-    (version "1.10.0")
+    (version "1.12.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "BiocOncoTK" version))
        (sha256
         (base32
-         "1jwp0gww2xyx8qfv5h4y0v3g66mmlyrd1v64xn91si4fsymk4108"))))
+         "0y396lx2mh9izb07lz83j35wydfj808ihc74jlgras03a3g335p2"))))
     (properties `((upstream-name . "BiocOncoTK")))
     (build-system r-build-system)
     (propagated-inputs
