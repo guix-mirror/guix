@@ -21335,7 +21335,7 @@ files are easily readable and they work nicely with version control systems.")
 (define-public emacs-all-the-icons
   (package
     (name "emacs-all-the-icons")
-    (version "4.0.1")
+    (version "5.0.0")
     (source
      (origin
        (method git-fetch)
@@ -21344,7 +21344,7 @@ files are easily readable and they work nicely with version control systems.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0yh7gnv9xfqn8q4rzaa6wpyn9575vyfxy7d3afly2mqsb367fgm5"))))
+        (base32 "0lwgvgnqf7vihglm0c5bwsxbl4x7f641289cji5s7jwy2dbsqk7g"))))
     (build-system emacs-build-system)
     (arguments
      `(#:include '("\\.el$" "^data/" "^fonts/")
