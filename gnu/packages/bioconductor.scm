@@ -2876,13 +2876,13 @@ high-throughput sequencing experiments.")
 (define-public r-geneoverlap
   (package
     (name "r-geneoverlap")
-    (version "1.26.0")
+    (version "1.28.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "GeneOverlap" version))
               (sha256
                (base32
-                "0bvh00n4fx0h1m83bypib3jvln1ihcv77ywrrn9xm20y73gymhkh"))))
+                "1kfw3h68rvbafhklds6sfmviwv91nms8wk0ywzkjg5h3mmgxbsv9"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-rcolorbrewer" ,r-rcolorbrewer)
