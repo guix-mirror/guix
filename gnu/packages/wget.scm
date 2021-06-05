@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
-;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -39,6 +39,7 @@
   #:use-module (gnu packages xdisorg)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu))
 
 (define-public wget
@@ -80,11 +81,13 @@ in downloaded documents to relative links.")
     (version "2.30")
     (source
       (origin
-        (method url-fetch)
-        (uri (string-append "https://wgetpaste.zlin.dk/wgetpaste-"
-                            version ".tar.bz2"))
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/zlin/wgetpaste")
+              (commit version)))
+        (file-name (git-file-name name version))
         (sha256
-         (base32 "14k5i6j6f34hcf9gdb9cnvfwscn0ys2dgd73ci421wj9zzqkbv73"))
+         (base32 "0fhm0qxdsm4k1m24z4bbb7mdv1x1iaqzgsnwkax6vb8bx9yd1ysi"))
         (patches (search-patches "wgetpaste-update-bpaste.patch"))))
     (build-system gnu-build-system)
     (arguments
