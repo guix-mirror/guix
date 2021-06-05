@@ -553,7 +553,7 @@ to access different radio hardware.")
        ("doxygen" ,doxygen)
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)
-       ("texlive" ,(texlive-union (list texlive-amsfonts
+       ("texlive" ,(texlive-union (list texlive-amsfonts/patched
                                         texlive-latex-amsmath
                                         ;; TODO: Add newunicodechar.
                                         texlive-latex-graphics)))))
