@@ -3986,13 +3986,13 @@ tab-delimited (tabix) files.")
 (define-public r-rtracklayer
   (package
     (name "r-rtracklayer")
-    (version "1.50.0")
+    (version "1.52.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "rtracklayer" version))
               (sha256
                (base32
-                "12zimhpdzjyzd81wrzz5hdbzvlgzcs22x1nnaf2jq4cba3ch5px8"))))
+                "0iic0g0clsjd9ypdmfs6k52hrnmfszhxzg0xx89nszpasf69wghv"))))
     (build-system r-build-system)
     (arguments
      `(#:phases
@@ -4002,20 +4002,21 @@ tab-delimited (tabix) files.")
              (substitute* "DESCRIPTION"
                ((" zlibbioc,") ""))
              (substitute* "NAMESPACE"
-               (("import\\(zlibbioc\\)") ""))
-             #t)))))
+               (("import\\(zlibbioc\\)") "")))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("zlib" ,zlib)))
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocio" ,r-biocio)
        ("r-biostrings" ,r-biostrings)
        ("r-genomeinfodb" ,r-genomeinfodb)
        ("r-genomicalignments" ,r-genomicalignments)
        ("r-genomicranges" ,r-genomicranges)
        ("r-iranges" ,r-iranges)
        ("r-rcurl" ,r-rcurl)
+       ("r-restfulr" ,r-restfulr)
        ("r-rsamtools" ,r-rsamtools)
        ("r-s4vectors" ,r-s4vectors)
        ("r-xml" ,r-xml)
