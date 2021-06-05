@@ -1297,7 +1297,8 @@ their position, altitude, speed, etc.")
     (inputs
      `(("libusb" ,libusb)
        ("openssl" ,openssl)
-       ("rtl-sdr" ,rtl-sdr)))
+       ("rtl-sdr" ,rtl-sdr)
+       ("soapysdr" ,soapysdr)))
     (synopsis "Decoder for radio transmissions in ISM bands")
     (description
      "This is a generic data receiver, mainly for decoding radio transmissions
