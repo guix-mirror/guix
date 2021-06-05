@@ -3006,13 +3006,13 @@ alignments.")
 (define-public r-genomicfeatures
   (package
     (name "r-genomicfeatures")
-    (version "1.42.3")
+    (version "1.44.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "GenomicFeatures" version))
               (sha256
                (base32
-                "168cf261vmcqffbzassavkjyz9a2af0l6zbv9cagkx6b1qrk3siz"))))
+                "0y7lnvfcfrs72xbkn67xcqyz9csl5696mr2zl425fkhmnmimm4fg"))))
     (properties
      `((upstream-name . "GenomicFeatures")))
     (build-system r-build-system)
@@ -3020,6 +3020,7 @@ alignments.")
      `(("r-annotationdbi" ,r-annotationdbi)
        ("r-biobase" ,r-biobase)
        ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocio" ,r-biocio)
        ("r-biomart" ,r-biomart)
        ("r-biostrings" ,r-biostrings)
        ("r-dbi" ,r-dbi)
