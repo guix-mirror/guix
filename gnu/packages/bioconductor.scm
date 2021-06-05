@@ -4430,13 +4430,13 @@ of gene-level counts.")
 (define-public r-variantannotation
   (package
     (name "r-variantannotation")
-    (version "1.36.0")
+    (version "1.38.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "VariantAnnotation" version))
               (sha256
                (base32
-                "1sl0l6v05lfglj281nszma0h5k234md7rn2pdah8vs2d4iq3kimw"))))
+                "0c9r00j8a3bs6n0dv4wi17jc1ljzvr3r2bi4h9axhcsf2ip906rh"))))
     (properties
      `((upstream-name . "VariantAnnotation")))
     (propagated-inputs
