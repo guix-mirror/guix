@@ -26,6 +26,7 @@
  (entry (commit "bdc298ecee15283451d3aa20a849dd7bb22c8538")
         (title
          (en "New @command{guix import egg} command")
+         (de "Neuer Befehl @command{guix import egg}")
          (zh "新的 @command{guix import egg} 命令"))
         (body
          (en "The new @command{guix import egg} command allows packagers to
@@ -37,9 +38,19 @@ guix import egg sourcehut
 @end example
 
 Run @command{info \"(guix) Invoking guix import\"} for more info.")
+         (de "Mit dem neuen Befehl @command{guix import egg} können
+Paketautoren eine Paketdefinition oder eine Vorlage dafür anhand des Namens
+eines „Egg“-Pakets für CHICKEN erzeugen, etwa so:
+
+@example
+guix import egg sourcehut
+@end example
+
+Führen Sie @command{info \"(guix.de) Aufruf von guix import\"} aus, um mehr
+Informationen zu bekommen.")
          (zh "新的 @command{guix import egg} 命令能让贡献者从一个CHICKEN egg生
 成一个包装或包装样板。
-
+x
 @example
 guix import egg sourcehut
 @end example
