@@ -139,7 +139,8 @@ useful in modems implemented with @dfn{digital signal processing} (DSP).")
      `(("autoconf" ,autoconf)))
     (inputs
      `(("fftw" ,fftw)
-       ("fftwf" ,fftwf)))
+       ("fftwf" ,fftwf)
+       ("libfec" ,libfec)))
     (home-page "https://liquidsdr.org")
     (synopsis "Signal processing library for software-defined radios")
     (description
