@@ -24359,7 +24359,7 @@ and article extracts for Wikipedia.")
 (define-public emacs-webfeeder
   (package
   (name "emacs-webfeeder")
-  (version "1.1.1")
+  (version "1.1.2")
   (source
     (origin
       (method url-fetch)
@@ -24369,7 +24369,7 @@ and article extracts for Wikipedia.")
              ".tar"))
       (sha256
         (base32
-          "09caj12hfdfhlbcsmjyhw728w1f7yq13hdslh793yvfqv83ipvc4"))))
+          "1l128q424qsq9jv2wk8cv4zli71rk34q5kgwa9axdz0d27p9l6v4"))))
   (build-system emacs-build-system)
   (home-page "https://gitlab.com/Ambrevar/emacs-webfeeder")
   (synopsis "Build RSS and Atom webfeeds from HTML files")
