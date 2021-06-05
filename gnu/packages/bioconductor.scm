@@ -1442,17 +1442,15 @@ biological sequences.")
 (define-public r-deepsnv
   (package
     (name "r-deepsnv")
-    (version "1.36.0")
+    (version "1.38.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "deepSNV" version))
               (sha256
                (base32
-                "1lbvx9liql8fkb4y020kwpgp61vzg67cy640dc4kybglcw9dx6j0"))))
+                "0zz56hf417m7bgg2g2wpbaik30pi6h2nam1n5bviqgdn4mv8n0bs"))))
     (properties `((upstream-name . "deepSNV")))
     (build-system r-build-system)
-    (inputs
-     `(("zlib" ,zlib)))
     (propagated-inputs
      `(("r-biostrings" ,r-biostrings)
        ("r-genomicranges" ,r-genomicranges)
@@ -1461,6 +1459,8 @@ biological sequences.")
        ("r-summarizedexperiment" ,r-summarizedexperiment)
        ("r-variantannotation" ,r-variantannotation)
        ("r-vgam" ,r-vgam)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/gerstung-lab/deepSNV/")
     (synopsis "Detection of subclonal SNVs in deep sequencing data")
     (description
