@@ -4318,14 +4318,14 @@ unmodeled, or latent sources of noise.")
 (define-public r-systempiper
   (package
     (name "r-systempiper")
-    (version "1.24.6")
+    (version "1.26.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "systemPipeR" version))
        (sha256
         (base32
-         "05qnn105gm423fka4kb84vpgzjmz1py6mxpfa2agwwmc5v012qbp"))))
+         "1apqi5ih06s37v7wpp13ybksiinrwj0ii6mx6vvvfkb6ix0wljws"))))
     (properties `((upstream-name . "systemPipeR")))
     (build-system r-build-system)
     (propagated-inputs
@@ -4351,6 +4351,7 @@ unmodeled, or latent sources of noise.")
        ("r-shortread" ,r-shortread)
        ("r-stringr" ,r-stringr)
        ("r-summarizedexperiment" ,r-summarizedexperiment)
+       ("r-testthat" ,r-testthat)
        ("r-yaml" ,r-yaml)
        ("r-variantannotation" ,r-variantannotation)))
     (native-inputs
