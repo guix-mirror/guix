@@ -3596,14 +3596,14 @@ information tool.")
 (define-public nnn
   (package
     (name "nnn")
-    (version "4.0")
+    (version "4.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/jarun/nnn/releases/download/v"
                            version "/nnn-v" version ".tar.gz"))
        (sha256
-        (base32 "0m07nh1cdfikn4bkpni29j61hr9jdwbl0n5fmlm53l1xmn7yq6d2"))))
+        (base32 "1fnf35s3b2nfp18s712n5vhg6idx4rfgwdfv74nc2933v9l2dq7h"))))
     (build-system gnu-build-system)
     (inputs
      `(("ncurses" ,ncurses)
