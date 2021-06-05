@@ -8962,14 +8962,14 @@ index.")
 (define-public r-quasr
   (package
     (name "r-quasr")
-    (version "1.30.0")
+    (version "1.32.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "QuasR" version))
        (sha256
         (base32
-         "032m01q34nnmvbhcb2g3pz2fqmgcw5464m74m1m0h7x9bl04a5k8"))))
+         "1635ff11ahzjrh3cdcxrq5bgd100n444k7mc0maz0jx21vj8qqb1"))))
     (properties `((upstream-name . "QuasR")))
     (build-system r-build-system)
     (propagated-inputs
@@ -8981,13 +8981,11 @@ index.")
        ("r-biostrings" ,r-biostrings)
        ("r-bsgenome" ,r-bsgenome)
        ("r-genomeinfodb" ,r-genomeinfodb)
-       ("r-genomicalignments" ,r-genomicalignments)
        ("r-genomicfeatures" ,r-genomicfeatures)
        ("r-genomicfiles" ,r-genomicfiles)
        ("r-genomicranges" ,r-genomicranges)
        ("r-iranges" ,r-iranges)
        ("r-rbowtie" ,r-rbowtie)
-       ("r-rhisat2" ,r-rhisat2)
        ("r-rhtslib" ,r-rhtslib)
        ("r-rsamtools" ,r-rsamtools)
        ("r-rtracklayer" ,r-rtracklayer)
