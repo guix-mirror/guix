@@ -1751,14 +1751,14 @@ analysis.")
 (define-public r-affycomp
   (package
     (name "r-affycomp")
-    (version "1.66.0")
+    (version "1.68.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "affycomp" version))
        (sha256
         (base32
-         "106gz4rami04r0ffc7rxkrv92s3yrcnlqnyykd5s8lrkndbihrpk"))))
+         "07my5scdh6h0y1bx1h9y5m4fa8bnmw389f83gkb7cf19w4vp36b2"))))
     (properties `((upstream-name . "affycomp")))
     (build-system r-build-system)
     (propagated-inputs `(("r-biobase" ,r-biobase)))
