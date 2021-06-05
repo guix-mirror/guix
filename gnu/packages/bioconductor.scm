@@ -4710,13 +4710,13 @@ integration with @code{Rcpp}.")
 (define-public r-apeglm
   (package
    (name "r-apeglm")
-   (version "1.12.0")
+   (version "1.14.0")
    (source (origin
             (method url-fetch)
             (uri (bioconductor-uri "apeglm" version))
             (sha256
              (base32
-              "0pix1fhxk2q89p2745fgsmxwics9rf10l392qhw3rw6v6ynhims2"))))
+              "1xld6ar440achik4dbd7vhiw6jfj0sb96jm52n7hav5bv4gag3mh"))))
    (properties `((upstream-name . "apeglm")))
    (build-system r-build-system)
    (propagated-inputs
