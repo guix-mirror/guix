@@ -7236,19 +7236,20 @@ profiles (GO and KEGG) of gene and gene clusters.")
 (define-public r-clusterexperiment
   (package
     (name "r-clusterexperiment")
-    (version "2.10.1")
+    (version "2.12.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "clusterExperiment" version))
               (sha256
                (base32
-                "04n3lcm7dh07sjkzyv83m55mx3lz0lkcy8yq9hi0zywqyrhyzz7z"))))
+                "1fhmayciwn1m124b4dcs3gzbghgk9f7a7qmjnvvxc958cywcwkx5"))))
     (build-system r-build-system)
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (propagated-inputs
      `(("r-ape" ,r-ape)
        ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocsingular" ,r-biocsingular)
        ("r-cluster" ,r-cluster)
        ("r-delayedarray" ,r-delayedarray)
        ("r-edger" ,r-edger)
@@ -7265,7 +7266,6 @@ profiles (GO and KEGG) of gene and gene clusters.")
        ("r-pracma" ,r-pracma)
        ("r-rcolorbrewer" ,r-rcolorbrewer)
        ("r-rcpp" ,r-rcpp)
-       ("r-rspectra" ,r-rspectra)
        ("r-s4vectors" ,r-s4vectors)
        ("r-scales" ,r-scales)
        ("r-singlecellexperiment" ,r-singlecellexperiment)
