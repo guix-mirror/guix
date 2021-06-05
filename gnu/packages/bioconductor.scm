@@ -6878,23 +6878,23 @@ published results; and a routine for graphical display.")
 (define-public r-tradeseq
   (package
    (name "r-tradeseq")
-   (version "1.4.0")
+   (version "1.6.0")
    (source (origin
             (method url-fetch)
             (uri (bioconductor-uri "tradeSeq" version))
             (sha256
              (base32
-              "1ncmvn9kaksismvsjs042xsp8bfq1xnm0ds87dwpk95bnpj96a89"))))
+              "0fgmb309pvqf3chdhqgbd4lzhahcj5g71sica33nzn98qhipldx7"))))
    (build-system r-build-system)
    (propagated-inputs
     `(("r-biobase" ,r-biobase)
       ("r-biocparallel" ,r-biocparallel)
-      ("r-clusterexperiment" ,r-clusterexperiment)
-      ("r-dplyr" ,r-dplyr)
       ("r-edger" ,r-edger)
       ("r-ggplot2" ,r-ggplot2)
       ("r-igraph" ,r-igraph)
       ("r-magrittr" ,r-magrittr)
+      ("r-matrix" ,r-matrix)
+      ("r-matrixstats" ,r-matrixstats)
       ("r-mgcv" ,r-mgcv)
       ("r-monocle" ,r-monocle)
       ("r-pbapply" ,r-pbapply)
@@ -6904,7 +6904,8 @@ published results; and a routine for graphical display.")
       ("r-singlecellexperiment" ,r-singlecellexperiment)
       ("r-slingshot" ,r-slingshot)
       ("r-summarizedexperiment" ,r-summarizedexperiment)
-      ("r-tibble" ,r-tibble)))
+      ("r-tibble" ,r-tibble)
+      ("r-viridis" ,r-viridis)))
    (native-inputs
     `(("r-knitr" ,r-knitr)))
    (home-page "https://statomics.github.io/tradeSeq/index.html")
