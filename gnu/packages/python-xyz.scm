@@ -5203,7 +5203,7 @@ color scales, and color space conversion easy.  It has support for:
                                         texlive-fonts-ec
                                         texlive-generic-ifxetex
                                         texlive-generic-pdftex
-                                        texlive-amsfonts
+                                        texlive-amsfonts/patched
                                         texlive-latex-capt-of
                                         texlive-latex-cmap
                                         texlive-latex-environ
