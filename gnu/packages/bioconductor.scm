@@ -7199,14 +7199,14 @@ All the visualization methods are developed based on ggplot2 graphics.")
 (define-public r-clusterprofiler
   (package
     (name "r-clusterprofiler")
-    (version "3.18.1")
+    (version "4.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "clusterProfiler" version))
        (sha256
         (base32
-         "04v1xsxfxxy8rdjfswv4crpzkx9592r2sh3cjh1kb54sd4lyb6si"))))
+         "1lmrb6ddpx1p3kdrwszhxq6nndmbiqipzrclk64mnp63y7g50q56"))))
     (properties
      `((upstream-name . "clusterProfiler")))
     (build-system r-build-system)
