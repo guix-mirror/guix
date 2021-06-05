@@ -5349,14 +5349,14 @@ experiments.")
 (define-public r-genomicinteractions
   (package
     (name "r-genomicinteractions")
-    (version "1.24.0")
+    (version "1.26.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "GenomicInteractions" version))
        (sha256
         (base32
-         "0ad0a5cadchx1rkqj4cc8k0y1zf34jgp1406hvik5zabr7xijkbd"))))
+         "0zjl7rp5fk14kqsx0bkbpq6hqahbkiyvwa9aggp4kfb8hnmz9qal"))))
     (properties
      `((upstream-name . "GenomicInteractions")))
     (build-system r-build-system)
