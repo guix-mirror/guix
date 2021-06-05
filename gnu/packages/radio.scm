@@ -138,8 +138,7 @@ useful in modems implemented with @dfn{digital signal processing} (DSP).")
     (native-inputs
      `(("autoconf" ,autoconf)))
     (inputs
-     `(("fftw" ,fftw)
-       ("fftwf" ,fftwf)
+     `(("fftwf" ,fftwf)
        ("libfec" ,libfec)))
     (arguments
      `(#:phases
