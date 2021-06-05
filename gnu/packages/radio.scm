@@ -258,6 +258,35 @@ To install the airspyhf udev rules, you must extend @code{udev-service-type}
 with this package.  E.g.: @code{(udev-rules-service 'airspyhf airspyhf)}")
     (license license:bsd-3)))
 
+(define-public soapysdr
+  (package
+    (name "soapysdr")
+    (version "0.8.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/pothosware/SoapySDR")
+             (commit (string-append "soapy-sdr-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1dy25zxk7wmg7ik82dx7h3bbbynvalbz1dxsl7kgm3374yxhnixv"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("python" ,python)
+       ("swig" ,swig)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "SOAPY_SDR_PLUGIN_PATH")
+            (files (list (string-append "lib/SoapySDR/modules"
+                                        (version-major+minor version)))))))
+    (home-page "https://github.com/pothosware/SoapySDR/wiki")
+    (synopsis "Vendor and platform neutral SDR support library")
+    (description
+     "SoapySDR is a library designed to support several kinds of software
+defined radio hardware devices with a common API.")
+    (license license:boost1.0)))
+
 (define-public chirp
   (package
     (name "chirp")
