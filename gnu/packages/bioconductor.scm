@@ -3437,14 +3437,14 @@ in SNV base substitution data.")
 (define-public r-msnbase
   (package
     (name "r-msnbase")
-    (version "2.16.1")
+    (version "2.18.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "MSnbase" version))
        (sha256
         (base32
-         "0hxzs9zzljywqxr7q388hshpy1pdryhl0zkwffqbxpf5pcf92d3h"))))
+         "1z7s17j6zgb70m0khyf9icqlnbnzlivca7vw7j0vxyw417ld9lkr"))))
     (properties `((upstream-name . "MSnbase")))
     (build-system r-build-system)
     (propagated-inputs
@@ -3459,11 +3459,11 @@ in SNV base substitution data.")
        ("r-lattice" ,r-lattice)
        ("r-maldiquant" ,r-maldiquant)
        ("r-mass" ,r-mass)
+       ("r-mscoreutils" ,r-mscoreutils)
        ("r-mzid" ,r-mzid)
        ("r-mzr" ,r-mzr)
        ("r-pcamethods" ,r-pcamethods)
        ("r-plyr" ,r-plyr)
-       ("r-preprocesscore" ,r-preprocesscore)
        ("r-protgenerics" ,r-protgenerics)
        ("r-rcpp" ,r-rcpp)
        ("r-s4vectors" ,r-s4vectors)
