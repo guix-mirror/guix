@@ -2380,7 +2380,7 @@ that block port 22.")
 (define-public iperf
   (package
     (name "iperf")
-    (version "3.10")
+    (version "3.10.1")
     (source
      (origin
        (method git-fetch)
@@ -2389,7 +2389,7 @@ that block port 22.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "102wcyl4j7c7lj7z87b5xlhj1ark88v4f3q9pmmljw8ksn2w1m2g"))))
+        (base32 "0svkrmxki6ckn2a8xysh5x0bw68mqnvl3w64j6d45fxs97dca2vq"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
