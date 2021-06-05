@@ -3053,6 +3053,7 @@ memoized as a function of '%current-system'."
   (package
     (inherit expat)
     (inputs (%boot0-inputs))
+    (outputs '("out"))
     (arguments
      ;; XXX: Linking 'runtestscpp' fails with things like:
      ;;
@@ -3067,6 +3068,7 @@ memoized as a function of '%current-system'."
             ;; Since we're not passing the right -Wl,-rpath flags, build the
             ;; static library to avoid RUNPATH validation failure.
             `(cons "--disable-shared" ,flags))
+           ((#:phases phases) '%standard-phases)
            ((#:tests? _ #f) #f))))))
 
 (define python-boot0

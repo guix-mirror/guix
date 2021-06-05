@@ -135,7 +135,19 @@ the entire document.")
                   "0spvyb9d3hijs4ys3x64cfmilsynl8kv6clfahv8d4lvp86js0yg")))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags '("--disable-static")))
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'install 'move-static-library
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out    (assoc-ref outputs "out"))
+                            (static (assoc-ref outputs "static")))
+                        (mkdir-p (string-append static "/lib"))
+                        (link (string-append out "/lib/libexpat.a")
+                              (string-append static "/lib/libexpat.a"))
+                        (delete-file (string-append out "/lib/libexpat.a"))
+                        (substitute* (string-append out "/lib/libexpat.la")
+                          (("old_library=.*")
+                           "old_library=''"))))))))
+    (outputs '("out" "static"))
     (home-page "https://libexpat.github.io/")
     (synopsis "Stream-oriented XML parser library written in C")
     (description
