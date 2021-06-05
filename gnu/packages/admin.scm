@@ -3637,7 +3637,7 @@ make it a perfect utility on modern distros.")
 (define-public thermald
   (package
     (name "thermald")
-    (version "2.4.4")
+    (version "2.4.5")
     (source
      (origin
       (method git-fetch)
@@ -3646,7 +3646,7 @@ make it a perfect utility on modern distros.")
              (commit (string-append "v" version))))
       (file-name (git-file-name name version))
       (sha256
-       (base32 "1k0r2c13fihjndwfh0byw0i8ni4lzsjgwz874pvpj1l1nvjj0ajx"))))
+       (base32 "1y8s0cpjm01bz4isp3ksvnrbhpp3phivdhsb0w2kxhv09sfxkc5g"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
