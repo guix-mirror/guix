@@ -4540,13 +4540,13 @@ and specific in detecting differential transcription.")
 (define-public r-zlibbioc
   (package
     (name "r-zlibbioc")
-    (version "1.36.0")
+    (version "1.38.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "zlibbioc" version))
               (sha256
                (base32
-                "0m36ddss0znvm19dhnxcclxjhgjplw8ajk8v419h20ab8an6khxg"))))
+                "1dv5bf12kzk1yzyfs3g5syim16sbi44kalvzj2i2xcnxnl6x60ip"))))
     (properties
      `((upstream-name . "zlibbioc")))
     (build-system r-build-system)
