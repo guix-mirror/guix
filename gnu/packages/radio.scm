@@ -141,6 +141,13 @@ useful in modems implemented with @dfn{digital signal processing} (DSP).")
      `(("fftw" ,fftw)
        ("fftwf" ,fftwf)
        ("libfec" ,libfec)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'delete-static-library
+           (lambda* (#:key outputs #:allow-other-keys)
+             (delete-file (string-append (assoc-ref outputs "out")
+                                         "/lib/libliquid.a")))))))
     (home-page "https://liquidsdr.org")
     (synopsis "Signal processing library for software-defined radios")
     (description
