@@ -8938,6 +8938,35 @@ refactoring for the @uref{http://clojure.org, Clojure programming language}.
 It is recommended to use @code{clojure-mode} with Paredit or Smartparens.")
     (license license:gpl3+)))
 
+(define-public emacs-clojure-snippets
+  ;; Use latest commit (2018) since latest tagged release is too old and is
+  ;; missing important changes.
+  (let ((version "1.0.1")
+        (revision "0")
+        (commit "6068dca90467a0f4ebc2cd39338a173d6f5ddc04"))
+    (package
+      (name "emacs-clojure-snippets")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/mpenet/clojure-snippets")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0vvadcydpsz4b17dlm1jd4fbddzfqibh3mlzv3k4gvp67vv10cqy"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:include (cons* "^.*\\/" %default-include)))
+      (propagated-inputs
+       `(("emacs-yasnippet" ,emacs-yasnippet)))
+      (home-page "https://github.com/mpenet/clojure-snippets")
+      (synopsis "Yasnippets for Clojure")
+      (description
+       "This package provides Yasnippets snippets for Clojure.")
+      (license license:gpl3+))))
+
 (define-public emacs-epl
   (package
     (name "emacs-epl")
@@ -28359,3 +28388,4 @@ to the https://multitran.com online dictionary.")
      "Kibit Helper provides functions to work with the Kibit Leiningen plugin
 for detecting and improve non-idiomatic Clojure source code.")
     (license license:gpl3+)))
+
