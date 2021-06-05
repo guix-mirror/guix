@@ -3732,13 +3732,13 @@ the graph algorithms contained in the Boost library.")
 (define-public r-rcas
   (package
     (name "r-rcas")
-    (version "1.16.0")
+    (version "1.18.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "RCAS" version))
               (sha256
                (base32
-                "0vdxml618vqvf8xyh0zxs307p9zby0cj9dqyiiz625ilyq1hkw2m"))))
+                "0l92v870ndna8zjqwzf22fb9vyhkh6942v4gaiqr1yc4qr521p5p"))))
     (properties `((upstream-name . "RCAS")))
     (build-system r-build-system)
     (propagated-inputs
@@ -3757,6 +3757,7 @@ the graph algorithms contained in the Boost library.")
        ("r-ggseqlogo" ,r-ggseqlogo)
        ("r-gprofiler2" ,r-gprofiler2)
        ("r-iranges" ,r-iranges)
+       ("r-knitr" ,r-knitr)
        ("r-pbapply" ,r-pbapply)
        ("r-pheatmap" ,r-pheatmap)
        ("r-plotly" ,r-plotly)
