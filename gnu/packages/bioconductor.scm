@@ -11615,14 +11615,14 @@ gene selection, testing relationships, and so on.")
 (define-public r-biocpkgtools
   (package
     (name "r-biocpkgtools")
-    (version "1.8.2")
+    (version "1.10.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "BiocPkgTools" version))
        (sha256
         (base32
-         "18m816mh1ic0znp38wax8xppai77lkym3w84x4x30x2mf0vriqfw"))))
+         "18a9mbzfmkipnv1cc9h3rhn9jxdp7nzywp0bz7hvmsaffv4p4skc"))))
     (properties `((upstream-name . "BiocPkgTools")))
     (build-system r-build-system)
     (propagated-inputs
@@ -11639,7 +11639,6 @@ gene selection, testing relationships, and so on.")
        ("r-igraph" ,r-igraph)
        ("r-jsonlite" ,r-jsonlite)
        ("r-magrittr" ,r-magrittr)
-       ("r-rappdirs" ,r-rappdirs)
        ("r-rbgl" ,r-rbgl)
        ("r-readr" ,r-readr)
        ("r-rex" ,r-rex)
