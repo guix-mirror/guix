@@ -3660,13 +3660,7 @@ make it a perfect utility on modern distros.")
        (modify-phases %standard-phases
          (add-before 'bootstrap 'no-early-./configure
            (lambda _
-             (setenv "NO_CONFIGURE" "yet")
-             ;; XXX thd_trip_point.h redefines "__STDC_LIMIT_MACROS" after
-             ;; <xz>/include/lzma.h.  ./configure forcibly appends -Werror
-             ;; to CXXFLAGS, overriding any -Wno-error we'd add.
-             (substitute* "configure.ac"
-               (("-Werror") ""))
-             #t)))))
+             (setenv "NO_CONFIGURE" "yet"))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("autoconf-archive" ,autoconf-archive)
