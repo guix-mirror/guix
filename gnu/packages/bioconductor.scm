@@ -2451,14 +2451,14 @@ experiments.")
 (define-public r-complexheatmap
   (package
     (name "r-complexheatmap")
-    (version "2.6.2")
+    (version "2.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ComplexHeatmap" version))
        (sha256
         (base32
-         "1nx1xxpq8zrvi990v9fmvx3msl85pdz5dp1gp6m78q6i4s2alg5x"))))
+         "0jl96msj1njdrvngg68s50vmphvhi2lfwlv34x07pcdzgkjjs41f"))))
     (properties
      `((upstream-name . "ComplexHeatmap")))
     (build-system r-build-system)
@@ -2468,13 +2468,14 @@ experiments.")
        ("r-clue" ,r-clue)
        ("r-colorspace" ,r-colorspace)
        ("r-digest" ,r-digest)
+       ("r-doparallel" ,r-doparallel)
+       ("r-foreach" ,r-foreach)
        ("r-getoptlong" ,r-getoptlong)
        ("r-globaloptions" ,r-globaloptions)
        ("r-iranges" ,r-iranges)
        ("r-matrixstats" ,r-matrixstats)
        ("r-png" ,r-png)
-       ("r-rcolorbrewer" ,r-rcolorbrewer)
-       ("r-s4vectors" ,r-s4vectors)))
+       ("r-rcolorbrewer" ,r-rcolorbrewer)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (home-page
