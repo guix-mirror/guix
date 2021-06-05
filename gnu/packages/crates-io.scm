@@ -23661,6 +23661,24 @@ for Rust structs.")
        (sha256
         (base32 "13ir50j549gdz94pds1i7ljnk14d66q5x91s11hncm1pih7jif8c"))))))
 
+(define-public rust-merge-derive-0.1
+  (package
+    (name "rust-merge-derive")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "merge_derive" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "01wxhi7mqmp34l540wcfb24hb13vcbps4wlynas66bnsfra0g790"))))
+    (build-system cargo-build-system)
+    (home-page "https://sr.ht/~ireas/merge-rs")
+    (synopsis "Derive macro for the merge crate")
+    (description "This crate provides a derive macro for the
+@code{merge::Merge} crate.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-merlin-2
   (package
     (name "rust-merlin")
