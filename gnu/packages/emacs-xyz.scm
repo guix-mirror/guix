@@ -8967,6 +8967,31 @@ It is recommended to use @code{clojure-mode} with Paredit or Smartparens.")
        "This package provides Yasnippets snippets for Clojure.")
       (license license:gpl3+))))
 
+(define-public emacs-anakondo
+  ;; This particular commit introduces bug fixes above latest release.
+  (let ((version "0.2.1")
+        (revision "0")
+        (commit "c48518560815c49d8d78fb9069906d17e883385e"))
+    (package
+      (name "emacs-anakondo")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/didibus/anakondo")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1fzsqd150gpmrj8kz3zy9cd78x9vank7ra720mljhyf04z0h1mj6"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/didibus/anakondo")
+      (synopsis "clj-kondo based Clojure[Script] editing facilities")
+      (description
+       "This package makes use of clj-kondo's analysis data to provide code
+editing facilities related to Clojure, ClojureScript and cljc source.")
+      (license license:expat))))
+
 (define-public emacs-epl
   (package
     (name "emacs-epl")
