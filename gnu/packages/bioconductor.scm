@@ -7162,20 +7162,21 @@ data.")
 (define-public r-enrichplot
   (package
     (name "r-enrichplot")
-    (version "1.10.2")
+    (version "1.12.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "enrichplot" version))
        (sha256
         (base32
-         "0lm5yapd567jxcnz9m4a623aymf3q00svjrxp3rf0r9j77dgyisv"))))
+         "0nvjwwzpmhsfkxqrn8v1a1wcrvr3xl1wn5dy89vsrdydyv31gdc6"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cowplot" ,r-cowplot)
        ("r-dose" ,r-dose)
        ("r-ggplot2" ,r-ggplot2)
        ("r-ggraph" ,r-ggraph)
+       ("r-ggtree" ,r-ggtree)
        ("r-gosemsim" ,r-gosemsim)
        ("r-igraph" ,r-igraph)
        ("r-magrittr" ,r-magrittr)
