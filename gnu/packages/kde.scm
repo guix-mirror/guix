@@ -619,14 +619,14 @@ used in KDE development tools Kompare and KDevelop.")
 (define-public qca
   (package
     (name "qca")
-    (version "2.3.2")
+    (version "2.3.3")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "mirror://kde/stable/qca/" version
                             "/qca-" version ".tar.xz"))
         (sha256
-         (base32 "0vb0kwm4vpf71vczadg6h1ib09sgca0crll7ksbkmg646w1615s6"))))
+         (base32 "0rvvf97la95lah67jcj0p06n4br0pc2mri0q1hn4x522hndqybjn"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
