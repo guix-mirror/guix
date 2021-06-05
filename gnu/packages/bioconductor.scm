@@ -4584,14 +4584,14 @@ libraries for systems that do not have these available via other means.")
 (define-public r-oligoclasses
   (package
     (name "r-oligoclasses")
-    (version "1.52.0")
+    (version "1.54.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "oligoClasses" version))
        (sha256
         (base32
-         "19p6h0cgnma5md5mm9bn6rxfhr0a9znljgdbvsqybms6asvh18gy"))))
+         "1nsfyfpj264h6y322pzz0i001b0m862j3skbq5rjwlrj1p8j2gi7"))))
     (properties `((upstream-name . "oligoClasses")))
     (build-system r-build-system)
     (propagated-inputs
