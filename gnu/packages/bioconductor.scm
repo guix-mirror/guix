@@ -7324,14 +7324,14 @@ data in R and Bioconductor containers.")
 (define-public r-annaffy
   (package
     (name "r-annaffy")
-    (version "1.62.0")
+    (version "1.63.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "annaffy" version))
        (sha256
         (base32
-         "1szlr33lq98pd3kx6n9l07lhr93swbk6vjpvb2n9f7716k39mi4i"))))
+         "071qr68dn8k3mvwgpllbk2a4g6f6yyv2087q5rmpb22lkfvi4hwv"))))
     (build-system r-build-system)
     (arguments
      `(#:phases
@@ -7339,11 +7339,11 @@ data in R and Bioconductor containers.")
          (add-after 'unpack 'remove-reference-to-non-free-data
            (lambda _
              (substitute* "DESCRIPTION"
-               ((", KEGG.db") ""))
-             #t)))))
+               ((", KEGG.db") "")))))))
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
        ("r-biobase" ,r-biobase)
+       ("r-biocmanager" ,r-biocmanager)
        ("r-dbi" ,r-dbi)
        ("r-go-db" ,r-go-db)))
     (home-page "https://bioconductor.org/packages/annaffy/")
