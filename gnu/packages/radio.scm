@@ -94,6 +94,34 @@
   #:use-module (guix build-system python)
   #:use-module (guix build-system qt))
 
+(define-public libfec
+  ;; Use commit to get compilation fixes that are not in a release yet.
+  (let ((commit "9750ca0a6d0a786b506e44692776b541f90daa91")
+        (revision "1"))
+    (package
+      (name "libfec")
+      (version (git-version "1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/quiet/libfec")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0i6jhrdswr1wglyb9h39idpz5v9z13yhidvlbj34vxpyngrkhlvs"))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")
+         #:test-target "test_all"))
+      (home-page "https://github.com/quiet/libfec")
+      (synopsis "Forward error correction algorithms library")
+      (description
+       "This package provides a set of functions that implement several popular
+@dfn{forward error correction} (FEC) algorithms and several low-level routines
+useful in modems implemented with @dfn{digital signal processing} (DSP).")
+      (license license:lgpl2.1))))
+
 (define-public liquid-dsp
   (package
     (name "liquid-dsp")
