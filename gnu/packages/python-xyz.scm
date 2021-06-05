@@ -24844,7 +24844,7 @@ By default it uses the open Python vulnerability database Safety DB.")
     (propagated-inputs
      `(("wheel" ,python-wheel)))
     (native-inputs
-     `(("texlive" ,(texlive-union (list texlive-amsfonts
+     `(("texlive" ,(texlive-union (list texlive-amsfonts/patched
                                         texlive-fonts-ec
                                         texlive-latex-hyperref
                                         texlive-latex-oberdiek
