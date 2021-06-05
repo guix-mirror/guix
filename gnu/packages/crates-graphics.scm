@@ -33,6 +33,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (gnu packages)
+  #:use-module (gnu packages assembly)
   #:use-module (gnu packages crates-io)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages llvm)
@@ -2030,20 +2031,22 @@ where libaom (the reference encoder) is too slow.")
         (base32 "1gyc7w1fz3qdk95cdpkj185dm6lskxfp329xm69waxc565fcz9rx"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-avif-serialize" ,rust-avif-serialize-0.6)
         ("rust-imgref" ,rust-imgref-1)
         ("rust-loop9" ,rust-loop9-0.1)
         ("rust-num-cpus" ,rust-num-cpus-1)
-        ("rust-rav1e" ,rust-rav1e-0.4)
+        ("rav1e" ,rav1e)
         ("rust-rayon" ,rust-rayon-1)
-        ("rust-rgb" ,rust-rgb-0.8))))
+        ("rust-rgb" ,rust-rgb-0.8))
+       #:cargo-development-inputs
+       (("rust-avif-parse" ,rust-avif-parse-0.13))))
+    (native-inputs
+     `(("nasm" ,nasm)))                 ;for building rav1e
     (home-page "https://lib.rs/ravif")
     (synopsis "Library for encoding images in AVIF format")
-    (description
-     "This package is a rav1e-based pure Rust library for encoding images in
-AVIF format.")
+    (description "This package is a rav1e-based pure Rust library for encoding
+images in AVIF format.")
     (license license:bsd-3)))
 
 (define-public rust-raw-window-handle-0.3
