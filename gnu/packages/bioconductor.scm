@@ -9909,24 +9909,29 @@ data, to only emphasize the data that actually matters.")
 (define-public r-rcistarget
   (package
     (name "r-rcistarget")
-    (version "1.10.0")
+    (version "1.12.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "RcisTarget" version))
        (sha256
         (base32
-         "0a711jzxl1kggpk3ln68xzc5y30my4nbs1mxx8951pyi3jvzjfyf"))))
+         "1yh0l11vnslgr6zsbpgc8mc4aa32zy34f5yrz98hkcdl53iw5y7f"))))
     (properties `((upstream-name . "RcisTarget")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-aucell" ,r-aucell)
+     `(("r-arrow" ,r-arrow)
+       ("r-aucell" ,r-aucell)
        ("r-biocgenerics" ,r-biocgenerics)
        ("r-data-table" ,r-data-table)
+       ("r-dplyr" ,r-dplyr)
        ("r-feather" ,r-feather)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicranges" ,r-genomicranges)
        ("r-gseabase" ,r-gseabase)
        ("r-r-utils" ,r-r-utils)
-       ("r-summarizedexperiment" ,r-summarizedexperiment)))
+       ("r-summarizedexperiment" ,r-summarizedexperiment)
+       ("r-tibble" ,r-tibble)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (home-page "https://aertslab.org/#scenic")
