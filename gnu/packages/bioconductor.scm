@@ -12367,14 +12367,14 @@ advanced visualization of sets of conserved noncoding elements.")
 (define-public r-tfbstools
   (package
     (name "r-tfbstools")
-    (version "1.28.0")
+    (version "1.30.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "TFBSTools" version))
        (sha256
         (base32
-         "0p42hnwhipmcvrsqk3s8qfiian1fvh6izfd9m961bsx99r2clnha"))))
+         "1avgjv2nyr28cla0z9dvh3v0hr1f561sz2as1k53a42irbjk0var"))))
     (properties `((upstream-name . "TFBSTools")))
     (build-system r-build-system)
     (propagated-inputs
