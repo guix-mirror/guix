@@ -77,14 +77,14 @@
 (define-public dash
   (package
     (name "dash")
-    (version "0.5.11.3")
+    (version "0.5.11.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://gondor.apana.org.au/~herbert/dash/files/"
                            "dash-" version ".tar.gz"))
        (sha256
-        (base32 "0amwphfal2rnfa63f7qd4i9m4ckv0gm3j6jlxkmfi9x6ddkz3fb2"))
+        (base32 "13g06zqfy4n7jkrbb5l1vw0xcnjvq76i16al8fjc5g33afxbf5af"))
        (modules '((guix build utils)))
        (snippet
         '(begin
