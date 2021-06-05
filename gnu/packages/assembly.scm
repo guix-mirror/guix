@@ -58,14 +58,14 @@
 (define-public nasm
   (package
     (name "nasm")
-    (version "2.14.02")
+    (version "2.15.05")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.nasm.us/pub/nasm/releasebuilds/"
                                   version "/nasm-" version ".tar.xz"))
               (sha256
                (base32
-                "1xg8dfr49py15vbwk1rzcjc3zpqydmr49ahlijm56wlgj8zdwjp2"))))
+                "0gqand86b0r86k3h46dh560lykxmxqqywz5m55kgjfq7q4lngbrw"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)  ;for doc and test target
                      ("texinfo" ,texinfo)))
@@ -76,11 +76,10 @@
          (add-after 'unpack 'dont-build-ps-pdf-outputs
            (lambda _
              (substitute* "doc/Makefile.in"
-               (("html nasmdoc.txt nasmdoc.pdf")
+               (("html nasmdoc.txt nasmdoc.pdf \\$\\(XZFILES\\)")
                 "html nasmdoc.txt")
                (("\\$\\(INSTALL_DATA\\) nasmdoc.pdf")
-                "$(INSTALL_DATA)"))
-             #t))
+                "$(INSTALL_DATA)"))))
          (add-after 'install 'install-info
            (lambda _
              (invoke "make" "install_doc"))))))
