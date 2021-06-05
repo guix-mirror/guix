@@ -9143,14 +9143,14 @@ packages.")
 (define-public r-ropls
   (package
     (name "r-ropls")
-    (version "1.22.0")
+    (version "1.24.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ropls" version))
        (sha256
         (base32
-         "1h76s89hsafrkshpkx7vjinfni9lzfpnbfyg3fhkkrwpp1fnwyj5"))))
+         "1j99kdywyljqzdcns5ysh590w4w8iiwzpddpfk5c8d4whax7vk5b"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biobase" ,r-biobase)
