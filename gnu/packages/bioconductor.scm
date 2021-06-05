@@ -12413,14 +12413,14 @@ provides a wrapper of de novo motif discovery software.")
 (define-public r-motifmatchr
   (package
     (name "r-motifmatchr")
-    (version "1.12.0")
+    (version "1.14.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "motifmatchr" version))
        (sha256
         (base32
-         "0zrpn0hqdg0hm80ydkfpiqncwyb8y0xp6mlin7g955p8zcpcm67z"))))
+         "1vif3dp4lv4jz1pxsq0ig791ir8q65jmrlqmkyfxpfxfj5alqnbm"))))
     (properties `((upstream-name . "motifmatchr")))
     (build-system r-build-system)
     (propagated-inputs
