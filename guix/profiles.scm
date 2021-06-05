@@ -1812,12 +1812,10 @@ are cross-built for TARGET."
                                    (mapm/accumulate-builds (lambda (hook)
                                                              (hook manifest))
                                                            hooks))))
-    (define inputs
-      (append (filter-map (lambda (drv)
-                            (and (derivation? drv)
-                                 (gexp-input drv)))
-                          extras)
-              (manifest-inputs manifest)))
+    (define extra-inputs
+      (filter-map (lambda (drv)
+                    (and (derivation? drv) (gexp-input drv)))
+                  extras))
 
     (define glibc-utf8-locales                    ;lazy reference
       (module-ref (resolve-interface '(gnu packages base))
@@ -1851,20 +1849,11 @@ are cross-built for TARGET."
 
             #+(if locales? set-utf8-locale #t)
 
-            (define search-paths
-              ;; Search paths of MANIFEST's packages, converted back to their
-              ;; record form.
-              (map sexp->search-path-specification
-                   (delete-duplicates
-                    '#$(map search-path-specification->sexp
-                            (manifest-search-paths manifest)))))
-
-            (build-profile #$output '#$inputs
+            (build-profile #$output '#$(manifest->gexp manifest)
+                           #:extra-inputs '#$extra-inputs
                            #:symlink #$(if relative-symlinks?
                                            #~symlink-relative
-                                           #~symlink)
-                           #:manifest '#$(manifest->gexp manifest)
-                           #:search-paths search-paths))))
+                                           #~symlink)))))
 
     (gexp->derivation name builder
                       #:system system
