@@ -12600,20 +12600,19 @@ quality control.")
 (define-public r-scran
   (package
     (name "r-scran")
-    (version "1.18.7")
+    (version "1.20.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "scran" version))
        (sha256
         (base32
-         "0hsr58b7xj2cqdkyjdpzyifg5wrl1lbylq2h91zbjh5861qjv2n4"))))
+         "0ilzp6ngw9pq88gk79iic2zxfh5jaic6lnq3xfwc9a269bjylff0"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-beachmat" ,r-beachmat)
        ("r-bh" ,r-bh)
        ("r-biocgenerics" ,r-biocgenerics)
-       ("r-biocneighbors" ,r-biocneighbors)
        ("r-biocparallel" ,r-biocparallel)
        ("r-biocsingular" ,r-biocsingular)
        ("r-bluster" ,r-bluster)
@@ -12624,6 +12623,7 @@ quality control.")
        ("r-igraph" ,r-igraph)
        ("r-limma" ,r-limma)
        ("r-matrix" ,r-matrix)
+       ("r-metapod" ,r-metapod)
        ("r-rcpp" ,r-rcpp)
        ("r-s4vectors" ,r-s4vectors)
        ("r-scuttle" ,r-scuttle)
