@@ -1478,13 +1478,13 @@ bases such as COSMIC.")
 (define-public r-delayedarray
   (package
     (name "r-delayedarray")
-    (version "0.16.3")
+    (version "0.18.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "DelayedArray" version))
               (sha256
                (base32
-                "0w1wppy6m2iv41852dscg3y19sq84ahdx3m7c2p2pxjcznmv6hys"))))
+                "0w632262dqzcnvq9s6jvc7naz93dayx51fsv05s0zb6cjwygbqjr"))))
     (properties
      `((upstream-name . "DelayedArray")))
     (build-system r-build-system)
