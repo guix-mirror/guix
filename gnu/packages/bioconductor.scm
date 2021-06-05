@@ -1541,13 +1541,13 @@ and evaluate clustering results.")
 (define-public r-ideoviz
   (package
     (name "r-ideoviz")
-    (version "1.26.0")
+    (version "1.28.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "IdeoViz" version))
               (sha256
                (base32
-                "1k5c0skr6pvpcvkak9f0a088w5wsx4fl3jb9a76gyyni4nkj7djq"))))
+                "17sx0v5lq2zmg098ps4ksj1h0yla3vlh6s2w1ahqsq0nvm193scm"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biobase" ,r-biobase)
