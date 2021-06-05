@@ -653,6 +653,7 @@ environment.")
          ("python-numpy" ,python-numpy)
          ("python-pyqt" ,python-pyqt)
          ("rtl-sdr" ,rtl-sdr)
+         ("soapysdr" ,soapysdr)
          ("volk" ,volk)))
       (arguments
        `(#:modules ((guix build cmake-build-system)
