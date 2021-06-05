@@ -378,13 +378,17 @@ used to apply commands with arbitrarily long arguments.")
                        (("/bin/sh") (which "sh")))
                      (substitute* (find-files "tests" "\\.sh$")
                        (("#!/bin/sh") (string-append "#!" (which "sh"))))))
-                 ,@(if (hurd-target?)
-                       `((add-after 'unpack 'remove-tests
-                           (lambda _
-                             (substitute* "Makefile.in"
+                 (add-after 'unpack 'remove-tests
+                   (lambda _
+                     ,@(if (hurd-target?)
+                           '((substitute* "Makefile.in"
                                ;; this test hangs
-                               (("^ *tests/misc/timeout-group.sh.*") "")))))
-                       '()))))
+                               (("^ *tests/misc/timeout-group.sh.*") "")))
+                           '())
+                     (substitute* "Makefile.in"
+                       ;; fails on filesystems where inotify cannot be used,
+                       ;; more info in #47935
+                       (("^ *tests/tail-2/inotify-dir-recreate.sh.*") "")))))))
    (synopsis "Core GNU utilities (file, text, shell)")
    (description
     "GNU Coreutils package includes all of the basic command-line tools that
