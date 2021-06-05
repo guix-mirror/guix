@@ -4842,29 +4842,29 @@ processing to visualization and annotation.")
 (define-public r-mbkmeans
   (package
     (name "r-mbkmeans")
-    (version "1.6.1")
+    (version "1.8.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "mbkmeans" version))
               (sha256
                (base32
-                "0rc83mh9xzwczfn88j0xah86ldzi1kdfqgd938nj57ifx3zci4xh"))))
+                "1k7ngpx4s50jplrsv19zzjr7izpdl9wwppb218ih5cp0ki1gcc2n"))))
     (build-system r-build-system)
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (propagated-inputs
-     `(("r-delayedarray" ,r-delayedarray)
+     `(("r-beachmat" ,r-beachmat)
+       ("r-benchmarkme" ,r-benchmarkme)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-clusterr" ,r-clusterr)
+       ("r-delayedarray" ,r-delayedarray)
+       ("r-matrix" ,r-matrix)
        ("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)
+       ("r-rhdf5lib" ,r-rhdf5lib)
        ("r-s4vectors" ,r-s4vectors)
        ("r-singlecellexperiment" ,r-singlecellexperiment)
-       ("r-summarizedexperiment" ,r-summarizedexperiment)
-       ("r-clusterr" ,r-clusterr)
-       ("r-benchmarkme" ,r-benchmarkme)
-       ("r-matrix" ,r-matrix)
-       ("r-bluster" ,r-bluster)
-       ("r-beachmat" ,r-beachmat)
-       ("r-rhdf5lib" ,r-rhdf5lib)
-       ("r-biocparallel" ,r-biocparallel)))
+       ("r-summarizedexperiment" ,r-summarizedexperiment)))
     (home-page "https://bioconductor.org/packages/mbkmeans")
     (synopsis "Mini-batch k-means clustering for single-cell RNA-seq")
     (description "This package implements the mini-batch k-means algorithm for
