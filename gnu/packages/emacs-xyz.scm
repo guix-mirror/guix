@@ -1503,6 +1503,31 @@ different tools.  It highlights errors and warnings inline in the buffer, and
 provides an optional IDE-like error list.")
       (license license:gpl3+))))                     ;+GFDLv1.3+ for the manual
 
+(define-public emacs-flymake-quickdef
+  ;; This particular commit includes bug fixes on top of 1.0.0 release.
+  (let ((version "1.0.0")
+        (revision "0")
+        (commit "150c5839768a3d32f988f9dc08052978a68f2ad7"))
+    (package
+      (name "emacs-flymake-quickdef")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/karlotness/flymake-quickdef")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "19gfd539l97j8xbrq1fw83b54mxbcamlz9m896088d3p01zf8b0g"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/karlotness/flymake-quickdef")
+      (synopsis "Quickly define a new Flymake backend")
+      (description
+       "This package mainly defines a macro which helps remove some of the
+boilerplate code from defining new Flymake backend functions.")
+      (license license:gpl3+))))
+
 (define-public emacs-flymake-shellcheck
   ;; No tag, version grabbed from source .el file.
   (let ((commit "ac534e9ef15c82ac86ae65fe5004d29dbc8c92c7")
