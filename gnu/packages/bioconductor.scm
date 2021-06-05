@@ -10859,14 +10859,14 @@ Affymetrix GeneChips.")
 (define-public r-bhc
   (package
     (name "r-bhc")
-    (version "1.42.0")
+    (version "1.44.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "BHC" version))
        (sha256
         (base32
-         "1n2rkbj8j10f38d40wvi6mwjxnrlfx71a48ab07bp2s0hwhxd7yn"))))
+         "0aaawm7h3ppyyhd7hi14rpynagnxx4730f5vxizj5bpzwbclp6h9"))))
     (properties `((upstream-name . "BHC")))
     (build-system r-build-system)
     (home-page "https://bioconductor.org/packages/BHC/")
