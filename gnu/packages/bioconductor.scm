@@ -1511,18 +1511,19 @@ array-like objects like @code{DataFrame} objects (typically with Rle columns),
 (define-public r-bluster
   (package
    (name "r-bluster")
-   (version "1.0.0")
+   (version "1.2.1")
    (source (origin
             (method url-fetch)
             (uri (bioconductor-uri "bluster" version))
             (sha256
              (base32
-              "0izrf82m5znyrgai5y5jss4k2brabh4ajxdvnlwwc92l5bw7jp61"))))
+              "128zd5vwlhmrkq0bpp1dxnkrcqfz1mjmdjlla4wqbjv7v6yyn6lg"))))
    (properties `((upstream-name . "bluster")))
    (build-system r-build-system)
    (propagated-inputs
     `(("r-biocneighbors" ,r-biocneighbors)
       ("r-biocparallel" ,r-biocparallel)
+      ("r-cluster" ,r-cluster)
       ("r-igraph" ,r-igraph)
       ("r-matrix" ,r-matrix)
       ("r-rcpp" ,r-rcpp)
