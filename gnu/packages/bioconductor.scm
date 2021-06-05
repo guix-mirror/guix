@@ -12889,14 +12889,14 @@ standards, ii) single-cell deconvolution, and iii) bead-based compensation.")
 (define-public r-erma
   (package
     (name "r-erma")
-    (version "1.6.0")
+    (version "1.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "erma" version))
        (sha256
         (base32
-         "1k2j1xhv0vwn45xmh8ds0gz812px5hnpgzvp37ngsdn4j5ai1l0k"))))
+         "02a9702sasgighwb0f9ii8n30ngfx1hjnppaay1f5zsigr8vqalz"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
