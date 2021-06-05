@@ -6426,14 +6426,14 @@ distributions.")
 (define-public r-scone
   (package
     (name "r-scone")
-    (version "1.14.0")
+    (version "1.16.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "scone" version))
        (sha256
         (base32
-         "1lnyxcrw3kn5gi3n59dwdhkqps58cjxfknsjsj53qz5rv8iiqz73"))))
+         "1wlky6nkdpz8fya81l6zaxlxc30wyp2gkyh94y5995jwddll38z5"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-aroma-light" ,r-aroma-light)
@@ -6448,12 +6448,14 @@ distributions.")
        ("r-gplots" ,r-gplots)
        ("r-hexbin" ,r-hexbin)
        ("r-limma" ,r-limma)
+       ("r-matrixgenerics" ,r-matrixgenerics)
        ("r-matrixstats" ,r-matrixstats)
        ("r-mixtools" ,r-mixtools)
        ("r-rarpack" ,r-rarpack)
        ("r-rcolorbrewer" ,r-rcolorbrewer)
        ("r-rhdf5" ,r-rhdf5)
        ("r-ruvseq" ,r-ruvseq)
+       ("r-singlecellexperiment" ,r-singlecellexperiment)
        ("r-summarizedexperiment" ,r-summarizedexperiment)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
