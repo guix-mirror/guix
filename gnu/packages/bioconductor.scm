@@ -7073,14 +7073,14 @@ the data set is suitable for such analysis.")
 (define-public r-sigpathway
   (package
     (name "r-sigpathway")
-    (version "1.58.0")
+    (version "1.60.0")
     (source
       (origin
         (method url-fetch)
         (uri (bioconductor-uri "sigPathway" version))
         (sha256
           (base32
-            "1fkw0ss471pllqxyjyif5lr35cr8sqpx31x0ccjp85lm3blws72l"))))
+            "1xz5nbw5dzyah8az7mpwj8m27fsvpi2jjhfg3n27dsv8rvdncqi8"))))
     (properties `((upstream-name . "sigPathway")))
     (build-system r-build-system)
     (home-page "https://www.pnas.org/cgi/doi/10.1073/pnas.0506577102")
