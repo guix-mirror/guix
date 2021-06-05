@@ -10,6 +10,7 @@
 ;;; Copyright © 2020 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Antoine Côté <antoine.cote@posteo.net>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -268,6 +269,38 @@ to draw lines and colored text and then write them to the terminal.  It uses
 the term library to handle the ANSI nonsense and hence it works on Windows,
 Mac, and Unix.")
     (license (list license:asl2.0 license:expat))))
+
+(define-public rust-avif-parse-0.13
+  (package
+    (name "rust-avif-parse")
+    (version "0.13.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "avif-parse" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1vylrjq77mpl6flmd85j5f2qimh6vjn03syvq8agb62x56khm0xj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bitreader" ,rust-bitreader-0.3)
+        ("rust-byteorder" ,rust-byteorder-1)
+        ("rust-fallible-collections" ,rust-fallible-collections-0.4)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-static-assertions" ,rust-static-assertions-1))
+       #:cargo-development-inputs
+       (("rust-env-logger" ,rust-env-logger-0.8)
+        ("rust-walkdir" ,rust-walkdir-2))))
+    (home-page "https://github.com/kornelski/avif-parse")
+    (synopsis "Parser for AVIF image files")
+    (description "This AVIF parser allows extracting the AV1 payload and alpha
+channel metadata out of AVIF image files.  The parser is a fork of Mozilla's
+MP4 parser used in Firefox, so it's designed to be robust and safely handle
+untrusted data.")
+    (license license:mpl2.0)))
 
 (define-public rust-avif-serialize-0.6
   (package
