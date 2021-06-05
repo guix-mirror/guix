@@ -1613,6 +1613,17 @@ convert and stream audio and video.  It includes the libavcodec
 audio/video codec library.")
     (license license:gpl2+)))
 
+(define-public ffmpeg-4.3
+  (package/inherit ffmpeg
+    (version "4.3.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "1nyd9jlcy0pqnwzi29a7sg50hq37vb0g3f9l16y3q8yh3m7ydr26"))))))
+
 (define-public ffmpeg-3.4
   (package
     (inherit ffmpeg)
