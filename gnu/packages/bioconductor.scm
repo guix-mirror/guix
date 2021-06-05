@@ -7282,14 +7282,14 @@ expression data sets.")
 (define-public r-mlinterfaces
   (package
     (name "r-mlinterfaces")
-    (version "1.70.0")
+    (version "1.72.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "MLInterfaces" version))
        (sha256
         (base32
-         "1j920h1657rc5agd1vrkzk126npfhw7pzr7p7gwg4i0h0wv25q3r"))))
+         "0ipzv7wdvfqhdyjiak956qq201igsdxm6dr6rh3dj6cssgsrnrpb"))))
     (properties `((upstream-name . "MLInterfaces")))
     (build-system r-build-system)
     (propagated-inputs
@@ -7303,6 +7303,7 @@ expression data sets.")
        ("r-genefilter" ,r-genefilter)
        ("r-ggvis" ,r-ggvis)
        ("r-hwriter" ,r-hwriter)
+       ("r-magrittr" ,r-magrittr)
        ("r-mass" ,r-mass)
        ("r-mlbench" ,r-mlbench)
        ("r-pls" ,r-pls)
