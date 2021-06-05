@@ -12140,27 +12140,16 @@ provided.")
 (define-public r-hdf5array
   (package
     (name "r-hdf5array")
-    (version "1.18.1")
+    (version "1.20.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "HDF5Array" version))
        (sha256
         (base32
-         "14v2adhwi0yac834g23kvfid740raclhmribzd28k10gsjk9cj7g"))))
+         "1718hplz5qlbwxwb87509bl7lir9kilvn1s7p2haz551pg48zvrc"))))
     (properties `((upstream-name . "HDF5Array")))
     (build-system r-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-linking
-           (lambda _
-             (substitute* "src/Makevars"
-               ;; This is to avoid having a plain directory on the list of
-               ;; libraries to link.
-               (("\\(RHDF5LIB_LIBS\\)" match)
-                (string-append match "/libhdf5.a")))
-             #t)))))
     (inputs
      `(("zlib" ,zlib)))
     (propagated-inputs
@@ -12169,6 +12158,7 @@ provided.")
        ("r-iranges" ,r-iranges)
        ("r-matrix" ,r-matrix)
        ("r-rhdf5" ,r-rhdf5)
+       ("r-rhdf5filters" ,r-rhdf5filters)
        ("r-rhdf5lib" ,r-rhdf5lib)
        ("r-s4vectors" ,r-s4vectors)))
     (home-page "https://bioconductor.org/packages/HDF5Array")
