@@ -4494,7 +4494,9 @@ create smoother and stable videos.")
        ("unittest++" ,unittest-cpp)))
     (propagated-inputs                  ;all referenced in installed headers
      `(("cppzmq" ,cppzmq)
-       ("ffmpeg" ,ffmpeg)
+       ;; libopenshot doesn't yet build with ffmpeg 4.4 (see:
+       ;; https://github.com/OpenShot/libopenshot/issues/676).
+       ("ffmpeg" ,ffmpeg-4.3)
        ("imagemagick" ,imagemagick)
        ("jsoncpp" ,jsoncpp)
        ("libopenshot-audio" ,libopenshot-audio)
