@@ -106,11 +106,9 @@ in downloaded documents to relative links.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin"))
-                    (zsh (string-append out "/share/zsh/site-functions"))
-                    (doc (string-append out "/share/doc/" ,name "-" ,version)))
+                    (zsh (string-append out "/share/zsh/site-functions")))
                (install-file "wgetpaste" bin)
                (install-file "_wgetpaste" zsh)
-               (install-file "LICENSE" doc)
                #t)))
          (add-after 'install 'wrap-program
            ;; /bin/wgetpaste prides itself on relying only on the following
