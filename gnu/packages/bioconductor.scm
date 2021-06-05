@@ -10698,14 +10698,14 @@ data.")
 (define-public r-universalmotif
   (package
     (name "r-universalmotif")
-    (version "1.8.5")
+    (version "1.10.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "universalmotif" version))
        (sha256
         (base32
-         "07862bs771xldmdnq0zr8926dr299ach8nrgci14p5bbrc88l3ly"))))
+         "1hwp7802r4pr7yafzir9afqaim9l0vznglm35b0gxaca8k7a3jvy"))))
     (properties
      `((upstream-name . "universalmotif")))
     (build-system r-build-system)
@@ -10720,12 +10720,10 @@ data.")
      `(("r-biocgenerics" ,r-biocgenerics)
        ("r-biostrings" ,r-biostrings)
        ("r-ggplot2" ,r-ggplot2)
-       ("r-ggseqlogo" ,r-ggseqlogo)
        ("r-iranges" ,r-iranges)
        ("r-mass" ,r-mass)
        ("r-rcpp" ,r-rcpp)
        ("r-rcppthread" ,r-rcppthread)
-       ("r-rdpack" ,r-rdpack)
        ("r-rlang" ,r-rlang)
        ("r-s4vectors" ,r-s4vectors)
        ("r-yaml" ,r-yaml)))
