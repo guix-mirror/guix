@@ -24,6 +24,7 @@
 
 (define-module (gnu packages nss)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module ((guix licenses) #:prefix license:)
@@ -31,8 +32,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages perl)
-  #:use-module (gnu packages sqlite)
-  #:use-module (ice-9 match))
+  #:use-module (gnu packages sqlite))
 
 (define-public nspr
   (package
@@ -121,13 +121,11 @@ in the Mozilla clients.")
        (modify-phases %standard-phases
          (replace 'configure
            (lambda _
-             (setenv "CC" "gcc")
+             (setenv "CC" ,(cc-for-target))
              ;; Tells NSS to build for the 64-bit ABI if we are 64-bit system.
-             ,@(match (%current-system)
-                 ((or "x86_64-linux" "aarch64-linux")
-                  `((setenv "USE_64" "1")))
-                 (_
-                  '()))))
+             ,@(if (target-64bit?)
+                   `((setenv "USE_64" "1"))
+                   '())))
          (replace 'check
            (lambda* (#:key tests? #:allow-other-keys)
              (if tests?
