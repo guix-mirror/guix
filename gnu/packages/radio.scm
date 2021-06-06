@@ -1947,6 +1947,7 @@ voice formats.")
        ("qtwebsockets" ,qtwebsockets)
        ("rtl-sdr" ,rtl-sdr)
        ("serialdv" ,serialdv)
+       ("soapysdr" ,soapysdr)
        ("sgp4" ,sgp4)
        ("zlib" ,zlib)))
     (arguments
@@ -1963,7 +1964,9 @@ voice formats.")
              (string-append "-DSERIALDV_DIR="
                             (assoc-ref %build-inputs "serialdv"))
              (string-append "-DSGP4_DIR="
-                            (assoc-ref %build-inputs "sgp4")))))
+                            (assoc-ref %build-inputs "sgp4"))
+             (string-append "-DSOAPYSDR_DIR="
+                            (assoc-ref %build-inputs "soapysdr")))))
     (home-page "https://github.com/f4exb/sdrangel/wiki")
     (synopsis "Software defined radio")
     (description
