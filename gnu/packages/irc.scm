@@ -7,7 +7,7 @@
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
-;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2021 WinterHound <winterhound@yandex.com>
@@ -35,8 +35,8 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (guix build-system cmake)
-  #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (guix build-system qt)
   #:use-module (gnu packages)
@@ -74,6 +74,7 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages regex)
   #:use-module (gnu packages ruby)
+  #:use-module (gnu packages sphinx)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages tcl)
@@ -241,7 +242,7 @@ using a mouse.  It is customizable and extensible with plugins and scripts.")
 (define-public srain
   (package
     (name "srain")
-    (version "1.1.3")
+    (version "1.2.2")
     (source
      (origin
        (method git-fetch)
@@ -250,22 +251,17 @@ using a mouse.  It is customizable and extensible with plugins and scripts.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1vqjjsxzc4601dpc8lf9k25rp2c7sjab7l5a6cbfygpr8dqvm6vq"))))
+        (base32 "04bgfyrl5swppsqmhzmjnnj2q7844k99f3894ank8v8fr3y6x78p"))))
+    (build-system meson-build-system)
     (arguments
      `(#:tests? #f ;there are no tests
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'install 'fix-permissions
-           ;; Make po folder writable for gettext to install translations.
-           (lambda _
-             (for-each make-file-writable
-                       (find-files "po" "." #:directories? #t)))))))
-    (build-system glib-or-gtk-build-system)
+       #:glib-or-gtk? #t))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")
        ("pkg-config" ,pkg-config)
-       ("python" ,python-wrapper)))
+       ("python" ,python-wrapper)
+       ("python-sphinx" ,python-sphinx)))
     (inputs
      `(("glib-networking" ,glib-networking)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
