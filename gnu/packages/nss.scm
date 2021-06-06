@@ -174,7 +174,9 @@ in the Mozilla clients.")
                  (copy-recursively (string-append obj "/bin") bin)
                  (copy-recursively (string-append obj "/lib") lib)))))))
       (inputs
-       `(("sqlite" ,sqlite)
+       `(;; XXX: Build with SQLite 3.33 to work around
+         ;; https://bugzilla.mozilla.org/show_bug.cgi?id=1714874
+         ("sqlite" ,sqlite-3.33)
          ("zlib" ,zlib)))
       (propagated-inputs `(("nspr" ,nspr))) ; required by nss.pc.
       (native-inputs `(("perl" ,perl)

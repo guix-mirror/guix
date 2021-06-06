@@ -6,7 +6,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -45,23 +45,26 @@
 ;;; This module has been separated from (gnu packages databases) to reduce the
 ;;; number of module references for core packages.
 
+(define (sqlite-uri version year)
+  (let ((numeric-version
+         (match (string-split version #\.)
+           ((first-digit other-digits ...)
+            (string-append first-digit
+                           (string-pad-right
+                            (string-concatenate
+                             (map (cut string-pad <> 2 #\0)
+                                  other-digits))
+                            6 #\0))))))
+    (string-append "https://sqlite.org/" (number->string year)
+                   "/sqlite-autoconf-" numeric-version ".tar.gz")))
+
 (define-public sqlite
   (package
    (name "sqlite")
    (version "3.35.5")
    (source (origin
             (method url-fetch)
-            (uri (let ((numeric-version
-                        (match (string-split version #\.)
-                          ((first-digit other-digits ...)
-                           (string-append first-digit
-                                          (string-pad-right
-                                           (string-concatenate
-                                            (map (cut string-pad <> 2 #\0)
-                                                 other-digits))
-                                           6 #\0))))))
-                   (string-append "https://sqlite.org/2021/sqlite-autoconf-"
-                                  numeric-version ".tar.gz")))
+            (uri (sqlite-uri version 2021))
             (patches (search-patches "sqlite-hurd.patch"))
             (sha256
              (base32
@@ -105,6 +108,17 @@ zero-configuration, transactional SQL database engine.  SQLite is the most
 widely deployed SQL database engine in the world.  The source code for SQLite
 is in the public domain.")
    (license license:public-domain)))
+
+(define-public sqlite-3.33
+  (package
+    (inherit sqlite)
+    (version "3.33.0")
+    (source (origin
+              (method url-fetch)
+              (uri (sqlite-uri version 2020))
+              (sha256
+               (base32
+                "05dvdfaxd552gj5p7k0i72sfam7lykaw1g2pfn52jnppqx42qshh"))))))
 
 ;; Column metadata support was added to the regular 'sqlite' package with
 ;; commit fad5b1a6d8d9c36bea5785ae4fbc1beb37e644d7.
