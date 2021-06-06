@@ -11922,18 +11922,35 @@ pyGenomeTracks can make plots with or without Hi-C data.")
 (define-public python-hic2cool
   (package
     (name "python-hic2cool")
-    (version "0.4.2")
+    (version "0.8.3")
+    ;; pypi sources do not contain the test_data directory and no test can be
+    ;; run
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri "hic2cool" version))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/4dn-dcic/hic2cool")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0xy6mhfns2lzib1kcr6419jjp6pmh0qx8z8na55lmiwn0ds8q9cl"))))
+         "0dlnf0qfcp4jrc1nyya32a035c13xicyq16bwfnwhbb9s47mz7gl"))))
     (build-system python-build-system)
-    (arguments '(#:tests? #f)) ; no tests included
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Two of the test-data files need to be writable.
+         (add-after 'unpack 'make-test-data-writable
+           (lambda _
+             (for-each make-file-writable
+                       (list "test_data/hic2cool_0.4.2_single_res.cool"
+                             "test_data/hic2cool_0.7.0_multi_res.mcool")))))))
     (propagated-inputs
-     `(("python-cooler" ,python-cooler)))
+     `(("python-cooler" ,python-cooler)
+       ("python-h5py" ,python-h5py)
+       ("python-numpy" ,python-numpy)
+       ("python-pandas" ,python-pandas)
+       ("python-scipy" ,python-scipy)))
     (home-page "https://github.com/4dn-dcic/hic2cool")
     (synopsis "Converter for .hic and .cool files")
     (description
