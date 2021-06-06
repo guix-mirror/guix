@@ -1058,20 +1058,7 @@ more.")
                 "0fdclvd7fcwixp0k57ccv7d159v3slasyhvndxfn8n1a9hh0lwjx"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags '("--enable-drafts")
-       #:phases (modify-phases %standard-phases
-                  (add-before 'check 'patch-tests
-                    (lambda _
-                      (substitute* "src/czmq_selftest.c"
-                        ;; Disable the zproc test, which fails on some hardware
-                        ;; (see: https://github.com/zeromq/czmq/issues/2007).
-                        (("\\{ \"zproc\", zproc_test.*")
-                         "")
-                        ;; Also disable the zarmour test, which fails as well
-                        ;; (see: https://github.com/zeromq/czmq/issues/2125).
-                        (("\\{ \"zarmour\", zarmour_test.*")
-                         ""))
-                      #t)))))
+     '(#:configure-flags '("--enable-drafts")))
     (inputs
      `(("zeromq" ,zeromq)))
     (home-page "https://zeromq.org")
