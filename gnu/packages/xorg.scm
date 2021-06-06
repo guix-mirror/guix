@@ -2555,7 +2555,8 @@ including most mice, keyboards, tablets and touchscreens.")
      "xf86-input-libinput is an input driver for the Xorg X server based
 on libinput.  It is a thin wrapper around libinput, so while it does
 provide all features that libinput supports it does little beyond.")
-    (license license:x11)))
+    (license (list license:x11          ; only install-sh
+                   license:expat))))    ; everything else
 
 (define-public xf86-input-joystick
   (package
