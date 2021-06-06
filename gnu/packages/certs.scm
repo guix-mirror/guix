@@ -92,7 +92,7 @@ that was originally contributed to Debian.")
          (add-after 'unpack 'install
            (lambda _
              (let ((certsdir (string-append %output "/etc/ssl/certs/")))
-               (with-directory-excursion "lib/ckfw/builtins/"
+               (with-directory-excursion "nss/lib/ckfw/builtins/"
                  (unless (file-exists? "blacklist.txt")
                    (call-with-output-file "blacklist.txt" (const #t)))
                  ;; Extract selected single certificates from blob.

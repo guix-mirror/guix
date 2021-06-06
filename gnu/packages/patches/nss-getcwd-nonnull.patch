@@ -4,9 +4,9 @@ the second argument should be NULL with recent glibc.  See:
 https://gcc.gnu.org/bugzilla/show_bug.cgi?id=96832
 https://sourceware.org/bugzilla/show_bug.cgi?id=26545
 
-diff --git a/coreconf/nsinstall/nsinstall.c b/coreconf/nsinstall/nsinstall.c
---- a/coreconf/nsinstall/nsinstall.c
-+++ b/coreconf/nsinstall/nsinstall.c
+diff --git a/nss/coreconf/nsinstall/nsinstall.c b/nss/coreconf/nsinstall/nsinstall.c
+--- a/nss/coreconf/nsinstall/nsinstall.c
++++ b/nss/coreconf/nsinstall/nsinstall.c
 @@ -236,14 +236,20 @@ main(int argc, char **argv)
  	return 0;
  

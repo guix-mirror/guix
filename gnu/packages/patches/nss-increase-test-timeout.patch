@@ -3,8 +3,8 @@ machine. Even a busy x86_64 machine can use more than 5s on some tests.
 
 Increase timeouts to increase chances of a successful build.
 
---- a/gtests/ssl_gtest/tls_connect.cc	2017-03-14 22:47:30.855813629 +0100
-+++ b/gtests/ssl_gtest/tls_connect.cc	2017-03-14 22:48:49.042335273 +0100
+--- a/nss/gtests/ssl_gtest/tls_connect.cc	2017-03-14 22:47:30.855813629 +0100
++++ b/nss/gtests/ssl_gtest/tls_connect.cc	2017-03-14 22:48:49.042335273 +0100
 @@ -245,7 +245,7 @@
  
    ASSERT_TRUE_WAIT((client_->state() != TlsAgent::STATE_CONNECTING) &&

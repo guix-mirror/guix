@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
@@ -25,8 +25,6 @@
 (define-module (gnu packages nss)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix git-download)
-  #:use-module (guix hg-download)
   #:use-module (guix build-system gnu)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
@@ -76,124 +74,118 @@ in the Mozilla clients.")
 ;;; Note: When updating, also test the build of the nss-certs package, which
 ;;; uses the same source as nss.
 (define-public nss
-  ;; Use the latest commit to get this fix:
-  ;; https://bugzilla.mozilla.org/show_bug.cgi?id=1686134, which caused test
-  ;; failures.  A simple patch cannot be used, as git binary diffs is not
-  ;; supported.
-  (let ((revision "1")
-        (changeset "92dcda94c1d4688edad2c094d505cd253757c0d4"))
-    (package
-      (name "nss")
-      (version (git-version "3.61" revision changeset))
-      (source (origin
-                (method hg-fetch)
-                (uri (hg-reference
-                     (url "https://hg.mozilla.org/projects/nss")
-                     (changeset changeset)))
-                (sha256
-                 (base32
-                  "0j3hnsfw1855x150zgdyf3d6wapiph80rmbvc34ykpp3j347q5hb"))
-                (file-name (git-file-name name version))
-                ;; Create nss.pc and nss-config.
-                (patches (search-patches "nss-3.56-pkgconfig.patch"
-                                         "nss-getcwd-nonnull.patch"
-                                         "nss-increase-test-timeout.patch"))
-                (modules '((guix build utils)))
-                (snippet
-                 '(begin
-                    ;; Delete the bundled copy of these libraries.
-                    (delete-file-recursively "lib/zlib")
-                    (delete-file-recursively "lib/sqlite")))))
-      (build-system gnu-build-system)
-      (outputs '("out" "bin"))
-      (arguments
-       ;; Parallel builds are not supported (see:
-       ;; https://bugzilla.mozilla.org/show_bug.cgi?id=1640328).
-       `(#:parallel-build? #f
-         #:tests? #t                   ;requires at least one hour to run
-         #:make-flags
-         (let* ((out (assoc-ref %outputs "out"))
-                (nspr (string-append (assoc-ref %build-inputs "nspr")))
-                (rpath (string-append "-Wl,-rpath=" out "/lib/nss")))
-           (list (string-append "PREFIX=" out)
-                 "NSDISTMODE=copy"
-                 "NSS_USE_SYSTEM_SQLITE=1"
-                 (string-append "NSPR_INCLUDE_DIR=" nspr "/include/nspr")
-                 ;; Add $out/lib/nss to RPATH.
-                 (string-append "RPATH=" rpath)
-                 (string-append "LDFLAGS=" rpath)))
-         #:modules ((guix build gnu-build-system)
-                    (guix build utils)
-                    (ice-9 ftw)
-                    (ice-9 match)
-                    (srfi srfi-26))
-         #:phases
-         (modify-phases %standard-phases
-           (replace 'configure
-             (lambda _
-               (setenv "CC" "gcc")
-               ;; Tells NSS to build for the 64-bit ABI if we are 64-bit system.
-               ,@(match (%current-system)
-                   ((or "x86_64-linux" "aarch64-linux")
-                    `((setenv "USE_64" "1")))
-                   (_
-                    '()))))
-           (replace 'check
-             (lambda* (#:key tests? #:allow-other-keys)
-               (when tests?
-                 ;; Use 127.0.0.1 instead of $HOST.$DOMSUF as HOSTADDR for testing.
-                 ;; The later requires a working DNS or /etc/hosts.
-                 (setenv "DOMSUF" "localdomain")
-                 (setenv "USE_IP" "TRUE")
-                 (setenv "IP_ADDRESS" "127.0.0.1")
+  (package
+    (name "nss")
+    (version "3.66")
+    (source (origin
+              (method url-fetch)
+              (uri (let ((version-with-underscores
+                          (string-join (string-split version #\.) "_")))
+                     (string-append
+                      "https://ftp.mozilla.org/pub/mozilla.org/security/nss/"
+                      "releases/NSS_" version-with-underscores "_RTM/src/"
+                      "nss-" version ".tar.gz")))
+              (sha256
+               (base32
+                "1jfdnh5l4k57r2vb07s06hqi7m2qzk0d9x25lsdsrw3cflx9x9w9"))
+              ;; Create nss.pc and nss-config.
+              (patches (search-patches "nss-3.56-pkgconfig.patch"
+                                       "nss-getcwd-nonnull.patch"
+                                       "nss-increase-test-timeout.patch"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Delete the bundled copy of these libraries.
+                  (delete-file-recursively "nss/lib/zlib")
+                  (delete-file-recursively "nss/lib/sqlite")))))
+    (build-system gnu-build-system)
+    (outputs '("out" "bin"))
+    (arguments
+     `(#:make-flags
+       (let* ((out (assoc-ref %outputs "out"))
+              (nspr (string-append (assoc-ref %build-inputs "nspr")))
+              (rpath (string-append "-Wl,-rpath=" out "/lib/nss")))
+         (list "-C" "nss" (string-append "PREFIX=" out)
+               "NSDISTMODE=copy"
+               "NSS_USE_SYSTEM_SQLITE=1"
+               (string-append "NSPR_INCLUDE_DIR=" nspr "/include/nspr")
+               ;; Add $out/lib/nss to RPATH.
+               (string-append "RPATH=" rpath)
+               (string-append "LDFLAGS=" rpath)))
+       #:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (ice-9 ftw)
+                  (ice-9 match)
+                  (srfi srfi-26))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda _
+             (setenv "CC" "gcc")
+             ;; Tells NSS to build for the 64-bit ABI if we are 64-bit system.
+             ,@(match (%current-system)
+                 ((or "x86_64-linux" "aarch64-linux")
+                  `((setenv "USE_64" "1")))
+                 (_
+                  '()))))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (if tests?
+                 (begin
+                   ;; Use 127.0.0.1 instead of $HOST.$DOMSUF as HOSTADDR for
+                   ;; testing.  The latter requires a working DNS or /etc/hosts.
+                   (setenv "DOMSUF" "localdomain")
+                   (setenv "USE_IP" "TRUE")
+                   (setenv "IP_ADDRESS" "127.0.0.1")
 
-                 ;; The "PayPalEE.cert" certificate expires every six months,
-                 ;; leading to test failures:
-                 ;; <https://bugzilla.mozilla.org/show_bug.cgi?id=609734>.  To
-                 ;; work around that, set the time to roughly the release date.
-                 (invoke "faketime" "2021-01-22" "./tests/all.sh"))))
-           (replace 'install
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (bin (string-append (assoc-ref outputs "bin") "/bin"))
-                      (inc (string-append out "/include/nss"))
-                      (lib (string-append out "/lib/nss"))
-                      (obj (match (scandir "../dist" (cut string-suffix? "OBJ" <>))
-                             ((obj) (string-append "../dist/" obj)))))
-                 ;; Install nss-config to $out/bin.
-                 (install-file (string-append obj "/bin/nss-config")
-                               (string-append out "/bin"))
-                 (delete-file (string-append obj "/bin/nss-config"))
-                 ;; Install nss.pc to $out/lib/pkgconfig.
-                 (install-file (string-append obj "/lib/pkgconfig/nss.pc")
-                               (string-append out "/lib/pkgconfig"))
-                 (delete-file (string-append obj "/lib/pkgconfig/nss.pc"))
-                 (rmdir (string-append obj "/lib/pkgconfig"))
-                 ;; Install other files.
-                 (mkdir-p inc)
-                 (copy-recursively "../dist/public/nss" inc)
-                 (copy-recursively (string-append obj "/bin") bin)
-                 (copy-recursively (string-append obj "/lib") lib)))))))
-      (inputs
-       `(;; XXX: Build with SQLite 3.33 to work around
-         ;; https://bugzilla.mozilla.org/show_bug.cgi?id=1714874
-         ("sqlite" ,sqlite-3.33)
-         ("zlib" ,zlib)))
-      (propagated-inputs `(("nspr" ,nspr))) ; required by nss.pc.
-      (native-inputs `(("perl" ,perl)
-                       ("libfaketime" ,libfaketime))) ;for tests
+                   ;; The "PayPalEE.cert" certificate expires every six months,
+                   ;; leading to test failures:
+                   ;; <https://bugzilla.mozilla.org/show_bug.cgi?id=609734>.  To
+                   ;; work around that, set the time to roughly the release date.
+                   (invoke "faketime" "2021-06-01" "./nss/tests/all.sh"))
+                 (format #t "test suite not run~%"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append (assoc-ref outputs "bin") "/bin"))
+                    (inc (string-append out "/include/nss"))
+                    (lib (string-append out "/lib/nss"))
+                    (obj (match (scandir "dist" (cut string-suffix? "OBJ" <>))
+                           ((obj) (string-append "dist/" obj)))))
+               ;; Install nss-config to $out/bin.
+               (install-file (string-append obj "/bin/nss-config")
+                             (string-append out "/bin"))
+               (delete-file (string-append obj "/bin/nss-config"))
+               ;; Install nss.pc to $out/lib/pkgconfig.
+               (install-file (string-append obj "/lib/pkgconfig/nss.pc")
+                             (string-append out "/lib/pkgconfig"))
+               (delete-file (string-append obj "/lib/pkgconfig/nss.pc"))
+               (rmdir (string-append obj "/lib/pkgconfig"))
+               ;; Install other files.
+               (copy-recursively "dist/public/nss" inc)
+               (copy-recursively (string-append obj "/bin") bin)
+               (copy-recursively (string-append obj "/lib") lib)))))))
+    (inputs
+     `(;; XXX: Build with SQLite 3.33 to work around
+       ;; https://bugzilla.mozilla.org/show_bug.cgi?id=1714874
+       ("sqlite" ,sqlite-3.33)
+       ("zlib" ,zlib)))
+    (propagated-inputs
+     `(("nspr" ,nspr)))                 ;required by nss.pc.
+    (native-inputs
+     `(("perl" ,perl)
+       ("libfaketime" ,libfaketime)))   ;for tests
 
-      ;; The NSS test suite takes around 48 hours on Loongson 3A (MIPS) when
-      ;; another build is happening concurrently on the same machine.
-      (properties '((timeout . 216000)))  ; 60 hours
+    ;; The NSS test suite takes around 48 hours on Loongson 3A (MIPS) when
+    ;; another build is happening concurrently on the same machine.
+    (properties '((timeout . 216000)))  ;60 hours
 
-      (home-page
-       "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS")
-      (synopsis "Network Security Services")
-      (description
-       "Network Security Services (@dfn{NSS}) is a set of libraries designed to
+    (home-page "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS")
+    (synopsis "Network Security Services")
+    (description
+     "Network Security Services (@dfn{NSS}) is a set of libraries designed to
 support cross-platform development of security-enabled client and server
 applications.  Applications built with NSS can support SSL v2 and v3, TLS,
 PKCS #5, PKCS #7, PKCS #11, PKCS #12, S/MIME, X.509 v3 certificates, and other
 security standards.")
-      (license license:mpl2.0))))
+    (license license:mpl2.0)))
