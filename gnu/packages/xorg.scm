@@ -3512,7 +3512,7 @@ X server.")
 (define-public xf86-video-vesa
   (package
     (name "xf86-video-vesa")
-    (version "2.4.0")
+    (version "2.5.0")
     (source
       (origin
         (method url-fetch)
@@ -3522,7 +3522,7 @@ X server.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1373vsxn6qh00na0s9c09kf09gj78rzi98zq93id8v5zsya3qi5z"))))
+            "0nf6ai74c60xk96kgr8q9mx6lrxm5id3765ws4d801irqzrj85hz"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
