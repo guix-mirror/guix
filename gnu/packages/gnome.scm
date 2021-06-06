@@ -2724,7 +2724,7 @@ and how they are displayed (View).")
 (define-public gtg
   (package
     (name "gtg")
-    (version "0.4")
+    (version "0.5")
     (source
      (origin
        (method git-fetch)
@@ -2733,7 +2733,7 @@ and how they are displayed (View).")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0r28vyr88rj3kd3cg4gj7sd29wadjchi92wzmbx67d4hlg25h8kk"))))
+        (base32 "0b2slm7kjq6q8c7v4m7aqc8m1ynjxn3bl7445srpv1xc0dilq403"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -2760,10 +2760,13 @@ and how they are displayed (View).")
        ("gtk+:bin" ,gtk+ "bin")
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+     `(("gdk-pixbuf" ,gdk-pixbuf+svg)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("gtk+" ,gtk+)
+       ("pango" ,pango)
        ("python-dbus" ,python-dbus)
        ("python-liblarch" ,python-liblarch)
+       ("python-lxml" ,python-lxml)
        ("python-pycairo" ,python-pycairo)
        ("python-pygobject" ,python-pygobject)
        ("python-pyxdg" ,python-pyxdg)))
