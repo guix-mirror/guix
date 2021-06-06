@@ -13302,6 +13302,27 @@ containing words from the Rime project.")
 shuangpin, wubi and cangjie.")
     (license license:gpl2+)))
 
+(define-public emacs-reverse-im
+  (package
+    (name "emacs-reverse-im")
+    (version "0.0.7")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/a13/reverse-im.el")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "05k2zp2hldzq5h6nl8gx79dd8lvfn507ad4x3naichdqgn2013nn"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/a13/reverse-im.el")
+    (synopsis "Reverse mapping for non-default system layouts")
+    (description
+     "Reverse IM provides a minor mode that toggles translations for all input
+methods from a given list.")
+    (license license:gpl3+)))
+
 (define-public emacs-posframe
   (package
     (name "emacs-posframe")
