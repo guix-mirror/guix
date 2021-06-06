@@ -27,6 +27,7 @@
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Jean-Baptiste Note <jean-baptiste.note@m4x.org>
 ;;; Copyright © 2021 Nicolò Balzarotti <nicolo@nixo.xyz>
+;;; Copyright © 2021 Matthew James Kraai <kraai@ftbfs.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6092,7 +6093,7 @@ to answer a question.  Xmessage can also exit after a specified time.")
 (define-public xterm
   (package
     (name "xterm")
-    (version "366")
+    (version "367")
     (source
      (origin
        (method url-fetch)
@@ -6102,7 +6103,7 @@ to answer a question.  Xmessage can also exit after a specified time.")
              (string-append "ftp://ftp.invisible-island.net/xterm/"
                             "xterm-" version ".tgz")))
        (sha256
-        (base32 "0vmzffy3hzgcgwx305h07ars5sxsq6nnl1ir4xqpxs9zjs2ji2w5"))))
+        (base32 "07y51l06n344pjyxdddq6sdvxw25nl10irl4avynkqjnqyqsiw97"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-wide-chars" "--enable-load-vt-fonts"
