@@ -66,7 +66,7 @@
 ;;; Copyright © 2019 Jacob MacDonald <jaccarmac@gmail.com>
 ;;; Copyright © 2019, 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
-;;; Copyright © 2019, 2020 Tanguy Le Carrour <tanguy@bioneland.org>
+;;; Copyright © 2019, 2020, 2021 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2019, 2021 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
 ;;; Copyright © 2020 Riku Viitanen <riku.viitanen@protonmail.com>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
@@ -20866,6 +20866,43 @@ Public Suffix List's private domains as well.")
 
 (define-public python2-tldextract
   (package-with-python2 python-tldextract))
+
+(define-public python-tldr
+  (package
+    (name "python-tldr")
+    (version "1.2.1")
+    (source
+     (origin
+       ;; There's no test in PyPI.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tldr-pages/tldr-python-client")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0n9wqvjxspm18vlxf9j9slrcydshk4rkv5nwkrqhfq606n6zvks4"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               ;; This test fails. It tries to open a network socket.
+               (invoke "pytest" "-vv" "-k" "not test_error_message")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (inputs
+     `(("python-argcomplete" ,python-argcomplete)
+       ("python-colorama" ,python-colorama)
+       ("python-termcolor" ,python-termcolor)))
+    (home-page "https://github.com/tldr-pages/tldr-python-client")
+    (synopsis "Python command-line client for tldr pages")
+    (description "This package provides the @code{tldr} command allowing users
+to view @code{tldr} pages from a shell.  The @code{tldr} pages are a community
+effort to simplify the man pages with practical examples.")
+    (license license:expat))) ; MIT license
 
 (define-public python-nodeenv
   (package
