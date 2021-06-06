@@ -198,7 +198,7 @@ editors.")
 (define-public fcitx5-gtk
   (package
     (name "fcitx5-gtk")
-    (version "5.0.3")
+    (version "5.0.7")
     (source
      (origin
        (method url-fetch)
@@ -206,7 +206,7 @@ editors.")
                            "/fcitx5-gtk/fcitx5-gtk-"
                            version ".tar.xz"))
        (sha256
-        (base32 "18bwwj9a5v82c6ssc8560hd8vwykakvg6sfijwdb5jswk9mafvgj"))))
+        (base32 "0x9xwyb3hnb2xl47jkj8zs34fhyf7gshy3bv3jxd66sfkjrscr5v"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;No test
@@ -229,6 +229,7 @@ editors.")
                   (string-append gtk2 "/lib")))))))))
     (inputs
      `(("fcitx5" ,fcitx5)
+       ("fmt" ,fmt)
        ("libxkbcommon" ,libxkbcommon)
        ("gobject-introspection" ,gobject-introspection)
        ("gtk2" ,gtk+-2)
