@@ -11717,15 +11717,39 @@ fasta subsequences.")
 (define-public python-cooler
   (package
     (name "python-cooler")
-    (version "0.8.7")
+    (version "0.8.11")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cooler" version))
        (sha256
         (base32
-         "01g6gqix9ba27sappz6nfyiwabzrlf8i5fn8kwcz8ra356cq9crp"))))
+         "1i96fmpsimj4wrx51rxn8lw2gqxf5a2pvrj5rwdd6ivnm3pmhyrn"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-tests
+           (lambda _
+             (substitute* "tests/test_create.py"
+              (("def test_roundtrip")
+                 (string-append "@pytest.mark.skip(reason=\"requires network "
+                                "access to genome.ucsc.edu\")\n"
+                                "def test_roundtrip")))
+             (substitute* "tests/test_util.py"
+              (("def test_fetch_chromsizes")
+                 (string-append "@pytest.mark.skip(reason=\"requires network "
+                                "access to genome.ucsc.edu\")\n"
+                                "def test_fetch_chromsizes")))
+             ;; This test depends on ipytree, which contains a lot of minified
+             ;; JavaScript.
+             (substitute* "tests/test_fileops.py"
+               (("def test_print_trees")
+                "def _test_print_trees"))))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "python" "-m" "pytest" "-v")))))))
     (propagated-inputs
      `(("python-asciitree" ,python-asciitree)
        ("python-biopython" ,python-biopython)
@@ -11741,11 +11765,17 @@ fasta subsequences.")
        ("python-pysam" ,python-pysam)
        ("python-pyyaml" ,python-pyyaml)
        ("python-scipy" ,python-scipy)
-       ("python-simplejson" ,python-simplejson)))
+       ("python-simplejson" ,python-simplejson)
+       ("python-six" ,python-six)
+       ("python-sparse" ,python-sparse)))
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)))
-    (home-page "https://github.com/mirnylab/cooler")
+     `(("python-codecov" ,python-codecov)
+       ("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-flake8" ,python-pytest-flake8)))
+    ;; Almost all the projects of the Mirnylab are moved under Open2C umbrella
+    (home-page "https://github.com/open2c/cooler")
     (synopsis "Sparse binary format for genomic interaction matrices")
     (description
      "Cooler is a support library for a sparse, compressed, binary persistent
