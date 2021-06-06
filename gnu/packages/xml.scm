@@ -120,35 +120,6 @@ the entire document.")
 (define-public expat
   (package
     (name "expat")
-    (replacement expat-2.4.1)
-    (version "2.3.0")
-    (source (let ((dot->underscore (lambda (c) (if (char=? #\. c) #\_ c))))
-              (origin
-                (method url-fetch)
-                (uri (list (string-append "mirror://sourceforge/expat/expat/"
-                                          version "/expat-" version ".tar.xz")
-                           (string-append
-                            "https://github.com/libexpat/libexpat/releases/download/R_"
-                            (string-map dot->underscore version)
-                            "/expat-" version ".tar.xz")))
-                (sha256
-                 (base32
-                  "1ab7fkab4wbj53xqsx2a4h5m310ak9abczjh0a2ymg73nsclz8ya")))))
-    (build-system gnu-build-system)
-    (arguments
-     '(#:configure-flags '("--disable-static")))
-    (home-page "https://libexpat.github.io/")
-    (synopsis "Stream-oriented XML parser library written in C")
-    (description
-     "Expat is an XML parser library written in C.  It is a
-stream-oriented parser in which an application registers handlers for
-things the parser might find in the XML document (like start tags).")
-    (license license:expat)))
-
-;; Replacement package to fix CVE-2013-0340.
-(define expat-2.4.1
-  (package
-    (inherit expat)
     (version "2.4.1")
     (source (let ((dot->underscore (lambda (c) (if (char=? #\. c) #\_ c))))
               (origin
@@ -161,7 +132,17 @@ things the parser might find in the XML document (like start tags).")
                             "/expat-" version ".tar.xz")))
                 (sha256
                  (base32
-                  "0spvyb9d3hijs4ys3x64cfmilsynl8kv6clfahv8d4lvp86js0yg")))))))
+                  "0spvyb9d3hijs4ys3x64cfmilsynl8kv6clfahv8d4lvp86js0yg")))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
+    (home-page "https://libexpat.github.io/")
+    (synopsis "Stream-oriented XML parser library written in C")
+    (description
+     "Expat is an XML parser library written in C.  It is a
+stream-oriented parser in which an application registers handlers for
+things the parser might find in the XML document (like start tags).")
+    (license license:expat)))
 
 (define-public libebml
   (package
