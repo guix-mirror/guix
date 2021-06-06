@@ -13572,7 +13572,7 @@ manipulations on VCF files.")
 (define-public freebayes
   (package
     (name "freebayes")
-    (version "1.3.3")
+    (version "1.3.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -13580,8 +13580,7 @@ manipulations on VCF files.")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
-               (base32 "0myz3giad7jqp6ricdfnig9ymlcps2h67mlivadvx97ngagm85z8"))
-              (patches (search-patches "freebayes-devendor-deps.patch"))
+               (base32 "1l0z88gq57kva677a6xri5g9k2d9h9lk5yk1q2xmq64wqhv7dvc3"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -13593,8 +13592,7 @@ manipulations on VCF files.")
        ("htslib" ,htslib)
        ("smithwaterman" ,smithwaterman)
        ("tabixpp" ,tabixpp)
-       ("vcflib" ,vcflib)
-       ("zlib" ,zlib)))
+       ("vcflib" ,vcflib)))
     (native-inputs
      `(("bash-tap" ,bash-tap)
        ("bc" ,bc)
@@ -13627,13 +13625,13 @@ manipulations on VCF files.")
                   (string-append bash-tap "/bin/bash-tap-bootstrap"))
                  (("source.*bash-tap-bootstrap")
                   (string-append "source " bash-tap "/bin/bash-tap-bootstrap")))
-               (substitute* "meson.build"
-                  ;; Some inputs aren't actually needed.
-                 ((".*bamtools/src.*") "")
-                 ((".*multichoose.*") ""))
                (substitute* '("src/BedReader.cpp"
                               "src/BedReader.h")
                  (("../intervaltree/IntervalTree.h") "IntervalTree.h"))
+               (substitute* "meson.build"
+                 ;; Our pkg-config file is vcflib.pc
+                 (("libvcflib") "vcflib")
+                 (("vcflib_inc,") ""))
                #t)))
          (add-after 'unpack 'unpack-submodule-sources
            (lambda* (#:key inputs #:allow-other-keys)

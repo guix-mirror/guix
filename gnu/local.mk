@@ -1019,7 +1019,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/fpc-reproducibility.patch		\
   %D%/packages/patches/fplll-std-fenv.patch     		\
   %D%/packages/patches/freedink-engine-fix-sdl-hints.patch	\
-  %D%/packages/patches/freebayes-devendor-deps.patch		\
   %D%/packages/patches/freeimage-unbundle.patch		\
   %D%/packages/patches/fuse-overlapping-headers.patch				\
   %D%/packages/patches/gajim-honour-GAJIM_PLUGIN_PATH.patch	\
