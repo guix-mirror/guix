@@ -6024,22 +6024,23 @@ described on the homepage.")
 (define-public emacs-company-irony
   (package
     (name "emacs-company-irony")
-    (version "1.1.0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/Sarcasm/company-irony")
-                    (commit (string-append "v" version))))
-              (sha256 (base32
-                       "1qgyam2vyjw90kpxns5cd6bq3qiqjhzpwrlvmi18vyb69qcgqd8a"))
-              (file-name (git-file-name name version))))
+    (version "1.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Sarcasm/company-irony")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "1d3jw0d4zymznri86a5iixyxnw16jzkkrbhrh657ys73189c1c73"))
+       (file-name (git-file-name name version))))
     (build-system emacs-build-system)
     (inputs
-     `(("emacs-irony-mode" ,emacs-irony-mode)
-       ("emacs-company" ,emacs-company)))
-    (synopsis "C++ completion backend for Company using irony-mode")
-    (description "This backend for company-mode allows for C++ code completion
-with irony-mode using clang-tooling.")
+     `(("emacs-company" ,emacs-company)
+       ("emacs-irony-mode" ,emacs-irony-mode)))
+    (synopsis "C++ completion backend for Company using Irony mode")
+    (description "This backend for Company allows for C++ code completion
+with Irony mode using Clang tooling.")
     (home-page "https://github.com/Sarcasm/company-irony")
     (license license:gpl3+)))
 
