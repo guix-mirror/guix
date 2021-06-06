@@ -67,7 +67,7 @@
 ;;; Copyright © 2019, 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
 ;;; Copyright © 2019, 2020 Tanguy Le Carrour <tanguy@bioneland.org>
-;;; Copyright © 2019 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
+;;; Copyright © 2019, 2021 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
 ;;; Copyright © 2020 Riku Viitanen <riku.viitanen@protonmail.com>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 sirgazil <sirgazil@zoho.com>
@@ -5146,6 +5146,51 @@ objects.")
 
 (define-public python2-colormath
   (package-with-python2 python-colormath))
+
+(define-public python-sparse
+  (package
+    (name "python-sparse")
+    (version "0.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "sparse" version))
+       (sha256
+        (base32
+         "05lmzckv69cvxavhdr36k803bgr5dl04cppglid1l880xswc759c"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "python" "-m" "pytest" "-v")))))))
+    (propagated-inputs
+     `(("python-numba" ,python-numba)
+       ("python-numpy" ,python-numpy)
+       ("python-scipy" ,python-scipy)))
+    (native-inputs
+     `(("python-dask" ,python-dask)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-black" ,python-pytest-black)
+       ("python-pytest-cov" ,python-pytest-cov)))
+    (home-page "https://github.com/pydata/sparse/")
+    (synopsis "Library for multi-dimensional sparse arrays")
+    (description
+     "This package implements sparse arrays of arbitrary dimension on top of
+@code{numpy} and @code{scipy.sparse}.  Sparse array is a matrix in which most
+of the elements are zero.  @code{python-sparse} generalizes the
+@code{scipy.sparse.coo_matrix} and @code{scipy.sparse.dok_matrix} layouts, but
+extends beyond just rows and columns to an arbitrary number of dimensions.
+Additionally, this project maintains compatibility with the
+@code{numpy.ndarray} interface rather than the @code{numpy.matrix} interface
+used in @code{scipy.sparse}.  These differences make this project useful in
+certain situations where @code{scipy.sparse} matrices are not well suited, but
+it should not be considered a full replacement.  It lacks layouts that are not
+easily generalized like @dfn{compressed sparse row/column}(CSR/CSC) and
+depends on @code{scipy.sparse} for some computations.")
+    (license license:bsd-3)))
 
 (define-public python-spectra
   (package
