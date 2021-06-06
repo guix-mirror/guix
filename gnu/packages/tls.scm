@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2021 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
@@ -274,7 +274,53 @@ required structures.")
                                        "gnutls-cross.patch"))
               (sha256
                (base32
-                "1czk511pslz367shf32f2jvvkp7y1323bcv88c2qng98mj0v6y8v"))))))
+                "1czk511pslz367shf32f2jvvkp7y1323bcv88c2qng98mj0v6y8v"))))
+    (arguments
+     (if (%current-target-system)
+         (substitute-keyword-arguments (package-arguments gnutls)
+           ((#:phases phases '%standard-phases)
+            `(modify-phases ,phases
+               (add-before 'configure 'build-eccdata-headers
+                 (lambda* (#:key configure-flags #:allow-other-keys)
+                   ;; Build the 'ecc/eccdata' program using the native
+                   ;; compiler, not the cross-compiler as happens by default,
+                   ;; and use it to build lib/nettle/ecc/ecc-*.h.  In GnuTLS
+                   ;; 3.6.15, this was not necessary because the tarball
+                   ;; contained pre-generated lib/nettle/ecc/ecc-*.h files as
+                   ;; well as 'ecc/eccdata.stamp'.
+                   (let ((jobs  (number->string (parallel-job-count)))
+                         (patch (assoc-ref %standard-phases
+                                           'patch-generated-file-shebangs)))
+                     (mkdir "+native-build")
+                     (with-directory-excursion "+native-build"
+                       ;; Build natively, with the native compiler, GMP, etc.
+                       (invoke "../configure"
+                               (string-append "SHELL=" (which "sh"))
+                               (string-append "CONFIG_SHELL=" (which "sh"))
+                               "NETTLE_CFLAGS=   " "NETTLE_LIBS=   "
+                               "HOGWEED_CFLAGS=   " "HOGWEED_LIBS=   "
+                               "LIBTASN1_CFLAGS=   " "LIBTASN1_LIBS=   "
+                               "ac_cv_func_nettle_rsa_sec_decrypt=yes"
+                               "--without-p11-kit" "--disable-guile")
+                       (patch)
+                       (invoke "make" "-C" "gl" "-j" jobs)
+                       (invoke "make" "-C" "lib/nettle" "V=1" "-j" jobs))
+
+                     ;; Copy the files we obtained during native build.
+                     (for-each (lambda (file)
+                                 (install-file file "lib/nettle/ecc"))
+                               (find-files
+                                "+native-build/lib/nettle/ecc"
+                                "^(eccdata\\.stamp|ecc-.*\\.h)$"))))))))
+         (package-arguments gnutls)))
+    (native-inputs
+     (if (%current-target-system)
+         `(("libtasn1" ,libtasn1)                 ;for 'ecc/eccdata'
+           ("libidn2" ,libidn2)
+           ("nettle" ,nettle)
+           ("zlib" ,zlib)
+           ,@(package-native-inputs gnutls))
+         (package-native-inputs gnutls)))))
 
 (define-public gnutls/guile-2.0
   ;; GnuTLS for Guile 2.0.
