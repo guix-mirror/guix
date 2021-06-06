@@ -189,8 +189,8 @@ client.")
        ("extra-cmake-modules" ,extra-cmake-modules)
        ("python" ,python)))             ;needed to run test
     (home-page "https://github.com/fcitx/libime")
-    (synopsis "Library for implementing generic input method")
-    (description "Libime is a library for implementing various input methods
+    (synopsis "Library for implementing generic input methods")
+    (description "Libime is a library for implementing various input method
 editors.")
     (license license:lgpl2.1+)))
 
