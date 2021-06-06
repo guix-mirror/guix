@@ -12465,6 +12465,36 @@ snippets.  When this package is installed, the extra snippets it provides are
 automatically made available to YASnippet.")
     (license license:gpl3+)))
 
+(define-public emacs-doom-snippets
+  ;; Use the latest commit, as there are no tagged releases.  Version is
+  ;; extracted from main file.
+  (let ((release "1.1.0")
+        (revision "0")
+        (commit "bc613f448eed1bd363e61c41691a61e9fd139534"))
+    (package
+      (name "emacs-doom-snippets")
+      (version (git-version release revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/hlissner/doom-snippets")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0n4b2pr0gpn8vb2n1rckdq4jk9sj995a62yxk6z2ygw5ad7pkj8f"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:include (cons* "^.*\\/" %default-include)))
+      (propagated-inputs
+       `(("emacs-yasnippet" ,emacs-yasnippet)))
+      (home-page "https://github.com/hlissner/doom-snippets")
+      (synopsis "Doom Emacs' snippet library")
+      (description
+       "This package provides Yasnippets snippets for Doom Emacs.  It also
+exposes a small API to assist in writing your own snippets.")
+      (license license:expat))))
+
 (define-public emacs-helm-c-yasnippet
   (let ((commit "65ca732b510bfc31636708aebcfe4d2d845b59b0")
         (revision "1"))
