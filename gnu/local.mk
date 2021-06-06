@@ -1134,8 +1134,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/gnupg-default-pinentry.patch		\
   %D%/packages/patches/gnutls-skip-trust-store-test.patch	\
   %D%/packages/patches/gnutls-cross.patch			\
-  %D%/packages/patches/gnutls-CVE-2021-20231.patch		\
-  %D%/packages/patches/gnutls-CVE-2021-20232.patch		\
   %D%/packages/patches/gobject-introspection-absolute-shlib-path.patch \
   %D%/packages/patches/gobject-introspection-cc.patch		\
   %D%/packages/patches/gobject-introspection-girepository.patch	\

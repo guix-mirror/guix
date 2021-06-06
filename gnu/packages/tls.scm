@@ -15,7 +15,7 @@
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
-;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -166,7 +166,7 @@ living in the same process.")
 (define-public gnutls
   (package
     (name "gnutls")
-    (version "3.6.15")
+    (version "3.7.2")
     (source (origin
               (method url-fetch)
               ;; Note: Releases are no longer on ftp.gnu.org since the
@@ -175,12 +175,10 @@ living in the same process.")
                                   (version-major+minor version)
                                   "/gnutls-" version ".tar.xz"))
               (patches (search-patches "gnutls-skip-trust-store-test.patch"
-                                       "gnutls-cross.patch"
-                                       "gnutls-CVE-2021-20231.patch"
-                                       "gnutls-CVE-2021-20232.patch"))
+                                       "gnutls-cross.patch"))
               (sha256
                (base32
-                "0n0m93ymzd0q9hbknxc2ycanz49sqlkyyf73g9fk7n787llc7a0f"))))
+                "0li7mwjnm64mbxhacz0rpf6i9qd83f53fvbrx96alpqqk9d6qvk4"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? ,(not (or (%current-target-system)
@@ -228,8 +226,7 @@ living in the same process.")
                     (lambda _
                       (substitute* "tests/fastopen.sh"
                         (("^unset RETCODE")
-                         "exit 77\n"))            ;skip
-                      #t))
+                         "exit 77\n")))) ;skip
                   (add-after 'install 'move-doc
                    (lambda* (#:key outputs #:allow-other-keys)
                      ;; Copy the 4.1 MiB of section 3 man pages to "doc".
@@ -239,8 +236,7 @@ living in the same process.")
                             (oldman (string-append out "/share/man/man3")))
                        (mkdir-p mandir)
                        (copy-recursively oldman mandir)
-                       (delete-file-recursively oldman)
-                       #t))))))
+                       (delete-file-recursively oldman)))))))
     (outputs '("out"                              ;4.4 MiB
                "debug"
                "doc"))                            ;4.1 MiB of man pages
