@@ -1063,7 +1063,7 @@ and which optional dependencies should be used.  In particular, avoid adding
 the @code{texlive-tiny} package or @code{texlive-union} procedure instead.
 
 @item
-For important changes, check that dependent package (if applicable) are
+For important changes, check that dependent packages (if applicable) are
 not affected by the change; @code{guix refresh --list-dependent
 @var{package}} will help you do that (@pxref{Invoking guix refresh}).
 
