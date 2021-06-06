@@ -532,9 +532,11 @@ It is a good idea to strip commit identifiers in the @code{version}
 field to, say, 7 digits.  It avoids an aesthetic annoyance (assuming
 aesthetics have a role to play here) as well as problems related to OS
 limits such as the maximum shebang length (127 bytes for the Linux
-kernel).  It is best to use the full commit identifiers in
-@code{origin}s, though, to avoid ambiguities.  A typical package
-definition may look like this:
+kernel).  There are helper functions for doing this for packages using
+@code{git-fetch} or @code{hg-fetch} (see below).  It is best to use the
+full commit identifiers in @code{origin}s, though, to avoid ambiguities.
+A typical package definition may look like this:
+
 
 @lisp
 (define my-package
@@ -552,6 +554,20 @@ definition may look like this:
       ;; @dots{}
       )))
 @end lisp
+
+@deffn {Scheme Procedure} git-version @var{VERSION} @var{REVISION} @var{COMMIT}
+Return the version string for packages using @code{git-fetch}.
+
+@lisp
+(git-version "0.2.3" "0" "93818c936ee7e2f1ba1b315578bde363a7d43d05")
+@result{} "0.2.3-0.93818c9"
+@end lisp
+@end deffn
+
+@deffn {Scheme Procedure} hg-version @var{VERSION} @var{REVISION} @var{CHANGESET}
+Return the version string for packages using @code{hg-fetch}.  It works
+in the same way as @code{git-version}.
+@end deffn
 
 @node Synopses and Descriptions
 @subsection Synopses and Descriptions
