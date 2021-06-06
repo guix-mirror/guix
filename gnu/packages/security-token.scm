@@ -9,6 +9,7 @@
 ;;; Copyright © 2018, 2019 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Raphaël Mélotte <raphael.melotte@mind.be>
+;;; Copyright © 2021 Antero Mejr <antero@kodmin.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,6 +33,7 @@
   #:use-module (guix download)
   #:use-module (guix gexp)
   #:use-module (guix git-download)
+  #:use-module (guix build-system cargo)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system python)
@@ -39,6 +41,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages crates-io)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages dns)
@@ -674,3 +677,46 @@ that after installing this package, you might still need to add appropriate
 udev rules to your system configuration to be able to configure the YubiKey as
 an unprivileged user.")
     (license license:bsd-2)))
+
+(define-public nitrocli
+  (package
+    (name "nitrocli")
+    (version "0.4.1")
+    (source (origin
+              (method url-fetch)
+              (uri (crate-uri "nitrocli" version))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1djspfvcqjipg17v8hkph8xrhkdg1xqjhq5jk1sr8vr750yavidy"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f ;; 2/164 tests fail, nitrocli-ext tests failing
+       #:cargo-inputs
+       (("rust-anyhow" ,rust-anyhow-1)
+        ("rust-base32" ,rust-base32-0.4)
+        ("rust-directories" ,rust-directories-3)
+        ("rust-envy" ,rust-envy-0.4)
+        ("rust-libc-0.2" ,rust-libc-0.2)
+        ("rust-merge" ,rust-merge-0.1)
+        ("rust-nitrokey" ,rust-nitrokey-0.9)
+        ("rust-progressing" ,rust-progressing-3)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-structopt" ,rust-structopt-0.3)
+        ("rust-termion" ,rust-termion-1)
+        ("rust-toml" ,rust-toml-0.5))
+       #:cargo-development-inputs
+       (("rust-nitrokey-test" ,rust-nitrokey-test-0.5)
+        ("rust-nitrokey-test-state" ,rust-nitrokey-test-state-0.1)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-tempfile" ,rust-tempfile-3))))
+    (inputs
+     `(("hidapi" ,hidapi)
+       ("gnupg" ,gnupg)))
+    (home-page "https://github.com/d-e-s-o/nitrocli")
+    (synopsis "Command line tool for Nitrokey devices")
+    (description
+     "nitrocli is a program that provides a command line interface
+for interaction with Nitrokey Pro, Nitrokey Storage, and Librem Key
+devices.")
+    (license license:gpl3+)))

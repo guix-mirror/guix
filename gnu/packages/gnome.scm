@@ -59,6 +59,7 @@
 ;;; Copyright © 2020, 2021 Andy Tai <atai@atai.org>
 ;;; Copyright © 2020, 2021 Sébastien Lerique <sl@eauchat.org>
 ;;; Copyright © 2021 Trevor Hass <thass@okstate.edu>
+;;; Copyright © 2021 Solene Rapenne <solene@perso.pw>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1109,7 +1110,7 @@ freedesktop.org desktop notification specification.")
 (define-public mm-common
   (package
     (name "mm-common")
-    (version "1.0.2")
+    (version "1.0.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/mm-common/"
@@ -1117,7 +1118,7 @@ freedesktop.org desktop notification specification.")
                                   "mm-common-" version ".tar.xz"))
               (sha256
                (base32
-                "07b4s5ckcz9q5gwx8vchim19mhfgl8wysqwi30pndks3m4zrzad2"))))
+                "1x8yvjy0yg17qyhmqws8xh2k8dvzrhpwqz7j1cfwzalrb1i9c5g8"))))
     (build-system meson-build-system)
     (arguments
      `(#:phases
@@ -1176,6 +1177,7 @@ Library reference documentation.")
     `(("docbook-xml" ,docbook-xml-4.3)
       ("gettext" ,gettext-minimal)
       ("glib:bin" ,glib "bin")
+      ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
       ("gtk-doc" ,gtk-doc/stable)
       ("pkg-config" ,pkg-config)))
    (inputs
@@ -1408,7 +1410,7 @@ and implementation of UPnP A/V profiles.")
 (define-public libmediaart
   (package
     (name "libmediaart")
-    (version "1.9.4")
+    (version "1.9.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1416,8 +1418,8 @@ and implementation of UPnP A/V profiles.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0gc10imyabk57ar54m0qzms0x9dnmkymhkzyk8w1aj3y4lby0yx5"))))
-    (build-system gnu-build-system)
+                "1mlw1qgj8nkd9ll6b6h54r1gfdy3zp8a8xqz7qfyfaj85jjgbph7"))))
+    (build-system meson-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin")
        ("pkg-config" ,pkg-config)))
@@ -6984,7 +6986,7 @@ metadata in photo and video files of various formats.")
 (define-public shotwell
   (package
     (name "shotwell")
-    (version "0.30.11")
+    (version "0.30.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/shotwell/"
@@ -6992,7 +6994,7 @@ metadata in photo and video files of various formats.")
                                   "shotwell-" version ".tar.xz"))
               (sha256
                (base32
-                "12d26y40kjlv5x8f5g04wff33vh7mdjb8c41ydqbrwdip0jwy2n2"))))
+                "1h5crjq59lqi8f8mdkadzi8pc3i9i2ik4lsx2nrhzq486fzdfhw6"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t
@@ -11954,7 +11956,7 @@ integrated profiler via Sysprof, debugging support, and more.")
 (define-public komikku
   (package
     (name "komikku")
-    (version "0.28.1")
+    (version "0.29.0")
     (source
      (origin
        (method git-fetch)
@@ -11964,7 +11966,7 @@ integrated profiler via Sysprof, debugging support, and more.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0ifcwp5fw74yypxkq7i0yc3002bsvj3p5c1icspr8s2kyjyllm6i"))))
+         "1sirwgny1s6jv9rb0lildqv4p7nfa15rvw957pwxnvrjasxyf6bq"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t

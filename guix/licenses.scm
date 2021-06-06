@@ -17,6 +17,7 @@
 ;;; Copyright © 2020 André Batista <nandre@riseup.net>
 ;;; Copyright © 2020 Helio Machado <0x2b3bfa0+guix@googlemail.com>
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
+;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,7 +41,7 @@
             apsl2
             asl1.1 asl2.0
             boost1.0
-            bsd-0 bsd-2 bsd-3 bsd-4
+            bsd-0 bsd-1 bsd-2 bsd-3 bsd-4
             non-copyleft
             cc0
             cc-by2.0 cc-by3.0 cc-by4.0
@@ -165,6 +166,11 @@
   (license "Zero-Clause BSD"
            "https://spdx.org/licenses/0BSD.html"
            "https://opensource.org/licenses/0BSD"))
+
+(define bsd-1
+  (license "BSD 1-Clause"
+           "https://spdx.org/licenses/BSD-1-Clause.html"
+           "https://opensource.org/licenses/BSD-1-Clause"))
 
 (define bsd-2
   (license "FreeBSD"

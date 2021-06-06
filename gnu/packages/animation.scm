@@ -2,7 +2,7 @@
 ;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Pkill -9 <pkill9@runbox.com>
-;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,10 +25,12 @@
   #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages assembly)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
@@ -45,6 +47,8 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages jemalloc)
+  #:use-module (gnu packages networking)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
@@ -319,6 +323,78 @@ of v8 and v9.  It is possible to configure Gnash to use several different
 audio or video backends, ensuring good performance.")
       (home-page "https://www.gnu.org/software/gnash/")
       (license license:gpl3+))))
+
+;; This package provides a standalone (no browser plugin) version of
+;; Lightspark.
+(define-public lightspark
+  (package
+    (name "lightspark")
+    (version "0.8.4.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/lightspark/lightspark")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "17l5gzb7p8nivx1a2frca2jklcjdsk2qj4jniv3z8bh307ksz254"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ;requires Adobe Flex SDK, see README.tests
+       ;; Disable browser plugins because neither NPAPI nor PPAPI is
+       ;; supported in the browsers we have.
+       #:configure-flags
+       '("-DCOMPILE_NPAPI_PLUGIN=FALSE"
+         "-DCOMPILE_PPAPI_PLUGIN=FALSE")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'prepare-build-environment
+           (lambda _
+             ;; Use relative etc path.
+             (substitute* "CMakeLists.txt" (("\\/etc") "etc"))))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "./tests")))))))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("nasm" ,nasm)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)))
+    (inputs
+     `(("cairo" ,cairo)
+       ("curl" ,curl)
+       ("ffmpeg" ,ffmpeg)
+       ("freeglut" ,freeglut)
+       ("glew" ,glew)
+       ("glibmm" ,glibmm)
+       ("gnash" ,gnash)
+       ("gnutls" ,gnutls)
+       ("libjpeg" ,libjpeg-turbo)
+       ("openssl" ,openssl)
+       ("pango" ,pango)
+       ("pcre2" ,pcre2)
+       ("rtmpdump" ,rtmpdump)
+       ("sdl2" ,sdl2)
+       ("sdl2-mixer" ,sdl2-mixer)
+       ("zlib" ,zlib)))
+    (home-page "https://lightspark.github.io/")
+    (synopsis "Flash player implementation")
+    (description
+     "Lightspark is a Flash player implementation for playing files in the SWF
+format.  It supports SWF files written on all versions of the ActionScript
+language.")
+    ;; NOTE: The bundled pugixml is a fork specific to Lightspark and
+    ;; incompatible with the one we have.
+    ;; FIXME: we also have jxrlib, but the build fails to find JXRMeta.h so we
+    ;; use the bundled one for now.
+    (license (list license:lgpl3+ ;lightspark
+                   license:mpl2.0 ;avmplus
+                   license:bsd-2 ;jxrlib
+                   license:expat)))) ;pugixml, PerlinNoise
 
 (define-public papagayo
   (let ((commit "e143684b30e59fe4a554f965cb655d23cbe93ee7")

@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
@@ -38,16 +38,13 @@
   #:use-module (gnu system shadow)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match)
-  #:export (<cuirass-remote-server-configuration>
-            cuirass-remote-server-configuration
+  #:export (cuirass-remote-server-configuration
             cuirass-remote-server-configuration?
 
-            <cuirass-configuration>
             cuirass-configuration
             cuirass-configuration?
             cuirass-service-type
 
-            <cuirass-remote-worker-configuration>
             cuirass-remote-worker-configuration
             cuirass-remote-worker-configuration?
             cuirass-remote-worker-service-type))
@@ -272,6 +269,8 @@
                                remote-server)))
          (user           (cuirass-configuration-user config))
          (log            "/var/log/cuirass")
+         (profile        (string-append "/var/guix/profiles/per-user/" user))
+         (roots          (string-append profile "/cuirass"))
          (group          (cuirass-configuration-group config)))
     (with-imported-modules '((guix build utils))
       #~(begin
@@ -279,6 +278,7 @@
 
           (mkdir-p #$cache)
           (mkdir-p #$log)
+          (mkdir-p #$roots)
 
           (when #$remote-cache
             (mkdir-p #$remote-cache))
@@ -287,6 +287,8 @@
                 (gid (group:gid (getgr #$group))))
             (chown #$cache uid gid)
             (chown #$log uid gid)
+            (chown #$roots uid gid)
+            (chown #$profile uid gid)
 
             (when #$remote-cache
               (chown #$remote-cache uid gid)))))))

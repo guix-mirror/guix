@@ -220,14 +220,14 @@ output.
 (define-public filezilla
   (package
     (name "filezilla")
-    (version "3.53.1")
+    (version "3.54.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.filezilla-project.org/client/"
                            "FileZilla_" version "_src.tar.bz2"))
        (sha256
-        (base32 "0ygpqfzj5ms1pd46fpfya1y1jl4w2kmaa7plf8n6fm7cxbr78s35"))))
+        (base32 "0smayigsk8hjplk7pm6dd80r1dnhr4f6xzp3n1p1ss5v2ff1jfkh"))))
     (build-system gnu-build-system)
     (arguments
       ;; Don't let filezilla phone home to check for updates.

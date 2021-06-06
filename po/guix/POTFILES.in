@@ -7,6 +7,7 @@ gnu/system.scm
 gnu/services/shepherd.scm
 gnu/system/mapped-devices.scm
 gnu/system/shadow.scm
+guix/import/egg.scm
 guix/import/opam.scm
 gnu/installer.scm
 gnu/installer/connman.scm
@@ -44,6 +45,7 @@ gnu/packages/bootstrap.scm
 guix/build/utils.scm
 guix/scripts.scm
 guix/scripts/build.scm
+guix/diagnostics.scm
 guix/discovery.scm
 guix/lint.scm
 guix/scripts/download.scm
@@ -99,6 +101,7 @@ guix/scripts/environment.scm
 guix/scripts/time-machine.scm
 guix/scripts/import/cpan.scm
 guix/scripts/import/crate.scm
+guix/scripts/import/egg.scm
 guix/scripts/import/gem.scm
 guix/scripts/import/gnu.scm
 guix/scripts/import/go.scm

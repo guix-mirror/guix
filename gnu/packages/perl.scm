@@ -9,7 +9,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
-;;; Copyright © 2016, 2018, 2020 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2016, 2018, 2020, 2021 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Raoul J.P. Bonnal <ilpuccio.febo@gmail.com>
@@ -665,6 +665,25 @@ in the user's browser.  A set of known commands per OS-name is tested for
 presence, and the first one found is executed.  With an optional parameter,
 all known commands are checked.")
     (license (package-license perl))))
+
+(define-public perl-bsd-resource
+  (package
+   (name "perl-bsd-resource")
+   (version "1.2911")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append
+           "https://cpan.metacpan.org/authors/id/J/JH/JHI/BSD-Resource-"
+           version ".tar.gz"))
+     (sha256
+      (base32 "0g8c7825ng2m0yz5sy6838rvfdl8j3vm29524wjgf66ccfhgn74x"))))
+   (build-system perl-build-system)
+   (home-page "https://metacpan.org/release/BSD-Resource")
+   (synopsis "BSD process resource limit and priority functions")
+   (description "This package provides procedures to get and set resource
+limits like @code{getrlimit} and @code{setpriority}.")
+   (license license:artistic2.0)))
 
 (define-public perl-b-hooks-endofscope
   (package
@@ -1917,6 +1936,32 @@ of the style used by the Git version control system.")
 and writing of @code{.ini}-style configuration files.")
     (license (package-license perl))))
 
+(define-public perl-const-fast
+  (package
+    (name "perl-const-fast")
+    (version "0.014")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/L/LE/LEONT/"
+             "Const-Fast-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1nwlldgrx86yn7y6a53cqgvzm2ircsvxg1addahlcy6510x9a1gq"))))
+    (inputs
+     `(("perl-module-build-tiny" ,perl-module-build-tiny)
+       ("perl-test-fatal" ,perl-test-fatal)))
+    ;; Needed for tests.
+    (native-inputs
+     `(("perl-sub-exporter-progressive" ,perl-sub-exporter-progressive)))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/release/Const-Fast")
+    (synopsis "Facility for creating read-only scalars, arrays, and hashes")
+    (description "This package provides prodecures to create read-only
+scalars, arrays, and hashes.")
+    (license (package-license perl))))
+
 (define-public perl-context-preserve
   (package
     (name "perl-context-preserve")
@@ -2479,6 +2524,27 @@ unsigned representations are handled.")
     (description "@code{Data::Uniqid} provides three simple routines for
 generating unique ids.  These ids are coded with a Base62 system to make them
 short and handy (e.g. to use it as part of a URL).")
+    (license (package-license perl))))
+
+(define-public perl-data-uuid
+  (package
+    (name "perl-data-uuid")
+    (version "1.226")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/R/RJ/RJBS/"
+                    "Data-UUID-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0lv4k4ibxwkw7zz9hw97s34za9nvjxb4kbmgmx5sj4fll3zmfg89"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/release/Data-UUID")
+    (synopsis "Universally Unique Identifiers generator")
+    (description "@code{Data::UUID} provides a framework for generating
+Universally Unique Identifiers (UUIDs), also known as Globally Unique
+Identifiers (GUIDs).  A UUID is 128 bits long, and is guaranteed to be
+different from all other UUIDs/GUIDs generated until 3400 CE.")
     (license (package-license perl))))
 
 (define-public perl-data-dump
@@ -4178,6 +4244,27 @@ and alternative installers with the `installler` option.  But it's written in
 only about 40% as many lines of code and with zero non-core dependencies.")
     (license (package-license perl))))
 
+(define-public perl-extutils-manifest
+  (package
+    (name "perl-extutils-manifest")
+    (version "1.73")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://cpan.metacpan.org/authors/id/E/ET/ETHER/"
+                    "ExtUtils-Manifest-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1y5siyw9sbxq6kdmsjfsx0mrbqb6xr8kmniwli7xc6hbmhyhcp6w"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/release/ExtUtils-Manifest")
+    (synopsis "Utilities to write and check a MANIFEST file")
+    (description "This package contains functions to manipulate a MANIFEST
+file.  The package exports no functions by default.  The following are exported
+on request: mkmanifest, manifind, manicheck, filecheck, fullcheck, skipcheck,
+maniread, maniskip, manicopy, maniadd.")
+    (license (package-license perl))))
+
 (define-public perl-extutils-installpaths
   (package
     (name "perl-extutils-installpaths")
@@ -5779,6 +5866,52 @@ logging mechanism.")
     (description "@code{Log::Any::Adapter::Log4perl} provides a
 @code{Log::Any} adapter using @code{Log::Log4perl} for logging.")
     (license (package-license perl))))
+
+(define-public perl-log-message
+  (package
+   (name "perl-log-message")
+   (version "0.08")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append
+                  "mirror://cpan/authors/id/B/BI/BINGOS/Log-Message-"
+                  version ".tar.gz"))
+            (sha256
+             (base32
+              "0ipyk7zbvz31kf3mj5ahwi2cbcfy54s8387hx4cd29mg5bb7ssdx"))))
+   (build-system perl-build-system)
+   (home-page "https://metacpan.org/release/Log-Message")
+   (synopsis "Powerful and flexible message logging mechanism")
+   (description "This package enables you to do generic message logging
+throughout programs and projects.  Every message will be logged with
+stacktraces, timestamps and so on.  You can use built-in handlers
+immediately, or after the fact when you inspect the error stack.  It
+is highly configurable and let's you even provide your own handlers
+for dealing with messages.")
+   (license (package-license perl))))
+
+(define-public perl-log-message-simple
+  (package
+   (name "perl-log-message-simple")
+   (version "0.10")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append
+           "mirror://cpan/authors/id/B/BI/BINGOS/Log-Message-Simple-"
+           version ".tar.gz"))
+     (sha256
+      (base32
+       "15nxi935nfrf8dkdrgvcrf2qlai4pbz03yj8sja0n9mcq2jd24ma"))))
+   (build-system perl-build-system)
+   (inputs
+    `(("perl-log-message" ,perl-log-message)))
+   (home-page "https://metacpan.org/release/Log-Message-Simple")
+   (synopsis "Simplified interface to @code{Log::Message}")
+   (description "This package provides a simplified frontend to
+@code{Log::Message}, offering most common use for logging, and easy access to
+the stack (in both raw and pretty-printable form).")
+   (license (package-license perl))))
 
 (define-public perl-log-log4perl
   (package
@@ -8824,6 +8957,27 @@ collector.")
     (synopsis "Infinite sets")
     (description "Set::Infinite is a set theory module for infinite sets.")
     (license (package-license perl))))
+
+(define-public perl-set-intervaltree
+  (package
+   (name "perl-set-intervaltree")
+   (version "0.12")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append
+           "mirror://cpan/authors/id/S/SL/SLOYD/Set-IntervalTree-"
+           version ".tar.gz"))
+     (sha256
+      (base32 "0jf3vdmdgxx6a9xrfwnbbs9g37i1i6qhfg5qwln8x5i280701m3g"))))
+   (build-system perl-build-system)
+   (native-inputs
+    `(("perl-extutils-cppguess" ,perl-extutils-cppguess)))
+   (home-page "https://metacpan.org/release/Set-IntervalTree")
+   (synopsis "Perform range-based lookups on sets of ranges")
+   (description "This package provides an efficient mechanism to look up
+ranges in Interval Trees.")
+   (license (package-license perl))))
 
 (define-public perl-set-intspan
   (package

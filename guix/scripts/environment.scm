@@ -755,6 +755,9 @@ message if any test fails."
                        (> (length (manifest-entries manifest-from-opts)) 0))
               (leave (G_ "'--profile' cannot be used with package options~%")))
 
+            (when (null? (manifest-entries manifest))
+              (warning (G_ "no packages specified; creating an empty environment~%")))
+
             (set-build-options-from-command-line store opts)
 
             ;; Use the bootstrap Guile when requested.

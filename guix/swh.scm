@@ -148,20 +148,12 @@
       url
       (string-append url "/")))
 
-(cond-expand
-  (guile-3
-   ;; XXX: Work around a bug in Guile 3.0.2 where #:verify-certificate? would
-   ;; be ignored (<https://bugs.gnu.org/40486>).
-   (define* (http-get* uri #:rest rest)
-     (apply http-request uri #:method 'GET rest))
-   (define* (http-post* uri #:rest rest)
-     (apply http-request uri #:method 'POST rest)))
-  (else                                           ;Guile 2.2
-   ;; Guile 2.2 did not have #:verify-certificate? so ignore it.
-   (define* (http-get* uri #:key verify-certificate? streaming?)
-     (http-request uri #:method 'GET #:streaming? streaming?))
-   (define* (http-post* uri #:key verify-certificate? streaming?)
-     (http-request uri #:method 'POST #:streaming? streaming?))))
+;; XXX: Work around a bug in Guile 3.0.2 where #:verify-certificate? would
+;; be ignored (<https://bugs.gnu.org/40486>).
+(define* (http-get* uri #:rest rest)
+  (apply http-request uri #:method 'GET rest))
+(define* (http-post* uri #:rest rest)
+  (apply http-request uri #:method 'POST rest))
 
 (define %date-regexp
   ;; Match strings like "2014-11-17T22:09:38+01:00" or

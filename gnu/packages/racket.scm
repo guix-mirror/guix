@@ -32,8 +32,6 @@
   #:use-module (ice-9 match)
   #:use-module (gnu packages)
   #:use-module (gnu packages bash)
-  #:use-module ((gnu packages chez)
-                #:select (chez-scheme))
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages fontutils)
@@ -173,8 +171,8 @@ DrRacket IDE, are not included.")
 
 
 (define-public racket
-  (package/inherit
-      racket-minimal
+  (package
+    (inherit racket-minimal)
     (name "racket")
     (version (package-version racket-minimal)) ; needed for origin uri to work
     (source

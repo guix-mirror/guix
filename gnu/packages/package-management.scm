@@ -132,8 +132,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "1.3.0")
-        (commit "9f2b2c432b834c8057ce2f4119599d36197bc063")
-        (revision 2))
+        (commit "50dfbbf8ef52111067071c788e19fc21d54c40d6")
+        (revision 3))
     (package
       (name "guix")
 
@@ -149,7 +149,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "09w6b4hqcxaj6x1q6m1q8vlp4dyk6anfv8p6mfwmpqis81cspphn"))
+                  "128608qyza3p769h7awp183c2mi9gdx2b1xidvmjilfkphlg1lyi"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -517,40 +517,6 @@ the Nix package manager.")
              (lambda* (#:key outputs #:allow-other-keys)
                (invoke "make" "install-binPROGRAMS")))
            (delete 'wrap-program)))))))
-
-
-(define-public guile2.2-guix
-  (package
-    (inherit guix)
-    (name "guile2.2-guix")
-    (native-inputs
-     `(("guile" ,guile-2.2)
-       ("gnutls" ,guile2.2-gnutls)
-       ("guile-gcrypt" ,guile2.2-gcrypt)
-       ("guile-json" ,guile2.2-json)
-       ("guile-lib" ,guile2.2-lib)
-       ("guile-sqlite3" ,guile2.2-sqlite3)
-       ("guile-ssh" ,guile2.2-ssh)
-       ("guile-git" ,guile2.2-git)
-       ("guile-zlib" ,guile2.2-zlib)
-       ("guile-lzlib" ,guile2.2-lzlib)
-       ,@(fold alist-delete (package-native-inputs guix)
-               '("guile" "gnutls" "guile-gcrypt" "guile-json"
-                 "guile-lib" "guile-sqlite3" "guile-ssh" "guile-git"
-                 "guile-zlib" "guile-lzlib"))))
-    (inputs
-     `(("guile" ,guile-2.2)
-       ,@(alist-delete "guile" (package-inputs guix))))
-    (propagated-inputs
-     `(("gnutls" ,gnutls)
-       ("guile-gcrypt" ,guile2.2-gcrypt)
-       ("guile-json" ,guile2.2-json)
-       ("guile-lib" ,guile2.2-lib)
-       ("guile-sqlite3" ,guile2.2-sqlite3)
-       ("guile-ssh" ,guile2.2-ssh)
-       ("guile-git" ,guile2.2-git)
-       ("guile-zlib" ,guile2.2-zlib)
-       ("guile-lzlib" ,guile2.2-lzlib)))))
 
 (define-public guile3.0-guix
   (deprecated-package "guile3.0-guix" guix))
@@ -1061,8 +1027,8 @@ environments.")
     (license (list license:gpl3+ license:agpl3+ license:silofl1.1))))
 
 (define-public guix-build-coordinator
-  (let ((commit "1305724c7ea3c2bb3e557918d5a1b17d572aa110")
-        (revision "27"))
+  (let ((commit "f9af463e81d9fcc712d7c58a491101d8d17457e8")
+        (revision "30"))
     (package
       (name "guix-build-coordinator")
       (version (git-version "0" revision commit))
@@ -1073,7 +1039,7 @@ environments.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "179n33mkhl6f2fv0gyn7sdm3k4hhm1hvca6dgc923d0w7zv4p577"))
+                  "08ysa7a33fsm069gxqnvbf1yzqcsky6gk2pifamkq0wq1dls661r"))
                 (file-name (string-append name "-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments

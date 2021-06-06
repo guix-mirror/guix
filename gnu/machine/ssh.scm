@@ -38,6 +38,9 @@
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module ((guix self) #:select (make-config.scm))
+  #:use-module ((guix inferior)
+                #:select (inferior-exception?
+                          inferior-exception-arguments))
   #:use-module (gcrypt pk-crypto)
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
@@ -443,17 +446,47 @@ have you run 'guix archive --generate-key?'")
   (mlet %store-monad ((_ (check-deployment-sanity machine))
                       (boot-parameters (machine-boot-parameters machine)))
     (let* ((os (machine-operating-system machine))
+           (host (machine-ssh-configuration-host-name
+                  (machine-configuration machine)))
            (eval (cut machine-remote-eval machine <>))
            (menu-entries (map boot-parameters->menu-entry boot-parameters))
            (bootloader-configuration (operating-system-bootloader os))
            (bootcfg (operating-system-bootcfg os menu-entries)))
+      (define-syntax-rule (eval/error-handling condition handler ...)
+        ;; Return a wrapper around EVAL such that HANDLER is evaluated if an
+        ;; exception is raised.
+        (lambda (exp)
+          (lambda (store)
+            (guard (condition ((inferior-exception? condition)
+                               (values (begin handler ...) store)))
+              (values (run-with-store store (eval exp))
+                      store)))))
+
       (mbegin %store-monad
         (with-roll-back #f
-          (switch-to-system eval os))
+          (switch-to-system (eval/error-handling c
+                              (raise (formatted-message
+                                      (G_ "\
+failed to switch systems while deploying '~a':~%~{~s ~}")
+                                      host
+                                      (inferior-exception-arguments c))))
+                            os))
         (with-roll-back #t
           (mbegin %store-monad
-            (upgrade-shepherd-services eval os)
-            (install-bootloader eval bootloader-configuration bootcfg)))))))
+            (upgrade-shepherd-services (eval/error-handling c
+                                         (warning (G_ "\
+an error occurred while upgrading services on '~a':~%~{~s ~}~%")
+                                                  host
+                                                  (inferior-exception-arguments
+                                                   c)))
+                                       os)
+            (install-bootloader (eval/error-handling c
+                                  (raise (formatted-message
+                                          (G_ "\
+failed to install bootloader on '~a':~%~{~s ~}~%")
+                                          host
+                                          (inferior-exception-arguments c))))
+                                bootloader-configuration bootcfg)))))))
 
 
 ;;;
@@ -540,4 +573,6 @@ for environment of type '~a'")
 
 ;; Local Variables:
 ;; eval: (put 'remote-let 'scheme-indent-function 1)
+;; eval: (put 'with-roll-back 'scheme-indent-function 1)
+;; eval: (put 'eval/error-handling 'scheme-indent-function 1)
 ;; End:

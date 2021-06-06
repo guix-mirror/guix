@@ -275,8 +275,8 @@ without requiring the source code to be rewritten.")
 (define-deprecated guile-2.2/bug-fix guile-2.2)
 
 (define-public guile-2.2.4
-  (package/inherit
-   guile-2.2
+  (package
+    (inherit guile-2.2)
    (version "2.2.4")
    (source (origin
              (inherit (package-source guile-2.2))

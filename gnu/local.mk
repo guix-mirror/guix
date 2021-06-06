@@ -42,6 +42,7 @@
 # Copyright © 2021 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 # Copyright © 2021 Greg Hogan <code@greghogan.com>
 # Copyright © 2021 Philip McGrath <philip@philipmcgrath.com>
+# Copyright © 2021 Arun Isaac <arunisaac@systemreboot.net>
 #
 # This file is part of GNU Guix.
 #
@@ -308,6 +309,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/jrnl.scm				\
   %D%/packages/jose.scm				\
   %D%/packages/julia.scm			\
+  %D%/packages/julia-jll.scm			\
   %D%/packages/julia-xyz.scm			\
   %D%/packages/jupyter.scm			\
   %D%/packages/kawa.scm				\
@@ -601,6 +603,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/base.scm				\
   %D%/services/certbot.scm			\
   %D%/services/cgit.scm			\
+  %D%/services/ci.scm				\
   %D%/services/configuration.scm		\
   %D%/services/cuirass.scm			\
   %D%/services/cups.scm				\
@@ -692,6 +695,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/tests.scm					\
   %D%/tests/audio.scm				\
   %D%/tests/base.scm				\
+  %D%/tests/ci.scm				\
   %D%/tests/cups.scm				\
   %D%/tests/databases.scm			\
   %D%/tests/desktop.scm				\
@@ -807,7 +811,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/akonadi-not-relocatable.patch		\
   %D%/packages/patches/akonadi-timestamps.patch		\
   %D%/packages/patches/allegro-mesa-18.2.5-and-later.patch	\
-  %D%/packages/patches/amule-crypto-6.patch			\
   %D%/packages/patches/anki-mpv-args.patch			\
   %D%/packages/patches/antiword-CVE-2014-8123.patch			\
   %D%/packages/patches/antlr3-3_1-fix-java8-compilation.patch	\
@@ -974,8 +977,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/emacs-exec-path.patch			\
   %D%/packages/patches/emacs-exwm-fix-fullscreen-states.patch	\
   %D%/packages/patches/emacs-fix-scheme-indent-function.patch	\
-  %D%/packages/patches/emacs-geiser-guile-auto-activate.patch	\
-  %D%/packages/patches/emacs-geiser-autoload-activate-implementation.patch	\
   %D%/packages/patches/emacs-ignore-empty-xim-styles.patch	\
   %D%/packages/patches/emacs-json-reformat-fix-tests.patch	\
   %D%/packages/patches/emacs-highlight-stages-add-gexp.patch	\
@@ -1018,7 +1019,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/fpc-reproducibility.patch		\
   %D%/packages/patches/fplll-std-fenv.patch     		\
   %D%/packages/patches/freedink-engine-fix-sdl-hints.patch	\
-  %D%/packages/patches/freebayes-devendor-deps.patch		\
   %D%/packages/patches/freeglut-gcc-compat.patch		\
   %D%/packages/patches/freeimage-unbundle.patch		\
   %D%/packages/patches/fuse-overlapping-headers.patch				\
@@ -1254,7 +1254,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libffi-float128-powerpc64le.patch	\
   %D%/packages/patches/libvirt-add-install-prefix.patch	\
   %D%/packages/patches/libziparchive-add-includes.patch		\
-  %D%/packages/patches/lksctp-tools-1.0.18-fix-header-file-name.patch \
   %D%/packages/patches/localed-xorg-keyboard.patch		\
   %D%/packages/patches/kdiagram-Fix-missing-link-libraries.patch \
   %D%/packages/patches/kiki-level-selection-crash.patch		\
@@ -1398,7 +1397,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/mingw-w64-6.0.0-gcc.patch		\
   %D%/packages/patches/mingw-w64-dlltool-temp-prefix.patch	\
   %D%/packages/patches/mingw-w64-reproducible-gendef.patch	\
-  %D%/packages/patches/minimap2-aarch64-support.patch		\
   %D%/packages/patches/minisat-friend-declaration.patch		\
   %D%/packages/patches/minisat-install.patch			\
   %D%/packages/patches/mit-krb5-hurd.patch			\
@@ -1407,6 +1405,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/module-init-tools-moduledir.patch	\
   %D%/packages/patches/monero-use-system-miniupnpc.patch			\
   %D%/packages/patches/mono-mdoc-timestamping.patch		\
+  %D%/packages/patches/mosaicatcher-unbundle-htslib.patch	\
   %D%/packages/patches/mozjs17-aarch64-support.patch		\
   %D%/packages/patches/mozjs24-aarch64-support.patch		\
   %D%/packages/patches/mozjs38-pkg-config-version.patch		\
@@ -1439,6 +1438,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/network-manager-plugin-path.patch	\
   %D%/packages/patches/nginx-socket-cloexec.patch		\
   %D%/packages/patches/nsis-env-passthru.patch			\
+  %D%/packages/patches/nsis-source-date-epoch.patch		\
   %D%/packages/patches/nss-getcwd-nonnull.patch			\
   %D%/packages/patches/nss-increase-test-timeout.patch		\
   %D%/packages/patches/nss-3.56-pkgconfig.patch			\
@@ -1766,7 +1766,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/webkitgtk-share-store.patch		\
   %D%/packages/patches/webkitgtk-bind-all-fonts.patch		\
   %D%/packages/patches/websocketpp-fix-for-cmake-3.15.patch	\
-  %D%/packages/patches/wgetpaste-update-bpaste.patch		\
   %D%/packages/patches/wicd-bitrate-none-fix.patch		\
   %D%/packages/patches/wicd-get-selected-profile-fix.patch	\
   %D%/packages/patches/wicd-urwid-1.3.patch			\

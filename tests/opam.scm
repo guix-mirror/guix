@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -55,6 +56,7 @@ depends: [
 synopsis: \"Some example package\"
 description: \"\"\"
 This package is just an example.\"\"\"
+license: \"BSD-3-Clause\"
 url {
   src: \"https://example.org/foo-1.0.0.tar.gz\"
   checksum: \"md5=74c6e897658e820006106f45f736381f\"
@@ -109,7 +111,7 @@ url {
                    ('home-page "https://example.org/")
                    ('synopsis "Some example package")
                    ('description "This package is just an example.")
-                   ('license #f))
+                   ('license 'license:bsd-3))
                  (string=? (bytevector->nix-base32-string
                             test-source-hash)
                            hash))

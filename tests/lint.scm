@@ -277,6 +277,29 @@
    (let ((pkg (dummy-package "under_score")))
      (check-name pkg))))
 
+(test-equal "tests-true: #:tests? must not be set to #t"
+  "#:tests? must not be explicitly set to #t"
+  (single-lint-warning-message
+   (let ((pkg (dummy-package "x" (arguments '(#:tests? #t)))))
+     (check-tests-true pkg))))
+
+(test-equal "tests-true: absent #:tests? is acceptable"
+  '()
+  (let ((pkg (dummy-package "x")))
+    (check-tests-true pkg)))
+
+(test-equal "tests-true: #:tests? #f is acceptable"
+  '()
+  (let ((pkg (dummy-package "x" (arguments '(#:tests? #f)))))
+    (check-tests-true pkg)))
+
+(test-equal "tests-true: #:tests? #t acceptable when compiling natively"
+  '()
+  (let ((pkg (dummy-package "x"
+                            (arguments
+                             `(#:tests? ,(not (%current-target-system)))))))
+    (check-tests-true pkg)))
+
 (test-equal "inputs: pkg-config is probably a native input"
   "'pkg-config' should probably be a native input"
   (single-lint-warning-message
@@ -1008,10 +1031,13 @@
                      (method url-fetch)
                      (uri "http://example.org/foo.tgz")
                      (sha256 (make-bytevector 32))))
-         (warnings (with-http-server '((404 "Not archived."))
+         (warnings (with-http-server '((404 "Not archived.")
+                                       (404 "Not in Disarchive database."))
                      (parameterize ((%swh-base-url (%local-url)))
-                       (check-archival (dummy-package "x"
-                                                      (source origin)))))))
+                       (mock ((guix download) %disarchive-mirrors
+                              (list (%local-url)))
+                             (check-archival (dummy-package "x"
+                                                            (source origin))))))))
     (warning-contains? "not archived" warnings)))
 
 (test-equal "archival: content available"
@@ -1026,6 +1052,29 @@
     (with-http-server `((200 ,content))
       (parameterize ((%swh-base-url (%local-url)))
         (check-archival (dummy-package "x" (source origin)))))))
+
+(test-equal "archival: content unavailable but disarchive available"
+  '()
+  (let* ((origin   (origin
+                     (method url-fetch)
+                     (uri "http://example.org/foo.tgz")
+                     (sha256 (make-bytevector 32))))
+         (disarchive (object->string
+                      '(disarchive (version 0)
+                                   ...
+                                   "swh:1:dir:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")))
+         ;; https://archive.softwareheritage.org/api/1/directory/
+         (directory "[ { \"checksums\": {},
+                         \"dir_id\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",
+                         \"type\": \"file\",
+                         \"name\": \"README\"
+                         \"length\": 42 } ]"))
+    (with-http-server `((404 "")                  ;lookup-content
+                        (200 ,disarchive)         ;Disarchive database lookup
+                        (200 ,directory))         ;lookup-directory
+      (mock ((guix download) %disarchive-mirrors (list (%local-url)))
+            (parameterize ((%swh-base-url (%local-url)))
+              (check-archival (dummy-package "x" (source origin))))))))
 
 (test-assert "archival: missing revision"
   (let* ((origin   (origin

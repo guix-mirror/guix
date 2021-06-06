@@ -51,6 +51,7 @@
 ;;; Copyright © 2021 David Larsson <david.larsson@selfhosted.xyz>
 ;;; Copyright © 2021 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2021 Bonface Munyoki Kilyungi <me@bonfacemunyoki.com>
+;;; Copyright © 2021 Simon Streit <simon@netpanic.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2135,14 +2136,14 @@ similar to BerkeleyDB, LevelDB, etc.")
 (define-public redis
   (package
     (name "redis")
-    (version "6.0.11")
+    (version "6.2.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.redis.io/releases/redis-"
                                   version".tar.gz"))
               (sha256
                (base32
-                "0prwqap452m581nyc3cz642d1z3x9nd81896hlqdm3z8238z49y9"))
+                "0vp1d9mlfsppry3nsj9f7bmh9wjgsy3jggp24sac1hhgl43c8cms"))
               (modules '((guix build utils)))
               (snippet
                ;; Delete bundled jemalloc, as the package will use the libc one
@@ -2150,8 +2151,8 @@ similar to BerkeleyDB, LevelDB, etc.")
                        #t))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("procps" ,procps) ; for tests
-       ("tcl" ,tcl)))     ; for tests
+     `(("procps" ,procps)               ; for tests
+       ("tcl" ,tcl)))                   ; for tests
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -2168,9 +2169,10 @@ similar to BerkeleyDB, LevelDB, etc.")
            (lambda _
              ;; Disable failing tests
              (substitute* "tests/test_helper.tcl"
-               (("    integration/replication[^-]") "")
-               (("    integration/replication-4") "")
-               (("    integration/replication-psync") ""))
+               (("integration/failover") "")
+               (("integration/replication-4") "")
+               (("integration/replication-psync") "")
+               (("integration/replication[^-]") ""))
              #t)))
        #:make-flags `("CC=gcc"
                       "MALLOC=libc"
@@ -2383,7 +2385,7 @@ database.")
 (define-public lmdb
   (package
     (name "lmdb")
-    (version "0.9.28")
+    (version "0.9.29")
     (source
      (origin
        (method git-fetch)
@@ -2392,7 +2394,7 @@ database.")
              (commit (string-append "LMDB_" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "012a8bs49cswsnzw7k4piis5b6dn4by85w7a7mai9i04xcjyy9as"))))
+        (base32 "0airps4cd0d91nbgy7hgvifa801snxwxzwxyr6pdv61plsi7h8l3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"

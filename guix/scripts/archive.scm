@@ -260,6 +260,9 @@ build and a list of store files to transfer."
 resulting archive to the standard output port."
   (let-values (((drv files)
                 (options->derivations+files store opts)))
+    (when (null? files)
+      (warning (G_ "no arguments specified; creating an empty archive~%")))
+
     (if (build-derivations store drv)
         (export-paths store files (current-output-port)
                       #:recursive? (assoc-ref opts 'export-recursive?))

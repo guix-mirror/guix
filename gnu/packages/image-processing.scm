@@ -16,6 +16,7 @@
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;; Copyright © 2021 Andy Tai <atai@atai.org>
 ;;; Copyright © 2021 Ekaitz Zarraga <ekaitz@elenq.tech>
+;;; Copyright © 2021 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -298,6 +299,8 @@ many popular formats.")
                            "-DVTK_MODULE_USE_EXTERNAL_VTK_theora=ON"
                            "-DVTK_MODULE_USE_EXTERNAL_VTK_tiff=ON"
                            "-DVTK_MODULE_USE_EXTERNAL_VTK_zlib=ON"
+                           "-DVTK_WRAP_PYTHON=ON"
+                           "-DVTK_PYTHON_VERSION:STRING=3"
                            )
        #:phases
          (modify-phases %standard-phases
@@ -328,6 +331,7 @@ many popular formats.")
        ("netcdf" ,netcdf)
        ("png" ,libpng)
        ("proj" ,proj.4)
+       ("python", python)
        ;("pugixml" ,pugixml)
        ("sqlite" ,sqlite)
        ("tiff" ,libtiff)
@@ -871,6 +875,7 @@ libraries designed for computer vision research and implementation.")
          ;; variable in the installed CMake files.  This is necessary as other
          ;; packages using insight-toolkit could not be configured otherwise.
          "-DGTEST_ROOT=gtest")
+
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'do-not-tune

@@ -243,7 +243,8 @@ network to check in GNU's database."
   ;; The "-src" pattern is for "TeXmacs-1.0.7.9-src.tar.gz".
   ;; The "-gnu[0-9]" pattern is for "icecat-38.4.0-gnu1.tar.bz2".
   ;; Accept underscores as in "PKG_1.2.tar.gz" for some non-GNU packages.
-  (make-regexp "^([^.]+)[-_]([0-9]|[^-])+(-(src|[sS]ource|gnu[0-9]))?\\.(tar\\.|zip$)"))
+  ;; Accept 'v' or 'V' prefix as in 'PKG-v2.3.tgz'.
+  (make-regexp "^([^.]+)[-_][vV]?([0-9]|[^-])+(-(src|[sS]ource|gnu[0-9]))?\\.(tar\\.|tgz|zip$)"))
 
 (define %alpha-tarball-rx
   (make-regexp "^.*-.*[0-9](-|~)?(alpha|beta|rc|RC|cvs|svn|git)-?[0-9\\.]*\\.tar\\."))
@@ -495,9 +496,30 @@ are unavailable."
 
     (define (url->release url)
       (let* ((base (basename url))
-             (url  (if (string=? base url)
-                       (string-append base-url directory "/" url)
-                       url)))
+             (base-url (string-append base-url directory))
+             (url  (cond ((and=> (string->uri url) uri-scheme) ;full URL?
+                          url)
+                         ((string-prefix? "/" url) ;absolute path?
+                          (let ((uri (string->uri base-url)))
+                            (uri->string
+                             (build-uri (uri-scheme uri)
+                                        #:host (uri-host uri)
+                                        #:port (uri-port uri)
+                                        #:path url))))
+
+                         ;; URL is a relative path and BASE-URL may or may not
+                         ;; end in slash.
+                         ((string-suffix? "/" base-url)
+                          (string-append base-url url))
+                         (else
+                          ;; If DIRECTORY is non-empty, assume BASE-URL
+                          ;; denotes a directory; otherwise, assume BASE-URL
+                          ;; denotes a file within a directory, and that URL
+                          ;; is relative to that directory.
+                          (string-append (if (string-null? directory)
+                                             (dirname base-url)
+                                             base-url)
+                                         "/" url)))))
         (and (release-file? package base)
              (let ((version (tarball->version base)))
                (upstream-source
@@ -596,7 +618,7 @@ list available from %GNU-FILE-LIST-URI over HTTP(S)."
 (define %package-name-rx
   ;; Regexp for a package name, e.g., "foo-X.Y".  Since TeXmacs uses
   ;; "TeXmacs-X.Y-src", the `-src' suffix is allowed.
-  (make-regexp "^(.*)[-_](([0-9]|\\.)+)(-src|\\.src|\\.orig)?"))
+  (make-regexp "^(.*)[-_][vV]?(([0-9]|\\.)+)(-src|\\.src|\\.orig)?"))
 
 (define (gnu-package-name->name+version name+version)
   "Return the package name and version number extracted from NAME+VERSION."

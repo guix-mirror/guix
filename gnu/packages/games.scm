@@ -61,6 +61,7 @@
 ;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
 ;;; Copyright © 2021 David Pflug <david@pflug.io>
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
+;;; Copyright © 2021 Solene Rapenne <solene@perso.pw>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1836,19 +1837,17 @@ Chess).  It is similar to standard chess but this variant is far more complicate
 (define-public ltris
   (package
     (name "ltris")
-    (version "1.2.1")
+    (version "1.2.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/lgames/ltris/"
                            "ltris-" version ".tar.gz"))
        (sha256
-        (base32 "0959vvxh5xnxzpdv7i67lpd2b6ghx69z65ldnclj1z6llyfzfs7q"))))
+        (base32 "1a2m17jwkyar8gj07bn5jk01j2ps4vvc48z955jjjsh67q2svi0f"))))
     (build-system gnu-build-system)
     (arguments
-     '(;; The code in LTris uses traditional GNU semantics for inline functions
-       #:configure-flags '("CFLAGS=-fgnu89-inline")
-       #:phases
+     '(#:phases
        (modify-phases %standard-phases
          (add-after 'set-paths 'set-sdl-paths
            (lambda* (#:key inputs #:allow-other-keys)
@@ -4305,35 +4304,15 @@ world}, @uref{http://evolonline.org, Evol Online} and
 (define openttd-engine
   (package
     (name "openttd-engine")
-    (version "1.10.3")
+    (version "1.11.2")
     (source
      (origin (method url-fetch)
              (uri (string-append "https://cdn.openttd.org/openttd-releases/"
                                  version "/openttd-" version "-source.tar.xz"))
              (sha256
               (base32
-               "0fxmfz1mm95a2x0rnzfff9wb8q57w0cvsdd0z7agdcbyakph25n1"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:tests? #f              ; no "check" target
-       #:phases
-       (modify-phases %standard-phases
-         ;; The build process fails if the configure script is passed the
-         ;; option "--enable-fast-install".
-         (replace 'configure
-           (lambda* (#:key inputs outputs (configure-flags '())
-                     #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out"))
-                   (lzo (assoc-ref inputs "lzo")))
-               (apply invoke "./configure"
-                      (string-append "--prefix=" out)
-                      ;; Provide the "lzo" path.
-                      (string-append "--with-liblzo2="
-                                     lzo "/lib/liblzo2.a")
-                      ;; Put the binary in 'bin' instead of 'games'.
-                      "--binary-dir=bin"
-                      configure-flags)))))))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+               "0v9f93lsdcv3ia28y8iihx9nj9zp6fpf5hkdrpl4ypw159d97fhg"))))
+    (build-system cmake-build-system)
     (inputs
      `(("allegro" ,allegro)
        ("fontconfig" ,fontconfig)
@@ -4500,19 +4479,17 @@ Transport Tycoon Deluxe.")
     (name "openttd")
     (arguments
      `(#:configure-flags
-       (list (string-append "--with-midi=" (assoc-ref %build-inputs "timidity++")
-                            "/bin/timidity"))
-       ,@(substitute-keyword-arguments (package-arguments openttd-engine)
-           ((#:phases phases)
-            `(modify-phases ,phases
-               (add-after 'install 'install-data
-                 (lambda* (#:key inputs outputs #:allow-other-keys)
-                   (for-each
-                    (lambda (input)
-                      (copy-recursively (assoc-ref inputs input)
-                                        (assoc-ref outputs "out")))
-                    (list "opengfx" "openmsx" "opensfx"))
-                   #t)))))))
+       (let* ((out (assoc-ref %outputs "out")))
+         (list (string-append "-DCMAKE_INSTALL_BINDIR=" out "/bin")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'install-data
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (for-each
+              (lambda (input)
+                (copy-recursively (assoc-ref inputs input)
+                                  (assoc-ref outputs "out")))
+              (list "opengfx" "openmsx" "opensfx")))))))
     (inputs
      `(("timidity++" ,timidity++)
        ,@(package-inputs openttd-engine)))
@@ -5138,7 +5115,7 @@ in-window at 640x480 resolution or fullscreen.")
 (define-public warzone2100
   (package
     (name "warzone2100")
-    (version "3.4.1")
+    (version "4.0.1")
     (source
      (origin
        (method url-fetch)
@@ -5146,7 +5123,7 @@ in-window at 640x480 resolution or fullscreen.")
                            version
                            "/warzone2100_src.tar.xz"))
        (sha256
-        (base32 "0savalmw1kp1sf8vg5aqrl5hc77p4jacxy5y9qj8k2hi2vqdfb7a"))
+        (base32 "1f8a4kflslsjl8jrryhwg034h1yc9y3y1zmllgww3fqkz3aj4xik"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -5160,6 +5137,7 @@ in-window at 640x480 resolution or fullscreen.")
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DWZ_DISTRIBUTOR=Guix"
+                           "-DWZ_ENABLE_BACKEND_VULKAN=off"
                            "-DENABLE_DISCORD=off")
        #:tests? #f ; TODO: Tests seem to be broken, configure.ac is missing.
        #:phases
@@ -5205,6 +5183,7 @@ in-window at 640x480 resolution or fullscreen.")
               ("qtscript" ,qtscript)
               ("openssl" ,openssl)
               ("sdl2" ,sdl2)
+              ("sqlite" ,sqlite)
               ("utfcpp" ,utfcpp)))
     (home-page "https://wz2100.net")
     (synopsis "3D Real-time strategy and real-time tactics game")
@@ -6909,7 +6888,7 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
 (define-public tome4
   (package
     (name "tome4")
-    (version "1.7.2")
+    (version "1.7.3")
     (synopsis "Single-player, RPG roguelike game set in the world of Eyal")
     (source
      (origin
@@ -6917,7 +6896,7 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
        (uri (string-append "https://te4.org/dl/t-engine/t-engine4-src-"
                            version ".tar.bz2"))
        (sha256
-        (base32 "1xa0pdn9pggwf7hnqb87ya2qxqhjahkdjwf8cr2y01gixgrkj9lv"))
+        (base32 "1rik17r01glq3944sdb06xjf0xppgqkjk564wrh22slm4mi3fifz"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -7302,7 +7281,8 @@ elements to achieve a simple goal in the most complex way possible.")
      `(#:tests? #f                      ;tests are broken
        #:configure-flags (list "-DUSE_SYSTEM_LIBLUA:BOOL=YES"
                                (string-append "-DPIONEER_DATA_DIR="
-                                              %output "/share/games/pioneer"))))
+                                              %output "/share/games/pioneer"))
+       #:make-flags (list "all" "build-data")))
     (home-page "https://pioneerspacesim.net")
     (synopsis "Game of lonely space adventure")
     (description

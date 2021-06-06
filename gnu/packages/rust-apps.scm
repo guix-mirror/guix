@@ -11,6 +11,7 @@
 ;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.ccom>
 ;;; Copyright © 2021 Zheng Junjie <873216071@qq.com>
 ;;; Copyright © 2021 Alexandru-Sergiu Marton <brown121407@posteo.ro>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,13 +36,16 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crates-io)
   #:use-module (gnu packages crates-graphics)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages jemalloc)
+  #:use-module (gnu packages ssh)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages rust)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control))
 
@@ -464,11 +468,11 @@ gitignore rules.")
      "This package provides a tool for generating C/C++ bindings to Rust code.")
     (license license:mpl2.0)))
 
-(define-public rust-cbindgen-0.17
+(define-public rust-cbindgen-0.19
   (package
     (inherit rust-cbindgen)
     (name "rust-cbindgen")
-    (version "0.17.0")
+    (version "0.19.0")
     (source
      (origin
        (method url-fetch)
@@ -477,7 +481,7 @@ gitignore rules.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1f40hxj6h7wqmsj8dzxjm3m421hjqpz2m5zxasbn8kgnr6scykvl"))))
+         "1yld9fni9g9mzg4r42zfk79aq9mzm2sfzzjrrx4vir4lp4qqqwiq"))))
     (arguments
      `(#:cargo-inputs
        (("rust-clap" ,rust-clap-2)
@@ -773,7 +777,7 @@ the details of how it was triggered.
 (define-public rust-cargo-c
   (package
     (name "rust-cargo-c")
-    (version "0.5.3")
+    (version "0.8.1+cargo-0.53")
     (source
       (origin
         (method url-fetch)
@@ -782,23 +786,72 @@ the details of how it was triggered.
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "0hsag5g4qngm8alfil2dyvl5sagpqi5nb40c7bhwng2z8mv9r41k"))))
+          "0fwdxhdj2963xr6xfqr56i7hikhsdv562vgxq2dj3h2mi3dil1k6"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs
-       (("rust-cbindgen" ,rust-cbindgen)
+     `(#:rust ,rust-1.52                ;inherited from rust-cargo
+       #:cargo-inputs
+       (("rust-cbindgen" ,rust-cbindgen-0.19)
+        ("rust-cargo" ,rust-cargo-0.53) ;
+        ("rust-anyhow" ,rust-anyhow-1)
         ("rust-pretty-env-logger" ,rust-pretty-env-logger-0.4)
         ("rust-structopt" ,rust-structopt-0.3)
         ("rust-log" ,rust-log-0.4)
         ("rust-toml" ,rust-toml-0.5)
         ("rust-cargo-metadata" ,rust-cargo-metadata-0.9)
+        ("rust-semver" ,rust-semver-0.10)
         ("rust-serde" ,rust-serde-1)
         ("rust-serde-derive" ,rust-serde-derive-1)
+        ("rust-serde-json" ,rust-serde-json-1)
         ("rust-regex" ,rust-regex-1))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("curl" ,curl)
+       ("libssh2" ,libssh2)
+       ("openssl" ,openssl)
+       ("zlib" ,zlib)))
     (home-page "https://github.com/lu-zero/cargo-c")
     (synopsis "Build and install C-compatible libraries")
     (description
      "This package produces and installs a correct pkg-config file, a static
 library and a dynamic library, and a C header to be used by any C (and
 C-compatible) software.")
+    (license license:expat)))
+
+(define-public zoxide
+  (package
+    (name "zoxide")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "zoxide" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1ih01l3xp8plicxhmyxjkq12ncpdb8954jcj3dh3lwvkhvw29nkk"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-anyhow" ,rust-anyhow-1)
+        ("rust-askama" ,rust-askama-0.10)
+        ("rust-bincode" ,rust-bincode-1)
+        ("rust-clap" ,rust-clap-3)
+        ("rust-dirs-next" ,rust-dirs-next-2)
+        ("rust-dunce" ,rust-dunce-1)
+        ("rust-glob" ,rust-glob-0.3)
+        ("rust-once-cell" ,rust-once-cell-1)
+        ("rust-ordered-float" ,rust-ordered-float-2)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-tempfile" ,rust-tempfile-3))
+       #:cargo-development-inputs
+       (("rust-assert-cmd" ,rust-assert-cmd-1)
+        ("rust-seq-macro" ,rust-seq-macro-0.2))))
+    (home-page "https://github.com/ajeetdsouza/zoxide/")
+    (synopsis "Fast way to navigate your file system")
+    (description
+     "Zoxide is a fast replacement for your @command{cd} command.  It keeps
+track of the directories you use most frequently, and uses a ranking algorithm
+to navigate to the best match.")
     (license license:expat)))

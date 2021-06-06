@@ -48,13 +48,13 @@
 (define-public python-django
   (package
     (name "python-django")
-    (version "3.2.2")
+    (version "3.2.4")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "Django" version))
               (sha256
                (base32
-                "0gffaabnnpzj0sl3jl7mllvi3gc0jvab6xw2bckvyljwsrd1j78a"))))
+                "15pjwyvrx4n8gi8n51b14wp54bg4jqapr25p52597zn6ikdxijb6"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -130,13 +130,13 @@ to the @dfn{don't repeat yourself} (DRY) principle.")
 (define-public python-django-2.2
   (package
     (inherit python-django)
-    (version "2.2.22")
+    (version "2.2.24")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "Django" version))
               (sha256
                (base32
-                "0q30zjcmnvwp1v1syn739wapahs2dx784n0yjyypq0cr3kdi88nv"))))
+                "1dvx3x85lggm91x7mpvaf9nmpxyz7r97pbpnmr2k1qfy0c7gyf9k"))))
     (native-inputs
      `(;; XXX: In 2.2 and 3.0, selenium is required for the test suite.
        ("python-selenium" ,python-selenium)
@@ -932,7 +932,7 @@ name is purely coincidental.")
 (define-public python-django-statici18n
   (package
     (name "python-django-statici18n")
-    (version "1.9.0")
+    (version "2.1.0")
     (home-page "https://github.com/zyegfryed/django-statici18n")
     (source (origin
               (method git-fetch)
@@ -942,7 +942,7 @@ name is purely coincidental.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1p3myp2im6c87yc05alh91jyahqws5lcw3zzdsj4dh8lx9s9cgpf"))))
+                "0x0xvfqd40is2ks43d65awgqkx3wk10lvdim15scvbjhkh301b6v"))))
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -1089,14 +1089,13 @@ forms using your favorite CSS framework, without writing template code.")
 (define-public python-django-compressor
   (package
     (name "python-django-compressor")
-    (version "2.4")
+    (version "2.4.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "django_compressor" version))
         (sha256
-         (base32
-          "0kx7bclfa0sxlsz6ka70zr9ra00lks0hmv1kc99wbanx6xhirvfj"))))
+         (base32 "1q0m0hfg7sqmj5km924g4dgy3nx51aszzsprlp6gsin10mv0fn1k"))))
     (build-system python-build-system)
     (arguments
      '(#:phases

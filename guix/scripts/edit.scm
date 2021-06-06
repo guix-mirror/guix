@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2020, 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
@@ -91,6 +91,8 @@ line."
   (with-error-handling
     (let* ((specs     (reverse (parse-arguments)))
            (locations (map specification->location specs)))
+      (when (null? specs)
+        (leave (G_ "no packages specified, nothing to edit~%")))
 
       (catch 'system-error
         (lambda ()

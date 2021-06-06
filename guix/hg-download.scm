@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,6 +26,8 @@
   #:use-module (guix modules)
   #:use-module (guix packages)
   #:autoload   (guix build-system gnu) (standard-packages)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module (ice-9 match)
   #:use-module (ice-9 popen)
   #:use-module (ice-9 rdelim)
@@ -34,7 +37,9 @@
             hg-reference-changeset
             hg-reference-recursive?
             hg-predicate
-            hg-fetch))
+            hg-fetch
+            hg-version
+            hg-file-name))
 
 ;;; Commentary:
 ;;;
@@ -101,6 +106,23 @@ HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if #f."
                       #:hash hash
                       #:recursive? #t
                       #:guile-for-build guile)))
+
+(define (hg-version version revision changeset)
+  "Return the version string for packages using hg-download."
+  ;; hg-version is almost exclusively executed while modules are being loaded.
+  ;; This makes any errors hide their backtrace. Avoid the mysterious error
+  ;; "Value out of range 0 to N: 7" when the commit ID is too short, which
+  ;; can happen, for example, when the user swapped the revision and commit
+  ;; arguments by mistake.
+  (when (< (string-length changeset) 7)
+    (raise
+     (condition
+      (&message (message "hg-version: changeset ID unexpectedly short")))))
+  (string-append version "-" revision "." (string-take changeset 7)))
+
+(define (hg-file-name name version)
+  "Return the file-name for packages using hg-download."
+  (string-append name "-" version "-checkout"))
 
 (define (hg-file-list directory)
   "Evaluates to a list of files contained in the repository at path

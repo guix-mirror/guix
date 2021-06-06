@@ -163,7 +163,9 @@ if file doesn't exist, and the narinfo otherwise."
 (define (lookup-narinfo caches path authorized?)
   "Return the narinfo for PATH in CACHES, or #f when no substitute for PATH
 was found."
-  (match (lookup-narinfos/diverse caches (list path) authorized?)
+  (match (lookup-narinfos/diverse
+          caches (list path) authorized?
+          #:open-connection open-connection-for-uri/cached)
     ((answer) answer)
     (_        #f)))
 
@@ -518,8 +520,11 @@ PORT."
                                          (current-error-port)
                                          #:abbreviation nar-uri-abbreviation))))
                      ;; Keep RAW open upon completion so we can later reuse
-                     ;; the underlying connection.
-                     (progress-report-port reporter raw #:close? #f)))
+                     ;; the underlying connection.  Pass the download size so
+                     ;; that this procedure won't block reading from RAW.
+                     (progress-report-port reporter raw
+                                           #:close? #f
+                                           #:download-size dl-size)))
                   ((input pids)
                    ;; NOTE: This 'progress' port of current process will be
                    ;; closed here, while the child process doing the

@@ -15,6 +15,7 @@
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2021 Eric Bavier <bavier@posteo.net>
+;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -409,33 +410,45 @@ integrate Sphinx documents in web templates and to handle searches.")
 (define-public python-sphinx-gallery
   (package
     (name "python-sphinx-gallery")
-    (version "0.1.13")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                     (url "https://github.com/sphinx-gallery/sphinx-gallery")
-                     (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "14nbqh9krx2l2y2ylbln6l6w8iak3wac1lngvaf278y1cx7685kg"))))
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "sphinx-gallery" version))
+       (sha256
+        (base32 "14zyhr7m92nafhhnzfvnbgkf5m91krd9mjyi24zn59bjq6zyr8hl"))))
     (build-system python-build-system)
     (arguments
-     ;; FIXME: Tests attempt to download <https://docs.python.org/3/objects.inv>,
-     ;; <https://docs.scipy.org/doc/numpy/objects.inv>, and
-     ;; <https://matplotlib.org/objects.inv>.
-     `(#:tests? #f))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'writable-files-for-tests
+           (lambda _
+             (for-each make-file-writable (find-files "."))))
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" "-m" "pytest" "--pyargs" "sphinx_gallery" "-k"
+                       (string-append
+                        ;; These tests require online data.
+                        "not test_embed_code_links_get_data"
+                        " and not test_run_sphinx"
+                        ;; AssertionError.
+                        " and not test_embed_links_and_styles"))))))))
     (native-inputs
-     `(("python-pytest-runner" ,python-pytest-runner)))
-    (home-page "https://sphinx-gallery.github.io/")
+     `(("python-joblib" ,python-joblib)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-numpy" ,python-numpy)
+       ("python-pillow" ,python-pillow)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-sphinx" ,python-sphinx)))
+    (home-page "https://sphinx-gallery.github.io/stable/index.html")
     (synopsis "Generate an examples gallery automatically")
     (description
      "@code{sphinx_gallery} is a Sphinx extension that builds an HTML version
 from any set of Python scripts and puts it into an examples gallery.")
     (license license:bsd-3)))
-
-(define-public python2-sphinx-gallery
-  (package-with-python2 python-sphinx-gallery))
 
 (define-public python-sphinx-me
   (package
@@ -606,18 +619,17 @@ and several other projects.")
 (define-public python-breathe
   (package
     (name "python-breathe")
-    (version "4.22.1")
+    (version "4.30.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "breathe" version))
        (sha256
         (base32
-         "0snk538xv60z4vfhl3f7v5g658za7257hddkg07cknkn33k6cjvf"))))
+         "055h95fkdld7s49878fqjx1nri1drj1czc184vrb7i60mf2yqg9n"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-docutils" ,python-docutils)
-       ("python-six" ,python-six)
        ("python-sphinx" ,python-sphinx)))
     (home-page "https://github.com/michaeljones/breathe")
     (synopsis "ReStructuredText and Sphinx bridge to Doxygen")

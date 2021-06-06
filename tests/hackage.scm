@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2019 Robert Vollmert <rob@vllmrt.net>
+;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -183,7 +184,7 @@ library
     ('home-page "http://test.org")
     ('synopsis (? string?))
     ('description (? string?))
-    ('license 'bsd-3)))
+    ('license 'license:bsd-3)))
 
 (define* (eval-test-with-cabal test-cabal matcher #:key (cabal-environment '()))
   (define port (open-input-string test-cabal))
@@ -232,7 +233,7 @@ library
     ('home-page "http://test.org")
     ('synopsis (? string?))
     ('description (? string?))
-    ('license 'bsd-3)))
+    ('license 'license:bsd-3)))
 
 (test-assert "hackage->guix-package test 6"
   (eval-test-with-cabal test-cabal-6 match-ghc-foo-6))
@@ -362,7 +363,7 @@ executable cabal
     ('home-page "http://test.org")
     ('synopsis (? string?))
     ('description (? string?))
-    ('license 'bsd-3)))
+    ('license 'license:bsd-3)))
 
 (test-assert "hackage->guix-package test cabal revision"
   (eval-test-with-cabal test-cabal-revision match-ghc-foo-revision))

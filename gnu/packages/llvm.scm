@@ -7,7 +7,7 @@
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
@@ -686,23 +686,23 @@ of programming tools as well as libraries with equivalent functionality.")
 (define-public llvm-7
   (package
     (inherit llvm-8)
-    (version "7.0.1")
+    (version "7.1.0")
     (source (origin
               (method url-fetch)
               (uri (llvm-uri "llvm" version))
               (sha256
                (base32
-                "16s196wqzdw4pmri15hadzqgdi926zln3an2viwyq0kini6zr3d3"))))))
+                "0r1p5didv4rkgxyvbkyz671xddg6i3dxvbpsi1xxipkla0l9pk0v"))))))
 
 (define-public clang-runtime-7
   (clang-runtime-from-llvm
    llvm-7
-   "065ybd8fsc4h2hikbdyricj6pyv4r7r7kpcikhb2y5zf370xybkq"
+   "1n48p8gjarihkws0i2bay5w9bdwyxyxxbpwyng7ba58jb30dlyq5"
    '("clang-runtime-9-libsanitizer-mode-field.patch")))
 
 (define-public clang-7
   (clang-from-llvm llvm-7 clang-runtime-7
-                   "067lwggnbg0w1dfrps790r5l6k8n5zwhlsw7zb6zvmfpwpfn4nx4"
+                   "0vc4i87qwxnw9lci4ayws9spakg0z6w5w670snj9f8g5m9rc8zg9"
                    #:patches '("clang-7.0-libc-search-path.patch")))
 
 (define-public clang-toolchain-7

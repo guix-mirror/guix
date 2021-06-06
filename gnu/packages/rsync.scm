@@ -3,7 +3,7 @@
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2019 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2019, 2021 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -26,6 +26,7 @@
   #:use-module (gnu packages acl)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages digest)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages popt)
   #:use-module ((guix licenses) #:prefix license:)
@@ -57,6 +58,44 @@
    (inputs
     `(("acl" ,acl)
       ("popt" ,popt)
+      ("zlib" ,zlib)))
+   (synopsis "Remote (and local) file copying tool")
+   (description
+    "Rsync is a fast and versatile file copying tool.  It can copy locally,
+to/from another host over any remote shell, or to/from a remote rsync daemon.
+Its delta-transfer algorithm reduces the amount of data sent over the network
+by sending only the differences between the source files and the existing
+files in the destination.")
+   (license license:gpl3+)
+   (home-page "https://rsync.samba.org/")))
+
+(define-public rsync-next
+  (package
+   (name "rsync")
+   (version "3.2.3")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "https://rsync.samba.org/ftp/rsync/src/rsync-"
+                                version ".tar.gz"))
+            (sha256
+             (base32
+              "03p5dha9g9krq61mdbcrjkpz5nglri0009ks2vs9k97f9i83rk5y"))))
+   (build-system gnu-build-system)
+   (arguments
+    `(#:configure-flags
+      ;; The bundled copies are preferred by default.
+      (list "--without-included-zlib"
+            "--without-included-popt"
+            ;; Avoid these dependencies for now.
+            "--disable-lz4"
+            "--disable-openssl"
+            "--disable-zstd")))
+   (native-inputs
+    `(("perl" ,perl)))
+   (inputs
+    `(("acl" ,acl)
+      ("popt" ,popt)
+      ("xxhash" ,xxhash)
       ("zlib" ,zlib)))
    (synopsis "Remote (and local) file copying tool")
    (description

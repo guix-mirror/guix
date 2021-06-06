@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2016, 2020, 2021 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,18 +20,20 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix git-download)
-  #:use-module (guix hg-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages java)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages mail) ; for libetpan
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages sequoia)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tls)
@@ -40,15 +42,16 @@
 (define-public yml2
   (package
     (name "yml2")
-    (version "2.6.3")
-    (source (origin
-       (method hg-fetch)
-       (uri (hg-reference
-             (url "https://pep.foundation/dev/repos/yml2")
-             (changeset version)))
-       (file-name (string-append name "-" version "-checkout"))
+    (version "2.7.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitea.pep.foundation/fdik/yml2")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "10jjjyq1mz18zkzvxd62aba00h69gd9cglisqcvb81j67ml2v1bx"))))
+        (base32 "0fm1x1fv4lwcpbn59s55idzf7x173n59xpz8rlrxalmi6gvsjijr"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-lxml" ,python-lxml)))
@@ -64,9 +67,9 @@ shell provides options to redirect the output into a pipe or a file.")
 (define fdik-libetpan
   ;; pEp Engine requires libetpan with a set of patches that have not been
   ;; upstreamed yet.
-  (let ((commit "210ba2b3b310b8b7a6ee4a4e35e50f7fa379643f") ; 2020-06-03
-        (checksum "00000nij3ray7nssvq0lzb352wmnab8ffzk7dgff2c68mvjbh1l6")
-        (revision "5"))
+  (let ((commit "0b80c39dd1504462ba3a39dc53db7c960c3a63f3") ; 2020-11-27
+        (checksum "0gv3ivaziadybjlf6rfpv1j5z5418243v5cvl4swlxd2njsh7gjk")
+        (revision "6"))
    (package
     (inherit libetpan)
     (name "fdik-libetpan")
@@ -76,7 +79,7 @@ shell provides options to redirect the output into a pipe or a file.")
        (inherit (package-source libetpan))
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/fdik/libetpan")
+             (url "https://gitea.pep.foundation/pEp.foundation/libetpan")
              (commit commit)))
        (file-name (string-append name "-" version))
        (sha256 (base32 checksum)))))))
@@ -84,23 +87,24 @@ shell provides options to redirect the output into a pipe or a file.")
 (define-public pep-engine
   (package
     (name "pep-engine")
-    (version "2.0.6")
+    (version "2.1.34")
     (source
      (origin
-       (method hg-fetch)
-       (uri (hg-reference
-             (url "https://pep.foundation/dev/repos/pEpEngine")
-             (changeset "ebb62ba262dd"))) ;; r4721
-       (file-name (string-append name "-" version "-checkout"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitea.pep.foundation/pEp.foundation/pEpEngine")
+             (commit (string-append "Release_" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0ljf79j4ng7l8w6pbdcrfzb4yk51zslypvq0n72ib1d7grqvnagi"))))
+        (base32 "00q96y9j985qfa382acsz02i0zf6ayq2gmg8z70jzl04isg1h3cn"))))
     (build-system gnu-build-system)
     (arguments
      '(#:parallel-build? #f
+       #:make-flags '("NDEBUG=1") ; release build
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
-           ;; pEpEngie does not use autotools and configure,
+           ;; pEpEngine does not use autotools and configure,
            ;; but a local.conf. We need to tweak the values there.
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
@@ -131,7 +135,7 @@ OPENPGP=SEQUOIA
        ("libiconv" ,libiconv)
        ("nettle" ,nettle)
        ("openssl" ,openssl)
-       ("sequoia" ,sequoia4pEp)
+       ("sequoia" ,sequoia)
        ("sqlite3" ,sqlite)
        ("util-linux" ,util-linux "lib"))) ;; uuid.h
     (home-page "https://pep.foundation/")
@@ -145,20 +149,21 @@ privacy).")
 (define-public libpepadapter
   (package
     (name "libpepadapter")
-    (version "2.0.2")
+    (version "2.1.21")
     (source
      (origin
-       (method hg-fetch)
-       (uri (hg-reference
-             (url "https://pep.foundation/dev/repos/libpEpAdapter")
-             (changeset "e8fe371c870a"))) ;; r168
-       (file-name (string-append name "-" version "-checkout"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitea.pep.foundation/pEp.foundation/libpEpAdapter")
+             (commit (string-append "Release_" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1mlpavjbnmslvmr5jxcvpjgb2x40nhmxjb10hza3kn4qzj0k1pjz"))))
+        (base32 "09ljj3x09y99wc47n063hpn62zi8cdvdha82rnaypvirrlga6a5w"))))
     (build-system gnu-build-system)
     (arguments
      '(#:test-target "test"
        #:tests? #f ;; building the tests fails
+       #:make-flags '("NDEBUG=1") ; release build
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
@@ -168,7 +173,7 @@ privacy).")
              (let ((out (assoc-ref outputs "out"))
                    (engine (assoc-ref inputs "pep-engine")))
                (with-output-to-file "local.conf"
-                 (lambda _ ;()
+                 (lambda _
                    (format #t "
 PREFIX=~a
 ENGINE_LIB_PATH=~a/lib
@@ -186,16 +191,16 @@ ENGINE_INC_PATH=~a/include
 (define-public python-pep-adapter
   (package
     (name "python-pep-adapter")
-    (version "2.0.5")
+    (version "2.1.3")
     (source
      (origin
-       (method hg-fetch)
-       (uri (hg-reference
-             (url "https://pep.foundation/dev/repos/pEpPythonAdapter")
-             (changeset "66df0e5b9405"))) ;; r374
-       (file-name (string-append name "-" version "-checkout"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitea.pep.foundation/pEp.foundation/pEpPythonAdapter")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "107i1s8jf8gyhpmqcs64q9csxa3fwc8g7s57iyccqb4czw8gph6d"))))
+        (base32 "0ssz21p1k7xx3snmd4g3ggzq565rlzdmp90l2mph6yfp1y65p39s"))))
     (build-system python-build-system)
     (arguments
      `(;; Adding configure-flags does not work, running `build_ext`
@@ -223,12 +228,24 @@ ENGINE_INC_PATH=~a/include
                 (string-append a "os.getenv('LIBRARY_PATH', '').split(os.pathsep)\n"))
                (("^(\\s+SYS_SHARES = )\\['/usr.*" _ a)
                 (string-append a "['" (assoc-ref %build-inputs "asn1c") "/share']\n")))
+             #t))
+         (add-before 'build 'remove-wheel-requirement
+           ;; we dont't build a wheel
+           (lambda _
+             (substitute* "setup.cfg"
+               ((" wheel *>= [0-9.]*") ""))
+             (substitute* "pyproject.toml"
+               (("\"wheel *>=.*\"") ""))
              #t)))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-forked" ,python-pytest-forked)))
     (inputs
-     `(("asn1c" ,asn1c)
-       ("boost-python" ,boost-with-python3)
+     `(("boost-python" ,boost-with-python3)
        ("libpepadapter" ,libpepadapter)
-       ("pep-engine" ,pep-engine)))
+       ("pep-engine" ,pep-engine)
+       ("python-setuptools-scm" ,python-setuptools-scm/next)
+       ("util-linux" ,util-linux "lib"))) ;; uuid.h
     (home-page "https://pep.foundation/")
     (synopsis "Python adapter for p≡p (pretty Easy Privacy)")
     (description "The p≡p Python adapter is an adaptor interface to the p≡p
@@ -238,35 +255,26 @@ ENGINE_INC_PATH=~a/include
 (define-public java-pep-adapter
   (package
     (name "java-pep-adapter")
-    (version "2.0.5")
+    (version "2.1.23")
     (source
      (origin
-       (method hg-fetch)
-       (uri (hg-reference
-             (url "https://pep.foundation/dev/repos/pEpJNIAdapter")
-             (changeset "534537c9cd50"))) ;; r763
-       (file-name (string-append name "-" version "-checkout"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitea.pep.foundation/pEp.foundation/pEpJNIAdapter")
+             (commit (string-append "Release_" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "107ldpssc80bq8kndn2n000000gphj4lqagaiv3fddlfph4vji48"))))
+        (base32 "1sw3a5ggxcrkghvpp0a6h2lz461x55ldgfw5y4pw7c3gk5wynvjk"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (arguments
      `(#:test-target "test"
-       #:make-flags (list "doxy-all")
+       #:make-flags '("NDEBUG=1" "all" "doc") ; release build
        #:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'fix-includes
-           (lambda _
-             (substitute* "src/jniutils.hh"
-               (("#pragma once\n" line)
-                (string-append line
-                               "#include <mutex>\n"
-                               "#include <cassert>\n"
-                               "#include <cstring>\n")))
-             #t))
          (add-before 'configure 'pin-shared-lib-path
            (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* "src/foundation/pEp/jniadapter/AbstractEngine.java"
+             (substitute* "src/java/foundation/pEp/jniadapter/AbstractEngine.java"
                (("System.loadLibrary\\(\"pEpJNI\"\\);")
                 (string-append "System.load(\""
                                (assoc-ref outputs "out")
@@ -281,7 +289,7 @@ ENGINE_INC_PATH=~a/include
                    (libadapter (assoc-ref inputs "libpepadapter"))
                    (openjdk  (assoc-ref inputs "openjdk")))
                (with-output-to-file "local.conf"
-                 (lambda _ ;()
+                 (lambda _
                    (format #t "
 PREFIX=~a
 ENGINE_LIB_PATH=~a/lib
@@ -296,16 +304,18 @@ JAVA_HOME=~a
                (substitute* "src/Makefile"  ;; suppress some warnings
                  (("^\\s+OLD_JAVA=") "    xxx_OLD_JAVA="))
                #t)))
+         (add-before 'build 'build-codegen
+           ;; run codegen first to allow parallel build of other parts
+           (lambda _
+             (invoke "make" "-C" "src" "create-dirs" "codegen")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (libout (string-append out "/lib/"))
                     (javaout (string-append out "/share/java/")))
-               (mkdir-p libout)
-               (mkdir-p javaout)
-               (copy-file "src/libpEpJNI.so"
-                          (string-append libout "/libpEpJNI.so"))
-               (copy-file "src/pEp.jar" (string-append javaout "/pEp.jar"))
+               (install-file "dist/libpEpJNI.a" libout)
+               (install-file "dist/libpEpJNI.so" libout)
+               (install-file "dist/pEp.jar" javaout)
                #t)))
          (add-after 'install 'install-docs
            (lambda* (#:key outputs #:allow-other-keys)
@@ -320,13 +330,14 @@ JAVA_HOME=~a
                #t))))))
     (native-inputs
      `(("doxygen" ,doxygen)
+       ("graphviz" ,graphviz)
        ("openjdk" ,openjdk9 "jdk")
        ("which" ,which)
        ("yml2" ,yml2)))
     (inputs
      `(("libpepadapter" ,libpepadapter)
        ("pep-engine" ,pep-engine)
-       ("util-linux" ,util-linux))) ;; uuid.h
+       ("util-linux" ,util-linux "lib"))) ;; uuid.h
     (home-page "https://pep.foundation/")
     (synopsis "Java adapter for p≡p (pretty Easy Privacy)")
     (description "The p≡p JNI adapter is a Java adapter interface to the p≡p

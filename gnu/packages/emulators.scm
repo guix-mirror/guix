@@ -15,6 +15,7 @@
 ;;; Copyright © 2020 Christopher Howard <christopher@librehacker.com>
 ;;; Copyright © 2021 Felipe Balbi <balbi@kernel.org>
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1314,7 +1315,7 @@ as RetroArch.")
 (define-public retroarch
   (package
     (name "retroarch")
-    (version "1.9.2")
+    (version "1.9.4")
     (source
      (origin
        (method git-fetch)
@@ -1323,7 +1324,7 @@ as RetroArch.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0zrry2zwknzsrrz8r6rl1iy9hmiv4dwjmf61aidx3xwxby3g82qg"))
+        (base32 "1wky28y52nsjmannks3y1hbjgw0dvqh85gxrllr98f9y7kvk1cvf"))
        (patches
         (search-patches "retroarch-LIBRETRO_DIRECTORY.patch"))))
     (build-system gnu-build-system)
@@ -1630,7 +1631,7 @@ This is a part of the TiLP project.")
 (define-public mame
   (package
     (name "mame")
-    (version "0.231")
+    (version "0.232")
     (source
      (origin
        (method git-fetch)
@@ -1639,7 +1640,7 @@ This is a part of the TiLP project.")
              (commit (apply string-append "mame" (string-split version #\.)))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0rgch8fg8ra48wa4gl5ah70q6191sxs28x39iyalb6ballmz8v1w"))
+        (base32 "1v6qka8k4smah08rp62kgjmc84hwsg1iqhms0369rhdh722bgpn7"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled libraries.
@@ -2123,200 +2124,211 @@ framework based on QEMU.")
       (license license:gpl2+))))
 
 (define-public ppsspp
-  (package
-    (name "ppsspp")
-    (version "1.11.3")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/hrydgard/ppsspp")
-             (commit (string-append "v" version))))
-       (sha256
-        (base32 "1dpxnwvl6jq7z67lbjws4lqc1bxc31xi6ddlmg5n3aig008yi2fp"))
-       (file-name (git-file-name name version))
-       (patches
-        (search-patches "ppsspp-disable-upgrade-and-gold.patch"))
-       (modules '((guix build utils)))
-       (snippet
-        `(begin
-           ;; The following is quite a heavy-handed way of unbundling PPSSPP.
-           ;; There are still a number of external sources, that we don't
-           ;; remove here.  Some may be packaged, others are not.
-           ;; First, we patch existing sources to include the right headers.
-           (substitute* (append (find-files "Common" ".*\\.(h|cpp)")
-                                (find-files "Core" ".*\\.(h|cpp)")
-                                (find-files "GPU" ".*\\.(h|cpp)")
-                                (find-files "SDL" ".*\\.(h|cpp)")
-                                (find-files "UI" ".*\\.(h|cpp)"))
-             ;; These headers are all hard-coded in the original source.
-             (("ext/cityhash/") "")
-             (("ext/glslang/glslang/") "glslang/")
-             (("ext/glslang/") "glslang/")
-             (("ext/miniupnp/") "")
-             (("ext/SPIRV-Cross/") "spirv_cross/")
-             (("ext/vulkan/") "vulkan/")
-             (("ext/xxhash.h") "xxhash.h")
-             ;; These definitions do not actually exist in the Vulkan headers,
-             ;; but PPSSPP defines them in ext/vulkan.
-             (("VK_FORMAT_BEGIN_RANGE") "VK_FORMAT_UNDEFINED")
-             (("VK_FORMAT_END_RANGE") "VK_FORMAT_ASTC_12x12_SRGB_BLOCK"))
-           ;; Next, we patch CMakeLists.
-           (substitute* "CMakeLists.txt"
-             ;; Drop unnecessary includes and targets.
-             (("include_directories\\(ext/glslang\\)") "")
-             (("include_directories\\(ext/xxhash\\)") "")
-             (("include_directories\\(ext/cityhash\\)") "")
-             (("set_target_properties\\(cityhash .*\\)") "")
-             ;; Fix linking to GLEW.
-             (("TARGET Ext::GLEW") "true")
-             (("target_link_libraries\\(native Ext::GLEW\\)")
-              "find_package(GLEW)\ntarget_link_libraries(native GLEW::GLEW)")
-             (("Ext::Snappy") "snappy")
-             ;; Don't search for cityhash/xxhash, we already have them.
-             (("add_library\\((city|xx)hash STATIC") "if()\nendif(")
-             (("ext/xxhash\\.[ch]") "")
-             (("ext/cityhash/.*\\.(cpp|h)") "")
-             (("if\\(USE_MINIUPNPC\\)" all)
-              (string-append all "
+  ;; Use a recent commit as fixes for ffmpeg 4.4 haven't been released as of
+  ;; 1.11.3.
+  (let ((commit "69fa20744958aef8da9ca052ba7675fdc1636e46")
+        (revision "1"))
+    (package
+      (name "ppsspp")
+      (version (git-version "1.11.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/hrydgard/ppsspp")
+               (commit commit)))
+         (sha256
+          (base32 "0r8w4hllhn6zsfxlajxw3sn3f8vsri45srr4mdwsffzcb4hvl0cr"))
+         (file-name (git-file-name name version))
+         (patches
+          (search-patches "ppsspp-disable-upgrade-and-gold.patch"))
+         (modules '((guix build utils)))
+         (snippet
+          `(begin
+             ;; The following is quite a heavy-handed way of unbundling PPSSPP.
+             ;; There are still a number of external sources, that we don't
+             ;; remove here.  Some may be packaged, others are not.
+             ;; First, we patch existing sources to include the right headers.
+             (substitute* (append (find-files "Common" ".*\\.(h|cpp)")
+                                  (find-files "Core" ".*\\.(h|cpp)")
+                                  (find-files "GPU" ".*\\.(h|cpp)")
+                                  (find-files "SDL" ".*\\.(h|cpp)")
+                                  (find-files "UI" ".*\\.(h|cpp)"))
+               ;; These headers are all hard-coded in the original source.
+               (("ext/cityhash/") "")
+               (("ext/glslang/glslang/") "glslang/")
+               (("ext/glslang/") "glslang/")
+               (("ext/miniupnp/") "")
+               (("ext/SPIRV-Cross/") "spirv_cross/")
+               (("ext/vulkan/") "vulkan/")
+               (("ext/xxhash.h") "xxhash.h")
+               ;; These definitions do not actually exist in the Vulkan headers,
+               ;; but PPSSPP defines them in ext/vulkan.
+               (("VK_FORMAT_BEGIN_RANGE") "VK_FORMAT_UNDEFINED")
+               (("VK_FORMAT_END_RANGE") "VK_FORMAT_ASTC_12x12_SRGB_BLOCK"))
+             ;; Next, we patch CMakeLists.
+             (substitute* "CMakeLists.txt"
+               ;; Drop unnecessary includes and targets.
+               (("include_directories\\(ext/glslang\\)") "")
+               (("include_directories\\(ext/xxhash\\)") "")
+               (("include_directories\\(ext/cityhash\\)") "")
+               (("include_directories\\(ext/zstd.*") "")
+               (("libzstd_static") "zstd")
+               (("set_target_properties\\(cityhash .*\\)") "")
+               ;; Fix linking to GLEW.
+               (("TARGET Ext::GLEW") "true")
+               (("target_link_libraries\\(native Ext::GLEW\\)")
+                "find_package(GLEW)\ntarget_link_libraries(native GLEW::GLEW)")
+               (("Ext::Snappy") "snappy")
+               ;; Don't search for cityhash/xxhash, we already have them.
+               (("add_library\\((city|xx)hash STATIC") "if()\nendif(")
+               (("ext/xxhash\\.[ch]") "")
+               (("ext/cityhash/.*\\.(cpp|h)") "")
+               (("if\\(USE_MINIUPNPC\\)" all)
+                (string-append all "
 find_package(miniupnpc)
 target_link_libraries(${CoreLibName} miniupnpc ${LDLIBS})
 elseif(FALSE)"))
-             ;; Link all of spirv-cross.
-             (("spirv-cross-glsl" all)
-              (string-append all
-                             " spirv-cross-core spirv-cross-cpp"
-                             " spirv-cross-reflect spirv-cross-util")))
-           (substitute* "ext/CMakeLists.txt"
-             (("add_subdirectory\\(glew\\)") "")
-             (("add_subdirectory\\(glslang( [A-Z_]*)*\\)") "")
-             (("add_subdirectory\\(snappy\\)") "")
-             (("add_subdirectory\\(SPIRV-Cross-build\\)") ""))
-           ;; Finally, we can delete the bundled sources.
-           (for-each delete-file-recursively
-                     '("MoltenVK"
-                       "ext/cmake"
-                       "ext/glew"
-                       "ext/glslang" "ext/glslang-build"
-                       "ext/miniupnp" "ext/miniupnp-build"
-                       "ext/native"
-                       "ext/snappy"
-                       "ext/SPIRV-Cross" "ext/SPIRV-Cross-build"
-                       "ext/vulkan"
-                       "ext/xxhash.c"
-                       "ext/xxhash.h"
-                       "ext/zlib"))
-           ;; Since we are not including git as an input, PPSSPP is confused
-           ;; about its version.  Let's fix that here.
-           (substitute* "git-version.cmake"
-             (("unknown") ,version))))))
-    (build-system cmake-build-system)
-    (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("python" ,python)))
-    (inputs
-     `(("cityhash" ,cityhash)
-       ("ffmpeg" ,ffmpeg)
-       ("glew" ,glew)
-       ("glslang" ,glslang)
-       ("libpng" ,libpng)
-       ("libzip" ,libzip)
-       ("mesa" ,mesa)
-       ("miniupnpc" ,miniupnpc)
-       ("sdl2" ,sdl2)
-       ("snappy" ,snappy)
-       ("spirv-cross" ,spirv-cross)
-       ("vulkan-headers" ,vulkan-headers)
-       ("vulkan-loader" ,vulkan-loader)
-       ("xxhash" ,xxhash)
-       ("zlib" ,zlib)
-       ;; TODO: unbundle armips.
-       ("armips-source" ,(package-source armips))
-       ("lang"
-        ,(let ((commit "6bd5b4bc983917ea8402f73c726b46e36f3de0b4"))
-           (origin
-             (method git-fetch)
-             (uri (git-reference
-                   (url "https://github.com/hrydgard/ppsspp-lang")
-                   (commit commit)))
-             (sha256
-              (base32 "08npr3a4xskf85gnlxidl4ksc3rhc7m5rgnj7vsbjvhvw5ap02qx"))
-             (file-name (git-file-name "ppsspp-lang" commit)))))
-       ("tests"
-        ,(let ((commit "1047400eaec6bcbdb2a64d326375ef6a6617c4ac"))
-           (origin
-             (method git-fetch)
-             (uri (git-reference
-                   (url "https://github.com/hrydgard/pspautotests")
-                   (commit commit)))
-             (sha256
-              (base32 "0nxv1lskcr8zbg6nrfai21mxsw0n5vaqhbsa41c3cxfyx5c4w2pg"))
-             (file-name (git-file-name "pspautotests" commit)))))))
-    (arguments
-     `(#:out-of-source? #f
-       #:configure-flags (list "-DUSE_DISCORD=OFF"
-                               "-DUSE_SYSTEM_FFMPEG=ON"
-                               "-DUSE_SYSTEM_LIBZIP=ON"
-                               ;; for testing
-                               "-DUNITTEST=ON" "-DHEADLESS=ON")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'add-external-sources
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; TODO: unbundle armips.
-             (copy-recursively (assoc-ref inputs "armips-source")
-                               "ext/armips")
-             ;; Some tests are externalised, so we add them here.
-             (copy-recursively (assoc-ref inputs "tests")
-                               "pspautotests")
-             ;; i18n is externalised, so we add it here.
-             (copy-recursively (assoc-ref inputs "lang")
-                               "assets/lang")
-             #t))
-         (add-after 'unpack 'fix-unittest-build
-           (lambda _
-             (substitute* "CMakeLists.txt"
-               (("unittest/TestVertexJit.cpp" all)
-                (string-append all " unittest/TestShaderGenerators.cpp")))
-             (substitute* "unittest/TestVertexJit.cpp"
-               (("#include \"unittest/UnitTest.h\"" all)
-                (string-append all "\n#include <cmath>")))
-             #t))
-         (replace 'check
-           (lambda _
-             (for-each
-              (lambda (t) (invoke "./unitTest" t))
-              '("Arm64Emitter" "ArmEmitter" "X64Emitter" "VertexJit" "Asin"
-                "SinCos" #|"VFPUSinCos" SIGSEGV|# "MathUtil" "Parsers" "Jit"
-                "MatrixTranspose" "ParseLBN" "QuickTexHash" "CLZ"
-                #|"ShaderGenerators"|#))
-             (invoke "python3" "test.py" "-g")
-             #t))
-         (replace 'install
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (bin/ppsspp (string-append out "/bin/ppsspp"))
-                    (share (string-append out "/share/ppsspp")))
-               (copy-recursively "icons/hicolor"
-                                 (string-append out "/share/icons/hicolor"))
-               (install-file "PPSSPPSDL" share)
-               (copy-recursively "assets" (string-append share "/assets"))
+               ;; Link all of spirv-cross.
+               (("spirv-cross-glsl" all)
+                (string-append all
+                               " spirv-cross-core spirv-cross-cpp"
+                               " spirv-cross-reflect spirv-cross-util")))
+             (substitute* "ext/CMakeLists.txt"
+               (("add_subdirectory\\(glew.*") "")
+               (("add_subdirectory\\(glslang.*") "")
+               (("add_subdirectory\\(snappy.*") "")
+               (("add_subdirectory\\(SPIRV-Cross-build.*") "")
+               (("add_subdirectory\\(zstd.*") ""))
+             ;; Finally, we can delete the bundled sources.
+             (for-each delete-file-recursively
+                       '("MoltenVK"
+                         "ext/cmake"
+                         "ext/glew"
+                         "ext/glslang" "ext/glslang-build"
+                         "ext/miniupnp" "ext/miniupnp-build"
+                         "ext/native"
+                         "ext/snappy"
+                         "ext/SPIRV-Cross" "ext/SPIRV-Cross-build"
+                         "ext/vulkan"
+                         "ext/xxhash.c"
+                         "ext/xxhash.h"
+                         "ext/zlib"
+                         "ext/zstd"))
+             ;; Since we are not including git as an input, PPSSPP is confused
+             ;; about its version.  Let's fix that here.
+             (substitute* "git-version.cmake"
+               (("unknown") ,version))))))
+      (build-system cmake-build-system)
+      (native-inputs
+       `(("pkg-config" ,pkg-config)
+         ("python" ,python)))
+      (inputs
+       `(("cityhash" ,cityhash)
+         ;; ppsspp doesn't yet build with ffmpeg 4.4 (see:
+         ("ffmpeg" ,ffmpeg)
+         ("glew" ,glew)
+         ("glslang" ,glslang)
+         ("libpng" ,libpng)
+         ("libzip" ,libzip)
+         ("mesa" ,mesa)
+         ("miniupnpc" ,miniupnpc)
+         ("sdl2" ,sdl2)
+         ("snappy" ,snappy)
+         ("spirv-cross" ,spirv-cross)
+         ("vulkan-headers" ,vulkan-headers)
+         ("vulkan-loader" ,vulkan-loader)
+         ("xxhash" ,xxhash)
+         ("zlib" ,zlib)
+         ("zstd" ,zstd "lib")
+;         ("zstd" ,zstd "static")
+         ;; TODO: unbundle armips.
+         ("armips-source" ,(package-source armips))
+         ("lang"
+          ,(let ((commit "6bd5b4bc983917ea8402f73c726b46e36f3de0b4"))
+             (origin
+               (method git-fetch)
+               (uri (git-reference
+                     (url "https://github.com/hrydgard/ppsspp-lang")
+                     (commit commit)))
+               (sha256
+                (base32 "08npr3a4xskf85gnlxidl4ksc3rhc7m5rgnj7vsbjvhvw5ap02qx"))
+               (file-name (git-file-name "ppsspp-lang" commit)))))
+         ("tests"
+          ,(let ((commit "1047400eaec6bcbdb2a64d326375ef6a6617c4ac"))
+             (origin
+               (method git-fetch)
+               (uri (git-reference
+                     (url "https://github.com/hrydgard/pspautotests")
+                     (commit commit)))
+               (sha256
+                (base32 "0nxv1lskcr8zbg6nrfai21mxsw0n5vaqhbsa41c3cxfyx5c4w2pg"))
+               (file-name (git-file-name "pspautotests" commit)))))))
+      (arguments
+       `(#:out-of-source? #f
+         #:configure-flags (list "-DUSE_DISCORD=OFF"
+                                 "-DUSE_SYSTEM_FFMPEG=ON"
+                                 "-DUSE_SYSTEM_LIBZIP=ON"
+                                 ;; for testing
+                                 "-DUNITTEST=ON" "-DHEADLESS=ON")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'add-external-sources
+             (lambda* (#:key inputs #:allow-other-keys)
+               ;; TODO: unbundle armips.
+               (copy-recursively (assoc-ref inputs "armips-source")
+                                 "ext/armips")
+               ;; Some tests are externalised, so we add them here.
+               (copy-recursively (assoc-ref inputs "tests")
+                                 "pspautotests")
+               ;; i18n is externalised, so we add it here.
+               (copy-recursively (assoc-ref inputs "lang")
+                                 "assets/lang")
+               #t))
+           (add-after 'unpack 'fix-unittest-build
+             (lambda _
+               (substitute* "CMakeLists.txt"
+                 (("unittest/TestVertexJit.cpp" all)
+                  (string-append all " unittest/TestShaderGenerators.cpp")))
+               (substitute* "unittest/TestVertexJit.cpp"
+                 (("#include \"unittest/UnitTest.h\"" all)
+                  (string-append all "\n#include <cmath>")))
+               #t))
+           (replace 'check
+             (lambda _
+               (for-each
+                (lambda (t) (invoke "./unitTest" t))
+                '("Arm64Emitter" "ArmEmitter" "X64Emitter" "VertexJit" "Asin"
+                  "SinCos" #|"VFPUSinCos" SIGSEGV|# "MathUtil" "Parsers" "Jit"
+                  "MatrixTranspose" "ParseLBN" "QuickTexHash" "CLZ"
+                  #|"ShaderGenerators"|#))
+               (invoke "python3" "test.py" "-g")
+               #t))
+           (replace 'install
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin/ppsspp (string-append out "/bin/ppsspp"))
+                      (share (string-append out "/share/ppsspp")))
+                 (copy-recursively "icons/hicolor"
+                                   (string-append out "/share/icons/hicolor"))
+                 (install-file "PPSSPPSDL" share)
+                 (copy-recursively "assets" (string-append share "/assets"))
 
-               (make-desktop-entry-file
-                (string-append out "/share/applications/ppsspp.desktop")
-                #:name "PPSSPP"
-                #:exec (string-append share "/PPSSPPSDL")
-                #:icon "ppsspp")
-               (mkdir-p (string-append out "/bin"))
-               (with-output-to-file bin/ppsspp
-                 (lambda ()
-                   (format #t "#!~a~%exec ~a/PPSSPPSDL \"$@\""
-                           (which "sh") share)))
-               (chmod bin/ppsspp #o755)
-               #t))))))
-    (home-page "https://www.ppsspp.org/")
-    (synopsis "PSP emulator")
-    (description
-     "PPSSPP is a ``high-level'' emulator simulating the PSP operating
+                 (make-desktop-entry-file
+                  (string-append out "/share/applications/ppsspp.desktop")
+                  #:name "PPSSPP"
+                  #:exec (string-append share "/PPSSPPSDL")
+                  #:icon "ppsspp")
+                 (mkdir-p (string-append out "/bin"))
+                 (with-output-to-file bin/ppsspp
+                   (lambda ()
+                     (format #t "#!~a~%exec ~a/PPSSPPSDL \"$@\""
+                             (which "sh") share)))
+                 (chmod bin/ppsspp #o755)
+                 #t))))))
+      (home-page "https://www.ppsspp.org/")
+      (synopsis "PSP emulator")
+      (description
+       "PPSSPP is a ``high-level'' emulator simulating the PSP operating
 system.")
-    (license license:gpl2+)))
+      (license license:gpl2+))))

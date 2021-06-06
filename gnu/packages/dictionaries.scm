@@ -175,11 +175,10 @@ work, such as sentence length and other readability measures.")
          (delete 'build)
          (delete 'check)
          (replace 'install
-           (lambda _
+           (lambda* (#:key inputs #:allow-other-keys)
              (let ((bindir (string-append
                             (assoc-ref %outputs "out") "/bin"))
-                   (wish (string-append
-                          (assoc-ref %build-inputs "tk")
+                   (wish (string-append (assoc-ref inputs "tk")
                           "/bin/wish8.6"))
                    (sharedir (string-append
                               (assoc-ref %outputs "out")

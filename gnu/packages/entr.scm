@@ -4,6 +4,7 @@
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2021 Solene Rapenne <solene@perso.pw>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,14 +34,14 @@
 (define-public entr
   (package
     (name "entr")
-    (version "4.6")
+    (version "4.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://entrproject.org/code/entr-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0vcflgagna2gdlpjsd6748c73j2829xlhm276mi838zl1n121phn"))))
+                "18h58k69f0qmqkknbcnhm5dz7mv5gr2blcq88qr62vz4zg9a8mp2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"

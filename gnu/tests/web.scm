@@ -378,12 +378,14 @@ HTTP-PORT, along with php-fpm."
   (define vm
     (virtual-machine
      (operating-system os)
-     (port-forwardings '((8080 . 5000)))))
+     (port-forwardings '((8080 . 5000)))
+     (memory-size 1024)))
 
   (define test
     (with-imported-modules '((gnu build marionette))
       #~(begin
           (use-modules (srfi srfi-11) (srfi srfi-64)
+                       (ice-9 match)
                        (gnu build marionette)
                        (web uri)
                        (web client)
@@ -412,9 +414,13 @@ HTTP-PORT, along with php-fpm."
             200
             (begin
               (wait-for-tcp-port 5000 marionette)
-              (let-values (((response text)
-                            (http-get "http://localhost:8080")))
-                (response-code response))))
+              (#$retry-on-error
+               (lambda ()
+                 (let-values (((response text)
+                               (http-get "http://localhost:8080")))
+                   (response-code response)))
+               #:times 10
+               #:delay 5)))
 
           (test-end)
           (exit (= (test-runner-fail-count (test-runner-current)) 0)))))

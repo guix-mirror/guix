@@ -28,6 +28,7 @@
 ;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;; Copyright © 2020, 2021 Robert Karszniewicz <avoidr@posteo.de>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
+;;; Copyright © 2021 Denis 'GNUtoo' Carikli <GNUtoo@cyberdimension.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -123,6 +124,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system go)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
@@ -478,7 +480,7 @@ your private keys, no previous conversation is compromised.")
 (define-public libsignal-protocol-c
   (package
   (name "libsignal-protocol-c")
-  (version "2.3.2")
+  (version "2.3.3")
   (source (origin
            (method git-fetch)
            (uri (git-reference
@@ -487,7 +489,7 @@ your private keys, no previous conversation is compromised.")
            (file-name (git-file-name name version))
            (sha256
             (base32
-             "1qj2w4csy6j9jg1jy66n1qwysx7hgjywk4n35hlqcnh1kpa14k3p"))))
+             "0z5p03vk15i6h870azfjgyfgxhv31q2vq6rfhnybrnkxq2wqzwhk"))))
   (arguments
    `(;; Required for proper linking and for tests to run.
      #:configure-flags '("-DBUILD_SHARED_LIBS=on" "-DBUILD_TESTING=1")))
@@ -1144,7 +1146,7 @@ and OpenPGP) and available in 29 languages.")
 (define-public gajim-omemo
   (package
     (name "gajim-omemo")
-    (version "2.7.13")
+    (version "2.7.14")
     (source
      (origin
        (method url-fetch/zipbomb)
@@ -1153,7 +1155,7 @@ and OpenPGP) and available in 29 languages.")
          "https://ftp.gajim.org/plugins_releases/omemo_"
          version ".zip"))
        (sha256
-        (base32 "1msr71rvik05wjpa2inpkadddad2rxaqbqcww5qrdrcz75pm8brn"))))
+        (base32 "0jmyjqfc4vimvq5vdqsvz25dsij6bh92alml8qnn59p5farnf86v"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -2404,13 +2406,13 @@ QMatrixClient project.")
 (define-public hangups
   (package
     (name "hangups")
-    (version "0.4.13")
+    (version "0.4.14")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "hangups" version))
        (sha256
-        (base32 "015g635vnrxk5lf9n80rdcmh6chv8kmla1k2j7m1iijijs519ngn"))))
+        (base32 "15qbbafcrdkx73xz9y30qa3d8nj6mgrp2m41749i5nn1qywmikk8"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -2965,6 +2967,33 @@ designed for experienced users.")
     (home-page "https://github.com/zulip/zulip-terminal")
     (synopsis "Zulip's official terminal client")
     (description "This package contains Zulip's official terminal client.")
+    (license license:asl2.0)))
+
+(define-public matterbridge
+  (package
+    (name "matterbridge")
+    (version "1.22.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/42wim/matterbridge")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "07rgdc4v043fhzsalmlhickqizk6xjlpjkzn6l5v9ryp5gmv580z"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/42wim/matterbridge"
+       #:unpack-path "github.com/42wim/matterbridge"))
+    (synopsis "Bridge together various messaging networks and protocols")
+    (description "Relays messages between different channels from various
+messaging networks and protocols.  So far it supports mattermost, IRC, gitter,
+xmpp, slack, discord, telegram, rocketchat, twitch, ssh-chat, zulip, whatsapp,
+keybase, matrix, microsoft teams, nextcloud, mumble, vk and more with REST
+API.  Mattermost is not required.")
+    (home-page "https://github.com/42wim/matterbridge")
     (license license:asl2.0)))
 
 ;;; messaging.scm ends here

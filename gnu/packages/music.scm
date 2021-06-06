@@ -38,6 +38,7 @@
 ;;; Copyright © 2021 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2021 Bonface Munyoki Kilyungi <me@bonfacemunyoki.com>
 ;;; Copyright © 2021 Frank Pursel <frank.pursel@gmail.com>
+;;; Copyright © 2021 Rovanion Luckey <rovanion.luckey@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -68,9 +69,11 @@
   #:use-module (guix build-system python)
   #:use-module (guix build-system scons)
   #:use-module (guix build-system glib-or-gtk)
+  #:use-module (guix build-system qt)
   #:use-module (guix build-system waf)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system go)
+  #:use-module (guix build-system qt)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages algebra)
@@ -1338,6 +1341,47 @@ Sega Master System/Mark III, Sega Genesis/Mega Drive, BBC Micro
     (license (list license:lgpl2.1+
                    ;; demo and player directories are under the Expat license
                    license:expat))))
+
+(define-public lingot
+  (package
+    (name "lingot")
+    (version "1.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ibancg/lingot")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "04lcjzfhddbyskxr2068z609y6x0s2gjx1wl78w0dkxdi459zrn9"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("cunit" ,cunit)
+       ("glib" ,glib "bin")             ; for glib-compile-resources
+       ("intltool" ,intltool)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("fftw" ,fftw)
+       ("gtk+" ,gtk+)
+       ("jack" ,jack-2)
+       ("json-c" ,json-c)
+       ("pulseaudio" ,pulseaudio)))
+    (home-page "http://lingot.nongnu.org/")
+    (synopsis "Accurate & configurable musical instrument tuner")
+    (description
+     "LINGOT is a musical instrument tuner.  It's accurate, easy to use, and
+highly configurable.  Originally conceived to tune electric guitars, it can now
+be used to tune other instruments.
+
+It looks like an analogue tuner, with a gauge indicating the relative shift to a
+certain note, determined automatically as the closest note to the estimated
+frequency.")
+    (license license:gpl2+)))
 
 (define-public ninjas2
   (package
@@ -4704,7 +4748,7 @@ standalone JACK client and an LV2 plugin is also available.")
                        "thirdparty/portmidi"
                        "thirdparty/qt-google-analytics"))
            #t))))
-    (build-system cmake-build-system)
+    (build-system qt-build-system)
     (arguments
      `(#:configure-flags
        `("-DBUILD_TELEMETRY_MODULE=OFF" ;don't phone home
@@ -4735,6 +4779,7 @@ standalone JACK client and an LV2 plugin is also available.")
        ("pulseaudio" ,pulseaudio)
        ("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)
+       ("qtgraphicaleffects" ,qtgraphicaleffects)
        ("qtquickcontrols2" ,qtquickcontrols2)
        ("qtscript" ,qtscript)
        ("qtsvg" ,qtsvg)
@@ -4761,25 +4806,21 @@ sample library.")
 (define-public muse-sequencer
   (package
     (name "muse-sequencer")
-    (version "3.1.1")
+    (version "4.0.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/muse-sequencer/muse")
-                    (commit (string-append "muse_"
-                                           (string-map (lambda (c)
-                                                         (if (char=? c #\.)
-                                                             #\_ c)) version)))))
+                    (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1rasp2v1ds2aw296lbf27rzw0l9fjl0cvbvw85d5ycvh6wkm301p"))))
-    (build-system cmake-build-system)
+                "1gamr9ln10l26wwyin1a4grrqy6h05qzcgp28wsp85yczkpsh02c"))))
+    (build-system qt-build-system)
     (arguments
      `(#:tests? #f ; there is no test target
        #:configure-flags
-       (list "-DENABLE_INSTPATCH=OFF"  ; FIXME: not packaged
-             "-DENABLE_VST_NATIVE=OFF"
+       (list "-DENABLE_VST_NATIVE=OFF"
              (string-append "-DCMAKE_EXE_LINKER_FLAGS="
                             "-Wl,-rpath="
                             (assoc-ref %outputs "out") "/lib/muse-"
@@ -4791,7 +4832,7 @@ sample library.")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'chdir
-           (lambda _ (chdir "muse3") #t))
+           (lambda _ (chdir "src") #t))
          (add-after 'chdir 'fix-include
            (lambda _
              (substitute* "muse/driver/rtaudio.h"
@@ -4799,26 +4840,30 @@ sample library.")
              #t)))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
-       ("lash" ,lash)
-       ("jack" ,jack-1)
-       ("liblo" ,liblo)
        ("dssi" ,dssi)
-       ("ladspa" ,ladspa)
-       ("lv2" ,lv2)
-       ("lilv" ,lilv)
-       ("sord" ,sord)
-       ("libsndfile" ,libsndfile)
-       ("libsamplerate" ,libsamplerate)
-       ("lrdf" ,lrdf)
        ("fluidsynth" ,fluidsynth)
+       ("glib" ,glib)
+       ("jack" ,jack-1)
+       ("ladspa" ,ladspa)
+       ("lash" ,lash)
+       ("libinstpatch" ,libinstpatch)
+       ("liblo" ,liblo)
+       ("libsamplerate" ,libsamplerate)
+       ("libsndfile" ,libsndfile)
+       ("lilv" ,lilv)
+       ("lrdf" ,lrdf)
+       ("lv2" ,lv2)
        ("pcre" ,pcre)
        ("pulseaudio" ,pulseaudio) ; required by rtaudio
        ("qtbase" ,qtbase)
        ("qtsvg" ,qtsvg)
        ("rtaudio" ,rtaudio)
-       ("rubberband" ,rubberband)))
+       ("rubberband" ,rubberband)
+       ("sord" ,sord)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)
        ("qttools" ,qttools)))
     (home-page "https://muse-sequencer.github.io/")
     (synopsis "MIDI/Audio sequencer")
@@ -4927,14 +4972,14 @@ specification and header.")
 (define-public rosegarden
   (package
     (name "rosegarden")
-    (version "20.12")
+    (version "21.06")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/rosegarden/rosegarden/"
                            version "/rosegarden-" version ".tar.bz2"))
        (sha256
-        (base32 "0nqw2caxmv6mqh485wzvywa024yvi18q87sd4dw9b2l5qnpq8rl8"))))
+        (base32 "0rhbmygzh62hc3mkq60lh9r28wvfkhzzd5kspl1ll0h1ipjgvr6d"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DCMAKE_BUILD_TYPE=Release")
@@ -5892,7 +5937,7 @@ audio and MIDI plugins that can also run as standalone JACK applications.")
          (recursive? #t)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0bxvssqnnd7bph3w1d6xcmxradv4cqq3wyzyv1a1hfm71a0pdahs"))))
+        (base32 "02blg0iqich4vx5z1ahj6avkh83yqszdiq83p9jd5qwm0i4llqjq"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ;no "check" target

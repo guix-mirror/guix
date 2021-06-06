@@ -2745,14 +2745,14 @@ GUI.")
 (define-public poke
   (package
     (name "poke")
-    (version "1.2")
+    (version "1.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/poke/poke-" version
                                   ".tar.gz"))
               (sha256
                (base32
-                "0qnz7lc681nxa16rw9n9q4spy9fas6m2adrpb49imh34bgdgh77n"))))
+                "06qgry1pal2vampmbmc1lzlhf1qnjkd8py781r5h020v981n6y5s"))))
     (build-system gnu-build-system)
     ;; The GUI, which we elide, requires tcl and tk.
     (native-inputs `(("bison" ,bison)

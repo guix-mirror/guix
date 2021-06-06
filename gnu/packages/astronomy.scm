@@ -228,7 +228,7 @@ astronomical image-processing packages like Drizzle, Swarp or SExtractor.")
 (define-public gnuastro
   (package
     (name "gnuastro")
-    (version "0.14")
+    (version "0.15")
     (source
      (origin
        (method url-fetch)
@@ -236,7 +236,7 @@ astronomical image-processing packages like Drizzle, Swarp or SExtractor.")
                            version ".tar.lz"))
        (sha256
         (base32
-         "1xp6n42qxv0x6yigi2w2l5k8006smv27lhrcssysgsvzbydghzg5"))))
+         "1jjr3ixxbpsr5m4s7ahh12ymcnlvjzwcp02ya16b1lvzrz1wmhy4"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))

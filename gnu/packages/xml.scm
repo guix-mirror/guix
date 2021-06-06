@@ -13,7 +13,7 @@
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2016–2021 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
@@ -120,6 +120,7 @@ the entire document.")
 (define-public expat
   (package
     (name "expat")
+    (replacement expat-2.4.1)
     (version "2.3.0")
     (source (let ((dot->underscore (lambda (c) (if (char=? #\. c) #\_ c))))
               (origin
@@ -143,6 +144,24 @@ the entire document.")
 stream-oriented parser in which an application registers handlers for
 things the parser might find in the XML document (like start tags).")
     (license license:expat)))
+
+;; Replacement package to fix CVE-2013-0340.
+(define expat-2.4.1
+  (package
+    (inherit expat)
+    (version "2.4.1")
+    (source (let ((dot->underscore (lambda (c) (if (char=? #\. c) #\_ c))))
+              (origin
+                (method url-fetch)
+                (uri (list (string-append "mirror://sourceforge/expat/expat/"
+                                          version "/expat-" version ".tar.xz")
+                           (string-append
+                            "https://github.com/libexpat/libexpat/releases/download/R_"
+                            (string-map dot->underscore version)
+                            "/expat-" version ".tar.xz")))
+                (sha256
+                 (base32
+                  "0spvyb9d3hijs4ys3x64cfmilsynl8kv6clfahv8d4lvp86js0yg")))))))
 
 (define-public libebml
   (package

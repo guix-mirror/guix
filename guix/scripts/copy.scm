@@ -62,6 +62,10 @@ number (or #f) corresponding to SPEC."
     (x
      (leave (G_ "~a: invalid SSH specification~%") spec))))
 
+(define (warn-if-empty items)
+  (when (null? items)
+    (warning (G_ "no arguments specified, nothing to copy~%"))))
+
 (define (send-to-remote-host local target opts)
   "Send ITEMS to TARGET.  ITEMS is a list of store items or package names; for ;
 package names, build the underlying packages before sending them."
@@ -69,6 +73,7 @@ package names, build the underlying packages before sending them."
                 (ssh-spec->user+host+port target))
                ((drv items)
                 (options->derivations+files local opts)))
+    (warn-if-empty items)
     (and (build-derivations local drv)
          (let* ((session (open-ssh-session host #:user user
                                            #:port (or port 22)))
@@ -94,7 +99,9 @@ package names, build the underlying packages before sending them."
     (let*-values (((drv items)
                    (options->derivations+files local opts))
                   ((retrieved)
-                   (retrieve-files local items remote #:recursive? #t)))
+                   (begin
+                     (warn-if-empty items)
+                     (retrieve-files local items remote #:recursive? #t))))
       (close-connection remote)
       (disconnect! session)
       (format #t "~{~a~%~}" retrieved)

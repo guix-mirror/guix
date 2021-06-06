@@ -864,7 +864,15 @@ time for compression ratio.")
                                   "squashfs" version ".tar.gz"))
               (sha256
                (base32
-                "0zmhvczscqz0mzh4b9m8m42asq14db0a6lc8clp5ljq5ybrv70d9"))))
+                "0zmhvczscqz0mzh4b9m8m42asq14db0a6lc8clp5ljq5ybrv70d9"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Fix build with -fno-common (default in GCC 10).
+                  ;; Remove for squashfs-tools > 4.4.
+                  (substitute* "squashfs-tools/mksquashfs.h"
+                    (("struct cache \\*bwriter_buffer" all)
+                     (string-append "extern " all)))))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no check target
@@ -1008,7 +1016,7 @@ tarballs.")
 (define-public libjcat
   (package
     (name "libjcat")
-    (version "0.1.7")
+    (version "0.1.8")
     (source
      (origin
        (method git-fetch)
@@ -1018,7 +1026,7 @@ tarballs.")
          (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "110c8h3p7m4ibrfvgja592z7j5h88qqanllxsvmxkjz3b129i02r"))))
+        (base32 "18qkyg19r7fxzv93kar5n808n3582ygjmqwa7rnyg5y4b6hnwihl"))))
     (build-system meson-build-system)
     (native-inputs
      `(("gobject-introspection" ,gobject-introspection)

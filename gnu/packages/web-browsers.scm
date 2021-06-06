@@ -178,14 +178,14 @@ older or slower computers and embedded systems.")
 (define-public links
   (package
     (name "links")
-    (version "2.22")
+    (version "2.23")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://links.twibright.com/download/"
                                   "links-" version ".tar.bz2"))
               (sha256
                (base32
-                "0k88qbmq0mf6zmk2v158c0rxvqbi7ysn58xyf4qqw7kz79mrhr03"))))
+                "0idcwryfbf6ds5x2fx1k21m459qz5mrz3hw4a6ziiz91yl1d4q36"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -231,7 +231,7 @@ features including, tables, builtin image display, bookmarks, SSL and more.")
 (define-public luakit
   (package
     (name "luakit")
-    (version "2.2")
+    (version "2.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -240,7 +240,7 @@ features including, tables, builtin image display, bookmarks, SSL and more.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0km5nxn6innzn8pfsvlkxvfj2z5g46fp6dy5bnmaklbn13mqlcrn"))))
+                "1khbn7dpizkznnwkw7rcfhf72dnd1nazk7dwb4rkh9i97b53mf1y"))))
     (inputs
      `(("lua-5.1" ,lua-5.1)
        ("gtk+" ,gtk+)
@@ -254,7 +254,7 @@ features including, tables, builtin image display, bookmarks, SSL and more.")
      `(("pkg-config" ,pkg-config)))
     (build-system glib-or-gtk-build-system)
     (arguments
-     '(#:make-flags
+     `(#:make-flags
        (let ((out (assoc-ref %outputs "out")))
          (list
           "CC=gcc"
@@ -270,6 +270,10 @@ features including, tables, builtin image display, bookmarks, SSL and more.")
                      (string-append
                       (assoc-ref %build-inputs "lua5.1-filesystem")
                       "/lib/lua/5.1/?.so;;"))
+             #t))
+         (add-before 'build 'set-version
+           (lambda _
+             (setenv "VERSION_FROM_GIT" ,(package-version this-package))
              #t))
          (delete 'configure)
          (delete 'check)
@@ -483,7 +487,7 @@ interface.")
 (define-public qutebrowser
   (package
     (name "qutebrowser")
-    (version "2.2.1")
+    (version "2.2.2")
     (source
      (origin
        (method url-fetch)
@@ -491,7 +495,7 @@ interface.")
                            "qutebrowser/releases/download/v" version "/"
                            "qutebrowser-" version ".tar.gz"))
        (sha256
-        (base32 "0vr6xpjy93w4i0x408vvs9xl497sjah51lxdk4awnx2gfg3acz14"))))
+        (base32 "11vjp20gzmdjj09b7wxzn7ar6viih0bk76y618yqsyqqkffylmbq"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-attrs" ,python-attrs))) ; for tests
@@ -718,7 +722,7 @@ key-bindings (Emacs, vi, CUA), and is fully configurable in Common Lisp.")
 (define-public lagrange
   (package
     (name "lagrange")
-    (version "1.3.4")
+    (version "1.5.0")
     (source
      (origin
        (method url-fetch)
@@ -726,7 +730,7 @@ key-bindings (Emacs, vi, CUA), and is fully configurable in Common Lisp.")
         (string-append "https://git.skyjake.fi/skyjake/lagrange/releases/"
                        "download/v" version "/lagrange-" version ".tar.gz"))
        (sha256
-        (base32 "108b8a9vdmf846v7p30fs9z0b68w3naifixnia0ra54ssxjvy0h6"))))
+        (base32 "0ziidk1qv7gaj2pvbla09vznjgslgqwr9ljfd9hskrv6nc68wafs"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #false))                ;no tests

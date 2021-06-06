@@ -552,14 +552,14 @@ and can dramatically shorten the lifespan of the drive if left unchecked.")
 (define-public gparted
   (package
     (name "gparted")
-    (version "1.2.0")
+    (version "1.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/gparted/gparted/gparted-"
                            version "/gparted-" version ".tar.gz"))
        (sha256
-        (base32 "06f72hqx5jf2irzsmi7lgpxxj38ncixh0acb4307wyjd4mfp343c"))))
+        (base32 "0amx3hb4rc504nl9i73rgyz0hzhq5x8nkg7lwbk4bsnrblj81hcd"))))
     (build-system glib-or-gtk-build-system)
     (arguments
       ;; Tests require access to paths outside the build container, such
@@ -1144,15 +1144,18 @@ of choice for all light thinking Unix addicts!")
 (define-public hddtemp
   (package
     (name "hddtemp")
-    (version "0.3-beta15")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://savannah/hddtemp/hddtemp-"
-                                  version
-                                  ".tar.bz2"))
-              (sha256
-               (base32
-                "0nzgg4nl8zm9023wp4dg007z6x3ir60rwbcapr9ks2al81c431b1"))))
+    ;; <https://savannah.nongnu.org/projects/hddtemp/> advertises the project as
+    ;; ‘orphaned/unmaintained’.  Use a maintained fork/continuation.
+    (version "0.4.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/vitlav/hddtemp")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "04kylb2ka0jimi238zpfq1yii2caidpmj3ck51rvxz03y5lpq8fw"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list (string-append
@@ -1161,19 +1164,20 @@ of choice for all light thinking Unix addicts!")
                                 "/share/hddtemp/hddtemp.db"))
        #:phases
        (modify-phases %standard-phases
+         (add-before 'bootstrap 'delete-autogen.sh
+           (lambda _
+             ;; The default 'bootstrap phase works better.
+             (delete-file "autogen.sh")))
          (add-after 'install 'install-db
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((target (string-append (assoc-ref outputs "out")
-                                          "/share/hddtemp/hddtemp.db")))
-               (mkdir-p (dirname target))
-               (copy-file (assoc-ref inputs "db") target)))))))
-    (inputs
-     `(("db" ,(origin
-                (method url-fetch)
-                (uri "mirror://savannah/hddtemp/hddtemp.db")
-                (sha256
-                 (base32 "1fr6qgns6qv7cr40lic5yqwkkc7yjmmgx8j0z6d93csg3smzhhya"))))))
-    (home-page "https://savannah.nongnu.org/projects/hddtemp/")
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (install-file "data/hddtemp.db"
+                             (string-append out "/share/hddtemp"))))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gettext-minimal)))
+    (home-page "https://github.com/vitlav/hddtemp")
     (synopsis "Report the temperature of hard drives from S.M.A.R.T. information")
     (description "@command{hddtemp} is a small utility that gives you the
 temperature of your hard drive by reading S.M.A.R.T. information (for drives

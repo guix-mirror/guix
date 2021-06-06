@@ -208,10 +208,10 @@
      `(("ncurses" ,ncurses)
        ("readline" ,readline)))
     (home-page "https://abook.sourceforge.io/")
-    (synopsis "Text-based addressbook")
+    (synopsis "Text-based address book")
     (description
-     "Abook is a text-based addressbook program designed to use with Mutt mail
-client.")
+     "Abook is a text-based address book program designed to use with the Mutt
+mail client.")
     (license license:gpl2)))
 
 (define-public anubis
@@ -1332,14 +1332,14 @@ invoking @command{notifymuch} from the post-new hook.")
 (define-public notmuch
   (package
     (name "notmuch")
-    (version "0.31.4")
+    (version "0.32.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://notmuchmail.org/releases/notmuch-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0magnyjjhhv11nwcm2596hdxszrj61y69i0hmwqdc3v6cxjvcqc6"))))
+                "0586d13ssygapjdri4cl25wzywivwsbxpjm6xlgxj6f9ii7clix7"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -1355,8 +1355,7 @@ invoking @command{notifymuch} from the post-new hook.")
                   (add-after 'unpack 'patch-notmuch-lib.el
                     (lambda _
                       (substitute* "emacs/notmuch-lib.el"
-                        (("/bin/sh") (which "sh")))
-                      #t))
+                        (("/bin/sh") (which "sh")))))
                   (replace 'configure
                     (lambda* (#:key outputs #:allow-other-keys)
                       (setenv "CC" "gcc")
@@ -1373,15 +1372,13 @@ invoking @command{notifymuch} from the post-new hook.")
                     ;; and try removing this for notmuch versions > 0.31.
                     (lambda _
                       (substitute* "test/T356-protected-headers.sh"
-                        (("\\$NOTMUCH_GMIME_X509_CERT_VALIDITY") "0"))
-                      #t))
+                        (("\\$NOTMUCH_GMIME_X509_CERT_VALIDITY") "0"))))
                   (add-before 'check 'prepare-test-environment
                     (lambda _
                       (setenv "TEST_CC" "gcc")
                       ;; Patch various inline shell invocations.
                       (substitute* (find-files "test" "\\.sh$")
-                        (("/bin/sh") (which "sh")))
-                      #t))
+                        (("/bin/sh") (which "sh")))))
                   (add-after 'install 'make-autoloads
                     (assoc-ref emacs:%standard-phases 'make-autoloads)))))
     (native-inputs

@@ -11,7 +11,7 @@
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2017 John Darrington <jmd@gnu.org>
-;;; Copyright © 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018, 2019, 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -27,6 +27,7 @@
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Jean-Baptiste Note <jean-baptiste.note@m4x.org>
 ;;; Copyright © 2021 Nicolò Balzarotti <nicolo@nixo.xyz>
+;;; Copyright © 2021 Matthew James Kraai <kraai@ftbfs.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2536,7 +2537,7 @@ including most mice, keyboards, tablets and touchscreens.")
 (define-public xf86-input-libinput
   (package
     (name "xf86-input-libinput")
-    (version "0.30.0")
+    (version "1.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2544,7 +2545,7 @@ including most mice, keyboards, tablets and touchscreens.")
                     name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1h4np66p87jf0c85ig524w8f5rbhl5gx8fww1qg0c55f87yzkizr"))))
+                "0nr4r9x8c7y1l0ipivjch5zps093mxmg2nqmfn2934am26fc9ppx"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -2561,7 +2562,8 @@ including most mice, keyboards, tablets and touchscreens.")
      "xf86-input-libinput is an input driver for the Xorg X server based
 on libinput.  It is a thin wrapper around libinput, so while it does
 provide all features that libinput supports it does little beyond.")
-    (license license:x11)))
+    (license (list license:x11          ; only install-sh
+                   license:expat))))    ; everything else
 
 (define-public xf86-input-joystick
   (package
@@ -5498,6 +5500,7 @@ draggable titlebars and borders.")
 (define-public libx11
   (package
     (name "libx11")
+    (replacement libx11/fixed)
     (version "1.7.0")
     (source
       (origin
@@ -5535,6 +5538,18 @@ draggable titlebars and borders.")
     (synopsis "Xorg Core X11 protocol client library")
     (description "Xorg Core X11 protocol client library.")
     (license license:x11)))
+
+(define-public libx11/fixed
+  (package
+    (inherit libx11)
+    (version "1.7.A")
+    (source
+      (origin
+        (method url-fetch)
+        (uri "mirror://xorg/individual/lib/libX11-1.7.1.tar.bz2")
+        (sha256
+          (base32
+            "0isxad59hvdwggbxqqjjjg3zmih9xiq4d9mdsnqbyb2nmbg46kp6"))))))
 
 ;; packages of height 5 in the propagated-inputs tree
 
@@ -6096,7 +6111,7 @@ to answer a question.  Xmessage can also exit after a specified time.")
 (define-public xterm
   (package
     (name "xterm")
-    (version "366")
+    (version "367")
     (source
      (origin
        (method url-fetch)
@@ -6106,7 +6121,7 @@ to answer a question.  Xmessage can also exit after a specified time.")
              (string-append "ftp://ftp.invisible-island.net/xterm/"
                             "xterm-" version ".tgz")))
        (sha256
-        (base32 "0vmzffy3hzgcgwx305h07ars5sxsq6nnl1ir4xqpxs9zjs2ji2w5"))))
+        (base32 "07y51l06n344pjyxdddq6sdvxw25nl10irl4avynkqjnqyqsiw97"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-wide-chars" "--enable-load-vt-fonts"
@@ -6666,7 +6681,7 @@ output.")
 (define-public console-setup
   (package
     (name "console-setup")
-    (version "1.201")
+    (version "1.203")
     (source
      (origin
        (method git-fetch)
@@ -6674,7 +6689,7 @@ output.")
              (url "https://salsa.debian.org/installer-team/console-setup.git")
              (commit version)))
        (sha256
-        (base32 "0xkynb8d1813wph3p0sdvbpimx7zqkzh4c3mmqymp3pibcg7af5a"))
+        (base32 "1bavb8h4j1za2h7mxr109imicjmh7fp4099lvzfgavhjr3l3vsab"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments

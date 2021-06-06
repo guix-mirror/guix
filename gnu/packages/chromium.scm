@@ -163,6 +163,7 @@
     "third_party/google_input_tools/third_party/closure_library/third_party/closure" ;Expat
     "third_party/googletest" ;BSD-3
     "third_party/harfbuzz-ng" ;Expat
+    "third_party/highway" ;ASL2.0
     "third_party/hunspell" ;MPL1.1/GPL2+/LGPL2.1+
     "third_party/iccjpeg" ;IJG
     "third_party/inspector_protocol" ;BSD-3
@@ -179,6 +180,7 @@
     "third_party/libaom/source/libaom/third_party/fastfeat" ;BSD-3
     "third_party/libaom/source/libaom/third_party/vector" ;Expat
     "third_party/libaom/source/libaom/third_party/x86inc" ;ISC
+    "third_party/libjxl" ;ASL2.0
     "third_party/libgav1" ;ASL2.0
     "third_party/libgifcodec" ;MPL1.1/GPL2+/LGPL2.1+, BSD-3, BSD-2
     "third_party/libjingle_xmpp" ;BSD-3
@@ -239,7 +241,6 @@
     "third_party/rnnoise" ;BSD-3
     "third_party/ruy" ;ASL2.0
     "third_party/s2cellid" ;ASL2.0
-    "third_party/schema_org" ;CC-BY-SA3.0
     "third_party/securemessage" ;ASL2.0
     "third_party/shell-encryption" ;ASL2.0
     "third_party/skia" ;BSD-3
@@ -274,6 +275,7 @@
     "third_party/wayland-protocols" ;Expat
     "third_party/web-animations-js" ;ASL2.0
     "third_party/webdriver" ;ASL2.0
+    "third_party/webgpu-cts" ;BSD-3
     "third_party/webrtc" ;BSD-3
     "third_party/webrtc/common_audio/third_party/ooura" ;Non-copyleft
     "third_party/webrtc/common_audio/third_party/spl_sqrt_floor" ;Public domain
@@ -320,14 +322,14 @@
                   (string-append "ungoogled-chromium-" category "-" name))))
     (sha256 (base32 hash))))
 
-(define %chromium-version "90.0.4430.212")
+(define %chromium-version "91.0.4472.77")
 (define %debian-revision "debian/90.0.4430.85-1")
-(define %ungoogled-revision "90.0.4430.85-1-11-g3184907")
+;; Note: use 'git describe --long' even for exact tags to placate the
+;; custom version format for ungoogled-chromium.
+(define %ungoogled-revision "91.0.4472.77-1-0-g6802c88")
 
 (define %debian-patches
-  (list (debian-patch "fixes/missing-includes.patch"
-                      "1f0drxp1cy76g71rkkzxxbwixn03yn9b0q22vb0mb6h2qk6cw92q")
-        (debian-patch "fixes/nomerge.patch"
+  (list (debian-patch "fixes/nomerge.patch"
                       "0lybs2b5gk08j8cr6vjrs9d3drd7qfw013z2r0y00by8dnpm74i3")
         (debian-patch "system/nspr.patch"
                       "1gdirn1k1i841l8zp8xgr95kl16b5nx827am9rcxj8sfkm8hgkn3")
@@ -344,7 +346,7 @@
     (file-name (git-file-name "ungoogled-chromium" %ungoogled-revision))
     (sha256
      (base32
-      "18xfwgkw3xarxcgnzvyv70h4icyqh3k8lfx6fvhp7fsr6x20sai0"))))
+      "1jfmmkw1y4rcjfgsm7b4v2lrgd3sks5qpajvq0djflbhkpsqxfk0"))))
 
 (define %guix-patches
   (list (local-file
@@ -399,6 +401,11 @@
 
           (format #t "Replacing GN files...~%")
           (force-output)
+          ;; XXX: Chromium no longer relies on overriding ICU's UCHAR_TYPE,
+          ;; but the unbundling code was not updated.  Remove for M92.
+          (substitute* "build/linux/unbundle/icu.gn"
+            (("\"UCHAR_TYPE=uint16_t\",")
+             ""))
           (substitute* "tools/generate_shim_headers/generate_shim_headers.py"
             ;; The "is_official_build" configure option enables certain
             ;; release optimizations like those used in the commercial
@@ -481,7 +488,7 @@
                                   %chromium-version ".tar.xz"))
               (sha256
                (base32
-                "17nmhrkl81qqvzbh861k2mmifncx4wg1mv1fmn52f8gzn461vqdb"))
+                "0c8vj3gq3nmb7ssiwj6875g0a8hcprss1a4gqw9h7llqywza9ma5"))
               (modules '((guix build utils)))
               (snippet (force ungoogled-chromium-snippet))))
     (build-system gnu-build-system)
@@ -629,6 +636,12 @@
              (substitute* "third_party/pdfium/core/fxcodec/icc/iccmodule.h"
                (("include \"third_party/lcms/include/lcms2\\.h\"")
                 "include \"lcms2.h\""))
+
+             ;; Add missing include statement.
+             (substitute* "third_party/pdfium/core/fxcodec/png/png_decoder.cpp"
+               (("#include \"core/fxcodec/fx_codec.h\"" all)
+                (string-append all
+                               "\n#include \"core/fxcodec/fx_codec_def.h\"")))
 
              (substitute*
                  "third_party/breakpad/breakpad/src/common/linux/libcurl_wrapper.h"
@@ -852,7 +865,7 @@
        ("glib" ,glib)
        ("gtk+" ,gtk+)
        ("harfbuzz" ,harfbuzz)
-       ("icu4c" ,icu4c-68)
+       ("icu4c" ,icu4c-69)
        ("lcms" ,lcms)
        ("libevent" ,libevent)
        ("libffi" ,libffi)

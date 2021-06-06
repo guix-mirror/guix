@@ -41,6 +41,7 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages freeipmi)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages mpi)
@@ -57,14 +58,14 @@
 (define-public parallel
   (package
     (name "parallel")
-    (version "20210422")
+    (version "20210522")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnu/parallel/parallel-"
                           version ".tar.bz2"))
       (sha256
-       (base32 "1s4ynlsh5fr5vxcf5xm45fcfyzp62zclzjq5b7rbwrs4chxnlgmy"))))
+       (base32 "1qdgywilyy2vy8lcl7f5qa7cm0b2ddnwwx9n8xcfbv9wj0z3wrpg"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -135,10 +136,37 @@ execution is also possible.")
     (home-page "https://github.com/leahneukirchen/xe")
     (license license:public-domain)))
 
+(define-public xjobs
+  (package
+    (name "xjobs")
+    (version "20200726")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://www.maier-komor.de/xjobs/xjobs-"
+                    version ".tgz"))
+              (sha256
+               (base32
+                "0ay6gn43pnm7r1jamwgpycl67bjg5n87ncl27jb01w2x6x70z0i3"))))
+    (build-system gnu-build-system)
+    (arguments `(#:tests? #f)) ;; No tests
+    (native-inputs
+     `(("flex" ,flex)
+       ("which" ,which)))
+    (home-page "http://www.maier-komor.de/xjobs.html")
+    (properties `((release-monitoring-url . ,home-page)))
+    (synopsis
+     "Parallel execution of jobs with several useful options")
+    (description
+     "xjobs reads job descriptions line by line and executes them in
+parallel.  It limits the number of parallel executing jobs and starts new jobs
+when jobs finish.")
+    (license license:gpl2+)))
+
 (define-public slurm
   (package
    (name "slurm")
-   (version "20.11.3")
+   (version "20.11.7")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -146,7 +174,7 @@ execution is also possible.")
                   version ".tar.bz2"))
             (sha256
              (base32
-              "1s70x6yh60sx63dgmp5rlhq8jcz7kxv9pk8gbs9v1jg8zps5h5bk"))
+              "1fdjihg1x7ks5l77yjv14a4mg6r0v8c3zk1dcxkhrhq3n4dc9nbs"))
             (modules '((guix build utils)))
             (snippet
              '(begin

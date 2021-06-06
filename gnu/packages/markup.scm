@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
-;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 EuAndreh <eu@euandre.org>
 ;;; Copyright © 2021 Noisytoot <noisytoot@disroot.org>
@@ -284,7 +284,7 @@ and smu is that smu doesn't support reference style links.")
 (define-public md4c
   (package
     (name "md4c")
-    (version "0.4.7")
+    (version "0.4.8")
     (source
      (origin
        (method git-fetch)
@@ -293,7 +293,7 @@ and smu is that smu doesn't support reference style links.")
              (commit (string-append "release-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0m3202zzjvw4k7jw66z1qi3cbisxzvplq5alkygpifvhzm81gwwx"))))
+        (base32 "12pdh4rfjc3b0cblj5nz3jksr2376lx8ay0vw5dwa1s97q09pczq"))))
     (build-system cmake-build-system)
     (arguments '(#:tests? #f))
     (home-page "https://github.com/mity/md4c/")

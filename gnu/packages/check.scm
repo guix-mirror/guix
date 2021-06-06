@@ -431,6 +431,7 @@ a multi-paradigm automated test framework for C++ and Objective-C.")
               (uri (git-reference
                     (url "git://git.liw.fi/cmdtest/")
                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "1yhcwsqcpckkq5kw3h07k0xg6infyiyzq9ni3nqphrzxis7hxjf1"))))
@@ -697,8 +698,8 @@ generation.")
     (license license:bsd-3)))
 
 (define-public googletest-1.8
-  (package/inherit
-   googletest
+  (package
+    (inherit googletest)
    (version "1.8.1")
    (source (origin
              (method git-fetch)
@@ -1144,8 +1145,8 @@ contacting the real http server.")
 ;; python-bleach 3.1.0 requires this ancient version of pytest-runner.
 ;; Remove once no longer needed.
 (define-public python-pytest-runner-2
-  (package/inherit
-   python-pytest-runner
+  (package
+    (inherit python-pytest-runner)
    (version "2.12.2")
    (source (origin
              (method url-fetch)

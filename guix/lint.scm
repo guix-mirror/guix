@@ -12,6 +12,7 @@
 ;;; Copyright © 2020 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2020 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,6 +31,7 @@
 
 (define-module (guix lint)
   #:use-module (guix store)
+  #:autoload   (guix base16) (bytevector->base16-string)
   #:use-module (guix base32)
   #:use-module (guix diagnostics)
   #:use-module (guix download)
@@ -95,6 +97,7 @@
             check-archival
             check-profile-collisions
             check-haskell-stackage
+            check-tests-true
 
             lint-warning
             lint-warning?
@@ -189,6 +192,26 @@
                      (G_ "name should use hyphens instead of underscores")
                      #:field 'name)))
      (else '()))))
+
+(define (check-tests-true package)
+  "Check whether PACKAGE explicitly requests to run tests, which is
+superfluous when building natively and incorrect when cross-compiling."
+  (define (tests-explicitly-enabled?)
+    (apply (lambda* (#:key tests? #:allow-other-keys)
+             (eq? tests? #t))
+           (package-arguments package)))
+  (if (and (tests-explicitly-enabled?)
+           ;; Some packages, e.g. gnutls, set #:tests?
+           ;; differently depending on whether it is being
+           ;; cross-compiled.
+           (parameterize ((%current-target-system "aarch64-linux-gnu"))
+             (tests-explicitly-enabled?)))
+      (list (make-warning package
+                          ;; TRANSLATORS: #:tests? and #t are Scheme constants
+                          ;; and must not be translated.
+                          (G_ "#:tests? must not be explicitly set to #t")
+                          #:field 'arguments))
+      '()))
 
 (define (properly-starts-sentence? s)
   (string-match "^[(\"'`[:upper:][:digit:]]" s))
@@ -1002,57 +1025,46 @@ descriptions maintained upstream."
          (origin-uris origin))
         '())))
 
-(cond-expand
-  (guile-3
-   ;; Guile 3.0.0 does not export this predicate.
-   (define exception-with-kind-and-args?
-     (exception-predicate &exception-with-kind-and-args)))
-  (else                                           ;Guile 2
-   (define exception-with-kind-and-args?
-     (const #f))))
+;; Guile 3.0.0 does not export this predicate.
+(define exception-with-kind-and-args?
+  (exception-predicate &exception-with-kind-and-args))
 
 (define* (check-derivation package #:key store)
   "Emit a warning if we fail to compile PACKAGE to a derivation."
   (define (try store system)
-    (catch #t     ;TODO: Remove 'catch' when Guile 2.x is no longer supported.
-      (lambda ()
-        (guard (c ((store-protocol-error? c)
-                   (make-warning package
-                                 (G_ "failed to create ~a derivation: ~a")
-                                 (list system
-                                       (store-protocol-error-message c))))
-                  ((exception-with-kind-and-args? c)
-                   (make-warning package
-                                 (G_ "failed to create ~a derivation: ~s")
-                                 (list system
-                                       (cons (exception-kind c)
-                                             (exception-args c)))))
-                  ((message-condition? c)
-                   (make-warning package
-                                 (G_ "failed to create ~a derivation: ~a")
-                                 (list system
-                                       (condition-message c))))
-                  ((formatted-message? c)
-                   (let ((str (apply format #f
-                                     (formatted-message-string c)
-                                     (formatted-message-arguments c))))
-                     (make-warning package
-                                   (G_ "failed to create ~a derivation: ~a")
-                                   (list system str)))))
-          (parameterize ((%graft? #f))
-            (package-derivation store package system #:graft? #f)
+    (guard (c ((store-protocol-error? c)
+               (make-warning package
+                             (G_ "failed to create ~a derivation: ~a")
+                             (list system
+                                   (store-protocol-error-message c))))
+              ((exception-with-kind-and-args? c)
+               (make-warning package
+                             (G_ "failed to create ~a derivation: ~s")
+                             (list system
+                                   (cons (exception-kind c)
+                                         (exception-args c)))))
+              ((message-condition? c)
+               (make-warning package
+                             (G_ "failed to create ~a derivation: ~a")
+                             (list system
+                                   (condition-message c))))
+              ((formatted-message? c)
+               (let ((str (apply format #f
+                                 (formatted-message-string c)
+                                 (formatted-message-arguments c))))
+                 (make-warning package
+                               (G_ "failed to create ~a derivation: ~a")
+                               (list system str)))))
+      (parameterize ((%graft? #f))
+        (package-derivation store package system #:graft? #f)
 
-            ;; If there's a replacement, make sure we can compute its
-            ;; derivation.
-            (match (package-replacement package)
-              (#f #t)
-              (replacement
-               (package-derivation store replacement system
-                                   #:graft? #f))))))
-      (lambda args
-        (make-warning package
-                      (G_ "failed to create ~a derivation: ~s")
-                      (list system args)))))
+        ;; If there's a replacement, make sure we can compute its
+        ;; derivation.
+        (match (package-replacement package)
+          (#f #t)
+          (replacement
+           (package-derivation store replacement system
+                               #:graft? #f))))))
 
   (define (check-with-store store)
     (filter lint-warning?
@@ -1227,6 +1239,43 @@ upstream releases")
                             #:field 'source)))))))
 
 
+(define (lookup-disarchive-spec hash)
+  "If Disarchive mirrors have a spec for HASH, return the list of SWH
+directory identifiers the spec refers to.  Otherwise return #f."
+  (define (extract-swh-id spec)
+    ;; Return the list of SWH directory identifiers SPEC refers to, where SPEC
+    ;; is a Disarchive sexp.  Instead of attempting to parse it, traverse it
+    ;; in a pretty unintelligent fashion.
+    (let loop ((sexp spec)
+               (ids '()))
+      (match sexp
+        ((? string? str)
+         (let ((prefix "swh:1:dir:"))
+           (if (string-prefix? prefix str)
+               (cons (string-drop str (string-length prefix)) ids)
+               ids)))
+        ((head tail ...)
+         (loop tail (loop head ids)))
+        (_ ids))))
+
+  (any (lambda (mirror)
+         (with-networking-fail-safe
+          (format #f (G_ "failed to access Disarchive database at ~a")
+                  mirror)
+          #f
+          (guard (c ((http-get-error? c) #f))
+            (let* ((url (string-append mirror
+                                       (symbol->string
+                                        (content-hash-algorithm hash))
+                                       "/"
+                                       (bytevector->base16-string
+                                        (content-hash-value hash))))
+                   (port (http-fetch (string->uri url) #:text? #t))
+                   (spec (read port)))
+              (close-port port)
+              (extract-swh-id spec)))))
+       %disarchive-mirrors))
+
 (define (check-archival package)
   "Check whether PACKAGE's source code is archived on Software Heritage.  If
 it's not, and if its source code is a VCS snapshot, then send a \"save\"
@@ -1302,10 +1351,26 @@ try again later")
                                         (symbol->string
                                          (content-hash-algorithm hash)))
                    (#f
-                    (list (make-warning package
-                                        (G_ "source not archived on Software \
-Heritage")
-                                        #:field 'source)))
+                    ;; If SWH doesn't have HASH as is, it may be because it's
+                    ;; a hand-crafted tarball.  In that case, check whether
+                    ;; the Disarchive database has an entry for that tarball.
+                    (match (lookup-disarchive-spec hash)
+                      (#f
+                       (list (make-warning package
+                                           (G_ "source not archived on Software \
+Heritage and missing from the Disarchive database")
+                                           #:field 'source)))
+                      (directory-ids
+                       (match (find (lambda (id)
+                                      (not (lookup-directory id)))
+                                    directory-ids)
+                         (#f '())
+                         (id
+                          (list (make-warning package
+                                              (G_ "
+Disarchive entry refers to non-existent SWH directory '~a'")
+                                              (list id)
+                                              #:field 'source)))))))
                    ((? content?)
                     '())))
                '()))))
@@ -1481,6 +1546,10 @@ them for PACKAGE."
      (name        'name)
      (description "Validate package names")
      (check       check-name))
+   (lint-checker
+     (name        'tests-true)
+     (description "Check if tests are explicitly enabled")
+     (check       check-tests-true))
    (lint-checker
      (name        'description)
      (description "Validate package descriptions")

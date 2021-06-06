@@ -1018,20 +1018,21 @@ Make sure the package builds on your platform, using @code{guix build
 We recommend you also try building the package on other supported
 platforms.  As you may not have access to actual hardware platforms, we
 recommend using the @code{qemu-binfmt-service-type} to emulate them.  In
-order to enable it, add the following service to the list of services in
-your @code{operating-system} configuration:
+order to enable it, add the @code{virtualization} service module and the
+following service to the list of services in your @code{operating-system}
+configuration:
 
 @lisp
 (service qemu-binfmt-service-type
  (qemu-binfmt-configuration
-   (platforms (lookup-qemu-platforms "arm" "aarch64"))
+   (platforms (lookup-qemu-platforms "arm" "aarch64"))))
 @end lisp
 
 Then reconfigure your system.
 
 You can then build packages for different platforms by specifying the
 @code{--system} option.  For example, to build the "hello" package for
-the armhf, aarch64, or mips64 architectures, you would run the following
+the armhf or aarch64 architectures, you would run the following
 commands, respectively:
 @example
 guix build --system=armhf-linux --rounds=2 hello
@@ -1062,7 +1063,7 @@ and which optional dependencies should be used.  In particular, avoid adding
 the @code{texlive-tiny} package or @code{texlive-union} procedure instead.
 
 @item
-For important changes, check that dependent package (if applicable) are
+For important changes, check that dependent packages (if applicable) are
 not affected by the change; @code{guix refresh --list-dependent
 @var{package}} will help you do that (@pxref{Invoking guix refresh}).
 
@@ -1179,6 +1180,11 @@ We prefer to get patches in plain text messages, either inline or as
 MIME attachments.  You are advised to pay attention if your email client
 changes anything like line breaks or indentation which could potentially
 break the patches.
+
+Expect some delay when you submit your very first patch to
+@email{guix-patches@@gnu.org}. You have to wait until you get an
+acknowledgement with the assigned tracking number. Future acknowledgements
+should not be delayed.
 
 When a bug is resolved, please close the thread by sending an email to
 @email{@var{NNN}-done@@debbugs.gnu.org}.
@@ -1517,20 +1523,20 @@ doubt, please contact us, we will be happy to help!
 @table @asis
 @item guix
 Guix is written in the Guile programming language, and some strings contain
-special formating that is interpreted by Guile.  These special formating
+special formatting that is interpreted by Guile.  These special formatting
 should be highlighted by Weblate.  They start with @code{~} followed by one
 or more characters.
 
-When printing the string, Guile replaces the special formating symbols with
+When printing the string, Guile replaces the special formatting symbols with
 actual values.  For instance, the string @samp{ambiguous package specification
 `~a'} would be substituted to contain said package specification instead of
-@code{~a}.  To properly translate this string, you must keep the formating
+@code{~a}.  To properly translate this string, you must keep the formatting
 code in your translation, although you can place it where it makes sense in
 your language.  For instance, the French translation says @samp{spécification
 du paquet « ~a » ambiguë} because the adjective needs to be placed in the
 end of the sentence.
 
-If there are multiple formating symbols, make sure to respect the order.
+If there are multiple formatting symbols, make sure to respect the order.
 Guile does not know in which order you intended the string to be read, so it
 will substitute the symbols in the same order as the English sentence.
 
@@ -1538,9 +1544,9 @@ As an example, you cannot translate @samp{package '~a' has been superseded by
 '~a'} by @samp{'~a' superseeds package '~a'}, because the meaning would be
 reversed.  If @var{foo} is superseded by @var{bar}, the translation would read
 @samp{'foo' superseeds package 'bar'}.  To work around this problem, it
-is possible to use more advanced formating to select a given piece of data,
+is possible to use more advanced formatting to select a given piece of data,
 instead of following the default English order.  @xref{Formatted Output,,,
-guile, GNU Guile Reference Manual}, for more information on formating in Guile.
+guile, GNU Guile Reference Manual}, for more information on formatting in Guile.
 
 @item packages
 
@@ -1551,7 +1557,7 @@ and Descriptions}).   Texinfo markup looks like @samp{@@code@{rm -rf@}},
 The characters after ``@@'' form the name of the markup, and the text between
 ``@{'' and ``@}'' is its content.  In general, you should not translate the
 content of markup like @code{@@code}, as it contains literal code that do not
-change with language.  You can translate the content of formating markup such
+change with language.  You can translate the content of formatting markup such
 as @code{@@emph}, @code{@@i}, @code{@@itemize}, @code{@@item}.  However, do
 not translate the name of the markup, or it will not be recognized.  Do
 not translate the word after @code{@@end}, it is the name of the markup that
@@ -1581,10 +1587,10 @@ The manual and the cookbook both use Texinfo.  As for @code{packages}, please
 keep Texinfo markup as is.  There are more possible markup types in the manual
 than in the package descriptions.  In general, do not translate the content
 of @code{@@code}, @code{@@file}, @code{@@var}, @code{@@value}, etc.  You
-should translate the content of formating markup such as @code{@@emph},
+should translate the content of formatting markup such as @code{@@emph},
 @code{@@i}, etc.
 
-The manual contains sections that can be refered to by name by @code{@@ref},
+The manual contains sections that can be referred to by name by @code{@@ref},
 @code{@@xref} and @code{@@pxref}.  We have a mechanism in place so you do
 not have to translate their content.  If you keep the English title, we will
 automatically replace it with your translation of that title.  This ensures
@@ -1664,7 +1670,7 @@ synchronize it with our guix and artworks repositories after checking no issue
 was introduced in the translation.
 
 Developers can download the latest PO files from weblate in the Guix
-repository by runnig the @command{make download-po} target.  It will
+repository by running the @command{make download-po} command.  It will
 automatically download the latest files from weblate, reformat them to a
 canonical form, and check they do not contain issues.  The manual needs to be
 built again to check for additional issues that might crash Texinfo.

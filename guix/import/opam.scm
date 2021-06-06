@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
+;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -335,7 +336,8 @@ or #f on failure."
                        (home-page ,(metadata-ref opam-content "homepage"))
                        (synopsis ,(metadata-ref opam-content "synopsis"))
                        (description ,(metadata-ref opam-content "description"))
-                       (license #f))
+                       (license ,(spdx-string->license
+                                  (metadata-ref opam-content "license"))))
                     (filter
                       (lambda (name)
                         (not (member name '("dune" "jbuilder"))))

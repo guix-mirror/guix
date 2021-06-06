@@ -453,14 +453,14 @@ CorelDRAW documents of all versions.")
 (define-public libetonyek
   (package
     (name "libetonyek")
-    (version "0.1.9")
+    (version "0.1.10")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "http://dev-www.libreoffice.org/src/" name "/"
                           name "-" version ".tar.xz"))
       (sha256 (base32
-               "0jhsbdimiyijdqriy0zzkjjgc4wi6fjimhdg4mdybrlwg7l7f5p6"))))
+               "16hy60ws29pb4pz3z5l4920yn9hnk2vlij0xfs5qi1w4drd46c5l"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--with-mdds=1.5")))

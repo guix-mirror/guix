@@ -5,7 +5,7 @@
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2019 Gábor Boskovits <boskovits@gmail.com>
-;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 malte Frank Gerdes <malte.f.gerdes@gmail.com>
 ;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
@@ -52,14 +52,14 @@
 (define-public fio
   (package
     (name "fio")
-    (version "3.26")
+    (version "3.27")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://brick.kernel.dk/snaps/"
                                   "fio-" version ".tar.bz2"))
               (sha256
                (base32
-                "1114h60vw63bim872an33xpvjfib6sc9dwj9xvk0yw41xjzfpp06"))))
+                "0akaixip86ycbxr13bjff2121rgfbz35fa9l39677wpwzckp4f4d"))))
     (build-system gnu-build-system)
     (arguments
      '(#:test-target "test"
@@ -126,13 +126,9 @@ is to write a job file matching the I/O load one wants to simulate.")
     (license (list license:gpl2 license:gpl2+ license:bsd-2
                    license:public-domain))))
 
-;; Parameterized in anticipation of m(va)pich support
-(define (intel-mpi-benchmarks mpi)
+(define-public intel-mpi-benchmarks/openmpi
   (package
-    (name (string-append "intel-mpi-benchmarks"
-                         (if (string=? (package-name mpi) "openmpi")
-                             ""
-                             (string-append "-" (package-name mpi)))))
+    (name "intel-mpi-benchmarks")
     (version "2019.6")
     (source (origin
               (method git-fetch)
@@ -154,7 +150,7 @@ is to write a job file matching the I/O load one wants to simulate.")
                   #t))))
     (build-system gnu-build-system)
     (inputs
-     `(("mpi" ,mpi)))
+     `(("openmpi" ,openmpi)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -193,9 +189,6 @@ and throughput;
 Efficiency of the MPI implementation.
 @end itemize")
     (license license:cpl1.0)))
-
-(define-public intel-mpi-benchmarks/openmpi
-  (intel-mpi-benchmarks openmpi))
 
 (define-public imb-openmpi
   (deprecated-package "imb-openmpi" intel-mpi-benchmarks/openmpi))

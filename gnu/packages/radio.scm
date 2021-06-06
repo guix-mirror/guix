@@ -94,6 +94,34 @@
   #:use-module (guix build-system python)
   #:use-module (guix build-system qt))
 
+(define-public libfec
+  ;; Use commit to get compilation fixes that are not in a release yet.
+  (let ((commit "9750ca0a6d0a786b506e44692776b541f90daa91")
+        (revision "1"))
+    (package
+      (name "libfec")
+      (version (git-version "1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/quiet/libfec")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0i6jhrdswr1wglyb9h39idpz5v9z13yhidvlbj34vxpyngrkhlvs"))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")
+         #:test-target "test_all"))
+      (home-page "https://github.com/quiet/libfec")
+      (synopsis "Forward error correction algorithms library")
+      (description
+       "This package provides a set of functions that implement several popular
+@dfn{forward error correction} (FEC) algorithms and several low-level routines
+useful in modems implemented with @dfn{digital signal processing} (DSP).")
+      (license license:lgpl2.1))))
+
 (define-public liquid-dsp
   (package
     (name "liquid-dsp")
@@ -110,8 +138,15 @@
     (native-inputs
      `(("autoconf" ,autoconf)))
     (inputs
-     `(("fftw" ,fftw)
-       ("fftwf" ,fftwf)))
+     `(("fftwf" ,fftwf)
+       ("libfec" ,libfec)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'delete-static-library
+           (lambda* (#:key outputs #:allow-other-keys)
+             (delete-file (string-append (assoc-ref outputs "out")
+                                         "/lib/libliquid.a")))))))
     (home-page "https://liquidsdr.org")
     (synopsis "Signal processing library for software-defined radios")
     (description
@@ -222,6 +257,110 @@ HF+ Software Defined Radio (SDR) over USB.
 To install the airspyhf udev rules, you must extend @code{udev-service-type}
 with this package.  E.g.: @code{(udev-rules-service 'airspyhf airspyhf)}")
     (license license:bsd-3)))
+
+(define-public soapysdr
+  (package
+    (name "soapysdr")
+    (version "0.8.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/pothosware/SoapySDR")
+             (commit (string-append "soapy-sdr-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1dy25zxk7wmg7ik82dx7h3bbbynvalbz1dxsl7kgm3374yxhnixv"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("python" ,python)
+       ("swig" ,swig)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "SOAPY_SDR_PLUGIN_PATH")
+            (files (list (string-append "lib/SoapySDR/modules"
+                                        (version-major+minor version)))))))
+    (home-page "https://github.com/pothosware/SoapySDR/wiki")
+    (synopsis "Vendor and platform neutral SDR support library")
+    (description
+     "SoapySDR is a library designed to support several kinds of software
+defined radio hardware devices with a common API.")
+    (license license:boost1.0)))
+
+(define-public soapyairspyhf
+  (package
+    (name "soapyairspyhf")
+    (version "0.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/pothosware/SoapyAirspyHF")
+             (commit (string-append "soapy-airspyhf-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "04krqinglgkjvx7klqik6yn8rb4mlpwzb6zvnmvm7szqci2agggz"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("airspyhf" ,airspyhf)
+       ("soapysdr" ,soapysdr)))
+    (arguments
+     `(#:tests? #f))  ; No test suite
+    (home-page "https://github.com/pothosware/SoapyAirspyHF/wiki")
+    (synopsis "SoapySDR Airspy HF+ module")
+    (description "This package provides Airspy HF+ devices support to the
+SoapySDR library.")
+    (license license:expat)))
+
+(define-public soapyhackrf
+  (package
+    (name "soapyhackrf")
+    (version "0.3.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/pothosware/SoapyHackRF")
+             (commit (string-append "soapy-hackrf-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1awn89z462500gb3fjb7x61b1znkjri9n1d39bqfip1qk4s11pxc"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("hackrf" ,hackrf)
+       ("soapysdr" ,soapysdr)))
+    (arguments
+     `(#:tests? #f))  ; No test suite
+    (home-page "https://github.com/pothosware/SoapyHackRF/wiki")
+    (synopsis "SoapySDR HackRF module")
+    (description
+     "This package provides HackRF devices support to the SoapySDR library.")
+    (license license:expat)))
+
+(define-public soapyrtlsdr
+  (package
+    (name "soapyrtlsdr")
+    (version "0.3.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/pothosware/SoapyRTLSDR")
+             (commit (string-append "soapy-rtl-sdr-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1dlnryj6k20pk7w7v4v13y099r7ikhvlzbgzgphmi5cxkdv0shrd"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("rtl-sdr" ,rtl-sdr)
+       ("soapysdr" ,soapysdr)))
+    (arguments
+     `(#:tests? #f))  ; No test suite
+    (home-page "https://github.com/pothosware/SoapyRTLSDR/wiki")
+    (synopsis "SoapySDR RTL-SDR module")
+    (description
+     "This package provides RTL-SDR devices support to the SoapySDR library.")
+    (license license:expat)))
 
 (define-public chirp
   (package
@@ -375,6 +514,7 @@ used by RDS Spy, and audio files containing @dfn{multiplex} signals (MPX).")
        ("python-click" ,python-click)
        ("python-click-plugins" ,python-click-plugins)
        ("python-lxml" ,python-lxml)
+       ("python-matplotlib" ,python-matplotlib)
        ("python-numpy" ,python-numpy)
        ("python-pycairo" ,python-pycairo)
        ("python-pygobject" ,python-pygobject)
@@ -513,6 +653,7 @@ environment.")
          ("python-numpy" ,python-numpy)
          ("python-pyqt" ,python-pyqt)
          ("rtl-sdr" ,rtl-sdr)
+         ("soapysdr" ,soapysdr)
          ("volk" ,volk)))
       (arguments
        `(#:modules ((guix build cmake-build-system)
@@ -798,66 +939,61 @@ for correctness.")
     (license license:gpl3+)))
 
 (define-public hackrf
-  ;; Using a git commit because there have been many many commits
-  ;; since the relase two years ago, but no sign of a promised
-  ;; release for many months now.
-  (let ((commit "43e6f99fe8543094d18ff3a6550ed2066c398862")
-        (revision "0"))
-    (package
-     (name "hackrf")
-     (version (git-version "2018.01.1" revision commit))
-     (source
-      (origin
+  (package
+    (name "hackrf")
+    (version "2021.03.1")
+    (source
+     (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/mossmann/hackrf")
-             (commit commit)))
+             (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0avnv693xi0zsnrvkbfn0ln1r3s1iyj0bz7sc3gxay909av0pvbc"))))
-     (build-system cmake-build-system)
-     (arguments
-      '(#:configure-flags
-        (list "-DUDEV_RULES_GROUP=dialout"
-              (string-append "-DUDEV_RULES_PATH="
-                             (assoc-ref %outputs "out")
-                             "/lib/udev/rules.d"))
-        #:phases
-        (modify-phases %standard-phases
-          (add-before 'configure 'enter-source-directory
-            (lambda _
-              (chdir "host")
-              #t))
-          (add-after 'install 'delete-static-library
-            (lambda* (#:key outputs #:allow-other-keys)
-              (delete-file (string-append (assoc-ref outputs "out")
-                                          "/lib/libhackrf.a"))
-              #t))
-          (add-before 'install-license-files 'leave-source-directory
-            (lambda _
-              (chdir "..")
-              #t)))
-        #:tests? #f)) ; no test suite
-     (native-inputs
-      `(("pkg-config" ,pkg-config)))
-     (inputs
-      `(("fftw" ,fftw)
-        ("fftwf" ,fftwf)
-        ("libusb" ,libusb)))
-     (home-page "https://greatscottgadgets.com/hackrf/")
-     (synopsis "User-space library and utilities for HackRF SDR")
-     (description
-      "Command line utilities and a C library for controlling the HackRF
+        (base32 "12fkgimjy5ia291c1rn4y59pn9r5wdvz5x9z5xc8zr1xr96iyhfs"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags
+       (list "-DUDEV_RULES_GROUP=dialout"
+             (string-append "-DUDEV_RULES_PATH="
+                            (assoc-ref %outputs "out")
+                            "/lib/udev/rules.d"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'enter-source-directory
+           (lambda _
+             (chdir "host")
+             #t))
+         (add-after 'install 'delete-static-library
+           (lambda* (#:key outputs #:allow-other-keys)
+             (delete-file (string-append (assoc-ref outputs "out")
+                                         "/lib/libhackrf.a"))
+             #t))
+         (add-before 'install-license-files 'leave-source-directory
+           (lambda _
+             (chdir "..")
+             #t)))
+       #:tests? #f)) ; no test suite
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("fftw" ,fftw)
+       ("fftwf" ,fftwf)
+       ("libusb" ,libusb)))
+    (home-page "https://greatscottgadgets.com/hackrf/")
+    (synopsis "User-space library and utilities for HackRF SDR")
+    (description
+     "Command line utilities and a C library for controlling the HackRF
 Software Defined Radio (SDR) over USB.  Installing this package installs the
 userspace hackrf utilities and C library.  To install the hackrf udev rules,
 you must extend 'udev-service-type' with this package.  E.g.:
 @code{(udev-rules-service 'hackrf hackrf #:groups '(\"dialout\"))}.")
-     (license license:gpl2))))
+    (license license:gpl2)))
 
 (define-public hamlib
   (package
     (name "hamlib")
-    (version "4.1")
+    (version "4.2")
     (source
      (origin
        (method url-fetch)
@@ -865,7 +1001,7 @@ you must extend 'udev-service-type' with this package.  E.g.:
              "https://github.com/Hamlib/Hamlib/releases/download/"
              version "/hamlib-" version ".tar.gz"))
        (sha256
-        (base32 "0hi3nc1k55mxff05amdv5iwryaz6r3205l24q0bg7l84f53bkm5l"))))
+        (base32 "1m8gb20i8ga6ndnnw187ry1h4z8wx27v1hl7c610r6ky60pv4072"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
@@ -1162,7 +1298,8 @@ their position, altitude, speed, etc.")
     (inputs
      `(("libusb" ,libusb)
        ("openssl" ,openssl)
-       ("rtl-sdr" ,rtl-sdr)))
+       ("rtl-sdr" ,rtl-sdr)
+       ("soapysdr" ,soapysdr)))
     (synopsis "Decoder for radio transmissions in ISM bands")
     (description
      "This is a generic data receiver, mainly for decoding radio transmissions
@@ -1543,7 +1680,7 @@ receiver.")
 (define-public welle-io
   (package
     (name "welle-io")
-    (version "2.2")
+    (version "2.3")
     (source
      (origin
        (method git-fetch)
@@ -1552,7 +1689,7 @@ receiver.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "04fpm6sc431dl9i5h53xpd6k85j22sv8aawl7b6wv2fzpfsd9fwa"))))
+        (base32 "1xl1lanw0xgmgks67dbfb2h52jxnrd1i2zik56v0q8dwsr7f0daw"))))
     (build-system qt-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1569,9 +1706,11 @@ receiver.")
        ("qtdeclarative" ,qtdeclarative)
        ("qtgraphicaleffects" ,qtgraphicaleffects)
        ("qtmultimedia" ,qtmultimedia)
-       ("qtquickcontrols2" ,qtquickcontrols2)))
+       ("qtquickcontrols2" ,qtquickcontrols2)
+       ("soapysdr" ,soapysdr)))
     (arguments
-     `(#:configure-flags '("-DRTLSDR=ON")
+     `(#:configure-flags '("-DRTLSDR=ON"
+                           "-DSOAPYSDR=ON")
        #:tests? #f))
     (home-page "https://www.welle.io/")
     (synopsis "DAB and DAB+ software radio")
@@ -1808,6 +1947,7 @@ voice formats.")
        ("qtwebsockets" ,qtwebsockets)
        ("rtl-sdr" ,rtl-sdr)
        ("serialdv" ,serialdv)
+       ("soapysdr" ,soapysdr)
        ("sgp4" ,sgp4)
        ("zlib" ,zlib)))
     (arguments
@@ -1824,7 +1964,9 @@ voice formats.")
              (string-append "-DSERIALDV_DIR="
                             (assoc-ref %build-inputs "serialdv"))
              (string-append "-DSGP4_DIR="
-                            (assoc-ref %build-inputs "sgp4")))))
+                            (assoc-ref %build-inputs "sgp4"))
+             (string-append "-DSOAPYSDR_DIR="
+                            (assoc-ref %build-inputs "soapysdr")))))
     (home-page "https://github.com/f4exb/sdrangel/wiki")
     (synopsis "Software defined radio")
     (description
@@ -1860,61 +2002,58 @@ software-defined radio receivers.")
     (license license:gpl3+)))
 
 (define-public wfview
-  ;; No tagged release, use commit directly.
-  (let ((commit "274e905d214a7360e8cf2dd0421dbe3712a0ddcc")
-        (revision "1"))
-    (package
-      (name "wfview")
-      (version (git-version "20210511" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://gitlab.com/eliggett/wfview")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "1dmxn15xs63wx1y4mh1mlv8qc1xz32vgbyl3rk82gf6knw518svp"))))
-      (build-system qt-build-system)
-      (inputs
-       `(("qcustomplot" ,qcustomplot)
-         ("qtbase" ,qtbase)
-         ("qtmultimedia" ,qtmultimedia)
-         ("qtserialport" ,qtserialport)))
-      (arguments
-       `(#:tests? #f  ; No test suite.
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'fix-paths
-             (lambda* (#:key outputs #:allow-other-keys)
-               (substitute* "wfview.pro"
-                 (("\\.\\./wfview/")
-                  "../"))
-               (substitute* '("wfmain.cpp")
-                 (("/usr/share")
-                  (string-append (assoc-ref outputs "out") "/share")))))
-           (replace 'configure
-             (lambda _
-               (mkdir-p "build")
-               (chdir "build")
-               (invoke "qmake" "../wfview.pro")))
-           (replace 'install
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out")))
-                 (install-file "wfview"
-                               (string-append out "/bin"))
-                 (install-file "wfview.png"
-                               (string-append out "/share/pixmaps"))
-                 (install-file "wfview.desktop"
-                               (string-append out "/share/applications"))
-                 (let ((dir (string-append
-                             out "/share/wfview/stylesheets/qdarkstyle")))
-                   (mkdir-p dir)
-                   (copy-recursively "qdarkstyle" dir))))))))
-      (home-page "https://wfview.org/")
-      (synopsis "Software to control Icom radios")
-      (description
-       "@code{wfview} is a program to control modern Icom radios and view the
+  (package
+    (name "wfview")
+    (version "1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/eliggett/wfview")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "16a9afm0nkqx4pzwfxisspybimhqdyr3yjpr7ac7wgpp3520ikzi"))))
+    (build-system qt-build-system)
+    (inputs
+     `(("qcustomplot" ,qcustomplot)
+       ("qtbase" ,qtbase)
+       ("qtmultimedia" ,qtmultimedia)
+       ("qtserialport" ,qtserialport)))
+    (arguments
+     `(#:tests? #f  ; No test suite.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "wfview.pro"
+               (("\\.\\./wfview/")
+                "../"))
+             (substitute* '("wfmain.cpp")
+               (("/usr/share")
+                (string-append (assoc-ref outputs "out") "/share")))))
+         (replace 'configure
+           (lambda _
+             (mkdir-p "build")
+             (chdir "build")
+             (invoke "qmake" "../wfview.pro")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out")))
+               (install-file "wfview"
+                             (string-append out "/bin"))
+               (install-file "wfview.png"
+                             (string-append out "/share/pixmaps"))
+               (install-file "wfview.desktop"
+                             (string-append out "/share/applications"))
+               (let ((dir (string-append
+                           out "/share/wfview/stylesheets/qdarkstyle")))
+                 (mkdir-p dir)
+                 (copy-recursively "qdarkstyle" dir))))))))
+    (home-page "https://wfview.org/")
+    (synopsis "Software to control Icom radios")
+    (description
+     "@code{wfview} is a program to control modern Icom radios and view the
 spectrum waterfall.  It supports at least the following models:
 
 @itemize
@@ -1925,5 +2064,90 @@ spectrum waterfall.  It supports at least the following models:
 @item IC-7851
 @item IC-9700
 @end itemize\n")
-      (license (list license:expat
-                     license:gpl3)))))
+    (license (list license:expat
+                   license:gpl3))))
+
+(define-public minimodem
+  (package
+    (name "minimodem")
+    (version "0.24")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.whence.com/minimodem/minimodem-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "13ipyh39l7p420j1j9kvwyskv2nqnimls1a3z1klsa1zivds9k7q"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("fftwf" ,fftwf)
+       ("libsndfile" ,libsndfile)
+       ("pulseaudio" ,pulseaudio)))
+    (home-page "http://www.whence.com/minimodem/")
+    (synopsis "Software audio FSK modem")
+    (description
+     "Minimodem is a command-line program which decodes (or generates) audio
+modem tones at any specified baud rate, using various framing protocols.  It
+acts a general-purpose software FSK modem, and includes support for various
+standard FSK protocols such as Bell103, Bell202, RTTY, TTY/TDD, NOAA SAME, and
+Caller-ID.")
+    (license license:gpl3+)))
+
+(define-public rfcat
+  ;; Use a commit for now because some fixes to make rfcat work with
+  ;; Python 3 instead of Python 2 are not in a release yet.
+  (let ((commit "725bf79af27d47cdec64107317c1c8fe3f7ad7b8")
+        (revision "1"))
+    (package
+      (name "rfcat")
+      (version (git-version "1.9.5" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/atlas0fd00m/rfcat")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0dbc6n4pxsa73wzxny773khc73r1dn3ma5hi7xv76vcykjvzkdi3"))))
+      (build-system python-build-system)
+      (inputs
+       `(("python-future" ,python-future)
+         ("python-ipython" ,python-ipython)
+         ("python-numpy" ,python-numpy)
+         ("python-pyserial" ,python-pyserial)
+         ("python-pyside-2" ,python-pyside-2)
+         ("python-pyusb" ,python-pyusb)))
+      (arguments
+       `(#:tests? #f  ; Tests want to use a serial port
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-permissions
+             (lambda _
+               (make-file-writable "rflib/rflib_version.py")))
+           (add-after 'install 'install-udev-rules
+             (lambda* (#:key outputs #:allow-other-keys)
+               (install-file "etc/udev/rules.d/20-rfcat.rules"
+                             (string-append (assoc-ref outputs "out")
+                                            "/lib/udev/rules.d")))))))
+      (home-page "https://github.com/atlas0fd00m/rfcat")
+      (synopsis "Program to control some radio dongles")
+      (description
+       "@code{rfcat} is a program to control some radio dongles operating in
+ISM bands.
+
+Supported dongles:
+@itemize
+@item YARD Stick One
+@item cc1111emk
+@item chronos watch dongle
+@item imme (limited support)
+@end itemize
+
+To install the rfcat udev rules, you must extend @code{udev-service-type} with
+this package.  E.g.: @code{(udev-rules-service 'rfcat rfcat)}")
+      (license (list license:bsd-3
+                     license:gpl2)))))

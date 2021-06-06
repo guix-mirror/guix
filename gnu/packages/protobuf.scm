@@ -123,7 +123,8 @@ internal RPC protocols and file formats.")
 
 ;; Tensorflow requires version 3.6 specifically.
 (define-public protobuf-3.6
-  (package/inherit protobuf
+  (package
+    (inherit protobuf)
     (version "3.6.1")
     (source (origin
               (method url-fetch)
@@ -136,8 +137,8 @@ internal RPC protocols and file formats.")
 
 ;; The 3.5 series are the last versions that do not require C++ 11.
 (define-public protobuf-3.5
-  (package/inherit
-   protobuf
+  (package
+    (inherit protobuf)
    (version "3.5.1")
    (source (origin
               (method url-fetch)
@@ -276,7 +277,8 @@ structured data.")
 
 ;; For tensorflow.
 (define-public python-protobuf-3.6
-  (package/inherit python-protobuf
+  (package
+    (inherit python-protobuf)
     (name "python-protobuf")
     (version (package-version protobuf-3.6) )
     (source

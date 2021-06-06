@@ -3,7 +3,7 @@
 ;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019, 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
-;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2019, 2021 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Edouard Klein <edk@beaver-labs.com>
@@ -1533,4 +1533,41 @@ code asynchronously.")
 allows one to create a set of tests using @emph{pairwise combinations} method,
 reducing a number of combinations of variables into a lesser set that covers
 most situations.")
+    (license license:expat)))
+
+(define-public python-pytest-mp
+  (package
+    (name "python-pytest-mp")
+    (version "0.0.4p2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ansible/pytest-mp")
+             (commit "49a8ff2ca9ef62d8c86854ab31d6b5d5d6cf3f28")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "01v98b6n3yvkfmxf2v38xk5ijqlk6ika0yljwkhl5bh6qhq23498"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-psutil" ,python-psutil)))
+    (arguments
+     ;; tests require setuptools-markdown, which is deprecated and not in guix
+     '(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-useless-requirements
+           (lambda _
+             (substitute* "setup.py"
+               ((" setup_requires=") " #")))))))
+    (home-page "https://github.com/ansible/pytest-mp")
+    (synopsis  "Segregate tests into several processes")
+    (description "pytest-mp is a minimalist approach to distribute and
+segregate pytest tests across processes using python's multiprocessing library
+and is heavily inspired by pytest-concurrent and pytest-xdist.  As a very
+early beta, it doesn't pledge or intend to support the majority of platforms
+or use cases.  Design is based on supporting slow, io-bound testing with often
+tedious system under test configuration that can benefit from running several
+tests at one time.")
     (license license:expat)))

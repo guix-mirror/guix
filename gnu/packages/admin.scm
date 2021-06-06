@@ -1162,14 +1162,14 @@ connection alive.")
                                       bind-release-version)))
     (package
       (name "isc-dhcp")
-      (version "4.4.2")
+      (version "4.4.2-P1")
       (source (origin
                 (method url-fetch)
                 (uri (string-append "https://ftp.isc.org/isc/dhcp/"
                                     version "/dhcp-" version ".tar.gz"))
                 (sha256
                  (base32
-                  "08a5003zdxgl41b29zjkxa92h2i40zyjgxg0npvnhpkfl5jcsz0s"))))
+                  "06jsr0cg5rsmyibshrpcb9za0qgwvqccashdma7mlm1rflrh8pmh"))))
       (build-system gnu-build-system)
       (arguments
        `(#:parallel-build? #f
@@ -1292,7 +1292,7 @@ connection alive.")
                 ("coreutils*" ,coreutils)
                 ("sed*" ,sed)))
 
-      (home-page "https://www.isc.org/products/DHCP/")
+      (home-page "https://www.isc.org/dhcp/")
       (synopsis "Dynamic Host Configuration Protocol (DHCP) tools")
       (description
        "ISC's Dynamic Host Configuration Protocol (DHCP) distribution provides a
@@ -3608,14 +3608,14 @@ information tool.")
 (define-public nnn
   (package
     (name "nnn")
-    (version "4.0")
+    (version "4.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/jarun/nnn/releases/download/v"
                            version "/nnn-v" version ".tar.gz"))
        (sha256
-        (base32 "0m07nh1cdfikn4bkpni29j61hr9jdwbl0n5fmlm53l1xmn7yq6d2"))))
+        (base32 "1fnf35s3b2nfp18s712n5vhg6idx4rfgwdfv74nc2933v9l2dq7h"))))
     (build-system gnu-build-system)
     (inputs
      `(("ncurses" ,ncurses)
@@ -3626,30 +3626,26 @@ information tool.")
      `(#:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)            ; no configure script
-         (add-after 'unpack 'patch-pkg-config
-           (lambda _
-             (substitute* "Makefile"
-               (("pkg-config")
-                ,(pkg-config-for-target))))))
+         (delete 'configure))           ; no configure script
        #:make-flags
        (list
         (string-append "PREFIX="
                        (assoc-ref %outputs "out"))
-        (string-append "CC=" ,(cc-for-target)))))
+        (string-append "CC=" ,(cc-for-target))
+        (string-append "PKG_CONFIG=" ,(pkg-config-for-target)))))
     (home-page "https://github.com/jarun/nnn")
     (synopsis "Terminal file browser")
-    (description "@command{nnn} is a fork of @command{noice}, a blazing-fast
-lightweight terminal file browser with easy keyboard shortcuts for
-navigation, opening files and running tasks.  There is no config file and
-mime associations are hard-coded.  The incredible user-friendliness and speed
-make it a perfect utility on modern distros.")
+    (description
+     "@command{nnn} is a fork of @command{noice}, a fast and minimal text
+terminal file browser with keyboard shortcuts for navigation, opening files and
+running tasks.  There is no configuration file and MIME associations are
+hard-coded.")
     (license license:bsd-2)))
 
 (define-public thermald
   (package
     (name "thermald")
-    (version "2.4.4")
+    (version "2.4.5")
     (source
      (origin
       (method git-fetch)
@@ -3658,7 +3654,7 @@ make it a perfect utility on modern distros.")
              (commit (string-append "v" version))))
       (file-name (git-file-name name version))
       (sha256
-       (base32 "1k0r2c13fihjndwfh0byw0i8ni4lzsjgwz874pvpj1l1nvjj0ajx"))))
+       (base32 "1y8s0cpjm01bz4isp3ksvnrbhpp3phivdhsb0w2kxhv09sfxkc5g"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -3672,13 +3668,7 @@ make it a perfect utility on modern distros.")
        (modify-phases %standard-phases
          (add-before 'bootstrap 'no-early-./configure
            (lambda _
-             (setenv "NO_CONFIGURE" "yet")
-             ;; XXX thd_trip_point.h redefines "__STDC_LIMIT_MACROS" after
-             ;; <xz>/include/lzma.h.  ./configure forcibly appends -Werror
-             ;; to CXXFLAGS, overriding any -Wno-error we'd add.
-             (substitute* "configure.ac"
-               (("-Werror") ""))
-             #t)))))
+             (setenv "NO_CONFIGURE" "yet"))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("autoconf-archive" ,autoconf-archive)

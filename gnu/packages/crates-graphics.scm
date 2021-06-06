@@ -10,6 +10,7 @@
 ;;; Copyright © 2020 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Antoine Côté <antoine.cote@posteo.net>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,6 +33,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (gnu packages)
+  #:use-module (gnu packages assembly)
   #:use-module (gnu packages crates-io)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages llvm)
@@ -268,6 +270,38 @@ to draw lines and colored text and then write them to the terminal.  It uses
 the term library to handle the ANSI nonsense and hence it works on Windows,
 Mac, and Unix.")
     (license (list license:asl2.0 license:expat))))
+
+(define-public rust-avif-parse-0.13
+  (package
+    (name "rust-avif-parse")
+    (version "0.13.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "avif-parse" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1vylrjq77mpl6flmd85j5f2qimh6vjn03syvq8agb62x56khm0xj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bitreader" ,rust-bitreader-0.3)
+        ("rust-byteorder" ,rust-byteorder-1)
+        ("rust-fallible-collections" ,rust-fallible-collections-0.4)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-static-assertions" ,rust-static-assertions-1))
+       #:cargo-development-inputs
+       (("rust-env-logger" ,rust-env-logger-0.8)
+        ("rust-walkdir" ,rust-walkdir-2))))
+    (home-page "https://github.com/kornelski/avif-parse")
+    (synopsis "Parser for AVIF image files")
+    (description "This AVIF parser allows extracting the AV1 payload and alpha
+channel metadata out of AVIF image files.  The parser is a fork of Mozilla's
+MP4 parser used in Firefox, so it's designed to be robust and safely handle
+untrusted data.")
+    (license license:mpl2.0)))
 
 (define-public rust-avif-serialize-0.6
   (package
@@ -1915,75 +1949,6 @@ interactive applications.")
         ("rust-glob" ,rust-glob-0.2)
         ("rust-term" ,rust-term-0.4))))))
 
-(define-public rust-rav1e-0.4
-  (package
-    (name "rust-rav1e")
-    (version "0.4.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (crate-uri "rav1e" version))
-       (file-name (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32 "02cpgzycfgnflnv8sck6ajasa7abfgdzn6b4jv01sf6r21yfipbq"))))
-    (build-system cargo-build-system)
-    (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-aom-sys" ,rust-aom-sys-0.2)
-        ("rust-arbitrary" ,rust-arbitrary-0.4)
-        ("rust-arg-enum-proc-macro" ,rust-arg-enum-proc-macro-0.3)
-        ("rust-arrayvec" ,rust-arrayvec-0.5)
-        ("rust-assert-cmd" ,rust-assert-cmd-1)
-        ("rust-av-metrics" ,rust-av-metrics-0.6)
-        ("rust-backtrace" ,rust-backtrace-0.3)
-        ("rust-bitstream-io" ,rust-bitstream-io-1)
-        ("rust-byteorder" ,rust-byteorder-1)
-        ("rust-cc" ,rust-cc-1)
-        ("rust-cfg-if" ,rust-cfg-if-1)
-        ("rust-clap" ,rust-clap-2)
-        ("rust-console" ,rust-console-0.14)
-        ("rust-criterion" ,rust-criterion-0.3)
-        ("rust-crossbeam" ,rust-crossbeam-0.8)
-        ("rust-dav1d-sys" ,rust-dav1d-sys-0.3)
-        ("rust-fern" ,rust-fern-0.6)
-        ("rust-image" ,rust-image-0.23)
-        ("rust-interpolate-name" ,rust-interpolate-name-0.2)
-        ("rust-itertools" ,rust-itertools-0.10)
-        ("rust-ivf" ,rust-ivf-0.1)
-        ("rust-libc" ,rust-libc-0.2)
-        ("rust-libfuzzer-sys" ,rust-libfuzzer-sys-0.3)
-        ("rust-log" ,rust-log-0.4)
-        ("rust-nasm-rs" ,rust-nasm-rs-0.2)
-        ("rust-noop-proc-macro" ,rust-noop-proc-macro-0.3)
-        ("rust-num-derive" ,rust-num-derive-0.3)
-        ("rust-num-traits" ,rust-num-traits-0.2)
-        ("rust-paste" ,rust-paste-1)
-        ("rust-pretty-assertions" ,rust-pretty-assertions-0.6)
-        ("rust-rand" ,rust-rand-0.8)
-        ("rust-rand-chacha" ,rust-rand-chacha-0.3)
-        ("rust-rayon" ,rust-rayon-1)
-        ("rust-regex" ,rust-regex-1)
-        ("rust-rust-hawktracer" ,rust-rust-hawktracer-0.7)
-        ("rust-rustc-version" ,rust-rustc-version-0.3)
-        ("rust-scan-fmt" ,rust-scan-fmt-0.2)
-        ("rust-serde" ,rust-serde-1)
-        ("rust-signal-hook" ,rust-signal-hook-0.3)
-        ("rust-simd-helpers" ,rust-simd-helpers-0.1)
-        ("rust-thiserror" ,rust-thiserror-1)
-        ("rust-toml" ,rust-toml-0.5)
-        ("rust-v-frame" ,rust-v-frame-0.2)
-        ("rust-vergen" ,rust-vergen-3)
-        ("rust-wasm-bindgen" ,rust-wasm-bindgen-0.2)
-        ("rust-y4m" ,rust-y4m-0.7))))
-    (home-page "https://github.com/xiph/rav1e")
-    (synopsis "Fast and safe AV1 encoder")
-    (description
-     "@code{rav1e} is an AV1 video encoder.  It is designed to eventually
-cover all use cases, though in its current form it is most suitable for cases
-where libaom (the reference encoder) is too slow.")
-    (license license:bsd-2)))
-
 (define-public rust-ravif-0.6
   (package
     (name "rust-ravif")
@@ -1997,20 +1962,22 @@ where libaom (the reference encoder) is too slow.")
         (base32 "1gyc7w1fz3qdk95cdpkj185dm6lskxfp329xm69waxc565fcz9rx"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-avif-serialize" ,rust-avif-serialize-0.6)
         ("rust-imgref" ,rust-imgref-1)
         ("rust-loop9" ,rust-loop9-0.1)
         ("rust-num-cpus" ,rust-num-cpus-1)
-        ("rust-rav1e" ,rust-rav1e-0.4)
+        ("rav1e" ,rav1e)
         ("rust-rayon" ,rust-rayon-1)
-        ("rust-rgb" ,rust-rgb-0.8))))
+        ("rust-rgb" ,rust-rgb-0.8))
+       #:cargo-development-inputs
+       (("rust-avif-parse" ,rust-avif-parse-0.13))))
+    (native-inputs
+     `(("nasm" ,nasm)))                 ;for building rav1e
     (home-page "https://lib.rs/ravif")
     (synopsis "Library for encoding images in AVIF format")
-    (description
-     "This package is a rav1e-based pure Rust library for encoding images in
-AVIF format.")
+    (description "This package is a rav1e-based pure Rust library for encoding
+images in AVIF format.")
     (license license:bsd-3)))
 
 (define-public rust-raw-window-handle-0.3

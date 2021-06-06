@@ -1360,29 +1360,31 @@ utilities that make it even easier to manipulate text in Common Lisp.  It has
   (sbcl-package->ecl-package sbcl-cl-strings))
 
 (define-public sbcl-trivial-features
-  ;; No release since 2014.
-  (let ((commit "870d03de0ed44067963350936856e17ee725153e"))
-    (package
-      (name "sbcl-trivial-features")
-      (version (git-version "0.8" "1" commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/trivial-features/trivial-features")
-               (commit commit)))
-         (file-name (git-file-name "trivial-features" version))
-         (sha256
-          (base32 "14pcahr8r2j3idhyy216zyw8jnj1dnrx0qbkkbdqkvwzign1ah4j"))))
-      (build-system asdf-build-system/sbcl)
-      (arguments
-       '(#:asd-files '("trivial-features.asd")
-         #:tests? #f))
-      (home-page "https://cliki.net/trivial-features")
-      (synopsis "Ensures consistency of @code{*FEATURES*} in Common Lisp")
-      (description "Trivial-features ensures that @code{*FEATURES*} is
+  (package
+    (name "sbcl-trivial-features")
+    (version "1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/trivial-features/trivial-features")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name "trivial-features" version))
+       (sha256
+        (base32 "0jsqah1znzqilxnw5vannb083ayk0d7phkackqzwwqkyg5hpn6pq"))))
+    (build-system asdf-build-system/sbcl)
+    (arguments
+     '(#:asd-files '("trivial-features.asd")
+       ;; FIXME: Tests disabled because of a circular dependency between
+       ;; trivial-features and cffi.
+       #:tests? #f))
+    ;; (native-inputs
+    ;;  `(("cffi" ,sbcl-cffi)))
+    (home-page "https://cliki.net/trivial-features")
+    (synopsis "Ensures consistency of @code{*FEATURES*} in Common Lisp")
+    (description "Trivial-features ensures that @code{*FEATURES*} is
 consistent across multiple Common Lisp implementations.")
-      (license license:expat))))
+    (license license:expat)))
 
 (define-public cl-trivial-features
   (sbcl-package->cl-source-package sbcl-trivial-features))
@@ -2079,8 +2081,8 @@ than the body of the lambda.")
 
 (define-public sbcl-nibbles
   ;; No tagged release since 2018.
-  (let ((commit "8e6b9b42d9f69000f55e5c45ad974d9e376ffdbd")
-        (revision "1"))
+  (let ((commit "dad25240928d5cf8f7df69c4398244e03570bb35")
+        (revision "2"))
     (package
       (name "sbcl-nibbles")
       (version (git-version "0.14" revision commit))
@@ -2091,7 +2093,7 @@ than the body of the lambda.")
                (url "https://github.com/sharplispers/nibbles/")
                (commit commit)))
          (sha256
-          (base32 "15qlsm82h36pjgvfnbzdg60l21qxbaii4d049jc5y0dn56y93amb"))
+          (base32 "0r6ljlpgjmkf87pmvdwzva8qj15bhznc3ylgcjjqyy4frbx9lygz"))
          (file-name (git-file-name "nibbles" version))))
       (build-system asdf-build-system/sbcl)
       (native-inputs
@@ -14468,10 +14470,10 @@ standard library.")
   (sbcl-package->cl-source-package sbcl-shlex))
 
 (define-public sbcl-cmd
-  (let ((commit "bc5a3bee8f22917126e4c3d05b33f766e562dbd8"))
+  (let ((commit "8ace7fb45f2ecf0eefae28583ee36c941d142179"))
     (package
       (name "sbcl-cmd")
-      (version (git-version "0.0.1" "3" commit))
+      (version (git-version "0.0.1" "4" commit))
       (source
        (origin
          (method git-fetch)
@@ -14480,7 +14482,7 @@ standard library.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "1sjlabrknw1kjb2y89vssjhcqh3slgly8wnr3152zgis8lsj2yc7"))))
+          (base32 "1da8sa0fsvsdivnx2s9m6jbb7yszrnkqqcxrn1sszp7k6iwnnkgi"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("alexandria" ,sbcl-alexandria)
@@ -16845,3 +16847,403 @@ building block for higher level libraries.")
 
 (define-public ecl-json-streams
   (sbcl-package->ecl-package sbcl-json-streams))
+
+(define-public sbcl-arnesi
+  (let ((commit "1e7dc4cb2cad8599113c7492c78f4925e839522e")
+        (revision "1"))
+    (package
+      (name "sbcl-arnesi")
+      (version (git-version "2.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/AccelerationNet/arnesi")
+               (commit commit)))
+         (file-name (git-file-name "arnesi" version))
+         (sha256
+          (base32 "0jgj2xgd1gq6rf8ia43lkmbrbxnp8rgs053br9azfa25ygk3ikbh"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       ;; FIXME: (Sharlatan-20210523T190315+0100): Tests failed on
+       ;; special-lisp-var-rebount-in/cc
+       ;;
+       ;; ; processing (TEST SPECIAL-LISP-VAR-REBOUND-IN/CC ...)
+       ;; ; wrote .../sbcl/arnesi/t/call-cc-tmp5GEXGEG5.fasl
+       ;; ; compilation finished in 0:00:00.028
+       ;; Unhandled SIMPLE-ERROR in thread
+       ;; #<SB-THREAD:THREAD "main thread" RUNNING {100B768173}>:
+       ;; Sorry, No walker for the special operater DECLARE defined.
+       ;;
+       ;; Backtrace for: #<SB-THREAD:THREAD "main thread" RUNNING {100B768173}>
+       ;; 0: (SB-DEBUG::DEBUGGER-DISABLED-HOOK #<SIMPLE-ERROR "Sorry,
+       ;; No walker for the special operater ~S defined."
+       ;; {1001FAF9D3}> #<unused argument> :QUIT T)
+       ;;
+       `(#:tests? #f))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (inputs
+       `(("cl-ppcre" ,sbcl-cl-ppcre)
+         ("collectors" ,sbcl-collectors)
+         ("swank" ,sbcl-slime-swank)))
+      (home-page "https://github.com/AccelerationNet/arnesi")
+      (synopsis "Common Lisp utility suite")
+      (description
+       "ARNESI is Common Lisp utilities library similar to ALEXANDRIA, ANAPHORA
+or GOLDEN-UTILS.")
+      (license license:bsd-3))))
+
+(define-public ecl-arnesi
+  (sbcl-package->ecl-package sbcl-arnesi))
+
+(define-public cl-arnesi
+  (sbcl-package->cl-source-package sbcl-arnesi))
+
+(define-public sbcl-gettext
+  (let ((commit "a432020cbad99fc22cbe6bb9aa8a83a35000d7aa")
+        (revision "1"))
+    (package
+      (name "sbcl-gettext")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/rotatef/gettext")
+               (commit commit)))
+         (file-name (git-file-name "gettext" version))
+         (sha256
+          (base32 "1pzhamgni6k5hi6bbvlb3dm659pcllrrr3vhhn3rpjn238zxg5ar"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("stefil" ,sbcl-stefil)))
+      (inputs
+       `(("flexi-streams" ,sbcl-flexi-streams)
+         ("split-sequence" ,sbcl-split-sequence)
+         ("yacc" ,sbcl-cl-yacc)))
+      (home-page "https://github.com/rotatef/gettext")
+      (synopsis "Common Lisp implementation of Gettext")
+      (description
+       "This package provides GNU @code{gettext} completely implemented in
+Common Lisp without any C library bindings.")
+      (license license:lgpl3+))))
+
+(define-public ecl-gettext
+  (sbcl-package->ecl-package sbcl-gettext))
+
+(define-public cl-gettext
+  (sbcl-package->cl-source-package sbcl-gettext))
+
+(define-public sbcl-parser-combinators
+  (let ((commit "9c7569a4f6af5e60c0d3a51d9c15c16d1714c845")
+        (revision "1"))
+    (package
+      (name "sbcl-parser-combinators")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Ramarren/cl-parser-combinators")
+               (commit commit)))
+         (file-name (git-file-name "parser-combinators" version))
+         (sha256
+          (base32 "1k49vha5xm2cklayzpqwg73n4v93xwsbs5in6342pkkiimnidhs8"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       ;; FIXME: (Sharlatan-20210523T184237+0100): Tests require `femlisp', which
+       ;; is quite chunky not packaged system yet, enable them when it's packed.
+       `(#:tests? #f
+         #:test-asd-file "parser-combinators-tests.asd"))
+      ;; (native-inputs
+      ;;  `(("hu.dwim.stefil" ,sbcl-hu.dwim.stefil)
+      ;;    ("infix" ,sbcl-femlisp)))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cl-containers" ,sbcl-cl-containers)
+         ("cl-ppcre" ,sbcl-cl-ppcre)
+         ("iterate" ,sbcl-iterate)))
+      (home-page "https://github.com/Ramarren/cl-parser-combinators")
+      (synopsis "Parser combinators in Common Lisp")
+      (description
+       "PARSER-COMBINATORS is a library implementing monadic parser
+combinators in Common Lisp, similar in concept to Haskell Parsec system.")
+      (license license:bsd-3))))
+
+(define-public ecl-parser-combinators
+  (sbcl-package->ecl-package sbcl-parser-combinators))
+
+(define-public cl-parser-combinators
+  (sbcl-package->cl-source-package sbcl-parser-combinators))
+
+(define-public sbcl-cl-locale
+  (let ((commit "0a36cc0dcf5e0a8c8bf97869cd6199980ca25eec")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-locale")
+      (version (git-version "0.1.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/fukamachi/cl-locale")
+               (commit commit)))
+         (file-name (git-file-name "cl-locale" version))
+         (sha256
+          (base32 "1rhannhpsw1yg1fpflam483a3w9qb1izgyvmnmiddv3dn4qsmn9p"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       ;; FIXME: (Sharlatan-20210523T190658+0100): All tests passed ok but
+       ;; successfully failed in the end:
+       ;;
+       ;; Summary:
+       ;;   All 1 file passed.
+       ;; Unhandled ASDF/FIND-COMPONENT:MISSING-DEPENDENCY
+       ;; in thread #<SB-THREAD:THREAD "main thread" RUNNING {100B6C8253}>:
+       ;;   Component CL-LOCALE-ASD::CL-LOCALE-TEST not found, required by
+       ;;   #<SYSTEM "cl-locale">
+       ;;
+       `(#:tests? #f))
+      (native-inputs
+       `(("prove" ,sbcl-prove)
+         ("flexi-streams" ,sbcl-flexi-streams)))
+      (inputs
+       `(("anaphora" ,sbcl-anaphora)
+         ("arnesi" ,sbcl-arnesi)
+         ("cl-annot" ,sbcl-cl-annot)
+         ("cl-syntax" ,sbcl-cl-syntax)))
+      (home-page "https://github.com/fukamachi/cl-locale")
+      (synopsis "Internalization library for Common Lisp")
+      (description
+       "This package provides a Common Lisp translation library similar to
+CL-I18N and CL-L10N.")
+      (license license:llgpl))))
+
+(define-public ecl-cl-locale
+  (sbcl-package->ecl-package sbcl-cl-locale))
+
+(define-public cl-locale
+  (sbcl-package->cl-source-package sbcl-cl-locale))
+
+(define-public sbcl-cl-slice
+  (let ((commit "c531683f287216aebbb0affbe090611fa1b5d697")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-slice")
+      (version (git-version "0.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/tpapp/cl-slice")
+               (commit commit)))
+         (file-name (git-file-name "cl-slice" version))
+         (sha256
+          (base32 "1ybznf4y5lda6bn163jcvj281qzhm24dfcwhbgxmm5n6f27gdccl"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("clunit" ,sbcl-clunit)))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("anaphora" ,sbcl-anaphora)
+         ("let-plus" ,sbcl-let-plus)))
+      (home-page "https://github.com/tpapp/cl-slice")
+      (synopsis "Array slices for Common Lisp")
+      (description
+       "This package provides a DSL for array slices in Common Lisp.")
+      (license license:expat))))
+
+(define-public ecl-cl-slice
+  (sbcl-package->ecl-package sbcl-cl-slice))
+
+(define-public cl-slice
+  (sbcl-package->cl-source-package sbcl-cl-slice))
+
+(define-public sbcl-djula
+  (let ((commit "5df7af35a21503d468a878fc6029caa527a7d204")
+        (revision "1"))
+    (package
+      (name "sbcl-djula")
+      (version (git-version "0.2.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/mmontone/djula")
+               (commit commit)))
+         (file-name (git-file-name "djula" version))
+         (sha256
+          (base32 "1lk2ypm3sacf60h96a7hv9jwjlxkl4k40yzdalmqdg548vrd1jjm"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (inputs
+       `(("access" ,sbcl-access)
+         ("alexandria" ,sbcl-alexandria)
+         ("anaphora" ,sbcl-anaphora)
+         ("babel" ,sbcl-babel)
+         ("cl-locale" ,sbcl-cl-locale)
+         ("cl-ppcre" ,sbcl-cl-ppcre)
+         ("cl-slice" ,sbcl-cl-slice)
+         ("closer-mop" ,sbcl-closer-mop)
+         ("gettext" ,sbcl-gettext)
+         ("iterate" ,sbcl-iterate)
+         ("local-time" ,sbcl-local-time)
+         ("parser-combinators" ,sbcl-parser-combinators)
+         ("split-sequence" ,sbcl-split-sequence)
+         ("trivial-backtrace" ,sbcl-trivial-backtrace)))
+      (home-page "https://mmontone.github.io/djula/")
+      (synopsis "Common Lisp port of the Django templating language")
+      (description
+       "This package provides a Common Lisp templating system based on Python
+Django with a syntax similar to Python Jinja2.")
+      (license license:expat))))
+
+(define-public ecl-djula
+  (sbcl-package->ecl-package sbcl-djula))
+
+(define-public cl-djula
+  (sbcl-package->cl-source-package sbcl-djula))
+
+(define-public sbcl-for
+  (let ((commit "2e4fcfa0f9c1d2f4559c58cef20ccefa50ba180d")
+        (revision "1"))
+    (package
+      (name "sbcl-for")
+      (version (git-version "1.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shinmera/for")
+               (commit commit)))
+         (file-name (git-file-name "for" version))
+         (sha256
+          (base32 "1akz9ggh33x2cq3h0f1cd0p632v1mbagv3dzsb0r10bwg9lh3nmv"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("documentation-utils" ,sbcl-documentation-utils)
+         ("form-fiddle" ,sbcl-form-fiddle)
+         ("lambda-fiddle" ,sbcl-lambda-fiddle)))
+      (home-page "https://shinmera.github.io/for/")
+      (synopsis "Extensible iteration macro library")
+      (description
+       "For is a library for an extensible iteration macro.  It allows you to write
+concise looping constructs similar to @code{loop} and @code{iterate}.  Unlike
+loop however it is extensible and sensible, and unlike iterate it does not
+require code-walking and is easier to extend.")
+      (license license:zlib))))
+
+(define-public ecl-for
+  (sbcl-package->ecl-package sbcl-for))
+
+(define-public cl-for
+  (sbcl-package->cl-source-package sbcl-for))
+
+(define-public sbcl-flare
+  (let ((commit "4f9f17a4fc5b368c2a1988b9a20288695b8d8c48")
+        (revision "1"))
+    (package
+      (name "sbcl-flare")
+      (version (git-version "1.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shinmera/flare")
+               (commit commit)))
+         (file-name (git-file-name "flare" version))
+         (sha256
+          (base32 "00nm3sjngbflj2gd5q0xs2m136w4kix6krww23nk64pkkyq2fs86"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("3d-vectors" ,sbcl-3d-vectors)
+         ("array-utils" ,sbcl-array-utils)
+         ("documentation-utils" ,sbcl-documentation-utils)
+         ("for" ,sbcl-for)
+         ("lambda-fiddle" ,sbcl-lambda-fiddle)
+         ("trivial-garbage" ,sbcl-trivial-garbage)))
+      (home-page "https://shinmera.github.io/flare/")
+      (synopsis "Easy particle systems with fine grained control")
+      (description
+       "FLARE is a library designed to allow quick and precise particle effect
+creations.  It does not concern itself with displaying and only with the
+management and movement of particles.  As such, it can easily be integrated into
+any existing or future application.")
+      (license license:zlib))))
+
+(define-public ecl-flare
+  (sbcl-package->ecl-package sbcl-flare))
+
+(define-public cl-flare
+  (sbcl-package->cl-source-package sbcl-flare))
+
+(define-public sbcl-simple-inferiors
+  (let ((commit "deac886354e03f8a9502ce96f12a0459ce3be671"))
+    (package
+      (name "sbcl-simple-inferiors")
+      (version (git-version "1.1.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shinmera/simple-inferiors")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "08vsvqv3768bwb2y8mwxbw5wyqzzwqr7rd004r6gafdgf9p9mcx3"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("bordeaux-threads" ,sbcl-bordeaux-threads)
+         ("documentation-utils" ,sbcl-documentation-utils)))
+      (home-page "https://shinmera.github.io/simple-inferiors/")
+      (synopsis "Common Lisp library to use inferior processes")
+      (description
+       "This is a library to allow easy handling of external processes, and
+primarily to get their output.  It handles proper copying of the standard and
+error outputs of the process simultaneously, both in a sequential and parallel
+fashion.  It also features a lazy directory switching mechanism, to avoid
+running into parallelism problems when having to change directory.")
+      (license license:zlib))))
+
+(define-public ecl-simple-inferiors
+  (sbcl-package->ecl-package sbcl-simple-inferiors))
+
+(define-public cl-simple-inferiors
+  (sbcl-package->cl-source-package sbcl-simple-inferiors))
+
+(define-public sbcl-legit
+  (let ((commit "48d50a20d8dcbd941d119683463b7c8257ba6458"))
+    (package
+      (name "sbcl-legit")
+      (version (git-version "1.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shinmera/legit")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "181aqpj4zkfk1aavj5jw8rym6gw4ma3gd64z2h5fpryabgmwk236"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("simple-inferiors" ,sbcl-simple-inferiors)
+         ("lambda-fiddle" ,sbcl-lambda-fiddle)
+         ("cl-ppcre" ,sbcl-cl-ppcre)
+         ("documentation-utils" ,sbcl-documentation-utils)))
+      (home-page "https://shinmera.github.io/legit/")
+      (synopsis "Interface to the git binary")
+      (description
+       "This is an interface to the @code{git} binary to make controlling it
+from within Common Lisp much easier.  It might not ever reach full coverage of
+all features given git's immense size, but features will be added as they are
+needed.  The low-level command API is fully mapped however.")
+      (license license:zlib))))
+
+(define-public ecl-legit
+  (sbcl-package->ecl-package sbcl-legit))
+
+(define-public cl-legit
+  (sbcl-package->cl-source-package sbcl-legit))

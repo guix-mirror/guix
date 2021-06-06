@@ -9,6 +9,7 @@
 ;;; Copyright © 2020 Guy Fleury Iteriteka <gfleury@disroot.org>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Prafulla Giri <pratheblackdiamond@gmail.com>
+;;; Copyright © 2021 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -726,6 +727,43 @@ each key.  A collection of lessons are included for a wide range of different
 languages and keyboard layouts, and typing statistics are used to dynamically
 adjust the level of difficulty.")
     (license license:gpl2)))
+
+(define-public kanatest
+  ;; Latest release tarball is 0.4.8, which is really old and does not build
+  ;; commit on sourceforge are not tagged, we take the latest
+  (let ((commit "860e790a35f547cc96669f805d371a5ba3d8daff")
+        (revision "0"))
+    (package
+      (name "kanatest")
+      (version (git-version "0.4.10" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://git.code.sf.net/p/kanatest/code")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0dz63m9p4ggzw0yb309qmgnl664qb5q268vaa3i9v0i8qsl66d78"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("gettext" ,gettext-minimal)   ; for msgfmt
+         ("pkg-config" ,pkg-config)))
+      (inputs
+       `(("libxml2" ,libxml2)
+         ("gtk+" ,gtk+)))
+      (home-page "https://kanatest.sourceforge.io/")
+      (synopsis "Hiragana and Katakana simple flashcard tool")
+      (description "Kanatest is a Japanese kana (Hiragana and Katakana) simple
+flashcard tool.
+
+During test the Kanatest displays randomly selected kana char (respecting mode
+and lesson) and waits for user answer expected as romaji equivalent.  This
+process continues until all questions will be answered or all questions will
+be answered correctly (depends on options).  At the end of test a short info
+about drilling time and correctness ratio is displayed.  The results are
+stored and user can review his performance in any time.")
+      (license license:gpl2+))))
 
 (define-public anki
   (package

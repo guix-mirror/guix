@@ -175,14 +175,14 @@ as well as the classic centralized workflow.")
 (define-public git
   (package
    (name "git")
-   (version "2.31.1")
+   (version "2.32.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "10367n5sv4nsgaxy486pbp7nscx34vjk8vrb06jm9ffm8ix42qcz"))))
+              "08rnm3ipjqdd2n31dw7mxl3iv9g4nxgc409krmz892a37kd43a38"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -202,7 +202,7 @@ as well as the classic centralized workflow.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "00n7vbfmd3ywgjksgwrszwj0l2niba64qkaq07ra4p8mawy483ax"))))
+            "1hba3wh1fmhrwzw93a0m7q4kb3kwwwi1bx4457c4lkf94l2cpqqr"))))
       ;; For subtree documentation.
       ("asciidoc" ,asciidoc)
       ("docbook-xsl" ,docbook-xsl)
@@ -1701,7 +1701,7 @@ interface.")
 (define-public python-hg-evolve
   (package
     (name "python-hg-evolve")
-    (version "10.0.1")
+    (version "10.3.1")
     (source
       (origin
         (method hg-fetch)
@@ -1711,7 +1711,7 @@ interface.")
         (file-name (string-append name "-" version "-checkout"))
         (sha256
           (base32
-            "1lz407373lfam9n02gq0l0rc2sjvn0m96kbzy93ipia3ika8fa68"))))
+            "0msnp5fp8sz4q2r5xpcmm60h82kwkyg23y212v1xfp7ixkq9f4qa"))))
     (build-system python-build-system)
     (arguments
      ;; Tests need mercurial source code.
@@ -2280,7 +2280,7 @@ from Subversion to any supported Distributed Version Control System (DVCS).")
 (define-public tig
   (package
     (name "tig")
-    (version "2.5.3")
+    (version "2.5.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2288,7 +2288,7 @@ from Subversion to any supported Distributed Version Control System (DVCS).")
                     version "/tig-" version ".tar.gz"))
               (sha256
                (base32
-                "1p1575yh4daxjifywxkd0hgyfwciylqcm2qakawvwn6mk620ca75"))))
+                "19va4jn46s0vjv9f337g3ad6hy1f285ynl27i9gkd9l70b9q90n4"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)

@@ -119,30 +119,6 @@ well as other mediums.")
 in print.  With attention to detail for high resolution rendering.")
     (license license:silofl1.1)))
 
-(define-public font-ubuntu
-  (package
-    (name "font-ubuntu")
-    (version "0.83")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://salsa.debian.org/fonts-team/fonts-ubuntu")
-                    (commit (string-append "upstream/" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1d2xrjpxy70f3nsgqiggwv6pj06qglf5vj2847pqx60w3ygi903g"))))
-    (build-system font-build-system)
-    (home-page "http://font.ubuntu.com/")
-    (synopsis "The Ubuntu Font Family")
-    (description "The Ubuntu Font Family is a unique, custom designed font
-that has a very distinctive look and feel.  This package provides the
-TrueType (TTF) files.")
-    (license
-     (license:non-copyleft
-      "http://font.ubuntu.com/ufl/ubuntu-font-licence-1.0.txt"
-      "Ubuntu Font License v1.0"))))
-
 (define-public font-dejavu
   (package
     (name "font-dejavu")
@@ -1387,7 +1363,7 @@ programming.  Iosevka is completely generated from its source code.")
 (define-public font-sarasa-gothic
   (package
     (name "font-sarasa-gothic")
-    (version "0.12.7")
+    (version "0.31.2")
     (source
      (origin
        (method url-fetch)
@@ -1395,7 +1371,7 @@ programming.  Iosevka is completely generated from its source code.")
                            "/releases/download/v" version
                            "/sarasa-gothic-ttc-" version ".7z"))
        (sha256
-        (base32 "09v65k00g8m953s6riz9xjzb2jgr6v5pdhcllalzzl7c1cn2xl3k"))))
+        (base32 "0p67qyhm266s6q17islqvwch807fy5slgp2symrl0z665vp6hycj"))))
     (build-system font-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases

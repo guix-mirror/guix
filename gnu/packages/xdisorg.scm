@@ -46,6 +46,7 @@
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
+;;; Copyright © 2021 Renzo Poddighe <renzo@poddighe.nl>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -510,6 +511,39 @@ resize, hide, and modify window properties like the title.  If your window
 manager supports it, you can use xdotool to switch desktops, move windows
 between desktops, and change the number of desktops.")
     (license license:bsd-3)))
+
+(define-public xdo
+  (package
+    (name "xdo")
+    (version "0.5.7")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/baskerville/xdo")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1h3jrygcjjbavdbkpx2hscsf0yf97gk487lzjdlvymd7dxdv9hy9"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no tests
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (inputs
+     `(("libxcb" ,libxcb)
+       ("xcb-util-wm" ,xcb-util-wm)
+       ("xcb-util" ,xcb-util)))
+    (home-page "https://github.com/baskerville/xdo")
+    (synopsis "Small X utility to perform elementary actions on windows")
+    (description
+     "Apply the given action to the given windows.  If no window IDs and no
+options are given, the action applies to the focused window.")
+    (license license:bsd-2)))
 
 (define-public xeyes
   (package
@@ -1206,7 +1240,7 @@ Escape key when Left Control is pressed and released on its own.")
 (define-public libwacom
   (package
     (name "libwacom")
-    (version "1.7")
+    (version "1.10")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1214,7 +1248,7 @@ Escape key when Left Control is pressed and released on its own.")
                     "libwacom-" version "/libwacom-" version ".tar.bz2"))
               (sha256
                (base32
-                "0797gc055dgg2jfqijy9823bd83jwr4wb2z9id992qlcr0xmz1rw"))))
+                "14aj4ss1chxxgaprs9sfriia2ch9wj9rqay0ndkzk1m7jx2qrjgn"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags '("--disable-static")))
@@ -2800,3 +2834,44 @@ and execute @file{.desktop} files of the Application type.")
      "The @command{hsetroot} command composes wallpapers for X.
 This package is the fork of hsetroot by Hyriand.")
     (license license:gpl2+)))
+
+(define-public jumpapp
+  (package
+    (name "jumpapp")
+    (version "1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mkropat/jumpapp")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1jrk4mm42sz6ca2gkb6w3dad53d4im4shpgsq8s4vr6xpl3b43ry"))))
+    (build-system gnu-build-system)
+    (arguments `(#:phases
+                 (modify-phases %standard-phases
+                   (delete 'configure)
+                   (delete 'check)
+                   (add-before 'install 'set-prefix-in-makefile
+                     (lambda* (#:key outputs #:allow-other-keys)
+                       (let ((out (assoc-ref outputs "out")))
+                         (substitute* "Makefile"
+                           (("PREFIX =.*")
+                            (string-append "PREFIX = " out "\n")))
+                         #true))))))
+    (propagated-inputs
+     `(("wmctrl" ,wmctrl)
+       ("xdotool" ,xdotool)
+       ("xprop" ,xprop)))
+    (native-inputs
+     `(("pandoc" ,pandoc)
+       ("perl" ,perl)))
+    (synopsis "Run-or-raise application switcher for any X11 desktop")
+    (description
+     "Bind a key for any given application that will launch the application,
+if it's not already running, or focus the application's window,if it is running.
+Pressing the key again will cycle to the application's next window,
+if there's more than one.")
+    (home-page "https://github.com/mkropat/jumpapp")
+    (license license:expat)))

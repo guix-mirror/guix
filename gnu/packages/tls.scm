@@ -9,13 +9,14 @@
 ;;; Copyright © 2016, 2017, 2018 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018, 2019, 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2017–2019, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Solene Rapenne <solene@perso.pw>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -311,6 +312,7 @@ required structures.")
   (package
    (name "openssl")
    (version "1.1.1j")
+   (replacement openssl-1.1.1k)
    (source (origin
              (method url-fetch)
              (uri (list (string-append "https://www.openssl.org/source/openssl-"
@@ -443,6 +445,25 @@ required structures.")
     "OpenSSL is an implementation of SSL/TLS.")
    (license license:openssl)
    (home-page "https://www.openssl.org/")))
+
+;; Replacement package to fix CVE-2021-3449 and CVE-2021-3450.
+(define openssl-1.1.1k
+  (package
+    (inherit openssl)
+    (version "1.1.1k")
+    (source (origin
+              (method url-fetch)
+              (uri (list (string-append "https://www.openssl.org/source/openssl-"
+                                        version ".tar.gz")
+                         (string-append "ftp://ftp.openssl.org/source/"
+                                        "openssl-" version ".tar.gz")
+                         (string-append "ftp://ftp.openssl.org/source/old/"
+                                        (string-trim-right version char-set:letter)
+                                        "/openssl-" version ".tar.gz")))
+              (patches (search-patches "openssl-1.1-c-rehash-in.patch"))
+              (sha256
+               (base32
+                "1rdfzcrxy9y38wqdw5942vmdax9hjhgrprzxm42csal7p5shhal9"))))))
 
 (define-public openssl-1.0
   (package

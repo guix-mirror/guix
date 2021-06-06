@@ -1487,7 +1487,7 @@ painted with a mouse.")
 (define-public ois
   (package
     (name "ois")
-    (version "1.5")
+    (version "1.5.1")
     (source
      (origin
        (method git-fetch)
@@ -1496,7 +1496,7 @@ painted with a mouse.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0g8krgq5bdx2rw7ig0xva4kqv4x815672i7z6lljp3n8847wmypa"))))
+        (base32 "0nkh0zrsbyv47c0i0vhdna3jsnvs69pb1svg75avxw6z7kwskgla"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ; no test suite

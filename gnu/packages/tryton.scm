@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -144,6 +145,27 @@ and security.")
      "This package provides a library to access Tryton server as a client.")
     (license license:lgpl3+)))
 
+(define (tryton-phases module . extra-arguments)
+  "Return the phases for building and testing a Tryton module named MODULE.
+If present, pass EXTRA-ARGUMENTS to runtest as well."
+  `(modify-phases %standard-phases
+     (replace 'check
+       (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+         (let ((runtest
+                (string-append
+                 (assoc-ref inputs "trytond")
+                 "/lib/python"
+                 ,(version-major+minor (package-version python))
+                 "/site-packages/trytond/tests/run-tests.py")))
+           (when tests?
+             (add-installed-pythonpath inputs outputs)
+             (invoke "python" runtest "-m" ,module ,@extra-arguments)))))))
+
+(define (tryton-arguments module . extra-arguments)
+  "Like ’tryton-phases’, but directly return all arguments for
+the build system."
+  `(#:phases ,(apply tryton-phases module extra-arguments)))
+
 ;;;
 ;;;  Tryton modules - please sort alphabetically
 ;;;
@@ -159,19 +181,7 @@ and security.")
        (sha256
         (base32 "16ny67vcnxk9ngcxd56cfixm441vs9jxv3apmb16xsi47yk2xd7w"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (let ((runtest
-                  (string-append
-                   (assoc-ref %build-inputs "trytond")
-                   "/lib/python"
-                   ,(version-major+minor (package-version python))
-                   "/site-packages/trytond/tests/run-tests.py")))
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (add-installed-pythonpath inputs outputs)
-               (invoke "python" runtest "-m" "account")))))))
+    (arguments (tryton-arguments "account"))
     (native-inputs
      `(("python-genshi" ,python-genshi)
        ("python-lxml" ,python-lxml)
@@ -210,19 +220,7 @@ most of accounting needs.")
        (sha256
         (base32 "0drccambg6855p7ai8654c7f9v85jzwicwpxmagyrr09qz6qzgcz"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (let ((runtest
-                  (string-append
-                   (assoc-ref %build-inputs "trytond")
-                   "/lib/python"
-                   ,(version-major+minor (package-version python))
-                   "/site-packages/trytond/tests/run-tests.py")))
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (add-installed-pythonpath inputs outputs)
-               (invoke "python" runtest "-m" "account_invoice")))))))
+    (arguments (tryton-arguments "account_invoice"))
     (native-inputs
      `(("python-genshi" ,python-genshi)
        ("python-lxml" ,python-lxml)
@@ -268,19 +266,7 @@ term.")
        (sha256
         (base32 "02m6ikcc38ac41ddzg5xp5l9jz0k6j7j1g2xa62ki4v093yn4z5v"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (let ((runtest
-                  (string-append
-                   (assoc-ref %build-inputs "trytond")
-                   "/lib/python"
-                   ,(version-major+minor (package-version python))
-                   "/site-packages/trytond/tests/run-tests.py")))
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (add-installed-pythonpath inputs outputs)
-               (invoke "python" runtest "-m" "account_invoice_stock")))))))
+    (arguments (tryton-arguments "account_invoice_stock"))
     (native-inputs
      `(("python-dateutil" ,python-dateutil)
        ("python-genshi" ,python-genshi)
@@ -319,19 +305,7 @@ average price of the posted invoice lines that are linked to it.")
        (sha256
         (base32 "10bpbkkmllbh9lm5ajydmc5nvqm9bbdn9rmm03jqgik23s5kyx2z"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (let ((runtest
-                  (string-append
-                   (assoc-ref %build-inputs "trytond")
-                   "/lib/python"
-                   ,(version-major+minor (package-version python))
-                   "/site-packages/trytond/tests/run-tests.py")))
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (add-installed-pythonpath inputs outputs)
-               (invoke "python" runtest "-m" "account_product")))))))
+    (arguments (tryton-arguments "account_product"))
     (native-inputs
      `(("python-dateutil" ,python-dateutil)
        ("python-genshi" ,python-genshi)
@@ -372,19 +346,7 @@ and category.")
        (sha256
         (base32 "10rn2rf1ji7d1gxmgca368yvabql1ahklqg7p8sh5bl79vn5qx5x"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (let ((runtest
-                  (string-append
-                   (assoc-ref %build-inputs "trytond")
-                   "/lib/python"
-                   ,(version-major+minor (package-version python))
-                   "/site-packages/trytond/tests/run-tests.py")))
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (add-installed-pythonpath inputs outputs)
-               (invoke "python" runtest "-m" "analytic_account")))))))
+    (arguments (tryton-arguments "analytic_account"))
     (native-inputs
      `(("python-dateutil" ,python-dateutil)
        ("python-genshi" ,python-genshi)
@@ -424,19 +386,7 @@ required to analyse accounting using multiple different axes.")
        (sha256
         (base32 "1bwy2rkgfw32cwhq5fh3rpy7bx425h44ap10i9kjx5ak86bfnpz9"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (let ((runtest
-                  (string-append
-                   (assoc-ref %build-inputs "trytond")
-                   "/lib/python"
-                   ,(version-major+minor (package-version python))
-                   "/site-packages/trytond/tests/run-tests.py")))
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (add-installed-pythonpath inputs outputs)
-               (invoke "python" runtest "-m" "company")))))))
+    (arguments (tryton-arguments "company"))
     (native-inputs
      `(("python-dateutil" ,python-dateutil)
        ("python-genshi" ,python-genshi)
@@ -472,20 +422,8 @@ company and employee and extend the user model.")
        (sha256
         (base32 "1lkspk5w5pb0gg2h27zb7vwcj993gkm1f84qdxmqlpkc8raqvicj"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (let ((runtest
-                  (string-append
-                   (assoc-ref %build-inputs "trytond")
-                   "/lib/python"
-                   ,(version-major+minor (package-version python))
-                   "/site-packages/trytond/tests/run-tests.py")))
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (add-installed-pythonpath inputs outputs)
-               ;; Doctest contains one test that requires internet access.
-               (invoke "python" runtest "-m" "country" "--no-doctest")))))))
+    ;; Doctest contains one test that requires internet access.
+    (arguments (tryton-arguments "country" "--no-doctest"))
     (native-inputs
      `(("python-dateutil" ,python-dateutil)
        ("python-genshi" ,python-genshi)
@@ -518,19 +456,7 @@ company and employee and extend the user model.")
        (sha256
         (base32 "0b5p7ibil7nlsv7f31j69rka4xj5za798262algx7xa88a6h7mmx"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (let ((runtest
-                  (string-append
-                   (assoc-ref %build-inputs "trytond")
-                   "/lib/python"
-                   ,(version-major+minor (package-version python))
-                   "/site-packages/trytond/tests/run-tests.py")))
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (add-installed-pythonpath inputs outputs)
-               (invoke "python" runtest "-m" "currency")))))))
+    (arguments (tryton-arguments "currency"))
     (native-inputs
      `(("python-dateutil" ,python-dateutil)
        ("python-genshi" ,python-genshi)
@@ -565,20 +491,8 @@ currency and rate.")
        (sha256
         (base32 "1hapfq7ip99s4qp9xra1m40q4n379p9pmfnz2x4ggd79ss76bghc"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (let ((runtest
-                  (string-append
-                   (assoc-ref %build-inputs "trytond")
-                   "/lib/python"
-                   ,(version-major+minor (package-version python))
-                   "/site-packages/trytond/tests/run-tests.py")))
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (add-installed-pythonpath inputs outputs)
-               ;; Doctest 'scenario_party_phone_number.rst' fails.
-               (invoke "python" runtest "-m" "party" "--no-doctest")))))))
+    ;; Doctest 'scenario_party_phone_number.rst' fails.
+    (arguments (tryton-arguments "party" "--no-doctest"))
     (native-inputs
      `(("python-dateutil" ,python-dateutil)
        ("python-genshi" ,python-genshi)
@@ -613,19 +527,7 @@ addresses.")
        (sha256
         (base32 "0x18ngpjyrdwjwg17bz98jph4jv5gcv0qc0p2kxpam4lqsy34ic2"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (let ((runtest
-                  (string-append
-                   (assoc-ref %build-inputs "trytond")
-                   "/lib/python"
-                   ,(version-major+minor (package-version python))
-                   "/site-packages/trytond/tests/run-tests.py")))
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (add-installed-pythonpath inputs outputs)
-               (invoke "python" runtest "-m" "product")))))))
+    (arguments (tryton-arguments "product"))
     (native-inputs
      `(("python-dateutil" ,python-dateutil)
        ("python-genshi" ,python-genshi)
@@ -661,19 +563,7 @@ Template and Product.")
        (sha256
         (base32 "0na74zijj46b12gypy9si3las02a96rh5ygl503c7razha61g1b0"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (let ((runtest
-                  (string-append
-                   (assoc-ref %build-inputs "trytond")
-                   "/lib/python"
-                   ,(version-major+minor (package-version python))
-                   "/site-packages/trytond/tests/run-tests.py")))
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (add-installed-pythonpath inputs outputs)
-               (invoke "python" runtest "-m" "purchase")))))))
+    (arguments (tryton-arguments "purchase"))
     (native-inputs
      `(("python-dateutil" ,python-dateutil)
        ("python-genshi" ,python-genshi)
@@ -721,21 +611,8 @@ Template and Product.")
        (sha256
         (base32 "1m92snnvgisnv083nml6cz5qgnfdg539rd5bwg3lqrknm7343w16"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (let ((runtest
-                  (string-append
-                   (assoc-ref %build-inputs "trytond")
-                   "/lib/python"
-                   ,(version-major+minor (package-version python))
-                   "/site-packages/trytond/tests/run-tests.py")))
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (add-installed-pythonpath inputs outputs)
-               ;; Doctest 'scenario_purchase_request.rst' fails.
-               (invoke "python" runtest
-                       "-m" "purchase_request" "--no-doctest")))))))
+    ;; Doctest 'scenario_purchase_request.rst' fails.
+    (arguments (tryton-arguments "purchase_request" "--no-doctest"))
     (native-inputs
      `(("python-dateutil" ,python-dateutil)
        ("python-genshi" ,python-genshi)
@@ -773,19 +650,7 @@ generated by other process from Tryton.")
        (sha256
         (base32 "0yb8kd3alwqkivrlpx0ni4jxv3x14i37lmwism9yi81xwchyrcjk"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (let ((runtest
-                  (string-append
-                   (assoc-ref %build-inputs "trytond")
-                   "/lib/python"
-                   ,(version-major+minor (package-version python))
-                   "/site-packages/trytond/tests/run-tests.py")))
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (add-installed-pythonpath inputs outputs)
-               (invoke "python" runtest "-m" "stock")))))))
+    (arguments (tryton-arguments "stock"))
     (native-inputs
      `(("python-genshi" ,python-genshi)
        ("python-lxml" ,python-lxml)
@@ -827,19 +692,7 @@ inventory to control and update stock levels.")
        (sha256
         (base32 "0w2f62cfzm7j8wnw8igmjslpxc1a8s82dkdizyvim5qhjg6mrsym"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (let ((runtest
-                  (string-append
-                   (assoc-ref %build-inputs "trytond")
-                   "/lib/python"
-                   ,(version-major+minor (package-version python))
-                   "/site-packages/trytond/tests/run-tests.py")))
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (add-installed-pythonpath inputs outputs)
-               (invoke "python" runtest "-m" "stock_lot")))))))
+    (arguments (tryton-arguments "stock_lot"))
     (native-inputs
      `(("python-dateutil" ,python-dateutil)
        ("python-genshi" ,python-genshi)
@@ -874,19 +727,7 @@ inventory to control and update stock levels.")
        (sha256
         (base32 "01cgpxlznldrba79a3xmj4d0csyfc3ccgs66c490j8v8rdnqpbww"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (let ((runtest
-                  (string-append
-                   (assoc-ref %build-inputs "trytond")
-                   "/lib/python"
-                   ,(version-major+minor (package-version python))
-                   "/site-packages/trytond/tests/run-tests.py")))
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (add-installed-pythonpath inputs outputs)
-               (invoke "python" runtest "-m" "stock_supply")))))))
+    (arguments (tryton-arguments "stock_supply"))
     (native-inputs
      `(("python-dateutil" ,python-dateutil)
        ("python-genshi" ,python-genshi)

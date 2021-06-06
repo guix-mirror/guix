@@ -33,6 +33,9 @@
                                  repository-discover
                                  repository-head
                                  repository-working-directory)
+  #:autoload   (git submodule)  (repository-submodules
+                                 submodule-lookup
+                                 submodule-path)
   #:autoload   (git commit)     (commit-lookup commit-tree)
   #:autoload   (git reference)  (reference-target)
   #:autoload   (git tree)       (tree-list)
@@ -194,11 +197,17 @@ HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if #f."
 ;;; 'git-predicate'.
 ;;;
 
-(define (git-file-list directory)
+(define* (git-file-list directory #:optional prefix #:key (recursive? #t))
   "Return the list of files checked in in the Git repository at DIRECTORY.
 The result is similar to that of the 'git ls-files' command, except that it
-also includes directories, not just regular files.  The returned file names
-are relative to DIRECTORY, which is not necessarily the root of the checkout."
+also includes directories, not just regular files.
+
+When RECURSIVE? is true, also list files in submodules, similar to the 'git
+ls-files --recurse-submodules' command.  This is enabled by default.
+
+The returned file names are relative to DIRECTORY, which is not necessarily
+the root of the checkout.  If a PREFIX is provided, it is prepended to each
+file name."
   (let* (;; 'repository-working-directory' always returns a trailing "/",
          ;; so add one here to ease the comparisons below.
          (directory  (string-append (canonicalize-path directory) "/"))
@@ -209,33 +218,65 @@ are relative to DIRECTORY, which is not necessarily the root of the checkout."
          (oid        (reference-target head))
          (commit     (commit-lookup repository oid))
          (tree       (commit-tree commit))
-         (files      (tree-list tree)))
+         (files      (tree-list tree))
+         (submodules (if recursive?
+                         (map (lambda (name)
+                                (submodule-path
+                                 (submodule-lookup repository name)))
+                              (repository-submodules repository))
+                         '()))
+         (relative      (and (not (string=? workdir directory))
+                             (string-drop directory (string-length workdir))))
+         (included?     (lambda (path)
+                          (or (not relative)
+                              (string-prefix? relative path))))
+         (make-relative (lambda (path)
+                          (if relative
+                              (string-drop path (string-length relative))
+                              path)))
+         (add-prefix    (lambda (path)
+                          (if prefix
+                              (string-append prefix "/" path)
+                              path)))
+         (rectify       (compose add-prefix make-relative)))
     (repository-close! repository)
-    (if (string=? workdir directory)
-        files
-        (let ((relative (string-drop directory (string-length workdir))))
-          (filter-map (lambda (file)
-                        (and (string-prefix? relative file)
-                             (string-drop file (string-length relative))))
-                      files)))))
+    (append
+     (if (or relative prefix)
+         (filter-map (lambda (file)
+                       (and (included? file)
+                            (rectify file)))
+                     files)
+         files)
+     (append-map (lambda (submodule)
+                   (if (included? submodule)
+                       (git-file-list
+                        (string-append workdir submodule)
+                        (rectify submodule))
+                       '()))
+                 submodules))))
 
-(define (git-predicate directory)
+(define* (git-predicate directory #:key (recursive? #t))
   "Return a predicate that returns true if a file is part of the Git checkout
 living at DIRECTORY.  If DIRECTORY does not lie within a Git checkout, and
 upon Git errors, return #f instead of a predicate.
+
+When RECURSIVE? is true, the predicate also returns true if a file is part of
+any Git submodule under DIRECTORY.  This is enabled by default.
 
 The returned predicate takes two arguments FILE and STAT where FILE is an
 absolute file name and STAT is the result of 'lstat'."
   (libgit2-init!)
   (catch 'git-error
     (lambda ()
-      (let* ((files  (git-file-list directory))
+      (let* ((files  (git-file-list directory #:recursive? recursive?))
              (inodes (fold (lambda (file result)
-                             (let ((stat
-                                    (lstat (string-append directory "/"
-                                                          file))))
-                               (vhash-consv (stat:ino stat) (stat:dev stat)
-                                            result)))
+                             (let* ((file (string-append directory "/" file))
+                                    (stat (false-if-exception (lstat file))))
+                               ;; Ignore FILE if it has been deleted.
+                               (if stat
+                                   (vhash-consv (stat:ino stat) (stat:dev stat)
+                                                result)
+                                   result)))
                            vlist-null
                            files)))
         (lambda (file stat)

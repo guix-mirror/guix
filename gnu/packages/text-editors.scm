@@ -524,13 +524,14 @@ OpenBSD team.")
                #t)))
          (add-after 'install 'install-extra-documentation
            ;; Install sample configuration file, Info, and HTML manual.
-           (lambda* (#:key outputs #:allow-other-keys)
+           (lambda* (#:key native-inputs inputs outputs #:allow-other-keys)
              (let* ((share (string-append (assoc-ref outputs "out") "/share"))
                     (doc (string-append share "/doc/" ,name "-" ,version))
                     (html (string-append share "/html"))
                     (info (string-append share "/info"))
-                    (makeinfo (string-append (assoc-ref %build-inputs "texinfo")
-                                             "/bin/makeinfo")))
+                    (makeinfo (string-append
+                               (assoc-ref (or native-inputs inputs) "texinfo")
+                               "/bin/makeinfo")))
                ;; First fix Texinfo documentation, create appropriate
                ;; directories, then generate Info and HTML files there.
                (substitute* "qe-doc.texi"
@@ -807,14 +808,14 @@ editors.")
 (define-public texmacs
   (package
     (name "texmacs")
-    (version "1.99.20")
+    (version "1.99.21")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.texmacs.org/Download/ftp/tmftp/"
                            "source/TeXmacs-" version "-src.tar.gz"))
        (sha256
-        (base32 "0wny36qsgzpp084h2i85rd3l8fq1q69sglc266prb06ygcb0iyia"))))
+        (base32 "0zmm8212cha22dp1xablj1h4anlnyhjh09n13ckqf6ppb1bkf4gm"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)

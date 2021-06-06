@@ -610,7 +610,7 @@ To function properly, this package should not be installed together with the
 (define-public micropython
   (package
     (name "micropython")
-    (version "1.14")
+    (version "1.15")
     (source
       (origin
         (method url-fetch)
@@ -618,7 +618,7 @@ To function properly, this package should not be installed together with the
                             "releases/download/v" version
                             "/micropython-" version ".tar.xz"))
         (sha256
-         (base32 "0k6ri3rxxnnmvcbi7z7x59r21f4vj9dcf9j64jhj1cgazmb62c4p"))
+         (base32 "04sfrfcljhfps340l4wh5ffwkhw1ydraday8nv92nv7gmnrj1l2j"))
       (modules '((guix build utils)))
       (snippet
        '(begin

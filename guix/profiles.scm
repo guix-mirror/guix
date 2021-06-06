@@ -334,7 +334,10 @@ file name."
     (filter-map (lambda (entry)
                   (let ((other (lookup (manifest-entry-name entry)
                                        (manifest-entry-output entry))))
-                    (and other (list entry other))))
+                    (and other
+                         (not (eq? (manifest-entry-item entry)
+                                   (manifest-entry-item other)))
+                         (list entry other))))
                 (manifest-transitive-entries manifest)))
 
   (define lower-pair

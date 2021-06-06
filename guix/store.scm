@@ -648,18 +648,10 @@ connection.  Use with care."
             (close-connection store)
             (apply values results)))))
 
-    (cond-expand
-      (guile-3
-       (with-exception-handler (lambda (exception)
-                                 (close-connection store)
-                                 (raise-exception exception))
-         thunk))
-      (else                                       ;Guile 2.2
-       (catch #t
-         thunk
-         (lambda (key . args)
-           (close-connection store)
-           (apply throw key args)))))))
+    (with-exception-handler (lambda (exception)
+                              (close-connection store)
+                              (raise-exception exception))
+      thunk)))
 
 (define-syntax-rule (with-store store exp ...)
   "Bind STORE to an open connection to the store and evaluate EXPs;

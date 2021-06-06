@@ -28,7 +28,7 @@
 ;;; Copyright © 2018 Adam Massmann <massmannak@gmail.com>
 ;;; Copyright © 2018, 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2018 Eric Brown <brown@fastmail.com>
-;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2018, 2021 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Amin Bandali <bandali@gnu.org>
 ;;; Copyright © 2019, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Steve Sprang <scs@stevesprang.com>
@@ -75,6 +75,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system ocaml)
   #:use-module (guix build-system python)
   #:use-module (guix build-system ruby)
   #:use-module (gnu packages algebra)
@@ -86,11 +87,13 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages coq)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages elf)
+  #:use-module (gnu packages emacs)
   #:use-module (gnu packages file)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fltk)
@@ -120,6 +123,7 @@
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages netpbm)
+  #:use-module (gnu packages ocaml)
   #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages popt)
@@ -248,6 +252,9 @@ programming languages.")
                (base32
                 "0zlbhg0lb6j60188c2xhcrvviskr079552icjldqhy1jhgmxghmm"))))
     (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags '("-DLINK_APPS_SHARED=ON"
+                           "-DCMAKE_POSITION_INDEPENDENT_CODE=ON")))
     (synopsis "Calculate convex hulls and related structures")
     (description
      "@code{Qhull} computes the convex hull, Delaunay triangulation, Voronoi
@@ -1234,7 +1241,8 @@ extremely large and complex data collections.")
               "https://www.hdfgroup.org/ftp/HDF5/current/src/unpacked/COPYING"))))
 
 (define-public hdf5-1.10
-  (package/inherit hdf5-1.8
+  (package
+    (inherit hdf5-1.8)
     (version "1.10.7")
     (source
      (origin
@@ -1253,7 +1261,8 @@ extremely large and complex data collections.")
        (patches (search-patches "hdf5-config-date.patch"))))))
 
 (define-public hdf5-1.12
-  (package/inherit hdf5-1.8
+  (package
+    (inherit hdf5-1.8)
     (version "1.12.0")
     (source
      (origin
@@ -1751,21 +1760,16 @@ online as well as original implementations of various other algorithms.")
 (define-public ipopt
   (package
     (name "ipopt")
-    (version "3.12.12")
+    (version "3.13.4")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://www.coin-or.org/download/source/Ipopt/Ipopt-"
-                    version".tgz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/coin-or/Ipopt")
+                    (commit (string-append "releases/" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "07yn9rzdswjk8n246qq6ci9ssf2bcplkifcpsfz9j6cdxw9vgbkv"))
-              (modules '((guix build utils)))
-              (snippet
-               ;; Make sure we don't use the bundled software.
-               '(begin
-                  (delete-file-recursively "ThirdParty")
-                  #t))))
+                "08gznhwhqv1x4baksz350ih8q16r5rd0k8vals6078m3h94khr4b"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -1785,7 +1789,8 @@ online as well as original implementations of various other algorithms.")
                                           after "\n")))
                         #t))))))
     (native-inputs
-     `(("gfortran" ,gfortran)))
+     `(("gfortran" ,gfortran)
+       ("pkg-config" ,pkg-config)))
     (inputs
      ;; TODO: Maybe add dependency on COIN-MUMPS, ASL, and HSL.
      `(("lapack" ,lapack)))                    ;for both libblas and liblapack
@@ -1795,6 +1800,35 @@ online as well as original implementations of various other algorithms.")
      "The Interior Point Optimizer (IPOPT) is a software package for
 large-scale nonlinear optimization.  It provides C++, C, and Fortran
 interfaces.")
+    (license license:epl2.0)))
+
+(define-public cbc
+  (package
+    (name "cbc")
+    (version "2.10.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.coin-or.org/download/source/"
+                                  "Cbc/Cbc-" version ".tgz"))
+              (sha256
+               (base32
+                "0wk9vr6zc62gw71v7gnra5wxqlcljcgbhm5lasx236v791b986ns"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Make sure we don't use the bundled software.
+               '(delete-file-recursively "ThirdParty"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("openblas" ,openblas)))
+    (home-page "https://www.coin-or.org")
+    (synopsis "Branch-and-cut solver")
+    (description
+     "Cbc (Coin-or branch and cut) is a mixed integer linear programming
+solver written in C++.  It can be used as a library or as a standalone
+executable.")
     (license license:epl1.0)))
 
 (define-public clp
@@ -4617,7 +4651,7 @@ set.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/LLNL/hypre")
+             (url "https://github.com/hypre-space/hypre")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -4722,7 +4756,8 @@ set.")
                              (copy-recursively (string-append base "-html")
                                                (string-append docdir "/" base)))
                            '("usr-manual" "ref-manual")))))))))
-    (home-page "http://www.llnl.gov/casc/hypre/")
+    (home-page "https://computing.llnl.gov/projects\
+/hypre-scalable-linear-solvers-multigrid-methods")
     (synopsis "Library of solvers and preconditioners for linear equations")
     (description
      "HYPRE is a software library of high performance preconditioners and
@@ -6284,3 +6319,111 @@ interval arithmetic, plotting.")
      "Numdiff compares files line by line and field by field, ignoring small
 numeric differences and differences in numeric formats.")
     (license license:gpl3+)))
+
+(define-public why3
+  (package
+    (name "why3")
+    (version "1.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://gforge.inria.fr/frs/download.php/file"
+                                  "/38291/why3-" version ".tar.gz"))
+              (sha256
+               (base32
+                "16zcrc60zz2j3gd3ww93z2z9x2jkxb3kr57y8i5rcgmacy7mw3bv"))))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("coq" ,coq)
+       ("ocaml" ,ocaml)
+       ("which" ,which)))
+    (propagated-inputs
+     `(("camlzip" ,camlzip)
+       ("ocaml-graph" ,ocaml-graph)
+       ("ocaml-menhir" ,ocaml-menhir)
+       ("ocaml-num" ,ocaml-num)
+       ("ocaml-zarith" ,ocaml-zarith)))
+    (inputs
+     `(("coq-flocq" ,coq-flocq)
+       ("emacs-minimal" ,emacs-minimal)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-configure
+           (lambda _
+             (setenv "CONFIG_SHELL" (which "sh"))
+             (substitute* "configure"
+               ;; find ocaml-num in the correct directory
+               (("\\$DIR/nums.cma") "$DIR/../nums.cma")
+               (("\\$DIR/num.cmi") "$DIR/../num.cmi"))
+             #t))
+         (add-after 'configure 'fix-makefile
+           (lambda _
+             (substitute* "Makefile"
+               ;; find ocaml-num in the correct directory
+               (("site-lib/num") "site-lib"))
+             #t))
+        (add-after 'install 'install-lib
+          (lambda _
+            (invoke "make" "byte")
+            (invoke "make" "install-lib")
+            #t)))))
+    (home-page "http://why3.lri.fr")
+    (synopsis "Deductive program verification")
+    (description "Why3 provides a language for specification and programming,
+called WhyML, and relies on external theorem provers, both automated and
+interactive, to discharge verification conditions.  Why3 comes with a standard
+library of logical theories (integer and real arithmetic, Boolean operations,
+sets and maps, etc.) and basic programming data structures (arrays, queues,
+hash tables, etc.).  A user can write WhyML programs directly and get
+correct-by-construction OCaml programs through an automated extraction
+mechanism.  WhyML is also used as an intermediate language for the verification
+of C, Java, or Ada programs.")
+    (license license:lgpl2.1)))
+
+(define-public frama-c
+  (package
+    (name "frama-c")
+    (version "22.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://frama-c.com/download/frama-c-"
+                                  version "-Titanium.tar.gz"))
+              (sha256
+               (base32
+                "1mq1fijka95ydrla486yr4w6wdl9l7vmp512s1q00b0p6lmfwmkh"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:tests? #f; no test target in Makefile
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'export-shell
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "CONFIG_SHELL" (string-append (assoc-ref inputs "bash")
+                                                   "/bin/sh"))
+             #t)))))
+    (inputs
+     `(("gmp" ,gmp)))
+    (propagated-inputs
+     `(("ocaml-biniou" ,ocaml-biniou)
+       ("ocaml-easy-format" ,ocaml-easy-format)
+       ("ocaml-graph" ,ocaml-graph)
+       ("ocaml-yojson" ,ocaml-yojson)
+       ("ocaml-zarith" ,ocaml-zarith)
+       ("why3" ,why3)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "FRAMAC_SHARE")
+            (files '("share/frama-c"))
+            (separator #f))
+           (search-path-specification
+            (variable "FRAMAC_LIB")
+            (files '("lib/frama-c"))
+            (separator #f))))
+    (home-page "http://frama-c.com")
+    (synopsis "C source code analysis platform")
+    (description "Frama-C is an extensible and collaborative platform dedicated
+to source-code analysis of C software.  The Frama-C analyzers assist you in
+various source-code-related activities, from the navigation through unfamiliar
+projects up to the certification of critical software.")
+    (license license:lgpl2.1+)))

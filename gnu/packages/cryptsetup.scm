@@ -35,7 +35,7 @@
 (define-public cryptsetup
   (package
    (name "cryptsetup")
-   (version "2.3.5")
+   (version "2.3.6")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/linux/utils/cryptsetup/v"
@@ -43,7 +43,7 @@
                                 "/cryptsetup-" version ".tar.xz"))
             (sha256
              (base32
-              "1hbhzlv4vbib1da20vnrqaikhxi7ljnchbzrv8v2a4sd8ipr9nff"))))
+              "0pv34l6230ba1i5p0z6zmvfqvv3as0cwn731h2qw4xm53sibg5mj"))))
    (build-system gnu-build-system)
    (arguments
     `(#:configure-flags
@@ -63,14 +63,22 @@
       ("lvm2" ,lvm2)                    ; device-mapper
       ("popt" ,popt)
       ("util-linux" ,util-linux "lib"))) ;libuuid
-   (synopsis "Hard disk encryption tool")
+   (synopsis "Set up transparent encryption of block devices using dm-crypt")
    (description
-    "LUKS (Linux Unified Key Setup)/Cryptsetup provides a standard on-disk
-encryption format, which does not only facilitate compatibility among
-distributions, but which also provides secure management of multiple user
-passwords.  In contrast to existing solutions, LUKS stores all setup necessary
-setup information in the partition header, enabling the users to transport
-or migrate their data seamlessly.")
+    "Cryptsetup is a utility used to conveniently set up disk encryption based
+on the @code{dm-crypt} Linux kernel module.  It is most often used to manage
+LUKS volumes but also supports plain dm-crypt volumes and loop-AES, TrueCrypt
+(including VeraCrypt extension), and BitLocker formats.
+
+@acronym{LUKS, Linux Unified Key Setup} is the standard for hard disk encryption
+with the kernel Linux.  It provides a standard on-disk-format compatible amongst
+distributions as well as secure management of multiple user passwords.  LUKS
+stores all necessary setup information in the partition header to facilitate
+data transport and migration.
+
+The package also includes the @command{veritysetup} and @command{integritysetup}
+utilities to conveniently configure the @code{dm-verity} and @code{dm-integrity}
+block integrity kernel modules.")
    (license license:gpl2)
    (home-page "https://gitlab.com/cryptsetup/cryptsetup")))
 

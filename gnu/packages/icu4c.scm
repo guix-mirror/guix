@@ -128,6 +128,22 @@ C/C++ part.")
                (base32
                 "09fng7a80xj8d5r1cgbgq8r47dsw5jsr6si9p2cj2ylhwgg974f7"))))))
 
+(define-public icu4c-69
+  (package
+    (inherit icu4c)
+    (version "69.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/unicode-org/icu/releases/download/release-"
+                    (string-map (lambda (x) (if (char=? x #\.) #\- x)) version)
+                    "/icu4c-"
+                    (string-map (lambda (x) (if (char=? x #\.) #\_ x)) version)
+                    "-src.tgz"))
+              (sha256
+               (base32
+                "0icps0avkwy5df3wwc5kybxcg63hcgk4phdh9g244g0xrmx7pfjc"))))))
+
 (define-public icu4c-build-root
   (package
     (inherit icu4c)

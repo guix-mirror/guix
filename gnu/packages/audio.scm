@@ -302,7 +302,7 @@ Linux kernel.")
 (define-public libopenmpt
   (package
     (name "libopenmpt")
-    (version "0.5.8")
+    (version "0.5.9")
     (source
      (origin
        (method url-fetch)
@@ -310,7 +310,7 @@ Linux kernel.")
         (string-append "https://download.openmpt.org/archive/libopenmpt/src/"
                        "libopenmpt-" version "+release.autotools.tar.gz"))
        (sha256
-        (base32 "1kca5nc870mfv7i4ww2g1q9jn61gsq46irsypbr6fgxpfh8w5qi9"))))
+        (base32 "0h86p8mnpm98vc4v6jbvrmm02fch7dnn332i26fg3a2s1738m04d"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -1022,7 +1022,7 @@ generators of mostly elementary and occasionally exotic nature.")
 (define-public infamous-plugins
   (package
     (name "infamous-plugins")
-    (version "0.2.04")
+    (version "0.3.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1031,7 +1031,7 @@ generators of mostly elementary and occasionally exotic nature.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0hmqk80w4qxq09iag7b7srf2g0wigkyhzq0ywxvhz2iz0hq9k0dh"))))
+                "1r72agk5nxf5k0mghcc2j90z43j5d9i7rqjmf49jfyqnd443isip"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; there are no tests
@@ -1041,6 +1041,12 @@ generators of mostly elementary and occasionally exotic nature.")
            (lambda _
              (substitute* (find-files "." "CMakeLists.txt")
                (("-msse2 -mfpmath=sse") ""))
+             #t))
+         (add-after 'unpack 'fix-build-with-newer-lv2
+           (lambda _
+             ;; https://github.com/ssj71/infamousPlugins/commit/4c7275b1fa8ea3296446421cbd29ec2df66588c0
+             (substitute* (find-files "src" ".*\\.cxx")
+               (("_LV2UI_Descriptor") "LV2UI_Descriptor"))
              #t)))))
     (inputs
      `(("cairo" ,cairo)
@@ -4313,7 +4319,7 @@ representations.")
 (define-public cava
   (package
     (name "cava")
-    (version "0.7.3")
+    (version "0.7.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4322,7 +4328,7 @@ representations.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "04j5hb29hivcbk542sfsx9m57dbnj2s6qpvy9fs488zvgjbgxrai"))))
+                "1mziklmqifhnb4kg9ia2r56r8wjn6xp40bkpf484hsgqvnrccl86"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -4465,7 +4471,7 @@ library.")
 (define-public faudio
   (package
     (name "faudio")
-    (version "21.05")
+    (version "21.06")
     (source
      (origin
        (method git-fetch)
@@ -4474,7 +4480,7 @@ library.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0lzvfx5gg5m6jbdzqwkjl4wq4fdg5n98fxn5x8n65vgvrj95sx6z"))))
+        (base32 "1nnx4l1r5hwdaw824d4fmd558qsqa22qzpvnkhs8nkjr40cnidkr"))))
     (arguments
      '(#:tests? #f                      ; No tests.
        #:configure-flags '("-DGSTREAMER=ON")))
@@ -5165,14 +5171,18 @@ while still staying in time.")
 (define-public butt
   (package
     (name "butt")
-    (version "0.1.29")
+    (version "0.1.30")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/butt/butt/butt-"
                                   version "/butt-" version ".tar.gz"))
               (sha256
                (base32
-                "0nbz0z4d7krvhmnwn10594gwc61gn2dlb5fazmynjfisrfdswqlg"))))
+                "1dfspdh3f18lpp7asxpj63b9zfpvazi7shgrdacg17gd42ycayq5"))
+              (modules '((guix build utils)))
+              (snippet
+               '(substitute* "src/butt.cpp"
+                  ((".*zica.*") "")))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -5209,7 +5219,7 @@ while still staying in time.")
                                         version "_manual.pdf"))
                     (sha256
                      (base32
-                      "1hhgdhdg5s86hjcbwh856gcd3kcch0i5xgi3i3v02zz3xmzl7gg3"))))))
+                      "1w3krh7f2v5vdz18hqycnpn0qv1x6xl6pa1najgp4jbfisjc1mn8"))))))
     (home-page "https://danielnoethen.de/butt/")
     (synopsis "Audio streaming tool")
     (description "Butt is a tool to stream audio to a ShoutCast or

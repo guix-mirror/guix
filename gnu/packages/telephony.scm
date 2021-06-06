@@ -7,7 +7,7 @@
 ;;; Copyright © 2016 Francesco Frassinelli <fraph24@gmail.com>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Adonay Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@hyperbola.info>
 ;;; Copyright © 2018 Jovany Leandro G.C <bit4bit@riseup.net>
 ;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
@@ -324,14 +324,14 @@ GNU ccRTP stack and serves as library for other RTP stacks
 (define-public osip
   (package
    (name "osip")
-   (version "5.2.0")
+   (version "5.2.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/osip/libosip2-" version ".tar.gz"))
             (patches (search-patches "osip-CVE-2017-7853.patch"))
             (sha256
              (base32
-              "0xdk3cszkzb8nb757gl47slrr13mf6xz43ab4k343fv8llp8pd2g"))))
+              "1wibs2zs035ay7qvl5ai8drv6f0xw7iscb0frmpgax3pisy88dzf"))))
    (build-system gnu-build-system)
 
    (synopsis "Library implementing SIP (RFC-3261)")

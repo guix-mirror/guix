@@ -14,6 +14,7 @@
 ;; Copyright © 2021 Zhu Zihao <all_but_last@163.com>
 ;; Copyright © 2021 Chris Marusich <cmmarusich@gmail.com>
 ;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
+;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;
 ;; Copying and distribution of this file, with or without modification, are
 ;; permitted in any medium without royalty provided the copyright notice and
@@ -21,6 +22,40 @@
 
 (channel-news
  (version 0)
+
+ (entry (commit "bdc298ecee15283451d3aa20a849dd7bb22c8538")
+        (title
+         (en "New @command{guix import egg} command")
+         (de "Neuer Befehl @command{guix import egg}")
+         (zh "新的 @command{guix import egg} 命令"))
+        (body
+         (en "The new @command{guix import egg} command allows packagers to
+generate a package definition or a template thereof given the name of a
+CHICKEN egg package, like so:
+
+@example
+guix import egg sourcehut
+@end example
+
+Run @command{info \"(guix) Invoking guix import\"} for more info.")
+         (de "Mit dem neuen Befehl @command{guix import egg} können
+Paketautoren eine Paketdefinition oder eine Vorlage dafür anhand des Namens
+eines „Egg“-Pakets für CHICKEN erzeugen, etwa so:
+
+@example
+guix import egg sourcehut
+@end example
+
+Führen Sie @command{info \"(guix.de) Aufruf von guix import\"} aus, um mehr
+Informationen zu bekommen.")
+         (zh "新的 @command{guix import egg} 命令能让贡献者从一个CHICKEN egg生
+成一个包装或包装样板。
+x
+@example
+guix import egg sourcehut
+@end example
+
+想了解更多可以运行 @command{info \"(guix) Invoking guix import\"}。")))
 
  (entry (commit "2161820ebbbab62a5ce76c9101ebaec54dc61586")
         (title

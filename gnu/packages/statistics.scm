@@ -186,7 +186,7 @@ This package also provides @command{xls2csv} to export Excel files to CSV.")
 (define r-with-tests
   (package
     (name "r-with-tests")
-    (version "4.0.4")
+    (version "4.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cran/src/base/R-"
@@ -194,7 +194,7 @@ This package also provides @command{xls2csv} to export Excel files to CSV.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0bl098xcv8v316kqnf43v6gb4kcsv31ydqfm1f7qr824jzb2fgsj"))))
+                "109732arm6dq6d6v3fl1nyx63lcvv9569j8g6r3s2b18sxcqkrp8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:disallowed-references (,tzdata-for-tests)
@@ -587,14 +587,14 @@ also flexible enough to handle most nonstandard requirements.")
 (define-public r-matrix
   (package
     (name "r-matrix")
-    (version "1.3-3")
+    (version "1.3-4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Matrix" version))
        (sha256
         (base32
-         "0fvayd6b8w6yzhil85xw7lib68dvxyzpcznwvwczlyxf8ggchzpp"))))
+         "0fbcbysp3vaivmp1yasmp8mdsldhr826vfs4vyxrjpjl8jfifhmb"))))
     (properties `((upstream-name . "Matrix")))
     (build-system r-build-system)
     (propagated-inputs
@@ -631,13 +631,13 @@ nonlinear mixed-effects models.")
 (define-public r-mgcv
   (package
    (name "r-mgcv")
-   (version "1.8-35")
+   (version "1.8-36")
    (source
     (origin
      (method url-fetch)
      (uri (cran-uri "mgcv" version))
      (sha256
-      (base32 "1dyphss1bw5rd8apgxsb364rcrkdbc9pcbsa0jy95mg9g5434wvk"))))
+      (base32 "002n4572sxslz9zfqvs5ys59m8q8wkcc5ks2m0yqs4p7l88xzca2"))))
    (build-system r-build-system)
    (propagated-inputs
     `(("r-matrix" ,r-matrix)
@@ -1331,13 +1331,13 @@ adapted for other output formats, such as HTML or LaTeX.")
 (define-public r-formatr
   (package
     (name "r-formatr")
-    (version "1.9")
+    (version "1.11")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "formatR" version))
               (sha256
                (base32
-                "0vbzvb91y5cxjbnwpww0r40r6m1l9w1qa979sv7ghhalzr7bib3i"))))
+                "0353aj975mj0yjc91z76bbfy86y7d5cvlqqyfr93cdng14nnd0dx"))))
     (build-system r-build-system)
     (native-inputs
      `(("r-knitr" ,r-knitr)))
@@ -2099,13 +2099,13 @@ jackknifed confidence intervals are available for most estimates.")
 (define-public r-rversions
   (package
     (name "r-rversions")
-    (version "2.0.2")
+    (version "2.1.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "rversions" version))
               (sha256
                (base32
-                "0ghpla5r3d6zh5dn6d6ii5p0a952lcdv004m88fk8r9k76vz88rm"))))
+                "1cbwwbz8lqx2n33xr4q904whvld22s63rpyy1nn93395l7ssrakr"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-curl" ,r-curl)
@@ -2644,13 +2644,13 @@ well as additional utilities such as panel and axis annotation functions.")
 (define-public r-rcpparmadillo
   (package
     (name "r-rcpparmadillo")
-    (version "0.10.4.0.0")
+    (version "0.10.5.0.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "RcppArmadillo" version))
               (sha256
                (base32
-                "00nc7wfrra645mp7dl4j451m3pk3a0b3lrhgf8ydnw862avr9s6v"))))
+                "059qi872f9h40ns65166qsq1i1jq1mvizm29a0xmqlyn7a5y9ca3"))))
     (properties `((upstream-name . "RcppArmadillo")))
     (build-system r-build-system)
     (propagated-inputs
@@ -3410,14 +3410,14 @@ Stochastic Neighbor Embedding using a Barnes-Hut implementation.")
 (define-public r-e1071
   (package
     (name "r-e1071")
-    (version "1.7-6")
+    (version "1.7-7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "e1071" version))
        (sha256
         (base32
-         "0blfnv3m5k5xm9bfx1v5awvagqlhqaqpabrvzplf4244c3j259qa"))))
+         "1phqrx787fkiamgx56sjjmzl9nh5wgpffah0mlwd7ijrf446qz3r"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-class" ,r-class)
@@ -3658,13 +3658,13 @@ t-probabilities, quantiles, random deviates and densities.")
 (define-public r-matrixstats
   (package
     (name "r-matrixstats")
-    (version "0.58.0")
+    (version "0.59.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "matrixStats" version))
               (sha256
                (base32
-                "0jab3xk56vqqzgz8jbsvxvsvr83sj0gb3cic0906wjyjijwv8rw3"))))
+                "178baqrd7rbin3l10zyrkps5sda0q9mdqil9r12b3n99mlk8fhh7"))))
     (properties `((upstream-name . "matrixStats")))
     (build-system r-build-system)
     (arguments
@@ -4141,14 +4141,14 @@ hierarchical clustering dendrograms.")
 (define-public r-fastcluster
   (package
     (name "r-fastcluster")
-    (version "1.1.25")
+    (version "1.2.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "fastcluster" version))
        (sha256
         (base32
-         "01a2xnhhvv1swd4g8p4lzyn7ww7kg49jlnzc7kfz60jqjzpisrpk"))))
+         "009amz7i5yndqw2008fgd3p11n4fsb291k2ypg3pip6dw4lr28hz"))))
     (build-system r-build-system)
     (home-page "http://danifold.net/fastcluster.html")
     (synopsis "Fast hierarchical clustering routines")
@@ -4378,13 +4378,13 @@ within a category based on their density using quasirandom noise.")
 (define-public r-beeswarm
   (package
     (name "r-beeswarm")
-    (version "0.3.1")
+    (version "0.4.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "beeswarm" version))
               (sha256
                (base32
-                "1jsggypyww77hkcic03kdb3fp8h938qs142xi0lapzh62bkn2pjj"))))
+                "016mqcbdksialkmap56rprzna9b6cd6896ml9gl2n2h8yjdk7x2i"))))
     (build-system r-build-system)
     (home-page "https://www.cbs.dtu.dk/~eklund/beeswarm/")
     (synopsis "Implementation of bee swarm plots")
@@ -4795,14 +4795,14 @@ data for species delimitation, nearest neighbor based noise detection.")
 (define-public r-deoptimr
   (package
     (name "r-deoptimr")
-    (version "1.0-8")
+    (version "1.0-9")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "DEoptimR" version))
        (sha256
         (base32
-         "1vz546hyjyhly70z62h5n3mn62b8llhhmim8ffp9y6jnnb0i2sc4"))))
+         "04k5gi0a5hbm6znzvjaipbmkacp694krkqs38dkbxx1gymsallb1"))))
     (properties `((upstream-name . "DEoptimR")))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/DEoptimR")
@@ -4818,14 +4818,14 @@ can be efficiently implemented directly in the R language.")
 (define-public r-robustbase
   (package
     (name "r-robustbase")
-    (version "0.93-7")
+    (version "0.93-8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "robustbase" version))
        (sha256
         (base32
-         "0mh9d114p3jdrjf8yn4dx5ff41niz5wn411y0ckjcpnazp8d44c9"))))
+         "16fmnk3p32mi70rkx89l1v4pry3gnrpy9jicnlfnk6lg1pwz5j8w"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
@@ -6125,3 +6125,118 @@ input, the effect size can be returned as standardized mean difference, Cohen's
 f, Hedges' g, Pearson's r or Fisher's transformation z, odds ratio or log odds,
 or eta squared effect size.")
     (license license:gpl3)))
+
+(define-public r-kknn
+  (package
+    (name "r-kknn")
+    (version "1.3.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "kknn" version))
+        (sha256
+          (base32
+            "1nzkg3dxaiqp87p56wm895qx5xn86hv5hjr73qvl1yiaxiq0x112"))))
+    (properties `((upstream-name . "kknn")))
+    (build-system r-build-system)
+    (propagated-inputs
+      `(("r-igraph" ,r-igraph) ("r-matrix" ,r-matrix)))
+    (home-page "https://github.com/KlausVigo/kknn")
+    (synopsis "Weighted k-Nearest Neighbors")
+    (description
+      "Weighted k-Nearest Neighbors for Classification, Regression and Clustering.")
+    (license license:gpl2+)))
+
+(define-public r-logspline
+  (package
+    (name "r-logspline")
+    (version "2.1.16")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "logspline" version))
+        (sha256
+          (base32
+            "12hkdi77vkic05p2vhap025xdcg1n53ywm239v18713pihdlj63l"))))
+    (properties `((upstream-name . "logspline")))
+    (build-system r-build-system)
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page
+      "https://cran.r-project.org/web/packages/logspline/")
+    (synopsis
+      "Routines for Logspline Density Estimation")
+    (description
+      "Contains routines for logspline density estimation.  The function
+@code{oldlogspline()} uses the same algorithm as the logspline package version
+1.0.x; i.e.  the Kooperberg and Stone (1992) algorithm (with an improved
+interface).  The recommended routine @code{logspline()} uses an algorithm from
+@url{doi:10.1214/aos/1031594728,Stone et al (1997)}.")
+    (license license:asl2.0)))
+
+(define-public r-effects
+  (package
+    (name "r-effects")
+    (version "4.2-0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "effects" version))
+        (sha256
+          (base32
+            "0iks79rd4knrd81x4kvcpgpclr69l0m0v6sfla8k3wzkcnydycv8"))))
+    (properties `((upstream-name . "effects")))
+    (build-system r-build-system)
+    (propagated-inputs
+      `(("r-cardata" ,r-cardata)
+        ("r-colorspace" ,r-colorspace)
+        ("r-estimability" ,r-estimability)
+        ("r-insight" ,r-insight)
+        ("r-lattice" ,r-lattice)
+        ("r-lme4" ,r-lme4)
+        ("r-nnet" ,r-nnet)
+        ("r-survey" ,r-survey)))
+    (native-inputs
+      `(("r-knitr" ,r-knitr)
+        ("r-car", r-car)))
+    (home-page "https://www.r-project.org")
+    (synopsis
+      "Effect Displays for Linear, Generalized Linear, and Other Models")
+    (description
+      "Graphical and tabular effect displays, e.g., of interactions, for
+various statistical models with linear predictors.")
+    (license license:gpl2+)))
+
+(define-public r-bayesfactor
+  (package
+    (name "r-bayesfactor")
+    (version "0.9.12-4.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "BayesFactor" version))
+        (sha256
+          (base32
+            "1z083v7is21gm0a458jm5ph3xfdm7mh29a6sg2r1njq82f8x3s3g"))))
+    (properties `((upstream-name . "BayesFactor")))
+    (build-system r-build-system)
+    (propagated-inputs
+      `(("r-coda" ,r-coda)
+        ("r-gtools" ,r-gtools)
+        ("r-hypergeo" ,r-hypergeo)
+        ("r-matrix" ,r-matrix)
+        ("r-matrixmodels" ,r-matrixmodels)
+        ("r-mvtnorm" ,r-mvtnorm)
+        ("r-pbapply" ,r-pbapply)
+        ("r-rcpp" ,r-rcpp)
+        ("r-rcppeigen" ,r-rcppeigen)
+        ("r-stringr" ,r-stringr)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page
+      "https://richarddmorey.github.io/BayesFactor/")
+    (synopsis
+      "Computation of Bayes Factors for Common Designs")
+    (description
+      "This package provides a suite of functions for computing various Bayes
+factors for simple designs, including contingency tables, one- and two-sample
+designs, one-way designs, general ANOVA designs, and linear regression.")
+    (license license:gpl2)))

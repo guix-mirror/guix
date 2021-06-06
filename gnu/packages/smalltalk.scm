@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -64,7 +65,8 @@
        ;; XXX: To be removed with the next release of Smalltalk.
        ("autoconf" ,autoconf)
        ("automake" ,automake)
-       ("libtool" ,libtool)))
+       ("libtool" ,libtool)
+       ("zip" ,zip)))
     ;; TODO: These optional dependencies raise the closure size to ~1 GiB
     ;; from the current ~100 MiB, although some of them might be very
     ;; useful for end users:
@@ -81,8 +83,7 @@
        ("libffi" ,libffi)
        ("libltdl" ,libltdl)
        ("libsigsegv" ,libsigsegv)
-       ("lightning" ,lightning)
-       ("zip" ,zip)))
+       ("lightning" ,lightning)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -102,8 +103,12 @@
                        (find-files "doc" "\\.info"))
              #t))
          (add-before 'configure 'fix-libc
-           (lambda _
-             (let ((libc (assoc-ref %build-inputs "libc")))
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((libc (or (assoc-ref inputs "libc")
+                             ;; When cross-compiling, the input
+                             ;; is named "cross-libc" instead of
+                             ;; simply "libc".
+                             (assoc-ref inputs "cross-libc"))))
                (substitute* "libc.la.in"
                  (("@LIBC_SO_NAME@") "libc.so")
                  (("@LIBC_SO_DIR@")  (string-append libc "/lib"))))

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2021, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018, 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -8,6 +8,7 @@
 ;;; Copyright © 2020 Alex ter Weele <alex.ter.weele@gmail.com>
 ;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
 ;;; Copyright © 2021 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -622,3 +623,30 @@ future system load (i.e., capacity planning).")
     ;; license:gpl2 for other plugins
     (license (list license:expat license:gpl2))))
 
+(define-public hostscope
+  (package
+    (name "hostscope")
+    (version "8.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://www.maier-komor.de/hostscope/hostscope-V"
+                    version ".tgz"))
+              (sha256
+               (base32
+                "0jw6yij8va0f292g4xkf9lp9sxkzfgv67ajw49g3vq42q47ld7cv"))))
+    (build-system gnu-build-system)
+    (inputs `(("ncurses" ,ncurses)))
+    (arguments '(#:tests? #f)) ;; No included tests.
+    (home-page "http://www.maier-komor.de/hostscope.html")
+    (properties `((release-monitoring-url . ,home-page)))
+    (synopsis
+     "System monitoring tool for multiple hosts")
+    (description
+     "HostScope displays key system metrics of Linux hosts, such as detailed
+CPU load, speed and temperature, I/O rates of network interfaces, I/O rates of
+disks, and user process summary information.  All metrics are multicast on the
+LAN, if wanted, and clients can switch between multiple hosts on the network.
+Hostscope features a bridge to Influx DB.  So Grafana can be used to visualize
+the recorded data over time.")
+    (license license:gpl3+)))

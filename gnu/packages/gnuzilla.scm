@@ -694,8 +694,8 @@ from forcing GEXP-PROMISE."
                       #:system system
                       #:guile-for-build guile)))
 
-(define %icecat-version "78.10.0-guix0-preview1")
-(define %icecat-build-id "20210419000000") ;must be of the form YYYYMMDDhhmmss
+(define %icecat-version "78.11.0-guix0-preview1")
+(define %icecat-build-id "20210601000000") ;must be of the form YYYYMMDDhhmmss
 
 ;; 'icecat-source' is a "computed" origin that generates an IceCat tarball
 ;; from the corresponding upstream Firefox ESR tarball, using the 'makeicecat'
@@ -717,7 +717,7 @@ from forcing GEXP-PROMISE."
                   "firefox-" upstream-firefox-version ".source.tar.xz"))
             (sha256
              (base32
-              "0h6zl87czbhyhy3597bxqzwy4p1vsaqimkg92lw31gjbv6k434cp"))))
+              "0zjpzkxx3wc2840d7q4b9lnkj1kwk1qps29s9c83jf5y6xclnf9q"))))
 
          (upstream-icecat-base-version "78.7.0") ; maybe older than base-version
          ;;(gnuzilla-commit (string-append "v" upstream-icecat-base-version))
@@ -1302,11 +1302,11 @@ standards of the IceCat project.")
        (cpe-version . ,(first (string-split version #\-)))))))
 
 ;; Update this together with icecat!
-(define %icedove-build-id "20210504000000") ;must be of the form YYYYMMDDhhmmss
+(define %icedove-build-id "20210601000000") ;must be of the form YYYYMMDDhhmmss
 (define-public icedove
   (package
     (name "icedove")
-    (version "78.10.1")
+    (version "78.11.0")
     (source icecat-source)
     (properties
      `((cpe-name . "thunderbird_esr")))
@@ -1586,7 +1586,7 @@ standards of the IceCat project.")
         ;; in the Thunderbird release tarball.  We don't use the release
         ;; tarball because it duplicates the Icecat sources and only adds the
         ;; "comm" directory, which is provided by this repository.
-        ,(let ((changeset "14a9afcfb6cc0c466e0d0b8222e85de5b2d8078d"))
+        ,(let ((changeset "1717d8d5fbd359aab7a4a0a15f4d15c72a7e6afc"))
            (origin
              (method hg-fetch)
              (uri (hg-reference
@@ -1595,7 +1595,7 @@ standards of the IceCat project.")
              (file-name (string-append "thunderbird-" version "-checkout"))
              (sha256
               (base32
-               "18658r4b1f5p8jcz68l31z29ny73lic0br7gc827m72nfc85wqz3")))))
+               "10l042dd7b8rvla0cbiks5kjrz2b28yy7hr8sr169wlx202hxa01")))))
        ("autoconf" ,autoconf-2.13)
        ("cargo" ,rust "cargo")
        ("clang" ,clang)
@@ -1618,25 +1618,40 @@ Thunderbird.  It supports email, news feeds, chat, calendar and contacts.")
     (license license:mpl2.0)))
 
 (define-public icedove/wayland
-  (package/inherit icedove
+  (package
+    (inherit icedove)
     (name "icedove-wayland")
+    (native-inputs '())
+    (inputs
+     `(("bash" ,bash-minimal)
+       ("icedove" ,icedove)))
+    (build-system trivial-build-system)
     (arguments
-     (substitute-keyword-arguments (package-arguments icedove)
-       ((#:phases phases)
-        `(modify-phases ,phases
-          (replace 'wrap-program
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (lib (string-append out "/lib"))
-                    (gtk (assoc-ref inputs "gtk+"))
-                    (gtk-share (string-append gtk "/share"))
-                    (pulseaudio (assoc-ref inputs "pulseaudio"))
-                    (pulseaudio-lib (string-append pulseaudio "/lib")))
-               (wrap-program (car (find-files lib "^icedove$"))
-                 `("MOZ_ENABLE_WAYLAND" = ("1"))
-                 `("XDG_DATA_DIRS" prefix (,gtk-share))
-                 `("LD_LIBRARY_PATH" prefix (,pulseaudio-lib)))
-               #t)))))))))
+      '(#:modules ((guix build utils))
+        #:builder
+        (begin
+          (use-modules (guix build utils))
+          (let* ((bash    (assoc-ref %build-inputs "bash"))
+                 (icedove (assoc-ref %build-inputs "icedove"))
+                 (out     (assoc-ref %outputs "out"))
+                 (exe     (string-append out "/bin/icedove")))
+            (mkdir-p (dirname exe))
+
+            (call-with-output-file exe
+              (lambda (port)
+                (format port "#!~a
+ MOZ_ENABLE_WAYLAND=1 exec ~a $@"
+                        (string-append bash "/bin/bash")
+                        (string-append icedove "/bin/icedove"))))
+            (chmod exe #o555)
+
+            ;; Provide the manual and .desktop file.
+            (copy-recursively (string-append icedove "/share")
+                              (string-append out "/share"))
+            (substitute* (string-append
+                          out "/share/applications/icedove.desktop")
+              ((icedove) out))
+            #t))))))
 
 (define-public firefox-decrypt
   (package

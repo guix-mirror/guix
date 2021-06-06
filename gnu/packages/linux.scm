@@ -356,15 +356,15 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 
 ;; The current "stable" kernels. That is, the most recently released major
 ;; versions that are still supported upstream.
-(define-public linux-libre-5.12-version "5.12.5")
+(define-public linux-libre-5.12-version "5.12.9")
 (define deblob-scripts-5.12
   (linux-libre-deblob-scripts
    linux-libre-5.12-version
    (base32 "1vdsr9y4gckknrbqcjyfakwva3k0vb5zcivzk3k1s9mh7qp9dils")
-   (base32 "1qp25fd4wgjyk7dzdq9yirm1z5w68sd1p3wv8lch8259i51gwjnf")))
+   (base32 "1p1jzrci97sipjdx3h0vmdnw35z2vyvczinxmp65xi1ja7ww0g14")))
 (define-public linux-libre-5.12-pristine-source
   (let ((version linux-libre-5.12-version)
-        (hash (base32 "1x39sdswww4j8zr54wpjzy9dia52kihs11xwljxcnz8pck0vwja0")))
+        (hash (base32 "0vg71h8r90fl01a8khyf1776y76rgqisxafky89cswa2fpsvxyn7")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.12)))
@@ -372,20 +372,20 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 ;; The "longterm" kernels — the older releases with long-term upstream support.
 ;; Here are the support timelines:
 ;; <https://www.kernel.org/category/releases.html>
-(define-public linux-libre-5.10-version "5.10.38")
+(define-public linux-libre-5.10-version "5.10.42")
 (define deblob-scripts-5.10
   (linux-libre-deblob-scripts
    linux-libre-5.10-version
    (base32 "1rmnx1px4sizs2lq831yd2g9dyflg0vmykz3cv9443x2a2vwy81f")
-   (base32 "0hh27ccqimagr3aij7ygwikxw66y63sqwd0xlf49bhpjd090r9a7")))
+   (base32 "1zsr02zmpx3968277sy8pfs2mdlgh86ifymwyj0r56wnhzf5q6hk")))
 (define-public linux-libre-5.10-pristine-source
   (let ((version linux-libre-5.10-version)
-        (hash (base32 "0bzipgnfvd5w70rv1x6g81iwknn2qskw92p2bpyiks7r52qmmwij")))
+        (hash (base32 "1r86v6q7ml7zv001f25w3h667nqqy39439s94vnqsyyn7g3jg84b")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.10)))
 
-(define-public linux-libre-5.4-version "5.4.120")
+(define-public linux-libre-5.4-version "5.4.124")
 (define deblob-scripts-5.4
   (linux-libre-deblob-scripts
    linux-libre-5.4-version
@@ -393,12 +393,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1xghbbnaisjd0k1klbyn1p7r6r4x5a1bpmkm56a3gh2zvw4s7mj8")))
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "0q08q6q2l9k04p8a0vvbnhwfp4yiags8s6wc9dnac0fhd4y3gl1q")))
+        (hash (base32 "10kxa1ng9w9xd2d5xh48fbhp1kri650p90nihrcpnb845gd9vwpp")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.190")
+(define-public linux-libre-4.19-version "4.19.193")
 (define deblob-scripts-4.19
   (linux-libre-deblob-scripts
    linux-libre-4.19-version
@@ -406,46 +406,46 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1jiaw0as1ippkrjdpd52657w5mz9qczg3y2hlra7m9k0xawwiqlf")))
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "0pf8py0id0r8wzr5050bik1sbhl8gsznnr5bvcmrs4jkhpp2m73g")))
+        (hash (base32 "17ci49ak5iw01kfkn3fcgncg9hm4j188417bxi3bnsq9il5ymhl4")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.232")
+(define-public linux-libre-4.14-version "4.14.235")
 (define deblob-scripts-4.14
   (linux-libre-deblob-scripts
    linux-libre-4.14-version
-   (base32 "091jk9jkn9jf39bxpc7395bhcb7p96nkg3a8047380ki06lnfxh6")
+   (base32 "07afckszdm4pq008i6ij0pxpw2rpgi5q931nxh6dxcczpicvwbc9")
    (base32 "1qij18inijj6c3ma8hv98yjagnzxdxyn134da9fd23ky8q6hbvky")))
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "0sa3sz7bznlhijd0iwv37nyrrnw34iq6dq1bqr6cj2wpyrhr7h8x")))
+        (hash (base32 "03k793hj294zf7jncs1h8zh5dh6xagkfvnydd9jadxvq2z8vvl8f")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.268")
+(define-public linux-libre-4.9-version "4.9.271")
 (define deblob-scripts-4.9
   (linux-libre-deblob-scripts
    linux-libre-4.9-version
-   (base32 "1wvldzlv7q2xdbadas87dh593nxr4a8p5n0f8zpm72lja6w18hmg")
+   (base32 "1w8cb8w1cpcwswc3rxq6vwjafw6yy0igib34rrm93ag5h6inncfv")
    (base32 "0fxajshb75siq39lj5h8xvhdj8lcmddkslwlyj65rhlwk6g2r4b2")))
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "0aknrlf5q0dsqib8c9klmf5c60dy7hg2zksb020qvyrp077gcrjv")))
+        (hash (base32 "1480miixphkf0b8w00m753ar7yp1rnl3zyr9wp4inngi2f90553r")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.268")
+(define-public linux-libre-4.4-version "4.4.271")
 (define deblob-scripts-4.4
   (linux-libre-deblob-scripts
    linux-libre-4.4-version
-   (base32 "0x2j1i88am54ih2mk7gyl79g25l9zz4r08xhl482l3fvjj2irwbw")
+   (base32 "1lid4k7g947yi3hcjj0lz0fnssawbph3jsy67vrv57l5imrhv3zs")
    (base32 "0hhin1jpfkd6nwrb6xqxjzl3hdxy4pn8a15hy2d3d83yw6pflbsf")))
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
-        (hash (base32 "1srk08kaxq5jjlqx804cgjffhcsrdkv3idh8ipagl6v2w4kas5v8")))
+        (hash (base32 "0n5h2lv1p542a45pas3pi0vkhgrk096vwrps79a7v3a6c1q2dxx6")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.4)))
@@ -481,14 +481,18 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 (define-public linux-libre-5.12-source
   (source-with-patches linux-libre-5.12-pristine-source
                        (list %boot-logo-patch
-                             %linux-libre-arm-export-__sync_icache_dcache-patch)))
+                             %linux-libre-arm-export-__sync_icache_dcache-patch
+                             ;; Pinebook Pro patch to fix LCD display
+                             (search-patch
+                              "linux-libre-arm64-generic-pinebook-lcd.patch"))))
 
 (define-public linux-libre-5.10-source
   (source-with-patches linux-libre-5.10-pristine-source
                        (list %boot-logo-patch
                              %linux-libre-arm-export-__sync_icache_dcache-patch
-			     (search-patch
-			      "linux-libre-arm64-generic-pinebook-lcd.patch"))))
+                             ;; Pinebook Pro patch to fix LCD display
+                             (search-patch
+                              "linux-libre-arm64-generic-pinebook-lcd.patch"))))
 
 (define-public linux-libre-5.4-source
   (source-with-patches linux-libre-5.4-pristine-source
@@ -1228,8 +1232,8 @@ RTL8812AU, RTL8821AU, and RTL8814AU chips.")
       (license license:gpl2+))))
 
 (define-public rtl8821ce-linux-module
-  (let ((commit "14b536f0c9ad2d0abbdab8afc7ade684900ca9cf")
-        (revision "2"))
+  (let ((commit "897e7c4c15dd5a0a569745dc223d969a26ff5bfc")
+        (revision "3"))
     (package
       (name "rtl8821ce-linux-module")
       (version (git-version "0.0.0" revision commit))
@@ -1242,7 +1246,7 @@ RTL8812AU, RTL8821AU, and RTL8814AU chips.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0z7r7spsgn22gwv9pcmkdjn9ingi8jj7xkxasph8118h46fw8ip2"))))
+           "0935dzz0njxh78wfd17yqah1dxn6b3kaszvzclwwrwwhwcrdp80j"))))
       (build-system linux-module-build-system)
       (arguments
        `(#:make-flags
@@ -6650,14 +6654,14 @@ re-use code and to avoid re-inventing the wheel.")
 (define-public libnftnl
   (package
     (name "libnftnl")
-    (version "1.1.9")
+    (version "1.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://netfilter.org/libnftnl/"
                            "libnftnl-" version ".tar.bz2"))
        (sha256
-        (base32 "16jbp4fs5dz2yf4c3bl1sb48x9x9wi1chv39zwmfgya1k9pimcp9"))))
+        (base32 "1xblq1cbcxhr6qmjpy98i1qdza148idgz99vbhjc7s4vzvfizc4h"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -6674,7 +6678,7 @@ used by nftables.")
 (define-public nftables
   (package
     (name "nftables")
-    (version "0.9.8")
+    (version "0.9.9")
     (source
      (origin
        (method url-fetch)
@@ -6683,7 +6687,7 @@ used by nftables.")
                   (string-append "https://www.nftables.org/projects/nftables"
                                  "/files/nftables-" version ".tar.bz2")))
        (sha256
-        (base32 "1r4g22grhd4s1918wws9vggb8821sv4kkj8197ygxr6sar301z30"))))
+        (base32 "1d7iwc8xlyfsbgn6qx1sdfcq7jhpl8wpfj39hcd06y8dzp3jvvvn"))))
     (build-system gnu-build-system)
     (arguments `(#:configure-flags
                  '("--disable-man-doc"))) ; FIXME: Needs docbook2x.
@@ -7360,7 +7364,7 @@ compatible with Python's ConfigParser style of .INI files, including RFC
 (define-public xfsprogs
   (package
     (name "xfsprogs")
-    (version "5.11.0")
+    (version "5.12.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -7368,7 +7372,7 @@ compatible with Python's ConfigParser style of .INI files, including RFC
                     "xfsprogs-" version ".tar.gz"))
               (sha256
                (base32
-                "1byj53qdwsii35d0f11nz0dl618mpvwy5aa44pc9zg281g2r27ab"))))
+                "0b5vvwq4rqw7kph23ycd518d31dx3wq7w61znixxpdljx0ig71qn"))))
     (build-system gnu-build-system)
     (outputs (list "out" "python"))
     (arguments
@@ -8099,7 +8103,7 @@ provides user-space tools for creating EROFS file systems.")
 (define-public rasdaemon
   (package
     (name "rasdaemon")
-    (version "0.6.6")
+    (version "0.6.7")
     (source
      (origin
        (method git-fetch)
@@ -8108,14 +8112,17 @@ provides user-space tools for creating EROFS file systems.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "13g39x19lfjf9izdcb0nlyfjrgpliivhv4nw3ndgyzi59l3yqc0v"))))
+        (base32 "12ih96jwmr7imp9zyckf9zjqqm5ra1kv5fj6kbw71y6yl31069dz"))))
     (native-inputs `(("autoconf" ,autoconf)
                      ("automake" ,automake)
                      ("libtool" ,libtool)))
     (inputs `(("sqlite" ,sqlite)))
     (arguments
-     `(#:configure-flags '("--enable-all"
-                           "--localstatedir=/var")
+     `(#:configure-flags
+       (list "--enable-all"
+             ;; Don't install unused /etc/sysconfig/rasdaemon environment file.
+             "--with-sysconfdefdir=."
+             "--localstatedir=/var")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'munge-autotools

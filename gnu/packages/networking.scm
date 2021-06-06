@@ -2,7 +2,7 @@
 ;;; Copyright © 2014, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015, 2016, 2017 Stefan Reichör <stefan@xsteve.at>
+;;; Copyright © 2015, 2016, 2017, 2021 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2016 Raimon Grau <raimonster@gmail.com>
 ;;; Copyright © 2016–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
@@ -440,7 +440,7 @@ performance across unpredictable networks, such as the Internet.")
 (define-public lksctp-tools
   (package
     (name "lksctp-tools")
-    (version "1.0.18")
+    (version "1.0.19")
     (source
      (origin
        (method git-fetch)
@@ -449,10 +449,8 @@ performance across unpredictable networks, such as the Internet.")
          (url "https://github.com/sctp/lksctp-tools")
          (commit (string-append "v" version))))
        (file-name (git-file-name name version))
-       (patches
-        (search-patches "lksctp-tools-1.0.18-fix-header-file-name.patch"))
        (sha256
-        (base32 "1x4fwzrlzvfa3vcpja97m8w5g9ir2zrh4zs7zksminrnmdrs0dsr"))))
+        (base32 "1jfq58j365mlgssavyw5wcal42n0xjkr40vmj9b8w265wgs28j20"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -461,11 +459,14 @@ performance across unpredictable networks, such as the Internet.")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("linux-headers" ,linux-libre-headers)))
-    (synopsis "Linux SCTP helper library")
-    (description "Lksctp-tools project provides a user space library for SCTP
-(libsctp) including C language header files (netinet/sctp.h) for accessing SCTP
-specific application programming interfaces not provided by the standard
-sockets, and also some helper utilities around SCTP.")
+    (synopsis
+     "@acronym{SCTP, Stream Control Transmission Protocol} helpers for Linux")
+    (description
+     "The lksctp-tools project provides a user-space library for @acronym{SCTP,
+the Stream Control Transmission Protocol} (@file{libsctp}) and C language header
+files (@file{netinet/sctp.h}) for accessing SCTP-specific @acronym{APIs,
+application programming interfaces} not provided by the standard sockets.
+It also includes some SCTP-related helper utilities.")
     (home-page "http://lksctp.sourceforge.net/")
     (license
      (list
@@ -908,6 +909,38 @@ establish a relatively secure environment (su and chroot) for running client
 or server shell scripts with network connections.")
     (license license:gpl2)))
 
+(define-public mbuffer
+  (package
+    (name "mbuffer")
+    (version "20210328")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://www.maier-komor.de/software/mbuffer/mbuffer-"
+                    version ".tgz"))
+              (sha256
+               (base32
+                "0pfw9xw4ph18yss07fl6w8fbqiwy1w9r1knzw5gsb4c993cbidai"))))
+    (build-system gnu-build-system)
+    (inputs `(("openssl" ,openssl)))
+    (home-page "http://www.maier-komor.de/mbuffer.html")
+    (synopsis
+     "Swiss army knife for data stream buffering (network aware)")
+    (description
+     "mbuffer is a tool for buffering data streams with a large set of features:
+
+@itemize
+@item direct support for TCP based network targets (IPv4 and IPv6)
+@item ability to send to multiple targets in parallel (distribution mode)
+@item support for multiple volumes
+@item I/O rate limitation
+@item high/low watermark based restart criteria
+@item configurable buffer size
+@item on the fly MD5 hash calculation
+@item highly efficient, multi-threaded implementation
+@end itemize")
+    (license license:gpl3+)))
+
 (define-public tcp-wrappers
   (package
     (name "tcp-wrappers")
@@ -1025,20 +1058,7 @@ more.")
                 "0fdclvd7fcwixp0k57ccv7d159v3slasyhvndxfn8n1a9hh0lwjx"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags '("--enable-drafts")
-       #:phases (modify-phases %standard-phases
-                  (add-before 'check 'patch-tests
-                    (lambda _
-                      (substitute* "src/czmq_selftest.c"
-                        ;; Disable the zproc test, which fails on some hardware
-                        ;; (see: https://github.com/zeromq/czmq/issues/2007).
-                        (("\\{ \"zproc\", zproc_test.*")
-                         "")
-                        ;; Also disable the zarmour test, which fails as well
-                        ;; (see: https://github.com/zeromq/czmq/issues/2125).
-                        (("\\{ \"zarmour\", zarmour_test.*")
-                         ""))
-                      #t)))))
+     '(#:configure-flags '("--enable-drafts")))
     (inputs
      `(("zeromq" ,zeromq)))
     (home-page "https://zeromq.org")
@@ -1154,14 +1174,14 @@ containing both Producer and Consumer support.")
 (define-public libndp
   (package
     (name "libndp")
-    (version "1.7")
+    (version "1.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://libndp.org/files/"
                                   "libndp-" version ".tar.gz"))
               (sha256
                (base32
-                "1dlinhl39va00v55qygjc9ap77yqf7xvn4rwmvdr49xhzzxhlj1c"))))
+                "0ay0n0d85254zdmv8znmn399gfiqpk6ga0jwdwa7ylpbw9pbdzw8"))))
     (build-system gnu-build-system)
     (home-page "https://libndp.org/")
     (synopsis "Library for Neighbor Discovery Protocol")
@@ -1380,7 +1400,7 @@ and up to 1 Mbit/s downstream.")
 (define-public whois
   (package
     (name "whois")
-    (version "5.5.8")
+    (version "5.5.9")
     (source
      (origin
        (method git-fetch)
@@ -1389,7 +1409,7 @@ and up to 1 Mbit/s downstream.")
               (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "12lhl2q1pa1qkbv0l1cpy8hn4wh5i99bqc68rlm4f7jyqlj2l82r"))))
+        (base32 "0l9dhyciylh14lqw8j5mrk0y2hl95cnj8pyvvabbgwxpsdn0yvbb"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no test suite
@@ -1425,14 +1445,14 @@ of the same name.")
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "3.4.5")
+    (version "3.4.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.wireshark.org/download/src/wireshark-"
                            version ".tar.xz"))
        (sha256
-        (base32 "0cyk8nqws9gp8p2ywszbynh8vawivnbhw60dhmy21qd1038sy6ny"))))
+        (base32 "0a26kcj3n1a2kw1f3fc6s1x3rw3f3bj2cq6rp7k0kc4ciwh7i9hj"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -1463,6 +1483,7 @@ of the same name.")
      `(("c-ares" ,c-ares)
        ("glib" ,glib)
        ("gnutls" ,gnutls)
+       ("google-brotli" ,google-brotli)
        ("libcap" ,libcap)
        ("libgcrypt" ,libgcrypt)
        ("libnl" ,libnl)
@@ -1472,12 +1493,15 @@ of the same name.")
        ("lz4" ,lz4)
        ("lua" ,lua-5.2)                 ;Lua 5.3 unsupported
        ("krb5" ,mit-krb5)
+       ("nghttp2:lib" ,nghttp2 "lib")
+       ("minizip" ,minizip)
        ("qtbase" ,qtbase)
        ("qtmultimedia" ,qtmultimedia)
        ("qtsvg" ,qtsvg)
        ("sbc" ,sbc)
        ("snappy" ,snappy)
-       ("zlib" ,zlib)))
+       ("zlib" ,zlib)
+       ("zstd:lib" ,zstd "lib")))
     (native-inputs
      `(("bison" ,bison)
        ("doxygen" ,doxygen)
@@ -2347,15 +2371,20 @@ that block port 22.")
 (define-public iperf
   (package
     (name "iperf")
-    (version "3.9")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://downloads.es.net/pub/iperf"
-                                  "/iperf-" version ".tar.gz"))
-              (sha256
-                (base32
-                 "0f601avdmzpwsa3lbi0ppjhkrdipm5wifhhxy5czf99370k3mdi4"))))
+    (version "3.10.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/esnet/iperf")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0svkrmxki6ckn2a8xysh5x0bw68mqnvl3w64j6d45fxs97dca2vq"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--disable-static")))
     (synopsis "TCP, UDP and SCTP bandwidth measurement tool")
     (description
      "iPerf is a tool to measure achievable bandwidth on IP networks.  It
@@ -2409,7 +2438,7 @@ gone wild and are suddenly taking up your bandwidth.")
 (define-public nzbget
   (package
     (name "nzbget")
-    (version "21.0")
+    (version "21.1")
     (source
      (origin
        (method url-fetch)
@@ -2417,16 +2446,7 @@ gone wild and are suddenly taking up your bandwidth.")
                            "/download/v" version
                            "/nzbget-" version "-src.tar.gz"))
        (sha256
-        (base32
-         "0lwd0pfrs4a5ms193hgz2qiyf7grrc925dw6y0nfc0gkp27db9b5"))
-       (modules '((guix build utils)))
-       (snippet
-        ;; Reported upstream as <https://github.com/nzbget/nzbget/pull/414>.
-        '(begin
-           (substitute* "daemon/connect/TlsSocket.cpp"
-             (("gnutls_certificate-verification_status_print")
-              "gnutls_certificate_verification_status_print"))
-           #t))))
+        (base32 "09900x1k0yf4yi2cc0k093advvadyhrkm8rnd8nszhhdp2zc33sf"))))
     (arguments
      `(#:configure-flags
        (list
@@ -2861,16 +2881,65 @@ displays the results in real time.")
              #t)))
        #:configure-flags
        (list
-        ;; Disable bsd-4 licensed plugins.
+        "--disable-ldap"
+        "--disable-mysql"
+        "--disable-systemd"
+
+        ;; Disable BSD-4 licensed plugins.
+        "--disable-blowfish"
         "--disable-des"
-        "--disable-blowfish")))
+
+        ;; Make it usable.  The default configuration is far too minimal to be
+        ;; used with most common VPN set-ups.
+        ;; See <https://wiki.strongswan.org/projects/strongswan/wiki/Autoconf>.
+        "--enable-aesni"
+        "--enable-attr-sql"
+        "--enable-chapoly"
+        "--enable-curl"
+        "--enable-dhcp"
+        "--enable-eap-aka"
+        "--enable-eap-aka-3gpp"
+        "--enable-eap-dynamic"
+        "--enable-eap-identity"
+        "--enable-eap-md5"
+        "--enable-eap-mschapv2"
+        "--enable-eap-peap"
+        "--enable-eap-radius"
+        "--enable-eap-sim"
+        "--enable-eap-sim-file"
+        "--enable-eap-simaka-pseudonym"
+        "--enable-eap-simaka-reauth"
+        "--enable-eap-simaka-sql"
+        "--enable-eap-tls"
+        "--enable-eap-tnc"
+        "--enable-eap-ttls"
+        "--enable-ext-auth"
+        "--enable-farp"
+        "--enable-ha"
+        "--enable-led"
+        "--enable-md4"
+        "--enable-mediation"
+        "--enable-openssl"
+        "--enable-soup"
+        "--enable-sql"
+        "--enable-sqlite"
+        "--enable-xauth-eap"
+        "--enable-xauth-noauth"
+        "--enable-xauth-pam"
+
+        ;; Use libcap by default.
+        "--with-capabilities=libcap")))
     (inputs
      `(("curl" ,curl)
        ("gmp" ,gmp)
+       ("libcap" ,libcap)
        ("libgcrypt" ,libgcrypt)
+       ("libsoup" ,libsoup)
+       ("linux-pam" ,linux-pam)
        ("openssl" ,openssl)))
     (native-inputs
      `(("coreutils" ,coreutils)
+       ("pkg-config" ,pkg-config)
        ("tzdata" ,tzdata-for-tests)))
     (synopsis "IKEv1/v2 keying daemon")
     (description "StrongSwan is an IPsec implementation originally based upon
@@ -2909,7 +2978,7 @@ file for more details.")
 (define-public amule
   (package
     (name "amule")
-    (version "2.3.2")
+    (version "2.3.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2918,9 +2987,7 @@ file for more details.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "010wxm6g9f92x6fympj501zbnjka32rzbx0sk3a2y4zpih5d2nsn"))
-              ;; Patch for adopting crypto++ >= 6.0.
-              (patches (search-patches "amule-crypto-6.patch"))))
+                "1nm4vxgmisn1b6l3drmz0q04x067j2i8lw5rnf0acaapwlp8qwvi"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -2956,7 +3023,7 @@ file for more details.")
        ("crypto++" ,crypto++)
        ("libpng" ,libpng)
        ("wxwidgets-gtk2" ,wxwidgets-gtk2)))
-    (home-page "http://amule.org/")
+    (home-page "https://amule.org/")
     (synopsis "Peer-to-peer client for the eD2K and Kademlia networks")
     (description
      "aMule is an eMule-like client for the eD2k and Kademlia peer-to-peer
@@ -3152,14 +3219,14 @@ Features:
 (define-public net-snmp
   (package
     (name "net-snmp")
-    (version "5.9")
+    (version "5.9.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/net-snmp/net-snmp/"
                                   version "/net-snmp-" version ".tar.gz"))
               (sha256
                (base32
-                "0wb0vyafpspw3mcifkjjmf17r1r80kjvslycscb8nvaxz1k3lc04"))
+                "0gwcyi9qk707jgfsgmdr9w2w3r892fnqaam9v7zxpkg69njd8zzb"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -3176,6 +3243,7 @@ Features:
        (list (string-append "LDFLAGS=-Wl,-rpath="
                             (assoc-ref %outputs "out")
                             "/lib")
+             "--disable-static"
              "--with-logfile=/var/log/snmpd.log"
              (string-append "--with-openssl="
                             (assoc-ref %build-inputs "openssl")))
@@ -3569,7 +3637,7 @@ A very simple IM client working over the DHT.
 (define-public frrouting
   (package
     (name "frrouting")
-    (version "7.5")
+    (version "7.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/FRRouting/frr/releases/"
@@ -3577,7 +3645,7 @@ A very simple IM client working over the DHT.
                                   ".tar.xz"))
               (sha256
                (base32
-                "1a27wvxmc51sr0kchy0hjfpv19imlgrr3s9k48lik9k01g71yrdr"))))
+                "1r7gh5h27ii7d1d0z0x48wx7hs8vvympv3gqvy3cwzg05q5vk9xs"))))
     (build-system gnu-build-system)
     (inputs
      `(("c-ares" ,c-ares)

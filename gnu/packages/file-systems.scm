@@ -8,6 +8,7 @@
 ;;; Copyright © 2020 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;; Copyright © 2021 raid5atemyhomework <raid5atemyhomework@protonmail.com>
 ;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
+;;; Copyright © 2021 Noisytoot <noisytoot@disroot.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -477,7 +478,7 @@ from the bcachefs-tools package.  It is meant to be used in initrds.")
 (define-public exfatprogs
   (package
     (name "exfatprogs")
-    (version "1.1.1")
+    (version "1.1.2")
     (source
      (origin
        (method git-fetch)
@@ -486,7 +487,7 @@ from the bcachefs-tools package.  It is meant to be used in initrds.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1zl3w5w2mzyggizc4dsiln0pa013f8sf5dxmm5wflplpfm6k4brk"))))
+        (base32 "19pbybgbfnvjb3n944ihrn1r8ch4dm8dr0d44d6w7p63dcp372xy"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -1526,3 +1527,35 @@ your put them.  TMSU maintains its own database and you simply gain an
 additional view, which you can mount where you like, based upon the tags you
 set up.")
     (license license:gpl3+)))
+
+(define-public udftools
+  (package
+    (name "udftools")
+    (version "2.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/pali/udftools")
+                    (commit version)))
+              (sha256
+               (base32
+                "1nl2s61znyzaap23zhbdg3znj6l6akr313fchn5wwvjzj8k70is9"))
+              (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--docdir=" (assoc-ref %outputs "out")
+                            "/share/doc/" ,name "-" ,version))))
+    (native-inputs
+     `(("automake" ,automake)
+       ("autoconf" ,autoconf)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/pali/udftools")
+    (synopsis "Tools to manage UDF file systems and DVD/CD-R(W) drives")
+    (description "@code{udftools} is a set of programs for reading
+and modifying @acronym{UDF, Universal Disk Format} file systems.
+@acronym{UDF, Universal Disk Format} is a file system mostly used for DVDs
+and other optical media.  It supports read-only media (DVD/CD-R)
+and rewritable media that wears out (DVD/CD-RW).")
+    (license license:gpl2+)))

@@ -944,14 +944,14 @@ SHA256, SHA512, SHA3, AICH, ED2K, Tiger, DC++ TTH, BitTorrent BTIH, GOST R
 (define-public botan
   (package
     (name "botan")
-    (version "2.17.3")
+    (version "2.18.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://botan.randombit.net/releases/"
                                   "Botan-" version ".tar.xz"))
               (sha256
                (base32
-                "121vn1aryk36cpks70kk4c4cfic5g0qs82bf92xap9258ijkn4kr"))))
+                "0adf53drhk1hlpfih0175c9081bqpclw6p2afn51cmx849ib9izq"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -976,7 +976,9 @@ SHA256, SHA512, SHA3, AICH, ED2K, Tiger, DC++ TTH, BitTorrent BTIH, GOST R
          (add-before 'check 'library-path-for-tests
            (lambda _ (setenv "LD_LIBRARY_PATH" (getcwd))))
          (replace 'check
-           (lambda _ (invoke "./botan-test"))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (if tests?
+                 (invoke "./botan-test")))))))
     (native-inputs
      `(("python" ,python-wrapper)
        ("python-docutils" ,python-docutils)))
@@ -1297,7 +1299,7 @@ Trusted comments are signed, thus verified, before being displayed.")
 (define-public libolm
   (package
     (name "libolm")
-    (version "3.2.2")
+    (version "3.2.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1305,7 +1307,7 @@ Trusted comments are signed, thus verified, before being displayed.")
                     (commit version)))
               (sha256
                (base32
-                "0qji25wiwmkxyfpraxj96c54hyayqmjkvwh0gsy5gb5pz5bp4mcy"))
+                "0bixly6jqpwfx3p37c1qp1j685yg6m429r1nazwh43w4n527bs3y"))
               (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (arguments

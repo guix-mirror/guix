@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019, 2020 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -23,10 +23,12 @@
 (define-module (gnu packages readline)
   #:use-module (guix licenses)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix utils)
   #:use-module (ice-9 format))
@@ -139,19 +141,21 @@ comfortable for anyone.")
 (define-public rlwrap
   (package
     (name "rlwrap")
-    (version "0.43")
+    (version "0.45.1")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "https://github.com/hanslub42/rlwrap/releases/"
-                            "download/v" version "/"
-                            name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "0bzb7ylk2770iv59v2d0gypb21y2xn87m299s9rqm6rdi2vx11lf"))))
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/hanslub42/rlwrap")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0shf59mkql584a0p449psnbr26bfik5pizg4vsa75g4gbi6mn4r7"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("perl" ,perl)))
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("perl" ,perl)))
     (inputs
      `(("readline" ,readline)))
     (synopsis "Wrapper to allow the editing of keyboard commands")
@@ -160,6 +164,6 @@ comfortable for anyone.")
 readline library to allow the editing of keyboard input for any command.  You
 should consider rlwrap especially when you need user-defined completion (by way
 of completion word lists) and persistent history, or if you want to program
-'special effects' using the filter mechanism.")
+`special effects' using the filter mechanism.")
     (home-page "https://github.com/hanslub42/rlwrap")
     (license gpl2+)))
