@@ -96,6 +96,7 @@ in the Mozilla clients.")
                 (file-name (git-file-name name version))
                 ;; Create nss.pc and nss-config.
                 (patches (search-patches "nss-3.56-pkgconfig.patch"
+                                         "nss-getcwd-nonnull.patch"
                                          "nss-increase-test-timeout.patch"))
                 (modules '((guix build utils)))
                 (snippet

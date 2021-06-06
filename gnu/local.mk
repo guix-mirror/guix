@@ -1439,6 +1439,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/network-manager-plugin-path.patch	\
   %D%/packages/patches/nginx-socket-cloexec.patch		\
   %D%/packages/patches/nsis-env-passthru.patch			\
+  %D%/packages/patches/nss-getcwd-nonnull.patch			\
   %D%/packages/patches/nss-increase-test-timeout.patch		\
   %D%/packages/patches/nss-3.56-pkgconfig.patch			\
   %D%/packages/patches/ntfs-3g-CVE-2019-9755.patch		\
