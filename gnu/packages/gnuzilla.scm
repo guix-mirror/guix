@@ -1618,25 +1618,40 @@ Thunderbird.  It supports email, news feeds, chat, calendar and contacts.")
     (license license:mpl2.0)))
 
 (define-public icedove/wayland
-  (package/inherit icedove
+  (package
+    (inherit icedove)
     (name "icedove-wayland")
+    (native-inputs '())
+    (inputs
+     `(("bash" ,bash-minimal)
+       ("icedove" ,icedove)))
+    (build-system trivial-build-system)
     (arguments
-     (substitute-keyword-arguments (package-arguments icedove)
-       ((#:phases phases)
-        `(modify-phases ,phases
-          (replace 'wrap-program
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (lib (string-append out "/lib"))
-                    (gtk (assoc-ref inputs "gtk+"))
-                    (gtk-share (string-append gtk "/share"))
-                    (pulseaudio (assoc-ref inputs "pulseaudio"))
-                    (pulseaudio-lib (string-append pulseaudio "/lib")))
-               (wrap-program (car (find-files lib "^icedove$"))
-                 `("MOZ_ENABLE_WAYLAND" = ("1"))
-                 `("XDG_DATA_DIRS" prefix (,gtk-share))
-                 `("LD_LIBRARY_PATH" prefix (,pulseaudio-lib)))
-               #t)))))))))
+      '(#:modules ((guix build utils))
+        #:builder
+        (begin
+          (use-modules (guix build utils))
+          (let* ((bash    (assoc-ref %build-inputs "bash"))
+                 (icedove (assoc-ref %build-inputs "icedove"))
+                 (out     (assoc-ref %outputs "out"))
+                 (exe     (string-append out "/bin/icedove")))
+            (mkdir-p (dirname exe))
+
+            (call-with-output-file exe
+              (lambda (port)
+                (format port "#!~a
+ MOZ_ENABLE_WAYLAND=1 exec ~a $@"
+                        (string-append bash "/bin/bash")
+                        (string-append icedove "/bin/icedove"))))
+            (chmod exe #o555)
+
+            ;; Provide the manual and .desktop file.
+            (copy-recursively (string-append icedove "/share")
+                              (string-append out "/share"))
+            (substitute* (string-append
+                          out "/share/applications/icedove.desktop")
+              ((icedove) out))
+            #t))))))
 
 (define-public firefox-decrypt
   (package
