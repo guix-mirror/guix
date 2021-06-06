@@ -3478,7 +3478,7 @@ and targeted primarily for asynchronous processing of HTTP-requests.")
     (build-system cmake-build-system)
     (inputs
      `(("argon2" ,argon2)
-       ("nettle" ,nettle-3.7)
+       ("nettle" ,nettle)
        ("readline" ,readline)
        ("jsoncpp" ,jsoncpp)
        ("openssl" ,openssl)             ;required for the DHT proxy
