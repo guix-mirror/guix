@@ -29,6 +29,7 @@
 ;;; Copyright © 2021 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2021 Matthew James Kraai <kraai@ftbfs.org>
 ;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2021 Matthew James Kraai <kraai@ftbfs.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3918,7 +3919,7 @@ alternative implementations like XRandR or TwinView.")
 (define xkbcomp-intermediate            ;used as input for xkeyboard-config
   (package
     (name "xkbcomp-intermediate")
-    (version "1.4.4")
+    (version "1.4.5")
     (source
      (origin
        (method url-fetch)
@@ -3926,7 +3927,7 @@ alternative implementations like XRandR or TwinView.")
                            version ".tar.bz2"))
        (sha256
         (base32
-         "0zpjkbap9160pdd6jpgb5f0yg5281w0rkkx1l0i7g887lq1ydk2r"))))
+         "0pmhshqinwqh5rip670l3szjpywky67hv232ql6gvdj489n0hlb8"))))
     (build-system gnu-build-system)
     (inputs
      `(("xorgproto" ,xorgproto)
