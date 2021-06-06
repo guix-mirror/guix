@@ -7807,7 +7807,7 @@ MbedTLS package:
 Some older packages that aren't using @file{Package.toml} yet, will require
 this file to be created, too.  The function @code{julia-create-package-toml}
 helps creating the file.  You need to pass the outputs and the source of the
-package, it's name (the same as the @code{file-name} parameter), the package
+package, its name (the same as the @code{file-name} parameter), the package
 uuid, the package version, and a list of dependencies specified by their name
 and their uuid.
 @end defvr
@@ -21755,7 +21755,7 @@ Available @code{getmail-options-configuration} fields are:
 If set to @samp{0}, getmail will only print warnings and errors.  A
 value of @samp{1} means that messages will be printed about retrieving
 and deleting messages.  If set to @samp{2}, getmail will print messages
-about each of it's actions.
+about each of its actions.
 
 Defaults to @samp{1}.
 
@@ -25502,7 +25502,7 @@ directives} for comprehensive documentation on the acceptable
 @deftp {Data type} php-fpm-dynamic-process-manager-configuration
 Data Type for the @code{dynamic} php-fpm process manager.  With the
 @code{dynamic} process manager, spare worker processes are kept around
-based on it's configured limits.
+based on its configured limits.
 @table @asis
 @item @code{max-children} (default: @code{5})
 Maximum of worker processes.
@@ -31570,7 +31570,7 @@ notifications.
 
 The kernel module loader service allows one to load loadable kernel
 modules at boot.  This is especially useful for modules that don't
-autoload and need to be manually loaded, as it's the case with
+autoload and need to be manually loaded, as is the case with
 @code{ddcci}.
 
 @deffn {Scheme Variable} kernel-module-loader-service-type

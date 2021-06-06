@@ -878,7 +878,7 @@ building Perl SAX2 XML parsers, filters, and drivers.")
     (home-page "https://metacpan.org/release/XML-SAX-Base")
     (synopsis "Base class for SAX Drivers and Filters")
     (description "This module has a very simple task - to be a base class for
-PerlSAX drivers and filters.  It's default behaviour is to pass the input
+PerlSAX drivers and filters.  Its default behaviour is to pass the input
 directly to the output unchanged.  It can be useful to use this module as a
 base class so you don't have to, for example, implement the characters()
 callback.")
@@ -2587,7 +2587,7 @@ for Python's ElementTree XML data structures, both for the standard
 ElementTree library and for the @uref{http://lxml.de, lxml.etree} library.
 
 For lxml.etree this package can be useful for providing XPath 2.0 selectors,
-because lxml.etree already has it's own implementation of XPath 1.0.")
+because lxml.etree already has its own implementation of XPath 1.0.")
     (license license:expat)))
 
 (define-public python-lxml

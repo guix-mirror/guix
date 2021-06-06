@@ -2068,7 +2068,7 @@ contain over 620 classes.")
                        "--sipdir" sipdir
                        "--pyqt-sipdir" pyqt-sipdir))))
          ;; Because this has a different prefix than python-pyqt then we need
-         ;; to make this a namespace of it's own
+         ;; to make this a namespace of its own.
          (add-after 'install 'make-namespace
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((__init__.py (string-append

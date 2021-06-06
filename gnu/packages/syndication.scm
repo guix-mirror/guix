@@ -576,7 +576,7 @@ formats, including all versions of RSS and Atom.")
     (home-page "https://quiterss.org/")
     (synopsis "RSS/Atom news feeds reader written on Qt/C++")
     (description "QuiteRSS is an RSS/Atom news feeds reader written on Qt/C++
-that aims to be quite fast and comfortable to it's user.")
+that aims to be quite fast and comfortable to its user.")
     (license license:gpl3+)))
 
 (define-public gfeeds

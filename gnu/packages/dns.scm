@@ -101,7 +101,7 @@
         (base32 "0ac242n7996fswq1a3nlh1bbbhrsdwsq4mx7xq8ffq6aplb4rj4a"))
        (patches
         (search-patches
-         ;; To create make-flag vairables,
+         ;; To create make-flag variables,
          ;; for splitting installation of drill and examples.
          "ldns-drill-examples.patch"))))
     (build-system gnu-build-system)

@@ -587,7 +587,7 @@ tools:
     (synopsis "Static code checker for C++")
     (description "@code{cpplint} is a command-line tool to check C/C++ files
 for style issues following Google’s C++ style guide.  While Google maintains
-it's own version of the tool, this is a fork that aims to be more responsive
+its own version of the tool, this is a fork that aims to be more responsive
 and make @code{cpplint} usable in wider contexts.")
     (license license:bsd-3)))
 

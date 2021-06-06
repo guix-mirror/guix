@@ -326,7 +326,7 @@ compatibility to existing emulators like xterm, gnome-terminal, konsole, etc.")
          ("libxkbcommon" ,libxkbcommon)
          ("logind" ,elogind)
          ;; MESA can be used for accelerated video output via OpenGLESv2, but
-         ;; it's a bit dependency that we'd rather avoid in the installation
+         ;; it's a big dependency that we'd rather avoid in the installation
          ;; image.
          ;; ("mesa" ,mesa)
          ("pango" ,pango)

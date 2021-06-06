@@ -7151,7 +7151,7 @@ some graphical niceities, and numerous bug-fixes and other improvements.")
                (mkdir-p (string-append out "/lib"))
                (mkdir-p (string-append out "/bin"))
                ;; The yamagi-quake2 binary must be in the same directory
-               ;; as it's engine libraries, but symlinking it to /bin is okay
+               ;; as its engine libraries, but symlinking it to /bin is okay.
                ;; https://github.com/yquake2/yquake2/blob/master/stuff/packaging.md
                (copy-recursively "release"
                                  (string-append out "/lib/yamagi-quake2"))
