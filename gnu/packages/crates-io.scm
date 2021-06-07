@@ -49176,7 +49176,7 @@ specified across Unix and Windows platforms.")
 (define-public rust-walkdir-2
   (package
     (name "rust-walkdir")
-    (version "2.3.1")
+    (version "2.3.2")
     (source
       (origin
         (method url-fetch)
@@ -49185,14 +49185,14 @@ specified across Unix and Windows platforms.")
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "0z9g39f49cycdm9vzjf8hnfh3f1csxgd65kmlphj8r2vffy84wbp"))))
+          "0mnszy33685v8y9js8mw6x2p3iddqs8vfj7n2dhqddnlbirz5340"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-winapi-util" ,rust-winapi-util-0.1)
+       (("rust-same-file" ,rust-same-file-1)
         ("rust-winapi" ,rust-winapi-0.3)
-        ("rust-same-file" ,rust-same-file-1))))
+        ("rust-winapi-util" ,rust-winapi-util-0.1))))
     (home-page "https://github.com/BurntSushi/walkdir")
     (synopsis "Recursively walk a directory")
     (description "Recursively walk a directory.")
