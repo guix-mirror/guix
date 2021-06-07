@@ -14,6 +14,7 @@
 ;;; Copyright © 2020 Mark Meyer <mark@ofosos.org>
 ;;; Copyright © 2020 Maxime Devos <maximedevos@telenet.be>
 ;;; Copyright © 2021 aecepoglu <aecepoglu@fastmail.fm>
+;;; Copyright © 2021 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -395,6 +396,38 @@ development focuses on keeping weight down to a minimum, only the most essential
 features are implemented in the editor.  Leafpad is simple to use, is easily
 compiled, requires few libraries, and starts up quickly. ")
     (license license:gpl2+)))
+
+(define-public l3afpad
+  (let ((commit "5235c9e13bbf0d31a902c6776918c2d7cdbb61ff")
+        (revision "0"))
+    (package
+      (name "l3afpad")
+      (version (git-version "0.8.18.1.11" revision commit))
+      (source (origin
+                (method git-fetch)
+                (file-name (git-file-name name version))
+                (uri (git-reference
+                       (url "https://github.com/stevenhoneyman/l3afpad")
+                       (commit commit)))
+                (sha256
+                 (base32
+                  "1alyghm2wpakzdfag0g4g8gb1h9l4wdg7mnhq8bk0iq5ryqia16a"))))
+      (build-system glib-or-gtk-build-system)
+      (native-inputs
+       `(("intltool" ,intltool)
+         ("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("pkg-config" ,pkg-config)))
+      (inputs
+       `(("gtk+" ,gtk+)))
+      (home-page "http://tarot.freeshell.org/leafpad/")
+      (synopsis "GTK+ 3 based text editor")
+      (description "L3afpad is a GTK+ 3 text editor that emphasizes simplicity.  As
+  development focuses on keeping weight down to a minimum, only the most essential
+  features are implemented in the editor.  L3afpad is simple to use, is easily
+  compiled, requires few libraries, and starts up quickly.  L3afpad is a
+  fork of Leafpad that uses GTK+ 3 instead of GTK+ 2.")
+      (license license:gpl2+))))
 
 (define-public e3
   (package
