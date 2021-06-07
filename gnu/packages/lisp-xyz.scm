@@ -15548,7 +15548,7 @@ return the CPU count of the current system.")
 (define-public sbcl-fof
   (package
     (name "sbcl-fof")
-    (version "0.1.0")
+    (version "0.2.0")
     (source
      (origin
        (method git-fetch)
@@ -15557,7 +15557,7 @@ return the CPU count of the current system.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1xdnlqrjfmgdgw58avkci881iwarv4am2vq09b14pfifmpxpzv10"))))
+        (base32 "0j64b7p40h8bq33hqkpgakm3vs1607vyx6n48d7qg3287v1akk6m"))))
     (build-system asdf-build-system/sbcl)
     (arguments
      `(#:phases
