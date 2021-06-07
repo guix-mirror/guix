@@ -43109,6 +43109,30 @@ memory all at once.")
       "Targeting utilities for compilers and related tools")
     (license license:asl2.0)))
 
+(define-public rust-tectonic-bridge-freetype2-0.2
+  (package
+    (name "rust-tectonic-bridge-freetype2")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tectonic_bridge_freetype2" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1vnn6c4cp1qaqnr74bi9mzh25l6dxi8h753lqrfkqz5wb57fv29b"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-tectonic-dep-support" ,rust-tectonic-dep-support-0.1))))
+    (home-page "https://tectonic-typesetting.github.io/")
+    (synopsis "Expose the FreeType2 library C APIs to Rust/Cargo")
+    (description
+     "This crate is part of the Tectonic project.  It exposes the C API of the
+FreeType font rendering engine within the Rust/Cargo build framework, with no
+Rust bindings.")
+    (license license:expat)))
+
 (define-public rust-tectonic-cfg-support-0.1
   (package
     (name "rust-tectonic-cfg-support")
