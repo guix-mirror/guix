@@ -11822,29 +11822,26 @@ such as Hi-C contact matrices.")
 (define-public python-hicmatrix
   (package
     (name "python-hicmatrix")
-    (version "12")
-    (source
-     (origin
-       ;; Version 12 is not available on pypi.
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/deeptools/HiCMatrix")
-             (commit version)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "1xhdyx16f3brgxgxybixdi64ki8nbbkq5vk4h9ahi11pzpjfn1pj"))))
+    (version "15")
+      (source
+        (origin
+          ;;Pypi sources do not contain any test
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/deeptools/HiCMatrix")
+                 (commit version)))
+          (file-name (git-file-name name version))
+          (sha256
+            (base32
+             "1dshjxgb16sdfg9k1bhw2yhyngac04k4ca7aqy8g3i3pprr068r5"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'relax-requirements
-           (lambda _
-             (substitute* '("requirements.txt"
-                            "setup.py")
-               (("cooler *=+ *0.8.5")
-                "cooler==0.8.*"))
-             #t)))))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "python" "-m" "pytest" "-v")))))))
     (propagated-inputs
      `(("python-cooler" ,python-cooler)
        ("python-intervaltree" ,python-intervaltree)
@@ -11852,6 +11849,8 @@ such as Hi-C contact matrices.")
        ("python-pandas" ,python-pandas)
        ("python-scipy" ,python-scipy)
        ("python-tables" ,python-tables)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
     (home-page "https://github.com/deeptools/HiCMatrix/")
     (synopsis "HiCMatrix class for HiCExplorer and pyGenomeTracks")
     (description
