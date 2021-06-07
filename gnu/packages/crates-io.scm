@@ -43132,6 +43132,33 @@ memory all at once.")
 with @code{CARGO_CFG_TARGET_*} variables.")
     (license license:expat)))
 
+(define-public rust-tectonic-dep-support-0.1
+  (package
+    (name "rust-tectonic-dep-support")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tectonic_dep_support" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0l901rjcjmx0d5wjrj95b32rj3lnnhb89hn4i0d29agndn45qw6j"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-pkg-config" ,rust-pkg-config-0.3)
+        ("rust-vcpkg" ,rust-vcpkg-0.2))))
+    (home-page "https://tectonic-typesetting.github.io/")
+    (synopsis "Find third-party libraries using either pkg-config or vcpkg")
+    (description
+     "This crate is part of the Tectonic project.  It provides build-time
+utilities for finding external library dependencies, allowing either
+@code{pkg-config} or @code{vcpkg} to be used as the dep-finding backend, and
+providing whatever fiddly features are needed to enable the Tectonic build
+process.")
+    (license license:expat)))
+
 (define-public rust-tectonic-errors-0.2
   (package
     (name "rust-tectonic-errors")
