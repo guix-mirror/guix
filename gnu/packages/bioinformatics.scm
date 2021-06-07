@@ -9639,7 +9639,7 @@ The following file formats are supported:
 (define-public salmon
   (package
     (name "salmon")
-    (version "0.13.1")
+    (version "1.4.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -9648,124 +9648,113 @@ The following file formats are supported:
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1i2z4aivicmiixdz9bxalp7vmfzi3k92fxa63iqa8kgvfw5a4aq5"))
+                "1di7y2s8cjr9480lngcmaz3wcabc1lpkyanzbhir1nkhcjmj70h4"))
               (modules '((guix build utils)))
               (snippet
-               '(begin
-                  ;; Delete bundled headers for eigen3.
-                  (delete-file-recursively "include/eigen3/")
-                  #t))))
+               ;; Delete bundled headers for eigen3.
+               '(delete-file-recursively "include/eigen3/"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
-       (list (string-append "-DBOOST_INCLUDEDIR="
-                            (assoc-ref %build-inputs "boost")
-                            "/include/")
-             (string-append "-DBOOST_LIBRARYDIR="
-                            (assoc-ref %build-inputs "boost")
-                            "/lib/")
-             (string-append "-DBoost_LIBRARIES="
-                            "-lboost_iostreams "
-                            "-lboost_filesystem "
-                            "-lboost_system "
-                            "-lboost_thread "
-                            "-lboost_timer "
-                            "-lboost_chrono "
-                            "-lboost_program_options")
-             "-DBoost_FOUND=TRUE"
-             "-DTBB_LIBRARIES=tbb tbbmalloc"
-             ;; Don't download RapMap---we already have it!
-             "-DFETCHED_RAPMAP=1")
+       (list (string-append "-Dlibgff_DIR="
+                            (assoc-ref %build-inputs "libgff") "/lib")
+             "-Dlibgff_FOUND=TRUE"
+             "-DTBB_FOUND=TRUE"
+             "-DTBB_VERSION=2020.3"
+             "-DTBB_LIBRARIES=tbb -ltbbmalloc"
+             "-DFETCHED_PUFFERFISH=TRUE"
+             "-DUSE_SHARED_LIBS=TRUE")
        #:phases
        (modify-phases %standard-phases
-         ;; Boost cannot be found, even though it's right there.
-         (add-after 'unpack 'do-not-look-for-boost
+         (add-after 'unpack 'prepare-pufferfish
            (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "CMakeLists.txt"
-               (("find_package\\(Boost 1\\.59\\.0") "#"))
-             #t))
+             (copy-recursively (assoc-ref inputs "pufferfish")
+                               "external/pufferfish")
+             ;; This test isn't working correctly, so compilation aborts.
+             (substitute* "external/pufferfish/include/string_view.hpp"
+               (("#if __has_include\\(<string_view>\\)")
+                "#if 0"))
+             (let ((headers "external/install/pufferfish/include/pufferfish")
+                   (source "external/install/src/pufferfish"))
+               (mkdir-p headers)
+               (mkdir-p source)
+               (for-each (lambda (file)
+                           (install-file (string-append "external/pufferfish/include/" file)
+                                         headers))
+                         (list "ProgOpts.hpp" "BooPHF.hpp" "SpinLock.hpp"
+                               "Kmer.hpp" "CanonicalKmer.hpp" "string_view.hpp"
+                               "CanonicalKmerIterator.hpp"
+                               "PufferfishBaseIndex.hpp"
+                               "PufferfishIndex.hpp"
+                               "PufferfishSparseIndex.hpp"
+                               "PufferfishLossyIndex.hpp"
+                               "PufferfishTypes.hpp"
+                               "rank9b.hpp" "rank9sel.hpp" "macros.hpp"
+                               "select.hpp" "Util.hpp"
+                               "PairedAlignmentFormatter.hpp"
+                               "SelectiveAlignmentUtils.hpp"
+                               "PuffAligner.hpp" "MemCollector.hpp"
+                               "MemChainer.hpp" "CommonTypes.hpp"
+                               "SAMWriter.hpp" "PufferfishConfig.hpp"
+                               "BulkChunk.hpp" "BinWriter.hpp"))
+               (for-each (lambda (dir)
+                           (copy-recursively
+                            (string-append "external/pufferfish/include/" dir)
+                            (string-append headers "/" dir)))
+                         (list "libdivide"
+                               "ksw2pp"
+                               "compact_vector"
+                               "metro"
+                               "chobo"
+                               "sparsepp"
+                               "simde"
+                               "tsl"))
+               (copy-recursively
+                (string-append "external/pufferfish/src/metro/")
+                (string-append source "/metro"))
+               (install-file
+                (string-append "external/pufferfish/src/rank9b.cpp")
+                source)
+
+               ;; Do not complain about not having built libtbb
+               (substitute* "external/pufferfish/external/twopaco/CMakeLists.txt"
+                 (("add_dependencies.*") "")))))
          (add-after 'unpack 'do-not-phone-home
            (lambda _
              (substitute* "src/Salmon.cpp"
-               (("getVersionMessage\\(\\)") "\"\""))
-             #t))
-         (add-after 'unpack 'prepare-rapmap
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((src "external/install/src/rapmap/")
-                   (include "external/install/include/rapmap/")
-                   (rapmap (assoc-ref inputs "rapmap")))
-               (mkdir-p src)
-               (mkdir-p include)
-               (copy-recursively (string-append rapmap "/src") src)
-               (copy-recursively (string-append rapmap "/include") include)
-               (for-each delete-file '("external/install/include/rapmap/xxhash.h"
-                                       "external/install/include/rapmap/FastxParser.hpp"
-                                       "external/install/include/rapmap/concurrentqueue.h"
-                                       "external/install/include/rapmap/FastxParserThreadUtils.hpp"
-                                       "external/install/src/rapmap/FastxParser.cpp"
-                                       "external/install/src/rapmap/xxhash.c"))
-               (delete-file-recursively "external/install/include/rapmap/spdlog"))
-             #t))
+               (("getVersionMessage\\(\\)") "\"\""))))
          (add-after 'unpack 'use-system-libraries
            (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "CMakeLists.txt"
-               ;; Don't prefer static libs
-               (("SET\\(CMAKE_FIND_LIBRARY_SUFFIXES.*") "")
-               (("set\\(TBB_LIBRARIES") "message(")
-               ;; Don't download anything
-               (("DOWNLOAD_COMMAND") "DOWNLOAD_COMMAND echo")
-               (("externalproject_add\\(libcereal") "message(")
-               (("externalproject_add\\(libgff") "message(")
-               (("externalproject_add\\(libtbb") "message(")
-               (("externalproject_add\\(libdivsufsort") "message(")
-               (("externalproject_add\\(libstadenio") "message(")
-               (("externalproject_add_step\\(") "message("))
-             (substitute* "src/CMakeLists.txt"
-               (("add_dependencies") "#")
-               (("\\$\\{GAT_SOURCE_DIR\\}/external/install/lib/libstaden-read.a")
-                (string-append (assoc-ref inputs "libstadenio-for-salmon")
-                               "/lib/libstaden-read.so"))
-               (("\\$\\{GAT_SOURCE_DIR\\}/external/install/lib/libdivsufsort.a")
-                (string-append (assoc-ref inputs "libdivsufsort")
-                               "/lib/libdivsufsort.so"))
-               (("\\$\\{GAT_SOURCE_DIR\\}/external/install/lib/libdivsufsort64.a")
-                (string-append (assoc-ref inputs "libdivsufsort")
-                               "/lib/libdivsufsort64.so"))
-               (("lib/libdivsufsort.a") "/lib/libdivsufsort.so"))
-
              ;; Ensure that all headers can be found
              (setenv "CPLUS_INCLUDE_PATH"
                      (string-append (or (getenv "CPLUS_INCLUDE_PATH") "")
                                     ":"
+                                    (getcwd) "/external/install/pufferfish/include:"
                                     (assoc-ref inputs "eigen")
-                                    "/include/eigen3"))
-             #t))
-         ;; CMAKE_INSTALL_PREFIX does not exist when the tests are
-         ;; run.  It only exists after the install phase.
-         (add-after 'unpack 'fix-tests
+                                    "/include/eigen3"))))
+         (add-after 'unpack 'fix-error-message-in-tests
            (lambda _
-             (substitute* "src/CMakeLists.txt"
-               (("DTOPLEVEL_DIR=\\$\\{CMAKE_INSTALL_PREFIX")
-                "DTOPLEVEL_DIR=${GAT_SOURCE_DIR"))
-             #t)))))
+             (substitute* "cmake/TestSalmonQuasi.cmake"
+               (("SALMON_QUASI_INDEX_COMMAND")
+                "SALMON_QUASI_INDEX_CMD")))))))
     (inputs
      `(("boost" ,boost)
        ("bzip2" ,bzip2)
        ("cereal" ,cereal)
+       ("curl" ,curl)
        ("eigen" ,eigen)
-       ("rapmap" ,(origin
-                    (method git-fetch)
-                    (uri (git-reference
-                          (url "https://github.com/COMBINE-lab/RapMap")
-                          (commit (string-append "salmon-v" version))))
-                    (file-name (string-append "rapmap-salmon-v" version "-checkout"))
-                    (sha256
-                     (base32
-                      "1biplxf0csc7a8h1wf219b0vmjkvw6wk2zylhdklb577kgmihdms"))))
        ("jemalloc" ,jemalloc)
        ("libgff" ,libgff)
+       ("pufferfish" ,(origin
+                        (method git-fetch)
+                        (uri (git-reference
+                              (url "https://github.com/COMBINE-lab/pufferfish")
+                              (commit (string-append "salmon-v" version))))
+                        (file-name (git-file-name "pufferfish" version))
+                        (sha256
+                         (base32
+                          "0qb4a2nl1d59qasr17sslgxnkjd5kbk5mns4cjshrmsvkrqp995n"))))
        ("tbb" ,tbb)
-       ("libdivsufsort" ,libdivsufsort)
        ("libstadenio-for-salmon" ,libstadenio-for-salmon)
        ("xz" ,xz)
        ("zlib" ,zlib)))
