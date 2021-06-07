@@ -43112,14 +43112,14 @@ memory all at once.")
 (define-public rust-tectonic-cfg-support-0.1
   (package
     (name "rust-tectonic-cfg-support")
-    (version "0.1.2")
+    (version "0.1.3")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "tectonic_cfg_support" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1jsbk89g4s75cdav6350anls81k3lwaq6imhjb4q2c4cmr24i1cz"))))
+        (base32 "1j2ib1jwfj31kx45xdxqlqck5zikvrqaq51p81smvi4755s0417b"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
