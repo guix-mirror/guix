@@ -50,6 +50,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages multiprecision)
@@ -43413,6 +43414,38 @@ interface for fetching URLs using one of several HTTP backends.")
 types for Tectonic's pluggable I/O backend system, with
 implementations for @code{std} I/O types as well as @code{flate2} gzip
 streams.")
+    (license license:expat)))
+
+(define-public rust-tectonic-pdf-io-0.1
+  (package
+    (name "rust-tectonic-pdf-io")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tectonic_pdf_io" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0ry5g6vh54i8ih8rjlz3ci7b8gi4irsllg34pv57mcwrhwcikg6x"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cc" ,rust-cc-1)
+        ("rust-tectonic-bridge-core" ,rust-tectonic-bridge-core-0.1)
+        ("rust-tectonic-bridge-flate" ,rust-tectonic-bridge-flate-0.1)
+        ("rust-tectonic-cfg-support" ,rust-tectonic-cfg-support-0.1)
+        ("rust-tectonic-dep-support" ,rust-tectonic-dep-support-0.1))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libpng" ,libpng)))
+    (home-page "https://tectonic-typesetting.github.io/")
+    (synopsis "Xdvipdfmx's PDF, XDV, and image I/O APIs in C, as a Rust crate")
+    (description
+     "This crate is part of the Tectonic project.  It provides the PDF, XDV,
+and image I/O capabilities of XeTeX’s xdvipdfmx as a crate, currently
+providing only a C API.")
     (license license:expat)))
 
 (define-public rust-tectonic-status-base-0.1
