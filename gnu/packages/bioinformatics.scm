@@ -8414,41 +8414,57 @@ replacement for strverscmp.")
 (define-public multiqc
   (package
     (name "multiqc")
-    (version "1.5")
+    (version "1.10.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "multiqc" version))
        (sha256
         (base32
-         "02iihfl0w0hpnr4pa0sbd1y9qxrg3ycyhjp5lidkcrqh1lmzs3zy"))))
+         "0y9sgjca3bp0kk3ngry4zf4q2diyzp5bvzsx5l23nsysfbfkigm4"))))
     (build-system python-build-system)
-    (propagated-inputs
-     `(("python-jinja2" ,python-jinja2)
-       ("python-simplejson" ,python-simplejson)
-       ("python-pyyaml" ,python-pyyaml)
-       ("python-click" ,python-click)
-       ("python-spectra" ,python-spectra)
-       ("python-requests" ,python-requests)
-       ("python-markdown" ,python-markdown)
-       ("python-lzstring" ,python-lzstring)
-       ("python-matplotlib" ,python-matplotlib)
-       ("python-numpy" ,python-numpy)
-       ;; MultQC checks for the presence of nose at runtime.
-       ("python-nose" ,python-nose)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'relax-requirements
-           (lambda _
-             (substitute* "setup.py"
-               ;; MultiQC 1.5 ‘requires’ a version of python-matplotlib older
-               ;; than the one in Guix, but should work fine with 2.2.2.
-               ;; See <https://github.com/ewels/MultiQC/issues/725> and
-               ;; <https://github.com/ewels/MultiQC/issues/732> for details.
-               (("['\"]matplotlib.*?['\"]")
-                "'matplotlib'"))
-             #t)))))
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (setenv "HOME" "/tmp")
+               (let ((here (getcwd)))
+                 (copy-recursively (assoc-ref inputs "tests") "/tmp/tests")
+                 ;; ModuleNotFoundError: No module named 'multiqc.modules.ccs'
+                 (delete-file "/tmp/tests/unit_tests/test_ccs.py")
+                 (with-directory-excursion "/tmp/tests"
+                   (setenv "PYTHONPATH" (string-append here ":" (getenv "PYTHONPATH")))
+                   (invoke "python" "-munittest" "discover")))))))))
+    (propagated-inputs
+     `(("python-click" ,python-click)
+       ("python-coloredlogs" ,python-coloredlogs)
+       ("python-future" ,python-future)
+       ("python-jinja2" ,python-jinja2)
+       ("python-lzstring" ,python-lzstring)
+       ("python-markdown" ,python-markdown)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-networkx" ,python-networkx)
+       ("python-numpy" ,python-numpy)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-requests" ,python-requests)
+       ("python-rich" ,python-rich)
+       ("python-simplejson" ,python-simplejson)
+       ("python-spectra" ,python-spectra)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("tests"
+        ,(let ((commit "02272d48a382beb27489fcf9e6308a0407dc3c2e"))
+           (origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/ewels/MultiQC_TestData")
+                   (commit commit)))
+             (file-name (git-file-name "multiqc-test-data" commit))
+             (sha256
+              (base32
+               "1bha64wanrigczw4yn81din56396n61j5gqdrkslhslmskcafi91")))))))
     (home-page "https://multiqc.info")
     (synopsis "Aggregate bioinformatics analysis reports")
     (description
