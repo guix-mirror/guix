@@ -43183,6 +43183,33 @@ Rust bindings.")
 with no Rust bindings.")
     (license license:expat)))
 
+(define-public rust-tectonic-bridge-harfbuzz-0.2
+  (package
+    (name "rust-tectonic-bridge-harfbuzz")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tectonic_bridge_harfbuzz" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "01f307014bndmby6prpygzkf7wxdxfrl36pvcw7s5mika7s7bw9k"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cc" ,rust-cc-1)
+        ("rust-tectonic-bridge-graphite2" ,rust-tectonic-bridge-graphite2-0.2)
+        ("rust-tectonic-bridge-icu" ,rust-tectonic-bridge-icu-0.2)
+        ("rust-tectonic-dep-support" ,rust-tectonic-dep-support-0.1))))
+    (home-page "https://tectonic-typesetting.github.io/")
+    (synopsis "Expose the Harfbuzz C/C++ APIs to Rust/Cargo")
+    (description
+     "This crate is part of the Tectonic project.  It exposes the C API of the
+Harfbuzz text shaping library the Rust/Cargo build framework, with no Rust
+bindings.")
+    (license license:expat)))
+
 (define-public rust-tectonic-bridge-icu-0.2
   (package
     (name "rust-tectonic-bridge-icu")
