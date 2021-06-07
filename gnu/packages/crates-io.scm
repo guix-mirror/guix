@@ -43350,6 +43350,34 @@ process.")
 engine as a reusable crate.")
     (license license:expat)))
 
+(define-public rust-tectonic-engine-xdvipdfmx-0.1
+  (package
+    (name "rust-tectonic-engine-xdvipdfmx")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tectonic_engine_xdvipdfmx" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "00kjsxzlzlc8lmh8mhb5v6iw1lb7rq09ski2mjzlyw604dcq1k3p"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cbindgen" ,rust-cbindgen-0.16)
+        ("rust-cc" ,rust-cc-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-tectonic-bridge-core" ,rust-tectonic-bridge-core-0.1)
+        ("rust-tectonic-errors" ,rust-tectonic-errors-0.2)
+        ("rust-tectonic-pdf-io" ,rust-tectonic-pdf-io-0.1))))
+    (home-page "https://tectonic-typesetting.github.io/")
+    (synopsis "@code{xdvipdfmx} program as a reusable crate")
+    (description
+     "This crate is part of the Tectonic project.  It provides XeTeX’s
+@code{xdvipdfmx} program as a reusable crate.")
+    (license license:expat)))
+
 (define-public rust-tectonic-errors-0.2
   (package
     (name "rust-tectonic-errors")
