@@ -11780,8 +11780,34 @@ for arbitrary structs.")
         ("rust-pretty-assertions" ,rust-pretty-assertions-0.2)
         ("rust-skeptic" ,rust-skeptic-0.9))))))
 
+(define-public rust-derive-builder-core-0.10
+  (package
+    (name "rust-derive-builder-core")
+    (version "0.10.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "derive_builder_core" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1r9ngcrfcvqv5l5p86bzg9v863bjf5nlmippin1fv1v1iy2idrk6"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-darling" ,rust-darling-0.12)
+        ("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/colin-kiegel/rust-derive-builder")
+    (synopsis "Internal helper library for @code{rust-derive-builder}")
+    (description
+     "Internal helper library for @code{rust-derive-builder}.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-derive-builder-core-0.9
   (package
+    (inherit rust-derive-builder-core-0.10)
     (name "rust-derive-builder-core")
     (version "0.9.0")
     (source
@@ -11793,7 +11819,6 @@ for arbitrary structs.")
        (sha256
         (base32
          "1vwb8nwls4lhd2yiyj87kmwws4mmfqfrjcr0pk09b11c6wzfm497"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-darling" ,rust-darling-0.10)
@@ -11802,12 +11827,7 @@ for arbitrary structs.")
         ("rust-quote" ,rust-quote-1)
         ("rust-syn" ,rust-syn-1))
        #:cargo-development-inputs
-       (("rust-pretty-assertions" ,rust-pretty-assertions-0.6))))
-    (home-page "https://github.com/colin-kiegel/rust-derive-builder")
-    (synopsis "Internal helper library for @code{rust-derive-builder}")
-    (description
-     "Internal helper library for @code{rust-derive-builder}.")
-    (license (list license:expat license:asl2.0))))
+       (("rust-pretty-assertions" ,rust-pretty-assertions-0.6))))))
 
 (define-public rust-derive-builder-core-0.2
   (package
