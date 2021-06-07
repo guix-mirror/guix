@@ -16991,18 +16991,20 @@ and bit flag values.")
                   (ice-9 ftw)
                   (srfi srfi-1)
                   (srfi srfi-26))
-       #:phases (modify-phases %standard-phases
-                  (replace 'check
-                    (lambda _
-                      (let ((cwd (getcwd)))
-                        (setenv "PYTHONPATH"
-                                (string-append
-                                 cwd "/build/"
-                                 (find (cut string-prefix? "lib" <>)
-                                       (scandir (string-append cwd "/build")))
-                                 ":"
-                                 (getenv "PYTHONPATH")))
-                        (invoke "python" "-m" "pytest")))))))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (let ((cwd (getcwd)))
+                 (setenv "PYTHONPATH"
+                         (string-append
+                          cwd "/build/"
+                          (find (cut string-prefix? "lib" <>)
+                                (scandir (string-append cwd "/build")))
+                          ":"
+                          (getenv "PYTHONPATH")))
+                 (invoke "python" "-m" "pytest"))))))))
     (native-inputs
      `(("python-coverage" ,python-coverage)
        ("python-hypothesis" ,python-hypothesis)
