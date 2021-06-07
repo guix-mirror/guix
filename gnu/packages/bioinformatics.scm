@@ -9427,19 +9427,19 @@ accurate as existing quantification tools.")
 (define-public libgff
   (package
     (name "libgff")
-    (version "1.0")
+    (version "2.0.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/Kingsford-Group/libgff")
+                    (url "https://github.com/COMBINE-lab/libgff")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0n6vfjnq7a2mianipscbshrvbncss8z4zkgkbjw754p9043nfkps"))))
+                "0ds9r22y8bl1rj7bhl0003kgmm6aam7g8l41mnjfrzw15d9zf9k4"))))
     (build-system cmake-build-system)
     (arguments `(#:tests? #f))          ; no tests included
-    (home-page "https://github.com/Kingsford-Group/libgff")
+    (home-page "https://github.com/COMBINE-lab/libgff")
     (synopsis "Parser library for reading/writing GFF files")
     (description "This is a simple \"libraryfication\" of the GFF/GTF parsing
 code that is used in the Cufflinks codebase.  The goal of this library is to
