@@ -43447,8 +43447,34 @@ writing colored text to a terminal.")
      "This package gets the size of your Linux or Windows terminal.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-terminfo-0.7
+  (package
+    (name "rust-terminfo")
+    (version "0.7.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "terminfo" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0zkln56bsixjad6rsfy9mm15d9ygm89i63cn3gn685hjwrvik5vn"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-dirs" ,rust-dirs-2)
+        ("rust-fnv" ,rust-fnv-1)
+        ("rust-nom" ,rust-nom-5)
+        ("rust-phf" ,rust-phf-0.8)
+        ("rust-phf-codegen" ,rust-phf-codegen-0.8))))
+    (home-page "https://github.com/meh/rust-terminfo")
+    (synopsis "Terminal information")
+    (description "Terminal capabilities with type-safe getters.")
+    (license license:wtfpl2)))
+
 (define-public rust-terminfo-0.6
   (package
+    (inherit rust-terminfo-0.7)
     (name "rust-terminfo")
     (version "0.6.1")
     (source
@@ -43460,17 +43486,12 @@ writing colored text to a terminal.")
        (sha256
         (base32
          "17k8vqvicd6yg0iqmkjnxjhz8h8pknv86r03nq3f3ayjmxdhclcf"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-fnv" ,rust-fnv-1)
         ("rust-nom" ,rust-nom-4)
         ("rust-phf" ,rust-phf-0.7)
-        ("rust-phf-codegen" ,rust-phf-codegen-0.7))))
-    (home-page "https://github.com/meh/rust-terminfo")
-    (synopsis "Terminal information")
-    (description "Terminal capabilities with type-safe getters.")
-    (license license:wtfpl2)))
+        ("rust-phf-codegen" ,rust-phf-codegen-0.7))))))
 
 (define-public rust-termion-1
   (package
