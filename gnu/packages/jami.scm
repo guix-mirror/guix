@@ -64,11 +64,9 @@
 
 (define %jami-version "20210326.1.cfba013")
 
-(define* (jami-source #:key keep-contrib-patches?)
-  "Return an origin object of the tarball release sources archive of Jami.
-When KEEP-CONTRIB-PATCHES? is #t, do not completely remove the contrib
-subdirectory, which contains patches to be applied to some of the dependencies
-of Jami."
+(define %jami-sources
+  ;; Return an origin object of the tarball release sources archive of the
+  ;; Jami project.
   (origin
     (method url-fetch)
     (uri (string-append "https://dl.jami.net/release/tarballs/jami_"
@@ -79,11 +77,9 @@ of Jami."
      `(begin
         ;; Delete multiple MiBs of bundled tarballs.  The contrib directory
         ;; contains the custom patches for pjproject and other libraries used
-        ;; by Savoir-faire Linux.
-        (if ,keep-contrib-patches?
-            (delete-file-recursively "daemon/contrib/tarballs")
-            (delete-file-recursively "daemon/contrib"))
-        ;; Remove code from unused Jami clients.
+        ;; by Jami.
+        (delete-file-recursively "daemon/contrib/tarballs")
+        ;; Remove the git submodule directories of unused Jami clients.
         (for-each delete-file-recursively '("client-android"
                                             "client-electron"
                                             "client-ios"
@@ -93,18 +89,14 @@ of Jami."
      (base32
       "1h0avma8bdzyznkz39crjyv2888bii4f49md15jg7970dyp5pdyz"))))
 
-(define %sfl-patches (jami-source #:keep-contrib-patches? #t))
-
-(define %jami-sources (jami-source))
-
-;; Savoir-faire Linux maintains a set of patches for some key dependencies
-;; (currently pjproject and ffmpeg) of Jami that haven't yet been integrated
-;; upstream.  This procedure simplifies the process of applying these patches.x
-(define jami-apply-dependency-patches
+;; Jami maintains a set of patches for some key dependencies (currently
+;; pjproject and ffmpeg) of Jami that haven't yet been integrated upstream.
+;; This procedure simplifies the process of applying them.
+(define jami-apply-custom-patches
   '(lambda* (#:key inputs dep-name patches)
-     (let ((patches-directory "sfl-patches"))
+     (let ((patches-directory "patches"))
        (mkdir-p patches-directory)
-       (invoke "tar" "-xvf" (assoc-ref inputs "sfl-patches")
+       (invoke "tar" "-xvf" (assoc-ref inputs "jami-sources")
                "-C" patches-directory
                "--strip-components=5"
                (string-append "ring-project/daemon/contrib/src/"
@@ -136,7 +128,7 @@ of Jami."
                         "pjproject-correct-the-cflags-field.patch"
                         "pjproject-fix-pkg-config-ldflags.patch"))))
     (native-inputs
-     `(("sfl-patches" ,%sfl-patches)
+     `(("jami-sources" ,%jami-sources)
        ,@(package-native-inputs pjproject)))
     (arguments
      (substitute-keyword-arguments (package-arguments pjproject)
@@ -144,7 +136,7 @@ of Jami."
         `(modify-phases ,phases
            (add-after 'make-source-files-writable 'apply-patches
              (lambda* (#:key inputs #:allow-other-keys)
-               (,jami-apply-dependency-patches
+               (,jami-apply-custom-patches
                 #:inputs inputs
                 #:dep-name "pjproject"
                 #:patches
@@ -387,7 +379,7 @@ of Jami."
   (package/inherit ffmpeg
     (name "ffmpeg-jami")
     (native-inputs
-     `(("sfl-patches" ,%sfl-patches)
+     `(("jami-sources" ,%jami-sources)
        ("libiconv" ,libiconv)
        ,@(package-native-inputs ffmpeg)))
     (supported-systems '("x86_64-linux" "i686-linux"
@@ -405,19 +397,15 @@ of Jami."
                 (for-each make-file-writable (find-files "."))))
             (add-after 'unpack 'apply-patches
               (lambda* (#:key inputs #:allow-other-keys)
-                (let ((jami-apply-dependency-patches
-                       ,jami-apply-dependency-patches))
-                  ;; These patches come from:
-                  ;; "ring-project/daemon/contrib/src/ffmpeg/rules.mak".
-                  (jami-apply-dependency-patches
-                   #:inputs inputs
-                   #:dep-name "ffmpeg"
-                   #:patches
-                   '("remove-mjpeg-log"
-                     "change-RTCP-ratio"
-                     "rtp_ext_abs_send_time"
-                     "libopusdec-enable-FEC"
-                     "libopusenc-enable-FEC"))))))))))))
+                ;; These patches come from:
+                ;; "ring-project/daemon/contrib/src/ffmpeg/rules.mak".
+                (,jami-apply-custom-patches
+                 #:inputs inputs #:dep-name "ffmpeg"
+                 #:patches '("remove-mjpeg-log"
+                             "change-RTCP-ratio"
+                             "rtp_ext_abs_send_time"
+                             "libopusdec-enable-FEC"
+                             "libopusenc-enable-FEC")))))))))))
 
 (define-public libring
   (package
