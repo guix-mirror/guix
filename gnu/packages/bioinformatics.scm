@@ -4715,7 +4715,7 @@ experiments and provide highly stable thresholds based on reproducibility.")
 (define-public jellyfish
   (package
     (name "jellyfish")
-    (version "2.2.10")
+    (version "2.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/gmarcais/Jellyfish/"
@@ -4723,14 +4723,15 @@ experiments and provide highly stable thresholds based on reproducibility.")
                                   "/jellyfish-" version ".tar.gz"))
               (sha256
                (base32
-                "1k4pc3fvv6w1km2yph4m5sd78fbxp21d6xyzgmy0gjihzc6mb249"))))
+                "0npa62wzasdibas5zp3n8j3armsci4kyvh0jw7jr0am4gg7vg5g1"))))
     (build-system gnu-build-system)
     (outputs '("out"      ;for library
                "ruby"     ;for Ruby bindings
                "python")) ;for Python bindings
     (arguments
      `(#:configure-flags
-       (list (string-append "--enable-ruby-binding="
+       (list "--without-sse" ; configure script probes for CPU features when SSE is enabled.
+             (string-append "--enable-ruby-binding="
                             (assoc-ref %outputs "ruby"))
              (string-append "--enable-python-binding="
                             (assoc-ref %outputs "python")))
@@ -4740,13 +4741,12 @@ experiments and provide highly stable thresholds based on reproducibility.")
            (lambda _
              ;; generator_manager.hpp either uses /bin/sh or $SHELL
              ;; to run tests.
-             (setenv "SHELL" (which "bash"))
-             #t)))))
+             (setenv "SHELL" (which "bash")))))))
     (native-inputs
      `(("bc" ,bc)
        ("time" ,time)
        ("ruby" ,ruby)
-       ("python" ,python-2)
+       ("python" ,python-wrapper)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("htslib" ,htslib)))
@@ -4762,9 +4762,8 @@ command, or queried for specific k-mers with @code{jellyfish query}.")
     (home-page "http://www.genome.umd.edu/jellyfish.html")
     ;; JELLYFISH seems to be 64-bit only.
     (supported-systems '("x86_64-linux" "aarch64-linux" "mips64el-linux"))
-    ;; The combined work is published under the GPLv3 or later.  Individual
-    ;; files such as lib/jsoncpp.cpp are released under the Expat license.
-    (license (list license:gpl3+ license:expat))))
+    ;; One of these licenses may be picked
+    (license (list license:gpl3+ license:bsd-3))))
 
 (define-public khmer
   (package
