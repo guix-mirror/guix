@@ -10371,6 +10371,13 @@ once.  This package provides tools to perform Drop-seq analyses.")
      `(#:parallel-tests? #f             ; not supported
        #:phases
        (modify-phases %standard-phases
+         ;; See https://github.com/BIMSBbioinfo/pigx_rnaseq/issues/96
+         (add-after 'unpack 'use-latest-salmon
+           (lambda _
+             (substitute* "snakefile.py"
+               (("\"sa.bin\"") "\"pos.bin\""))
+             (substitute* "tests/test_salmon/test_salmon_index.sh.in"
+               (("sa.bin") "pos.bin"))))
          ;; "test.sh" runs STAR, which requires excessive amounts of memory.
          (add-after 'unpack 'disable-resource-intensive-test
            (lambda _
