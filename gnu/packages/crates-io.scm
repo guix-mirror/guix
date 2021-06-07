@@ -43159,6 +43159,30 @@ FreeType font rendering engine within the Rust/Cargo build framework, with no
 Rust bindings.")
     (license license:expat)))
 
+(define-public rust-tectonic-bridge-graphite2-0.2
+  (package
+    (name "rust-tectonic-bridge-graphite2")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tectonic_bridge_graphite2" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1qsq337y4p3z832kmn2xcaj6xh3z6ngr0izn4jgdjrymnsq1ac81"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-tectonic-dep-support" ,rust-tectonic-dep-support-0.1))))
+    (home-page "https://tectonic-typesetting.github.io/")
+    (synopsis "Expose the graphite2 library to Rust/Cargo")
+    (description
+     "This crate is part of the Tectonic project.  It exposes the C API of the
+@code{graphite2} ``smart font`` system within the Rust/Cargo build framework,
+with no Rust bindings.")
+    (license license:expat)))
+
 (define-public rust-tectonic-bridge-icu-0.2
   (package
     (name "rust-tectonic-bridge-icu")
