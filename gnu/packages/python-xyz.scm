@@ -13749,6 +13749,56 @@ is made as zipfile like as possible.")
 (define-public python2-rarfile
   (package-with-python2 python-rarfile))
 
+(define-public python-rich
+  (package
+    (name "python-rich")
+    (version "10.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "rich" version))
+              (sha256
+               (base32
+                "1z5m5brcdf3vndpavcqj5nl35xby4x5rfj48klhwqycfqf3g9cqp"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs tests? #:allow-other-keys)
+             (when tests?
+               (copy-recursively (string-append
+                                  (assoc-ref inputs "tests") "/tests")
+                                 "tests")
+               (invoke "python" "-m" "pytest" "-vv")))))))
+    (propagated-inputs
+     `(("python-attrs" ,python-attrs)
+       ("python-colorama" ,python-colorama)
+       ("python-commonmark" ,python-commonmark)
+       ("python-ipywidgets" ,python-ipywidgets)
+       ("python-pygments" ,python-pygments)
+       ("python-typing-extensions" ,python-typing-extensions)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("tests"
+        ;; The release on pypi comes without tests.  We can't build from this
+        ;; checkout, though, because installation requires an invocation of
+        ;; poetry.
+        ,(origin
+           (method git-fetch)
+           (uri (git-reference
+                 (url "https://github.com/willmcgugan/rich")
+                 (commit (string-append "v" version))))
+           (file-name (git-file-name name version))
+           (sha256
+            (base32
+             "19f4svb363sn5708qkpa6lakmiwzyb25h8kmh7bqrsbbrvi9hr70"))))))
+    (home-page "https://github.com/willmcgugan/rich")
+    (synopsis "Render rich text and more to the terminal")
+    (description
+     "This is a Python package for rendering rich text, tables, progress bars,
+syntax highlighting, markdown and more to the terminal.")
+    (license license:expat)))
+
 (define-public python-magic
   (package
     (name "python-magic")
