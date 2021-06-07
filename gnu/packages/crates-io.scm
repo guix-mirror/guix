@@ -43109,6 +43109,32 @@ memory all at once.")
       "Targeting utilities for compilers and related tools")
     (license license:asl2.0)))
 
+(define-public rust-tectonic-bridge-flate-0.1
+  (package
+    (name "rust-tectonic-bridge-flate")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tectonic_bridge_flate" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0fa1jj1zcm9grlfrrdd1r2kjpzblfbrwv6a4vasczng93xiyprxx"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cbindgen" ,rust-cbindgen-0.16)
+        ("rust-flate2" ,rust-flate2-1)
+        ("rust-libc" ,rust-libc-0.2))))
+    (home-page "https://tectonic-typesetting.github.io/")
+    (synopsis "Expose flate compression to the Tectonic C code")
+    (description
+     "This crate is part of the Tectonic project.  It provides a limited C API
+to the @code{flate2} crate.  This API is consumed by other Tectonic crates
+that include C code that require flate2 functionality.")
+    (license license:expat)))
+
 (define-public rust-tectonic-bridge-freetype2-0.2
   (package
     (name "rust-tectonic-bridge-freetype2")
