@@ -715,15 +715,14 @@ blanks grouped by language.")
 (define-public watchexec
   (package
     (name "watchexec")
-    (version "1.14.1")
+    (version "1.16.1")
     (source
      (origin
        (method url-fetch)
-       (uri (crate-uri "watchexec" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
+       (uri (crate-uri "watchexec-cli" version))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1vqaa462sjpzi0crh12ixqc2wa5bblirc129pnj8jr8iz3xw3gvd"))))
+        (base32 "1wp424gzw1zmax5yy5gya15knl24rjx8gi9c7palvq807q3cnj65"))))
     (build-system cargo-build-system)
     (arguments
      `(#:phases
@@ -734,44 +733,25 @@ blanks grouped by language.")
                     (zsh (string-append out "/share/zsh/site-functions/_watchexec"))
                     (doc (string-append out "/share/doc/watchexec-" ,version)))
                (mkdir-p (dirname zsh))
-               (copy-file "completions/zsh" zsh)
-               (install-file "README.md" doc)
-               #t))))
+               ;; FIXME: The crates.io source does not provide zsh
+               ;; completions.  But the GitHub source does not compile.
+               ;;
+               ;; (copy-file "completions/zsh" zsh)
+               (install-file "README.md" doc)))))
        #:cargo-inputs
-       (("rust-embed-resource" ,rust-embed-resource-1)
-        ("rust-derive-builder" ,rust-derive-builder-0.9)
-        ("rust-env-logger" ,rust-env-logger-0.7)
-        ("rust-glob" ,rust-glob-0.3)
-        ("rust-globset" ,rust-globset-0.4)
-        ("rust-lazy-static" ,rust-lazy-static-1)
+       (("rust-clap" ,rust-clap-2)
+        ("rust-embed-resource" ,rust-embed-resource-1)
+        ("rust-env-logger" ,rust-env-logger-0.8)
         ("rust-log" ,rust-log-0.4)
-        ("rust-nix" ,rust-nix-0.17)
-        ("rust-notify" ,rust-notify-4)
-        ("rust-walkdir" ,rust-walkdir-2))))
+        ("rust-watchexec" ,rust-watchexec-1))
+       #:cargo-development-inputs
+       (("rust-assert-cmd" ,rust-assert-cmd-1)
+        ("rust-insta" ,rust-insta-1))))
     (home-page "https://github.com/watchexec/watchexec")
     (synopsis "Executes commands in response to file modifications")
     (description
-     "@command{watchexec} is a simple, standalone tool that watches a path and runs
-a command whenever it detects modifications.
-
-Example use cases:
-@itemize @bullet
-@item Automatically run unit tests
-@item Run linters/syntax checkers
-@end itemize
-
-Features:
-@itemize @bullet
-@item Coalesces multiple file system events into one, for editors that
-use swap/backup files during saving
-@item By default, uses @code{.gitignore} and @code{.ignore} to determine which
-files to ignore notifications for
-@item Supports watching files with a specific extension
-@item Supports filtering/ignoring events based on glob patterns
-@item Launches child processes in a new process group
-@item Sets environment variables that allow the executed program to learn
-the details of how it was triggered.
-@end itemize")
+     "@command{watchexec} is a simple, standalone tool that watches a path and
+runs a command whenever it detects modifications.")
     (license license:asl2.0)))
 
 (define-public rust-cargo-c
