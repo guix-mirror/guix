@@ -21255,6 +21255,42 @@ youtube-dl backends are supported.  It is possible to create download profiles
 depending on the downloaded URL.")
     (license license:gpl3+)))
 
+(define-public emacs-ytel
+  ;; No tagged releases.  Using version from main file.
+  (let ((commit "d40bc7ead8d4d7e4d16b03b66a93d63bef51cc5f")
+        (revision "0"))
+    (package
+      (name "emacs-ytel")
+      (version (git-version "0.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/grastello/ytel")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0pxzfsxzrpv59dssrgx2mmwkm6rzk49ffjkgsa3wks7rdyfil3kf"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-exec-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((curl (assoc-ref inputs "curl")))
+                 (substitute* "ytel.el"
+                   (("\"curl\"") (string-append "\"" curl "/bin/curl\"")))))))))
+      (inputs
+       `(("curl" ,curl)))
+      (home-page "https://github.com/grastello/ytel")
+      (synopsis "Youtube front-end for Emacs")
+      (description
+       "This package provides a major mode to search YouTube videos via an
+Elfeed-like buffer.  Information about videos displayed in this buffer can be
+extracted and manipulated by user-defined functions to do various things such
+as playing them in some video player, or downloading them.")
+      (license license:gpl3+))))
+
 (define-public emacs-org-web-tools
   (package
     (name "emacs-org-web-tools")
