@@ -11720,8 +11720,31 @@ Instead, enable the @code{derive} feature of the @code{arbitrary} crate.")
        (sha256
         (base32 "1rp0z4k0j5ip0bx6dssg97l4q6bakhf6lm5h1lpr3p3kwjsi585i"))))))
 
+(define-public rust-derive-builder-0.10
+  (package
+    (name "rust-derive-builder")
+    (version "0.10.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "derive_builder" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0c2v6vi0lih3fwwgwx92pspcmkrjz8wxfqwhmr01060ipvg04cni"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-derive-builder-macro" ,rust-derive-builder-macro-0.10))))
+    (home-page "https://github.com/colin-kiegel/rust-derive-builder")
+    (synopsis "Builder pattern for arbitrary structs")
+    (description "Rust macro to automatically implement the builder pattern
+for arbitrary structs.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-derive-builder-0.9
   (package
+    (inherit rust-derive-builder-0.10)
     (name "rust-derive-builder")
     (version "0.9.0")
     (source
@@ -11733,7 +11756,6 @@ Instead, enable the @code{derive} feature of the @code{arbitrary} crate.")
         (sha256
           (base32
             "1h4f8vnggmpyw27fznl3cpyjrzz1nw5xrxx6ca3zcb3z54hqcrd2"))))
-    (build-system cargo-build-system)
     (arguments
       `(#:cargo-inputs
         (("rust-compiletest-rs" ,rust-compiletest-rs-0.3)
@@ -11746,12 +11768,7 @@ Instead, enable the @code{derive} feature of the @code{arbitrary} crate.")
          ("rust-skeptic" ,rust-skeptic-0.13)
          ("rust-syn" ,rust-syn-1))
         #:cargo-development-inputs
-        (("rust-pretty-assertions" ,rust-pretty-assertions-0.6))))
-    (home-page "https://github.com/colin-kiegel/rust-derive-builder")
-    (synopsis "Builder pattern for arbitrary structs")
-    (description "Rust macro to automatically implement the builder pattern
-for arbitrary structs.")
-    (license (list license:expat license:asl2.0))))
+        (("rust-pretty-assertions" ,rust-pretty-assertions-0.6))))))
 
 (define-public rust-derive-builder-0.5
   (package
