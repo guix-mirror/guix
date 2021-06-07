@@ -43317,6 +43317,39 @@ providing whatever fiddly features are needed to enable the Tectonic build
 process.")
     (license license:expat)))
 
+(define-public rust-tectonic-engine-xetex-0.1
+  (package
+    (name "rust-tectonic-engine-xetex")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tectonic_engine_xetex" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0a0ycybx5nng79dm7pcy1ymvlv5wfgiaik0a7f7jz9p6bsalamm3"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cbindgen" ,rust-cbindgen-0.16)
+        ("rust-cc" ,rust-cc-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-tectonic-bridge-core" ,rust-tectonic-bridge-core-0.1)
+        ("rust-tectonic-bridge-flate" ,rust-tectonic-bridge-flate-0.1)
+        ("rust-tectonic-bridge-graphite2" ,rust-tectonic-bridge-graphite2-0.2)
+        ("rust-tectonic-bridge-harfbuzz" ,rust-tectonic-bridge-harfbuzz-0.2)
+        ("rust-tectonic-cfg-support" ,rust-tectonic-cfg-support-0.1)
+        ("rust-tectonic-errors" ,rust-tectonic-errors-0.2)
+        ("rust-tectonic-pdf-io" ,rust-tectonic-pdf-io-0.1)
+        ("rust-tectonic-xetex-layout" ,rust-tectonic-xetex-layout-0.1))))
+    (home-page "https://tectonic-typesetting.github.io/")
+    (synopsis "XeTeX engine as a reusable crate")
+    (description
+     "This crate is part of the Tectonic project.  It provides the XeTeX
+engine as a reusable crate.")
+    (license license:expat)))
+
 (define-public rust-tectonic-errors-0.2
   (package
     (name "rust-tectonic-errors")
