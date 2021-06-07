@@ -50,7 +50,7 @@ Führen Sie @command{info \"(guix.de) Aufruf von guix import\"} aus, um mehr
 Informationen zu bekommen.")
          (zh "新的 @command{guix import egg} 命令能让贡献者从一个CHICKEN egg生
 成一个包装或包装样板。
-x
+
 @example
 guix import egg sourcehut
 @end example
