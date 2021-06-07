@@ -10357,7 +10357,7 @@ once.  This package provides tools to perform Drop-seq analyses.")
 (define-public pigx-rnaseq
   (package
     (name "pigx-rnaseq")
-    (version "0.0.13")
+    (version "0.0.17")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_rnaseq/"
@@ -10365,25 +10365,26 @@ once.  This package provides tools to perform Drop-seq analyses.")
                                   "/pigx_rnaseq-" version ".tar.gz"))
               (sha256
                (base32
-                "0z9zid2c8q16lfzlnjd63nparknhv31qgv4h79algmvhkakm2pgk"))))
+                "0k9zj50bij3sjwq08v8l8waddcx8k66m3vdq8mx5vc23p19qz42s"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-tests? #f             ; not supported
        #:phases
        (modify-phases %standard-phases
-         ;; See https://github.com/BIMSBbioinfo/pigx_rnaseq/issues/96
-         (add-after 'unpack 'use-latest-salmon
-           (lambda _
-             (substitute* "snakefile.py"
-               (("\"sa.bin\"") "\"pos.bin\""))
-             (substitute* "tests/test_salmon/test_salmon_index.sh.in"
-               (("sa.bin") "pos.bin"))))
-         ;; "test.sh" runs STAR, which requires excessive amounts of memory.
+         ;; "test.sh" runs the whole pipeline, which takes a long time and
+         ;; might fail due to OOM.  The MultiQC is also resource intensive.
          (add-after 'unpack 'disable-resource-intensive-test
            (lambda _
              (substitute* "Makefile.in"
                (("^  tests/test_multiqc/test.sh") "")
-               (("^  test.sh") "")))))))
+               (("^  test.sh") ""))))
+         (add-before 'check 'set-timezone
+           ;; The readr package is picky about timezones.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "TZ" "UTC+1")
+             (setenv "TZDIR"
+                     (string-append (assoc-ref inputs "tzdata")
+                                    "/share/zoneinfo")))))))
     (inputs
      `(("coreutils" ,coreutils)
        ("sed" ,sed)
@@ -10398,8 +10399,9 @@ once.  This package provides tools to perform Drop-seq analyses.")
        ("r-minimal" ,r-minimal)
        ("r-rmarkdown" ,r-rmarkdown)
        ("r-ggplot2" ,r-ggplot2)
+       ("r-ggpubr" ,r-ggpubr)
        ("r-ggrepel" ,r-ggrepel)
-       ("r-gprofiler" ,r-gprofiler)
+       ("r-gprofiler2" ,r-gprofiler2)
        ("r-deseq2" ,r-deseq2)
        ("r-dt" ,r-dt)
        ("r-knitr" ,r-knitr)
@@ -10417,7 +10419,10 @@ once.  This package provides tools to perform Drop-seq analyses.")
        ("pandoc" ,pandoc)
        ("pandoc-citeproc" ,pandoc-citeproc)
        ("python-wrapper" ,python-wrapper)
+       ("python-deeptools" ,python-deeptools)
        ("python-pyyaml" ,python-pyyaml)))
+    (native-inputs
+     `(("tzdata" ,tzdata)))
     (home-page "https://bioinformatics.mdc-berlin.de/pigx/")
     (synopsis "Analysis pipeline for RNA sequencing experiments")
     (description "PiGX RNAseq is an analysis pipeline for preprocessing and
