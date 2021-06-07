@@ -43156,6 +43156,24 @@ with @code{CARGO_CFG_TARGET_*} variables.")
 error type and utilities.")
     (license license:expat)))
 
+(define-public rust-tectonic-errors-0.1
+  (package
+    (inherit rust-tectonic-errors-0.2)
+    (name "rust-tectonic-errors")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tectonic_errors" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0x5wnxj3qvi4j45zm6a3ihdwikgg48vygi0vp3p64sicnqadcv6n"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-anyhow" ,rust-anyhow-1))))))
+
 (define-public rust-tectonic-xdv-0.1
   (package
     (name "rust-tectonic-xdv")
