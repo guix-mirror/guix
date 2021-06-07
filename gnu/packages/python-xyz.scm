@@ -16977,13 +16977,13 @@ and bit flag values.")
 (define-public python-attrs
   (package
     (name "python-attrs")
-    (version "19.3.0")
+    (version "21.2.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "attrs" version))
               (sha256
                (base32
-                "0wky4h28n7xnr6xv69p9z6kv8bzn50d10c3drmd9ds8gawbcxdzp"))))
+                "1yzmwi5d197p0qhl7rl4xi9q1w8mk9i3zn6hrl22knbcrb1slspg"))))
     (build-system python-build-system)
     (arguments
      `(#:modules ((guix build utils)
@@ -17027,6 +17027,13 @@ protocols.")
   (package
     (inherit python-attrs)
     (name "python-attrs-bootstrap")
+    (version "19.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "attrs" version))
+              (sha256
+               (base32
+                "0wky4h28n7xnr6xv69p9z6kv8bzn50d10c3drmd9ds8gawbcxdzp"))))
     (native-inputs `())
     (arguments `(#:tests? #f))))
 
