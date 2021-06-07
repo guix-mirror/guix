@@ -601,8 +601,7 @@ scripts/input/X11/C/Shell/HTML/Dired): 49KB.
 (define-public ghostwriter
   (package
     (name "ghostwriter")
-    ;; XXX We use a release candidate to fix incompatibility with Qt 5.15.
-    (version "2.0.0-rc4")
+    (version "2.0.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -611,7 +610,7 @@ scripts/input/X11/C/Shell/HTML/Dired): 49KB.
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "07547503a209hc0fcg902w3x0s1m899c10nj3gqz3hak0cmrasi3"))))
+                "07jrsh6549zypdnyy7g6yvggrz5mlya9jm7zmkjmvl7s0min3mbc"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
