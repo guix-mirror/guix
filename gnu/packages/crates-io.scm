@@ -43133,6 +43133,29 @@ memory all at once.")
 with @code{CARGO_CFG_TARGET_*} variables.")
     (license license:expat)))
 
+(define-public rust-tectonic-errors-0.2
+  (package
+    (name "rust-tectonic-errors")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tectonic_errors" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1cqy8ydsm1gi094l5hlkaq8lmkmgg6mivqpkh4q6h61lr4fhpckg"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-anyhow" ,rust-anyhow-1))))
+    (home-page "https://tectonic-typesetting.github.io/")
+    (synopsis "Boxed error type for Tectonic, with supporting utilities")
+    (description
+     "This crate is part of the Tectonic project.  It provides a basic boxed
+error type and utilities.")
+    (license license:expat)))
+
 (define-public rust-tectonic-xdv-0.1
   (package
     (name "rust-tectonic-xdv")
