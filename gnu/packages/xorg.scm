@@ -54,6 +54,7 @@
   #:use-module (guix build-system python)
   #:use-module (guix utils)
   #:use-module (gnu packages)
+  #:use-module (gnu packages aidc)
   #:use-module (gnu packages anthy)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages bison)
@@ -69,6 +70,7 @@
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages inkscape)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
@@ -6300,15 +6302,15 @@ basic eye-candy effects.")
 (define-public xpra
   (package
     (name "xpra")
-    (version "4.0.6")
+    (version "4.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.xpra.org/src/xpra-"
-                           version ".tar.xz"))
+                           version ".tar.gz"))
        (sha256
-        (base32 "1s49y2s75a8a70vj0micnmpic5zv1n32yjxy8fkxsqa6j5njyrww"))
-       (patches (search-patches "xpra-4.0.1-systemd-run.patch"))))
+        (base32 "1yg9asi3i3wf73ibc006xv3g77axvbyp81lyinwq27syabh30i1a"))
+       (patches (search-patches "xpra-4.2-systemd-run.patch"))))
     (build-system python-build-system)
     ;; see also http://xpra.org/trac/wiki/Dependencies
     (inputs `(
@@ -6347,6 +6349,7 @@ basic eye-candy effects.")
               ("python-lz4" ,python-lz4) ; Faster compression than zlib.
               ("python-netifaces" ,python-netifaces)))
     (native-inputs `(("pkg-config" ,pkg-config)
+                     ("pandoc" ,pandoc)
                      ("python-cython" ,python-cython)))
     (arguments
      `(#:configure-flags '("--without-Xdummy"
@@ -6383,7 +6386,7 @@ basic eye-candy effects.")
                  (close-port file)))
              ;; Add Xorg module paths.
              (append-to-file
-              "etc/xpra/xorg.conf"
+              "fs/etc/xpra/xorg.conf"
               (string-append "\nSection \"Files\"\nModulePath \""
                              (assoc-ref inputs "xf86-video-dummy") "/lib/xorg/modules,"
                              (assoc-ref inputs "xf86-input-mouse") "/lib/xorg/modules,"
@@ -6391,8 +6394,8 @@ basic eye-candy effects.")
                              (assoc-ref inputs "xorg-server") "/lib/xorg/modules\"\n"
                              "EndSection\n\n"))
              (substitute* '("xpra/scripts/config.py"
-                            "etc/xpra/conf.d/60_server.conf.in"
-                            "unittests/unit/server/mixins/notification_test.py")
+                            "fs/etc/xpra/conf.d/60_server.conf.in"
+                            "tests/unittests/unit/server/mixins/notification_test.py")
                ;; The trailing -- is intentional, so we only replace it inside
                ;; a command line.
                (("dbus-launch --")
