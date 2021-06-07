@@ -10935,6 +10935,28 @@ cases include:
 @end enumerate\n")
     (license license:expat)))
 
+(define-public python-mappy
+  (package
+   (name "python-mappy")
+   (version "2.18")
+   (source (origin
+            (method url-fetch)
+            (uri (pypi-uri "mappy" version))
+            (sha256
+             (base32
+              "1a05p7rkmxa6qhm108na8flzj2v45jab06drk59kzk1ip2sgvzqq"))))
+   (build-system python-build-system)
+   (native-inputs
+    `(("python-cython" ,python-cython)))
+   (inputs
+    `(("zlib" ,zlib)))
+   (home-page "https://github.com/lh3/minimap2")
+   (synopsis "Python binding for minimap2")
+   (description "This package provides a convenient interface to minimap2,
+a fast and accurate C program to align genomic and transcribe nucleotide
+sequences.")
+   (license license:expat)))
+
 (define-public miniasm
   (package
    (name "miniasm")
