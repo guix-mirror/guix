@@ -17437,7 +17437,7 @@ shell style patterns.")
 (define-public rust-globset-0.4
   (package
     (name "rust-globset")
-    (version "0.4.5")
+    (version "0.4.6")
     (source
      (origin
        (method url-fetch)
@@ -17446,7 +17446,7 @@ shell style patterns.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0841ihdg1ps2618cs0kjbr3pn3rzrj24rx3n4pg1sa6p1d1xmlbs"))))
+         "0jhy0qs5k43g8zyx1fys44kcdzjmcrwjyv9n703kj8g4y6g1cln1"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
