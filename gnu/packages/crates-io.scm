@@ -7555,6 +7555,32 @@ Command Line Argument Parser.")
         ("rust-version-sync" ,rust-version-sync-0.8))))
     (license license:expat)))
 
+(define-public rust-clearscreen-1
+  (package
+    (name "rust-clearscreen")
+    (version "1.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "clearscreen" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "083ycj7qhwlq8azy0rl9lpbr69k87hn622wc8mi96w293rsq1zwy"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-nix" ,rust-nix-0.20)
+        ("rust-terminfo" ,rust-terminfo-0.7)
+        ("rust-thiserror" ,rust-thiserror-1)
+        ("rust-which" ,rust-which-4)
+        ("rust-winapi" ,rust-winapi-0.3))))
+    (home-page "https://github.com/watchexec/clearscreen")
+    (synopsis "Cross-platform terminal screen clearing")
+    (description
+     "This crate provides cross-platform terminal screen clearing.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-clicolors-control-1
   (package
     (name "rust-clicolors-control")
