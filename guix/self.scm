@@ -719,7 +719,9 @@ load path."
                   ("share/guix/ci.guix.gnu.org.pub"  ;alias
                    ,(file-append* source "/etc/substitutes/berlin.guix.gnu.org.pub"))
                   ("share/guix/ci.guix.info.pub"  ;alias
-                   ,(file-append* source "/etc/substitutes/berlin.guix.gnu.org.pub")))))
+                   ,(file-append* source "/etc/substitutes/berlin.guix.gnu.org.pub"))
+                  ("share/guix/bordeaux.guix.gnu.org.pub"
+                   ,(file-append* source "/etc/substitutes/bordeaux.guix.gnu.org.pub")))))
 
 (define* (whole-package name modules dependencies
                         #:key
