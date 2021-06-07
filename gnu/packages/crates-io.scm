@@ -43317,6 +43317,33 @@ providing whatever fiddly features are needed to enable the Tectonic build
 process.")
     (license license:expat)))
 
+(define-public rust-tectonic-engine-bibtex-0.1
+  (package
+    (name "rust-tectonic-engine-bibtex")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tectonic_engine_bibtex" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1l5s21yid2iidfn70bn4pq0dz7095dl0cd7h1d54abpz7zzs2z7q"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cbindgen" ,rust-cbindgen-0.16)
+        ("rust-cc" ,rust-cc-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-tectonic-bridge-core" ,rust-tectonic-bridge-core-0.1)
+        ("rust-tectonic-errors" ,rust-tectonic-errors-0.2))))
+    (home-page "https://tectonic-typesetting.github.io/")
+    (synopsis "@code{bibtex} program as a reusable crate")
+    (description
+     "This crate is part of the Tectonic project.  It provides the
+@code{bibtex} program as a reusable crate.")
+    (license license:expat)))
+
 (define-public rust-tectonic-engine-xetex-0.1
   (package
     (name "rust-tectonic-engine-xetex")
