@@ -43494,6 +43494,37 @@ types for reporting status messages to a user.")
 used by XeTeX and Tectonic.")
     (license license:expat)))
 
+(define-public rust-tectonic-xetex-layout-0.1
+  (package
+    (name "rust-tectonic-xetex-layout")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tectonic_xetex_layout" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "063fq6bhhqac30bg6vmcfpd9zikn0p6rd189avz0f34ka4mir0yi"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cc" ,rust-cc-1)
+        ("rust-tectonic-bridge-core" ,rust-tectonic-bridge-core-0.1)
+        ("rust-tectonic-bridge-freetype2" ,rust-tectonic-bridge-freetype2-0.2)
+        ("rust-tectonic-bridge-graphite2" ,rust-tectonic-bridge-graphite2-0.2)
+        ("rust-tectonic-bridge-harfbuzz" ,rust-tectonic-bridge-harfbuzz-0.2)
+        ("rust-tectonic-bridge-icu" ,rust-tectonic-bridge-icu-0.2)
+        ("rust-tectonic-cfg-support" ,rust-tectonic-cfg-support-0.1)
+        ("rust-tectonic-dep-support" ,rust-tectonic-dep-support-0.1))))
+    (home-page "https://tectonic-typesetting.github.io/")
+    (synopsis "XeTeX's font loading and layout interface encapsulation")
+    (description
+     "This crate is part of the Tectonic project.  It provides the font
+loading and layout routines of XeTeX as a crate, currently providing only
+a C API.")
+    (license license:expat)))
+
 (define-public rust-tempdir-0.3
   (package
     (name "rust-tempdir")
