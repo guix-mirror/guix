@@ -14974,7 +14974,7 @@ cross platform API.")
 (define-public rust-flate2-1
   (package
     (name "rust-flate2")
-    (version "1.0.14")
+    (version "1.0.20")
     (source
      (origin
        (method url-fetch)
@@ -14983,20 +14983,19 @@ cross platform API.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0hlb2zmn5ixrgr0i1qvrd3a7j4fpp002d0kddn2hm7hjj49z9zrc"))))
+         "1q5b4r2rclhjbcxlbv5231avp1y6y8bynrf5v3brdzhhvr9yqfnd"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-cfg-if" ,rust-cfg-if-0.1)
-        ("rust-cloudflare-zlib-sys"
-         ,rust-cloudflare-zlib-sys-0.2)
+       (("rust-cfg-if" ,rust-cfg-if-1)
+        ("rust-cloudflare-zlib-sys" ,rust-cloudflare-zlib-sys-0.2)
         ("rust-crc32fast" ,rust-crc32fast-1)
         ("rust-futures" ,rust-futures-0.1)
         ("rust-libc" ,rust-libc-0.2)
         ("rust-libz-sys" ,rust-libz-sys-1)
         ("rust-miniz-sys" ,rust-miniz-sys-0.1)
-        ("rust-miniz-oxide" ,rust-miniz-oxide-0.3)
+        ("rust-miniz-oxide" ,rust-miniz-oxide-0.4)
         ("rust-tokio-io" ,rust-tokio-io-0.1))
        #:cargo-development-inputs
        (("rust-futures" ,rust-futures-0.1)
