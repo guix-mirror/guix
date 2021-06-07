@@ -25334,14 +25334,14 @@ disk files in asyncio applications.")
 (define-public python-dataclasses
   (package
     (name "python-dataclasses")
-    (version "0.7")
+    (version "0.8")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "dataclasses" version))
         (sha256
           (base32
-            "1rh8111fbws2vxyf2qy2zw3x6p6cq1jfz8pf904gig5qwg56sjj9"))))
+            "15sc12nrc7gxwb30vfa6frzdnpmbap9ibi1fr1yrbkra6izhcyc4"))))
     (build-system python-build-system)
     (home-page
       "https://github.com/ericvsmith/dataclasses")
