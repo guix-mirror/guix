@@ -43159,6 +43159,30 @@ FreeType font rendering engine within the Rust/Cargo build framework, with no
 Rust bindings.")
     (license license:expat)))
 
+(define-public rust-tectonic-bridge-icu-0.2
+  (package
+    (name "rust-tectonic-bridge-icu")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tectonic_bridge_icu" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0kbqi4gn26ymjxlg912p1f2v9rb8a39fr3mvpg2j2hm503vh4dj5"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-tectonic-dep-support" ,rust-tectonic-dep-support-0.1))))
+    (home-page "https://tectonic-typesetting.github.io/")
+    (synopsis "Expose a subset of the ICU Unicode APIs to Rust/Cargo")
+    (description
+     "This crate is part of the Tectonic project.  It exposes the C API of the
+@code{ICU4C} Unicode library the Rust/Cargo build framework, with no Rust
+bindings.")
+    (license license:expat)))
+
 (define-public rust-tectonic-cfg-support-0.1
   (package
     (name "rust-tectonic-cfg-support")
