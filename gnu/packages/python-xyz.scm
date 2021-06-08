@@ -7081,9 +7081,6 @@ cluster directly from Python.  You can directly map Python functions onto the
 cluster without needing to write any wrapper code yourself.")
     (license license:gpl3+)))
 
-(define-public python2-gridmap
-  (package-with-python2 python-gridmap))
-
 (define-public python-honcho
   (package
     (name "python-honcho")
