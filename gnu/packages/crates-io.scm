@@ -34659,8 +34659,33 @@ responses, and headers for the Rocket web framework.")
 network services using futures.")
     (license license:expat)))
 
+(define-public rust-ron-0.6
+  (package
+    (name "rust-ron")
+    (version "0.6.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ron" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "07vzhbrnimz1lij0f280y624j4yzipn2404jmygs24mp7xhshkh6"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-base64" ,rust-base64-0.13)
+        ("rust-bitflags" ,rust-bitflags-1)
+        ("rust-indexmap" ,rust-indexmap-1)
+        ("rust-serde" ,rust-serde-1))))
+    (home-page "https://github.com/ron-rs/ron")
+    (synopsis "Rusty Object Notation")
+    (description "This package provides Rusty Object Notation (RON).")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-ron-0.5
   (package
+    (inherit rust-ron-0.6)
     (name "rust-ron")
     (version "0.5.1")
     (source
@@ -34669,7 +34694,6 @@ network services using futures.")
        (uri (crate-uri "ron" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256 (base32 "1mb2bavvp8jg5wx0kx9n45anrsbjwhjzddim987bjaa11hg45kif"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-base64" ,rust-base64-0.10)
@@ -34677,11 +34701,7 @@ network services using futures.")
         ("rust-serde" ,rust-serde-1))
        #:cargo-development-inputs
        (("rust-serde-bytes" ,rust-serde-bytes-0.10)
-        ("rust-serde-json" ,rust-serde-json-1))))
-    (home-page "https://github.com/ron-rs/ron")
-    (synopsis "Rusty Object Notation")
-    (description "This package provides Rusty Object Notation (RON).")
-    (license (list license:expat license:asl2.0))))
+        ("rust-serde-json" ,rust-serde-json-1))))))
 
 (define-public rust-ron-0.4
   (package
