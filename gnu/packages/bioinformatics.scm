@@ -10648,7 +10648,7 @@ based methods.")
 (define-public pigx-sars-cov2-ww
   (package
     (name "pigx-sars-cov2-ww")
-    (version "0.0.1")
+    (version "0.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_sarscov2_ww/"
@@ -10656,7 +10656,7 @@ based methods.")
                                   "/pigx_sars-cov2-ww-" version ".tar.gz"))
               (sha256
                (base32
-                "1h1rfl3dyf7pid74xxgiyr4x1l5yj000wcz5crm1bdbaz8p7b7ic"))))
+                "0yrbza7lbzijjc8ifk06b646n959a4k7id94x3ndz795892f64l0"))))
     (build-system gnu-build-system)
     (inputs
      `(("bash-minimal" ,bash-minimal)
@@ -10683,7 +10683,8 @@ based methods.")
        ("r-stringr" ,r-stringr)
        ("r-tidyr" ,r-tidyr)
        ("samtools" ,samtools)
-       ("snakemake" ,snakemake)))
+       ("snakemake" ,snakemake)
+       ("wget" ,wget)))
     (home-page "https://bioinformatics.mdc-berlin.de/pigx/")
     (synopsis "Analysis pipeline for wastewater sequencing")
     (description "PiGx SARS-CoV-2 is a pipeline for analysing data from
