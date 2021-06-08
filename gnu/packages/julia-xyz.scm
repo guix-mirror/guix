@@ -1463,6 +1463,32 @@ to be temporarily overloaded for the purpose of testing.")
 Julia, with type-driven, overloadable packing/unpacking functionality.")
     (license license:expat)))
 
+(define-public julia-mutablearithmetics
+  (package
+    (name "julia-mutablearithmetics")
+    (version "0.2.19")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/jump-dev/MutableArithmetics.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1zjfq5sh0rc941pbc9kvnr6a2lpr4yd276mw62vbncbz9jg52rrg"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-offsetarrays" ,julia-offsetarrays)))
+    (home-page "https://github.com/jump-dev/MutableArithmetics.jl")
+    (synopsis "Interface for arithmetics on mutable types in Julia")
+    (description "MutableArithmetics is a Julia package which allows:
+@itemize
+@item mutable types to implement mutable arithmetics
+@item algorithms that could exploit mutable arithmetics to exploit them while
+still being completely generic
+@end itemize")
+    (license license:mpl2.0)))
+
 (define-public julia-nanmath
   (package
     (name "julia-nanmath")
