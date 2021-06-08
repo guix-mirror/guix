@@ -21521,9 +21521,6 @@ This Python package wraps the Blosc library.")
 append on old values.  Partd excels at shuffling operations.")
     (license license:bsd-3)))
 
-(define-public python2-partd
-  (package-with-python2 python-partd))
-
 (define-public python-fsspec
   (package
     (name "python-fsspec")
