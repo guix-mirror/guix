@@ -17290,3 +17290,46 @@ and even allows the generic visualisation of graphs in this format.")
 
 (define-public cl-flow
   (sbcl-package->cl-source-package sbcl-flow))
+
+(define-public sbcl-cl-glfw3
+  (let ((commit "32c3f34d592d55ee7ce932ed85804c1a9c4158c6")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-glfw3")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/AlexCharlton/cl-glfw3")
+               (commit commit)))
+         (file-name (git-file-name "cl-glfw3" version))
+         (sha256
+          (base32 "1wzr43nckdx4rlgxzhm1r4kfc264q969mc43y0js9ramh7l8gba5"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-glfw-lib-path
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "glfw-bindings.lisp"
+                 (("libglfw.so.3" all)
+                  (string-append (assoc-ref inputs "glfw") "/lib/" all))))))))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cffi" ,sbcl-cffi)
+         ("cl-opengl" ,sbcl-cl-opengl)
+         ("glfw" ,glfw)
+         ("trivial-main-thread" ,sbcl-trivial-main-thread)))
+      (home-page "https://github.com/AlexCharlton/cl-glfw3")
+      (synopsis "Common Lisp bindings to GLFW version 3.x")
+      (description
+       "This package provides a Common Lisp bindings to @code{glfw}, an OpenGL
+application development library.")
+      (license license:bsd-2))))
+
+(define-public ecl-cl-glfw3
+  (sbcl-package->ecl-package sbcl-cl-glfw3))
+
+(define-public cl-glfw3
+  (sbcl-package->cl-source-package sbcl-cl-glfw3))
