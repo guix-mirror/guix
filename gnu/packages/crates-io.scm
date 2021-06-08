@@ -50045,6 +50045,39 @@ attribute that is not in the shared backend crate.")
 WebAssembly binary files.")
     (license license:asl2.0)))
 
+(define-public rust-watchexec-1
+  (package
+    (name "rust-watchexec")
+    (version "1.16.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "watchexec" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1v52fi5fvjr7h5npyjkwnfc7801qrl4ayzgq4k03ylxr4lkbvhsb"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-clearscreen" ,rust-clearscreen-1)
+        ("rust-derive-builder" ,rust-derive-builder-0.10)
+        ("rust-glob" ,rust-glob-0.3)
+        ("rust-globset" ,rust-globset-0.4)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-nix" ,rust-nix-0.20)
+        ("rust-notify" ,rust-notify-4)
+        ("rust-walkdir" ,rust-walkdir-2)
+        ("rust-winapi" ,rust-winapi-0.3))))
+    (home-page "https://github.com/watchexec/watchexec")
+    (synopsis
+     "Library to execute commands in response to file modifications")
+    (description
+     "This crate is a library to execute commands in response to file
+modifications.")
+    (license license:asl2.0)))
+
 (define-public rust-web-sys-0.3
   (package
     (name "rust-web-sys")
