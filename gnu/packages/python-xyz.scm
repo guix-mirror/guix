@@ -15340,18 +15340,19 @@ well.")
 (define-public ptpython
   (package
     (name "ptpython")
-    (version "3.0.5")
+    (version "3.0.17")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "ptpython" version))
               (sha256
                (base32
-                "0c2ry5gwi2v99slna62j8r2bwq0hpzmvgdryqg9m6x57vbjfg52h"))))
+                "1phk1grcvn456igjg8gwjjg8bf4kszddq5nd5sdlz3hslg62a7ci"))))
     (build-system python-build-system)
     (arguments
-     '(#:tests? #f)) ; FIXME: No tests in pypi tarball.
+     `(#:tests? #f)) ;there are no tests
     (propagated-inputs
      `(("python-appdirs" ,python-appdirs)
+       ("python-black" ,python-black)
        ("python-jedi" ,python-jedi)
        ("python-prompt-toolkit" ,python-prompt-toolkit)
        ("python-pygments" ,python-pygments)))
