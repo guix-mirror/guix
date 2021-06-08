@@ -29604,7 +29604,7 @@ algorithm.")
 (define-public rust-pest-2
   (package
     (name "rust-pest")
-    (version "2.1.1")
+    (version "2.1.3")
     (source
      (origin
        (method url-fetch)
@@ -29613,7 +29613,7 @@ algorithm.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "134686mwxm73asbiads53zfchqvvcrsrsyax2cghfcizmvg8ac4k"))))
+         "0lry80bm90x47nq71wxq83kjrm9ashpz4kbm92p90ysdx4m8gx0h"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
