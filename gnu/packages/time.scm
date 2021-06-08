@@ -169,9 +169,6 @@ standard @code{datetime} all @code{datetime} instances can be replaced by
 Pendulum instances.")
     (license expat)))
 
-(define-public python2-pendulum
-  (package-with-python2 python-pendulum))
-
 (define-public python-dateutil
   (package
     (name "python-dateutil")
