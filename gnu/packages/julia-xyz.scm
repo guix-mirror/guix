@@ -2082,6 +2082,36 @@ moving the function definition to @code{StatsAPI.jl} and each package taking a
 dependency on it.")
     (license license:expat)))
 
+(define-public julia-statsbase
+  (package
+    (name "julia-statsbase")
+    (version "0.33.8")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaStats/StatsBase.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "02y4pm5yvg713a2pn970bbcfkrn2h133rxbxk1da18svhqw3czhi"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-dataapi" ,julia-dataapi)
+       ("julia-datastructures" ,julia-datastructures)
+       ("julia-missings" ,julia-missings)
+       ("julia-sortingalgorithms" ,julia-sortingalgorithms)
+       ("julia-statsapi" ,julia-statsapi)))
+    (native-inputs
+     `(("julia-stablerngs" ,julia-stablerngs)))
+    (home-page "https://github.com/JuliaStats/StatsBase.jl")
+    (synopsis "Basic statistics for Julia")
+    (description "StatsBase.jl is a Julia package that provides basic support
+for statistics.  Particularly, it implements a variety of statistics-related
+functions, such as scalar statistics, high-order moment computation, counting,
+ranking, covariances, sampling, and empirical density estimation.")
+    (license license:expat)))
+
 (define-public julia-suppressor
   (package
     (name "julia-suppressor")
