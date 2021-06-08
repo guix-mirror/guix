@@ -20552,8 +20552,45 @@ written in Rust.")
 data efficiently.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-insta-1
+  (package
+    (name "rust-insta")
+    (version "1.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "insta" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0i4jdrr888h0qvfhy2b4vvswlpi2x2ghwg31ljfa9kki54db58f4"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-backtrace" ,rust-backtrace-0.3)
+        ("rust-console" ,rust-console-0.14)
+        ("rust-csv" ,rust-csv-1)
+        ("rust-globset" ,rust-globset-0.4)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-pest" ,rust-pest-2)
+        ("rust-pest-derive" ,rust-pest-derive-2)
+        ("rust-ron" ,rust-ron-0.6)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-serde-yaml" ,rust-serde-yaml-0.8)
+        ("rust-similar" ,rust-similar-1)
+        ("rust-toml" ,rust-toml-0.5)
+        ("rust-uuid" ,rust-uuid-0.8)
+        ("rust-walkdir" ,rust-walkdir-2))))
+    (home-page "https://insta.rs/")
+    (synopsis "Snapshot testing library for Rust")
+    (description
+     "This package provides a snapshot testing library for Rust.")
+    (license license:asl2.0)))
+
 (define-public rust-insta-0.16
   (package
+    (inherit rust-insta-1)
     (name "rust-insta")
     (version "0.16.1")
     (source
@@ -20564,7 +20601,6 @@ data efficiently.")
        (sha256
         (base32
          "1vhqlirp75nx8qalz87qk2wjs7mzwxww0n09n2ircgw1phd94zk1"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-backtrace" ,rust-backtrace-0.3)
@@ -20577,11 +20613,7 @@ data efficiently.")
         ("rust-ron" ,rust-ron-0.5)
         ("rust-serde" ,rust-serde-1)
         ("rust-serde-json" ,rust-serde-json-1)
-        ("rust-serde-yaml" ,rust-serde-yaml-0.8))))
-    (home-page "https://github.com/mitsuhiko/insta")
-    (synopsis "Snapshot testing library for Rust")
-    (description "This package provides a snapshot testing library for Rust.")
-    (license license:asl2.0)))
+        ("rust-serde-yaml" ,rust-serde-yaml-0.8))))))
 
 (define-public rust-insta-0.12
   (package
