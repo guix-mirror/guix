@@ -2546,6 +2546,37 @@ product preserves all dimensions}, and @acronym{boxdot, contracts neighboring
 dimensions}.")
     (license license:expat)))
 
+(define-public julia-tracker
+  (package
+    (name "julia-tracker")
+    (version "0.2.12")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/FluxML/Tracker.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1s4mdywbp7nli7z985fqaj1rs4i6d92b1jx3lhg0qhk1s5wc0v8j"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-adapt" ,julia-adapt)
+       ("julia-diffrules" ,julia-diffrules)
+       ("julia-forwarddiff" ,julia-forwarddiff)
+       ("julia-macrotools" ,julia-macrotools)
+       ("julia-nanmath" ,julia-nanmath)
+       ("julia-nnlib" ,julia-nnlib)
+       ("julia-requires" ,julia-requires)
+       ("julia-specialfunctions" ,julia-specialfunctions)))
+    (native-inputs
+     `(("julia-pdmats" ,julia-pdmats)))
+    (home-page "https://github.com/FluxML/Tracker.jl")
+    (synopsis "Operator overloading reverse-mode automatic differentiator")
+    (description "@code{Tracker.jl} previously provided @code{Flux.jl} with
+automatic differentiation for its machine learning platform.")
+    (license license:expat)))
+
 (define-public julia-typedtables
   (package
     (name "julia-typedtables")
