@@ -856,9 +856,7 @@ version 0.1.0 or later;
 @item @uref{https://notabug.org/guile-lzlib/guile-lzlib, Guile-lzlib};
 @item @uref{https://www.nongnu.org/guile-avahi/, Guile-Avahi};
 @item
-@c FIXME: We need the #:fetch-options parameter of 'submodule-update',
-@c which appeared in 0.5.0.  Change below after string freeze.
-@uref{https://gitlab.com/guile-git/guile-git, Guile-Git}, version 0.3.0
+@uref{https://gitlab.com/guile-git/guile-git, Guile-Git}, version 0.5.0
 or later;
 @item @uref{https://savannah.nongnu.org/projects/guile-json/, Guile-JSON}
 4.3.0 or later;
