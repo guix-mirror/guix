@@ -1487,6 +1487,26 @@ Cassette.")
 extensions to the iterator interface.")
     (license license:expat)))
 
+(define-public julia-itertools
+  (package
+    (name "julia-itertools")
+    (version "1.3.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaCollections/IterTools.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0haf974kcqj6arv4if97ahs4w3dmvslh6ab3hl57r9s41ic36xdq"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/JuliaCollections/IterTools.jl")
+    (synopsis "Common functional iterator patterns")
+    (description
+     "Common functional iterator patterns (formerly @code{Iterators.jl}).")
+    (license license:expat)))
+
 (define-public julia-json
   (package
     (name "julia-json")
