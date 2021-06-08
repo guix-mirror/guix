@@ -44,6 +44,7 @@
   (package
     (name "polkit")
     (version "0.116")
+    (replacement polkit/fixed)
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -134,6 +135,13 @@ privileged processes.  It is a framework for centralizing the decision
 making process with respect to granting access to privileged operations
 for unprivileged applications.")
     (license lgpl2.0+)))
+
+(define polkit/fixed
+  (package
+    (inherit polkit)
+    (source (origin
+              (inherit (package-source polkit))
+              (patches (search-patches "polkit-CVE-2021-3560.patch"))))))
 
 (define-public polkit-qt
   (package
