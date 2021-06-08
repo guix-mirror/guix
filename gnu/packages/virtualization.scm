@@ -1261,9 +1261,6 @@ three libraries:
 virtualization library.")
     (license license:lgpl2.1+)))
 
-(define-public python2-libvirt
-  (package-with-python2 python-libvirt))
-
 (define-public virt-manager
   (package
     (name "virt-manager")
