@@ -2886,6 +2886,29 @@ useful in order to support @code{VersionNumber} comparisons applied to
 allows for efficient string representation and transfer")
     (license license:expat)))
 
+(define-public julia-woodburymatrices
+  (package
+    (name "julia-woodburymatrices")
+    (version "0.5.3")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/timholy/WoodburyMatrices.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "04yykivi8zrbryxlmb0p5xa6lma8iq22r5s863117dnnqj5gaffd"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/timholy/WoodburyMatrices.jl")
+    (synopsis "Support for the Woodbury matrix identity for Julia")
+    (description "This package provides support for the Woodbury matrix identity
+for the Julia programming language.  This is a generalization of the
+Sherman-Morrison formula.  Note that the Woodbury matrix identity is notorious
+for floating-point roundoff errors, so be prepared for a certain amount of
+inaccuracy in the result.")
+    (license license:expat)))
+
 (define-public julia-zipfile
   (package
     (name "julia-zipfile")
