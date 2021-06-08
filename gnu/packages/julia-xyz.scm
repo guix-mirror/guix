@@ -1235,6 +1235,32 @@ extensions to the iterator interface.")
 and printing JSON documents.")
     (license license:expat)))
 
+(define-public julia-logexpfunctions
+  (package
+    (name "julia-logexpfunctions")
+    (version "0.2.4")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaStats/LogExpFunctions.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0rvms3mmq8a1viqlyzdgs2ccddcy6j0c677dlb8m5nk6hkiwr16n"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-docstringextensions" ,julia-docstringextensions)))
+    (native-inputs
+     `(("julia-offsetarrays" ,julia-offsetarrays)))
+    (home-page "https://github.com/JuliaStats/LogExpFunctions.jl")
+    (synopsis "Special functions based on @code{log} and @code{exp}")
+    (description "Various special functions based on log and exp moved from
+@code{StatsFuns.jl} into a separate package, to minimize dependencies.  These
+functions only use native Julia code, so there is no need to depend on
+@code{librmath} or similar libraries.")
+    (license license:expat)))
+
 (define-public julia-macrotools
   (package
     (name "julia-macrotools")
