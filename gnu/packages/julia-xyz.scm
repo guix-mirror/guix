@@ -140,6 +140,30 @@ appropriate BLAS or optimised Julia linear algebra routines.  This supports a
 much wider class of matrix types than Julia's in-built @code{StridedArray}.")
     (license license:expat)))
 
+(define-public julia-axisalgorithms
+  (package
+    (name "julia-axisalgorithms")
+    (version "1.0.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/timholy/AxisAlgorithms.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "00x85lnfln7xkfnirpplzyi8r6q92nfqwya8il156bf7b1pa20gk"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-woodburymatrices" ,julia-woodburymatrices)))
+    (home-page "https://github.com/timholy/AxisAlgorithms.jl")
+    (synopsis "Filtering and linear algebra routines for multidimensional arrays")
+    (description "@code{AxisAlgorithms} is a collection of filtering and linear
+algebra algorithms for multidimensional arrays.  For algorithms that would
+typically apply along the columns of a matrix, you can instead pick an arbitrary
+axis (dimension).")
+    (license license:expat)))
+
 (define-public julia-bandedmatrices
   (package
     (name "julia-bandedmatrices")
