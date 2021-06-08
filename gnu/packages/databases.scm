@@ -2793,11 +2793,7 @@ Memory-Mapped Database} (LMDB), a high-performance key-value store.")
     (description
      "Orator provides a simple ActiveRecord-like Object Relational Mapping
 implementation for Python.")
-    (license license:expat)
-    (properties `((python2-variant . ,(delay python2-orator))))))
-
-(define-public python2-orator
-  (package-with-python2 (strip-python2-variant python-orator)))
+    (license license:expat)))
 
 (define-public virtuoso-ose
   (package
