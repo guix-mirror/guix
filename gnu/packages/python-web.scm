@@ -826,9 +826,6 @@ websites.  It automatically stores and sends cookies, follows redirects, and can
 follow links and submit forms.  It doesn’t do JavaScript.")
     (license license:expat)))
 
-(define-public python2-mechanicalsoup
-  (package-with-python2 python-mechanicalsoup))
-
 (define-public python-hyperframe
   (package
     (name "python-hyperframe")
