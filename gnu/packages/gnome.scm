@@ -4748,8 +4748,6 @@ library.")
                (base32
                 "0vlzn8jf4sg90cm8xxr28yf66nhf8qy9dl2m4b8w1cr6mn2mw8qb"))))
     (build-system meson-build-system)
-    (arguments
-     `(#:configure-flags '("-Dopenssl=auto")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
@@ -4757,8 +4755,7 @@ library.")
      `(("glib" ,glib)
        ("gnutls" ,gnutls)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("libproxy" ,libproxy)
-       ("openssl" ,openssl)))
+       ("libproxy" ,libproxy)))
     (home-page "https://wiki.gnome.org/Projects/GLib")
     (synopsis "Network extensions for GLib")
     (description
