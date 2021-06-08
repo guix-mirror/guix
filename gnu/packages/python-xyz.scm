@@ -14380,9 +14380,6 @@ graphviz.")
 format.")
     (license license:gpl2+)))
 
-(define-public python2-fastimport
-  (package-with-python2 python-fastimport))
-
 (define-public python-twisted
   (package
     (name "python-twisted")
