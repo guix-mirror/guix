@@ -140,6 +140,31 @@ appropriate BLAS or optimised Julia linear algebra routines.  This supports a
 much wider class of matrix types than Julia's in-built @code{StridedArray}.")
     (license license:expat)))
 
+(define-public julia-bandedmatrices
+  (package
+    (name "julia-bandedmatrices")
+    (version "0.16.9")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaMatrices/BandedMatrices.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "105y5d3208s0byk3p0469sfy79lhjpdblk6karbwj8x7hl26na00"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-arraylayouts" ,julia-arraylayouts)
+       ("julia-fillarrays" ,julia-fillarrays)))
+    (native-inputs
+     `(("julia-genericlinearalgebra" ,julia-genericlinearalgebra)))
+    (home-page "https://github.com/JuliaMatrices/BandedMatrices.jl")
+    (synopsis "Julia package for representing banded matrices")
+    (description "This package supports representing banded matrices by only
+the entries on the bands.")
+    (license license:expat)))
+
 (define-public julia-benchmarktools
   (package
     (name "julia-benchmarktools")
