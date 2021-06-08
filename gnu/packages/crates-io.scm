@@ -13426,7 +13426,7 @@ signing, and verification in pure Rust.")
 (define-public rust-embed-resource-1
   (package
     (name "rust-embed-resource")
-    (version "1.3.3")
+    (version "1.6.2")
     (source
      (origin
        (method url-fetch)
@@ -13434,12 +13434,12 @@ signing, and verification in pure Rust.")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0pbif8kl6xcvfnp8gibqsw0w14l28vfkff9k6byw506s0d20nsqz"))))
+        (base32 "0w6l2zh82sx8rqjpr2a0y56m6hjb6zrqbp3l8b984a96y7mnvsnh"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-vswhom" ,rust-vswhom-0.1)
-        ("rust-winreg" ,rust-winreg-0.6))))
+        ("rust-winreg" ,rust-winreg-0.8))))
     (home-page "https://github.com/nabijaczleweli/rust-embed-resource")
     (synopsis
      "Cargo library to handle compilation and inclusion of Windows resources")
