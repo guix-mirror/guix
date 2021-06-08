@@ -2292,6 +2292,27 @@ user-friendly, scratch spaces should, in general, not be used for a storing
 files that the user must interact with through a file browser.")
     (license license:expat)))
 
+(define-public julia-showoff
+  (package
+    (name "julia-showoff")
+    (version "1.0.2")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaGraphics/Showoff.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1g4hqvjjpwbrs7fnllyl5w66yj6qlvpvzpygym2nvf01m1ps6m53"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/JuliaGraphics/Showoff.jl")
+    (synopsis "Nicely format an array of n things for tables and plots")
+    (description "@code{Showoff} provides an interface for consistently
+formatting an array of n things, e.g. numbers, dates, unitful values.  It's used
+in @code{Gadfly}, @code{Plots} and @code{Makie} to label axes and keys.")
+    (license license:expat)))
+
 (define-public julia-sortingalgorithms
   (package
     (name "julia-sortingalgorithms")
