@@ -1636,6 +1636,43 @@ still being completely generic
 @code{NaN} instead of throwing a @code{DomainError}.")
     (license license:expat)))
 
+(define-public julia-nnlib
+  (package
+    (name "julia-nnlib")
+    (version "0.7.19")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/FluxML/NNlib.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "163v7hkmbxxgnq7qigmqjdqcdywi2njxbh54w8v0hf4bddnalbba"))))
+    (build-system julia-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'drop-cuda-support
+           (lambda _
+             (substitute* "test/runtests.jl"
+               (("using CUDA") ""))
+             (setenv "NNLIB_TEST_CUDA" "false"))))))
+    (propagated-inputs
+     `(("julia-adapt" ,julia-adapt)
+       ("julia-chainrulescore" ,julia-chainrulescore)
+       ("julia-requires" ,julia-requires)))
+    (native-inputs
+     `(("julia-chainrulestestutils" ,julia-chainrulestestutils)
+       ("julia-stablerngs" ,julia-stablerngs)
+       ("julia-zygote" ,julia-zygote)))
+    (home-page "https://github.com/FluxML/NNlib.jl")
+    (synopsis "Neural Network primitives with multiple backends")
+    (description "This package will provide a library of functions useful for
+machine learning, such as softmax, sigmoid, convolutions and pooling.  It
+doesn't provide any other \"high-level\" functionality like layers or AD.")
+    (license license:expat)))
+
 (define-public julia-optimtestproblems
   (package
     (name "julia-optimtestproblems")
