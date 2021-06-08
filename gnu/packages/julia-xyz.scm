@@ -2626,6 +2626,30 @@ functions, such as scalar statistics, high-order moment computation, counting,
 ranking, covariances, sampling, and empirical density estimation.")
     (license license:expat)))
 
+(define-public julia-stringdistances
+  (package
+    (name "julia-stringdistances")
+    (version "0.10.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/matthieugomez/StringDistances.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0n5707wplbibzhhv1xmshvc025d7xk6mnikclc3hvq5cdc0gy9f7"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-distances" ,julia-distances)))
+    (home-page "https://github.com/matthieugomez/StringDistances.jl")
+    (synopsis "String Distances in Julia")
+    (description "This package provides string distances in Julia.  Distances
+are defined for @code{AbstractStrings}, and any iterator that define
+@code{length()}.  The package also defines Distance \"modifiers\" that can be
+applied to any distance.")
+    (license license:expat)))
+
 (define-public julia-suppressor
   (package
     (name "julia-suppressor")
