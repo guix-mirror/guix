@@ -379,6 +379,34 @@ constructors, and sets up traits and show methods to make them easier to work
 with.")
     (license license:expat)))
 
+(define-public julia-colorvectorspace
+  (package
+    (name "julia-colorvectorspace")
+    (version "0.9.5")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaGraphics/ColorVectorSpace.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1gx4k1bvf6lkzxphnvpkw857ihrkifhb68yvsj889k9pf1vda3fq"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-colortypes" ,julia-colortypes)
+       ("julia-specialfunctions" ,julia-specialfunctions)
+       ("julia-tensorcore" ,julia-tensorcore)))
+    (native-inputs
+     `(("julia-colors" ,julia-colors)))
+    (home-page "https://github.com/JuliaGraphics/ColorVectorSpace.jl")
+    (synopsis "Treat colors as n-vectors for the purposes of arithmetic")
+    (description "This package is an add-on to @code{ColorTypes.jl} and provides
+fast mathematical operations for objects with types such as RGB and Gray.
+Specifically, with this package both grayscale and RGB colors are treated as if
+they are points in a normed vector space.")
+    (license license:expat)))
+
 (define-public julia-commonsubexpressions
   (package
     (name "julia-commonsubexpressions")
