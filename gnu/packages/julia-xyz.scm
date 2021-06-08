@@ -1223,6 +1223,32 @@ library for parsing HTML.")
 implementing both a client and a server.")
     (license license:expat)))
 
+(define-public julia-identityranges
+  (package
+    (name "julia-identityranges")
+    (version "0.3.1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaArrays/IdentityRanges.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0jvl4xn8f8k70sn473li5q62wbiycl5qi25b5k456h3a0j1lbiml"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-offsetarrays" ,julia-offsetarrays)))
+    (home-page "https://github.com/JuliaArrays/IdentityRanges.jl")
+    (synopsis "Ranges that preserve indices of views")
+    (description "@code{IdentityRanges} are Julia-language a helper type for
+creating \"views\" of arrays.  They are a custom type of AbstractUnitRange that
+makes it easy to preserve the indices of array views.  The key property of an
+@code{IdentityRange r} is that @code{r[i] == i} (hence the name of the
+type/package), and that they support arbitrary start/stop indices (i.e., not
+just starting at 1).")
+    (license license:expat)))
+
 (define-public julia-ifelse
   (package
     (name "julia-ifelse")
