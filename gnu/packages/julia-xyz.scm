@@ -729,6 +729,42 @@ to represent missing data.")
 dictionaries in Julia, for improved productivity and performance.")
     (license license:expat)))
 
+(define-public julia-distances
+  (package
+    (name "julia-distances")
+    (version "0.10.3")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaStats/Distances.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1yqd9wg4z15k42mrp4y14j2x0sq7yrjhm5zpqklrw6w6j1c367ig"))))
+    (build-system julia-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-flakey-tests
+           (lambda _
+             (substitute* "test/test_dists.jl"
+               (("test dyz ≥") "test_nowarn dyz ≥")
+               (("test dist\\(y, x") "test_nowarn dist(y, x")
+               (("test dist\\(z, x") "test_nowarn dist(z, x")))))))
+    (propagated-inputs
+     `(("julia-statsapi" ,julia-statsapi)))
+    (native-inputs
+     `(("julia-offsetarrays" ,julia-offsetarrays)
+       ("julia-unitful" ,julia-unitful)))
+    (home-page "https://github.com/JuliaStats/Distances.jl")
+    (synopsis "Julia package for evaluating distances (metrics) between vectors")
+    (description "A Julia package for evaluating distances(metrics) between
+vectors.  This package also provides optimized functions to compute column-wise
+and pairwise distances, which are often substantially faster than a
+straightforward loop implementation.")
+    (license license:expat)))
+
 (define-public julia-docstringextensions
   (package
     (name "julia-docstringextensions")
