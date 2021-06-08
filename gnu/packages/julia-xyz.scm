@@ -706,6 +706,40 @@ a given rule exists, and symbolically apply rules to simple Julia expressions.")
 stressing the robustness of differentiation tools.")
     (license license:expat)))
 
+(define-public julia-dualnumbers
+  (package
+    (name "julia-dualnumbers")
+    (version "0.6.5")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaDiff/DualNumbers.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "05vr5wbzqpchnb96b3pmn67x196mbfnkv7r9bdlz3gm56if4awk5"))))
+    (build-system julia-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'adjust-test-suite
+           (lambda _
+             (substitute* "test/runtests.jl"
+               ;; Seems to not play nicely with SpecialFunctions
+               ((".*isempty.*") "")))))))
+    (propagated-inputs
+     `(("julia-calculus" ,julia-calculus)
+       ("julia-nanmath" ,julia-nanmath)
+       ("julia-specialfunctions" ,julia-specialfunctions)))
+    (home-page "https://github.com/JuliaDiff/DualNumbers.jl")
+    (synopsis "Represent dual numbers and for perform dual algebra")
+    (description "The @code{DualNumbers} Julia package defines the @code{Dual}
+type to represent dual numbers, and supports standard mathematical operations on
+them.  Conversions and promotions are defined to allow performing operations on
+combinations of dual numbers with predefined Julia numeric types.")
+    (license license:expat)))
+
 (define-public julia-example
   (let ((commit "f968c69dea24f851d0c7e686db23fa55826b5388"))
     (package
