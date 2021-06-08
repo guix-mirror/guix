@@ -10513,7 +10513,7 @@ in an easily configurable manner.")
 (define-public pigx-bsseq
   (package
     (name "pigx-bsseq")
-    (version "0.1.3")
+    (version "0.1.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_bsseq/"
@@ -10521,7 +10521,7 @@ in an easily configurable manner.")
                                   "/pigx_bsseq-" version ".tar.gz"))
               (sha256
                (base32
-                "0blm0bl5z3ng01n7hh2ffk4rkzvf7vb3nm0crgdzrxr5cahxdxql"))))
+                "05al5dacfp1vf1x3cq20jhd6w4xj5vaxslzaka6yrpg0av8sh3k3"))))
     (build-system gnu-build-system)
     (arguments
      `(;; TODO: tests currently require 12+GB of RAM.  See
@@ -10535,8 +10535,7 @@ in an easily configurable manner.")
              (setenv "TZ" "UTC+1")
              (setenv "TZDIR"
                      (string-append (assoc-ref inputs "tzdata")
-                                    "/share/zoneinfo"))
-             #t)))))
+                                    "/share/zoneinfo")))))))
     (native-inputs
      `(("tzdata" ,tzdata)))
     (inputs
