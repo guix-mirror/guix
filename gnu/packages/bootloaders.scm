@@ -866,6 +866,13 @@ to Novena upstream, does not load u-boot.img from the first partition.")
 (define-public u-boot-sifive-fu540
   (make-u-boot-package "sifive_fu540" "riscv64-linux-gnu"))
 
+(define-public u-boot-sifive-unmatched
+  (let ((base (make-u-boot-package "sifive_unmatched" "riscv64-linux-gnu")))
+    (package
+      (inherit base)
+      (version (package-version u-boot-2021.07))
+      (source (package-source u-boot-2021.07)))))
+
 (define-public u-boot-rock64-rk3328
   (let ((base (make-u-boot-package "rock64-rk3328" "aarch64-linux-gnu")))
     (package
