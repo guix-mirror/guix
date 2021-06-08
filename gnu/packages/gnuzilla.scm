@@ -1501,7 +1501,9 @@ standards of the IceCat project.")
                      "ac_add_options --with-system-nspr\n"
                      "ac_add_options --with-system-nss\n"
                      "ac_add_options --with-system-zlib\n"
-                     "ac_add_options --with-user-appdir=\\.icedove\n"))))
+                     "ac_add_options --with-user-appdir=\\.icedove\n"
+                     "mk_add_options MOZ_MAKE_FLAGS=-j"
+                     (number->string (parallel-job-count)) "\n"))))
                (display (getcwd))
                (newline)
                (display "mach configure")
