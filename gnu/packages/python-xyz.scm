@@ -8871,9 +8871,6 @@ more advanced mathematics.")
 multiprecision arithmetic.")
     (license license:lgpl3+)))
 
-(define-public python2-bigfloat
-  (package-with-python2 python-bigfloat))
-
 (define-public python-sympy
   (package
     (name "python-sympy")
