@@ -223,6 +223,34 @@ extraction and insertion of blocks while @code{PseudoBlockArray} supports fast
 access to the full matrix to use in in for example a linear solver.")
     (license license:expat)))
 
+(define-public julia-blockbandedmatrices
+  (package
+    (name "julia-blockbandedmatrices")
+    (version "0.10.6")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaMatrices/BlockBandedMatrices.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0q9ni4pgdkb00jb42fdzlhx745852xx2666vr96k0c4l0cn5mi0y"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-arraylayouts" ,julia-arraylayouts)
+       ("julia-bandedmatrices" ,julia-bandedmatrices)
+       ("julia-blockarrays" ,julia-blockarrays)
+       ("julia-fillarrays" ,julia-fillarrays)
+       ("julia-matrixfactorizations" ,julia-matrixfactorizations)))
+    (home-page "https://github.com/JuliaMatrices/BlockBandedMatrices.jl")
+    (synopsis "Block-banded matrices and banded-block-banded matrices")
+    (description "This package supports representing block-banded and
+banded-block-banded matrices by only storing the entries in the non-zero bands.
+A @code{BlockBandedMatrix} is a subtype of @code{BlockMatrix} of
+@code{BlockArrays.jl} whose layout of non-zero blocks is banded.")
+    (license license:expat)))
+
 (define-public julia-bufferedstreams
   (package
     (name "julia-bufferedstreams")
