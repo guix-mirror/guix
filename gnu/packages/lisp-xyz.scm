@@ -17247,3 +17247,49 @@ needed.  The low-level command API is fully mapped however.")
 
 (define-public cl-legit
   (sbcl-package->cl-source-package sbcl-legit))
+
+(define-public sbcl-flow
+  (let ((commit "6d925af009cdfe033650d7048197a5e6ee937d15")
+        (revision "1"))
+    (package
+      (name "sbcl-flow")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shinmera/flow")
+               (commit commit)))
+         (file-name (git-file-name "flow" version))
+         (sha256
+          (base32 "0ysw1kwiqlf8kzllhnz8v3q40dmvwf83fzq8bfkbmwy5hfjh3pxp"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       ;; FIXME: (Sharlatan-20210527T203118+0100): FLOW-VISUALIZER requires
+       ;; COMMONQT which is not packed yet and required tweaks with QT. Remove
+       ;; this when it's ready.
+       `(#:asd-files '("flow.asd")))
+      (inputs
+       `(("closer-mop" ,sbcl-closer-mop)
+         ("documentation-utils" ,sbcl-documentation-utils)))
+      (home-page "https://shinmera.github.io/flow/")
+      (synopsis "Tools for the representation of graphs and flowcharts")
+      (description
+       "FLOW is a flowchart graph library.  Unlike other graphing libraries,
+this one focuses on nodes in a graph having distinct @code{ports} through which
+connections to other nodes are formed.  This helps in many concrete scenarios
+where it is important to distinguish not only which nodes are connected, but
+also how they are connected to each other.
+
+Particularly, a lot of data flow and exchange problems can be reduced to such
+a @code{flowchart}.  For example, an audio processing library may present its
+pipeline as a flowchart of segments that communicate with each other through
+audio sample buffers.  Flow gives a convenient view onto this kind of problem,
+and even allows the generic visualisation of graphs in this format.")
+      (license license:zlib))))
+
+(define-public ecl-flow
+  (sbcl-package->ecl-package sbcl-flow))
+
+(define-public cl-flow
+  (sbcl-package->cl-source-package sbcl-flow))
