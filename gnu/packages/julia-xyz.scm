@@ -962,6 +962,37 @@ differentiation (AD).")
      "FuzzyCompletions provides fuzzy completions for a Julia runtime session.")
     (license license:expat)))
 
+(define-public julia-genericlinearalgebra
+  (package
+    (name "julia-genericlinearalgebra")
+    (version "0.2.5")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaLinearAlgebra/GenericLinearAlgebra.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0ndwypa397z3pwzdgc3s9plaqlqf63g3d4px5pvym5psgr6lnm3l"))))
+    (build-system julia-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'adjust-test-suite
+           (lambda _
+             (substitute* "test/runtests.jl"
+               ((".*lapack.*") "")))))))
+    (native-inputs
+     `(("julia-quaternions" ,julia-quaternions)))
+    (home-page "https://github.com/JuliaLinearAlgebra/GenericLinearAlgebra.jl")
+    (synopsis "Generic numerical linear algebra")
+    (description "The purpose of this package is partly to extend linear algebra
+functionality in base to cover generic element types, e.g. @code{BigFloat} and
+@code{Quaternion}, and partly to be a place to experiment with fast linear
+algebra routines written in Julia (except for optimized BLAS).")
+    (license license:expat)))
+
 (define-public julia-genericschur
   (package
     (name "julia-genericschur")
