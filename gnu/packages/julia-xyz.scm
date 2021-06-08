@@ -1362,6 +1362,35 @@ extensions to the iterator interface.")
 and printing JSON documents.")
     (license license:expat)))
 
+(define-public julia-lazyarrays
+  (package
+    (name "julia-lazyarrays")
+    (version "0.21.6")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaArrays/LazyArrays.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0zm1ihvi8v2823ap59ajqcs46s5z0nai8l70n51f6j9dzp8lc3cy"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-arraylayouts" ,julia-arraylayouts)
+       ("julia-fillarrays" ,julia-fillarrays)
+       ("julia-macrotools" ,julia-macrotools)
+       ("julia-matrixfactorizations" ,julia-matrixfactorizations)
+       ("julia-staticarrays" ,julia-staticarrays)))
+    (native-inputs
+     `(("julia-tracker" ,julia-tracker)))
+    (home-page "https://github.com/JuliaArrays/LazyArrays.jl")
+    (synopsis "Lazy arrays and linear algebra")
+    (description "This package supports lazy analogues of array operations like
+@code{vcat}, @code{hcat}, and multiplication.  This helps with the
+implementation of matrix-free methods for iterative solvers.")
+    (license license:expat)))
+
 (define-public julia-logexpfunctions
   (package
     (name "julia-logexpfunctions")
