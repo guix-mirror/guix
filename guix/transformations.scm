@@ -25,7 +25,7 @@
   #:autoload   (guix download) (download-to-store)
   #:autoload   (guix git-download) (git-reference? git-reference-url)
   #:autoload   (guix git) (git-checkout git-checkout? git-checkout-url)
-  #:autoload   (guix upstream) (package-latest-release*
+  #:autoload   (guix upstream) (package-latest-release
                                 upstream-source-version
                                 upstream-source-signature-urls)
   #:use-module (guix utils)
@@ -518,7 +518,7 @@ additional patches."
   "Return a procedure that rewrites package graphs such that those in SPECS
 are replaced by their latest upstream version."
   (define (package-with-latest-upstream p)
-    (let ((source (package-latest-release* p)))
+    (let ((source (package-latest-release p)))
       (cond ((not source)
              (warning
               (G_ "could not determine latest upstream release of '~a'~%")
