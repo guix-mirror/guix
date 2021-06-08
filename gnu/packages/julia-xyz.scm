@@ -2167,6 +2167,26 @@ array data structures where the columns of the arrays are generated (on the fly)
 by Ranges.")
     (license license:expat)))
 
+(define-public julia-ratios
+  (package
+    (name "julia-ratios")
+    (version "0.4.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/timholy/Ratios.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1a4fd4jq4qjply29rkwg3m1clfndjsbckj1b1dab1bc35h2c6yxh"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/timholy/Ratios.jl")
+    (synopsis "Faster Rational-like types for Julia")
+    (description "This package provides types similar to Julia's @code{Rational}
+type, which make some sacrifices but have better computational performance.")
+    (license license:expat)))
+
 (define-public julia-recipesbase
   (package
     (name "julia-recipesbase")
