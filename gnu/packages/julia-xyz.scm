@@ -2448,6 +2448,31 @@ formatting an array of n things, e.g. numbers, dates, unitful values.  It's used
 in @code{Gadfly}, @code{Plots} and @code{Makie} to label axes and keys.")
     (license license:expat)))
 
+(define-public julia-simpletraits
+  (package
+    (name "julia-simpletraits")
+    (version "0.9.3")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/mauro3/SimpleTraits.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1aaq91klwxb0r3ckwihf7rd7jvg70757nkhp5ip4cc3lspnnip23"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-macrotools" ,julia-macrotools)))
+    (home-page "https://github.com/mauro3/SimpleTraits.jl")
+    (synopsis "Simple Traits for Julia")
+    (description "This package provides a macro-based implementation of traits.
+The main idea behind traits is to group types outside the type-hierarchy and to
+make dispatch work with that grouping.  The difference to Union-types is that
+types can be added to a trait after the creation of the trait, whereas Union
+types are fixed after creation.")
+    (license license:expat)))
+
 (define-public julia-sortingalgorithms
   (package
     (name "julia-sortingalgorithms")
