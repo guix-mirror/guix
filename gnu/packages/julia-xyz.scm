@@ -928,6 +928,43 @@ differentiation (AD).")
      "FuzzyCompletions provides fuzzy completions for a Julia runtime session.")
     (license license:expat)))
 
+(define-public julia-genericschur
+  (package
+    (name "julia-genericschur")
+    (version "0.5.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/RalphAS/GenericSchur.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0kklc2niylvynhq0v49kdmy58m9jmr5jxjf287k1wr9r81fya3sz"))))
+    (build-system julia-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'adjust-test-suite
+           (lambda _
+             (substitute* "test/complex.jl"
+               ;; expected Array{Int32,1}, got a value of type Array{Int64,1}
+               (("A = _example") "#A = _example")
+               (("schurtest\\(A,20\\)") ""))
+             (substitute* "test/runtests.jl"
+               ;; Test errors relating to liblapack.so
+               ((".*complex\\.jl.*") "")
+               ((".*real\\.jl.*") "")
+               ;; GenericSVD is deprecated upstream
+               ((".*gordschur\\.jl.*") "")))))))
+    (home-page "https://github.com/RalphAS/GenericSchur.jl")
+    (synopsis "Schur decomposition of matrices with generic element types")
+    (description "The Schur decomposition is the workhorse for eigensystem
+analysis of dense matrices.  The diagonal eigen-decomposition of normal
+(especially Hermitian) matrices is an important special case, but for non-normal
+matrices the Schur form is often more useful.")
+    (license license:expat)))
+
 (define-public julia-graphics
   (package
     (name "julia-graphics")
