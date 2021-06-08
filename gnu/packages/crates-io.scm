@@ -51297,7 +51297,7 @@ implementation that works everywhere, even WASM!")
 (define-public rust-zip-0.5
   (package
     (name "rust-zip")
-    (version "0.5.9")
+    (version "0.5.13")
     (source
      (origin
        (method url-fetch)
@@ -51306,13 +51306,13 @@ implementation that works everywhere, even WASM!")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1i9axf7h9l04l1cy14js30svjb6zcira5yj1d4v42b14b93rca6c"))))
+         "0588z88sj37nj1clis1rf4fh794av0hwaiaihfrin9b19n24iawk"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-byteorder" ,rust-byteorder-1)
-        ("rust-bzip2" ,rust-bzip2-0.3)
+        ("rust-bzip2" ,rust-bzip2-0.4)
         ("rust-crc32fast" ,rust-crc32fast-1)
         ("rust-flate2" ,rust-flate2-1)
         ("rust-thiserror" ,rust-thiserror-1)
