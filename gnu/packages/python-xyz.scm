@@ -1120,9 +1120,6 @@ NetCDF files can also be read and modified.  Python-HDF4 is a fork of
 @url{http://hdfeos.org/software/pyhdf.php,pyhdf}.")
    (license license:expat)))
 
-(define-public python2-hdf4
-  (package-with-python2 python-hdf4))
-
 (define-public python-h5py
   (package
     (name "python-h5py")
