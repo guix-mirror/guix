@@ -187,6 +187,42 @@ code easy by supplying a framework for writing and running groups of
 benchmarks as well as comparing benchmark results.")
     (license license:expat)))
 
+(define-public julia-blockarrays
+  (package
+    (name "julia-blockarrays")
+    (version "0.15.3")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaArrays/BlockArrays.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "15nd493bfkx92ihnr8dj8mb155dj44iqw266igv0qr5q0wad2bfr"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-arraylayouts" ,julia-arraylayouts)
+       ("julia-fillarrays" ,julia-fillarrays)))
+    (native-inputs
+     `(("julia-lazyarrays" ,julia-lazyarrays)
+       ("julia-offsetarrays" ,julia-offsetarrays)
+       ("julia-staticarrays" ,julia-staticarrays)))
+    (home-page "https://github.com/JuliaArrays/BlockArrays.jl")
+    (synopsis "BlockArrays for Julia")
+    (description "A block array is a partition of an array into blocks or
+subarrays.  This package has two purposes.  Firstly, it defines an interface for
+an @code{AbstractBlockArray} block arrays that can be shared among types
+representing different types of block arrays.  The advantage to this is that it
+provides a consistent API for block arrays.
+Secondly, it also implements two different type of block arrays that follow the
+@code{AbstractBlockArray} interface.  The type @code{BlockArray} stores each
+block contiguously while the type @code{PseudoBlockArray} stores the full matrix
+contiguously.  This means that @code{BlockArray} supports fast non copying
+extraction and insertion of blocks while @code{PseudoBlockArray} supports fast
+access to the full matrix to use in in for example a linear solver.")
+    (license license:expat)))
+
 (define-public julia-bufferedstreams
   (package
     (name "julia-bufferedstreams")
