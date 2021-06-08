@@ -5319,13 +5319,6 @@ color scales, and color space conversion easy.  It has support for:
     (description (package-description python-numpy))
     (license (package-license python-numpy))))
 
-(define-public python2-numpy-documentation
-  (let ((numpy-documentation (package-with-python2 python-numpy-documentation)))
-    (package
-      (inherit numpy-documentation)
-      (native-inputs `(("python2-functools32" ,python2-functools32)
-                       ,@(package-native-inputs numpy-documentation))))))
-
 (define-public python-pygit2
   (package
     (name "python-pygit2")
