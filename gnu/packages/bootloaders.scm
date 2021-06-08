@@ -6,7 +6,7 @@
 ;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2017 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
-;;; Copyright © 2017, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019, 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 nee <nee@cock.li>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -516,17 +516,17 @@ also initializes the boards (RAM etc).")
 (define-public u-boot-2021.07
   (package
    (inherit u-boot)
-   (version "2021.07-rc1")
+   (version "2021.07-rc4")
    (source (origin
-	    (patches
-             (list %u-boot-rockchip-inno-usb-patch))
+             (patches
+               (list %u-boot-rockchip-inno-usb-patch))
             (method url-fetch)
             (uri (string-append
                   "https://ftp.denx.de/pub/u-boot/"
                   "u-boot-" version ".tar.bz2"))
             (sha256
              (base32
-              "12krpy85iwy40xlhqb61d0d4bzj0sbn9sdf8brn57m4cjh1svaya"))))))
+              "0bnsywgy2b0jxim5h9dc807lqk5kq8hvgf4lcsmffnc0hf4isv8p"))))))
 
 (define-public u-boot-tools
   (package
