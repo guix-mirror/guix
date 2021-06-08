@@ -9124,14 +9124,18 @@ applications.")
     (arguments
      `(#:configure-flags
        (list (string-append "--zmq=" (assoc-ref %build-inputs "zeromq")))
-       ;; FIXME: You must build pyzmq with 'python setup.py build_ext
-       ;; --inplace' for 'python setup.py test' to work.
-       #:tests? #f))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'build-extensions
+           (lambda _
+             ;; Cython extensions have to be built before running the tests.
+             (invoke "python" "setup.py" "build_ext" "--inplace"))))))
     (inputs
      `(("zeromq" ,zeromq)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("python-nose" ,python-nose)))
+       ("python-cython" ,python-cython)
+       ("python-pytest" ,python-pytest)))
     (home-page "https://github.com/zeromq/pyzmq")
     (synopsis "Python bindings for 0MQ")
     (description
