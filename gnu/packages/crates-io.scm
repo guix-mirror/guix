@@ -39943,6 +39943,29 @@ CPUs, as well as raw interfaces to platform-specific instructions.
      "This package provides helpers to write more compact simd code.")
     (license license:expat)))
 
+(define-public rust-similar-1
+  (package
+    (name "rust-similar")
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "similar" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1v4ara277c2s8gcv821b9392ki5zzw95brfs8vy3bcjpln4d9l8s"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bstr" ,rust-bstr-0.2)
+        ("rust-unicode-segmentation" ,rust-unicode-segmentation-1))))
+    (home-page
+     "https://github.com/mitsuhiko/similar")
+    (synopsis "Diff library for Rust")
+    (description "This package provides a diff library for Rust.")
+    (license license:asl2.0)))
+
 (define-public rust-simple-mutex-1
   (package
     (name "rust-simple-mutex")
