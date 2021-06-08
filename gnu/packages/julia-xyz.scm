@@ -1887,6 +1887,29 @@ human-readable format.")
 format.")
     (license license:expat)))
 
+(define-public julia-quaternions
+  (package
+    (name "julia-quaternions")
+    (version "0.4.2")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaGeometry/Quaternions.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1zhynyvchc50hywws2jznpkwydr3njh8cv84d2ylyabhcwwmil9s"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-dualnumbers" ,julia-dualnumbers)))
+    (home-page "https://github.com/JuliaGeometry/Quaternions.jl")
+    (synopsis "Quaternion and dual-quaternion functionality")
+    (description "Quaternions are best known for their suitability as
+representations of 3D rotational orientation.  They can also be viewed as an
+extension of complex numbers.")
+    (license license:expat)))
+
 (define-public julia-queryoperators
   (package
     (name "julia-queryoperators")
