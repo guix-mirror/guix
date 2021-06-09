@@ -46,6 +46,7 @@
 ;;; Copyright © 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;; Copyright © 2021 Renzo Poddighe <renzo@poddighe.nl>
+;;; Copyright © 2021 Paul A. Patience <paul@apatience.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2871,3 +2872,57 @@ Pressing the key again will cycle to the application's next window,
 if there's more than one.")
     (home-page "https://github.com/mkropat/jumpapp")
     (license license:expat)))
+
+(define-public xkbset
+  (package
+    (name "xkbset")
+    (version "0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://faculty.missouri.edu/~stephen/software/"
+                           name "/" name "-" version ".tar.gz"))
+       (sha256
+        (base32 "199mlm127zk1lr8nrq22n68l2l8cjwc4cgwd67rg1i6497n2y0xc"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libx11" ,libx11)
+       ("perl" ,perl)
+       ("perl-tk" ,perl-tk)))
+    (arguments
+     `(#:tests? #f                      ; There are none.
+       #:make-flags
+       `(,,(string-append "CC=" (cc-for-target))
+         ,(string-append "X11PREFIX=" %output)
+         ,(string-append "X11BASE=" (assoc-ref %build-inputs "libx11"))
+         ,(string-append "INSTALL_MAN1=" %output "/share/man/man1"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'install 'create-install-directories
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (mkdir-p out)
+               (with-directory-excursion out
+                 (for-each mkdir-p '("bin" "share/man/man1"))))
+             #t))
+         (add-after 'install 'wrap-perl-script
+           (lambda* (#:key outputs #:allow-other-keys)
+             (wrap-program (string-append (assoc-ref outputs "out")
+                                          "/bin/xkbset-gui")
+               `("PERL5LIB" ":" prefix (,(getenv "PERL5LIB"))))
+             #t))
+         (replace 'install-license-files
+           (lambda* (#:key outputs #:allow-other-keys)
+             (install-file "COPYRIGHT"
+                           (string-append (assoc-ref outputs "out")
+                                          "/share/doc/" ,name "-" ,version))
+             #t)))))
+    (home-page "https://faculty.missouri.edu/~stephen/software/")
+    (synopsis "User-preference utility for XKB extensions for X")
+    (description
+     "This is a program to help manage many of the XKB features of the X Window
+System.  This includes such features as MouseKeys, AccessX, StickyKeys,
+BounceKeys, and SlowKeys.  It includes a graphical program to help with
+MouseKeys-acceleration management.")
+    (license license:bsd-3)))
