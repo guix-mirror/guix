@@ -140,14 +140,14 @@ in between these sequences may be different in both content and length.")
 (define-public liburcu
   (package
     (name "liburcu")
-    (version "0.12.2")
+    (version "0.13.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.lttng.org/files/urcu/"
                                   "userspace-rcu-" version ".tar.bz2"))
               (sha256
                (base32
-                "0yx69kbx9zd6ayjzvwvglilhdnirq4f1x1sdv33jy8bc9wgc3vsf"))))
+                "085s437nig6bdiv9im4k4qwqbrbnc4qw9flqi16jlb493az0vcnb"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
