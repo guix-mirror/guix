@@ -25,10 +25,12 @@
   #:use-module (guix records)
   #:use-module (guix gexp)
   #:use-module ((guix utils) #:select (source-properties->location))
+  #:use-module ((guix diagnostics) #:select (location-file))
+  #:use-module ((guix modules) #:select (file-name->module-name))
   #:autoload   (texinfo) (texi-fragment->stexi)
   #:autoload   (texinfo serialize) (stexi->texi)
   #:use-module (ice-9 match)
-  #:use-module ((srfi srfi-1) #:select (append-map))
+  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:export (configuration-field
@@ -252,6 +254,21 @@ does not have a default value" field kind)))
 ;; A little helper to make it easier to document all those fields.
 (define (generate-documentation documentation documentation-name)
   (define (str x) (object->string x))
+
+  (define (package->symbol package)
+    "Return the first symbol name of a package that matches PACKAGE, else #f."
+    (let* ((module (file-name->module-name
+                    (location-file (package-location package))))
+           (symbols (filter-map
+                     identity
+                     (module-map (lambda (symbol var)
+                                   (and (equal? package (variable-ref var))
+                                        symbol))
+                                 (resolve-module module)))))
+      (if (null? symbols)
+          #f
+          (first symbols))))
+
   (define (generate configuration-name)
     (match (assq-ref documentation configuration-name)
       ((fields . sub-documentation)
@@ -270,14 +287,21 @@ does not have a default value" field kind)))
                                   (lambda _ '%invalid))))
                    (define (show-default? val)
                      (or (string? val) (number? val) (boolean? val)
+                         (package? val)
                          (and (symbol? val) (not (eq? val '%invalid)))
                          (and (list? val) (and-map show-default? val))))
+
+                   (define (show-default val)
+                     (cond
+                      ((package? val)
+                       (symbol->string (package->symbol val)))
+                      (else (str val))))
 
                    `(entry (% (heading
                                (code ,(str field-name))
                                ,@(if (show-default? default)
                                      `(" (default: "
-                                       (code ,(str default)) ")")
+                                       (code ,(show-default default)) ")")
                                      '())
                                " (type: " ,(str field-type) ")"))
                            (para ,@field-docs)
