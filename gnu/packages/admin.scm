@@ -681,13 +681,13 @@ memory, disks, network and processes.")
 (define-public bpytop
   (package
     (name "bpytop")
-    (version "1.0.65")
+    (version "1.0.67")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "bpytop" version))
        (sha256
-        (base32 "1vq51vg2ygk2p738zi21v5chn908d4bd5zkb8s4fbgf4zqp425ny"))))
+        (base32 "1fwmiwvs8ax9az3hbp1p79x6m3wq73pn3vkbhcg9jvps4wv8wcwb"))))
     (build-system python-build-system)
     (inputs
      `(("python-psutil" ,python-psutil)))
@@ -702,7 +702,7 @@ memory, disks, network and processes.")
                                             (package-version python))
                                           "/site-packages/bpytop-themes")))
                (mkdir-p themes)
-               (copy-recursively "bpytop-themes" themes)))))))
+               (copy-recursively "themes" themes)))))))
     (home-page
      "https://github.com/aristocratos/bpytop")
     (synopsis "Resource monitor")
