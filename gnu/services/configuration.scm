@@ -255,32 +255,37 @@ does not have a default value" field kind)))
   (define (generate configuration-name)
     (match (assq-ref documentation configuration-name)
       ((fields . sub-documentation)
-       `((para "Available " (code ,(str configuration-name)) " fields are:")
-         ,@(map
-            (lambda (f)
-              (let ((field-name (configuration-field-name f))
-                    (field-type (configuration-field-type f))
-                    (field-docs (cdr (texi-fragment->stexi
-                                      (configuration-field-documentation f))))
-                    (default (catch #t
-                               (configuration-field-default-value-thunk f)
-                               (lambda _ '%invalid))))
-                (define (show-default? val)
-                  (or (string? val) (number? val) (boolean? val)
-                      (and (symbol? val) (not (eq? val '%invalid)))
-                      (and (list? val) (and-map show-default? val))))
-                `(deftypevr (% (category
-                                (code ,(str configuration-name)) " parameter")
-                               (data-type ,(str field-type))
-                               (name ,(str field-name)))
-                   ,@field-docs
-                   ,@(if (show-default? default)
-                         `((para "Defaults to " (samp ,(str default)) "."))
-                         '())
-                   ,@(append-map
-                      generate
-                      (or (assq-ref sub-documentation field-name) '())))))
-            fields)))))
+       `((deftp (% (category "Data Type") (name ,(str configuration-name)))
+           (para "Available " (code ,(str configuration-name)) " fields are:")
+           (table
+            (% (formatter (asis)))
+            ,@(map
+               (lambda (f)
+                 (let ((field-name (configuration-field-name f))
+                       (field-type (configuration-field-type f))
+                       (field-docs (cdr (texi-fragment->stexi
+                                         (configuration-field-documentation f))))
+                       (default (catch #t
+                                  (configuration-field-default-value-thunk f)
+                                  (lambda _ '%invalid))))
+                   (define (show-default? val)
+                     (or (string? val) (number? val) (boolean? val)
+                         (and (symbol? val) (not (eq? val '%invalid)))
+                         (and (list? val) (and-map show-default? val))))
+
+                   `(entry (% (heading
+                               (code ,(str field-name))
+                               ,@(if (show-default? default)
+                                     `(" (default: "
+                                       (code ,(str default)) ")")
+                                     '())
+                               " (type: " ,(str field-type) ")"))
+                           (para ,@field-docs)
+                           ,@(append-map
+                              generate
+                              (or (assq-ref sub-documentation field-name)
+                                  '())))))
+               fields)))))))
   (stexi->texi `(*fragment* . ,(generate documentation-name))))
 
 (define (configuration->documentation configuration-symbol)
