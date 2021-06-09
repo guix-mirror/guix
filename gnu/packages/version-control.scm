@@ -1700,17 +1700,17 @@ interface.")
 (define-public python-hg-evolve
   (package
     (name "python-hg-evolve")
-    (version "10.3.1")
+    (version "10.3.2")
     (source
       (origin
         (method hg-fetch)
         (uri (hg-reference
                (url "https://www.mercurial-scm.org/repo/evolve")
                (changeset version)))
-        (file-name (string-append name "-" version "-checkout"))
+        (file-name (hg-file-name name version))
         (sha256
           (base32
-            "0msnp5fp8sz4q2r5xpcmm60h82kwkyg23y212v1xfp7ixkq9f4qa"))))
+            "0qgk39s5pwxbshfa6x1f1ccxahja3fs265dddxy6q99spy3b3x5h"))))
     (build-system python-build-system)
     (arguments
      ;; Tests need mercurial source code.
