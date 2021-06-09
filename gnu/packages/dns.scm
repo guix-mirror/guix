@@ -803,7 +803,8 @@ served by AS112.  Stub and forward zones are supported.")
        (list "--sysconfdir=/etc"
              "--localstatedir=/var"
              "--enable-shared" "--disable-static"
-             "--disable-build-timestamp"))) ; build reproducibly
+             "--disable-build-timestamp"    ; build reproducibly
+             "--enable-tcp-manager")))
     (home-page "https://www.yadifa.eu/")
     (synopsis "Authoritative DNS name server")
     (description "YADIFA is an authoritative name server for the @dfn{Domain
