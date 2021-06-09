@@ -3850,14 +3850,17 @@ practically any type of media.")
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)
-       ("zlib" ,zlib)
+       ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("zlib" ,zlib)
        ("tinyxml2" ,tinyxml2)
-       ("curl" ,curl)
+       ("curl" ,curl) ; In Requires.private of libmediainfo.pc.
        ("libzen" ,libzen)))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; see above TODO
+       #:configure-flags
+       (list "--with-libcurl" "--with-libtinyxml2")
        #:phases
        ;; build scripts not in root of archive
        (modify-phases %standard-phases
@@ -3910,10 +3913,9 @@ MPEG-2, MPEG-4, DVD (VOB)...
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)
-       ("zlib" ,zlib)
-       ("libmediainfo" ,libmediainfo)
-       ("libzen" ,libzen)))
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libmediainfo" ,libmediainfo)))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; lacks tests
