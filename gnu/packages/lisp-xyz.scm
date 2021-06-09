@@ -5858,59 +5858,56 @@ formats.")
   (sbcl-package->ecl-package sbcl-swap-bytes))
 
 (define-public sbcl-iolib
-  ;; Latest release is from June 2017.
-  (let ((commit "7f5ea3a8457a29d224b24653c2b3657fb1898021")
-        (revision "2"))
-    (package
-      (name "sbcl-iolib")
-      (version (git-version "0.8.3" revision commit))
-      (home-page "https://github.com/sionescu/iolib")
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url home-page)
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "1bg5w7lm61hqk4b0svmri8a590q36z76jfa0sdgzb39r98c04w12"))))
-      (build-system asdf-build-system/sbcl)
-      (inputs
-       `(("alexandria" ,sbcl-alexandria)
-         ("bordeaux-threads" ,sbcl-bordeaux-threads)
-         ("cffi" ,sbcl-cffi)
-         ("idna" ,sbcl-idna)
-         ("libfixposix" ,libfixposix)
-         ("split-sequence" ,sbcl-split-sequence)
-         ("swap-bytes" ,sbcl-swap-bytes)))
-      (arguments
-       '(#:asd-files '("iolib.asdf.asd"
-                       "iolib.conf.asd"
-                       "iolib.common-lisp.asd"
-                       "iolib.base.asd"
-                       "iolib.asd")
-         #:asd-systems '("iolib"
-                         "iolib/os")
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'fix-paths
-             (lambda* (#:key inputs #:allow-other-keys)
-               (substitute* "src/syscalls/ffi-functions-unix.lisp"
-                 (("\\(:default \"libfixposix\"\\)")
-                  (string-append
-                   "(:default \""
-                   (assoc-ref inputs "libfixposix") "/lib/libfixposix\")")))
-               ;; Socket tests need Internet access, disable them.
-               (substitute* "iolib.asd"
-                 (("\\(:file \"sockets\" :depends-on \\(\"pkgdcl\" \"defsuites\"\\)\\)")
-                  "")))))))
-      (synopsis "Common Lisp I/O library")
-      (description "IOlib is to be a better and more modern I/O library than
+  (package
+    (name "sbcl-iolib")
+    (version "0.8.4")
+    (home-page "https://github.com/sionescu/iolib")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1f43jqqqwp9n7xksqxw91myapsdbc2dxck6nd6flakbnp9haylyq"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("bordeaux-threads" ,sbcl-bordeaux-threads)
+       ("cffi" ,sbcl-cffi)
+       ("idna" ,sbcl-idna)
+       ("libfixposix" ,libfixposix)
+       ("split-sequence" ,sbcl-split-sequence)
+       ("swap-bytes" ,sbcl-swap-bytes)))
+    (arguments
+     '(#:asd-files '("iolib.asdf.asd"
+                     "iolib.conf.asd"
+                     "iolib.common-lisp.asd"
+                     "iolib.base.asd"
+                     "iolib.asd")
+       #:asd-systems '("iolib"
+                       "iolib/os")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "src/syscalls/ffi-functions-unix.lisp"
+               (("\\(:default \"libfixposix\"\\)")
+                (string-append
+                 "(:default \""
+                 (assoc-ref inputs "libfixposix") "/lib/libfixposix\")")))
+             ;; Socket tests need Internet access, disable them.
+             (substitute* "iolib.asd"
+               (("\\(:file \"sockets\" :depends-on \\(\"pkgdcl\" \"defsuites\"\\)\\)")
+                "")))))))
+    (synopsis "Common Lisp I/O library")
+    (description "IOlib is to be a better and more modern I/O library than
 the standard Common Lisp library.  It contains a socket library, a DNS
 resolver, an I/O multiplexer(which supports @code{select(2)}, @code{epoll(4)}
 and @code{kqueue(2)}), a pathname library and file-system utilities.")
-      (license license:expat))))
+    (license license:expat)))
 
 (define-public cl-iolib
   (let ((parent (sbcl-package->cl-source-package sbcl-iolib)))
