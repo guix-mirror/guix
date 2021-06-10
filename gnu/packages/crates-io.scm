@@ -11033,13 +11033,44 @@ attributes.")
         ("rust-cxx-test-suite" ,rust-cxx-test-suite-0.0.0)
         ("rust-rustversion" ,rust-rustversion-1)
         ("rust-trybuild" ,rust-trybuild-1))))
+
+(define-public rust-cxx-build-1
+  (package
+    (name "rust-cxx-build")
+    (version "1.0.49")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "cxx-build" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0shmkgv3cnh06ws1p555znj1hh23phynaz73rgnz95gradsdwnwg"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:rust ,rust-1.48    ; or newer
+       #:cargo-inputs
+       (("rust-cc" ,rust-cc-1)
+        ("rust-codespan-reporting" ,rust-codespan-reporting-0.11)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-scratch" ,rust-scratch-1)
+        ("rust-syn" ,rust-syn-1))
+       #:cargo-development-inputs
+       (("rust-cxx-gen" ,rust-cxx-gen-0.7)
+        ("rust-pkg-config" ,rust-pkg-config-0.3))))
     (home-page "https://cxx.rs")
-    (synopsis "Safe interop between Rust and C++")
-    (description "This package provides a safe interop between Rust and C++.")
+    (synopsis "C++ code generator")
+    (description
+     "This package provides a C++ code generator for integrating the @code{cxx}
+crate into a Cargo build.")
     (license (list license:expat license:asl2.0))))
 
 (define-public rust-cxx-build-0.5
   (package
+    (inherit rust-cxx-build-1)
     (name "rust-cxx-build")
     (version "0.5.10")
     (source
@@ -11051,7 +11082,6 @@ attributes.")
         (sha256
          (base32
           "01109arjlj8wdq2rcyy3s76a5aidkn7zvhhhvhvkg1cxgqza9p22"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-cc" ,rust-cc-1)
@@ -11063,7 +11093,7 @@ attributes.")
         ("rust-syn" ,rust-syn-1))
        #:cargo-development-inputs
        (("rust-cxx-gen" ,rust-cxx-gen-0.6)
-        ("rust-pkg-config" ,rust-pkg-config-0.3))))
+        ("rust-pkg-config" ,rust-pkg-config-0.3))))))
 
 (define-public rust-cxx-gen-0.7
   (package
