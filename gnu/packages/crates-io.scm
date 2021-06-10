@@ -17181,8 +17181,36 @@ retrieving random data from system source.")
 getters and setters on fields.")
     (license license:expat)))
 
+(define-public rust-gettext-rs-0.7
+  (package
+    (name "rust-gettext-rs")
+    (version "0.7.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "gettext-rs" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0r7kahqcjrkm83d3gzzkn83fnw2bnqj2ank5z6hsm66izalai7p4"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-gettext-sys" ,rust-gettext-sys-0.21)
+        ("rust-locale-config" ,rust-locale-config-0.3))
+       #:cargo-development-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1))))
+    (inputs
+     `(("gettext" ,gettext-minimal)))
+    (home-page "https://github.com/Koka/gettext-rs")
+    (synopsis "GNU Gettext FFI binding for Rust")
+    (description "This package provides GNU Gettext FFI bindings for Rust.")
+    (license license:expat)))
+
 (define-public rust-gettext-rs-0.5
   (package
+    (inherit rust-gettext-rs-0.7)
     (name "rust-gettext-rs")
     (version "0.5.0")
     (source
@@ -17194,17 +17222,10 @@ getters and setters on fields.")
         (sha256
          (base32
           "1qc9a63i54b9ad3jx951hn7xb6xf76c9f3hmi2cdy2m7rhczm58v"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-gettext-sys" ,rust-gettext-sys-0.19)
-        ("rust-locale-config" ,rust-locale-config-0.3))))
-    (inputs
-     `(("gettext" ,gettext-minimal)))
-    (home-page "https://github.com/Koka/gettext-rs")
-    (synopsis "GNU Gettext FFI binding for Rust")
-    (description "This package provides GNU Gettext FFI bindings for Rust.")
-    (license license:expat)))
+        ("rust-locale-config" ,rust-locale-config-0.3))))))
 
 (define-public rust-gettext-rs-0.4
   (package
