@@ -17208,6 +17208,27 @@ getters and setters on fields.")
     (description "This package provides GNU Gettext FFI bindings for Rust.")
     (license license:expat)))
 
+(define-public rust-gettext-rs-0.6
+  (package
+    (inherit rust-gettext-rs-0.7)
+    (name "rust-gettext-rs")
+    (version "0.6.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "gettext-rs" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "040nizg9l5ap2vqgq4d2va2hi6cpykj46g8q1z9xv393vjlygx1x"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-gettext-sys" ,rust-gettext-sys-0.21)
+        ("rust-locale-config" ,rust-locale-config-0.3))
+       #:cargo-development-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1))))))
+
 (define-public rust-gettext-rs-0.5
   (package
     (inherit rust-gettext-rs-0.7)
