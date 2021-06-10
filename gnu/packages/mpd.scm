@@ -9,7 +9,7 @@
 ;;; Copyright © 2019 Evan Straw <evan.straw99@gmail.com>
 ;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Lars-Dominik Braun <lars@6xq.net>
-;;; Copyright © 2020 Simon Streit <simon@netpanic.org>
+;;; Copyright © 2020, 2021 Simon Streit <simon@netpanic.org>
 ;;; Copyright © 2021 Noah Evans <noah@nevans.me>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -383,7 +383,7 @@ other MPD frontends.")
 (define-public mpdris2
   (package
     (name "mpdris2")
-    (version "0.8")
+    (version "0.9.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -392,7 +392,7 @@ other MPD frontends.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "048b8acsd1b8kcxzd9fsh5p9g2an9c4rznicfcpyrsjz5syv894h"))))
+                "17ys8ccr3h6vix0agvhz859slz0phhk7lwqn5bg4az8s7zgqm3nm"))))
     (build-system gnu-build-system)
     ;; Manually wrap the binary, because we’re not using python-build-system.
     (arguments
