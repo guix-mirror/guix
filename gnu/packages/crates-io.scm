@@ -11136,8 +11136,29 @@ crate into higher level tools.")
     (description "This package provides the test suite of the cxx crate.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-cxxbridge-flags-1
+  (package
+    (name "rust-cxxbridge-flags")
+    (version "1.0.49")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "cxxbridge-flags" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "18cv8a8sgyiwfqspdyfq18jizf0rlhg90ibdl0zp8jhcv498s6gr"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/dtolnay/cxx")
+    (synopsis "Compiler configuration of the `cxx` crate")
+    (description "This package provides a compiler configuration of the `cxx`
+crate (implementation detail).")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-cxxbridge-flags-0.5
   (package
+    (inherit rust-cxxbridge-flags-1)
     (name "rust-cxxbridge-flags")
     (version "0.5.10")
     (source
@@ -11148,13 +11169,7 @@ crate into higher level tools.")
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "0jfwsm85s5kalgqbqlg1kq79zcb5zwk375h0qw7ycz5i6v3c8j0k"))))
-    (build-system cargo-build-system)
-    (home-page "https://github.com/dtolnay/cxx")
-    (synopsis "Compiler configuration of the `cxx` crate")
-    (description "This package provides a compiler configuration of the `cxx`
-crate (implementation detail).")
-    (license (list license:expat license:asl2.0))))
+          "0jfwsm85s5kalgqbqlg1kq79zcb5zwk375h0qw7ycz5i6v3c8j0k"))))))
 
 (define-public rust-cxxbridge-macro-0.5
   (package
