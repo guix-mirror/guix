@@ -17115,8 +17115,37 @@ getters and setters on fields.")
        (("rust-gettext-sys" ,rust-gettext-sys-0.19)
         ("rust-locale-config" ,rust-locale-config-0.2))))))
 
+(define-public rust-gettext-sys-0.21
+  (package
+    (name "rust-gettext-sys")
+    (version "0.21.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "gettext-sys" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "105d5zh67yc5vyzmqxdw7hx82h606ca6rzhsfjgzjczn2s012pc8"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin (delete-file "gettext-0.21.tar.xz") #t))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-cc" ,rust-cc-1)
+        ("rust-tempfile" ,rust-tempfile-3))))
+    (inputs
+     `(("gettext" ,gettext-minimal)))
+    (home-page "https://github.com/Koka/gettext-rs")
+    (synopsis "Gettext raw FFI bindings")
+    (description "This package provides raw FFI bindings for GNU Gettext.")
+    (license license:expat)))
+
 (define-public rust-gettext-sys-0.19
   (package
+    (inherit rust-gettext-sys-0.21)
     (name "rust-gettext-sys")
     (version "0.19.9")
     (source
@@ -17131,16 +17160,9 @@ getters and setters on fields.")
         (modules '((guix build utils)))
         (snippet
          '(begin (delete-file "gettext-0.19.8.1.tar.xz") #t))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-cc" ,rust-cc-1))))
-    (inputs
-     `(("gettext" ,gettext-minimal)))
-    (home-page "https://github.com/Koka/gettext-rs")
-    (synopsis "Gettext raw FFI bindings")
-    (description "This package provides raw FFI bindings for GNU Gettext.")
-    (license license:expat)))
+       (("rust-cc" ,rust-cc-1))))))
 
 (define-public rust-gfa-0.6
   (package
