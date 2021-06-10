@@ -7289,6 +7289,28 @@ coding.")
      "This package provides current CI environment information.")
     (license license:asl2.0)))
 
+(define-public rust-clang-ast-test-suite-0.0.0
+  (package
+    (name "rust-clang-ast-test-suite")
+    (version "0.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "clang-ast-test-suite" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "04c6p67w2f3s74pl83swj93l6p9g88vgki0rp2vxbb0bzm1hqy5h"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t))   ; Not intended to be built independently.
+    (home-page "https://github.com/dtolnay/clang-ast")
+    (synopsis "Test suite of the clang-ast crate")
+    (description
+     "This package contains the test suite of the @code{clang-ast} crate.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-clang-sys-1
   (package
     (name "rust-clang-sys")
