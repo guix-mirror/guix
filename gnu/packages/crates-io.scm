@@ -37492,7 +37492,7 @@ proven statistical guarantees.")
 (define-public rust-section-testing-0.0
   (package
     (name "rust-section-testing")
-    (version "0.0.4")
+    (version "0.0.5")
     (source
       (origin
         (method url-fetch)
@@ -37501,7 +37501,7 @@ proven statistical guarantees.")
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "0a1zwpcs2dqhky2wd8y82cm25l3s9i5dbyn4ypgmvdysizcxgr7c"))))
+          "18dfl8nacwcd1z2y4sgdx7751czzpl6282q6cd49ys5gd0xlkljz"))))
     (build-system cargo-build-system)
     (home-page "https://github.com/evanw/section_testing")
     (synopsis "Library for section-style testing")
