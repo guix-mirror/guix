@@ -1406,6 +1406,11 @@ NanoVNA vector network analyzers.")
      `(#:tests? #f  ; No test suite.
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-newer-hamlib-support
+           (lambda _
+             (substitute* "qsstv/rig/rigcontrol.cpp"
+               (("FILPATHLEN")
+                "HAMLIB_FILPATHLEN"))))
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
              (invoke "qmake"
