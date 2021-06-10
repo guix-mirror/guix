@@ -3092,7 +3092,7 @@ for OpenSMTPD to extend its functionality.")
     (license (list license:bsd-2 license:bsd-3 ; openbsd-compat
                    license:isc))))             ; everything else
 
-(define libopensmtpd
+(define-public libopensmtpd
   ;; Private source dependency of opensmtpd-filter-dkimsign (by the same
   ;; author), until any project actually uses it in its compiled form.
   (package
