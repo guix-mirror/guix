@@ -66,6 +66,7 @@
   #:use-module (gnu packages fribidi)
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
@@ -493,7 +494,7 @@ clone.")
 (define-public tsukundere
   (package
     (name "tsukundere")
-    (version "0.3.0")
+    (version "0.3.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -502,7 +503,7 @@ clone.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "06jiaylbnx8khicsaq2gwnd8wspjhjymbb5z6x5445krklk0jx18"))))
+                "13p9inz7jj3hm2lmx4p0lhva4ng1m148pjzhq12ybc4kk139i75b"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((ice-9 match)
@@ -546,6 +547,7 @@ clone.")
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
+       ("gettext" ,gettext-minimal)
        ("guile" ,guile-3.0)
        ("pkg-config" ,pkg-config)
        ("texinfo" ,texinfo)))
