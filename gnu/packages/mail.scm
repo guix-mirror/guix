@@ -3095,59 +3095,40 @@ for OpenSMTPD to extend its functionality.")
 (define libopensmtpd
   ;; Private source dependency of opensmtpd-filter-dkimsign (by the same
   ;; author), until any project actually uses it in its compiled form.
-  (let ((revision 48))
-    (package
-      (name "libopensmtpd")
-      (version (format #f "0.0.0-~a" revision))
-      (source
-       (origin
-         (method svn-fetch)
-         (uri (svn-reference
-               (url "http://imperialat.at/dev/libopensmtpd/")
-               (revision revision)))
-         (sha256
-          (base32 "04fgibpi6q0c3468ww3z7gsvraz0gyfps0c2dj8mdyri636c0x0s"))
-         (file-name (git-file-name name version))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:make-flags
-         (list "-f" "Makefile.gnu"
-               (string-append "CC=" ,(cc-for-target))
-               (string-append "LOCALBASE=" (assoc-ref %outputs "out")))
-         #:tests? #f                    ; no test suite
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'inherit-ownership
-             (lambda _
-               (substitute* "Makefile.gnu"
-                 (("-o \\$\\{BINOWN\\} -g \\$\\{BINGRP\\}") ""))
-               #t))
-           (delete 'configure)          ; no configure script
-           (add-before 'install 'create-output-directories
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let ((out (assoc-ref outputs "out")))
-                 (mkdir-p (string-append out "/lib"))
-                 #t)))
-           (add-after 'install 'install-header-file
-             (lambda* (#:key make-flags outputs #:allow-other-keys)
-               (let ((out (assoc-ref outputs "out")))
-                 (mkdir-p (string-append out "/include"))
-                 (apply invoke "make" "includes" make-flags))))
-           (add-after 'install 'install-man-page
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (man3 (string-append out "/share/man/man3")))
-                 ;; There is no make target for this.
-                 (install-file "osmtpd_run.3" man3)
-                 #t))))))
-      (inputs
-       `(("libevent" ,libevent)))
-      (home-page "http://imperialat.at/dev/libopensmtpd/")
-      (synopsis "OpenSMTPd filter C API")
-      (description
-       "The @code{osmtpd} API is an event-based C programming interface for
+  (package
+    (name "libopensmtpd")
+    (version "0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://distfiles.sigtrap.nl/"
+                           "libopensmtpd-" version ".tar.gz"))
+       (sha256
+        (base32 "04x610mvwba7m0n9h0wbnsw58rb4khq44fm4blkgjqvh3bhxbmnd"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list "-f" "Makefile.gnu"
+             (string-append "CC=" ,(cc-for-target))
+             (string-append "LOCALBASE=" (assoc-ref %outputs "out")))
+       #:tests? #f                      ; no test suite
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'inherit-ownership
+           (lambda _
+             (substitute* "Makefile.gnu"
+               (("-o \\$\\{...OWN\\} -g \\$\\{...GRP\\}") ""))))
+         (delete 'configure))))         ; no configure script
+    (native-inputs
+     `(("mandoc" ,mandoc)))           ; silently installs empty man page without
+    (inputs
+     `(("libevent" ,libevent)))
+    (home-page "https://imperialat.at/dev/libopensmtpd/")
+    (synopsis "OpenSMTPd filter C API")
+    (description
+     "The @code{osmtpd} API is an event-based C programming interface for
 writing OpenSMTPd filters.")
-      (license license:expat))))
+    (license license:expat)))
 
 (define-public opensmtpd-filter-dkimsign
   (package
