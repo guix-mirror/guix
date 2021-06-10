@@ -887,8 +887,13 @@ time for compression ratio.")
        (modify-phases %standard-phases
          (replace 'configure
            (lambda _
-             (chdir "squashfs-tools")
-             #t)))))
+             (chdir "squashfs-tools")))
+         (add-after 'install 'install-documentation
+           ;; Install what very little usage documentation is provided.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/" ,name)))
+               (install-file "../USAGE" doc)))))))
     (inputs
      `(("lz4" ,lz4)
        ("lzo" ,lzo)
