@@ -11171,8 +11171,42 @@ crate (implementation detail).")
          (base32
           "0jfwsm85s5kalgqbqlg1kq79zcb5zwk375h0qw7ycz5i6v3c8j0k"))))))
 
+(define-public rust-cxxbridge-macro-1
+  (package
+    (name "rust-cxxbridge-macro")
+    (version "1.0.49")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "cxxbridge-macro" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0gkwvihw74dh8p3fz3552wnxanrpwmwfy38ylz2z8knjq0y8y4v3"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:rust ,rust-1.48    ; or newer
+       #:cargo-inputs
+       (("rust-clang-ast" ,rust-clang-ast-0.1)
+        ("rust-flate2" ,rust-flate2-1)
+        ("rust-memmap" ,rust-memmap-0.7)
+        ("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-syn" ,rust-syn-1))
+       #:cargo-development-inputs
+       (("rust-cxx" ,rust-cxx-1))))
+    (home-page "https://cxx.rs")
+    (synopsis "Implementation detail of the `cxx` crate")
+    (description
+     "This package provides an implementation detail of the @code{cxx} crate.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-cxxbridge-macro-0.5
   (package
+    (inherit rust-cxxbridge-macro-1)
     (name "rust-cxxbridge-macro")
     (version "0.5.10")
     (source
@@ -11184,19 +11218,13 @@ crate (implementation detail).")
         (sha256
          (base32
           "05mhvchmcb8dpgcqkl5vyxycywp2x42vw1qh2hyxxyi576nmmxsr"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-proc-macro2" ,rust-proc-macro2-1)
         ("rust-quote" ,rust-quote-1)
         ("rust-syn" ,rust-syn-1))
        #:cargo-development-inputs
-       (("rust-cxx" ,rust-cxx-0.5))))
-    (home-page "https://cxx.rs")
-    (synopsis "Implementation detail of the `cxx` crate")
-    (description
-     "This package provides an implementation detail of the @code{cxx} crate.")
-    (license (list license:expat license:asl2.0))))
+       (("rust-cxx" ,rust-cxx-0.5))))))
 
 (define-public rust-daemonize-0.4
   (package
