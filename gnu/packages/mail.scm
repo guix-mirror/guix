@@ -3133,58 +3133,34 @@ writing OpenSMTPd filters.")
 (define-public opensmtpd-filter-dkimsign
   (package
     (name "opensmtpd-filter-dkimsign")
-    ;; The .arch repackaging provides not only a usable Makefile, but patches
-    ;; the source to actually build on GNU, e.g., by making pledge() optional.
-    ;; It's effectively the portable branch that upstream lacks at this time.
-    (version "0.2.arch2")               ; also update both native-inputs
+    (version "0.5")
     (source
      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/de-vri-es/filter-dkimsign")
-             (commit (string-append "v" version))))
+       (method url-fetch)
+       (uri (string-append "https://distfiles.sigtrap.nl/"
+                           "filter-dkimsign-" version ".tar.gz"))
        (sha256
-        (base32 "1dv6184h0gq2safnc7ln4za3arbafzc1xwkgwmiihqcjvdyxig0c"))
-       (file-name (git-file-name name version))))
+        (base32 "0jwp47ixibnz8rghn193bk2hxh1j1zfrnidml18j7d7cylxfrd55"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
-       (list (string-append "CC=" ,(cc-for-target)))
+       (list "-f" "Makefile.gnu"
+             (string-append "CC=" ,(cc-for-target))
+             (string-append "LOCALBASE=" (assoc-ref %outputs "out")))
        #:tests? #f                      ; no test suite
        #:phases
        (modify-phases %standard-phases
-         (replace 'unpack
-           (lambda* (#:key source inputs #:allow-other-keys)
-             (copy-recursively source "filter-dkimsign")
-             (copy-recursively (assoc-ref inputs "libopensmtpd-source")
-                               "libopensmtpd")
-             (copy-file (assoc-ref inputs "Makefile") "Makefile")
-             #t))
-         (delete 'configure)            ; no configure script
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out     (assoc-ref outputs "out"))
-                    (libexec (string-append out "/libexec/opensmtpd"))
-                    (man8    (string-append out "/share/man/man8")))
-               (chdir "filter-dkimsign")
-               (install-file "filter-dkimsign" libexec)
-               (install-file "filter-dkimsign.8" man8)
-               #t))))))
+         (add-after 'unpack 'inherit-ownership
+           (lambda _
+             (substitute* "Makefile.gnu"
+               (("-o \\$\\{...OWN\\} -g \\$\\{...GRP\\}") ""))))
+         (delete 'configure))))         ; no configure script
     (native-inputs
-     `(("Makefile"
-        ,(origin
-           (method url-fetch)
-           (uri (string-append
-                 "https://aur.archlinux.org/cgit/aur.git/plain/Makefile"
-                 "?h=opensmtpd-filter-dkimsign"
-                 "&id=58393470477a2ff2a58f9d72f5d851698067539f"))
-           (sha256
-            (base32 "0da5qr9hfjkf07ybvfva967njmf2x0b82z020r6v5f93jzsbqx92"))
-           (file-name (string-append name "-" version "-Makefile"))))
-       ("libopensmtpd-source" ,(package-source libopensmtpd))))
+     `(("mandoc" ,mandoc)))           ; silently installs empty man page without
     (inputs
      `(("libevent" ,libevent)
-       ("libressl" ,libressl)))         ; openssl works too but follow opensmtpd
+       ("libressl" ,libressl)           ; openssl works too but follow opensmtpd
+       ("libopensmtpd" ,libopensmtpd)))
     (home-page "http://imperialat.at/dev/filter-dkimsign/")
     (synopsis "OpenSMTPd filter for signing mail with DKIM")
     (description
