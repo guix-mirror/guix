@@ -382,12 +382,12 @@ built-in registry server of Docker.")
                (("DefaultInitBinary = .*")
                 (string-append "DefaultInitBinary = \""
                                (assoc-ref inputs "tini")
-                               "/bin/tini\"\n")))
+                               "/bin/tini-static\"\n")))
              (substitute* "daemon/config/config_common_unix_test.go"
                (("expectedInitPath: \"docker-init\"")
                 (string-append "expectedInitPath: \""
                                (assoc-ref inputs "tini")
-                               "/bin/tini\"")))
+                               "/bin/tini-static\"")))
              (substitute* "vendor/github.com/moby/buildkit/executor/runcexecutor/executor.go"
                (("var defaultCommandCandidates = .*")
                 (string-append "var defaultCommandCandidates = []string{\""
