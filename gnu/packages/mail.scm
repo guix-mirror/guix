@@ -3146,21 +3146,25 @@ writing OpenSMTPd filters.")
      `(#:make-flags
        (list "-f" "Makefile.gnu"
              (string-append "CC=" ,(cc-for-target))
+             "HAVE_ED25519=yep-but-is-openssl-only"
              (string-append "LOCALBASE=" (assoc-ref %outputs "out")))
        #:tests? #f                      ; no test suite
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'inherit-ownership
+         (add-after 'unpack 'patch-Makefile.gnu
            (lambda _
              (substitute* "Makefile.gnu"
+               (("pkg-config") ,(pkg-config-for-target))
                (("-o \\$\\{...OWN\\} -g \\$\\{...GRP\\}") ""))))
          (delete 'configure))))         ; no configure script
     (native-inputs
      `(("mandoc" ,mandoc)))           ; silently installs empty man page without
     (inputs
      `(("libevent" ,libevent)
-       ("libressl" ,libressl)           ; openssl works too but follow opensmtpd
-       ("libopensmtpd" ,libopensmtpd)))
+       ("libopensmtpd" ,libopensmtpd)
+       ;; XXX Our OpenSMTPd package uses libressl, but this package currently
+       ;; supports HAVE_ED25519 only with openssl.  Switch back when possible.
+       ("openssl" ,openssl)))
     (home-page "http://imperialat.at/dev/filter-dkimsign/")
     (synopsis "OpenSMTPd filter for signing mail with DKIM")
     (description
