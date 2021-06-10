@@ -881,6 +881,7 @@ time for compression ratio.")
              "XZ_SUPPORT=1"
              "LZO_SUPPORT=1"
              "LZ4_SUPPORT=1"
+             "ZSTD_SUPPORT=1"
              (string-append "INSTALL_DIR=" %output "/bin"))
        #:phases
        (modify-phases %standard-phases
@@ -892,7 +893,8 @@ time for compression ratio.")
      `(("lz4" ,lz4)
        ("lzo" ,lzo)
        ("xz" ,xz)
-       ("zlib" ,zlib)))
+       ("zlib" ,zlib)
+       ("zstd:lib" ,zstd "lib")))
     (home-page "https://github.com/plougher/squashfs-tools")
     (synopsis "Tools to create and extract squashfs file systems")
     (description
