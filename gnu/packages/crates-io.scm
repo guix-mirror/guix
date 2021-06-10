@@ -7289,6 +7289,34 @@ coding.")
      "This package provides current CI environment information.")
     (license license:asl2.0)))
 
+(define-public rust-clang-ast-0.1
+  (package
+    (name "rust-clang-ast")
+    (version "0.1.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "clang-ast" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1sfqyxszas78s78nga88fl0i5qlr87qsj22vlxarhvx96q86impf"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t     ; Uses unstable features.
+       #:cargo-inputs
+       (("rust-serde" ,rust-serde-1))
+       #:cargo-development-inputs
+       (("rust-clang-ast-test-suite" ,rust-clang-ast-test-suite-0.0.0)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1))))
+    (home-page "https://github.com/dtolnay/clang-ast")
+    (synopsis "Data structures for processing Clang's ast format")
+    (description "This package contains data structures for processing Clang's
+@code{-ast-dump=json} format.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-clang-ast-test-suite-0.0.0
   (package
     (name "rust-clang-ast-test-suite")
