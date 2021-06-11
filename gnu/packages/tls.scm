@@ -16,6 +16,7 @@
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2021 Solene Rapenne <solene@perso.pw>
+;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -612,21 +613,19 @@ required structures.")
                 "0rihprcgxsydsbcqgd1952k2cfn4jmp7rlyp1c6sglfc6rdmcwd4"))))
     (build-system gnu-build-system)
     (arguments
-     ;; Do as if 'getentropy' were missing: Linux kernels before 3.17 lack its
-     ;; underlying 'getrandom' system call and ENOSYS isn't properly handled.
-     ;; See <https://lists.gnu.org/archive/html/guix-devel/2017-04/msg00235.html>.
-     '(#:configure-flags '("ac_cv_func_getentropy=no"
-                           ;; Provide a TLS-enabled netcat.
-                           "--enable-nc")))
-    (native-search-paths
-     (list (search-path-specification
-            (variable "SSL_CERT_DIR")
-            (separator #f)              ;single entry
-            (files '("etc/ssl/certs")))
-           (search-path-specification
-            (variable "SSL_CERT_FILE")
-            (separator #f)              ;single entry
-            (files '("etc/ssl/certs/ca-certificates.crt")))))
+     `(#:configure-flags
+       (list
+        ;; Do as if 'getentropy' were missing: Linux kernels before 3.17 lack its
+        ;; underlying 'getrandom' system call and ENOSYS isn't properly handled.
+        ;; See <https://lists.gnu.org/archive/html/guix-devel/2017-04/msg00235.html>.
+        "ac_cv_func_getentropy=no"
+        ;; FIXME It's using it's own bundled certificate, instead it should
+        ;; behave like OpenSSL by using environment variables.
+        (string-append "--with-openssldir=" %output
+                       "/share/libressl-"
+                       ,(package-version this-package))
+        ;; Provide a TLS-enabled netcat.
+        "--enable-nc")))
     (home-page "https://www.libressl.org/")
     (synopsis "SSL/TLS implementation")
     (description "LibreSSL is a version of the TLS/crypto stack, forked from
