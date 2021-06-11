@@ -22859,8 +22859,38 @@ library.")
         (snippet
          '(begin (delete-file-recursively "libgit2") #t))))))
 
+(define-public rust-libloading-0.7
+  (package
+    (name "rust-libloading")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "libloading" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0sidr67nsa693mqrqgk2np3bkqni0778yk147xncspy171jdk13g"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-1)
+        ("rust-winapi" ,rust-winapi-0.3))
+       #:cargo-development-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-static-assertions"
+         ,rust-static-assertions-1))))
+    (home-page "https://github.com/nagisa/rust_libloading/")
+    (synopsis "Safer binding to dynamic library loading utilities")
+    (description "This package provides a safer binding to dynamic library
+loading utilities.")
+    (license license:isc)))
+
 (define-public rust-libloading-0.6
   (package
+    (inherit rust-libloading-0.7)
     (name "rust-libloading")
     (version "0.6.7")
     (source
@@ -22870,7 +22900,6 @@ library.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "10wq4a4jkman8k6y0v2cw3d38y1h3rw6d2in5klggm8jg90k46im"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #true
        #:cargo-inputs
@@ -22881,12 +22910,7 @@ library.")
         ("rust-static-assertions" ,rust-static-assertions-1))))
     (inputs
      `(("rust-cfg-if" ,rust-cfg-if-1)
-       ("rust-winapi" ,rust-winapi-0.3)))
-    (home-page "https://github.com/nagisa/rust_libloading/")
-    (synopsis "Safer binding to dynamic library loading utilities")
-    (description "This package provides a safer binding to dynamic library
-loading utilities.")
-    (license license:isc)))
+       ("rust-winapi" ,rust-winapi-0.3)))))
 
 (define-public rust-libloading-0.5
   (package
