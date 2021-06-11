@@ -22176,6 +22176,30 @@ the jni-bindgen code generator for binding to JVM APIs from Rust.")
      "An implementation of the GNU make jobserver for Rust.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-jod-thread-0.1
+  (package
+    (name "rust-jod-thread")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "jod-thread" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1bj7g6l59ybcf33znf80ccqbxvs1cmd8ynd4m8h7ywdqk473c8wb"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page
+     "https://github.com/matklad/jod-thread")
+    (synopsis
+     "Thin wrapper around @code{std::thread} which joins on drop by default")
+    (description
+     "Join On Drop thread (jod_thread) is a thin wrapper around
+@code{std::thread}, which makes sure that by default all threads are joined.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-jsonrpc-core-14
   (package
     (name "rust-jsonrpc-core")
