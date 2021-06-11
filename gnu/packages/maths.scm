@@ -6212,7 +6212,7 @@ cli.")
 (define-public qalculate-gtk
   (package
     (name "qalculate-gtk")
-    (version "3.8.0")
+    (version "3.19.0")
     (source
      (origin
        (method git-fetch)
@@ -6221,7 +6221,7 @@ cli.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0nsg6dzg5r7rzqr671nvrf1c50rjwpz7bxv5f20i4s7agizgv840"))))
+        (base32 "1nrx7gp6f1yalbdda1gb97azhbr4xclq2xf08vvbvsk8jfd6fd2v"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -6245,15 +6245,6 @@ cli.")
            ;; script, which has not yet been patched to replace /bin/sh.
            (lambda _
              (setenv "NOCONFIGURE" "TRUE")
-             #t))
-         (add-before 'check 'add-pot-file
-           ;; the file contains translations and are currently not in use
-           ;; left out on purpose so add it to POTFILES.skip
-           (lambda _
-             (with-output-to-file "po/POTFILES.skip"
-               (lambda _
-                 (format #t "data/shortcuts.ui~%")
-                 #t))
              #t)))))
     (home-page "https://qalculate.github.io/")
     (synopsis "Multi-purpose graphical desktop calculator")
