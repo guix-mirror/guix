@@ -30512,6 +30512,33 @@ runtime support for rust-peg grammars.  To use rust-peg, see the peg crate.")
 perf_event_open system call, with associated types and constants.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-perf-event-0.4
+  (package
+    (name "rust-perf-event")
+    (version "0.4.7")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "perf-event" version))
+        (file-name
+          (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32
+            "0rlxmyscr38wynknqqpy82fypq8ywa52ad3dbm22ia7as8n5d5jk"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:cargo-inputs
+        (("rust-libc" ,rust-libc-0.2)
+         ("rust-perf-event-open-sys"
+          ,rust-perf-event-open-sys-1))))
+    (home-page
+      "https://github.com/jimblandy/perf-event.git")
+    (synopsis
+     "Rust interface to Linux performance monitoring")
+    (description
+     "This package provides a Rust interface to Linux performance monitoring.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-permutohedron-0.2
   (package
     (name "rust-permutohedron")
