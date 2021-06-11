@@ -6158,7 +6158,7 @@ researchers and developers alike to get started on SAT.")
 (define-public libqalculate
   (package
     (name "libqalculate")
-    (version "3.8.0")
+    (version "3.19.0")
     (source
      (origin
        (method git-fetch)
@@ -6167,7 +6167,7 @@ researchers and developers alike to get started on SAT.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1vbaza9c7159xf2ym90l0xkyj2mp6c3hbghhsqn29yvz08fda9df"))
+        (base32 "1w44407wb552q21dz4m2nwwdi8b9hzjb2w1l3ffsikzqckc7wbyj"))
        (patches
         (search-patches "libqalculate-3.8.0-libcurl-ssl-fix.patch"))))
     (build-system gnu-build-system)
