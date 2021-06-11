@@ -34125,6 +34125,29 @@ random generic types.")
     (license
      (list license:zlib license:asl2.0 license:expat))))
 
+(define-public rust-randomize-3
+  (package
+    (inherit rust-randomize-4)
+    (name "rust-randomize")
+    (version "3.0.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "randomize" version))
+        (file-name
+          (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32
+            "02ll7r3rrpmhjx34w91m1yvqw1685bq2n9amqvycjcqznncqrhw8"))))
+    (arguments
+      `(#:skip-build? #t
+        #:cargo-inputs
+        (("rust-rand-core" ,rust-rand-core-0.5)
+         ("rust-serde" ,rust-serde-1))
+        #:cargo-development-inputs
+        (("rust-bincode" ,rust-bincode-1))))
+    (license license:bsd-0)))
+
 (define-public rust-raw-cpuid-8
   (package
     (name "rust-raw-cpuid")
