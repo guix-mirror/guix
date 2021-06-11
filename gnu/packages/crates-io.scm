@@ -7263,6 +7263,35 @@ macros.")
 clauses.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-chalk-recursive-0.68
+  (package
+    (name "rust-chalk-recursive")
+    (version "0.68.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "chalk-recursive" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "11ak4zl5lgyh88scjm91fc9wjcyxb4s1kkcanhhi0ci755nl1pz0"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-chalk-derive" ,rust-chalk-derive-0.68)
+        ("rust-chalk-ir" ,rust-chalk-ir-0.68)
+        ("rust-chalk-solve" ,rust-chalk-solve-0.68)
+        ("rust-rustc-hash" ,rust-rustc-hash-1)
+        ("rust-tracing" ,rust-tracing-0.1))))
+    (home-page "https://github.com/rust-lang/chalk")
+    (synopsis
+     "Recursive solver for the Chalk project")
+    (description
+     "Recursive solver for the Chalk project")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-chalk-solve-0.68
   (package
     (name "rust-chalk-solve")
