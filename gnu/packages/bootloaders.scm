@@ -294,7 +294,9 @@ menu to select one of the installed operating systems.")
        ,@(substitute-keyword-arguments (package-arguments grub)
            ((#:tests? _ #f) #f)
            ((#:configure-flags flags ''())
-            `(cons "--with-platform=efi" ,flags))
+            `(cons* "--with-platform=efi"
+                    "--enable-stack-protector" ; EFI-only for now
+                    ,flags))
            ((#:phases phases)
             `(modify-phases ,phases
                (add-after 'patch-stuff 'use-absolute-efibootmgr-path
