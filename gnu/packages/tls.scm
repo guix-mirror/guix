@@ -602,14 +602,14 @@ required structures.")
 (define-public libressl
   (package
     (name "libressl")
-    (version "3.1.5")
+    (version "3.3.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://openbsd/LibreSSL/"
                                   "libressl-" version ".tar.gz"))
               (sha256
                (base32
-                "1504a1sf43frw43j14pij0q1f48rm5q86ggrlxxhw708qp7ds4rc"))))
+                "0rihprcgxsydsbcqgd1952k2cfn4jmp7rlyp1c6sglfc6rdmcwd4"))))
     (build-system gnu-build-system)
     (arguments
      ;; Do as if 'getentropy' were missing: Linux kernels before 3.17 lack its
