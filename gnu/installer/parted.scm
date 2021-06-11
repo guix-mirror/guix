@@ -107,6 +107,9 @@
 
             &no-root-mount-point
             no-root-mount-point?
+            &cannot-read-uuid
+            cannot-read-uuid?
+            cannot-read-uuid-partition
 
             check-user-partitions
             set-user-partitions-file-name
@@ -1006,15 +1009,48 @@ exists."
 (define-condition-type &no-root-mount-point &condition
   no-root-mount-point?)
 
+;; Cannot not read the partition UUID.
+(define-condition-type &cannot-read-uuid &condition
+  cannot-read-uuid?
+  (partition cannot-read-uuid-partition))
+
 (define (check-user-partitions user-partitions)
-  "Return #t if the USER-PARTITIONS lists contains one <user-partition> record
-with a mount-point set to '/', raise &no-root-mount-point condition
-otherwise."
-  (let ((mount-points
-         (map user-partition-mount-point user-partitions)))
-    (or (member "/" mount-points)
-        (raise
-         (condition (&no-root-mount-point))))))
+  "Check the following statements:
+
+The USER-PARTITIONS list contains one <user-partition> record with a
+mount-point set to '/'.  Raise &no-root-mount-point condition otherwise.
+
+All the USER-PARTITIONS with a mount point and that will not be formatted have
+a valid UUID.  Raise a &cannot-read-uuid condition specifying the faulty
+partition otherwise.
+
+Return #t if all the statements are valid."
+  (define (check-root)
+    (let ((mount-points
+           (map user-partition-mount-point user-partitions)))
+      (or (member "/" mount-points)
+          (raise
+           (condition (&no-root-mount-point))))))
+
+  (define (check-uuid)
+    (let ((mount-partitions
+           (filter user-partition-mount-point user-partitions)))
+      (every
+       (lambda (user-partition)
+         (let ((file-name (user-partition-file-name user-partition))
+               (need-formatting?
+                (user-partition-need-formatting? user-partition)))
+           (or need-formatting?
+               (read-partition-uuid file-name)
+               (raise
+                (condition
+                 (&cannot-read-uuid
+                  (partition file-name)))))))
+       mount-partitions)))
+
+  (and (check-root)
+       (check-uuid)
+       #t))
 
 (define (set-user-partitions-file-name user-partitions)
   "Set the partition file-name of <user-partition> records in USER-PARTITIONS
