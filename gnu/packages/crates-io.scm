@@ -39098,14 +39098,14 @@ macOS and iOS.")
 (define-public rust-semver-parser-0.10
   (package
     (name "rust-semver-parser")
-    (version "0.10.1")
+    (version "0.10.2")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "semver-parser" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0a0lgmnd7jga3c6090lsn4lifh3mnzmy4v6d6yqg9rfm59n19vs2"))))
+        (base32 "1xqijhqhx3bn77xnl1mlcp032hz8nv7n2fbdacbdzq7rnzsvxc00"))))
     (build-system cargo-build-system)
     (arguments
      `(#:tests? #f                      ;missing files
