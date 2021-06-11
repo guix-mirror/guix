@@ -53122,6 +53122,31 @@ to XDG Base Directory specification.")
       "This package provides a private implementation details of xflags.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-xflags-0.2
+  (package
+    (name "rust-xflags")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "xflags" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "12i0m43fmvwhlqid5xbr017c12j7jv3vlkjv04q428mpl3k6rbar"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-xflags-macros" ,rust-xflags-macros-0.2))))
+    (home-page "https://github.com/matklad/xflags")
+    (synopsis
+     "Moderately simple command line arguments parser")
+    (description
+     "This package provides a moderately simple command line arguments parser.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-xml-rs-0.8
   (package
     (name "rust-xml-rs")
