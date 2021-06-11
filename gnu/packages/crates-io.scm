@@ -14585,6 +14585,34 @@ blocking data structures.")
     (description "XML parser library written in C")
     (license license:expat)))
 
+(define-public rust-expect-test-1
+  (package
+    (name "rust-expect-test")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "expect-test" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0cq651b3dcrw94bl03krxnvllr8kqx6vskqal0n8ydrsmdx4f013"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build?
+       #t
+       #:cargo-inputs
+       (("rust-dissimilar" ,rust-dissimilar-1)
+        ("rust-once-cell" ,rust-once-cell-1))))
+    (home-page
+     "https://github.com/rust-analyzer/expect-test")
+    (synopsis
+     "Minimalistic snapshot testing library")
+    (description
+     "This package provides a minimalistic snapshot testing library.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-expectest-0.9
   (package
     (name "rust-expectest")
