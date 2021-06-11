@@ -53095,6 +53095,33 @@ to XDG Base Directory specification.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-xflags-macros-0.2
+  (package
+    (name "rust-xflags-macros")
+    (version "0.2.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "xflags-macros" version))
+        (file-name
+          (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32
+            "1jb2bq76kzzmq5rdyi3hzkq6x41l11fr1yn00f5ib5j9l4y7s0y8"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:skip-build? #t
+        #:cargo-inputs
+        (("rust-proc-macro2" ,rust-proc-macro2-1))
+        #:cargo-development-inputs
+        (("rust-expect-test" ,rust-expect-test-1))))
+    (home-page "https://github.com/matklad/xflags")
+    (synopsis
+      "Private implementation details of xflags")
+    (description
+      "This package provides a private implementation details of xflags.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-xml-rs-0.8
   (package
     (name "rust-xml-rs")
