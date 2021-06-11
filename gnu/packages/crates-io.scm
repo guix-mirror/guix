@@ -32782,6 +32782,37 @@ compliant email address validation.")
        (("rust-bitflags" ,rust-bitflags-0.5)
         ("rust-getopts" ,rust-getopts-0.2))))))
 
+(define-public rust-pulldown-cmark-to-cmark-6
+  (package
+    (name "rust-pulldown-cmark-to-cmark")
+    (version "6.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "pulldown-cmark-to-cmark" version))
+        (file-name
+          (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32
+            "08yyjr60jk8f4v4sqcgmna5n9y31l6lx3z9lak38wd82h63vkwp8"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:skip-build? #t
+        #:cargo-inputs
+        (("rust-pulldown-cmark" ,rust-pulldown-cmark-0.8))
+        #:cargo-development-inputs
+        (("rust-indoc" ,rust-indoc-1)
+         ("rust-pretty-assertions"
+          ,rust-pretty-assertions-0.6))))
+    (home-page
+      "https://github.com/Byron/pulldown-cmark-to-cmark")
+    (synopsis
+      "Convert pulldown-cmark Events back to the string they were parsed from")
+    (description
+      "This package provides a convert pulldown-cmark Events back to the string
+they were parsed from")
+    (license license:asl2.0)))
+
 (define-public rust-pulse-0.5
   (package
     (name "rust-pulse")
