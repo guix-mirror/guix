@@ -28091,8 +28091,45 @@ Foundation framework.")
      "This package provides utilities for testing Objective-C interop.")
     (license license:expat)))
 
+(define-public rust-object-0.24
+  (package
+    (name "rust-object")
+    (version "0.24.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "object" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0w21hp41mixzaavsdpjylbylh44z2b5d2wbnf5ipkvkjq38ksnqs"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-compiler-builtins"
+         ,rust-compiler-builtins-0.1)
+        ("rust-crc32fast" ,rust-crc32fast-1)
+        ("rust-flate2" ,rust-flate2-1)
+        ("rust-indexmap" ,rust-indexmap-1)
+        ("rust-rustc-std-workspace-alloc"
+         ,rust-rustc-std-workspace-alloc-1)
+        ("rust-rustc-std-workspace-core"
+         ,rust-rustc-std-workspace-core-1)
+        ("rust-wasmparser" ,rust-wasmparser-0.57))
+       #:cargo-development-inputs
+       (("rust-memmap" ,rust-memmap-0.7))))
+    (home-page "https://github.com/gimli-rs/object")
+    (synopsis "Unified interface for reading and writing object file formats")
+    (description
+     "This package provides a unified interface for reading and writing object
+file formats.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-object-0.23
   (package
+    (inherit rust-object-0.24)
     (name "rust-object")
     (version "0.23.0")
     (source
@@ -28102,7 +28139,6 @@ Foundation framework.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1m658q2ci9hk8csbl17zwcg1hpvcxm2sspjb9bzg0kc1cifsp9x9"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -28112,13 +28148,7 @@ Foundation framework.")
         ("rust-indexmap" ,rust-indexmap-1)
         ("rust-rustc-std-workspace-alloc" ,rust-rustc-std-workspace-alloc-1)
         ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1)
-        ("rust-wasmparser" ,rust-wasmparser-0.57))))
-    (home-page "https://github.com/gimli-rs/object")
-    (synopsis "Unified interface for reading and writing object file formats")
-    (description
-     "This package provides a unified interface for reading and writing object
-file formats.")
-    (license (list license:asl2.0 license:expat))))
+        ("rust-wasmparser" ,rust-wasmparser-0.57))))))
 
 (define-public rust-object-0.22
   (package
