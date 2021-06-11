@@ -984,21 +984,18 @@ tools (analyzer, mono/stereo tools, crossovers).")
 (define-public caps-plugins-lv2
   (package
     (name "caps-plugins-lv2")
-    (version "0.9.24") ; version that has been ported.
+    (version "0.9.26")
     (source
      (origin
        ;; The Github project hasn't tagged a release.
        (method git-fetch)
        (uri (git-reference
-             ;; Actually https://github.com/moddevices/caps-lv2.git, but it's
-             ;; missing fixes for newer glibc, so using the origin of a pull
-             ;; request regarding this issue:
-             (url "https://github.com/jujudusud/caps-lv2")
-             (commit "9c9478b7fbd8f9714f552ebe2a6866398b0babfb")))
+             (url "https://github.com/moddevices/caps-lv2.git")
+             (commit "5d52a0c6e8863c058c2aab2dea9f901a90d96eb9")))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1idfnazin3cca41zw1a8vwgnxjnkrap7bxxjamjqvgpmvydgcam1"))))
+         "0hdl7n3ra5gqgwkdfqkw8dj9gb1cgb76bn1v91w06d2w4lj9s8xa"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no check target
