@@ -44899,6 +44899,32 @@ fixed set of worker threads.")
      "You can bind to libsodium from Rust with this crate.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-tikv-jemalloc-sys-0.4
+  (package
+    (name "rust-tikv-jemalloc-sys")
+    (version "0.4.1+5.2.1-patched")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tikv-jemalloc-sys" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1lw6gy9gzk7g7h71nm8a5ybrilhqgr583mn80nslr78p0ldk69la"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cc" ,rust-cc-1)
+        ("rust-fs-extra" ,rust-fs-extra-1)
+        ("rust-libc" ,rust-libc-0.2))))
+    (home-page
+     "https://github.com/tikv/jemallocator")
+    (synopsis "Rust FFI bindings to jemalloc")
+    (description "This package provides a Rust FFI bindings to jemalloc.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-time-0.2
   (package
     (name "rust-time")
