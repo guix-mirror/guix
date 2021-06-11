@@ -35847,6 +35847,39 @@ can handle huge texts and memory-incoherent edits with ease.")
 wildcard segments")
     (license license:expat)))
 
+(define-public rust-rowan-0.13
+  (package
+    (name "rust-rowan")
+    (version "0.13.0-pre.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rowan" version))
+        (file-name
+          (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32
+            "03gh3wa52135mh1an1x4hw6jba64fwfsh4lw3fsmm6jy2i7c1k42"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:skip-build? #t
+        #:cargo-inputs
+        (("rust-countme" ,rust-countme-2)
+         ("rust-hashbrown" ,rust-hashbrown-0.9)
+         ("rust-memoffset" ,rust-memoffset-0.6)
+         ("rust-rustc-hash" ,rust-rustc-hash-1)
+         ("rust-serde" ,rust-serde-1)
+         ("rust-text-size" ,rust-text-size-1))
+        #:cargo-development-inputs
+        (("rust-m-lexer" ,rust-m-lexer-0.0.4))))
+    (home-page
+      "https://github.com/rust-analyzer/rowan")
+    (synopsis
+      "Library for generic lossless syntax trees")
+    (description
+      "This package provides a library for generic lossless syntax trees.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-rspec-1
   (package
     (name "rust-rspec")
