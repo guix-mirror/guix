@@ -41903,6 +41903,36 @@ control on the fields.")
     (description "This package provides a small and fast async runtime.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-smol-str-0.1
+  (package
+    (name "rust-smol-str")
+    (version "0.1.17")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "smol-str" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1srj7gd14cllfwh55jwmid425rz2idpvbw7ly08448r97b7gg83c"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-serde" ,rust-serde-1))
+       #:cargo-development-inputs
+       (("rust-proptest" ,rust-proptest-0.10)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1))))
+    (home-page "https://github.com/rust-analyzer/smol_str")
+    (synopsis
+     "Small-string optimized string type with O(1) clone")
+    (description
+     "This package provides a small-string optimized string type with O(1)
+clone.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-snailquote-0.3
   (package
     (name "rust-snailquote")
