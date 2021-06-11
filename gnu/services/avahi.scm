@@ -40,7 +40,6 @@
             avahi-configuration-wide-area?
             avahi-configuration-domains-to-browse
 
-            avahi-service
             avahi-service-type))
 
 ;;; Commentary:
@@ -165,39 +164,5 @@ service switch (NSS) with support for @code{.local} host name resolution.")
                          (service-extension profile-service-type
                                             avahi-package)))
                   (default-value (avahi-configuration)))))
-
-(define-deprecated (avahi-service #:key (avahi avahi) debug?
-                                  host-name
-                                  (publish? #t)
-                                  (ipv4? #t) (ipv6? #t)
-                                  wide-area?
-                                  (domains-to-browse '()))
-  avahi-service-type
-  "Return a service that runs @command{avahi-daemon}, a system-wide
-mDNS/DNS-SD responder that allows for service discovery and
-\"zero-configuration\" host name lookups (see @uref{https://avahi.org/}), and
-extends the name service cache daemon (nscd) so that it can resolve
-@code{.local} host names using
-@uref{http://0pointer.de/lennart/projects/nss-mdns/, nss-mdns}.  Additionally,
-add the @var{avahi} package to the system profile so that commands such as
-@command{avahi-browse} are directly usable.
-
-If @var{host-name} is different from @code{#f}, use that as the host name to
-publish for this machine; otherwise, use the machine's actual host name.
-
-When @var{publish?} is true, publishing of host names and services is allowed;
-in particular, avahi-daemon will publish the machine's host name and IP
-address via mDNS on the local network.
-
-When @var{wide-area?} is true, DNS-SD over unicast DNS is enabled.
-
-Boolean values @var{ipv4?} and @var{ipv6?} determine whether to use IPv4/IPv6
-sockets."
-  (service avahi-service-type
-           (avahi-configuration
-            (avahi avahi) (debug? debug?) (host-name host-name)
-            (publish? publish?) (ipv4? ipv4?) (ipv6? ipv6?)
-            (wide-area? wide-area?)
-            (domains-to-browse domains-to-browse))))
 
 ;;; avahi.scm ends here

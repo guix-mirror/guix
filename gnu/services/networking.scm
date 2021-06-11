@@ -73,7 +73,6 @@
   #:re-export (static-networking-service
                static-networking-service-type)
   #:export (%facebook-host-aliases
-            dhcp-client-service
             dhcp-client-service-type
 
             dhcpd-service-type
@@ -99,7 +98,6 @@
             ntp-server-address
             ntp-server-options
 
-            ntp-service
             ntp-service-type
 
             %openntpd-servers
@@ -126,7 +124,6 @@
             tor-configuration
             tor-configuration?
             tor-hidden-service
-            tor-service
             tor-service-type
 
             wicd-service-type
@@ -309,12 +306,6 @@ fe80::1%lo0 apps.facebook.com\n")
    isc-dhcp
    (description "Run @command{dhcp}, a Dynamic Host Configuration
 Protocol (DHCP) client, on all the non-loopback network interfaces.")))
-
-(define-deprecated (dhcp-client-service #:key (dhcp isc-dhcp))
-  dhcp-client-service-type
-  "Return a service that runs @var{dhcp}, a Dynamic Host Configuration
-Protocol (DHCP) client, on all the non-loopback network interfaces."
-  (service dhcp-client-service-type dhcp))
 
 (define-record-type* <dhcpd-configuration>
   dhcpd-configuration make-dhcpd-configuration
@@ -540,21 +531,6 @@ restrict source notrap nomodify noquery\n"))
 daemon of the @uref{http://www.ntp.org, Network Time Foundation}.  The daemon
 will keep the system clock synchronized with that of the given servers.")
                 (default-value (ntp-configuration))))
-
-(define-deprecated (ntp-service #:key (ntp ntp)
-                                (servers %ntp-servers)
-                                allow-large-adjustment?)
-  ntp-service-type
-  "Return a service that runs the daemon from @var{ntp}, the
-@uref{http://www.ntp.org, Network Time Protocol package}.  The daemon will
-keep the system clock synchronized with that of @var{servers}.
-@var{allow-large-adjustment?} determines whether @command{ntpd} is allowed to
-make an initial adjustment of more than 1,000 seconds."
-  (service ntp-service-type
-           (ntp-configuration (ntp ntp)
-                              (servers servers)
-                              (allow-large-adjustment?
-                               allow-large-adjustment?))))
 
 
 ;;;
@@ -1058,21 +1034,6 @@ HiddenServicePort ~a ~a~%"
                 (description
                  "Run the @uref{https://torproject.org, Tor} anonymous
 networking daemon.")))
-
-(define-deprecated (tor-service #:optional
-                                (config-file (plain-file "empty" ""))
-                                #:key (tor tor))
-  tor-service-type
-  "Return a service to run the @uref{https://torproject.org, Tor} anonymous
-networking daemon.
-
-The daemon runs as the @code{tor} unprivileged user.  It is passed
-@var{config-file}, a file-like object, with an additional @code{User tor} line
-and lines for hidden services added via @code{tor-hidden-service}.  Run
-@command{man tor} for information about the configuration file."
-  (service tor-service-type
-           (tor-configuration (tor tor)
-                              (config-file config-file))))
 
 (define tor-hidden-service-type
   ;; A type that extends Tor with hidden services.

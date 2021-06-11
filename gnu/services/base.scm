@@ -71,7 +71,6 @@
             file-system-service-type
             swap-service
             host-name-service
-            console-keymap-service
             %default-console-font
             console-font-service-type
             console-font-service
@@ -151,7 +150,6 @@
             guix-configuration-extra-options
             guix-configuration-log-file
 
-            guix-service
             guix-service-type
             guix-publish-configuration
             guix-publish-configuration?
@@ -163,16 +161,13 @@
             guix-publish-configuration-nar-path
             guix-publish-configuration-cache
             guix-publish-configuration-ttl
-            guix-publish-service
             guix-publish-service-type
 
             gpm-configuration
             gpm-configuration?
             gpm-service-type
-            gpm-service
 
             urandom-seed-service-type
-            urandom-seed-service
 
             rngd-configuration
             rngd-configuration?
@@ -543,10 +538,6 @@ file systems, as well as corresponding @file{/etc/fstab} entries.")))
 generator (RNG) with the value recorded when the system was last shut
 down.")))
 
-(define-deprecated (urandom-seed-service)
-  urandom-seed-service-type
-  (service urandom-seed-service-type))
-
 
 ;;;
 ;;; Add hardware random number generator to entropy pool.
@@ -650,11 +641,6 @@ to add @var{device} to the kernel's entropy pool.  The service will fail if
    (description "@emph{This service is deprecated in favor of the
 @code{keyboard-layout} field of @code{operating-system}.}  Load the given list
 of console keymaps with @command{loadkeys}.")))
-
-(define-deprecated (console-keymap-service #:rest files)
-  #f
-  "Return a service to load console keymaps from @var{files}."
-  (service console-keymap-service-type files))
 
 (define %default-console-font
   ;; Note: 'LatGrkCyr-8x16' has the advantage of providing three common
@@ -1770,13 +1756,6 @@ proxy of 'guix-daemon'...~%")
    (description
     "Run the build daemon of GNU@tie{}Guix, aka. @command{guix-daemon}.")))
 
-(define-deprecated (guix-service #:optional
-                                 (config %default-guix-configuration))
-  guix-service-type
-  "Return a service that runs the Guix build daemon according to
-@var{config}."
-  (service guix-service-type config))
-
 
 (define-record-type* <guix-publish-configuration>
   guix-publish-configuration make-guix-publish-configuration
@@ -1927,19 +1906,6 @@ raise a deprecation warning if the 'compression-level' field was used."
                 (description
                  "Add a Shepherd service running @command{guix publish}, a
 command that allows you to share pre-built binaries with others over HTTP.")))
-
-(define-deprecated (guix-publish-service #:key (guix guix)
-                                         (port 80) (host "localhost"))
-  guix-publish-service-type
-  "Return a service that runs @command{guix publish} listening on @var{host}
-and @var{port} (@pxref{Invoking guix publish}).
-
-This assumes that @file{/etc/guix} already contains a signing key pair as
-created by @command{guix archive --generate-key} (@pxref{Invoking guix
-archive}).  If that is not the case, the service will fail to start."
-  ;; Deprecated.
-  (service guix-publish-service-type
-           (guix-publish-configuration (guix guix) (port port) (host host))))
 
 
 ;;;
@@ -2282,19 +2248,6 @@ command-line options.  GPM allows users to use the mouse in the console,
 notably to select, copy, and paste text.  The default options use the
 @code{ps2} protocol, which works for both USB and PS/2 mice.")))
 
-(define-deprecated (gpm-service #:key (gpm gpm)
-                                (options %default-gpm-options))
-  gpm-service-type
-  "Run @var{gpm}, the general-purpose mouse daemon, with the given
-command-line @var{options}.  GPM allows users to use the mouse in the console,
-notably to select, copy, and paste text.  The default value of @var{options}
-uses the @code{ps2} protocol, which works for both USB and PS/2 mice.
-
-This service is not part of @var{%base-services}."
-  ;; To test in QEMU, use "-usbdevice mouse" and then, in the monitor, use
-  ;; "info mice" and "mouse_set X" to use the right mouse.
-  (service gpm-service-type
-           (gpm-configuration (gpm gpm) (options options))))
 
 (define-record-type* <kmscon-configuration>
   kmscon-configuration     make-kmscon-configuration

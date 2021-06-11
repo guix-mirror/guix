@@ -95,7 +95,6 @@
             slim-configuration-sessreg
 
             slim-service-type
-            slim-service
 
             screen-locker
             screen-locker?
@@ -108,7 +107,6 @@
 
             gdm-configuration
             gdm-service-type
-            gdm-service
 
             handle-xorg-configuration
             set-xorg-configuration))
@@ -664,49 +662,6 @@ reboot_cmd " shepherd "/sbin/reboot\n"
                   (description
                    "Run the SLiM graphical login manager for X11."))))
 
-(define-deprecated (slim-service #:key (slim slim)
-                                 (allow-empty-passwords? #t) auto-login?
-                                 (default-user "")
-                                 (theme %default-slim-theme)
-                                 (theme-name %default-slim-theme-name)
-                                 (xauth xauth) (shepherd shepherd)
-                                 (auto-login-session #f)
-                                 (startx (xorg-start-command)))
-  slim-service-type
-  "Return a service that spawns the SLiM graphical login manager, which in
-turn starts the X display server with @var{startx}, a command as returned by
-@code{xorg-start-command}.
-
-@cindex X session
-
-SLiM automatically looks for session types described by the @file{.desktop}
-files in @file{/run/current-system/profile/share/xsessions} and allows users
-to choose a session from the log-in screen using @kbd{F1}.  Packages such as
-@var{xfce}, @var{sawfish}, and @var{ratpoison} provide @file{.desktop} files;
-adding them to the system-wide set of packages automatically makes them
-available at the log-in screen.
-
-In addition, @file{~/.xsession} files are honored.  When available,
-@file{~/.xsession} must be an executable that starts a window manager
-and/or other X clients.
-
-When @var{allow-empty-passwords?} is true, allow logins with an empty
-password.  When @var{auto-login?} is true, log in automatically as
-@var{default-user} with @var{auto-login-session}.
-
-If @var{theme} is @code{#f}, the use the default log-in theme; otherwise
-@var{theme} must be a gexp denoting the name of a directory containing the
-theme to use.  In that case, @var{theme-name} specifies the name of the
-theme."
-  (service slim-service-type
-           (slim-configuration
-            (slim slim)
-            (allow-empty-passwords? allow-empty-passwords?)
-            (auto-login? auto-login?) (default-user default-user)
-            (theme theme) (theme-name theme-name)
-            (xauth xauth) (shepherd shepherd)
-            (auto-login-session auto-login-session))))
-
 
 ;;;
 ;;; Screen lockers & co.
@@ -1042,34 +997,6 @@ the GNOME desktop environment.")
                   (description
                    "Run the GNOME Desktop Manager (GDM), a program that allows
 you to log in in a graphical session, whether or not you use GNOME."))))
-
-(define-deprecated (gdm-service #:key (gdm gdm)
-                                (allow-empty-passwords? #t)
-                                (x-server (xorg-wrapper)))
-  gdm-service-type
-  "Return a service that spawns the GDM graphical login manager, which in turn
-starts the X display server with @var{X}, a command as returned by
-@code{xorg-wrapper}.
-
-@cindex X session
-
-GDM automatically looks for session types described by the @file{.desktop}
-files in @file{/run/current-system/profile/share/xsessions} and allows users
-to choose a session from the log-in screen using @kbd{F1}.  Packages such as
-@var{xfce}, @var{sawfish}, and @var{ratpoison} provide @file{.desktop} files;
-adding them to the system-wide set of packages automatically makes them
-available at the log-in screen.
-
-In addition, @file{~/.xsession} files are honored.  When available,
-@file{~/.xsession} must be an executable that starts a window manager
-and/or other X clients.
-
-When @var{allow-empty-passwords?} is true, allow logins with an empty
-password."
-  (service gdm-service-type
-           (gdm-configuration
-            (gdm gdm)
-            (allow-empty-passwords? allow-empty-passwords?))))
 
 (define* (set-xorg-configuration config
                                  #:optional
