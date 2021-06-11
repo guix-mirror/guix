@@ -13217,7 +13217,7 @@ Central Dispatch.")
 (define-public rust-dissimilar-1
   (package
     (name "rust-dissimilar")
-    (version "1.0.1")
+    (version "1.0.2")
     (source
       (origin
         (method url-fetch)
@@ -13226,7 +13226,7 @@ Central Dispatch.")
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "154ba92ifmh3js1k0hbmxz7pv95n8wmahlyvhdbnxggbs8f1dpir"))))
+          "1fwa892hcf7y36b8w41p14b3ld3df389y9jpglkbz55vp7s2jjzw"))))
     (build-system cargo-build-system)
     (home-page "https://github.com/dtolnay/dissimilar")
     (synopsis "Diff library with semantic cleanup")
