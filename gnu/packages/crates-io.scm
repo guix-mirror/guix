@@ -47533,6 +47533,43 @@ application authors using tracing to instrument their applications.")
         ("rust-tracing" ,rust-tracing-0.1)
         ("rust-tracing-log" ,rust-tracing-log-0.1))))))
 
+(define-public rust-tracing-tree-0.1
+  (package
+    (name "rust-tracing-tree")
+    (version "0.1.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tracing-tree" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0rs9zjajlkhdxfgyajbi7l9bf569vrhsnqv7qqmvrngq0w4v84hp"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-ansi-term" ,rust-ansi-term-0.12)
+        ("rust-atty" ,rust-atty-0.2)
+        ("rust-termcolor" ,rust-termcolor-1)
+        ("rust-tracing" ,rust-tracing-0.1)
+        ("rust-tracing-log" ,rust-tracing-log-0.1)
+        ("rust-tracing-subscriber"
+         ,rust-tracing-subscriber-0.2))
+       #:cargo-development-inputs
+        (("rust-assert-cmd" ,rust-assert-cmd-1)
+         ("rust-glob" ,rust-glob-0.3)
+         ("rust-log" ,rust-log-0.4))))
+    (home-page
+     "https://github.com/davidbarsky/tracing-tree")
+    (synopsis
+     "Tracing Layer which prints a tree of spans and events")
+    (description
+     "This package provides a Tracing Layer which prints a tree of spans and
+events.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-trackable-1
   (package
     (name "rust-trackable")
