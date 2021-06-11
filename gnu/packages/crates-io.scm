@@ -24370,6 +24370,32 @@ implementation of LZMA and xz stream encoding/decoding.")
      "This package provides LZW compression and decompression.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-m-lexer-0.0.4
+  (package
+    (name "rust-m-lexer")
+    (version "0.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "m_lexer" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "19v7hk4i3avgvmhhv26bf5hjfjpwkrvy81dfbdd5hb8nj6zixrd7"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-regex" ,rust-regex-1))))
+    (home-page "https://github.com/matklad/m_lexer")
+    (synopsis
+     "Simple extensible regular expressions based lexer")
+    (description
+     "This package provides a simple extensible regular expressions based
+lexer.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-mac-0.1
   (package
     (name "rust-mac")
