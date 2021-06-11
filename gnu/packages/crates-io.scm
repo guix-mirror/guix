@@ -24219,6 +24219,36 @@ server (LSP).")
         ("rust-serde-repr" ,rust-serde-repr-0.1)
         ("rust-url" ,rust-url-2))))))
 
+(define-public rust-lsp-server-0.5
+  (package
+    (name "rust-lsp-server")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "lsp-server" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "14irb3kawr5i2cx295xyw8q7pv18d52cjh3c6rd858aw5l2df9b8"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-crossbeam-channel"
+         ,rust-crossbeam-channel-0.5)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1))
+       #:cargo-development-inputs
+       (("rust-lsp-types" ,rust-lsp-types-0.83))))
+    (home-page
+     "https://github.com/rust-analyzer/lsp-server")
+    (synopsis "Generic LSP server scaffold")
+    (description "This package provides a generic LSP server scaffold.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-lzma-sys-0.1
   (package
     (name "rust-lzma-sys")
