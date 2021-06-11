@@ -25754,14 +25754,14 @@ application.")
 (define-public rust-mio-0.7
   (package
     (name "rust-mio")
-    (version "0.7.6")
+    (version "0.7.11")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "mio" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "12qsvmsmpijnghgci5i0liskvwxrbg2dz6hc09kgvwaf0s3whfzk"))))
+        (base32 "0mi9ah60l270761sz6qdhhn0hkn5msc8689b53bhnkmk0glx706g"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
