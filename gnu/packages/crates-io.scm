@@ -16199,8 +16199,38 @@ process and much more.")
      "This package provides cross-platform file locks and file duplication.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-fsevent-2
+  (package
+    (name "rust-fsevent")
+    (version "2.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "fsevent" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0qsylfbhgha319q6a8yvkznbm3hf47gy3y8nq82qijcm5hh4gwwp"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-fsevent-sys" ,rust-fsevent-sys-3))
+       #:cargo-development-inputs
+       (("rust-tempfile" ,rust-tempfile-3)
+        ("rust-time" ,rust-time-0.2))))
+    (home-page "https://github.com/octplane/fsevent-rust")
+    (synopsis "Rust bindings to the fsevent-sys macOS API")
+    (description
+     "This package provides Rust bindings to the @code{fsevent-sys} macOS API
+for file changes notifications")
+    (license license:expat)))
+
 (define-public rust-fsevent-0.4
   (package
+    (inherit rust-fsevent-2)
     (name "rust-fsevent")
     (version "0.4.0")
     (source
@@ -16220,13 +16250,7 @@ process and much more.")
          ("rust-fsevent-sys" ,rust-fsevent-sys-2))
         #:cargo-development-inputs
         (("rust-tempdir" ,rust-tempdir-0.3)
-         ("rust-time" ,rust-time-0.1))))
-    (home-page "https://github.com/octplane/fsevent-rust")
-    (synopsis "Rust bindings to the fsevent-sys macOS API")
-    (description
-     "This package provides Rust bindings to the @code{fsevent-sys} macOS API
-for file changes notifications")
-    (license license:expat)))
+         ("rust-time" ,rust-time-0.1))))))
 
 (define-public rust-fsevent-sys-3
   (package
