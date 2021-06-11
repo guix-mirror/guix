@@ -44925,6 +44925,34 @@ fixed set of worker threads.")
     (description "This package provides a Rust FFI bindings to jemalloc.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-tikv-jemallocator-0.4
+  (package
+    (name "rust-tikv-jemallocator")
+    (version "0.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tikv-jemallocator" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1pyc94yx74s3vxnr22gnpj0b2f87s0vql0c5ayy1b1zb0jkaa51w"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-tikv-jemalloc-sys"
+         ,rust-tikv-jemalloc-sys-0.4))))
+    (home-page
+     "https://github.com/tikv/jemallocator")
+    (synopsis
+     "Rust allocator backed by jemalloc")
+    (description
+     "This package provides a Rust allocator backed by jemalloc.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-time-0.2
   (package
     (name "rust-time")
