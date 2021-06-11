@@ -1171,10 +1171,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/grocsvs-dont-use-admiral.patch		\
   %D%/packages/patches/gromacs-tinyxml2.patch			\
   %D%/packages/patches/groovy-add-exceptionutilsgenerator.patch	\
-  %D%/packages/patches/grub-cross-system-i686.patch		\
   %D%/packages/patches/grub-efi-fat-serial-number.patch		\
   %D%/packages/patches/grub-setup-root.patch			\
-  %D%/packages/patches/grub-verifiers-Blocklist-fallout-cleanup.patch \
   %D%/packages/patches/gspell-dash-test.patch			\
   %D%/packages/patches/gst-libav-64channels-stack-corruption.patch	\
   %D%/packages/patches/gst-plugins-bad-fix-overflow.patch	\

@@ -88,18 +88,16 @@
 (define-public grub
   (package
     (name "grub")
-    (version "2.04")
+    (version "2.06")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/grub/grub-" version ".tar.xz"))
              (sha256
               (base32
-               "0zgp5m3hmc9jh8wpjx6czzkh5id2y8n1k823x2mjvm2sk6b28ag5"))
+               "1qbycnxkx07arj9f2nlsi9kp0dyldspbv07ysdyd34qvz55a97mp"))
              (patches (search-patches
                        "grub-efi-fat-serial-number.patch"
-                       "grub-setup-root.patch"
-                       "grub-verifiers-Blocklist-fallout-cleanup.patch"
-                       "grub-cross-system-i686.patch"))))
+                       "grub-setup-root.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
