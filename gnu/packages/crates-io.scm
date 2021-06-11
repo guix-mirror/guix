@@ -37173,6 +37173,35 @@ client (S3RS).")
         ("rust-sha2" ,rust-sha2-0.6)
         ("rust-url" ,rust-url-2))))))
 
+(define-public rust-salsa-macros-0.17
+  (package
+    (name "rust-salsa-macros")
+    (version "0.17.0-pre.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "salsa-macros" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1yrjiriw5bb0gxl2dk7c5ng7g5wlkc4gd65czx5x99bzc9hc0brf"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build?
+       #t
+       #:cargo-inputs
+       (("rust-heck" ,rust-heck-0.3)
+        ("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/salsa-rs/salsa")
+    (synopsis
+     "Procedural macros for the salsa crate")
+    (description
+     "This package provides a procedural macros for the salsa crate.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-safemem-0.3
   (package
     (name "rust-safemem")
