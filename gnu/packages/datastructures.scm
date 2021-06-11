@@ -149,9 +149,6 @@ in between these sequences may be different in both content and length.")
                (base32
                 "085s437nig6bdiv9im4k4qwqbrbnc4qw9flqi16jlb493az0vcnb"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:configure-flags
-       (list "--disable-static")))
     (native-inputs
      `(("perl" ,perl)))                 ; for tests
     (home-page "https://liburcu.org/")
