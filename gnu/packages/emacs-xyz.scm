@@ -8651,8 +8651,8 @@ use it, call @code{M-x ivy-yasnippet} (but make sure you have enabled
 ;; pick a more recent snapshot of the repository, see
 ;; https://github.com/Yevgnen/ivy-rich/pull/80.
 (define-public emacs-ivy-rich
-  (let ((commit "7b9b7b20c3ead81da90232cd6707dfad3c1f1eb3")
-        (revision "1"))
+  (let ((commit "600b8183ed0be8668dcc548cc2c8cb94b001363b")
+        (revision "2"))
     (package
       (name "emacs-ivy-rich")
       (version (git-version "0.1.6" revision commit))
@@ -8664,7 +8664,7 @@ use it, call @code{M-x ivy-yasnippet} (but make sure you have enabled
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "03p13z609ighdq4axls93alqfl7pclx12g4vdd7lwpcy0r0cgyf8"))))
+          (base32 "1dv6vr7fv32v5m04zdy02sdajpvrnpc4i3pbh2dwfv73ff8d8yxm"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-ivy" ,emacs-ivy)))
