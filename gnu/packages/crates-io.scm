@@ -49882,6 +49882,29 @@ panic-free alternative to @code{core::fmt}.")
      "Unchecked indexing wrapper using regular index syntax.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-ungrammar-1
+  (package
+    (name "rust-ungrammar")
+    (version "1.13.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "ungrammar" version))
+        (file-name
+          (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32
+            "17wm4b5r3z5hqail6p609nii37y3j8dr4bxg8x0bkhkc2wa06xkn"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page
+      "https://github.com/matklad/ungrammar")
+    (synopsis
+      "DSL for describing concrete syntax trees")
+    (description
+      "This package provides a DSL for describing concrete syntax trees.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-unic-char-property-0.9
   (package
     (name "rust-unic-char-property")
