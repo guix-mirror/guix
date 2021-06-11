@@ -45355,6 +45355,34 @@ for TLS).")
 unstable language features.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-text-size-1
+  (package
+    (name "rust-text-size")
+    (version "1.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "text-size" version))
+        (file-name
+          (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32
+            "02jn26l5wcdjqpy80ycnk9ha10flyc0p4yga8ci6aaz7vd4bb318"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:skip-build? #t
+        #:cargo-inputs
+        (("rust-serde" ,rust-serde-1))
+        #:cargo-development-inputs
+        (("rust-serde-test" ,rust-serde-test-1)
+         ("rust-static-assertions"
+          ,rust-static-assertions-1))))
+    (home-page
+      "https://github.com/rust-analyzer/text-size")
+    (synopsis "Newtypes for text offsets")
+    (description "This package provides a newtypes for text offsets")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-textwrap-0.12
   (package
     (name "rust-textwrap")
