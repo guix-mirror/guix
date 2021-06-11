@@ -45544,9 +45544,12 @@ introspection APIs.")
         ("rust-standback" ,rust-standback-0.2)
         ("rust-stdweb" ,rust-stdweb-0.4)
         ("rust-time-macros" ,rust-time-macros-0.1)
+        ("rust-version-check" ,rust-version-check-0.9)
         ("rust-winapi" ,rust-winapi-0.3))
        #:cargo-development-inputs
-       (("rust-version-check" ,rust-version-check-0.9))))
+       (("rust-rand" ,rust-rand-0.7)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-standback" ,rust-standback-0.2))))
     (home-page "https://github.com/time-rs/time")
     (synopsis "Date and time library")
     (description "This package provides a date and time library.  It is fully
