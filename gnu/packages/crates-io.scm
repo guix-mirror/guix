@@ -27496,8 +27496,54 @@ with all line endings.")
         (base32
          "1a1knz9j1w5a1pl2q6whmjphm3z6p64r5njnam7syp5rx8wil2if"))))))
 
+(define-public rust-notify-5
+  (package
+    (name "rust-notify")
+    (version "5.0.0-pre.8")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "notify" version))
+        (file-name
+          (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32
+            "0jq1ixzi7rgq233dxbxkn129n8lidswp1glsgbdhvw7ig38brfs6"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:skip-build? #t
+        #:cargo-inputs
+        (("rust-bitflags" ,rust-bitflags-1)
+         ("rust-crossbeam-channel"
+          ,rust-crossbeam-channel-0.5)
+         ("rust-filetime" ,rust-filetime-0.2)
+         ("rust-fsevent" ,rust-fsevent-2)
+         ("rust-fsevent-sys" ,rust-fsevent-sys-3)
+         ("rust-inotify" ,rust-inotify-0.9)
+         ("rust-libc" ,rust-libc-0.2)
+         ("rust-mio" ,rust-mio-0.7)
+         ("rust-serde" ,rust-serde-1)
+         ("rust-walkdir" ,rust-walkdir-2)
+         ("rust-winapi" ,rust-winapi-0.3))
+        #:cargo-development-inputs
+        (("rust-serde-json" ,rust-serde-json-1))
+        #:phases
+        (modify-phases %standard-phases
+          (add-after 'unpack 'fix-version-requirements
+           (lambda _
+             (substitute* "Cargo.toml"
+               (("0.7.7") ,(package-version rust-mio-0.7)))
+             #t)))))
+    (home-page "https://github.com/notify-rs/notify")
+    (synopsis
+      "Cross-platform filesystem notification library")
+    (description
+      "Cross-platform filesystem notification library")
+    (license (list license:cc0 license:artistic2.0))))
+
 (define-public rust-notify-4
   (package
+    (inherit rust-notify-5)
     (name "rust-notify")
     (version "4.0.15")
     (source
@@ -27509,7 +27555,6 @@ with all line endings.")
        (sha256
         (base32
          "1gadf8jf1vz7sip37rlwa66vw85ripy6977ibcfbiynii1v4mbl0"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-bitflags" ,rust-bitflags-1)
@@ -27524,10 +27569,6 @@ with all line endings.")
         ("rust-winapi" ,rust-winapi-0.3))
        #:cargo-development-inputs
        (("rust-tempfile" ,rust-tempfile-3))))
-    (home-page "https://github.com/passcod/notify")
-    (synopsis "Cross-platform file system notification library")
-    (description
-     "Cross-platform file system notification library.")
     (license license:cc0)))
 
 (define-public rust-ntapi-0.3
