@@ -30,6 +30,7 @@
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
+;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -484,100 +485,95 @@ any X11 window.")
     (license license:gpl3+)))
 
 (define-public password-store
-  ;; The 1.7.3 release does not include support for wl-clipboard, which was
-  ;; added in b0b784b1a57c0b06936e6f5d6560712b4b810cd3. Instead, use the
-  ;; latest commit on master at the time of writing.
-  (let ((commit "918992c19231b33b3d4a3288a7288a620e608cb4")
-        (revision "1"))
-    (package
-      (name "password-store")
-      (version (git-version "1.7.3" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "git://git.zx2c4.com/password-store")
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "0ni62f4pq96g0i0q66bch1dl9k4zqwhg7xaf746k3gbbqxcdh3vi"))
-                (file-name (git-file-name name version)) ))
-      (build-system gnu-build-system)
-      (arguments
-       '(#:phases
-         (modify-phases %standard-phases
-           (delete 'configure)
-           (delete 'build)
-           (add-before 'install 'patch-system-extension-dir
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (extension-dir (string-append out "/lib/password-store/extensions")))
-                 (substitute* "src/password-store.sh"
-                   (("^SYSTEM_EXTENSION_DIR=.*$")
-                    ;; lead with whitespace to prevent 'make install' from
-                    ;; overwriting it again
-                    (string-append " SYSTEM_EXTENSION_DIR=\""
-                                   "${PASSWORD_STORE_SYSTEM_EXTENSION_DIR:-"
-                                   extension-dir
-                                   "}\"\n"))))
-               #t))
-           (add-before 'install 'patch-passmenu-path
-             (lambda* (#:key inputs #:allow-other-keys)
-               (substitute* "contrib/dmenu/passmenu"
-                 (("dmenu") (string-append (assoc-ref inputs "dmenu")
-                                           "/bin/dmenu"))
-                 (("xdotool") (string-append (assoc-ref inputs "xdotool")
-                                             "/bin/xdotool")))
-               #t))
-           (add-after 'install 'install-passmenu
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (bin (string-append out "/bin")))
-                 (install-file "contrib/dmenu/passmenu" bin)
-                 #t)))
-           (add-after 'install 'wrap-path
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let ((out (assoc-ref outputs "out"))
-                     (path (map (lambda (pkg)
-                                  (string-append (assoc-ref inputs pkg) "/bin"))
-                                '("coreutils" "getopt" "git" "gnupg" "qrencode"
-                                  "sed" "tree" "which" "wl-clipboard" "xclip"))))
-                 (wrap-program (string-append out "/bin/pass")
-                   `("PATH" ":" prefix (,(string-join path ":"))))
-                 #t))))
-         #:make-flags (list "CC=gcc" (string-append "PREFIX=" %output)
-                            "WITH_ALLCOMP=yes"
-                            (string-append "BASHCOMPDIR="
-                                           %output "/etc/bash_completion.d"))
-         ;; Parallel tests may cause a race condition leading to a
-         ;; timeout in some circumstances.
-         #:parallel-tests? #f
-         #:test-target "test"))
-      (native-search-paths
-       (list (search-path-specification
-              (variable "PASSWORD_STORE_SYSTEM_EXTENSION_DIR")
-              (separator #f)                        ;single entry
-              (files '("lib/password-store/extensions")))))
-      (inputs
-       `(("dmenu" ,dmenu)
-         ("getopt" ,util-linux)
-         ("git" ,git)
-         ("gnupg" ,gnupg)
-         ("qrencode" ,qrencode)
-         ("sed" ,sed)
-         ("tree" ,tree)
-         ("which" ,which)
-         ("wl-clipboard" ,wl-clipboard)
-         ("xclip" ,xclip)
-         ("xdotool" ,xdotool)))
-      (home-page "https://www.passwordstore.org/")
-      (synopsis "Encrypted password manager")
-      (description "Password-store is a password manager which uses GnuPG to
+  (package
+    (name "password-store")
+    (version "1.7.4")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "git://git.zx2c4.com/password-store")
+                    (commit version)))
+              (sha256
+               (base32
+                "17zp9pnb3i9sd2zn9qanngmsywrb7y495ngcqs6313pv3gb83v53"))
+              (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (add-before 'install 'patch-system-extension-dir
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (extension-dir (string-append out "/lib/password-store/extensions")))
+               (substitute* "src/password-store.sh"
+                 (("^SYSTEM_EXTENSION_DIR=.*$")
+                  ;; lead with whitespace to prevent 'make install' from
+                  ;; overwriting it again
+                  (string-append " SYSTEM_EXTENSION_DIR=\""
+                                 "${PASSWORD_STORE_SYSTEM_EXTENSION_DIR:-"
+                                 extension-dir
+                                 "}\"\n"))))
+             #t))
+         (add-before 'install 'patch-passmenu-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "contrib/dmenu/passmenu"
+               (("dmenu") (string-append (assoc-ref inputs "dmenu")
+                                         "/bin/dmenu"))
+               (("xdotool") (string-append (assoc-ref inputs "xdotool")
+                                           "/bin/xdotool")))
+             #t))
+         (add-after 'install 'install-passmenu
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (install-file "contrib/dmenu/passmenu" bin)
+               #t)))
+         (add-after 'install 'wrap-path
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (path (map (lambda (pkg)
+                                (string-append (assoc-ref inputs pkg) "/bin"))
+                              '("coreutils" "getopt" "git" "gnupg" "qrencode"
+                                "sed" "tree" "which" "wl-clipboard" "xclip"))))
+               (wrap-program (string-append out "/bin/pass")
+                 `("PATH" ":" prefix (,(string-join path ":"))))
+               #t))))
+       #:make-flags (list "CC=gcc" (string-append "PREFIX=" %output)
+                          "WITH_ALLCOMP=yes"
+                          (string-append "BASHCOMPDIR="
+                                         %output "/etc/bash_completion.d"))
+       ;; Parallel tests may cause a race condition leading to a
+       ;; timeout in some circumstances.
+       #:parallel-tests? #f
+       #:test-target "test"))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "PASSWORD_STORE_SYSTEM_EXTENSION_DIR")
+            (separator #f)             ;single entry
+            (files '("lib/password-store/extensions")))))
+    (inputs
+     `(("dmenu" ,dmenu)
+       ("getopt" ,util-linux)
+       ("git" ,git)
+       ("gnupg" ,gnupg)
+       ("qrencode" ,qrencode)
+       ("sed" ,sed)
+       ("tree" ,tree)
+       ("which" ,which)
+       ("wl-clipboard" ,wl-clipboard)
+       ("xclip" ,xclip)
+       ("xdotool" ,xdotool)))
+    (home-page "https://www.passwordstore.org/")
+    (synopsis "Encrypted password manager")
+    (description "Password-store is a password manager which uses GnuPG to
 store and retrieve passwords.  The tool stores each password in its own
 GnuPG-encrypted file, allowing the program to be simple yet secure.
 Synchronization is possible using the integrated git support, which commits
 changes to your password database to a git repository that can be managed
 through the pass command.")
-      (license license:gpl2+))))
+    (license license:gpl2+)))
 
 (define-public pass-otp
   (package
