@@ -789,6 +789,7 @@ by pressing the Exit button.~%~%")))
     (format-user-partitions user-partitions-with-pass)
     (syslog "formatted ~a user partitions~%"
             (length user-partitions-with-pass))
+    (syslog "user-partitions: ~a~%" user-partitions)
 
     (destroy-form-and-pop form)
     user-partitions))
