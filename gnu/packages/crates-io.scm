@@ -20910,7 +20910,7 @@ crate.")
 (define-public rust-indexmap-1
   (package
     (name "rust-indexmap")
-    (version "1.6.1")
+    (version "1.6.2")
     (source
       (origin
         (method url-fetch)
@@ -20919,7 +20919,7 @@ crate.")
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "0friqyzr4ssyayks7nirqbc36zcsf8fdi67jmvl4vpjh8a9zmcag"))))
+          "1wxfh55zlrlpdxfcvvvj6wwc46f23cnb0j9q71190yl9pyh4aj42"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
