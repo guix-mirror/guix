@@ -28878,7 +28878,7 @@ contents.")
 (define-public rust-oorandom-11.1
   (package
     (name "rust-oorandom")
-    (version "11.1.0")
+    (version "11.1.3")
     (source
       (origin
         (method url-fetch)
@@ -28887,7 +28887,7 @@ contents.")
           (string-append name "-" version ".tar.gz"))
         (sha256
           (base32
-            "01clxfnz1zwg4maynvbgj09wlkj5m3c8kjqfrp3sqp59qb4wgkpb"))))
+            "0xdm4vd89aiwnrk1xjwzklnchjqvib4klcihlc2bsd4x50mbrc8a"))))
     (build-system cargo-build-system)
     (arguments `(#:skip-build? #t))
     (home-page "https://hg.sr.ht/~icefox/oorandom")
