@@ -424,6 +424,14 @@ it unchanged."
        ;; REPOSITORY as soon as possible.
        (repository-close! repository)
 
+       ;; Update CACHE-DIRECTORY's mtime to so the cache logic sees it.
+       (match (gettimeofday)
+         ((seconds . microseconds)
+          (let ((nanoseconds (* 1000 microseconds)))
+            (utime cache-directory
+                   seconds seconds
+                   nanoseconds nanoseconds))))
+
        ;; When CACHE-DIRECTORY is a sub-directory of the default cache
        ;; directory, remove expired checkouts that are next to it.
        (let ((parent (dirname cache-directory)))
