@@ -22908,7 +22908,7 @@ requires non-const function calls to be computed.")
 (define-public rust-libc-0.2
   (package
     (name "rust-libc")
-    (version "0.2.86")
+    (version "0.2.96")
     (source
      (origin
        (method url-fetch)
@@ -22916,7 +22916,7 @@ requires non-const function calls to be computed.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "074b38mq1rx3dgg7sf952d4ccywq450zymk7gzn5q9z39f92sa5p"))))
+         "1z5l4rdk44sx1vaq69x1mbwi5zh75q46p2hkl90ihhn5xzkb802n"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
