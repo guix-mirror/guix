@@ -1889,6 +1889,30 @@ escape codes.")
 @code{std::error::Error}.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-anymap-0.12
+  (package
+    (name "rust-anymap")
+    (version "0.12.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "anymap" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0i23vv38i22aazp5z2hz0a44b943b6w5121kwwnpq1brpm1l559k"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page
+     "https://github.com/chris-morgan/anymap")
+    (synopsis
+     "Safe and convenient store for one value of each type")
+    (description
+     "This package provides a safe and convenient store for one value of each
+type.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-app-dirs2-2
   (package
     (name "rust-app-dirs2")
