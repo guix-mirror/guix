@@ -39813,6 +39813,35 @@ data.  This crate provides a wrapper that works with any existing Serde
      "Macros to auto-generate implementations for the serde framework.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-serde-path-to-error-0.1
+  (package
+    (name "rust-serde-path-to-error")
+    (version "0.1.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "serde-path-to-error" version))
+        (file-name
+          (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32
+            "0n5ilbsxvi174m2fd506ivd43kws0yh523li1xz0zqh60ngi1xj2"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:skip-build? #t
+        #:cargo-inputs
+        (("rust-serde" ,rust-serde-1))
+        #:cargo-development-inputs
+        (("rust-serde-derive" ,rust-serde-derive-1)
+         ("rust-serde-json" ,rust-serde-json-1))))
+    (home-page
+      "https://github.com/dtolnay/path-to-error")
+    (synopsis
+      "Path to the element that failed to deserialize")
+    (description
+      "This package provides a path to the element that failed to deserialize.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-serde-qs-0.7
   (package
     (name "rust-serde-qs")
