@@ -41284,6 +41284,32 @@ More importantly, this library also provides the ability to un-escape a given
 escaped text to recover the original string.")
     (license license:gpl3)))
 
+(define-public rust-snap-1
+  (package
+    (name "rust-snap")
+    (version "1.0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "snap" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0l8llidvm7dlwfw2ql6hk4b4byl9677fppwgl7i2wglqs6a60ia5"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-doc-comment" ,rust-doc-comment-0.3))))
+    (home-page
+     "https://github.com/BurntSushi/rust-snappy")
+    (synopsis
+     "Pure Rust implementation of the Snappy compression algorithm")
+    (description
+     "This package provides a pure Rust implementation of the Snappy compression
+algorithm.  Includes streaming compression and decompression.")
+    (license license:bsd-3)))
+
 (define-public rust-socket2-0.3
   (package
     (name "rust-socket2")
