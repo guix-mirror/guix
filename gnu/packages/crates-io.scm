@@ -6951,8 +6951,40 @@ capabilities")
 the library crate of Cargo.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-cargo-metadata-0.13
+  (package
+    (name "rust-cargo-metadata")
+    (version "0.13.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "cargo-metadata" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "11cnz97byqswmhpbbig9hss5kf8bmxq9nd5xjg3l2rsnnv040i32"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-camino" ,rust-camino-1)
+        ("rust-cargo-platform" ,rust-cargo-platform-0.1)
+        ("rust-derive-builder" ,rust-derive-builder-0.9)
+        ("rust-semver" ,rust-semver-0.11)
+        ("rust-semver-parser" ,rust-semver-parser-0.10)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1))))
+    (home-page "https://github.com/oli-obk/cargo_metadata")
+    (synopsis "Structured access to the output of `cargo metadata`")
+    (description
+     "This package provides structured access to the output of @code{cargo
+metadata}.")
+    (license license:expat)))
+
 (define-public rust-cargo-metadata-0.9
   (package
+    (inherit rust-cargo-metadata-0.13)
     (name "rust-cargo-metadata")
     (version "0.9.1")
     (source
@@ -6964,7 +6996,6 @@ the library crate of Cargo.")
         (sha256
          (base32
           "00pjms89lghvizh4d55lz80hvrih9r55xv9m5wd9vcsgc163gqs6"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:tests? #f
        #:cargo-inputs
@@ -6975,13 +7006,7 @@ the library crate of Cargo.")
        #:cargo-development-inputs
        (("rust-clap" ,rust-clap-2)
         ("rust-docopt" ,rust-docopt-1)
-        ("rust-structopt" ,rust-structopt-0.2))))
-    (home-page "https://github.com/oli-obk/cargo_metadata")
-    (synopsis "Structured access to the output of `cargo metadata`")
-    (description
-     "This package provides structured access to the output of @code{cargo
-metadata}.")
-    (license license:expat)))
+        ("rust-structopt" ,rust-structopt-0.2))))))
 
 (define-public rust-cargo-metadata-0.6
   (package
