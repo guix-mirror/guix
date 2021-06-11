@@ -315,8 +315,8 @@ SoapySDR library.")
 (define-public soapyhackrf
   ;; Use commit because some fixes are not in a release yet
   ;; (last release was in 2018).
-  (let ((commit "fa83fac695fad9e198cc9a19a1e1a9c344fc191f")
-        (revision "1"))
+  (let ((commit "8d2e7beebb4c451609cb0cee236fa4d20a0e28b1")
+        (revision "2"))
     (package
       (name "soapyhackrf")
       (version (git-version "0.3.3" revision commit))
@@ -328,7 +328,7 @@ SoapySDR library.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0sfb2gq4lp1fff921xm3bqqjv3srdsczjj8ps5jfhxhr6yx3a329"))))
+          (base32 "0l5890a240i1fan88jjdxaqswk3as410nlrv12a698fy9npqh4w4"))))
       (build-system cmake-build-system)
       (inputs
        `(("hackrf" ,hackrf)
