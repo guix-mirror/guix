@@ -379,7 +379,7 @@ characters, ASCII whitespace characters, other ASCII characters and non-ASCII.")
 (define-public ripgrep
   (package
     (name "ripgrep")
-    (version "12.1.1")
+    (version "13.0.0")
     (source
      (origin
        (method url-fetch)
@@ -388,13 +388,13 @@ characters, ASCII whitespace characters, other ASCII characters and non-ASCII.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1grfi0j9zczzipipc21lkdbqmd2lvy2wlqy65fy4sckqvix5amdr"))))
+         "1gv4imhjgxmyxaa996yshcjlakmrjw9pf4rycp90pq675cn9sz7k"))))
     (build-system cargo-build-system)
     (arguments
      ;; XXX: Upgrading rust-bstr-0.2 from 0.2.12 to 0.2.15 introduced 11 test
      ;; failures. Skip tests for now. Check again at next bstr or ripgrep
      ;; upgrade.
-     `(#:tests? #false
+     `(#:tests? #t
        #:cargo-inputs
        (("rust-bstr" ,rust-bstr-0.2)
         ("rust-clap" ,rust-clap-2)
@@ -409,7 +409,8 @@ characters, ASCII whitespace characters, other ASCII characters and non-ASCII.")
         ("rust-termcolor" ,rust-termcolor-1))
        #:cargo-development-inputs
        (("rust-serde" ,rust-serde-1)
-        ("rust-serde-derive" ,rust-serde-derive-1))
+        ("rust-serde-derive" ,rust-serde-derive-1)
+        ("rust-walkdir" ,rust-walkdir-2))
        #:modules ((ice-9 match)
                   (guix build cargo-build-system)
                   (guix build utils))
@@ -422,8 +423,8 @@ characters, ASCII whitespace characters, other ASCII characters and non-ASCII.")
              (match (find-files "target" "^rg\\.1$")
                ((manpage)
                 (install-file manpage (string-append
-                                        (assoc-ref outputs "out")
-                                        "/share/man/man1"))))
+                                       (assoc-ref outputs "out")
+                                       "/share/man/man1"))))
              #t)))
        #:features '("pcre2")))
     (native-inputs
