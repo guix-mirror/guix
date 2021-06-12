@@ -3101,8 +3101,10 @@ for OpenSMTPD to extend its functionality.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://distfiles.sigtrap.nl/"
-                           "libopensmtpd-" version ".tar.gz"))
+       (uri (list (string-append "https://imperialat.at/releases/"
+                                 "libopensmtpd-" version ".tar.gz")
+                  (string-append "https://distfiles.sigtrap.nl/"
+                                 "libopensmtpd-" version ".tar.gz")))
        (sha256
         (base32 "04x610mvwba7m0n9h0wbnsw58rb4khq44fm4blkgjqvh3bhxbmnd"))))
     (build-system gnu-build-system)
@@ -3137,8 +3139,10 @@ writing OpenSMTPd filters.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://distfiles.sigtrap.nl/"
-                           "filter-dkimsign-" version ".tar.gz"))
+       (uri (list (string-append "https://imperialat.at/releases/"
+                                 "filter-dkimsign-" version ".tar.gz")
+                  (string-append "https://distfiles.sigtrap.nl/"
+                                 "filter-dkimsign-" version ".tar.gz")))
        (sha256
         (base32 "0jwp47ixibnz8rghn193bk2hxh1j1zfrnidml18j7d7cylxfrd55"))))
     (build-system gnu-build-system)
