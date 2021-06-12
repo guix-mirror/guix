@@ -47,6 +47,7 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
@@ -904,3 +905,30 @@ http, and https via third-party applications.")
 interface.")
     (home-page "https://www.autistici.org/interzona/tinmop.html")
     (license license:gpl3+)))
+
+(define-public telescope
+  (package
+    (name "telescope")
+    (version "0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://git.omarpolo.com/telescope/snapshot/"
+                           "telescope-" version ".tar.gz"))
+       (sha256
+        (base32 "1j7cj7fmvl11dvyhb23jx20k4r7m310qnyq0pwz3ijdpm5s88rf1"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f))                    ;no tests
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gettext-minimal)))
+    (inputs
+     `(("libevent"  ,libevent)
+       ("libressl"  ,libressl)
+       ("ncurses"   ,ncurses)))
+    (home-page "https://git.omarpolo.com/telescope/about/")
+    (synopsis "Gemini client with a terminal interface")
+    (description "Telescope is a w3m-like browser for Gemini.")
+    (license license:x11)))
