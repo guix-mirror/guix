@@ -18043,7 +18043,7 @@ loading crate.")
 (define-public rust-grep-cli-0.1
   (package
     (name "rust-grep-cli")
-    (version "0.1.5")
+    (version "0.1.6")
     (source
      (origin
        (method url-fetch)
@@ -18051,8 +18051,7 @@ loading crate.")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "10mi7pkvlm5r478jhwlx15wlmqylq9fmkdg4qazz1xcifx7pi4im"))))
+        (base32 "12lyww4hl4cham9zqqssm3wcp1g3ffvi6906wl6hsiml9g1i1l9d"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -18065,13 +18064,12 @@ loading crate.")
         ("rust-same-file" ,rust-same-file-1)
         ("rust-termcolor" ,rust-termcolor-1)
         ("rust-winapi-util" ,rust-winapi-util-0.1))))
-    (home-page
-     "https://github.com/BurntSushi/ripgrep")
-    (synopsis
-     "Utilities for search oriented command line applications")
+    (home-page "https://github.com/BurntSushi/ripgrep")
+    (synopsis "Utilities for search oriented command line applications")
     (description
-     "Utilities for search oriented command line applications.")
-    (license license:expat)))
+     "This crate provides utilities for search oriented command line
+applications.")
+    (license (list license:unlicense license:expat))))
 
 (define-public rust-grep-matcher-0.1
   (package
