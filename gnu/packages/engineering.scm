@@ -1694,20 +1694,7 @@ high-performance parallel differential evolution (DE) optimization algorithm.")
                             "old-releases/" version
                             "/ngspice-" version ".tar.gz")))
        (sha256
-        (base32 "1dfpkgkwmgwhq8dnbb8dh28cfap6rw0yywkhmxr4jxclcvygyqr2"))
-       (modules '((guix build utils)))
-       ;; We remove the non-free cider and build without it.
-       (snippet
-        '(begin
-           (delete-file-recursively "src/ciderlib")
-           (delete-file "src/ciderinit")
-           (substitute* "configure"
-             (("src/ciderlib/Makefile") "")
-             (("src/ciderlib/input/Makefile") "")
-             (("src/ciderlib/support/Makefile") "")
-             (("src/ciderlib/oned/Makefile") "")
-             (("src/ciderlib/twod/Makefile") ""))
-           #t))))
+        (base32 "1dfpkgkwmgwhq8dnbb8dh28cfap6rw0yywkhmxr4jxclcvygyqr2"))))
     (build-system gnu-build-system)
     (arguments
      `(;; No tests for libngspice exist.
@@ -1731,6 +1718,7 @@ high-performance parallel differential evolution (DE) optimization algorithm.")
                              "/share/ngspice/scripts")))))
        #:configure-flags
        (list "--enable-openmp"
+             "--enable-ciderlib"
              "--enable-xspice"
              "--with-ngshared"
              "--with-readline=yes")))
@@ -1750,6 +1738,7 @@ provides code modeling support and simulation of digital components through
 an embedded event driven algorithm.")
     (license (list license:lgpl2.0+ ; code in frontend/numparam
                    (license:non-copyleft "file:///COPYING") ; spice3 bsd-style
+                   license:bsd-3 ; ciderlib
                    license:public-domain)))) ; xspice
 
 (define-public ngspice
