@@ -712,7 +712,8 @@ architecture (x86_64)?"
 
 (define* (target-64bit? #:optional (system (or (%current-target-system)
                                                (%current-system))))
-  (any (cut string-prefix? <> system) '("x86_64" "aarch64" "mips64" "powerpc64")))
+  (any (cut string-prefix? <> system) '("x86_64" "aarch64" "mips64"
+                                        "powerpc64" "riscv64")))
 
 (define* (cc-for-target #:optional (target (%current-target-system)))
   (if target

@@ -144,7 +144,16 @@
      ("tar"
       ,(base32 "150c8948cz8r208g6qgn2dn4f4zs5kpgbpbg6bwag6yw42rapw2l"))
      ("xz"
-      ,(base32 "0v5738idy9pqzcbrjdpxi5c6qs5m78zrpsydmrpx5cfcfzbkxzjh")))))
+      ,(base32 "0v5738idy9pqzcbrjdpxi5c6qs5m78zrpsydmrpx5cfcfzbkxzjh")))
+    ("riscv64-linux"
+     ("bash"
+      ,(base32 "0almlf73k6hbm495kzf4bw1rzsg5qddn7z2rf5l3d1xcapac2hj3"))
+     ("mkdir"
+      ,(base32 "0rg1amdcqfkplcy1608jignl8jq0wqzfkp430mwik3f62959gya6"))
+     ("tar"
+      ,(base32 "17d3x27qhiwk7h6ns0xrvbrq0frxz89mjjh2cdwx2rraq5x6wffm"))
+     ("xz"
+      ,(base32 "0nxn75xf386vdq3igmgm8gnyk4h4x0cm8jv71vlb2jvwxh0cyw1q")))))
 
 (define %bootstrap-executable-base-urls
   ;; This is where the bootstrap executables come from.
@@ -159,6 +168,7 @@
     ("powerpc64le-linux" (string-append system "/20210106/" program))
     ("i586-gnu" (string-append system "/20200326/" program))
     ("powerpc-linux" (string-append system "/20200923/bin/" program))
+    ("riscv64-linux" (string-append system "/20210725/bin/" program))
     (_ (string-append system "/" program
                       "?id=44f07d1dc6806e97c4e9ee3e6be883cc59dc666e"))))
 
@@ -362,6 +372,8 @@ or false to signal an error."
                     "/20200326/guile-static-stripped-2.0.14-i586-pc-gnu.tar.xz")
                    ("powerpc64le-linux"
                     "/20210106/guile-static-stripped-2.0.14-powerpc64le-linux-gnu.tar.xz")
+                   ("riscv64-linux"
+                    "/20210725/guile-3.0.2.tar.xz")
                    (_
                     "/20131110/guile-2.0.9.tar.xz"))))
 
@@ -383,7 +395,9 @@ or false to signal an error."
     ("i586-gnu"
      (base32 "0wgqpsmvg25rnqn49ap7kwd2qxccd8dr4lllzp7i3rjvgav27vac"))
     ("powerpc-linux"
-     (base32 "1by2p7s27fbyjzfkcw8h65h4kkqh7d23kv4sgg5jppjn2qx7swq4"))))
+     (base32 "1by2p7s27fbyjzfkcw8h65h4kkqh7d23kv4sgg5jppjn2qx7swq4"))
+    ("riscv64-linux"
+     (base32 "12pqmhsbbp7hh9r1bjdl14l3a4q06plpz6dcks9dysb4czay8p9f"))))
 
 (define (bootstrap-guile-origin system)
   "Return an <origin> object for the Guile tarball of SYSTEM."
@@ -471,6 +485,76 @@ $out/bin/guile --version~%"
                     #:env-vars `(("GUILE_TARBALL"
                                   . ,(derivation->output-path guile))))))
 
+(define* (raw-build-guile3 name inputs
+                    #:key outputs system search-paths
+                    #:allow-other-keys)
+  (define (->store file)
+    (lower-object (bootstrap-executable file system)
+                  system))
+
+  (define (make-guile-wrapper bash guile-real)
+    ;; The following code, run by the bootstrap guile after it is unpacked,
+    ;; creates a wrapper for itself to set its load path.  This replaces the
+    ;; previous non-portable method based on reading the /proc/self/exe
+    ;; symlink.
+    '(begin
+       (use-modules (ice-9 match))
+       (match (command-line)
+         ((_ out bash)
+          (let ((bin-dir    (string-append out "/bin"))
+                (guile      (string-append out "/bin/guile"))
+                (guile-real (string-append out "/bin/.guile-real"))
+                ;; We must avoid using a bare dollar sign in this code,
+                ;; because it would be interpreted by the shell.
+                (dollar     (string (integer->char 36))))
+            (chmod bin-dir #o755)
+            (rename-file guile guile-real)
+            (call-with-output-file guile
+              (lambda (p)
+                (format p "\
+#!~a
+export GUILE_SYSTEM_PATH=~a/share/guile/3.0
+export GUILE_SYSTEM_COMPILED_PATH=~a/lib/guile/3.0/ccache
+exec -a \"~a0\" ~a \"~a@\"\n"
+                        bash out out dollar guile-real dollar)))
+            (chmod guile   #o555)
+            (chmod bin-dir #o555))))))
+
+  (mlet* %store-monad ((tar   (->store "tar"))
+                       (xz    (->store "xz"))
+                       (mkdir (->store "mkdir"))
+                       (bash  (->store "bash"))
+                       (guile (download-bootstrap-guile system))
+                       (wrapper -> (make-guile-wrapper bash guile))
+                       (builder
+                        (text-file "build-bootstrap-guile.sh"
+                                   (format #f "
+echo \"unpacking bootstrap Guile to '$out'...\"
+~a $out
+cd $out
+~a -dc < $GUILE_TARBALL | ~a xv
+
+# Use the bootstrap guile to create its own wrapper to set the load path.
+GUILE_SYSTEM_PATH=$out/share/guile/3.0 \
+GUILE_SYSTEM_COMPILED_PATH=$out/lib/guile/3.0/ccache \
+$out/bin/guile -c ~s $out ~a
+
+# Sanity check.
+$out/bin/guile --version~%"
+                                           (derivation->output-path mkdir)
+                                           (derivation->output-path xz)
+                                           (derivation->output-path tar)
+                                           (object->string wrapper)
+                                           (derivation->output-path bash)))))
+    (raw-derivation name
+                    (derivation->output-path bash) `(,builder)
+                    #:system system
+                    #:inputs (map derivation-input
+                                  (list bash mkdir tar xz guile))
+                    #:sources (list builder)
+                    #:env-vars `(("GUILE_TARBALL"
+                                  . ,(derivation->output-path guile))))))
+
 (define* (make-raw-bag name
                        #:key source inputs native-inputs outputs
                        system target)
@@ -478,7 +562,9 @@ $out/bin/guile --version~%"
     (name name)
     (system system)
     (build-inputs inputs)
-    (build raw-build)))
+    (build (cond ((target-riscv64?)
+                  raw-build-guile3)
+                 (else raw-build)))))
 
 (define %bootstrap-guile
   ;; The Guile used to run the build scripts of the initial derivations.
@@ -518,6 +604,8 @@ $out/bin/guile --version~%"
                                              "/20200326/static-binaries-0-i586-pc-gnu.tar.xz")
                                             ("powerpc-linux"
                                              "/20200923/static-binaries.tar.xz")
+                                            ("riscv64-linux"
+                                             "/20210725/static-binaries.tar.xz")
                                             (_
                                              "/20131110/static-binaries.tar.xz")))
                                      %bootstrap-base-urls))
@@ -544,6 +632,9 @@ $out/bin/guile --version~%"
                               ("powerpc-linux"
                                (base32
                                 "0kspxy0yczan2vlih6aa9hailr2inz000fqa0gn5x9d1fxxa5y8m"))
+                              ("riscv64-linux"
+                               (base32
+                                "0x0xjlpmyh6rkr51p00gp6pscgl6zjida1rsg8vk3rinyi6rrbkg"))
                               ("mips64el-linux"
                                (base32
                                 "072y4wyfsj1bs80r6vbybbafy8ya4vfy7qj25dklwk97m6g71753"))))))
@@ -596,6 +687,8 @@ $out/bin/guile --version~%"
                                              "/20200326/binutils-static-stripped-2.34-i586-pc-gnu.tar.xz")
                                             ("powerpc-linux"
                                              "/20200923/binutils-2.35.1.tar.xz")
+                                            ("riscv64-linux"
+                                             "/20210725/binutils-2.34.tar.xz")
                                             (_
                                              "/20131110/binutils-2.23.2.tar.xz")))
                                      %bootstrap-base-urls))
@@ -616,6 +709,9 @@ $out/bin/guile --version~%"
                               ("powerpc64le-linux"
                                (base32
                                 "1klxy945c61134mzhqzz2gbk8w0n8jq7arwkrvz78d22ff2q0cwz"))
+                              ("riscv64-linux"
+                               (base32
+                                "0n9qf4vbilfmh1lknhw000waakj4q6s50pnjazr5137skm976z5m"))
                               ("i586-gnu"
                                (base32
                                 "11kykv1kmqc5wln57rs4klaqa13hm952smkc57qcsyss21kfjprs"))
@@ -681,6 +777,8 @@ $out/bin/guile --version~%"
                                        "/20200326/glibc-stripped-2.31-i586-pc-gnu.tar.xz")
                                       ("powerpc-linux"
                                        "/20200923/glibc-2.32.tar.xz")
+                                      ("riscv64-linux"
+                                       "/20210725/glibc-2.31.tar.xz")
                                       (_
                                        "/20131110/glibc-2.18.tar.xz")))
                                %bootstrap-base-urls))
@@ -701,6 +799,9 @@ $out/bin/guile --version~%"
                         ("powerpc64le-linux"
                          (base32
                           "1a1df6z8gkaq09md3jy94lixnh20599p58p0s856p10xwjaqr1iz"))
+                        ("riscv64-linux"
+                         (base32
+                          "0d9x80vm7ca1pd2whcmpm1h14zxpb58kqajlxlwffzm04xfsjnxm"))
                         ("i586-gnu"
                          (base32
                           "14ddm10lpbas8bankmn5bcrlqvz1v5dnn1qjzxb19r57vd2w5952"))
@@ -782,6 +883,8 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
                                         "/20200326/gcc-stripped-5.5.0-i586-pc-gnu.tar.xz")
                                        ("powerpc-linux"
                                         "/20200923/gcc-5.5.0.tar.xz")
+                                       ("riscv64-linux"
+                                        "/20210725/gcc-7.5.0.tar.xz")
                                        (_
                                         "/20131110/gcc-4.8.2.tar.xz")))
                                 %bootstrap-base-urls))
@@ -802,6 +905,9 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
                          ("powerpc64le-linux"
                           (base32
                            "151kjsai25vz2s667bgzpisx8f281fpl3n9pxz2yrp9jlnadz3m1"))
+                         ("riscv64-linux"
+                          (base32
+                           "1k4mbnb54wj2q37fgshf5dfixixqnhn002vhzvi9pnb57xb9v14d"))
                          ("i586-gnu"
                           (base32
                            "1j2zc58wzil71a34h7c70sd68dmqvcscrw3rmn2whq79vd70zvv5"))

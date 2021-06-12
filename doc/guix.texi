@@ -33,7 +33,7 @@ Copyright @copyright{} 2015, 2016, 2017, 2019, 2020, 2021 Leo Famulari@*
 Copyright @copyright{} 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus@*
 Copyright @copyright{} 2016 Ben Woodcroft@*
 Copyright @copyright{} 2016, 2017, 2018, 2021 Chris Marusich@*
-Copyright @copyright{} 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner@*
+Copyright @copyright{} 2016, 2017, 2018, 2019, 2020, 2021, 2022 Efraim Flashner@*
 Copyright @copyright{} 2016 John Darrington@*
 Copyright @copyright{} 2016, 2017 Nikita Gillmann@*
 Copyright @copyright{} 2016, 2017, 2018, 2019, 2020 Jan Nieuwenhuizen@*
@@ -564,6 +564,15 @@ build (@pxref{Tracking Bugs and Patches}).  That said, the Guix
 community is actively working on improving this support, and now is a
 great time to try it and get involved!
 
+@item riscv64-linux
+little-endian 64-bit RISC-V processors, specifically RV64GC, and
+Linux-Libre kernel. This playform is available as a "technology preview":
+although it is supported, substitutes are not yet available from the
+build farm (@pxref{Substitutes}), and some packages may fail to build
+(@pxref{Tracking Bugs and Patches}).  That said, the Guix community is
+actively working on improving this support, and now is a great time to
+try it and get involved!
+
 @end table
 
 With Guix@tie{}System, you @emph{declare} all aspects of the operating system
@@ -575,7 +584,8 @@ Manual}), the well-known GNU utilities and tool chain, as well as the
 graphical environment or system services of your choice.
 
 Guix System is available on all the above platforms except
-@code{mips64el-linux} and @code{powerpc64le-linux}.
+@code{mips64el-linux}, @code{powerpc-linux}, @code{powerpc64le-linux} and
+@code{riscv64-linux}.
 
 @noindent
 For information on porting to other architectures or kernels,

@@ -89,7 +89,7 @@ courageous and port the GNU System distribution to it (see
   # Currently only Linux-based systems are supported, and only on some
   # platforms.
   case "$guix_system" in
-    x86_64-linux|i686-linux|armhf-linux|aarch64-linux|powerpc64le-linux|i586-gnu)
+    x86_64-linux|i686-linux|armhf-linux|aarch64-linux|powerpc64le-linux|riscv64-linux|i586-gnu)
       ;;
     mips64el-linux|powerpc-linux)
       AC_MSG_WARN([building Guix on `$guix_system', which is not supported])
