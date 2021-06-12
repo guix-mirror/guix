@@ -16,6 +16,7 @@
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2021 Mike Gerwitz <mtg@gnu.org>
+;;; Copyright © 2021 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2428,14 +2429,16 @@ new Date();"))
   (package
     (inherit openjdk12)
     (name "openjdk")
-    (version "13.0")
+    (version "13.0.7")
     (source (origin
-              (method url-fetch)
-              (uri "http://hg.openjdk.java.net/jdk/jdk13/archive/9c250a7600e1.tar.bz2")
-              (file-name (string-append name "-" version ".tar.bz2"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/openjdk/jdk13u")
+                    (commit (string-append "jdk-" version "-ga"))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0v0ljvx5dyzp96dw4z4ksw3pvasil7783mgnmd1wk9gads5ab8iq"))
+                "0wrrr0d7lz1v8qqm752mn4gz5l2vpl2kmx4ac3ysvk4mljc924hp"))
               (modules '((guix build utils)))
               (snippet
                `(begin
