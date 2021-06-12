@@ -20390,14 +20390,14 @@ let} expressions.")
 (define-public rust-ignore-0.4
   (package
     (name "rust-ignore")
-    (version "0.4.17")
+    (version "0.4.18")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "ignore" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1347mxd0cwiidcl0qvixl7za524x5ds0izv8vjh2df0bqr2zp1xj"))))
+        (base32 "07bmnv96msggqb040z6xqp1p7s8ys0f97b731hp6mybkjc9ingvi"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
