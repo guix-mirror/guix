@@ -18079,7 +18079,7 @@ loading crate.")
 (define-public rust-grep-matcher-0.1
   (package
     (name "rust-grep-matcher")
-    (version "0.1.4")
+    (version "0.1.5")
     (source
      (origin
        (method url-fetch)
@@ -18088,7 +18088,7 @@ loading crate.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0l4k9c0iw17vqw02z0wbx1nfj9h2xiiqx1px32lhhw7ibbyy3w7x"))))
+         "1k618qni7bgx9mvdp1kaznqjvn2gpgiasrmi0cqd6b066cy5c9vd"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
