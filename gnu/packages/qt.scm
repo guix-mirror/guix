@@ -303,25 +303,24 @@ system, and the core design of Django is reused in Grantlee.")
     (name "qtbase")
     (version "5.15.2")
     (source (origin
-             (method url-fetch)
-             (uri (qt5-urls name version))
-             (sha256
-              (base32
-               "1y70libf2x52lpbqvhz10lpk7nyl1ajjwzjxly9pjdpfj4jsv7wh"))
-             ;; Use TZDIR to avoid depending on package "tzdata".
-             (patches (search-patches "qtbase-use-TZDIR.patch"
-                                      "qtbase-moc-ignore-gcc-macro.patch"
-                                      "qtbase-absolute-runpath.patch"))
-             (modules '((guix build utils)))
-             (snippet
+              (method url-fetch)
+              (uri (qt5-urls name version))
+              (sha256
+               (base32
+                "1y70libf2x52lpbqvhz10lpk7nyl1ajjwzjxly9pjdpfj4jsv7wh"))
+              ;; Use TZDIR to avoid depending on package "tzdata".
+              (patches (search-patches "qtbase-use-TZDIR.patch"
+                                       "qtbase-moc-ignore-gcc-macro.patch"
+                                       "qtbase-absolute-runpath.patch"))
+              (modules '((guix build utils)))
+              (snippet
                ;; corelib uses bundled harfbuzz, md4, md5, sha3
-              '(begin
-                (with-directory-excursion "src/3rdparty"
-                  (for-each delete-file-recursively
-                            (list "double-conversion" "freetype" "harfbuzz-ng"
-                                  "libpng" "libjpeg" "pcre2" "sqlite" "xcb"
-                                  "zlib"))
-                  #t)))))
+               '(begin
+                  (with-directory-excursion "src/3rdparty"
+                    (for-each delete-file-recursively
+                              (list "double-conversion" "freetype" "harfbuzz-ng"
+                                    "libpng" "libjpeg" "pcre2" "sqlite" "xcb"
+                                    "zlib")))))))
     (build-system gnu-build-system)
     (outputs '("out" "debug"))
     (propagated-inputs
@@ -383,7 +382,56 @@ system, and the core design of Django is reused in Grantlee.")
        ("vulkan-headers" ,vulkan-headers)
        ("ruby" ,ruby)))
     (arguments
-     `(#:phases
+     `(#:configure-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list "-verbose"
+               "-prefix" out
+               "-docdir" (string-append out "/share/doc/qt5")
+               "-headerdir" (string-append out "/include/qt5")
+               "-archdatadir" (string-append out "/lib/qt5")
+               "-datadir" (string-append out "/share/qt5")
+               "-examplesdir" (string-append
+                               out "/share/doc/qt5/examples")
+               "-opensource"
+               "-confirm-license"
+
+               ;; Later stripped into the :debug output.
+               "-force-debug-info"
+
+               ;; These features require higher versions of Linux than the
+               ;; minimum version of the glibc.  See
+               ;; src/corelib/global/minimum-linux_p.h.  By disabling these
+               ;; features Qt5 applications can be used on the oldest
+               ;; kernels that the glibc supports, including the RHEL6
+               ;; (2.6.32) and RHEL7 (3.10) kernels.
+               "-no-feature-getentropy" ; requires Linux 3.17
+               "-no-feature-renameat2"  ; requires Linux 3.16
+
+               ;; Do not build examples; if desired, these could go
+               ;; into a separate output, but for the time being, we
+               ;; prefer to save the space and build time.
+               "-no-compile-examples"
+               ;; Most "-system-..." are automatic, but some use
+               ;; the bundled copy by default.
+               "-system-sqlite"
+               "-system-harfbuzz"
+               "-system-pcre"
+               ;; explicitly link with openssl instead of dlopening it
+               "-openssl-linked"
+               ;; explicitly link with dbus instead of dlopening it
+               "-dbus-linked"
+               ;; don't use the precompiled headers
+               "-no-pch"
+               ;; drop special machine instructions that do not have
+               ;; runtime detection
+               ,@(if (string-prefix? "x86_64"
+                                     (or (%current-target-system)
+                                         (%current-system)))
+                     '()
+                     '("-no-sse2"))
+               "-no-mips_dsp"
+               "-no-mips_dspr2"))
+       #:phases
        (modify-phases %standard-phases
          (add-after 'configure 'patch-bin-sh
            (lambda _
@@ -391,18 +439,18 @@ system, and the core design of Django is reused in Grantlee.")
                             "configure"
                             "mkspecs/features/qt_functions.prf"
                             "qmake/library/qmakebuiltins.cpp")
-                          (("/bin/sh") (which "sh")))
-             #t))
+               (("/bin/sh") (which "sh")))))
          (add-after 'configure 'patch-xdg-open
            (lambda _
              (substitute* '("src/platformsupport/services/genericunix/qgenericunixservices.cpp")
-                          (("^.*const char \\*browsers.*$" all)
-                           (string-append "*browser = QStringLiteral(\""
-                                          (which "xdg-open")
-                                          "\"); return true; \n" all)))
-             #t))
+               (("^.*const char \\*browsers.*$" all)
+                (string-append "*browser = QStringLiteral(\""
+                               (which "xdg-open")
+                               "\"); return true; \n" all)))))
          (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
+           ;; Overridden to not pass "--enable-fast-install", which makes the
+           ;; configure process fail.
+           (lambda* (#:key outputs configure-flags #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (substitute* "configure"
                  (("/bin/pwd") (which "pwd")))
@@ -415,57 +463,9 @@ system, and the core design of Django is reused in Grantlee.")
                ;; components can be installed in different places.
                (substitute* (find-files "." ".*\\.cmake")
                  (("NO_DEFAULT_PATH") ""))
-               ;; do not pass "--enable-fast-install", which makes the
-               ;; configure process fail
-               (invoke
-                 "./configure"
-                 "-verbose"
-                 "-prefix" out
-                 "-docdir" (string-append out "/share/doc/qt5")
-                 "-headerdir" (string-append out "/include/qt5")
-                 "-archdatadir" (string-append out "/lib/qt5")
-                 "-datadir" (string-append out "/share/qt5")
-                 "-examplesdir" (string-append
-                                  out "/share/doc/qt5/examples")
-                 "-opensource"
-                 "-confirm-license"
-
-                 ;; Later stripped into the :debug output.
-                 "-force-debug-info"
-
-                 ;; These features require higher versions of Linux than the
-                 ;; minimum version of the glibc.  See
-                 ;; src/corelib/global/minimum-linux_p.h.  By disabling these
-                 ;; features Qt5 applications can be used on the oldest
-                 ;; kernels that the glibc supports, including the RHEL6
-                 ;; (2.6.32) and RHEL7 (3.10) kernels.
-                 "-no-feature-getentropy"  ; requires Linux 3.17
-                 "-no-feature-renameat2"   ; requires Linux 3.16
-
-                 ;; Do not build examples; if desired, these could go
-                 ;; into a separate output, but for the time being, we
-                 ;; prefer to save the space and build time.
-                 "-no-compile-examples"
-                 ;; Most "-system-..." are automatic, but some use
-                 ;; the bundled copy by default.
-                 "-system-sqlite"
-                 "-system-harfbuzz"
-                 "-system-pcre"
-                 ;; explicitly link with openssl instead of dlopening it
-                 "-openssl-linked"
-                 ;; explicitly link with dbus instead of dlopening it
-                 "-dbus-linked"
-                 ;; don't use the precompiled headers
-                 "-no-pch"
-                 ;; drop special machine instructions that do not have
-                 ;; runtime detection
-                 ,@(if (string-prefix? "x86_64"
-                                       (or (%current-target-system)
-                                           (%current-system)))
-                     '()
-                     '("-no-sse2"))
-                 "-no-mips_dsp"
-                 "-no-mips_dspr2"))))
+               (format #t "build directory: ~s~%" (getcwd))
+               (format #t "configure flags: ~s~%" configure-flags)
+               (apply invoke "./configure" configure-flags))))
          (add-after 'install 'patch-mkspecs
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -497,8 +497,7 @@ system, and the core design of Django is reused in Grantlee.")
                         '("device_config.prf" "moc.prf" "qt_build_config.prf"
                           "qt_config.prf" "winrt/package_manifest.prf"))
                  (("\\$\\$\\[QT_HOST_DATA/get\\]") archdata)
-                 (("\\$\\$\\[QT_HOST_DATA/src\\]") archdata))
-               #t)))
+                 (("\\$\\$\\[QT_HOST_DATA/src\\]") archdata)))))
          (add-after 'patch-mkspecs 'patch-prl-files
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
@@ -507,8 +506,7 @@ system, and the core design of Django is reused in Grantlee.")
                ;; on context.  See <https://bugs.gnu.org/38405>
                (substitute* (find-files (string-append out "/lib") "\\.prl$")
                  (("\\$\\$\\[QT_INSTALL_LIBS\\]")
-                  (string-append out "/lib")))
-               #t)))
+                  (string-append out "/lib"))))))
          (add-after 'unpack 'patch-paths
            ;; Use the absolute paths for dynamically loaded libs, otherwise
            ;; the lib will be searched in LD_LIBRARY_PATH which typically is
@@ -520,7 +518,7 @@ system, and the core design of Django is reused in Grantlee.")
                (substitute* '("src/network/kernel/qdnslookup_unix.cpp"
                               "src/network/kernel/qhostinfo_unix.cpp")
                  (("^\\s*(lib.setFileName\\(QLatin1String\\(\")(resolv\"\\)\\);)" _ a b)
-                (string-append a glibc "/lib/lib" b))))
+                  (string-append a glibc "/lib/lib" b))))
              ;; libGL
              (substitute* "src/plugins/platforms/xcb/gl_integrations/xcb_glx/qglxintegration.cpp"
                (("^\\s*(QLibrary lib\\(QLatin1String\\(\")(GL\"\\)\\);)" _ a b)
@@ -530,8 +528,7 @@ system, and the core design of Django is reused in Grantlee.")
                (("^\\s*(QLibrary xcursorLib\\(QLatin1String\\(\")(Xcursor\"\\), 1\\);)" _ a b)
                 (string-append a (assoc-ref inputs "libxcursor") "/lib/lib" b))
                (("^\\s*(xcursorLib.setFileName\\(QLatin1String\\(\")(Xcursor\"\\)\\);)" _ a b)
-                (string-append a (assoc-ref inputs "libxcursor") "/lib/lib" b)))
-             #t)))))
+                (string-append a (assoc-ref inputs "libxcursor") "/lib/lib" b))))))))
     (native-search-paths
      (list (search-path-specification
             (variable "QMAKEPATH")
