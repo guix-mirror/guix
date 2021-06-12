@@ -328,8 +328,6 @@ When FORCE? is true, do perform a real check.  This is not recommended!  See
 @uref{https://bugzilla.redhat.com/show_bug.cgi?id=625967#c8}.  If REPAIR is
 false, do not write to DEVICE.  If it's #t, fix any errors found.  Otherwise,
 fix only those considered safe to repair automatically."
-  ;; XXX Why make this conditional on (check? #t) at all?
-  (system* "btrfs" "device" "scan")     ; ignore errors
   (if force?
       (match (status:exit-val
               (apply system* `("btrfs" "check" "--progress"

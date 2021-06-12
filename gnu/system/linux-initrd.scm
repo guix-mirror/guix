@@ -210,6 +210,16 @@ upon error."
              (open source targets)))
          mapped-devices))
 
+  (define file-system-scan-commands
+    ;; File systems like btrfs need help to assemble multi-device file systems
+    ;; but do not use manually-specified <mapped-devices>.
+    (let ((file-system-types (map file-system-type file-systems)))
+      (if (member "btrfs" file-system-types)
+          ;; Ignore errors: if the system manages to boot anyway, the better.
+          #~((system* (string-append #$btrfs-progs/static "/bin/btrfs")
+                      "device" "scan"))
+          #~())))
+
   (define kodir
     (flat-linux-module-directory linux linux-modules))
 
@@ -245,7 +255,8 @@ upon error."
                         (map spec->file-system
                              '#$(map file-system->spec file-systems))
                         #:pre-mount (lambda ()
-                                      (and #$@device-mapping-commands))
+                                      (and #$@device-mapping-commands
+                                           #$@file-system-scan-commands))
                         #:linux-modules '#$linux-modules
                         #:linux-module-directory '#$kodir
                         #:keymap-file #+(and=> keyboard-layout
