@@ -17823,7 +17823,7 @@ shell style patterns.")
 (define-public rust-globset-0.4
   (package
     (name "rust-globset")
-    (version "0.4.6")
+    (version "0.4.7")
     (source
      (origin
        (method url-fetch)
@@ -17831,8 +17831,7 @@ shell style patterns.")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "0jhy0qs5k43g8zyx1fys44kcdzjmcrwjyv9n703kj8g4y6g1cln1"))))
+        (base32 "1ca96s29s7aqpkm04z4babyk8xqn1w7slpdrlldgnkz6l2gipz7h"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -17846,12 +17845,10 @@ shell style patterns.")
        (("rust-glob" ,rust-glob-0.3)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-serde-json" ,rust-serde-json-1))))
-    (home-page
-     "https://github.com/BurntSushi/ripgrep/tree/master/globset")
-    (synopsis
-     "Cross platform single glob and glob set matching")
+    (home-page "https://github.com/BurntSushi/ripgrep/tree/master/globset")
+    (synopsis "Single glob and glob set matching")
     (description
-     "Cross platform single glob and glob set matching.  Glob set matching is
+     "This crate provides glob and glob set matching.  Glob set matching is
 the process of matching one or more glob patterns against a single candidate
 path simultaneously, and returning all of the globs that matched.")
     (license (list license:expat license:unlicense))))
