@@ -24,7 +24,8 @@
   #:use-module (gnu installer newt page)
   #:use-module (gnu system uuid)
   #:use-module ((gnu build file-systems)
-                #:select (read-partition-uuid
+                #:select (find-partition-by-label
+                          read-partition-uuid
                           read-luks-partition-uuid))
   #:use-module ((gnu build linux-modules)
                 #:select (missing-modules))
@@ -338,14 +339,17 @@ fail. See rereadpt function in wipefs.c of util-linux for an explanation."
    (invoke "dmsetup" "remove_all")))
 
 (define (non-install-devices)
-  "Return all the available devices, except the busy one, allegedly the
-install device. DEVICE-IS-BUSY? is a parted call, checking if the device is
-mounted."
-  ;; FIXME: The install image uses an overlayfs so the install device does not
-  ;; appear as mounted and won't be considered as busy.
+  "Return all the available devices, except the install device."
+  ;; XXX: The install image uses an overlayfs so detecting the install device
+  ;; is not easy.  Assume that a given device is the installation device if it
+  ;; is reported as busy by parted or if its label is the ISO9660 image label.
   (remove (lambda (device)
-            (let ((file-name (device-path device)))
-              (device-is-busy? device)))
+            (let ((file-name (device-path device))
+                  (install-file-name
+                   (find-partition-by-label "GUIX_IMAGE")))
+              (or (device-is-busy? device)
+                  (and install-file-name
+                       (string=? file-name install-file-name)))))
           (devices)))
 
 
