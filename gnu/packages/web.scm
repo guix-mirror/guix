@@ -317,7 +317,7 @@ Interface} specification.")
 (define-public monolith
   (package
     (name "monolith")
-    (version "2.5.0")
+    (version "2.6.0")
     (source
      (origin
        (method git-fetch)
@@ -326,7 +326,7 @@ Interface} specification.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0s6jyhz51d39ccz0ghr7hy1fww84b0pzsyb8s63qgxbndp2c42l0"))))
+        (base32 "0rz0b1fvyn94s4izzzrxyijwzc0np80qgmbwvg983nnzpzfr33ai"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -335,6 +335,7 @@ Interface} specification.")
         ("rust-chrono" ,rust-chrono-0.4)
         ("rust-clap" ,rust-clap-2)
         ("rust-cssparser" ,rust-cssparser-0.28)
+        ("rust-encoding-rs" ,rust-encoding-rs-0.8)
         ("rust-html5ever" ,rust-html5ever-0.24)
         ("rust-regex" ,rust-regex-1)
         ("rust-reqwest" ,rust-reqwest-0.11)
