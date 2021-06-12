@@ -41,6 +41,7 @@
 ;;; Copyright © 2021 Hyunseok Kim <lasnesne@lagunposprasihopre.org>
 ;;; Copyright © 2021 David Larsson <david.larsson@selfhosted.xyz>
 ;;; Copyright © 2021 WinterHound <winterhound@yandex.com>
+;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1700,18 +1701,27 @@ commands and their arguments.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-before 'configure 'pre-configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "GNUmakefile"
+               (("^\tchown.*$") ""))
+             ;; OpenDoas look for binaries in safepath when a rule specify a
+             ;; relative command, such as “permit keepenv :wheel cmd guix”.
+             (substitute* "doas.c"
+               (("safepath =" match)
+                (string-append match " \""
+                               "/run/setuid-programs:"
+                               "/run/current-system/profile/bin:"
+                               "/run/current-system/profile/sbin:"
+                               "\" ")))
+             #t))
          (replace 'configure
            ;; The configure script doesn't accept most of the default flags.
            (lambda* (#:key configure-flags #:allow-other-keys)
              ;; The configure script can be told which compiler to use only
              ;; through environment variables.
              (setenv "CC" ,(cc-for-target))
-             (apply invoke "./configure" configure-flags)))
-         (add-before 'install 'fix-makefile
-           (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* "GNUmakefile"
-               (("^\tchown.*$") ""))
-             #t)))
+             (apply invoke "./configure" configure-flags))))
        #:configure-flags
        (list (string-append "--prefix=" (assoc-ref %outputs "out"))
              "--with-timestamp")
