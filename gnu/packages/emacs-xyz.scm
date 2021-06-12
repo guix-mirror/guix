@@ -21291,6 +21291,32 @@ extracted and manipulated by user-defined functions to do various things such
 as playing them in some video player, or downloading them.")
       (license license:gpl3+))))
 
+(define-public emacs-ytel-show
+  ;; No tagged releases.  Version extracted from main file.
+  (let ((commit "8b999484eb447ecdb741b24cbef2b5a7260a53e6")
+        (revision "0"))
+    (package
+      (name "emacs-ytel-show")
+      (version (git-version "0.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/xFA25E/ytel-show")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0nhgzfzq1bgpbdbljx5z2hzr8ia7ybsyvvr66yj4klz0zj97rghj"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-ytel" ,emacs-ytel)))
+      (home-page "https://github.com/xFA25E/ytel-show")
+      (synopsis "Browse YouTube in Emacs")
+      (description
+       "This package provides an Emacs interface for browsing YouTube videos
+and comments.")
+      (license license:gpl3+))))
+
 (define-public emacs-org-web-tools
   (package
     (name "emacs-org-web-tools")
