@@ -1683,31 +1683,31 @@ high-performance parallel differential evolution (DE) optimization algorithm.")
   ;; See <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=27344#236>.
   (package
     (name "libngspice")
-    (version "28")
-    (source (origin
-              (method url-fetch)
-              (uri (list
-                     (string-append "mirror://sourceforge/ngspice/ng-spice-rework/"
-                                    version "/ngspice-" version ".tar.gz")
-                     (string-append "mirror://sourceforge/ngspice/ng-spice-rework/"
-                                    "old-releases/" version
-                                    "/ngspice-" version ".tar.gz")))
-              (sha256
-               (base32
-                "0rnz2rdgyav16w7wfn3sfrk2lwvvgz1fh0l9107zkcldijklz04l"))
-              (modules '((guix build utils)))
-              ;; We remove the non-free cider and build without it.
-              (snippet
-               '(begin
-                  (delete-file-recursively "src/ciderlib")
-                  (delete-file "src/ciderinit")
-                  (substitute* "configure"
-                    (("src/ciderlib/Makefile") "")
-                    (("src/ciderlib/input/Makefile") "")
-                    (("src/ciderlib/support/Makefile") "")
-                    (("src/ciderlib/oned/Makefile") "")
-                    (("src/ciderlib/twod/Makefile") ""))
-                  #t))))
+    (version "34")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (list
+             (string-append "mirror://sourceforge/ngspice/ng-spice-rework/"
+                            version "/ngspice-" version ".tar.gz")
+             (string-append "mirror://sourceforge/ngspice/ng-spice-rework/"
+                            "old-releases/" version
+                            "/ngspice-" version ".tar.gz")))
+       (sha256
+        (base32 "1dfpkgkwmgwhq8dnbb8dh28cfap6rw0yywkhmxr4jxclcvygyqr2"))
+       (modules '((guix build utils)))
+       ;; We remove the non-free cider and build without it.
+       (snippet
+        '(begin
+           (delete-file-recursively "src/ciderlib")
+           (delete-file "src/ciderinit")
+           (substitute* "configure"
+             (("src/ciderlib/Makefile") "")
+             (("src/ciderlib/input/Makefile") "")
+             (("src/ciderlib/support/Makefile") "")
+             (("src/ciderlib/oned/Makefile") "")
+             (("src/ciderlib/twod/Makefile") ""))
+           #t))))
     (build-system gnu-build-system)
     (arguments
      `(;; No tests for libngspice exist.
@@ -1718,14 +1718,12 @@ high-performance parallel differential evolution (DE) optimization algorithm.")
          (add-after 'unpack 'patch-timestamps
            (lambda _
              (substitute* "configure"
-               (("`date`") "Thu Jan  1 00:00:01 UTC 1970"))
-             #t))
+               (("`date`") "Thu Jan  1 00:00:01 UTC 1970"))))
          (add-after 'unpack 'delete-program-manuals
            (lambda _
              (substitute* "man/man1/Makefile.in"
                (("^man_MANS = ngspice\\.1 ngnutmeg\\.1 ngsconvert\\.1 ngmultidec\\.1")
-                "man_MANS = "))
-             #t))
+                "man_MANS = "))))
          (add-after 'install 'delete-script-files
            (lambda* (#:key outputs #:allow-other-keys)
              (delete-file-recursively
@@ -1768,16 +1766,7 @@ an embedded event driven algorithm.")
              (lambda _
                (substitute* "src/Makefile.in"
                  (("^SUBDIRS = misc maths frontend spicelib include/ngspice")
-                  "SUBDIRS = misc maths frontend spicelib"))
-               #t))
-           (add-after 'install 'delete-cmpp-dlmain
-             (lambda* (#:key outputs #:allow-other-keys)
-               (for-each (lambda (file)
-                           (delete-file
-                            (string-append (assoc-ref outputs "out")
-                                           file)))
-                         '("/bin/cmpp" "/share/ngspice/dlmain.c"))
-               #t))
+                  "SUBDIRS = misc maths frontend spicelib"))))
            (delete 'delete-program-manuals)
            (delete 'delete-script-files)))))
     (inputs
