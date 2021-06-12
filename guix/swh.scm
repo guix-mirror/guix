@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -455,8 +456,13 @@ URL could not be found."
         ((visit . _)
          (let ((snapshot (visit-snapshot visit)))
            (match (and=> (find (lambda (branch)
-                                 (string=? (string-append "refs/tags/" tag)
-                                           (branch-name branch)))
+                                 (or
+                                  ;; Git specific.
+                                  (string=? (string-append "refs/tags/" tag)
+                                            (branch-name branch))
+                                  ;; Hg specific.
+                                  (string=? tag
+                                            (branch-name branch))))
                                (snapshot-branches snapshot))
                          branch-target)
              ((? release? release)
