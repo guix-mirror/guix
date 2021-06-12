@@ -44637,19 +44637,20 @@ different for every thread.")
 (define-public rust-thread-local-1
   (package
     (name "rust-thread-local")
-    (version "1.0.1")
+    (version "1.1.3")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "thread_local" version))
-        (file-name (string-append name "-" version ".crate"))
-        (sha256
-         (base32
-          "054vlrr1vsdy1h4b7n99mr24pnj8928ig9qwzg36wnkld4dns36l"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "thread_local" version))
+       (file-name (string-append name "-" version ".crate"))
+       (sha256
+        (base32 "1gccp3grndpi6dyhzylz4hkqnkzc1xyri98n0xwwhnn90i7d4640"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
-       #:cargo-inputs (("rust-lazy-static" ,rust-lazy-static-1))))
+       #:cargo-inputs
+       (("rust-criterion" ,rust-criterion-0.3)
+        ("rust-once-cell" ,rust-once-cell-1))))
     (home-page "https://github.com/Amanieu/thread_local-rs")
     (synopsis "Per-object thread-local storage")
     (description "Per-object thread-local storage.")
