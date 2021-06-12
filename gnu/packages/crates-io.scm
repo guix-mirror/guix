@@ -18195,7 +18195,7 @@ standard printing of search results, similar to grep itself.")
 (define-public rust-grep-searcher-0.1
   (package
     (name "rust-grep-searcher")
-    (version "0.1.7")
+    (version "0.1.8")
     (source
      (origin
        (method url-fetch)
@@ -18204,7 +18204,7 @@ standard printing of search results, similar to grep itself.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "06sb8n7nvaa4dnqnsx9jxvs78nnzmyp110cyzdvxnw09i4h7728r"))))
+         "0gf2qkkfsywvzrqvfx6h88qzb68zmnvggvid1ljdqam51glvvgbz"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -18214,7 +18214,7 @@ standard printing of search results, similar to grep itself.")
         ("rust-encoding-rs-io" ,rust-encoding-rs-io-0.1)
         ("rust-grep-matcher" ,rust-grep-matcher-0.1)
         ("rust-log" ,rust-log-0.4)
-        ("rust-memmap" ,rust-memmap-0.7))
+        ("rust-memmap" ,rust-memmap2-0.3))
        #:cargo-development-inputs
        (("rust-grep-regex" ,rust-grep-regex-0.1)
         ("rust-regex" ,rust-regex-1))))
