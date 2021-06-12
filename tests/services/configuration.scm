@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -81,6 +82,17 @@
   (not (false-if-exception
         (let ((config (serializable-configuration)))
           (serialize-configuration config serializable-configuration-fields)))))
+
+(define (custom-prefix-serialize-integer field-name name) name)
+
+(define-configuration configuration-with-prefix
+  (port (integer 10) "The port number.")
+  (prefix custom-prefix-))
+
+(test-assert "serialize-configuration with prefix"
+  (gexp?
+   (let ((config (configuration-with-prefix)))
+     (serialize-configuration config configuration-with-prefix-fields))))
 
 
 ;;;
