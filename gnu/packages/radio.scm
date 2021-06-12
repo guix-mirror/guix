@@ -136,12 +136,15 @@ useful in modems implemented with @dfn{digital signal processing} (DSP).")
               (base32 "1n6dbg13q8ga5qhg1yiszwly4jj0rxqr6f1xwm9waaly5z493xsd"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)))
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
     (inputs
      `(("fftwf" ,fftwf)
        ("libfec" ,libfec)))
     (arguments
-     `(#:phases
+     `(;; For reproducibility, disable use of SSE3, SSE4.1, etc.
+       #:configure-flags '("--enable-simdoverride")
+       #:phases
        (modify-phases %standard-phases
          (add-after 'install 'delete-static-library
            (lambda* (#:key outputs #:allow-other-keys)
