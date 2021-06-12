@@ -18133,7 +18133,7 @@ the regex engine it uses pluggable.")
 (define-public rust-grep-printer-0.1
   (package
     (name "rust-grep-printer")
-    (version "0.1.5")
+    (version "0.1.6")
     (source
      (origin
        (method url-fetch)
@@ -18142,11 +18142,11 @@ the regex engine it uses pluggable.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "004xv2bb52x801n0m1pknkdmzcjbi9fk9625m49y9s0ghh6d8d3z"))))
+         "0wnw8khcvris8canv1dp58qh6vph18fml9qsnrsmdpxf9ni73hh5"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-base64" ,rust-base64-0.12)
+       (("rust-base64" ,rust-base64-0.13)
         ("rust-bstr" ,rust-bstr-0.2)
         ("rust-grep-matcher" ,rust-grep-matcher-0.1)
         ("rust-grep-searcher" ,rust-grep-searcher-0.1)
@@ -18159,8 +18159,8 @@ the regex engine it uses pluggable.")
     (home-page "https://github.com/BurntSushi/ripgrep")
     (synopsis "Standard printing of search results")
     (description
-     "An implementation of the grep crate's Sink trait that provides
-standard printing of search results, similar to grep itself.")
+     "This package is an implementation of the grep crate's Sink trait that
+provides standard printing of search results, similar to grep itself.")
     (license (list license:unlicense license:expat))))
 
 (define-public rust-grep-regex-0.1
