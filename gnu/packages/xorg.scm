@@ -28,6 +28,7 @@
 ;;; Copyright © 2020 Jean-Baptiste Note <jean-baptiste.note@m4x.org>
 ;;; Copyright © 2021 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2021 Matthew James Kraai <kraai@ftbfs.org>
+;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3017,8 +3018,8 @@ X server.")
 
 
 (define-public xf86-video-intel
-  (let ((commit "ad5540f6ecaec287c70259f0181e613561b716f6")
-        (revision "17"))
+  (let ((commit "31486f40f8e8f8923ca0799aea84b58799754564")
+        (revision "18"))
     (package
       (name "xf86-video-intel")
       (version (git-version "2.99.917" revision commit))
@@ -3027,11 +3028,11 @@ X server.")
          ;; there's no current tarball
          (method git-fetch)
          (uri (git-reference
-               (url "https://anongit.freedesktop.org/git/xorg/driver/xf86-video-intel.git")
+               (url "https://gitlab.freedesktop.org/xorg/driver/xf86-video-intel.git")
                (commit commit)))
          (sha256
           (base32
-           "09jdg5wrq708wc83027337qvdjb96827h7sjwjfl5ffiynfpwl95"))
+           "0lv6vlx9gvp34pidmx4gxgb0qjf0km0gabbaxw141nnvj1azv94y"))
          (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (inputs `(("mesa" ,mesa)
