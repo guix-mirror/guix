@@ -43,11 +43,13 @@
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -99,6 +101,36 @@ ddcutil allows colour-related settings to be saved at the time a monitor is
 calibrated, and restored when the calibration is applied.")
     (license (list license:bsd-3        ; FindDDCUtil.cmake
                    license:gpl2+))))    ; everything else
+
+(define-public ddcui
+  (package
+    (name "ddcui")
+    (version "0.1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rockowitz/ddcui")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0myma1zw6dlygv3xbin662d91zcnwss10syf12q2fppkrd8qdgqf"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:tests? #f))                    ; No test suite
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("ddcutil" ,ddcutil)
+       ("glib" ,glib)
+       ("qtbase" ,qtbase-5)))
+    (home-page "https://www.ddcutil.com/")
+    (synopsis "Graphical user interface for ddcutil")
+    (description "ddcui is a graphical user interface for ddcutil, implemented
+using Qt.  It provide a dynamic way to inspect and configure external monitors
+through the Display Data Channel Command Interface (@dfn{DDC/CI}) protocol.")
+    (license (list license:gpl2+))))
 
 (define-public edid-decode
   (let ((commit "74b64180d67bb009d8d9ea1b6f18ad41aaa16396") ; 2020-04-22
