@@ -391,11 +391,7 @@ characters, ASCII whitespace characters, other ASCII characters and non-ASCII.")
          "1gv4imhjgxmyxaa996yshcjlakmrjw9pf4rycp90pq675cn9sz7k"))))
     (build-system cargo-build-system)
     (arguments
-     ;; XXX: Upgrading rust-bstr-0.2 from 0.2.12 to 0.2.15 introduced 11 test
-     ;; failures. Skip tests for now. Check again at next bstr or ripgrep
-     ;; upgrade.
-     `(#:tests? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-bstr" ,rust-bstr-0.2)
         ("rust-clap" ,rust-clap-2)
         ("rust-grep" ,rust-grep-0.2)
