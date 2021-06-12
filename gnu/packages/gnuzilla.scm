@@ -15,6 +15,7 @@
 ;;; Copyright © 2019, 2020 Adrian Malacoda <malacoda@monarch-pass.net>
 ;;; Copyright © 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -910,6 +911,7 @@ from forcing GEXP-PROMISE."
        ;; UNBUNDLE-ME! ("nss" ,nss)
        ("shared-mime-info" ,shared-mime-info)
        ;; UNBUNDLE-ME! ("sqlite" ,sqlite)
+       ("eudev" ,eudev)
        ("unzip" ,unzip)
        ("zip" ,zip)
        ;; UNBUNDLE-ME! ("zlib" ,zlib)
@@ -1271,24 +1273,21 @@ from forcing GEXP-PROMISE."
                     (lib (string-append out "/lib"))
                     (gtk (assoc-ref inputs "gtk+"))
                     (gtk-share (string-append gtk "/share"))
-                    (mesa (assoc-ref inputs "mesa"))
-                    (mesa-lib (string-append mesa "/lib"))
-                    (pulseaudio (assoc-ref inputs "pulseaudio"))
-                    (pulseaudio-lib (string-append pulseaudio "/lib"))
-                    (libxscrnsaver (assoc-ref inputs "libxscrnsaver"))
-                    (libxscrnsaver-lib (string-append libxscrnsaver "/lib"))
-                    (mit-krb5 (assoc-ref inputs "mit-krb5"))
-                    (mit-krb5-lib (string-append mit-krb5 "/lib")))
+                    (ld-libs (map (lambda (lib)
+                                    (string-append (assoc-ref inputs lib)
+                                                   "/lib"))
+                              '("libxscrnsaver"
+                                "mesa"
+                                "mit-krb5"
+                                "eudev"
+                                "pulseaudio"))))
                (wrap-program (car (find-files lib "^icecat$"))
                  `("XDG_DATA_DIRS" prefix (,gtk-share))
                  ;; The following line is commented out because the icecat
                  ;; package on guix has been observed to be unstable when
                  ;; using wayland, and the bundled extensions stop working.
                  ;;   `("MOZ_ENABLE_WAYLAND" = ("1"))
-                 `("LD_LIBRARY_PATH" prefix (,pulseaudio-lib
-                                             ,mesa-lib
-                                             ,libxscrnsaver-lib
-                                             ,mit-krb5-lib)))
+                 `("LD_LIBRARY_PATH" prefix ,ld-libs))
                #t))))))
     (home-page "https://www.gnu.org/software/gnuzilla/")
     (synopsis "Entirely free browser derived from Mozilla Firefox")
