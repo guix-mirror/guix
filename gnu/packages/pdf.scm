@@ -222,14 +222,14 @@ please install the @code{flyer-composer-gui} package.")))
 (define-public poppler
   (package
    (name "poppler")
-   (version "21.05.0")
+   (version "21.06.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://poppler.freedesktop.org/poppler-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "135x1p4jc7cym3an1g45q7blk14fyg8m7z20phai5b8gd1xm7zfs"))))
+              "1d2xb57z0rpcs23mz7f53x5sz3hjql8qgvqn74d0hh6y09d9xc46"))))
    (build-system cmake-build-system)
    ;; FIXME:
    ;;  use libcurl:        no
@@ -255,12 +255,13 @@ please install the @code{flyer-composer-gui} package.")))
         ("glib" ,glib "bin")                      ; glib-mkenums, etc.
         ("gobject-introspection" ,gobject-introspection)))
    (arguments
-    `(#:tests? #f ; no test data provided with the tarball
+    `(#:tests? #f                      ;no test data provided with the tarball
       #:configure-flags
       (let* ((out (assoc-ref %outputs "out"))
              (lib (string-append out "/lib")))
         (list "-DENABLE_UNSTABLE_API_ABI_HEADERS=ON" ;to install header files
               "-DENABLE_ZLIB=ON"
+              "-DENABLE_BOOST=OFF"      ;disable Boost to save size
               (string-append "-DCMAKE_INSTALL_LIBDIR=" lib)
               (string-append "-DCMAKE_INSTALL_RPATH=" lib)))))
    (synopsis "PDF rendering library")
