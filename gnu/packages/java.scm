@@ -2473,14 +2473,16 @@ new Date();"))
   (package
     (inherit openjdk13)
     (name "openjdk")
-    (version "14.0")
+    (version "14.0.2")
     (source (origin
-              (method url-fetch)
-              (uri "http://hg.openjdk.java.net/jdk/jdk14/archive/bc54620a3848.tar.bz2")
-              (file-name (string-append name "-" version ".tar.bz2"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/openjdk/jdk14u")
+                    (commit (string-append "jdk-" version "-ga"))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0z485pk7r1xpw8004g4nrwrzj17sabgx8yfdbxwfvzkjp8qyajch"))
+                "07k9bsbxwyf2z2n50z96nvhsdai916mxdxcr5lm44jz7f6xrwfq6"))
               (modules '((guix build utils)))
               (snippet
                `(begin
