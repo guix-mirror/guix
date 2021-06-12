@@ -297,7 +297,7 @@ video and audio streams from a DVD.")
          (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0rac70p6rpvdx9v0bdd8nphgr7imdxb7nz0x77n3p7h3180zz9x0"))))
+        (base32 "1cv6vcf5yxcwdvj5yqcckbixqrvvdxk7ibincnnv80pz6wh527sv"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f)) ; Test script is stand-alone
