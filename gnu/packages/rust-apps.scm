@@ -589,14 +589,14 @@ gitignore rules.")
 (define-public tectonic
   (package
     (name "tectonic")
-    (version "0.5.1")
+    (version "0.5.2")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "tectonic" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0886wn6bkqsfila4m49k7n33ii74yhp4c2wcpbbhq2f9443ry6v9"))))
+        (base32 "050d5slf3s6p58nzkqdqqx2bpwnjkyfk3y5bwfkrdiimfdi6k6yd"))))
     (build-system cargo-build-system)
     (arguments
      `(#:rust ,rust-1.52
