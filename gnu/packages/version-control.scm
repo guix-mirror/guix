@@ -1552,26 +1552,27 @@ control to Git repositories.")
              (invoke "git" "config" "--global" "user.name" "Your Name")
              (invoke "git" "config" "--global" "user.email" "you@example.com")))
          (replace 'check
-           (lambda* (#:key inputs outputs #:allow-other-keys)
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
              (add-installed-pythonpath inputs outputs)
-             ;; The file below contains about 30 tests that fail because they
-             ;; depend on tools from multiple languages (cargo, npm, cpan,
-             ;; Rscript, etc).  There are other tests that pass, but it's more
-             ;; convenient to skip the whole file than list 30 tests to skip.
-             (invoke "pytest" "--ignore=tests/repository_test.py"
-                     ;; Ruby and Node tests require node and gem.
-                     "--ignore=tests/languages/node_test.py"
-                     "--ignore=tests/languages/ruby_test.py"
-                     ;; FIXME: Python tests fail because of distlib version
-                     ;; mismatch.  Even with python-distlib/next it is
-                     ;; pulling version 0.3.0, while 0.3.1 is required.
-                     "--ignore=tests/languages/python_test.py" "-k"
-                     (string-append
-                      ;; TODO: these tests fail with AssertionError.  It may
-                      ;; be possible to fix them.
-                      "not test_install_existing_hooks_no_overwrite"
-                      " and not test_uninstall_restores_legacy_hooks"
-                      " and not test_installed_from_venv"))))
+             (when tests?
+               ;; The file below contains 30+ tests that fail because they
+               ;; depend on tools from multiple languages (cargo, npm, cpan,
+               ;; Rscript, etc).  Other tests are passing, but it's more
+               ;; convenient to skip the file than list 30 tests to skip.
+               (invoke "pytest" "--ignore=tests/repository_test.py"
+                       ;; Ruby and Node tests require node and gem.
+                       "--ignore=tests/languages/node_test.py"
+                       "--ignore=tests/languages/ruby_test.py"
+                       ;; FIXME: Python tests fail because of distlib version
+                       ;; mismatch.  Even with python-distlib/next it is
+                       ;; pulling version 0.3.0, while 0.3.1 is required.
+                       "--ignore=tests/languages/python_test.py" "-k"
+                       (string-append
+                        ;; TODO: these tests fail with AssertionError.  It may
+                        ;; be possible to fix them.
+                        "not test_install_existing_hooks_no_overwrite"
+                        " and not test_uninstall_restores_legacy_hooks"
+                        " and not test_installed_from_venv")))))
          (add-before 'reset-gzip-timestamps 'make-gz-writable
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Make sure .gz files are writable so that the
