@@ -2517,6 +2517,29 @@ new Date();"))
        ("zip" ,zip)))
     (home-page "https://openjdk.java.net/projects/jdk/14")))
 
+(define-public openjdk15
+  (package
+    (inherit openjdk14)
+    (name "openjdk")
+    (version "15.0.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/openjdk/jdk15u")
+                    (commit (string-append "jdk-" version "-ga"))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "168cr08nywp0q3vyj8njkhsmmnyd8rz9r58hk4xhzdzc6bdfkl1i"))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("openjdk14:jdk" ,openjdk14 "jdk")
+       ("pkg-config" ,pkg-config)
+       ("unzip" ,unzip)
+       ("which" ,which)
+       ("zip" ,zip)))
+    (home-page "https://openjdk.java.net/projects/jdk/15")))
+
 (define-public icedtea icedtea-8)
 
 
