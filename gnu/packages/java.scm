@@ -2540,6 +2540,44 @@ new Date();"))
        ("zip" ,zip)))
     (home-page "https://openjdk.java.net/projects/jdk/15")))
 
+(define-public openjdk16
+  (package
+    (inherit openjdk15)
+    (name "openjdk")
+    (version "16.0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/openjdk/jdk16u")
+                    (commit (string-append "jdk-" version "-ga"))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1ggddsbsar4dj2fycfqqqagqil7prhb30afvq6933rz7pa9apm2f"))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("openjdk15:jdk" ,openjdk15 "jdk")
+       ("pkg-config" ,pkg-config)
+       ("unzip" ,unzip)
+       ("which" ,which)
+       ("zip" ,zip)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments openjdk15)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'make-templates-writable
+             (lambda _
+               ;; The build system copies a few .template files from the
+               ;; source directory into the build directory and then modifies
+               ;; them in-place.  So these files have to be writable.
+               (for-each
+                (lambda (file)
+                  (invoke "chmod" "u+w" file))
+                (find-files "src/java.base/share/classes/jdk/internal/misc/"
+                            "\\.template$"))
+               #t))))))
+    (home-page "https://openjdk.java.net/projects/jdk/16")))
+
 (define-public icedtea icedtea-8)
 
 
