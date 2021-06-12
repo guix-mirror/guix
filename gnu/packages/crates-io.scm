@@ -24439,17 +24439,17 @@ file IO.")
        #:cargo-development-inputs
        (("rust-tempdir" ,rust-tempdir-0.3))))))
 
-(define-public rust-memmap2-0.1
+(define-public rust-memmap2-0.3
   (package
     (name "rust-memmap2")
-    (version "0.1.0")
+    (version "0.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "memmap2" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0nmymqy9q62x577ydja0ysfyir7h5qa0n5fwcnvchfhhlsi0rdyr"))))
+        (base32 "1xcg3vv6rg8vhl0wdfy085gx4xsp2dah7anvn5816h6wgczj1zr0"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -24459,6 +24459,19 @@ file IO.")
     (synopsis "Cross-platform Rust API for memory-mapped file IO")
     (description "This package provides a Rust API for memory-mapped file IO.")
     (license (list license:expat license:asl2.0))))
+
+(define-public rust-memmap2-0.1
+  (package
+    (inherit rust-memmap2-0.3)
+    (name "rust-memmap2")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "memmap2" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0nmymqy9q62x577ydja0ysfyir7h5qa0n5fwcnvchfhhlsi0rdyr"))))))
 
 (define-public rust-memoffset-0.6
   (package
