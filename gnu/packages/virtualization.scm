@@ -142,7 +142,7 @@
 (define-public qemu
   (package
     (name "qemu")
-    (version "5.2.0")
+    (version "6.0.0")
     (source
      (origin
        (method url-fetch)
@@ -150,24 +150,12 @@
                            version ".tar.xz"))
        (sha256
         (base32
-         "1g0pvx4qbirpcn9mni704y03n3lvkmw2c0rbcwvydyr8ns4xh66b"))
+         "1f9hz8rf12jm8baa7kda34yl4hyl0xh0c4ap03krfjx23i3img47"))
        (patches (search-patches "qemu-CVE-2021-20203.patch"
                                 "qemu-build-info-manual.patch"))
        (modules '((guix build utils)))
        (snippet
         '(begin
-           ;; Fix a bug in the do_ioctl_ifconf() function of qemu to
-           ;; make ioctl(…, SIOCGIFCONF, …) work for emulated 64 bit
-           ;; architectures.  The size of struct ifreq is handled
-           ;; incorrectly.
-           ;; https://lists.nongnu.org/archive/html/qemu-devel/2021-01/msg01545.html
-           (substitute* '("linux-user/syscall.c")
-             (("^([[:blank:]]*)const argtype ifreq_arg_type.*$" line indent)
-              (string-append line indent "const argtype ifreq_max_type[] = "
-                             "{ MK_STRUCT(STRUCT_ifmap_ifreq) };\n"))
-             (("^([[:blank:]]*)target_ifreq_size[[:blank:]]=.*$" _ indent)
-              (string-append indent "target_ifreq_size = "
-                             "thunk_type_size(ifreq_max_type, 0);")))
            ;; Delete the bundled meson copy.
            (delete-file-recursively "meson")))))
     (outputs '("out" "static" "doc"))   ;5.3 MiB of HTML docs
@@ -223,14 +211,14 @@
                 (string-append match "9")))))
          (add-after 'unpack 'disable-unusable-tests
            (lambda _
-             (substitute* "tests/meson.build"
+             (substitute* "tests/unit/meson.build"
                ;; Comment out the test-qga test, which needs /sys and
                ;; fails within the build environment.
                (("tests.*test-qga.*$" all)
                 (string-append "# " all))
                ;; Comment out the test-char test, which needs networking and
                ;; fails within the build environment.
-               (("check-unit-.* tests/test-char" all)
+               ((".*'test-char':.*" all)
                 (string-append "# " all)))))
          (add-after 'patch-source-shebangs 'patch-embedded-shebangs
            (lambda _

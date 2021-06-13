@@ -3,7 +3,7 @@
 ;;; Copyright © 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
-;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2018, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2016, 2017 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
 ;;; Copyright © 2017, 2018, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
@@ -97,7 +97,15 @@
                "1qbycnxkx07arj9f2nlsi9kp0dyldspbv07ysdyd34qvz55a97mp"))
              (patches (search-patches
                        "grub-efi-fat-serial-number.patch"
-                       "grub-setup-root.patch"))))
+                       "grub-setup-root.patch"))
+             (modules '((guix build utils)))
+             (snippet
+              '(begin
+                 ;; Adjust QEMU invocation to not use a deprecated device
+                 ;; name that was removed in QEMU 6.0.  Remove for >2.06.
+                 (substitute* "tests/ahci_test.in"
+                   (("ide-drive")
+                    "ide-hd"))))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
