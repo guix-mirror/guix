@@ -722,9 +722,10 @@ as the 'native-search-paths' field."
         `(modify-phases ,phases
            (add-after 'install 'remove-broken-or-conflicting-files
              (lambda* (#:key outputs #:allow-other-keys)
-               (for-each delete-file
-                         (find-files (string-append (assoc-ref outputs "out") "/bin")
-                                     ".*(c\\+\\+|cpp|g\\+\\+|gcov|gcc|gcc-.*)"))))))))))
+               (for-each
+                delete-file
+                (find-files (string-append (assoc-ref outputs "out") "/bin")
+                            ".*(c\\+\\+|cpp|g\\+\\+|gcov|gcc|lto)(-.*)?$"))))))))))
 
 (define %generic-search-paths
   ;; This is the language-neutral search path for GCC.  Entries in $CPATH are
