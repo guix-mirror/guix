@@ -234,7 +234,7 @@ inferior to MAX-SIZE, #f otherwise."
   (case fs-type
     ((ext4)  "ext4")
     ((btrfs) "btrfs")
-    ((fat16) "fat")
+    ((fat16) "vfat")
     ((fat32) "vfat")
     ((jfs)   "jfs")
     ((ntfs)  "ntfs")))
