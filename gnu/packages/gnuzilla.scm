@@ -1276,14 +1276,19 @@ from forcing GEXP-PROMISE."
                     (pulseaudio (assoc-ref inputs "pulseaudio"))
                     (pulseaudio-lib (string-append pulseaudio "/lib"))
                     (libxscrnsaver (assoc-ref inputs "libxscrnsaver"))
-                    (libxscrnsaver-lib (string-append libxscrnsaver "/lib")))
+                    (libxscrnsaver-lib (string-append libxscrnsaver "/lib"))
+                    (mit-krb5 (assoc-ref inputs "mit-krb5"))
+                    (mit-krb5-lib (string-append mit-krb5 "/lib")))
                (wrap-program (car (find-files lib "^icecat$"))
                  `("XDG_DATA_DIRS" prefix (,gtk-share))
                  ;; The following line is commented out because the icecat
                  ;; package on guix has been observed to be unstable when
                  ;; using wayland, and the bundled extensions stop working.
                  ;;   `("MOZ_ENABLE_WAYLAND" = ("1"))
-                 `("LD_LIBRARY_PATH" prefix (,pulseaudio-lib ,mesa-lib ,libxscrnsaver-lib)))
+                 `("LD_LIBRARY_PATH" prefix (,pulseaudio-lib
+                                             ,mesa-lib
+                                             ,libxscrnsaver-lib
+                                             ,mit-krb5-lib)))
                #t))))))
     (home-page "https://www.gnu.org/software/gnuzilla/")
     (synopsis "Entirely free browser derived from Mozilla Firefox")
