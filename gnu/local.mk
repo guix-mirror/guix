@@ -1623,6 +1623,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/pypy3-7.3.1-fix-tests.patch		\
   %D%/packages/patches/qemu-build-info-manual.patch		\
   %D%/packages/patches/qemu-CVE-2021-20203.patch		\
+  %D%/packages/patches/qemu-meson-compat.patch			\
   %D%/packages/patches/qemu-glibc-2.27.patch 			\
   %D%/packages/patches/qemu-glibc-2.30.patch 			\
   %D%/packages/patches/qpdfview-qt515-compat.patch		\
