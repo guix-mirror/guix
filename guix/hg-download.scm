@@ -35,7 +35,6 @@
             hg-reference?
             hg-reference-url
             hg-reference-changeset
-            hg-reference-recursive?
             hg-predicate
             hg-fetch
             hg-version
