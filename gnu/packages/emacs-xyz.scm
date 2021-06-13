@@ -532,6 +532,26 @@ buffers, directory trees, or the web.")
 @command{hg histedit} for editing the commit history.")
       (license license:gpl3+))))
 
+(define-public emacs-package-build
+  (package
+    (name "emacs-package-build")
+    (version "2.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/melpa/package-build")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1412pjghyvzkdlsrrs0ql30vw591bhyk1wlbf49f15dzjbspx3w0"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/melpa/package-build")
+    (synopsis "Tools for assembling en Emacs package archive")
+    (description "This package provides tools for assembling an @acronym{ELPA,
+Emacs package archive}.")
+    (license license:gpl3+)))
+
 (define-public emacs-paredit
   (package
     (name "emacs-paredit")
