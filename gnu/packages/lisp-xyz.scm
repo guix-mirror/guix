@@ -9854,20 +9854,20 @@ correctly.")
   (sbcl-package->ecl-package sbcl-trivialib-type-unify))
 
 (define-public sbcl-specialized-function
-  (let ((commit "dee56d2d2b6ecd10500ad291c56217698604ec35")
-        (revision "2"))
+  (let ((commit "5e2b04432bdf728496e6ff7227f210f845af7247")
+        (revision "3"))
     (package
       (name "sbcl-specialized-function")
-      (version (git-version "0.0.0" revision commit))
+      (version (git-version "0.1" revision commit))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
                (url "https://github.com/numcl/specialized-function")
                (commit commit)))
-         (file-name (git-file-name name version))
+         (file-name (git-file-name "specialized-function" version))
          (sha256
-          (base32 "1mcc7mmpbnmgnr1cl2jl5r1ai54gn7fbisv2c14sh9za5w4sib82"))))
+          (base32 "19hfgc83b7as630r1w9r8yl0v6xq3dn01vcrl0bd4pza5hgjn4la"))))
       (build-system asdf-build-system/sbcl)
       (synopsis "Julia-like dispatch for Common Lisp")
       (description
@@ -9878,21 +9878,17 @@ code.  The main target of this macro is speed.")
       (home-page "https://github.com/numcl/specialized-function")
       (license license:lgpl3+)
       (inputs
-       `(("trivia" ,sbcl-trivia)
-         ("alexandria" ,sbcl-alexandria)
+       `(("alexandria" ,sbcl-alexandria)
          ("iterate" ,sbcl-iterate)
          ("lisp-namespace" ,sbcl-lisp-namespace)
-         ("type-r" ,sbcl-type-r)
-         ("trivial-cltl2" ,sbcl-trivial-cltl2)))
+         ("trivia" ,sbcl-trivia)
+         ("trivial-cltl2" ,sbcl-trivial-cltl2)
+         ("type-r" ,sbcl-type-r)))
       (native-inputs
        `(("fiveam" ,sbcl-fiveam)))
       (arguments
        `(#:asd-files '("specialized-function.asd")
-         #:test-asd-file "specialized-function.test.asd"
-         ;; Tests fail because they try to use an internal symbol of SBCL
-         ;; that does not exists in recent versions:
-         ;;   "The variable SB-VM:COMPLEX-VECTOR-NIL-WIDETAG is unbound."
-         #:tests? #f)))))
+         #:test-asd-file "specialized-function.test.asd")))))
 
 (define-public cl-specialized-function
   (sbcl-package->cl-source-package sbcl-specialized-function))
