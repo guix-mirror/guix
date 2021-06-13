@@ -1367,11 +1367,13 @@ commits, run:
 
 @example
 git config commit.gpgsign true
+
+# Substitute the fingerprint of your public PGP key.
 git config user.signingkey CABBA6EA1DC0FF33
 @end example
 
 You can prevent yourself from accidentally pushing unsigned commits to
-Savannah by using the pre-push Git hook called located at
+Savannah by using the pre-push Git hook located at
 @file{etc/git/pre-push}:
 
 @example
