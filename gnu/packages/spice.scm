@@ -329,17 +329,18 @@ resolution scaling on graphical console window resize.")
 (define-public libcacard
   (package
     (name "libcacard")
-    (version "2.7.0")
+    (version "2.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://gitlab.freedesktop.org/spice/libcacard/uploads/"
-                    "56cb2499198e78e560a1d4c716cd8ab1"
+                    "9d8f24b131bcbbd7846727ea92952cb5"
                     "/libcacard-" version ".tar.xz"))
+              (patches (search-patches "libcacard-unknown-variable.patch"))
               (sha256
                (base32
-                "0vyvkk4b6xjwq1ccggql13c1x7g4y90clpkqw28257azgn2a1c8n"))))
-    (build-system gnu-build-system)
+                "0azj3rqr2smg0lai24xrn3zr628xmjfrzcggay877zrr64ybj1c0"))))
+    (build-system meson-build-system)
     (arguments
      '(#:tests? #f                      ; TODO Tests require gnutls built with
                                         ; p11-kit
@@ -350,8 +351,7 @@ resolution scaling on graphical console window resize.")
              (substitute* "tests/setup-softhsm2.sh"
                (("\\/usr\\/lib64\\/pkcs11\\/libsofthsm2\\.so")
                 (string-append (assoc-ref inputs "softhsm")
-                               "/lib/softhsm/libsofthsm2.so")))
-             #t)))))
+                               "/lib/softhsm/libsofthsm2.so"))))))))
     (propagated-inputs
      `(("glib" ,glib)                   ; Requires: in the pkg-config file
        ("nss" ,nss)))                   ; Requires.private: in the pkg-config
