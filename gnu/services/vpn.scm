@@ -4,6 +4,8 @@
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2021 Solene Rapenne <solene@perso.pw>
+;;; Copyright © 2021 Domagoj Stolfa <ds815@gmx.com>
+;;; Copyright © 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,10 +28,13 @@
   #:use-module (gnu services shepherd)
   #:use-module (gnu system shadow)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages networking)
   #:use-module (gnu packages vpn)
   #:use-module (guix packages)
   #:use-module (guix records)
   #:use-module (guix gexp)
+  #:use-module (guix i18n)
+  #:use-module (guix utils)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
@@ -43,6 +48,9 @@
             openvpn-ccd-configuration
             generate-openvpn-client-documentation
             generate-openvpn-server-documentation
+
+            strongswan-configuration
+            strongswan-service-type
 
             wireguard-peer
             wireguard-peer?
@@ -528,6 +536,138 @@ is truncated and rewritten every minute.")
       (remote openvpn-remote-configuration))
      (openvpn-remote-configuration ,openvpn-remote-configuration-fields))
    'openvpn-client-configuration))
+
+;;;
+;;; Strongswan.
+;;;
+
+(define-record-type* <strongswan-configuration>
+  strongswan-configuration make-strongswan-configuration
+  strongswan-configuration?
+  (strongswan      strongswan-configuration-strongswan ;<package>
+                   (default strongswan))
+  (ipsec-conf      strongswan-configuration-ipsec-conf ;string|#f
+                   (default #f))
+  (ipsec-secrets   strongswan-configuration-ipsec-secrets ;string|#f
+                   (default #f)))
+
+;; In the future, it might be worth implementing a record type to configure
+;; all of the plugins, but for *most* basic use cases, simply creating the
+;; files will be sufficient. Same is true of charon-plugins.
+(define strongswand-configuration-files
+  (list "charon" "charon-logging" "pki" "pool" "scepclient"
+        "swanctl" "tnc"))
+
+;; Plugins to load. All of these plugins end up as configuration files in
+;; strongswan.d/charon/.
+(define charon-plugins
+  (list "aes" "aesni" "attr" "attr-sql" "chapoly" "cmac" "constraints"
+        "counters" "curl" "curve25519" "dhcp" "dnskey" "drbg" "eap-aka-3gpp"
+        "eap-aka" "eap-dynamic" "eap-identity" "eap-md5" "eap-mschapv2"
+        "eap-peap" "eap-radius" "eap-simaka-pseudonym" "eap-simaka-reauth"
+        "eap-simaka-sql" "eap-sim" "eap-sim-file" "eap-tls" "eap-tnc"
+        "eap-ttls" "ext-auth" "farp" "fips-prf" "gmp" "ha" "hmac"
+        "kernel-netlink" "led" "md4" "md5" "mgf1" "nonce" "openssl" "pem"
+        "pgp" "pkcs12" "pkcs1" "pkcs7" "pkcs8" "pubkey" "random" "rc2"
+        "resolve" "revocation" "sha1" "sha2" "socket-default" "soup" "sql"
+        "sqlite" "sshkey" "tnc-tnccs" "vici" "x509" "xauth-eap" "xauth-generic"
+        "xauth-noauth" "xauth-pam" "xcbc"))
+
+(define (strongswan-configuration-file config)
+  (match-record config <strongswan-configuration>
+    (strongswan ipsec-conf ipsec-secrets)
+    (if (eq? (string? ipsec-conf) (string? ipsec-secrets))
+        (let* ((strongswan-dir
+                (computed-file
+                 "strongswan.d"
+                 #~(begin
+                     (mkdir #$output)
+                     ;; Create all of the configuration files strongswan.d/.
+                     (map (lambda (conf-file)
+                            (let* ((filename (string-append
+                                              #$output "/"
+                                              conf-file ".conf")))
+                              (call-with-output-file filename
+                                (lambda (port)
+                                  (display
+                                   "# Created by 'strongswan-service'\n"
+                                   port)))))
+                          (list #$@strongswand-configuration-files))
+                     (mkdir (string-append #$output "/charon"))
+                     ;; Create all of the plugin configuration files.
+                     (map (lambda (plugin)
+                            (let* ((filename (string-append
+                                              #$output "/charon/"
+                                              plugin ".conf")))
+                              (call-with-output-file filename
+                                (lambda (port)
+                                  (format port "~a {
+  load = yes
+}"
+                                          plugin)))))
+                          (list #$@charon-plugins))))))
+          ;; Generate our strongswan.conf to reflect the user configuration.
+          (computed-file
+           "strongswan.conf"
+           #~(begin
+               (call-with-output-file #$output
+                 (lambda (port)
+                   (display "# Generated by 'strongswan-service'.\n" port)
+                   (format port "charon {
+  load_modular = yes
+  plugins {
+    include ~a/charon/*.conf"
+                           #$strongswan-dir)
+                   (if #$ipsec-conf
+                       (format port "
+    stroke {
+      load = yes
+      secrets_file = ~a
+    }
+  }
+}
+
+starter {
+  config_file = ~a
+}
+
+include ~a/*.conf"
+                               #$ipsec-secrets
+                               #$ipsec-conf
+                               #$strongswan-dir)
+                       (format port "
+  }
+}
+include ~a/*.conf"
+                               #$strongswan-dir)))))))
+        (throw 'error
+               (G_ "strongSwan ipsec-conf and ipsec-secrets must both be (un)set")))))
+
+(define (strongswan-shepherd-service config)
+  (let* ((ipsec (file-append strongswan "/sbin/ipsec"))
+        (strongswan-conf-path (strongswan-configuration-file config)))
+    (list (shepherd-service
+           (requirement '(networking))
+           (provision '(ipsec))
+           (start #~(make-forkexec-constructor
+                     (list #$ipsec "start" "--nofork")
+                     #:environment-variables
+                     (list (string-append "STRONGSWAN_CONF="
+                                          #$strongswan-conf-path))))
+           (stop #~(make-kill-destructor))
+           (documentation
+            "strongSwan's charon IKE keying daemon for IPsec VPN.")))))
+
+(define strongswan-service-type
+  (service-type
+   (name 'strongswan)
+   (extensions
+    (list (service-extension shepherd-root-service-type
+                             strongswan-shepherd-service)))
+   (default-value (strongswan-configuration))
+   (description
+    "Connect to an IPsec @acronym{VPN, Virtual Private Network} with
+strongSwan.")))
 
 ;;;
 ;;; Wireguard.

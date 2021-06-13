@@ -92,6 +92,7 @@ Copyright @copyright{} 2021 Maxime Devos@*
 Copyright @copyright{} 2021 B. Wilson@*
 Copyright @copyright{} 2021 Xinglu Chen@*
 Copyright @copyright{} 2021 Raghav Gururajan@*
+Copyright @copyright{} 2021 Domagoj Stolfa@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -27107,8 +27108,44 @@ Defaults to @samp{#f}.
 
 @end deftypevr
 
-
 @c %end of automatic openvpn-server documentation
+
+@subheading strongSwan
+
+Currently, the strongSwan service only provides legacy-style configuration with
+@file{ipsec.conf} and @file{ipsec.secrets} files.
+
+@defvr {Scheme Variable} strongswan-service-type
+A service type for configuring strongSwan for IPsec @acronym{VPN,
+Virtual Private Networking}.  Its value must be a
+@code{strongswan-configuration} record as in this example:
+
+@lisp
+(service strongswan-service-type
+         (strongswan-configuration
+          (ipsec-conf "/etc/ipsec.conf")
+          (ipsec-secrets "/etc/ipsec.secrets")))
+@end lisp
+
+@end defvr
+
+@deftp {Data Type} strongswan-configuration
+Data type representing the configuration of the StrongSwan service.
+
+@table @asis
+@item @code{strongswan}
+The strongSwan package to use for this service.
+
+@item @code{ipsec-conf} (default: @code{#f})
+The file name of your @file{ipsec.conf}.  If not @code{#f}, then this and
+@code{ipsec-secrets} must both be strings.
+
+@item @code{ipsec-secrets} (default @code{#f})
+The file name of your @file{ipsec.secrets}.  If not @code{#f}, then this and
+@code{ipsec-conf} must both be strings.
+
+@end table
+@end deftp
 
 @subsubheading Wireguard
 
