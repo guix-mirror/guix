@@ -20,6 +20,7 @@
 ;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;; Copyright © 2021 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2021 Mathieu Othacehe <othacehe@gnu.org>
+;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -46,6 +47,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages cryptsetup)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages elf)
@@ -1303,3 +1305,53 @@ like raw system image files, can be copied or flashed a lot faster and more
 reliably with @code{bmaptool} than with traditional tools, like @code{dd} or
 @code{cp}.")
     (license license:gpl2)))
+
+(define-public duc
+  (package
+    (name "duc")
+    (version "1.4.4")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/zevv/duc")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1i7ry25xzy027g6ysv6qlf09ax04q4vy0kikl8h0aq5jbxsl9q52"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out")))
+               (substitute* "src/duc/cmd-ui.c"
+                 (("ncursesw/ncurses.h") "ncurses.h"))
+               (substitute* "examples/index.cgi"
+                 (("/usr/local/bin/duc")
+                  (string-append out "/bin/duc"))))))
+         (add-after 'install 'install-examples
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/" ,name "-" ,version)))
+               (copy-recursively "examples" (string-append doc "/examples"))))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("cairo" ,cairo)
+       ("pango" ,pango)
+       ("tokyocabinet" ,tokyocabinet)
+       ("ncurses" ,ncurses)))
+    (home-page "http://duc.zevv.nl")
+    (synopsis "Library and suite of tools for inspecting disk usage")
+    (description "Duc maintains a database of accumulated sizes of
+directories of the file system, and allows you to query this database with
+some tools, or create fancy graphs showing you where your bytes are.
+
+Duc comes with console utilities, ncurses and X11 user interfaces and a CGI
+wrapper for disk usage querying and visualisation.")
+    (license license:lgpl3+)))
