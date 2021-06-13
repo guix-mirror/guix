@@ -49,6 +49,68 @@
   #:use-module (guix utils)
   #:use-module (guix packages))
 
+(define-public slstatus
+  ;; No release tarballs yet.
+  (let ((commit "84a2f117a32f0796045941260cdc4b69852b41e0")
+        (revision "0"))
+    (package
+      (name "slstatus")
+      (version (git-version "0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "git://git.suckless.org/slstatus.git")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "063a4fnvsjbc61alnbfdpxy0nwhh9ql9j6s9hkdv12713kv932ds"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f                    ;no test suite
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (substitute* "config.mk"
+                 (("/usr/local") (assoc-ref outputs "out"))
+                 (("/usr/X11R6") (assoc-ref inputs "x11"))
+                 (("CC = cc") (string-append "CC = " ,(cc-for-target))))))
+           (delete 'configure))))       ;no configure script
+      (inputs
+       `(("x11" ,libx11)))
+      (home-page "https://tools.suckless.org/slstatus/")
+      (synopsis "Status monitor for window managers")
+      (description "SlStatus is a suckless status monitor for window managers
+that use WM_NAME or stdin to fill the status bar.
+It provides the following features:
+@itemize
+@item Battery percentage/state/time left
+@item CPU usage
+@item CPU frequency
+@item Custom shell commands
+@item Date and time
+@item Disk status (free storage, percentage, total storage and used storage)
+@item Available entropy
+@item Username/GID/UID
+@item Hostname
+@item IP address (IPv4 and IPv6)
+@item Kernel version
+@item Keyboard indicators
+@item Keymap
+@item Load average
+@item Network speeds (RX and TX)
+@item Number of files in a directory (hint: Maildir)
+@item Memory status (free memory, percentage, total memory and used memory)
+@item Swap status (free swap, percentage, total swap and used swap)
+@item Temperature
+@item Uptime
+@item Volume percentage
+@item WiFi signal percentage and ESSID
+@end itemize")
+      (license license:isc))))
+
 (define-public blind
   (package
     (name "blind")
