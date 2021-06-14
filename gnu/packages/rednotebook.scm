@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Jesse Gibbons <jgibbons2357+guix@gmail.com>
+;;; Copyright © 2021 Solene Rapenne <solene@perso.pw>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,7 +31,7 @@
 (define-public rednotebook
   (package
     (name "rednotebook")
-    (version "2.11.1")
+    (version "2.22")
     (source
      (origin
        (method git-fetch)
@@ -39,7 +40,7 @@
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "04c7a0wgmdl88v9386y1052c38ajbkryiwhqps5lx34d4g7r6hm1"))))
+        (base32 "11n970ad0j57vlll5j30ngkrfyil23v1b29ickbnblcldvjbgwa5"))))
     (build-system python-build-system)
     (arguments
      ;; Tests fail to find the "_" function.
