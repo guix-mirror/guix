@@ -1183,6 +1183,45 @@ following types: @code{Eye}, @code{Fill}, @code{Ones}, @code{Zeros},
 @code{Trues} and @code{Falses}.")
     (license license:expat)))
 
+(define-public julia-finitediff
+  (package
+    (name "julia-finitediff")
+    (version "2.8.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaDiff/FiniteDiff.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0ndazn02wn8ddwgjh1i32y7pbaqpw06f42ccilz5ya78cyrjhq2m"))))
+    (build-system julia-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'pre-check
+           (lambda _
+             ;; We don't want to run all the tests; the Downstream tests
+             ;; try to download the package registry.
+             (setenv "GROUP" "Core")
+             #t)))))
+    (propagated-inputs
+     `(("julia-arrayinterface" ,julia-arrayinterface)
+       ("julia-requires" ,julia-requires)
+       ("julia-staticarrays" ,julia-staticarrays)))
+    (native-inputs
+     `(("julia-bandedmatrices" ,julia-bandedmatrices)
+       ("julia-blockbandedmatrices" ,julia-blockbandedmatrices)
+       ("julia-safetestsets" ,julia-safetestsets)))
+    (home-page "https://github.com/JuliaDiff/FiniteDiff.jl")
+    (synopsis "Calculations of gradients, Jacobians, and Hessians")
+    (description "This package is for calculating derivatives, gradients,
+Jacobians, Hessians, etc. numerically.  This library is for maximizing speed
+while giving a usable interface to end users in a way that specializes on array
+types and sparsity.")
+    (license license:expat)))
+
 (define-public julia-finitedifferences
   (package
     (name "julia-finitedifferences")
