@@ -266,6 +266,9 @@ _guix_complete ()
                 if _guix_is_dash_L || _guix_is_dash_m || _guix_is_dash_p || _guix_is_dash_l
                 then
                     _guix_complete_file
+		elif _guix_is_option "$word_at_point"
+		then
+		    _guix_complete_option "$command_index" "$word_at_point"
 		else
 		    _guix_complete_available_package "$word_at_point"
 		fi
