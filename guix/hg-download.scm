@@ -104,6 +104,9 @@ HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if #f."
                                              (((names dirs outputs ...) ...)
                                               dirs)))
 
+            (setvbuf (current-output-port) 'line)
+            (setvbuf (current-error-port) 'line)
+
             (or (hg-fetch '#$(hg-reference-url ref)
                           '#$(hg-reference-changeset ref)
                           #$output
