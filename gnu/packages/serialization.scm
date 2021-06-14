@@ -45,6 +45,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages llvm)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -86,6 +87,43 @@
 Code generation is not required to read or write data files nor to use or
 implement RPC protocols.")
     (license license:asl2.0)))
+
+(define-public avro-cpp-1.9-for-irods
+  (package
+    (inherit avro-cpp-1.9)
+    (properties `((hidden? . #true)))
+    (arguments
+     `(#:configure-flags
+       '("-DCMAKE_CXX_COMPILER=clang++"
+         "-DCMAKE_CXX_FLAGS=-stdlib=libc++"
+         "-DCMAKE_EXE_LINKER_FLAGS=-lc++abi -lz")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _ (chdir "lang/c++")))
+         (add-after 'set-paths 'adjust-CPLUS_INCLUDE_PATH
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((gcc (assoc-ref inputs  "gcc")))
+               (setenv "CPLUS_INCLUDE_PATH"
+                       (string-join
+                        (cons* (string-append (assoc-ref inputs "libcxx+libcxxabi")
+                                              "/include/c++/v1")
+                               ;; Hide GCC's C++ headers so that they do not interfere with
+                               ;; the Clang headers.
+                               (delete (string-append gcc "/include/c++")
+                                       (string-split (getenv "CPLUS_INCLUDE_PATH")
+                                                     #\:)))
+                        ":"))
+               (format #true
+                       "environment variable `CPLUS_INCLUDE_PATH' changed to ~a~%"
+                       (getenv "CPLUS_INCLUDE_PATH"))))))))
+    (inputs
+     `(("boost" ,boost-for-irods)
+       ("clang" ,clang-toolchain-6)
+       ("libcxx+libcxxabi" ,libcxx+libcxxabi-6)
+       ("libcxxabi" ,libcxxabi-6)
+       ("snappy" ,snappy-with-clang6)
+       ("zlib" ,zlib)))))
 
 (define-public cereal
   (package
