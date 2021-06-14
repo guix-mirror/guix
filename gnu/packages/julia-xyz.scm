@@ -3139,6 +3139,44 @@ recursive arrays like arrays of arrays.")
     (description "This package provides tools to re-export modules and symbols.")
     (license license:expat)))
 
+(define-public julia-referencetests
+  (package
+    (name "julia-referencetests")
+    (version "0.9.7")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaTesting/ReferenceTests.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0mm6bjhs8a21pippww6b08b5frmnb9m6k8xrszrwq9zhc879zpc9"))))
+    (build-system julia-build-system)
+    (arguments
+     `(#:tests? #f))    ; Cycle with ImageCore.jl through ImageMagick.jl.
+    (propagated-inputs
+     `(("julia-deepdiffs" ,julia-deepdiffs)
+       ("julia-distances" ,julia-distances)
+       ("julia-fileio" ,julia-fileio)
+       ("julia-imagecore" ,julia-imagecore)
+       ("julia-imageinterminal" ,julia-imageinterminal)))
+    ;(native-inputs
+    ; `(("julia-csvfiles" ,julia-csvfiles)
+    ;   ("julia-dataframes" ,julia-dataframes)
+    ;   ("julia-gr" ,julia-gr)
+    ;   ("julia-imagemagick" ,julia-imagemagick)
+    ;   ("julia-imagetransformations" ,julia-imagetransformations)
+    ;   ("julia-plots" ,julia-plots)
+    ;   ("julia-testimages" ,julia-testimages)))
+    (home-page "https://juliatesting.github.io/ReferenceTests.jl/latest/")
+    (synopsis "Utility package for comparing data against reference files")
+    (description "@code{ReferenceTests.jl} is a Julia package that adds a couple
+of additional macros to your testing toolbox.  In particular, it focuses on
+functionality for testing values against reference files, which in turn the
+package can help create and update if need be.")
+    (license license:expat)))
+
 (define-public julia-requires
   (package
     (name "julia-requires")
