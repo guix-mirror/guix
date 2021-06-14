@@ -3978,7 +3978,7 @@ working with @acronym{URIs,Uniform Resource Identifiers}, as defined in RFC
 (define-public julia-unitful
   (package
     (name "julia-unitful")
-    (version "1.7.0")
+    (version "1.8.0")
     (source
      (origin
        (method git-fetch)
@@ -3987,7 +3987,7 @@ working with @acronym{URIs,Uniform Resource Identifiers}, as defined in RFC
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "03nq2nc2mwiqg3z1gksfsnyd7dmsjsya5c2v1n5h0ab22vm59f0m"))))
+        (base32 "0n9z4skj04h033qbn22cn6f5jby6584j6pizvs7bdbk93h39ch1g"))))
     (build-system julia-build-system)
     (propagated-inputs
      `(("julia-constructionbase" ,julia-constructionbase)))
