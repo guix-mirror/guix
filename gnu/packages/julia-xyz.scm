@@ -1601,6 +1601,34 @@ just starting at 1).")
 conditional ifelse.  It is similar to @code{Core.ifelse} but it is extendable.")
     (license license:expat)))
 
+(define-public julia-imageaxes
+  (package
+    (name "julia-imageaxes")
+    (version "0.6.9")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaImages/ImageAxes.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "15zqxani1jjh8849s7rdps6b6prqdwv8yxx893y536vkpk7i07qd"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-axisarrays" ,julia-axisarrays)
+       ("julia-imagecore" ,julia-imagecore)
+       ("julia-reexport" ,julia-reexport)
+       ("julia-simpletraits" ,julia-simpletraits)))
+    (native-inputs
+     `(("julia-unitful" ,julia-unitful)))
+    (home-page "https://github.com/JuliaImages/ImageAxes.jl")
+    (synopsis "Julia package for giving \"meaning\" to the axes of an image")
+    (description "This small package supports the representation of images as
+@code{AxisArrays} to endow the axes with \"meaning,\" and makes programming with
+such arrays easy via traits.")
+    (license license:expat)))
+
 (define-public julia-imagecore
   (package
     (name "julia-imagecore")
