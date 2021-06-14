@@ -968,6 +968,29 @@ them.  Conversions and promotions are defined to allow performing operations on
 combinations of dual numbers with predefined Julia numeric types.")
     (license license:expat)))
 
+(define-public julia-ellipsisnotation
+  (package
+    (name "julia-ellipsisnotation")
+    (version "1.1.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/ChrisRackauckas/EllipsisNotation.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0py46kxl702r8pw3v7x4cqllf7yc91b0dr7vb60xh2qi7d6y3jc7"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-arrayinterface" ,julia-arrayinterface)))
+    (home-page "https://github.com/ChrisRackauckas/EllipsisNotation.jl")
+    (synopsis "Elipsis notation implementation")
+    (description "This implements the notation @code{..} for indexing arrays.
+It's similar to the Python @code{...} in that it means \"all of the columns
+before (or after)\".")
+    (license license:expat)))
+
 (define-public julia-example
   (let ((commit "f968c69dea24f851d0c7e686db23fa55826b5388"))
     (package
