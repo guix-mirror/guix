@@ -60,6 +60,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (guix deprecation)
   #:use-module (gnu packages)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages assembly)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages algebra)
@@ -106,6 +107,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lisp-xyz)
   #:use-module (gnu packages logging)
+  #:use-module (gnu packages lsof)
   #:use-module (gnu packages machine-learning)
   #:use-module (gnu packages man)
   #:use-module (gnu packages maths)
@@ -125,6 +127,7 @@
   #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-compression)
+  #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-science)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
@@ -14175,6 +14178,62 @@ usually ignored by other methods or only used for filtering.")
     (description
      "PyLiftover is a library for quick and easy conversion of genomic (point)
 coordinates between different assemblies.")
+    (license license:expat)))
+
+(define-public python-cgatcore
+  (package
+    (name "python-cgatcore")
+    (version "0.6.7")
+    ;; The version of pypi does not include test data.
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/cgat-developers/cgat-core")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "17vk88v1bx7x02ibzkc9i7ir4b5p1hcjr38jpsfzyzxr68352d5k"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-references
+           (lambda _
+             (substitute* "cgatcore/pipeline/execution.py"
+               (("#!/bin/bash") (string-append "#!" (which "bash")))
+               (("executable=\"/bin/bash\"")
+                (string-append "executable=\"" (which "bash") "\""))
+               (("\\\\time") (which "time")))))
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               ;; Requires network access
+               (delete-file "tests/test_pipeline_execution.py")
+               (invoke "python" "-m" "pytest" "-v")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("lsof" ,lsof)
+       ("hostname" ,inetutils)
+       ("openssl" ,openssl)))
+    (inputs
+     `(("time" ,time)))
+    (propagated-inputs
+     `(("python-apsw" ,python-apsw)
+       ("python-gevent" ,python-gevent)
+       ("python-pandas" ,python-pandas)
+       ("python-paramiko" ,python-paramiko)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-ruffus" ,python-ruffus)
+       ("python-sqlalchemy" ,python-sqlalchemy)))
+    (home-page "https://github.com/cgat-developers/cgat-core")
+    (synopsis "Computational genomics analysis toolkit")
+    (description
+     "CGAT-core is a set of libraries and helper functions used to enable
+researchers to design and build computational workflows for the analysis of
+large-scale data-analysis.")
     (license license:expat)))
 
 (define-public ensembl-vep
