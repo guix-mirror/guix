@@ -1,5 +1,6 @@
 # GNU Guix --- Functional package management for GNU
 # Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2021 Tobias Geerinck-Rice <me@tobias.gr>
 #
 # This file is part of GNU Guix.
 #
@@ -80,19 +81,16 @@ _guix_complete_option ()
     COMPREPLY=($(compgen -W "$options" -- "${COMP_WORDS[${#COMP_WORDS[*]} - 1]}"))
 }
 
-_guix_is_command ()
+_guix_is_option ()
 {
-    local word
-    local result="false"
-    for word in ${COMP_WORDS[*]}
-    do
-	if [ "$word" = "$1" ]
-	then
-	    result=true
-	    break
-	fi
-    done
-    $result
+    case "$1" in
+	-*)
+	    true
+	    ;;
+	*)
+	    false
+	    ;;
+    esac
 }
 
 _guix_is_removing ()
@@ -183,22 +181,43 @@ _guix_complete ()
     local word_count=${#COMP_WORDS[*]}
     local word_at_point="${COMP_WORDS[$COMP_CWORD]}"
 
-    if [ "$COMP_CWORD" -gt 1 ]
-    then
-	case "$word_at_point" in
-	    -*)
-		_guix_complete_option "$word_at_point"
-		return
-		;;
-	esac
-    fi
+    # Find the innermost command at point, e.g. "build" in the case of
+    # "guix time-machine OPTIONS -- build<Tab>" -- but "time-machine" if
+    # point is moved before "build".
+    local command_index=0
+    local command
+    local word_index=0
+    local word
+    local expect_command="true"
+    while [[ $((++word_index)) -le COMP_CWORD ]]
+    do
+	word="${COMP_WORDS[$word_index]}"
+	if $expect_command
+	then
+	    command_index=$word_index
+	    command="$word"
+	    expect_command="false"
+	    continue
+	fi
+	if [[ "$word" = "--" ]]
+	then
+	    case "$command" in
+		environment)
+		    break
+		    ;;
+		time-machine)
+		    expect_command="true"
+		    ;;
+	    esac
+	fi
+    done
 
     case $COMP_CWORD in
-	1)
+	$command_index)
 	    _guix_complete_command
 	    ;;
 	*)
-	    if _guix_is_command "package"
+	    if [[ "$command" = "package" ]]
 	    then
 		if _guix_is_dash_L || _guix_is_dash_m || _guix_is_dash_p || _guix_is_dash_f
 		then
@@ -209,7 +228,7 @@ _guix_complete ()
 		else
 		    _guix_complete_available_package "$word_at_point"
 		fi
-	    elif _guix_is_command "install"
+	    elif [[ "$command" = "install" ]]
 	    then
                 if _guix_is_dash_L || _guix_is_dash_m || _guix_is_dash_p
                 then
@@ -217,7 +236,7 @@ _guix_complete ()
 		else
 		    _guix_complete_available_package "$word_at_point"
 		fi
-	    elif _guix_is_command "remove"
+	    elif [[ "$command" = "remove" ]]
 	    then
                 if _guix_is_dash_L || _guix_is_dash_m || _guix_is_dash_p
                 then
@@ -225,7 +244,7 @@ _guix_complete ()
 		else
 		    _guix_complete_installed_package "$word_at_point"
 		fi
-	    elif _guix_is_command "upgrade"
+	    elif [[ "$command" = "upgrade" ]]
 	    then
                 if _guix_is_dash_L || _guix_is_dash_m || _guix_is_dash_p
                 then
@@ -233,7 +252,7 @@ _guix_complete ()
 		else
 		    _guix_complete_installed_package "$word_at_point"
 		fi
-            elif _guix_is_command "build"
+            elif [[ "$command" = "build" ]]
             then
                 if _guix_is_dash_L || _guix_is_dash_m || _guix_is_dash_f
                 then
@@ -241,7 +260,7 @@ _guix_complete ()
 		else
 		    _guix_complete_available_package "$word_at_point"
                 fi
-	    elif _guix_is_command "environment"
+	    elif [[ "$command" = "environment" ]]
 	    then
                 if _guix_is_dash_L || _guix_is_dash_m || _guix_is_dash_p || _guix_is_dash_l
                 then
@@ -249,22 +268,22 @@ _guix_complete ()
 		else
 		    _guix_complete_available_package "$word_at_point"
 		fi
-	    elif _guix_is_command "download"
+	    elif [[ "$command" = "download" ]]
 	    then
 		 _guix_complete_file
-	    elif _guix_is_command "system"
+	    elif [[ "$command" = "system" ]]
 	    then
 		case $COMP_CWORD in
 		    2) _guix_complete_subcommand;;
 		    *) _guix_complete_file;; # TODO: restrict to *.scm
 		esac
-            elif _guix_is_command "pull"
+            elif [[ "$command" = "pull" ]]
             then
                 if _guix_is_dash_C || _guix_is_dash_p
                 then
                     _guix_complete_file
                 fi
-            elif _guix_is_command "time-machine"
+            elif [[ "$command" = "time-machine" ]]
             then
                 if _guix_is_dash_C
                 then
@@ -272,20 +291,20 @@ _guix_complete ()
 		else
 		    _guix_complete_command
                 fi
-	    elif _guix_is_command "container"
+	    elif [[ "$command" = "container" ]]
 	    then
 		case $COMP_CWORD in
 		    2) _guix_complete_subcommand;;
 		    3) _guix_complete_pid "$word_at_point";;
 		    *) _guix_complete_file;;
 		esac
-	    elif _guix_is_command "import"
+	    elif [[ "$command" = "import" ]]
 	    then
 		_guix_complete_subcommand
-	    elif _guix_is_command "hash" || _guix_is_command "gc"
+	    elif [[ "$command" = "hash" || "$command" = "gc" ]]
 	    then
 		_guix_complete_file
-            elif _guix_is_command "weather"
+            elif [[ "$command" = "weather" ]]
             then
                 if _guix_is_dash_m
                 then
@@ -296,6 +315,12 @@ _guix_complete ()
 	    fi
 	    ;;
     esac
+
+    if [[ -z "$COMPREPLY" && COMP_CWORD -gt command_index ]] &&
+        _guix_is_option "$word_at_point"
+    then
+	_guix_complete_option
+    fi
 }
 
 complete -F _guix_complete guix
