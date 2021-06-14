@@ -2090,6 +2090,38 @@ with @code{missing} values in Julia.")
 to be temporarily overloaded for the purpose of testing.")
     (license license:expat)))
 
+(define-public julia-mosaicviews
+  (package
+    (name "julia-mosaicviews")
+    (version "0.3.3")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaArrays/MosaicViews.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "04fgxghyb7n2ji76xkb1r1fjhzsdbgmp5wsfyyn3yjcsdqbyp8pz"))))
+    (build-system julia-build-system)
+    (arguments
+     `(#:tests? #f))    ; Cycle with ImageCore.jl
+    (propagated-inputs
+     `(("julia-mappedarrays" ,julia-mappedarrays)
+       ("julia-paddedviews" ,julia-paddedviews)
+       ("julia-stackviews" ,julia-stackviews)))
+    ;(native-inputs
+    ; `(("julia-colorvectorspace" ,julia-colorvectorspace)
+    ;   ("julia-imagecore" ,julia-imagecore)))
+    (home-page "https://github.com/JuliaArrays/MosaicViews.jl")
+    (synopsis
+     "Lazily view a 3D or 4D array as an expanded 2D array as a matrix of slices")
+    (description "When visualizing images, it is not uncommon to provide a 2D
+view of different image sources.  For example, comparing multiple images of
+different sizes, getting a preview of machine learning dataset.  This package
+aims to provide easy-to-use tools for such tasks.")
+    (license license:expat)))
+
 (define-public julia-msgpack
   (package
     (name "julia-msgpack")
