@@ -3542,7 +3542,7 @@ There are multiple ways to understand @code{StackView}:
 (define-public julia-static
   (package
     (name "julia-static")
-    (version "0.2.4")
+    (version "0.2.5")
     (source
       (origin
         (method git-fetch)
@@ -3551,7 +3551,7 @@ There are multiple ways to understand @code{StackView}:
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "01rbiysrkaca03gh55rc5zykkp63bhzaqgrxxj88lnisrbzmf0d2"))))
+         (base32 "1sxfp169c7caaklpp7mz8770ayk9w8xw133m95kf7v11sya1lb7v"))))
     (build-system julia-build-system)
     (propagated-inputs
      `(("julia-ifelse" ,julia-ifelse)))
