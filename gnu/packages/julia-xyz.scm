@@ -671,6 +671,41 @@ way.")
 for construction of objects.")
     (license license:expat)))
 
+(define-public julia-coordinatetransformations
+  (package
+    (name "julia-coordinatetransformations")
+    (version "0.6.1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaGeometry/CoordinateTransformations.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "15zbkn32v7xlz7559s0r5a0vkwmjwsswxaqpzijly4lky4jnp33d"))))
+    (build-system julia-build-system)
+    (arguments
+     `(#:tests? #f))    ; Documenter.jl not packaged yet.
+    (propagated-inputs
+     `(("julia-staticarrays" ,julia-staticarrays)))
+    ;(native-inputs
+    ; `(("julia-documenter" ,julia-documenter)
+    ;   ("julia-forwarddiff" ,julia-forwarddiff)
+    ;   ("julia-unitful" ,julia-unitful)))
+    (home-page "https://github.com/JuliaGeometry/CoordinateTransformations.jl")
+    (synopsis "Coordinate transformations in Julia")
+    (description "@code{CoordinateTransformations} is a Julia package to manage
+simple or complex networks of coordinate system transformations.
+Transformations can be easily applied, inverted, composed, and differentiated
+(both with respect to the input coordinates and with respect to transformation
+parameters such as rotation angle).  Transformations are designed to be
+light-weight and efficient enough for, e.g., real-time graphical applications,
+while support for both explicit and automatic differentiation makes it easy to
+perform optimization and therefore ideal for computer vision applications such
+as SLAM (simultaneous localization and mapping).")
+    (license license:expat)))
+
 (define-public julia-crayons
   (package
     (name "julia-crayons")
