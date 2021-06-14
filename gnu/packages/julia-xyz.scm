@@ -116,6 +116,42 @@ be GPU compatible without throwing away the wrapper.")
 provides functions to run a few automatable checks for Julia packages.")
     (license license:expat)))
 
+(define-public julia-arrayinterface
+  (package
+    (name "julia-arrayinterface")
+    (version "3.1.17")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaArrays/ArrayInterface.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1yfl7wsciqm8ggfs6grxdrvpkxniy4c63d05f65v2j0c55z8a6mn"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-ifelse" ,julia-ifelse)
+       ("julia-requires" ,julia-requires)
+       ("julia-static" ,julia-static)))
+    (native-inputs
+     `(("julia-aqua" ,julia-aqua)
+       ("julia-bandedmatrices" ,julia-bandedmatrices)
+       ("julia-blockbandedmatrices" ,julia-blockbandedmatrices)
+       ("julia-ifelse" ,julia-ifelse)
+       ("julia-offsetarrays" ,julia-offsetarrays)
+       ("julia-staticarrays" ,julia-staticarrays)))
+    (home-page "https://github.com/JuliaArrays/ArrayInterface.jl")
+    (synopsis "Base array interface primitives")
+    (description "The purpose of this library is to solidify extensions to the
+current @code{AbstractArray} interface, which are put to use in package
+ecosystems like @code{DifferentialEquations.jl}.  Since these libraries are
+live, this package will serve as a staging ground for ideas before they are
+merged into Base Julia.  For this reason, no functionality is exported so that
+if such functions are added and exported in a future Base Julia, there will be
+no issues with the upgrade.")
+    (license license:expat)))
+
 (define-public julia-arraylayouts
   (package
     (name "julia-arraylayouts")
