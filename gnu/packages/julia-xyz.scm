@@ -2156,6 +2156,35 @@ still being completely generic
 @code{NaN} instead of throwing a @code{DomainError}.")
     (license license:expat)))
 
+(define-public julia-nlsolversbase
+  (package
+    (name "julia-nlsolversbase")
+    (version "7.8.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaNLSolvers/NLSolversBase.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0n8qh5a2ghjx1j70zxn0hmh8gzpa46kmjg8di879y9974bfk0f98"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-diffresults" ,julia-diffresults)
+       ("julia-finitediff" ,julia-finitediff)
+       ("julia-forwarddiff" ,julia-forwarddiff)))
+    (native-inputs
+     `(("julia-optimtestproblems" ,julia-optimtestproblems)
+       ("julia-recursivearraytools" ,julia-recursivearraytools)))
+    (home-page "https://github.com/JuliaNLSolvers/NLSolversBase.jl")
+    (synopsis "Optimization and equation solver software in JuliaNLSolvers")
+    (description "This package aims at establishing common ground for Optim.jl,
+LineSearches.jl, and NLsolve.jl.  The common ground is mainly the types used to
+hold objective related callables, information about the objectives, and an
+interface to interact with these types.")
+    (license license:expat)))
+
 (define-public julia-nnlib
   (package
     (name "julia-nnlib")
