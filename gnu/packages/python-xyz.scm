@@ -5322,13 +5322,13 @@ color scales, and color space conversion easy.  It has support for:
 (define-public python-pygit2
   (package
     (name "python-pygit2")
-    (version "1.4.0")
+    (version "1.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pygit2" version))
        (sha256
-        (base32 "1j71iskvirkm8jzfmwdm79v69878m9iix8a8cn4xidgr3nmkisyb"))))
+        (base32 "0qjd5aqpmla64da4pb47vdnrmnqdbn7248a4fzs7f5q1ax7fmb3s"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f))            ; tests don't run correctly in our environment
