@@ -1737,6 +1737,42 @@ dependencies.")
 of packages designed to support image processing and computer vision.")
     (license license:expat)))
 
+(define-public julia-imageinterminal
+  (package
+    (name "julia-imageinterminal")
+    (version "0.4.6")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaImages/ImageInTerminal.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1mqbv27qmnsr6wqvklzb4gawi7hp4wnaspszhaxny1m53q6wbifl"))))
+    (build-system julia-build-system)
+    (arguments
+     `(#:tests? #f))    ; Cycle with ReferenceTests.jl.
+    (propagated-inputs
+     `(("julia-crayons" ,julia-crayons)
+       ("julia-imagecore" ,julia-imagecore)
+       ("julia-imagetransformations" ,julia-imagetransformations)))
+    ;(native-inputs
+    ; `(("julia-coordinatetransformations" ,julia-coordinatetransformations)
+    ;   ("julia-imagemagick" ,julia-imagemagick)
+    ;   ("julia-offsetarrays" ,julia-offsetarrays)
+    ;   ("julia-referencetests" ,julia-referencetests)
+    ;   ("julia-rotations" ,julia-rotations)
+    ;   ("julia-sparsearrays" ,julia-sparsearrays)
+    ;   ("julia-testimages" ,julia-testimages)))
+    (home-page "https://github.com/JuliaImages/ImageInTerminal.jl")
+    (synopsis "Julia package for displaying images in the terminal")
+    (description "@code{ImageInTerminal.jl} is a drop-in package that once
+imported changes a how a single @code{Colorant} and whole @code{Colorant} arrays
+(i.e. Images) are displayed in the interactive REPL.  The displayed images will
+be downscaled to fit into the size of your active terminal session.")
+    (license license:expat)))
+
 (define-public julia-imagemetadata
   (package
     (name "julia-imagemetadata")
