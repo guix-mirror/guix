@@ -426,7 +426,7 @@ The unified Libertinus family consists of:
        (sha256
         (base32 "0yggffiplk22lgqklfmd2c0rw8gwchynjh5kz4bz8yv2h6vw2qfr"))))
     (build-system gnu-build-system)
-    (outputs (list "out" "pcf-8bit"))
+    (outputs (list "out" "pcf-8bit" "otb"))
     (arguments
      `(#:tests? #f                      ; no test target in tarball
        #:phases
@@ -441,6 +441,15 @@ The unified Libertinus family consists of:
              (let ((pcf-8bit (assoc-ref outputs "pcf-8bit")))
                (apply invoke "make" "install-pcf-8bit" (string-append "prefix="
                                                                       pcf-8bit)
+                      make-flags))))
+         (add-after 'build-more-bits 'build-otb
+           ;; Build Open Type Bitmap
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (apply invoke "make" "otb" make-flags)))
+         (add-after 'install 'install-otb
+           (lambda* (#:key make-flags outputs #:allow-other-keys)
+             (let ((otb (assoc-ref outputs "otb")))
+               (apply invoke "make" "install-otb" (string-append "prefix=" otb)
                       make-flags)))))))
     (native-inputs
      `(("bdftopcf" ,bdftopcf)
