@@ -2391,6 +2391,33 @@ plotting components.")
 purposes of compression when there are few unique elements.")
     (license license:expat)))
 
+(define-public julia-positivefactorizations
+  (package
+    (name "julia-positivefactorizations")
+    (version "0.2.4")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/timholy/PositiveFactorizations.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1wxy6ak7f3hvibcgc8q88cgkf9zvi649mmjy1zlkx1qk80hgvz23"))))
+    (build-system julia-build-system)
+    (native-inputs
+     `(("julia-forwarddiff" ,julia-forwarddiff)
+       ("julia-reversediff" ,julia-reversediff)))
+    (home-page "https://github.com/timholy/PositiveFactorizations.jl")
+    (synopsis "Positive-definite \"approximations\" to matrices")
+    (description "@code{PositiveFactorizations} is a package for computing a
+positive definite matrix decomposition (factorization) from an arbitrary
+symmetric input.  The motivating application is optimization (Newton or
+quasi-Newton methods), in which the canonical search direction -H/g (H being the
+Hessian and g the gradient) may not be a descent direction if H is not positive
+definite.")
+    (license license:expat)))
+
 (define-public julia-prettytables
   (package
     (name "julia-prettytables")
