@@ -1872,6 +1872,38 @@ indexed images, sometimes called \"colormap images\" or \"paletted images.\"")
 interfaces with @file{.ini} files.")
     (license license:expat)))
 
+(define-public julia-interpolations
+  (package
+    (name "julia-interpolations")
+    (version "0.13.2")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaMath/Interpolations.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "06wh4fc7hy20kq9iipk3w8v50vd09k7vkii43k8z1vw036f6l7x3"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-axisalgorithms" ,julia-axisalgorithms)
+       ("julia-offsetarrays" ,julia-offsetarrays)
+       ("julia-ratios" ,julia-ratios)
+       ("julia-staticarrays" ,julia-staticarrays)
+       ("julia-woodburymatrices" ,julia-woodburymatrices)))
+    (native-inputs
+     `(("julia-dualnumbers" ,julia-dualnumbers)
+       ("julia-forwarddiff" ,julia-forwarddiff)
+       ("julia-offsetarrays" ,julia-offsetarrays)
+       ("julia-unitful" ,julia-unitful)))
+    (home-page "https://github.com/JuliaMath/Interpolations.jl")
+    (synopsis "Continuous interpolation of discrete datasets")
+    (description "This package implements a variety of interpolation schemes for
+the Julia language.  It has the goals of ease-of-use, broad algorithmic support,
+and exceptional performance.")
+    (license license:expat)))
+
 (define-public julia-intervalsets
   (package
     (name "julia-intervalsets")
