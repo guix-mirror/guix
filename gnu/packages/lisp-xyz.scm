@@ -17373,3 +17373,55 @@ coverage.")
 
 (define-public cl-chirp
   (sbcl-package->cl-source-package sbcl-chirp))
+
+(define-public sbcl-cepl
+  (let ((commit "d1a10b6c8f4cedc07493bf06aef3a56c7b6f8d5b")
+        (revision "1"))
+    (package
+     (name "sbcl-cepl")
+     (version (git-version "0.0.0" revision commit))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cbaggers/cepl")
+             (commit commit)))
+       (file-name (git-file-name "cepl" version))
+       (sha256
+        (base32 "0izbw2advqm3wailj3dpq6zqfrfirwn14pw5qmqh8i71r51xwmm2"))))
+     (build-system asdf-build-system/sbcl)
+     (arguments
+      `(#:asd-files '("cepl.asd" "cepl.build.asd")))
+     (inputs
+      `(("alexandria" ,sbcl-alexandria)
+        ("bordeaux-threads" ,sbcl-bordeaux-threads)
+        ("cffi" ,sbcl-cffi)
+        ("cl-opengl" ,sbcl-cl-opengl)
+        ("cl-ppcre" ,sbcl-cl-ppcre)
+        ("documentation-utils" ,sbcl-documentation-utils)
+        ("float-features" ,sbcl-float-features)
+        ("ieee-floats" ,sbcl-ieee-floats)
+        ("split-sequence" ,sbcl-split-sequence)
+        ("varjo" ,sbcl-varjo)))
+     (propagated-inputs
+      `(("quickproject" ,sbcl-quickproject)))
+     (home-page "https://github.com/cbaggers/cepl")
+     (synopsis "Development playground to work with OpenGL")
+     (description
+      "CEPL (Code Evaluate Play Loop ) is a lispy and REPL-friendly Common Lisp
+library for working with OpenGL.
+
+Its definition of success is making the user feel that GPU programming has
+always been part of the languages standard.
+
+The usual approach to using CEPL is to start it at the beginning of your Lisp
+session and leave it open for the duration of your work.  You can then treat the
+window it creates as just another output for your graphics, analogous to how
+@code{*standard-output*} is treated for text.")
+     (license license:bsd-2))))
+
+(define-public ecl-cepl
+  (sbcl-package->ecl-package sbcl-cepl))
+
+(define-public cl-cepl
+  (sbcl-package->cl-source-package sbcl-cepl))
