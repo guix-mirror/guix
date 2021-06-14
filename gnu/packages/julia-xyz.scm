@@ -2751,7 +2751,7 @@ utilities for Julia.")
 (define-public julia-pdmats
   (package
     (name "julia-pdmats")
-    (version "0.11.0")
+    (version "0.11.1")
     (source
       (origin
         (method git-fetch)
@@ -2760,7 +2760,7 @@ utilities for Julia.")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "1gyhfjmb0qlqgx2398b356cph25bnpjagcslckv41bzyf8pg3ybl"))))
+         (base32 "0bc2gmpd30rkclvxyfnssjllp0pk63h0vvgr8862phm5ia83r8j0"))))
     (build-system julia-build-system)
     (home-page "https://github.com/JuliaStats/PDMats.jl")
     (synopsis
