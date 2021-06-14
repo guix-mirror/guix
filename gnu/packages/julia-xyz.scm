@@ -200,6 +200,37 @@ typically apply along the columns of a matrix, you can instead pick an arbitrary
 axis (dimension).")
     (license license:expat)))
 
+(define-public julia-axisarrays
+  (package
+    (name "julia-axisarrays")
+    (version "0.4.3")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaArrays/AxisArrays.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "079rj7wvh9ks293g2ih1yah5k0sg8wazw08z3vg2bxj4s16wr64p"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-rangearrays" ,julia-rangearrays)
+       ("julia-intervalsets" ,julia-intervalsets)
+       ("julia-itertools" ,julia-itertools)))
+    (native-inputs
+     `(("julia-offsetarrays" ,julia-offsetarrays)
+       ("julia-unitful" ,julia-unitful)))
+    (home-page "http://juliaarrays.github.io/AxisArrays.jl/latest/")
+    (synopsis "Arrays where each dimension can have a named axis with values")
+    (description "This package for the Julia language provides an array type
+(the AxisArray) that knows about its dimension names and axis values.  This
+allows for indexing by name without incurring any runtime overhead.  This
+permits one to implement algorithms that are oblivious to the storage order of
+the underlying arrays.  AxisArrays can also be indexed by the values along their
+axes, allowing column names or interval selections.")
+    (license license:expat)))
+
 (define-public julia-bandedmatrices
   (package
     (name "julia-bandedmatrices")
