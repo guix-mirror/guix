@@ -3123,16 +3123,16 @@ recursive arrays like arrays of arrays.")
 (define-public julia-reexport
   (package
     (name "julia-reexport")
-    (version "1.0.0")
+    (version "1.1.0")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/simonster/Reexport.jl")
-             (commit version)))
+             (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1yhhja1zz6dy5f4fd19bdwd6jwgj7q4w3avzgyg1hjhmdl8jrh0s"))))
+        (base32 "1wj4vnxxmnblm6ajkkdvwb7v4835qrrc406q5is74qv1n68xql7l"))))
     (build-system julia-build-system)
     (home-page "https://github.com/simonster/Reexport.jl")
     (synopsis "Re-export modules and symbols")
