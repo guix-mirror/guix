@@ -3323,7 +3323,7 @@ a loadable module.")
 (define-public julia-scratch
   (package
     (name "julia-scratch")
-    (version "1.0.3")
+    (version "1.1.0")
     (source
       (origin
         (method git-fetch)
@@ -3333,7 +3333,7 @@ a loadable module.")
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "06n0rc7grlg9igkdlrql83q0zpc97bh2hfzj5mw4spfik8ahw2aa"))))
+          "09xni9rrrax17fxjz04j1b48mk9ffww5rcbagh66jklr89mrkqhx"))))
     (build-system julia-build-system)
     (arguments
      `(#:tests? #f))    ; Test suite tries to access the Julia package registry.
