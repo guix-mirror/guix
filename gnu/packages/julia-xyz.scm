@@ -2545,6 +2545,37 @@ possible to describe visualization routines that can be used as components in
 more complex visualizations.")
     (license license:expat)))
 
+(define-public julia-recipespipeline
+  (package
+    (name "julia-recipespipeline")
+    (version "0.3.2")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaPlots/RecipesPipeline.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "0wa342m2d9k4kihr6g9i0wpbsipp0n11kh9jmlw4pc5msmz4rxr0"))))
+    (build-system julia-build-system)
+    (arguments
+     `(#:tests? #f))    ; Cycle with Plots.jl.
+    (propagated-inputs
+     `(("julia-nanmath" ,julia-nanmath)
+       ("julia-plotutils" ,julia-plotutils)
+       ("julia-recipesbase" ,julia-recipesbase)))
+    (home-page "http://juliaplots.org/RecipesPipeline.jl/dev/")
+    (synopsis "Utilities for processing recipes")
+    (description "This package was factored out of @code{Plots.jl} to allow any
+other plotting package to use the recipe pipeline.  In short, the extremely
+lightweight @code{RecipesBase.jl} package can be depended on by any package to
+define \"recipes\": plot specifications of user-defined types, as well as custom
+plot types.  @code{RecipePipeline.jl} contains the machinery to translate these
+recipes to full specifications for a plot.")
+    (license license:expat)))
+
 (define-public julia-reexport
   (package
     (name "julia-reexport")
