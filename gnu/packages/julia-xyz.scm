@@ -2649,6 +2649,40 @@ another package is loaded, so that explicit dependencies (and long load times)
 can be avoided.")
     (license license:expat)))
 
+(define-public julia-reversediff
+  (package
+    (name "julia-reversediff")
+    (version "1.9.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaDiff/ReverseDiff.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1wrr6sqj2xl9grkvdp88rw3manxy9vbx28zq2wssya5ns1xabsnl"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-diffresults" ,julia-diffresults)
+       ("julia-diffrules" ,julia-diffrules)
+       ("julia-forwarddiff" ,julia-forwarddiff)
+       ("julia-functionwrappers" ,julia-functionwrappers)
+       ("julia-macrotools" ,julia-macrotools)
+       ("julia-nanmath" ,julia-nanmath)
+       ("julia-specialfunctions" ,julia-specialfunctions)
+       ("julia-staticarrays" ,julia-staticarrays)))
+    (native-inputs
+     `(("julia-difftests" ,julia-difftests)
+       ("julia-fillarrays" ,julia-fillarrays)))
+    (home-page "https://github.com/JuliaDiff/ReverseDiff.jl")
+    (synopsis "Reverse Mode Automatic Differentiation for Julia")
+    (description "@code{ReverseDiff.jl} is a fast and compile-able tape-based
+reverse mode @acronym{AD, automatic differentiation}, that implements methods to
+take gradients, Jacobians, Hessians, and higher-order derivatives of native
+Julia functions (or any callable object, really).")
+    (license license:expat)))
+
 (define-public julia-richardson
   (package
     (name "julia-richardson")
