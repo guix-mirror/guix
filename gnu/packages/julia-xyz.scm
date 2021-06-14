@@ -1629,6 +1629,37 @@ conditional ifelse.  It is similar to @code{Core.ifelse} but it is extendable.")
 such arrays easy via traits.")
     (license license:expat)))
 
+(define-public julia-imagebase
+  (package
+    (name "julia-imagebase")
+    (version "0.1.1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaImages/ImageBase.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1n63f2zs6ail9pcl7rzgv3l0z8v1idjsaza3zgvgy7iacxsdpcj2"))))
+    (build-system julia-build-system)
+    (arguments
+     `(#:tests? #f))    ; Cycle with ImageMagick.jl.
+    (propagated-inputs
+     `(("julia-imagecore" ,julia-imagecore)
+       ("julia-reexport" ,julia-reexport)))
+    ;(native-inputs
+    ; `(("julia-imagemagick" ,julia-imagemagick)
+    ;   ("julia-offsetarrays" ,julia-offsetarrays)
+    ;   ("julia-testimages" ,julia-testimages)))
+    (home-page "https://github.com/JuliaImages/ImageBase.jl")
+    (synopsis "Wrapper package around ImageCore")
+    (description "This is a twin package to @code{ImageCore} with functions that
+are used among many of the packages in JuliaImages.  The main purpose of this
+package is to reduce unnecessary compilation overhead from external
+dependencies.")
+    (license license:expat)))
+
 (define-public julia-imagecore
   (package
     (name "julia-imagecore")
