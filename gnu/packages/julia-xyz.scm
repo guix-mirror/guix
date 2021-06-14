@@ -520,6 +520,26 @@ Specifically, with this package both grayscale and RGB colors are treated as if
 they are points in a normed vector space.")
     (license license:expat)))
 
+(define-public julia-combinatorics
+  (package
+    (name "julia-combinatorics")
+    (version "1.0.2")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaMath/Combinatorics.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0gafqkqi874zfm9h99akw9q95lk3ih5gip2h8p12fj9h7rvyf4j5"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/JuliaMath/Combinatorics.jl")
+    (synopsis "Combinatorics library for Julia")
+    (description "This package provides a combinatorics library for Julia,
+focusing mostly (as of now) on enumerative combinatorics and permutations.")
+    (license license:expat)))
+
 (define-public julia-commonsubexpressions
   (package
     (name "julia-commonsubexpressions")
