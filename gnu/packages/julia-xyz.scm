@@ -1804,6 +1804,42 @@ for graphical platforms such as IJulia.  It is intended to provide convenient
 inline presentation of greyscale or color images.")
     (license license:expat)))
 
+(define-public julia-imagetransformations
+  (package
+    (name "julia-imagetransformations")
+    (version "0.8.12")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaImages/ImageTransformations.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0i8gw68hljshsy9wdl5mrpbb31irhmayqyglsxi7jwm88iy9pxhm"))))
+    (build-system julia-build-system)
+    (arguments
+     `(#:tests? #f))    ; Cycle with ImageMagick.jl.
+    (propagated-inputs
+     `(("julia-axisalgorithms" ,julia-axisalgorithms)
+       ("julia-colorvectorspace" ,julia-colorvectorspace)
+       ("julia-coordinatetransformations" ,julia-coordinatetransformations)
+       ("julia-identityranges" ,julia-identityranges)
+       ("julia-imagecore" ,julia-imagecore)
+       ("julia-interpolations" ,julia-interpolations)
+       ("julia-offsetarrays" ,julia-offsetarrays)
+       ("julia-rotations" ,julia-rotations)
+       ("julia-staticarrays" ,julia-staticarrays)))
+    ;(native-inputs
+    ; `(("julia-imagemagick" ,julia-imagemagick)
+    ;   ("julia-referencetests" ,julia-referencetests)
+    ;   ("julia-testimages" ,julia-testimages)))
+    (home-page "https://github.com/JuliaImages/ImageTransformations.jl")
+    (synopsis "Geometric transformations on images for Julia")
+    (description "This package provides support for image resizing, image
+rotation, and other spatial transformations of arrays.")
+    (license license:expat)))
+
 (define-public julia-indexing
   (package
     (name "julia-indexing")
