@@ -2744,6 +2744,28 @@ are defined for @code{AbstractStrings}, and any iterator that define
 applied to any distance.")
     (license license:expat)))
 
+(define-public julia-structtypes
+  (package
+    (name "julia-structtypes")
+    (version "1.7.2")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaData/StructTypes.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "02mn4kkhn3927dk7945c9bjwlldihydxgn5ilmqqvs8dknvbw8p1"))))
+    (build-system julia-build-system)
+    (home-page "https://juliadata.github.io/StructTypes.jl/stable/")
+    (synopsis "Abstract definitions and convenience methods for Julia objects")
+    (description "This package provides the @code{StructTypes.StructType} trait
+for Julia types to declare the kind of \"struct\" they are, providing
+serialization/deserialization packages patterns and strategies to automatically
+construct objects.")
+    (license license:expat)))
+
 (define-public julia-suppressor
   (package
     (name "julia-suppressor")
