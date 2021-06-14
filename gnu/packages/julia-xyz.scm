@@ -1552,6 +1552,29 @@ extensions to the iterator interface.")
 and printing JSON documents.")
     (license license:expat)))
 
+(define-public julia-json3
+  (package
+    (name "julia-json3")
+    (version "1.8.2")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/quinnj/JSON3.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1mc3byqm6ygg4mjpdrx6grkr4gn06p25nr7050jgq1k2cf06iqba"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-parsers" ,julia-parsers)
+       ("julia-structtypes" ,julia-structtypes)))
+    (home-page "https://github.com/quinnj/JSON3.jl")
+    (synopsis "JSON package for Julia")
+    (description "This package provides another JSON package for Julia, with a
+focus on speed and slick struct mapping.")
+    (license license:expat)))
+
 (define-public julia-lazyarrays
   (package
     (name "julia-lazyarrays")
