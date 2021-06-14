@@ -1773,6 +1773,52 @@ imported changes a how a single @code{Colorant} and whole @code{Colorant} arrays
 be downscaled to fit into the size of your active terminal session.")
     (license license:expat)))
 
+(define-public julia-imagemagick
+  (package
+    (name "julia-imagemagick")
+    (version "1.2.1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaIO/ImageMagick.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "05vzv4jsj3l9pv6yrix28hlw7wnag0mqdfjwv8shn4x71hcfxl1p"))))
+    (build-system julia-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-failing-test
+           (lambda _
+             ;; These tests try to download from the imagemagick.org
+             (substitute* "test/runtests.jl"
+               ((".*readremote\\.jl.*") ""))
+             ;; Tests with the color gray are hard.
+             (substitute* "test/constructed_images.jl"
+               (("test (b == aa)" _ test) (string-append "test_nowarn " test))
+               (("test (B == map)" _ test) (string-append "test_nowarn " test)))
+             #t)))))
+    (propagated-inputs
+     `(("julia-fileio" ,julia-fileio)
+       ("julia-imagecore" ,julia-imagecore)
+       ("julia-imagemagick-jll" ,julia-imagemagick-jll)))
+    (native-inputs
+     `(("julia-colors" ,julia-colors)
+       ("julia-colorvectorspace" ,julia-colorvectorspace)
+       ("julia-imagemetadata" ,julia-imagemetadata)
+       ("julia-imageshow" ,julia-imageshow)
+       ("julia-imagetransformations" ,julia-imagetransformations)
+       ("julia-indirectarrays" ,julia-indirectarrays)
+       ("julia-offsetarrays" ,julia-offsetarrays)
+       ("julia-zipfile" ,julia-zipfile)))
+    (home-page "https://github.com/JuliaIO/ImageMagick.jl")
+    (synopsis "Thin wrapper for ImageMagick")
+    (description "This package provides a wrapper around ImageMagick version 6.
+It was split off from @code{Images.jl} to make image I/O more modular.")
+    (license license:expat)))
+
 (define-public julia-imagemetadata
   (package
     (name "julia-imagemetadata")
