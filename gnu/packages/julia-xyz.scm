@@ -1601,6 +1601,48 @@ just starting at 1).")
 conditional ifelse.  It is similar to @code{Core.ifelse} but it is extendable.")
     (license license:expat)))
 
+(define-public julia-imagecore
+  (package
+    (name "julia-imagecore")
+    (version "0.9.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaImages/ImageCore.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0d844lrilw7zjpax8zr5272a9s292wg4qk53mvm0n88yai598zd6"))))
+    (build-system julia-build-system)
+    (arguments
+     `(#:tests? #f))    ; Cycle with ImageMagick.jl.
+    (propagated-inputs
+     `(("julia-abstractffts" ,julia-abstractffts)
+       ("julia-colors" ,julia-colors)
+       ("julia-colorvectorspace" ,julia-colorvectorspace)
+       ("julia-fixedpointnumbers" ,julia-fixedpointnumbers)
+       ("julia-graphics" ,julia-graphics)
+       ("julia-mappedarrays" ,julia-mappedarrays)
+       ("julia-mosaicviews" ,julia-mosaicviews)
+       ("julia-offsetarrays" ,julia-offsetarrays)
+       ("julia-paddedviews" ,julia-paddedviews)
+       ("julia-reexport" ,julia-reexport)))
+    ;(native-inputs
+    ; `(("julia-aqua" ,julia-aqua)
+    ;   ("julia-colorvectorspace" ,julia-colorvectorspace)
+    ;   ("julia-documenter" ,julia-documenter)
+    ;   ("julia-fftw" ,julia-fftw)
+    ;   ("julia-imageinterminal" ,julia-imageinterminal)
+    ;   ("julia-imagemagick" ,julia-imagemagick)
+    ;   ("julia-referencetests" ,julia-referencetests)
+    ;   ("julia-statistics" ,julia-statistics)))
+    (home-page "https://github.com/JuliaImages/ImageCore.jl")
+    (synopsis "Julia types for representing images")
+    (description "@code{ImageCore} is the lowest-level component of the system
+of packages designed to support image processing and computer vision.")
+    (license license:expat)))
+
 (define-public julia-indexing
   (package
     (name "julia-indexing")
