@@ -974,6 +974,56 @@ need the ffmpeg binaries + executables, and don't want the overhead of
 @code{VideoIO.jl}.")
     (license license:expat)))
 
+(define-public julia-fileio
+  (package
+    (name "julia-fileio")
+    (version "1.9.1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaIO/FileIO.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1b18x43i737g5q41n9818xbnc2pgd98q1m6yw3h29yri0clg4gfx"))))
+    (build-system julia-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'reset-gzip-timestamps)
+         (add-after 'unpack 'skip-network-tests
+           (lambda _
+             ;; These tests try to download audio/video files.
+             (substitute* "test/query.jl"
+               (("testset.*(MP4|OGG|MATROSKA).*" all)
+                (string-append all "return\n")))
+             (substitute* "test/loadsave.jl"
+               (("testset.*CSVFiles.*" all)
+                (string-append all "return\n")))
+             ;; This test tries to download a Julia package.
+             (substitute* "test/error_handling.jl"
+               (("testset.*Not installed.*" all)
+                (string-append all "return\n")))
+             ;; This test tries to write to the store.
+             ;; (Error says can't find User 0)
+             (substitute* "test/runtests.jl"
+               ((".*test_mimesave.*") "")))))))
+    (propagated-inputs
+     `(("julia-requires" ,julia-requires)))
+    (native-inputs
+     `(("julia-colortypes" ,julia-colortypes)
+       ("julia-filepathsbase" ,julia-filepathsbase)
+       ("julia-http" ,julia-http)))
+    (home-page "https://github.com/JuliaIO/FileIO.jl")
+    (synopsis "Main Package for IO, loading all different kind of files")
+    (description "@code{FileIO} aims to provide a common framework for detecting
+file formats and dispatching to appropriate readers/writers.  The two core
+functions in this package are called @code{load} and @code{save}, and offer
+high-level support for formatted files (in contrast with Julia's low-level
+@code{read} and @code{write}).")
+    (license license:expat)))
+
 (define-public julia-filepathsbase
   (package
     (name "julia-filepathsbase")
