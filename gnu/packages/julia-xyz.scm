@@ -1101,7 +1101,7 @@ performant tooling without requiring additional package dependencies.")
 (define-public julia-ffmpeg
   (package
     (name "julia-ffmpeg")
-    (version "0.4.0")
+    (version "0.4.1")
     (source
       (origin
         (method git-fetch)
@@ -1110,7 +1110,7 @@ performant tooling without requiring additional package dependencies.")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "1kwqixwhnnxs59xsw2k44xxnkx5fn4y49g58l5snfbszycxq7lls"))))
+         (base32 "1ldxbp0kq3ip67x7sp82dz56aq4p5i0chspbgx2zgskr6jcbjj1b"))))
     (build-system julia-build-system)
     (propagated-inputs
      `(("julia-ffmpeg-jll" ,julia-ffmpeg-jll)
