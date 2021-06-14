@@ -1571,6 +1571,32 @@ indexed images, sometimes called \"colormap images\" or \"paletted images.\"")
 interfaces with @file{.ini} files.")
     (license license:expat)))
 
+(define-public julia-intervalsets
+  (package
+    (name "julia-intervalsets")
+    (version "0.5.3")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaMath/IntervalSets.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0gsz89cd3iygbl5qr389k9vwpg7w1nk0s90g25nsmk34y9hifxag"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-ellipsisnotation" ,julia-ellipsisnotation)))
+    (native-inputs
+     `(("julia-offsetarrays" ,julia-offsetarrays)))
+    (home-page "https://github.com/JuliaMath/IntervalSets.jl")
+    (synopsis "Interval Sets for Julia")
+    (description "This package is intended to implement a \"minimal\" foundation
+for intervals upon which other packages might build.  In particular, we
+encourage type-piracy for the reason that only one interval package can
+unambiguously define the @code{..} and @code{±} operators.")
+    (license license:expat)))
+
 (define-public julia-invertedindices
   (package
     (name "julia-invertedindices")
