@@ -1671,6 +1671,38 @@ such arrays easy via traits.")
 of packages designed to support image processing and computer vision.")
     (license license:expat)))
 
+(define-public julia-imagemetadata
+  (package
+    (name "julia-imagemetadata")
+    (version "0.9.6")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaImages/ImageMetadata.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0iv154ms370xgcr56bwsjl13iwmy671cbxjl9ld5yfj85pclcwi1"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-axisarrays" ,julia-axisarrays)
+       ("julia-imageaxes" ,julia-imageaxes)
+       ("julia-imagecore" ,julia-imagecore)
+       ("julia-indirectarrays" ,julia-indirectarrays)))
+    (native-inputs
+     `(("julia-offsetarrays" ,julia-offsetarrays)
+       ("julia-simpletraits" ,julia-simpletraits)
+       ("julia-unitful" ,julia-unitful)))
+    (home-page "https://github.com/JuliaImages/ImageMetadata.jl")
+    (synopsis "Julia package for images having metadata")
+    (description "@code{ImageMetadata} is a simple package providing utilities
+for working with images that have metadata attached.  For example, you might
+want to associate an image with the date on which the picture was taken, or an
+MRI scan with patient data, or an astronomical image with sky coordinates and
+information about the detector used to acquire the image.")
+    (license license:expat)))
+
 (define-public julia-indexing
   (package
     (name "julia-indexing")
