@@ -913,7 +913,7 @@ straightforward loop implementation.")
 (define-public julia-docstringextensions
   (package
     (name "julia-docstringextensions")
-    (version "0.8.4")
+    (version "0.8.5")
     (source
       (origin
         (method git-fetch)
@@ -922,7 +922,7 @@ straightforward loop implementation.")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "1fazv87f0j6hw03frx0gqgq9qpjbddqgccm9998a3329wrrs6gwd"))))
+         (base32 "0fy4kfnfacyfmlly6nqxn77dk2gqw80b69zb4m1i0i39zv3cpqfb"))))
     (build-system julia-build-system)
     (home-page "https://juliadocs.github.io/DocStringExtensions.jl/latest/")
     (synopsis "Extensions for Julia's docsystem")
