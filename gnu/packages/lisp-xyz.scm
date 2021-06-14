@@ -17333,3 +17333,47 @@ application development library.")
 
 (define-public cl-glfw3
   (sbcl-package->cl-source-package sbcl-cl-glfw3))
+
+(define-public sbcl-chirp
+  (let ((commit "01c79fa41939688216d1f86d0766a687becb0654")
+        (revision "1"))
+    (package
+      (name "sbcl-chirp")
+      (version (git-version "0.2.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shinmera/chirp")
+               (commit commit)))
+         (file-name (git-file-name "chirp" version))
+         (sha256
+          (base32 "10xlz1vwdv3jv48kmpndpnrg6672m0r5vsjgm2pksfl8bc05j2m0"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:asd-systems '("chirp-core" "chirp-dexador" "chirp-drakma" "chirp")))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("babel" ,sbcl-babel)
+         ("cl-base64" ,sbcl-cl-base64)
+         ("cl-ppcre" ,sbcl-cl-ppcre)
+         ("dexador" ,sbcl-dexador)
+         ("drakma" ,sbcl-drakma)
+         ("flexi-streams" ,sbcl-flexi-streams)
+         ("ironclad" ,sbcl-ironclad)
+         ("local-time" ,sbcl-local-time)
+         ("split-sequence" ,sbcl-split-sequence)
+         ("uuid" ,sbcl-uuid)
+         ("yason" ,sbcl-yason)))
+      (home-page "https://shinmera.github.io/chirp/")
+      (synopsis "Twitter client library for Common Lisp")
+      (description
+       "This package provides a Common Lisp Twitter client featuring full API
+coverage.")
+      (license license:zlib))))
+
+(define-public ecl-chirp
+  (sbcl-package->ecl-package sbcl-chirp))
+
+(define-public cl-chirp
+  (sbcl-package->cl-source-package sbcl-chirp))
