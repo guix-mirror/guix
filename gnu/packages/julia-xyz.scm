@@ -3076,6 +3076,46 @@ default are documented to have non-stable streams (which for example enables
 some performance improvements).")
     (license license:expat)))
 
+(define-public julia-stackviews
+  (package
+    (name "julia-stackviews")
+    (version "0.1.1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaArrays/StackViews.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1fwiaxdpx1z9dli3jr8kyraych0jbdiny3qklynf0r13px25r6i7"))))
+    (build-system julia-build-system)
+    (arguments
+     `(#:tests? #f  ; Documenter.jl not packaged yet
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-doctest
+           (lambda _
+             (substitute* "test/runtests.jl"
+               ((".*doctest.*") ""))
+             #t)))))
+    (propagated-inputs
+     `(("julia-offsetarrays" ,julia-offsetarrays)))
+    ;(native-inputs
+    ; `(("julia-aqua" ,julia-aqua)
+    ;   ("julia-documenter" ,julia-documenter)))
+    (home-page "https://github.com/JuliaArrays/StackViews.jl")
+    (synopsis "No more catcat")
+    (description "StackViews provides only one array type: @code{StackView}.
+There are multiple ways to understand @code{StackView}:
+@itemize
+@item inverse of @code{eachslice}
+@item @code{cat} variant
+@item view object
+@item lazy version of @code{repeat} special case
+@end itemize")
+    (license license:expat)))
+
 (define-public julia-static
   (package
     (name "julia-static")
