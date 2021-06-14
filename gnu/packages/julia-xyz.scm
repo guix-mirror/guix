@@ -77,7 +77,7 @@ in this package.")
 (define-public julia-adapt
   (package
     (name "julia-adapt")
-    (version "3.3.0")
+    (version "3.3.1")
     (source
      (origin
        (method git-fetch)
@@ -86,7 +86,7 @@ in this package.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0zs5mjnql77jvrsm8lrlfkq5524wnrfxqxyqyjk8ka2xpxf9lp7n"))))
+        (base32 "009fj59fzhvfsyw35kakllsh36k3xlwyzq8qa5f5k598i3pq14i7"))))
     (build-system julia-build-system)
     (home-page "https://github.com/JuliaGPU/Adapt.jl")
     (synopsis "Package providing the @code{adapt} function, similar to @code{convert}")
