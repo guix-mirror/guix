@@ -974,6 +974,28 @@ need the ffmpeg binaries + executables, and don't want the overhead of
 @code{VideoIO.jl}.")
     (license license:expat)))
 
+(define-public julia-filepathsbase
+  (package
+    (name "julia-filepathsbase")
+    (version "0.9.10")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/rofinn/FilePathsBase.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "136wm4ik6isrdanmpi4gdr1qw0qhr15i925qzjxbawk5hnyzwng9"))))
+    (build-system julia-build-system)
+    (arguments
+     `(#:tests? #f))    ; Cycle with JLSO.jl
+    (home-page "https://github.com/rofinn/FilePathsBase.jl")
+    (synopsis "Filesystem path types in Julia")
+    (description "@code{FilePathsBase.jl} provides a type based approach to
+working with filesystem paths in Julia.")
+    (license license:expat)))
+
 (define-public julia-fillarrays
   (package
     (name "julia-fillarrays")
