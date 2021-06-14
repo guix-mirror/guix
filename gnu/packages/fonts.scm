@@ -414,14 +414,15 @@ The unified Libertinus family consists of:
 (define-public font-terminus
   (package
     (name "font-terminus")
-    (version "4.48")
+    (version "4.49.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/terminus-font/terminus-font-"
-                           version "/terminus-font-" version ".tar.gz"))
+                           (version-major+minor version)
+                           "/terminus-font-" version ".tar.gz"))
        (sha256
-        (base32 "1bwlkj39rqbyq57v5yssayav6hzv1n11b9ml2s0dpiyfsn6rqy9l"))))
+        (base32 "0yggffiplk22lgqklfmd2c0rw8gwchynjh5kz4bz8yv2h6vw2qfr"))))
     (build-system gnu-build-system)
     (outputs (list "out" "pcf-8bit"))
     (arguments
