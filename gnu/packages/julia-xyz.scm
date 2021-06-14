@@ -1296,6 +1296,34 @@ functions (or any callable object, really) using forward mode automatic
 differentiation (AD).")
     (license license:expat)))
 
+(define-public julia-functionwrappers
+  (package
+    (name "julia-functionwrappers")
+    (version "1.1.2")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/yuyichao/FunctionWrappers.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "02jilpjr7px6138dx2w7ixricvfgsxqdk84d9dgviranibhnjcxa"))))
+    (build-system julia-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'adjust-tests
+           (lambda _
+             (substitute* "test/runtests.jl"
+               (("testset \\\"Abstract.*" all)
+                (string-append all "return\n"))))))))
+    (home-page "https://github.com/yuyichao/FunctionWrappers.jl")
+    (synopsis "Type stable and efficient wrapper of arbitrary functions")
+    (description "This package provides a type stable and efficient wrapper of
+arbitrary functions.")
+    (license license:expat)))
+
 (define-public julia-fuzzycompletions
   (package
     (name "julia-fuzzycompletions")
