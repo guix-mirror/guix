@@ -3140,6 +3140,43 @@ product preserves all dimensions}, and @acronym{boxdot, contracts neighboring
 dimensions}.")
     (license license:expat)))
 
+(define-public julia-testimages
+  (package
+    (name "julia-testimages")
+    (version "1.5.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaImages/TestImages.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1lnfsmx33qspyvxw0cykwh7il8xykjpcw1080sisn95ngz2qhdmy"))))
+    (build-system julia-build-system)
+    (arguments
+     `(#:tests? #f))    ; cycle with ImageMagick.jl
+    (propagated-inputs
+     `(("julia-axisarrays" ,julia-axisarrays)
+       ("julia-colortypes" ,julia-colortypes)
+       ("julia-fileio" ,julia-fileio)
+       ("julia-offsetarrays" ,julia-offsetarrays)
+       ("julia-stringdistances" ,julia-stringdistances)))
+    ;(native-inputs
+    ; `(("julia-colors" ,julia-colors)
+    ;   ("julia-fixedpointnumbers" ,julia-fixedpointnumbers)
+    ;   ("julia-imagecontrastadjustment" ,julia-imagecontrastadjustment)
+    ;   ("julia-imagemagick" ,julia-imagemagick)
+    ;   ("julia-ometiff" ,julia-ometiff)
+    ;   ("julia-referencetests" ,julia-referencetests)))
+    (home-page "https://testimages.juliaimages.org/")
+    (synopsis "Standard test images for Julia")
+    (description "This package provides a convenient Julia interface for loading
+standard named test images and example images for the internal usage in
+@code{JuliaImages}.  This can be used in conjunction with the @code{Images}
+package.")
+    (license license:expat)))
+
 (define-public julia-tracker
   (package
     (name "julia-tracker")
