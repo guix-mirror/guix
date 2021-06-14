@@ -2074,7 +2074,7 @@ as an index into any @code{AbstractArray} subtype, including OffsetArrays.")
 (define-public julia-iocapture
   (package
     (name "julia-iocapture")
-    (version "0.2.1")
+    (version "0.2.2")
     (source
       (origin
         (method git-fetch)
@@ -2083,7 +2083,7 @@ as an index into any @code{AbstractArray} subtype, including OffsetArrays.")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "0ajlfh8f1g23bx5f8h70nrgr0zfwxaqnpxlka8l4qhjmnfqxl43a"))))
+         (base32 "0v76wbvg80g9nx0rjbcna82zk61krly1y9yhyfrjv2pf7mcr4idb"))))
     (build-system julia-build-system)
     (home-page "https://github.com/JuliaDocs/IOCapture.jl")
     (synopsis "Capture standard output and error streams")
