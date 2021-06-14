@@ -727,6 +727,29 @@ without having to take direct dependencies.")
 to represent missing data.")
     (license license:expat)))
 
+(define-public julia-deepdiffs
+  (package
+    (name "julia-deepdiffs")
+    (version "1.2.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/ssfrr/DeepDiffs.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1gsbxb1d67g05h5bvzz3swdfih6404jrydy724a8dvbdgqvm3sds"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/ssfrr/DeepDiffs.jl")
+    (synopsis "Compute and pretty-print diffs for data structures")
+    (description "@code{DeepDiffs.jl} provides the @code{deepdiff} function,
+which finds and displays differences (diffs) between Julia data structures.  It
+supports @code{Vectors}, @code{Dicts}, and @code{String}s.  When diffing
+dictionaries where values associated with a particular key may change,
+@code{deepdiff} will recurse into value to provide a more detailed diff.")
+    (license license:expat)))
+
 (define-public julia-dictionaries
   (package
     (name "julia-dictionaries")
