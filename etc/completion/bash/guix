@@ -69,16 +69,17 @@ _guix_complete_installed_package ()
 
 _guix_complete_option ()
 {
-    local subcommand
-    case "${COMP_WORDS[2]}" in
-	-*)     subcommand="";;
-	[a-z]*) subcommand="${COMP_WORDS[2]}";;
-    esac
-    local options="$(${COMP_WORDS[0]} ${COMP_WORDS[1]} $subcommand --help 2> /dev/null \
+    local command="${COMP_WORDS[$1]}"
+    local subcommand="${COMP_WORDS[$(($1 + 1))]}"
+    if _guix_is_option "$subcommand"
+    then
+	subcommand=""
+    fi
+    local options="$(${COMP_WORDS[0]} $command $subcommand --help 2> /dev/null \
                             | grep '^  \+-' \
                             | sed -e's/^.*--\([a-zA-Z0-9_-]\+\)\(=\?\).*/--\1\2/g')"
     compopt -o nospace
-    COMPREPLY=($(compgen -W "$options" -- "${COMP_WORDS[${#COMP_WORDS[*]} - 1]}"))
+    COMPREPLY=($(compgen -W "$options" -- "$2"))
 }
 
 _guix_is_option ()
@@ -289,7 +290,7 @@ _guix_complete ()
                 then
                     _guix_complete_file
 		else
-		    _guix_complete_command
+		    _guix_complete_option "$command_index" "$word_at_point"
                 fi
 	    elif [[ "$command" = "container" ]]
 	    then
@@ -319,7 +320,7 @@ _guix_complete ()
     if [[ -z "$COMPREPLY" && COMP_CWORD -gt command_index ]] &&
         _guix_is_option "$word_at_point"
     then
-	_guix_complete_option
+	_guix_complete_option "$command_index" "$word_at_point"
     fi
 }
 
