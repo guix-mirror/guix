@@ -1734,6 +1734,41 @@ MRI scan with patient data, or an astronomical image with sky coordinates and
 information about the detector used to acquire the image.")
     (license license:expat)))
 
+(define-public julia-imageshow
+  (package
+    (name "julia-imageshow")
+    (version "0.3.2")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaImages/ImageShow.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "00wq3ab8y6nyhxwc5lpz9dnslsmcr1vg3cjdkh7wb7k6a8bw98mh"))))
+    (build-system julia-build-system)
+    (arguments
+     `(#:tests? #f))    ; cycle with ImageMagick.jl.
+    (propagated-inputs
+     `(("julia-fileio" ,julia-fileio)
+       ("julia-imagebase" ,julia-imagebase)
+       ("julia-imagecore" ,julia-imagecore)
+       ("julia-offsetarrays" ,julia-offsetarrays)
+       ("julia-stackviews" ,julia-stackviews)))
+    ;(native-inputs
+    ; `(("julia-imagedistances" ,julia-imagedistances)
+    ;   ("julia-imagemagick" ,julia-imagemagick)
+    ;   ("julia-suppressor" ,julia-suppressor)
+    ;   ("julia-testimages" ,julia-testimages)))
+    (home-page "https://github.com/JuliaImages/ImageShow.jl")
+    (synopsis
+     "Inline graphical display of images in Julia graphical environments")
+    (description "This package implements image @code{show} methods suitable
+for graphical platforms such as IJulia.  It is intended to provide convenient
+inline presentation of greyscale or color images.")
+    (license license:expat)))
+
 (define-public julia-indexing
   (package
     (name "julia-indexing")
