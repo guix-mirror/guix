@@ -46654,6 +46654,29 @@ manipulation in Rust.")
     (description "This package provides a low level HTTP server library.")
     (license license:asl2.0)))
 
+(define-public rust-tiny-keccak-2
+  (package
+    (name "rust-tiny-keccak")
+    (version "2.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tiny-keccak" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0dq2x0hjffmixgyf6xv9wgsbcxkd65ld0wrfqmagji8a829kg79c"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-crunchy" ,rust-crunchy-0.2))))
+    (home-page "https://github.com/debris/tiny-keccak")
+    (synopsis "Implementation of Keccak derived functions")
+    (description
+     "Tiny Keccak provides ann implementation of Keccak derived functions
+specified in FIPS-202, SP800-185 and KangarooTwelve.")
+    (license license:cc0)))
+
 (define-public rust-tinytemplate-1
   (package
     (name "rust-tinytemplate")
