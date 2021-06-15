@@ -22912,29 +22912,29 @@ requires non-const function calls to be computed.")
 (define-public rust-lexical-core-0.7
   (package
     (name "rust-lexical-core")
-    (version "0.7.4")
+    (version "0.7.6")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "lexical-core" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "05i6b69ay8xbxw88vx89vglb7xm5n8ky82hax7d5a7z60bdccrfv"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "lexical-core" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1zjzab1fnaw4kj6ixyrskp4dyz761gdcab07m4bkvlk1l4mcc1v6"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-arrayvec" ,rust-arrayvec-0.5)
         ("rust-bitflags" ,rust-bitflags-1)
-        ("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-cfg-if" ,rust-cfg-if-1)
         ("rust-dtoa" ,rust-dtoa-0.4)
+        ("rust-libm" ,rust-libm-0.2)
         ("rust-ryu" ,rust-ryu-1)
         ("rust-static-assertions" ,rust-static-assertions-1))
        #:cargo-development-inputs
-       (("rust-approx" ,rust-approx-0.3)
-        ("rust-proptest" ,rust-proptest-0.9)
-        ("rust-quickcheck" ,rust-quickcheck-0.9))))
+       (("rust-approx" ,rust-approx-0.4)
+        ("rust-proptest" ,rust-proptest-0.10)
+        ("rust-quickcheck" ,rust-quickcheck-1))))
     (home-page
      "https://github.com/Alexhuszagh/rust-lexical/tree/master/lexical-core")
     (synopsis
