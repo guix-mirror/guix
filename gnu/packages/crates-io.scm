@@ -32132,6 +32132,31 @@ applications.")
      "Additional trait for Read and Write to read and write Plain Old Data.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-polars-arrow-0.13
+  (package
+    (name "rust-polars-arrow")
+    (version "0.13.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "polars-arrow" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0r6k2zm9f3nngjszdjnjz7r7c91qpq88lwjfgsbwfi8383xxbcjk"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-arrow" ,rust-arrow-4)
+        ("rust-num" ,rust-num-0.4)
+        ("rust-thiserror" ,rust-thiserror-1))))
+    (home-page "https://github.com/ritchie46/polars")
+    (synopsis "Arrow interfaces for Polars DataFrame library")
+    (description
+     "This crate provides Arrow interfaces for Polars DataFrame library.")
+    (license license:expat)))
+
 (define-public rust-polling-2
   (package
     (name "rust-polling")
