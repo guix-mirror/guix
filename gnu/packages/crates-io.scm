@@ -30501,6 +30501,41 @@ synchronization primitives.")
         ("rust-winapi" ,rust-winapi-0.3)
         ("rust-rustc-version" ,rust-rustc-version-0.2))))))
 
+(define-public rust-parquet-4
+  (package
+    (name "rust-parquet")
+    (version "4.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "parquet" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "19l8ya7jqym8bpf1pyg0i31a7sqaw18dskwbj6v6lkmhxbwafxcj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-arrow" ,rust-arrow-4)
+        ("rust-base64" ,rust-base64-0.13)
+        ("rust-brotli" ,rust-brotli-3)
+        ("rust-byteorder" ,rust-byteorder-1)
+        ("rust-chrono" ,rust-chrono-0.4)
+        ("rust-clap" ,rust-clap-2)
+        ("rust-flate2" ,rust-flate2-1)
+        ("rust-lz4" ,rust-lz4-1)
+        ("rust-num-bigint" ,rust-num-bigint-0.4)
+        ("rust-parquet-format" ,rust-parquet-format-2)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-snap" ,rust-snap-1)
+        ("rust-thrift" ,rust-thrift-0.13)
+        ("rust-zstd" ,rust-zstd-0.8))))
+    (home-page "https://github.com/apache/arrow-rs")
+    (synopsis "Apache Parquet implementation in Rust")
+    (description
+     "This crate provides an Apache Parquet implementation in Rust.")
+    (license license:asl2.0)))
+
 (define-public rust-parquet-format-2
   (package
     (name "rust-parquet-format")
