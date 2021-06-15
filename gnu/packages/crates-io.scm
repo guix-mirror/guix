@@ -44944,8 +44944,32 @@ and image I/O capabilities of XeTeX’s xdvipdfmx as a crate, currently
 providing only a C API.")
     (license license:expat)))
 
+(define-public rust-tectonic-status-base-0.2
+  (package
+    (name "rust-tectonic-status-base")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tectonic_status_base" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "02pxbpvwdxg2jdjs4vygz0h6qb2c4zcqkdlcjx217xdrn13jcbz3"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-tectonic-errors" ,rust-tectonic-errors-0.2))))
+    (home-page "https://tectonic-typesetting.github.io/")
+    (synopsis "Basic types for reporting status messages to a user")
+    (description
+     "This crate is part of the Tectonic project.  It provides a basic
+types for reporting status messages to a user.")
+    (license license:expat)))
+
 (define-public rust-tectonic-status-base-0.1
   (package
+    (inherit rust-tectonic-status-base-0.2)
     (name "rust-tectonic-status-base")
     (version "0.1.0")
     (source
@@ -44955,17 +44979,10 @@ providing only a C API.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "0pdyva28cdrak2jcmw0i9blf3imyfg04h3dhg8zfn96s578wp000"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-tectonic-errors" ,rust-tectonic-errors-0.1))))
-    (home-page "https://tectonic-typesetting.github.io/")
-    (synopsis "Basic types for reporting status messages to a user")
-    (description
-     "This crate is part of the Tectonic project.  It provides a basic
-types for reporting status messages to a user.")
-    (license license:expat)))
+       (("rust-tectonic-errors" ,rust-tectonic-errors-0.1))))))
 
 (define-public rust-tectonic-xdv-0.1
   (package
