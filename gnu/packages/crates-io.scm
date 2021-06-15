@@ -5979,7 +5979,7 @@ constants from build.rs or a script.")
 (define-public rust-bumpalo-3
   (package
     (name "rust-bumpalo")
-    (version "3.2.1")
+    (version "3.7.0")
     (source
      (origin
        (method url-fetch)
@@ -5988,10 +5988,10 @@ constants from build.rs or a script.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "11silgpsnfv6ir7j2nh7a69564f92vq20k9ha7zcbynpiav9vbhj"))))
+         "0ccn025n0x1gc0ijjlabin2xs7dkx5yfagkskr93yw9c06pyfncw"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:tests? #f      ; cargo_readme_up_to_date test fails
+     `(#:tests? #f                      ;cargo_readme_up_to_date test fails
        #:cargo-development-inputs
        (("rust-criterion" ,rust-criterion-0.3)
         ("rust-quickcheck" ,rust-quickcheck-0.9))))
