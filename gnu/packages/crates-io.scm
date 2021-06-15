@@ -44415,17 +44415,17 @@ memory all at once.")
       "Targeting utilities for compilers and related tools")
     (license license:asl2.0)))
 
-(define-public rust-tectonic-bridge-core-0.1
+(define-public rust-tectonic-bridge-core-0.2
   (package
     (name "rust-tectonic-bridge-core")
-    (version "0.1.0")
+    (version "0.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "tectonic_bridge_core" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1mfy8i03vmd4mwx8jb2lrwbggqq0vfp2vmbg296ipy7gf1zhi4jl"))))
+        (base32 "1728hdynpkc1hmaaslci0wijqni240f8mmclf8sw6nkkfbygk8zk"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -44437,7 +44437,7 @@ memory all at once.")
         ("rust-libc" ,rust-libc-0.2)
         ("rust-md-5" ,rust-md-5-0.9)
         ("rust-tectonic-errors" ,rust-tectonic-errors-0.2)
-        ("rust-tectonic-io-base" ,rust-tectonic-io-base-0.2)
+        ("rust-tectonic-io-base" ,rust-tectonic-io-base-0.3)
         ("rust-tectonic-status-base" ,rust-tectonic-status-base-0.1))))
     (home-page "https://tectonic-typesetting.github.io/")
     (synopsis "Expose core backend APIs to the Tectonic C/C++ code")
@@ -44446,6 +44446,31 @@ memory all at once.")
 I/O services provided by the Tectonic Rust code.  This API is then consumed by
 the various C/C++ ``engines`` implementing the TeX software.")
     (license license:expat)))
+
+(define-public rust-tectonic-bridge-core-0.1
+  (package
+    (inherit rust-tectonic-bridge-core-0.2)
+    (name "rust-tectonic-bridge-core")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tectonic_bridge_core" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1mfy8i03vmd4mwx8jb2lrwbggqq0vfp2vmbg296ipy7gf1zhi4jl"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cbindgen" ,rust-cbindgen-0.16)
+        ("rust-cc" ,rust-cc-1)
+        ("rust-flate2" ,rust-flate2-1)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-md-5" ,rust-md-5-0.9)
+        ("rust-tectonic-errors" ,rust-tectonic-errors-0.2)
+        ("rust-tectonic-io-base" ,rust-tectonic-io-base-0.2)
+        ("rust-tectonic-status-base" ,rust-tectonic-status-base-0.1))))))
 
 (define-public rust-tectonic-bridge-flate-0.1
   (package
