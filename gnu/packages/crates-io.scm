@@ -1942,8 +1942,34 @@ type.")
 on every platform.")
     (license license:expat)))
 
+(define-public rust-approx-0.4
+  (package
+    (name "rust-approx")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "approx" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0y52dg58lapl4pp1kqlznfw1blbki0nx6b0aw8kja2yi3gyhaaiz"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-num-complex" ,rust-num-complex-0.3)
+        ("rust-num-traits" ,rust-num-traits-0.2))))
+    (home-page "https://github.com/brendanzab/approx")
+    (synopsis "Approximate floating point equality comparisons and assertions")
+    (description
+     "This crate provides facilities for testing the approximate equality of
+floating-point based types, using either relative difference, or units in the
+last place (ULPs) comparisons.")
+    (license license:asl2.0)))
+
 (define-public rust-approx-0.3
   (package
+    (inherit rust-approx-0.4)
     (name "rust-approx")
     (version "0.3.2")
     (source
@@ -1955,18 +1981,11 @@ on every platform.")
        (sha256
         (base32
          "1hx580xjdxl3766js9b49rnbnmr8gw8c060809l43k9f0xshprph"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-num-complex" ,rust-num-complex-0.2)
-        ("rust-num-traits" ,rust-num-traits-0.2))))
-    (home-page "https://github.com/brendanzab/approx")
-    (synopsis
-     "Approximate floating point equality comparisons and assertions")
-    (description
-     "Approximate floating point equality comparisons and assertions.")
-    (license license:asl2.0)))
+        ("rust-num-traits" ,rust-num-traits-0.2))))))
 
 (define-public rust-approx-0.1
   (package
