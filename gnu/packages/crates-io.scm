@@ -19179,8 +19179,37 @@ the template engine that renders the official Rust website")
 @code{#[derive(Hash32)]}.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-hashbrown-0.11
+  (package
+    (name "rust-hashbrown")
+    (version "0.11.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "hashbrown" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0vkjsf5nzs7qcia5ya79j9sq2p1caz4crrncr1675wwyj3ag0pmb"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-ahash" ,rust-ahash-0.7)
+        ("rust-bumpalo" ,rust-bumpalo-3)
+        ("rust-compiler-builtins" ,rust-compiler-builtins-0.1)
+        ("rust-rayon" ,rust-rayon-1)
+        ("rust-rustc-std-workspace-alloc" ,rust-rustc-std-workspace-alloc-1)
+        ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1)
+        ("rust-serde" ,rust-serde-1))))
+    (home-page "https://github.com/rust-lang/hashbrown")
+    (synopsis "Rust port of Google's SwissTable hash map")
+    (description "This package provides a Rust port of Google's SwissTable
+hash map.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-hashbrown-0.9
   (package
+    (inherit rust-hashbrown-0.11)
     (name "rust-hashbrown")
     (version "0.9.1")
     (source
@@ -19191,7 +19220,6 @@ the template engine that renders the official Rust website")
        (sha256
         (base32
          "016dsm9s4xmxlkw2jfikm54qlz6vyk0qr280gab7kzp342jf9byp"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -19207,12 +19235,7 @@ the template engine that renders the official Rust website")
         ("rust-rand" ,rust-rand-0.7)
         ("rust-rayon" ,rust-rayon-1)
         ("rust-rustc-hash" ,rust-rustc-hash-1)
-        ("rust-serde-test" ,rust-serde-test-1))))
-    (home-page "https://github.com/rust-lang/hashbrown")
-    (synopsis "Rust port of Google's SwissTable hash map")
-    (description "This package provides a Rust port of Google's SwissTable
-hash map.")
-    (license (list license:asl2.0 license:expat))))
+        ("rust-serde-test" ,rust-serde-test-1))))))
 
 (define-public rust-hashbrown-0.8
   (package
