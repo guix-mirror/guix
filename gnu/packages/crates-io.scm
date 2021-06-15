@@ -24535,6 +24535,29 @@ server (LSP).")
     (description "This package provides a generic LSP server scaffold.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-lz4-sys-1
+  (package
+    (name "rust-lz4-sys")
+    (version "1.9.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "lz4-sys" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1bmc82bddx2lm0r9bn422cxbwlwq6qld6m6l78hjcclbbnlrm9yw"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cc" ,rust-cc-1)
+        ("rust-libc" ,rust-libc-0.2))))
+    (home-page "https://github.com/bozaro/lz4-rs")
+    (synopsis "Rust LZ4 sys package")
+    (description "This is the Rust LZ4 sys package.")
+    (license license:expat)))
+
 (define-public rust-lzma-sys-0.1
   (package
     (name "rust-lzma-sys")
