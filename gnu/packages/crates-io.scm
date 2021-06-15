@@ -10596,6 +10596,26 @@ abstractions around common WinAPI calls.")
     (arguments
      `(#:cargo-inputs (("rust-winapi" ,rust-winapi-0.3))))))
 
+(define-public rust-crunchy-0.2
+  (package
+    (name "rust-crunchy")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "crunchy" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1dx9mypwd5mpfbbajm78xcrg5lirqk7934ik980mmaffg3hdm0bs"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://docs.rs/crate/crunchy/0.2.2/source/")
+    (synopsis "Deterministically unroll constant loops")
+    (description
+     "The Crunchy unroller deterministically unrolls constant loops, for
+number ``crunching``.")
+    (license license:expat)))
+
 (define-public rust-roxmltree-0.14
   (package
     (name "rust-roxmltree")
