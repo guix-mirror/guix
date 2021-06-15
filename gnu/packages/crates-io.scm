@@ -54012,7 +54012,7 @@ library.")
 (define-public rust-zstd-sys-1
   (package
     (name "rust-zstd-sys")
-    (version "1.4.20+zstd.1.4.9")
+    (version "1.6.0+zstd.1.5.0")
     (source
      (origin
        (method url-fetch)
@@ -54021,11 +54021,11 @@ library.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "13kc3crvqg021fya48jw0spfbxdli5anmry3w93r8bfgswrvgmgb"))))
+         "19rs3vvwlzr9v6qfmfxh43x99njmybpvysqf8xhpfhibjbcbwh91"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-bindgen" ,rust-bindgen-0.57)
+       (("rust-bindgen" ,rust-bindgen-0.58)
         ("rust-cc" ,rust-cc-1)
         ("rust-libc" ,rust-libc-0.2)
         ("rust-pkg-config" ,rust-pkg-config-0.3))))
