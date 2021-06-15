@@ -26489,6 +26489,31 @@ that provides support for POST multipart/form-data requests on both client and
 server.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-multiversion-macros-0.6
+  (package
+    (name "rust-multiversion-macros")
+    (version "0.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "multiversion-macros" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1bzkmxgyiwsanqf4lsdzx5gn4harza4rdrzkq5hgksw2wfyy58x8"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/calebzulawski/multiversion")
+    (synopsis "Implementation crate for multiversion")
+    (description "This is an implementation crate for multiversion Rust
+library.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-mustache-0.9
   (package
     (name "rust-mustache")
