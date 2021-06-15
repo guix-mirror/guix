@@ -28148,8 +28148,37 @@ including bigint, complex, rational, range iterators, generic integers, and more
         ("rust-num-rational" ,rust-num-rational-0.1)
         ("rust-num-traits" ,rust-num-traits-0.2))))))
 
+(define-public rust-num-bigint-0.4
+  (package
+    (name "rust-num-bigint")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "num-bigint" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "04k5xh7d0nxay4yfb02rj841y9g5jh45d320avi53ak221y083af"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-arbitrary" ,rust-arbitrary-1)
+        ("rust-autocfg" ,rust-autocfg-1)
+        ("rust-num-integer" ,rust-num-integer-0.1)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-quickcheck" ,rust-quickcheck-1)
+        ("rust-rand" ,rust-rand-0.8)
+        ("rust-serde" ,rust-serde-1))))
+    (home-page "https://github.com/rust-num/num-bigint")
+    (synopsis "Big integer implementation for Rust")
+    (description
+     "This package provides a big integer implementation for Rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-num-bigint-0.3
   (package
+    (inherit rust-num-bigint-0.4)
     (name "rust-num-bigint")
     (version "0.3.1")
     (source
@@ -28159,7 +28188,6 @@ including bigint, complex, rational, range iterators, generic integers, and more
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1gq7cpvmzk5jixzr26fbjfayiigzh4p4vyyzbb73yqz4g9s436jy"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -28169,12 +28197,7 @@ including bigint, complex, rational, range iterators, generic integers, and more
         ("rust-num-traits" ,rust-num-traits-0.2)
         ("rust-quickcheck" ,rust-quickcheck-0.9)
         ("rust-rand" ,rust-rand-0.7)
-        ("rust-serde" ,rust-serde-1))))
-    (home-page "https://github.com/rust-num/num-bigint")
-    (synopsis "Big integer implementation for Rust")
-    (description
-     "This package provides a big integer implementation for Rust.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-serde" ,rust-serde-1))))))
 
 (define-public rust-num-bigint-0.2
   (package
