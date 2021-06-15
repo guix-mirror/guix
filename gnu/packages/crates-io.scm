@@ -44622,6 +44622,31 @@ providing whatever fiddly features are needed to enable the Tectonic build
 process.")
     (license license:expat)))
 
+(define-public rust-tectonic-docmodel-0.1
+  (package
+    (name "rust-tectonic-docmodel")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tectonic_docmodel" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "041hbp5rjrnnf6pbi7b9039jx5vn5f0d9fwhk0vshwjn69jmknkm"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-serde" ,rust-serde-1)
+        ("rust-tectonic-errors" ,rust-tectonic-errors-0.2)
+        ("rust-toml" ,rust-toml-0.5))))
+    (home-page "https://tectonic-typesetting.github.io/")
+    (synopsis "Tectonic document model")
+    (description
+     "This crate is part of the Tectonic project.  It implements the Tectonic
+document model, including the @file{Tectonic.toml} file.")
+    (license license:expat)))
+
 (define-public rust-tectonic-engine-bibtex-0.1
   (package
     (name "rust-tectonic-engine-bibtex")
