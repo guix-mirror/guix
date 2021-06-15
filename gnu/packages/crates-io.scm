@@ -44572,6 +44572,36 @@ bindings.")
 bindings.")
     (license license:expat)))
 
+(define-public rust-tectonic-bundles-0.1
+  (package
+    (name "rust-tectonic-bundles")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tectonic_bundles" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "05x852w73d0gy9dmg69cl6ch3r2qfh4czai44nkbm6ykn190q2lc"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-flate2" ,rust-flate2-1)
+        ("rust-fs2" ,rust-fs2-0.4)
+        ("rust-tectonic-errors" ,rust-tectonic-errors-0.2)
+        ("rust-tectonic-geturl" ,rust-tectonic-geturl-0.2)
+        ("rust-tectonic-io-base" ,rust-tectonic-io-base-0.3)
+        ("rust-tectonic-status-base" ,rust-tectonic-status-base-0.1)
+        ("rust-zip" ,rust-zip-0.5))))
+    (home-page "https://tectonic-typesetting.github.io/")
+    (synopsis "Tectonic ``bundle'' (support file collection) implementations")
+    (description
+     "This crate is part of the Tectonic project.  It implements various
+Tectonic ``bundles`` that provide access to collections of TeX support
+files.")
+    (license license:expat)))
+
 (define-public rust-tectonic-cfg-support-0.1
   (package
     (name "rust-tectonic-cfg-support")
