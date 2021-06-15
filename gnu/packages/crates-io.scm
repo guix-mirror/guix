@@ -28073,8 +28073,38 @@ enhances the built-in library with some useful features.")
 framework.")
     (license license:expat)))
 
+(define-public rust-num-0.4
+  (package
+    (name "rust-num")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "num" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "01j6k8kjad0a96297j3qjhdhrc6cgmzhf52i0sd7yd0d2z8ndns3"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-num-bigint" ,rust-num-bigint-0.4)
+        ("rust-num-complex" ,rust-num-complex-0.4)
+        ("rust-num-integer" ,rust-num-integer-0.1)
+        ("rust-num-iter" ,rust-num-iter-0.1)
+        ("rust-num-rational" ,rust-num-rational-0.4)
+        ("rust-num-traits" ,rust-num-traits-0.2))))
+    (home-page "https://github.com/rust-num/num")
+    (synopsis "Collection of numeric types and traits for Rust")
+    (description
+     "This package provides a collection of numeric types and traits for Rust,
+including bigint, complex, rational, range iterators, generic integers, and
+more.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-num-0.3
   (package
+    (inherit rust-num-0.4)
     (name "rust-num")
     (version "0.3.0")
     (source
@@ -28086,7 +28116,6 @@ framework.")
        (sha256
         (base32
          "0jng6s3i51k3227id2z8h348l2da8x3jq4p3az9slkxwj5hifgmb"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-num-bigint" ,rust-num-bigint-0.3)
@@ -28094,13 +28123,7 @@ framework.")
         ("rust-num-integer" ,rust-num-integer-0.1)
         ("rust-num-iter" ,rust-num-iter-0.1)
         ("rust-num-rational" ,rust-num-rational-0.3)
-        ("rust-num-traits" ,rust-num-traits-0.2))))
-    (home-page "https://github.com/rust-num/num")
-    (synopsis "Collection of numeric types and traits for Rust")
-    (description
-     "This package provides a collection of numeric types and traits for Rust,
-including bigint, complex, rational, range iterators, generic integers, and more.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-num-traits" ,rust-num-traits-0.2))))))
 
 (define-public rust-num-0.2
   (package
