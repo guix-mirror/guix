@@ -28604,8 +28604,35 @@ directly.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-num-rational-0.4
+  (package
+    (name "rust-num-rational")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "num-rational" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0ska19zb05f84b1cki7vyzy5wjqs26y82hiq1d9gabbw2syh45yl"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-autocfg" ,rust-autocfg-1)
+        ("rust-num-bigint" ,rust-num-bigint-0.4)
+        ("rust-num-integer" ,rust-num-integer-0.1)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-serde" ,rust-serde-1))))
+    (home-page "https://github.com/rust-num/num-rational")
+    (synopsis "Rational numbers implementation for Rust")
+    (description
+     "This crate provides a rational numbers implementation for Rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-num-rational-0.3
   (package
+    (inherit rust-num-rational-0.4)
     (name "rust-num-rational")
     (version "0.3.0")
     (source
@@ -28617,19 +28644,13 @@ directly.")
         (sha256
          (base32
           "0f41j1l1kn5jj36a8xdy8kv242wlwq0ka578vm8gnb1n1wvdgd55"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-num-bigint" ,rust-num-bigint-0.3)
         ("rust-num-integer" ,rust-num-integer-0.1)
         ("rust-num-traits" ,rust-num-traits-0.2)
         ("rust-serde" ,rust-serde-1)
-        ("rust-autocfg" ,rust-autocfg-1))))
-    (home-page "https://github.com/rust-num/num-rational")
-    (synopsis "Rational numbers implementation for Rust")
-    (description
-     "Rational numbers implementation for Rust.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-autocfg" ,rust-autocfg-1))))))
 
 (define-public rust-num-rational-0.2
   (package
