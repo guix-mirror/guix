@@ -14753,14 +14753,14 @@ deserialized from environment variables.")
 (define-public rust-error-code-2
   (package
     (name "rust-error-code")
-    (version "2.0.2")
+    (version "2.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "error-code" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0lmblmk2kr0cy6x3d1y2ywxg3jg6nicf8fahd3l5wb1ddzv9975l"))))
+        (base32 "1zxi3pfrmj7hmv2bv94ax8vpylsfs49vwwp48c04wrr5mikma4dm"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
