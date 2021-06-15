@@ -13668,7 +13668,7 @@ on mouse-control.")
 (define-public emacs-gnugo
   (package
     (name "emacs-gnugo")
-    (version "3.1.0")
+    (version "3.1.1")
     (source
      (origin
        (method url-fetch)
@@ -13676,7 +13676,7 @@ on mouse-control.")
                            version ".tar"))
        (sha256
         (base32
-         "0xpjvs250gg71qwapdsb1hlc61gs0gpkjds01srf784fvyxx2gf1"))))
+         "035rgiz42q042h41l4cvf0hr8igy2vyn3s1hsl2pgh2dq2jjylv6"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
