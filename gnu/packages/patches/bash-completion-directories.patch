@@ -16,11 +16,11 @@ This is what this patch does.
  {
 -    local -a dirs=( ${BASH_COMPLETION_USER_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/bash-completion}/completions )
 +    local -a dirs=(
++        ${BASH_COMPLETION_USER_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/bash-completion}/completions
 +        "$HOME/.guix-profile/share/bash-completion/completions/$base"
 +        "$HOME/.guix-profile/etc/bash_completion.d/$base"
 +        "/run/current-system/profile/share/bash-completion/completions/$base"
-+        "/run/current-system/profile/etc/bash_completion.d/$base"
-+        ${BASH_COMPLETION_USER_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/bash-completion}/completions )
++        "/run/current-system/profile/etc/bash_completion.d/$base" )
 +
      local OIFS=$IFS IFS=: dir cmd="${1##*/}" compfile
      for dir in ${XDG_DATA_DIRS:-/usr/local/share:/usr/share}; do
