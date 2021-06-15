@@ -7,7 +7,7 @@
 ;;; Copyright © 2017, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017, 2019 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2017, 2019, 2021 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
@@ -59,6 +59,7 @@
   #:use-module (gnu packages tex)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages xiph)
+  #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (guix build-system ant)
   #:use-module (guix build-system gnu)
@@ -1607,3 +1608,48 @@ no more than about 20 bits long).")
 (@dfn{DCT}), Discrete Sine Transform (@dfn{DST}) and Discrete Hartley Transform
 (@dfn{DHT}).")
     (license license:gpl2+)))
+
+(define-public sollya
+  (package
+   (name "sollya")
+   (version "7.0")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "https://www.sollya.org/releases/"
+                                "sollya-" version "/sollya-" version ".tar.bz2"))
+            (sha256
+             (base32
+              "11290ivi9h665cxi8f1shlavhy10vzb8s28m57hrcgnxyxqmhx0m"))))
+   (build-system gnu-build-system)
+   (inputs
+    `(("fplll" ,fplll)
+      ("gmp" ,gmp)
+      ("gnuplot" ,gnuplot)
+      ("libxml2" ,libxml2)
+      ("mpfi" ,mpfi)
+      ("mpfr" ,mpfr)))
+   (arguments
+    `(#:configure-flags
+      (list (string-append "--docdir=${datadir}/doc/sollya-" ,version))
+      #:phases
+      (modify-phases %standard-phases
+        (add-after 'unpack 'patch-test-shebang
+          (lambda _
+            (substitute* (list "tests-tool/Makefile.in"
+                               "tests-lib/Makefile.in")
+             (("#!/bin/sh") (string-append "#!" (which "sh"))))
+            #t))
+        (add-before 'build 'patch-gnuplot-reference
+          (lambda _
+            (substitute* "general.c"
+             (("\"gnuplot\"") (string-append "\"" (which "gnuplot") "\"")))
+            #t)))))
+   (home-page "https://www.sollya.org")
+   (synopsis "Development environment for safe floating-point code")
+   (description "Sollya is a computer program whose purpose is to
+provide an environment for safe floating-point code development.  It
+is particularly targeted to the automated implementation of
+mathematical floating-point libraries (libm).  Amongst other features,
+it offers a certified infinity norm, an automatic polynomial
+implementer, and a fast Remez algorithm.")
+   (license license:cecill-c)))
