@@ -8650,6 +8650,31 @@ combinator.")
 and 1.0.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-comfy-table-1
+  (package
+    (name "rust-comfy-table")
+    (version "1.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "comfy-table" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1y6lc8h2lyyrrrdc36fz7brwyjz5l9w4nld4qx9mlacfibm8i92j"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-crossterm" ,rust-crossterm-0.19)
+        ("rust-strum" ,rust-strum-0.20)
+        ("rust-strum-macros" ,rust-strum-macros-0.20))))
+    (home-page "https://github.com/nukesor/comfy-table")
+    (synopsis "Library for building tables with automatic content wrapping")
+    (description
+     "Comfy-tables is an utility for building tables with automatic content
+wrapping.")
+    (license license:expat)))
+
 (define-public rust-commoncrypto-sys-0.2
   (package
     (name "rust-commoncrypto-sys")
