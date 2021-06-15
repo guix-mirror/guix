@@ -50733,6 +50733,26 @@ whitespace from a string.")
      "Traits and implementations for unchecked downcasting.")
     (license license:expat)))
 
+(define-public rust-unsafe-unwrap-0.1
+  (package
+    (name "rust-unsafe-unwrap")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "unsafe_unwrap" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "106swla8nyzn9qgjrb4xxa9ihl8rsk921nl9swl9n3ryy5jyqc0j"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/nvzqz/unsafe-unwrap-rs")
+    (synopsis "Unsafely unwrap Result and Option types without checking")
+    (description
+     "This crate enables unchecked unwrapping on Option and Result types.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-untrusted-0.7
   (package
     (name "rust-untrusted")
