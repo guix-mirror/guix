@@ -15201,6 +15201,30 @@ supported in purely NFA-based implementations.")
      "This package provides a simple and fast random number generator.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-fd-lock-2
+  (package
+    (name "rust-fd-lock")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "fd-lock" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "01kzrikg3a60lxmr0k8bbm4nggh6693f1pf530ip136qzwpg0400"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-winapi" ,rust-winapi-0.3))))
+    (home-page "https://github.com/yoshuawuyts/fd-lock")
+    (synopsis "Advisory lock on a file")
+    (description
+     "Fd-lock provides an advisory lock on a file using a file descriptor to
+it.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-femme-2
   (package
     (name "rust-femme")
