@@ -677,6 +677,7 @@ used by Pidgin and Bitlbee, among others, to access
               (method url-fetch)
               (uri (string-append "https://dl.hexchat.net/hexchat/hexchat-"
                                   version ".tar.xz"))
+              (patches (search-patches "hexchat-add-libera-chat.patch"))
               (sha256
                (base32
                 "10p829jm1r6kidkgf5lhqhyqc5mxdcq96q3zhadsckasvc9rs6lh"))))
