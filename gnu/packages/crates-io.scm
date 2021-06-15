@@ -53966,17 +53966,18 @@ implementation that works everywhere, even WASM!")
         ("rust-quickcheck" ,rust-quickcheck-0.6)
         ("rust-walkdir" ,rust-walkdir-2))))))
 
-(define-public rust-zstd-safe-3
+(define-public rust-zstd-safe-4
   (package
     (name "rust-zstd-safe")
-    (version "3.0.1+zstd.1.4.9")
+    (version "4.1.0+zstd.1.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "zstd-safe" version))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "133gassn5zy4vf0hhgsff3gxv1q3nc0bzi3qrqq7n4iqv6ycm1qk"))))
+        (base32 "1rssk1njcy9vz40ja0rpjyi9lbqnq2i2xx1h374s8p0qivvpa0yk"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -53989,6 +53990,24 @@ implementation that works everywhere, even WASM!")
      "This package provides safe low-level bindings to the zstd compression
 library.")
     (license (list license:expat license:asl2.0))))
+
+(define-public rust-zstd-safe-3
+  (package
+    (inherit rust-zstd-safe-4)
+    (name "rust-zstd-safe")
+    (version "3.0.1+zstd.1.4.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "zstd-safe" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "133gassn5zy4vf0hhgsff3gxv1q3nc0bzi3qrqq7n4iqv6ycm1qk"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-zstd-sys" ,rust-zstd-sys-1))))))
 
 (define-public rust-zstd-safe-2
   (package
