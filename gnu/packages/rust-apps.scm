@@ -587,20 +587,19 @@ gitignore rules.")
 (define-public tectonic
   (package
     (name "tectonic")
-    (version "0.5.2")
+    (version "0.6.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "tectonic" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "050d5slf3s6p58nzkqdqqx2bpwnjkyfk3y5bwfkrdiimfdi6k6yd"))))
+        (base32 "0s740374sdkagq967ryhki19ww7x6fsazw5c4dcbgddk0m4aai3n"))))
     (build-system cargo-build-system)
     (arguments
      `(#:rust ,rust-1.52
        #:cargo-inputs
-       (("rust-app-dirs2" ,rust-app-dirs2-2)
-        ("rust-atty" ,rust-atty-0.2)
+       (("rust-atty" ,rust-atty-0.2)
         ("rust-byte-unit" ,rust-byte-unit-4)
         ("rust-cfg-if" ,rust-cfg-if-1)
         ("rust-error-chain" ,rust-error-chain-0.12)
@@ -613,14 +612,16 @@ gitignore rules.")
         ("rust-serde" ,rust-serde-1)
         ("rust-sha2" ,rust-sha2-0.9)
         ("rust-structopt" ,rust-structopt-0.3)
-        ("rust-tectonic-bridge-core" ,rust-tectonic-bridge-core-0.1)
+        ("rust-tectonic-bridge-core" ,rust-tectonic-bridge-core-0.2)
+        ("rust-tectonic-bundles" ,rust-tectonic-bundles-0.1)
+        ("rust-tectonic-docmodel" ,rust-tectonic-docmodel-0.1)
         ("rust-tectonic-engine-bibtex" ,rust-tectonic-engine-bibtex-0.1)
         ("rust-tectonic-engine-xdvipdfmx" ,rust-tectonic-engine-xdvipdfmx-0.1)
         ("rust-tectonic-engine-xetex" ,rust-tectonic-engine-xetex-0.1)
         ("rust-tectonic-errors" ,rust-tectonic-errors-0.2)
         ("rust-tectonic-geturl" ,rust-tectonic-geturl-0.2)
-        ("rust-tectonic-io-base" ,rust-tectonic-io-base-0.2)
-        ("rust-tectonic-status-base" ,rust-tectonic-status-base-0.1)
+        ("rust-tectonic-io-base" ,rust-tectonic-io-base-0.3)
+        ("rust-tectonic-status-base" ,rust-tectonic-status-base-0.2)
         ("rust-tectonic-xdv" ,rust-tectonic-xdv-0.1)
         ("rust-tectonic-xetex-layout" ,rust-tectonic-xetex-layout-0.1)
         ("rust-tempfile" ,rust-tempfile-3)
