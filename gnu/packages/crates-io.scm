@@ -30156,6 +30156,29 @@ synchronization primitives.")
         ("rust-winapi" ,rust-winapi-0.3)
         ("rust-rustc-version" ,rust-rustc-version-0.2))))))
 
+(define-public rust-parquet-format-2
+  (package
+    (name "rust-parquet-format")
+    (version "2.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "parquet-format" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0wavvaf5dkfas1ms5kz093hq4mayldc0grfcyv4fsp9vahinpg55"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-thrift" ,rust-thrift-0.13))))
+    (home-page "https://github.com/sunchao/parquet-format-rs")
+    (synopsis "Apache Parquet format for Rust")
+    (description
+     "This crate provides Apache Parquet format, hosting the Thrift definition
+file and the generated @file{.rs} file.")
+    (license license:asl2.0)))
+
 (define-public rust-parse-zoneinfo-0.3
   (package
     (name "rust-parse-zoneinfo")
