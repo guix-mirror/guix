@@ -24535,6 +24535,29 @@ server (LSP).")
     (description "This package provides a generic LSP server scaffold.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-lz4-1
+  (package
+    (name "rust-lz4")
+    (version "1.23.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "lz4" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0k3j1wsgn4c5ys4vma326r00g5rq5ggp7k385rmby08yk7b0xhma"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-lz4-sys" ,rust-lz4-sys-1))))
+    (home-page "https://github.com/10xGenomics/lz4-rs")
+    (synopsis "Rust LZ4 bindings library")
+    (description "This crate provides Rust LZ4 bindings.")
+    (license license:expat)))
+
 (define-public rust-lz4-sys-1
   (package
     (name "rust-lz4-sys")
