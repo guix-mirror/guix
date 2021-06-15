@@ -22971,6 +22971,34 @@ requires non-const function calls to be computed.")
         ("rust-quickcheck" ,rust-quickcheck-0.8)
         ("rust-rustc-version" ,rust-rustc-version-0.2))))))
 
+(define-public rust-lexical-5
+  (package
+    (name "rust-lexical")
+    (version "5.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "lexical" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1r8lsi523h53kbb99xgv31jabwhcp4rzqd4hfazfhcjffh5aj17l"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-1)
+        ("rust-lexical-core" ,rust-lexical-core-0.7)
+        ("rust-rand" ,rust-rand-0.4)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-derive" ,rust-serde-derive-1)
+        ("rust-toml" ,rust-toml-0.5))))
+    (home-page "https://github.com/Alexhuszagh/rust-lexical")
+    (synopsis "Lexical, to- and from-string conversion routines")
+    (description
+     "Lexical provides routines to convert numbers to and from decimal
+strings.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-libc-0.2
   (package
     (name "rust-libc")
