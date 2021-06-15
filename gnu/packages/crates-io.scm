@@ -34014,8 +34014,35 @@ tools for implementation.")
        #:cargo-inputs
        (("rust-rand-core" ,rust-rand-core-0.3))))))
 
+(define-public rust-rand-distr-0.3
+  (package
+    (name "rust-rand-distr")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rand-distr" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0mlxzzzbwpxxnvy79w0kb332r6vcw38jiglx5s5zna9rv8m57sf9"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-rand" ,rust-rand-0.7))
+       #:cargo-development-inputs
+       (("rust-average" ,rust-average-0.10)
+        ("rust-rand-pcg" ,rust-rand-pcg-0.2))))
+    (home-page "https://crates.io/crates/rand_distr")
+    (synopsis "Sampling from random number distributions")
+    (description
+     "Sampling from random number distributions.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-rand-distr-0.2
   (package
+    (inherit rust-rand-distr-0.3)
     (name "rust-rand-distr")
     (version "0.2.2")
     (source
@@ -34027,18 +34054,12 @@ tools for implementation.")
         (sha256
          (base32
           "1cpz577qid09lirjjhhn98yqdwsv0c01jf973pxpcr9svp5pm5wn"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-rand" ,rust-rand-0.7))
        #:cargo-development-inputs
        (("rust-average" ,rust-average-0.10)
-        ("rust-rand-pcg" ,rust-rand-pcg-0.2))))
-    (home-page "https://crates.io/crates/rand_distr")
-    (synopsis "Sampling from random number distributions")
-    (description
-     "Sampling from random number distributions.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-rand-pcg" ,rust-rand-pcg-0.2))))))
 
 (define-public rust-rand-hc-0.3
   (package
