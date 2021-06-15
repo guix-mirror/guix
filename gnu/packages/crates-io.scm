@@ -44652,14 +44652,14 @@ process.")
 (define-public rust-tectonic-engine-xetex-0.1
   (package
     (name "rust-tectonic-engine-xetex")
-    (version "0.1.0")
+    (version "0.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "tectonic_engine_xetex" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0a0ycybx5nng79dm7pcy1ymvlv5wfgiaik0a7f7jz9p6bsalamm3"))))
+        (base32 "0ki06fsqx7rb683gz4d5xz248gwvpzf137zqrg8whsrazaqgzmfq"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
