@@ -44130,6 +44130,34 @@ syntax extension expansion.")
        (sha256
         (base32 "0facyh6hswp1i7airri8ly5kl6sv5bvkkd21vs51k2b3z22bvkz5"))))))
 
+(define-public rust-sys-locale-0.1
+  (package
+    (name "rust-sys-locale")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "sys-locale" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1pv3hl604vnbk7fi5s47zmb555znjj7ddhmgbzvd8c7sb6xrxy4i"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cc" ,rust-cc-1)
+        ("rust-cstr-core" ,rust-cstr-core-0.2)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-web-sys" ,rust-web-sys-0.3)
+        ("rust-winapi" ,rust-winapi-0.3))))
+    (home-page "https://github.com/1Password/sys-locale")
+    (synopsis "Lightweight library to obtain the active system locale")
+    (description
+     "Sys-locale is small library for obtaining the current locale set for the
+system or application with the relevant platform APIs.  The library is also
+no_std compatible by default, only relying on alloc.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-sysctl-0.4
   (package
     (name "rust-sysctl")
