@@ -78,7 +78,7 @@
 ;;; Copyright © 2020 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2020, 2021 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;; Copyright © 2020 Peng Mei Yu <i@pengmeiyu.com>
-;;; Copyright © 2020 Niklas Eklund <niklas.eklund@posteo.net>
+;;; Copyright © 2020, 2021 Niklas Eklund <niklas.eklund@posteo.net>
 ;;; Copyright © 2020 Marco Grassi <marco.au.grassi98@protonmail.com>
 ;;; Copyright © 2020 Tomás Ortín Fernández <tomasortin@mailbox.org>
 ;;; Copyright © 2020 Zhu Zihao <all_but_last@163.com>
@@ -5574,6 +5574,31 @@ errors.")
     (description
      "This Flycheck extension configures Flycheck automatically for
 the current Cargo project.")
+    (license license:gpl3+)))
+
+(define-public emacs-flycheck-package
+  (package
+    (name "emacs-flycheck-package")
+    (version "0.14")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/purcell/flycheck-package")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "00py39n1383761wq6wp194pvyk94ydqdbxj9kl64g9jnipkp7849"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-flycheck" ,emacs-flycheck)
+       ("emacs-package-lint" ,emacs-package-lint)))
+    (home-page "https://github.com/purcell/flycheck-package")
+    (synopsis "Flycheck checker for elisp package metadata")
+    (description
+     "This library provides a flycheck checker for the metadata in Emacs Lisp
+files which are intended to be packages.")
     (license license:gpl3+)))
 
 (define-public emacs-elisp-demos
