@@ -28282,8 +28282,33 @@ including bigint, complex, rational, range iterators, generic integers, and more
 for Rust")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-num-complex-0.4
+  (package
+    (name "rust-num-complex")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "num-complex" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "11ahq51ibf7x30rsabgp3a29zw6d6bfilz53sj152z5vpdkkd1r6"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-rand" ,rust-rand-0.8)
+        ("rust-serde" ,rust-serde-1))))
+    (home-page "https://github.com/rust-num/num-complex")
+    (synopsis "Complex numbers implementation for Rust")
+    (description
+     "This crate provides complex numbers implementation for Rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-num-complex-0.3
   (package
+    (inherit rust-num-complex-0.4)
     (name "rust-num-complex")
     (version "0.3.0")
     (source
@@ -28295,19 +28320,11 @@ for Rust")
         (sha256
          (base32
           "1dczd81f2xb092dhb0brbdbf19pyfn0v9xmkf6qm0w4pv1dx0nmh"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-num-traits" ,rust-num-traits-0.2)
         ("rust-rand" ,rust-rand-0.7)
-        ("rust-serde" ,rust-serde-1))))
-    (home-page
-     "https://github.com/rust-num/num-complex")
-    (synopsis
-     "Complex numbers implementation for Rust")
-    (description
-     "Complex numbers implementation for Rust.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-serde" ,rust-serde-1))))))
 
 (define-public rust-num-complex-0.2
   (package
