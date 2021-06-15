@@ -598,6 +598,7 @@ gitignore rules.")
     (build-system cargo-build-system)
     (arguments
      `(#:rust ,rust-1.52
+       #:cargo-build-flags '("--release" "--features" "external-harfbuzz")
        #:cargo-inputs
        (("rust-atty" ,rust-atty-0.2)
         ("rust-byte-unit" ,rust-byte-unit-4)
