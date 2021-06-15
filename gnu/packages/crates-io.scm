@@ -11005,6 +11005,29 @@ reallocations.")
      "Bare bones CSV parsing with no_std support.")
     (license (list license:unlicense license:expat))))
 
+(define-public rust-cstr-core-0.2
+  (package
+    (name "rust-cstr-core")
+    (version "0.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "cstr_core" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1fymp34mv7bix8m35pw3qs30b7879wmaym03ihfbzdl84plwa1r8"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cty" ,rust-cty-0.2)
+        ("rust-memchr" ,rust-memchr-2))))
+    (home-page "https://github.com/Amanieu/cstr_core")
+    (synopsis "Implementation of CStr and CString for no_std environments")
+    (description
+     "This crates implements CStr and CString for no_std environments.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-ct-logs-0.8
   (package
     (name "rust-ct-logs")
