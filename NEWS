@@ -4,6 +4,7 @@
 
 Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 Copyright © 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 
   Copying and distribution of this file, with or without modification,
   are permitted in any medium without royalty provided the copyright
@@ -11,10 +12,12 @@ Copyright © 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 
 Please send Guix bug reports to bug-guix@gnu.org.
 
-* Changes in 1.3.0 (since 1.2.0)
-
+* Changes in 1.4.0 (since 1.3.0)
 ** Package management
+   * New 'deb' format for the 'guix pack' command
 
+* Changes in 1.3.0 (since 1.2.0)
+** Package management
 *** POWER9 (powerpc64le-linux) is now supported as a technology preview
 *** New ‘--export-manifest’ and ‘--export-channels’ options of ‘guix package’
 *** New ‘--profile’ option for ‘guix environment’

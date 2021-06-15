@@ -6,6 +6,7 @@
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Eric Bavier <bavier@posteo.net>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -65,6 +66,7 @@
             %compressors
             lookup-compressor
             self-contained-tarball
+            debian-archive
             docker-image
             squashfs-image
 
@@ -346,6 +348,10 @@ added to the pack."
    #:target target
    #:references-graphs `(("profile" ,profile))))
 
+
+;;;
+;;; Singularity.
+;;;
 (define (singularity-environment-file profile)
   "Return a shell script that defines the environment variables corresponding
 to the search paths of PROFILE."
@@ -372,6 +378,10 @@ to the search paths of PROFILE."
 
   (computed-file "singularity-environment.sh" build))
 
+
+;;;
+;;; SquashFS image format.
+;;;
 (define* (squashfs-image name profile
                          #:key target
                          (profile-name "guix-profile")
@@ -546,6 +556,10 @@ added to the pack."
                     #:target target
                     #:references-graphs `(("profile" ,profile))))
 
+
+;;;
+;;; Docker image format.
+;;;
 (define* (docker-image name profile
                        #:key target
                        (profile-name "guix-profile")
@@ -632,6 +646,167 @@ the image."
                     build
                     #:target target
                     #:references-graphs `(("profile" ,profile))))
+
+
+;;;
+;;; Debian archive format.
+;;;
+;;; TODO: When relocatable option is selected, install to a unique prefix.
+;;; This would enable installation of multiple deb packs with conflicting
+;;; files at the same time.
+;;; TODO: Allow passing a custom control file from the CLI.
+;;; TODO: Allow providing a postinst script.
+(define* (debian-archive name profile
+                         #:key target
+                         (profile-name "guix-profile")
+                         deduplicate?
+                         entry-point
+                         (compressor (first %compressors))
+                         localstatedir?
+                         (symlinks '())
+                         (archiver tar))
+  "Return a Debian archive (.deb) containing a store initialized with the
+closure of PROFILE, a derivation.  The archive contains /gnu/store; if
+LOCALSTATEDIR? is true, it also contains /var/guix, including /var/guix/db
+with a properly initialized store database.  The supported compressors are
+\"none\", \"gz\" or \"xz\".
+
+SYMLINKS must be a list of (SOURCE -> TARGET) tuples denoting symlinks to be
+added to the pack."
+  ;; For simplicity, limit the supported compressors to the superset of
+  ;; compressors able to compress both the control file (gz or xz) and the
+  ;; data tarball (gz, bz2 or xz).
+  (define %valid-compressors '("gzip" "xz" "none"))
+
+  (let ((compressor-name (compressor-name compressor)))
+    (unless (member compressor-name %valid-compressors)
+      (leave (G_ "~a is not a valid Debian archive compressor.  \
+Valid compressors are: ~a~%") compressor-name %valid-compressors)))
+
+  (when entry-point
+    (warning (G_ "entry point not supported in the '~a' format~%")
+             'deb))
+
+  (define data-tarball
+    (computed-file (string-append "data.tar"
+                                  (compressor-extension compressor))
+                   (self-contained-tarball/builder
+                    profile
+                    #:profile-name profile-name
+                    #:compressor compressor
+                    #:localstatedir? localstatedir?
+                    #:symlinks symlinks
+                    #:archiver archiver)
+                   #:local-build? #f    ;allow offloading
+                   #:options (list #:references-graphs `(("profile" ,profile))
+                                   #:target target)))
+
+  (define build
+    (with-extensions (list guile-gcrypt)
+      (with-imported-modules `(((guix config) => ,(make-config.scm))
+                               ,@(source-module-closure
+                                  `((guix build pack)
+                                    (guix build utils)
+                                    (guix profiles))
+                                  #:select? not-config?))
+        #~(begin
+            (use-modules (guix build pack)
+                         (guix build utils)
+                         (guix profiles)
+                         (ice-9 match)
+                         (srfi srfi-1))
+
+            (define machine-type
+              ;; Extract the machine type from the specified target, else from the
+              ;; current system.
+              (and=> (or #$target %host-type) (lambda (triplet)
+                                              (first (string-split triplet #\-)))))
+
+            (define (gnu-machine-type->debian-machine-type type)
+              "Translate machine TYPE from the GNU to Debian terminology."
+              ;; Debian has its own jargon, different from the one used in GNU, for
+              ;; machine types (see data/cputable in the sources of dpkg).
+              (match type
+                ("i586" "i386")
+                ("i486" "i386")
+                ("i686" "i386")
+                ("x86_64" "amd64")
+                ("aarch64" "arm64")
+                ("mipsisa32r6" "mipsr6")
+                ("mipsisa32r6el" "mipsr6el")
+                ("mipsisa64r6" "mips64r6")
+                ("mipsisa64r6el" "mips64r6el")
+                ("powerpcle" "powerpcel")
+                ("powerpc64" "ppc64")
+                ("powerpc64le" "ppc64el")
+                (machine machine)))
+
+            (define architecture
+              (gnu-machine-type->debian-machine-type machine-type))
+
+            #$(procedure-source manifest->friendly-name)
+
+            (define manifest (profile-manifest #$profile))
+
+            (define single-entry        ;manifest entry
+              (match (manifest-entries manifest)
+                ((entry)
+                 entry)
+                (() #f)))
+
+            (define package-name (or (and=> single-entry manifest-entry-name)
+                                     (manifest->friendly-name manifest)))
+
+            (define package-version
+              (or (and=> single-entry manifest-entry-version)
+                  "0.0.0"))
+
+            (define debian-format-version "2.0")
+
+            ;; Generate the debian-binary file.
+            (call-with-output-file "debian-binary"
+              (lambda (port)
+                (format port "~a~%" debian-format-version)))
+
+            (define data-tarball-file-name (strip-store-file-name
+                                            #+data-tarball))
+
+            (copy-file #+data-tarball data-tarball-file-name)
+
+            (define control-tarball-file-name
+              (string-append "control.tar"
+                             #$(compressor-extension compressor)))
+
+            ;; Write the compressed control tarball.  Only the control file is
+            ;; mandatory (see: 'man deb' and 'man deb-control').
+            (call-with-output-file "control"
+              (lambda (port)
+                (format port "\
+Package: ~a
+Version: ~a
+Description: Debian archive generated by GNU Guix.
+Maintainer: GNU Guix
+Architecture: ~a
+~%" package-name package-version architecture)))
+
+            (define tar (string-append #+archiver "/bin/tar"))
+
+            (apply invoke tar
+                   `(,@(tar-base-options
+                        #:tar tar
+                        #:compressor '#+(and=> compressor compressor-command))
+                     "-cvf" ,control-tarball-file-name
+                     "control"))
+
+            ;; Create the .deb archive using GNU ar.
+            (invoke (string-append #+binutils "/bin/ar") "-rv" #$output
+                    "debian-binary"
+                    control-tarball-file-name data-tarball-file-name)))))
+
+  (gexp->derivation (string-append name ".deb")
+    build
+    #:target target
+    #:references-graphs `(("profile" ,profile))))
 
 
 ;;;
@@ -965,7 +1140,8 @@ last resort for relocation."
   ;; Supported pack formats.
   `((tarball . ,self-contained-tarball)
     (squashfs . ,squashfs-image)
-    (docker  . ,docker-image)))
+    (docker  . ,docker-image)
+    (deb . ,debian-archive)))
 
 (define (show-formats)
   ;; Print the supported pack formats.
@@ -977,6 +1153,8 @@ last resort for relocation."
   squashfs      Squashfs image suitable for Singularity"))
   (display (G_ "
   docker        Tarball ready for 'docker load'"))
+  (display (G_ "
+  deb           Debian archive installable via dpkg/apt"))
   (newline))
 
 (define %options

@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,6 +33,7 @@
   #:use-module ((gnu packages base) #:select (glibc-utf8-locales))
   #:use-module (gnu packages bootstrap)
   #:use-module ((gnu packages compression) #:select (squashfs-tools))
+  #:use-module ((gnu packages debian) #:select (dpkg))
   #:use-module ((gnu packages guile) #:select (guile-sqlite3))
   #:use-module ((gnu packages gnupg) #:select (guile-gcrypt))
   #:use-module (srfi srfi-64))
@@ -55,6 +57,8 @@
    #~(#+(file-append %bootstrap-coreutils&co "/bin/gzip") "-6n")))
 
 (define %tar-bootstrap %bootstrap-coreutils&co)
+
+(define %ar-bootstrap %bootstrap-binutils)
 
 
 (test-begin "pack")
@@ -270,6 +274,77 @@
                                                  1)
                                                 (pk 'guilelink (readlink "bin"))))
                              (mkdir #$output))))))))
+      (built-derivations (list check))))
+
+  (unless store (test-skip 1))
+  (test-assertm "deb archive with symlinks" store
+    (mlet* %store-monad
+        ((guile   (set-guile-for-build (default-guile)))
+         (profile (profile-derivation (packages->manifest
+                                       (list %bootstrap-guile))
+                                      #:hooks '()
+                                      #:locales? #f))
+         (deb (debian-archive "deb-pack" profile
+                              #:compressor %gzip-compressor
+                              #:symlinks '(("/opt/gnu/bin" -> "bin"))
+                              #:archiver %tar-bootstrap))
+         (check
+          (gexp->derivation "check-deb-pack"
+            (with-imported-modules '((guix build utils))
+              #~(begin
+                  (use-modules (guix build utils)
+                               (ice-9 match)
+                               (ice-9 popen)
+                               (ice-9 rdelim)
+                               (ice-9 textual-ports)
+                               (rnrs base))
+
+                  (setenv "PATH" (string-join
+                                  (list (string-append #+%tar-bootstrap "/bin")
+                                        (string-append #+dpkg "/bin")
+                                        (string-append #+%ar-bootstrap "/bin"))
+                                  ":"))
+
+                  ;; Validate the output of 'dpkg --info'.
+                  (let* ((port (open-pipe* OPEN_READ "dpkg" "--info" #$deb))
+                         (info (get-string-all port))
+                         (exit-val (status:exit-val (close-pipe port))))
+                    (assert (zero? exit-val))
+
+                    (assert (string-contains
+                             info
+                             (string-append "Package: "
+                                            #+(package-name %bootstrap-guile))))
+
+                    (assert (string-contains
+                             info
+                             (string-append "Version: "
+                                            #+(package-version %bootstrap-guile)))))
+
+                  ;; Sanity check .deb contents.
+                  (invoke "ar" "-xv" #$deb)
+                  (assert (file-exists? "debian-binary"))
+                  (assert (file-exists? "data.tar.gz"))
+                  (assert (file-exists? "control.tar.gz"))
+
+                  ;; Verify there are no hard links in data.tar.gz, as hard
+                  ;; links would cause dpkg to fail unpacking the archive.
+                  (define hard-links
+                    (let ((port (open-pipe* OPEN_READ "tar" "-tvf" "data.tar.gz")))
+                      (let loop ((hard-links '()))
+                        (match (read-line port)
+                          ((? eof-object?)
+                           (assert (zero? (status:exit-val (close-pipe port))))
+                           hard-links)
+                          (line
+                           (if (string-prefix? "u" line)
+                               (loop (cons line hard-links))
+                               (loop hard-links)))))))
+
+                  (unless (null? hard-links)
+                    (error "hard links found in data.tar.gz" hard-links))
+
+                  (mkdir #$output))))))
       (built-derivations (list check)))))
 
 (test-end)
