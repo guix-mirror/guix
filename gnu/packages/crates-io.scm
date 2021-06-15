@@ -41124,6 +41124,25 @@ perform shell-like expansions in strings, that is, to expand variables like
 some context).")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-shlex-1
+  (package
+    (name "rust-shlex")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "shlex" version))
+       (file-name (string-append name "-" version ".crate"))
+       (sha256
+        (base32 "0gf773p2snqpw69rzh8s1wdlq8dc8c1ypmiv516il1fdyb46i9a2"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/comex/rust-shlex")
+    (synopsis "Split a string into shell words, like Python's shlex")
+    (description "This crate provides a method to split a string into shell
+words, like Python's shlex.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-shlex-0.1
   (package
     (name "rust-shlex")
