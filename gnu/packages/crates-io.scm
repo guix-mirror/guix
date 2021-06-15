@@ -26994,14 +26994,14 @@ applications written in Rust.  Its API is inspired by the popular
 (define-public rust-nipper-0.1
   (package
     (name "rust-nipper")
-    (version "0.1.8")
+    (version "0.1.9")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nipper" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0l003qvzivrqq2lj2cdn4q5x0fg6xczld13m41x492x0g91hwvap"))))
+        (base32 "05h1zsqmg405f589lfm8ch2b0853h7hqv7mz38bvpx4k8s3844vn"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
