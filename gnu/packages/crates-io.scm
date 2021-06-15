@@ -7914,14 +7914,14 @@ colorization.")
 (define-public rust-clipboard-win-4
   (package
     (name "rust-clipboard-win")
-    (version "4.0.3")
+    (version "4.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "clipboard-win" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0bd9gw35zjdh50n2gy6qq2gwpnqfafzwkliqkvm9z046fawwc8si"))))
+        (base32 "1a1cpp4yyizz41bkij5x85p220xxrlja6l6wwj9wkvwj364a2kjf"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
