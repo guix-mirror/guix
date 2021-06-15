@@ -26489,6 +26489,28 @@ that provides support for POST multipart/form-data requests on both client and
 server.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-multiversion-0.6
+  (package
+    (name "rust-multiversion")
+    (version "0.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "multiversion" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0wsk9ykdqjd6c54rf5l6yb6ps4hx409cda8aa875xk6k7lm9cp02"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-multiversion-macros" ,rust-multiversion-macros-0.6))))
+    (home-page "https://github.com/calebzulawski/multiversion")
+    (synopsis "Function multiversioning attribute macros for Rust")
+    (description "This crate provides function multiversioning attribute
+macros for Rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-multiversion-macros-0.6
   (package
     (name "rust-multiversion-macros")
