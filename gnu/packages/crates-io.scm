@@ -28582,21 +28582,21 @@ directly.")
 (define-public rust-num-iter-0.1
   (package
     (name "rust-num-iter")
-    (version "0.1.41")
+    (version "0.1.42")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "num-iter" version))
-        (file-name (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "17sb142lhmpsq17cf9wrffjh8vjk901axxf55565r6cgfiy6nvks"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "num-iter" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ndd9wb9qar50fdr16xm3i1zk6h2g9br56nml2n22kd56y1iq0mj"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-num-integer" ,rust-num-integer-0.1)
-        ("rust-num-traits" ,rust-num-traits-0.2)
-        ("rust-autocfg" ,rust-autocfg-1))))
+       (("rust-autocfg" ,rust-autocfg-1)
+        ("rust-num-integer" ,rust-num-integer-0.1)
+        ("rust-num-traits" ,rust-num-traits-0.2))))
     (home-page "https://github.com/rust-num/num-iter")
     (synopsis "External iterators for generic mathematics")
     (description
