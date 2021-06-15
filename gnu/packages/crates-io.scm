@@ -9030,15 +9030,14 @@ const functions with conditional compilations.")
 (define-public rust-const-random-0.1
   (package
     (name "rust-const-random")
-    (version "0.1.8")
+    (version "0.1.13")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "const-random" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "0sp1ang5sh27fq5b7g9fdwpq4d5s17ymj7khfzax4bbvffngj6ig"))))
+        (base32 "1i3pmhmmcdw3rr1pv1p9yhm4danm5r156cpy7w30pa0s05fxk47m"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
