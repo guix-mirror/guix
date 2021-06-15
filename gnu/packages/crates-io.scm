@@ -46195,6 +46195,32 @@ fixed set of worker threads.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-thrift-0.13
+  (package
+    (name "rust-thrift")
+    (version "0.13.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "thrift" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0nvbrflb5fw6hmayqppkp97dh63vs2znww92dlkcfz4laia9cv8c"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-byteorder" ,rust-byteorder-1)
+        ("rust-integer-encoding" ,rust-integer-encoding-1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-ordered-float" ,rust-ordered-float-1)
+        ("rust-threadpool" ,rust-threadpool-1))))
+    (home-page "http://thrift.apache.org")
+    (synopsis "Rust bindings for the Apache Thrift RPC system")
+    (description
+     "This crate provides Rust bindings for the Apache Thrift RPC system.")
+    (license license:asl2.0)))
+
 (define-public rust-thrussh-libsodium-0.1
   (package
     (name "rust-thrussh-libsodium")
