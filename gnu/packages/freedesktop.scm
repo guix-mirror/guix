@@ -2381,7 +2381,7 @@ interfaces.")
 (define-public xdg-desktop-portal-wlr
   (package
     (name "xdg-desktop-portal-wlr")
-    (version "0.3.0")
+    (version "0.4.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2390,8 +2390,12 @@ interfaces.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "18nlkqqxgxh7k0r2nk867wnp2nmaiinl6z67lrfv7rmiym0x82p8"))))
+                "13fbzh8bjnhk4xs8j9bpc01q3hy27zpbf0gkk1fnh3hm5pnyfyiv"))))
     (build-system meson-build-system)
+    (arguments
+     `(#:configure-flags
+       '("-Dsystemd=disabled"
+         "-Dsd-bus-provider=libelogind")))
     (native-inputs
      `(("cmake" ,cmake)
        ("pkg-config" ,pkg-config)))
@@ -2399,6 +2403,7 @@ interfaces.")
      `(("elogind" ,elogind)
        ("iniparser" ,iniparser)
        ("pipewire" ,pipewire-0.3)
+       ("inih" ,libinih)
        ("wayland" ,wayland)
        ("wayland-protocols" ,wayland-protocols)))
     (home-page "https://github.com/emersion/xdg-desktop-portal-wlr")
