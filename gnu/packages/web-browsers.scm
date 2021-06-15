@@ -723,7 +723,7 @@ key-bindings (Emacs, vi, CUA), and is fully configurable in Common Lisp.")
 (define-public lagrange
   (package
     (name "lagrange")
-    (version "1.5.1")
+    (version "1.5.2")
     (source
      (origin
        (method url-fetch)
@@ -731,7 +731,7 @@ key-bindings (Emacs, vi, CUA), and is fully configurable in Common Lisp.")
         (string-append "https://git.skyjake.fi/skyjake/lagrange/releases/"
                        "download/v" version "/lagrange-" version ".tar.gz"))
        (sha256
-        (base32 "1yihayy1vp1d6a7y9cdwdmglrhkciqlqg9p2lcs9wwkbdnfrmjs9"))))
+        (base32 "0gqaipgs16kw711ijhshmbhhvlyjvh37wxdz059p4vvjhfrxbr1v"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #false))                ;no tests
