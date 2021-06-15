@@ -11,6 +11,7 @@
 ;;; Copyright © 2019 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Danny Milosavljevic <dannym@scratchpost.org>
+;;; Copyright © 2014 David Thompson <davet@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -54,6 +55,7 @@
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
+  #:autoload   (srfi srfi-98) (get-environment-variables)
   #:export (&profile-error
             profile-error?
             profile-error-profile
@@ -127,6 +129,7 @@
             %default-profile-hooks
             profile-derivation
             profile-search-paths
+            load-profile
 
             profile
             profile?
@@ -1915,6 +1918,44 @@ Use GETENV to determine the current settings and report only settings not
 already effective."
   (evaluate-search-paths (manifest-search-paths manifest)
                          (list profile) getenv))
+
+(define %precious-variables
+  ;; Environment variables in the default 'load-profile' white list.
+  '("HOME" "USER" "LOGNAME" "DISPLAY" "TERM" "TZ" "PAGER"))
+
+(define (purify-environment white-list white-list-regexps)
+  "Unset all environment variables except those that match the regexps in
+WHITE-LIST-REGEXPS and those listed in WHITE-LIST."
+  (for-each unsetenv
+            (remove (lambda (variable)
+                      (or (member variable white-list)
+                          (find (cut regexp-exec <> variable)
+                                white-list-regexps)))
+                    (match (get-environment-variables)
+                      (((names . _) ...)
+                       names)))))
+
+(define* (load-profile profile
+                       #:optional (manifest (profile-manifest profile))
+                       #:key pure? (white-list-regexps '())
+                       (white-list %precious-variables))
+  "Set the environment variables specified by MANIFEST for PROFILE.  When
+PURE? is #t, unset the variables in the current environment except those that
+match the regexps in WHITE-LIST-REGEXPS and those listed in WHITE-LIST.
+Otherwise, augment existing environment variables with additional search
+paths."
+  (when pure?
+    (purify-environment white-list white-list-regexps))
+  (for-each (match-lambda
+              ((($ <search-path-specification> variable _ separator) . value)
+               (let ((current (getenv variable)))
+                 (setenv variable
+                         (if (and current (not pure?))
+                             (if separator
+                                 (string-append value separator current)
+                                 value)
+                             value)))))
+            (profile-search-paths profile manifest)))
 
 (define (profile-regexp profile)
   "Return a regular expression that matches PROFILE's name and number."

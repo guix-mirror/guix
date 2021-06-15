@@ -279,6 +279,33 @@
                  (string=? (dirname (readlink bindir))
                            (derivation->output-path guile))))))
 
+(test-assertm "load-profile"
+  (mlet* %store-monad
+      ((entry ->   (package->manifest-entry %bootstrap-guile))
+       (guile      (package->derivation %bootstrap-guile))
+       (drv        (profile-derivation (manifest (list entry))
+                                       #:hooks '()
+                                       #:locales? #f))
+       (profile -> (derivation->output-path drv))
+       (bindir ->  (string-append profile "/bin"))
+       (_          (built-derivations (list drv))))
+    (define-syntax-rule (with-environment-excursion exp ...)
+      (let ((env (environ)))
+        (dynamic-wind
+          (const #t)
+          (lambda () exp ...)
+          (lambda () (environ env)))))
+
+    (return (and (with-environment-excursion
+                  (load-profile profile)
+                  (and (string-prefix? (string-append bindir ":")
+                                       (getenv "PATH"))
+                       (getenv "GUILE_LOAD_PATH")))
+                 (with-environment-excursion
+                  (load-profile profile #:pure? #t #:white-list '())
+                  (equal? (list (string-append "PATH=" bindir))
+                          (environ)))))))
+
 (test-assertm "<profile>"
   (mlet* %store-monad
       ((entry ->   (package->manifest-entry %bootstrap-guile))
