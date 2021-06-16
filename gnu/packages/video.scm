@@ -764,9 +764,9 @@ mpv's powerful playback capabilities.")
                    (replace 'bootstrap
                      (lambda _ (invoke "sh" "bootstrap"))))))
     (home-page "http://liba52.sourceforge.net/")
-    (synopsis "ATSC A/52 stream decoder")
-    (description "liba52 is a library for decoding ATSC A/52 streams.  The
-A/52 standard is used in a variety of applications, including digital
+    (synopsis "ATSC A/52 audio stream decoder")
+    (description "liba52 is a library for decoding ATSC A/52 audio streams.
+The A/52 standard is used in a variety of applications, including digital
 television and DVD.  It is also known as AC-3.")
     (license license:gpl2+)))
 
