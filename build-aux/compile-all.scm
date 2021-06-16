@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2016, 2017, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -132,11 +132,8 @@ to 'make'."
                             (false-if-exception
                              (module-ref ui 'report-load-error)))))
          (if report
-             ;; In Guile <= 2.2.5, 'current-load-port' was not exported.
-             (let ((load-port ((module-ref (resolve-module '(ice-9 ports))
-                                           'current-load-port))))
-               (report (or (and=> load-port port-filename) "?.scm")
-                       args frame))
+             (report (or (and=> (current-load-port) port-filename) "?.scm")
+                     args frame)
              (begin
                (print-exception (current-error-port) frame
                                 (car args) (cdr args))
