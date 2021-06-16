@@ -7120,20 +7120,42 @@ optional dependency, you can define a variant that removes that
 dependency like so:
 
 @lisp
-(use-modules (gnu packages gdb)    ;for 'gdb'
-             (srfi srfi-1))        ;for 'alist-delete'
+(use-modules (gnu packages gdb))   ;for 'gdb'
 
 (define gdb-sans-guile
   (package
     (inherit gdb)
-    (inputs (alist-delete "guile"
-                          (package-inputs gdb)))))
+    (inputs (modify-inputs (package-inputs gdb)
+              (delete "guile")))))
 @end lisp
 
-The @code{alist-delete} call above removes the tuple from the
-@code{inputs} field that has @code{"guile"} as its first element
-(@pxref{SRFI-1 Association Lists,,, guile, GNU Guile Reference
-Manual}).
+The @code{modify-inputs} form above removes the @code{"guile"} package
+from the @code{inputs} field of @code{gdb}.  The @code{modify-inputs}
+macro is a helper that can prove useful anytime you want to remove, add,
+or replace package inputs.
+
+@deffn {Scheme Syntax} modify-inputs @var{inputs} @var{clauses}
+Modify the given package inputs, as returned by @code{package-inputs} & co.,
+according to the given clauses.  The example below removes the GMP and ACL
+inputs of Coreutils and adds libcap to the back of the input list:
+
+@lisp
+(modify-inputs (package-inputs coreutils)
+  (delete "gmp" "acl")
+  (append libcap))
+@end lisp
+
+The example below replaces the @code{guile} package from the inputs of
+@code{guile-redis} with @code{guile-2.2}:
+
+@lisp
+(modify-inputs (package-inputs guile-redis)
+  (replace "guile" guile-2.2))
+@end lisp
+
+The last type of clause is @code{prepend}, to add inputs to the front of
+the list.
+@end deffn
 
 In some cases, you may find it useful to write functions
 (``procedures'', in Scheme parlance) that return a package based on some

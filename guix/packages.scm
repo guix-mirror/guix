@@ -55,6 +55,7 @@
   #:re-export (%current-system
                %current-target-system
                search-path-specification)         ;for convenience
+  #:re-export-and-replace (delete)                ;used as syntactic keyword
   #:export (content-hash
             content-hash?
             content-hash-algorithm
@@ -112,6 +113,10 @@
             lookup-package-native-input
             lookup-package-propagated-input
             lookup-package-direct-input
+
+            prepend                               ;syntactic keyword
+            replace                               ;syntactic keyword
+            modify-inputs
 
             package-direct-sources
             package-transitive-sources
@@ -922,6 +927,69 @@ otherwise."
   "Look up NAME among PACKAGE's direct inputs.  Return it if found, #f
 otherwise."
   (lookup-input (package-direct-inputs package) name))
+
+(define (inputs-sans-labels inputs)
+  "Return INPUTS stripped of any input labels."
+  (map (match-lambda
+         ((label obj) obj)
+         ((label obj output) `(,obj ,output)))
+       inputs))
+
+(define (replace-input name replacement inputs)
+  "Replace input NAME by REPLACEMENT within INPUTS."
+  (map (lambda (input)
+         (match input
+           (((? string? label) . _)
+            (if (string=? label name)
+                (match replacement        ;does REPLACEMENT specify an output?
+                  ((_ _) (cons label replacement))
+                  (_     (list label replacement)))
+                input))))
+       inputs))
+
+(define-syntax prepend
+  (lambda (s)
+    (syntax-violation 'prepend
+                      "'prepend' may only be used within 'modify-inputs'"
+                      s)))
+
+(define-syntax replace
+  (lambda (s)
+    (syntax-violation 'replace
+                      "'replace' may only be used within 'modify-inputs'"
+                      s)))
+
+(define-syntax modify-inputs
+  (syntax-rules (delete prepend append replace)
+    "Modify the given package inputs, as returned by 'package-inputs' & co.,
+according to the given clauses.  The example below removes the GMP and ACL
+inputs of Coreutils and adds libcap:
+
+  (modify-inputs (package-inputs coreutils)
+    (delete \"gmp\" \"acl\")
+    (append libcap))
+
+Other types of clauses include 'prepend' and 'replace'."
+    ;; Note: This macro hides the fact that INPUTS, as returned by
+    ;; 'package-inputs' & co., is actually an alist with labels.  Eventually,
+    ;; it will operate on list of inputs without labels.
+    ((_ inputs (delete name) clauses ...)
+     (modify-inputs (alist-delete name inputs)
+                    clauses ...))
+    ((_ inputs (delete names ...) clauses ...)
+     (modify-inputs (fold alist-delete inputs (list names ...))
+                    clauses ...))
+    ((_ inputs (prepend lst ...) clauses ...)
+     (modify-inputs (append (list lst ...) (inputs-sans-labels inputs))
+                    clauses ...))
+    ((_ inputs (append lst ...) clauses ...)
+     (modify-inputs (append (inputs-sans-labels inputs) (list lst ...))
+                    clauses ...))
+    ((_ inputs (replace name replacement) clauses ...)
+     (modify-inputs (replace-input name replacement inputs)
+                    clauses ...))
+    ((_ inputs)
+     inputs)))
 
 (define (package-direct-sources package)
   "Return all source origins associated with PACKAGE; including origins in
