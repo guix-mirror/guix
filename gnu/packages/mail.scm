@@ -4343,6 +4343,24 @@ score.")
     (home-page "https://www.rspamd.com/")
     (license license:asl2.0)))
 
+(define-public undbx
+  (package
+    (name "undbx")
+    (version "0.21")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/undbx/undbx-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0ncs1dzhrn9nlaxpyap2ipf61fc7k9bkkqacp3w6bngfj2c0p6yj"))))
+    (build-system gnu-build-system)
+    (home-page "https://undbx.sourceforge.io/")
+    (synopsis "Extract email messages from Outlook Express .dbx files")
+    (description "This package provides a tool to extract, recover and
+undelete email messages from Outlook Express .dbx files.")
+    (license license:gpl3+)))
+
 (define-public crm114
   (package
     (name "crm114")
