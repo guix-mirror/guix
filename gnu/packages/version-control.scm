@@ -1322,7 +1322,7 @@ manipulate them in various ways.")
 (define-public vcsh
   (package
     (name "vcsh")
-    (version "1.20190621")
+    (version "1.20190621-4")
     (source
      (origin
        (method git-fetch)
@@ -1331,7 +1331,7 @@ manipulate them in various ways.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1s9l47wm9r7sndcgc778mq60wkzkhvfv7rkrwci5kjvw8vsddvcc"))))
+        (base32 "1gx5nbqyprgy6picns5hxky3lyzkqfq3xhm614f0wcdi58xrsdh0"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)))
