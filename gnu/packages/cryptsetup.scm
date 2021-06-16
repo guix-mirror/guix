@@ -52,7 +52,7 @@
        "--enable-libargon2"
        ;; The default is OpenSSL which provides better PBKDF performance.
        "--with-crypto_backend=gcrypt"
-       ;; GRUB as of 2.04 still can't read LUKS2 containers.
+       ;; GRUB 2.06 supports LUKS2, but does it reliably support all set-ups…?
        "--with-default-luks-format=LUKS1")))
    (native-inputs
     `(("pkg-config" ,pkg-config)))
