@@ -6817,6 +6817,30 @@ cross-compiling:
 It is an error to refer to @code{this-package} outside a package definition.
 @end deffn
 
+The following helper procedures are provided to help deal with package
+inputs.
+
+@deffn {Scheme Procedure} lookup-package-input @var{package} @var{name}
+@deffnx {Scheme Procedure} lookup-package-native-input @var{package} @var{name}
+@deffnx {Scheme Procedure} lookup-package-propagated-input @var{package} @var{name}
+@deffnx {Scheme Procedure} lookup-package-direct-input @var{package} @var{name}
+Look up @var{name} among @var{package}'s inputs (or native, propagated,
+or direct inputs).  Return it if found, @code{#f} otherwise.
+
+@var{name} is the name of a package depended on.  Here's how you might
+use it:
+
+@lisp
+(use-modules (guix packages) (gnu packages base))
+
+(lookup-package-direct-input coreutils "gmp")
+@result{} #<package gmp@@6.2.1 @dots{}>
+@end lisp
+
+In this example we obtain the @code{gmp} package that is among the
+direct inputs of @code{coreutils}.
+@end deffn
+
 Because packages are regular Scheme objects that capture a complete
 dependency graph and associated build procedures, it is often useful to
 write procedures that take a package and return a modified version

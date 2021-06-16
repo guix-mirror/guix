@@ -108,6 +108,11 @@
             deprecated-package
             package-field-location
 
+            lookup-package-input
+            lookup-package-native-input
+            lookup-package-propagated-input
+            lookup-package-direct-input
+
             package-direct-sources
             package-transitive-sources
             package-direct-inputs
@@ -888,6 +893,35 @@ preserved, and only duplicate propagated inputs are removed."
                  (vhash-consq package outputs seen))))
       ((input rest ...)
        (loop rest (cons input result) propagated first? seen)))))
+
+(define (lookup-input inputs name)
+  "Lookup NAME among INPUTS, an input list."
+  ;; Note: Currently INPUTS is assumed to be an input list that contains input
+  ;; labels.  In the future, input labels will be gone and this procedure will
+  ;; check package names.
+  (match (assoc-ref inputs name)
+    ((obj) obj)
+    ((obj _) obj)
+    (#f #f)))
+
+(define (lookup-package-input package name)
+  "Look up NAME among PACKAGE's inputs.  Return it if found, #f otherwise."
+  (lookup-input (package-inputs package) name))
+
+(define (lookup-package-native-input package name)
+  "Look up NAME among PACKAGE's native inputs.  Return it if found, #f
+otherwise."
+  (lookup-input (package-native-inputs package) name))
+
+(define (lookup-package-propagated-input package name)
+  "Look up NAME among PACKAGE's propagated inputs.  Return it if found, #f
+otherwise."
+  (lookup-input (package-propagated-inputs package) name))
+
+(define (lookup-package-direct-input package name)
+  "Look up NAME among PACKAGE's direct inputs.  Return it if found, #f
+otherwise."
+  (lookup-input (package-direct-inputs package) name))
 
 (define (package-direct-sources package)
   "Return all source origins associated with PACKAGE; including origins in
