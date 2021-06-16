@@ -19,6 +19,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix build-system node)
+  #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix gexp)
