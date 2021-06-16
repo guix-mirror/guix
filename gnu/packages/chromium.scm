@@ -322,7 +322,7 @@
                   (string-append "ungoogled-chromium-" category "-" name))))
     (sha256 (base32 hash))))
 
-(define %chromium-version "91.0.4472.101")
+(define %chromium-version "91.0.4472.106")
 (define %debian-revision "debian/90.0.4430.85-1")
 ;; Note: use 'git describe --long' even for exact tags to placate the
 ;; custom version format for ungoogled-chromium.
@@ -488,7 +488,7 @@
                                   %chromium-version ".tar.xz"))
               (sha256
                (base32
-                "1d3y621iclkq6nvxrapk5aihv50x13hjha0c2gcp2xxfma96253q"))
+                "1fxy1l2dl0f6v8566lykcng18ma6fv4nlwxmdb0hh06fgp6khpjl"))
               (modules '((guix build utils)))
               (snippet (force ungoogled-chromium-snippet))))
     (build-system gnu-build-system)
