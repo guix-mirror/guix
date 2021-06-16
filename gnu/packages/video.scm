@@ -789,14 +789,21 @@ television and DVD.  It is also known as AC-3.")
        ("pkg-config" ,pkg-config)
        ("python" ,python))) ; to detect the version
     (arguments
-     `(#:tests? #f  ;no check target
+     `(#:tests? #f                      ; downloads many video clips
        #:configure-flags
-         ;; build dynamic library
        (list "-DBUILD_SHARED_LIBS=YES"
              "-DENABLE_PIC=TRUE"
              "-DAOM_TARGET_CPU=generic"
              (string-append "-DCMAKE_INSTALL_PREFIX="
-                              (assoc-ref %outputs "out")))))
+                            (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'delete-static-libraries
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib")))
+               (for-each delete-file
+                         (find-files lib "\\.a$"))))))))
     (home-page "https://aomedia.googlesource.com/aom/")
     (synopsis "AV1 video codec")
     (description "Libaom is the reference implementation of AV1.  It includes a
