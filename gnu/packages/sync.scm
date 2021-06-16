@@ -341,10 +341,16 @@ See also: megacmd, the official tool set by MEGA.")
                (("QCoreApplication::applicationFilePath\\()") "\"owncloud\""))
              #t))
          (delete 'patch-dot-desktop-files))
-       #:configure-flags '("-DUNIT_TESTING=ON"
+       #:configure-flags `("-DUNIT_TESTING=ON"
                            ;; build without qtwebkit, which causes the
                            ;; package to FTBFS while looking for QWebView.
-                           "-DNO_SHIBBOLETH=1")))
+                           "-DNO_SHIBBOLETH=1"
+                           ;; Fix sync-exclude.list problem, see
+                           ;; <https://github.com/owncloud/client/issues/8373>
+                           ;; <https://issues.guix.gnu.org/47672>
+                           ,(string-append "-DSYSCONF_INSTALL_DIR="
+                                           (assoc-ref %outputs "out")
+                                           "/etc"))))
     (native-inputs
      `(("cmocka" ,cmocka)
        ("extra-cmake-modules" ,extra-cmake-modules)
