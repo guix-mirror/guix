@@ -40,6 +40,7 @@
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2021 Antoine Côté <antoine.cote@posteo.net>
 ;;; Copyright © 2021 Sergiu Ivanov <sivanov@colimite.fr>
+;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2176,3 +2177,32 @@ neighborhood of Buenos Aires inspired Julieta Ulanovsky to design this
 typeface and rescue the beauty of urban typography that emerged in the first
 half of the twentieth century.")
     (license license:silofl1.1)))
+
+(define-public font-overpass
+  (package
+    (name "font-overpass")
+    (version "3.0.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/RedHatOfficial/Overpass")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1pl7zpwlx0j2xv23ahnpmbb4a5d6ib2cjck5mxqzi3jjk25rk9kb"))))
+    (build-system font-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'delete-webfonts
+           (lambda _
+             (delete-file-recursively "webfonts"))))))
+    (home-page "https://overpassfont.org")
+    (synopsis "Sans serif font family inspired by Highway Gothic")
+    (description
+     "Overpass is a sans-serif typeface based on the U.S. interstate highway
+road signage typefaces, adapted for on-screen display and user interfaces.
+Overpass includes proprotional and monospace variants.")
+    (license (list license:silofl1.1
+                   license:lgpl2.1))))
