@@ -229,7 +229,7 @@ dependencies are registered."
              (let ((target (string-append #$profile "/" target))
                    (parent (dirname source)))
                ;; Never add a 'directory' directive for "/" so as to
-               ;; preserve its ownnership when extracting the archive (see
+               ;; preserve its ownership when extracting the archive (see
                ;; below), and also because this would lead to adding the
                ;; same entries twice in the tarball.
                `(,@(if (string=? parent "/")
