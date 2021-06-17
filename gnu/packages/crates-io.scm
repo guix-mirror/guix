@@ -18237,6 +18237,28 @@ a result when an allocation error occurs, ala
 fallible format macro.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-fallible-collections-0.3
+  (package
+    (name "rust-fallible-collections")
+    (version "0.3.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "fallible_collections" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "1shgcljh6pliv1b1qk6knk2hzig5ah76hx01f1icpgkiqp6fi6cm"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:skip-build? #t
+        #:cargo-inputs
+        (("rust-hashbrown" ,rust-hashbrown-0.9))))
+    (home-page "https://github.com/vcombey/fallible_collections.git")
+    (synopsis "Fallible allocation API for standard collections")
+    (description "This crate adds fallible allocation API to standard
+collections.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-failure-0.1
   (package
     (name "rust-failure")
