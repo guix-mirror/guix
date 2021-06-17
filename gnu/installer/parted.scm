@@ -24,9 +24,13 @@
   #:use-module (gnu installer newt page)
   #:use-module (gnu system uuid)
   #:use-module ((gnu build file-systems)
-                #:select (find-partition-by-label
+                #:select (canonicalize-device-spec
+                          find-partition-by-label
                           read-partition-uuid
                           read-luks-partition-uuid))
+  #:use-module ((gnu build linux-boot)
+                #:select (linux-command-line
+                          find-long-option))
   #:use-module ((gnu build linux-modules)
                 #:select (missing-modules))
   #:use-module ((gnu system linux-initrd)
@@ -338,19 +342,35 @@ fail. See rereadpt function in wipefs.c of util-linux for an explanation."
   (with-null-output-ports
    (invoke "dmsetup" "remove_all")))
 
+(define (installation-device)
+  "Return the installation device path."
+  (let* ((cmdline (linux-command-line))
+         (root (find-long-option "--root" cmdline)))
+    (and root
+         (canonicalize-device-spec (uuid root)))))
+
 (define (non-install-devices)
   "Return all the available devices, except the install device."
-  ;; XXX: The install image uses an overlayfs so detecting the install device
-  ;; is not easy.  Assume that a given device is the installation device if it
-  ;; is reported as busy by parted or if its label is the ISO9660 image label.
-  (remove (lambda (device)
-            (let ((file-name (device-path device))
-                  (install-file-name
-                   (find-partition-by-label "GUIX_IMAGE")))
-              (or (device-is-busy? device)
-                  (and install-file-name
-                       (string=? file-name install-file-name)))))
-          (devices)))
+  (define (read-only? device)
+    (dynamic-wind
+    (lambda ()
+      (device-open device))
+    (lambda ()
+      (device-read-only? device))
+    (lambda ()
+      (device-close device))))
+
+  ;; If parted reports that a device is read-only it is probably the
+  ;; installation device. However, as this detection does not always work,
+  ;; compare the device path to the installation device path read from the
+  ;; command line.
+  (let ((install-device (installation-device)))
+    (remove (lambda (device)
+              (let ((file-name (device-path device)))
+                (or (read-only? device)
+                    (and install-device
+                         (string=? file-name install-device)))))
+            (devices))))
 
 
 ;;
