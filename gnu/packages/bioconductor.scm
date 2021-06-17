@@ -7163,14 +7163,14 @@ data.")
 (define-public r-enrichplot
   (package
     (name "r-enrichplot")
-    (version "1.12.0")
+    (version "1.12.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "enrichplot" version))
        (sha256
         (base32
-         "0nvjwwzpmhsfkxqrn8v1a1wcrvr3xl1wn5dy89vsrdydyv31gdc6"))))
+         "116mwmpr06f4z60avdsfzdalbxn4119dbzk3jz1q5fp81qvw164d"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cowplot" ,r-cowplot)
