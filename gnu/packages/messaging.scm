@@ -1261,11 +1261,7 @@ Encryption to Gajim.")
        ("libsignal-protocol-c" ,libsignal-protocol-c)
        ("libsoup" ,libsoup)
        ("qrencode" ,qrencode)
-       ("sqlite" ,sqlite)
-       ("gpgme" ,gpgme)
-       ("gtk+" ,gtk+)
-       ("glib-networking" ,glib-networking)
-       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
+       ("sqlite" ,sqlite)))
     (synopsis "Graphical Jabber/XMPP Client using GTK+/Vala")
     (description "Dino is a chat client for the desktop.  It focuses on providing
 a minimal yet reliable Jabber/XMPP experience and having encryption enabled by
