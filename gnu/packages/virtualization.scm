@@ -187,22 +187,6 @@
                   ,@%gnu-build-system-modules)
        #:phases
        (modify-phases %standard-phases
-         (add-after 'set-paths 'hide-glibc
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; Work around https://issues.guix.info/issue/36882.  We need to
-             ;; remove glibc from C_INCLUDE_PATH so that the one hardcoded in GCC,
-             ;; at the bottom of GCC include search-path is used.
-             (let* ((filters '("libc"))
-                    (input-directories
-                     (filter-map (lambda (input)
-                                   (match input
-                                     ((name . dir)
-                                      (and (not (member name filters))
-                                           dir))))
-                                 inputs)))
-               (set-path-environment-variable "C_INCLUDE_PATH"
-                                              '("include")
-                                              input-directories))))
          (add-after 'unpack 'extend-test-time-outs
            (lambda _
              ;; These tests can time out on heavily-loaded and/or slow storage.
