@@ -32608,15 +32608,14 @@ types as proposed in RFC 1158.")
 (define-public rust-nettle-7
   (package
     (name "rust-nettle")
-    (version "7.0.0")
+    (version "7.0.3")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "nettle" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1n6dwy9zba8853bmxzhwaashd3np0wxpx0pj43brm0hb8n2sxbxi"))
-       (patches (search-patches "rust-nettle-disable-vendor.patch"))))
+        (base32 "1qlsq3szglkw7s089h5qh9xa787qyvkdj5cgxm4qj30fazwr0hx0"))))
     (build-system cargo-build-system)
     (native-inputs
      (list pkg-config))
