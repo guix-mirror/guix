@@ -20,6 +20,7 @@
 ;;; Copyright © 2020, 2021 pukkamustard <pukkamustard@posteo.net>
 ;;; Copyright © 2021 aecepoglu <aecepoglu@fastmail.fm>
 ;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
+;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2044,6 +2045,55 @@ manipulate such data.")
     (description "Access monotonic wall-clock time.  It measures time
 spans without being subject to operating system calendar time adjustments.")
     (license license:isc)))
+
+(define-public ocaml-calendar
+  ;; No tags.
+  ;; Commit from 2019-02-03.
+  (let ((commit "a447a88ae3c1e9873e32d2a95d3d3e7c5ed4a7da")
+        (revision "0"))
+    (package
+      (name "ocaml-calendar")
+      ;; Makefile.in says 2.04.
+      (version (git-version "2.04" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ocaml-community/calendar")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "09d9gyqm3zkf3z2m9fx87clqihx6brf8rnzm4yq7c8kf1p572hmc"))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:test-target "tests"
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'make-deterministic
+             (lambda _
+               (substitute* "Makefile.in"
+                 (("`date`") "no date for reproducibility"))))
+           (add-before 'install 'set-environment-variables
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (setenv "OCAMLFIND_DESTDIR"
+                         (string-append out "/lib/ocaml/site-lib"))
+                 (setenv "OCAMLFIND_LDCONF" "ignore")
+                 (mkdir-p (string-append
+                           out "/lib/ocaml/site-lib/calendar"))))))))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)))
+      (propagated-inputs
+       `(("ocaml" ,ocaml)
+         ("ocamlfind" ,ocaml-findlib)))
+      (home-page "https://github.com/ocaml-community/calendar")
+      (synopsis "OCaml library for handling dates and times")
+      (description "This package provides types and operations over
+dates and times.")
+      ;; With linking exception.
+      (license license:lgpl2.1+))))
 
 (define-public ocaml-cmdliner
   (package
