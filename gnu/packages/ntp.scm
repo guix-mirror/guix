@@ -190,7 +190,9 @@ computers over a network.")
     (arguments
      `(#:configure-flags
        (let* ((libressl (assoc-ref %build-inputs "libressl"))
-             (libressl-version ,(package-version libressl)))
+              (libressl-version ,(package-version
+                                  (car (assoc-ref (package-inputs this-package)
+                                                  "libressl")))))
          (list "--with-privsep-user=ntpd"
                "--localstatedir=/var"
                (string-append "--with-cacert=" libressl
