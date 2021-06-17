@@ -610,7 +610,7 @@ the image."
                                 #$profile
                                 #:repository tag
                                 #:database #+database
-                                #:system (or #$target (utsname:machine (uname)))
+                                #:system (or #$target %host-type)
                                 #:environment environment
                                 #:entry-point
                                 #$(and entry-point
