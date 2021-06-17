@@ -54716,6 +54716,21 @@ memory all at once.")
 tools.")
     (license license:asl2.0)))
 
+(define-public rust-target-lexicon-0.11
+  (package
+    (inherit rust-target-lexicon-0.12)
+    (name "rust-target-lexicon")
+    (version "0.11.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "target-lexicon" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0khq669rji1l0liv9mdxvddklqhxxpk6r06wbdhc18hiilw9xck2"))))
+    (arguments `(#:skip-build? #t))))
+
 (define-public rust-target-lexicon-0.10
   (package
     (inherit rust-target-lexicon-0.12)
