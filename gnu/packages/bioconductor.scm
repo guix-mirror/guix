@@ -1946,13 +1946,13 @@ microarrays.")
 (define-public r-annotationdbi
   (package
     (name "r-annotationdbi")
-    (version "1.54.0")
+    (version "1.54.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "AnnotationDbi" version))
               (sha256
                (base32
-                "117zh7iqa6phsrxrkv45kxraamm3vbfz5i1a8vkhyalhdbs5ssph"))))
+                "0fcammls431pgmp47r85k0zh3bz42bajbqdmafd31kpqncc1ijal"))))
     (properties
      `((upstream-name . "AnnotationDbi")))
     (build-system r-build-system)
