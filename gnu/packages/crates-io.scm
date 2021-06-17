@@ -8971,6 +8971,25 @@ winded @code{#[cfg()]} checks.")
 expressions.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-cfg-expr-0.7
+  (package
+    (inherit rust-cfg-expr-0.8)
+    (name "rust-cfg-expr")
+    (version "0.7.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "cfg-expr" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "0sn2mw7s2i9qr5mrbyarz0mn5vb3iv6z656va6sccf5qzcprxaih"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:skip-build? #t
+        #:cargo-inputs
+        (("rust-smallvec" ,rust-smallvec-1)
+         ("rust-target-lexicon" ,rust-target-lexicon-0.11))))))
+
 (define-public rust-cfg-if-1
   (package
     (name "rust-cfg-if")
