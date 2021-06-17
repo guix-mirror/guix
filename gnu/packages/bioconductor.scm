@@ -2154,13 +2154,13 @@ on Bioconductor or which replace R functions.")
 (define-public r-biomart
   (package
     (name "r-biomart")
-    (version "2.48.0")
+    (version "2.48.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "biomaRt" version))
               (sha256
                (base32
-                "1h8lzd63qvy1y75nlnhazpkyhl6g1hz80baqg20gpxbv38wkyf55"))))
+                "1a1lh0z1vk1q3wil85pi7v0f9miv070sjkbnwbw390zvncwakqxa"))))
     (properties
      `((upstream-name . "biomaRt")))
     (build-system r-build-system)
@@ -2172,7 +2172,8 @@ on Bioconductor or which replace R functions.")
        ("r-progress" ,r-progress)
        ("r-rappdirs" ,r-rappdirs)
        ("r-stringr" ,r-stringr)
-       ("r-xml" ,r-xml)))
+       ("r-xml" ,r-xml)
+       ("r-xml2" ,r-xml2)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/biomaRt")
