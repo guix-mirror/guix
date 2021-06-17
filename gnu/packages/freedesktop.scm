@@ -225,12 +225,13 @@ application-centers for distributions.")
        (sha256
         (base32 "1sd8syldyq6bphfdm129s3gq554vfv7vh1vcwzk48gjryf101awk"))
        (patches
-        (search-patches "farstream-make.patch"))))
+        (search-patches
+         "farstream-gupnp.patch"        ;for test 'transmitter/rawudp'
+         "farstream-make.patch"))))
     (build-system glib-or-gtk-build-system)
     (outputs '("out" "doc"))
     (arguments
-     `(#:tests? #f ; https://gitlab.freedesktop.org/farstream/farstream/-/issues/18
-       #:configure-flags
+     `(#:configure-flags
        (list
         "--enable-gtk-doc"
         "--enable-glib-asserts"
@@ -246,6 +247,15 @@ application-centers for distributions.")
               (assoc-ref %build-inputs "common")
               "common")
              #t))
+         (add-after 'unpack 'disable-timeout-tests
+           (lambda _
+             (substitute* "tests/check/Makefile.am"
+               ;; This test timeouts despite changing
+               ;; the value of 'CK_DEFAULT_TIMEOUT' to 600,
+               ;; as per %common-gstreamer-phases.
+               ;; Reported to upstream:
+               ;; https://gitlab.freedesktop.org/farstream/farstream/-/issues/20
+               (("[ \t]*transmitter/nice.*$") ""))))
          (add-after 'unpack 'patch-docbook-xml
            (lambda* (#:key inputs #:allow-other-keys)
              (with-directory-excursion "docs"
