@@ -286,6 +286,7 @@ Utilities
 * Invoking guix hash::          Computing the cryptographic hash of a file.
 * Invoking guix import::        Importing package definitions.
 * Invoking guix refresh::       Updating package definitions.
+* Invoking guix style::         Styling package definitions.
 * Invoking guix lint::          Finding errors in package definitions.
 * Invoking guix size::          Profiling disk usage.
 * Invoking guix graph::         Visualizing the graph of packages.
@@ -6722,7 +6723,8 @@ the one above, but using the @dfn{old input style}:
 
 This style is now deprecated; it is still supported but support will be
 removed in a future version.  It should not be used for new package
-definitions.
+definitions.  @xref{Invoking guix style}, on how to migrate to the new
+style.
 @end quotation
 
 @cindex cross compilation, package dependencies
@@ -10254,6 +10256,7 @@ the Scheme programming interface of Guix in a convenient way.
 * Invoking guix hash::          Computing the cryptographic hash of a file.
 * Invoking guix import::        Importing package definitions.
 * Invoking guix refresh::       Updating package definitions.
+* Invoking guix style::         Styling package definitions.
 * Invoking guix lint::          Finding errors in package definitions.
 * Invoking guix size::          Profiling disk usage.
 * Invoking guix graph::         Visualizing the graph of packages.
@@ -12076,6 +12079,98 @@ token procured from @uref{https://github.com/settings/tokens} or
 otherwise.
 
 
+@node Invoking guix style
+@section Invoking @command{guix style}
+
+The @command{guix style} command helps packagers style their package
+definitions according to the latest fashionable trends.  The command
+currently focuses on one aspect: the style of package inputs.  It may
+eventually be extended to handle other stylistic matters.
+
+The way package inputs are written is going through a transition
+(@pxref{package Reference}, for more on package inputs).  Until version
+1.3.0, package inputs were written using the ``old style'', where each
+input was given an explicit label, most of the time the package name:
+
+@lisp
+(package
+  ;; @dots{}
+  ;; The "old style" (deprecated).
+  (inputs `(("libunistring" ,libunistring)
+            ("libffi" ,libffi))))
+@end lisp
+
+Today, the old style is deprecated and the preferred style looks like
+this:
+
+@lisp
+(package
+  ;; @dots{}
+  ;; The "new style".
+  (inputs (list libunistring libffi)))
+@end lisp
+
+Likewise, uses of @code{alist-delete} and friends to manipulate inputs
+is now deprecated in favor of @code{modify-inputs} (@pxref{Defining
+Package Variants}, for more info on @code{modify-inputs}).
+
+In the vast majority of cases, this is a purely mechanical change on the
+surface syntax that does not even incur a package rebuild.  Running
+@command{guix style} can do that for you, whether you're working on
+packages in Guix proper or in an external channel.
+
+The general syntax is:
+
+@example
+guix style [@var{options}] @var{package}@dots{}
+@end example
+
+This causes @command{guix style} to analyze and rewrite the definition
+of @var{package}@dots{}.  It does so in a conservative way: preserving
+comments and bailing out if it cannot make sense of the code that
+appears in an inputs field.  The available options are listed below.
+
+@table @code
+@item --load-path=@var{directory}
+@itemx -L @var{directory}
+Add @var{directory} to the front of the package module search path
+(@pxref{Package Modules}).
+
+@item --expression=@var{expr}
+@itemx -e @var{expr}
+Style the package @var{expr} evaluates to.
+
+For example, running:
+
+@example
+guix style -e '(@@ (gnu packages gcc) gcc-5)'
+@end example
+
+styles the @code{gcc-5} package definition.
+
+@item --input-simplification=@var{policy}
+Specify the package input simplification policy for cases where an input
+label does not match the corresponding package name.  @var{policy} may
+be one of the following:
+
+@table @code
+@item silent
+Simplify inputs only when the change is ``silent'', meaning that the
+package does not need to be rebuilt (its derivation is unchanged).
+
+@item safe
+Simplify inputs only when that is ``safe'' to do: the package might need
+to be rebuilt, but the change is known to have no observable effect.
+
+@item always
+Simplify inputs even when input labels do not match package names, and
+even if that might have an observable effect.
+@end table
+
+The default is @code{silent}, meaning that input simplifications do not
+trigger any package rebuild.
+@end table
+
 @node Invoking guix lint
 @section Invoking @command{guix lint}
 
@@ -12209,7 +12304,8 @@ use of tabulations, etc.
 Report old-style input labels that do not match the name of the
 corresponding package.  This aims to help migrate from the ``old input
 style''.  @xref{package Reference}, for more information on package
-inputs and input styles.
+inputs and input styles.  @xref{Invoking guix style}, on how to migrate
+to the new style.
 @end table
 
 The general syntax is:

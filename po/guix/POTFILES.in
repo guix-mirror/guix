@@ -115,5 +115,6 @@ guix/scripts/offload.scm
 guix/scripts/perform-download.scm
 guix/scripts/refresh.scm
 guix/scripts/repl.scm
+guix/scripts/style.scm
 guix/scripts/system/reconfigure.scm
 nix/nix-daemon/guix-daemon.cc

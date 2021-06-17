@@ -286,6 +286,7 @@ MODULES =					\
   guix/scripts/refresh.scm			\
   guix/scripts/repl.scm				\
   guix/scripts/describe.scm			\
+  guix/scripts/style.scm			\
   guix/scripts/system.scm			\
   guix/scripts/system/search.scm		\
   guix/scripts/system/reconfigure.scm		\
@@ -500,6 +501,7 @@ SCM_TESTS =					\
   tests/swh.scm				\
   tests/syscalls.scm				\
   tests/system.scm				\
+  tests/style.scm				\
   tests/texlive.scm				\
   tests/transformations.scm			\
   tests/ui.scm					\
