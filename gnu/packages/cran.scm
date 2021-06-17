@@ -29157,6 +29157,34 @@ Xiaohui Yan, Jiafeng Guo, Yanyan Lan, Xueqi Cheng (2013)
 BTM-WWW13.pdf}.")
     (license license:asl2.0)))
 
+(define-public r-delaporte
+  (package
+    (name "r-delaporte")
+    (version "8.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "Delaporte" version))
+       (sha256
+        (base32
+         "0ijhmwclpg5czs2sl2vykcw8qj2pxy26xf6knh62rqq6p6sm43f4"))))
+    (properties `((upstream-name . "Delaporte")))
+    (build-system r-build-system)
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "https://github.com/aadler/Delaporte")
+    (synopsis "Statistical functions for the Delaporte distribution")
+    (description
+     "This package provides probability mass, distribution, quantile,
+random-variate generation, and method-of-moments parameter-estimation
+functions for the Delaporte distribution with parameterization based on
+Vose (2008).  The Delaporte is a discrete probability distribution which can
+be considered the convolution of a negative binomial distribution with a
+Poisson distribution.  Alternatively, it can be considered a counting
+distribution with both Poisson and negative binomial components.  It has been
+studied in actuarial science as a frequency distribution which has more
+variability than the Poisson, but less than the negative binomial.")
+    (license license:bsd-2)))
+
 (define-public r-rjsonio
   (package
     (name "r-rjsonio")
