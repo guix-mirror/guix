@@ -120,7 +120,14 @@
   #t)
 
 (define* (repack #:key inputs #:allow-other-keys)
-  (invoke "tar" "-czf" "../package.tgz" ".")
+  (invoke "tar"
+          ;; Add options suggested by https://reproducible-builds.org/docs/archives/
+          "--sort=name"
+          (string-append "--mtime=@" (getenv "SOURCE_DATE_EPOCH"))
+          "--owner=0"
+          "--group=0"
+          "--numeric-owner"
+          "-czf" "../package.tgz" ".")
   #t)
 
 (define* (install #:key outputs inputs #:allow-other-keys)
