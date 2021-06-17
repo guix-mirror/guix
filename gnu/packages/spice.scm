@@ -252,6 +252,14 @@ which allows users to view a desktop computing environment.")
         '("--enable-lz4"
           "--enable-automated-tests")
 
+        #:phases
+        (modify-phases %standard-phases
+          ;; XXX: Otherwise the server listen tests fails with
+          ;;   Failed to create /homeless-shelter/.config/glib-2.0/settings
+          (add-before 'check 'set-XDG_CONFIG_HOME
+            (lambda _
+              (setenv "XDG_CONFIG_HOME" "/tmp"))))
+
         ;; Several tests appear to be opening the same sockets concurrently.
         #:parallel-tests? #f))
     (synopsis "Server implementation of the SPICE protocol")
