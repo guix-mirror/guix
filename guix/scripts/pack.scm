@@ -172,6 +172,28 @@ dependencies are registered."
   (computed-file "store-database" build
                  #:options `(#:references-graphs ,(zip labels items))))
 
+(define-syntax-rule (define-with-source (variable args ...) body body* ...)
+  "Bind VARIABLE to a procedure accepting ARGS defined as BODY, also setting
+its source property."
+  (begin
+    (define (variable args ...)
+      body body* ...)
+    (eval-when (load eval)
+      (set-procedure-property! variable 'source
+                               '(define (variable args ...) body body* ...)))))
+
+(define-with-source (manifest->friendly-name manifest)
+  "Return a friendly name computed from the entries in MANIFEST, a
+<manifest> object."
+  (let loop ((names (map manifest-entry-name
+                         (manifest-entries manifest))))
+    (define str (string-join names "-"))
+    (if (< (string-length str) 40)
+        str
+        (match names
+          ((_) str)
+          ((names ... _) (loop names))))))
+
 
 ;;;
 ;;; Tarball format.
@@ -540,7 +562,7 @@ the image."
          (file-append (store-database (list profile))
                       "/db/db.sqlite")))
 
-  (define defmod 'define-module)                  ;trick Geiser
+  (define defmod 'define-module)        ;trick Geiser
 
   (define build
     ;; Guile-JSON and Guile-Gcrypt are required by (guix docker).
@@ -557,6 +579,8 @@ the image."
                          (guix profiles) (guix search-paths)
                          (srfi srfi-1) (srfi srfi-19)
                          (ice-9 match))
+
+            #$(procedure-source manifest->friendly-name)
 
             (define environment
               (map (match-lambda
@@ -581,19 +605,6 @@ the image."
               `((directory "/tmp" ,(getuid) ,(getgid) #o1777)
                 ,@(append-map symlink->directives '#$symlinks)))
 
-            (define tag
-              ;; Compute a meaningful "repository" name, which will show up in
-              ;; the output of "docker images".
-              (let ((manifest (profile-manifest #$profile)))
-                (let loop ((names (map manifest-entry-name
-                                       (manifest-entries manifest))))
-                  (define str (string-join names "-"))
-                  (if (< (string-length str) 40)
-                      str
-                      (match names
-                        ((_) str)
-                        ((names ... _) (loop names))))))) ;drop one entry
-
             (setenv "PATH" #+(file-append archiver "/bin"))
 
             (build-docker-image #$output
@@ -601,7 +612,8 @@ the image."
                                      (call-with-input-file "profile"
                                        read-reference-graph))
                                 #$profile
-                                #:repository tag
+                                #:repository (manifest->friendly-name
+                                              (profile-manifest #$profile))
                                 #:database #+database
                                 #:system (or #$target %host-type)
                                 #:environment environment
@@ -1209,8 +1221,6 @@ Create a bundle of PACKAGE.\n"))
                                        manifest)
                                       manifest)))
                    (pack-format (assoc-ref opts 'format))
-                   (name        (string-append (symbol->string pack-format)
-                                               "-pack"))
                    (target      (assoc-ref opts 'target))
                    (bootstrap?  (assoc-ref opts 'bootstrap?))
                    (compressor  (if bootstrap?
@@ -1244,7 +1254,10 @@ Create a bundle of PACKAGE.\n"))
                                     (hooks (if bootstrap?
                                                '()
                                                %default-profile-hooks))
-                                    (locales? (not bootstrap?)))))
+                                    (locales? (not bootstrap?))))
+                   (name (string-append (manifest->friendly-name manifest)
+                                        "-" (symbol->string pack-format)
+                                        "-pack")))
               (define (lookup-package package)
                 (manifest-lookup manifest (manifest-pattern (name package))))
 
