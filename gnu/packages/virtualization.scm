@@ -153,6 +153,7 @@
          "1f9hz8rf12jm8baa7kda34yl4hyl0xh0c4ap03krfjx23i3img47"))
        (patches (search-patches "qemu-CVE-2021-20203.patch"
                                 "qemu-meson-compat.patch"
+                                "qemu-sphinx-compat.patch"
                                 "qemu-build-info-manual.patch"))
        (modules '((guix build utils)))
        (snippet
