@@ -230,13 +230,15 @@ its source property."
                           `((guix build pack)
                             (guix build utils)
                             (guix build union)
-                            (gnu build install))
+                            (gnu build install)
+                            (gnu system file-systems))
                           #:select? import-module?)
     #~(begin
         (use-modules (guix build pack)
                      (guix build utils)
                      ((guix build union) #:select (relative-file-name))
                      (gnu build install)
+                     ((gnu system file-systems) #:select (reduce-directories))
                      (srfi srfi-1)
                      (srfi srfi-26)
                      (ice-9 match))
@@ -303,7 +305,7 @@ its source property."
 
                    ,(string-append "." (%store-directory))
 
-                   ,@(delete-duplicates
+                   ,@(reduce-directories
                       (filter-map (match-lambda
                                     (('directory directory)
                                      (string-append "." directory))

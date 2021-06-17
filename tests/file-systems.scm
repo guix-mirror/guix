@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,6 +49,11 @@
                    (inherit (dummy-fs (%store-prefix)))
                    (device "/foo")
                    (flags '(bind-mount read-only)))))))))
+
+(test-equal "reduce-directories"
+  '("./opt/gnu/" "./opt/gnuism" "a/b/c")
+  (reduce-directories '("./opt/gnu/etc" "./opt/gnu/" "./opt/gnu/bin"
+                        "./opt/gnu/lib/debug" "./opt/gnuism" "a/b/c" "a/b/c")))
 
 (test-assert "does not pull (guix config)"
   ;; This module is meant both for the host side and "build side", so make
