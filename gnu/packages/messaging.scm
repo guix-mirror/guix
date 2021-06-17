@@ -1242,6 +1242,14 @@ Encryption to Gajim.")
                            (guix build glib-or-gtk-build-system))
        #:phases
        (modify-phases %standard-phases
+         ;; To be enabled in v0.3.0, for A/V support.
+         ;;(add-after 'install 'wrap
+           ;;(lambda* (#:key outputs #:allow-other-keys)
+             ;;(let* ((out (assoc-ref outputs "out"))
+                    ;;(dino (string-append out "/bin/dino"))
+                    ;;(gst-plugin-path (getenv "GST_PLUGIN_SYSTEM_PATH")))
+               ;;(wrap-program dino
+                 ;;`("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path))))))
          (add-after 'install 'glib-or-gtk-wrap
            (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap)))))
     (native-inputs
@@ -1252,6 +1260,7 @@ Encryption to Gajim.")
        ("pkg-config" ,pkg-config)
        ("vala" ,vala)))
     (inputs
+     ;; NOTE: Commented-out lines are to be enabled in v0.3.0.
      `(("atk" ,atk)
        ("cairo" ,cairo)
        ("gdk-pixbuf" ,gdk-pixbuf+svg)
@@ -1259,15 +1268,23 @@ Encryption to Gajim.")
        ("glib-networking" ,glib-networking)
        ("gpgme" ,gpgme)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gspell" ,gspell)               ;for spell-check support
+       ;;("gstreamer" ,gstreamer)         ;for A/V support
+       ;;("gst-plugins-base" ,gst-plugins-base)
+       ;;("gst-plugins-good" ,gst-plugins-good)
        ("gtk+" ,gtk+)
+       ("icu4c" ,icu4c)                 ;for emoji support
+       ;;("libcanberra" ,libcanberra)    ;for sound-notification support
        ("libgcrypt" ,libgcrypt)
        ("libgee" ,libgee)
        ("libnice" ,libnice)
        ("libsignal-protocol-c" ,libsignal-protocol-c)
        ("libsoup" ,libsoup)
+       ;;("libsrtp" ,libsrtp)             ;for calls support
        ("pango" ,pango)
        ("qrencode" ,qrencode)
        ("sqlite" ,sqlite)))
+       ;;("webrtc-audio-processing" ,webrtc-audio-processing))) ;for A/V support
     (synopsis "Graphical Jabber/XMPP Client using GTK+/Vala")
     (description "Dino is a chat client for the desktop.  It focuses on providing
 a minimal yet reliable Jabber/XMPP experience and having encryption enabled by
