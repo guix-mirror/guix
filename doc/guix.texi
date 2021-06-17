@@ -33225,7 +33225,7 @@ below, which enables networking and requests 1@tie{}GiB of RAM for the
 emulated machine:
 
 @example
-$ /gnu/store/@dots{}-run-vm.sh -m 1024 -smp 2 -net user,model=virtio-net-pci
+$ /gnu/store/@dots{}-run-vm.sh -m 1024 -smp 2 -nic user,model=virtio-net-pci
 @end example
 
 The VM shares its store with the host system.
