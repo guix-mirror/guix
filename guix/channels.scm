@@ -2,6 +2,7 @@
 ;;; Copyright © 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1009,6 +1010,7 @@ true, include its introduction, if any."
     `(channel
       (name ',(channel-name channel))
       (url ,(channel-url channel))
+      (branch ,(channel-branch channel))
       (commit ,(channel-commit channel))
       ,@(if intro
             `((introduction (make-channel-introduction
