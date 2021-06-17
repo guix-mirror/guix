@@ -9949,6 +9949,32 @@ each motif and gene-set, RcisTarget predicts the candidate target genes (i.e.
 genes in the gene-set that are ranked above the leading edge).")
     (license license:gpl3)))
 
+(define-public r-chicago
+  (package
+    (name "r-chicago")
+    (version "1.20.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "Chicago" version))
+       (sha256
+        (base32
+         "0dkwy6pfvzd7g4qmhjl24ypn92l78w1zy0ajhcxgg39f7zsq883x"))))
+    (properties `((upstream-name . "Chicago")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-data-table" ,r-data-table)
+       ("r-delaporte" ,r-delaporte)
+       ("r-hmisc" ,r-hmisc)
+       ("r-mass" ,r-mass)
+       ("r-matrixstats" ,r-matrixstats)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://bioconductor.org/packages/Chicago")
+    (synopsis "Capture Hi-C analysis of genomic organization")
+    (description
+     "This package provides a pipeline for analysing Capture Hi-C data.")
+    (license license:artistic2.0)))
+
 (define-public r-cicero
   (package
     (name "r-cicero")
