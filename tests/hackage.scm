@@ -388,4 +388,46 @@ executable cabal
      #t)
     (x (pk 'fail x #f))))
 
+(define test-cabal-import
+  "name: foo
+version: 1.0.0
+homepage: http://test.org
+synopsis: synopsis
+description: description
+license: BSD3
+common commons
+  build-depends:
+    HTTP       >= 4000.2.5 && < 4000.3,
+    mtl        >= 2.0      && < 3
+
+executable cabal
+  import: commons
+")
+
+(define-package-matcher match-ghc-foo-import
+  ('package
+    ('name "ghc-foo")
+    ('version "1.0.0")
+    ('source
+     ('origin
+       ('method 'url-fetch)
+       ('uri ('string-append
+              "https://hackage.haskell.org/package/foo/foo-"
+              'version
+              ".tar.gz"))
+       ('sha256
+        ('base32
+         (? string? hash)))))
+    ('build-system 'haskell-build-system)
+    ('inputs
+     ('quasiquote
+      (("ghc-http" ('unquote 'ghc-http)))))
+    ('home-page "http://test.org")
+    ('synopsis (? string?))
+    ('description (? string?))
+    ('license 'license:bsd-3)))
+
+(test-assert "hackage->guix-package test cabal import"
+  (eval-test-with-cabal test-cabal-import match-ghc-foo-import))
+
 (test-end "hackage")
