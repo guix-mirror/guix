@@ -39,6 +39,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix svn-download)
+  #:use-module (guix hg-download)
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
@@ -140,6 +141,72 @@ VIC20, practically all PET models, the PLUS4 and the CBM-II (aka
 C610/C510).  An extra emulator is provided for C64 expanded with the CMD
 SuperCPU.")
     (license license:gpl2+)))
+
+(define-public blastem
+  (package
+    (name "blastem")
+    (version "0.6.2")
+    (source (origin
+              (method hg-fetch)
+              (uri (hg-reference
+                    (url "https://www.retrodev.com/repos/blastem")
+                    (changeset (string-append "v" version))))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "08ycfisivh9rb9vmijlrpdryaw8spd81ck48960p15cnf8h2535q"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; TODO: Separately package and unbundle nuklear
+                  (delete-file-recursively "zlib")))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list (string-append "CC=" ,(cc-for-target))
+                          "HOST_ZLIB=1"
+                          "HAS_PROC=-DHAS_PROC"
+                          (string-append "CONFIG_PATH="
+                                         %output "/share/blastem")
+                          (string-append "DATA_PATH="
+                                         %output "/share/blastem"))
+       #:tests? #f ; No check target and custom tests don't seem to build
+       #:imported-modules
+       ((guix build copy-build-system)
+        ,@%gnu-build-system-modules)
+       #:modules
+       (((guix build copy-build-system)
+         #:prefix copy:)
+        (guix build gnu-build-system)
+        (guix build utils))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-source
+           (lambda _
+             (substitute* (find-files "." ".*\\.[ch]")
+               (("\"zlib/zlib.h\"") "<zlib.h>"))))
+         (delete 'configure)
+         (replace 'install
+           (lambda* args
+             (apply (assoc-ref copy:%standard-phases 'install)
+                    #:install-plan
+                    '(("." "bin" #:include ("blastem" "vgmplay"))
+                      ("." "share/blastem"
+                       #:include ("default.cfg" "rom.db")
+                       #:exclude ("android"))
+                      ("shaders" "share/blastem/shaders"))
+                    args))))))
+    (inputs
+     `(("glew" ,glew)
+       ("mesa" ,mesa)
+       ("sdl2" ,sdl2)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://www.retrodev.com/blastem/")
+    (synopsis "Genesis/Mega Drive emulator")
+    (description "Blastem is an emulator for the Sega Genesis/Mega Drive
+console.")
+    (license license:gpl3+)))
 
 (define-public desmume
   (package
