@@ -1108,23 +1108,20 @@ shell command executions.")
 (define-public emilua
   (package
    (name "emilua")
-   (version "0.3.0")
+   (version "0.3.2")
    (source (origin
             (method git-fetch)
             (uri (git-reference
                   (url "https://gitlab.com/emilua/emilua.git")
                   (commit (string-append "v" version))
-                  ;; Current version requires bundled CLI11, but at some future
-                  ;; release the one found in the system could be used
-                  ;; instead. Current version also requires Trial.Protocol and
-                  ;; the HTTP lib developed as part of GSoC 2014 for Boost, but
-                  ;; these are dependencies unlikely to be "unbundled" in future
-                  ;; releases.
+                  ;; Current version requires Trial.Protocol and the HTTP lib
+                  ;; developed as part of GSoC 2014 for Boost, and these are
+                  ;; dependencies unlikely to be "unbundled" in future releases.
                   (recursive? #t)))
             (file-name (git-file-name name version))
             (sha256
              (base32
-              "124fj73722c03znwdyqp1i0jygwv3s11f6s1j9rzym513qrf7fnd"))))
+              "1999bgrh52124a5g4qizav3x257ff2brjr855srpm1jv1nxzbygv"))))
    (build-system meson-build-system)
    (arguments
     `(#:meson ,meson-0.55
