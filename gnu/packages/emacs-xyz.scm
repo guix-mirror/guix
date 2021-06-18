@@ -16877,7 +16877,7 @@ interactive commands and functions, such as @code{completing-read}.")
 (define-public emacs-org-ql
   (package
     (name "emacs-org-ql")
-    (version "0.5")
+    (version "0.5.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -16885,7 +16885,7 @@ interactive commands and functions, such as @code{completing-read}.")
                     (commit version)))
               (sha256
                (base32
-                "14nsy2dbln3m5bpqzyfqycn18sb3qh407hjbkk1l0x2nqs3lrkqn"))
+                "0b3xxnbhnrz0263fnrrdbs3gif4pjkfws4mxkfqqpg0fc8azp2rx"))
               (file-name (git-file-name name version))))
     (build-system emacs-build-system)
     (propagated-inputs
@@ -16914,8 +16914,7 @@ interactive commands and functions, such as @code{completing-read}.")
                ;; This test fails on Emacs 27.1 (see:
                ;; https://github.com/alphapapa/org-super-agenda/issues/183).
                (("it \"Can search buffer containing the link\"" all)
-                (string-append "x" all)))
-             #t)))))
+                (string-append "x" all))))))))
     (home-page "https://github.com/alphapapa/org-ql/")
     (synopsis "Query language for Org buffers")
     (description "This package provides a Lispy query language for Org
