@@ -15,7 +15,7 @@
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
-;;; Copyright © 2016, 2017, 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2016, 2017, 2018, 2019, 2021 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Bake Timmons <b3timmons@speedymail.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
@@ -6578,51 +6578,37 @@ Instagram and YouTube.")
 (define-public linkchecker
   (package
     (name "linkchecker")
-    (version "9.4.0")
+    (version "10.0.1")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/linkchecker/linkchecker")
              (commit (string-append "v" version))))
-       (patches
-        (search-patches "linkchecker-tests-require-network.patch"))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "03ihjmc4bqxxqv71bb43r2f23sx0xnbq1k2fsg9fw05qa5s9x187"))))
+         "1j97dc9a4yhpscwadhv5dxp7036pnrxiaky18l8ddr3pvxdjvkxs"))))
     (build-system python-build-system)
     (inputs
-     `(("python2-dnspython" ,python2-dnspython-1.16)
-       ("python2-pyxdg" ,python2-pyxdg)
-       ("python2-requests" ,python2-requests)))
+     `(("python-beautifulsoup4" ,python-beautifulsoup4)
+       ("python-dnspython" ,python-dnspython)
+       ("python-pyxdg" ,python-pyxdg)
+       ("python-requests" ,python-requests)))
     (native-inputs
      `(("gettext" ,gettext-minimal)
-       ("python2-pytest" ,python2-pytest)
-       ("python2-miniboa" ,python2-miniboa)
-       ("python2-parameterized" ,python2-parameterized)))
+       ("python-pytest" ,python-pytest)
+       ("python-miniboa" ,python-miniboa)
+       ("python-parameterized" ,python-parameterized)))
     (arguments
-     `(#:python ,python-2
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
-         ;; Move the 'check phase to after 'install, so that the installed
-         ;; library can be used
-         (delete 'check)
-         (add-after 'install 'check
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               ;; Set PYTHONPATH so that the installed linkchecker is used
-               (setenv "PYTHONPATH"
-                       (string-append out "/lib/python2.7/site-packages"
-                                      ":"
-                                      (getenv "PYTHONPATH")))
-               ;; Remove this directory to avoid it being used when running
-               ;; the tests
-               (delete-file-recursively "linkcheck")
-
-               (invoke "py.test" "tests"))
-             #t)))))
-    (home-page "https://linkcheck.github.io/linkchecker")
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "py.test" "tests")))))))
+    (home-page "https://linkchecker.github.io/linkchecker/")
     (synopsis "Check websites for broken links")
     (description "LinkChecker is a website validator.  It checks for broken
 links in websites.  It is recursive and multithreaded providing output in
