@@ -141,10 +141,6 @@ no external store to talk to."
     (dynamic-wind
       (const #t)
       (lambda ()
-        ;; Since we're using a different store we must clear the
-        ;; package-derivation cache.
-        (hash-clear! (@@ (guix packages) %derivation-cache))
-
         (proc store))
       (lambda ()
         (when store
