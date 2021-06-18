@@ -41,6 +41,7 @@
 ;;; Copyright © 2021 Antoine Côté <antoine.cote@posteo.net>
 ;;; Copyright © 2021 Sergiu Ivanov <sivanov@colimite.fr>
 ;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
+;;; Copyright © 2021 Paul A. Patience <paul@apatience.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1213,11 +1214,55 @@ later hand-tweaked with the gbdfed(1) editor:
 typeface, by mimicking Comic Sans while fixing its most obvious shortcomings.")
     (license license:silofl1.1)))
 
+;; When updating the version (and hash) of font-iosevka, also update the hash
+;; of the Iosevka variants further below.
+;; The following script downloads all Iosevka variants to the store and prints
+;; their hash at the end.
+#|
+guix repl <<EOF
+(use-modules (guix base32)
+             (guix download)
+             (guix packages)
+             (guix store)
+             (gcrypt hash)
+             (ice-9 string-fun)
+             (gnu packages fonts))
+
+(let ((new-version "7.0.3")
+      (iosevka-hashes #nil)
+      (iosevka-fails #nil))
+  (for-each (lambda (font)
+              (let ((file (download-to-store (open-connection)
+                                             (string-replace-substring
+                                              (origin-uri (package-source font))
+                                              (package-version font)
+                                              new-version))))
+                (if file
+                    (set! iosevka-hashes
+                          (acons file (bytevector->nix-base32-string
+                                       (file-sha256 file))
+                                 iosevka-hashes))
+                    (set! iosevka-fails (cons font iosevka-fails)))))
+            (list font-iosevka
+                  font-iosevka-slab
+                  font-iosevka-term
+                  font-iosevka-term-slab
+                  font-iosevka-aile
+                  font-iosevka-curly
+                  font-iosevka-curly-slab
+                  font-iosevka-etoile))
+  (for-each (lambda (hash)
+              (format #t "~a: ~a~%" (car hash) (cdr hash)))
+            iosevka-hashes)
+  (for-each (lambda (fail)
+              (format #t "~a: failed to download latest version~%" fail))
+            iosevka-fails))
+EOF
+|#
 (define-public font-iosevka
   (package
     (name "font-iosevka")
-    ;; When updating, also update the hash of the Iosevka variant(s) below.
-    (version "4.0.3")
+    (version "7.0.3")
     (source
      (origin
        (method url-fetch/zipbomb)
@@ -1225,7 +1270,7 @@ typeface, by mimicking Comic Sans while fixing its most obvious shortcomings.")
                            "/releases/download/v" version
                            "/ttc-iosevka-" version ".zip"))
        (sha256
-        (base32 "1xc45rs09aj899wz9ghyizq6ddbgxpkqq5bl1jc89hls5laf7qjb"))))
+        (base32 "08n1c2j38vd1qrf18ilgvq6rl7z9yrsyq9ljf037yiw6zlphx4da"))))
     (build-system font-build-system)
     (home-page "https://be5invis.github.io/Iosevka/")
     (synopsis "Coders' typeface, built from code")
@@ -1233,8 +1278,8 @@ typeface, by mimicking Comic Sans while fixing its most obvious shortcomings.")
      "Iosevka is a slender monospace sans-serif or slab-serif typeface inspired
 by Pragmata Pro, M+, and PF DIN Mono, designed to be the ideal font for
 programming.  Iosevka is completely generated from its source code.")
-    (license (list license:silofl1.1 ; build artifacts (i.e. the fonts)
-                   license:bsd-3)))) ; supporting code
+    (license (list license:silofl1.1    ;build artifacts (i.e., the fonts)
+                   license:bsd-3))))    ;supporting code
 
 (define-public font-iosevka-slab
   (package
@@ -1248,7 +1293,7 @@ programming.  Iosevka is completely generated from its source code.")
                            "/releases/download/v" version
                            "/ttc-iosevka-slab-" version ".zip"))
        (sha256
-        (base32 "0qpfzyi050zca0bwhb460nvcaarij4srhify0rb8sf9ygpzyvnjh"))))))
+        (base32 "1ggrbl8gi2hv8yiw7vw8cajlv7nkz8i975165cayyzppjlrfs3nr"))))))
 
 (define-public font-iosevka-term
   (package
@@ -1262,7 +1307,7 @@ programming.  Iosevka is completely generated from its source code.")
                            "/releases/download/v" version
                            "/ttf-iosevka-term-" version ".zip"))
        (sha256
-        (base32 "092ygzv24wbi8cjjsmq0jkxdf4cm7wqlfj7jkn0cip7nlbyskl3h"))))
+        (base32 "1jmbp3hni99l92653b356nbmj45kd54kbl6c6ws1k5jxydrjglrh"))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1283,7 +1328,7 @@ programming.  Iosevka is completely generated from its source code.")
                            "releases/download/v" version "/"
                            "ttf-iosevka-term-slab-" version ".zip"))
        (sha256
-        (base32 "157kdxrxz981ympd2iww66v50vm2cxd7z98vvb36rii94hf30k7x"))))
+        (base32 "19fc6jbkv0aif6ds9ddxaarz2ambzln7y6k2qjsczwlbznr8cf09"))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1304,7 +1349,7 @@ programming.  Iosevka is completely generated from its source code.")
                            "/releases/download/v" version
                            "/ttc-iosevka-aile-" version ".zip"))
        (sha256
-        (base32 "0n52lfn7awc28a4f5yh4my8q4ikzza705kp69chfw9jm2xx79npc"))))))
+        (base32 "1bkrk4dqkj45fbaac2n61a5kwxs3bk6sdm5hanw7g2h4xb83fi8d"))))))
 
 (define-public font-iosevka-curly
   (package
@@ -1318,7 +1363,7 @@ programming.  Iosevka is completely generated from its source code.")
                            "releases/download/v" version  "/"
                            "ttc-iosevka-curly-" version ".zip"))
        (sha256
-        (base32 "0m51r0bc25khllq8nsfgsldhwfs7kzl8kqasivjlm14mpv5080fn"))))))
+        (base32 "12jdb38dlbwa58q0b0sf9sp1dcafzp9dcf71jf1wrlnn8047vxyx"))))))
 
 (define-public font-iosevka-curly-slab
   (package
@@ -1332,7 +1377,7 @@ programming.  Iosevka is completely generated from its source code.")
                            "releases/download/v" version  "/"
                            "ttc-iosevka-curly-slab-" version ".zip"))
        (sha256
-        (base32 "0ffiz2kg43kc2dxv48sjji33ra3kc6sy8vlard93c601fqjmrjws"))))))
+        (base32 "0zn21bxyj0ni4vbdarwam2piixzvkdk769vg3k4fl3h03q56cj24"))))))
 
 (define-public font-iosevka-etoile
   (package
@@ -1346,21 +1391,7 @@ programming.  Iosevka is completely generated from its source code.")
                            "/releases/download/v" version
                            "/ttc-iosevka-etoile-" version ".zip"))
        (sha256
-        (base32 "1fj8g7sjp9idjh14iqk4wsz3rdarlmq7amcdsr0dznwyivx8a9wx"))))))
-
-(define-public font-iosevka-sparkle
-  (package
-    (inherit font-iosevka)
-    (name "font-iosevka-sparkle")
-    (version (package-version font-iosevka))
-    (source
-     (origin
-       (method url-fetch/zipbomb)
-       (uri (string-append "https://github.com/be5invis/Iosevka"
-                           "/releases/download/v" version
-                           "/ttc-iosevka-sparkle-" version ".zip"))
-       (sha256
-        (base32 "00dw894930xdikai8bcaimp0a3720diwi0r7ii52jwl4d70w53dx"))))))
+        (base32 "0lnpdvv20g2bg6rwl0gv83bkbgfmkbyfxshhpw9vprfs2g8k6lil"))))))
 
 (define-public font-sarasa-gothic
   (package
