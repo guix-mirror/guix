@@ -28,6 +28,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages databases)
@@ -104,6 +105,7 @@
                ;; now uses the Aspell library.
                (with "--with-pspell" "aspell")
                (with "--with-readline" "readline")
+               (with "--with-sodium" "libsodium")
                (with "--with-sqlite3" "sqlite")
                (with "--with-tidy" "tidy")
                (with "--with-xsl" "libxslt")
@@ -359,6 +361,7 @@
        ("icu4c" ,icu4c)
        ("libgcrypt" ,libgcrypt)
        ("libpng" ,libpng)
+       ("libsodium" ,libsodium)
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)
        ("libx11" ,libx11)
