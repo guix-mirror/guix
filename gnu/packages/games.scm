@@ -5215,15 +5215,16 @@ tactics.")
 (define-public widelands
   (package
     (name "widelands")
-    (version "21")
+    (version "1.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://launchpad.net/widelands/"
-                           "build" version "/build" version "/+download/"
-                           "widelands-build" version "-source.tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/widelands/widelands")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0mz3jily0w1zxxqbnkqrp6hl88xhrwzbil9crq7gpcwidx60w7k0"))
+        (base32 "1hw51binnbia15mj1gzx1cbk3cw9r91sisqci2qzcy4ahxiadnw0"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -5263,7 +5264,8 @@ tactics.")
      `(("gettext" ,gettext-minimal)
        ("python" ,python-wrapper)))
     (inputs
-     `(("boost" ,boost)
+     `(("curl" ,curl)
+       ("boost" ,boost)
        ("glew" ,glew)
        ("icu4c" ,icu4c)
        ("libpng" ,libpng)
