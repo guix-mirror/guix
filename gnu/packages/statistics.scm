@@ -12,6 +12,7 @@
 ;;; Copyright © 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2018 Alex Branham <alex.branham@gmail.com>
 ;;; Copyright © 2020 Tim Howes <timhowes@lavabit.com>
+;;; Copyright © 2021 Bonface Munyoki Kilyungi <me@bonfacemunyoki.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5731,31 +5732,14 @@ to any arbitrary string.  In this case, it is up to you to set valid values.")
 (define-public python-rpy2
   (package
     (name "python-rpy2")
-    (version "3.3.5")
+    (version "3.4.5")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "rpy2" version))
         (sha256
          (base32
-          "1bs36rds5fq8821l5q85q2b25161rs9ppw5c26x0hjwj487gpcfj"))
-        ;; These patches should be removed with the next release.
-        (patches
-          (list
-            (origin
-              (method url-fetch)
-              (uri "https://github.com/rpy2/rpy2/commit/04c57598f00145d868ea8da31ac1b1e7c49f7570.patch")
-              (file-name "python-rpy2-fix-test-failure.patch")
-              (sha256
-               (base32
-                "1lqd3yxjfx1rxrybcmnapy0r6ambg9myrb98q4nlfhpxanwfdbbh")))
-            (origin
-              (method url-fetch)
-              (uri "https://github.com/rpy2/rpy2/commit/685f67d0a6b47ea80e718116a10755019446aef7.patch")
-              (file-name "python-rpy2-r-console-test-fix.patch")
-              (sha256
-               (base32
-                "18wpvfaa4c13d44cb4sw88c3c7403xdy5m8h82wfq8fjmcq3cmzn")))))))
+          "1cysswxr5glrdblyl2zsmywcj7xhxn3wmyihxinrz9gm8gmaacax"))))
     (build-system python-build-system)
     (arguments
      '(#:modules ((ice-9 ftw)
