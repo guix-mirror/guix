@@ -47,6 +47,7 @@
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;; Copyright © 2021 Renzo Poddighe <renzo@poddighe.nl>
 ;;; Copyright © 2021 Paul A. Patience <paul@apatience.com>
+;;; Copyright © 2021 Niklas Eklund <niklas.eklund@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -358,6 +359,33 @@ application.")
 high-level and flexible remapping mechanisms.  It affects the low-level
 layers (evdev and uinput), making remapping work in almost all the places.")
     (license license:gpl3+)))           ; see README.md (no licence headers)
+
+(define-public xkb-switch
+  (package
+    (name "xkb-switch")
+    (version "1.8.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/grwlf/xkb-switch")
+         (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1sd6ihgsswp6hjm1i4y092n4gl3gj0bc22grz4n7iy43mwphi40d"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f))                    ;no test target
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxkbfile" ,libxkbfile)))
+    (home-page "https://github.com/grwlf/xkb-switch")
+    (synopsis "Switch your X keyboard layouts from the command line")
+    (description
+     "xkb-switch is a C++ program that queries and changes the XKB layout
+state.")
+    (license license:gpl3+)))
 
 (define-public xclip
   (package
