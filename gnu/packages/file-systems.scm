@@ -576,6 +576,7 @@ single file can be mounted.")
        (sha256
         (base32 "0kbsy2sk1jv4m82rxyl25gwrlkzvl3hzdga9gshkxkhm83v1aji4"))
        (patches (search-patches "jfsutils-add-sysmacros.patch"
+                                "jfsutils-gcc-compat.patch"
                                 "jfsutils-include-systypes.patch"))))
     (build-system gnu-build-system)
     (inputs
