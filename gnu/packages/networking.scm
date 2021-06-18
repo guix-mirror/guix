@@ -43,6 +43,7 @@
 ;;; Copyright © 2020 Hamzeh Nasajpour <h.nasajpour@pantherx.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2021 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2021 Domagoj Stolfa <ds815@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2851,14 +2852,14 @@ displays the results in real time.")
 (define-public strongswan
   (package
     (name "strongswan")
-    (version "5.8.4")
+    (version "5.9.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.strongswan.org/strongswan-"
                            version ".tar.bz2"))
        (sha256
-        (base32 "0g2m08gmgdi3qvvqz6zy7n16np53sp232xd0rdc2vdhk73img6id"))))
+        (base32 "0qxhbash2nyh5k2h9zcysgwv61512w1wxk5plyai4b6v3rs2ziv1"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
