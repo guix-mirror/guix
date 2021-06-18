@@ -16375,7 +16375,7 @@ add any additional instance slots.")
 (define-public emacs-epkg
   (package
     (name "emacs-epkg")
-    (version "3.3.0")
+    (version "3.3.1")
     (source
      (origin
        (method git-fetch)
@@ -16385,7 +16385,7 @@ add any additional instance slots.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "03zsysj78w43q902wi9dhck64q9va247avr6fhdw8ynf2lvb78d3"))))
+         "0z9sz9ydfjzhawh4qip41h3vid1lslaf0h14hkjz9kx8fkrzib8a"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-closql" ,emacs-closql)
