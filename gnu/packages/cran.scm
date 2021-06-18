@@ -33,6 +33,7 @@
 ;;; Copyright © 2020 Magali Lemes <magalilemes00@gmail.com>
 ;;; Copyright © 2020 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2020 Aniket Patil <aniket112.patil@gmail.com>
+;;; Copyright © 2021 Marcel Schilling <marcel.schilling@uni-luebeck.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27541,14 +27542,14 @@ data to rasters.  It speeds up plotting of data with millions of points.")
 (define-public r-seuratobject
   (package
     (name "r-seuratobject")
-    (version "4.0.1")
+    (version "4.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "SeuratObject" version))
        (sha256
         (base32
-         "0g32ivx7g64a1sbxc5ym1832wh14w22z025lzyasn8yn2769c1f9"))))
+         "076bd6xmpnspnz7raw03mfgknnygx79sj3c9q6yhpanc46i9gvk4"))))
     (properties `((upstream-name . "SeuratObject")))
     (build-system r-build-system)
     (propagated-inputs
@@ -27569,13 +27570,13 @@ other R users.")
 (define-public r-seurat
   (package
     (name "r-seurat")
-    (version "4.0.2")
+    (version "4.0.3")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "Seurat" version))
               (sha256
                (base32
-                "1b1wyj4dxjn0hfg09l8z282grdgwgah0czs7pn2ian455x0dphng"))))
+                "1jfzkqnk4r82ssyz6h51n2jybkdcjkpjdb2la6n2xqnfs2b8dnbm"))))
     (properties `((upstream-name . "Seurat")))
     (build-system r-build-system)
     (propagated-inputs
