@@ -5049,7 +5049,16 @@ Ridge, Joliet, and zisofs.")
               (patches (search-patches "gpm-glibc-2.26.patch"))
               (sha256
                (base32
-                "13d426a8h403ckpc8zyf7s2p5rql0lqbg2bv0454x0pvgbfbf4gh"))))
+                "13d426a8h403ckpc8zyf7s2p5rql0lqbg2bv0454x0pvgbfbf4gh"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Take a patch from upstream to fix building with -fno-common,
+                  ;; which is default in GCC 10:
+                  ;;  https://github.com/telmich/gpm/pull/37
+                  (substitute* "src/headers/daemon.h"
+                    (("^time_t[[:blank:]]+last_selection_time;")
+                      "extern time_t           last_selection_time;"))))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
