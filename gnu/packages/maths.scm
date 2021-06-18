@@ -2417,7 +2417,7 @@ September 2004}")
      `(("python" ,python-2)))
     (inputs
      `(("gfortran" ,gfortran)
-       ("lapack" ,lapack)
+       ("openblas" ,openblas)
        ("superlu" ,superlu)
        ;; leaving out hdf5 and fftw, as petsc expects them to be built with mpi
        ;; leaving out opengl, as configuration seems to only be for mac
@@ -2428,6 +2428,7 @@ September 2004}")
        #:configure-flags
        `("--with-mpi=0"
          "--with-openmp=1"
+         "--with-openblas=1"
          "--with-superlu=1")
        #:make-flags
        ;; Honor (parallel-job-count) for build.  Do not use --with-make-np,
