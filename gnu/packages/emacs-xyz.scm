@@ -23389,7 +23389,7 @@ commands (a prefix and a suffix) we prefer to call it just a \"transient\".")
 (define-public emacs-forge
   (package
      (name "emacs-forge")
-     (version "0.2.0")
+     (version "0.2.1")
      (source
       (origin
         (method git-fetch)
@@ -23399,7 +23399,7 @@ commands (a prefix and a suffix) we prefer to call it just a \"transient\".")
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "139pndj9l9aifnvv2ak5zwf5gzwhp3m6dfpw1avf4vkh1zywzwa0"))))
+          "0j28vc0q1h36pk0y2nidnlsc2y7n0vpfrd8civiv1zp8z0jwfyc9"))))
      (build-system emacs-build-system)
      (native-inputs
       `(("texinfo" ,texinfo)))
