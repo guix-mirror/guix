@@ -11,7 +11,7 @@
 ;;; Copyright © 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Raymond Nicholson <rain1@openmailbox.org>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
-;;; Copyright © 2016, 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2016, 2018, 2019, 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
@@ -5436,7 +5436,7 @@ feature, and a laptop with an accelerometer.  It has no effect on SSDs.")
 (define-public thinkfan
   (package
     (name "thinkfan")
-    (version "1.2.1")
+    (version "1.2.2")
     (source
      (origin
        (method git-fetch)
@@ -5445,7 +5445,7 @@ feature, and a laptop with an accelerometer.  It has no effect on SSDs.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "18vgm5w5pjnpipa34j4x87q10695w2jnqwvc2f027afy7mnzw7kz"))))
+        (base32 "01l1pnj1cgy3dwgyys2s5iqzyv6kk47vlpy09qjafk8py21ijik3"))))
     (build-system cmake-build-system)
     (arguments
      `(#:modules ((guix build cmake-build-system)
