@@ -153,12 +153,6 @@ base compiler and using LIBC (which may be either a libc package or #f.)"
                                "--disable-decimal-float" ;would need libc
                                "--disable-libcilkrts"
 
-                              ,@(if (string-prefix? "powerpc64le-" target)
-                                   ;; On POWER9 (little endian) glibc needs
-                                   ;; the 128-bit long double type.
-                                   '("--with-long-double-128")
-                                   '())
-
                                ;; When target is any OS other than 'none' these
                                ;; libraries will fail if there is no libc
                                ;; present. See

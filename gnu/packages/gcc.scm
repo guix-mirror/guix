@@ -79,6 +79,11 @@ where the OS part is overloaded to denote a specific ABI---into GCC
          ;; Cilk has been removed from GCC 8 anyway.
          '("--disable-libcilkrts"))
 
+        ;; glibc needs the 128-bit long double type on these architectures.
+        ((or (string-prefix? "powerpc64le-" target)
+             (string-prefix? "powerpc-" target))
+         '("--with-long-double-128"))
+
         (else
          ;; TODO: Add `arm.*-gnueabi', etc.
          '())))

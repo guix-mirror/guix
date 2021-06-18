@@ -2733,13 +2733,6 @@ exec " gcc "/bin/" program
                            "--disable-shared"
                            "--enable-languages=c,c++"
 
-                           ;; On POWER9 (little endian) glibc needs the 128-bit
-                           ;; long double type.  32-bit PPC is affected by the
-                           ;; changes applied for powerpc64le.
-                           ,@(if (string-prefix? "powerpc" (boot-triplet))
-                               '("--with-long-double-128")
-                               '())
-
                            ;; libstdc++ cannot be built at this stage
                            ;; ("Link tests are not allowed after
                            ;; GCC_NO_EXECUTABLES.").
