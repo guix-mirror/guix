@@ -1921,6 +1921,7 @@ This is the declarative counterpart of 'text-file*'."
   (define build
     (gexp (call-with-output-file (ungexp output "out")
             (lambda (port)
+              (set-port-encoding! port "UTF-8")
               (display (string-append (ungexp-splicing text)) port)))))
 
   (computed-file name build))
