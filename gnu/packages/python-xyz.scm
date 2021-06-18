@@ -29,7 +29,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2016, 2017, 2021 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2016, 2017, 2019 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2016, 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2016, 2017, 2018, 2021 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016, 2017, 2018, 2020, 2021 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2016–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
@@ -2818,14 +2818,14 @@ matching them against a list of media-ranges.")
 (define-public python-miniboa
   (package
     (name "python-miniboa")
-    (version "1.0.7")
+    (version "1.0.8")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "miniboa" version))
        (sha256
         (base32
-         "09jh3pn4rh7kh7jayanf8jzy6gp03791b5a193w6148cf3i6k9m3"))))
+         "002c1aki9hsrwj5plrwdrf3sk8rn95fqylqyjx2arrjfpsih4dgs"))))
     (build-system python-build-system)
     (home-page "https://github.com/shmup/miniboa")
     (synopsis "Simple, single-threaded Telnet server")
