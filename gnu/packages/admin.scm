@@ -1152,6 +1152,7 @@ connection alive.")
                 (method url-fetch)
                 (uri (string-append "https://ftp.isc.org/isc/dhcp/"
                                     version "/dhcp-" version ".tar.gz"))
+                (patches (search-patches "isc-dhcp-gcc-compat.patch"))
                 (sha256
                  (base32
                   "06jsr0cg5rsmyibshrpcb9za0qgwvqccashdma7mlm1rflrh8pmh"))))
