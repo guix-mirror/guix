@@ -25,6 +25,7 @@
 ;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@mgail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2411,6 +2412,32 @@ which satisfies the cron expression.")
     (description
      "This package provides a Go library for encode and decode YAML
 values.")
+    (license license:asl2.0)))
+
+(define-public go-gopkg-in-yaml-v3
+  (package
+    (name "go-gopkg-in-yaml-v3")
+    (version "3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gopkg.in/yaml.v3")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "06f4lnrp494wqaygv09dggr2dwf3z2bawqhnlnnwiamg5y787k4g"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "gopkg.in/yaml.v3"))
+    (native-inputs
+     `(("go-gopkg-in-check-v1" ,go-gopkg-in-check-v1)))
+    (home-page "https://gopkg.in/yaml.v3")
+    (synopsis "YAML reader and writer for the Go language")
+    (description
+     "This package provides a Go library for encode and decode YAML values.
+The yaml package supports most of YAML 1.2, but preserves some behavior from
+1.1 for backwards compatibility.")
     (license license:asl2.0)))
 
 (define-public go-github-com-mattn-go-isatty
