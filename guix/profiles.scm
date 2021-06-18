@@ -1921,7 +1921,7 @@ already effective."
 
 (define %precious-variables
   ;; Environment variables in the default 'load-profile' white list.
-  '("HOME" "USER" "LOGNAME" "DISPLAY" "TERM" "TZ" "PAGER"))
+  '("HOME" "USER" "LOGNAME" "DISPLAY" "XAUTHORITY" "TERM" "TZ" "PAGER"))
 
 (define (purify-environment white-list white-list-regexps)
   "Unset all environment variables except those that match the regexps in
