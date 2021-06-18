@@ -7,6 +7,7 @@
 ;;; Copyright © 2020 Charlie Ritter <chewzerita@posteo.net>
 ;;; Copyright © 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2021 João Pedro Simas <jpsimas@gmail.com>
+;;; Copyright © 2021 Jack Hill <jackhill@jackhill.us>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,6 +30,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix utils)
+  #:use-module (gnu packages)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages astronomy)
@@ -68,6 +70,7 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages networking)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
@@ -1064,6 +1067,65 @@ users.")
                            "--with-python-binding"
                            "--with-tcl-binding"
                            "--with-xml-support")))))
+
+(define-public tlf
+  (package
+    (name "tlf")
+    (version "1.4.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tlf/tlf")
+             (commit (string-append "tlf-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1xpgs4k27pjd9mianfknknp6mf34365bcp96wrv5xh4dhph573rj"))
+       (patches
+        (search-patches "tlf-support-hamlib-4.2+.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       (list "--enable-fldigi-xmlrpc")))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("cmocka" ,cmocka)
+       ("glib" ,glib)
+       ("hamlib" ,hamlib)
+       ("libusb" ,libusb) ;`Requires.private: libusb-1.0` in hamlib pkg-config
+       ("ncurses" ,ncurses)
+       ("xmlrpc-c" ,xmlrpc-c)))
+    (home-page "https://tlf.github.io/")
+    (synopsis "Amateur radio contest logging for the terminal")
+    (description "TLF is a @acronym{Text User Interface, TUI} amateur radio
+contest logging program.  It integrates with radios supported by hamlib and
+other ham radio programs like fldigi.  Many contests are supported including:
+
+@itemize
+@item CQWW (SO, M/S and M/M)
+@item WPX (SO, M/S and M/M)
+@item ARRL Sweepstakes (SO, M/S )
+@item EU SPRINT
+@item EUHFC
+@item ARRL-DX (both sides)
+@item ARRL-FD
+@item ARRL 10m
+@item ARRL 160m
+@item Region1 field day
+@item SP DX contest
+@item PACC (both sides)
+@item NRAU - scandinavian
+@item Wysiwyg mults mode (per band or per contest)
+@item WAEDX
+@end itemize
+
+It also supports connecting to DX clusters, log synchronization with other TLF
+instances over the network, and general QSO and DXpedition logging.")
+    (license license:gpl2+)))
 
 (define-public wsjtx
   (package
