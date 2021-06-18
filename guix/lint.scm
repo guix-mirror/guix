@@ -801,7 +801,8 @@ warnings."
                   ((blank? line)
                    (loop))
                   ((or (string-prefix? "--- " line)
-                       (string-prefix? "+++ " line))
+                       (string-prefix? "+++ " line)
+                       (string-prefix? "diff --git " line))
                    (list (make-warning package
                                        (G_ "~a: patch lacks comment and \
 upstream status")
