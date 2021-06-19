@@ -3118,36 +3118,6 @@ offered by the Perl language.")
     ;; With static linking exception
     (license license:lgpl2.1+)))
 
-(define-public ocaml4.07-pcre
-  (package
-    (name "ocaml4.07-pcre")
-    (version "7.4.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                     (url "https://github.com/mmottl/pcre-ocaml")
-                     (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "11sd8g668h48790lamz0riw9jgnfkaif5qdfa0akcndwa6aj07jf"))))
-    (build-system dune-build-system)
-    (arguments
-     `(#:test-target "."
-       #:ocaml ,ocaml-4.07
-       #:findlib ,ocaml4.07-findlib
-       #:dune ,ocaml4.07-dune))
-    (native-inputs
-     `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
-       ("pcre:bin" ,pcre "bin")))
-    (propagated-inputs `(("pcre" ,pcre)))
-    (home-page "https://mmottl.github.io/pcre-ocaml")
-    (synopsis "Bindings to the Perl Compatibility Regular Expressions library")
-    (description "Pcre-ocaml offers library functions for string pattern
-matching and substitution, similar to the functionality offered by the Perl
-language.")
-    (license license:lgpl2.1+))); with the OCaml link exception
-
 (define-public ocaml-expect
   (package
     (name "ocaml-expect")
