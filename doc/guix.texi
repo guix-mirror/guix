@@ -3736,7 +3736,7 @@ other substitute server.
 @cindex access control list (ACL), for substitutes
 @cindex ACL (access control list), for substitutes
 To allow Guix to download substitutes from @code{@value{SUBSTITUTE-SERVER-1}}, @code{@value{SUBSTITUTE-SERVER-2}} or a mirror, you
-must add the releavnt public key to the access control list (ACL) of archive
+must add the relevant public key to the access control list (ACL) of archive
 imports, using the @command{guix archive} command (@pxref{Invoking guix
 archive}).  Doing so implies that you trust the substitute server to not
 be compromised and to serve genuine substitutes.
