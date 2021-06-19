@@ -71,8 +71,18 @@ that was originally contributed to Debian.")
 (define-public nss-certs
   (package
     (name "nss-certs")
-    (version (package-version nss))
-    (source (package-source nss))
+    (version "3.67")
+    (source (origin
+              (method url-fetch)
+              (uri (let ((version-with-underscores
+                          (string-join (string-split version #\.) "_")))
+                     (string-append
+                      "https://ftp.mozilla.org/pub/mozilla.org/security/nss/"
+                      "releases/NSS_" version-with-underscores "_RTM/src/"
+                      "nss-" version ".tar.gz")))
+              (sha256
+               (base32
+                "0zyfi27lbdz1bmk9dmsivcya4phx25rzlxqcnjab69yd928rlm7n"))))
     (build-system gnu-build-system)
     (outputs '("out"))
     (native-inputs

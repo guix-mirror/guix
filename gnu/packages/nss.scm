@@ -71,8 +71,8 @@ platform-neutral API for system level and libc-like functions.  It is used
 in the Mozilla clients.")
     (license license:mpl2.0)))
 
-;;; Note: When updating, also test the build of the nss-certs package, which
-;;; uses the same source as nss.
+;;; Note: When updating, also update the nss-certs package, which cannot
+;;; inherit from here.
 (define-public nss
   (package
     (name "nss")
