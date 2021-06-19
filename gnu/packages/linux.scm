@@ -727,9 +727,9 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
 
 (define* (make-linux-libre version hash-string supported-systems
                            #:key
+                           (extra-version #f)
                            ;; A function that takes an arch and a variant.
                            ;; See kernel-config for an example.
-                           (extra-version #f)
                            (configuration-file #f)
                            (defconfig "defconfig")
                            (extra-options %default-extra-linux-options)
@@ -748,9 +748,9 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
 
 (define* (make-linux-libre* version source supported-systems
                             #:key
+                            (extra-version #f)
                             ;; A function that takes an arch and a variant.
                             ;; See kernel-config for an example.
-                            (extra-version #f)
                             (configuration-file #f)
                             (defconfig "defconfig")
                             (extra-options %default-extra-linux-options))
@@ -816,7 +816,8 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
                  (format #t "`CROSS_COMPILE' set to `~a'~%"
                          (getenv "CROSS_COMPILE"))))
 
-             (setenv "EXTRA_VERSION" ,extra-version)
+             (setenv "EXTRAVERSION" ,(and extra-version
+                                          (string-append "-" extra-version)))
 
              (let ((build  (assoc-ref %standard-phases 'build))
                    (config (assoc-ref (or native-inputs inputs) "kconfig")))
