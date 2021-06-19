@@ -6827,6 +6827,21 @@ the FParsec library for FSharp by Stephan Tolksdorf.")
     ;; With static linking exception.
     (license license:lgpl2.1+)))
 
+(define-public ocaml-mparser-re
+  (package
+    (inherit ocaml-mparser)
+    (name "ocaml-mparser-re")
+    (arguments
+     ;; No tests.
+     '(#:package "mparser-re"
+       #:tests? #f))
+    (propagated-inputs
+     `(("ocaml-mparser" ,ocaml-mparser)
+       ("ocaml-re" ,ocaml-re)))
+    (synopsis "MParser plugin for RE-based regular expressions")
+    (description "This package provides RE-based regular expressions
+support for Mparser.")))
+
 (define-public lablgtk3
   (package
     (name "lablgtk")
