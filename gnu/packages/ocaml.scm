@@ -6842,6 +6842,21 @@ the FParsec library for FSharp by Stephan Tolksdorf.")
     (description "This package provides RE-based regular expressions
 support for Mparser.")))
 
+(define-public ocaml-mparser-pcre
+  (package
+    (inherit ocaml-mparser)
+    (name "ocaml-mparser-pcre")
+    (arguments
+     ;; No tests.
+     '(#:package "mparser-pcre"
+       #:tests? #f))
+    (propagated-inputs
+     `(("ocaml-mparser" ,ocaml-mparser)
+       ("ocaml-pcre" ,ocaml-pcre)))
+    (synopsis "MParser plugin for PCRE-based regular expressions")
+    (description "This package provides PCRE-based regular expressions
+support for Mparser.")))
+
 (define-public lablgtk3
   (package
     (name "lablgtk")
