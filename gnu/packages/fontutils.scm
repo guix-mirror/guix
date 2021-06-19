@@ -14,6 +14,7 @@
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -331,7 +332,8 @@ Font Format (WOFF).")
                   "https://www.freedesktop.org/software/"
                   "fontconfig/release/fontconfig-" version ".tar.xz"))
             (sha256 (base32
-                     "1850q4k80yxma5g3yxkvyv8i5a3xqzswwml8gjy3jmywx8qqd5pa"))))
+                     "1850q4k80yxma5g3yxkvyv8i5a3xqzswwml8gjy3jmywx8qqd5pa"))
+             (patches (search-patches "fontconfig-cache-ignore-mtime.patch"))))
      (build-system gnu-build-system)
      ;; In Requires or Requires.private of fontconfig.pc.
      (propagated-inputs `(("expat" ,expat)
@@ -362,6 +364,9 @@ Font Format (WOFF).")
         (modify-phases %standard-phases
           (add-before 'check 'skip-problematic-tests
             (lambda _
+              ;; SOURCE_DATE_EPOCH doesn't make sense when ignoring mtime
+              (unsetenv "SOURCE_DATE_EPOCH")
+
               (substitute* "test/run-test.sh"
                 ;; The crbug1004254 test attempts to fetch fonts from the
                 ;; network.
