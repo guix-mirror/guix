@@ -144,24 +144,25 @@ provides a 'Setup.hs' file as its build system."
       #~(begin
           (use-modules #$@(sexp->gexp modules))
 
-          (haskell-build #:name #$name
-                         #:source #+source
-                         #:cabal-revision #$(assoc-ref inputs
-                                                       "cabal-revision")
-                         #:configure-flags #$configure-flags
-                         #:extra-directories #$extra-directories
-                         #:haddock-flags #$haddock-flags
-                         #:system #$system
-                         #:test-target #$test-target
-                         #:tests? #$tests?
-                         #:parallel-build? #$parallel-build?
-                         #:haddock? #$haddock?
-                         #:phases #$phases
-                         #:outputs #$(outputs->gexp outputs)
-                         #:search-paths '#$(sexp->gexp
-                                            (map search-path-specification->sexp
-                                                 search-paths))
-                         #:inputs #$(input-tuples->gexp inputs)))))
+          #$(with-build-variables inputs outputs
+              #~(haskell-build #:name #$name
+                               #:source #+source
+                               #:cabal-revision #$(assoc-ref inputs "cabal-revision")
+                               #:configure-flags #$configure-flags
+                               #:extra-directories #$extra-directories
+                               #:extra-directories #$extra-directories
+                               #:haddock-flags #$haddock-flags
+                               #:system #$system
+                               #:test-target #$test-target
+                               #:tests? #$tests?
+                               #:parallel-build? #$parallel-build?
+                               #:haddock? #$haddock?
+                               #:phases #$phases
+                               #:outputs #$(outputs->gexp outputs)
+                               #:search-paths '#$(sexp->gexp
+                                                  (map search-path-specification->sexp
+                                                       search-paths))
+                               #:inputs #$(input-tuples->gexp inputs))))))
 
   (mlet %store-monad ((guile (package->derivation (or guile (default-guile))
                                                   system #:graft? #f)))
