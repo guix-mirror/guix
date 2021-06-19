@@ -809,6 +809,27 @@ and Chrome OS, and the recommended font for the
 visual language \"Material Design\".")
     (license license:asl2.0)))
 
+(define-public font-borg-sans-mono
+  (package
+    (name "font-borg-sans-mono")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/charje/borg-sans-mono"
+             "/releases/download/v" version "/borg-sans-mono.zip"))
+       (sha256
+        (base32
+         "1xxakd9nfb8wz76rh0gbd69gh0mlqs2453g0j516xgxn8bxip2yj"))))
+    (build-system font-build-system)
+    (home-page "https://github.com/charje/borg-sans-mono")
+    (synopsis "The Borg Sans Mono font")
+    (description "Borg Sans Mono is a monospaced font derived from Droid Sans
+Mono.  It includes additions commonly found in programming fonts such as a
+slashed zero and ligatures for operators.")
+    (license license:asl2.0)))
+
 (define-public font-un
   (package
     (name "font-un")
