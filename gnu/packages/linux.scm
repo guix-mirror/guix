@@ -5703,6 +5703,7 @@ invocations of itself.")
     (native-inputs `(("pkg-config" ,pkg-config)))
     (arguments
      '(#:configure-flags (list "--disable-static"
+                               "--disable-ldconfig" ;not necessary
                                "--exec-prefix=${prefix}"
                                "--with-fuse=external" ;use our own FUSE
                                "--enable-mount-helper"
