@@ -6262,16 +6262,26 @@ under OpenGL graphics workloads.")
               (uri (string-append "https://github.com/rhboot/" name
                                   "/releases/download/" version "/" name
                                   "-" version ".tar.bz2"))
+              (patches (search-patches "efivar-gcc-compat.patch"))
               (sha256
                (base32
-                "17vvfivhsrszh7q39b6npjsrhrhsjf1cmmcpp3xrh6wh7ywzwrrw"))))
+                "17vvfivhsrszh7q39b6npjsrhrhsjf1cmmcpp3xrh6wh7ywzwrrw"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Compile everything within a single LTO partition
+                  ;; to work around ordering issues in the code.  Try
+                  ;; removing this for versions > 37.
+                  (substitute* "Make.defaults"
+                    (("-flto")
+                     "-flto -flto-partition=one"))))))
     (build-system gnu-build-system)
     (arguments
      `(;; Tests require a UEFI system and is not detected in the chroot.
        #:tests? #f
        #:make-flags (list (string-append "prefix=" %output)
                           (string-append "libdir=" %output "/lib")
-                          "CC_FOR_BUILD=gcc"
+                          (string-append "CC_FOR_BUILD=" ,(cc-for-target))
                           (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))
        #:phases
        (modify-phases %standard-phases
