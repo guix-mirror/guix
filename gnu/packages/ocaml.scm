@@ -3148,9 +3148,9 @@ matching and substitution, similar to the functionality offered by the Perl
 language.")
     (license license:lgpl2.1+))); with the OCaml link exception
 
-(define-public ocaml4.07-expect
+(define-public ocaml-expect
   (package
-    (name "ocaml4.07-expect")
+    (name "ocaml-expect")
     (version "0.0.6")
     (source (origin
               (method url-fetch)
@@ -3159,21 +3159,20 @@ language.")
                (base32
                 "098qvg9d4yrqzr5ax291y3whrpax0m3sx4gi6is0mblc96r9yqk0"))))
     (arguments
-     `(#:tests? #f
-       #:ocaml ,ocaml-4.07
-       #:findlib ,ocaml4.07-findlib))
+     `(#:tests? #f))
     (build-system ocaml-build-system)
     (native-inputs
-     `(("ocamlbuild" ,(package-with-ocaml4.07 ocamlbuild))
-       ("ocaml-num" ,(package-with-ocaml4.07 ocaml-num))
-       ("ocaml-pcre" ,ocaml4.07-pcre)
-       ("ounit" ,(package-with-ocaml4.07 ocaml-ounit))))
+     `(("ocamlbuild" ,ocamlbuild)
+       ("ocaml-num" ,ocaml-num)
+       ("ocaml-pcre" ,ocaml-pcre)
+       ("ounit" ,ocaml-ounit)))
     (propagated-inputs
-     `(("batteries" ,(package-with-ocaml4.07 ocaml-batteries))))
+     `(("batteries" ,ocaml-batteries)))
     (home-page "https://forge.ocamlcore.org/projects/ocaml-expect/")
     (synopsis "Simple implementation of expect")
-    (description "Help building unitary testing of interactive program.  You
-can match the question using a regular expression or a timeout.")
+    (description "This package provides utilities for building unitary testing
+of interactive program.  You can match the question using a regular expression
+or a timeout.")
     (license license:lgpl2.1+))) ; with the OCaml static compilation exception
 
 (define-public ocaml-stdlib-shims
